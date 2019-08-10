@@ -1,0 +1,7 @@
+**/.terraform
+**/terraform.tfstate*
+**/terraform.tfvars
+.idea
+.vscode
+credentials.json
+key.json
