@@ -23,6 +23,11 @@ variable "terraform_owners" {
   default     = []
 }
 
+variable "gcs_location" {
+  description = "GCS bucket location."
+  default     = "EU"
+}
+
 variable "project_services" {
   description = "Service APIs enabled by default in new projects."
   default = [

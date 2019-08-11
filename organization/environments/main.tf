@@ -13,12 +13,13 @@
 # limitations under the License.
 
 ###############################################################################
-#                         Terraform org-level project                         #
+#                        Terraform top-level resources                        #
 ###############################################################################
 
 module "project-terraform" {
-  source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
-  version         = "3.0.0"
+  # source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
+  # version         = "3.0.0"
+  source          = "github.com/terraform-google-modules/terraform-google-project-factory//modules/fabric-project?ref=32a539a"
   parent_type     = var.root_type
   parent_id       = var.root_id
   billing_account = var.billing_account_id
@@ -29,3 +30,12 @@ module "project-terraform" {
   activate_apis   = var.project_services
 }
 
+module "gcs-terraform" {
+  # source        = "terraform-google-modules/cloud-storage/google"
+  # version       = "0.1.0"
+  source     = "github.com/terraform-google-modules/terraform-google-cloud-storage?ref=3f27f26"
+  prefix     = var.prefix
+  names      = ["tf-bootstrap"]
+  project_id = module.project-terraform.project_id
+  location   = var.gcs_location
+}
