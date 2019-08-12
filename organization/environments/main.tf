@@ -19,9 +19,9 @@
 # Terraform project
 
 module "project-tf" {
-  # source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
-  # version         = "3.0.1"
-  source          = "github.com/terraform-google-modules/terraform-google-project-factory//modules/fabric-project?ref=32a539a"
+  source  = "terraform-google-modules/project-factory/google//modules/fabric-project"
+  version = "3.1.0"
+  #source          = "github.com/terraform-google-modules/terraform-google-project-factory//modules/fabric-project?ref=32a539a"
   parent_type     = var.root_type
   parent_id       = var.org_id
   billing_account = var.billing_account_id
@@ -106,9 +106,8 @@ module "folders-top-level" {
 # Audit logs project
 
 module "project-audit" {
-  # source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
-  # version         = "3.0.1"
-  source          = "github.com/terraform-google-modules/terraform-google-project-factory//modules/fabric-project?ref=32a539a"
+  source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
+  version         = "3.1.0"
   parent_type     = var.root_type
   parent_id       = var.org_id
   billing_account = var.billing_account_id
@@ -150,9 +149,8 @@ module "log-sink-audit" {
 # Shared resources project
 
 module "project-shared-resources" {
-  # source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
-  # version         = "3.0.1"
-  source          = "github.com/terraform-google-modules/terraform-google-project-factory//modules/fabric-project?ref=32a539a"
+  source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
+  version         = "3.1.0"
   parent_type     = var.root_type
   parent_id       = var.org_id
   billing_account = var.billing_account_id
