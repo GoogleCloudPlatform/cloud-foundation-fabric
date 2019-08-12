@@ -37,6 +37,7 @@ variable "project_services" {
   description = "Service APIs enabled by default in new projects."
   default = [
     "bigquery-json.googleapis.com",
+    "bigquerystorage.googleapis.com",
     "cloudbilling.googleapis.com",
     "cloudresourcemanager.googleapis.com",
     "compute.googleapis.com",
