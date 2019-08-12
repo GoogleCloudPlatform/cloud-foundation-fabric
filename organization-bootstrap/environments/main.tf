@@ -52,7 +52,7 @@ module "service-accounts-tf-environments" {
 
 module "gcs-tf-bootstrap" {
   # source        = "terraform-google-modules/cloud-storage/google"
-  # version       = "1.0.0"
+  # version       = "2.0.0"
   source     = "github.com/terraform-google-modules/terraform-google-cloud-storage?ref=e7243fd"
   project_id = module.project-tf.project_id
   prefix     = "${var.prefix}-tf"
@@ -64,7 +64,7 @@ module "gcs-tf-bootstrap" {
 
 module "gcs-tf-environments" {
   # source        = "terraform-google-modules/cloud-storage/google"
-  # version       = "1.0.0"
+  # version       = "2.0.0"
   source          = "github.com/terraform-google-modules/terraform-google-cloud-storage?ref=e7243fd"
   project_id      = module.project-tf.project_id
   prefix          = "${var.prefix}-tf"
@@ -84,8 +84,9 @@ module "gcs-tf-environments" {
 # TODO(ludomagno): move XPN admin role here after checking it now works on folders
 
 module "folders-top-level" {
-  source            = "terraform-google-modules/folders/google"
-  version           = "1.0.0"
+  # source            = "terraform-google-modules/folders/google"
+  # version           = "2.0.0"
+  source            = "github.com/terraform-google-modules/terraform-google-folders?ref=26db794564"
   parent_type       = var.root_type
   parent_id         = var.org_id
   names             = var.environments
@@ -136,7 +137,7 @@ module "log-sink-audit" {
   filter                 = "logName: \"/logs/cloudaudit.googleapis.com%2Factivity\" OR logName: \"/logs/cloudaudit.googleapis.com%2Fsystem_event\""
   log_sink_name          = "logs-audit-${var.environments[0]}"
   parent_resource_type   = "folder"
-  parent_resource_id     = "${element(values(module.folders-top-level.names_and_ids), 0)}"
+  parent_resource_id     = module.folders-top-level.ids[0]
   include_children       = "true"
   unique_writer_identity = "true"
   destination_uri        = "${module.bq-audit-export.destination_uri}"
@@ -160,5 +161,5 @@ module "project-shared-resources" {
   activate_apis   = var.project_services
 }
 
-# Add here further modules for resources that don't belong to any environments,
+# Add further modules here for resources that don't belong to any environments,
 # like GCS buckets to hold assets, KMS, etc.
