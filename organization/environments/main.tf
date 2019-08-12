@@ -143,4 +143,24 @@ module "log-sink-audit" {
   destination_uri        = "${module.bq-audit-export.destination_uri}"
 }
 
+###############################################################################
+#                    Shared resources (GCR, GCS, KMS, etc.)                   #
+###############################################################################
 
+# Shared resources project
+
+module "project-shared-resources" {
+  # source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
+  # version         = "3.0.1"
+  source          = "github.com/terraform-google-modules/terraform-google-project-factory//modules/fabric-project?ref=32a539a"
+  parent_type     = var.root_type
+  parent_id       = var.org_id
+  billing_account = var.billing_account_id
+  prefix          = var.prefix
+  name            = "shared"
+  lien_reason     = "shared"
+  activate_apis   = var.project_services
+}
+
+# Add here further modules for resources that don't belong to any environments,
+# like GCS buckets to hold assets, KMS, etc.
