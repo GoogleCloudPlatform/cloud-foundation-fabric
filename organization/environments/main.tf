@@ -98,3 +98,49 @@ module "folders-top-level" {
     "roles/compute.networkAdmin",
   ]
 }
+
+###############################################################################
+#                              Audit log exports                              #
+###############################################################################
+
+# Audit logs project
+
+module "project-audit" {
+  # source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
+  # version         = "3.0.1"
+  source          = "github.com/terraform-google-modules/terraform-google-project-factory//modules/fabric-project?ref=32a539a"
+  parent_type     = var.root_type
+  parent_id       = var.org_id
+  billing_account = var.billing_account_id
+  prefix          = var.prefix
+  name            = "audit"
+  lien_reason     = "audit"
+  activate_apis   = var.project_services
+}
+
+# audit logs destination on BigQuery
+
+module "bq-audit-export" {
+  source                   = "terraform-google-modules/log-export/google//modules/bigquery"
+  version                  = "3.0.0"
+  project_id               = module.project-audit.project_id
+  dataset_name             = "logs_audit_${replace(var.environments[0], "-", "_")}"
+  log_sink_writer_identity = module.log-sink-audit.writer_identity
+}
+
+# This sink exports  audit logs for the first environment only, change the
+# parent resource to the organization to have organization-wide audit exports
+
+module "log-sink-audit" {
+  source                 = "terraform-google-modules/log-export/google"
+  version                = "3.0.0"
+  filter                 = "logName: \"/logs/cloudaudit.googleapis.com%2Factivity\" OR logName: \"/logs/cloudaudit.googleapis.com%2Fsystem_event\""
+  log_sink_name          = "logs-audit-${var.environments[0]}"
+  parent_resource_type   = "folder"
+  parent_resource_id     = "${element(values(module.folders-top-level.names_and_ids), 0)}"
+  include_children       = "true"
+  unique_writer_identity = "true"
+  destination_uri        = "${module.bq-audit-export.destination_uri}"
+}
+
+
