@@ -1,11 +1,16 @@
-variable "root_type" {
-  description = "Type of the root for the new hierarchy."
-  default     = "folder"
+variable "billing_account_id" {
+  description = "Billing account id used as default for new projects."
+  type        = string
 }
 
-variable "root_id" {
-  description = "Id of the organization or folder used as the root for the new hierarchy."
-  type        = string
+variable "environments" {
+  description = "Environment short names."
+  type        = list(string)
+}
+
+variable "gcs_location" {
+  description = "GCS bucket location."
+  default     = "EU"
 }
 
 variable "prefix" {
@@ -13,19 +18,19 @@ variable "prefix" {
   type        = string
 }
 
-variable "billing_account_id" {
-  description = "Billing account id used as default for new projects."
+variable "root_type" {
+  description = "Type of the root for the new hierarchy."
+  default     = "organization"
+}
+
+variable "org_id" {
+  description = "Organization id."
   type        = string
 }
 
 variable "terraform_owners" {
   description = "Terraform project owners, in IAM format."
   default     = []
-}
-
-variable "gcs_location" {
-  description = "GCS bucket location."
-  default     = "EU"
 }
 
 variable "project_services" {
