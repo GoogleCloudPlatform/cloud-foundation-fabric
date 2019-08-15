@@ -34,7 +34,7 @@ output "environment_tf_gcs_buckets" {
 
 output "environment_service_accounts" {
   description = "Service accounts used to run each environment Terraform modules."
-  value       = zipmap(var.environments, module.service-accounts-tf-environments.emails)
+  value       = module.service-accounts-tf-environments
 }
 
 output "audit_logs_bq_dataset" {

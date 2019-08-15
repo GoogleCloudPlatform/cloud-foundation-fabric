@@ -35,9 +35,8 @@ module "project-tf" {
 # per-environment service accounts
 
 module "service-accounts-tf-environments" {
-  # source             = "terraform-google-modules/service-accounts/google"
-  # version            = "1.0.1"
-  source             = "github.com/terraform-google-modules/terraform-google-service-accounts?ref=857f394"
+  source             = "terraform-google-modules/service-accounts/google"
+  version            = "2.0.0"
   project_id         = module.project-tf.project_id
   org_id             = var.org_id
   billing_account_id = var.billing_account_id
@@ -73,7 +72,7 @@ module "gcs-tf-environments" {
   set_admin_roles = true
   bucket_admins = zipmap(
     var.environments,
-    module.service-accounts-tf-environments.iam_emails
+    module.service-accounts-tf-environments.iam_emails_list
   )
 }
 
@@ -91,7 +90,7 @@ module "folders-top-level" {
   parent_id         = var.org_id
   names             = var.environments
   set_roles         = true
-  per_folder_admins = module.service-accounts-tf-environments.iam_emails
+  per_folder_admins = module.service-accounts-tf-environments.iam_emails_list
   folder_admin_roles = [
     "roles/resourcemanager.folderViewer",
     "roles/resourcemanager.projectCreator",
