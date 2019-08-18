@@ -24,17 +24,23 @@ output "bootstrap_tf_gcs_bucket" {
 
 output "environment_folders" {
   description = "Top-level environment folders."
-  value       = zipmap(var.environments, module.folders-top-level.ids)
+  value       = module.folders-top-level.ids
 }
 
 output "environment_tf_gcs_buckets" {
   description = "GCS buckets used for each environment Terraform state."
-  value       = zipmap(var.environments, module.gcs-tf-environments.names)
+  value       = module.gcs-tf-environments.names
+}
+
+output "environment_service_account_keys" {
+  description = "Service account keys used to run each environment Terraform modules."
+  sensitive   = true
+  value       = module.service-accounts-tf-environments.keys
 }
 
 output "environment_service_accounts" {
   description = "Service accounts used to run each environment Terraform modules."
-  value       = module.service-accounts-tf-environments
+  value       = module.service-accounts-tf-environments.emails
 }
 
 output "audit_logs_bq_dataset" {
