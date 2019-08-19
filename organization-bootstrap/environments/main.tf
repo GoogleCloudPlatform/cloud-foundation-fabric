@@ -133,7 +133,7 @@ module "log-sink-audit" {
   filter                 = "logName: \"/logs/cloudaudit.googleapis.com%2Factivity\" OR logName: \"/logs/cloudaudit.googleapis.com%2Fsystem_event\""
   log_sink_name          = "logs-audit-${var.environments[0]}"
   parent_resource_type   = "folder"
-  parent_resource_id     = module.folders-top-level.ids_list[0]
+  parent_resource_id     = split("/", module.folders-top-level.ids_list[0])[1]
   include_children       = "true"
   unique_writer_identity = "true"
   destination_uri        = "${module.bq-audit-export.destination_uri}"
