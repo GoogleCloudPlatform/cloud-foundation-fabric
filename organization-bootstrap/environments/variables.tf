@@ -8,19 +8,9 @@ variable "environments" {
   type        = list(string)
 }
 
-variable "generate_service_account_keys" {
-  description = "Generate and store service account keys in the state file."
-  default     = false
-}
-
 variable "gcs_location" {
   description = "GCS bucket location."
   default     = "EU"
-}
-
-variable "organization_id" {
-  description = "Organization id."
-  type        = string
 }
 
 variable "prefix" {
@@ -28,8 +18,13 @@ variable "prefix" {
   type        = string
 }
 
-variable "root_node" {
-  description = "Root node for the new hierarchy, either 'organizations/org_id' or 'folders/folder_id'."
+variable "root_type" {
+  description = "Type of the root for the new hierarchy."
+  default     = "organization"
+}
+
+variable "org_id" {
+  description = "Organization id."
   type        = string
 }
 
