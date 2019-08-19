@@ -19,9 +19,8 @@
 # Terraform project
 
 module "project-tf" {
-  source  = "terraform-google-modules/project-factory/google//modules/fabric-project"
-  version = "3.2.0"
-  #source          = "github.com/terraform-google-modules/terraform-google-project-factory//modules/fabric-project?ref=32a539a"
+  source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
+  version         = "3.2.0"
   parent          = var.root_node
   billing_account = var.billing_account_id
   prefix          = var.prefix
@@ -46,12 +45,11 @@ module "service-accounts-tf-environments" {
   generate_keys      = var.generate_service_account_keys
 }
 
-# bootstrap Terraform state  GCS bucket
+# bootstrap Terraform state GCS bucket
 
 module "gcs-tf-bootstrap" {
-  source  = "terraform-google-modules/cloud-storage/google"
-  version = "1.0.0"
-  # source     = "github.com/terraform-google-modules/terraform-google-cloud-storage?ref=e7243fd"
+  source     = "terraform-google-modules/cloud-storage/google"
+  version    = "1.0.0"
   project_id = module.project-tf.project_id
   prefix     = "${var.prefix}-tf"
   names      = ["tf-bootstrap"]
@@ -61,9 +59,8 @@ module "gcs-tf-bootstrap" {
 # per-environment Terraform state GCS buckets
 
 module "gcs-tf-environments" {
-  source  = "terraform-google-modules/cloud-storage/google"
-  version = "1.0.0"
-  # source     = "github.com/terraform-google-modules/terraform-google-cloud-storage?ref=e7243fd"
+  source          = "terraform-google-modules/cloud-storage/google"
+  version         = "1.0.0"
   project_id      = module.project-tf.project_id
   prefix          = "${var.prefix}-tf"
   names           = var.environments
@@ -82,9 +79,8 @@ module "gcs-tf-environments" {
 # TODO(ludomagno): move XPN admin role here after checking it now works on folders
 
 module "folders-top-level" {
-  # source            = "terraform-google-modules/folders/google"
-  # version           = "2.0.0"
-  source            = "github.com/terraform-google-modules/terraform-google-folders?ref=2cd6a08"
+  source            = "terraform-google-modules/folders/google"
+  version           = "2.0.0"
   parent            = var.root_node
   names             = var.environments
   set_roles         = true
@@ -101,7 +97,7 @@ module "folders-top-level" {
 #                              Audit log exports                              #
 ###############################################################################
 
-# Audit logs project
+# audit logs project
 
 module "project-audit" {
   source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
@@ -124,8 +120,8 @@ module "bq-audit-export" {
   log_sink_writer_identity = module.log-sink-audit.writer_identity
 }
 
-# This sink exports  audit logs for the first environment only, change the
-# parent resource to the organization to have organization-wide audit exports
+# audit log sink
+# set the organization as parent to export audit logs for all environments
 
 module "log-sink-audit" {
   source                 = "terraform-google-modules/log-export/google"
@@ -143,7 +139,7 @@ module "log-sink-audit" {
 #                    Shared resources (GCR, GCS, KMS, etc.)                   #
 ###############################################################################
 
-# Shared resources project
+# shared resources project
 
 module "project-shared-resources" {
   source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
@@ -156,5 +152,5 @@ module "project-shared-resources" {
   activate_apis   = var.project_services
 }
 
-# Add further modules here for resources that don't belong to any environments,
-# like GCS buckets to hold assets, KMS, etc.
+# Add further modules here for resources that are common to all environments
+# like GCS buckets (used to hold shared assets), Container Registry, KMS, etc.
