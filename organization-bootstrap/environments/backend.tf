@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# uncomment after initial run once bootstrap bucket has been created
+# comment before initial run
 
-# terraform {
-#   backend "gcs" {
-#     bucket = ""
-#   }
-# }
+terraform {
+  backend "gcs" {
+    bucket = ""
+  }
+}

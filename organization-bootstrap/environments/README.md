@@ -30,11 +30,11 @@ As mentioned above this root module is meant to be run infrequently, only when t
 
 Regardless of how it's run, the credentials used need very specific roles on the root node, and some roles at the organization level if Shared VPC usage is anticipated in environments:
 
-- Billing Account Administrator on the billing account
+- Billing Account Administrator on the billing account or organization
 - Folder Administrator
-- Logging Administrator on the root node (folder or organization)
+- Logging Administrator on the root folder or organization
 - Project Creator
-- Organization Administrator (if Shared VPC roles need to be granted)
+- Organization Administrator, if Shared VPC roles need to be granted
 
 ### Prerequisites
 

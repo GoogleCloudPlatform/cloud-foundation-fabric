@@ -3,5 +3,6 @@
 **/terraform.tfvars
 .idea
 .vscode
+backend-config.hcl
 credentials.json
 key.json
