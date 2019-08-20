@@ -41,7 +41,7 @@ module "service-accounts-tf-environments" {
   prefix             = var.prefix
   names              = var.environments
   grant_billing_role = true
-  grant_xpn_roles    = true
+  grant_xpn_roles    = var.grant_xpn_roles
   generate_keys      = var.generate_service_account_keys
 }
 

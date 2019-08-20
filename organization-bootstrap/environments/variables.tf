@@ -18,6 +18,12 @@ variable "gcs_location" {
   default     = "EU"
 }
 
+variable "grant_xpn_roles" {
+  description = "Grant roles needed for Shared VPC creation to service accounts."
+  default     = true
+}
+
+
 variable "organization_id" {
   description = "Organization id."
   type        = string
@@ -61,4 +67,3 @@ variable "project_services" {
     "storage-api.googleapis.com",
   ]
 }
-
