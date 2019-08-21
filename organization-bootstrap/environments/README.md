@@ -1,8 +1,8 @@
 # Environment-based organizational sample
 
-This sample creates an organizational layout with a single level, where each  folder is usually mapped to one infrastructure environment (test, dev, etc.). It also sets up all prerequisites for automation (GCS state buckets, service accounts, etc.), and sets up the correct roles on those to enforce separation of duties at the environment level.
+This sample creates an organizational layout with a single level, where each  folder is usually mapped to one infrastructure environment (test, dev, etc.). It also sets up all prerequisites for automation (GCS state buckets, service accounts, etc.), and the correct roles on those to enforce separation of duties at the environment level.
 
-This layout is well suited for small and medium-sized infrastructures, where a limited set of teams manages the underlying infrastructure, and the complexity in application resource ownership and access roles is mostly dealt with at the project level, and/or in the individual infrastructure services (GKE, Cloud SQL, etc.). Its simplicity also makes it a good starting point for more complex or specialized layouts.
+This layout is well suited for small and medium-sized infrastructures managed by a smal set of teams, where the complexity in application resource ownership and access roles is mostly dealt with at the project level, and/or in the individual services (GKE, Cloud SQL, etc.). Its simplicity also makes it a good starting point for more complex or specialized layouts.
 
 ![High-level diagram](diagram.png "High-level diagram")
 
