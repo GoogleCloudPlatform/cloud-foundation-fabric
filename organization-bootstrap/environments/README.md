@@ -55,10 +55,11 @@ TODO: describe potential issues with multiple resources, and the upcoming `forea
 | environments | Environment short names. | list(string) | n/a | yes |
 | gcs\_location | GCS bucket location. | string | `"EU"` | no |
 | generate\_service\_account\_keys | Generate and store service account keys in the state file. | string | `"false"` | no |
+| grant\_xpn\_roles | Grant roles needed for Shared VPC creation to service accounts. | string | `"true"` | no |
 | organization\_id | Organization id. | string | n/a | yes |
 | prefix | Prefix used for resources that need unique names. | string | n/a | yes |
 | project\_services | Service APIs enabled by default in new projects. | list | `<list>` | no |
-| root\_node | Root node for the new hierarchy, either 'organizations/org\_id' or 'folders/folder\_id'. | string | n/a | yes |
+| root\_node | Root node for the new hierarchy, either 'organizations/org_id' or 'folders/folder_id'. | string | n/a | yes |
 | terraform\_owners | Terraform project owners, in IAM format. | list | `<list>` | no |
 
 ## Outputs
