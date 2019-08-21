@@ -1,3 +1,8 @@
+variable "audit_viewers" {
+  description = "Audit project viewers, in IAM format."
+  default     = []
+}
+
 variable "billing_account_id" {
   description = "Billing account id used as default for new projects."
   type        = string
@@ -37,6 +42,17 @@ variable "prefix" {
 variable "root_node" {
   description = "Root node for the new hierarchy, either 'organizations/org_id' or 'folders/folder_id'."
   type        = string
+}
+
+variable "shared_bindings_members" {
+  description = "List of comma-delimited IAM-format members for the additional shared project bindings."
+  # example: ["user:a@example.com,b@example.com", "user:c@example.com"]
+  default = []
+}
+variable "shared_bindings_roles" {
+  description = "List of roles for additional shared project bindings."
+  # example: ["roles/storage.objectViewer", "roles/storage.admin"]
+  default = []
 }
 
 variable "terraform_owners" {

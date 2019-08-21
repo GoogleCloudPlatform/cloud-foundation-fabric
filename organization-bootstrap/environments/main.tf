@@ -108,6 +108,7 @@ module "project-audit" {
   name            = "audit"
   lien_reason     = "audit"
   activate_apis   = var.project_services
+  viewers         = var.audit_viewers
 }
 
 # audit logs destination on BigQuery
@@ -142,14 +143,16 @@ module "log-sink-audit" {
 # shared resources project
 
 module "project-shared-resources" {
-  source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
-  version         = "3.2.0"
-  parent          = var.root_node
-  billing_account = var.billing_account_id
-  prefix          = var.prefix
-  name            = "shared"
-  lien_reason     = "shared"
-  activate_apis   = var.project_services
+  source                 = "terraform-google-modules/project-factory/google//modules/fabric-project"
+  version                = "3.2.0"
+  parent                 = var.root_node
+  billing_account        = var.billing_account_id
+  prefix                 = var.prefix
+  name                   = "shared"
+  lien_reason            = "shared"
+  activate_apis          = var.project_services
+  extra_bindings_roles   = var.shared_bindings_roles
+  extra_bindings_members = var.shared_bindings_members
 }
 
 # Add further modules here for resources that are common to all environments

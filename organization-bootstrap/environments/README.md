@@ -45,12 +45,15 @@ TODO: describe the state switch that needs to be done after first apply
 ### Things to be aware of
 
 TODO: describe potential issues with multiple resources, and the upcoming `foreach` fix
+TODO: describe how `prefix` can be used to enforce naming
+TODO: describe xpn roles
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
+| audit\_viewers | Audit project viewers, in IAM format. | list | `<list>` | no |
 | billing\_account\_id | Billing account id used as default for new projects. | string | n/a | yes |
 | environments | Environment short names. | list(string) | n/a | yes |
 | gcs\_location | GCS bucket location. | string | `"EU"` | no |
@@ -60,6 +63,8 @@ TODO: describe potential issues with multiple resources, and the upcoming `forea
 | prefix | Prefix used for resources that need unique names. | string | n/a | yes |
 | project\_services | Service APIs enabled by default in new projects. | list | `<list>` | no |
 | root\_node | Root node for the new hierarchy, either 'organizations/org_id' or 'folders/folder_id'. | string | n/a | yes |
+| shared\_bindings\_members | List of comma-delimited IAM-format members for the additional shared project bindings. | list | `<list>` | no |
+| shared\_bindings\_roles | List of roles for additional shared project bindings. | list | `<list>` | no |
 | terraform\_owners | Terraform project owners, in IAM format. | list | `<list>` | no |
 
 ## Outputs
