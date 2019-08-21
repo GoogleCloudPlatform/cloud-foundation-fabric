@@ -40,8 +40,11 @@ Regardless of how it's run, the credentials used need very specific roles on the
 
 ### State
 
+TODO: describe the state switch that needs to be done after first apply
+
 ### Things to be aware of
 
+TODO: describe potential issues with multiple resources, and the upcoming `foreach` fix
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Inputs
