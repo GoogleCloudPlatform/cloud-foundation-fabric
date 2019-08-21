@@ -13,7 +13,7 @@ This set of Terraform files is usually applied manually by an org-level administ
 - anticipating the requirement of organizational-level roles for specific resources (eg Shared VPC), by granting them to the service accounts used for environment automation
 - enforcing separation of duties by using separate sets of automation resources (GCS, service accounts) for each environment, and only granting roles scoped to the environment's folder
 
-## Managed resources and GCP services
+## Managed resources and services
 
 This sample creates several distinct groups of resources:
 
@@ -26,9 +26,11 @@ The number of resources in this sample is kept to a minimum so as to make it gen
 
 ## Operational considerations
 
-As mentioned above this root module is meant to be run infrequently, only when the number of environments change or a new service needs to be added to the shared project, so the advantages of automating it in a CI pipeline are very limited.
+As mentioned above this root module is meant to be run infrequently, only when an environment or a shared service needs to be added or changed, so the advantages of automating it in a CI pipeline are very limited.
 
-Regardless of how it's run, the credentials used need very specific roles on the root node, and some roles at the organization level if Shared VPC usage is anticipated in environments:
+### IAM roles
+
+Regardless of how it's run, the credentials used need very specific roles on the root node, plus additional roles at the organization level if Shared VPC usage is anticipated in environments:
 
 - Billing Account Administrator on the billing account or organization
 - Folder Administrator
@@ -36,12 +38,9 @@ Regardless of how it's run, the credentials used need very specific roles on the
 - Project Creator
 - Organization Administrator, if Shared VPC roles need to be granted
 
-### Prerequisites
-
-
 ### State
 
-### Gotchas
+### Things to be aware of
 
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
