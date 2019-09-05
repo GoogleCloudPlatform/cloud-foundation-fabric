@@ -40,13 +40,17 @@ Regardless of how it's run, the credentials used need very specific roles on the
 
 ### State
 
-TODO: describe the state switch that needs to be done after first apply
+This root module creates the prerequisites for Terraform including the GCS bucket for its own remote state, so some care needs to be used when running it for the first time, when the GCS bucket has not yet been created:
+
+- when running `apply` for the first time, the `backend.tf` file needs to be commented so local state is used
+- after the first `apply` has completed successfully, the comments in the `backend.tf` file need to be removed, and the GCS bucket name from the `bootstrap_tf_gcs_bucket` output added as a value for the `bucket` attribute
+- once the `bootstrap.tf` file has been updated, `apply` has to be run again so that state is moved from the local file to the remote bucket
+
+The steps above only need to be performed once, after that the chicken-and-eggs problem is solved and state is remote for all subsequent runs.
 
 ### Things to be aware of
 
-TODO: describe potential issues with multiple resources, and the upcoming `foreach` fix
-TODO: describe how `prefix` can be used to enforce naming
-TODO: describe xpn roles
+One potential issue to be aware of is due to Terraform's way of managing multiple resources indexed by positional argument. What could happen in practice is that a change in one of the elements in the `environments` variable could trigger recreation of all the resources dependent on this variable: service accounts, folders, GCS buckets. This is a relatively rare issue as environment names are usually stable, and a later addition of a new element in the list won't have any of the above effects, but it's still worth accounting for. This issue will be addressed in a future version, by using the new `foreach` construct [introduced in Terraform 0.12.6](https://twitter.com/mitchellh/status/1156661893789966336?lang=en).
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Inputs
