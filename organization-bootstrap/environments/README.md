@@ -9,7 +9,7 @@ This layout is well suited for medium-sized infrastructures managed by a small s
 This set of Terraform files is usually applied manually by an org-level administrator as a first step, and then reapplied only when a new environment needs to be created or an existing one removed, and serves different purposes:
 
 - automating and parameterizing creation of the organizational layout
-- automating creation of the base resources needed for Terraform automation, obviating the need for external scripts or hand-coded commands
+- automating creation of the base resources needed for Terraform automation (service accounts, state buckets), without having to resort toexternal scripts or hand-coded commands
 - anticipating the requirement of organizational-level roles for specific resources (eg Shared VPC), by granting them to the service accounts used for environment automation
 - enforcing separation of duties by using separate sets of automation resources (GCS, service accounts) for each environment, and only granting roles scoped to the environment's folder
 
