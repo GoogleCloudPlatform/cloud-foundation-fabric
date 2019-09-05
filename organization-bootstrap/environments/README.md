@@ -6,12 +6,7 @@ This layout is well suited for medium-sized infrastructures managed by a small s
 
 ![High-level diagram](diagram.png "High-level diagram")
 
-This set of Terraform files is usually applied manually by an org-level administrator as a first step, and then reapplied only when a new environment needs to be created or an existing one removed, and serves different purposes:
-
-- automating and parameterizing creation of the organizational layout
-- automating creation of the base resources needed for Terraform automation (service accounts, state buckets), without having to resort to external scripts or hand-coded commands
-- assign IAM roles to automation service accounts on the organization (eg for Shared VPC) and their respective folders, to minimize the need for the org admin role during day to day operations
-- enforcing separation of duties by using separate sets of automation resources (GCS, service accounts) for each environment, and scoping IAM roles to folders wherever possible
+Refer to the [section-level README](../README.md) for general considerations about this type of samples, and usage instructions.
 
 ## Managed resources and services
 
@@ -23,34 +18,6 @@ This sample creates several distinct groups of resources:
 - one top-level project to hold services used across environments like GCS, GCR, KMS, Cloud Build, etc. (optional)
 
 The number of resources in this sample is kept to a minimum so as to make it more generally applicable, further resources can be easily added by leveraging the full array of [Cloud Foundation Toolkit modules](https://github.com/terraform-google-modules), especially in the shared services project.
-
-## Operational considerations
-
-As mentioned above this root module is meant to be run infrequently, only when an environment or a shared service needs to be added or changed, so the advantages of automating it in a CI pipeline are very limited.
-
-### IAM roles
-
-Regardless of how it's run, the credentials used need very specific roles on the root node, plus additional roles at the organization level if Shared VPC usage is anticipated in environments:
-
-- Billing Account Administrator on the billing account or organization
-- Folder Administrator
-- Logging Administrator on the root folder or organization
-- Project Creator
-- Organization Administrator, if Shared VPC roles need to be granted
-
-### State
-
-This root module creates the prerequisites for Terraform including the GCS bucket for its own remote state, so some care needs to be used when running it for the first time, when the GCS bucket has not yet been created:
-
-- when running `apply` for the first time, the `backend.tf` file needs to be commented so local state is used
-- after the first `apply` has completed successfully, the comments in the `backend.tf` file need to be removed, and the GCS bucket name from the `bootstrap_tf_gcs_bucket` output added as a value for the `bucket` attribute
-- once the `bootstrap.tf` file has been updated, `apply` has to be run again so that state is moved from the local file to the remote bucket
-
-The steps above only need to be performed once, after that the chicken-and-eggs problem is solved and state is remote for all subsequent runs.
-
-### Things to be aware of
-
-One potential issue to be aware of is related to Terraform's way of managing multiple resources indexed by positional argument. What could happen in practice is that a change in one of the elements in the `environments` variable could trigger recreation of all the resources dependent on this variable: service accounts, folders, GCS buckets. This is a relatively rare issue as environment names are usually stable, and a later addition of a new element in the list won't have any of the above effects, but it's still worth accounting for. This issue will be addressed in a future version, by using the new `foreach` construct [introduced in Terraform 0.12.6](https://twitter.com/mitchellh/status/1156661893789966336?lang=en).
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Inputs
