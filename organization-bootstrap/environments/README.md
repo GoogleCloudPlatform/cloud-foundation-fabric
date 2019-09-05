@@ -9,9 +9,9 @@ This layout is well suited for medium-sized infrastructures managed by a small s
 This set of Terraform files is usually applied manually by an org-level administrator as a first step, and then reapplied only when a new environment needs to be created or an existing one removed, and serves different purposes:
 
 - automating and parameterizing creation of the organizational layout
-- automating creation of the base resources needed for Terraform automation (service accounts, state buckets), without having to resort toexternal scripts or hand-coded commands
-- anticipating the requirement of organizational-level roles for specific resources (eg Shared VPC), by granting them to the service accounts used for environment automation
-- enforcing separation of duties by using separate sets of automation resources (GCS, service accounts) for each environment, and only granting roles scoped to the environment's folder
+- automating creation of the base resources needed for Terraform automation (service accounts, state buckets), without having to resort to external scripts or hand-coded commands
+- assign IAM roles to automation service accounts on the organization (eg for Shared VPC) and their respective folders, to minimize the need for the org admin role during day to day operations
+- enforcing separation of duties by using separate sets of automation resources (GCS, service accounts) for each environment, and scoping IAM roles to folders wherever possible
 
 ## Managed resources and services
 
@@ -22,7 +22,7 @@ This sample creates several distinct groups of resources:
 - one top-level project to set up and host centralized audit log exports (optional)
 - one top-level project to hold services used across environments like GCS, GCR, KMS, Cloud Build, etc. (optional)
 
-The number of resources in this sample is kept to a minimum so as to make it generally applicable, more resources can be easily added by leveraging the full array of [Cloud Foundation Toolkit modules](https://github.com/terraform-google-modules), especially in the shared services project.
+The number of resources in this sample is kept to a minimum so as to make it more generally applicable, further resources can be easily added by leveraging the full array of [Cloud Foundation Toolkit modules](https://github.com/terraform-google-modules), especially in the shared services project.
 
 ## Operational considerations
 
@@ -50,7 +50,7 @@ The steps above only need to be performed once, after that the chicken-and-eggs 
 
 ### Things to be aware of
 
-One potential issue to be aware of is due to Terraform's way of managing multiple resources indexed by positional argument. What could happen in practice is that a change in one of the elements in the `environments` variable could trigger recreation of all the resources dependent on this variable: service accounts, folders, GCS buckets. This is a relatively rare issue as environment names are usually stable, and a later addition of a new element in the list won't have any of the above effects, but it's still worth accounting for. This issue will be addressed in a future version, by using the new `foreach` construct [introduced in Terraform 0.12.6](https://twitter.com/mitchellh/status/1156661893789966336?lang=en).
+One potential issue to be aware of is related to Terraform's way of managing multiple resources indexed by positional argument. What could happen in practice is that a change in one of the elements in the `environments` variable could trigger recreation of all the resources dependent on this variable: service accounts, folders, GCS buckets. This is a relatively rare issue as environment names are usually stable, and a later addition of a new element in the list won't have any of the above effects, but it's still worth accounting for. This issue will be addressed in a future version, by using the new `foreach` construct [introduced in Terraform 0.12.6](https://twitter.com/mitchellh/status/1156661893789966336?lang=en).
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Inputs
