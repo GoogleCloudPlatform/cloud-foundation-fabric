@@ -15,8 +15,9 @@
 
 terraform {
   backend "gcs" {
-    # set value to the `bootstrap_tf_gcs_bucket` output after first apply
-    # then rename the file to `backend.tf` and reapply to transfer state
+    # once initial apply has completed, copy this file to `backend.tf` then
+    # set the `bucket` value to the `bootstrap_tf_gcs_bucket` output, then
+    # run apply again to transfer state
     bucket = ""
   }
 }
