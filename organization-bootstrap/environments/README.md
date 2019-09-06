@@ -15,9 +15,17 @@ This sample creates several distinct groups of resources:
 - one folder per environment
 - one top-level project to hold Terraform-related resources
 - one top-level project to set up and host centralized audit log exports (optional)
-- one top-level project to hold services used across environments like GCS, GCR, KMS, Cloud Build, etc. (optional)
+- one top-level shared services project
 
 The number of resources in this sample is kept to a minimum so as to make it more generally applicable, further resources can be easily added by leveraging the full array of [Cloud Foundation Toolkit modules](https://github.com/terraform-google-modules), especially in the shared services project.
+
+## Shared services project
+
+This sample contains a single, top-level project used to host services shared across environments (eg GCS, GCR, KMS, Cloud Build, etc.). In our experience, that is enough for many customers, especially those using this organizational layout.
+
+For more complex setups where multiple shared services projects are needed to encapsulate a larger number of resources, shared services should be treated as an extra environment so that they can be managed by a dedicated set of Terraform files, using a separate service account and GCS bucket, with a folder to contain shared projects.
+
+If no shared services are needed, the shared service project module can of course be removed from `main.tf`.
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Inputs
