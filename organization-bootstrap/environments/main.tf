@@ -141,6 +141,9 @@ module "log-sink-audit" {
 ###############################################################################
 
 # shared resources project
+# you might want to create a 'Shared' folder if you need multiple projects for
+# shared resources; in that case, add a 'folders' module reference here to
+# create it, and use its 'id' output as parent for the shared projects
 
 module "project-shared-resources" {
   source                 = "terraform-google-modules/project-factory/google//modules/fabric-project"

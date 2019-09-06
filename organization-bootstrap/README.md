@@ -26,16 +26,9 @@ This type of automation stage needs very specific IAM roles on the root node (or
 
 ### State
 
-This type of stage creates the prerequisites for Terraform automation including the GCS bucket used for its own remote state, so some care needs to be used when running it for the first time, when its GCS bucket has not yet been created. This is the sequence of steps to be followed to enable remote state management:
+This type of stage creates the prerequisites for Terraform automation including the GCS bucket used for its own remote state, so some care needs to be used when running it for the first time, when its GCS bucket has not yet been created.
 
-- when running `apply` for the first time, the `backend.tf` file needs to be commented so local state is used
-- after the first `apply` has completed successfully, the comments in the `backend.tf` file need to be removed, and the GCS bucket name from the `bootstrap_tf_gcs_bucket` output added as a value for the `bucket` attribute
-  - in the `backedn.tf` file directly, or better
-  - in a separate `backend-config.hcl` file that will then be passed in the `-backend-config` option to every `init` call
-- after setting the bucket name, re-run `init` with the above option if using a backend config file, then
-- run `apply` so that state is moved from the local file to the remote bucket
-
-The steps above only need to be performed once, after that the chicken-and-eggs problem is solved and state is remote for all subsequent runs.
+After the first successful `terraform apply`, edit `backend.tf.sample` and set the bucket name to the one shown in the `bootstrap_tf_gcs_bucket` output, then save and rename the file to `backend.tf`. Once that is done, run `terraform apply` again to transfer local state to the remote GCS bucket. From then on, state will be remote.
 
 ### Things to be aware of
 
