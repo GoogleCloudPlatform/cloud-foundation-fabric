@@ -1,6 +1,9 @@
 **/.terraform
 **/terraform.tfstate*
 **/terraform.tfvars
+!tests/**/terraform.tfvars
+**/__pycache__
+**/.pytest_cache
 .idea
 .vscode
 backend-config.hcl
