@@ -15,7 +15,7 @@
 steps:
   - name: "wata727/tflint"
     id: "lint"
-    args: ["/workdir"]
+    args: ["."]
 tags:
   - "ci"
   - "lint"
