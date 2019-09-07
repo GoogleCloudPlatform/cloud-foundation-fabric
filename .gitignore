@@ -6,6 +6,7 @@
 **/.pytest_cache
 .idea
 .vscode
+backend.tf
 backend-config.hcl
 credentials.json
 key.json
