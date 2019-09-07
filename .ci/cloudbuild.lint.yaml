@@ -18,7 +18,7 @@ steps:
     args: ["/workspace/.ci/scripts/check_boilerplate.py", "/workspace"]
   - name: "wata727/tflint"
     id: "lint"
-    args: ["."]
+    args: ["/workspace"]
 tags:
   - "ci"
   - "lint"
