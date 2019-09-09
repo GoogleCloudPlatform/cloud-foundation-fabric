@@ -12,6 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-terraform {
-  required_version = ">= 0.12"
-}
+steps:
+  - name: "python:3.6-alpine"
+    id: "boilerplate"
+    args: ["/workspace/.ci/scripts/check_boilerplate.py", "/workspace"]
+  - name: "wata727/tflint"
+    id: "lint"
+    args: ["/workspace"]
+tags:
+  - "ci"
+  - "lint"
