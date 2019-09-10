@@ -42,5 +42,6 @@ def test_environment_buckets(plan):
 
 
 def test_bq_dataset(plan):
+  "Bigquery dataset should be named after the first environment."
   assert plan.outputs['audit_logs_bq_dataset'].endswith(
       plan.variables['environments'][0])
