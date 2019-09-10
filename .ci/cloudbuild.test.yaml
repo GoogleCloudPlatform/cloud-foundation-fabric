@@ -12,33 +12,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 steps:
   - name: python:3.6-alpine
     id: prepare
     entrypoint: sh
     args:
-    - -c
-    - |
-      python -m pip install -t . -r tests/requirements.txt &&
-      wget https://releases.hashicorp.com/terraform/${_TERRAFORM_VERSION}/terraform_${_TERRAFORM_VERSION}_linux_amd64.zip &&
-      unzip terraform_${_TERRAFORM_VERSION}_linux_amd64.zip &&
-      chmod 755 terraform &&
-      mv terraform /bin/
+      - -c
+      - |
+        python -m pip install --user -r tests/requirements.txt &&
+        wget https://releases.hashicorp.com/terraform/${_TERRAFORM_VERSION}/terraform_${_TERRAFORM_VERSION}_linux_amd64.zip &&
+        unzip terraform_${_TERRAFORM_VERSION}_linux_amd64.zip -d /builder/home/.local/bin &&
+        rm terraform_${_TERRAFORM_VERSION}_linux_amd64.zip &&
+        chmod 755 /builder/home/.local/bin/terraform
   - name: python:3.6-alpine
-    id: check
-    entrypoint: sh
+    id: test
+    entrypoint: python
     args:
-    - -c
-    - |
-      ls -l
-  # - name: python:3.6-alpine
-  #   id: test
-  #   entrypoint: python3
-  #   args:
-  #   - -m
-  #   - pytest
-  #   - tests
+      - -m
+      - pytest
+      - -v
+      - tests
+    env:
+      - PATH=/usr/local/bin:/usr/bin:/bin:/builder/home/.local/bin
 
 substitutions:
   _TERRAFORM_VERSION: 0.12.8
