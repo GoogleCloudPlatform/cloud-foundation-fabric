@@ -13,3 +13,36 @@
 # limitations under the License.
 
 
+steps:
+  - name: python:3.6-alpine
+    id: prepare
+    entrypoint: sh
+    args:
+    - -c
+    - |
+      python -m pip install -t . -r tests/requirements.txt &&
+      wget https://releases.hashicorp.com/terraform/${_TERRAFORM_VERSION}/terraform_${_TERRAFORM_VERSION}_linux_amd64.zip &&
+      unzip terraform_${_TERRAFORM_VERSION}_linux_amd64.zip &&
+      chmod 755 terraform &&
+      mv terraform /bin/
+  - name: python:3.6-alpine
+    id: check
+    entrypoint: sh
+    args:
+    - -c
+    - |
+      ls -l
+  # - name: python:3.6-alpine
+  #   id: test
+  #   entrypoint: python3
+  #   args:
+  #   - -m
+  #   - pytest
+  #   - tests
+
+substitutions:
+  _TERRAFORM_VERSION: 0.12.8
+
+tags:
+  - "ci"
+  - "test"
