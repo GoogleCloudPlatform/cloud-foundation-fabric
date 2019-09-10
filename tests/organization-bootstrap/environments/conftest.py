@@ -24,6 +24,8 @@ _ABSPATH = os.path.dirname(os.path.abspath(__file__)).split(os.path.sep)
 _TFDIR = os.path.sep.join(_ABSPATH[-2:])
 
 
+# TODO(ludoo): generalize and put in top-level package
+
 @pytest.fixture(scope='session')
 def plan():
   import logging
