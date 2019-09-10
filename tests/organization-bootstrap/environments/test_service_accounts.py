@@ -12,26 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"Test plan on the organization environment sample."
+"Test service account creation in root module."
 
-import os
-import re
 
 import pytest
-import tftest
-
-
-_ABSPATH = os.path.dirname(os.path.abspath(__file__)).split(os.path.sep)
-_TFDIR = os.path.sep.join(_ABSPATH[-2:])
 
 
 @pytest.fixture(scope='module')
-def plan():
-  tf = tftest.TerraformTest(_TFDIR, os.path.sep.join(_ABSPATH[:-3]),
-                            os.environ.get('TERRAFORM', 'terraform'))
-  tf.setup(extra_files=['tests/{}/terraform.tfvars'.format(_TFDIR)])
-  return tf.plan()
+def mod(plan):
+  return plan.modules['module.service-accounts-tf-environments']
 
 
-def test_dummy(plan):
-  print(plan)
+def test_accounts(plan, mod):
+  "One service account per environment should be created."
+  environments = plan.variables['environments']
+  prefix = plan.variables['prefix']
+  resources = [v for k, v in mod.items() if '.google_service_account.' in k]
+  assert len(resources) == len(environments)
+  assert sorted([res['values']['account_id'] for res in resources]) == sorted([
+      '%s-%s' % (prefix, env) for env in environments])
