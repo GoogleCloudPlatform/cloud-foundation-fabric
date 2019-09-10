@@ -1,8 +1,8 @@
 # Business-units based organizational sample
 
-This sample creates an organizational layout with two folder levels, where the first level is usually mapped to one business unit (infra, data, analythics) and the second level represents enviroments (prod, test). It also sets up all prerequisites for automation (GCS state buckets, service accounts, etc.), and the correct roles on those to enforce separation of duties at the environment level.
+This sample creates an organizational layout with two folder levels, where the first level is usually mapped to one business unit (infra, data, analytics) and the second level represents enviroments (prod, test). It also sets up all prerequisites for automation (GCS state buckets, service accounts, etc.), and the correct roles on those to enforce separation of duties at the environment level.
 
-This layout is well suited for small and medium-sized infrastructures managed by a smal set of teams, where the complexity in application resource ownership and access roles is mostly dealt with at the project level, and/or in the individual services (GKE, Cloud SQL, etc.). Its simplicity also makes it a good starting point for more complex or specialized layouts.
+This layout is well suited for small and medium-sized infrastructures managed by a small set of teams, where the complexity in application resource ownership and access roles is mostly dealt with at the project level, and/or in the individual services (GKE, Cloud SQL, etc.). Its simplicity also makes it a good starting point for more complex or specialized layouts.
 
 This layout is well suited for medium-sized infrastructures managed by different sets of teams grouped to different business units, where the complexity in application resource ownership and access roles is mostly dealt with at the project level, and/or in the individual services (GKE, Cloud SQL, etc.). 
 
@@ -58,12 +58,10 @@ TODO: describe xpn roles
 |------|-------------|:----:|:-----:|:-----:|
 | audit\_viewers | Audit project viewers, in IAM format. | list | `<list>` | no |
 | billing\_account\_id | Billing account id used as default for new projects. | string | n/a | yes |
-| business\_unit\_1\_envs | Business unit 1 environments short names. | list(string) | `<list>` | no |
 | business\_unit\_1\_name | Business unit 1 short name. | string | n/a | yes |
-| business\_unit\_2\_envs | Business unit 2 environments short names. | list(string) | `<list>` | no |
 | business\_unit\_2\_name | Business unit 2 short name. | string | n/a | yes |
-| business\_unit\_3\_envs | Business unit 3 environments short names. | list(string) | `<list>` | no |
 | business\_unit\_3\_name | Business unit 3 short name. | string | n/a | yes |
+| environments | Environment short names. | list(string) | n/a | yes |
 | gcs\_location | GCS bucket location. | string | `"EU"` | no |
 | generate\_service\_account\_keys | Generate and store service account keys in the state file. | string | `"false"` | no |
 | organization\_id | Organization id. | string | n/a | yes |
@@ -81,21 +79,16 @@ TODO: describe xpn roles
 | audit\_logs\_bq\_dataset | Bigquery dataset for the audit logs export. |
 | audit\_logs\_project | Project that holds the audit logs export resources. |
 | bootstrap\_tf\_gcs\_bucket | GCS bucket used for the bootstrap Terraform state. |
-| business\_unit\_1\_envs\_folders\_ids | Business unit 1 environment folders. |
-| business\_unit\_1\_envs\_service\_account\_keys | Service account keys used to run each environment Terraform modules for business unit 1. |
-| business\_unit\_1\_envs\_service\_accounts | Service accounts used to run each environment Terraform modules for business unit 1. |
-| business\_unit\_1\_envs\_tf\_gcs\_buckets | GCS buckets used for each environment Terraform state for business unit 1. |
-| business\_unit\_1\_top\_level\_folder\_id | Business unit 1 top-level folder. |
-| business\_unit\_2\_envs\_folders\_ids | Business unit 2 environment folders. |
-| business\_unit\_2\_envs\_service\_account\_keys | Service account keys used to run each environment Terraform modules for business unit 2. |
-| business\_unit\_2\_envs\_service\_accounts | Service accounts used to run each environment Terraform modules for business unit 2. |
-| business\_unit\_2\_envs\_tf\_gcs\_buckets | GCS buckets used for each environment Terraform state for business unit 2. |
-| business\_unit\_2\_top\_level\_folder\_id | Business unit 2 top-level folder. |
-| business\_unit\_3\_envs\_folders\_ids | Business unit 3 environment folders. |
-| business\_unit\_3\_envs\_service\_account\_keys | Service account keys used to run each environment Terraform modules for business unit 3. |
-| business\_unit\_3\_envs\_service\_accounts | Service accounts used to run each environment Terraform modules for business unit 3. |
-| business\_unit\_3\_envs\_tf\_gcs\_buckets | GCS buckets used for each environment Terraform state for business unit 3. |
-| business\_unit\_3\_top\_level\_folder\_id | Business unit 3 top-level folder. |
+| business\_unit\_1\_environment\_folders\_ids | Business unit 1 environment folders. |
+| business\_unit\_1\_folder\_id | Business unit 1 top-level folder ID. |
+| business\_unit\_2\_environment\_folders\_ids | Business unit 2 environment folders. |
+| business\_unit\_2\_folder\_id | Business unit 2 top-level folder ID. |
+| business\_unit\_3\_environment\_folders\_ids | Business unit 3 environment folders. |
+| business\_unit\_3\_folder\_id | Business unit 3 top-level folder ID. |
+| environment\_service\_account\_keys | Service account keys used to run each environment Terraform modules. |
+| environment\_service\_accounts | Service accounts used to run each environment Terraform modules. |
+| environment\_tf\_gcs\_buckets | GCS buckets used for each environment Terraform state. |
+| shared\_folder\_id | Shared folder ID. |
 | shared\_resources\_project | Project that holdes resources shared across business units. |
 | terraform\_project | Project that holds the base Terraform resources. |
 

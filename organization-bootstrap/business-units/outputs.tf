@@ -22,82 +22,54 @@ output "bootstrap_tf_gcs_bucket" {
   value       = module.gcs-tf-bootstrap.name
 }
 
-output "business_unit_1_top_level_folder_id" {
-  description = "Business unit 1 top-level folder."
-  value       = module.business-unit-1-folders-tree.top_level_folder_id
+output "environment_tf_gcs_buckets" {
+  description = "GCS buckets used for each environment Terraform state."
+  value       = module.gcs-tf-environments.names
 }
 
-output "business_unit_1_envs_folders_ids" {
+output "environment_service_account_keys" {
+  description = "Service account keys used to run each environment Terraform modules."
+  sensitive   = true
+  value       = module.service-accounts-tf-environments.keys
+}
+
+output "environment_service_accounts" {
+  description = "Service accounts used to run each environment Terraform modules."
+  value       = module.service-accounts-tf-environments.emails
+}
+
+output "shared_folder_id" {
+  description = "Shared folder ID."
+  value       = module.shared-folder.id
+}
+output "business_unit_1_folder_id" {
+  description = "Business unit 1 top-level folder ID."
+  value       = module.business-unit-1-folders.business_unit_folder_id
+}
+
+output "business_unit_1_environment_folders_ids" {
   description = "Business unit 1 environment folders."
-  value       = module.business-unit-1-folders-tree.second_level_folders_ids
+  value       = module.business-unit-1-folders.environment_folders_ids
 }
 
-output "business_unit_1_envs_tf_gcs_buckets" {
-  description = "GCS buckets used for each environment Terraform state for business unit 1."
-  value       = module.business-unit-1-folders-tree.second_level_folders_tf_gcs_bucket_names
+output "business_unit_2_folder_id" {
+  description = "Business unit 2 top-level folder ID."
+  value       = module.business-unit-2-folders.business_unit_folder_id
 }
 
-output "business_unit_1_envs_service_account_keys" {
-  description = "Service account keys used to run each environment Terraform modules for business unit 1."
-  sensitive   = true
-  value       = module.business-unit-1-folders-tree.second_level_folders_service_account_keys
-}
-
-output "business_unit_1_envs_service_accounts" {
-  description = "Service accounts used to run each environment Terraform modules for business unit 1."
-  value       = module.business-unit-1-folders-tree.second_level_folders_service_account_emails
-}
-
-output "business_unit_2_top_level_folder_id" {
-  description = "Business unit 2 top-level folder."
-  value       = module.business-unit-2-folders-tree.top_level_folder_id
-}
-
-output "business_unit_2_envs_folders_ids" {
+output "business_unit_2_environment_folders_ids" {
   description = "Business unit 2 environment folders."
-  value       = module.business-unit-2-folders-tree.second_level_folders_ids
+  value       = module.business-unit-2-folders.environment_folders_ids
 }
 
-output "business_unit_2_envs_tf_gcs_buckets" {
-  description = "GCS buckets used for each environment Terraform state for business unit 2."
-  value       = module.business-unit-2-folders-tree.second_level_folders_tf_gcs_bucket_names
+output "business_unit_3_folder_id" {
+  description = "Business unit 3 top-level folder ID."
+  value       = module.business-unit-3-folders.business_unit_folder_id
 }
 
-output "business_unit_2_envs_service_account_keys" {
-  description = "Service account keys used to run each environment Terraform modules for business unit 2."
-  sensitive   = true
-  value       = module.business-unit-2-folders-tree.second_level_folders_service_account_keys
-}
-
-output "business_unit_2_envs_service_accounts" {
-  description = "Service accounts used to run each environment Terraform modules for business unit 2."
-  value       = module.business-unit-2-folders-tree.second_level_folders_service_account_emails
-}
-
-output "business_unit_3_top_level_folder_id" {
-  description = "Business unit 3 top-level folder."
-  value       = module.business-unit-3-folders-tree.top_level_folder_id
-}
-
-output "business_unit_3_envs_folders_ids" {
+output "business_unit_3_environment_folders_ids" {
   description = "Business unit 3 environment folders."
-  value       = module.business-unit-3-folders-tree.second_level_folders_ids
-}
-
-output "business_unit_3_envs_tf_gcs_buckets" {
-  description = "GCS buckets used for each environment Terraform state for business unit 3."
-  value       = module.business-unit-3-folders-tree.second_level_folders_tf_gcs_bucket_names
-}
-
-output "business_unit_3_envs_service_account_keys" {
-  description = "Service account keys used to run each environment Terraform modules for business unit 3."
-  sensitive   = true
-  value       = module.business-unit-3-folders-tree.second_level_folders_service_account_keys
-}
-
-output "business_unit_3_envs_service_accounts" {
-  description = "Service accounts used to run each environment Terraform modules for business unit 3."
-  value       = module.business-unit-3-folders-tree.second_level_folders_service_account_emails
+  value       = module.business-unit-3-folders.environment_folders_ids
 }
 
 output "audit_logs_bq_dataset" {

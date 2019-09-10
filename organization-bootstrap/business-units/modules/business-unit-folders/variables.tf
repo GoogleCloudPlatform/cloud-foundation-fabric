@@ -12,6 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-terraform {
-  required_version = ">= 0.12"
+variable "business_unit_folder_name" {
+  description = "Business Unit Folder name."
+  type        = string
+}
+
+variable "environments" {
+  description = "Environment short names."
+  type        = list(string)
+}
+
+variable "per_folder_admins" {
+  type        = list(string)
+  description = "List of IAM-style members per folder who will get extended permissions."
+  default     = []
+}
+
+variable "root_node" {
+  description = "Root node for the new hierarchy, either 'organizations/org_id' or 'folders/folder_id'."
+  type        = string
 }

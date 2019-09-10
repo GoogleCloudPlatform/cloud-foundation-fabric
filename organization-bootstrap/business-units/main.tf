@@ -12,6 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# TODO(averbukh): simplify log-sink parameters once https://github.com/terraform-google-modules/terraform-google-log-export/issues/28 is done. 
+
+locals {
+  parent_numeric_id             = element(split("/", var.root_node), 1)
+  log_sink_parent_resource_type = element(split("/", var.root_node), 0) == "organizations" ? "organization" : "folder"
+  log_sink_name                 = element(split("/", var.root_node), 0) == "organizations" ? "logs-audit-org-${local.parent_numeric_id}" : "logs-audit-folder-${local.parent_numeric_id}"
+}
+
+###############################################################################
+#                        Shared resources folder                              #
+###############################################################################
+
+module "shared-folder" {
+  source  = "terraform-google-modules/folders/google"
+  version = "2.0.0"
+  parent  = var.root_node
+  names   = ["shared"]
+}
+
 ###############################################################################
 #                        Terraform top-level resources                        #
 ###############################################################################
@@ -21,13 +40,27 @@
 module "project-tf" {
   source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
   version         = "3.2.0"
-  parent          = var.root_node
+  parent          = module.shared-folder.id
   billing_account = var.billing_account_id
   prefix          = var.prefix
   name            = "terraform"
   lien_reason     = "terraform"
   owners          = var.terraform_owners
   activate_apis   = var.project_services
+}
+
+# Per environment service accounts
+
+module "service-accounts-tf-environments" {
+  source             = "terraform-google-modules/service-accounts/google"
+  version            = "2.0.0"
+  project_id         = module.project-tf.project_id
+  org_id             = var.organization_id
+  billing_account_id = var.billing_account_id
+  prefix             = var.prefix
+  names              = var.environments
+  grant_billing_role = true
+  generate_keys      = var.generate_service_account_keys
 }
 
 # Bootstrap Terraform state GCS bucket
@@ -41,58 +74,59 @@ module "gcs-tf-bootstrap" {
   location   = var.gcs_location
 }
 
+# Per environment Terraform state GCS buckets
+
+module "gcs-tf-environments" {
+  source          = "terraform-google-modules/cloud-storage/google"
+  version         = "1.0.0"
+  project_id      = module.project-tf.project_id
+  prefix          = "${var.prefix}-tf"
+  names           = var.environments
+  location        = var.gcs_location
+  set_admin_roles = true
+  bucket_admins = zipmap(
+    var.environments,
+    module.service-accounts-tf-environments.iam_emails_list
+  )
+}
+
 ###############################################################################
 #                              Business units                                 #
 ###############################################################################
 
 # Business unit 1
 
-module "business-unit-1-folders-tree" {
-  source = "./modules/business-unit-folders-tree"
+module "business-unit-1-folders" {
+  source = "./modules/business-unit-folders"
 
-  billing_account_id            = var.billing_account_id
-  tf_project_id                 = module.project-tf.project_id
-  top_level_folder_name         = var.business_unit_1_name
-  second_level_folders_names    = var.business_unit_1_envs
-  generate_service_account_keys = var.generate_service_account_keys
-  gcs_location                  = var.gcs_location
-  organization_id               = var.organization_id
-  prefix                        = var.prefix
-  root_node                     = var.root_node
+  business_unit_folder_name = var.business_unit_1_name
+  environments              = var.environments
+  per_folder_admins         = module.service-accounts-tf-environments.iam_emails_list
+  root_node                 = var.root_node
 
 }
 
 # Business unit 2
 
-module "business-unit-2-folders-tree" {
-  source = "./modules/business-unit-folders-tree"
+module "business-unit-2-folders" {
+  source = "./modules/business-unit-folders"
 
-  billing_account_id            = var.billing_account_id
-  tf_project_id                 = module.project-tf.project_id
-  top_level_folder_name         = var.business_unit_2_name
-  second_level_folders_names    = var.business_unit_2_envs
-  generate_service_account_keys = var.generate_service_account_keys
-  gcs_location                  = var.gcs_location
-  organization_id               = var.organization_id
-  prefix                        = var.prefix
-  root_node                     = var.root_node
+  business_unit_folder_name = var.business_unit_2_name
+  environments              = var.environments
+  per_folder_admins         = module.service-accounts-tf-environments.iam_emails_list
+  root_node                 = var.root_node
 
 }
 
 # Business unit 3
 
-module "business-unit-3-folders-tree" {
-  source = "./modules/business-unit-folders-tree"
+module "business-unit-3-folders" {
+  source = "./modules/business-unit-folders"
 
-  billing_account_id            = var.billing_account_id
-  tf_project_id                 = module.project-tf.project_id
-  top_level_folder_name         = var.business_unit_3_name
-  second_level_folders_names    = var.business_unit_3_envs
-  generate_service_account_keys = var.generate_service_account_keys
-  gcs_location                  = var.gcs_location
-  organization_id               = var.organization_id
-  prefix                        = var.prefix
-  root_node                     = var.root_node
+  business_unit_folder_name = var.business_unit_3_name
+  environments              = var.environments
+  per_folder_admins         = module.service-accounts-tf-environments.iam_emails_list
+  root_node                 = var.root_node
 
 }
 
@@ -105,7 +139,7 @@ module "business-unit-3-folders-tree" {
 module "project-audit" {
   source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
   version         = "3.2.0"
-  parent          = var.root_node
+  parent          = module.shared-folder.id
   billing_account = var.billing_account_id
   prefix          = var.prefix
   name            = "audit"
@@ -120,20 +154,19 @@ module "bq-audit-export" {
   source                   = "terraform-google-modules/log-export/google//modules/bigquery"
   version                  = "3.0.0"
   project_id               = module.project-audit.project_id
-  dataset_name             = "logs_audit_${replace(var.business_unit_1_name, "-", "_")}"
+  dataset_name             = "${replace(local.log_sink_name, "-", "_")}"
   log_sink_writer_identity = module.log-sink-audit.writer_identity
 }
 
-# Audit log sink for business unit 1
-# set the organization as parent to export audit logs for all business units
+# Audit log sink for root node
 
 module "log-sink-audit" {
   source                 = "terraform-google-modules/log-export/google"
   version                = "3.0.0"
   filter                 = "logName: \"/logs/cloudaudit.googleapis.com%2Factivity\" OR logName: \"/logs/cloudaudit.googleapis.com%2Fsystem_event\""
-  log_sink_name          = "logs-audit-${var.business_unit_1_name}"
-  parent_resource_type   = "folder"
-  parent_resource_id     = split("/", module.business-unit-1-folders-tree.top_level_folder_id)[1]
+  log_sink_name          = local.log_sink_name
+  parent_resource_type   = local.log_sink_parent_resource_type
+  parent_resource_id     = local.parent_numeric_id
   include_children       = "true"
   unique_writer_identity = "true"
   destination_uri        = "${module.bq-audit-export.destination_uri}"
@@ -148,7 +181,7 @@ module "log-sink-audit" {
 module "project-shared-resources" {
   source                 = "terraform-google-modules/project-factory/google//modules/fabric-project"
   version                = "3.2.0"
-  parent                 = var.root_node
+  parent                 = module.shared-folder.id
   billing_account        = var.billing_account_id
   prefix                 = var.prefix
   name                   = "shared"

@@ -12,6 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-terraform {
-  required_version = ">= 0.12"
+output "business_unit_folder_id" {
+  description = "Business Unit Folder ID."
+  value       = module.business-unit-folder.id
 }
+
+output "environment_folders_ids" {
+  description = "Environment folders IDs."
+  value       = module.environment-folders.ids
+}
+
+# Add further outputs here for the additional modules that manage shared
+# resources, like GCR, GCS buckets, KMS, etc.

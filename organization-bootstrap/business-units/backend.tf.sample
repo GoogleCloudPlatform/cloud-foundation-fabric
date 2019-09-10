@@ -12,10 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# comment before initial run
-
 terraform {
   backend "gcs" {
+    # once initial apply has completed, copy this file to `backend.tf` then
+    # set the `bucket` value to the `bootstrap_tf_gcs_bucket` output, then
+    # run apply again to transfer state
     bucket = ""
   }
 }

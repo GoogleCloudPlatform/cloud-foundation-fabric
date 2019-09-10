@@ -1,3 +1,17 @@
+# Copyright 2019 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 variable "audit_viewers" {
   description = "Audit project viewers, in IAM format."
   default     = []
@@ -13,21 +27,9 @@ variable "business_unit_1_name" {
   type        = string
 }
 
-variable "business_unit_1_envs" {
-  description = "Business unit 1 environments short names."
-  type        = list(string)
-  default     = ["prod", "test"]
-}
-
 variable "business_unit_2_name" {
   description = "Business unit 2 short name."
   type        = string
-}
-
-variable "business_unit_2_envs" {
-  description = "Business unit 2 environments short names."
-  type        = list(string)
-  default     = ["prod", "test"]
 }
 
 variable "business_unit_3_name" {
@@ -35,10 +37,9 @@ variable "business_unit_3_name" {
   type        = string
 }
 
-variable "business_unit_3_envs" {
-  description = "Business unit 3 environments short names."
+variable "environments" {
+  description = "Environment short names."
   type        = list(string)
-  default     = ["prod", "test"]
 }
 
 variable "generate_service_account_keys" {

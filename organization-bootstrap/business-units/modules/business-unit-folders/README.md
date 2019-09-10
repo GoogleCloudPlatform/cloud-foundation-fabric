@@ -20,24 +20,16 @@ The number of resources in this sample is kept to a minimum so as to make it gen
 
 | Name | Description | Type | Default | Required |
 |------|-------------|:----:|:-----:|:-----:|
-| billing\_account\_id | Billing account id used as default for new projects. | string | n/a | yes |
-| gcs\_location | GCS bucket location. | string | `"EU"` | no |
-| generate\_service\_account\_keys | Generate and store service account keys in the state file. | string | `"false"` | no |
-| organization\_id | Organization id. | string | n/a | yes |
-| prefix | Prefix used for resources that need unique names. | string | n/a | yes |
+| business\_unit\_folder\_name | Business Unit Folder name. | string | n/a | yes |
+| environments | Environment short names. | list(string) | n/a | yes |
+| per\_folder\_admins | List of IAM-style members per folder who will get extended permissions. | list(string) | `<list>` | no |
 | root\_node | Root node for the new hierarchy, either 'organizations/org_id' or 'folders/folder_id'. | string | n/a | yes |
-| second\_level\_folders\_names | Second level folders names. | list(string) | n/a | yes |
-| tf\_project\_id | Id of a project where service accounts and terraform state buckets should be created | string | n/a | yes |
-| top\_level\_folder\_name | Top level folder name. | string | n/a | yes |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| second\_level\_folders\_ids | Second-level folders IDs. |
-| second\_level\_folders\_service\_account\_emails | Service accounts used to run each econd-level folder Terraform modules. |
-| second\_level\_folders\_service\_account\_keys | Service account keys used to run each second-level folder Terraform modules. |
-| second\_level\_folders\_tf\_gcs\_bucket\_names | GCS buckets used for each second-level folder Terraform state. |
-| top\_level\_folder\_id | Top-level folder ID. |
+| business\_unit\_folder\_id | Business Unit Folder ID. |
+| environment\_folders\_ids | Environment folders IDs. |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
