@@ -1,55 +1,29 @@
 # Business-units based organizational sample
 
-This sample creates an organizational layout with two folder levels, where the first level is usually mapped to one business unit (infra, data, analytics) and the second level represents enviroments (prod, test). It also sets up all prerequisites for automation (GCS state buckets, service accounts, etc.), and the correct roles on those to enforce separation of duties at the environment level.
+This sample creates an organizational layout with two folder levels, where the first level is usually mapped to one business unit or team (infra, data, analytics) and the second level represents enviroments (prod, test). It also sets up all prerequisites for automation (GCS state buckets, service accounts, etc.), and the correct roles on those to enforce separation of duties at the environment level.
 
-This layout is well suited for small and medium-sized infrastructures managed by a small set of teams, where the complexity in application resource ownership and access roles is mostly dealt with at the project level, and/or in the individual services (GKE, Cloud SQL, etc.). Its simplicity also makes it a good starting point for more complex or specialized layouts.
-
-This layout is well suited for medium-sized infrastructures managed by different sets of teams grouped to different business units, where the complexity in application resource ownership and access roles is mostly dealt with at the project level, and/or in the individual services (GKE, Cloud SQL, etc.). 
+This layout is well suited for medium-sized infrastructures managed by different sets of teams, and especially where the foundational infrastructure needs to be managed centrally, as the top-level automation service accounts for each environment allow cross-team management of the base resources (projects, IAM, etc.).
 
 ![High-level diagram](diagram.png "High-level diagram")
 
-This set of Terraform files is usually applied manually by an org-level administrator as a first step, and then reapplied only when a new business-unit or environment needs to be created or an existing one removed, and serves different purposes:
-
-- automating and parameterizing creation of the organizational layout
-- automating creation of the base resources needed for Terraform automation, obviating the need for external scripts or hand-coded commands
-- anticipating the requirement of organizational-level roles for specific resources (eg Shared VPC), by granting them to the service accounts used for environment automation
-- enforcing separation of duties by using separate sets of automation resources (GCS, service accounts) for each environment, and only granting roles scoped to the environment's folder
+Refer to the [section-level README](../README.md) for general considerations about this type of samples, and usage instructions.
 
 ## Managed resources and services
 
 This sample creates several distinct groups of resources:
 
-- one folder per business unit
-- two second-level folders (test, prod) for every business unit
-- one top-level project to hold Terraform-related resources
-- one top-level project to set up and host centralized audit log exports (optional).
-- one top-level project to hold services used across environments like GCS, GCR, KMS, Cloud Build, etc. (optional)
+- one top-level folder per business unit/team
+- one top-level folder for shared services
+- one second-level folder for each environment in all the business unit top-level folders
+- one project in the shared folder to hold Terraform-related resources
+- one project in the shared folder to set up and host centralized audit log exports
+- one project in the shared folder to hold services used across environments like GCS, GCR, KMS, Cloud Build, etc.
 
 The number of resources in this sample is kept to a minimum so as to make it generally applicable, more resources can be easily added by leveraging the full array of [Cloud Foundation Toolkit modules](https://github.com/terraform-google-modules), especially in the shared services project.
 
-## Operational considerations
+## Shared services
 
-As mentioned above this root module is meant to be run infrequently, only when an environment or a shared service needs to be added or changed, so the advantages of automating it in a CI pipeline are very limited.
-
-### IAM roles
-
-Regardless of how it's run, the credentials used need very specific roles on the root node, plus additional roles at the organization level if Shared VPC usage is anticipated in environments:
-
-- Billing Account Administrator on the billing account or organization
-- Folder Administrator
-- Logging Administrator on the root folder or organization
-- Project Creator
-- Organization Administrator, if Shared VPC roles need to be granted
-
-### State
-
-TODO: describe the state switch that needs to be done after first apply
-
-### Things to be aware of
-
-TODO: describe potential issues with multiple resources, and the upcoming `foreach` fix
-TODO: describe how `prefix` can be used to enforce naming
-TODO: describe xpn roles
+This sample uses a top-level folder to encapsulate projects that host resources that are not specific to a single environment. If no shared services are needed,the Terraform and audit modules can be easily attached to the root node, and the shared services folder and project removed from `main.tf`.
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Inputs
