@@ -1,19 +1,8 @@
-# Two-levels folders tree
+# Two-level folders tree
 
-This module creates one top-level folder and set of second-level folders, which meant to represent a business unit with set of enviroments underneeth. It also creates per environment GCS bucket and ServiceAccount in a project specified by `tf_project_id` variable. 
+This module is a simple wrapper for the [Cloud Foundation Folder module](https://github.com/terraform-google-modules/terraform-google-folders), that manages one folder and one child folder under it, for each name passed in the `environments` variable. It is meant to be used for organizational layouts where a predefined number of folders representing environments, are created as child folders for business units or teams.
 
-This set of Terraform files is usually applied manually by an org-level administrator as a first step, and then reapplied only when a new environment needs to be created or an existing one removed, and serves different purposes:
-
-## Managed resources and services
-
-This sample creates several distinct groups of resources:
-
-- one top level folder
-- set of second level folders
-- set of GCS buckets, which meant to be used for storing terraform state. 
-- set of service accounts and keys, which meant to be used for automating underneeth infrastructure with terraform. 
-
-The number of resources in this sample is kept to a minimum so as to make it generally applicable, more resources can be easily added by leveraging the full array of [Cloud Foundation Toolkit modules](https://github.com/terraform-google-modules), especially in the shared services project.
+For details on how the IAM variables work, please refer to the [Cloud Foundation Folder module](https://github.com/terraform-google-modules/terraform-google-folders).
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Inputs
