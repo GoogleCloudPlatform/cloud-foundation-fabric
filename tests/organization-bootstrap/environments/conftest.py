@@ -28,8 +28,6 @@ _TFDIR = os.path.sep.join(_ABSPATH[-2:])
 
 @pytest.fixture(scope='session')
 def plan():
-  import logging
-  logging.basicConfig(level=logging.DEBUG)
   tf = tftest.TerraformTest(_TFDIR, os.path.sep.join(_ABSPATH[:-3]),
                             os.environ.get('TERRAFORM', 'terraform'))
   tf.setup(extra_files=['tests/{}/terraform.tfvars'.format(_TFDIR)])
