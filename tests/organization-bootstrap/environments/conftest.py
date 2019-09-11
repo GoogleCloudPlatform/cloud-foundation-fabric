@@ -12,14 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"Plan fixture."
 
-steps:
-  - name: "python:3.6-alpine"
-    id: "boilerplate"
-    args: ["/workspace/.ci/scripts/check_boilerplate.py", "/workspace"]
-  - name: "wata727/tflint"
-    id: "lint"
-    args: ["/workspace"]
-tags:
-  - "ci"
-  - "lint"
+import os
+
+import pytest
+import tftest
+
+
+_ABSPATH = os.path.dirname(os.path.abspath(__file__)).split(os.path.sep)
+_TFDIR = os.path.sep.join(_ABSPATH[-2:])
+
+
+# TODO(ludoo): generalize and put in top-level package
+
+@pytest.fixture(scope='session')
+def plan():
+  tf = tftest.TerraformTest(_TFDIR, os.path.sep.join(_ABSPATH[:-3]),
+                            os.environ.get('TERRAFORM', 'terraform'))
+  tf.setup(extra_files=['tests/{}/terraform.tfvars'.format(_TFDIR)])
+  return tf.plan_out(parsed=True)
