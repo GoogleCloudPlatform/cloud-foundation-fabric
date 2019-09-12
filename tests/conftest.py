@@ -12,16 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"Plan fixture."
+"Shared fixtures."
 
 import os
 
 import pytest
+import tftest
 
 
-_TFDIR = os.path.sep.join(os.path.abspath(__file__).split(os.path.sep)[-3:-1])
+_BASEDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-@pytest.fixture(scope='package')
-def plan(plan):
-  return plan(_TFDIR)
+@pytest.fixture(scope='session')
+def plan():
+
+  def run_plan(tfdir):
+    tf = tftest.TerraformTest(tfdir, _BASEDIR,
+                              os.environ.get('TERRAFORM', 'terraform'))
+    tf.setup(extra_files=['tests/{}/terraform.tfvars'.format(tfdir)])
+    return tf.plan_out(parsed=True)
+
+  return run_plan

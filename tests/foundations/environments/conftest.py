@@ -17,18 +17,11 @@
 import os
 
 import pytest
-import tftest
 
 
-_ABSPATH = os.path.dirname(os.path.abspath(__file__)).split(os.path.sep)
-_TFDIR = os.path.sep.join(_ABSPATH[-2:])
+_TFDIR = os.path.sep.join(os.path.abspath(__file__).split(os.path.sep)[-3:-1])
 
 
-# TODO(ludoo): generalize and put in top-level package
-
-@pytest.fixture(scope='session')
-def plan():
-  tf = tftest.TerraformTest(_TFDIR, os.path.sep.join(_ABSPATH[:-3]),
-                            os.environ.get('TERRAFORM', 'terraform'))
-  tf.setup(extra_files=['tests/{}/terraform.tfvars'.format(_TFDIR)])
-  return tf.plan_out(parsed=True)
+@pytest.fixture(scope='package')
+def plan(plan):
+  return plan(_TFDIR)
