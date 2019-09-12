@@ -31,3 +31,5 @@ def test_accounts(plan, mod):
   assert len(resources) == len(environments)
   assert sorted([res['values']['account_id'] for res in resources]) == sorted([
       '%s-%s' % (prefix, env) for env in environments])
+
+  
