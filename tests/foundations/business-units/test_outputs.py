@@ -18,9 +18,9 @@
 def test_project_ids(plan):
   "Project ids should use prefix and match expected values."
   prefix = plan.variables['prefix']
-  assert plan.outputs['audit_logs_project'] == prefix + '-audit'
-  assert plan.outputs['shared_resources_project'] == prefix + '-shared'
-  assert plan.outputs['terraform_project'] == prefix + '-terraform'
+  assert plan.outputs['audit_logs_project'] == '%s-audit' % prefix
+  assert plan.outputs['shared_resources_project'] == '%s-shared' % prefix
+  assert plan.outputs['terraform_project'] == '%s-terraform' % prefix
 
 
 def test_bucket_names(plan):
@@ -42,7 +42,7 @@ def test_environment_buckets(plan):
 
 
 def test_bq_dataset(plan):
-  "Bigquery dataset should be named in the following way 'logs_audit_<ROOT_NODE_TYPE>_<ROOT NODE NUMERIC ID>'"
-  root_node_type = plan.variables['root_node'].split("/")[0][:-1]
-  root_node_numeric_id = plan.variables['root_node'].split("/")[1]
-  assert plan.outputs['audit_logs_bq_dataset'] == 'logs_audit_' + root_node_type + '_' + root_node_numeric_id
+  "Bigquery dataset name should be based on root node type and id."
+  node_type, node_id = plan.variables['root_node'].split('/')
+  assert plan.outputs['audit_logs_bq_dataset'] == 'logs_audit_%s_%s' % (
+      node_type[:-1], node_id)

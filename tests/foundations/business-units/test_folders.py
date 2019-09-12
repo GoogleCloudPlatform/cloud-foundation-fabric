@@ -21,18 +21,23 @@ import pytest
 def test_shared_folder(plan):
   "Shared folder resource attributes must match variables."
   root_node = plan.variables['root_node']
-  resource = plan.modules['module.shared-folder']['module.shared-folder.google_folder.folders[0]']
+  resource = plan.modules['module.shared-folder'].get(
+      'module.shared-folder.google_folder.folders[0]')
   assert resource['values']['parent'] == root_node
   assert resource['values']['display_name'] == 'shared'
 
 
 def test_business_unit_folders(plan):
   "Business Unit folder resource attributes must match variables."
-  folder_resource_addresses = ['module.business-unit-%s-folders.module.business-unit-folder.google_folder.folders[0]' %
-          num for num in (1,2,3)]
+  address_tpl = (
+      'module.business-unit-%s-folders.module.business-unit-folder'
+      '.google_folder.folders[0]'
+  )
+  count = range(1, 4)
+  business_unit_names = [
+      plan.variables['business_unit_%s_name' % i] for i in count]
   root_node = plan.variables['root_node']
-  business_unit_names = [plan.variables[name] for name in ('business_unit_1_name', 'business_unit_2_name', 'business_unit_3_name')]
-  for address in folder_resource_addresses:
+  for address in [address_tpl % i for i in count]:
     resource = plan.resource_changes[address]
     assert resource['change']['after']['parent'] == root_node
     assert resource['change']['after']['display_name'] in business_unit_names

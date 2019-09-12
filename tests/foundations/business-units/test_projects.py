@@ -27,9 +27,10 @@ def project_modules(plan):
 
 def test_project_resource(plan, project_modules):
   "Project resource attributes must match variables."
+  names = ('shared', 'terraform', 'audit')
+  prefix = plan.variables['prefix']
   billing_account = plan.variables['billing_account_id']
-  project_names =  ['%s-%s' %
-           (plan.variables['prefix'], name) for name in ('shared', 'terraform', 'audit')] 
+  project_names = ['%s-%s' % (prefix, name) for name in names]
   for name, mod in project_modules.items():
     resource = mod['%s.google_project.project' % name]
     assert resource['values']['billing_account'] == billing_account
