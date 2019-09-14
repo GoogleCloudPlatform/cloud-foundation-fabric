@@ -12,58 +12,46 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-################################################################################
-#                               shared VPC host                                #
-################################################################################
-
-# project
-
-module "project-svpc-host" {
-  source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
-  version         = "3.2.0"
-  activate_apis   = var.project_services
-  billing_account = var.billing_account_id
-  name            = "svpc-host"
-  oslogin_admins  = var.host_oslogin_admins
-  owners          = var.host_owners
-  parent          = var.root_node
-  prefix          = var.prefix
+variable "billing_account_id" {
+  description = "Billing account id used as default for new projects."
+  type        = string
 }
 
-module "net-vpc-host" {
-  source  = "terraform-google-modules/network/google"
-  version = "~> 1.1.0"
+variable "host_owners" {
+  description = "Host project owners, in IAM format."
+  default     = []
+}
 
-  project_id   = module.project-svc-host.project_id
-  network_name = "vpc-host"
+variable "prefix" {
+  description = "Prefix used for resources that need unique names."
+  type        = string
+}
 
-  subnets = var.subnets
-  secondary_ranges = {
-    subnet-01 = [
-      {
-        range_name    = "subnet-01-secondary-01"
-        ip_cidr_range = "192.168.64.0/24"
-      },
-    ]
+variable "root_node" {
+  description = "Hierarchy node where projects will be created, 'organizations/org_id' or 'folders/folder_id'."
+  type        = string
+}
 
-    subnet-02 = []
-  }
-
-  routes = [
-    {
-      name              = "egress-internet"
-      description       = "route through IGW to access internet"
-      destination_range = "0.0.0.0/0"
-      tags              = "egress-inet"
-      next_hop_internet = "true"
-    },
-    {
-      name                   = "app-proxy"
-      description            = "route through proxy to reach app"
-      destination_range      = "10.50.10.0/24"
-      tags                   = "app-proxy"
-      next_hop_instance      = "app-proxy-instance"
-      next_hop_instance_zone = "us-west1-a"
-    },
+variable "project_services" {
+  description = "Service APIs enabled by default in new projects."
+  default = [
+    "bigquery-json.googleapis.com",
+    "bigquerystorage.googleapis.com",
+    "cloudbilling.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
+    "compute.googleapis.com",
+    "container.googleapis.com",
+    "containerregistry.googleapis.com",
+    "deploymentmanager.googleapis.com",
+    "iam.googleapis.com",
+    "iamcredentials.googleapis.com",
+    "logging.googleapis.com",
+    "oslogin.googleapis.com",
+    "pubsub.googleapis.com",
+    "replicapool.googleapis.com",
+    "replicapoolupdater.googleapis.com",
+    "resourceviews.googleapis.com",
+    "serviceusage.googleapis.com",
+    "storage-api.googleapis.com",
   ]
 }
