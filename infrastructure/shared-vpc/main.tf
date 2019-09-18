@@ -31,22 +31,22 @@ module "project-svpc-host" {
 
 # service projects
 
-module "project-service-1" {
+module "project-service-data" {
   source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
   version         = "3.2.0"
   parent          = var.root_node
   prefix          = var.prefix
-  name            = "service-1"
+  name            = "data"
   billing_account = var.billing_account_id
   activate_apis   = var.project_services
 }
 
-module "project-service-2" {
+module "project-service-gke" {
   source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
   version         = "3.2.0"
   parent          = var.root_node
   prefix          = var.prefix
-  name            = "service-2"
+  name            = "gke"
   billing_account = var.billing_account_id
   activate_apis   = var.project_services
 }
@@ -58,9 +58,9 @@ module "project-service-2" {
 module "net-vpc-host" {
   source           = "terraform-google-modules/network/google"
   version          = "~> 1.1.0"
-  project_id       = module.project-svc-host.project_id
+  project_id       = module.project-svpc-host.project_id
   network_name     = "vpc-host"
   subnets          = var.subnets
-  secondary_ranges = var.secondary_ranges
+  secondary_ranges = var.subnet_secondary_ranges
   routes           = []
 }

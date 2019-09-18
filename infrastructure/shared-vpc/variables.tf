@@ -32,6 +32,45 @@ variable "root_node" {
   type        = string
 }
 
+variable "subnets" {
+  description = "Shared VPC subnet definitions."
+  default = [{
+    subnet_name           = "networking"
+    subnet_ip             = "10.0.0.0/24"
+    subnet_region         = "europe-west1"
+    subnet_private_access = "true"
+    }, {
+    subnet_name           = "data"
+    subnet_ip             = "10.0.16.0/24"
+    subnet_region         = "europe-west1"
+    subnet_private_access = "true"
+    }, {
+    subnet_name           = "gke"
+    subnet_ip             = "10.0.32.0/24"
+    subnet_region         = "europe-west1"
+    subnet_private_access = "true"
+    },
+  ]
+}
+
+variable "subnet_secondary_ranges" {
+  description = "Shared VPC subnets secondary range definitions."
+  default = {
+    networking = [],
+    data       = [],
+    gke = [
+      {
+        range_name    = "services"
+        ip_cidr_range = "172.16.0.0/24"
+      },
+      {
+        range_name    = "pods"
+        ip_cidr_range = "10.128.0.0/18"
+      }
+    ]
+  }
+}
+
 variable "project_services" {
   description = "Service APIs enabled by default in new projects."
   default = [

@@ -20,18 +20,18 @@ output "project-host" {
   }
 }
 
-output "project-service-1" {
-  description = "VPC service 1."
+output "project-data" {
+  description = "Data service project."
   value = {
-    project_id     = module.project-service-1.project_id
-    project_number = module.project-service-1.number
+    project_id     = module.project-service-data.project_id
+    project_number = module.project-service-data.number
   }
 }
 
-output "project-service-2" {
-  description = "VPC service 2."
+output "project-gke" {
+  description = "GKE service project."
   value = {
-    project_id     = module.project-service-2.project_id
-    project_number = module.project-service-2.number
+    project_id     = module.project-service-gke.project_id
+    project_number = module.project-service-gke.number
   }
 }
