@@ -40,8 +40,6 @@ variable "project_services" {
     "cloudbilling.googleapis.com",
     "cloudresourcemanager.googleapis.com",
     "compute.googleapis.com",
-    "container.googleapis.com",
-    "containerregistry.googleapis.com",
     "deploymentmanager.googleapis.com",
     "iam.googleapis.com",
     "iamcredentials.googleapis.com",

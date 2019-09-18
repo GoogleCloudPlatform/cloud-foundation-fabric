@@ -29,40 +29,38 @@ module "project-svpc-host" {
   activate_apis   = var.project_services
 }
 
-# module "net-vpc-host" {
-#   source  = "terraform-google-modules/network/google"
-#   version = "~> 1.1.0"
+# service projects
 
-#   project_id   = module.project-svc-host.project_id
-#   network_name = "vpc-host"
+module "project-service-1" {
+  source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
+  version         = "3.2.0"
+  parent          = var.root_node
+  prefix          = var.prefix
+  name            = "service-1"
+  billing_account = var.billing_account_id
+  activate_apis   = var.project_services
+}
 
-#   subnets = var.subnets
-#   secondary_ranges = {
-#     subnet-01 = [
-#       {
-#         range_name    = "subnet-01-secondary-01"
-#         ip_cidr_range = "192.168.64.0/24"
-#       },
-#     ]
+module "project-service-2" {
+  source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
+  version         = "3.2.0"
+  parent          = var.root_node
+  prefix          = var.prefix
+  name            = "service-2"
+  billing_account = var.billing_account_id
+  activate_apis   = var.project_services
+}
 
-#     subnet-02 = []
-#   }
+################################################################################
+#                                  Networking                                  #
+################################################################################
 
-#   routes = [
-#     {
-#       name              = "egress-internet"
-#       description       = "route through IGW to access internet"
-#       destination_range = "0.0.0.0/0"
-#       tags              = "egress-inet"
-#       next_hop_internet = "true"
-#     },
-#     {
-#       name                   = "app-proxy"
-#       description            = "route through proxy to reach app"
-#       destination_range      = "10.50.10.0/24"
-#       tags                   = "app-proxy"
-#       next_hop_instance      = "app-proxy-instance"
-#       next_hop_instance_zone = "us-west1-a"
-#     },
-#   ]
-# }
+module "net-vpc-host" {
+  source           = "terraform-google-modules/network/google"
+  version          = "~> 1.1.0"
+  project_id       = module.project-svc-host.project_id
+  network_name     = "vpc-host"
+  subnets          = var.subnets
+  secondary_ranges = var.secondary_ranges
+  routes           = []
+}

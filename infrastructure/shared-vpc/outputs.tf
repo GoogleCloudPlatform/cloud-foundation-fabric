@@ -13,6 +13,25 @@
 # limitations under the License.
 
 output "project-host" {
-  description = "VPC host project id."
-  value       = module.project-svpc-host.project_id
+  description = "VPC host."
+  value = {
+    project_id     = module.project-svpc-host.project_id
+    project_number = module.project-svpc-host.number
+  }
+}
+
+output "project-service-1" {
+  description = "VPC service 1."
+  value = {
+    project_id     = module.project-service-1.project_id
+    project_number = module.project-service-1.number
+  }
+}
+
+output "project-service-2" {
+  description = "VPC service 2."
+  value = {
+    project_id     = module.project-service-2.project_id
+    project_number = module.project-service-2.number
+  }
 }
