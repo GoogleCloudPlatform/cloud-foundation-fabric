@@ -41,7 +41,7 @@ module "service-accounts-tf-environments" {
   prefix             = var.prefix
   names              = var.environments
   grant_billing_role = true
-  grant_xpn_roles    = var.grant_xpn_roles
+  grant_xpn_roles    = var.grant_xpn_org_roles
   generate_keys      = var.generate_service_account_keys
 }
 
@@ -76,8 +76,6 @@ module "gcs-tf-environments" {
 #                              Top-level folders                              #
 ###############################################################################
 
-# TODO(ludomagno): move XPN admin role here after checking it now works on folders
-
 module "folders-top-level" {
   source            = "terraform-google-modules/folders/google"
   version           = "2.0.0"
@@ -85,12 +83,15 @@ module "folders-top-level" {
   names             = var.environments
   set_roles         = true
   per_folder_admins = module.service-accounts-tf-environments.iam_emails_list
-  folder_admin_roles = [
-    "roles/resourcemanager.folderViewer",
-    "roles/resourcemanager.projectCreator",
-    "roles/owner",
-    "roles/compute.networkAdmin",
-  ]
+  folder_admin_roles = compact(
+    [
+      "roles/compute.networkAdmin",
+      "roles/owner",
+      "roles/resourcemanager.folderViewer",
+      "roles/resourcemanager.projectCreator",
+      var.grant_xpn_folder_roles ? "roles/compute.xpnAdmin" : ""
+    ]
+  )
 }
 
 ###############################################################################
