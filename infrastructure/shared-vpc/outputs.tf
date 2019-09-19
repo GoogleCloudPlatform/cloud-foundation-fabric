@@ -12,8 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+output "net-vpc-name" {
+  description = "Shared VPC name"
+  value       = module.net-vpc-host.network_name
+}
+
+output "net-vpc-subnets" {
+  description = "Shared VPC subnets."
+  value       = local.net_subnet_ips
+}
+
 output "project-host" {
-  description = "VPC host."
+  description = "VPC host project."
   value = {
     project_id     = module.project-svpc-host.project_id
     project_number = module.project-svpc-host.number

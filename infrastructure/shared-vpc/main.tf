@@ -57,20 +57,20 @@ module "project-service-gke" {
 #                                  Networking                                  #
 ################################################################################
 
-# VPC
+# Shared VPC
 
 module "net-vpc-host" {
   source           = "terraform-google-modules/network/google"
   version          = "1.2.0"
   project_id       = module.project-svpc-host.project_id
-  network_name     = "vpc-host"
+  network_name     = "vpc-shared"
   shared_vpc_host  = true
   subnets          = var.subnets
   secondary_ranges = var.subnet_secondary_ranges
   routes           = []
 }
 
-# VPC firewall
+# Shared VPC firewall
 
 module "net-vpc-firewall" {
   source               = "terraform-google-modules/network/google//modules/fabric-net-firewall"
@@ -90,20 +90,19 @@ module "network_fabric-net-svpc-access" {
   host_project_id     = module.project-svpc-host.project_id
   service_project_num = 2
   service_project_ids = [
-    module.project-service-data.number,
-    module.project-service-gke.number
+    module.project-service-data.number, module.project-service-gke.number
   ]
   host_subnets = ["data", "gke"]
   host_subnet_regions = [
-    local.net_subnet_regions["data"],
-    local.net_subnet_regions["gke"],
+    local.net_subnet_regions["data"], local.net_subnet_regions["gke"]
   ]
   host_subnet_users = {
-    data = join(",", local.net_data_users),
-    gke  = join(",", local.net_gke_users),
+    data = join(",", local.net_data_users)
+    gke  = join(",", local.net_gke_users)
   }
   host_service_agent_role = true
   host_service_agent_users = [
     "serviceAccount:${module.project-service-gke.cloudsvc_service_account}"
   ]
 }
+

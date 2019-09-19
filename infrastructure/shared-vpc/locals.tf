@@ -35,3 +35,4 @@ locals {
     module.net-vpc-host.subnets_regions
   )
 }
+
