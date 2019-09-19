@@ -37,7 +37,8 @@ If no shared services are needed, the shared service project module can of cours
 | environments | Environment short names. | list(string) | n/a | yes |
 | gcs\_location | GCS bucket location. | string | `"EU"` | no |
 | generate\_service\_account\_keys | Generate and store service account keys in the state file. | string | `"false"` | no |
-| grant\_xpn\_roles | Grant roles needed for Shared VPC creation to service accounts. | string | `"true"` | no |
+| grant\_xpn\_folder\_roles | Grant roles needed for Shared VPC creation to service accounts at the environment folder level. | string | `"true"` | no |
+| grant\_xpn\_org\_roles | Grant roles needed for Shared VPC creation to service accounts at the organization level. | string | `"false"` | no |
 | organization\_id | Organization id. | string | n/a | yes |
 | prefix | Prefix used for resources that need unique names. | string | n/a | yes |
 | project\_services | Service APIs enabled by default in new projects. | list | `<list>` | no |

@@ -37,11 +37,15 @@ variable "gcs_location" {
   default     = "EU"
 }
 
-variable "grant_xpn_roles" {
-  description = "Grant roles needed for Shared VPC creation to service accounts."
-  default     = true
+variable "grant_xpn_org_roles" {
+  description = "Grant roles needed for Shared VPC creation to service accounts at the organization level."
+  default     = false
 }
 
+variable "grant_xpn_folder_roles" {
+  description = "Grant roles needed for Shared VPC creation to service accounts at the environment folder level."
+  default     = true
+}
 
 variable "organization_id" {
   description = "Organization id."
