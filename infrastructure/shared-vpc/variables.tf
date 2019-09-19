@@ -17,7 +17,17 @@ variable "billing_account_id" {
   type        = string
 }
 
-variable "host_owners" {
+variable "owners_data" {
+  description = "Data project owners, in IAM format."
+  default     = []
+}
+
+variable "owners_gke" {
+  description = "GKE project owners, in IAM format."
+  default     = []
+}
+
+variable "owners_host" {
   description = "Host project owners, in IAM format."
   default     = []
 }
