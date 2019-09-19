@@ -34,21 +34,24 @@ variable "root_node" {
 
 variable "subnets" {
   description = "Shared VPC subnet definitions."
-  default = [{
-    subnet_name           = "networking"
-    subnet_ip             = "10.0.0.0/24"
-    subnet_region         = "europe-west1"
-    subnet_private_access = "true"
-    }, {
-    subnet_name           = "data"
-    subnet_ip             = "10.0.16.0/24"
-    subnet_region         = "europe-west1"
-    subnet_private_access = "true"
-    }, {
-    subnet_name           = "gke"
-    subnet_ip             = "10.0.32.0/24"
-    subnet_region         = "europe-west1"
-    subnet_private_access = "true"
+  default = [
+    {
+      subnet_name           = "networking"
+      subnet_ip             = "10.0.0.0/24"
+      subnet_region         = "europe-west1"
+      subnet_private_access = "true"
+    },
+    {
+      subnet_name           = "data"
+      subnet_ip             = "10.0.16.0/24"
+      subnet_region         = "europe-west1"
+      subnet_private_access = "true"
+    },
+    {
+      subnet_name           = "gke"
+      subnet_ip             = "10.0.32.0/24"
+      subnet_region         = "europe-west1"
+      subnet_private_access = "true"
     },
   ]
 }
@@ -79,6 +82,8 @@ variable "project_services" {
     "cloudbilling.googleapis.com",
     "cloudresourcemanager.googleapis.com",
     "compute.googleapis.com",
+    "container.googleapis.com",
+    "containerregistry.googleapis.com",
     "deploymentmanager.googleapis.com",
     "iam.googleapis.com",
     "iamcredentials.googleapis.com",

@@ -55,12 +55,30 @@ module "project-service-gke" {
 #                                  Networking                                  #
 ################################################################################
 
+# VPC
+
 module "net-vpc-host" {
   source           = "terraform-google-modules/network/google"
-  version          = "~> 1.1.0"
+  version          = "~> 1.2.0"
   project_id       = module.project-svpc-host.project_id
   network_name     = "vpc-host"
   subnets          = var.subnets
   secondary_ranges = var.subnet_secondary_ranges
   routes           = []
+}
+
+# VPC firewall
+
+module "net-vpc-firewall" {
+  source               = "terraform-google-modules/network/google//modules/fabric-net-firewall"
+  version              = "1.2.0"
+  project_id           = module.project-svpc-host.project_id
+  network              = module.net-vpc-host.network_name
+  admin_ranges_enabled = true
+  admin_ranges = [
+    lookup(
+      zipmap(module.net-vpc-host.subnets_names, module.net-vpc-host.subnets_ips),
+      "networking"
+    )
+  ]
 }
