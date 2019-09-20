@@ -38,7 +38,10 @@ module "project-service-data" {
   prefix          = var.prefix
   name            = "data"
   billing_account = var.billing_account_id
+  oslogin         = "true"
   owners          = var.owners_data
+  oslogin_admins  = var.oslogin_admins_data
+  oslogin_users   = var.oslogin_users_data
   activate_apis   = var.project_services
 }
 

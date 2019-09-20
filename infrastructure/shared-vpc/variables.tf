@@ -17,6 +17,16 @@ variable "billing_account_id" {
   type        = string
 }
 
+variable "oslogin_admins_data" {
+  description = "Data project oslogin admin members, in IAM format."
+  default     = []
+}
+
+variable "oslogin_users_data" {
+  description = "Data project oslogin user members, in IAM format."
+  default     = []
+}
+
 variable "owners_data" {
   description = "Data project owners, in IAM format."
   default     = []
