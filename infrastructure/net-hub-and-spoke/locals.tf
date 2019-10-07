@@ -14,19 +14,13 @@
 # limitations under the License.
 
 locals {
-  all_subnets = ["${concat(
-    var.hub_subnet_cidr_ranges,
-    var.spoke_1_subnet_cidr_ranges,
-    var.spoke_2_subnet_cidr_ranges
-  )}"]
-  hub_to_spoke_1_router = "${
-    var.hub_custom_route_advertisement
-    ? element(concat(google_compute_router.hub-to-spoke-1-custom.*.name, list("")), 0)
-    : element(concat(google_compute_router.hub-to-spoke-1-default.*.name, list("")), 0)
-  }"
-  hub_to_spoke_2_router = "${
-    var.hub_custom_route_advertisement
-    ? element(concat(google_compute_router.hub-to-spoke-2-custom.*.name, list("")), 0)
-    : element(concat(google_compute_router.hub-to-spoke-2-default.*.name, list("")), 0)
-  }"
+  hub_subnet_regions         = [for subnet in var.hub_subnets : subnet["subnet_region"]]
+  spoke_1_subnet_regions     = [for subnet in var.spoke_1_subnets : subnet["subnet_region"]]
+  spoke_2_subnet_regions     = [for subnet in var.spoke_2_subnets : subnet["subnet_region"]]
+  hub_subnet_cidr_ranges     = [for subnet in var.hub_subnets : subnet["subnet_ip"]]
+  spoke_1_subnet_cidr_ranges = [for subnet in var.spoke_1_subnets : subnet["subnet_ip"]]
+  spoke_2_subnet_cidr_ranges = [for subnet in var.spoke_2_subnets : subnet["subnet_ip"]]
+  all_subnet_cidrs           = concat(local.hub_subnet_cidr_ranges, local.spoke_1_subnet_cidr_ranges, local.spoke_2_subnet_cidr_ranges)
+  hub_to_spoke_1_router = var.hub_custom_route_advertisement ? element(concat(google_compute_router.hub-to-spoke-1-custom.*.name, list("")), 0) : element(concat(google_compute_router.hub-to-spoke-1-default.*.name, list("")), 0)
+  hub_to_spoke_2_router = var.hub_custom_route_advertisement ? element(concat(google_compute_router.hub-to-spoke-2-custom.*.name, list("")), 0) : element(concat(google_compute_router.hub-to-spoke-2-default.*.name, list("")), 0)
 }

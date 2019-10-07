@@ -13,79 +13,99 @@
 # limitations under the License.
 
 resource "null_resource" "spoke-1-ranges-to-advertise" {
-  count = "${length(var.spoke_1_subnet_names)}"
+  count = length(local.spoke_1_subnet_cidr_ranges)
   triggers = {
-    range = "${element(var.spoke_1_subnet_cidr_ranges, count.index)}"
+    range = element(local.spoke_1_subnet_cidr_ranges, count.index)
   }
 }
 
 resource "null_resource" "spoke-2-ranges-to-advertise" {
-  count = "${length(var.spoke_2_subnet_names)}"
+  count = length(local.spoke_2_subnet_cidr_ranges)
   triggers = {
-    range = "${element(var.spoke_2_subnet_cidr_ranges, count.index)}"
+    range = element(local.spoke_2_subnet_cidr_ranges, count.index)
   }
 }
+
 resource "google_compute_router" "hub-to-spoke-1-custom" {
-  count   = "${var.hub_custom_route_advertisement ? 1 : 0}"
+  count   = var.hub_custom_route_advertisement ? 1 : 0
   name    = "hub-to-spoke-1-custom"
-  region  = "${element(var.hub_subnet_regions, 0)}"
-  network = "${module.vpc-hub.name}"
-  project = "${var.project_id}"
+  region  = element(local.hub_subnet_regions, 0)
+  network = module.vpc-hub.network_name
+  project = var.hub_project_id
   bgp {
-    asn                  = "${var.hub_bgp_asn}"
+    asn                  = var.hub_bgp_asn
     advertise_mode       = "CUSTOM"
     advertised_groups    = ["ALL_SUBNETS"]
-    advertised_ip_ranges = ["${null_resource.spoke-2-ranges-to-advertise.*.triggers}"]
+
+    dynamic "advertised_ip_ranges" {
+      for_each = [for trigger in null_resource.spoke-1-ranges-to-advertise.*.triggers: {
+        range = trigger["range"]
+      }]
+
+      content {
+        range = advertised_ip_ranges.value.range
+      }
+    }
   }
 }
+
 resource "google_compute_router" "hub-to-spoke-2-custom" {
-  count   = "${var.hub_custom_route_advertisement ? 1 : 0}"
+  count   = var.hub_custom_route_advertisement ? 1 : 0
   name    = "hub-to-spoke-2-custom"
-  region  = "${element(var.hub_subnet_regions, 1)}"
-  network = "${module.vpc-hub.name}"
-  project = "${var.project_id}"
+  region  = element(local.hub_subnet_regions, 1)
+  network = module.vpc-hub.network_name
+  project = var.hub_project_id
   bgp {
-    asn                  = "${var.hub_bgp_asn}"
+    asn                  = var.hub_bgp_asn
     advertise_mode       = "CUSTOM"
     advertised_groups    = ["ALL_SUBNETS"]
-    advertised_ip_ranges = ["${null_resource.spoke-1-ranges-to-advertise.*.triggers}"]
+    dynamic "advertised_ip_ranges" {
+      for_each = [for trigger in null_resource.spoke-2-ranges-to-advertise.*.triggers: {
+        range = trigger["range"]
+      }]
+
+      content {
+        range = advertised_ip_ranges.value.range
+      }
+    }
   }
 }
+
 resource "google_compute_router" "hub-to-spoke-1-default" {
-  count   = "${var.hub_custom_route_advertisement ? 0 : 1}"
+  count   = var.hub_custom_route_advertisement ? 0 : 1
   name    = "hub-to-spoke-1-default"
-  region  = "${element(var.hub_subnet_regions, 0)}"
-  network = "${module.vpc-hub.name}"
-  project = "${var.project_id}"
+  region  = element(local.hub_subnet_regions, 0)
+  network = module.vpc-hub.network_name
+  project = var.hub_project_id
   bgp {
-    asn = "${var.hub_bgp_asn}"
+    asn = var.hub_bgp_asn
   }
 }
 resource "google_compute_router" "hub-to-spoke-2-default" {
-  count   = "${var.hub_custom_route_advertisement ? 0 : 1}"
+  count   = var.hub_custom_route_advertisement ? 0 : 1
   name    = "hub-to-spoke-2-default"
-  region  = "${element(var.hub_subnet_regions, 1)}"
-  network = "${module.vpc-hub.name}"
-  project = "${var.project_id}"
+  region  = element(local.hub_subnet_regions, 1)
+  network = module.vpc-hub.network_name
+  project = var.hub_project_id
   bgp {
-    asn = "${var.hub_bgp_asn}"
+    asn = var.hub_bgp_asn
   }
 }
 resource "google_compute_router" "spoke-1" {
   name    = "spoke-1"
-  region  = "${element(var.spoke_1_subnet_regions, 0)}"
-  network = "${module.vpc-spoke-1.name}"
-  project = "${var.project_id}"
+  region  = element(local.spoke_1_subnet_regions, 0)
+  network = module.vpc-spoke-1.network_name
+  project = var.spoke_1_project_id
   bgp {
-    asn = "${var.spoke_1_bgp_asn}"
+    asn = var.spoke_1_bgp_asn
   }
 }
 resource "google_compute_router" "spoke-2" {
   name    = "spoke-2"
-  region  = "${element(var.spoke_2_subnet_regions, 0)}"
-  network = "${module.vpc-spoke-2.name}"
-  project = "${var.project_id}"
+  region  = element(local.spoke_2_subnet_regions, 0)
+  network = module.vpc-spoke-2.network_name
+  project = var.spoke_2_project_id
   bgp {
-    asn = "${var.spoke_2_bgp_asn}"
+    asn = var.spoke_2_bgp_asn
   }
 }

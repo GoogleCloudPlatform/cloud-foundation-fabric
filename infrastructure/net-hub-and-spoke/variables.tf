@@ -11,62 +11,88 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-variable "project_id" {
-  description = "Project id to use for resources."
+
+variable "hub_project_id" {
+  description = "Hub Project id."
 }
+
+variable "spoke_1_project_id" {
+  description = "Spoke 1 Project id."
+}
+
+variable "spoke_2_project_id" {
+  description = "Spoke 2 Project id."
+}
+
 variable "prefix" {
   description = "Prefix for VPC names."
 }
-variable "hub_subnet_names" {
-  description = "Hub VPC subnet names."
-  default     = ["a", "b"]
-}
-variable "hub_subnet_regions" {
-  description = "Hub subnet regions."
-  default     = ["europe-west1", "europe-west2"]
-}
-variable "hub_subnet_cidr_ranges" {
-  description = "Hub subnet IP CIDR ranges."
-  default     = ["10.10.10.0/24", "10.10.20.0/24"]
-}
-variable "hub_bgp_asn" {
-  description = "Hub BGP ASN."
-  default     = 64515
-}
+
 variable "hub_custom_route_advertisement" {
   description = "Use custom route advertisement in hub routers to advertise all spoke subnets."
   default     = true
 }
-variable "spoke_1_subnet_names" {
-  description = "Spoke 1 VPC subnet names."
-  default     = ["a", "b"]
+
+variable "hub_bgp_asn" {
+  description = "Hub BGP ASN."
+  default     = 64515
 }
-variable "spoke_1_subnet_regions" {
-  description = "Spoke 1 subnet regions."
-  default     = ["asia-east1", "asia-northeast1"]
-}
-variable "spoke_1_subnet_cidr_ranges" {
-  description = "Spoke 1 subnet IP CIDR ranges."
-  default     = ["10.20.10.0/24", "10.20.20.0/24"]
-}
+
 variable "spoke_1_bgp_asn" {
   description = "Spoke 1 BGP ASN."
   default     = 64516
-}
-variable "spoke_2_subnet_names" {
-  description = "Spoke 2 VPC subnet names."
-  default     = ["a", "b"]
-}
-variable "spoke_2_subnet_regions" {
-  description = "Spoke 2 subnet regions."
-  default     = ["us-west1", "us-west2"]
-}
-variable "spoke_2_subnet_cidr_ranges" {
-  description = "Spoke 2 subnet IP CIDR ranges."
-  default     = ["10.30.10.0/24", "10.30.20.0/24"]
 }
 
 variable "spoke_2_bgp_asn" {
   description = "Spoke 2 BGP ASN."
   default     = 64517
 }
+
+variable "hub_subnets" {
+  description = "Hub VPC subnets configuration."
+  default = [{
+    subnet_name   = "subnet-a"
+    subnet_ip     = "10.10.10.0/24"
+    subnet_region = "europe-west1"
+    },
+    {
+
+      subnet_name   = "subnet-b"
+      subnet_ip     = "10.10.20.0/24"
+      subnet_region = "europe-west2"
+    },
+  ]
+}
+
+variable "spoke_1_subnets" {
+  description = "Spoke 1 VPC subnets configuration."
+  default = [{
+    subnet_name   = "subnet-a"
+    subnet_ip     = "10.20.10.0/24"
+    subnet_region = "asia-east1"
+    },
+    {
+
+      subnet_name   = "subnet-b"
+      subnet_ip     = "10.20.20.0/24"
+      subnet_region = "asia-northeast1"
+    },
+  ]
+}
+
+variable "spoke_2_subnets" {
+  description = "Spoke 2 VPC subnets configuration."
+  default = [{
+    subnet_name   = "subnet-a"
+    subnet_ip     = "10.30.10.0/24"
+    subnet_region = "us-west1"
+    },
+    {
+
+      subnet_name   = "subnet-b"
+      subnet_ip     = "10.30.20.0/24"
+      subnet_region = "us-west2"
+    },
+  ]
+}
+

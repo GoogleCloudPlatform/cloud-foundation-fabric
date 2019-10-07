@@ -13,11 +13,11 @@
 # limitations under the License.
 
 resource "google_compute_instance" "hub" {
-  count        = "${length(var.hub_subnet_names)}"
-  project      = "${var.project_id}"
-  name         = "${var.prefix}-hub-${element(var.hub_subnet_names, count.index)}"
+  count        = length(var.hub_subnets)
+  project      = var.hub_project_id
+  name         = "${var.prefix}-hub-${element(var.hub_subnets, count.index)["subnet_name"]}"
   machine_type = "f1-micro"
-  zone         = "${element(var.hub_subnet_regions, count.index)}-b"
+  zone         = "${element(local.hub_subnet_regions, count.index)}-b"
   tags         = ["ssh"]
   boot_disk {
     initialize_params {
@@ -25,16 +25,17 @@ resource "google_compute_instance" "hub" {
     }
   }
   network_interface {
-    subnetwork    = "${lookup(module.vpc-hub.subnet_self_links, element(var.hub_subnet_names, count.index))}"
-    access_config = {}
+    subnetwork    = element(module.vpc-hub.subnets_self_links, count.index)
+    access_config {}
   }
 }
+
 resource "google_compute_instance" "spoke-1" {
-  count        = "${length(var.spoke_1_subnet_names)}"
-  project      = "${var.project_id}"
-  name         = "${var.prefix}-spoke-1-${element(var.spoke_1_subnet_names, count.index)}"
+  count        = length(var.spoke_1_subnets)
+  project      = var.spoke_1_project_id
+  name         = "${var.prefix}-spoke-1-${element(var.spoke_1_subnets, count.index)["subnet_name"]}"
   machine_type = "f1-micro"
-  zone         = "${element(var.spoke_1_subnet_regions, count.index)}-b"
+  zone         = "${element(local.spoke_1_subnet_regions, count.index)}-b"
   tags         = ["ssh"]
   boot_disk {
     initialize_params {
@@ -42,16 +43,17 @@ resource "google_compute_instance" "spoke-1" {
     }
   }
   network_interface {
-    subnetwork    = "${lookup(module.vpc-spoke-1.subnet_self_links, element(var.spoke_1_subnet_names, count.index))}"
-    access_config = {}
+    subnetwork    = element(module.vpc-spoke-1.subnets_self_links, count.index)
+    access_config {}
   }
 }
+
 resource "google_compute_instance" "spoke-2" {
-  count        = "${length(var.spoke_2_subnet_names)}"
-  project      = "${var.project_id}"
-  name         = "${var.prefix}-spoke-2-${element(var.spoke_2_subnet_names, count.index)}"
+  count        = length(var.spoke_2_subnets)
+  project      = var.spoke_2_project_id
+  name         = "${var.prefix}-spoke-2-${element(var.spoke_2_subnets, count.index)["subnet_name"]}"
   machine_type = "f1-micro"
-  zone         = "${element(var.spoke_2_subnet_regions, count.index)}-b"
+  zone         = "${element(local.spoke_2_subnet_regions, count.index)}-b"
   tags         = ["ssh"]
   boot_disk {
     initialize_params {
@@ -59,7 +61,7 @@ resource "google_compute_instance" "spoke-2" {
     }
   }
   network_interface {
-    subnetwork    = "${lookup(module.vpc-spoke-2.subnet_self_links, element(var.spoke_2_subnet_names, count.index))}"
-    access_config = {}
+    subnetwork    = element(module.vpc-spoke-2.subnets_self_links, count.index)
+    access_config {}
   }
 }
