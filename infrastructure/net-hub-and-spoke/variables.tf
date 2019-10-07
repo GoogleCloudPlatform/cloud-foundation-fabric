@@ -30,7 +30,7 @@ variable "prefix" {
 
 variable "hub_custom_route_advertisement" {
   description = "Use custom route advertisement in hub routers to advertise all spoke subnets."
-  default     = true
+  default     = false
 }
 
 variable "hub_bgp_asn" {
