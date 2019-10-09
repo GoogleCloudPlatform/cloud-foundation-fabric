@@ -20,7 +20,7 @@
 
 module "project-svpc-host" {
   source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
-  version         = "3.2.0"
+  version         = "3.3.0"
   parent          = var.root_node
   prefix          = var.prefix
   name            = "vpc-host"
@@ -33,7 +33,7 @@ module "project-svpc-host" {
 
 module "project-service-data" {
   source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
-  version         = "3.2.0"
+  version         = "3.3.0"
   parent          = var.root_node
   prefix          = var.prefix
   name            = "data"
@@ -47,7 +47,7 @@ module "project-service-data" {
 
 module "project-service-gke" {
   source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
-  version         = "3.2.0"
+  version         = "3.3.0"
   parent          = var.root_node
   prefix          = var.prefix
   name            = "gke"
