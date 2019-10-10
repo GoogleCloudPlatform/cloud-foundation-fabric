@@ -12,6 +12,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+locals {
+  net_gce_users = concat(
+    var.owners_gce,
+    ["serviceAccount:${module.project-service-gce.cloudsvc_service_account}"]
+  )
+  net_gke_users = concat(
+    var.owners_gke,
+    [
+      "serviceAccount:${module.project-service-gke.gke_service_account}",
+      "serviceAccount:${module.project-service-gke.cloudsvc_service_account}"
+    ]
+  )
+  net_subnet_ips = zipmap(
+    module.net-vpc-host.subnets_names,
+    module.net-vpc-host.subnets_ips
+  )
+  net_subnet_regions = zipmap(
+    module.net-vpc-host.subnets_names,
+    module.net-vpc-host.subnets_regions
+  )
+}
+
 ###############################################################################
 #                          Host and service projects                          #
 ###############################################################################
@@ -31,17 +53,17 @@ module "project-svpc-host" {
 
 # service projects
 
-module "project-service-data" {
+module "project-service-gce" {
   source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
   version         = "3.3.0"
   parent          = var.root_node
   prefix          = var.prefix
-  name            = "data"
+  name            = "gce"
   billing_account = var.billing_account_id
   oslogin         = "true"
-  owners          = var.owners_data
-  oslogin_admins  = var.oslogin_admins_data
-  oslogin_users   = var.oslogin_users_data
+  owners          = var.owners_gce
+  oslogin_admins  = var.oslogin_admins_gce
+  oslogin_users   = var.oslogin_users_gce
   activate_apis   = var.project_services
 }
 
@@ -88,24 +110,24 @@ module "net-vpc-firewall" {
 
 module "network_fabric-net-svpc-access" {
   # source              = "terraform-google-modules/network/google//modules/fabric-net-svpc-access"
-  # version             = "1.2.0"
+  # version             = "1.3.0"
   source              = "github.com/terraform-google-modules/terraform-google-network//modules/fabric-net-svpc-access?ref=35b92c3848b4e796c57c4cbedc1529b736614389"
   host_project_id     = module.project-svpc-host.project_id
   service_project_num = 2
   service_project_ids = [
-    module.project-service-data.number, module.project-service-gke.number
+    module.project-service-gce.number, module.project-service-gke.number
   ]
-  host_subnets = ["data", "gke"]
+  host_subnets = ["gce", "gke"]
   host_subnet_regions = [
-    local.net_subnet_regions["data"], local.net_subnet_regions["gke"]
+    local.net_subnet_regions["gce"], local.net_subnet_regions["gke"]
   ]
   host_subnet_users = {
-    data = join(",", local.net_data_users)
-    gke  = join(",", local.net_gke_users)
+    gce = join(",", local.net_gce_users)
+    gke = join(",", local.net_gke_users)
   }
   host_service_agent_role = true
   host_service_agent_users = [
-    "serviceAccount:${module.project-service-gke.cloudsvc_service_account}"
+    "serviceAccount:${module.project-service-gke.gke_service_account}"
   ]
 }
 

@@ -30,11 +30,11 @@ output "project-host" {
   }
 }
 
-output "project-data" {
-  description = "Data service project."
+output "project-gce" {
+  description = "GCE service project."
   value = {
-    project_id     = module.project-service-data.project_id
-    project_number = module.project-service-data.number
+    project_id     = module.project-service-gce.project_id
+    project_number = module.project-service-gce.number
   }
 }
 

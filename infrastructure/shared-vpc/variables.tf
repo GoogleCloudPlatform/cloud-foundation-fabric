@@ -17,18 +17,18 @@ variable "billing_account_id" {
   type        = string
 }
 
-variable "oslogin_admins_data" {
-  description = "Data project oslogin admin members, in IAM format."
+variable "oslogin_admins_gce" {
+  description = "GCE project oslogin admin members, in IAM format."
   default     = []
 }
 
-variable "oslogin_users_data" {
-  description = "Data project oslogin user members, in IAM format."
+variable "oslogin_users_gce" {
+  description = "GCE project oslogin user members, in IAM format."
   default     = []
 }
 
-variable "owners_data" {
-  description = "Data project owners, in IAM format."
+variable "owners_gce" {
+  description = "GCE project owners, in IAM format."
   default     = []
 }
 
@@ -62,7 +62,7 @@ variable "subnets" {
       subnet_private_access = "true"
     },
     {
-      subnet_name           = "data"
+      subnet_name           = "gce"
       subnet_ip             = "10.0.16.0/24"
       subnet_region         = "europe-west1"
       subnet_private_access = "true"
@@ -80,7 +80,7 @@ variable "subnet_secondary_ranges" {
   description = "Shared VPC subnets secondary range definitions."
   default = {
     networking = [],
-    data       = [],
+    gce        = [],
     gke = [
       {
         range_name    = "services"
