@@ -105,6 +105,7 @@ variable "project_services" {
     "container.googleapis.com",
     "containerregistry.googleapis.com",
     "deploymentmanager.googleapis.com",
+    "dns.googleapis.com",
     "iam.googleapis.com",
     "iamcredentials.googleapis.com",
     "logging.googleapis.com",

@@ -28,6 +28,10 @@ locals {
     module.net-vpc-host.subnets_names,
     module.net-vpc-host.subnets_ips
   )
+  net_subnet_links = zipmap(
+    module.net-vpc-host.subnets_names,
+    module.net-vpc-host.subnets_self_links
+  )
   net_subnet_regions = zipmap(
     module.net-vpc-host.subnets_names,
     module.net-vpc-host.subnets_regions
@@ -131,3 +135,23 @@ module "network_fabric-net-svpc-access" {
   ]
 }
 
+################################################################################
+#                                     DNS                                      #
+################################################################################
+
+module "dns-host-forwarding-zone" {
+  source                             = "terraform-google-modules/cloud-dns/google"
+  version                            = "2.0.0"
+  project_id                         = module.project-svpc-host.project_id
+  type                               = "private"
+  name                               = "svpc-fabric-example"
+  domain                             = "svpc.fabric."
+  private_visibility_config_networks = [module.net-vpc-host.network_self_link]
+  record_names                       = ["localhost"]
+  record_data = [
+    {
+      rrdatas = "127.0.0.1"
+      type    = "A"
+    },
+  ]
+}
