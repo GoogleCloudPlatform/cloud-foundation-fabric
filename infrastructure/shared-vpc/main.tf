@@ -90,7 +90,7 @@ module "project-service-gke" {
 
 module "net-vpc-host" {
   source           = "terraform-google-modules/network/google"
-  version          = "1.2.0"
+  version          = "1.3.0"
   project_id       = module.project-svpc-host.project_id
   network_name     = "vpc-shared"
   shared_vpc_host  = true
@@ -102,20 +102,42 @@ module "net-vpc-host" {
 # Shared VPC firewall
 
 module "net-vpc-firewall" {
-  source               = "terraform-google-modules/network/google//modules/fabric-net-firewall"
-  version              = "1.2.0"
+  # source               = "terraform-google-modules/network/google//modules/fabric-net-firewall"
+  # version              = "1.4.0"
+  source               = "github.com/terraform-google-modules/terraform-google-network//modules/fabric-net-firewall?ref=52e49a9"
   project_id           = module.project-svpc-host.project_id
   network              = module.net-vpc-host.network_name
   admin_ranges_enabled = true
   admin_ranges         = [lookup(local.net_subnet_ips, "networking")]
+  custom_rules = {
+    ingress-mysql = {
+      description = "Allow incoming connections on the MySQL port from GKE addresses."
+      direction   = "INGRESS"
+      action      = "allow"
+      ranges = [
+        local.net_subnet_ips.gke,
+        element([
+          for range in var.subnet_secondary_ranges.gke :
+          range.ip_cidr_range if range.range_name == "pods"
+        ], 0)
+      ]
+      sources              = []
+      targets              = ["mysql"]
+      use_service_accounts = false
+      rules = [{
+        protocol = "tcp"
+        ports    = [3306]
+      }]
+      extra_attributes = {}
+    }
+  }
 }
 
 # Shared VPC access
 
 module "network_fabric-net-svpc-access" {
-  # source              = "terraform-google-modules/network/google//modules/fabric-net-svpc-access"
-  # version             = "1.3.0"
-  source              = "github.com/terraform-google-modules/terraform-google-network//modules/fabric-net-svpc-access?ref=35b92c3848b4e796c57c4cbedc1529b736614389"
+  source              = "terraform-google-modules/network/google//modules/fabric-net-svpc-access"
+  version             = "1.3.0"
   host_project_id     = module.project-svpc-host.project_id
   service_project_num = 2
   service_project_ids = [
