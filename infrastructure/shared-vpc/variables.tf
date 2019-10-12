@@ -17,6 +17,16 @@ variable "billing_account_id" {
   type        = string
 }
 
+variable "kms_keyring_location" {
+  description = "Location used for the KMS keyring."
+  default     = "europe"
+}
+
+variable "kms_keyring_name" {
+  description = "Name used for the KMS keyring."
+  default     = "svpc-example"
+}
+
 variable "oslogin_admins_gce" {
   description = "GCE project oslogin admin members, in IAM format."
   default     = []
@@ -100,6 +110,7 @@ variable "project_services" {
     "bigquery-json.googleapis.com",
     "bigquerystorage.googleapis.com",
     "cloudbilling.googleapis.com",
+    "cloudkms.googleapis.com",
     "cloudresourcemanager.googleapis.com",
     "compute.googleapis.com",
     "container.googleapis.com",

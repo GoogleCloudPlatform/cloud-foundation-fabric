@@ -177,3 +177,18 @@ module "dns-host-forwarding-zone" {
     },
   ]
 }
+
+################################################################################
+#                                     KMS                                      #
+################################################################################
+
+module "host-kms" {
+  source             = "terraform-google-modules/kms/google"
+  version            = "1.0.0"
+  project_id         = module.project-svpc-host.project_id
+  location           = var.kms_keyring_location
+  keyring            = var.kms_keyring_name
+  keys               = ["mysql"]
+  set_decrypters_for = ["mysql"]
+  decrypters         = ["serviceAccount:${module.project-service-gke.gce_service_account}"]
+}
