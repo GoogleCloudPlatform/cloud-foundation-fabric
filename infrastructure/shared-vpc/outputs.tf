@@ -46,6 +46,8 @@ output "project-gke" {
   }
 }
 
+# test resource outputs, comment if you don't need them
+
 output "test-instances" {
   description = "Test instance names."
   value = {
@@ -59,4 +61,10 @@ output "test-instances" {
       google_compute_instance.test-net.network_interface.0.network_ip
     )
   }
+}
+
+output "mysql-root-password" {
+  description = "Password for the test MySQL db root user."
+  sensitive   = true
+  value       = random_pet.mysql_password.id
 }

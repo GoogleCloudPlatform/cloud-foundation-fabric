@@ -24,6 +24,13 @@ locals {
       "serviceAccount:${module.project-service-gke.cloudsvc_service_account}"
     ]
   )
+  net_gke_ip_ranges = [
+    local.net_subnet_ips.gke,
+    element([
+      for range in var.subnet_secondary_ranges.gke :
+      range.ip_cidr_range if range.range_name == "pods"
+    ], 0)
+  ]
   net_subnet_ips = zipmap(
     module.net-vpc-host.subnets_names,
     module.net-vpc-host.subnets_ips
@@ -111,24 +118,15 @@ module "net-vpc-firewall" {
   admin_ranges         = [lookup(local.net_subnet_ips, "networking")]
   custom_rules = {
     ingress-mysql = {
-      description = "Allow incoming connections on the MySQL port from GKE addresses."
-      direction   = "INGRESS"
-      action      = "allow"
-      ranges = [
-        local.net_subnet_ips.gke,
-        element([
-          for range in var.subnet_secondary_ranges.gke :
-          range.ip_cidr_range if range.range_name == "pods"
-        ], 0)
-      ]
+      description          = "Allow incoming connections on the MySQL port from GKE addresses."
+      direction            = "INGRESS"
+      action               = "allow"
+      ranges               = local.net_gke_ip_ranges
       sources              = []
       targets              = ["mysql"]
       use_service_accounts = false
-      rules = [{
-        protocol = "tcp"
-        ports    = [3306]
-      }]
-      extra_attributes = {}
+      rules                = [{ protocol = "tcp", ports = [3306] }]
+      extra_attributes     = {}
     }
   }
 }
@@ -169,12 +167,10 @@ module "dns-host-forwarding-zone" {
   name                               = "svpc-fabric-example"
   domain                             = "svpc.fabric."
   private_visibility_config_networks = [module.net-vpc-host.network_self_link]
-  record_names                       = ["localhost"]
+  record_names                       = ["localhost", "mysql"]
   record_data = [
-    {
-      rrdatas = "127.0.0.1"
-      type    = "A"
-    },
+    { rrdatas = "127.0.0.1", type = "A" },
+    { rrdatas = values(module.container-vm_cos-mysql.instances)[0], type = "A" }
   ]
 }
 
@@ -190,5 +186,5 @@ module "host-kms" {
   keyring            = var.kms_keyring_name
   keys               = ["mysql"]
   set_decrypters_for = ["mysql"]
-  decrypters         = ["serviceAccount:${module.project-service-gke.gce_service_account}"]
+  decrypters         = ["serviceAccount:${module.project-service-gce.gce_service_account}"]
 }

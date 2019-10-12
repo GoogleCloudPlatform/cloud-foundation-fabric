@@ -28,7 +28,7 @@ resource "google_compute_instance" "test-net" {
     subnetwork = local.net_subnet_links.networking
     access_config {}
   }
-  metadata_startup_script = "apt update && apt install -y dnsutils"
+  metadata_startup_script = "apt update && apt install -y dnsutils mysql-client"
 }
 
 resource "google_compute_instance" "test-gke" {
@@ -47,29 +47,34 @@ resource "google_compute_instance" "test-gke" {
     subnetwork = local.net_subnet_links.gke
     access_config {}
   }
-  metadata_startup_script = "apt update && apt install -y dnsutils"
+  metadata_startup_script = "apt update && apt install -y dnsutils mysql-client"
 }
 
 resource "random_pet" "mysql_password" {}
 
+data "google_kms_secret_ciphertext" "mysql_password" {
+  crypto_key = module.host-kms.keys.mysql
+  plaintext  = random_pet.mysql_password.id
+}
+
 module "container-vm_cos-mysql" {
-  # source         = "terraform-google-modules/container-vm/google//modules/cos-mysql"
-  # version        = "1.0.2"
-  source         = "github.com/terraform-google-modules/terraform-google-container-vm//modules/cos-mysql"
+  # source  = "terraform-google-modules/container-vm/google//modules/cos-mysql"
+  # version = "1.0.3"
+  source         = "github.com/terraform-google-modules/terraform-google-container-vm//modules/cos-mysql?ref=50ef682"
   project_id     = module.project-service-gce.project_id
   region         = "${local.net_subnet_regions.gce}"
   zone           = "${local.net_subnet_regions.gce}-b"
+  network        = module.net-vpc-host.network_self_link
+  subnetwork     = local.net_subnet_links.gke
   instance_count = "1"
   data_disk_size = "10"
   vm_tags        = ["ssh", "mysql"]
-  password       = random_pet.mysql_password.id
+  password       = data.google_kms_secret_ciphertext.mysql_password.ciphertext # random_pet.mysql_password.id
+  # TODO(ludomagno): add a location output to the keyring module
   kms_data = {
-    project_id = module.project-svpc-host.project_id
-    keyring    = module.host-kms.keyring
     key        = "mysql"
-    # TODO(ludomagno): add a location output to the keyring module
-    location = var.kms_keyring_location
+    keyring    = module.host-kms.keyring_name
+    location   = var.kms_keyring_location
+    project_id = module.project-svpc-host.project_id
   }
-  network    = module.net-vpc-host.network_self_link
-  subnetwork = local.net_subnet_links.gke
 }
