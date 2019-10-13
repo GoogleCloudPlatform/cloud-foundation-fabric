@@ -98,22 +98,22 @@ variable "spoke_2_subnets" {
 
 variable "private_dns_zone_name" {
   description = "Private DNS Zone Name."
-  default     = "gcp-private"
+  default     = "gcp-local"
 }
 
 variable "private_dns_zone_domain" {
   description = "Private DNS Zone Domain."
-  default     = "gcp.private"
+  default     = "gcp.local."
 }
 
 variable "forwarding_dns_zone_name" {
   description = "Forwarding DNS Zone Name."
-  default     = "on-prem-private"
+  default     = "on-prem-local"
 }
 
 variable "forwarding_dns_zone_domain" {
   description = "Forwarding DNS Zone Domain."
-  default     = "on-prem.private"
+  default     = "on-prem.local."
 }
 
 variable "forwarding_zone_server_addresses" {

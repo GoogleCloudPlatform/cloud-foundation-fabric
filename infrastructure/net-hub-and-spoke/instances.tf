@@ -30,6 +30,19 @@ resource "google_compute_instance" "hub" {
   }
 }
 
+resource "google_dns_record_set" "hub" {
+  count = length(var.hub_subnets)
+
+  project = var.hub_project_id
+  name    = "hub-${count.index}.${module.hub-private-zone.domain}"
+  type    = "A"
+  ttl     = 300
+
+  managed_zone = module.hub-private-zone.name
+
+  rrdatas = [google_compute_instance.hub[count.index].network_interface.0.network_ip]
+}
+
 resource "google_compute_instance" "spoke-1" {
   count        = length(var.spoke_1_subnets)
   project      = var.spoke_1_project_id
@@ -48,6 +61,19 @@ resource "google_compute_instance" "spoke-1" {
   }
 }
 
+resource "google_dns_record_set" "spoke-1" {
+  count = length(var.spoke_1_subnets)
+
+  project = var.hub_project_id
+  name    = "spoke-1-${count.index}.${module.hub-private-zone.domain}"
+  type    = "A"
+  ttl     = 300
+
+  managed_zone = module.hub-private-zone.name
+
+  rrdatas = [google_compute_instance.spoke-1[count.index].network_interface.0.network_ip]
+}
+
 resource "google_compute_instance" "spoke-2" {
   count        = length(var.spoke_2_subnets)
   project      = var.spoke_2_project_id
@@ -64,4 +90,17 @@ resource "google_compute_instance" "spoke-2" {
     subnetwork = element(module.vpc-spoke-2.subnets_self_links, count.index)
     access_config {}
   }
+}
+
+resource "google_dns_record_set" "spoke-2" {
+  count = length(var.spoke_2_subnets)
+
+  project = var.hub_project_id
+  name    = "spoke-2-${count.index}.${module.hub-private-zone.domain}"
+  type    = "A"
+  ttl     = 300
+
+  managed_zone = module.hub-private-zone.name
+
+  rrdatas = [google_compute_instance.spoke-2[count.index].network_interface.0.network_ip]
 }
