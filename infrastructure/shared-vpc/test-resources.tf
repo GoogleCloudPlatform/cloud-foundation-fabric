@@ -95,7 +95,7 @@ data "google_kms_secret_ciphertext" "mysql_password" {
   plaintext  = random_pet.mysql_password.id
 }
 
-# work around the password KMS ciphertext always refreshing, taint to refresh
+# work around the encrypted password always refreshing, taint to refresh
 
 resource "null_resource" "mysql_password" {
   triggers = {
