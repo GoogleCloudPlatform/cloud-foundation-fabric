@@ -12,6 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+###############################################################################
+#                         host test VM and DNS record                         #
+###############################################################################
+
 resource "google_compute_instance" "test-net" {
   project      = module.project-svpc-host.project_id
   name         = "test-net"
@@ -31,6 +35,21 @@ resource "google_compute_instance" "test-net" {
   metadata_startup_script = "apt update && apt install -y dnsutils mysql-client"
 }
 
+resource "google_dns_record_set" "test_net" {
+  project      = module.project-svpc-host.project_id
+  name         = "test-net.${module.host-dns.domain}"
+  type         = "A"
+  ttl          = 300
+  managed_zone = module.host-dns.name
+  rrdatas = [
+    google_compute_instance.test-net.network_interface.0.network_ip
+  ]
+}
+
+###############################################################################
+#                      GKE project test VM and DNS record                     #
+###############################################################################
+
 resource "google_compute_instance" "test-gke" {
   project      = module.project-service-gke.project_id
   name         = "test-gke"
@@ -49,6 +68,21 @@ resource "google_compute_instance" "test-gke" {
   }
   metadata_startup_script = "apt update && apt install -y dnsutils mysql-client"
 }
+
+resource "google_dns_record_set" "test_gke" {
+  project      = module.project-svpc-host.project_id
+  name         = "test-gke.${module.host-dns.domain}"
+  type         = "A"
+  ttl          = 300
+  managed_zone = module.host-dns.name
+  rrdatas = [
+    google_compute_instance.test-gke.network_interface.0.network_ip
+  ]
+}
+
+###############################################################################
+#                   GCE project MySQL test VM and DNS record                  #
+###############################################################################
 
 resource "random_pet" "mysql_password" {}
 
@@ -77,4 +111,40 @@ module "container-vm_cos-mysql" {
     location   = var.kms_keyring_location
     project_id = module.project-svpc-host.project_id
   }
+}
+
+resource "google_dns_record_set" "mysql" {
+  project      = module.project-svpc-host.project_id
+  name         = "mysql.${module.host-dns.domain}"
+  type         = "A"
+  ttl          = 300
+  managed_zone = module.host-dns.name
+  rrdatas = [
+    values(module.container-vm_cos-mysql.instances)[0]
+  ]
+}
+
+###############################################################################
+#                                 test outputs                                #
+###############################################################################
+
+output "test-instances" {
+  description = "Test instance names."
+  value = {
+    gke = map(
+      google_compute_instance.test-gke.name,
+      google_compute_instance.test-gke.network_interface.0.network_ip
+    )
+    mysql = module.container-vm_cos-mysql.instances
+    networking = map(
+      google_compute_instance.test-net.name,
+      google_compute_instance.test-net.network_interface.0.network_ip
+    )
+  }
+}
+
+output "mysql-root-password" {
+  description = "Password for the test MySQL db root user."
+  sensitive   = true
+  value       = random_pet.mysql_password.id
 }

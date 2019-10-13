@@ -159,7 +159,7 @@ module "network_fabric-net-svpc-access" {
 #                                     DNS                                      #
 ################################################################################
 
-module "dns-host-forwarding-zone" {
+module "host-dns" {
   source                             = "terraform-google-modules/cloud-dns/google"
   version                            = "2.0.0"
   project_id                         = module.project-svpc-host.project_id
@@ -167,11 +167,8 @@ module "dns-host-forwarding-zone" {
   name                               = "svpc-fabric-example"
   domain                             = "svpc.fabric."
   private_visibility_config_networks = [module.net-vpc-host.network_self_link]
-  record_names                       = ["localhost", "mysql"]
-  record_data = [
-    { rrdatas = "127.0.0.1", type = "A" },
-    { rrdatas = values(module.container-vm_cos-mysql.instances)[0], type = "A" }
-  ]
+  record_names                       = ["localhost"]
+  record_data                        = [{ rrdatas = "127.0.0.1", type = "A" }]
 }
 
 ################################################################################

@@ -45,26 +45,3 @@ output "project-gke" {
     project_number = module.project-service-gke.number
   }
 }
-
-# test resource outputs, comment if you don't need them
-
-output "test-instances" {
-  description = "Test instance names."
-  value = {
-    gke = map(
-      google_compute_instance.test-gke.name,
-      google_compute_instance.test-gke.network_interface.0.network_ip
-    )
-    mysql = module.container-vm_cos-mysql.instances
-    networking = map(
-      google_compute_instance.test-net.name,
-      google_compute_instance.test-net.network_interface.0.network_ip
-    )
-  }
-}
-
-output "mysql-root-password" {
-  description = "Password for the test MySQL db root user."
-  sensitive   = true
-  value       = random_pet.mysql_password.id
-}
