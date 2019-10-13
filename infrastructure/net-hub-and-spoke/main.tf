@@ -12,9 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+##############################################################
+#                              VPCs                          #
+##############################################################
+
 module "vpc-hub" {
   source  = "terraform-google-modules/network/google"
-  version = "~> 1.2.0"
+  version = "~> 1.2"
 
   project_id   = var.hub_project_id
   network_name = "${var.prefix}-hub"
@@ -24,7 +28,7 @@ module "vpc-hub" {
 
 module "vpc-spoke-1" {
   source  = "terraform-google-modules/network/google"
-  version = "~> 1.2.0"
+  version = "~> 1.2"
 
   project_id   = var.spoke_1_project_id
   network_name = "${var.prefix}-spoke-1"
@@ -34,7 +38,7 @@ module "vpc-spoke-1" {
 
 module "vpc-spoke-2" {
   source  = "terraform-google-modules/network/google"
-  version = "~> 1.2.0"
+  version = "~> 1.2"
 
   project_id   = var.spoke_2_project_id
   network_name = "${var.prefix}-spoke-2"
@@ -42,9 +46,13 @@ module "vpc-spoke-2" {
   routing_mode = "GLOBAL"
 }
 
+##############################################################
+#                           Firewalls                        #
+##############################################################
+
 module "firewall-hub" {
   source  = "terraform-google-modules/network/google//modules/fabric-net-firewall"
-  version = "~> 1.2.0"
+  version = "~> 1.2"
 
   project_id           = var.hub_project_id
   network              = module.vpc-hub.network_name
@@ -54,7 +62,7 @@ module "firewall-hub" {
 
 module "firewall-spoke-1" {
   source  = "terraform-google-modules/network/google//modules/fabric-net-firewall"
-  version = "~> 1.2.0"
+  version = "~> 1.2"
 
   project_id           = var.spoke_1_project_id
   network              = module.vpc-spoke-1.network_name
@@ -64,7 +72,7 @@ module "firewall-spoke-1" {
 
 module "firewall-spoke-2" {
   source  = "terraform-google-modules/network/google//modules/fabric-net-firewall"
-  version = "~> 1.2.0"
+  version = "~> 1.2"
 
   project_id           = var.spoke_2_project_id
   network              = module.vpc-spoke-2.network_name
@@ -72,10 +80,13 @@ module "firewall-spoke-2" {
   admin_ranges         = local.all_subnet_cidrs
 }
 
+##############################################################
+#                              VPNs                          #
+##############################################################
 
 module "vpn-hub-to-spoke-1" {
   source  = "terraform-google-modules/vpn/google"
-  version = "~> 1.1.0"
+  version = "~> 1.1"
 
   project_id               = var.hub_project_id
   network                  = module.vpc-hub.network_name
@@ -90,7 +101,7 @@ module "vpn-hub-to-spoke-1" {
 
 module "vpn-hub-to-spoke-2" {
   source  = "terraform-google-modules/vpn/google"
-  version = "~> 1.1.0"
+  version = "~> 1.1"
 
   project_id               = var.hub_project_id
   network                  = module.vpc-hub.network_name
@@ -105,7 +116,7 @@ module "vpn-hub-to-spoke-2" {
 
 module "vpn-spoke-1-to-hub" {
   source  = "terraform-google-modules/vpn/google"
-  version = "~> 1.1.0"
+  version = "~> 1.1"
 
   project_id               = var.spoke_1_project_id
   network                  = module.vpc-spoke-1.network_name
@@ -121,7 +132,7 @@ module "vpn-spoke-1-to-hub" {
 
 module "vpn-spoke-2-to-hub" {
   source  = "terraform-google-modules/vpn/google"
-  version = "~> 1.1.0"
+  version = "~> 1.1"
 
   project_id               = var.spoke_2_project_id
   network                  = module.vpc-spoke-2.network_name

@@ -12,67 +12,51 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-resource "null_resource" "spoke-1-ranges-to-advertise" {
-  count = length(local.spoke_1_subnet_cidr_ranges)
-  triggers = {
-    range = element(local.spoke_1_subnet_cidr_ranges, count.index)
-  }
-}
-
-resource "null_resource" "spoke-2-ranges-to-advertise" {
-  count = length(local.spoke_2_subnet_cidr_ranges)
-  triggers = {
-    range = element(local.spoke_2_subnet_cidr_ranges, count.index)
-  }
-}
+##############################################################
+#                        Cloud Routers                       #
+##############################################################
 
 resource "google_compute_router" "hub-to-spoke-1-custom" {
-  count   = var.hub_custom_route_advertisement ? 1 : 0
+  count   = var.spoke_to_spoke_route_advertisement ? 1 : 0
   name    = "hub-to-spoke-1-custom"
   region  = element(local.hub_subnet_regions, 0)
   network = module.vpc-hub.network_name
   project = var.hub_project_id
   bgp {
-    asn                  = var.hub_bgp_asn
-    advertise_mode       = "CUSTOM"
-    advertised_groups    = ["ALL_SUBNETS"]
+    asn               = var.hub_bgp_asn
+    advertise_mode    = "CUSTOM"
+    advertised_groups = ["ALL_SUBNETS"]
 
     dynamic "advertised_ip_ranges" {
-      for_each = [for trigger in null_resource.spoke-1-ranges-to-advertise.*.triggers: {
-        range = trigger["range"]
-      }]
-
+      for_each = toset(local.spoke_2_subnet_cidr_ranges)
       content {
-        range = advertised_ip_ranges.value.range
+        range = advertised_ip_ranges.value
       }
     }
   }
 }
 
 resource "google_compute_router" "hub-to-spoke-2-custom" {
-  count   = var.hub_custom_route_advertisement ? 1 : 0
+  count   = var.spoke_to_spoke_route_advertisement ? 1 : 0
   name    = "hub-to-spoke-2-custom"
   region  = element(local.hub_subnet_regions, 1)
   network = module.vpc-hub.network_name
   project = var.hub_project_id
   bgp {
-    asn                  = var.hub_bgp_asn
-    advertise_mode       = "CUSTOM"
-    advertised_groups    = ["ALL_SUBNETS"]
+    asn               = var.hub_bgp_asn
+    advertise_mode    = "CUSTOM"
+    advertised_groups = ["ALL_SUBNETS"]
     dynamic "advertised_ip_ranges" {
-      for_each = [for trigger in null_resource.spoke-2-ranges-to-advertise.*.triggers: {
-        range = trigger["range"]
-      }]
-
+      for_each = toset(local.spoke_1_subnet_cidr_ranges)
       content {
-        range = advertised_ip_ranges.value.range
+        range = advertised_ip_ranges.value
       }
     }
   }
 }
 
 resource "google_compute_router" "hub-to-spoke-1-default" {
-  count   = var.hub_custom_route_advertisement ? 0 : 1
+  count   = var.spoke_to_spoke_route_advertisement ? 0 : 1
   name    = "hub-to-spoke-1-default"
   region  = element(local.hub_subnet_regions, 0)
   network = module.vpc-hub.network_name
@@ -82,7 +66,7 @@ resource "google_compute_router" "hub-to-spoke-1-default" {
   }
 }
 resource "google_compute_router" "hub-to-spoke-2-default" {
-  count   = var.hub_custom_route_advertisement ? 0 : 1
+  count   = var.spoke_to_spoke_route_advertisement ? 0 : 1
   name    = "hub-to-spoke-2-default"
   region  = element(local.hub_subnet_regions, 1)
   network = module.vpc-hub.network_name
