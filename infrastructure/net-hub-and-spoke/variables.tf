@@ -24,10 +24,6 @@ variable "spoke_2_project_id" {
   description = "Spoke 2 Project id."
 }
 
-variable "prefix" {
-  description = "Prefix for VPC names."
-}
-
 variable "spoke_to_spoke_route_advertisement" {
   description = "Use custom route advertisement in hub routers to advertise all spoke subnets."
   default     = true
@@ -56,7 +52,6 @@ variable "hub_subnets" {
     subnet_region = "europe-west1"
     },
     {
-
       subnet_name   = "subnet-b"
       subnet_ip     = "10.10.20.0/24"
       subnet_region = "europe-west2"
@@ -72,7 +67,6 @@ variable "spoke_1_subnets" {
     subnet_region = "asia-east1"
     },
     {
-
       subnet_name   = "subnet-b"
       subnet_ip     = "10.20.20.0/24"
       subnet_region = "asia-northeast1"
@@ -88,7 +82,6 @@ variable "spoke_2_subnets" {
     subnet_region = "us-west1"
     },
     {
-
       subnet_name   = "subnet-b"
       subnet_ip     = "10.30.20.0/24"
       subnet_region = "us-west2"
@@ -120,4 +113,3 @@ variable "forwarding_zone_server_addresses" {
   description = "Forwarding DNS Zone Server Addresses"
   default     = ["8.8.8.8", "8.8.4.4"]
 }
-       

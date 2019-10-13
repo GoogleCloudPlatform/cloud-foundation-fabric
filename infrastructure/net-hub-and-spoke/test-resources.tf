@@ -12,10 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+###############################################################################
+#                         Hub test VMs and DNS records                        #
+###############################################################################
+
 resource "google_compute_instance" "hub" {
   count        = length(var.hub_subnets)
   project      = var.hub_project_id
-  name         = "${var.prefix}-hub-${element(var.hub_subnets, count.index)["subnet_name"]}"
+  name         = "hub-${element(var.hub_subnets, count.index)["subnet_name"]}"
   machine_type = "f1-micro"
   zone         = "${element(local.hub_subnet_regions, count.index)}-b"
   tags         = ["ssh"]
@@ -43,10 +47,14 @@ resource "google_dns_record_set" "hub" {
   rrdatas = [google_compute_instance.hub[count.index].network_interface.0.network_ip]
 }
 
+###############################################################################
+#                         Spoke 1 test VMs and DNS records                    #
+###############################################################################
+
 resource "google_compute_instance" "spoke-1" {
   count        = length(var.spoke_1_subnets)
   project      = var.spoke_1_project_id
-  name         = "${var.prefix}-spoke-1-${element(var.spoke_1_subnets, count.index)["subnet_name"]}"
+  name         = "spoke-1-${element(var.spoke_1_subnets, count.index)["subnet_name"]}"
   machine_type = "f1-micro"
   zone         = "${element(local.spoke_1_subnet_regions, count.index)}-b"
   tags         = ["ssh"]
@@ -74,10 +82,14 @@ resource "google_dns_record_set" "spoke-1" {
   rrdatas = [google_compute_instance.spoke-1[count.index].network_interface.0.network_ip]
 }
 
+###############################################################################
+#                         Spoke 2 test VMs and DNS records                    #
+###############################################################################
+
 resource "google_compute_instance" "spoke-2" {
   count        = length(var.spoke_2_subnets)
   project      = var.spoke_2_project_id
-  name         = "${var.prefix}-spoke-2-${element(var.spoke_2_subnets, count.index)["subnet_name"]}"
+  name         = "spoke-2-${element(var.spoke_2_subnets, count.index)["subnet_name"]}"
   machine_type = "f1-micro"
   zone         = "${element(local.spoke_2_subnet_regions, count.index)}-b"
   tags         = ["ssh"]
@@ -103,4 +115,43 @@ resource "google_dns_record_set" "spoke-2" {
   managed_zone = module.hub-private-zone.name
 
   rrdatas = [google_compute_instance.spoke-2[count.index].network_interface.0.network_ip]
+}
+
+###############################################################################
+#                                 test outputs                                #
+###############################################################################
+
+output "test-instances" {
+  value = {
+    hub = {
+      instance_zones = zipmap(
+        google_compute_instance.hub.*.name,
+        google_compute_instance.hub.*.zone
+      )
+      instances_dns_names = zipmap(
+        google_compute_instance.hub.*.name,
+        google_dns_record_set.hub.*.name
+      )
+    }
+    spoke-1 = {
+      instances_zones = zipmap(
+        google_compute_instance.spoke-1.*.name,
+        google_compute_instance.spoke-1.*.zone
+      )
+      instances_dns_names = zipmap(
+        google_compute_instance.spoke-1.*.name,
+        google_dns_record_set.spoke-1.*.name
+      )
+    }
+    spoke-2 = {
+      instances_zones = zipmap(
+        google_compute_instance.spoke-2.*.name,
+        google_compute_instance.spoke-2.*.zone
+      )
+      instances_dns_names = zipmap(
+        google_compute_instance.spoke-2.*.name,
+        google_dns_record_set.spoke-2.*.name
+      )
+    }
+  }
 }

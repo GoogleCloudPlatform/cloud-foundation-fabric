@@ -14,41 +14,58 @@
 
 output "hub" {
   value = {
-    name = module.vpc-hub.network_name
-    subnets = zipmap(
+    network_name = module.vpc-hub.network_name
+    subnets_ips = zipmap(
       module.vpc-hub.subnets_names,
       module.vpc-hub.subnets_ips
     )
-    instances = zipmap(
-      google_compute_instance.hub.*.name,
-      google_compute_instance.hub.*.zone
+    subnets_regions = zipmap(
+      module.vpc-hub.subnets_names,
+      module.vpc-hub.subnets_regions
     )
+    privte_dns_zone = {
+      name   = module.hub-private-zone.name
+      domain = module.hub-private-zone.domain
+    }
+    forwarding_dns_zone = {
+      name   = module.hub-forwarding-zone.name
+      domain = module.hub-forwarding-zone.domain
+    }
   }
 }
 
 output "spoke-1" {
   value = {
-    name = module.vpc-spoke-1.network_name
-    subnets = zipmap(
+    network_name = module.vpc-spoke-1.network_name
+    subnets_ips = zipmap(
       module.vpc-spoke-1.subnets_names,
       module.vpc-spoke-1.subnets_ips
     )
-    instances = zipmap(
-      google_compute_instance.spoke-1.*.name,
-      google_compute_instance.spoke-1.*.zone
+    subnets_regions = zipmap(
+      module.vpc-spoke-1.subnets_names,
+      module.vpc-spoke-1.subnets_regions
     )
+    peering_dns_zone = {
+      name   = module.spoke-1-peering-zone.name
+      domain = module.spoke-1-peering-zone.domain
+    }
   }
 }
+
 output "spoke-2" {
   value = {
-    name = module.vpc-spoke-2.network_name
-    subnets = zipmap(
+    network_name = module.vpc-spoke-2.network_name
+    subnets_ips = zipmap(
       module.vpc-spoke-2.subnets_names,
       module.vpc-spoke-2.subnets_ips
     )
-    instances = zipmap(
-      google_compute_instance.spoke-2.*.name,
-      google_compute_instance.spoke-2.*.zone
+    subnets_regions = zipmap(
+      module.vpc-spoke-2.subnets_names,
+      module.vpc-spoke-2.subnets_regions
     )
+    peering_dns_zone = {
+      name   = module.spoke-2-peering-zone.name
+      domain = module.spoke-2-peering-zone.domain
+    }
   }
 }
