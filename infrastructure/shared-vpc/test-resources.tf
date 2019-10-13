@@ -84,12 +84,29 @@ resource "google_dns_record_set" "test_gke" {
 #                   GCE project MySQL test VM and DNS record                  #
 ###############################################################################
 
+# random password for MySQL
+
 resource "random_pet" "mysql_password" {}
+
+# MySQL password encrypted via KMS key
 
 data "google_kms_secret_ciphertext" "mysql_password" {
   crypto_key = module.host-kms.keys.mysql
   plaintext  = random_pet.mysql_password.id
 }
+
+# work around the password KMS ciphertext always refreshing, taint to refresh
+
+resource "null_resource" "mysql_password" {
+  triggers = {
+    ciphertext = data.google_kms_secret_ciphertext.mysql_password.ciphertext
+  }
+  lifecycle {
+    ignore_changes = [triggers]
+  }
+}
+
+# MySQL container on Container Optimized OS
 
 module "container-vm_cos-mysql" {
   # source  = "terraform-google-modules/container-vm/google//modules/cos-mysql"
@@ -103,7 +120,7 @@ module "container-vm_cos-mysql" {
   instance_count = "1"
   data_disk_size = "10"
   vm_tags        = ["ssh", "mysql"]
-  password       = data.google_kms_secret_ciphertext.mysql_password.ciphertext # random_pet.mysql_password.id
+  password       = null_resource.mysql_password.triggers.ciphertext
   # TODO(ludomagno): add a location output to the keyring module
   kms_data = {
     key        = "mysql"
