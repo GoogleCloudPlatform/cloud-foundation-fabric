@@ -26,3 +26,36 @@ SSH access to instances is configured via [OS Login](https://cloud.google.com/co
 The GCE instance is somewhat special, as it's configured to run a containerized MySQL server using the [`cos-mysql` module](https://github.com/terraform-google-modules/terraform-google-container-vm/tree/master/modules/cos-mysql), to show a practical example of using this module with KMS encryption for its secret, and to demonstrate how to define a custom firewall rule in the firewall module.
 
 The networking and GKE instances have `dig` and the `mysql` client installed via startup scripts, so that tests can be run as soon as they are created.
+
+<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|:----:|:-----:|:-----:|
+| billing\_account\_id | Billing account id used as default for new projects. | string | n/a | yes |
+| kms\_keyring\_location | Location used for the KMS keyring. | string | `"europe"` | no |
+| kms\_keyring\_name | Name used for the KMS keyring. | string | `"svpc-example"` | no |
+| oslogin\_admins\_gce | GCE project oslogin admin members, in IAM format. | list | `<list>` | no |
+| oslogin\_users\_gce | GCE project oslogin user members, in IAM format. | list | `<list>` | no |
+| owners\_gce | GCE project owners, in IAM format. | list | `<list>` | no |
+| owners\_gke | GKE project owners, in IAM format. | list | `<list>` | no |
+| owners\_host | Host project owners, in IAM format. | list | `<list>` | no |
+| prefix | Prefix used for resources that need unique names. | string | n/a | yes |
+| project\_services | Service APIs enabled by default in new projects. | list | `<list>` | no |
+| root\_node | Hierarchy node where projects will be created, 'organizations/org_id' or 'folders/folder_id'. | string | n/a | yes |
+| subnet\_secondary\_ranges | Shared VPC subnets secondary range definitions. | map | `<map>` | no |
+| subnets | Shared VPC subnet definitions. | list | `<list>` | no |
+
+## Outputs
+
+| Name | Description |
+|------|-------------|
+| mysql-root-password | Password for the test MySQL db root user. |
+| net-vpc-name | Shared VPC name |
+| net-vpc-subnets | Shared VPC subnets. |
+| project-gce | GCE service project. |
+| project-gke | GKE service project. |
+| project-host | VPC host project. |
+| test-instances | Test instance names. |
+
+<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
