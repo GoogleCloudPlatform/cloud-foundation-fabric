@@ -28,9 +28,9 @@ variable "prefix" {
   description = "Prefix for VPC names."
 }
 
-variable "hub_custom_route_advertisement" {
+variable "spoke_to_spoke_route_advertisement" {
   description = "Use custom route advertisement in hub routers to advertise all spoke subnets."
-  default     = false
+  default     = true
 }
 
 variable "hub_bgp_asn" {
@@ -96,3 +96,28 @@ variable "spoke_2_subnets" {
   ]
 }
 
+variable "private_dns_zone_name" {
+  description = "Private DNS Zone Name."
+  default     = "gcp-private"
+}
+
+variable "private_dns_zone_domain" {
+  description = "Private DNS Zone Domain."
+  default     = "gcp.private"
+}
+
+variable "forwarding_dns_zone_name" {
+  description = "Forwarding DNS Zone Name."
+  default     = "on-prem-private"
+}
+
+variable "forwarding_dns_zone_domain" {
+  description = "Forwarding DNS Zone Domain."
+  default     = "on-prem.private"
+}
+
+variable "forwarding_zone_server_addresses" {
+  description = "Forwarding DNS Zone Server Addresses"
+  default     = ["8.8.8.8", "8.8.4.4"]
+}
+       

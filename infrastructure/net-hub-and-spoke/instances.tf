@@ -25,7 +25,7 @@ resource "google_compute_instance" "hub" {
     }
   }
   network_interface {
-    subnetwork    = element(module.vpc-hub.subnets_self_links, count.index)
+    subnetwork = element(module.vpc-hub.subnets_self_links, count.index)
     access_config {}
   }
 }
@@ -43,7 +43,7 @@ resource "google_compute_instance" "spoke-1" {
     }
   }
   network_interface {
-    subnetwork    = element(module.vpc-spoke-1.subnets_self_links, count.index)
+    subnetwork = element(module.vpc-spoke-1.subnets_self_links, count.index)
     access_config {}
   }
 }
@@ -61,7 +61,7 @@ resource "google_compute_instance" "spoke-2" {
     }
   }
   network_interface {
-    subnetwork    = element(module.vpc-spoke-2.subnets_self_links, count.index)
+    subnetwork = element(module.vpc-spoke-2.subnets_self_links, count.index)
     access_config {}
   }
 }
