@@ -99,13 +99,13 @@ module "net-vpc-firewall" {
 
 # Shared VPC access
 
-module "network_fabric-net-svpc-access" {
+module "net-svpc-access" {
   source              = "terraform-google-modules/network/google//modules/fabric-net-svpc-access"
   version             = "1.4.0"
   host_project_id     = module.project-svpc-host.project_id
   service_project_num = 2
   service_project_ids = [
-    module.project-service-gce.number, module.project-service-gke.number
+    module.project-service-gce.project_id, module.project-service-gke.project_id
   ]
   host_subnets = ["gce", "gke"]
   host_subnet_regions = compact([

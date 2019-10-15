@@ -50,4 +50,9 @@ locals {
     module.net-vpc-host.subnets_names,
     module.net-vpc-host.subnets_regions
   )
+  # create an implicit dependency on shared VPC service project registration
+  service_projects = zipmap(
+    module.net-svpc-access.service_projects,
+    module.net-svpc-access.service_projects
+  )
 }

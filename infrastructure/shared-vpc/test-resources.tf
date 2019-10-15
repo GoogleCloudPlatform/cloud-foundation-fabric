@@ -51,6 +51,7 @@ resource "google_dns_record_set" "test_net" {
 ###############################################################################
 
 resource "google_compute_instance" "test-gke" {
+  depends_on   = [module.net-svpc-access]
   project      = module.project-service-gke.project_id
   name         = "test-gke"
   machine_type = "f1-micro"
@@ -112,7 +113,7 @@ module "container-vm_cos-mysql" {
   # source         = "terraform-google-modules/container-vm/google//modules/cos-mysql"
   # version        = "1.0.4"
   source         = "github.com/terraform-google-modules/terraform-google-container-vm//modules/cos-mysql?ref=a8c693d"
-  project_id     = module.project-service-gce.project_id
+  project_id     = lookup(local.service_projects, module.project-service-gce.project_id, "")
   region         = "${lookup(local.net_subnet_regions, "gce", "")}"
   zone           = "${lookup(local.net_subnet_regions, "gce", "")}-b"
   network        = module.net-vpc-host.network_self_link
