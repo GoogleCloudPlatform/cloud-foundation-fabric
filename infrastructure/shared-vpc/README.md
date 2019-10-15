@@ -29,10 +29,10 @@ The networking and GKE instances have `dig` and the `mysql` client installed via
 
 ## Destroying
 
-TODO(ludoo): mention the service project / host project dependency and
-             successive apply phases
 TODO(ludoo): mention the need to remove the KMS key resource from state
             `tf state rm module.host-kms.google_kms_crypto_key.key_ephemeral[0]`
+TOFO(ludoo): mention the `Cannot disable project as a shared VPC host because it has active service projects` error due to deactivation lag and the need to destroy a few times
+
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Inputs
