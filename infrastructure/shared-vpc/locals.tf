@@ -26,7 +26,7 @@ locals {
       "serviceAccount:${module.project-service-gke.cloudsvc_service_account}"
     ]
   )
-  # GKE ssubnet primary and secondary ranges, used in firewall rules
+  # GKE subnet primary and secondary ranges, used in firewall rules
   # use lookup to prevent failure on successive destroys
   net_gke_ip_ranges = compact([
     lookup(local.net_subnet_ips, "gke", ""),
@@ -50,7 +50,7 @@ locals {
     module.net-vpc-host.subnets_names,
     module.net-vpc-host.subnets_regions
   )
-  # create an implicit dependency on shared VPC service project registration
+  # use svpc access module outputs to create an implicit dependency on service project registration
   service_projects = zipmap(
     module.net-svpc-access.service_projects,
     module.net-svpc-access.service_projects
