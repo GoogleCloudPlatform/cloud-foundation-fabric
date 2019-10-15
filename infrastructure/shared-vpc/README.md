@@ -27,6 +27,13 @@ The GCE instance is somewhat special, as it's configured to run a containerized 
 
 The networking and GKE instances have `dig` and the `mysql` client installed via startup scripts, so that tests can be run as soon as they are created.
 
+## Destroying
+
+TODO(ludoo): mention the service project / host project dependency and
+             successive apply phases
+TODO(ludoo): mention the need to remove the KMS key resource from state
+            `tf state rm module.host-kms.google_kms_crypto_key.key_ephemeral[0]`
+
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Inputs
 

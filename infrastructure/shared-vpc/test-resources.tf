@@ -109,14 +109,14 @@ resource "null_resource" "mysql_password" {
 # MySQL container on Container Optimized OS
 
 module "container-vm_cos-mysql" {
-  # source  = "terraform-google-modules/container-vm/google//modules/cos-mysql"
-  # version = "1.0.3"
-  source         = "github.com/terraform-google-modules/terraform-google-container-vm//modules/cos-mysql?ref=50ef682"
+  # source         = "terraform-google-modules/container-vm/google//modules/cos-mysql"
+  # version        = "1.0.4"
+  source         = "github.com/terraform-google-modules/terraform-google-container-vm//modules/cos-mysql?ref=a8c693d"
   project_id     = module.project-service-gce.project_id
-  region         = "${local.net_subnet_regions.gce}"
-  zone           = "${local.net_subnet_regions.gce}-b"
+  region         = "${lookup(local.net_subnet_regions, "gce", "")}"
+  zone           = "${lookup(local.net_subnet_regions, "gce", "")}-b"
   network        = module.net-vpc-host.network_self_link
-  subnetwork     = local.net_subnet_links.gke
+  subnetwork     = lookup(local.net_subnet_links, "gke", "")
   instance_count = "1"
   data_disk_size = "10"
   vm_tags        = ["ssh", "mysql"]

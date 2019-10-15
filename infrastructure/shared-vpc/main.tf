@@ -12,44 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-locals {
-  net_gce_users = concat(
-    var.owners_gce,
-    ["serviceAccount:${module.project-service-gce.cloudsvc_service_account}"]
-  )
-  net_gke_users = concat(
-    var.owners_gke,
-    [
-      "serviceAccount:${module.project-service-gke.gke_service_account}",
-      "serviceAccount:${module.project-service-gke.cloudsvc_service_account}"
-    ]
-  )
-  net_gke_ip_ranges = [
-    local.net_subnet_ips.gke,
-    element([
-      for range in var.subnet_secondary_ranges.gke :
-      range.ip_cidr_range if range.range_name == "pods"
-    ], 0)
-  ]
-  net_subnet_ips = zipmap(
-    module.net-vpc-host.subnets_names,
-    module.net-vpc-host.subnets_ips
-  )
-  net_subnet_links = zipmap(
-    module.net-vpc-host.subnets_names,
-    module.net-vpc-host.subnets_self_links
-  )
-  net_subnet_regions = zipmap(
-    module.net-vpc-host.subnets_names,
-    module.net-vpc-host.subnets_regions
-  )
-}
-
 ###############################################################################
 #                          Host and service projects                          #
 ###############################################################################
 
-# VPC host project
+# host project
 
 module "project-svpc-host" {
   source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
@@ -97,7 +64,7 @@ module "project-service-gke" {
 
 module "net-vpc-host" {
   source           = "terraform-google-modules/network/google"
-  version          = "1.3.0"
+  version          = "1.4.0"
   project_id       = module.project-svpc-host.project_id
   network_name     = "vpc-shared"
   shared_vpc_host  = true
@@ -109,13 +76,12 @@ module "net-vpc-host" {
 # Shared VPC firewall
 
 module "net-vpc-firewall" {
-  # source               = "terraform-google-modules/network/google//modules/fabric-net-firewall"
-  # version              = "1.4.0"
-  source               = "github.com/terraform-google-modules/terraform-google-network//modules/fabric-net-firewall?ref=52e49a9"
+  source               = "terraform-google-modules/network/google//modules/fabric-net-firewall"
+  version              = "1.4.0"
   project_id           = module.project-svpc-host.project_id
   network              = module.net-vpc-host.network_name
   admin_ranges_enabled = true
-  admin_ranges         = [lookup(local.net_subnet_ips, "networking")]
+  admin_ranges         = compact([lookup(local.net_subnet_ips, "networking", "")])
   custom_rules = {
     ingress-mysql = {
       description          = "Allow incoming connections on the MySQL port from GKE addresses."
@@ -135,16 +101,17 @@ module "net-vpc-firewall" {
 
 module "network_fabric-net-svpc-access" {
   source              = "terraform-google-modules/network/google//modules/fabric-net-svpc-access"
-  version             = "1.3.0"
+  version             = "1.4.0"
   host_project_id     = module.project-svpc-host.project_id
   service_project_num = 2
   service_project_ids = [
     module.project-service-gce.number, module.project-service-gke.number
   ]
   host_subnets = ["gce", "gke"]
-  host_subnet_regions = [
-    local.net_subnet_regions["gce"], local.net_subnet_regions["gke"]
-  ]
+  host_subnet_regions = compact([
+    lookup(local.net_subnet_regions, "gce", ""),
+    lookup(local.net_subnet_regions, "gke", "")
+  ])
   host_subnet_users = {
     gce = join(",", local.net_gce_users)
     gke = join(",", local.net_gke_users)
@@ -176,12 +143,14 @@ module "host-dns" {
 ################################################################################
 
 module "host-kms" {
-  source             = "terraform-google-modules/kms/google"
-  version            = "1.0.0"
+  # source             = "terraform-google-modules/kms/google"
+  # version            = "1.1.0"
+  source             = "github.com/terraform-google-modules/terraform-google-kms"
   project_id         = module.project-svpc-host.project_id
   location           = var.kms_keyring_location
   keyring            = var.kms_keyring_name
   keys               = ["mysql"]
   set_decrypters_for = ["mysql"]
   decrypters         = ["serviceAccount:${module.project-service-gce.gce_service_account}"]
+  prevent_destroy    = false
 }
