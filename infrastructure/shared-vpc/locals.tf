@@ -26,7 +26,7 @@ locals {
       "serviceAccount:${module.project-service-gke.cloudsvc_service_account}"
     ]
   )
-  # GKE service project primary and secondary ranges, used in firewall rules
+  # GKE ssubnet primary and secondary ranges, used in firewall rules
   # use lookup to prevent failure on successive destroys
   net_gke_ip_ranges = compact([
     lookup(local.net_subnet_ips, "gke", ""),
