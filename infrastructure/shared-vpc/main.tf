@@ -143,9 +143,8 @@ module "host-dns" {
 ################################################################################
 
 module "host-kms" {
-  # source             = "terraform-google-modules/kms/google"
-  # version            = "1.1.0"
-  source             = "github.com/terraform-google-modules/terraform-google-kms"
+  source             = "terraform-google-modules/kms/google"
+  version            = "1.1.0"
   project_id         = module.project-svpc-host.project_id
   location           = var.kms_keyring_location
   keyring            = var.kms_keyring_name

@@ -110,9 +110,8 @@ resource "null_resource" "mysql_password" {
 # MySQL container on Container Optimized OS
 
 module "container-vm_cos-mysql" {
-  # source         = "terraform-google-modules/container-vm/google//modules/cos-mysql"
-  # version        = "1.0.4"
-  source         = "github.com/terraform-google-modules/terraform-google-container-vm//modules/cos-mysql?ref=a8c693d"
+  source         = "terraform-google-modules/container-vm/google//modules/cos-mysql"
+  version        = "1.0.4"
   project_id     = lookup(local.service_projects, module.project-service-gce.project_id, "")
   region         = "${lookup(local.net_subnet_regions, "gce", "")}"
   zone           = "${lookup(local.net_subnet_regions, "gce", "")}-b"
