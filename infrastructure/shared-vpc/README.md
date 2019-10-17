@@ -29,10 +29,7 @@ The networking and GKE instances have `dig` and the `mysql` client installed via
 
 ## Destroying
 
-TODO(ludoo): mention the need to remove the KMS key resource from state
-            `tf state rm module.host-kms.google_kms_crypto_key.key_ephemeral[0]`
-TOFO(ludoo): mention the `Cannot disable project as a shared VPC host because it has active service projects` error due to deactivation lag and the need to destroy a few times
-
+There's a minor glitch that can surface running `terraform destroy`, with a simple workaround. The glitch is due to a delay between the API reporting service project removal from the Shared VPC as successful (`google_compute_shared_vpc_service_project` resources destroyed), and the Shared VPC resource being aligned with that event. This results in an error that prevents disabling the Shared VPC feature: `Error disabling Shared VPC Host [...] Cannot disable project as a shared VPC host because it has active service projects.`. The workaround is to run `terraform destroy` again after a few seconds, giving the Shared VPC resource time to be in sync with service project removal.
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Inputs
