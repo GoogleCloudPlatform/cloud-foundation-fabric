@@ -19,19 +19,26 @@ steps:
     args:
       - -c
       - |
-        python -m pip install --user -r tests/requirements.txt &&
+        python -m pip install --user --no-warn-script-location -r tests/requirements.txt &&
         wget https://releases.hashicorp.com/terraform/${_TERRAFORM_VERSION}/terraform_${_TERRAFORM_VERSION}_linux_amd64.zip &&
         unzip terraform_${_TERRAFORM_VERSION}_linux_amd64.zip -d /builder/home/.local/bin &&
         rm terraform_${_TERRAFORM_VERSION}_linux_amd64.zip &&
         chmod 755 /builder/home/.local/bin/terraform
+  # TODO(ludoo): split into two triggers with different filters
   - name: python:3.6-alpine
-    id: test
-    entrypoint: python
+    id: test-foundations
+    entrypoint: pytest
     args:
-      - -m
-      - pytest
       - -v
-      - tests
+      - tests/foundations
+    env:
+      - PATH=/usr/local/bin:/usr/bin:/bin:/builder/home/.local/bin
+  - name: python:3.6-alpine
+    id: test-infrastructure
+    entrypoint: pytest
+    args:
+      - -v
+      - tests/infrastructure
     env:
       - PATH=/usr/local/bin:/usr/bin:/bin:/builder/home/.local/bin
 
