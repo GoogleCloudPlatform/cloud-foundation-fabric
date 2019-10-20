@@ -12,25 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-output "vpc_name" {
-  description = "Shared VPC name"
-  value       = module.net-vpc-host.network_name
-}
+"Plan fixture."
 
-output "vpc_subnets" {
-  description = "Shared VPC subnets."
-  value       = local.net_subnet_ips
-}
+import os
 
-output "host_project_id" {
-  description = "VPC host project id."
-  value       = module.project-svpc-host.project_id
-}
+import pytest
 
-output "service_project_ids" {
-  description = "Service project ids."
-  value = {
-    gce = module.project-service-gce.project_id
-    gke = module.project-service-gke.project_id
-  }
-}
+
+_TFDIR = os.path.sep.join(os.path.abspath(__file__).split(os.path.sep)[-3:-1])
+
+
+@pytest.fixture(scope='package')
+def plan(plan):
+  return plan(_TFDIR)

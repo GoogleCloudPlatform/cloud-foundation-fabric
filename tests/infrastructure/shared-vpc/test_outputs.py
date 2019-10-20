@@ -12,25 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-output "vpc_name" {
-  description = "Shared VPC name"
-  value       = module.net-vpc-host.network_name
-}
+"Test root module outputs."
 
-output "vpc_subnets" {
-  description = "Shared VPC subnets."
-  value       = local.net_subnet_ips
-}
 
-output "host_project_id" {
-  description = "VPC host project id."
-  value       = module.project-svpc-host.project_id
-}
+def test_vpc_ranges(plan):
+  "VPC ranges should match input variables."
+  ranges = plan.outputs['vpc_subnets']
+  for subnet in plan.variables['subnets']:
+    assert ranges[subnet['subnet_name']] == subnet['subnet_ip']
 
-output "service_project_ids" {
-  description = "Service project ids."
-  value = {
-    gce = module.project-service-gce.project_id
-    gke = module.project-service-gke.project_id
-  }
-}
+
+def test_project_ids(plan):
+  "Project ids should use prefix and match expected values."
+  prefix = plan.variables['prefix']
+  assert plan.outputs['host_project_id'] == prefix + '-vpc-host'
+  assert plan.outputs['service_project_ids']['gce'] == prefix + '-gce'
