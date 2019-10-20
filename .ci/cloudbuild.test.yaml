@@ -19,17 +19,15 @@ steps:
     args:
       - -c
       - |
-        python -m pip install --user -r tests/requirements.txt &&
+        python -m pip install --user --no-warn-script-location -r tests/requirements.txt &&
         wget https://releases.hashicorp.com/terraform/${_TERRAFORM_VERSION}/terraform_${_TERRAFORM_VERSION}_linux_amd64.zip &&
         unzip terraform_${_TERRAFORM_VERSION}_linux_amd64.zip -d /builder/home/.local/bin &&
         rm terraform_${_TERRAFORM_VERSION}_linux_amd64.zip &&
         chmod 755 /builder/home/.local/bin/terraform
   - name: python:3.6-alpine
     id: test
-    entrypoint: python
+    entrypoint: pytest
     args:
-      - -m
-      - pytest
       - -v
       - tests
     env:
