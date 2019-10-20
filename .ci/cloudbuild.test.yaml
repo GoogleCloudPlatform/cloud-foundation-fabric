@@ -24,15 +24,23 @@ steps:
         unzip terraform_${_TERRAFORM_VERSION}_linux_amd64.zip -d /builder/home/.local/bin &&
         rm terraform_${_TERRAFORM_VERSION}_linux_amd64.zip &&
         chmod 755 /builder/home/.local/bin/terraform
+  # TODO(ludoo): split into two triggers with different filters
   - name: python:3.6-alpine
-    id: test
+    id: test-foundations
     entrypoint: pytest
     args:
       - -v
-      - tests
+      - tests/foundations
     env:
       - PATH=/usr/local/bin:/usr/bin:/bin:/builder/home/.local/bin
-      - PYTHONDONTWRITEBYTECODE=1
+  - name: python:3.6-alpine
+    id: test-infrastructure
+    entrypoint: pytest
+    args:
+      - -v
+      - tests/infrastructure
+    env:
+      - PATH=/usr/local/bin:/usr/bin:/bin:/builder/home/.local/bin
 
 substitutions:
   _TERRAFORM_VERSION: 0.12.8
