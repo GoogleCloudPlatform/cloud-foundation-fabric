@@ -54,12 +54,11 @@ There's a minor glitch that can surface running `terraform destroy`, with a simp
 
 | Name | Description |
 |------|-------------|
+| host\_project\_id | VPC host project id. |
 | mysql-root-password | Password for the test MySQL db root user. |
-| net-vpc-name | Shared VPC name |
-| net-vpc-subnets | Shared VPC subnets. |
-| project-gce | GCE service project. |
-| project-gke | GKE service project. |
-| project-host | VPC host project. |
+| service\_project\_ids | Service project ids. |
 | test-instances | Test instance names. |
+| vpc\_name | Shared VPC name |
+| vpc\_subnets | Shared VPC subnets. |
 
 <!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
