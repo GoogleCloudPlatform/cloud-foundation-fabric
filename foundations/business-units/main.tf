@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# TODO(averbukh): simplify log-sink parameters once https://github.com/terraform-google-modules/terraform-google-log-export/issues/28 is done. 
+# TODO(averbukh): simplify log-sink parameters once https://github.com/terraform-google-modules/terraform-google-log-export/issues/28 is done.
 
 locals {
   parent_numeric_id             = element(split("/", var.root_node), 1)
@@ -39,7 +39,7 @@ module "shared-folder" {
 
 module "project-tf" {
   source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
-  version         = "3.2.0"
+  version         = "4.0.0"
   parent          = module.shared-folder.id
   billing_account = var.billing_account_id
   prefix          = var.prefix
@@ -138,7 +138,7 @@ module "business-unit-3-folders" {
 
 module "project-audit" {
   source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
-  version         = "3.2.0"
+  version         = "4.0.0"
   parent          = module.shared-folder.id
   billing_account = var.billing_account_id
   prefix          = var.prefix
@@ -180,7 +180,7 @@ module "log-sink-audit" {
 
 module "project-shared-resources" {
   source                 = "terraform-google-modules/project-factory/google//modules/fabric-project"
-  version                = "3.2.0"
+  version                = "4.0.0"
   parent                 = module.shared-folder.id
   billing_account        = var.billing_account_id
   prefix                 = var.prefix
