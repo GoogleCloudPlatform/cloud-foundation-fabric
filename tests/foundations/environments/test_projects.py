@@ -30,14 +30,15 @@ def test_project_resource(plan, project_modules):
   root_node = plan.variables['root_node'].split('/')[1]
   billing_account = plan.variables['billing_account_id']
   for name, mod in project_modules.items():
-    resource = mod['%s.google_project.project' % name]
+    resource = mod.resources['google_project.project']
     assert resource['values']['folder_id'] == root_node
     assert resource['values']['billing_account'] == billing_account
 
 
 def test_project_services(plan, project_modules):
   "Project service resource must enable APIs specified in the variable."
-  services = plan.variables['project_services']
-  for name, mod in project_modules.items():
-    resource = mod['%s.google_project_services.services[0]' % name]
-    assert resource['values']['services'] == services
+  num_services = len(plan.variables['project_services'])
+  for mod in project_modules.values():
+    project_services = [r for r in mod.child_modules['module.project_services'].resources if r.startswith(
+        'google_project_service.project_services')]
+    assert len(project_services) == num_services
