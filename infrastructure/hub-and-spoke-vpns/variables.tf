@@ -62,12 +62,12 @@ variable "hub_subnets" {
 variable "spoke_1_subnets" {
   description = "Spoke 1 VPC subnets configuration."
   default = [{
-    subnet_name   = "subnet-a"
+    subnet_name   = "spoke-1-subnet-a"
     subnet_ip     = "10.20.10.0/24"
     subnet_region = "europe-west1"
     },
     {
-      subnet_name   = "subnet-b"
+      subnet_name   = "spoke-1-subnet-b"
       subnet_ip     = "10.20.20.0/24"
       subnet_region = "europe-west2"
     },
@@ -77,12 +77,12 @@ variable "spoke_1_subnets" {
 variable "spoke_2_subnets" {
   description = "Spoke 2 VPC subnets configuration."
   default = [{
-    subnet_name   = "subnet-a"
+    subnet_name   = "spoke-2-subnet-a"
     subnet_ip     = "10.30.10.0/24"
     subnet_region = "europe-west1"
     },
     {
-      subnet_name   = "subnet-b"
+      subnet_name   = "spoke-2-subnet-b"
       subnet_ip     = "10.30.20.0/24"
       subnet_region = "europe-west2"
     },

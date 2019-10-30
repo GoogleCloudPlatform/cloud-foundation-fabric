@@ -185,6 +185,7 @@ module "vpn-hub-to-spoke-1" {
   project_id               = var.hub_project_id
   network                  = module.vpc-hub.network_name
   region                   = element(local.hub_subnet_regions, 0)
+  gateway_name             = "hub-to-spoke-1-gtw"
   tunnel_name_prefix       = "hub-to-spoke-1"
   peer_ips                 = [module.vpn-spoke-1-to-hub.gateway_ip]
   bgp_cr_session_range     = ["169.254.0.1/30"]
@@ -200,6 +201,7 @@ module "vpn-hub-to-spoke-2" {
   project_id               = var.hub_project_id
   network                  = module.vpc-hub.network_name
   region                   = element(local.hub_subnet_regions, 1)
+  gateway_name             = "hub-to-spoke-2-gtw"
   tunnel_name_prefix       = "hub-to-spoke-2"
   peer_ips                 = [module.vpn-spoke-2-to-hub.gateway_ip]
   bgp_cr_session_range     = ["169.254.1.1/30"]
@@ -215,6 +217,7 @@ module "vpn-spoke-1-to-hub" {
   project_id               = var.spoke_1_project_id
   network                  = module.vpc-spoke-1.network_name
   region                   = element(local.spoke_1_subnet_regions, 0)
+  gateway_name             = "spoke-1-to-hub-gtw"
   tunnel_name_prefix       = "spoke-1-to-hub"
   shared_secret            = module.vpn-hub-to-spoke-1.ipsec_secret-dynamic[0]
   peer_ips                 = [module.vpn-hub-to-spoke-1.gateway_ip]
@@ -231,6 +234,7 @@ module "vpn-spoke-2-to-hub" {
   project_id               = var.spoke_2_project_id
   network                  = module.vpc-spoke-2.network_name
   region                   = element(local.spoke_2_subnet_regions, 1)
+  gateway_name             = "spoke-2-to-hub-gtw"
   tunnel_name_prefix       = "spoke-2-to-hub"
   shared_secret            = module.vpn-hub-to-spoke-2.ipsec_secret-dynamic[0]
   peer_ips                 = [module.vpn-hub-to-spoke-2.gateway_ip]

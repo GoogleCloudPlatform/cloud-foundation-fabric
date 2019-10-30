@@ -122,6 +122,7 @@ resource "google_dns_record_set" "spoke-2" {
 ###############################################################################
 
 output "test-instances" {
+  description = "Test instance attributes."
   value = {
     hub = {
       instance_zones = zipmap(
