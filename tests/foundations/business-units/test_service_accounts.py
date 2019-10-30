@@ -27,9 +27,8 @@ def test_accounts(plan, mod):
   "One service account per environment should be created."
   environments = plan.variables['environments']
   prefix = plan.variables['prefix']
-  resources = [v for k, v in mod.items() if '.google_service_account.' in k]
+  resources = [
+      v for k, v in mod.resources.items() if 'google_service_account.' in k]
   assert len(resources) == len(environments)
   assert sorted([res['values']['account_id'] for res in resources]) == sorted([
       '%s-%s' % (prefix, env) for env in environments])
-
-  

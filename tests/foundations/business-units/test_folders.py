@@ -21,8 +21,7 @@ import pytest
 def test_shared_folder(plan):
   "Shared folder resource attributes must match variables."
   root_node = plan.variables['root_node']
-  resource = plan.modules['module.shared-folder'].get(
-      'module.shared-folder.google_folder.folders[0]')
+  resource = plan.modules['module.shared-folder'].resources['google_folder.folders[0]']
   assert resource['values']['parent'] == root_node
   assert resource['values']['display_name'] == 'shared'
 

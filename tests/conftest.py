@@ -30,6 +30,6 @@ def plan():
     tf = tftest.TerraformTest(tfdir, _BASEDIR,
                               os.environ.get('TERRAFORM', 'terraform'))
     tf.setup(extra_files=['tests/{}/terraform.tfvars'.format(tfdir)])
-    return tf.plan_out(parsed=True)
+    return tf.plan(output=True)
 
   return run_plan

@@ -26,14 +26,14 @@ def mod(plan):
 def test_host_vpc(plan):
   "Test that the vpc project is set as shared vpc host."
   mod = plan.modules['module.net-vpc-host']
-  resources = [v['values'] for v in mod.values() if v['type'] ==
+  resources = [v['values'] for v in mod.resources.values() if v['type'] ==
                'google_compute_shared_vpc_host_project']
   assert resources[0]['project'] == plan.outputs['host_project_id']
 
 
 def test_service_projects(plan, mod):
   "Test that service projects are registered with the shared vpc."
-  resources = [v['values'] for v in mod.values() if v['type'] ==
+  resources = [v['values'] for v in mod.resources.values() if v['type'] ==
                'google_compute_shared_vpc_service_project']
   assert len(resources) == 2
   assert set([r['host_project'] for r in resources]) == set(
@@ -44,7 +44,7 @@ def test_service_projects(plan, mod):
 
 def test_subnet_users(plan, mod):
   "Test that the network user role is assigned on subnets."
-  resources = [v['values'] for v in mod.values() if v['type'] ==
+  resources = [v['values'] for v in mod.resources.values() if v['type'] ==
                'google_compute_subnetwork_iam_binding']
   assert len(resources) == 2
   assert set([r['project'] for r in resources]) == set(
@@ -54,7 +54,7 @@ def test_subnet_users(plan, mod):
 
 def test_service_agent(plan, mod):
   "Test that the service agent role is assigned for gke only."
-  resources = [v['values'] for v in mod.values() if v['type'] ==
+  resources = [v['values'] for v in mod.resources.values() if v['type'] ==
                'google_project_iam_binding']
   assert resources[0] == {
       'project': plan.outputs['host_project_id'],
