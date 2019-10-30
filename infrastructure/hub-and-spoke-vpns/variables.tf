@@ -64,12 +64,12 @@ variable "spoke_1_subnets" {
   default = [{
     subnet_name   = "subnet-a"
     subnet_ip     = "10.20.10.0/24"
-    subnet_region = "asia-east1"
+    subnet_region = "europe-west1"
     },
     {
       subnet_name   = "subnet-b"
       subnet_ip     = "10.20.20.0/24"
-      subnet_region = "asia-northeast1"
+      subnet_region = "europe-west2"
     },
   ]
 }
@@ -79,12 +79,12 @@ variable "spoke_2_subnets" {
   default = [{
     subnet_name   = "subnet-a"
     subnet_ip     = "10.30.10.0/24"
-    subnet_region = "us-west1"
+    subnet_region = "europe-west1"
     },
     {
       subnet_name   = "subnet-b"
       subnet_ip     = "10.30.20.0/24"
-      subnet_region = "us-west2"
+      subnet_region = "europe-west2"
     },
   ]
 }
