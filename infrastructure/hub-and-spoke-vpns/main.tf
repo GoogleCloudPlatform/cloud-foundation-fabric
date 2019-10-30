@@ -166,7 +166,7 @@ resource "google_compute_router" "spoke-1" {
 }
 resource "google_compute_router" "spoke-2" {
   name    = "spoke-2"
-  region  = element(local.spoke_2_subnet_regions, 0)
+  region  = element(local.spoke_2_subnet_regions, 1)
   network = module.vpc-spoke-2.network_name
   project = var.spoke_2_project_id
   bgp {
@@ -230,7 +230,7 @@ module "vpn-spoke-2-to-hub" {
 
   project_id               = var.spoke_2_project_id
   network                  = module.vpc-spoke-2.network_name
-  region                   = element(local.spoke_2_subnet_regions, 0)
+  region                   = element(local.spoke_2_subnet_regions, 1)
   tunnel_name_prefix       = "spoke-2-to-hub"
   shared_secret            = module.vpn-hub-to-spoke-2.ipsec_secret-dynamic[0]
   peer_ips                 = [module.vpn-hub-to-spoke-2.gateway_ip]
@@ -269,27 +269,53 @@ module "hub-forwarding-zone" {
   target_name_server_addresses       = var.forwarding_zone_server_addresses
 }
 
-module "spoke-1-peering-zone" {
+module "spoke-1-peering-zone-to-hub-private-zone" {
   source  = "terraform-google-modules/cloud-dns/google"
   version = "~> 2.0"
 
   project_id = var.spoke_1_project_id
   type       = "peering"
-  name       = "${var.private_dns_zone_name}-spoke-1-peering"
+  name       = "${var.private_dns_zone_name}-spoke-1-peering-to-hub-private"
   domain     = var.private_dns_zone_domain
 
   private_visibility_config_networks = [module.vpc-spoke-1.network_self_link]
   target_network                     = module.vpc-hub.network_self_link
 }
 
-module "spoke-2-peering-zone" {
+module "spoke-2-peering-zone-to-hub-private-zone" {
   source  = "terraform-google-modules/cloud-dns/google"
   version = "~> 2.0"
 
   project_id = var.spoke_2_project_id
   type       = "peering"
-  name       = "${var.private_dns_zone_name}-spoke-2-peering"
+  name       = "${var.private_dns_zone_name}-spoke-2-peering-to-hub-private"
   domain     = var.private_dns_zone_domain
+
+  private_visibility_config_networks = [module.vpc-spoke-2.network_self_link]
+  target_network                     = module.vpc-hub.network_self_link
+}
+
+module "spoke-1-peering-zone-to-hub-forwarding-zone" {
+  source  = "terraform-google-modules/cloud-dns/google"
+  version = "~> 2.0"
+
+  project_id = var.spoke_1_project_id
+  type       = "peering"
+  name       = "${var.private_dns_zone_name}-spoke-1-peering-to-hub-forwarding"
+  domain     = var.forwarding_dns_zone_domain
+
+  private_visibility_config_networks = [module.vpc-spoke-1.network_self_link]
+  target_network                     = module.vpc-hub.network_self_link
+}
+
+module "spoke-2-peering-zone-to-hub-forwarding-zone" {
+  source  = "terraform-google-modules/cloud-dns/google"
+  version = "~> 2.0"
+
+  project_id = var.spoke_2_project_id
+  type       = "peering"
+  name       = "${var.private_dns_zone_name}-spoke-2-peering-to-hub-forwarding"
+  domain     = var.forwarding_dns_zone_domain
 
   private_visibility_config_networks = [module.vpc-spoke-2.network_self_link]
   target_network                     = module.vpc-hub.network_self_link
