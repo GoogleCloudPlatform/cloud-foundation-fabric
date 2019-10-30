@@ -1,7 +1,9 @@
 # Hub and Spoke VPNs
 
-This sample creates a simple **Hub and Spoke VPNs** architecture, where network connects every location (VPC Network) through a single intermediary location called a hub. 
+This sample creates a simple **Hub and Spoke VPNs** architecture, where network connects every location (VPC Network) through a single intermediary location called a hub via IPsec VPNs. 
+
 The benefits of this topology include:
+
 - Network/Security Admin manages Central Services Project (Hub).
 - Central services and tools deployed in Central Services Project (Hub) for use by all Service Projects (Spokes).
 - Network/Security Admin hands over spoke Projects to respective team who then have full autonomy.
@@ -11,6 +13,8 @@ The benefits of this topology include:
 - This is a decentralized architecture where each spoke project has autonomy to manage all their GCP compute and network resources.
 
 The purpose of this sample is showing how to wire different [Cloud Foundation Fabric](https://github.com/search?q=topic%3Acft-fabric+org%3Aterraform-google-modules&type=Repositories) modules to create **Hub and Spoke VPNs** network architectures, and as such it is meant to be used for prototyping, or to experiment with networking configurations. Additional best practices and security considerations need to be taken into account for real world usage (eg removal of default service accounts, disabling of external IPs, firewall design, etc).
+
+> **NOTE**: This example is not desined to provide HA, please refer to the [documentation](https://cloud.google.com/vpn/docs/concepts/advanced#ha-options) for information on Cloud VPNs and HA.
 
 ![High-level diagram](diagram.png "High-level diagram")
 
