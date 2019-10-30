@@ -2,6 +2,9 @@
 
 This sample creates a simple **Hub and Spoke VPNs** architecture, where network connects every location (VPC Network) through a single intermediary location called a hub via IPsec VPNs. 
 
+> **NOTE**: This example is not desined to provide HA, please refer to the [documentation](https://cloud.google.com/vpn/docs/concepts/advanced#ha-options) for information on Cloud VPNs and HA.
+
+
 The benefits of this topology include:
 
 - Network/Security Admin manages Central Services Project (Hub).
@@ -14,7 +17,6 @@ The benefits of this topology include:
 
 The purpose of this sample is showing how to wire different [Cloud Foundation Fabric](https://github.com/search?q=topic%3Acft-fabric+org%3Aterraform-google-modules&type=Repositories) modules to create **Hub and Spoke VPNs** network architectures, and as such it is meant to be used for prototyping, or to experiment with networking configurations. Additional best practices and security considerations need to be taken into account for real world usage (eg removal of default service accounts, disabling of external IPs, firewall design, etc).
 
-> **NOTE**: This example is not desined to provide HA, please refer to the [documentation](https://cloud.google.com/vpn/docs/concepts/advanced#ha-options) for information on Cloud VPNs and HA.
 
 ![High-level diagram](diagram.png "High-level diagram")
 
@@ -27,6 +29,7 @@ This sample creates several distinct groups of resources:
 - one Cloud DNS Private zone in the hub project
 - one Cloud DNS Forwarding zone in the hub project
 - four Cloud DNS Peering zones (two per each spoke project)
+- one Cloud DNS Policy for inbound forwarding
 - four Cloud Routers (two in hub project and one per each spoke project)
 - four Cloud VPNs (two in hub project and one per each spoke project)
 
@@ -39,6 +42,11 @@ A set of test resources are included for convenience, as they facilitate experim
 - two virtual machine instances in spoke2 project (one per each region) 
 
 SSH access to instances is configured via [OS Login](https://cloud.google.com/compute/docs/oslogin/). External access is allowed via the default SSH rule created by the firewall module, and corresponding `ssh` tags on the instances.
+
+## Known issues
+ - It is not possible to get inbound DNS forwarding IPs in the terraform output.
+   -  Please refer to the [bug](https://github.com/terraform-providers/terraform-provider-google/issues/3753) for more details.
+   -  Please refer to the [documentation](https://cloud.google.com/dns/zones/#creating_a_dns_policy_that_enables_inbound_dns_forwarding) on how to get the IPs with `gcloud`.
 
 <!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
 ## Inputs

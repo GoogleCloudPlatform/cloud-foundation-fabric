@@ -324,3 +324,21 @@ module "spoke-2-peering-zone-to-hub-forwarding-zone" {
   private_visibility_config_networks = [module.vpc-spoke-2.network_self_link]
   target_network                     = module.vpc-hub.network_self_link
 }
+
+##############################################################
+#                   Inbount DNS Forwarding                   #
+##############################################################
+
+# TODO Provide resolver addresses in the output once https://github.com/terraform-providers/terraform-provider-google/issues/3753 resolved.
+# For now please refer to the documentation on how to get the compute addresses for the DNS Resolver https://cloud.google.com/dns/zones/#creating_a_dns_policy_that_enables_inbound_dns_forwarding
+resource "google_dns_policy" "google_dns_policy" {
+  provider = "google-beta"
+
+  project = var.hub_project_id
+  name = "inbound-dns-forwarding-policy"
+  enable_inbound_forwarding = true
+
+  networks {
+    network_url = module.vpc-hub.network_self_link
+  }
+}
