@@ -30,7 +30,7 @@ locals {
 
 module "vpc-hub" {
   source  = "terraform-google-modules/network/google"
-  version = "~> 1.2"
+  version = "~> 1.4.3"
 
   project_id   = var.hub_project_id
   network_name = "hub-network"
@@ -40,7 +40,7 @@ module "vpc-hub" {
 
 module "vpc-spoke-1" {
   source  = "terraform-google-modules/network/google"
-  version = "~> 1.2"
+  version = "~> 1.4.3"
 
   project_id   = var.spoke_1_project_id
   network_name = "spoke-1-network"
@@ -50,7 +50,7 @@ module "vpc-spoke-1" {
 
 module "vpc-spoke-2" {
   source  = "terraform-google-modules/network/google"
-  version = "~> 1.2"
+  version = "~> 1.4.3"
 
   project_id   = var.spoke_2_project_id
   network_name = "spoke-2-network"
@@ -334,8 +334,8 @@ module "spoke-2-peering-zone-to-hub-forwarding-zone" {
 resource "google_dns_policy" "google_dns_policy" {
   provider = "google-beta"
 
-  project = var.hub_project_id
-  name = "inbound-dns-forwarding-policy"
+  project                   = var.hub_project_id
+  name                      = "inbound-dns-forwarding-policy"
   enable_inbound_forwarding = true
 
   networks {

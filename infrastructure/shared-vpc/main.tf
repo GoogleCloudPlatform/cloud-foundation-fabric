@@ -64,7 +64,7 @@ module "project-service-gke" {
 
 module "net-vpc-host" {
   source           = "terraform-google-modules/network/google"
-  version          = "1.4.0"
+  version          = "1.4.3"
   project_id       = module.project-svpc-host.project_id
   network_name     = "vpc-shared"
   shared_vpc_host  = true
@@ -77,7 +77,7 @@ module "net-vpc-host" {
 
 module "net-vpc-firewall" {
   source               = "terraform-google-modules/network/google//modules/fabric-net-firewall"
-  version              = "1.4.0"
+  version              = "1.4.3"
   project_id           = module.project-svpc-host.project_id
   network              = module.net-vpc-host.network_name
   admin_ranges_enabled = true
@@ -101,7 +101,7 @@ module "net-vpc-firewall" {
 
 module "net-svpc-access" {
   source              = "terraform-google-modules/network/google//modules/fabric-net-svpc-access"
-  version             = "1.4.0"
+  version             = "1.4.3"
   host_project_id     = module.project-svpc-host.project_id
   service_project_num = 2
   service_project_ids = [
