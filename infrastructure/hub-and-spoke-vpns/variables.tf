@@ -13,39 +13,51 @@
 # limitations under the License.
 
 variable "hub_project_id" {
-  description = "Hub Project id."
+  description = "Hub Project id. Same project can be used for hub and spokes."
+  type        = string
 }
 
 variable "spoke_1_project_id" {
-  description = "Spoke 1 Project id."
+  description = "Spoke 1 Project id. Same project can be used for hub and spokes."
+  type        = string
 }
 
 variable "spoke_2_project_id" {
-  description = "Spoke 2 Project id."
+  description = "Spoke 2 Project id. Same project can be used for hub and spokes."
+  type        = string
 }
 
 variable "spoke_to_spoke_route_advertisement" {
   description = "Use custom route advertisement in hub routers to advertise all spoke subnets."
+  type        = bool
   default     = true
 }
 
 variable "hub_bgp_asn" {
   description = "Hub BGP ASN."
+  type        = number
   default     = 64515
 }
 
 variable "spoke_1_bgp_asn" {
   description = "Spoke 1 BGP ASN."
+  type        = number
   default     = 64516
 }
 
 variable "spoke_2_bgp_asn" {
   description = "Spoke 2 BGP ASN."
+  type        = number
   default     = 64517
 }
 
 variable "hub_subnets" {
   description = "Hub VPC subnets configuration."
+  type = list(object({
+    subnet_name   = string
+    subnet_ip     = string
+    subnet_region = string
+  }))
   default = [{
     subnet_name   = "subnet-a"
     subnet_ip     = "10.10.10.0/24"
@@ -91,25 +103,30 @@ variable "spoke_2_subnets" {
 
 variable "private_dns_zone_name" {
   description = "Private DNS Zone Name."
+  type        = string
   default     = "gcp-local"
 }
 
 variable "private_dns_zone_domain" {
   description = "Private DNS Zone Domain."
+  type        = string
   default     = "gcp.local."
 }
 
 variable "forwarding_dns_zone_name" {
   description = "Forwarding DNS Zone Name."
+  type        = string
   default     = "on-prem-local"
 }
 
 variable "forwarding_dns_zone_domain" {
   description = "Forwarding DNS Zone Domain."
+  type        = string
   default     = "on-prem.local."
 }
 
 variable "forwarding_zone_server_addresses" {
   description = "Forwarding DNS Zone Server Addresses"
+  type        = list(string)
   default     = ["8.8.8.8", "8.8.4.4"]
 }
