@@ -1,8 +1,8 @@
 # Hub and Spoke VPNs
 
-This sample creates a simple **Hub and Spoke VPNs** architecture, where network connects every location (VPC Network) through a single intermediary location called a hub via IPsec VPNs. 
+This sample creates a simple **Hub and Spoke VPN** architecture, where the VPC network connects satellite locations (spokes) through a single intermediary location (hub) via [IPsec VPN](https://cloud.google.com/vpn/docs/concepts/overview), optionally providing full-mesh networking via [custom route advertisements](https://cloud.google.com/router/docs/how-to/advertising-overview).
 
-> **NOTE**: This example is not desined to provide HA, please refer to the [documentation](https://cloud.google.com/vpn/docs/concepts/advanced#ha-options) for information on Cloud VPNs and HA.
+> **NOTE**: This example is not designed to provide HA, please refer to the [documentation](https://cloud.google.com/vpn/docs/concepts/advanced#ha-options) for information on Cloud VPNs and HA.
 
 
 The benefits of this topology include:
@@ -11,7 +11,7 @@ The benefits of this topology include:
 - Central services and tools deployed in Central Services Project (Hub) for use by all Service Projects (Spokes).
 - Network/Security Admin hands over spoke Projects to respective team who then have full autonomy.
 - Network/Security Admin monitors spoke projects for organization security posture compliance using tools like [Forseti](https://forsetisecurity.org/), [CSCC](https://cloud.google.com/security-command-center/) etc deployed in Central Services Project (Hub).
-- Spokes communicate with on-prem via VPN to transit hub and then over Interconnect or VPN to on-premises.
+- Spokes communicate with on-prem via VPN to transit hub and then over Interconnect or VPN to on-premises (on-premises resources are not included in this sample for obvious reasons).
 - (Optional) Spokes communicate in a full-mesh to each other via VPN transit routing in Central Services Project (Hub).
 - This is a decentralized architecture where each spoke project has autonomy to manage all their GCP compute and network resources.
 
@@ -55,19 +55,19 @@ SSH access to instances is configured via [OS Login](https://cloud.google.com/co
 |------|-------------|:----:|:-----:|:-----:|
 | forwarding\_dns\_zone\_domain | Forwarding DNS Zone Domain. | string | `"on-prem.local."` | no |
 | forwarding\_dns\_zone\_name | Forwarding DNS Zone Name. | string | `"on-prem-local"` | no |
-| forwarding\_zone\_server\_addresses | Forwarding DNS Zone Server Addresses | list | `<list>` | no |
-| hub\_bgp\_asn | Hub BGP ASN. | string | `"64515"` | no |
-| hub\_project\_id | Hub Project id. | string | n/a | yes |
-| hub\_subnets | Hub VPC subnets configuration. | list | `<list>` | no |
+| forwarding\_zone\_server\_addresses | Forwarding DNS Zone Server Addresses | list(string) | `<list>` | no |
+| hub\_bgp\_asn | Hub BGP ASN. | number | `"64515"` | no |
+| hub\_project\_id | Hub Project id. Same project can be used for hub and spokes. | string | n/a | yes |
+| hub\_subnets | Hub VPC subnets configuration. | object | `<list>` | no |
 | private\_dns\_zone\_domain | Private DNS Zone Domain. | string | `"gcp.local."` | no |
 | private\_dns\_zone\_name | Private DNS Zone Name. | string | `"gcp-local"` | no |
-| spoke\_1\_bgp\_asn | Spoke 1 BGP ASN. | string | `"64516"` | no |
-| spoke\_1\_project\_id | Spoke 1 Project id. | string | n/a | yes |
+| spoke\_1\_bgp\_asn | Spoke 1 BGP ASN. | number | `"64516"` | no |
+| spoke\_1\_project\_id | Spoke 1 Project id. Same project can be used for hub and spokes. | string | n/a | yes |
 | spoke\_1\_subnets | Spoke 1 VPC subnets configuration. | list | `<list>` | no |
-| spoke\_2\_bgp\_asn | Spoke 2 BGP ASN. | string | `"64517"` | no |
-| spoke\_2\_project\_id | Spoke 2 Project id. | string | n/a | yes |
+| spoke\_2\_bgp\_asn | Spoke 2 BGP ASN. | number | `"64517"` | no |
+| spoke\_2\_project\_id | Spoke 2 Project id. Same project can be used for hub and spokes. | string | n/a | yes |
 | spoke\_2\_subnets | Spoke 2 VPC subnets configuration. | list | `<list>` | no |
-| spoke\_to\_spoke\_route\_advertisement | Use custom route advertisement in hub routers to advertise all spoke subnets. | string | `"true"` | no |
+| spoke\_to\_spoke\_route\_advertisement | Use custom route advertisement in hub routers to advertise all spoke subnets. | bool | `"true"` | no |
 
 ## Outputs
 
