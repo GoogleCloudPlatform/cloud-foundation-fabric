@@ -20,7 +20,7 @@
 
 module "project-tf" {
   source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
-  version         = "4.0.0"
+  version         = "3.3.1"
   parent          = var.root_node
   billing_account = var.billing_account_id
   prefix          = var.prefix
@@ -102,7 +102,7 @@ module "folders-top-level" {
 
 module "project-audit" {
   source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
-  version         = "4.0.0"
+  version         = "3.3.1"
   parent          = var.root_node
   billing_account = var.billing_account_id
   prefix          = var.prefix
@@ -146,7 +146,7 @@ module "log-sink-audit" {
 
 module "project-shared-resources" {
   source                 = "terraform-google-modules/project-factory/google//modules/fabric-project"
-  version                = "4.0.0"
+  version                = "3.3.1"
   parent                 = var.root_node
   billing_account        = var.billing_account_id
   prefix                 = var.prefix
