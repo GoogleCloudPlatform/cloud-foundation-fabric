@@ -19,21 +19,26 @@
 # host project
 
 module "project-svpc-host" {
-  source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
-  version         = "3.3.1"
+  # source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
+  # version         = "3.3.1"
+  source          = "github.com/terraform-google-modules/terraform-google-project-factory//modules/fabric-project"
   parent          = var.root_node
   prefix          = var.prefix
   name            = "vpc-host"
   billing_account = var.billing_account_id
   owners          = var.owners_host
-  activate_apis   = var.project_services
+  activate_apis = concat(
+    var.project_services,
+    ["dns.googleapis.com", "cloudkms.googleapis.com"]
+  )
 }
 
 # service projects
 
 module "project-service-gce" {
-  source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
-  version         = "3.3.1"
+  # source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
+  # version         = "3.3.1"
+  source          = "github.com/terraform-google-modules/terraform-google-project-factory//modules/fabric-project"
   parent          = var.root_node
   prefix          = var.prefix
   name            = "gce"
@@ -42,18 +47,25 @@ module "project-service-gce" {
   owners          = var.owners_gce
   oslogin_admins  = var.oslogin_admins_gce
   oslogin_users   = var.oslogin_users_gce
-  activate_apis   = var.project_services
+  activate_apis = concat(
+    var.project_services,
+    ["container.googleapis.com"]
+  )
 }
 
 module "project-service-gke" {
-  source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
-  version         = "3.3.1"
+  # source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
+  # version         = "3.3.1"
+  source          = "github.com/terraform-google-modules/terraform-google-project-factory//modules/fabric-project"
   parent          = var.root_node
   prefix          = var.prefix
   name            = "gke"
   billing_account = var.billing_account_id
   owners          = var.owners_gke
-  activate_apis   = var.project_services
+  activate_apis = concat(
+    var.project_services,
+    ["resourceviews.googleapis.com"]
+  )
 }
 
 ################################################################################
