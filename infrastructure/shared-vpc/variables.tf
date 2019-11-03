@@ -107,10 +107,7 @@ variable "subnet_secondary_ranges" {
 variable "project_services" {
   description = "Service APIs enabled by default in new projects."
   default = [
-    "bigquery.googleapis.com",
-    "compute.googleapis.com",
-    "iam.googleapis.com",
+    "resourceviews.googleapis.com",
     "stackdriver.googleapis.com",
-    "storage-api.googleapis.com",
   ]
 }

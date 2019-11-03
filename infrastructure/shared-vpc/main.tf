@@ -47,10 +47,7 @@ module "project-service-gce" {
   owners          = var.owners_gce
   oslogin_admins  = var.oslogin_admins_gce
   oslogin_users   = var.oslogin_users_gce
-  activate_apis = concat(
-    var.project_services,
-    ["container.googleapis.com"]
-  )
+  activate_apis   = var.project_services
 }
 
 module "project-service-gke" {
@@ -62,10 +59,7 @@ module "project-service-gke" {
   name            = "gke"
   billing_account = var.billing_account_id
   owners          = var.owners_gke
-  activate_apis = concat(
-    var.project_services,
-    ["resourceviews.googleapis.com"]
-  )
+  activate_apis   = var.project_services
 }
 
 ################################################################################
@@ -117,7 +111,8 @@ module "net-svpc-access" {
   host_project_id     = module.project-svpc-host.project_id
   service_project_num = 2
   service_project_ids = [
-    module.project-service-gce.project_id, module.project-service-gke.project_id
+    module.project-service-gce.project_id,
+    module.project-service-gke.project_id
   ]
   host_subnets = ["gce", "gke"]
   host_subnet_regions = compact([
