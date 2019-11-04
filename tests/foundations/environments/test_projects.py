@@ -39,6 +39,6 @@ def test_project_services(plan, project_modules):
   "Project service resource must enable APIs specified in the variable."
   num_services = len(plan.variables['project_services'])
   for mod in project_modules.values():
-    project_services = [r for r in mod.child_modules['module.project_services'].resources if r.startswith(
+    project_services = [r for r in mod.resources if r.startswith(
         'google_project_service.project_services')]
-    assert len(project_services) == num_services
+    assert len(project_services) >= num_services
