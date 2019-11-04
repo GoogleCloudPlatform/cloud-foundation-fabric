@@ -20,20 +20,23 @@
 
 module "project-svpc-host" {
   source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
-  version         = "3.3.1"
+  version         = "5.0.0"
   parent          = var.root_node
   prefix          = var.prefix
   name            = "vpc-host"
   billing_account = var.billing_account_id
   owners          = var.owners_host
-  activate_apis   = var.project_services
+  activate_apis = concat(
+    var.project_services,
+    ["dns.googleapis.com", "cloudkms.googleapis.com"]
+  )
 }
 
 # service projects
 
 module "project-service-gce" {
   source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
-  version         = "3.3.1"
+  version         = "5.0.0"
   parent          = var.root_node
   prefix          = var.prefix
   name            = "gce"
@@ -47,7 +50,7 @@ module "project-service-gce" {
 
 module "project-service-gke" {
   source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
-  version         = "3.3.1"
+  version         = "5.0.0"
   parent          = var.root_node
   prefix          = var.prefix
   name            = "gke"
@@ -105,7 +108,8 @@ module "net-svpc-access" {
   host_project_id     = module.project-svpc-host.project_id
   service_project_num = 2
   service_project_ids = [
-    module.project-service-gce.project_id, module.project-service-gke.project_id
+    module.project-service-gce.project_id,
+    module.project-service-gke.project_id
   ]
   host_subnets = ["gce", "gke"]
   host_subnet_regions = compact([

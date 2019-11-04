@@ -39,7 +39,7 @@ module "shared-folder" {
 
 module "project-tf" {
   source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
-  version         = "3.3.1"
+  version         = "5.0.0"
   parent          = module.shared-folder.id
   billing_account = var.billing_account_id
   prefix          = var.prefix
@@ -53,7 +53,7 @@ module "project-tf" {
 
 module "service-accounts-tf-environments" {
   source             = "terraform-google-modules/service-accounts/google"
-  version            = "2.0.0"
+  version            = "2.0.1"
   project_id         = module.project-tf.project_id
   org_id             = var.organization_id
   billing_account_id = var.billing_account_id
@@ -97,8 +97,7 @@ module "gcs-tf-environments" {
 # Business unit 1
 
 module "business-unit-1-folders" {
-  source = "./modules/business-unit-folders"
-
+  source                    = "./modules/business-unit-folders"
   business_unit_folder_name = var.business_unit_1_name
   environments              = var.environments
   per_folder_admins         = module.service-accounts-tf-environments.iam_emails_list
@@ -109,8 +108,7 @@ module "business-unit-1-folders" {
 # Business unit 2
 
 module "business-unit-2-folders" {
-  source = "./modules/business-unit-folders"
-
+  source                    = "./modules/business-unit-folders"
   business_unit_folder_name = var.business_unit_2_name
   environments              = var.environments
   per_folder_admins         = module.service-accounts-tf-environments.iam_emails_list
@@ -121,8 +119,7 @@ module "business-unit-2-folders" {
 # Business unit 3
 
 module "business-unit-3-folders" {
-  source = "./modules/business-unit-folders"
-
+  source                    = "./modules/business-unit-folders"
   business_unit_folder_name = var.business_unit_3_name
   environments              = var.environments
   per_folder_admins         = module.service-accounts-tf-environments.iam_emails_list
@@ -138,21 +135,23 @@ module "business-unit-3-folders" {
 
 module "project-audit" {
   source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
-  version         = "3.3.1"
+  version         = "5.0.0"
   parent          = module.shared-folder.id
   billing_account = var.billing_account_id
   prefix          = var.prefix
   name            = "audit"
   lien_reason     = "audit"
-  activate_apis   = var.project_services
   viewers         = var.audit_viewers
+  activate_apis = concat(var.project_services, [
+    "bigquery.googleapis.com",
+  ])
 }
 
 # Audit logs destination on BigQuery
 
 module "bq-audit-export" {
   source                   = "terraform-google-modules/log-export/google//modules/bigquery"
-  version                  = "3.0.0"
+  version                  = "3.1.0"
   project_id               = module.project-audit.project_id
   dataset_name             = "${replace(local.log_sink_name, "-", "_")}"
   log_sink_writer_identity = module.log-sink-audit.writer_identity
@@ -162,7 +161,7 @@ module "bq-audit-export" {
 
 module "log-sink-audit" {
   source                 = "terraform-google-modules/log-export/google"
-  version                = "3.0.0"
+  version                = "3.1.0"
   filter                 = "logName: \"/logs/cloudaudit.googleapis.com%2Factivity\" OR logName: \"/logs/cloudaudit.googleapis.com%2Fsystem_event\""
   log_sink_name          = local.log_sink_name
   parent_resource_type   = local.log_sink_parent_resource_type
@@ -180,7 +179,7 @@ module "log-sink-audit" {
 
 module "project-shared-resources" {
   source                 = "terraform-google-modules/project-factory/google//modules/fabric-project"
-  version                = "3.3.1"
+  version                = "5.0.0"
   parent                 = module.shared-folder.id
   billing_account        = var.billing_account_id
   prefix                 = var.prefix
