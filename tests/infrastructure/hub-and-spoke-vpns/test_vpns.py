@@ -43,7 +43,6 @@ def test_spokes_peer_asn(plan, spoke_to_hub_vpn):
 
 def test_hub_peer_asns(plan, hub_to_spoke_vpn):
   "Test that the hub-to-spoke VPNs mach input variables"
-  count = range(1,3)
   var_names, mods = hub_to_spoke_vpn
   for var_name, mod in zip(var_names, mods):
     hub_bgp_peer = mod.resources['google_compute_router_peer.bgp_peer[0]']

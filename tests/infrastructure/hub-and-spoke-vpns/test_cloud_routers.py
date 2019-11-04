@@ -18,21 +18,22 @@
 def test_hub_custom_routers(plan):
   "Custom routers should match input variables."
   hub_custom_router_tpl = ('google_compute_router.hub-to-spoke-%s-custom[0]')
-  count = range(1, 3)
-  for i in count:
+  for i in range(1, 3):
     name = hub_custom_router_tpl % i
     custom_router = plan.resource_changes[name]
+    adv_ranges = custom_router['change']['after']['bgp'][0]['advertised_ip_ranges']
+    spoke_subnets = plan.variables['spoke_%s_subnets' % (3 - i)]
     assert custom_router['change']['after']['bgp'][0]['advertise_mode'] == 'CUSTOM'
     assert custom_router['change']['after']['bgp'][0]['advertised_groups'] == ['ALL_SUBNETS']
     assert custom_router['change']['after']['bgp'][0]['asn'] == plan.variables['hub_bgp_asn']
-    assert [range['range'] for range in custom_router['change']['after']['bgp'][0]['advertised_ip_ranges']] == [subnet['subnet_ip'] for subnet in plan.variables['spoke_%s_subnets' % (3 - i)]]
+    assert [range['range'] for range in adv_ranges] == [subnet['subnet_ip']
+                                                            for subnet in spoke_subnets]
 
 def test_spoke_routers(plan):
   "Spoke routers should match input variables."
   spoke_router_tpl = ('google_compute_router.spoke-%s')
   spoke_bgp_asn_tpl = ('spoke_%s_bgp_asn')
-  count = range(1, 3)
-  for i in count:
+  for i in range(1, 3):
     spoke_router = plan.resource_changes[spoke_router_tpl % i]
     spoke_bgp_asn = plan.variables[spoke_bgp_asn_tpl % i]
     assert spoke_router['change']['after']['bgp'][0]['advertise_mode'] == 'DEFAULT'

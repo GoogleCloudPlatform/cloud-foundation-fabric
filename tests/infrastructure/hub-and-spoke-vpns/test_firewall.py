@@ -19,8 +19,7 @@ import pytest
 
 @pytest.fixture(scope='module')
 def firewall_modules(plan):
-  names = ['module.firewall-%s' %
-           name for name in ('hub', 'spoke-1', 'spoke-2')]
+  names = [name for name in plan.modules.keys() if name.startswith('module.firewall-')]
   return dict((name, plan.modules[name]) for name in names)
 
 

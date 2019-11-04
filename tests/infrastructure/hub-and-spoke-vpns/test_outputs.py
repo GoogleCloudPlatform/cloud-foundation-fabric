@@ -27,8 +27,7 @@ def test_spokes_outputs(plan):
   "Spokes VPC ranges and regions should match input variables."
   spoke_output_tpl = ('spoke-%s')
   spole_subnets_tpl = ('spoke_%s_subnets')
-  count = range(1, 3)
-  for i in count:
+  for i in range(1, 3):
     spoke_output = plan.outputs[spoke_output_tpl % i]
     for spoke_subnet in plan.variables[spole_subnets_tpl % i]:
       assert spoke_output['subnets_ips'][spoke_subnet['subnet_name']] == spoke_subnet['subnet_ip']
