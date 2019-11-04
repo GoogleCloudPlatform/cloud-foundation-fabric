@@ -107,25 +107,7 @@ variable "subnet_secondary_ranges" {
 variable "project_services" {
   description = "Service APIs enabled by default in new projects."
   default = [
-    "bigquery-json.googleapis.com",
-    "bigquerystorage.googleapis.com",
-    "cloudbilling.googleapis.com",
-    "cloudkms.googleapis.com",
-    "cloudresourcemanager.googleapis.com",
-    "compute.googleapis.com",
-    "container.googleapis.com",
-    "containerregistry.googleapis.com",
-    "deploymentmanager.googleapis.com",
-    "dns.googleapis.com",
-    "iam.googleapis.com",
-    "iamcredentials.googleapis.com",
-    "logging.googleapis.com",
-    "oslogin.googleapis.com",
-    "pubsub.googleapis.com",
-    "replicapool.googleapis.com",
-    "replicapoolupdater.googleapis.com",
     "resourceviews.googleapis.com",
-    "serviceusage.googleapis.com",
-    "storage-api.googleapis.com",
+    "stackdriver.googleapis.com",
   ]
 }
