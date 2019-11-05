@@ -41,6 +41,7 @@ steps:
       - tests/infrastructure
     env:
       - PATH=/usr/local/bin:/usr/bin:/bin:/builder/home/.local/bin
+      - PYTHONDONTWRITEBYTECODE=true
 
 substitutions:
   _TERRAFORM_VERSION: 0.12.8
