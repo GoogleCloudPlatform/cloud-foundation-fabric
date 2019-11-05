@@ -17,18 +17,18 @@
 
 def test_hub_outputs(plan):
   "Hub VPC ranges and regions should match input variables."
-  hub_output = plan.outputs['hub']
-  for hub_subnet in plan.variables['hub_subnets']:
-    assert hub_output['subnets_ips'][hub_subnet['subnet_name']] == hub_subnet['subnet_ip']
-    assert hub_output['subnets_regions'][hub_subnet['subnet_name']] == hub_subnet['subnet_region']
+  output = plan.outputs['hub']
+  for subnet in plan.variables['hub_subnets']:
+    name = subnet['subnet_name']
+    assert output['subnets_ips'][name] == subnet['subnet_ip']
+    assert output['subnets_regions'][name] == subnet['subnet_region']
 
 
 def test_spokes_outputs(plan):
   "Spokes VPC ranges and regions should match input variables."
-  spoke_output_tpl = ('spoke-%s')
-  spole_subnets_tpl = ('spoke_%s_subnets')
-  for i in range(1, 3):
-    spoke_output = plan.outputs[spoke_output_tpl % i]
-    for spoke_subnet in plan.variables[spole_subnets_tpl % i]:
-      assert spoke_output['subnets_ips'][spoke_subnet['subnet_name']] == spoke_subnet['subnet_ip']
-      assert spoke_output['subnets_regions'][spoke_subnet['subnet_name']] == spoke_subnet['subnet_region']
+  for i in (1, 2):
+    output = plan.outputs['spoke-%s' % i]
+    for subnet in plan.variables['spoke_%s_subnets' % i]:
+      name = subnet['subnet_name']
+      assert output['subnets_ips'][name] == subnet['subnet_ip']
+      assert output['subnets_regions'][name] == subnet['subnet_region']
