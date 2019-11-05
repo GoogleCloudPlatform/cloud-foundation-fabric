@@ -16,26 +16,23 @@
 
 
 def test_hub_custom_routers(plan):
-  "Custom routers should match input variables."
-  hub_custom_router_tpl = ('google_compute_router.hub-to-spoke-%s-custom[0]')
-  for i in range(1, 3):
-    name = hub_custom_router_tpl % i
-    custom_router = plan.resource_changes[name]
-    adv_ranges = custom_router['change']['after']['bgp'][0]['advertised_ip_ranges']
-    spoke_subnets = plan.variables['spoke_%s_subnets' % (3 - i)]
-    assert custom_router['change']['after']['bgp'][0]['advertise_mode'] == 'CUSTOM'
-    assert custom_router['change']['after']['bgp'][0]['advertised_groups'] == ['ALL_SUBNETS']
-    assert custom_router['change']['after']['bgp'][0]['asn'] == plan.variables['hub_bgp_asn']
-    assert [range['range'] for range in adv_ranges] == [subnet['subnet_ip']
-                                                            for subnet in spoke_subnets]
+  "Hub to spoke routers should match input variables."
+  for i in (1, 2):
+    router = plan.resources['google_compute_router.hub-to-spoke-%s-custom[0]' % i]
+    bgp = router['values']['bgp'][0]
+    assert bgp['advertise_mode'] == 'CUSTOM'
+    assert bgp['advertised_groups'] == ['ALL_SUBNETS']
+    assert bgp['asn'] == plan.variables['hub_bgp_asn']
+    subnet_ranges = [s['subnet_ip']
+                     for s in plan.variables['spoke_%s_subnets' % (3 - i)]]
+    assert [r['range'] for r in bgp['advertised_ip_ranges']] == subnet_ranges
+
 
 def test_spoke_routers(plan):
   "Spoke routers should match input variables."
-  spoke_router_tpl = ('google_compute_router.spoke-%s')
-  spoke_bgp_asn_tpl = ('spoke_%s_bgp_asn')
-  for i in range(1, 3):
-    spoke_router = plan.resource_changes[spoke_router_tpl % i]
-    spoke_bgp_asn = plan.variables[spoke_bgp_asn_tpl % i]
-    assert spoke_router['change']['after']['bgp'][0]['advertise_mode'] == 'DEFAULT'
-    assert spoke_router['change']['after']['bgp'][0]['advertised_groups'] == None
-    assert spoke_router['change']['after']['bgp'][0]['asn'] == spoke_bgp_asn
+  for i in (1, 2):
+    router = plan.resources['google_compute_router.spoke-%s' % i]
+    bgp = router['values']['bgp'][0]
+    assert bgp['advertise_mode'] == 'DEFAULT'
+    assert bgp['advertised_groups'] == None
+    assert bgp['asn'] == plan.variables['spoke_%s_bgp_asn' % i]
