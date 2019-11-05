@@ -17,22 +17,20 @@
 
 import pytest
 
+
 @pytest.fixture(scope='module')
 def firewall_modules(plan):
-  names = [name for name in plan.modules.keys() if name.startswith('module.firewall-')]
-  return dict((name, plan.modules[name]) for name in names)
+  return [v for k, v in plan.modules.items() if k.startswith('module.firewall-')]
 
 
 def test_firewall_rules(plan, firewall_modules):
   "Test that the hub and spoke VPCs have allow-admin firewall rules"
-  names = ['%s_subnets' %
-           name for name in ('hub', 'spoke_1', 'spoke_2')]
   source_ranges = []
-  for name in names:
-    subnets = plan.variables[name]
-    for subnet in subnets:
-      source_ranges.append(subnet['subnet_ip'])
-  for mod in firewall_modules.values():
+  for k in plan.variables:
+    if not k.endswith('_subnets'):
+      continue
+    source_ranges += [s['subnet_ip'] for s in plan.variables[k]]
+  for mod in firewall_modules:
     allow_admins_resource = mod.resources['google_compute_firewall.allow-admins[0]']
     allow_ssh = mod.resources['google_compute_firewall.allow-tag-ssh[0]']
     assert allow_admins_resource['values']['source_ranges'] == source_ranges
