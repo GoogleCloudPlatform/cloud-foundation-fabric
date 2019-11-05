@@ -26,10 +26,11 @@ _BASEDIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 @pytest.fixture(scope='session')
 def plan():
 
-  def run_plan(tfdir):
+  def run_plan(testdir):
+    tfdir = testdir.replace('_', '-')
     tf = tftest.TerraformTest(tfdir, _BASEDIR,
                               os.environ.get('TERRAFORM', 'terraform'))
-    tf.setup(extra_files=['tests/{}/terraform.tfvars'.format(tfdir)])
+    tf.setup(extra_files=['tests/{}/terraform.tfvars'.format(testdir)])
     return tf.plan(output=True)
 
   return run_plan
