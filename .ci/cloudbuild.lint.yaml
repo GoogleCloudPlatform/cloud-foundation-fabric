@@ -14,7 +14,7 @@
 
 
 steps:
-  - name: "python:3.6-alpine"
+  - name: "python:3-alpine"
     id: "boilerplate"
     args: ["/workspace/.ci/scripts/check_boilerplate.py", "/workspace"]
   - name: "wata727/tflint"
