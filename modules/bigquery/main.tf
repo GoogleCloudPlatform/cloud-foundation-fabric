@@ -26,7 +26,7 @@ resource "google_bigquery_dataset" "datasets" {
   default_partition_expiration_ms = lookup(var.datasets[count.index], "default_partition_expiration_ms", null)
 
   dynamic "access" {
-    for_each = lookup(var.dataset_access, var.datasets[count.index]["id"], [])
+    for_each = lookup(var.dataset_access, var.datasets[count.index]["id"], tomap({}))
     content {
       user_by_email = access.key
       role          = access.value

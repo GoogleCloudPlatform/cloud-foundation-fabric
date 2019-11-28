@@ -23,7 +23,7 @@ module "bq" {
 
   dataset_access = {
     dataset1 = {
-      "me@myorg.com" : "roles/bigquery.dataViewer"
+      "me@myorg.com" = "roles/bigquery.dataViewer"
     }
   }
 
@@ -39,7 +39,7 @@ module "bq" {
         {
           type = "DATE"
           name = "date"
-        }
+        },
         {
           type = "STRING"
           name = "name"

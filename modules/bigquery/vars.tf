@@ -16,21 +16,55 @@
 
 variable "project_id" {
   description = "Project ID"
-  default     = []
+  type        = string
 }
+
 variable "datasets" {
   description = "Datatase IDs"
   default     = []
+  type        = list
+  # type = list(object({
+  #   id          = string
+  #   name        = string
+  #   description = string
+  #   location    = string
+  #   # labels = map(string) # optional
+  #   # default_partition_expiration_ms = number # optional
+  #   # default_table_expiration_ms = number # optional
+  # }))
 }
+
 variable "tables" {
   description = "Tables"
   default     = []
+  type        = list
+  # type = list(object({
+  #   table_id   = string
+  #   dataset_id = string
+  #   labels     = map(string)
+  #   schema     = string
+  #   # expiration_time = number # optional
+  #   # clustering = string # optional
+  #   # time_partitioning = object({ # optional
+  #   #   field = string
+  #   #   type = string
+  #   #   expiration_ms = number # optional
+  #   # }
+  # }))
 }
+
 variable "views" {
   description = "Views"
   default     = []
+  type = list(object({
+    dataset = string
+    table   = string
+    query   = string
+  }))
 }
+
 variable "dataset_access" {
   description = "Dataset permissions"
   default     = {}
+  type        = map(map(string))
 }
