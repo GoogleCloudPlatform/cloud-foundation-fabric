@@ -60,7 +60,13 @@ output "subnet_regions" {
 
 output "subnet_secondary_ranges" {
   description = "Map of subnet secondary ranges keyed by name."
-  value       = { for k, v in google_compute_subnetwork.subnetwork : k => v.secondary_ip_range }
+  value = {
+    for k, v in google_compute_subnetwork.subnetwork :
+    k => {
+      for range in v.secondary_ip_range :
+      range.range_name => range.ip_cidr_range
+    }
+  }
 }
 
 output "bindings" {
