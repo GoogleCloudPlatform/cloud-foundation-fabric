@@ -80,6 +80,12 @@ variable "shared_vpc_host" {
   default     = false
 }
 
+variable "shared_vpc_service_projects" {
+  description = "Shared VPC service projects to register with this host"
+  type        = list(string)
+  default     = []
+}
+
 variable "subnets" {
   description = "The list of subnets being created"
   type = map(object({

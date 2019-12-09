@@ -36,6 +36,10 @@ output "project_id" {
     ? google_compute_shared_vpc_host_project.shared_vpc_host[*].project
     : null
   )
+  depends_on = [
+    google_compute_shared_vpc_host_project.shared_vpc_host,
+    google_compute_shared_vpc_service_project.service_projects
+  ]
 }
 
 output "subnets" {

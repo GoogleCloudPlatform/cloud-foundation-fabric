@@ -56,7 +56,12 @@ resource "google_compute_shared_vpc_host_project" "shared_vpc_host" {
   depends_on = [google_compute_network.network]
 }
 
-# TODO(ludoo): add shared vpc service project registration
+resource "google_compute_shared_vpc_service_project" "service_projects" {
+  for_each        = var.shared_vpc_host ? toset(var.shared_vpc_service_projects) : toset([])
+  host_project    = var.project_id
+  service_project = each.value
+  depends_on      = [google_compute_shared_vpc_host_project.shared_vpc_host]
+}
 
 resource "google_compute_subnetwork" "subnetwork" {
   for_each                 = var.subnets
