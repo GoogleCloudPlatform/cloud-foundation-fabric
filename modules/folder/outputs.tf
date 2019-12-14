@@ -16,17 +16,17 @@
 
 output "folder" {
   description = "Folder resource (for single use)."
-  value       = local.folders[0]
+  value       = length(var.names) > 0 ? local.folders[0] : null
 }
 
 output "id" {
   description = "Folder id (for single use)."
-  value       = local.folders[0].name
+  value       = length(var.names) > 0 ? local.folders[0].name : null
 }
 
 output "name" {
   description = "Folder name (for single use)."
-  value       = local.folders[0].display_name
+  value       = length(var.names) > 0 ? local.folders[0].display_name : null
 }
 
 output "folders" {
