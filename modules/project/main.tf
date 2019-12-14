@@ -18,14 +18,14 @@ locals {
   cloudsvc_service_account = "${google_project.project.number}@cloudservices.gserviceaccount.com"
   gce_service_account      = "${google_project.project.number}-compute@developer.gserviceaccount.com"
   gke_service_account      = "service-${google_project.project.number}@container-engine-robot.iam.gserviceaccount.com"
-  iam_non_authoritative_pairs = flatten([
-    for role in var.iam_non_authoritative_roles : [
-      for member in lookup(var.iam_non_authoritative_members, role, []) :
+  iam_nonauth_pairs = flatten([
+    for role in var.iam_nonauth_roles : [
+      for member in lookup(var.iam_nonauth_members, role, []) :
       { role = role, member = member }
     ]
   ])
-  iam_non_authoritative = {
-    for pair in local.iam_non_authoritative_pairs :
+  iam_nonauth = {
+    for pair in local.iam_nonauth_pairs :
     "${pair.role}-${pair.member}" => pair
   }
   parent_type = split("/", var.parent)[0]
@@ -82,14 +82,14 @@ resource "google_project_service" "project_services" {
 # - non-authoritative roles might fail due to dynamic values
 
 resource "google_project_iam_binding" "authoritative" {
-  for_each = toset(var.iam_authoritative_roles)
+  for_each = toset(var.iam_roles)
   project  = google_project.project.project_id
   role     = each.value
-  members  = lookup(var.iam_authoritative_members, each.value, [])
+  members  = lookup(var.iam_members, each.value, [])
 }
 
 resource "google_project_iam_member" "non_authoritative" {
-  for_each = length(var.iam_non_authoritative_roles) > 0 ? local.iam_non_authoritative : {}
+  for_each = length(var.iam_nonauth_roles) > 0 ? local.iam_nonauth : {}
   project  = google_project.project.project_id
   role     = each.value.role
   member   = each.value.member

@@ -32,25 +32,25 @@ variable "custom_roles" {
   default     = {}
 }
 
-variable "iam_authoritative_members" {
+variable "iam_members" {
   description = "Map of member lists used to set authoritative bindings, keyed by role."
   type        = map(list(string))
   default     = {}
 }
 
-variable "iam_authoritative_roles" {
+variable "iam_roles" {
   description = "List of roles used to set authoritative bindings."
   type        = list(string)
   default     = []
 }
 
-variable "iam_non_authoritative_members" {
+variable "iam_nonauth_members" {
   description = "Map of member lists used to set non authoritative bindings, keyed by role."
   type        = map(list(string))
   default     = {}
 }
 
-variable "iam_non_authoritative_roles" {
+variable "iam_nonauth_roles" {
   description = "List of roles used to set non authoritative bindings."
   type        = list(string)
   default     = []
