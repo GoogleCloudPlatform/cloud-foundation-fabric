@@ -15,13 +15,21 @@
  */
 
 locals {
-  prefix       = var.prefix == "" ? "" : join("-", list(var.prefix, lower(var.location), ""))
-  names        = toset(var.names)
-  buckets_list = [for name in var.names : google_storage_bucket.buckets[name]]
+  buckets = [for name in var.names : google_storage_bucket.buckets[name]]
+  # distinct is needed to make the expanding function argument work
+  iam_pairs = concat([], distinct([
+    for name, roles in var.iam_roles :
+    [for role in roles : { name = name, role = role }]
+  ])...)
+  iam_keypairs = {
+    for pair in local.iam_pairs :
+    "${pair.name}-${pair.role}" => pair
+  }
+  prefix = var.prefix == "" ? "" : join("-", [var.prefix, lower(var.location), ""])
 }
 
 resource "google_storage_bucket" "buckets" {
-  for_each           = local.names
+  for_each           = toset(var.names)
   name               = "${local.prefix}${lower(each.key)}"
   project            = var.project_id
   location           = var.location
@@ -32,56 +40,17 @@ resource "google_storage_bucket" "buckets" {
     enabled = lookup(var.versioning, each.key, false)
   }
   labels = merge(var.labels, {
-    name = "${local.prefix}${lower(each.key)}"
+    location      = lower(var.location)
+    name          = lower(each.key)
+    storage_class = lower(var.storage_class)
   })
 }
 
-resource "google_storage_bucket_iam_binding" "object_admins" {
-  for_each = var.set_object_admin_roles ? local.names : toset([])
-  bucket   = google_storage_bucket.buckets[each.key].name
-  role     = "roles/storage.objectAdmin"
-  members = compact(concat(
-    var.object_admins,
-    split(",", lookup(var.bucket_object_admins, each.key, ""))
-  ))
-}
-
-resource "google_storage_bucket_iam_binding" "creators" {
-  for_each = var.set_creator_roles ? local.names : toset([])
-  bucket   = google_storage_bucket.buckets[each.key].name
-  role     = "roles/storage.objectCreator"
-  members = compact(concat(
-    var.creators,
-    split(",", lookup(var.bucket_creators, each.key, ""))
-  ))
-}
-
-resource "google_storage_bucket_iam_binding" "viewers" {
-  for_each = var.set_viewer_roles ? local.names : toset([])
-  bucket   = google_storage_bucket.buckets[each.key].name
-  role     = "roles/storage.objectViewer"
-  members = compact(concat(
-    var.viewers,
-    split(",", lookup(var.bucket_viewers, each.key, ""))
-  ))
-}
-
-resource "google_storage_bucket_iam_binding" "hmackey_admins" {
-  for_each = var.set_hmackey_admin_roles ? local.names : toset([])
-  bucket   = google_storage_bucket.buckets[each.key].name
-  role     = "roles/storage.hmacKeyAdmin"
-  members = compact(concat(
-    var.hmackey_admins,
-    split(",", lookup(var.bucket_hmackey_admins, each.key, ""))
-  ))
-}
-
-resource "google_storage_bucket_iam_binding" "admins" {
-  for_each = var.set_admin_roles ? local.names : toset([])
-  bucket   = google_storage_bucket.buckets[each.key].name
-  role     = "roles/storage.admin"
-  members = compact(concat(
-    var.admins,
-    split(",", lookup(var.bucket_admins, each.key, ""))
-  ))
+resource "google_storage_bucket_iam_binding" "bindings" {
+  for_each = local.iam_keypairs
+  bucket   = google_storage_bucket.buckets[each.value.name].name
+  role     = each.value.role
+  members = lookup(
+    lookup(var.iam_members, each.value.name, {}), each.value.role, []
+  )
 }
