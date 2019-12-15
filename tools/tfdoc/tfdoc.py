@@ -22,7 +22,7 @@ import re
 import click
 
 
-RE_TYPE_FORMAT = re.compile(r'(?s)^\s*([a-z]+).*?$')
+RE_TYPE = re.compile(r'([\(\{\}\)])')
 RE_OUTPUTS = re.compile(r'''(?smx)
     (?:^\s*output\s*"([^"]+)"\s*\{$) |
     (?:^\s*description\s*=\s*"([^"]+)"\s*$)
@@ -138,9 +138,19 @@ def format_outputs(outputs):
 
 def format_type(type_spec):
   "Format variable type."
-  if type_spec.startswith('map(object'):
-    return 'object map'
-  return RE_TYPE_FORMAT.sub(r'\1', type_spec)
+  buffer = []
+  stack = []
+  for t in RE_TYPE.split(type_spec.split("\n")[0]):
+    if not t:
+      continue
+    if t in '({':
+      stack.append(t)
+    elif t in '})':
+      stack.pop()
+    buffer.append(t)
+  for t in reversed(stack):
+    buffer.append(')' if t == '(' else '}')
+  return ''.join(buffer).replace('object({})', 'object({...})')
 
 
 def format_variables(variables, required_first=True):
