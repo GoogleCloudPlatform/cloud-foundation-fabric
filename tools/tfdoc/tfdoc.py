@@ -119,23 +119,28 @@ class Variable(object):
                         self.default is None)
 
 
-def parse_items(content, item_re, item_enum, item_class, item_data_class):
-  "Parse variable or output items in data."
-  item = item_class()
-  for m in item_re.finditer(content):
-    try:
-      item.parse_token(item_enum(m.lastindex).name, m.group(m.lastindex))
-    except ItemParsed as e:
-      item = item_class()
-      item.parse_token(item_enum(m.lastindex).name, m.group(m.lastindex))
-      yield e.args[0]
-  if item.in_progress:
-    yield item.close()
-
-
 def format_output(output):
   "Format output."
   return
+
+
+def format_outputs(outputs):
+  "Format variables."
+  if not outputs:
+    return
+  outputs.sort(key=lambda v: v.name)
+  yield '| name | description |'
+  yield '|---|---|'
+  for o in outputs:
+    yield '| {name} | {description} |'.format(
+        name=o.name, description=o.description)
+
+
+def format_type(type_spec):
+  "Format variable type."
+  if type_spec.startswith('map(object'):
+    return 'object map'
+  return RE_TYPE_FORMAT.sub(r'\1', type_spec)
 
 
 def format_variables(variables, required_first=True):
@@ -149,21 +154,23 @@ def format_variables(variables, required_first=True):
   for v in variables:
     yield '| {name} | {description} | {type} | {required}'.format(
         name=v.name if v.required else '*%s*' % v.name,
-        description=v.description, type=RE_TYPE_FORMAT.sub(r'\1', v.type),
+        description=v.description, type=format_type(v.type),
         required='✓' if v.required else ''
     )
 
 
-def format_outputs(outputs):
-  "Format variables."
-  if not outputs:
-    return
-  outputs.sort(key=lambda v: v.name)
-  yield '| name | description |'
-  yield '|---|---|'
-  for o in outputs:
-    yield '| {name} | {description} |'.format(
-        name=o.name, description=o.description)
+def parse_items(content, item_re, item_enum, item_class, item_data_class):
+  "Parse variable or output items in data."
+  item = item_class()
+  for m in item_re.finditer(content):
+    try:
+      item.parse_token(item_enum(m.lastindex).name, m.group(m.lastindex))
+    except ItemParsed as e:
+      item = item_class()
+      item.parse_token(item_enum(m.lastindex).name, m.group(m.lastindex))
+      yield e.args[0]
+  if item.in_progress:
+    yield item.close()
 
 
 @click.command()
