@@ -22,11 +22,13 @@ import re
 import click
 
 
-RE_TYPE = re.compile(r'([\(\{\}\)])')
+MARK_BEGIN = '<!-- BEGIN TFDOC -->'
+MARK_END = '<!-- END TFDOC -->'
 RE_OUTPUTS = re.compile(r'''(?smx)
     (?:^\s*output\s*"([^"]+)"\s*\{$) |
     (?:^\s*description\s*=\s*"([^"]+)"\s*$)
 ''')
+RE_TYPE = re.compile(r'([\(\{\}\)])')
 RE_VARIABLES = re.compile(r'''(?smx)
     # empty lines
     (^\s*$) |
@@ -169,6 +171,17 @@ def format_variables(variables, required_first=True):
     )
 
 
+def get_doc(variables, outputs):
+  "Return formatted documentation."
+  buffer = ['## Variables\n']
+  for line in format_variables(variables):
+    buffer.append(line)
+  buffer.append('\n## Outputs\n')
+  for line in format_outputs(outputs):
+    buffer.append(line)
+  return '\n'.join(buffer)
+
+
 def parse_items(content, item_re, item_enum, item_class, item_data_class):
   "Parse variable or output items in data."
   item = item_class()
@@ -183,9 +196,25 @@ def parse_items(content, item_re, item_enum, item_class, item_data_class):
     yield item.close()
 
 
+def replace_doc(module, doc):
+  "Replace document in module's README.md file."
+  try:
+    readme = open(os.path.join(module, 'README.md')).read()
+    m = re.search('(?sm)%s.*%s' % (MARK_BEGIN, MARK_END), readme)
+    if not m:
+      raise SystemExit('Pattern not found in README file.')
+    replacement = "{pre}{begin}\n{doc}\n{end}{post}".format(
+        pre=readme[:m.start()], begin=MARK_BEGIN, doc=doc,
+        end=MARK_END, post=readme[m.end():])
+    open(os.path.join(module, 'README.md'), 'w').write(replacement)
+  except (IOError, OSError) as e:
+    raise SystemExit('Error replacing in README: %s' % e)
+
+
 @click.command()
 @click.argument('module', type=click.Path(exists=True))
-def main(module=None):
+@click.option('--replace/--no-replace', default=True)
+def main(module=None, replace=True):
   "Program entry point."
   try:
     with open(os.path.join(module, 'variables.tf')) as file:
@@ -196,13 +225,11 @@ def main(module=None):
           file.read(), RE_OUTPUTS, OutputToken, Output, OutputData)]
   except (IOError, OSError) as e:
     raise SystemExit(e)
-  print('## Variables\n')
-  for line in format_variables(variables):
-    print(line)
-  print()
-  print('## Outputs\n')
-  for line in format_outputs(outputs):
-    print(line)
+  doc = get_doc(variables, outputs)
+  if replace:
+    replace_doc(module, doc)
+  else:
+    print(doc)
 
 
 if __name__ == '__main__':
