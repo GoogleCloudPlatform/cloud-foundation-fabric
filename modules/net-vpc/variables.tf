@@ -89,12 +89,27 @@ variable "shared_vpc_service_projects" {
 variable "subnets" {
   description = "The list of subnets being created"
   type = map(object({
-    ip_cidr_range            = string
-    region                   = string
-    description              = string
-    private_ip_google_access = bool
-    enable_flow_logs         = bool
-    secondary_ip_range       = map(string)
+    ip_cidr_range      = string
+    region             = string
+    secondary_ip_range = map(string)
   }))
   default = {}
+}
+
+variable "subnet_descriptions" {
+  description = "Optional map of subnet descriptions, keyed by subnet name."
+  type        = map(string)
+  default     = {}
+}
+
+variable "subnet_flow_logs" {
+  description = "Optional map of boolean to control flow logs (default is disabled), keyed by subnet name."
+  type        = map(bool)
+  default     = {}
+}
+
+variable "subnet_private_access" {
+  description = "Optional map of boolean to control private Google access (default is enabled), keyed by subnet name."
+  type        = map(bool)
+  default     = {}
 }

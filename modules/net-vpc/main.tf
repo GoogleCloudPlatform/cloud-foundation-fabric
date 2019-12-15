@@ -15,17 +15,12 @@
  */
 
 locals {
-  # map of log configs for all subnets to reduce the number of lookups needed
-  subnet_log_configs = {
-    for name, attrs in var.subnets : name => lookup(var.log_configs, name, {})
-  }
-  # map of log config that reflects enable_flow_logs and sets defaults
   log_configs = {
     for name, attrs in var.subnets : name => (
-      attrs.enable_flow_logs
+      lookup(var.subnet_flow_logs, name, false)
       ? [{
         for key, value in var.log_config_defaults : key => lookup(
-          local.subnet_log_configs[name], key, value
+          lookup(var.log_configs, name, {}), key, value
         )
       }]
       : []
@@ -64,18 +59,18 @@ resource "google_compute_shared_vpc_service_project" "service_projects" {
 }
 
 resource "google_compute_subnetwork" "subnetwork" {
-  for_each                 = var.subnets
-  project                  = var.project_id
-  network                  = google_compute_network.network.name
-  name                     = each.key
-  description              = each.value.description
-  ip_cidr_range            = each.value.ip_cidr_range
-  region                   = each.value.region
-  private_ip_google_access = each.value.private_ip_google_access
+  for_each      = var.subnets
+  project       = var.project_id
+  network       = google_compute_network.network.name
+  region        = each.value.region
+  name          = each.key
+  ip_cidr_range = each.value.ip_cidr_range
   secondary_ip_range = [
     for name, range in each.value.secondary_ip_range :
     { range_name = name, ip_cidr_range = range }
   ]
+  description              = lookup(var.subnet_descriptions, each.key, "Terraform-managed.")
+  private_ip_google_access = lookup(var.subnet_private_access, each.key, true)
   dynamic "log_config" {
     for_each = local.log_configs[each.key]
     content {
