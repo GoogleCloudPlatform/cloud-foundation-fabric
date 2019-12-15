@@ -8,6 +8,8 @@ TODO(ludoo): add example
 
 ## Variables
 
+## Variables
+
 | name | description | type | required |
 |---|---|:---: |:---:|
 | name | The name of the network being created | string | ✓
@@ -20,6 +22,10 @@ TODO(ludoo): add example
 | *log_configs* | Map of per-subnet optional configurations for flow logs when enabled. | map |
 | *routing_mode* | The network routing mode (default 'GLOBAL') | string |
 | *shared_vpc_host* | Makes this project a Shared VPC host if 'true' (default 'false') | bool |
+| *shared_vpc_service_projects* | Shared VPC service projects to register with this host | list |
+| *subnet_descriptions* | Optional map of subnet descriptions, keyed by subnet name. | map |
+| *subnet_flow_logs* | Optional map of boolean to control flow logs (default is disabled), keyed by subnet name. | map |
+| *subnet_private_access* | Optional map of boolean to control private Google access (default is enabled), keyed by subnet name. | map |
 | *subnets* | The list of subnets being created | map |
 
 ## Outputs
@@ -36,3 +42,4 @@ TODO(ludoo): add example
 | subnet_secondary_ranges | Map of subnet secondary ranges keyed by name. |
 | subnet_self_links | Map of subnet self links keyed by name. |
 | subnets | Subnet resources. |
+
