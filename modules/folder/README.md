@@ -1,4 +1,4 @@
-# Google Cloud Folder module
+# Google Cloud Folder Module
 
 ## Variables
 

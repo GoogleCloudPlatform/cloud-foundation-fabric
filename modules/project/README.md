@@ -13,25 +13,27 @@ The resources/services/activations/deletions that this module will create/trigge
 
 ## Variables
 
+## Variables
+
 | name | description | type | required |
 |---|---|:---: |:---:|
 | name | Project name and id suffix. | string | ✓
 | parent | The resource name of the parent Folder or Organization. Must be of the form folders/folder_id or organizations/org_id. | string | ✓
 | prefix | Prefix used to generate project id and name. | string | ✓
-| *auto_create_network* | Whether to create the default network for the project | bool |
-| *billing_account* | Billing account id. | string |
-| *custom_roles* | Map of role name => list of permissions to create in this project. | map |
-| *iam_authoritative_members* | Map of member lists used to set authoritative bindings, keyed by role. | map |
-| *iam_authoritative_roles* | List of roles used to set authoritative bindings. | list |
-| *iam_non_authoritative_members* | Map of member lists used to set non authoritative bindings, keyed by role. | map |
-| *iam_non_authoritative_roles* | List of roles used to set non authoritative bindings. | list |
-| *labels* | Resource labels. | map |
-| *lien_reason* | If non-empty, creates a project lien with this description. | string |
-| *oslogin* | Enable OS Login. | bool |
-| *oslogin_admins* | List of IAM-style identities that will be granted roles necessary for OS Login administrators. | list |
-| *oslogin_users* | List of IAM-style identities that will be granted roles necessary for OS Login users. | list |
-| *owners* | IAM-style identities that will be granted non-authoritative viewer role. | list |
-| *services* | Service APIs to enable. | list |
+| *auto_create_network* | Whether to create the default network for the project | bool | 
+| *billing_account* | Billing account id. | string | 
+| *custom_roles* | Map of role name => list of permissions to create in this project. | map | 
+| *iam_members* | Map of member lists used to set authoritative bindings, keyed by role. | map | 
+| *iam_nonauth_members* | Map of member lists used to set non authoritative bindings, keyed by role. | map | 
+| *iam_nonauth_roles* | List of roles used to set non authoritative bindings. | list | 
+| *iam_roles* | List of roles used to set authoritative bindings. | list | 
+| *labels* | Resource labels. | map | 
+| *lien_reason* | If non-empty, creates a project lien with this description. | string | 
+| *oslogin* | Enable OS Login. | bool | 
+| *oslogin_admins* | List of IAM-style identities that will be granted roles necessary for OS Login administrators. | list | 
+| *oslogin_users* | List of IAM-style identities that will be granted roles necessary for OS Login users. | list | 
+| *owners* | IAM-style identities that will be granted non-authoritative viewer role. | list | 
+| *services* | Service APIs to enable. | list | 
 
 ## Outputs
 
