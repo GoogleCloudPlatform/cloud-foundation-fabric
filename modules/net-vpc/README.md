@@ -6,6 +6,7 @@ TODO(ludoo): add description.
 
 TODO(ludoo): add example
 
+<!-- BEGIN TFDOC -->
 ## Variables
 
 | name | description | type | required |
@@ -40,4 +41,5 @@ TODO(ludoo): add example
 | subnet_secondary_ranges | Map of subnet secondary ranges keyed by name. |
 | subnet_self_links | Map of subnet self links keyed by name. |
 | subnets | Subnet resources. |
+<!-- END TFDOC -->
 

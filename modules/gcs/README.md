@@ -1,22 +1,21 @@
 # Google Cloud Storage Module
 
-## Variables
-
+<!-- BEGIN TFDOC -->
 ## Variables
 
 | name | description | type | required |
 |---|---|:---: |:---:|
-| names | Bucket name suffixes. | list | ✓
+| names | Bucket name suffixes. | list(string) | ✓
 | project_id | Bucket project id. | string | ✓
-| *bucket_policy_only* | Optional map to disable object ACLS keyed by name, defaults to true. | map |
-| *force_destroy* | Optional map to set force destroy keyed by name, defaults to false. | map |
-| *iam_members* | List of IAM members keyed by name and role. | map |
-| *iam_roles* | List of IAM roles keyed by name. | map |
-| *labels* | Labels to be attached to all buckets. | map |
-| *location* | Bucket location. | string |
-| *prefix* | Prefix used to generate the bucket name. | string |
-| *storage_class* | Bucket storage class. | string |
-| *versioning* | Optional map to set versioning keyed by name, defaults to false. | map |
+| *bucket_policy_only* | Optional map to disable object ACLS keyed by name, defaults to true. | map(bool) | 
+| *force_destroy* | Optional map to set force destroy keyed by name, defaults to false. | map(bool) | 
+| *iam_members* | List of IAM members keyed by name and role. | map(map(list(string))) | 
+| *iam_roles* | List of IAM roles keyed by name. | map(list(string)) | 
+| *labels* | Labels to be attached to all buckets. | map(string) | 
+| *location* | Bucket location. | string | 
+| *prefix* | Prefix used to generate the bucket name. | string | 
+| *storage_class* | Bucket storage class. | string | 
+| *versioning* | Optional map to set versioning keyed by name, defaults to false. | map(bool) | 
 
 ## Outputs
 
@@ -30,4 +29,4 @@
 | url | Bucket URL (for single use). |
 | urls | Bucket URLs. |
 | urls_list | List of bucket URLs. |
-
+<!-- END TFDOC -->
