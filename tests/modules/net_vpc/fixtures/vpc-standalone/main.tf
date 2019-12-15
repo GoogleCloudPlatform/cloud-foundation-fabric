@@ -26,7 +26,7 @@ variable "project_id" {
 }
 
 module "vpc-simple" {
-  source     = "../../../../net-vpc"
+  source     = "../../../../../modules/net-vpc"
   project_id = var.project_id
   name       = var.name
 }

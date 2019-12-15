@@ -51,13 +51,12 @@ def test_subnet_regions(result):
 def test_secondary_ip_ranges(result):
   "Test subnet secondary ranges output."
   for name, attrs in result.plan.variables['subnets'].items():
-    ranges = [{'range_name': k, 'ip_cidr_range': v}
-              for k, v in attrs['secondary_ip_range'].items()]
-    assert ranges == result.output['subnet_secondary_ranges'][name]
+    assert attrs['secondary_ip_range'] == result.output['subnet_secondary_ranges'][name]
 
 
 def test_flow_logs(result):
   "Test that log config is set using the enable flow logs variable."
+  enable_flow_logs = result.plan.variables['subnet_flow_logs']
   for name, attrs in result.plan.variables['subnets'].items():
-    log_config = 1 if attrs['enable_flow_logs'] else 0
+    log_config = enable_flow_logs.get(name, False)
     assert len(result.output['subnets'][name]['log_config']) == log_config

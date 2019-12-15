@@ -23,28 +23,19 @@ variable "subnets" {
   description = "Subnet definitions."
   default = {
     subnet-a = {
-      ip_cidr_range            = "192.168.0.0/24"
-      region                   = "europe-west1"
-      description              = "First subnet."
-      private_ip_google_access = false
-      enable_flow_logs         = false
-      secondary_ip_range       = {}
+      ip_cidr_range      = "192.168.0.0/24"
+      region             = "europe-west1"
+      secondary_ip_range = {}
     },
     subnet-b = {
-      ip_cidr_range            = "192.168.1.0/24"
-      region                   = "europe-west1"
-      description              = "Second subnet."
-      private_ip_google_access = false
-      enable_flow_logs         = false
-      secondary_ip_range       = {}
+      ip_cidr_range      = "192.168.1.0/24"
+      region             = "europe-west1"
+      secondary_ip_range = {}
     },
     subnet-c = {
-      ip_cidr_range            = "192.168.2.0/24"
-      region                   = "europe-west1"
-      description              = "Third subnet."
-      private_ip_google_access = false
-      enable_flow_logs         = false
-      secondary_ip_range       = {}
+      ip_cidr_range      = "192.168.2.0/24"
+      region             = "europe-west1"
+      secondary_ip_range = {}
     },
   }
 }
@@ -63,7 +54,7 @@ resource "google_service_account" "binding_members" {
 }
 
 module "vpc" {
-  source      = "../../../../net-vpc"
+  source      = "../../../../../modules/net-vpc"
   project_id  = var.project_id
   name        = "vpc-iam-bindings"
   description = "Created by the vpc-iam-bindings fixture."

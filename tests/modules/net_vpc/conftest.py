@@ -20,7 +20,7 @@ import pytest
 
 
 # path of this folder relative to root
-_PATH = os.path.sep.join(os.path.abspath(__file__).split(os.path.sep)[-3:-1])
+_PATH = os.path.sep.join(os.path.abspath(__file__).split(os.path.sep)[-4:-1])
 
 
 @pytest.fixture(scope='module')
