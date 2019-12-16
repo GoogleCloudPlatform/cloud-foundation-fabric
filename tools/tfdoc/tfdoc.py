@@ -26,7 +26,8 @@ MARK_BEGIN = '<!-- BEGIN TFDOC -->'
 MARK_END = '<!-- END TFDOC -->'
 RE_OUTPUTS = re.compile(r'''(?smx)
     (?:^\s*output\s*"([^"]+)"\s*\{$) |
-    (?:^\s*description\s*=\s*"([^"]+)"\s*$)
+    (?:^\s*description\s*=\s*"([^"]+)"\s*$) |
+    (?:^\s*sensitive\s*=\s*(\S+)\s*$)
 ''')
 RE_TYPE = re.compile(r'([\(\{\}\)])')
 RE_VARIABLES = re.compile(r'''(?smx)
@@ -48,8 +49,8 @@ RE_VARIABLES = re.compile(r'''(?smx)
     (?:^\s*(\S.*?)$)
 ''')
 
-OutputData = collections.namedtuple('Output', 'name description')
-OutputToken = enum.Enum('OutputToken', 'NAME DESCRIPTION')
+OutputData = collections.namedtuple('Output', 'name description sensitive')
+OutputToken = enum.Enum('OutputToken', 'NAME DESCRIPTION SENSITIVE')
 VariableData = collections.namedtuple(
     'Variable', 'name description type default required')
 VariableToken = enum.Enum(
@@ -66,7 +67,7 @@ class Output(object):
 
   def __init__(self):
     self.in_progress = False
-    self.name = self.description = None
+    self.name = self.description = self.sensitive = None
 
   def parse_token(self, token_type, token_data):
     if token_type == 'NAME':
@@ -74,11 +75,11 @@ class Output(object):
         raise ItemParsed(self.close())
       self.in_progress = True
       self.name = token_data
-    elif token_type == 'DESCRIPTION':
+    else:
       setattr(self, token_type.lower(), token_data)
 
   def close(self):
-    return OutputData(self.name, self.description)
+    return OutputData(self.name, self.description, self.sensitive)
 
 
 class Variable(object):
@@ -131,11 +132,12 @@ def format_outputs(outputs):
   if not outputs:
     return
   outputs.sort(key=lambda v: v.name)
-  yield '| name | description |'
-  yield '|---|---|'
+  yield '| name | description | sensitive |'
+  yield '|---|---|:---:|'
   for o in outputs:
-    yield '| {name} | {description} |'.format(
-        name=o.name, description=o.description)
+    yield '| {name} | {description} | {sensitive} |'.format(
+        name=o.name, description=o.description,
+        sensitive='✓' if o.sensitive else '')
 
 
 def format_type(type_spec):
