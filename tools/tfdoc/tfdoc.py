@@ -123,7 +123,7 @@ class Variable(object):
 
 
 def format_outputs(outputs):
-  "Format variables."
+  "Format outputs."
   if not outputs:
     return
   outputs.sort(key=lambda v: v.name)
@@ -161,7 +161,7 @@ def format_variables(variables, required_first=True):
   yield '| name | description | type | required |'
   yield '|---|---|:---: |:---:|'
   for v in variables:
-    yield '| {name} | {description} | {type} | {required}'.format(
+    yield '| {name} | {description} | `{type}` | {required}'.format(
         name=v.name if v.required else '*%s*' % v.name,
         description=v.description, type=format_type(v.type),
         required='✓' if v.required else ''
