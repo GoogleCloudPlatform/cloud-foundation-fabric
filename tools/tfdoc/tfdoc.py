@@ -122,11 +122,6 @@ class Variable(object):
                         self.default is None)
 
 
-def format_output(output):
-  "Format output."
-  return
-
-
 def format_outputs(outputs):
   "Format variables."
   if not outputs:
