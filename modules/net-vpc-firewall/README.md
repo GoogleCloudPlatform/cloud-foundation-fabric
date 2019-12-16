@@ -72,22 +72,22 @@ module "net-firewall" {
 
 | name | description | type | required |
 |---|---|:---: |:---:|
-| network | Name of the network this set of firewall rules applies to. | string | ✓
-| project_id | Project id of the project that holds the network. | string | ✓
-| *admin_ranges* | IP CIDR ranges that have complete access to all subnets. | list(string) | 
-| *admin_ranges_enabled* | Enable admin ranges-based rules. | bool | 
-| *custom_rules* | List of custom rule definitions (refer to variables file for syntax). | map(object({...})) | 
-| *http_source_ranges* | List of IP CIDR ranges for tag-based HTTP rule, defaults to 0.0.0.0/0. | list(string) | 
-| *https_source_ranges* | List of IP CIDR ranges for tag-based HTTPS rule, defaults to 0.0.0.0/0. | list(string) | 
-| *ssh_source_ranges* | List of IP CIDR ranges for tag-based SSH rule, defaults to 0.0.0.0/0. | list(string) | 
+| network | Name of the network this set of firewall rules applies to. | `string` | ✓
+| project_id | Project id of the project that holds the network. | `string` | ✓
+| *admin_ranges* | IP CIDR ranges that have complete access to all subnets. | `list(string)` | 
+| *admin_ranges_enabled* | Enable admin ranges-based rules. | `bool` | 
+| *custom_rules* | List of custom rule definitions (refer to variables file for syntax). | `map(object({...}))` | 
+| *http_source_ranges* | List of IP CIDR ranges for tag-based HTTP rule, defaults to 0.0.0.0/0. | `list(string)` | 
+| *https_source_ranges* | List of IP CIDR ranges for tag-based HTTPS rule, defaults to 0.0.0.0/0. | `list(string)` | 
+| *ssh_source_ranges* | List of IP CIDR ranges for tag-based SSH rule, defaults to 0.0.0.0/0. | `list(string)` | 
 
 ## Outputs
 
-| name | description |
-|---|---|
-| admin_ranges | Admin ranges data. |
-| custom_egress_allow_rules | Custom egress rules with allow blocks. |
-| custom_egress_deny_rules | Custom egress rules with allow blocks. |
-| custom_ingress_allow_rules | Custom ingress rules with allow blocks. |
-| custom_ingress_deny_rules | Custom ingress rules with deny blocks. |
+| name | description | sensitive |
+|---|---|:---:|
+| admin_ranges | Admin ranges data. |  |
+| custom_egress_allow_rules | Custom egress rules with allow blocks. |  |
+| custom_egress_deny_rules | Custom egress rules with allow blocks. |  |
+| custom_ingress_allow_rules | Custom ingress rules with allow blocks. |  |
+| custom_ingress_deny_rules | Custom ingress rules with deny blocks. |  |
 <!-- END TFDOC -->
