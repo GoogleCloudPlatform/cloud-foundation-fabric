@@ -13,7 +13,6 @@
 | *config_timeouts* | Timeout configurations. | `object({...})` | 
 | *create_router* | Create router for Cloud NAT instead of using existing one. | `bool` | 
 | *name* | Name of the Cloud NAT resource. | `string` | 
-| *network* | Name of the VPC where optional router will be created. | `string` | 
 | *prefix* | Optional prefix that will be prepended to resource names. | `string` | 
 | *router_asn* | Router ASN used for auto-created router. | `number` | 
 | *router_name* | Name of the existing or auto-created router. | `string` | 

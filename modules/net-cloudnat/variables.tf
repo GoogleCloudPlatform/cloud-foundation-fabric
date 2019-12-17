@@ -60,12 +60,6 @@ variable "name" {
   default     = "cloud-nat"
 }
 
-variable "network" {
-  description = "Name of the VPC where optional router will be created."
-  type        = string
-  default     = ""
-}
-
 variable "prefix" {
   description = "Optional prefix that will be prepended to resource names."
   type        = string
