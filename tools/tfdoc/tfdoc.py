@@ -137,6 +137,8 @@ def format_outputs(outputs):
 
 def format_type(type_spec):
   "Format variable type."
+  if not type_spec:
+    return ''
   buffer = []
   stack = []
   for t in RE_TYPE.split(type_spec.split("\n")[0]):
