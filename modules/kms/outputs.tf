@@ -36,5 +36,8 @@ output "keys" {
 
 output "key_self_links" {
   description = "Key self links."
-  value       = [for name in var.keys : google_kms_crypto_key.keys[name].self_link]
+  value = {
+    for name in var.keys :
+    name => google_kms_crypto_key.keys[name].self_link
+  }
 }
