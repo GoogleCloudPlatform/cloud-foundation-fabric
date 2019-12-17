@@ -35,6 +35,7 @@ locals {
     for pair in local.iam_pairs :
     "${pair.subnet}-${pair.role}" => pair
   }
+  peer_network = var.peering_config == null ? null : element(reverse(split("/", var.peering_config.peer_vpc_self_link)), 0)
 }
 
 resource "google_compute_network" "network" {
@@ -43,6 +44,27 @@ resource "google_compute_network" "network" {
   description             = var.description
   auto_create_subnetworks = var.auto_create_subnetworks
   routing_mode            = var.routing_mode
+}
+
+resource "google_compute_network_peering" "local" {
+  provider             = google-beta
+  count                = var.peering_config == null ? 0 : 1
+  name                 = "${google_compute_network.network.name}-${local.peer_network}"
+  network              = google_compute_network.network.self_link
+  peer_network         = var.peering_config.peer_vpc_self_link
+  export_custom_routes = var.peering_config.export_routes
+  import_custom_routes = var.peering_config.import_routes
+}
+
+resource "google_compute_network_peering" "remote" {
+  provider             = google-beta
+  count                = var.peering_config == null ? 0 : 1
+  name                 = "${local.peer_network}-${google_compute_network.network.name}"
+  network              = var.peering_config.peer_vpc_self_link
+  peer_network         = google_compute_network.network.self_link
+  export_custom_routes = var.peering_config.import_routes
+  import_custom_routes = var.peering_config.export_routes
+  depends_on           = [google_compute_network_peering.local]
 }
 
 resource "google_compute_shared_vpc_host_project" "shared_vpc_host" {
@@ -63,7 +85,7 @@ resource "google_compute_subnetwork" "subnetwork" {
   project       = var.project_id
   network       = google_compute_network.network.name
   region        = each.value.region
-  name          = each.key
+  name          = "${var.name}-${each.key}"
   ip_cidr_range = each.value.ip_cidr_range
   secondary_ip_range = [
     for name, range in each.value.secondary_ip_range :

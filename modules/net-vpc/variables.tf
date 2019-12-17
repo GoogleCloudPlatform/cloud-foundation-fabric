@@ -63,6 +63,16 @@ variable "name" {
   type        = string
 }
 
+variable "peering_config" {
+  description = "VPC peering configuration."
+  type = object({
+    peer_vpc_self_link = string
+    export_routes      = bool
+    import_routes      = bool
+  })
+  default = null
+}
+
 variable "project_id" {
   description = "The ID of the project where this VPC will be created"
   type        = string
