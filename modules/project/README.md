@@ -41,6 +41,7 @@ The resources/services/activations/deletions that this module will create/trigge
 | cloudsvc_service_account | Cloud services service account (depends on services). |  |
 | custom_roles | Ids of the created custom roles. |  |
 | gce_service_account | Default GCE service account (depends on services). |  |
+| gcr_service_account | Default GCR service account (depends on services). |  |
 | gke_service_account | Default GKE service account (depends on services). |  |
 | name | Name (depends on services). |  |
 | number | Project number (depends on services). |  |
