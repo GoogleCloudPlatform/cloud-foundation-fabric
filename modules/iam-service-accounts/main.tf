@@ -43,8 +43,12 @@ locals {
       ]
     ]
   ])
+  keys = {
+    for name in var.names :
+    name => base64encode(google_service_account_key.keys[name].private_key)
+  }
   prefix = var.prefix != "" ? "${var.prefix}-" : ""
-  resource = local.resources[var.names[0]]
+  resource = lookup(local.resources, var.names[0], {})
   resource_iam_emails = {
     for name, resource in local.resources : name => "serviceAccount: ${resource.email}"
   }

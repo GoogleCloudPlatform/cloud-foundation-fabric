@@ -26,53 +26,41 @@ output "service_accounts" {
 
 output "email" {
   description = "Service account email (for single use)."
-  value       = local.resource.email
+  value       = local.resource == null ? null : local.resource.email
 }
 
 output "iam_email" {
   description = "IAM-format service account email (for single use)."
-  value       = "serviceAccount:${local.resource.email}"
+  value       = local.resource == null ? null : "serviceAccount:${local.resource.email}"
 }
 
 output "key" {
   description = "Service account key (for single use)."
-  value       = data.template_file.keys[0].rendered
+  value       = lookup(local.keys, var.names[0], null)
 }
 
 output "emails" {
   description = "Service account emails."
-  value       = zipmap(var.names, slice(local.emails, 0, length(var.names)))
+  value       = { for name, resource in local.resources : name => resource.email }
 }
 
 output "iam_emails" {
   description = "IAM-format service account emails."
-  value       = zipmap(var.names, slice(local.iam_emails, 0, length(var.names)))
+  value       = { for name, resource in local.resources : name => "serviceAccount:${resource.email}" }
 }
 
 output "emails_list" {
   description = "Service account emails."
-  value       = local.emails
+  value       = [for name, resource in local.resources : resource.email]
 }
 
 output "iam_emails_list" {
   description = "IAM-format service account emails."
-  value       = local.iam_emails
-}
-
-data "template_file" "keys" {
-  count    = length(var.names)
-  template = "$${key}"
-
-  vars = {
-    key = var.generate_keys ? base64decode(google_service_account_key.keys[count.index].private_key) : ""
-  }
+  value       = [for name, resource in local.resources : "serviceAccount:${resource.email}"]
 }
 
 output "keys" {
   description = "Map of service account keys."
   sensitive   = true
-  value = zipmap(
-    var.names,
-    slice(data.template_file.keys[*].rendered, 0, length(var.names))
-  )
+  value       = local.keys
 }
