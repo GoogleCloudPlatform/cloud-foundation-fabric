@@ -19,9 +19,14 @@ output "keyring" {
   value       = google_kms_key_ring.key_ring
 }
 
+output "location" {
+  description = "Keyring self link."
+  value       = google_kms_key_ring.key_ring.location
+}
+
 output "name" {
   description = "Keyring self link."
-  value       = google_kms_key_ring.key_ring.self_link
+  value       = google_kms_key_ring.key_ring.name
 }
 
 output "self_link" {
@@ -31,13 +36,10 @@ output "self_link" {
 
 output "keys" {
   description = "Key resources."
-  value       = [for name in var.keys : google_kms_crypto_key.keys[name]]
+  value       = local.keys
 }
 
 output "key_self_links" {
   description = "Key self links."
-  value = {
-    for name in var.keys :
-    name => google_kms_crypto_key.keys[name].self_link
-  }
+  value       = { for name, resource in local.keys : name => resource.self_link }
 }
