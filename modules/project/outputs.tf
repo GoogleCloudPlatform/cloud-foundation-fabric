@@ -44,6 +44,12 @@ output "gce_service_account" {
   depends_on  = [google_project_service.project_services]
 }
 
+output "gcr_service_account" {
+  description = "Default GCR service account (depends on services)."
+  value       = local.gcr_service_account
+  depends_on  = [google_project_service.project_services]
+}
+
 output "gke_service_account" {
   description = "Default GKE service account (depends on services)."
   value       = local.gke_service_account
