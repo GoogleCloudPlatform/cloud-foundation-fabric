@@ -1,0 +1,109 @@
+/**
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+locals {
+  iam_billing_pairs = flatten([
+    for entity, roles in var.iam_billing_roles : [
+      for role in roles : [
+        for name in var.names : { entity = entity, role = role, name = name }
+      ]
+    ]
+  ])
+  iam_folder_pairs = flatten([
+    for entity, roles in var.iam_folder_roles : [
+      for role in roles : [
+        for name in var.names : { entity = entity, role = role, name = name }
+      ]
+    ]
+  ])
+  iam_organization_pairs = flatten([
+    for entity, roles in var.iam_organization_roles : [
+      for role in roles : [
+        for name in var.names : { entity = entity, role = role, name = name }
+      ]
+    ]
+  ])
+  iam_project_pairs = flatten([
+    for entity, roles in var.iam_project_roles : [
+      for role in roles : [
+        for name in var.names : { entity = entity, role = role, name = name }
+      ]
+    ]
+  ])
+  prefix = var.prefix != "" ? "${var.prefix}-" : ""
+  resource = local.resources[var.names[0]]
+  resource_iam_emails = {
+    for name, resource in local.resources : name => "serviceAccount: ${resource.email}"
+  }
+  resources = {
+    for name in var.names : google_service_account.service_accounts[name]
+  }
+}
+
+resource "google_service_account" "service_accounts" {
+  for_each     = toset(var.names)
+  project      = var.project_id
+  account_id   = "${local.prefix}${lower(each.value)}"
+  display_name = "Terraform-managed."
+}
+
+resource "google_service_account_key" "keys" {
+  for_each           = var.generate_keys ? toset(var.names) : toset([])
+  service_account_id = google_service_account.service_accounts[each.value].email
+}
+
+resource "google_billing_account_iam_member" "roles" {
+  for_each = {
+    for pair in local.iam_billing_pairs :
+    "${pair.name}-${pair.entity}-${pair.role}" => pair
+  }
+  billing_account_id = each.value.entity
+  role               = each.value.role
+  member             = local.resource_iam_emails[each.value.name]
+}
+
+resource "google_folder_iam_member" "roles" {
+  for_each = {
+    for pair in local.iam_folder_pairs :
+    "${pair.name}-${pair.entity}-${pair.role}" => pair
+  }
+  folder = each.value.entity
+  role   = each.value.role
+  member = local.resource_iam_emails[each.value.name]
+}
+
+resource "google_organization_iam_member" "roles" {
+  for_each = {
+    for pair in local.iam_organization_pairs :
+    "${pair.name}-${pair.entity}-${pair.role}" => pair
+  }
+  org_id = each.value.entity
+  role   = each.value.role
+  member = local.resource_iam_emails[each.value.name]
+}
+
+resource "google_project_iam_member" "project-roles" {
+  for_each = {
+    for pair in local.iam_project_pairs :
+    "${pair.name}-${pair.entity}-${pair.role}" => pair
+  }
+  project = each.value.entity
+  role    = each.value.role
+  member  = local.resource_iam_emails[each.value.name]
+}
+
+# TODO(ludoo): link from README
+# ref: https://cloud.google.com/vpc/docs/shared-vpc
