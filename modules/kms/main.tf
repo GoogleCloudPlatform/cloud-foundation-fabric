@@ -16,10 +16,10 @@
 
 locals {
   # distinct is needed to make the expanding function argument work
-  iam_pairs = concat([], distinct([
+  iam_pairs = flatten([
     for name, roles in var.iam_roles :
     [for role in roles : { name = name, role = role }]
-  ])...)
+  ])
   iam_keypairs = {
     for pair in local.iam_pairs :
     "${pair.name}-${pair.role}" => pair
