@@ -46,7 +46,7 @@ output "emails" {
 
 output "iam_emails" {
   description = "IAM-format service account emails."
-  value       = { for name, resource in local.resources : name => "serviceAccount:${resource.email}" }
+  value       = local.resource_iam_emails
 }
 
 output "emails_list" {
