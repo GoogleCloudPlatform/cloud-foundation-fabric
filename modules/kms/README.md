@@ -16,8 +16,8 @@ The resources/services/activations/deletions that this module will create/trigge
 | keyring | Keyring name. | `string` | ✓
 | location | Location for the keyring. | `string` | ✓
 | project_id | Project id where the keyring will be created. | `string` | ✓
-| *iam_members* | List of IAM members keyed by name and role. | `map(map(list(string)))` | 
-| *iam_roles* | List of IAM roles keyed by name. | `map(list(string))` | 
+| *iam_members* | IAM members keyed by key name and role. | `map(map(list(string)))` | 
+| *iam_roles* | IAM roles keyed by key name. | `map(list(string))` | 
 | *key_attributes* | Optional key attributes per key. | `map(object({...}))` | 
 | *key_defaults* | Key attribute defaults. | `object({...})` | 
 | *keys* | Key names. | `list(string)` | 
@@ -29,6 +29,7 @@ The resources/services/activations/deletions that this module will create/trigge
 | key_self_links | Key self links. |  |
 | keyring | Keyring resource. |  |
 | keys | Key resources. |  |
+| location | Keyring self link. |  |
 | name | Keyring self link. |  |
 | self_link | Keyring self link. |  |
 <!-- END TFDOC -->
