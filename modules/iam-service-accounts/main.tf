@@ -43,12 +43,24 @@ locals {
       ]
     ]
   ])
-  keys = var.generate_keys ? {
-    for name in var.names :
-    name => lookup(google_service_account_key.keys, name, null)
-  } : {}
-  prefix   = var.prefix != "" ? "${var.prefix}-" : ""
-  resource = lookup(local.resources, var.names[0], null)
+  keys = (
+    var.generate_keys
+    ? {
+      for name in var.names :
+      name => lookup(google_service_account_key.keys, name, null)
+    }
+    : {}
+  )
+  prefix = (
+    var.prefix != ""
+    ? "${var.prefix}-"
+    : ""
+  )
+  resource = (
+    length(var.names) > 0
+    ? lookup(local.resources, var.names[0], null)
+    : null
+  )
   resource_iam_emails = {
     for name, resource in local.resources :
     name => "serviceAccount:${resource.email}"
