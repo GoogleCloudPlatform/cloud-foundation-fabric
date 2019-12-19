@@ -76,16 +76,16 @@ variable "region" {
   type        = string
 }
 
-variable "router_name" {
-  description = "Name of the existing or auto-created router."
-  type        = string
-  default     = "cloud-nat"
-}
-
 variable "router_asn" {
   description = "Router ASN used for auto-created router."
   type        = number
   default     = 64514
+}
+
+variable "router_name" {
+  description = "Name of the existing or auto-created router."
+  type        = string
+  default     = "cloud-nat"
 }
 
 variable "router_network" {
