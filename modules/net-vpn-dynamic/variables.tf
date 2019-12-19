@@ -52,16 +52,19 @@ variable "region" {
   type        = string
 }
 
-variable "remote_ranges" {
-  description = "Remote IP CIDR ranges."
-  type        = list(string)
-  default     = []
-}
-
 variable "route_priority" {
   description = "Route priority, defaults to 1000."
   type        = number
   default     = 1000
+}
+
+variable "router_advertise_config" {
+  description = "Router custom advertisement configuration, ip_ranges is a map of range as key and description as value."
+  type = object({
+    all_subnets = bool
+    ip_ranges   = map(string)
+  })
+  default = null
 }
 
 variable "router_asn" {
@@ -73,22 +76,20 @@ variable "router_asn" {
 variable "router_name" {
   description = "Name of the existing or auto-created router."
   type        = string
-  default     = "vpn"
+  default     = ""
 }
 
 variable "tunnels" {
   description = "VPN tunnel configurations."
   type = map(object({
-    bgp_peer_address  = string
-    bgp_peer_asn      = number
-    bgp_session_range = list(string)
+    bgp_peer_address = string
+    bgp_peer_asn     = number
+    # each BGP session on the same Cloud Router must use a unique /30 CIDR
+    # from the 169.254.0.0/16 block.
+    bgp_session_range = string
     ike_version       = number
     peer_ip           = string
     shared_secret     = string
-    traffic_selectors = object({
-      local  = list(string)
-      remote = list(string)
-    })
   }))
   default = {}
 }

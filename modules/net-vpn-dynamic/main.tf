@@ -66,11 +66,25 @@ resource "google_compute_forwarding_rule" "udp-4500" {
 
 resource "google_compute_router" "router" {
   count   = var.create_router ? 1 : 0
-  name    = "${local.prefix}${var.router_name}"
+  name    = var.router_name != "" ? var.router_name : "vpn-${var.name}"
   project = var.project_id
   region  = var.region
-  network = var.router_network
+  network = var.network
   bgp {
+    advertise_mode = (
+      var.router_advertise_config == null ? "DEFAULT" : "CUSTOM"
+    )
+    advertised_groups = (var.router_advertise_config == null ? null : (
+      var.router_advertise_config.all_subnets ? ["ALL_SUBNETS"] : []
+    ))
+    dynamic advertised_ip_ranges {
+      for_each = var.router_advertise_config == null ? {} : var.router_advertise_config.ip_ranges
+      iterator = range
+      content {
+        range       = range.key
+        description = range.value
+      }
+    }
     asn = var.router_asn
   }
 }
@@ -83,7 +97,7 @@ resource "google_compute_router_peer" "bgp_peer" {
   router                    = local.router
   peer_ip_address           = each.value.bgp_peer_address
   peer_asn                  = each.value.bgp_peer_asn
-  advertised_route_priority = var.advertised_route_priority
+  advertised_route_priority = var.route_priority
   interface                 = google_compute_router_interface.router_interface[each.key].name
 }
 
@@ -93,7 +107,7 @@ resource "google_compute_router_interface" "router_interface" {
   region     = var.region
   name       = "${var.name}-${each.key}"
   router     = local.router
-  ip_range   = length(each.value.bgp_session_range) == 0 ? null : each.value.bgp_session_range
+  ip_range   = each.value.bgp_session_range == "" ? null : each.value.bgp_session_range
   vpn_tunnel = google_compute_vpn_tunnel.tunnels[each.key].name
 }
 
@@ -105,17 +119,16 @@ resource "google_compute_vpn_gateway" "gateway" {
 }
 
 resource "google_compute_vpn_tunnel" "tunnels" {
-  for_each                = var.tunnels
-  project                 = var.project_id
-  region                  = var.region
-  name                    = "${var.name}-${each.key}"
-  router                  = local.router
-  peer_ip                 = each.value.peer_ip
-  local_traffic_selector  = each.value.traffic_selectors.local
-  remote_traffic_selector = each.value.traffic_selectors.remote
-  ike_version             = each.value.ike_version
-  shared_secret           = each.value.shared_secret == "" ? local.secret : each.value.shared_secret
-  target_vpn_gateway      = google_compute_vpn_gateway.gateway.self_link
+  for_each           = var.tunnels
+  project            = var.project_id
+  region             = var.region
+  name               = "${var.name}-${each.key}"
+  router             = local.router
+  peer_ip            = each.value.peer_ip
+  ike_version        = each.value.ike_version
+  shared_secret      = each.value.shared_secret == "" ? local.secret : each.value.shared_secret
+  target_vpn_gateway = google_compute_vpn_gateway.gateway.self_link
+  depends_on         = [google_compute_forwarding_rule.esp]
 }
 
 resource "random_id" "secret" {

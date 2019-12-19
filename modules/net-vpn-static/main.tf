@@ -93,6 +93,7 @@ resource "google_compute_vpn_tunnel" "tunnels" {
   ike_version             = each.value.ike_version
   shared_secret           = each.value.shared_secret == "" ? local.secret : each.value.shared_secret
   target_vpn_gateway      = google_compute_vpn_gateway.gateway.self_link
+  depends_on              = [google_compute_forwarding_rule.esp]
 }
 
 resource "random_id" "secret" {
