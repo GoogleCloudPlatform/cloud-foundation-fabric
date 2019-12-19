@@ -29,6 +29,20 @@ output "name" {
   value       = google_compute_vpn_gateway.gateway.name
 }
 
+output "router" {
+  description = "Router resource (only if auto-created)."
+  value = (
+    var.create_router && length(google_compute_router.router) > 0
+    ? google_compute_router.router[0]
+    : null
+  )
+}
+
+output "router_name" {
+  description = "Router name."
+  value       = local.router
+}
+
 output "self_link" {
   description = "VPN gateway self link."
   value       = google_compute_vpn_gateway.gateway.self_link
