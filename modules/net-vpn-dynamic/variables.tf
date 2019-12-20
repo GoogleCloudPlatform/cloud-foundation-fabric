@@ -14,20 +14,8 @@
  * limitations under the License.
  */
 
-variable "create_address" {
-  description = "Create gateway address resource instead of using external one, defaults to true."
-  type        = bool
-  default     = true
-}
-
-variable "create_router" {
-  description = "Create router for Cloud NAT instead of using existing one."
-  type        = bool
-  default     = true
-}
-
 variable "gateway_address" {
-  description = "Optional address assigned to the VPN, used if create_address is false."
+  description = "Optional address assigned to the VPN, leave blank to create one."
   type        = string
   default     = ""
 }
@@ -59,7 +47,7 @@ variable "route_priority" {
 }
 
 variable "router_advertise_config" {
-  description = "Router custom advertisement configuration, ip_ranges is a map of range as key and description as value."
+  description = "Router custom advertisement configuration, ip_ranges is a map of address ranges and descriptions."
   type = object({
     all_subnets = bool
     ip_ranges   = map(string)
@@ -74,7 +62,7 @@ variable "router_asn" {
 }
 
 variable "router_name" {
-  description = "Name of the existing or auto-created router."
+  description = "Name of router, leave blank to create one."
   type        = string
   default     = ""
 }

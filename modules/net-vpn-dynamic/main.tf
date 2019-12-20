@@ -16,12 +16,12 @@
 
 locals {
   gateway_address = (
-    var.create_address
+    var.gateway_address == ""
     ? google_compute_address.gateway[0].address
     : var.gateway_address
   )
   router = (
-    var.create_router
+    var.router_name == ""
     ? google_compute_router.router[0].name
     : var.router_name
   )
@@ -29,7 +29,7 @@ locals {
 }
 
 resource "google_compute_address" "gateway" {
-  count   = var.create_address ? 1 : 0
+  count   = var.gateway_address == "" ? 1 : 0
   name    = "vpn-${var.name}"
   project = var.project_id
   region  = var.region
@@ -65,8 +65,8 @@ resource "google_compute_forwarding_rule" "udp-4500" {
 }
 
 resource "google_compute_router" "router" {
-  count   = var.create_router ? 1 : 0
-  name    = var.router_name != "" ? var.router_name : "vpn-${var.name}"
+  count   = var.router_name == "" ? 1 : 0
+  name    = "vpn-${var.name}"
   project = var.project_id
   region  = var.region
   network = var.network

@@ -15,17 +15,16 @@
  */
 
 locals {
-  prefix = var.prefix == "" ? "" : "${var.prefix}-"
   router = (
-    var.create_router
+    var.router_name == ""
     ? google_compute_router.router[0].name
     : var.router_name
   )
 }
 
 resource "google_compute_router" "router" {
-  count   = var.create_router ? 1 : 0
-  name    = "${local.prefix}${var.router_name}"
+  count   = var.router_name == "" ? 1 : 0
+  name    = var.router_name
   project = var.project_id
   region  = var.region
   network = var.router_network
@@ -37,7 +36,7 @@ resource "google_compute_router" "router" {
 resource "google_compute_router_nat" "nat" {
   project                            = var.project_id
   region                             = var.region
-  name                               = "${local.prefix}${var.name}"
+  name                               = var.name
   router                             = local.router
   nat_ips                            = var.addresses
   nat_ip_allocate_option             = length(var.addresses) > 0 ? "MANUAL_ONLY" : "AUTO_ONLY"

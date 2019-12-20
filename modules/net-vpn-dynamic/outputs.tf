@@ -31,11 +31,7 @@ output "name" {
 
 output "router" {
   description = "Router resource (only if auto-created)."
-  value = (
-    var.create_router && length(google_compute_router.router) > 0
-    ? google_compute_router.router[0]
-    : null
-  )
+  value       = var.router_name == "" ? google_compute_router.router[0] : null
 }
 
 output "router_name" {

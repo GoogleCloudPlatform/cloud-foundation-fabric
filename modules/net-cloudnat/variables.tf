@@ -27,7 +27,7 @@ variable "config_min_ports_per_vm" {
 }
 
 variable "config_source_subnets" {
-  description = "Subnetwork configuration, valid values are ALL_SUBNETWORKS_ALL_IP_RANGES, ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES, LIST_OF_SUBNETWORKS."
+  description = "Subnetwork configuration (ALL_SUBNETWORKS_ALL_IP_RANGES, ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES, LIST_OF_SUBNETWORKS)."
   type        = string
   default     = "ALL_SUBNETWORKS_ALL_IP_RANGES"
 }
@@ -48,22 +48,9 @@ variable "config_timeouts" {
   }
 }
 
-variable "create_router" {
-  description = "Create router for Cloud NAT instead of using existing one."
-  type        = bool
-  default     = true
-}
-
 variable "name" {
   description = "Name of the Cloud NAT resource."
   type        = string
-  default     = "cloud-nat"
-}
-
-variable "prefix" {
-  description = "Optional prefix that will be prepended to resource names."
-  type        = string
-  default     = ""
 }
 
 variable "project_id" {
@@ -83,9 +70,9 @@ variable "router_asn" {
 }
 
 variable "router_name" {
-  description = "Name of the existing or auto-created router."
+  description = "Router name, leave blank to create."
   type        = string
-  default     = "cloud-nat"
+  default     = ""
 }
 
 variable "router_network" {

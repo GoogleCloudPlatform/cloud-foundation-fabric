@@ -16,7 +16,7 @@
 
 locals {
   gateway_address = (
-    var.create_address
+    var.gateway_address == ""
     ? google_compute_address.gateway[0].address
     : var.gateway_address
   )
@@ -30,7 +30,7 @@ locals {
 }
 
 resource "google_compute_address" "gateway" {
-  count   = var.create_address ? 1 : 0
+  count   = var.gateway_address == "" ? 1 : 0
   name    = "vpn-${var.name}"
   project = var.project_id
   region  = var.region

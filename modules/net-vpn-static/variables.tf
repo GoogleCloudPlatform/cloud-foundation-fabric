@@ -14,14 +14,8 @@
  * limitations under the License.
  */
 
-variable "create_address" {
-  description = "Create gateway address resource instead of using external one, defaults to true."
-  type        = bool
-  default     = true
-}
-
 variable "gateway_address" {
-  description = "Optional address assigned to the VPN, used if create_address is false."
+  description = "Optional address assigned to the VPN, leave blank to create one."
   type        = string
   default     = ""
 }
