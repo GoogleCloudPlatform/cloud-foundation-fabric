@@ -49,8 +49,9 @@ variable "route_priority" {
 variable "router_advertise_config" {
   description = "Router custom advertisement configuration, ip_ranges is a map of address ranges and descriptions."
   type = object({
-    all_subnets = bool
-    ip_ranges   = map(string)
+    groups    = list(string)
+    ip_ranges = map(string)
+    mode      = string
   })
   default = null
 }
@@ -68,10 +69,18 @@ variable "router_name" {
 }
 
 variable "tunnels" {
-  description = "VPN tunnel configurations."
+  description = "VPN tunnel configurations, bgp_peer_options is usually null."
   type = map(object({
-    bgp_peer_address = string
-    bgp_peer_asn     = number
+    bgp_peer = object({
+      address = string
+      asn     = number
+    })
+    bgp_peer_options = object({
+      advertise_groups    = list(string)
+      advertise_ip_ranges = map(string)
+      advertise_mode      = string
+      route_priority      = number
+    })
     # each BGP session on the same Cloud Router must use a unique /30 CIDR
     # from the 169.254.0.0/16 block.
     bgp_session_range = string

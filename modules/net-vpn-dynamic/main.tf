@@ -72,13 +72,25 @@ resource "google_compute_router" "router" {
   network = var.network
   bgp {
     advertise_mode = (
-      var.router_advertise_config == null ? "DEFAULT" : "CUSTOM"
+      var.router_advertise_config == null
+      ? null
+      : var.router_advertise_config.mode
     )
-    advertised_groups = (var.router_advertise_config == null ? null : (
-      var.router_advertise_config.all_subnets ? ["ALL_SUBNETS"] : []
-    ))
+    advertised_groups = (
+      var.router_advertise_config == null ? null : (
+        var.router_advertise_config.mode != "CUSTOM"
+        ? null
+        : var.router_advertise_config.groups
+      )
+    )
     dynamic advertised_ip_ranges {
-      for_each = var.router_advertise_config == null ? {} : var.router_advertise_config.ip_ranges
+      for_each = (
+        var.router_advertise_config == null ? {} : (
+          var.router_advertise_config.mode != "CUSTOM"
+          ? null
+          : var.router_advertise_config.ip_ranges
+        )
+      )
       iterator = range
       content {
         range       = range.key
@@ -90,15 +102,45 @@ resource "google_compute_router" "router" {
 }
 
 resource "google_compute_router_peer" "bgp_peer" {
-  for_each                  = var.tunnels
-  region                    = var.region
-  project                   = var.project_id
-  name                      = "${var.name}-${each.key}"
-  router                    = local.router
-  peer_ip_address           = each.value.bgp_peer_address
-  peer_asn                  = each.value.bgp_peer_asn
-  advertised_route_priority = var.route_priority
-  interface                 = google_compute_router_interface.router_interface[each.key].name
+  for_each        = var.tunnels
+  region          = var.region
+  project         = var.project_id
+  name            = "${var.name}-${each.key}"
+  router          = local.router
+  peer_ip_address = each.value.bgp_peer.address
+  peer_asn        = each.value.bgp_peer.asn
+  advertised_route_priority = (
+    each.value.bgp_peer_options == null ? var.route_priority : (
+      each.value.bgp_peer_options.route_priority == null
+      ? var.route_priority
+      : each.value.bgp_peer_options.route_priority
+    )
+  )
+  advertise_mode = (
+    each.value.bgp_peer_options == null ? null : each.value.bgp_peer_options.advertise_mode
+  )
+  advertised_groups = (
+    each.value.bgp_peer_options == null ? null : (
+      each.value.bgp_peer_options.advertise_mode != "CUSTOM"
+      ? null
+      : each.value.bgp_peer_options.advertise_groups
+    )
+  )
+  dynamic advertised_ip_ranges {
+    for_each = (
+      each.value.bgp_peer_options == null ? {} : (
+        each.value.bgp_peer_options.advertise_mode != "CUSTOM"
+        ? {}
+        : each.value.bgp_peer_options.advertise_ip_ranges
+      )
+    )
+    iterator = range
+    content {
+      range       = range.key
+      description = range.value
+    }
+  }
+  interface = google_compute_router_interface.router_interface[each.key].name
 }
 
 resource "google_compute_router_interface" "router_interface" {
