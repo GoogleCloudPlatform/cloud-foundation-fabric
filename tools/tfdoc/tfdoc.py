@@ -18,6 +18,7 @@ import collections
 import enum
 import os
 import re
+import string
 
 import click
 
@@ -48,6 +49,8 @@ RE_VARIABLES = re.compile(r'''(?smx)
     # variable body
     (?:^\s*(\S.*?)$)
 ''')
+REPL_VALID = string.digits + string.ascii_letters + ' .,;:_-'
+
 
 OutputData = collections.namedtuple('Output', 'name description sensitive')
 OutputToken = enum.Enum('OutputToken', 'NAME DESCRIPTION SENSITIVE')
@@ -122,6 +125,11 @@ class Variable(object):
                         self.default is None)
 
 
+def _escape(s):
+  "Basic, minimal HTML escaping"
+  return ''.join(c if c in REPL_VALID else ('&#%s;' % ord(c)) for c in s)
+
+
 def format_outputs(outputs):
   "Format outputs."
   if not outputs:
@@ -160,13 +168,27 @@ def format_variables(variables, required_first=True):
     return
   variables.sort(key=lambda v: v.name)
   variables.sort(key=lambda v: v.required, reverse=True)
-  yield '| name | description | type | required |'
-  yield '|---|---|:---: |:---:|'
+  yield '| name | description | type | required | default |'
+  yield '|---|---|:---: |:---:|:---:|'
+  row = (
+      '| {name} | {description} | <code title="{type_spec}">{type}</code> '
+      '| {required} | <code title="{default_spec}">{default}</code> |'
+  )
   for v in variables:
-    yield '| {name} | {description} | `{type}` | {required}'.format(
+    default = default_spec = type_spec = ''
+    if not v.required:
+      if '\n' in v.default:
+        default = '...'
+        default_spec = _escape(v.default)
+      else:
+        default = v.default or ''
+    if v.type and '(' in v.type:
+      type_spec = _escape(v.type)
+    yield row.format(
         name=v.name if v.required else '*%s*' % v.name,
-        description=v.description, type=format_type(v.type),
-        required='✓' if v.required else ''
+        description=v.description, required='✓' if v.required else '',
+        type=format_type(v.type), type_spec=type_spec,
+        default=default, default_spec=default_spec
     )
 
 
