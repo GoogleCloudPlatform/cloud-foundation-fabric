@@ -15,16 +15,16 @@ The resources/services/activations/deletions that this module will create/trigge
 <!-- BEGIN TFDOC -->
 ## Variables
 
-| name | description | type | required |
-|---|---|:---: |:---:|
-| project_id | Project id where service account will be created. | `string` | ✓
-| *generate_keys* | Generate keys for service accounts. | `bool` | 
-| *iam_billing_roles* | Project roles applied to all service accounts, by billing account id. | `map(list(string))` | 
-| *iam_folder_roles* | Project roles applied to all service accounts, by folder id. | `map(list(string))` | 
-| *iam_organization_roles* | Project roles applied to all service accounts, by organization id. | `map(list(string))` | 
-| *iam_project_roles* | Project roles applied to all service accounts, by project id. | `map(list(string))` | 
-| *names* | Names of the service accounts to create. | `list(string)` | 
-| *prefix* | Prefix applied to service account names. | `string` | 
+| name | description | type | required | default |
+|---|---|:---: |:---:|:---:|
+| project_id | Project id where service account will be created. | <code title="">string</code> | ✓ | <code title=""></code> |
+| *generate_keys* | Generate keys for service accounts. | <code title="">bool</code> |  | <code title="">false</code> |
+| *iam_billing_roles* | Project roles applied to all service accounts, by billing account id. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
+| *iam_folder_roles* | Project roles applied to all service accounts, by folder id. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
+| *iam_organization_roles* | Project roles applied to all service accounts, by organization id. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
+| *iam_project_roles* | Project roles applied to all service accounts, by project id. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
+| *names* | Names of the service accounts to create. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
+| *prefix* | Prefix applied to service account names. | <code title="">string</code> |  | <code title=""></code> |
 
 ## Outputs
 

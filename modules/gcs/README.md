@@ -3,19 +3,19 @@
 <!-- BEGIN TFDOC -->
 ## Variables
 
-| name | description | type | required |
-|---|---|:---: |:---:|
-| names | Bucket name suffixes. | `list(string)` | ✓
-| project_id | Bucket project id. | `string` | ✓
-| *bucket_policy_only* | Optional map to disable object ACLS keyed by name, defaults to true. | `map(bool)` | 
-| *force_destroy* | Optional map to set force destroy keyed by name, defaults to false. | `map(bool)` | 
-| *iam_members* | List of IAM members keyed by name and role. | `map(map(list(string)))` | 
-| *iam_roles* | List of IAM roles keyed by name. | `map(list(string))` | 
-| *labels* | Labels to be attached to all buckets. | `map(string)` | 
-| *location* | Bucket location. | `string` | 
-| *prefix* | Prefix used to generate the bucket name. | `string` | 
-| *storage_class* | Bucket storage class. | `string` | 
-| *versioning* | Optional map to set versioning keyed by name, defaults to false. | `map(bool)` | 
+| name | description | type | required | default |
+|---|---|:---: |:---:|:---:|
+| names | Bucket name suffixes. | <code title="list&#40;string&#41;">list(string)</code> | ✓ | <code title=""></code> |
+| project_id | Bucket project id. | <code title="">string</code> | ✓ | <code title=""></code> |
+| *bucket_policy_only* | Optional map to disable object ACLS keyed by name, defaults to true. | <code title="map&#40;bool&#41;">map(bool)</code> |  | <code title="">{}</code> |
+| *force_destroy* | Optional map to set force destroy keyed by name, defaults to false. | <code title="map&#40;bool&#41;">map(bool)</code> |  | <code title="">{}</code> |
+| *iam_members* | IAM members keyed by bucket name and role. | <code title="map&#40;map&#40;list&#40;string&#41;&#41;&#41;">map(map(list(string)))</code> |  | <code title="">{}</code> |
+| *iam_roles* | IAM roles keyed by bucket name. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
+| *labels* | Labels to be attached to all buckets. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
+| *location* | Bucket location. | <code title="">string</code> |  | <code title="">EU</code> |
+| *prefix* | Prefix used to generate the bucket name. | <code title="">string</code> |  | <code title=""></code> |
+| *storage_class* | Bucket storage class. | <code title="">string</code> |  | <code title="">MULTI_REGIONAL</code> |
+| *versioning* | Optional map to set versioning keyed by name, defaults to false. | <code title="map&#40;bool&#41;">map(bool)</code> |  | <code title="">{}</code> |
 
 ## Outputs
 

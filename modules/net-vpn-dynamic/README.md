@@ -3,18 +3,18 @@
 <!-- BEGIN TFDOC -->
 ## Variables
 
-| name | description | type | required |
-|---|---|:---: |:---:|
-| name | VPN gateway name, and prefix used for dependent resources. | `string` | ✓
-| network | VPC used for the gateway and routes. | `string` | ✓
-| project_id | Project where resources will be created. | `string` | ✓
-| region | Region used for resources. | `string` | ✓
-| *gateway_address* | Optional address assigned to the VPN, leave blank to create one. | `string` | 
-| *route_priority* | Route priority, defaults to 1000. | `number` | 
-| *router_advertise_config* | Router custom advertisement configuration, ip_ranges is a map of address ranges and descriptions. | `object({...})` | 
-| *router_asn* | Router ASN used for auto-created router. | `number` | 
-| *router_name* | Name of router, leave blank to create one. | `string` | 
-| *tunnels* | VPN tunnel configurations, bgp_peer_options is usually null. | `map(object({...}))` | 
+| name | description | type | required | default |
+|---|---|:---: |:---:|:---:|
+| name | VPN gateway name, and prefix used for dependent resources. | <code title="">string</code> | ✓ | <code title=""></code> |
+| network | VPC used for the gateway and routes. | <code title="">string</code> | ✓ | <code title=""></code> |
+| project_id | Project where resources will be created. | <code title="">string</code> | ✓ | <code title=""></code> |
+| region | Region used for resources. | <code title="">string</code> | ✓ | <code title=""></code> |
+| *gateway_address* | Optional address assigned to the VPN, leave blank to create one. | <code title="">string</code> |  | <code title=""></code> |
+| *route_priority* | Route priority, defaults to 1000. | <code title="">number</code> |  | <code title="">1000</code> |
+| *router_advertise_config* | Router custom advertisement configuration, ip_ranges is a map of address ranges and descriptions. | <code title="object&#40;&#123;&#10;groups    &#61; list&#40;string&#41;&#10;ip_ranges &#61; map&#40;string&#41;&#10;mode      &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
+| *router_asn* | Router ASN used for auto-created router. | <code title="">number</code> |  | <code title="">64514</code> |
+| *router_name* | Name of router, leave blank to create one. | <code title="">string</code> |  | <code title=""></code> |
+| *tunnels* | VPN tunnel configurations, bgp_peer_options is usually null. | <code title="map&#40;object&#40;&#123;&#10;bgp_peer &#61; object&#40;&#123;&#10;address &#61; string&#10;asn     &#61; number&#10;&#125;&#41;&#10;bgp_peer_options &#61; object&#40;&#123;&#10;advertise_groups    &#61; list&#40;string&#41;&#10;advertise_ip_ranges &#61; map&#40;string&#41;&#10;advertise_mode      &#61; string&#10;route_priority      &#61; number&#10;&#125;&#41;&#10;bgp_session_range &#61; string&#10;ike_version       &#61; number&#10;peer_ip           &#61; string&#10;shared_secret     &#61; string&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
 
 ## Outputs
 

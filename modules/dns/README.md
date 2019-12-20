@@ -30,20 +30,20 @@ module "dns-private-zone" {
 <!-- BEGIN TFDOC -->
 ## Variables
 
-| name | description | type | required |
-|---|---|:---: |:---:|
-| domain | Zone domain, must end with a period. | `string` | ✓
-| name | Zone name, must be unique within the project. | `string` | ✓
-| project_id | Project id for the zone. | `string` | ✓
-| *client_networks* | List of VPC self links that can see this zone. | `list(string)` |
-| *default_key_specs_key* | DNSSEC default key signing specifications: algorithm, key_length, key_type, kind. | `any` |
-| *default_key_specs_zone* | DNSSEC default zone signing specifications: algorithm, key_length, key_type, kind. | `any` |
-| *description* | Domain description. | `string` |
-| *dnssec_config* | DNSSEC configuration: kind, non_existence, state. | `any` |
-| *forwarders* | List of target name servers, only valid for 'forwarding' zone types. | `list(string)` |
-| *peer_network* | Peering network self link, only valid for 'peering' zone types. | `string` |
-| *recordsets* | List of DNS record objects to manage. | `string` |
-| *type* | Type of zone to create, valid values are 'public', 'private', 'forwarding', 'peering'. | `string` |
+| name | description | type | required | default |
+|---|---|:---: |:---:|:---:|
+| domain | Zone domain, must end with a period. | <code title="">string</code> | ✓ | <code title=""></code> |
+| name | Zone name, must be unique within the project. | <code title="">string</code> | ✓ | <code title=""></code> |
+| project_id | Project id for the zone. | <code title="">string</code> | ✓ | <code title=""></code> |
+| *client_networks* | List of VPC self links that can see this zone. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
+| *default_key_specs_key* | DNSSEC default key signing specifications: algorithm, key_length, key_type, kind. | <code title="">any</code> |  | <code title="">{}</code> |
+| *default_key_specs_zone* | DNSSEC default zone signing specifications: algorithm, key_length, key_type, kind. | <code title="">any</code> |  | <code title="">{}</code> |
+| *description* | Domain description. | <code title="">string</code> |  | <code title="">Terraform managed.</code> |
+| *dnssec_config* | DNSSEC configuration: kind, non_existence, state. | <code title="">any</code> |  | <code title="">{}</code> |
+| *forwarders* | List of target name servers, only valid for 'forwarding' zone types. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
+| *peer_network* | Peering network self link, only valid for 'peering' zone types. | <code title="">string</code> |  | <code title=""></code> |
+| *recordsets* | List of DNS record objects to manage. | <code title="string&#10;ttl     &#61; number&#10;records &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">string</code> |  | <code title="">[]</code> |
+| *type* | Type of zone to create, valid values are 'public', 'private', 'forwarding', 'peering'. | <code title="">string</code> |  | <code title="">private</code> |
 
 ## Outputs
 

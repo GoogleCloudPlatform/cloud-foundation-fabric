@@ -11,16 +11,16 @@ The resources/services/activations/deletions that this module will create/trigge
 <!-- BEGIN TFDOC -->
 ## Variables
 
-| name | description | type | required |
-|---|---|:---: |:---:|
-| keyring | Keyring name. | `string` | ✓
-| location | Location for the keyring. | `string` | ✓
-| project_id | Project id where the keyring will be created. | `string` | ✓
-| *iam_members* | IAM members keyed by key name and role. | `map(map(list(string)))` | 
-| *iam_roles* | IAM roles keyed by key name. | `map(list(string))` | 
-| *key_attributes* | Optional key attributes per key. | `map(object({...}))` | 
-| *key_defaults* | Key attribute defaults. | `object({...})` | 
-| *keys* | Key names. | `list(string)` | 
+| name | description | type | required | default |
+|---|---|:---: |:---:|:---:|
+| keyring | Keyring name. | <code title="">string</code> | ✓ | <code title=""></code> |
+| location | Location for the keyring. | <code title="">string</code> | ✓ | <code title=""></code> |
+| project_id | Project id where the keyring will be created. | <code title="">string</code> | ✓ | <code title=""></code> |
+| *iam_members* | IAM members keyed by key name and role. | <code title="map&#40;map&#40;list&#40;string&#41;&#41;&#41;">map(map(list(string)))</code> |  | <code title="">{}</code> |
+| *iam_roles* | IAM roles keyed by key name. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
+| *key_attributes* | Optional key attributes per key. | <code title="map&#40;object&#40;&#123;&#10;protected       &#61; bool&#10;rotation_period &#61; string&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
+| *key_defaults* | Key attribute defaults. | <code title="object&#40;&#123;&#10;protected       &#61; bool&#10;rotation_period &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;protected       &#61; true&#10;rotation_period &#61; &#34;100000s&#34;&#10;&#125;">...</code> |
+| *keys* | Key names. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 
 ## Outputs
 
