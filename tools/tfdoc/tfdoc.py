@@ -172,23 +172,23 @@ def format_variables(variables, required_first=True):
   yield '|---|---|:---: |:---:|:---:|'
   row = (
       '| {name} | {description} | <code title="{type_spec}">{type}</code> '
-      '| {required} | <code title="{default_spec}">{default}</code> |'
+      '| {required} | {default} |'
   )
   for v in variables:
     default = default_spec = type_spec = ''
     if not v.required:
+      default = '<code title="{}">{}</code>'
       if '\n' in v.default:
-        default = '...'
-        default_spec = _escape(v.default)
+        default.format(_escape(v.default), '...')
       else:
-        default = v.default or ''
+        default = default.format('', v.default or '')
     if v.type and '(' in v.type:
       type_spec = _escape(v.type)
     yield row.format(
         name=v.name if v.required else '*%s*' % v.name,
         description=v.description, required='✓' if v.required else '',
         type=format_type(v.type), type_spec=type_spec,
-        default=default, default_spec=default_spec
+        default=default
     )
 
 
