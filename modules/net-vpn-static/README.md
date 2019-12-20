@@ -5,10 +5,10 @@
 
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
-| name | VPN gateway name, and prefix used for dependent resources. | <code title="">string</code> | ✓ | <code title=""></code> |
-| network | VPC used for the gateway and routes. | <code title="">string</code> | ✓ | <code title=""></code> |
-| project_id | Project where resources will be created. | <code title="">string</code> | ✓ | <code title=""></code> |
-| region | Region used for resources. | <code title="">string</code> | ✓ | <code title=""></code> |
+| name | VPN gateway name, and prefix used for dependent resources. | <code title="">string</code> | ✓ |  |
+| network | VPC used for the gateway and routes. | <code title="">string</code> | ✓ |  |
+| project_id | Project where resources will be created. | <code title="">string</code> | ✓ |  |
+| region | Region used for resources. | <code title="">string</code> | ✓ |  |
 | *gateway_address* | Optional address assigned to the VPN, leave blank to create one. | <code title="">string</code> |  | <code title=""></code> |
 | *remote_ranges* | Remote IP CIDR ranges. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 | *route_priority* | Route priority, defaults to 1000. | <code title="">number</code> |  | <code title="">1000</code> |

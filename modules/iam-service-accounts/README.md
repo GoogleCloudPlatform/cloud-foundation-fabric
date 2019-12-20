@@ -17,7 +17,7 @@ The resources/services/activations/deletions that this module will create/trigge
 
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
-| project_id | Project id where service account will be created. | <code title="">string</code> | ✓ | <code title=""></code> |
+| project_id | Project id where service account will be created. | <code title="">string</code> | ✓ |  |
 | *generate_keys* | Generate keys for service accounts. | <code title="">bool</code> |  | <code title="">false</code> |
 | *iam_billing_roles* | Project roles applied to all service accounts, by billing account id. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
 | *iam_folder_roles* | Project roles applied to all service accounts, by folder id. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |

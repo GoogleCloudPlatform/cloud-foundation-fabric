@@ -32,9 +32,9 @@ module "dns-private-zone" {
 
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
-| domain | Zone domain, must end with a period. | <code title="">string</code> | ✓ | <code title=""></code> |
-| name | Zone name, must be unique within the project. | <code title="">string</code> | ✓ | <code title=""></code> |
-| project_id | Project id for the zone. | <code title="">string</code> | ✓ | <code title=""></code> |
+| domain | Zone domain, must end with a period. | <code title="">string</code> | ✓ |  |
+| name | Zone name, must be unique within the project. | <code title="">string</code> | ✓ |  |
+| project_id | Project id for the zone. | <code title="">string</code> | ✓ |  |
 | *client_networks* | List of VPC self links that can see this zone. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 | *default_key_specs_key* | DNSSEC default key signing specifications: algorithm, key_length, key_type, kind. | <code title="">any</code> |  | <code title="">{}</code> |
 | *default_key_specs_zone* | DNSSEC default zone signing specifications: algorithm, key_length, key_type, kind. | <code title="">any</code> |  | <code title="">{}</code> |

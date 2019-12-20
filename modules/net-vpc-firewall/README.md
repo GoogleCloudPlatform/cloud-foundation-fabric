@@ -72,8 +72,8 @@ module "net-firewall" {
 
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
-| network | Name of the network this set of firewall rules applies to. | <code title="">string</code> | ✓ | <code title=""></code> |
-| project_id | Project id of the project that holds the network. | <code title="">string</code> | ✓ | <code title=""></code> |
+| network | Name of the network this set of firewall rules applies to. | <code title="">string</code> | ✓ |  |
+| project_id | Project id of the project that holds the network. | <code title="">string</code> | ✓ |  |
 | *admin_ranges* | IP CIDR ranges that have complete access to all subnets. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 | *admin_ranges_enabled* | Enable admin ranges-based rules. | <code title="">bool</code> |  | <code title="">false</code> |
 | *custom_rules* | List of custom rule definitions (refer to variables file for syntax). | <code title="map&#40;object&#40;&#123;&#10;description          &#61; string&#10;direction            &#61; string&#10;action               &#61; string &#35; &#40;allow&#124;deny&#41;&#10;ranges               &#61; list&#40;string&#41;&#10;sources              &#61; list&#40;string&#41;&#10;targets              &#61; list&#40;string&#41;&#10;use_service_accounts &#61; bool&#10;rules &#61; list&#40;object&#40;&#123;&#10;protocol &#61; string&#10;ports    &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;&#10;extra_attributes &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |

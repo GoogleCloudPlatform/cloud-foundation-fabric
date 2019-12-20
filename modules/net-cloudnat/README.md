@@ -5,13 +5,13 @@
 
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
-| name | Name of the Cloud NAT resource. | <code title="">string</code> | ✓ | <code title=""></code> |
-| project_id | Project where resources will be created. | <code title="">string</code> | ✓ | <code title=""></code> |
-| region | Region where resources will be created. | <code title="">string</code> | ✓ | <code title=""></code> |
+| name | Name of the Cloud NAT resource. | <code title="">string</code> | ✓ |  |
+| project_id | Project where resources will be created. | <code title="">string</code> | ✓ |  |
+| region | Region where resources will be created. | <code title="">string</code> | ✓ |  |
 | *addresses* | Optional list of external address self links. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 | *config_min_ports_per_vm* | Minimum number of ports allocated to a VM from this NAT config. | <code title="">number</code> |  | <code title="">64</code> |
 | *config_source_subnets* | Subnetwork configuration (ALL_SUBNETWORKS_ALL_IP_RANGES, ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES, LIST_OF_SUBNETWORKS). | <code title="">string</code> |  | <code title="">ALL_SUBNETWORKS_ALL_IP_RANGES</code> |
-| *config_timeouts* | Timeout configurations. | <code title="object&#40;&#123;&#10;icmp            &#61; number&#10;tcp_established &#61; number&#10;tcp_transitory  &#61; number&#10;udp             &#61; number&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;icmp            &#61; 30&#10;tcp_established &#61; 1200&#10;tcp_transitory  &#61; 30&#10;udp             &#61; 30&#10;&#125;">...</code> |
+| *config_timeouts* | Timeout configurations. | <code title="object&#40;&#123;&#10;icmp            &#61; number&#10;tcp_established &#61; number&#10;tcp_transitory  &#61; number&#10;udp             &#61; number&#10;&#125;&#41;">object({...})</code> |  | <code title="{}">{}</code> |
 | *router_asn* | Router ASN used for auto-created router. | <code title="">number</code> |  | <code title="">64514</code> |
 | *router_name* | Router name, leave blank to create. | <code title="">string</code> |  | <code title=""></code> |
 | *router_network* | Name of the VPC used for auto-created router. | <code title="">string</code> |  | <code title=""></code> |

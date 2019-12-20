@@ -5,10 +5,10 @@
 
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
-| name | VPN gateway name, and prefix used for dependent resources. | <code title="">string</code> | ✓ | <code title=""></code> |
-| network | VPC used for the gateway and routes. | <code title="">string</code> | ✓ | <code title=""></code> |
-| project_id | Project where resources will be created. | <code title="">string</code> | ✓ | <code title=""></code> |
-| region | Region used for resources. | <code title="">string</code> | ✓ | <code title=""></code> |
+| name | VPN gateway name, and prefix used for dependent resources. | <code title="">string</code> | ✓ |  |
+| network | VPC used for the gateway and routes. | <code title="">string</code> | ✓ |  |
+| project_id | Project where resources will be created. | <code title="">string</code> | ✓ |  |
+| region | Region used for resources. | <code title="">string</code> | ✓ |  |
 | *gateway_address* | Optional address assigned to the VPN, leave blank to create one. | <code title="">string</code> |  | <code title=""></code> |
 | *route_priority* | Route priority, defaults to 1000. | <code title="">number</code> |  | <code title="">1000</code> |
 | *router_advertise_config* | Router custom advertisement configuration, ip_ranges is a map of address ranges and descriptions. | <code title="object&#40;&#123;&#10;groups    &#61; list&#40;string&#41;&#10;ip_ranges &#61; map&#40;string&#41;&#10;mode      &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |

@@ -5,8 +5,8 @@
 
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
-| names | Bucket name suffixes. | <code title="list&#40;string&#41;">list(string)</code> | ✓ | <code title=""></code> |
-| project_id | Bucket project id. | <code title="">string</code> | ✓ | <code title=""></code> |
+| names | Bucket name suffixes. | <code title="list&#40;string&#41;">list(string)</code> | ✓ |  |
+| project_id | Bucket project id. | <code title="">string</code> | ✓ |  |
 | *bucket_policy_only* | Optional map to disable object ACLS keyed by name, defaults to true. | <code title="map&#40;bool&#41;">map(bool)</code> |  | <code title="">{}</code> |
 | *force_destroy* | Optional map to set force destroy keyed by name, defaults to false. | <code title="map&#40;bool&#41;">map(bool)</code> |  | <code title="">{}</code> |
 | *iam_members* | IAM members keyed by bucket name and role. | <code title="map&#40;map&#40;list&#40;string&#41;&#41;&#41;">map(map(list(string)))</code> |  | <code title="">{}</code> |

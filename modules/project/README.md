@@ -16,9 +16,9 @@ The resources/services/activations/deletions that this module will create/trigge
 
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
-| name | Project name and id suffix. | <code title="">string</code> | ✓ | <code title=""></code> |
-| parent | The resource name of the parent Folder or Organization. Must be of the form folders/folder_id or organizations/org_id. | <code title="">string</code> | ✓ | <code title=""></code> |
-| prefix | Prefix used to generate project id and name. | <code title="">string</code> | ✓ | <code title=""></code> |
+| name | Project name and id suffix. | <code title="">string</code> | ✓ |  |
+| parent | The resource name of the parent Folder or Organization. Must be of the form folders/folder_id or organizations/org_id. | <code title="">string</code> | ✓ |  |
+| prefix | Prefix used to generate project id and name. | <code title="">string</code> | ✓ |  |
 | *auto_create_network* | Whether to create the default network for the project | <code title="">bool</code> |  | <code title="">false</code> |
 | *billing_account* | Billing account id. | <code title="">string</code> |  | <code title=""></code> |
 | *custom_roles* | Map of role name => list of permissions to create in this project. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
