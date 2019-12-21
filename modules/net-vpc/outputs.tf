@@ -42,9 +42,10 @@ output "project_id" {
   ]
 }
 
+# TODO(ludoo): use input names as keys
 output "subnets" {
   description = "Subnet resources."
-  value       = google_compute_subnetwork.subnetwork
+  value       = { for k, v in google_compute_subnetwork.subnetwork : k => v }
 }
 
 output "subnet_ips" {
