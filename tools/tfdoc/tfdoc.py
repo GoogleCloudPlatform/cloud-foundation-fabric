@@ -116,7 +116,7 @@ class Variable(object):
 
   def _start(self, context, data):
     if context == self._data_context or getattr(self, context):
-      self._data.append(data)
+      self._data.append("%s = %s" % (context, data))
       return
     self._close()
     self._data = [data]
