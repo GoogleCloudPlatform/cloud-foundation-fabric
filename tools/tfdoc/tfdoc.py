@@ -115,6 +115,9 @@ class Variable(object):
       setattr(self, self._data_context, ('\n'.join(data)).strip())
 
   def _start(self, context, data):
+    if context == self._data_context or getattr(self, context):
+      self._data.append(data)
+      return
     self._close()
     self._data = [data]
     self._data_context = context
