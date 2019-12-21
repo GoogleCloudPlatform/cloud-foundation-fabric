@@ -13,8 +13,8 @@
 | subnetwork | Subnetwork name (self link for shared vpc). | <code title="">string</code> | ✓ |  |
 | zone | Compute zone. | <code title="">string</code> | ✓ |  |
 | *addresses* | Optional internal addresses (only for non-MIG usage). | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
-| *attached_disks* | Additional disks (only for non-MIG usage). | <code title="map&#40;object&#40;&#123;&#10;string&#10;size &#61; string&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
-| *boot_disk* | Boot disk properties. | <code title="object&#40;&#123;&#10;image &#61; string&#10;size  &#61; number&#10;string&#10;&#125;&#41;">object({...})</code> |  | <code title="{}">{}</code> |
+| *attached_disks* | Additional disks (only for non-MIG usage). | <code title="map&#40;object&#40;&#123;&#10;type &#61; string&#10;size &#61; string&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
+| *boot_disk* | Boot disk properties. | <code title="object&#40;&#123;&#10;image &#61; string&#10;size  &#61; number&#10;type &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="{}">{}</code> |
 | *cloud_config_vars* | Custom variables passed to cloud config template. | <code title="map&#40;any&#41;">map(any)</code> |  | <code title="">{}</code> |
 | *instance_count* | Number of instances to create (only for non-MIG usage). | <code title="">number</code> |  | <code title="">1</code> |
 | *instance_type* | Instance type. | <code title="">string</code> |  | <code title="">f1-micro</code> |
