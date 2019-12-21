@@ -40,11 +40,10 @@ data "template_file" "cloud_config" {
   for_each = local.names
   template = file(var.cloud_config_path)
   vars = merge(var.cloud_config_vars, {
-    address           = lookup(local.addresses, each.key, "")
-    attached_disks    = join(",", keys(var.attached_disks))
-    docker_log_driver = var.docker_log_driver
-    id                = each.value
-    name              = each.key
+    address        = lookup(local.addresses, each.key, "")
+    attached_disks = join(",", keys(var.attached_disks))
+    id             = each.value
+    name           = each.key
   })
 }
 
@@ -100,9 +99,10 @@ resource "google_compute_instance" "default" {
     subnetwork = var.subnetwork
     network_ip = lookup(local.addresses, each.key, null)
     dynamic access_config {
-      for_each = var.nat.enabled ? [var.nat.address] : []
+      for_each = var.nat.enabled ? [var.nat.addresses] : []
+      iterator = config
       content {
-        nat_ip = each.value
+        nat_ip = length(config.value) > 0 ? config.value[each.value] : null
       }
     }
   }

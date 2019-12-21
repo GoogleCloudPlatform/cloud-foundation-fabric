@@ -15,20 +15,22 @@
  */
 
 variable "addresses" {
-  type    = list(string)
-  default = []
+  description = "Optional internal addresses (only for non-MIG usage)."
+  type        = list(string)
+  default     = []
 }
 
 variable "attached_disks" {
   description = "Additional disks (only for non-MIG usage)."
   type = map(object({
-    type = string # pd-standard pd-ssd
+    type = string
     size = string
   }))
   default = {}
 }
 
 variable "boot_disk" {
+  description = "Boot disk properties."
   type = object({
     image = string
     size  = number
@@ -42,49 +44,52 @@ variable "boot_disk" {
 }
 
 variable "cloud_config_path" {
-  type = string
+  description = "Path to cloud config template file to set in metadata."
+  type        = string
 }
 
 variable "cloud_config_vars" {
-  type    = map(any)
-  default = {}
-}
-
-variable "docker_log_driver" {
-  type    = string
-  default = "gcplogs"
+  description = "Custom variables passed to cloud config template."
+  type        = map(any)
+  default     = {}
 }
 
 variable "instance_count" {
-  type    = number
-  default = 1
+  description = "Number of instances to create (only for non-MIG usage)."
+  type        = number
+  default     = 1
 }
 
 variable "instance_type" {
-  type    = string
-  default = "f1-micro"
+  description = "Instance type."
+  type        = string
+  default     = "f1-micro"
 }
 
 variable "name" {
-  type = string
+  description = "Instance name."
+  type        = string
 }
 
 variable "network" {
-  type = string
+  description = "Network name (self link for shared vpc)."
+  type        = string
 }
 
 variable "nat" {
+  description = "External address properties (addresses only for non-MIG usage)."
   type = object({
-    enabled = bool
-    address = string
+    enabled   = bool
+    addresses = list(string)
   })
   default = {
-    enabled = false
-    address = null
+    enabled   = false
+    addresses = []
   }
 }
 
 variable "options" {
+  description = "Instance options."
   type = object({
     allow_stopping_for_update = bool
     automatic_restart         = bool
@@ -100,19 +105,23 @@ variable "options" {
 }
 
 variable "project_id" {
-  type = string
+  description = "Project id."
+  type        = string
 }
 
 variable "region" {
-  type = string
+  description = "Compute region."
+  type        = string
 }
 
 variable "service_account" {
-  type    = string
-  default = ""
+  description = "Service account email (leave empty to auto-create)."
+  type        = string
+  default     = ""
 }
 
 variable "stackdriver" {
+  description = "Stackdriver options set in metadata."
   type = object({
     enable_logging    = bool
     enable_monitoring = bool
@@ -124,19 +133,23 @@ variable "stackdriver" {
 }
 
 variable "subnetwork" {
-  type = string
+  description = "Subnetwork name (self link for shared vpc)."
+  type        = string
 }
 
 variable "tags" {
-  type    = list(string)
-  default = ["ssh"]
+  description = "Instance tags."
+  type        = list(string)
+  default     = ["ssh"]
 }
 
 variable "use_instance_template" {
-  type    = bool
-  default = false
+  description = "Create instance template instead of instances."
+  type        = bool
+  default     = false
 }
 
 variable "zone" {
-  type = string
+  description = "Compute zone."
+  type        = string
 }
