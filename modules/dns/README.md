@@ -42,7 +42,7 @@ module "dns-private-zone" {
 | *dnssec_config* | DNSSEC configuration: kind, non_existence, state. | <code title="">any</code> |  | <code title="">{}</code> |
 | *forwarders* | List of target name servers, only valid for 'forwarding' zone types. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 | *peer_network* | Peering network self link, only valid for 'peering' zone types. | <code title="">string</code> |  | <code title=""></code> |
-| *recordsets* | List of DNS record objects to manage. | <code title="string&#10;ttl     &#61; number&#10;records &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">string</code> |  | <code title="">[]</code> |
+| *recordsets* | List of DNS record objects to manage. | <code title="list&#40;object&#40;&#123;&#10;name    &#61; string&#10;type &#61; string&#10;ttl     &#61; number&#10;records &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">list(object({...}))</code> |  | <code title="">[]</code> |
 | *type* | Type of zone to create, valid values are 'public', 'private', 'forwarding', 'peering'. | <code title="">string</code> |  | <code title="">private</code> |
 
 ## Outputs
