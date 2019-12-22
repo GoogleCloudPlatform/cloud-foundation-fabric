@@ -180,11 +180,11 @@ def format_variables(variables, required_first=True):
   for v in variables:
     default = default_spec = type_spec = ''
     if not v.required:
-      default = '<code title="{}">{}</code>'
+      default = '<code title="{title}">{default}</code>'
       if '\n' in v.default:
-        default.format(_escape(v.default), '...')
+        default = default.format(title=_escape(v.default), default='...')
       else:
-        default = default.format('', v.default or '')
+        default = default.format(title='', default=v.default or '')
     if v.type and '(' in v.type:
       type_spec = _escape(v.type)
     yield row.format(
