@@ -2,15 +2,22 @@
 
 This module allows easy creation of one or more service accounts, and granting them basic roles.
 
-The resources/services/activations/deletions that this module will create/trigger are:
+## Example
 
-- one or more service accounts
-- optional non-autoritative IAM role bindings for each service account for the following resource types
-  - organization
-  - billing account
-  - folder
-  - project
-- one optional service account key per service account
+```hcl
+module "serviceprj-service-accounts" {
+  source        = "./modules/iam-service-accounts"
+  project_id    = module.service-project.project_id
+  names         = ["vm-default", "gke-node-default"]
+  generate_keys = true
+  iam_project_roles = {
+    "${module.service-project.project_id}" = [
+      "roles/logging.logWriter",
+      "roles/monitoring.metricWriter",
+    ]
+  }
+}
+```
 
 <!-- BEGIN TFDOC -->
 ## Variables

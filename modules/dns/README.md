@@ -1,30 +1,22 @@
-# Terraform Google Cloud DNS Module
+# Cloud DNS Module
 
 This module makes it easy to create Google Cloud DNS zones of different types, and manage their records. It supports creating public, private, forwarding, and peering zones.
 
-The resources/services/activations/deletions that this module will create/trigger are:
 
-- One `google_dns_managed_zone` for the zone
-- Zero or more `google_dns_record_set` for the zone records
-
-## Usage
-
-Basic usage of this module for a private zone is as follows:
+## Example
 
 ```hcl
-module "dns-private-zone" {
-  source  = "./modules/dns
-  project_id = "my-project"
-  type       = "private"
-  name       = "example-com"
-  domain     = "example.com."
-  client_networks = [var.vpc_self_link]
+module "private-dns" {
+  source          = "./modules/dns"
+  project_id      = local.projects.host
+  type            = "private"
+  name            = "test-example"
+  domain          = "test.example."
+  client_networks = [local.vpc_peered.self_link, local.vpc_shared.self_link]
   recordsets = [
-    {name = "", type = "NS", ttl = 300, records = ["127.0.0.1"]},
-    {name = "localhost", type = "A", ttl = 300, records = ["127.0.0.1"]},
+    { name = "localhost", type = "A", ttl = 300, records = ["127.0.0.1"] }
   ]
 }
-
 ```
 
 <!-- BEGIN TFDOC -->

@@ -1,15 +1,25 @@
-# Google Cloud Simple Project Creation
+# Project Module
 
-This module allows simple Google Cloud Platform project creation, with minimal service and project-level IAM binding management. It's designed to be used for architectural design and rapid prototyping, as part of the [Cloud Foundation Fabric](https://github.com/terraform-google-modules/cloud-foundation-fabric) environments.
+## Example
 
-The resources/services/activations/deletions that this module will create/trigger are:
-
-- one project
-- zero or one project metadata items for OSLogin activation
-- zero or more project service activations
-- zero or more project-level IAM bindings
-- zero or more project-level custom roles
-- zero or one project liens
+```hcl
+module "project" {
+  source          = "./modules/project"
+  parent          = var.folder.id
+  billing_account = var.billing_account_id
+  prefix          = "foo"
+  name            = "project-example"
+  oslogin         = true
+  oslogin_admins  = var.admins
+  services = concat(var.project_services, [
+    "cloudkms.googleapis.com", "accesscontextmanager.googleapis.com"
+  ])
+  iam_roles = ["roles/container.hostServiceAgentUser"]
+  iam_members = { "roles/container.hostServiceAgentUser" = [
+    "serviceAccount:${var.gke_service_account}"
+  ] }
+}
+```
 
 <!-- BEGIN TFDOC -->
 ## Variables

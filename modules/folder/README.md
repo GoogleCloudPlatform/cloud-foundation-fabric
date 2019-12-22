@@ -1,5 +1,23 @@
 # Google Cloud Folder Module
 
+## Example
+
+```hcl
+module "folder" {
+  source = "./modules/folder"
+  parent = "organizations/${var.organization_id}"
+  names  = ["TF Test"]
+  iam_members = {
+    "TF Test" = {
+      for role in local.folder_roles : "${role}" => var.admins
+    }
+  }
+  iam_roles = {
+    "TF Test" = local.folder_roles
+  }
+}
+```
+
 <!-- BEGIN TFDOC -->
 ## Variables
 

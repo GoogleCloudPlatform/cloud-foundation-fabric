@@ -1,5 +1,28 @@
 # Compute Engine VM module
 
+## Example
+
+```hcl
+module "debian-test" {
+  source     = "../modules/compute-vm"
+  project_id = local.project
+  region     = local.subnet.region
+  zone       = "${local.subnet.region}-b"
+  name       = "debian-test"
+  network_interfaces = [{
+    network    = local.network.self_link,
+    subnetwork = local.subnet.self_link,
+    nat        = false,
+    addresses  = null
+  }]
+  instance_count = 1
+  attached_disks = [
+    { name = "disk-1", size = 10, image = null, options = null }
+  ]
+  # use_instance_template = true
+}
+```
+
 <!-- BEGIN TFDOC -->
 ## Variables
 

@@ -1,5 +1,19 @@
 # Google Cloud Storage Module
 
+## Example
+
+```iam
+module "buckets" {
+  source     = "./modules/gcs"
+  project_id = module.project.project_id
+  prefix     = "ludo-tf-playground"
+  names      = ["tfstate"]
+  bucket_policy_only = {
+    tfstate = false
+  }
+}
+```
+
 <!-- BEGIN TFDOC -->
 ## Variables
 

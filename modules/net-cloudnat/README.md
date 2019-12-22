@@ -1,4 +1,19 @@
-# Google Cloud NAT Module
+# Cloud NAT Module
+
+## Example
+
+```hcl
+module "nat" {
+  source      = "../modules/net-cloudnat"
+  project_id  = local.projects.host
+  region      = module.vpc.subnet_regions["default"]
+  name        = "shared"
+  router_name = module.vpn-dynamic.router_name
+  addresses = [
+    module.addresses.external_addresses.nat-1.self_link
+  ]
+}
+```
 
 <!-- BEGIN TFDOC -->
 ## Variables

@@ -1,5 +1,30 @@
 # Cloud VPN Dynamic Module
 
+## Example
+
+```hcl
+module "vpn-dynamic" {
+  source          = "./modules/net-vpn-dynamic"
+  project_id      = local.projects.host
+  region          = module.vpc.subnet_regions["default"]
+  network         = module.vpc.name
+  name            = "shared-to-remote"
+  gateway_address = module.addresses.external_addresses.vpn-remote.address
+  tunnels = {
+    remote-0 = {
+      bgp_peer = {
+        address = "169.254.139.134"
+        asn     = 64513
+      }
+      bgp_peer_options  = null
+      bgp_session_range = "169.254.139.133/30"
+      ike_version       = 2
+      peer_ip           = var.remote_vpn_gateway.address
+      shared_secret     = ""
+    }
+  }
+}```
+
 <!-- BEGIN TFDOC -->
 ## Variables
 

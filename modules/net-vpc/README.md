@@ -2,9 +2,44 @@
 
 TODO(ludoo): add description.
 
-## Example usage
+## Example
 
-TODO(ludoo): add example
+```hcl
+module "vpc" {
+  source     = "../modules/net-vpc"
+  project_id = local.projects.host
+  name       = "shared"
+  iam_roles = {
+    default = ["roles/compute.networkUser", "roles/compute.securityAdmin"]
+  }
+  iam_members = {
+    default = {
+      "roles/compute.networkUser" = [
+        local.service_accounts.service_cloudsvc,
+        local.service_accounts.service_gke
+      ]
+      "roles/compute.securityAdmin" = [
+        local.service_accounts.service_gke
+      ]
+    }
+  }
+  shared_vpc_host = true
+  shared_vpc_service_projects = [
+    local.projects.service,
+    local.projects.gae
+  ]
+  subnets = {
+    default = {
+      ip_cidr_range = var.ip_ranges.shared-default
+      region        = var.region
+      secondary_ip_range = {
+        pods     = var.ip_secondary_ranges.shared-default-pods
+        services = var.ip_secondary_ranges.shared-default-services
+      }
+    }
+  }
+}
+```
 
 <!-- BEGIN TFDOC -->
 ## Variables

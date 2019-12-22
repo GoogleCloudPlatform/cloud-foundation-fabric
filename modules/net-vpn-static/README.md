@@ -1,5 +1,27 @@
 # Cloud VPN Route-based Module
 
+## Example
+
+```hcl
+module "vpn" {
+  source          = "./modules/net-vpn-static"
+  project_id      = var.project_id
+  region          = var.region
+  network         = var.network
+  name            = "remote"
+  # gateway_address = var.gateway_address
+  remote_ranges   = [var.remote_ranges]
+  tunnels = {
+    remote-0 = {
+      ike_version       = 2
+      peer_ip           = var.remote_vpn_gateway_address
+      shared_secret     = ""
+      traffic_selectors = { local = ["0.0.0.0/0"], remote = null }
+    }
+  }
+}
+```
+
 <!-- BEGIN TFDOC -->
 ## Variables
 

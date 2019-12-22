@@ -1,5 +1,18 @@
 # Net Address Reservation Module
 
+## Example
+
+```hcl
+module "addresses" {
+  source     = "./modules/net-address"
+  project_id = local.projects.host
+  external_addresses = {
+    nat-1      = module.vpc.subnet_regions["default"],
+    vpn-remote = module.vpc.subnet_regions["default"],
+  }
+}
+```
+
 <!-- BEGIN TFDOC -->
 ## Variables
 

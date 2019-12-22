@@ -2,11 +2,17 @@
 
 Simple Cloud KMS module that allows managing a keyring, zero or more keys in the keyring, and IAM role bindings on individual keys.
 
-The resources/services/activations/deletions that this module will create/trigger are:
+## Example
 
-- Create a KMS keyring in the provided project
-- Create zero or more keys in the keyring
-- Create IAM role bindings for owners, encrypters, decrypters
+```hcl
+module "kms" {
+  source     = "../modules/kms"
+  project_id = module.project.project_id
+  keyring    = "playground"
+  location   = "europe"
+  keys       = ["vpn"]
+}
+```
 
 <!-- BEGIN TFDOC -->
 ## Variables
