@@ -32,10 +32,10 @@ variable "gke_version" {
 variable "initial_node_count" {
   description = "Initial number of nodes for the pool."
   type        = number
-  default     = null
+  default     = 1
 }
 
-variable "initial_node_count" {
+variable "location" {
   description = "Cluster location."
   type        = string
   default     = null

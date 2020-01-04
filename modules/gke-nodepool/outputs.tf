@@ -15,5 +15,6 @@
  */
 
 output "name" {
-  value = google_container_node_pool.nodepool.name
+  description = "Nodepool name."
+  value       = google_container_node_pool.nodepool.name
 }
