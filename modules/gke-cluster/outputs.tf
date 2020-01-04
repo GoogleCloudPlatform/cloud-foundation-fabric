@@ -27,6 +27,11 @@ output "endpoint" {
   value       = google_container_cluster.cluster.endpoint
 }
 
+output "location" {
+  description = "Cluster location."
+  value       = google_container_cluster.cluster.location
+}
+
 output "master_version" {
   description = "Master version."
   value       = google_container_cluster.cluster.master_version

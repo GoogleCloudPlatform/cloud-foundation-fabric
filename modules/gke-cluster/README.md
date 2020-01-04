@@ -48,6 +48,7 @@ TODO(ludoo): add example
 |---|---|:---:|
 | cluster | Cluster resource. | ✓ |
 | endpoint | Cluster endpoint. |  |
+| location | Cluster location. |  |
 | master_version | Master version. |  |
 | name | Cluster name. |  |
 <!-- END TFDOC -->
