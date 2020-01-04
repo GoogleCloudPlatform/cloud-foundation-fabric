@@ -1,4 +1,4 @@
-# Minimalistic GKE module
+# Minimalistic GKE nodepool module
 
 TODO(ludoo): add description.
 
