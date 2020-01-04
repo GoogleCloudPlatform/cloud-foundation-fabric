@@ -1,0 +1,189 @@
+/**
+ * Copyright 2019 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+variable "autoscaling_config" {
+  description = "Optional autoscaling configuration."
+  type = object({
+    min_node_count = number
+    max_node_count = number
+  })
+  default = null
+}
+
+variable "gke_version" {
+  description = "Kubernetes nodes version. Ignored if auto_upgrade is set in management_config."
+  type        = string
+  default     = null
+}
+
+variable "initial_node_count" {
+  description = "Initial number of nodes for the pool."
+  type        = number
+  default     = null
+}
+
+variable "initial_node_count" {
+  description = "Cluster location."
+  type        = string
+  default     = null
+}
+
+variable "management_config" {
+  description = "Optional node management configuration."
+  type = object({
+    auto_repair  = bool
+    auto_upgrade = bool
+  })
+  default = null
+}
+
+variable "max_pods_per_node" {
+  description = "Maximum number of pods per node."
+  type        = number
+  default     = null
+}
+
+variable "name" {
+  description = "Optional nodepool name."
+  type        = string
+  default     = null
+}
+
+variable "node_config_disk_size" {
+  description = "Node disk size, defaults to 100GB."
+  type        = number
+  default     = 100
+}
+
+variable "node_config_disk_type" {
+  description = "Node disk type, defaults to pd-standard."
+  type        = string
+  default     = "pd-standard"
+}
+
+variable "node_config_guest_accelerator" {
+  description = "Map of type and count of attached accelerator cards."
+  type        = map(number)
+  default     = {}
+}
+
+variable "node_config_image_type" {
+  description = "Nodes image type."
+  type        = string
+  default     = null
+}
+
+variable "node_config_labels" {
+  description = "Kubernetes labels attached to nodes."
+  type        = map(string)
+  default     = {}
+}
+
+variable "node_config_local_ssd_count" {
+  description = "Number of local SSDs attached to nodes."
+  type        = number
+  default     = 0
+}
+
+variable "node_config_machine_type" {
+  description = "Nodes machine type."
+  type        = string
+  default     = "n1-standard-1"
+}
+
+variable "node_config_metadata" {
+  description = "Metadata key/value pairs assigned to nodes. Set disable-legacy-endpoints to true when using this variable."
+  type        = map(string)
+  default     = null
+}
+
+variable "node_config_min_cpu_platform" {
+  description = "Minimum CPU platform for nodes."
+  type        = string
+  default     = null
+}
+
+variable "node_config_oauth_scopes" {
+  description = "Set of Google API scopes for the nodes service account. Include logging-write, monitoring, and storage-ro when using this variable."
+  type        = list(string)
+  default     = null
+}
+
+variable "node_config_preemptible" {
+  description = "Use preemptible VMs for nodes."
+  type        = bool
+  default     = null
+}
+
+variable "node_config_sandbox_config" {
+  description = "GKE Sandbox configuration. Needs image_type set to COS_CONTAINERD and node_version set to 1.12.7-gke.17 when using this variable."
+  type        = string
+  default     = null
+}
+
+variable "node_config_service_account" {
+  description = "Service account used for nodes."
+  type        = string
+  default     = null
+}
+
+variable "node_config_shielded_instance_config" {
+  description = "Shielded instance options."
+  type = object({
+    enable_secure_boot          = bool
+    enable_integrity_monitoring = bool
+  })
+  default = null
+}
+
+variable "node_config_tags" {
+  description = "Network tags applied to nodes."
+  type        = list(string)
+  default     = null
+}
+
+# variable "node_config_taint" {
+#   description = "Kubernetes taints applied to nodes."
+#   type        = string
+#   default     = null
+# }
+
+variable "node_config_workload_metadata_config" {
+  description = "Metadata configuration to expose to workloads on the node pool."
+  type        = string
+  default     = "SECURE"
+}
+
+variable "node_count" {
+  description = "Number of nodes per instance group, can be updated after creation. Ignored when autoscaling is set."
+  type        = number
+  default     = null
+}
+
+variable "node_locations" {
+  description = "Optional list of zones in which nodes should be located. Uses cluster locations if unset."
+  type        = list(string)
+  default     = null
+}
+
+variable "upgrade_config" {
+  description = "Optional node upgrade configuration."
+  type = object({
+    max_surge       = number
+    max_unavailable = number
+  })
+  default = null
+}
