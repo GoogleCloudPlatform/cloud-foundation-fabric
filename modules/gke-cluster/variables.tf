@@ -175,24 +175,14 @@ variable "pod_security_policy" {
   default     = null
 }
 
-variable "private_cluster" {
-  description = "Enable private cluster."
-  type        = bool
-  default     = false
-}
-
 variable "private_cluster_config" {
-  description = "Private cluster configuration."
+  description = "Enable and configure private cluster."
   type = object({
     enable_private_nodes    = bool
     enable_private_endpoint = bool
     master_ipv4_cidr_block  = string
   })
-  default = {
-    enable_private_nodes    = true
-    enable_private_endpoint = false
-    master_ipv4_cidr_block  = null
-  }
+  default = null
 }
 
 variable "project_id" {

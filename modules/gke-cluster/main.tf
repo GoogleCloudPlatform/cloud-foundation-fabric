@@ -106,7 +106,7 @@ resource "google_container_cluster" "cluster" {
   }
 
   dynamic private_cluster_config {
-    for_each = var.private_cluster ? list(var.private_cluster_config) : []
+    for_each = var.private_cluster_config != null ? [var.private_cluster_config] : []
     iterator = config
     content {
       enable_private_nodes    = config.value.enable_private_nodes

@@ -36,8 +36,7 @@ TODO(ludoo): add example
 | *monitoring_service* | Monitoring service (disable with an empty string). | <code title="">string</code> |  | <code title="">monitoring.googleapis.com/kubernetes</code> |
 | *node_locations* | Zones in which the cluster's nodes are located. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 | *pod_security_policy* | Enable the PodSecurityPolicy feature. | <code title="">bool</code> |  | <code title="">null</code> |
-| *private_cluster* | Enable private cluster. | <code title="">bool</code> |  | <code title="">false</code> |
-| *private_cluster_config* | Private cluster configuration. | <code title="object&#40;&#123;&#10;enable_private_nodes    &#61; bool&#10;enable_private_endpoint &#61; bool&#10;master_ipv4_cidr_block  &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;enable_private_nodes    &#61; true&#10;enable_private_endpoint &#61; false&#10;master_ipv4_cidr_block  &#61; null&#10;&#125;">...</code> |
+| *private_cluster_config* | Enable and configure private cluster. | <code title="object&#40;&#123;&#10;enable_private_nodes    &#61; bool&#10;enable_private_endpoint &#61; bool&#10;master_ipv4_cidr_block  &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 | *release_channel* | Release channel for GKE upgrades. | <code title="">string</code> |  | <code title="">null</code> |
 | *resource_usage_export_config* | Configure the ResourceUsageExportConfig feature. | <code title="object&#40;&#123;&#10;enabled &#61; bool&#10;dataset &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;enabled &#61; null&#10;dataset &#61; null&#10;&#125;">...</code> |
 | *vertical_pod_autoscaling* | Enable the Vertical Pod Autoscaling feature. | <code title="">bool</code> |  | <code title="">null</code> |
