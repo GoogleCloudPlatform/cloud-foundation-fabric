@@ -26,11 +26,7 @@ resource "google_container_node_pool" "nodepool" {
   max_pods_per_node  = var.max_pods_per_node
   node_count         = var.autoscaling_config == null ? var.node_count : null
   node_locations     = var.node_locations
-  version = (
-    var.management_config == null || ! var.management_config.auto_upgrade
-    ? var.gke_version
-    : null
-  )
+  version            = var.gke_version
 
   node_config {
     disk_size_gb     = var.node_config_disk_size
@@ -50,8 +46,8 @@ resource "google_container_node_pool" "nodepool" {
       for_each = var.node_config_guest_accelerator
       iterator = config
       content {
-        type   = config.key
-        number = config.value
+        type  = config.key
+        count = config.value
       }
     }
 

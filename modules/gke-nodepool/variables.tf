@@ -23,6 +23,11 @@ variable "autoscaling_config" {
   default = null
 }
 
+variable "cluster_name" {
+  description = "Cluster name."
+  type        = string
+}
+
 variable "gke_version" {
   description = "Kubernetes nodes version. Ignored if auto_upgrade is set in management_config."
   type        = string
@@ -38,7 +43,6 @@ variable "initial_node_count" {
 variable "location" {
   description = "Cluster location."
   type        = string
-  default     = null
 }
 
 variable "management_config" {
@@ -177,6 +181,11 @@ variable "node_locations" {
   description = "Optional list of zones in which nodes should be located. Uses cluster locations if unset."
   type        = list(string)
   default     = null
+}
+
+variable "project_id" {
+  description = "Cluster project id."
+  type        = string
 }
 
 variable "upgrade_config" {
