@@ -11,10 +11,12 @@ TODO(ludoo): add example
 
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
+| cluster_name | Cluster name. | <code title="">string</code> | ✓ |  |
+| location | Cluster location. | <code title="">string</code> | ✓ |  |
+| project_id | Cluster project id. | <code title="">string</code> | ✓ |  |
 | *autoscaling_config* | Optional autoscaling configuration. | <code title="object&#40;&#123;&#10;min_node_count &#61; number&#10;max_node_count &#61; number&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 | *gke_version* | Kubernetes nodes version. Ignored if auto_upgrade is set in management_config. | <code title="">string</code> |  | <code title="">null</code> |
 | *initial_node_count* | Initial number of nodes for the pool. | <code title="">number</code> |  | <code title="">1</code> |
-| *location* | Cluster location. | <code title="">string</code> |  | <code title="">null</code> |
 | *management_config* | Optional node management configuration. | <code title="object&#40;&#123;&#10;auto_repair  &#61; bool&#10;auto_upgrade &#61; bool&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 | *max_pods_per_node* | Maximum number of pods per node. | <code title="">number</code> |  | <code title="">null</code> |
 | *name* | Optional nodepool name. | <code title="">string</code> |  | <code title="">null</code> |
