@@ -24,7 +24,7 @@ locals {
 
 resource "google_compute_router" "router" {
   count   = var.router_name == "" ? 1 : 0
-  name    = var.router_name
+  name    = var.router_name == "" ? "${var.name}-nat" : var.router_name
   project = var.project_id
   region  = var.region
   network = var.router_network
