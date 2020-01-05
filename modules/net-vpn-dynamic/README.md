@@ -23,7 +23,8 @@ module "vpn-dynamic" {
       shared_secret     = ""
     }
   }
-}```
+}
+```
 
 <!-- BEGIN TFDOC -->
 ## Variables
