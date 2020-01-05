@@ -14,8 +14,14 @@
  * limitations under the License.
  */
 
+variable "gateway_address_create" {
+  description = "Create external address assigned to the VPN gateway. Needs to be explicitly set to false to use address in gateway_address variable."
+  type        = bool
+  default     = true
+}
+
 variable "gateway_address" {
-  description = "Optional address assigned to the VPN, leave blank to create one."
+  description = "Optional address assigned to the VPN gateway. Ignored unless gateway_address_create is set to false."
   type        = string
   default     = ""
 }
@@ -62,8 +68,14 @@ variable "router_asn" {
   default     = 64514
 }
 
+variable "router_create" {
+  description = "Create router."
+  type        = bool
+  default     = true
+}
+
 variable "router_name" {
-  description = "Name of router, leave blank to create one."
+  description = "Router name used for auto created router, or to specify existing router to use. Leave blank to use VPN name for auto created router."
   type        = string
   default     = ""
 }
