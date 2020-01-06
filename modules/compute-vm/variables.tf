@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-variable "addresses" {
-  description = "Optional internal addresses (only for non-template usage)."
-  type        = list(string)
-  default     = []
-}
-
 variable "attached_disks" {
   description = "Additional disks, if options is null defaults will be used in its place."
   type = list(object({
