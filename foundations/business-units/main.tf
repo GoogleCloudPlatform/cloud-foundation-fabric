@@ -26,7 +26,7 @@ locals {
 
 module "shared-folder" {
   source  = "terraform-google-modules/folders/google"
-  version = "2.0.0"
+  version = "2.0.2"
   parent  = var.root_node
   names   = ["shared"]
 }
@@ -53,7 +53,7 @@ module "project-tf" {
 
 module "service-accounts-tf-environments" {
   source             = "terraform-google-modules/service-accounts/google"
-  version            = "2.0.1"
+  version            = "2.0.2"
   project_id         = module.project-tf.project_id
   org_id             = var.organization_id
   billing_account_id = var.billing_account_id
@@ -151,7 +151,7 @@ module "project-audit" {
 
 module "bq-audit-export" {
   source                   = "terraform-google-modules/log-export/google//modules/bigquery"
-  version                  = "3.1.0"
+  version                  = "3.2.0"
   project_id               = module.project-audit.project_id
   dataset_name             = "${replace(local.log_sink_name, "-", "_")}"
   log_sink_writer_identity = module.log-sink-audit.writer_identity
@@ -161,7 +161,7 @@ module "bq-audit-export" {
 
 module "log-sink-audit" {
   source                 = "terraform-google-modules/log-export/google"
-  version                = "3.1.0"
+  version                = "3.2.0"
   filter                 = "logName: \"/logs/cloudaudit.googleapis.com%2Factivity\" OR logName: \"/logs/cloudaudit.googleapis.com%2Fsystem_event\""
   log_sink_name          = local.log_sink_name
   parent_resource_type   = local.log_sink_parent_resource_type
