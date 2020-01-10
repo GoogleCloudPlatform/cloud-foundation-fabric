@@ -14,6 +14,7 @@
 
 variable "audit_viewers" {
   description = "Audit project viewers, in IAM format."
+  type        = list(string)
   default     = []
 }
 
@@ -29,21 +30,25 @@ variable "environments" {
 
 variable "generate_service_account_keys" {
   description = "Generate and store service account keys in the state file."
+  type        = bool
   default     = false
 }
 
 variable "gcs_location" {
   description = "GCS bucket location."
+  type        = string
   default     = "EU"
 }
 
 variable "grant_xpn_org_roles" {
   description = "Grant roles needed for Shared VPC creation to service accounts at the organization level."
+  type        = bool
   default     = false
 }
 
 variable "grant_xpn_folder_roles" {
   description = "Grant roles needed for Shared VPC creation to service accounts at the environment folder level."
+  type        = bool
   default     = true
 }
 
@@ -65,21 +70,25 @@ variable "root_node" {
 variable "shared_bindings_members" {
   description = "List of comma-delimited IAM-format members for the additional shared project bindings."
   # example: ["user:a@example.com,b@example.com", "user:c@example.com"]
+  type    = list(string)
   default = []
 }
 variable "shared_bindings_roles" {
   description = "List of roles for additional shared project bindings."
   # example: ["roles/storage.objectViewer", "roles/storage.admin"]
+  type    = list(string)
   default = []
 }
 
 variable "terraform_owners" {
   description = "Terraform project owners, in IAM format."
+  type        = list(string)
   default     = []
 }
 
 variable "project_services" {
   description = "Service APIs enabled by default in new projects."
+  type        = list(string)
   default = [
     "resourceviews.googleapis.com",
     "stackdriver.googleapis.com",
