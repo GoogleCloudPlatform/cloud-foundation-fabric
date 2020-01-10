@@ -37,15 +37,15 @@ If no shared services are needed, the shared service project module can of cours
 | organization_id | Organization id. | <code title="">string</code> | ✓ |  |
 | prefix | Prefix used for resources that need unique names. | <code title="">string</code> | ✓ |  |
 | root_node | Root node for the new hierarchy, either 'organizations/org_id' or 'folders/folder_id'. | <code title="">string</code> | ✓ |  |
-| *audit_viewers* | Audit project viewers, in IAM format. | <code title=""></code> |  | <code title="">[]</code> |
-| *gcs_location* | GCS bucket location. | <code title=""></code> |  | <code title="">EU</code> |
-| *generate_service_account_keys* | Generate and store service account keys in the state file. | <code title=""></code> |  | <code title="">false</code> |
-| *grant_xpn_folder_roles* | Grant roles needed for Shared VPC creation to service accounts at the environment folder level. | <code title=""></code> |  | <code title="">true</code> |
-| *grant_xpn_org_roles* | Grant roles needed for Shared VPC creation to service accounts at the organization level. | <code title=""></code> |  | <code title="">false</code> |
-| *project_services* | Service APIs enabled by default in new projects. | <code title=""></code> |  | <code title="&#91;&#10;&#34;resourceviews.googleapis.com&#34;,&#10;&#34;stackdriver.googleapis.com&#34;,&#10;&#93;">...</code> |
-| *shared_bindings_members* | List of comma-delimited IAM-format members for the additional shared project bindings. | <code title=""></code> |  | <code title="">[]</code> |
-| *shared_bindings_roles* | List of roles for additional shared project bindings. | <code title=""></code> |  | <code title="">[]</code> |
-| *terraform_owners* | Terraform project owners, in IAM format. | <code title=""></code> |  | <code title="">[]</code> |
+| *audit_viewers* | Audit project viewers, in IAM format. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
+| *gcs_location* | GCS bucket location. | <code title="">string</code> |  | <code title="">EU</code> |
+| *generate_service_account_keys* | Generate and store service account keys in the state file. | <code title="">bool</code> |  | <code title="">false</code> |
+| *grant_xpn_folder_roles* | Grant roles needed for Shared VPC creation to service accounts at the environment folder level. | <code title="">bool</code> |  | <code title="">true</code> |
+| *grant_xpn_org_roles* | Grant roles needed for Shared VPC creation to service accounts at the organization level. | <code title="">bool</code> |  | <code title="">false</code> |
+| *project_services* | Service APIs enabled by default in new projects. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="&#91;&#10;&#34;resourceviews.googleapis.com&#34;,&#10;&#34;stackdriver.googleapis.com&#34;,&#10;&#93;">...</code> |
+| *shared_bindings_members* | List of comma-delimited IAM-format members for the additional shared project bindings. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
+| *shared_bindings_roles* | List of roles for additional shared project bindings. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
+| *terraform_owners* | Terraform project owners, in IAM format. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 
 ## Outputs
 
