@@ -130,7 +130,7 @@ module "bq-audit-export" {
 module "log-sink-audit" {
   source                 = "terraform-google-modules/log-export/google"
   version                = "3.2.0"
-  filter                 = "logName: \"/logs/cloudaudit.googleapis.com%2Factivity\" OR logName: \"/logs/cloudaudit.googleapis.com%2Fsystem_event\""
+  filter                 = var.audit_filter
   log_sink_name          = "logs-audit-${var.environments[0]}"
   parent_resource_type   = "folder"
   parent_resource_id     = split("/", module.folders-top-level.ids_list[0])[1]

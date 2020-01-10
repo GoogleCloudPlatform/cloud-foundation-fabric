@@ -12,6 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+variable "audit_filter" {
+  description = "Audit log filter used for the log sink."
+  type        = string
+  default     = <<END
+  logName: "/logs/cloudaudit.googleapis.com%2Factivity"
+  OR
+  logName: "/logs/cloudaudit.googleapis.com%2Fsystem_event"
+  END
+}
+
 variable "audit_viewers" {
   description = "Audit project viewers, in IAM format."
   type        = list(string)
@@ -43,13 +53,13 @@ variable "gcs_location" {
 variable "grant_xpn_org_roles" {
   description = "Grant roles needed for Shared VPC creation to service accounts at the organization level."
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "grant_xpn_folder_roles" {
   description = "Grant roles needed for Shared VPC creation to service accounts at the environment folder level."
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "organization_id" {
