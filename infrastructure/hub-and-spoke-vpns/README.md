@@ -48,34 +48,32 @@ SSH access to instances is configured via [OS Login](https://cloud.google.com/co
    -  Please refer to the [bug](https://github.com/terraform-providers/terraform-provider-google/issues/3753) for more details.
    -  Please refer to the [documentation](https://cloud.google.com/dns/zones/#creating_a_dns_policy_that_enables_inbound_dns_forwarding) on how to get the IPs with `gcloud`.
 
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
-## Inputs
+<!-- BEGIN TFDOC -->
+## Variables
 
-| Name | Description | Type | Default | Required |
-|------|-------------|:----:|:-----:|:-----:|
-| forwarding\_dns\_zone\_domain | Forwarding DNS Zone Domain. | string | `"on-prem.local."` | no |
-| forwarding\_dns\_zone\_name | Forwarding DNS Zone Name. | string | `"on-prem-local"` | no |
-| forwarding\_zone\_server\_addresses | Forwarding DNS Zone Server Addresses | list(string) | `<list>` | no |
-| hub\_bgp\_asn | Hub BGP ASN. | number | `"64515"` | no |
-| hub\_project\_id | Hub Project id. Same project can be used for hub and spokes. | string | n/a | yes |
-| hub\_subnets | Hub VPC subnets configuration. | object | `<list>` | no |
-| private\_dns\_zone\_domain | Private DNS Zone Domain. | string | `"gcp.local."` | no |
-| private\_dns\_zone\_name | Private DNS Zone Name. | string | `"gcp-local"` | no |
-| spoke\_1\_bgp\_asn | Spoke 1 BGP ASN. | number | `"64516"` | no |
-| spoke\_1\_project\_id | Spoke 1 Project id. Same project can be used for hub and spokes. | string | n/a | yes |
-| spoke\_1\_subnets | Spoke 1 VPC subnets configuration. | list | `<list>` | no |
-| spoke\_2\_bgp\_asn | Spoke 2 BGP ASN. | number | `"64517"` | no |
-| spoke\_2\_project\_id | Spoke 2 Project id. Same project can be used for hub and spokes. | string | n/a | yes |
-| spoke\_2\_subnets | Spoke 2 VPC subnets configuration. | list | `<list>` | no |
-| spoke\_to\_spoke\_route\_advertisement | Use custom route advertisement in hub routers to advertise all spoke subnets. | bool | `"true"` | no |
+| name | description | type | required | default |
+|---|---|:---: |:---:|:---:|
+| hub_project_id | Hub Project id. Same project can be used for hub and spokes. | <code title="">string</code> | ✓ |  |
+| spoke_1_project_id | Spoke 1 Project id. Same project can be used for hub and spokes. | <code title="">string</code> | ✓ |  |
+| spoke_2_project_id | Spoke 2 Project id. Same project can be used for hub and spokes. | <code title="">string</code> | ✓ |  |
+| *forwarding_dns_zone_domain* | Forwarding DNS Zone Domain. | <code title="">string</code> |  | <code title="">on-prem.local.</code> |
+| *forwarding_dns_zone_name* | Forwarding DNS Zone Name. | <code title="">string</code> |  | <code title="">on-prem-local</code> |
+| *forwarding_zone_server_addresses* | Forwarding DNS Zone Server Addresses | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">["8.8.8.8", "8.8.4.4"]</code> |
+| *hub_bgp_asn* | Hub BGP ASN. | <code title="">number</code> |  | <code title="">64515</code> |
+| *hub_subnets* | Hub VPC subnets configuration. | <code title="list&#40;object&#40;&#123;&#10;subnet_name   &#61; string&#10;subnet_ip     &#61; string&#10;subnet_region &#61; string&#10;&#125;&#41;&#41;">list(object({...}))</code> |  | <code title="&#91;&#123;&#10;subnet_name   &#61; &#34;subnet-a&#34;&#10;subnet_ip     &#61; &#34;10.10.10.0&#47;24&#34;&#10;subnet_region &#61; &#34;europe-west1&#34;&#10;&#125;,&#10;&#123;&#10;subnet_name   &#61; &#34;subnet-b&#34;&#10;subnet_ip     &#61; &#34;10.10.20.0&#47;24&#34;&#10;subnet_region &#61; &#34;europe-west2&#34;&#10;&#125;,&#10;&#93;">...</code> |
+| *private_dns_zone_domain* | Private DNS Zone Domain. | <code title="">string</code> |  | <code title="">gcp.local.</code> |
+| *private_dns_zone_name* | Private DNS Zone Name. | <code title="">string</code> |  | <code title="">gcp-local</code> |
+| *spoke_1_bgp_asn* | Spoke 1 BGP ASN. | <code title="">number</code> |  | <code title="">64516</code> |
+| *spoke_1_subnets* | Spoke 1 VPC subnets configuration. | <code title=""></code> |  | <code title="&#91;&#123;&#10;subnet_name   &#61; &#34;spoke-1-subnet-a&#34;&#10;subnet_ip     &#61; &#34;10.20.10.0&#47;24&#34;&#10;subnet_region &#61; &#34;europe-west1&#34;&#10;&#125;,&#10;&#123;&#10;subnet_name   &#61; &#34;spoke-1-subnet-b&#34;&#10;subnet_ip     &#61; &#34;10.20.20.0&#47;24&#34;&#10;subnet_region &#61; &#34;europe-west2&#34;&#10;&#125;,&#10;&#93;">...</code> |
+| *spoke_2_bgp_asn* | Spoke 2 BGP ASN. | <code title="">number</code> |  | <code title="">64517</code> |
+| *spoke_2_subnets* | Spoke 2 VPC subnets configuration. | <code title=""></code> |  | <code title="&#91;&#123;&#10;subnet_name   &#61; &#34;spoke-2-subnet-a&#34;&#10;subnet_ip     &#61; &#34;10.30.10.0&#47;24&#34;&#10;subnet_region &#61; &#34;europe-west1&#34;&#10;&#125;,&#10;&#123;&#10;subnet_name   &#61; &#34;spoke-2-subnet-b&#34;&#10;subnet_ip     &#61; &#34;10.30.20.0&#47;24&#34;&#10;subnet_region &#61; &#34;europe-west2&#34;&#10;&#125;,&#10;&#93;">...</code> |
+| *spoke_to_spoke_route_advertisement* | Use custom route advertisement in hub routers to advertise all spoke subnets. | <code title="">bool</code> |  | <code title="">true</code> |
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| hub | Hub network resources. |
-| spoke-1 | Spoke1 network resources. |
-| spoke-2 | Spoke2 network resources. |
-| test-instances | Test instance attributes. |
-
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+| name | description | sensitive |
+|---|---|:---:|
+| hub | Hub network resources. |  |
+| spoke-1 | Spoke1 network resources. |  |
+| spoke-2 | Spoke2 network resources. |  |
+<!-- END TFDOC -->

@@ -31,34 +31,31 @@ The networking and GKE instances have `dig` and the `mysql` client installed via
 
 There's a minor glitch that can surface running `terraform destroy`, with a simple workaround. The glitch is due to a delay between the API reporting service project removal from the Shared VPC as successful (`google_compute_shared_vpc_service_project` resources destroyed), and the Shared VPC resource being aligned with that event. This results in an error that prevents disabling the Shared VPC feature: `Error disabling Shared VPC Host [...] Cannot disable project as a shared VPC host because it has active service projects.`. The workaround is to run `terraform destroy` again after a few seconds, giving the Shared VPC resource time to be in sync with service project removal.
 
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
-## Inputs
+<!-- BEGIN TFDOC -->
+## Variables
 
-| Name | Description | Type | Default | Required |
-|------|-------------|:----:|:-----:|:-----:|
-| billing\_account\_id | Billing account id used as default for new projects. | string | n/a | yes |
-| kms\_keyring\_location | Location used for the KMS keyring. | string | `"europe"` | no |
-| kms\_keyring\_name | Name used for the KMS keyring. | string | `"svpc-example"` | no |
-| oslogin\_admins\_gce | GCE project oslogin admin members, in IAM format. | list | `<list>` | no |
-| oslogin\_users\_gce | GCE project oslogin user members, in IAM format. | list | `<list>` | no |
-| owners\_gce | GCE project owners, in IAM format. | list | `<list>` | no |
-| owners\_gke | GKE project owners, in IAM format. | list | `<list>` | no |
-| owners\_host | Host project owners, in IAM format. | list | `<list>` | no |
-| prefix | Prefix used for resources that need unique names. | string | n/a | yes |
-| project\_services | Service APIs enabled by default in new projects. | list | `<list>` | no |
-| root\_node | Hierarchy node where projects will be created, 'organizations/org_id' or 'folders/folder_id'. | string | n/a | yes |
-| subnet\_secondary\_ranges | Shared VPC subnets secondary range definitions. | map | `<map>` | no |
-| subnets | Shared VPC subnet definitions. | list | `<list>` | no |
+| name | description | type | required | default |
+|---|---|:---: |:---:|:---:|
+| billing_account_id | Billing account id used as default for new projects. | <code title="">string</code> | ✓ |  |
+| prefix | Prefix used for resources that need unique names. | <code title="">string</code> | ✓ |  |
+| root_node | Hierarchy node where projects will be created, 'organizations/org_id' or 'folders/folder_id'. | <code title="">string</code> | ✓ |  |
+| *kms_keyring_location* | Location used for the KMS keyring. | <code title=""></code> |  | <code title="">europe</code> |
+| *kms_keyring_name* | Name used for the KMS keyring. | <code title=""></code> |  | <code title="">svpc-example</code> |
+| *oslogin_admins_gce* | GCE project oslogin admin members, in IAM format. | <code title=""></code> |  | <code title="">[]</code> |
+| *oslogin_users_gce* | GCE project oslogin user members, in IAM format. | <code title=""></code> |  | <code title="">[]</code> |
+| *owners_gce* | GCE project owners, in IAM format. | <code title=""></code> |  | <code title="">[]</code> |
+| *owners_gke* | GKE project owners, in IAM format. | <code title=""></code> |  | <code title="">[]</code> |
+| *owners_host* | Host project owners, in IAM format. | <code title=""></code> |  | <code title="">[]</code> |
+| *project_services* | Service APIs enabled by default in new projects. | <code title=""></code> |  | <code title="&#91;&#10;&#34;resourceviews.googleapis.com&#34;,&#10;&#34;stackdriver.googleapis.com&#34;,&#10;&#93;">...</code> |
+| *subnet_secondary_ranges* | Shared VPC subnets secondary range definitions. | <code title=""></code> |  | <code title="&#123;&#10;networking &#61; &#91;&#93;,&#10;gce        &#61; &#91;&#93;,&#10;gke &#61; &#91;&#10;&#123;&#10;range_name    &#61; &#34;services&#34;&#10;ip_cidr_range &#61; &#34;172.16.0.0&#47;24&#34;&#10;&#125;,&#10;&#123;&#10;range_name    &#61; &#34;pods&#34;&#10;ip_cidr_range &#61; &#34;10.128.0.0&#47;18&#34;&#10;&#125;&#10;&#93;&#10;&#125;">...</code> |
+| *subnets* | Shared VPC subnet definitions. | <code title=""></code> |  | <code title="&#91;&#10;&#123;&#10;subnet_name           &#61; &#34;networking&#34;&#10;subnet_ip             &#61; &#34;10.0.0.0&#47;24&#34;&#10;subnet_region         &#61; &#34;europe-west1&#34;&#10;subnet_private_access &#61; &#34;true&#34;&#10;&#125;,&#10;&#123;&#10;subnet_name           &#61; &#34;gce&#34;&#10;subnet_ip             &#61; &#34;10.0.16.0&#47;24&#34;&#10;subnet_region         &#61; &#34;europe-west1&#34;&#10;subnet_private_access &#61; &#34;true&#34;&#10;&#125;,&#10;&#123;&#10;subnet_name           &#61; &#34;gke&#34;&#10;subnet_ip             &#61; &#34;10.0.32.0&#47;24&#34;&#10;subnet_region         &#61; &#34;europe-west1&#34;&#10;subnet_private_access &#61; &#34;true&#34;&#10;&#125;,&#10;&#93;">...</code> |
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| host\_project\_id | VPC host project id. |
-| mysql-root-password | Password for the test MySQL db root user. |
-| service\_project\_ids | Service project ids. |
-| test-instances | Test instance names. |
-| vpc\_name | Shared VPC name |
-| vpc\_subnets | Shared VPC subnets. |
-
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+| name | description | sensitive |
+|---|---|:---:|
+| host_project_id | VPC host project id. |  |
+| service_project_ids | Service project ids. |  |
+| vpc_name | Shared VPC name |  |
+| vpc_subnets | Shared VPC subnets. |  |
+<!-- END TFDOC -->
