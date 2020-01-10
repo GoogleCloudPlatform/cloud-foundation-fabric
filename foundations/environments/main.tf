@@ -25,9 +25,9 @@ module "project-tf" {
   billing_account = var.billing_account_id
   prefix          = var.prefix
   name            = "terraform"
-  lien_reason     = "terraform"
-  owners          = var.terraform_owners
-  activate_apis   = var.project_services
+  # lien_reason     = "terraform"
+  owners        = var.terraform_owners
+  activate_apis = var.project_services
 }
 
 # per-environment service accounts
@@ -107,7 +107,7 @@ module "project-audit" {
   billing_account = var.billing_account_id
   prefix          = var.prefix
   name            = "audit"
-  lien_reason     = "audit"
+  # lien_reason     = "audit"
   activate_apis = concat(var.project_services, [
     "bigquery.googleapis.com",
   ])
@@ -153,7 +153,6 @@ module "project-shared-resources" {
   billing_account        = var.billing_account_id
   prefix                 = var.prefix
   name                   = "shared"
-  lien_reason            = "shared"
   activate_apis          = var.project_services
   extra_bindings_roles   = var.shared_bindings_roles
   extra_bindings_members = var.shared_bindings_members
