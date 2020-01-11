@@ -13,3 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+variable "sinks" {
+  description = "Logging sinks that will be created, options default to true except for unique_writer_identity."
+  type = list(object({
+    # organizations/nnn, billing_accounts/nnn, folders/nnn, projects/nnn
+    name        = string
+    resource    = string
+    filter      = string
+    destination = string
+    options = object({
+      bigquery_partitioned_tables = bool
+      include_children            = bool
+      unique_writer_identity      = bool
+    })
+  }))
+  default = []
+}
