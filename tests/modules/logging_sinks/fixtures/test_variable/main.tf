@@ -42,7 +42,7 @@ module "sinks" {
       destination = "bigquery destination: folder_simple"
       options = {
         bigquery_partitioned_tables = false
-        include_children            = true
+        include_children            = false
         unique_writer_identity      = null
       }
     },

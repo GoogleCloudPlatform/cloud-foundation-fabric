@@ -15,13 +15,18 @@
  */
 
 locals {
+  default_options = {
+    bigquery_partitioned_tables = true
+    include_children            = true
+    unique_writer_identity      = false
+  }
   sinks = [
     for sink in var.sinks : merge(
       sink,
       zipmap(["resource_type", "resource_id"], split("/", sink.resource)),
       {
         to_bigquery = substr(sink.destination, 0, 8) == "bigquery",
-        options     = sink.options == null ? {} : sink.options
+        options     = sink.options == null ? local.default_options : sink.options
       }
     )
   ]
@@ -42,14 +47,12 @@ resource "google_logging_organization_sink" "sinks" {
   org_id           = each.value.resource_id
   filter           = each.value.filter
   destination      = each.value.destination
-  include_children = lookup(each.value.options, "include_children", true)
+  include_children = each.value.options.include_children
   dynamic bigquery_options {
     for_each = each.value.to_bigquery ? ["1"] : []
     iterator = config
     content {
-      use_partitioned_tables = lookup(
-        each.value.options, "bigquery_partitioned_tables", true
-      )
+      use_partitioned_tables = each.value.options.bigquery_partitioned_tables
     }
   }
 }
@@ -67,9 +70,7 @@ resource "google_logging_billing_account_sink" "sinks" {
     for_each = each.value.to_bigquery ? ["1"] : []
     iterator = config
     content {
-      use_partitioned_tables = lookup(
-        each.value.options, "bigquery_partitioned_tables", true
-      )
+      use_partitioned_tables = each.value.options.bigquery_partitioned_tables
     }
   }
 }
@@ -83,14 +84,12 @@ resource "google_logging_folder_sink" "sinks" {
   folder           = each.value.resource
   filter           = each.value.filter
   destination      = each.value.destination
-  include_children = lookup(each.value.options, "include_children", true)
+  include_children = each.value.options.include_children
   dynamic bigquery_options {
     for_each = each.value.to_bigquery ? ["1"] : []
     iterator = config
     content {
-      use_partitioned_tables = lookup(
-        each.value.options, "bigquery_partitioned_tables", true
-      )
+      use_partitioned_tables = each.value.options.bigquery_partitioned_tables
     }
   }
 }
@@ -104,14 +103,12 @@ resource "google_logging_project_sink" "sinks" {
   project                = each.value.resource_id
   filter                 = each.value.filter
   destination            = each.value.destination
-  unique_writer_identity = lookup(each.value.options, "unique_writer_identity", false)
+  unique_writer_identity = each.value.options.unique_writer_identity
   dynamic bigquery_options {
     for_each = each.value.to_bigquery ? ["1"] : []
     iterator = config
     content {
-      use_partitioned_tables = lookup(
-        each.value.options, "bigquery_partitioned_tables", true
-      )
+      use_partitioned_tables = each.value.options.bigquery_partitioned_tables
     }
   }
 }
