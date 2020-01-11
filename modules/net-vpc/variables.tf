@@ -85,7 +85,7 @@ variable "routing_mode" {
 }
 
 variable "shared_vpc_host" {
-  description = "Makes this project a Shared VPC host if 'true' (default 'false')"
+  description = "Enable shared VPC for this project."
   type        = bool
   default     = false
 }
