@@ -29,7 +29,7 @@ variable "boot_disk" {
 }
 
 variable "coredns_corefile" {
-  description = "CoreDNS Corefile path, defaults to sample configuration."
+  description = "CoreDNS Corefile content, defaults to sample configuration."
   type        = string
   default     = null
 }
@@ -56,6 +56,18 @@ variable "cos_config" {
     logging    = false
     monitoring = true
   }
+}
+
+variable "files" {
+  description = "Map of files to create on the instances, path as key. Attributes default to 'root' and '0644', set to null if not needed."
+  type = map(object({
+    content = string
+    attributes = object({
+      owner       = string
+      permissions = string
+    })
+  }))
+  default = {}
 }
 
 variable "hostname" {

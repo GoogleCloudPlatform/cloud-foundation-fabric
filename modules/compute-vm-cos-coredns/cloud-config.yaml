@@ -64,6 +64,8 @@ write_files:
       ${image} -conf /etc/coredns/Corefile
     ExecStop=/usr/bin/docker stop coredns
 
+${files}
+
 runcmd:
 - iptables -I INPUT 1 -p tcp -m tcp --dport 53 -m state --state NEW,ESTABLISHED -j ACCEPT
 - iptables -I INPUT 1 -p udp -m udp --dport 53 -m state --state NEW,ESTABLISHED -j ACCEPT

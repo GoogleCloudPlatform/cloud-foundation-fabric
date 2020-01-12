@@ -14,15 +14,42 @@
  * limitations under the License.
  */
 
+locals {
+  files = {
+    for path, data in var.files :
+    path => merge(data, {
+      attributes = (
+        data.attributes == null
+        ? { owner = "root", permissions = "0644" }
+        : data.attributes
+      )
+    })
+  }
+  files_yaml = join("\n", [
+    for _, data in data.template_file.cloud-config-files : data.rendered
+  ])
+}
+
+data "template_file" "cloud-config-files" {
+  for_each = local.files
+  template = file("${path.module}/cloud-config-file.yaml")
+  vars = {
+    path        = each.key
+    content     = each.value.content
+    owner       = each.value.attributes.owner
+    permissions = each.value.attributes.permissions
+  }
+}
+
 data "template_file" "cloud-config" {
   template = file("${path.module}/cloud-config.yaml")
-
   vars = {
-    corefile = file(
+    corefile = (
       var.coredns_corefile == null
-      ? "${path.module}/Corefile"
+      ? file("${path.module}/Corefile")
       : var.coredns_corefile
     )
+    files      = local.files_yaml
     image      = var.coredns_image
     log_driver = var.coredns_log_driver
   }
