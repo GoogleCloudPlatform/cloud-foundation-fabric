@@ -14,19 +14,41 @@
  * limitations under the License.
  */
 
-variable "sinks" {
-  description = "Logging sinks that will be created, options default to true except for unique_writer_identity."
-  type = list(object({
-    # organizations/nnn, billing_accounts/nnn, folders/nnn, projects/nnn
-    name        = string
-    resource    = string
-    filter      = string
-    destination = string
-    options = object({
-      bigquery_partitioned_tables = bool
-      include_children            = bool
-      unique_writer_identity      = bool
-    })
+variable "default_options" {
+  description = "Default options used for sinks where no specific options are set."
+  type = object({
+    bigquery_partitioned_tables = bool
+    include_children            = bool
+    unique_writer_identity      = bool
+  })
+  default = {
+    bigquery_partitioned_tables = true
+    include_children            = true
+    unique_writer_identity      = false
+  }
+}
+
+variable "destinations" {
+  description = "Map of destinations by sink name."
+  type        = map(string)
+}
+
+variable "parent" {
+  description = "Resource where the sink will be created, eg 'organizations/nnnnnnnn'."
+  type        = string
+}
+
+variable "sink_options" {
+  description = "Optional map of sink name / sink options. If no options are specified for a sink defaults will be used."
+  type = map(object({
+    bigquery_partitioned_tables = bool
+    include_children            = bool
+    unique_writer_identity      = bool
   }))
-  default = []
+  default = {}
+}
+
+variable "sinks" {
+  description = "Map of sink name / sink filter."
+  type        = map(string)
 }

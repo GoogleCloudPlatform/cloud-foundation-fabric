@@ -15,21 +15,16 @@
  */
 
 locals {
-  default_options = {
-    bigquery_partitioned_tables = true
-    include_children            = true
-    unique_writer_identity      = false
+  bigquery_destinations = {
+    for name, destination in var.destinations :
+    name => substr(destination, 0, 8) == "bigquery"
   }
-  sinks = [
-    for sink in var.sinks : merge(
-      sink,
-      zipmap(["resource_type", "resource_id"], split("/", sink.resource)),
-      {
-        to_bigquery = substr(sink.destination, 0, 8) == "bigquery",
-        options     = sink.options == null ? local.default_options : sink.options
-      }
-    )
-  ]
+  resource_type = element(split("/", var.parent), 0)
+  resource_id   = element(split("/", var.parent), 1)
+  sink_options = {
+    for name, _ in var.sinks :
+    name => lookup(var.sink_options, name, var.default_options)
+  }
   sink_resources = concat(
     [for _, sink in google_logging_organization_sink.sinks : sink],
     [for _, sink in google_logging_billing_account_sink.sinks : sink],
@@ -39,76 +34,64 @@ locals {
 }
 
 resource "google_logging_organization_sink" "sinks" {
-  for_each = {
-    for sink in local.sinks :
-    "${sink.resource}/${sink.name}" => sink if sink.resource_type == "organizations"
-  }
-  name             = each.value.name
-  org_id           = each.value.resource_id
-  filter           = each.value.filter
-  destination      = each.value.destination
-  include_children = each.value.options.include_children
+  for_each         = local.resource_type == "organizations" ? var.sinks : {}
+  name             = each.key
+  org_id           = local.resource_id
+  filter           = each.value
+  destination      = var.destinations[each.key]
+  include_children = local.sink_options[each.key].include_children
   dynamic bigquery_options {
-    for_each = each.value.to_bigquery ? ["1"] : []
+    for_each = local.bigquery_destinations[each.key] ? ["1"] : []
     iterator = config
     content {
-      use_partitioned_tables = each.value.options.bigquery_partitioned_tables
+      use_partitioned_tables = local.sink_options[each.key].bigquery_partitioned_tables
     }
   }
 }
 
 resource "google_logging_billing_account_sink" "sinks" {
-  for_each = {
-    for sink in local.sinks :
-    "${sink.resource}/${sink.name}" => sink if sink.resource_type == "billing_accounts"
-  }
-  name            = each.value.name
-  billing_account = each.value.resource_id
-  filter          = each.value.filter
-  destination     = each.value.destination
+  for_each        = local.resource_type == "billing_accounts" ? var.sinks : {}
+  name            = each.key
+  billing_account = local.resource_id
+  filter          = each.value
+  destination     = var.destinations[each.key]
   dynamic bigquery_options {
-    for_each = each.value.to_bigquery ? ["1"] : []
+    for_each = local.bigquery_destinations[each.key] ? ["1"] : []
     iterator = config
     content {
-      use_partitioned_tables = each.value.options.bigquery_partitioned_tables
+      use_partitioned_tables = local.sink_options[each.key].bigquery_partitioned_tables
     }
   }
 }
 
 resource "google_logging_folder_sink" "sinks" {
-  for_each = {
-    for sink in local.sinks :
-    "${sink.resource}/${sink.name}" => sink if sink.resource_type == "folders"
-  }
-  name             = each.value.name
-  folder           = each.value.resource
-  filter           = each.value.filter
-  destination      = each.value.destination
-  include_children = each.value.options.include_children
+  for_each         = local.resource_type == "folders" ? var.sinks : {}
+  name             = each.key
+  folder           = var.parent
+  filter           = each.value
+  destination      = var.destinations[each.key]
+  include_children = local.sink_options[each.key].include_children
   dynamic bigquery_options {
-    for_each = each.value.to_bigquery ? ["1"] : []
+    for_each = local.bigquery_destinations[each.key] ? ["1"] : []
     iterator = config
     content {
-      use_partitioned_tables = each.value.options.bigquery_partitioned_tables
+      use_partitioned_tables = local.sink_options[each.key].bigquery_partitioned_tables
     }
   }
 }
 
 resource "google_logging_project_sink" "sinks" {
-  for_each = {
-    for sink in local.sinks :
-    "${sink.resource}/${sink.name}" => sink if sink.resource_type == "projects"
-  }
-  name                   = each.value.name
-  project                = each.value.resource_id
-  filter                 = each.value.filter
-  destination            = each.value.destination
-  unique_writer_identity = each.value.options.unique_writer_identity
+  for_each               = local.resource_type == "projects" ? var.sinks : {}
+  name                   = each.key
+  project                = local.resource_id
+  filter                 = each.value
+  destination            = var.destinations[each.key]
+  unique_writer_identity = local.sink_options[each.key].unique_writer_identity
   dynamic bigquery_options {
-    for_each = each.value.to_bigquery ? ["1"] : []
+    for_each = local.bigquery_destinations[each.key] ? ["1"] : []
     iterator = config
     content {
-      use_partitioned_tables = each.value.options.bigquery_partitioned_tables
+      use_partitioned_tables = local.sink_options[each.key].bigquery_partitioned_tables
     }
   }
 }
