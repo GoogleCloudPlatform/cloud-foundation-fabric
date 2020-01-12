@@ -18,7 +18,7 @@
 
 module "business-unit-folder" {
   source  = "terraform-google-modules/folders/google"
-  version = "2.0.0"
+  version = "2.0.2"
   parent  = var.root_node
   names   = [var.business_unit_folder_name]
 }
@@ -29,7 +29,7 @@ module "business-unit-folder" {
 
 module "environment-folders" {
   source            = "terraform-google-modules/folders/google"
-  version           = "2.0.0"
+  version           = "2.0.2"
   parent            = module.business-unit-folder.id
   names             = var.environments
   set_roles         = true

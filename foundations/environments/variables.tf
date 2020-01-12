@@ -12,8 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+variable "audit_filter" {
+  description = "Audit log filter used for the log sink."
+  type        = string
+  default     = <<END
+  logName: "/logs/cloudaudit.googleapis.com%2Factivity"
+  OR
+  logName: "/logs/cloudaudit.googleapis.com%2Fsystem_event"
+  END
+}
+
 variable "audit_viewers" {
   description = "Audit project viewers, in IAM format."
+  type        = list(string)
   default     = []
 }
 
@@ -29,22 +40,26 @@ variable "environments" {
 
 variable "generate_service_account_keys" {
   description = "Generate and store service account keys in the state file."
+  type        = bool
   default     = false
 }
 
 variable "gcs_location" {
   description = "GCS bucket location."
+  type        = string
   default     = "EU"
 }
 
 variable "grant_xpn_org_roles" {
   description = "Grant roles needed for Shared VPC creation to service accounts at the organization level."
-  default     = false
+  type        = bool
+  default     = true
 }
 
 variable "grant_xpn_folder_roles" {
   description = "Grant roles needed for Shared VPC creation to service accounts at the environment folder level."
-  default     = true
+  type        = bool
+  default     = false
 }
 
 variable "organization_id" {
@@ -65,21 +80,25 @@ variable "root_node" {
 variable "shared_bindings_members" {
   description = "List of comma-delimited IAM-format members for the additional shared project bindings."
   # example: ["user:a@example.com,b@example.com", "user:c@example.com"]
+  type    = list(string)
   default = []
 }
 variable "shared_bindings_roles" {
   description = "List of roles for additional shared project bindings."
   # example: ["roles/storage.objectViewer", "roles/storage.admin"]
+  type    = list(string)
   default = []
 }
 
 variable "terraform_owners" {
   description = "Terraform project owners, in IAM format."
+  type        = list(string)
   default     = []
 }
 
 variable "project_services" {
   description = "Service APIs enabled by default in new projects."
+  type        = list(string)
   default = [
     "resourceviews.googleapis.com",
     "stackdriver.googleapis.com",

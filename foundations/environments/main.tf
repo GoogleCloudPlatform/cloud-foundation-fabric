@@ -25,16 +25,16 @@ module "project-tf" {
   billing_account = var.billing_account_id
   prefix          = var.prefix
   name            = "terraform"
-  lien_reason     = "terraform"
-  owners          = var.terraform_owners
-  activate_apis   = var.project_services
+  # lien_reason     = "terraform"
+  owners        = var.terraform_owners
+  activate_apis = var.project_services
 }
 
 # per-environment service accounts
 
 module "service-accounts-tf-environments" {
   source             = "terraform-google-modules/service-accounts/google"
-  version            = "2.0.1"
+  version            = "2.0.2"
   project_id         = module.project-tf.project_id
   org_id             = var.organization_id
   billing_account_id = var.billing_account_id
@@ -78,7 +78,7 @@ module "gcs-tf-environments" {
 
 module "folders-top-level" {
   source            = "terraform-google-modules/folders/google"
-  version           = "2.0.0"
+  version           = "2.0.2"
   parent            = var.root_node
   names             = var.environments
   set_roles         = true
@@ -107,7 +107,7 @@ module "project-audit" {
   billing_account = var.billing_account_id
   prefix          = var.prefix
   name            = "audit"
-  lien_reason     = "audit"
+  # lien_reason     = "audit"
   activate_apis = concat(var.project_services, [
     "bigquery.googleapis.com",
   ])
@@ -118,7 +118,7 @@ module "project-audit" {
 
 module "bq-audit-export" {
   source                   = "terraform-google-modules/log-export/google//modules/bigquery"
-  version                  = "3.1.0"
+  version                  = "3.2.0"
   project_id               = module.project-audit.project_id
   dataset_name             = "logs_audit_${replace(var.environments[0], "-", "_")}"
   log_sink_writer_identity = module.log-sink-audit.writer_identity
@@ -129,8 +129,8 @@ module "bq-audit-export" {
 
 module "log-sink-audit" {
   source                 = "terraform-google-modules/log-export/google"
-  version                = "3.1.0"
-  filter                 = "logName: \"/logs/cloudaudit.googleapis.com%2Factivity\" OR logName: \"/logs/cloudaudit.googleapis.com%2Fsystem_event\""
+  version                = "3.2.0"
+  filter                 = var.audit_filter
   log_sink_name          = "logs-audit-${var.environments[0]}"
   parent_resource_type   = "folder"
   parent_resource_id     = split("/", module.folders-top-level.ids_list[0])[1]
@@ -153,7 +153,6 @@ module "project-shared-resources" {
   billing_account        = var.billing_account_id
   prefix                 = var.prefix
   name                   = "shared"
-  lien_reason            = "shared"
   activate_apis          = var.project_services
   extra_bindings_roles   = var.shared_bindings_roles
   extra_bindings_members = var.shared_bindings_members
