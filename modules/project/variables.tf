@@ -91,12 +91,6 @@ variable "oslogin_users" {
   default     = []
 }
 
-variable "owners" {
-  description = "IAM-style identities that will be granted non-authoritative viewer role."
-  type        = list(string)
-  default     = []
-}
-
 variable "parent" {
   description = "The resource name of the parent Folder or Organization. Must be of the form folders/folder_id or organizations/org_id."
   type        = string
