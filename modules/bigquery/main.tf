@@ -18,8 +18,9 @@ locals {
   datasets = {
     for id, data in var.datasets :
     id => merge(data, {
-      options = data.options != null ? data.options : var.default_options
+      options = lookup(var.dataset_options, id, var.default_options)
       access  = lookup(var.dataset_access, id, var.default_access)
+      labels  = data.labels == null ? {} : data.labels
     })
   }
 }
@@ -30,7 +31,7 @@ resource "google_bigquery_dataset" "datasets" {
   dataset_id    = each.key
   friendly_name = each.value.name
   description   = each.value.description
-  labels        = each.value.labels
+  labels        = merge(var.default_labels, each.value.labels)
   location      = each.value.location
 
   delete_contents_on_destroy      = each.value.options.delete_contents_on_destroy

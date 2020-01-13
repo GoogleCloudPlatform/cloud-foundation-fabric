@@ -21,11 +21,6 @@ variable "datasets" {
     location    = string
     name        = string
     labels      = map(string)
-    options = object({
-      default_table_expiration_ms     = number
-      default_partition_expiration_ms = number
-      delete_contents_on_destroy      = bool
-    })
   }))
 }
 
@@ -39,6 +34,16 @@ variable "dataset_access" {
   default = {}
 }
 
+variable "dataset_options" {
+  description = "Optional map of dataset option by dataset id."
+  type = map(object({
+    default_table_expiration_ms     = number
+    default_partition_expiration_ms = number
+    delete_contents_on_destroy      = bool
+  }))
+  default = {}
+}
+
 variable "default_access" {
   description = "Access rules applied to all dataset if no specific ones are defined."
   type = list(object({
@@ -47,6 +52,12 @@ variable "default_access" {
     identity      = any
   }))
   default = []
+}
+
+variable "default_labels" {
+  description = "Labels set on all datasets."
+  type        = map(string)
+  default     = {}
 }
 
 variable "default_options" {
