@@ -1,8 +1,42 @@
 # Container Optimized OS CoreDNS module
 
+This module allows creating instances (or an instance template) runnning a containerized DNS server using CoreDNS. A service account will be created if none is set.
+
 ## Example
 
-TODO
+```hcl
+module "onprem-dns" {
+  source     = "./modules/compute-vm-cos-coredns"
+  project_id = var.project_id
+  region     = var.region
+  zone       = var.zone
+  name       = "coredns"
+  network_interfaces = [{
+    network    = var.vpc_self_link
+    subnetwork = var.subnet_self_link
+    nat        = false,
+    addresses  = null
+  }]
+  coredns_corefile = <<END
+  example.com {
+    hosts /etc/coredns/hosts
+    log
+    errors
+  }
+  . {
+    forward . /etc/resolv.conf
+    log
+    errors
+  }
+  END
+  files = {
+    "/etc/coredns/hosts" = {
+      content    = "127.0.0.1 localhost.example.com"
+      attributes = null
+    }
+  }
+}
+```
 
 <!-- BEGIN TFDOC -->
 ## Variables

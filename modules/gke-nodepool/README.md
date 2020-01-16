@@ -1,10 +1,18 @@
-# Minimalistic GKE nodepool module
+# GKE nodepool module
 
-TODO(ludoo): add description.
+This module allows simplified creation and management of individual GKE nodepools, setting sensible defaults (eg a service account is created for nodes if none is set) and allowing for less verbose usage in most use cases.
 
 ## Example usage
 
-TODO(ludoo): add example
+```hcl
+module "cluster-1-nodepool-1" {
+  source                      = "../modules/gke-nodepool"
+  project_id                  = "myproject"
+  cluster_name                = "cluster-1"
+  location                    = "europe-west1-b"
+  name                        = "nodepool-1"
+}
+```
 
 <!-- BEGIN TFDOC -->
 ## Variables

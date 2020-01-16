@@ -1,4 +1,8 @@
-# Compute Engine VM module
+# Google Compute Engine VM module
+
+This module allows creating on or multiple instances for a specific configuration, optionally creating an instance template instead of instances.
+
+A service account is optionally created and assigned to instances if no service account email is specified.
 
 ## Example
 
@@ -60,3 +64,7 @@ module "debian-test" {
 | template | Template resource. |  |
 | template_name | Template name. |  |
 <!-- END TFDOC -->
+
+## TODO
+
+- [ ] add support for instance groups

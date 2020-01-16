@@ -2,14 +2,22 @@
 
 ## Example
 
-```iam
+```hcl
 module "buckets" {
   source     = "./modules/gcs"
-  project_id = module.project.project_id
-  prefix     = "ludo-tf-playground"
-  names      = ["tfstate"]
+  project_id = "myproject"
+  prefix     = "test"
+  names      = ["bucket-one", "bucket-two"]
   bucket_policy_only = {
-    tfstate = false
+    bucket-one = false
+  }
+  iam_members = {
+    bucket-two = {
+      "roles/storage.admin" = ["group:storage@example.com"]
+    }
+  }
+  iam_roles = {
+    bucket-two = ["roles/storage.admin"]
   }
 }
 ```

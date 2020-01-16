@@ -1,18 +1,17 @@
-# Cloud DNS Module
+# Google Cloud DNS Module
 
-This module makes it easy to create Google Cloud DNS zones of different types, and manage their records. It supports creating public, private, forwarding, and peering zones.
-
+This module allows simple management of Google Cloud DNS zones and records. It supports creating public, private, forwarding, and peering zones. For DNSSEC configuration, refer to the [`dns_managed_zone` documentation](https://www.terraform.io/docs/providers/google/r/dns_managed_zone.html#dnssec_config).
 
 ## Example
 
 ```hcl
 module "private-dns" {
   source          = "./modules/dns"
-  project_id      = local.projects.host
+  project_id      = "myproject"
   type            = "private"
   name            = "test-example"
   domain          = "test.example."
-  client_networks = [local.vpc_peered.self_link, local.vpc_shared.self_link]
+  client_networks = [var.vpc_self_link]
   recordsets = [
     { name = "localhost", type = "A", ttl = 300, records = ["127.0.0.1"] }
   ]
@@ -47,22 +46,3 @@ module "private-dns" {
 | type | The DNS zone type. |  |
 | zone | DNS zone resource. |  |
 <!-- END TFDOC -->
-
-## Requirements
-
-### IAM Roles
-
-The following roles must be used to provision the resources in this module:
-
-- Storage Admin: `roles/dns.admin`
-
-### APIs
-
-A project with the following APIs enabled must be used to host the
-resources of this module:
-
-- Google Cloud DNS API: `dns.googleapis.com`
-
-## DNSSEC
-
-For DNSSEC configuration, refer to the [`dns_managed_zone` documentation](https://www.terraform.io/docs/providers/google/r/dns_managed_zone.html#dnssec_config).

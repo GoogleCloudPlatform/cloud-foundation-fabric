@@ -1,19 +1,21 @@
 # Google Cloud Folder Module
 
+This module allow creation and management of sets of folders sharing a common parent, and their individual IAM bindings.
+
 ## Example
 
 ```hcl
 module "folder" {
   source = "./modules/folder"
-  parent = "organizations/${var.organization_id}"
-  names  = ["TF Test"]
+  parent = "organizations/1234567890"
+  names  = ["Folder one", "Folder two]
   iam_members = {
-    "TF Test" = {
-      for role in local.folder_roles : "${role}" => var.admins
+    "Folder one" = {
+      "roles/owner" => ["group:users@example.com"]
     }
   }
   iam_roles = {
-    "TF Test" = local.folder_roles
+    "Folder one" = ["roles/owner"]
   }
 }
 ```

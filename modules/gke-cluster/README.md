@@ -1,10 +1,33 @@
-# Minimalistic GKE module
+# GKE cluster module
 
-TODO(ludoo): add description.
+This module allows simplified creation and management of GKE cluster, and should be used together with the GKE nodepool module as the default nodepool is turned off in this module and cannot be re-enabled. Some sensible defaults are set initially, in order to allow less verbose usage for most use cases.
 
-## Example usage
+## Example
 
-TODO(ludoo): add example
+```hcl
+module "cluster-1" {
+  source = "./modules/gke-cluster"
+  project_id = "myproject"
+  name                      = "cluster-1"
+  location                  = "europe-west1-b"
+  network                   = var.network_self_link
+  subnetwork                = var.subnet_self_link
+  secondary_range_pods      = "pods"
+  secondary_range_services  = "services"
+  default_max_pods_per_node = 32
+  labels = {
+    environment = "dev"
+  }
+  master_authorized_ranges = {
+    internal-vms = "10.0.0.0/8"
+  }
+  private_cluster_config = {
+    enable_private_nodes    = true
+    enable_private_endpoint = true
+    master_ipv4_cidr_block  = "192.168.0.0/28"
+  }
+}
+```
 
 <!-- BEGIN TFDOC -->
 ## Variables

@@ -1,17 +1,17 @@
-# Terraform Service Accounts Module
+# Google Service Accounts Module
 
-This module allows easy creation of one or more service accounts, and granting them basic roles.
+This module allows simplified creation and management of one or more service accounts and their IAM bindings. Keys can optionally be generated and will be stored in Terraform state. To use them create a sensitive output in your root modules referencing the `keys` or `key` outputs, then extract the private key from the JSON formatted outputs.
 
 ## Example
 
 ```hcl
-module "serviceprj-service-accounts" {
+module "myproject-default-service-accounts" {
   source        = "./modules/iam-service-accounts"
-  project_id    = module.service-project.project_id
+  project_id    = "myproject"
   names         = ["vm-default", "gke-node-default"]
   generate_keys = true
   iam_project_roles = {
-    "${module.service-project.project_id}" = [
+    "myproject" = [
       "roles/logging.logWriter",
       "roles/monitoring.metricWriter",
     ]
@@ -48,13 +48,3 @@ module "serviceprj-service-accounts" {
 | service_account | Service account resource (for single use). |  |
 | service_accounts | Service account resources. |  |
 <!-- END TFDOC -->
-
-## Requirements
-
-### IAM
-
-Service account or user credentials with the following roles must be used to provision the resources of this module:
-
-- Service Account Admin: `roles/iam.serviceAccountAdmin`
-- (optional) Service Account Key Admin: `roles/iam.serviceAccountAdmin` when `generate_keys` is set to `true`
-- (optional) roles needed to grant optional IAM roles at the project or organizational level
