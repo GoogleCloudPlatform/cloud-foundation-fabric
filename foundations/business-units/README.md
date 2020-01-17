@@ -25,45 +25,44 @@ The number of resources in this sample is kept to a minimum so as to make it gen
 
 This sample uses a top-level folder to encapsulate projects that host resources that are not specific to a single environment. If no shared services are needed,the Terraform and audit modules can be easily attached to the root node, and the shared services folder and project removed from `main.tf`.
 
-<!-- BEGINNING OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
-## Inputs
+<!-- BEGIN TFDOC -->
+## Variables
 
-| Name | Description | Type | Default | Required |
-|------|-------------|:----:|:-----:|:-----:|
-| audit\_viewers | Audit project viewers, in IAM format. | list | `<list>` | no |
-| billing\_account\_id | Billing account id used as default for new projects. | string | n/a | yes |
-| business\_unit\_1\_name | Business unit 1 short name. | string | n/a | yes |
-| business\_unit\_2\_name | Business unit 2 short name. | string | n/a | yes |
-| business\_unit\_3\_name | Business unit 3 short name. | string | n/a | yes |
-| environments | Environment short names. | list(string) | n/a | yes |
-| gcs\_location | GCS bucket location. | string | `"EU"` | no |
-| generate\_service\_account\_keys | Generate and store service account keys in the state file. | string | `"false"` | no |
-| organization\_id | Organization id. | string | n/a | yes |
-| prefix | Prefix used for resources that need unique names. | string | n/a | yes |
-| project\_services | Service APIs enabled by default in new projects. | list | `<list>` | no |
-| root\_node | Root node for the new hierarchy, either 'organizations/org_id' or 'folders/folder_id'. | string | n/a | yes |
-| shared\_bindings\_members | List of comma-delimited IAM-format members for the additional shared project bindings. | list | `<list>` | no |
-| shared\_bindings\_roles | List of roles for additional shared project bindings. | list | `<list>` | no |
-| terraform\_owners | Terraform project owners, in IAM format. | list | `<list>` | no |
+| name | description | type | required | default |
+|---|---|:---: |:---:|:---:|
+| billing_account_id | Billing account id used as default for new projects. | <code title="">string</code> | ✓ |  |
+| business_unit_1_name | Business unit 1 short name. | <code title="">string</code> | ✓ |  |
+| business_unit_2_name | Business unit 2 short name. | <code title="">string</code> | ✓ |  |
+| business_unit_3_name | Business unit 3 short name. | <code title="">string</code> | ✓ |  |
+| environments | Environment short names. | <code title="list&#40;string&#41;">list(string)</code> | ✓ |  |
+| organization_id | Organization id. | <code title="">string</code> | ✓ |  |
+| prefix | Prefix used for resources that need unique names. | <code title="">string</code> | ✓ |  |
+| root_node | Root node for the new hierarchy, either 'organizations/org_id' or 'folders/folder_id'. | <code title="">string</code> | ✓ |  |
+| *audit_viewers* | Audit project viewers, in IAM format. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
+| *gcs_location* | GCS bucket location. | <code title="">string</code> |  | <code title="">EU</code> |
+| *generate_service_account_keys* | Generate and store service account keys in the state file. | <code title="">bool</code> |  | <code title="">false</code> |
+| *project_services* | Service APIs enabled by default in new projects. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="&#91;&#10;&#34;resourceviews.googleapis.com&#34;,&#10;&#34;stackdriver.googleapis.com&#34;,&#10;&#93;">...</code> |
+| *shared_bindings_members* | List of comma-delimited IAM-format members for the additional shared project bindings. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
+| *shared_bindings_roles* | List of roles for additional shared project bindings. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
+| *terraform_owners* | Terraform project owners, in IAM format. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| audit\_logs\_bq\_dataset | Bigquery dataset for the audit logs export. |
-| audit\_logs\_project | Project that holds the audit logs export resources. |
-| bootstrap\_tf\_gcs\_bucket | GCS bucket used for the bootstrap Terraform state. |
-| business\_unit\_1\_environment\_folders\_ids | Business unit 1 environment folders. |
-| business\_unit\_1\_folder\_id | Business unit 1 top-level folder ID. |
-| business\_unit\_2\_environment\_folders\_ids | Business unit 2 environment folders. |
-| business\_unit\_2\_folder\_id | Business unit 2 top-level folder ID. |
-| business\_unit\_3\_environment\_folders\_ids | Business unit 3 environment folders. |
-| business\_unit\_3\_folder\_id | Business unit 3 top-level folder ID. |
-| environment\_service\_account\_keys | Service account keys used to run each environment Terraform modules. |
-| environment\_service\_accounts | Service accounts used to run each environment Terraform modules. |
-| environment\_tf\_gcs\_buckets | GCS buckets used for each environment Terraform state. |
-| shared\_folder\_id | Shared folder ID. |
-| shared\_resources\_project | Project that holdes resources shared across business units. |
-| terraform\_project | Project that holds the base Terraform resources. |
-
-<!-- END OF PRE-COMMIT-TERRAFORM DOCS HOOK -->
+| name | description | sensitive |
+|---|---|:---:|
+| audit_logs_bq_dataset | Bigquery dataset for the audit logs export. |  |
+| audit_logs_project | Project that holds the audit logs export resources. |  |
+| bootstrap_tf_gcs_bucket | GCS bucket used for the bootstrap Terraform state. |  |
+| business_unit_1_environment_folders_ids | Business unit 1 environment folders. |  |
+| business_unit_1_folder_id | Business unit 1 top-level folder ID. |  |
+| business_unit_2_environment_folders_ids | Business unit 2 environment folders. |  |
+| business_unit_2_folder_id | Business unit 2 top-level folder ID. |  |
+| business_unit_3_environment_folders_ids | Business unit 3 environment folders. |  |
+| business_unit_3_folder_id | Business unit 3 top-level folder ID. |  |
+| environment_service_account_keys | Service account keys used to run each environment Terraform modules. | ✓ |
+| environment_service_accounts | Service accounts used to run each environment Terraform modules. |  |
+| environment_tf_gcs_buckets | GCS buckets used for each environment Terraform state. |  |
+| shared_folder_id | Shared folder ID. |  |
+| shared_resources_project | Project that holdes resources shared across business units. |  |
+| terraform_project | Project that holds the base Terraform resources. |  |
+<!-- END TFDOC -->

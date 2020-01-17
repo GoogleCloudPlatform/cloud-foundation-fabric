@@ -19,36 +19,43 @@ variable "billing_account_id" {
 
 variable "kms_keyring_location" {
   description = "Location used for the KMS keyring."
+  type        = string
   default     = "europe"
 }
 
 variable "kms_keyring_name" {
   description = "Name used for the KMS keyring."
+  type        = string
   default     = "svpc-example"
 }
 
 variable "oslogin_admins_gce" {
   description = "GCE project oslogin admin members, in IAM format."
+  type        = list(string)
   default     = []
 }
 
 variable "oslogin_users_gce" {
   description = "GCE project oslogin user members, in IAM format."
+  type        = list(string)
   default     = []
 }
 
 variable "owners_gce" {
   description = "GCE project owners, in IAM format."
+  type        = list(string)
   default     = []
 }
 
 variable "owners_gke" {
   description = "GKE project owners, in IAM format."
+  type        = list(string)
   default     = []
 }
 
 variable "owners_host" {
   description = "Host project owners, in IAM format."
+  type        = list(string)
   default     = []
 }
 
@@ -64,6 +71,12 @@ variable "root_node" {
 
 variable "subnets" {
   description = "Shared VPC subnet definitions."
+  type = list(object({
+    subnet_name           = string
+    subnet_ip             = string
+    subnet_region         = string
+    subnet_private_access = string
+  }))
   default = [
     {
       subnet_name           = "networking"
@@ -88,6 +101,10 @@ variable "subnets" {
 
 variable "subnet_secondary_ranges" {
   description = "Shared VPC subnets secondary range definitions."
+  type = map(list(object({
+    range_name    = string
+    ip_cidr_range = string
+  })))
   default = {
     networking = [],
     gce        = [],
@@ -106,6 +123,7 @@ variable "subnet_secondary_ranges" {
 
 variable "project_services" {
   description = "Service APIs enabled by default in new projects."
+  type        = list(string)
   default = [
     "resourceviews.googleapis.com",
     "stackdriver.googleapis.com",

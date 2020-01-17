@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-output "terraform_project" {
+/* output "terraform_project" {
   description = "Project that holds the base Terraform resources."
   value       = module.project-tf.project_id
 }
@@ -60,3 +60,4 @@ output "shared_resources_project" {
 
 # Add further outputs here for the additional modules that manage shared
 # resources, like GCR, GCS buckets, KMS, etc.
+ */

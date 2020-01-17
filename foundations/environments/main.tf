@@ -18,80 +18,84 @@
 
 # Terraform project
 
-module "project-tf" {
-  source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
-  version         = "5.0.0"
-  parent          = var.root_node
-  billing_account = var.billing_account_id
-  prefix          = var.prefix
-  name            = "terraform"
-  lien_reason     = "terraform"
-  owners          = var.terraform_owners
-  activate_apis   = var.project_services
+module "tf-project" {
+  source              = "../../modules/project"
+  name                = "terraform"
+  parent              = var.root_node
+  prefix              = var.prefix
+  billing_account     = var.billing_account_id
+  iam_nonauth_members = { "roles/owner" = var.iam_terraform_owners }
+  iam_nonauth_roles   = ["roles/owner"]
+  services            = var.project_services
 }
 
 # per-environment service accounts
 
-module "service-accounts-tf-environments" {
-  source             = "terraform-google-modules/service-accounts/google"
-  version            = "2.0.1"
-  project_id         = module.project-tf.project_id
-  org_id             = var.organization_id
-  billing_account_id = var.billing_account_id
-  prefix             = var.prefix
-  names              = var.environments
-  grant_billing_role = true
-  grant_xpn_roles    = var.grant_xpn_org_roles
-  generate_keys      = var.generate_service_account_keys
+module "tf-service-accounts" {
+  source     = "../../modules/iam-service-accounts"
+  project_id = module.tf-project.project_id
+  names      = var.environments
+  prefix     = var.prefix
+  iam_billing_roles = {
+    (var.billing_account_id) = (
+      var.iam_billing_config.grant ? local.sa_billing_account_role : []
+    )
+  }
+  # folder roles are set in the folders module using authoritative bindings
+  iam_organization_roles = {
+    (var.organization_id) = concat(
+      var.iam_billing_config.grant ? local.sa_billing_org_role : [],
+      var.iam_xpn_config.grant ? local.sa_xpn_org_roles : []
+    )
+  }
+  generate_keys = var.service_account_keys
 }
 
 # bootstrap Terraform state GCS bucket
 
-module "gcs-tf-bootstrap" {
-  source     = "terraform-google-modules/cloud-storage/google"
-  version    = "1.0.0"
-  project_id = module.project-tf.project_id
-  prefix     = "${var.prefix}-tf"
+module "tf-gcs-bootstrap" {
+  source     = "../../modules/gcs"
+  project_id = module.tf-project.project_id
   names      = ["tf-bootstrap"]
+  prefix     = "${var.prefix}-tf"
   location   = var.gcs_location
 }
 
 # per-environment Terraform state GCS buckets
 
-module "gcs-tf-environments" {
-  source          = "terraform-google-modules/cloud-storage/google"
-  version         = "1.0.0"
-  project_id      = module.project-tf.project_id
-  prefix          = "${var.prefix}-tf"
-  names           = var.environments
-  location        = var.gcs_location
-  set_admin_roles = true
-  bucket_admins = zipmap(
-    var.environments,
-    module.service-accounts-tf-environments.iam_emails_list
-  )
+module "tf-gcs-environments" {
+  source     = "../../modules/gcs"
+  project_id = module.tf-project.project_id
+  names      = var.environments
+  prefix     = "${var.prefix}-tf"
+  location   = var.gcs_location
+  iam_roles = {
+    for name in var.environments : (name) => ["roles/storage.objectAdmin"]
+  }
+  iam_members = {
+    for name in var.environments : (name) => {
+      "roles/storage.objectAdmin" = [module.tf-service-accounts.iam_emails[name]]
+    }
+  }
 }
 
 ###############################################################################
 #                              Top-level folders                              #
 ###############################################################################
 
-module "folders-top-level" {
-  source            = "terraform-google-modules/folders/google"
-  version           = "2.0.0"
-  parent            = var.root_node
-  names             = var.environments
-  set_roles         = true
-  per_folder_admins = module.service-accounts-tf-environments.iam_emails_list
-  folder_admin_roles = compact(
-    [
-      "roles/compute.networkAdmin",
-      "roles/owner",
-      "roles/resourcemanager.folderViewer",
-      "roles/resourcemanager.projectCreator",
-      var.grant_xpn_folder_roles ? "roles/compute.xpnAdmin" : ""
-    ]
-  )
+module "environment-folders" {
+  source = "../../modules/folders"
+  parent = var.root_node
+  names  = var.environments
+  iam_roles = {
+    for name in var.environments : (name) => local.folder_roles
+  }
+  iam_members = {
+    for name in var.environments : (name) => {
+      for role in local.folder_roles :
+      (role) => [module.tf-service-accounts.iam_emails[name]]
+    }
+  }
 }
 
 ###############################################################################
@@ -100,43 +104,50 @@ module "folders-top-level" {
 
 # audit logs project
 
-module "project-audit" {
-  source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
-  version         = "5.0.0"
-  parent          = var.root_node
-  billing_account = var.billing_account_id
-  prefix          = var.prefix
+module "audit-project" {
+  source          = "../../modules/project"
   name            = "audit"
-  lien_reason     = "audit"
-  activate_apis = concat(var.project_services, [
+  parent          = var.root_node
+  prefix          = var.prefix
+  billing_account = var.billing_account_id
+  iam_members = {
+    "roles/bigquery.dataEditor" = [module.audit-log-sinks.writer_identities[0]]
+    "roles/viewer"              = var.iam_audit_viewers
+  }
+  iam_roles = [
+    "roles/bigquery.dataEditor",
+    "roles/viewer"
+  ]
+  services = concat(var.project_services, [
     "bigquery.googleapis.com",
   ])
-  viewers = var.audit_viewers
 }
 
-# audit logs destination on BigQuery
+# audit logs dataset and sink
 
-module "bq-audit-export" {
-  source                   = "terraform-google-modules/log-export/google//modules/bigquery"
-  version                  = "3.1.0"
-  project_id               = module.project-audit.project_id
-  dataset_name             = "logs_audit_${replace(var.environments[0], "-", "_")}"
-  log_sink_writer_identity = module.log-sink-audit.writer_identity
+module "audit-datasets" {
+  source     = "../../modules/bigquery"
+  project_id = module.audit-project.project_id
+  datasets = {
+    audit_export = {
+      name        = "Audit logs export."
+      description = "Terraform managed."
+      location    = "EU"
+      labels      = null
+      options     = null
+    }
+  }
 }
 
-# audit log sink
-# set the organization as parent to export audit logs for all environments
-
-module "log-sink-audit" {
-  source                 = "terraform-google-modules/log-export/google"
-  version                = "3.1.0"
-  filter                 = "logName: \"/logs/cloudaudit.googleapis.com%2Factivity\" OR logName: \"/logs/cloudaudit.googleapis.com%2Fsystem_event\""
-  log_sink_name          = "logs-audit-${var.environments[0]}"
-  parent_resource_type   = "folder"
-  parent_resource_id     = split("/", module.folders-top-level.ids_list[0])[1]
-  include_children       = "true"
-  unique_writer_identity = "true"
-  destination_uri        = "${module.bq-audit-export.destination_uri}"
+module "audit-log-sinks" {
+  source = "../../modules/logging-sinks"
+  parent = var.root_node
+  destinations = {
+    audit-logs = "bigquery.googleapis.com/projects/${module.audit-project.project_id}/datasets/${module.audit-datasets.names[0]}"
+  }
+  sinks = {
+    audit-logs = var.audit_filter
+  }
 }
 
 ###############################################################################
@@ -146,17 +157,19 @@ module "log-sink-audit" {
 # shared resources project
 # see the README file for additional options on managing shared services
 
-module "project-shared-resources" {
-  source                 = "terraform-google-modules/project-factory/google//modules/fabric-project"
-  version                = "5.0.0"
-  parent                 = var.root_node
-  billing_account        = var.billing_account_id
-  prefix                 = var.prefix
-  name                   = "shared"
-  lien_reason            = "shared"
-  activate_apis          = var.project_services
-  extra_bindings_roles   = var.shared_bindings_roles
-  extra_bindings_members = var.shared_bindings_members
+module "sharedsvc-project" {
+  source          = "../../modules/project"
+  name            = "sharedsvc"
+  parent          = var.root_node
+  prefix          = var.prefix
+  billing_account = var.billing_account_id
+  iam_members = {
+    "roles/owner" = var.iam_sharedsvc_owners
+  }
+  iam_roles = [
+    "roles/owner"
+  ]
+  services = var.project_services
 }
 
 # Add further modules here for resources that are common to all environments

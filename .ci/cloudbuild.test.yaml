@@ -44,7 +44,7 @@ steps:
       - PYTHONDONTWRITEBYTECODE=true
 
 substitutions:
-  _TERRAFORM_VERSION: 0.12.8
+  _TERRAFORM_VERSION: 0.12.19
 
 tags:
   - "ci"
