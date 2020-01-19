@@ -11,7 +11,7 @@ The module allows for several different VPC configurations, some of the most com
 ```hcl
 module "vpc" {
   source     = "../modules/net-vpc"
-  project_id = local.projects.host
+  project_id = "my-project"
   name       = "my-network"
   subnets = {
     subnet-1 = {
@@ -37,7 +37,7 @@ A single peering can be configured for the VPC, so as to allow management of sim
 ```hcl
 module "vpc-spoke-1" {
   source     = "../modules/net-vpc"
-  project_id = local.projects.host
+  project_id = "my-project"
   name       = "my-network"
   subnets = {
     subnet-1 = {
@@ -60,9 +60,9 @@ module "vpc-spoke-1" {
 ### Shared VPC
 
 ```hcl
-module "vpc" {
+module "vpc-host" {
   source     = "../modules/net-vpc"
-  project_id = local.projects.host
+  project_id = "my-project"
   name       = "shared"
   subnets = {
     subnet-1 = {
@@ -80,16 +80,19 @@ module "vpc" {
     local.service_project_2.project_id
   ]
   iam_roles = {
-    subnet-1 = ["roles/compute.networkUser", "roles/compute.securityAdmin"]
+    subnet-1 = [
+      "roles/compute.networkUser",
+      "roles/compute.securityAdmin"
+    ]
   }
   iam_members = {
     subnet-1 = {
       "roles/compute.networkUser" = [
-        local.service_project_1.cloudsvc,
-        local.service_project_1.gke
+        local.service_project_1.cloudsvc_sa,
+        local.service_project_1.gke_sa
       ]
       "roles/compute.securityAdmin" = [
-        local.service_project_1.gke
+        local.service_project_1.gke_sa
       ]
     }
   }
