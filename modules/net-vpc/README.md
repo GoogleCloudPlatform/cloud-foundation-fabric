@@ -1,41 +1,96 @@
 # Minimalistic VPC module
 
-TODO(ludoo): add description.
+This module allows creation and management of VPC networks including subnetworks and subnetwork IAM bindings, Shared VPC activation and service project registration, and one-to-one peering.
 
-## Example
+## Examples
+
+The module allows for several different VPC configurations, some of the most common are shown below.
+
+### Simple VPC
+
+```hcl
+module "vpc" {
+  source     = "../modules/net-vpc"
+  project_id = local.projects.host
+  name       = "my-network"
+  subnets = {
+    subnet-1 = {
+      ip_cidr_range = "10.0.0.0/24"
+      region        = "europe-west1"
+      secondary_ip_range = {
+        pods     = "172.16.0.0/20"
+        services = "192.168.0.0/24"
+      }
+    }
+    subnet-2 = {
+      ip_cidr_range = "10.0.16.0/24"
+      region        = "europe-west1"
+    }
+  }
+}
+```
+
+### Peering
+
+A single peering can be configured for the VPC, so as to allow management of simple scenarios, and more complex configurations like hub and spoke by defining the peering configuration on the spoke VPCs. Care must be taken so as a single peering is created/changed/destroyed at a time, due to the specific behaviour of the peering API calls.
+
+```hcl
+module "vpc-spoke-1" {
+  source     = "../modules/net-vpc"
+  project_id = local.projects.host
+  name       = "my-network"
+  subnets = {
+    subnet-1 = {
+      ip_cidr_range = "10.0.0.0/24"
+      region        = "europe-west1"
+      secondary_ip_range = {
+        pods     = "172.16.0.0/20"
+        services = "192.168.0.0/24"
+      }
+    }
+  }
+  peering_config = {
+    peer_vpc_self_link = module.vpc-hub.self_link
+    export_routes = false
+    import_routes = true
+  }
+}
+```
+
+### Shared VPC
 
 ```hcl
 module "vpc" {
   source     = "../modules/net-vpc"
   project_id = local.projects.host
   name       = "shared"
-  iam_roles = {
-    default = ["roles/compute.networkUser", "roles/compute.securityAdmin"]
-  }
-  iam_members = {
-    default = {
-      "roles/compute.networkUser" = [
-        local.service_accounts.service_cloudsvc,
-        local.service_accounts.service_gke
-      ]
-      "roles/compute.securityAdmin" = [
-        local.service_accounts.service_gke
-      ]
+  subnets = {
+    subnet-1 = {
+      ip_cidr_range = "10.0.0.0/24"
+      region        = "europe-west1"
+      secondary_ip_range = {
+        pods     = "172.16.0.0/20"
+        services = "192.168.0.0/24"
+      }
     }
   }
   shared_vpc_host = true
   shared_vpc_service_projects = [
-    local.projects.service,
-    local.projects.gae
+    local.service_project_1.project_id,
+    local.service_project_2.project_id
   ]
-  subnets = {
-    default = {
-      ip_cidr_range = var.ip_ranges.shared-default
-      region        = var.region
-      secondary_ip_range = {
-        pods     = var.ip_secondary_ranges.shared-default-pods
-        services = var.ip_secondary_ranges.shared-default-services
-      }
+  iam_roles = {
+    subnet-1 = ["roles/compute.networkUser", "roles/compute.securityAdmin"]
+  }
+  iam_members = {
+    subnet-1 = {
+      "roles/compute.networkUser" = [
+        local.service_project_1.cloudsvc,
+        local.service_project_1.gke
+      ]
+      "roles/compute.securityAdmin" = [
+        local.service_project_1.gke
+      ]
     }
   }
 }
