@@ -63,7 +63,7 @@ module "vpc-spoke-1" {
 module "vpc-host" {
   source     = "../modules/net-vpc"
   project_id = "my-project"
-  name       = "shared"
+  name       = "my-host-network"
   subnets = {
     subnet-1 = {
       ip_cidr_range = "10.0.0.0/24"
