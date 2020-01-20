@@ -37,21 +37,21 @@ variable "admin_ranges" {
 }
 
 variable "ssh_source_ranges" {
-  description = "List of IP CIDR ranges for tag-based SSH rule, defaults to 0.0.0.0/0."
+  description = "List of IP CIDR ranges for tag-based SSH rule, defaults to the IAP forwarders range."
   type        = list(string)
-  default     = ["0.0.0.0/0"]
+  default     = ["35.235.240.0/20"]
 }
 
 variable "http_source_ranges" {
-  description = "List of IP CIDR ranges for tag-based HTTP rule, defaults to 0.0.0.0/0."
+  description = "List of IP CIDR ranges for tag-based HTTP rule, defaults to the health checkers ranges."
   type        = list(string)
-  default     = ["0.0.0.0/0"]
+  default     = ["35.191.0.0/16", "130.211.0.0/22"]
 }
 
 variable "https_source_ranges" {
-  description = "List of IP CIDR ranges for tag-based HTTPS rule, defaults to 0.0.0.0/0."
+  description = "List of IP CIDR ranges for tag-based HTTPS rule, defaults to the health checkers ranges."
   type        = list(string)
-  default     = ["0.0.0.0/0"]
+  default     = ["35.191.0.0/16", "130.211.0.0/22"]
 }
 
 variable "custom_rules" {
