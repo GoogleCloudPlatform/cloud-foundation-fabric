@@ -4,8 +4,8 @@ This module allows creating one or multiple instances or an instance template fo
 
 ## TODO
 
-- [] add support for instance groups
-- [] use a non-dynamic variable in the service account resource `count`
+- [ ] add support for instance groups
+- [ ] use a non-dynamic variable in the service account resource `count`
 
 ## Examples
 
