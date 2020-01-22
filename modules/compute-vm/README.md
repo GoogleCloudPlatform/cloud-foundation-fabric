@@ -1,21 +1,19 @@
 # Google Compute Engine VM module
 
-This module allows creating on or multiple instances for a specific configuration, optionally creating an instance template instead of instances.
-
-A service account is optionally created and assigned to instances if no service account email is specified.
+This module allows creating one or multiple instances or an instance template for a specific configuration. A service account is optionally created and assigned if not specified.
 
 ## Example
 
 ```hcl
 module "debian-test" {
   source     = "../modules/compute-vm"
-  project_id = local.project
-  region     = local.subnet.region
-  zone       = "${local.subnet.region}-b"
-  name       = "debian-test"
+  project_id = "my-project"
+  region     = "europe-west1"
+  zone       = "europe-west1-b"
+  name       = "test"
   network_interfaces = [{
-    network    = local.network.self_link,
-    subnetwork = local.subnet.self_link,
+    network    = local.network_self_link,
+    subnetwork = local.subnet_self_link,
     nat        = false,
     addresses  = null
   }]
