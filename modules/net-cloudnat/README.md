@@ -10,11 +10,11 @@ Simple Cloud NAT management, with optional router creation.
 
 ```hcl
 module "nat" {
-  source      = "../modules/net-cloudnat"
-  project_id  = "my-project"
-  region      = "europe-west1"
-  name        = "default"
-  router_name = "nat"
+  source         = "../modules/net-cloudnat"
+  project_id     = "my-project"
+  region         = "europe-west1"
+  name           = "default"
+  router_name    = "nat"
   router_network = "my-vpc"
 }
 ```
