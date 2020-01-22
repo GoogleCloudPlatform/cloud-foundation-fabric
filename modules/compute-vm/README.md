@@ -2,6 +2,11 @@
 
 This module allows creating one or multiple instances or an instance template for a specific configuration. A service account is optionally created and assigned if not specified.
 
+## TODO
+
+- [] add support for instance groups
+- [] use a non-dynamic variable in the service account resource `count`
+
 ## Examples
 
 ### Instance leveraging defaults
