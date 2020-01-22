@@ -153,15 +153,21 @@ variable "scratch_disks" {
 }
 
 variable "service_account" {
-  description = "Service account email and scopes (default is to auto-create)."
-  type = object({
-    email  = string
-    scopes = list(string)
-  })
-  default = {
-    email  = null
-    scopes = ["https://www.googleapis.com/auth/cloud-platform"]
-  }
+  description = "Service account email. Unused if service account is auto-created."
+  type        = string
+  default     = null
+}
+
+variable "service_account_create" {
+  description = "Auto-create service account."
+  type        = bool
+  default     = false
+}
+
+variable "service_account_scopes" {
+  description = "Scopes applied to service account."
+  type        = list(string)
+  default     = ["https://www.googleapis.com/auth/cloud-platform"]
 }
 
 variable "tags" {

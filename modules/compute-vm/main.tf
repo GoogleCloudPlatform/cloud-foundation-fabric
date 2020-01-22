@@ -31,9 +31,9 @@ locals {
     : { for i in range(0, var.instance_count) : "${var.name}-${i + 1}" => i }
   )
   service_account_email = (
-    var.service_account.email == null
+    var.service_account_create
     ? google_service_account.service_account[0].email
-    : var.service_account.email
+    : var.service_account
   )
 }
 
@@ -129,7 +129,7 @@ resource "google_compute_instance" "default" {
 
   service_account {
     email  = local.service_account_email
-    scopes = var.service_account.scopes
+    scopes = var.service_account_scopes
   }
 
   # guest_accelerator
@@ -193,7 +193,7 @@ resource "google_compute_instance_template" "default" {
 
   service_account {
     email  = local.service_account_email
-    scopes = var.service_account.scopes
+    scopes = var.service_account_scopes
   }
 
   lifecycle {
@@ -202,7 +202,7 @@ resource "google_compute_instance_template" "default" {
 }
 
 resource "google_service_account" "service_account" {
-  count        = var.service_account_email == null ? 1 : 0
+  count        = var.service_account_create ? 1 : 0
   project      = var.project_id
   account_id   = "tf-vm-${var.name}"
   display_name = "Terraform VM ${var.name}."

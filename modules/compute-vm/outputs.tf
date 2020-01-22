@@ -52,9 +52,7 @@ output "self_links" {
 output "service_account" {
   description = "Service account resource."
   value = (
-    var.service_account.email == null
-    ? google_service_account.service_account[0]
-    : null
+    var.service_account_create ? google_service_account.service_account[0] : null
   )
 }
 
