@@ -15,15 +15,13 @@
  */
 
 locals {
-  router = (
-    var.router_name == ""
-    ? google_compute_router.router[0].name
-    : var.router_name
+  router_name = (
+    var.router_create ? google_compute_router.router[0].name : var.router_name
   )
 }
 
 resource "google_compute_router" "router" {
-  count   = var.router_name == "" ? 1 : 0
+  count   = var.router_create ? 1 : 0
   name    = var.router_name == "" ? "${var.name}-nat" : var.router_name
   project = var.project_id
   region  = var.region
@@ -37,7 +35,7 @@ resource "google_compute_router_nat" "nat" {
   project                            = var.project_id
   region                             = var.region
   name                               = var.name
-  router                             = local.router
+  router                             = local.router_name
   nat_ips                            = var.addresses
   nat_ip_allocate_option             = length(var.addresses) > 0 ? "MANUAL_ONLY" : "AUTO_ONLY"
   source_subnetwork_ip_ranges_to_nat = var.config_source_subnets

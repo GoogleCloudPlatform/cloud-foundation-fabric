@@ -69,8 +69,14 @@ variable "router_asn" {
   default     = 64514
 }
 
+variable "router_create" {
+  description = "Create router."
+  type        = bool
+  default     = true
+}
+
 variable "router_name" {
-  description = "Router name, leave blank to create."
+  description = "Router name, leave blank if router will be created to use auto generated name."
   type        = string
   default     = ""
 }
