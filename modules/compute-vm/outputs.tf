@@ -14,9 +14,29 @@
  * limitations under the License.
  */
 
+output "external_ips" {
+  description = "Instance main interface external IP addresses."
+  value = (
+    var.network_interfaces[0].nat
+    ? [
+      for name, instance in google_compute_instance.default :
+      instance.network_interface.0.network_ip
+    ]
+    : []
+  )
+}
+
 output "instances" {
   description = "Instance resources."
   value       = [for name, instance in google_compute_instance.default : instance]
+}
+
+output "internal_ips" {
+  description = "Instance main interface internal IP addresses."
+  value = [
+    for name, instance in google_compute_instance.default :
+    instance.network_interface.0.network_ip
+  ]
 }
 
 output "names" {
@@ -29,24 +49,18 @@ output "self_links" {
   value       = [for name, instance in google_compute_instance.default : instance.self_link]
 }
 
-output "internal_ips" {
-  description = "Instance main interface internal IP addresses."
-  value = [
-    for name, instance in google_compute_instance.default :
-    instance.network_interface.0.network_ip
-  ]
+output "service_account" {
+  description = "Service account resource."
+  value = (
+    var.service_account.email == null
+    ? google_service_account.service_account[0]
+    : null
+  )
 }
 
-output "external_ips" {
-  description = "Instance main interface external IP addresses."
-  value = (
-    var.network_interfaces[0].nat
-    ? [
-      for name, instance in google_compute_instance.default :
-      instance.network_interface.0.network_ip
-    ]
-    : []
-  )
+output "service_account_email" {
+  description = "Service account email."
+  value       = local.service_account_email
 }
 
 output "template" {

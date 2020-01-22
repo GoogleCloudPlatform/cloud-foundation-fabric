@@ -98,6 +98,8 @@ module "debian-test" {
 | internal_ips | Instance main interface internal IP addresses. |  |
 | names | Instance names. |  |
 | self_links | Instance self links. |  |
+| service_account | Service account resource. |  |
+| service_account_email | Service account email. |  |
 | template | Template resource. |  |
 | template_name | Template name. |  |
 <!-- END TFDOC -->
