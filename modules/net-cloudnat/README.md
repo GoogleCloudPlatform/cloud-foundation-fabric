@@ -1,17 +1,21 @@
 # Cloud NAT Module
 
+Simple Cloud NAT management, with optional router creation.
+
+## TODO
+
+- [ ] ensure a dynamic router name does not break `count` in the router resource
+
 ## Example
 
 ```hcl
 module "nat" {
   source      = "../modules/net-cloudnat"
-  project_id  = local.projects.host
-  region      = module.vpc.subnet_regions["default"]
-  name        = "shared"
-  router_name = module.vpn-dynamic.router_name
-  addresses = [
-    module.addresses.external_addresses.nat-1.self_link
-  ]
+  project_id  = "my-project"
+  region      = "europe-west1"
+  name        = "default"
+  router_name = "nat"
+  router_network = "my-vpc"
 }
 ```
 
