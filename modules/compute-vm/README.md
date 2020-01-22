@@ -2,7 +2,32 @@
 
 This module allows creating one or multiple instances or an instance template for a specific configuration. A service account is optionally created and assigned if not specified.
 
-## Example
+## Examples
+
+### Instance leveraging defaults
+
+The simplest example leverages defaults for the boot disk image and size, and uses a service account created by the module. Multiple instances can be managed via the `instance_count` variable.
+
+```hcl
+module "simple-vm-example" {
+  source     = "../modules/compute-vm"
+  project_id = "my-project"
+  region     = "europe-west1"
+  zone       = "europe-west1-b"
+  name       = "test"
+  network_interfaces = [{
+    network    = local.network_self_link,
+    subnetwork = local.subnet_self_link,
+    nat        = false,
+    addresses  = null
+  }]
+  instance_count = 1
+}
+```
+
+### Instance template
+
+This example shows how to use the module to manage an instance template that defines an additional attached disk for each instance, and overrides defaults for the boot disk image and service account.
 
 ```hcl
 module "debian-test" {
@@ -18,10 +43,19 @@ module "debian-test" {
     addresses  = null
   }]
   instance_count = 1
+  boot_disk      = {
+    image = "projects/cos-cloud/global/images/family/cos-stable"
+    type  = "pd-ssd"
+    size  = 10
+  }
   attached_disks = [
     { name = "disk-1", size = 10, image = null, options = null }
   ]
-  # use_instance_template = true
+  service_account = {
+    email = "vm-default@my-project.iam.gserviceaccount.com"
+    scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+  }
+  use_instance_template = true
 }
 ```
 
