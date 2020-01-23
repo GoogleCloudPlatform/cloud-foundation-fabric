@@ -2,6 +2,11 @@
 
 ## Example
 
+This example shows how to configure a single VPN tunnel using a couple of extra features
+
+-  custom advertisement on the tunnel's BGP session; if custom advertisement is not needed, simply set the `bgp_peer_options` attribute to `null`
+- internally generated shared secret, which can be fetched from the module's `random_secret` output for reuse; a predefined secret can be used instead by assigning it to the `shared_secret` attribute
+
 ```hcl
 module "vpn-dynamic" {
   source          = "./modules/net-vpn-dynamic"
@@ -15,11 +20,18 @@ module "vpn-dynamic" {
         address = "169.254.139.134"
         asn     = 64513
       }
-      bgp_peer_options  = null
       bgp_session_range = "169.254.139.133/30"
       ike_version       = 2
       peer_ip           = var.remote_vpn_gateway.address
       shared_secret     = null
+      bgp_peer_options = {
+        advertise_groups = ["ALL_SUBNETS"]
+        advertise_ip_ranges = {
+          "192.168.0.0/24" = "Advertised range description"
+        }
+        advertise_mode = "CUSTOM"
+        route_priority = 1000
+      }
     }
   }
 }
