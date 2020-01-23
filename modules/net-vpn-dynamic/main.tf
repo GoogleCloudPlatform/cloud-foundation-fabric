@@ -161,14 +161,18 @@ resource "google_compute_vpn_gateway" "gateway" {
 }
 
 resource "google_compute_vpn_tunnel" "tunnels" {
-  for_each           = var.tunnels
-  project            = var.project_id
-  region             = var.region
-  name               = "${var.name}-${each.key}"
-  router             = local.router
-  peer_ip            = each.value.peer_ip
-  ike_version        = each.value.ike_version
-  shared_secret      = each.value.shared_secret == "" ? local.secret : each.value.shared_secret
+  for_each    = var.tunnels
+  project     = var.project_id
+  region      = var.region
+  name        = "${var.name}-${each.key}"
+  router      = local.router
+  peer_ip     = each.value.peer_ip
+  ike_version = each.value.ike_version
+  shared_secret = (
+    each.value.shared_secret == "" || each.value.shared_secret == null
+    ? local.secret
+    : each.value.shared_secret
+  )
   target_vpn_gateway = google_compute_vpn_gateway.gateway.self_link
   depends_on         = [google_compute_forwarding_rule.esp]
 }

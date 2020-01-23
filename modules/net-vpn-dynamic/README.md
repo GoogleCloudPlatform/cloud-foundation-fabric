@@ -5,13 +5,12 @@
 ```hcl
 module "vpn-dynamic" {
   source          = "./modules/net-vpn-dynamic"
-  project_id      = local.projects.host
-  region          = module.vpc.subnet_regions["default"]
-  network         = module.vpc.name
-  name            = "shared-to-remote"
-  gateway_address = module.addresses.external_addresses.vpn-remote.address
+  project_id      = "my-project"
+  region          = "europe-west1"
+  network         = "my-vpc"
+  name            = "gateway-1"
   tunnels = {
-    remote-0 = {
+    remote-1 = {
       bgp_peer = {
         address = "169.254.139.134"
         asn     = 64513
@@ -20,7 +19,7 @@ module "vpn-dynamic" {
       bgp_session_range = "169.254.139.133/30"
       ike_version       = 2
       peer_ip           = var.remote_vpn_gateway.address
-      shared_secret     = ""
+      shared_secret     = null
     }
   }
 }
