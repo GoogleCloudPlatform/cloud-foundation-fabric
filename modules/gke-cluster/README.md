@@ -1,13 +1,13 @@
 # GKE cluster module
 
-This module allows simplified creation and management of GKE cluster, and should be used together with the GKE nodepool module as the default nodepool is turned off in this module and cannot be re-enabled. Some sensible defaults are set initially, in order to allow less verbose usage for most use cases.
+This module allows simplified creation and management of GKE clusters and should be used together with the GKE nodepool module, as the default nodepool is turned off here and cannot be re-enabled. Some sensible defaults are set initially, in order to allow less verbose usage for most use cases.
 
 ## Example
 
 ```hcl
 module "cluster-1" {
   source = "./modules/gke-cluster"
-  project_id = "myproject"
+  project_id                = "myproject"
   name                      = "cluster-1"
   location                  = "europe-west1-b"
   network                   = var.network_self_link
@@ -15,9 +15,6 @@ module "cluster-1" {
   secondary_range_pods      = "pods"
   secondary_range_services  = "services"
   default_max_pods_per_node = 32
-  labels = {
-    environment = "dev"
-  }
   master_authorized_ranges = {
     internal-vms = "10.0.0.0/8"
   }
@@ -25,6 +22,9 @@ module "cluster-1" {
     enable_private_nodes    = true
     enable_private_endpoint = true
     master_ipv4_cidr_block  = "192.168.0.0/28"
+  }
+  labels = {
+    environment = "dev"
   }
 }
 ```
