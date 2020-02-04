@@ -60,3 +60,9 @@ variable "iam_project_roles" {
   type        = map(list(string))
   default     = {}
 }
+
+variable "iam_storage_roles" {
+  description = "Storage roles applied to all service accounts, by bucket name."
+  type        = map(list(string))
+  default     = {}
+}

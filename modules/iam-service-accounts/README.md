@@ -30,6 +30,7 @@ module "myproject-default-service-accounts" {
 | *iam_folder_roles* | Project roles applied to all service accounts, by folder id. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
 | *iam_organization_roles* | Project roles applied to all service accounts, by organization id. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
 | *iam_project_roles* | Project roles applied to all service accounts, by project id. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
+| *iam_storage_roles* | Storage roles applied to all service accounts, by bucket name. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
 | *names* | Names of the service accounts to create. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 | *prefix* | Prefix applied to service account names. | <code title="">string</code> |  | <code title=""></code> |
 

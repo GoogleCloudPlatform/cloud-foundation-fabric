@@ -43,6 +43,13 @@ locals {
       ]
     ]
   ])
+  iam_storage_pairs = flatten([
+    for entity, roles in var.iam_storage_roles : [
+      for role in roles : [
+        for name in var.names : { entity = entity, role = role, name = name }
+      ]
+    ]
+  ])
   keys = (
     var.generate_keys
     ? {
@@ -121,6 +128,16 @@ resource "google_project_iam_member" "project-roles" {
   project = each.value.entity
   role    = each.value.role
   member  = local.resource_iam_emails[each.value.name]
+}
+
+resource "google_storage_bucket_iam_member" "bucket-roles" {
+  for_each = {
+    for pair in local.iam_storage_pairs :
+    "${pair.name}-${pair.entity}-${pair.role}" => pair
+  }
+  bucket = each.value.entity
+  role   = each.value.role
+  member = local.resource_iam_emails[each.value.name]
 }
 
 # TODO(ludoo): link from README
