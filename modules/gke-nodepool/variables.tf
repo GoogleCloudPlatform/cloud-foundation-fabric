@@ -123,7 +123,7 @@ variable "node_config_min_cpu_platform" {
 variable "node_config_oauth_scopes" {
   description = "Set of Google API scopes for the nodes service account. Include logging-write, monitoring, and storage-ro when using this variable."
   type        = list(string)
-  default     = null
+  default     = ["logging-write", "monitoring-write", "storage-ro"]
 }
 
 variable "node_config_preemptible" {
