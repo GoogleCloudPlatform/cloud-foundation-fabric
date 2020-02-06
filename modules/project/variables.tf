@@ -106,3 +106,9 @@ variable "services" {
   type        = list(string)
   default     = []
 }
+
+variable "prevent_default_network_deletion" {
+  description = "Prevent deletion of default network (use this if your organization has skipDefaultNetworkCreation enforced)"
+  type        = bool
+  default     = false
+}

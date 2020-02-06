@@ -39,7 +39,7 @@ resource "google_project" "project" {
   project_id          = "${var.prefix}-${var.name}"
   name                = "${var.prefix}-${var.name}"
   billing_account     = var.billing_account
-  auto_create_network = var.auto_create_network
+  auto_create_network = var.prevent_default_network_deletion ? null : var.auto_create_network
   labels              = var.labels
 }
 
