@@ -41,6 +41,7 @@ module "project" {
 | *oslogin* | Enable OS Login. | <code title="">bool</code> |  | <code title="">false</code> |
 | *oslogin_admins* | List of IAM-style identities that will be granted roles necessary for OS Login administrators. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 | *oslogin_users* | List of IAM-style identities that will be granted roles necessary for OS Login users. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
+| *prevent_default_network_deletion* | Prevent deletion of default network. Use this if your organization has skipDefaultNetworkCreation enforced. | <code title="">bool</code> |  | <code title="">false</code> |
 | *services* | Service APIs to enable. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 
 ## Outputs
