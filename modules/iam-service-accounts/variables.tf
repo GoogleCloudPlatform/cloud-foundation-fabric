@@ -37,32 +37,44 @@ variable "project_id" {
   type        = string
 }
 
+variable "iam_members" {
+  description = "Map of member lists which are granted authoritative roles on the service accounts, keyed by role."
+  type        = map(list(string))
+  default     = {}
+}
+
+variable "iam_roles" {
+  description = "List of authoritative roles granted on the service accounts."
+  type        = list(string)
+  default     = []
+}
+
 variable "iam_billing_roles" {
-  description = "Project roles applied to all service accounts, by billing account id."
+  description = "Project roles granted to all service accounts, by billing account id."
   type        = map(list(string))
   default     = {}
 }
 
 variable "iam_folder_roles" {
-  description = "Project roles applied to all service accounts, by folder id."
+  description = "Project roles granted to all service accounts, by folder id."
   type        = map(list(string))
   default     = {}
 }
 
 variable "iam_organization_roles" {
-  description = "Project roles applied to all service accounts, by organization id."
+  description = "Project roles granted to all service accounts, by organization id."
   type        = map(list(string))
   default     = {}
 }
 
 variable "iam_project_roles" {
-  description = "Project roles applied to all service accounts, by project id."
+  description = "Project roles granted to all service accounts, by project id."
   type        = map(list(string))
   default     = {}
 }
 
 variable "iam_storage_roles" {
-  description = "Storage roles applied to all service accounts, by bucket name."
+  description = "Storage roles granted to all service accounts, by bucket name."
   type        = map(list(string))
   default     = {}
 }

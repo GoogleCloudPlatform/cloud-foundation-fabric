@@ -15,6 +15,10 @@
  */
 
 locals {
+  iam_pairs = {
+    for pair in setproduct(var.names, var.iam_roles) :
+    "${pair.0}-${pair.1}" => { name = pair.0, role = pair.1 }
+  }
   iam_billing_pairs = flatten([
     for entity, roles in var.iam_billing_roles : [
       for role in roles : [
@@ -88,6 +92,13 @@ resource "google_service_account" "service_accounts" {
 resource "google_service_account_key" "keys" {
   for_each           = var.generate_keys ? toset(var.names) : toset([])
   service_account_id = google_service_account.service_accounts[each.value].email
+}
+
+resource "google_service_account_iam_binding" "sa-roles" {
+  for_each           = local.iam_pairs
+  service_account_id = google_service_account.service_accounts[each.value.name].name
+  role               = each.value.role
+  members            = lookup(var.iam_members, each.value.role, [])
 }
 
 resource "google_billing_account_iam_member" "roles" {
