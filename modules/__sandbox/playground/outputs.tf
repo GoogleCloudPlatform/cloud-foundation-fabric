@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-output "datasets" {
-  value = zipmap(google_bigquery_dataset.datasets[*].dataset_id, google_bigquery_dataset.datasets)
+output "folder" {
+  description = "Folder resource."
+  value       = google_folder.folder
 }
 
-output "tables" {
-  value = google_bigquery_table.tables
-}
-
-output "views" {
-  value = google_bigquery_table.views
+output "folder_name" {
+  description = "Folder name."
+  value       = google_folder.folder.name
 }
