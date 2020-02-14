@@ -21,6 +21,7 @@ import sys
 
 
 _EXCLUDE_DIRS = ('.git', '.terraform')
+_EXCLUDE_RE = re.compile(r'# skip boilerplate check')
 _MATCH_FILES = (
     'Dockerfile', '.py', '.sh', '.tf', '.yaml', '.yml'
 )
@@ -40,8 +41,11 @@ def main(dir):
     for fname in files:
       if fname in _MATCH_FILES or os.path.splitext(fname)[1] in _MATCH_FILES:
         fpath = os.path.abspath(os.path.join(root, fname))
+        content = open(fpath).read()
+        if _EXCLUDE_RE.search(content):
+          continue
         try:
-          if not _MATCH_RE.search(open(fpath).read()):
+          if not _MATCH_RE.search(content):
             errors.append(fpath)
         except (IOError, OSError):
           warnings.append(fpath)
