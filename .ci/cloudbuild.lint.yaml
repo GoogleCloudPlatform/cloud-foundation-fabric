@@ -14,12 +14,12 @@
 
 
 steps:
-  - name: "python:3-alpine3.10"
-    id: "boilerplate"
+  - name: python:3-alpine
+    id: boilerplate
     args: ["/workspace/.ci/scripts/check_boilerplate.py", "/workspace"]
-  - name: "wata727/tflint"
-    id: "lint"
+  - name: wata727/tflint
+    id: lint
     args: ["/workspace"]
 tags:
-  - "ci"
-  - "lint"
+  - ci
+  - lint

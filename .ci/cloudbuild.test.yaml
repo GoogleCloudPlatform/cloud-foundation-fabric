@@ -13,7 +13,7 @@
 # limitations under the License.
 
 steps:
-  - name: python:3-alpine3.10
+  - name: python:3-alpine
     id: prepare
     entrypoint: sh
     args:
@@ -24,24 +24,25 @@ steps:
         unzip terraform_${_TERRAFORM_VERSION}_linux_amd64.zip -d /builder/home/.local/bin &&
         rm terraform_${_TERRAFORM_VERSION}_linux_amd64.zip &&
         chmod 755 /builder/home/.local/bin/terraform
-  # TODO(ludoo): split into two triggers with different filters
-  - name: python:3-alpine3.10
-    id: test-foundations
-    entrypoint: pytest
-    args:
-      - -v
-      - tests/foundations
-    env:
-      - PATH=/usr/local/bin:/usr/bin:/bin:/builder/home/.local/bin
-  - name: python:3-alpine3.10
-    id: test-infrastructure
-    entrypoint: pytest
-    args:
-      - -v
-      - tests/infrastructure
-    env:
-      - PATH=/usr/local/bin:/usr/bin:/bin:/builder/home/.local/bin
-      - PYTHONDONTWRITEBYTECODE=true
+  # TODO(ludoo): reenable once development tests are ready
+  # TODO(ludoo): add a step that detects change files and sets tests to run
+  # - name: python:3-alpine
+  #   id: test-foundations
+  #   entrypoint: pytest
+  #   args:
+  #     - -v
+  #     - tests/foundations
+  #   env:
+  #     - PATH=/usr/local/bin:/usr/bin:/bin:/builder/home/.local/bin
+  # - name: python:3-alpine
+  #   id: test-infrastructure
+  #   entrypoint: pytest
+  #   args:
+  #     - -v
+  #     - tests/infrastructure
+  #   env:
+  #     - PATH=/usr/local/bin:/usr/bin:/bin:/builder/home/.local/bin
+  #     - PYTHONDONTWRITEBYTECODE=true
 
 substitutions:
   _TERRAFORM_VERSION: 0.12.19
