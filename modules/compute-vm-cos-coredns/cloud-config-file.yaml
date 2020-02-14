@@ -1,3 +1,4 @@
+# skip boilerplate check
 - path: ${path}
   content: |
     ${indent(4, content)}
