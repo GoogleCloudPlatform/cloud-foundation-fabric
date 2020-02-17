@@ -60,6 +60,48 @@ variable "boot_disk" {
   }
 }
 
+variable "group" {
+  description = "Instance group (for instance use)."
+  type = object({
+    name        = string
+    named_ports = map(number)
+  })
+  default = null
+}
+
+variable "group_manager" {
+  description = "Instance group manager (for template use)."
+  type = object({
+    auto_healing_policies = object({
+      health_check      = string
+      initial_delay_sec = number
+    })
+    named_ports = map(number)
+    options = object({
+      target_pools       = list(string)
+      wait_for_instances = bool
+    })
+    regional    = bool
+    target_size = number
+    update_policy = object({
+      type                 = string # OPPORTUNISTIC | PROACTIVE
+      minimal_action       = string # REPLACE | RESTART
+      min_ready_sec        = number
+      max_surge_type       = string # fixed | percent
+      max_surge            = number
+      max_unavailable_type = string
+      max_unavailable      = number
+    })
+    versions = list(object({
+      name              = string
+      instance_template = string
+      target_type       = string # fixed | percent
+      target_size       = number
+    }))
+  })
+  default = null
+}
+
 variable "hostname" {
   description = "Instance FQDN name."
   type        = string

@@ -1,9 +1,0 @@
-billing_account_id            = "012345-ABCDEF-012345"
-business_unit_1_name          = "infra"
-business_unit_2_name          = "analytics"
-business_unit_3_name          = "data"
-environments                  = ["dev", "test"]
-generate_service_account_keys = true
-organization_id               = "012345678919"
-prefix                        = "fabric-org-env-3"
-root_node                     = "folders/0123456789"
