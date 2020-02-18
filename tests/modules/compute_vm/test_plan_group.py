@@ -33,13 +33,8 @@ def test_unmanaged(plan_runner):
 def test_managed(plan_runner):
   plan = plan_runner(FIXTURES_DIR, use_instance_template='true', group_manager=(
       '{ '
-      'auto_healing_policies=null, '
-      'named_ports={}, '
-      'options=null, '
-      'regional=false, '
-      'target_size=1, '
-      'update_policy=null,'
-      'versions=null'
+      'auto_healing_policies=null, named_ports={}, options=null, '
+      'regional=false, target_size=1, update_policy=null, versions=null'
       ' }'
   ))
   resources = plan.planned_values['root_module']['child_modules'][0]['resources']
