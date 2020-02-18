@@ -20,7 +20,7 @@
 
 module "project-svpc-host" {
   source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
-  version         = "5.0.0"
+  version         = "7.0.0"
   parent          = var.root_node
   prefix          = var.prefix
   name            = "vpc-host"
@@ -36,7 +36,7 @@ module "project-svpc-host" {
 
 module "project-service-gce" {
   source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
-  version         = "5.0.0"
+  version         = "7.0.0"
   parent          = var.root_node
   prefix          = var.prefix
   name            = "gce"
@@ -50,7 +50,7 @@ module "project-service-gce" {
 
 module "project-service-gke" {
   source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
-  version         = "5.0.0"
+  version         = "7.0.0"
   parent          = var.root_node
   prefix          = var.prefix
   name            = "gke"
@@ -67,7 +67,7 @@ module "project-service-gke" {
 
 module "net-vpc-host" {
   source           = "terraform-google-modules/network/google"
-  version          = "1.4.3"
+  version          = "2.1.1"
   project_id       = module.project-svpc-host.project_id
   network_name     = "vpc-shared"
   shared_vpc_host  = true
@@ -80,7 +80,7 @@ module "net-vpc-host" {
 
 module "net-vpc-firewall" {
   source               = "terraform-google-modules/network/google//modules/fabric-net-firewall"
-  version              = "1.4.3"
+  version              = "2.1.1"
   project_id           = module.project-svpc-host.project_id
   network              = module.net-vpc-host.network_name
   admin_ranges_enabled = true
@@ -104,7 +104,7 @@ module "net-vpc-firewall" {
 
 module "net-svpc-access" {
   source              = "terraform-google-modules/network/google//modules/fabric-net-svpc-access"
-  version             = "1.4.3"
+  version             = "2.1.1"
   host_project_id     = module.project-svpc-host.project_id
   service_project_num = 2
   service_project_ids = [
@@ -132,14 +132,15 @@ module "net-svpc-access" {
 
 module "host-dns" {
   source                             = "terraform-google-modules/cloud-dns/google"
-  version                            = "2.0.0"
+  version                            = "3.0.0"
   project_id                         = module.project-svpc-host.project_id
   type                               = "private"
   name                               = "svpc-fabric-example"
   domain                             = "svpc.fabric."
   private_visibility_config_networks = [module.net-vpc-host.network_self_link]
-  record_names                       = ["localhost"]
-  record_data                        = [{ rrdatas = "127.0.0.1", type = "A" }]
+  recordsets = [
+    { name = "localhost", type = "A", ttl = 300, records = ["127.0.0.1"] }
+  ]
 }
 
 ################################################################################
