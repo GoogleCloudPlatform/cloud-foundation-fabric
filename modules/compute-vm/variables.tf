@@ -63,7 +63,6 @@ variable "boot_disk" {
 variable "group" {
   description = "Instance group (for instance use)."
   type = object({
-    name        = string
     named_ports = map(number)
   })
   default = null

@@ -17,8 +17,7 @@ import os
 import pytest
 
 
-FIXTURES_DIR = os.path.join(os.path.dirname(
-    __file__), 'fixtures/test_instances')
+FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
 
 
 def test_single_instance(plan_runner):
@@ -41,3 +40,11 @@ def test_service_account(plan_runner):
   resources = plan.planned_values['root_module']['child_modules'][0]['resources']
   assert len(resources) == 3
   assert 'google_service_account' in [r['type'] for r in resources]
+
+
+def test_template(plan_runner):
+  plan = plan_runner(FIXTURES_DIR, use_instance_template='true')
+  resources = plan.planned_values['root_module']['child_modules'][0]['resources']
+  assert len(resources) == 1
+  assert resources[0]['type'] == 'google_compute_instance_template'
+  assert resources[0]['values']['name_prefix'] == 'test-'

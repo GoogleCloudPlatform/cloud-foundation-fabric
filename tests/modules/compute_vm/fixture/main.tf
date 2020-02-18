@@ -14,16 +14,8 @@
  * limitations under the License.
  */
 
-variable "service_account_create" {
-  default = false
-}
-
-variable "instance_count" {
-  default = 1
-}
-
 module "test" {
-  source     = "../../../../../modules/compute-vm"
+  source     = "../../../../modules/compute-vm"
   project_id = "my-project"
   region     = "europe-west1"
   zone       = "europe-west1-b"
@@ -36,4 +28,7 @@ module "test" {
   }]
   service_account_create = var.service_account_create
   instance_count         = var.instance_count
+  use_instance_template  = var.use_instance_template
+  group                  = var.group
+  group_manager          = var.group_manager
 }

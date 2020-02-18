@@ -31,7 +31,7 @@ resource "google_compute_instance_group" "unmanaged" {
     for name, instance in google_compute_instance.default : instance.self_link
   ]
   dynamic named_port {
-    for_each = var.group.named_ports
+    for_each = var.group.named_ports != null ? var.group.named_ports : {}
     iterator = config
     content {
       name = config.key
@@ -100,7 +100,7 @@ resource "google_compute_instance_group_manager" "managed" {
     }
   }
   dynamic named_port {
-    for_each = var.group.named_ports
+    for_each = var.group_manager.named_ports != null ? var.group_manager.named_ports : {}
     iterator = config
     content {
       name = config.key
