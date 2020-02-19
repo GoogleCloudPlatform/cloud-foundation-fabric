@@ -15,9 +15,9 @@
  */
 
 module "test" {
-  source = "../../../../modules/folders"
-  parent = var.parent
-  names  = ["folder-a", "folder-b"]
-  # iam_members = var.iam_members
-  # iam_roles   = var.iam_roles
+  source      = "../../../../modules/folders"
+  parent      = "organizations/12345678"
+  names       = ["folder-a", "folder-b"]
+  iam_members = var.iam_members
+  iam_roles   = var.iam_roles
 }

@@ -16,7 +16,7 @@
 
 locals {
   folders = [for name in var.names : google_folder.folders[name]]
-  iam_pairs = flatten([
+  iam_pairs = var.iam_roles == null ? [] : flatten([
     for name, roles in var.iam_roles :
     [for role in roles : { name = name, role = role }]
   ])
@@ -24,6 +24,7 @@ locals {
     for pair in local.iam_pairs :
     "${pair.name}-${pair.role}" => pair
   }
+  iam_members = var.iam_members == null ? {} : var.iam_members
 }
 
 resource "google_folder" "folders" {
@@ -46,7 +47,7 @@ resource "google_folder_iam_binding" "authoritative" {
   folder   = google_folder.folders[each.value.name].name
   role     = each.value.role
   members = lookup(
-    lookup(var.iam_members, each.value.name, {}), each.value.role, []
+    lookup(local.iam_members, each.value.name, {}), each.value.role, []
   )
 }
 

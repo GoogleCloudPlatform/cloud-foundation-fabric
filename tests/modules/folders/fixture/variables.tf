@@ -15,16 +15,11 @@
  */
 
 variable "iam_members" {
-  type    = list(string)
+  type    = map(map(list(string)))
   default = null
 }
 
 variable "iam_roles" {
   type    = map(list(string))
   default = null
-}
-
-variable "parent" {
-  type    = string
-  default = "organizations/12345678"
 }

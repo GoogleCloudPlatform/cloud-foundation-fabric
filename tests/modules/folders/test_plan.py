@@ -25,3 +25,25 @@ def test_folder(plan_runner):
   _, resources = plan_runner(FIXTURES_DIR)
   assert len(resources) == 2
   assert set(r['type'] for r in resources) == set(['google_folder'])
+  assert set(r['values']['display_name'] for r in resources) == set([
+      'folder-a', 'folder-b'
+  ])
+  assert set(r['values']['parent'] for r in resources) == set([
+      'organizations/12345678'
+  ])
+
+
+def test_iam_roles_only(plan_runner):
+  "Test folder resources with only iam roles passed."
+  _, resources = plan_runner(
+      FIXTURES_DIR, iam_roles='{folder-a = [ "roles/owner"]}')
+  assert len(resources) == 3
+
+
+def test_iam(plan_runner):
+  "Test folder resources with iam roles and members."
+  iam_roles = '{folder-a = ["roles/owner"], folder-b = ["roles/viewer"]}'
+  iam_members = '{folder-a = { "roles/owner" = ["user:a@b.com"] }}'
+  _, resources = plan_runner(
+      FIXTURES_DIR, iam_roles=iam_roles, iam_members=iam_members)
+  assert len(resources) == 4

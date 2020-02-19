@@ -17,13 +17,13 @@
 variable "iam_members" {
   description = "List of IAM members keyed by folder name and role."
   type        = map(map(list(string)))
-  default     = {}
+  default     = null
 }
 
 variable "iam_roles" {
   description = "List of IAM roles keyed by folder name."
   type        = map(list(string))
-  default     = {}
+  default     = null
 }
 
 variable "names" {
