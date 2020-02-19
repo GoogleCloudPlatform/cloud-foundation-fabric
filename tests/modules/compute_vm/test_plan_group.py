@@ -21,9 +21,8 @@ FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
 
 
 def test_unmanaged(plan_runner):
-  plan = plan_runner(FIXTURES_DIR, instance_count=2,
-                     group='{named_ports={}}')
-  resources = plan.planned_values['root_module']['child_modules'][0]['resources']
+  plan, resources = plan_runner(FIXTURES_DIR, instance_count=2,
+                                group='{named_ports={}}')
   assert len(resources) == 3
   assert set(r['type'] for r in resources) == set([
       'google_compute_instance_group', 'google_compute_instance'
@@ -31,13 +30,14 @@ def test_unmanaged(plan_runner):
 
 
 def test_managed(plan_runner):
-  plan = plan_runner(FIXTURES_DIR, use_instance_template='true', group_manager=(
-      '{ '
-      'auto_healing_policies=null, named_ports={}, options=null, '
-      'regional=false, target_size=1, update_policy=null, versions=null'
-      ' }'
-  ))
-  resources = plan.planned_values['root_module']['child_modules'][0]['resources']
+  plan, resources = plan_runner(
+      FIXTURES_DIR, use_instance_template='true', group_manager=(
+          '{ '
+          'auto_healing_policies=null, named_ports={}, options=null, '
+          'regional=false, target_size=1, update_policy=null, versions=null'
+          ' }'
+      )
+  )
   assert len(resources) == 2
   assert set(r['type'] for r in resources) == set([
       'google_compute_instance_group_manager', 'google_compute_instance_template'

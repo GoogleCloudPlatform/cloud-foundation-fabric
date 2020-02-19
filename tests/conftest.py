@@ -31,6 +31,10 @@ def plan_runner():
     tf = tftest.TerraformTest(fixture_path, BASEDIR,
                               os.environ.get('TERRAFORM', 'terraform'))
     tf.setup()
-    return tf.plan(output=True, tf_vars=tf_vars)
+    plan = tf.plan(output=True, tf_vars=tf_vars)
+    return (
+        plan,
+        plan.planned_values['root_module']['child_modules'][0]['resources']
+    )
 
   return run_plan
