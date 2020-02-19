@@ -1,5 +1,5 @@
 /**
- * Copyright 2018 Google LLC
+ * Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,25 +14,10 @@
  * limitations under the License.
  */
 
-variable "iam_members" {
-  description = "List of IAM members keyed by folder name and role."
-  type        = map(map(list(string)))
-  default     = null
-}
-
-variable "iam_roles" {
-  description = "List of IAM roles keyed by folder name."
-  type        = map(list(string))
-  default     = null
-}
-
-variable "names" {
-  description = "Folder names."
-  type        = list(string)
-  default     = []
-}
-
-variable "parent" {
-  description = "Parent in folders/folder_id or organizations/org_id format."
-  type        = string
+module "test" {
+  source      = "../../../../modules/folders"
+  parent      = "organizations/12345678"
+  names       = ["folder-a", "folder-b"]
+  iam_members = var.iam_members
+  iam_roles   = var.iam_roles
 }
