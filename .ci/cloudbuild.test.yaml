@@ -24,28 +24,18 @@ steps:
         unzip terraform_${_TERRAFORM_VERSION}_linux_amd64.zip -d /builder/home/.local/bin &&
         rm terraform_${_TERRAFORM_VERSION}_linux_amd64.zip &&
         chmod 755 /builder/home/.local/bin/terraform
-  # TODO(ludoo): reenable once development tests are ready
   # TODO(ludoo): add a step that detects change files and sets tests to run
-  # - name: python:3-alpine
-  #   id: test-foundations
-  #   entrypoint: pytest
-  #   args:
-  #     - -v
-  #     - tests/foundations
-  #   env:
-  #     - PATH=/usr/local/bin:/usr/bin:/bin:/builder/home/.local/bin
-  # - name: python:3-alpine
-  #   id: test-infrastructure
-  #   entrypoint: pytest
-  #   args:
-  #     - -v
-  #     - tests/infrastructure
-  #   env:
-  #     - PATH=/usr/local/bin:/usr/bin:/bin:/builder/home/.local/bin
-  #     - PYTHONDONTWRITEBYTECODE=true
+  - name: python:3-alpine
+    id: test-modules
+    entrypoint: pytest
+    args:
+      - -v
+      - tests/modules
+    env:
+      - PATH=/usr/local/bin:/usr/bin:/bin:/builder/home/.local/bin
 
 substitutions:
-  _TERRAFORM_VERSION: 0.12.19
+  _TERRAFORM_VERSION: 0.12.20
 
 tags:
   - "ci"

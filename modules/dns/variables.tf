@@ -56,6 +56,7 @@ variable "domain" {
   type        = string
 }
 
+# TODO(ludoo): add support for forwarding path attribute
 variable "forwarders" {
   description = "List of target name servers, only valid for 'forwarding' zone types."
   type        = list(string)

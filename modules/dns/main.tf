@@ -16,7 +16,7 @@
 
 locals {
   is_static_zone = var.type == "public" || var.type == "private"
-  recordsets = {
+  recordsets = var.recordsets == null ? {} : {
     for record in var.recordsets :
     join("/", [record.name, record.type]) => record
   }
@@ -35,7 +35,11 @@ resource "google_dns_managed_zone" "non-public" {
   visibility  = "private"
 
   dynamic forwarding_config {
-    for_each = var.type == "forwarding" ? { config = var.forwarders } : {}
+    for_each = (
+      var.type == "forwarding" && var.forwarders != null
+      ? { config = var.forwarders }
+      : {}
+    )
     iterator = config
     content {
       dynamic "target_name_servers" {
@@ -49,7 +53,11 @@ resource "google_dns_managed_zone" "non-public" {
   }
 
   dynamic peering_config {
-    for_each = var.type == "peering" ? { config = var.peer_network } : {}
+    for_each = (
+      var.type == "peering" && var.peer_network != null
+      ? { config = var.peer_network }
+      : {}
+    )
     iterator = config
     content {
       target_network {
@@ -104,7 +112,11 @@ resource "google_dns_managed_zone" "public" {
 }
 
 resource "google_dns_record_set" "cloud-static-records" {
-  for_each     = local.recordsets
+  for_each = (
+    var.type == "public" || var.type == "private"
+    ? local.recordsets
+    : {}
+  )
   project      = var.project_id
   managed_zone = var.name
   name         = each.value.name != "" ? "${each.value.name}.${var.domain}" : var.domain
