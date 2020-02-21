@@ -16,7 +16,7 @@
 
 locals {
   buckets = [for name in var.names : google_storage_bucket.buckets[name]]
-  iam_pairs = flatten([
+  iam_pairs = var.iam_roles == null ? [] : flatten([
     for name, roles in var.iam_roles :
     [for role in roles : { name = name, role = role }]
   ])
@@ -24,7 +24,8 @@ locals {
     for pair in local.iam_pairs :
     "${pair.name}-${pair.role}" => pair
   }
-  prefix = var.prefix == "" ? "" : join("-", [var.prefix, lower(var.location), ""])
+  iam_members = var.iam_members == null ? {} : var.iam_members
+  prefix      = var.prefix == "" ? "" : join("-", [var.prefix, lower(var.location), ""])
 }
 
 resource "google_storage_bucket" "buckets" {
@@ -50,6 +51,6 @@ resource "google_storage_bucket_iam_binding" "bindings" {
   bucket   = google_storage_bucket.buckets[each.value.name].name
   role     = each.value.role
   members = lookup(
-    lookup(var.iam_members, each.value.name, {}), each.value.role, []
+    lookup(local.iam_members, each.value.name, {}), each.value.role, []
   )
 }

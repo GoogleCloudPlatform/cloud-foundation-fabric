@@ -29,13 +29,13 @@ variable "force_destroy" {
 variable "iam_members" {
   description = "IAM members keyed by bucket name and role."
   type        = map(map(list(string)))
-  default     = {}
+  default     = null
 }
 
 variable "iam_roles" {
   description = "IAM roles keyed by bucket name."
   type        = map(list(string))
-  default     = {}
+  default     = null
 }
 
 variable "labels" {
