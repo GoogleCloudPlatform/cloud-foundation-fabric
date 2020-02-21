@@ -1,0 +1,221 @@
+#cloud-config
+
+write_files:
+# turn on IP forwarding
+- path: /etc/sysctl.d/99-forwarding.conf
+  owner: root:root
+  permissions: '0644'
+  content: |
+    net.ipv4.ip_forward=1
+
+# disable systemd-resolved to free port 53 on the loopback interface
+- path: /etc/systemd/resolved.conf
+  permissions: 0644
+  owner: root
+  content: |
+    [Resolve]
+    LLMNR=no
+    DNSStubListener=no
+
+# use external nameservers in resolv.conf
+- path: /etc/resolv.conf
+  permissions: 0644
+  owner: root
+  content: |
+    nameserver 8.8.8.8
+    nameserver 8.8.4.4
+    options edns0
+
+# Docker daemon configuration
+- path: /etc/docker/daemon.json
+  owner: root:root
+  permissions: '0644'
+  content: |
+    {
+      "log-driver": "json-file",
+      "log-opts": {
+        "max-size": "10m"
+      }
+    }
+
+# Docker compose systemd unit for onprem
+- path: /etc/systemd/system/docker-onprem.service
+  permissions: 0644
+  owner: root
+  content: |
+    [Install]
+    WantedBy=multi-user.target
+    [Unit]
+    Description=Start Docker Compose onprem infrastructure
+    After=network-online.target docker.socket
+    Wants=network-online.target docker.socket
+    [Service]
+    ExecStart=/bin/sh -c "cd /var/lib/docker-compose/onprem && docker-compose up"
+    ExecStop=/bin/sh -c "cd /var/lib/docker-compose/onprem && docker-compose down"
+    ExecStopPost=-/sbin/ip rule del from ${local_ip_cidr_range} to ${remote_ip_cidr_range} table 200
+    ExecStopPost=-/sbin/ip rule del from ${local_ip_cidr_range} to 199.36.153.4/30 table 200
+    ExecStopPost=-/sbin/ip rule del from ${local_ip_cidr_range} to 35.199.192.0/19 table 200
+
+# Docker compose configuration file for onprem
+# TODO(ludomagno): support multiple remote IP ranges
+- path: /var/lib/docker-compose/onprem/docker-compose.yaml
+  permissions: 0644
+  owner: root
+  content: |
+    version: "3"
+    services:
+      vpn:
+        image: deltaprojects/strongswan
+        networks:
+          default:
+            ipv4_address: ${vpn_ip_address}
+        ports:
+          - "500:500/udp"
+          - "4500:4500/udp"
+        privileged: true
+        volumes:
+          - "/lib/modules:/lib/modules:ro"
+          - "/etc/localtime:/etc/localtime:ro"
+          - "/var/lib/docker-compose/onprem/ipsec:/etc/ipsec.docker:ro"
+      dns:
+        image: coredns/coredns
+        command: "-conf /etc/coredns/Corefile"
+        depends_on:
+          - "vpn"
+        networks:
+          default:
+            ipv4_address: ${dns_ip_address}
+        volumes:
+          - "/var/lib/docker-compose/onprem/coredns:/etc/coredns:ro"
+        # network_mode: "service:vpn"
+      web:
+        image: nginx:stable-alpine
+        depends_on:
+          - "vpn"
+          - "dns"
+        dns:
+          - ${dns_ip_address}
+        networks:
+          default:
+            ipv4_address: ${web_ip_address}
+        volumes:
+          - "/var/lib/docker-compose/onprem/nginx:/usr/share/nginx/html:ro"
+      shell:
+        image: gcr.io/google.com/ludo-sce-test/toolbox
+        depends_on:
+          - "vpn"
+          - "dns"
+          - "web"
+        dns:
+          - ${dns_ip_address}
+      routing:
+        image: alpine
+        network_mode: host
+        privileged: true
+        command: |
+          /bin/sh -c "\
+            ip rule add from ${local_ip_cidr_range} to ${remote_ip_cidr_range} table 200 && \
+            ip route add ${remote_ip_cidr_range} via ${vpn_ip_address} table 200 && \
+            ip rule add from ${local_ip_cidr_range} to 199.36.153.4/30 table 200 && \
+            ip route add 199.36.153.4/30 via ${vpn_ip_address} table 200"
+            ip rule add from ${local_ip_cidr_range} to 35.199.192.0/19 table 200 && \
+            ip route add 35.199.192.0/19 via ${vpn_ip_address} table 200"
+        depends_on:
+          - "vpn"
+    networks:
+      default:
+        ipam:
+          driver: default
+          config:
+            - subnet: ${local_ip_cidr_range}
+
+# IPSEC tunnel secret
+- path: /var/lib/docker-compose/onprem/ipsec/ipsec.gc.secrets
+  owner: root:root
+  permissions: '0600'
+  content: |
+    : PSK "${shared_secret}"
+
+# IPSEC tunnel configuration
+- path: /var/lib/docker-compose/onprem/ipsec/ipsec.gc.conf
+  owner: root:root
+  permissions: '0644'
+  content: |
+    conn %default
+      ikelifetime=600m # 36,000 s
+      keylife=180m # 10,800 s
+      rekeymargin=3m
+      keyingtries=3
+      keyexchange=ikev2
+      mobike=no
+      ike=aes256gcm16-sha512-modp2048
+      esp=aes256gcm16-sha512-modp8192
+      authby=psk
+
+    conn gcp
+      left=%any
+      leftid=%any
+      leftsubnet=${local_ip_cidr_range}
+      leftauth=psk
+      right=${peer_ip_wildcard}
+      rightid=${peer_ip}
+      rightsubnet=${remote_ip_cidr_range},199.36.153.4/30,35.199.192.0/19
+      rightauth=psk
+      type=tunnel
+      auto=start
+      dpdaction=restart
+      closeaction=restart
+
+# CoreDNS configuration
+- path: /var/lib/docker-compose/onprem/coredns/Corefile
+  owner: root:root
+  permissions: '0644'
+  content: |
+    onprem {
+      root /etc/coredns
+      hosts onprem.hosts
+      log
+      errors
+    }
+    . {
+      forward . 8.8.8.8
+      log
+      errors
+    }
+
+# CoreDNS onprem hosts file
+- path: /var/lib/docker-compose/onprem/coredns/onprem.hosts
+  owner: root:root
+  permissions: '0644'
+  content: |
+    ${vpn_ip_address} gw.onprem
+    ${dns_ip_address} ns.onprem
+    ${web_ip_address} www.onprem
+
+# Minimal nginx index page
+- path: /var/lib/docker-compose/onprem/nginx/index.html
+  owner: root:root
+  permissions: '0644'
+  content: |
+    <!DOCTYPE html>
+    <html>
+    <head><meta charset="utf-8"></head>
+    <body>
+    <h1>On Prem in a Box</h1>
+    <p>${instance_name}</p>
+    </body>
+    </html>
+
+# setup script
+- path: /tmp/server-config.sh
+  owner: root:root
+  permissions: '0700'
+  content: |
+    ${server_config_script}
+
+runcmd:
+- /sbin/sysctl -w net.ipv4.ip_forward=1
+- /tmp/server-config.sh
+- systemctl daemon-reload
+- systemctl enable docker-onprem
+- systemctl start docker-onprem
