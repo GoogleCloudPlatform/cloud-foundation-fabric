@@ -3,3 +3,5 @@
 - [ ] mention interfaces
 - [ ] mention typical use (fork and own or git ref)
 - [ ] etc
+- [ ] add CloudSQL modules
+- [ ] add xLB modules
