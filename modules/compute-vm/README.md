@@ -4,7 +4,7 @@ This module allows creating one or multiple instances or an instance template fo
 
 ## TODO
 
-- [ ] add support for instance groups
+- [ ] add examples for instance groups
 
 ## Examples
 
