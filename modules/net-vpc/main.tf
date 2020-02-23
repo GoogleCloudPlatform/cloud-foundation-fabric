@@ -34,7 +34,31 @@ locals {
     for pair in local.iam_pairs :
     "${pair.subnet}-${pair.role}" => pair
   }
-  peer_network = var.peering_config == null ? null : element(reverse(split("/", var.peering_config.peer_vpc_self_link)), 0)
+  peer_network = (
+    var.peering_config == null
+    ? null
+    : element(reverse(split("/", var.peering_config.peer_vpc_self_link)), 0)
+  )
+  routes_gateway = {
+    for name, data in var.routes :
+    name => data if data.next_hop_type == "gateway"
+  }
+  routes_ilb = {
+    for name, data in var.routes :
+    name => data if data.next_hop_type == "ilb"
+  }
+  routes_instance = {
+    for name, data in var.routes :
+    name => data if data.next_hop_type == "instance"
+  }
+  routes_ip = {
+    for name, data in var.routes :
+    name => data if data.next_hop_type == "ip"
+  }
+  routes_vpn_tunnel = {
+    for name, data in var.routes :
+    name => data if data.next_hop_type == "vpn_tunnel"
+  }
 }
 
 resource "google_compute_network" "network" {
@@ -111,4 +135,64 @@ resource "google_compute_subnetwork_iam_binding" "binding" {
   members = lookup(
     lookup(var.iam_members, each.value.subnet, {}), each.value.role, []
   )
+}
+
+resource "google_compute_route" "gateway" {
+  for_each         = local.routes_gateway
+  project          = var.project_id
+  network          = google_compute_network.network.name
+  name             = each.key
+  description      = "Terraform-managed."
+  dest_range       = each.value.dest_range
+  priority         = each.value.priority
+  tags             = each.value.tags
+  next_hop_gateway = each.value.next_hop
+}
+
+resource "google_compute_route" "ilb" {
+  for_each     = local.routes_ilb
+  project      = var.project_id
+  network      = google_compute_network.network.name
+  name         = each.key
+  description  = "Terraform-managed."
+  dest_range   = each.value.dest_range
+  priority     = each.value.priority
+  tags         = each.value.tags
+  next_hop_ilb = each.value.next_hop
+}
+
+resource "google_compute_route" "instance" {
+  for_each          = local.routes_instance
+  project           = var.project_id
+  network           = google_compute_network.network.name
+  name              = each.key
+  description       = "Terraform-managed."
+  dest_range        = each.value.dest_range
+  priority          = each.value.priority
+  tags              = each.value.tags
+  next_hop_instance = each.value.next_hop
+}
+
+resource "google_compute_route" "ip" {
+  for_each    = local.routes_ip
+  project     = var.project_id
+  network     = google_compute_network.network.name
+  name        = each.key
+  description = "Terraform-managed."
+  dest_range  = each.value.dest_range
+  priority    = each.value.priority
+  tags        = each.value.tags
+  next_hop_ip = each.value.next_hop
+}
+
+resource "google_compute_route" "vpn_tunnel" {
+  for_each            = local.routes_vpn_tunnel
+  project             = var.project_id
+  network             = google_compute_network.network.name
+  name                = each.key
+  description         = "Terraform-managed."
+  dest_range          = each.value.dest_range
+  priority            = each.value.priority
+  tags                = each.value.tags
+  next_hop_vpn_tunnel = each.value.next_hop
 }

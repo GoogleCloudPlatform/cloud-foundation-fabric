@@ -78,6 +78,18 @@ variable "project_id" {
   type        = string
 }
 
+variable "routes" {
+  description = "Network routes, keyed by name."
+  type = map(object({
+    dest_range    = string
+    priority      = number
+    tags          = list(string)
+    next_hop_type = string # gateway, instance, ip, vpn_tunnel, ilb
+    next_hop      = string
+  }))
+  default = {}
+}
+
 variable "routing_mode" {
   description = "The network routing mode (default 'GLOBAL')"
   type        = string
