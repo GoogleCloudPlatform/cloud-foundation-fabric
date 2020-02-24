@@ -15,18 +15,8 @@
  */
 
 locals {
-  log_configs = {
-    for name, attrs in var.subnets : name => (
-      lookup(var.subnet_flow_logs, name, false)
-      ? [{
-        for key, value in var.log_config_defaults : key => lookup(
-          lookup(var.log_configs, name, {}), key, value
-        )
-      }]
-      : []
-    )
-  }
-  iam_pairs = flatten([
+  iam_members = var.iam_members == null ? {} : var.iam_members
+  iam_pairs = var.iam_roles == null ? [] : flatten([
     for subnet, roles in var.iam_roles :
     [for role in roles : { subnet = subnet, role = role }]
   ])
@@ -34,31 +24,45 @@ locals {
     for pair in local.iam_pairs :
     "${pair.subnet}-${pair.role}" => pair
   }
+  log_configs = var.log_configs == null ? {} : var.log_configs
   peer_network = (
     var.peering_config == null
     ? null
     : element(reverse(split("/", var.peering_config.peer_vpc_self_link)), 0)
   )
+  routes = var.routes == null ? {} : var.routes
   routes_gateway = {
-    for name, data in var.routes :
+    for name, data in local.routes :
     name => data if data.next_hop_type == "gateway"
   }
   routes_ilb = {
-    for name, data in var.routes :
+    for name, data in local.routes :
     name => data if data.next_hop_type == "ilb"
   }
   routes_instance = {
-    for name, data in var.routes :
+    for name, data in local.routes :
     name => data if data.next_hop_type == "instance"
   }
   routes_ip = {
-    for name, data in var.routes :
+    for name, data in local.routes :
     name => data if data.next_hop_type == "ip"
   }
   routes_vpn_tunnel = {
-    for name, data in var.routes :
+    for name, data in local.routes :
     name => data if data.next_hop_type == "vpn_tunnel"
   }
+  subnet_log_configs = {
+    for name, attrs in local.subnets : name => (
+      lookup(var.subnet_flow_logs, name, false)
+      ? [{
+        for key, value in var.log_config_defaults : key => lookup(
+          lookup(local.log_configs, name, {}), key, value
+        )
+      }]
+      : []
+    )
+  }
+  subnets = var.subnets == null ? {} : var.subnets
 }
 
 resource "google_compute_network" "network" {
@@ -97,31 +101,36 @@ resource "google_compute_shared_vpc_host_project" "shared_vpc_host" {
 }
 
 resource "google_compute_shared_vpc_service_project" "service_projects" {
-  for_each        = var.shared_vpc_host ? toset(var.shared_vpc_service_projects) : toset([])
+  for_each = (
+    var.shared_vpc_host && var.shared_vpc_service_projects != null
+    ? toset(var.shared_vpc_service_projects)
+    : toset([])
+  )
   host_project    = var.project_id
   service_project = each.value
   depends_on      = [google_compute_shared_vpc_host_project.shared_vpc_host]
 }
 
 resource "google_compute_subnetwork" "subnetwork" {
-  for_each      = var.subnets
+  for_each      = local.subnets
   project       = var.project_id
   network       = google_compute_network.network.name
   region        = each.value.region
   name          = "${var.name}-${each.key}"
   ip_cidr_range = each.value.ip_cidr_range
-  secondary_ip_range = [
+  secondary_ip_range = each.value.secondary_ip_range == null ? [] : [
     for name, range in each.value.secondary_ip_range :
     { range_name = name, ip_cidr_range = range }
   ]
   description              = lookup(var.subnet_descriptions, each.key, "Terraform-managed.")
   private_ip_google_access = lookup(var.subnet_private_access, each.key, true)
   dynamic "log_config" {
-    for_each = local.log_configs[each.key]
+    for_each = local.subnet_log_configs[each.key]
+    iterator = config
     content {
-      aggregation_interval = log_config.value.aggregation_interval
-      flow_sampling        = log_config.value.flow_sampling
-      metadata             = log_config.value.metadata
+      aggregation_interval = config.value.aggregation_interval
+      flow_sampling        = config.value.flow_sampling
+      metadata             = config.value.metadata
     }
   }
 }
@@ -133,7 +142,7 @@ resource "google_compute_subnetwork_iam_binding" "binding" {
   region     = google_compute_subnetwork.subnetwork[each.value.subnet].region
   role       = each.value.role
   members = lookup(
-    lookup(var.iam_members, each.value.subnet, {}), each.value.role, []
+    lookup(local.iam_members, each.value.subnet, {}), each.value.role, []
   )
 }
 

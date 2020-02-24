@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Google LLC
+ * Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,38 +14,37 @@
  * limitations under the License.
  */
 
-variable "auto_create_subnetworks" {
-  description = "Set to true to create an auto mode subnet, defaults to custom mode."
-  type        = bool
-  default     = false
+variable "project_id" {
+  type    = string
+  default = "my-project"
 }
 
-variable "description" {
-  description = "An optional description of this resource (triggers recreation on change)."
-  type        = string
-  default     = "Terraform-managed."
+variable "name" {
+  type    = string
+  default = "my-vpc"
+}
+
+variable "auto_create_subnetworks" {
+  type    = bool
+  default = false
 }
 
 variable "iam_roles" {
-  description = "List of IAM roles keyed by subnet."
-  type        = map(list(string))
-  default     = null
+  type    = map(list(string))
+  default = null
 }
 
 variable "iam_members" {
-  description = "List of IAM members keyed by subnet and role."
-  type        = map(map(list(string)))
-  default     = null
+  type    = map(map(list(string)))
+  default = null
 }
 
 variable "log_configs" {
-  description = "Map of per-subnet optional configurations for flow logs when enabled."
-  type        = map(map(string))
-  default     = null
+  type    = map(map(string))
+  default = null
 }
 
 variable "log_config_defaults" {
-  description = "Default configuration for flow logs when enabled."
   type = object({
     aggregation_interval = string
     flow_sampling        = number
@@ -58,13 +57,7 @@ variable "log_config_defaults" {
   }
 }
 
-variable "name" {
-  description = "The name of the network being created"
-  type        = string
-}
-
 variable "peering_config" {
-  description = "VPC peering configuration."
   type = object({
     peer_vpc_self_link = string
     export_routes      = bool
@@ -73,13 +66,7 @@ variable "peering_config" {
   default = null
 }
 
-variable "project_id" {
-  description = "The ID of the project where this VPC will be created"
-  type        = string
-}
-
 variable "routes" {
-  description = "Network routes, keyed by name."
   type = map(object({
     dest_range    = string
     priority      = number
