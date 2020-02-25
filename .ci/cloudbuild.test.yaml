@@ -24,7 +24,7 @@ steps:
         unzip terraform_${_TERRAFORM_VERSION}_linux_amd64.zip -d /builder/home/.local/bin &&
         rm terraform_${_TERRAFORM_VERSION}_linux_amd64.zip &&
         chmod 755 /builder/home/.local/bin/terraform &&
-        mkdir /workspace/.terraform.d/plugin-cache
+        mkdir -p /workspace/.terraform.d/plugin-cache
   # TODO(ludoo): add a step that detects change files and sets tests to run
   - name: python:3-alpine
     id: test-modules
