@@ -84,6 +84,7 @@ def test_vpc_routes(plan_runner):
   for next_hop_type, next_hop in _VAR_ROUTES_NEXT_HOPS.items():
     _var_routes = _VAR_ROUTES_TEMPLATE % (next_hop_type, next_hop)
     _, resources = plan_runner(FIXTURES_DIR, routes=_var_routes)
-    from pprint import pprint
-    pprint(resources)
     assert len(resources) == 3
+    resource = [r for r in resources if r['values']
+                ['name'] == 'next-hop-test'][0]
+    assert resource['values']['next_hop_%s' % next_hop_type]
