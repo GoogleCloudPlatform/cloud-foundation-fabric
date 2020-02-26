@@ -16,113 +16,149 @@
 #                          Host and service projects                          #
 ###############################################################################
 
-# host project
-
-module "project-svpc-host" {
-  source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
-  version         = "5.0.0"
+module "project-host" {
+  source          = "../../modules/project"
   parent          = var.root_node
+  billing_account = var.billing_account_id
   prefix          = var.prefix
   name            = "vpc-host"
-  billing_account = var.billing_account_id
-  owners          = var.owners_host
-  activate_apis = concat(
-    var.project_services,
-    ["dns.googleapis.com", "cloudkms.googleapis.com"]
-  )
+  services = concat(var.project_services, [
+    "cloudkms.googleapis.com", "dns.googleapis.com"
+  ])
+  iam_roles = [
+    "roles/container.hostServiceAgentUser", "roles/owner"
+  ]
+  iam_members = {
+    "roles/container.hostServiceAgentUser" = [
+      "serviceAccount:${module.project-svc-gke.gke_service_account}"
+    ]
+    "roles/owner" = var.owners_host
+  }
 }
 
-# service projects
-
-module "project-service-gce" {
-  source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
-  version         = "5.0.0"
+module "project-svc-gce" {
+  source          = "../../modules/project"
   parent          = var.root_node
+  billing_account = var.billing_account_id
   prefix          = var.prefix
   name            = "gce"
-  billing_account = var.billing_account_id
-  oslogin         = "true"
-  owners          = var.owners_gce
-  oslogin_admins  = var.oslogin_admins_gce
-  oslogin_users   = var.oslogin_users_gce
-  activate_apis   = var.project_services
+  services        = var.project_services
+  oslogin         = true
+  oslogin_admins  = var.owners_gce
+  iam_roles = [
+    "roles/owner"
+  ]
+  iam_members = {
+    "roles/owner" = var.owners_gce
+  }
 }
 
-module "project-service-gke" {
-  source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
-  version         = "5.0.0"
+module "project-svc-gke" {
+  source          = "../../modules/project"
   parent          = var.root_node
+  billing_account = var.billing_account_id
   prefix          = var.prefix
   name            = "gke"
-  billing_account = var.billing_account_id
-  owners          = var.owners_gke
-  activate_apis   = var.project_services
+  services        = var.project_services
+  iam_roles = [
+    "roles/owner"
+  ]
+  iam_members = {
+    "roles/owner" = var.owners_gke
+  }
 }
 
 ################################################################################
 #                                  Networking                                  #
 ################################################################################
 
-# Shared VPC
-
-module "net-vpc-host" {
-  source           = "terraform-google-modules/network/google"
-  version          = "1.4.3"
-  project_id       = module.project-svpc-host.project_id
-  network_name     = "vpc-shared"
-  shared_vpc_host  = true
-  subnets          = var.subnets
-  secondary_ranges = var.subnet_secondary_ranges
-  routes           = []
+module "vpc-shared" {
+  source          = "../../modules/net-vpc"
+  project_id      = module.project-host
+  name            = "shared-vpc"
+  shared_vpc_host = true
+  shared_vpc_service_projects = [
+    module.project-svc-gce.project_id
+    module.project-svc-gke.project_id
+  ]
+  subnets = {
+    gce = {
+      ip_cidr_range = var.ip_ranges.gce
+      region        = var.region
+      secondary_ip_range = {}
+    }
+    gke = {
+      ip_cidr_range      = var.ip_ranges.gke
+      region             = var.region
+      secondary_ip_range = {
+        pods     = var.ip_secondary_ranges.gke-pods
+        services = var.ip_secondary_ranges.gke-services
+      }
+    }
+  }
+  iam_roles = {
+    gke = ["roles/compute.networkUser", "roles/compute.securityAdmin"]
+    gce = ["roles/compute.networkUser"]
+  }
+  iam_members = {
+    gce = {
+      "roles/compute.networkUser" = concat(var.owners_gce, [
+        "serviceAccount:${module.project-svc-gce.cloudsvc_service_account}",
+      ])
+    }
+    gke = {
+      "roles/compute.networkUser" = concat(var.owners_gke, [
+        "serviceAccount:${module.project-svc-gke.cloudsvc_service_account}",
+        "serviceAccount:${module.project-svc-gke.gke_service_account}",
+      ])
+      "roles/compute.securityAdmin" = [
+        "serviceAccount:${module.project-svc-gke.gke_service_account}",
+      ]
+    }
+  }
 }
 
-# Shared VPC firewall
+data "google_netblock_ip_ranges" "health-checkers" {
+  range_type = "health-checkers"
+}
 
-module "net-vpc-firewall" {
-  source               = "terraform-google-modules/network/google//modules/fabric-net-firewall"
-  version              = "1.4.3"
-  project_id           = module.project-svpc-host.project_id
-  network              = module.net-vpc-host.network_name
+module "vpc-shared-firewall" {
+  source               = "../../modules/net-vpc-firewall"
+  project_id           = module.project-host.project_id
+  network              = module.vpc-shared.name
   admin_ranges_enabled = true
-  admin_ranges         = compact([lookup(local.net_subnet_ips, "networking", "")])
+  admin_ranges         = values(var.ip_ranges)
   custom_rules = {
-    ingress-mysql = {
-      description          = "Allow incoming connections on the MySQL port from GKE addresses."
+    health-checks = {
+      description          = "HTTP health checks."
       direction            = "INGRESS"
       action               = "allow"
-      ranges               = local.net_gke_ip_ranges
       sources              = []
-      targets              = ["mysql"]
+      ranges               = data.google_netblock_ip_ranges.health-checkers.cidr_blocks_ipv4
+      targets              = ["health-checks"]
       use_service_accounts = false
-      rules                = [{ protocol = "tcp", ports = [3306] }]
+      rules                = [{ protocol = "tcp", ports = [80] }]
       extra_attributes     = {}
     }
   }
 }
 
-# Shared VPC access
-
-module "net-svpc-access" {
-  source              = "terraform-google-modules/network/google//modules/fabric-net-svpc-access"
-  version             = "1.4.3"
-  host_project_id     = module.project-svpc-host.project_id
-  service_project_num = 2
-  service_project_ids = [
-    module.project-service-gce.project_id,
-    module.project-service-gke.project_id
-  ]
-  host_subnets = ["gce", "gke"]
-  host_subnet_regions = compact([
-    lookup(local.net_subnet_regions, "gce", ""),
-    lookup(local.net_subnet_regions, "gke", "")
-  ])
-  host_subnet_users = {
-    gce = join(",", local.net_gce_users)
-    gke = join(",", local.net_gke_users)
+module "addresses" {
+  source     = "../../modules/net-address"
+  project_id    = module.project-host.project_id
+  external_addresses = {
+    nat-1              = module.vpc.subnet_regions["default"],
   }
-  host_service_agent_role = true
-  host_service_agent_users = [
-    "serviceAccount:${module.project-service-gke.gke_service_account}"
+}
+
+module "nat" {
+  source        = "../../modules/net-cloudnat"
+  project_id    = module.project-host.project_id
+  region        = var.region
+  name          = "vpc-shared"
+  router_create = true
+  addresses = [
+    module.addresses.external_addresses.nat-1.self_link
   ]
 }
 

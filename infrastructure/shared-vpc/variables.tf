@@ -29,18 +29,6 @@ variable "kms_keyring_name" {
   default     = "svpc-example"
 }
 
-variable "oslogin_admins_gce" {
-  description = "GCE project oslogin admin members, in IAM format."
-  type        = list(string)
-  default     = []
-}
-
-variable "oslogin_users_gce" {
-  description = "GCE project oslogin user members, in IAM format."
-  type        = list(string)
-  default     = []
-}
-
 variable "owners_gce" {
   description = "GCE project owners, in IAM format."
   type        = list(string)
@@ -64,60 +52,32 @@ variable "prefix" {
   type        = string
 }
 
+variable "region" {
+  description = "Region used."
+  type        = string
+  default     = "europe-west1"
+}
+
 variable "root_node" {
   description = "Hierarchy node where projects will be created, 'organizations/org_id' or 'folders/folder_id'."
   type        = string
 }
 
-variable "subnets" {
-  description = "Shared VPC subnet definitions."
-  type = list(object({
-    subnet_name           = string
-    subnet_ip             = string
-    subnet_region         = string
-    subnet_private_access = string
-  }))
-  default = [
-    {
-      subnet_name           = "networking"
-      subnet_ip             = "10.0.0.0/24"
-      subnet_region         = "europe-west1"
-      subnet_private_access = "true"
-    },
-    {
-      subnet_name           = "gce"
-      subnet_ip             = "10.0.16.0/24"
-      subnet_region         = "europe-west1"
-      subnet_private_access = "true"
-    },
-    {
-      subnet_name           = "gke"
-      subnet_ip             = "10.0.32.0/24"
-      subnet_region         = "europe-west1"
-      subnet_private_access = "true"
-    },
-  ]
+variable "ip_ranges" {
+  description = "Subnet IP CIDR ranges."
+  type        = map(string)
+  default = {
+    gce = "10.0.16.0/24"
+    gke = "10.0.32.0/24"
+  }
 }
 
-variable "subnet_secondary_ranges" {
-  description = "Shared VPC subnets secondary range definitions."
-  type = map(list(object({
-    range_name    = string
-    ip_cidr_range = string
-  })))
+variable "ip_secondary_ranges" {
+  description = "Secondary IP CIDR ranges."
+  type        = map(string)
   default = {
-    networking = [],
-    gce        = [],
-    gke = [
-      {
-        range_name    = "services"
-        ip_cidr_range = "172.16.0.0/24"
-      },
-      {
-        range_name    = "pods"
-        ip_cidr_range = "10.128.0.0/18"
-      }
-    ]
+    gke-pods     = "10.128.0.0/18"
+    gke-services = "172.16.0.0/24"
   }
 }
 
