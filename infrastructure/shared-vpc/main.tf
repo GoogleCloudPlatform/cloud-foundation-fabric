@@ -22,9 +22,7 @@ module "project-host" {
   billing_account = var.billing_account_id
   prefix          = var.prefix
   name            = "vpc-host"
-  services = concat(var.project_services, [
-    "cloudkms.googleapis.com", "dns.googleapis.com"
-  ])
+  services        = concat(var.project_services, ["dns.googleapis.com"])
   iam_roles = [
     "roles/container.hostServiceAgentUser", "roles/owner"
   ]
@@ -57,14 +55,16 @@ module "project-svc-gke" {
   name            = "gke"
   services        = var.project_services
   iam_roles = [
+    "roles/container.developer",
     "roles/logging.logWriter",
     "roles/monitoring.metricWriter",
     "roles/owner",
   ]
   iam_members = {
-    "roles/owner"                   = var.owners_gke
-    "roles/monitoring.metricWriter" = [module.service-account-gke-node.iam_email]
-    "roles/owner"                   = [module.service-account-gke-node.iam_email]
+    "roles/owner" = var.owners_gke
+    "roles/container.developer" = [
+      "serviceAccount:${module.vm-bastion.service_account_email}"
+    ]
   }
 }
 
@@ -78,7 +78,7 @@ data "google_netblock_ip_ranges" "health-checkers" {
 
 module "vpc-shared" {
   source          = "../../modules/net-vpc"
-  project_id      = module.project-host
+  project_id      = module.project-host.project_id
   name            = "shared-vpc"
   shared_vpc_host = true
   shared_vpc_service_projects = [
@@ -147,7 +147,7 @@ module "addresses" {
   source     = "../../modules/net-address"
   project_id = module.project-host.project_id
   external_addresses = {
-    nat-1 = module.vpc.subnet_regions["default"],
+    nat-1 = module.vpc-shared.subnet_regions["default"],
   }
 }
 
@@ -167,14 +167,18 @@ module "nat" {
 ################################################################################
 
 module "host-dns" {
-  source                             = "../../modules/dns"
-  project_id                         = module.project-host.project_id
-  type                               = "private"
-  name                               = "example"
-  domain                             = "example.com."
-  private_visibility_config_networks = [module.vpc-shared.self_link]
-  record_names                       = ["localhost"]
-  record_data                        = [{ rrdatas = "127.0.0.1", type = "A" }]
+  source          = "../../modules/dns"
+  project_id      = module.project-host.project_id
+  type            = "private"
+  name            = "example"
+  domain          = "example.com."
+  client_networks = [module.vpc-shared.self_link]
+  recordsets = [
+    { name = "localhost", type = "A", ttl = 300, records = ["127.0.0.1"] },
+    { name = "bastion", type = "A", ttl = 300, records = [
+      module.vm-bastion.internal_ips.0
+    ] },
+  ]
 }
 
 ################################################################################
@@ -184,12 +188,12 @@ module "host-dns" {
 module "vm-bastion" {
   source     = "../../modules/compute-vm"
   project_id = module.project-svc-gce.project_id
-  region     = module.vpc-host.subnet_regions.gce
-  zone       = "${module.vpc-host.subnet_regions.gce}-b"
+  region     = module.vpc-shared.subnet_regions.gce
+  zone       = "${module.vpc-shared.subnet_regions.gce}-b"
   name       = "bastion"
   network_interfaces = [{
-    network    = module.vpc-host.self_link,
-    subnetwork = module.vpc-host.subnet_self_links.gce,
+    network    = module.vpc-shared.self_link,
+    subnetwork = module.vpc-shared.subnet_self_links.gce,
     nat        = false,
     addresses  = null
   }]
@@ -204,15 +208,6 @@ module "vm-bastion" {
   service_account_create = true
 }
 
-module "service-account-gce-vm-gke" {
-  source     = "../../modules/iam-service-accounts"
-  project_id = module.project-svc-gce.project_id
-  names      = ["gce-vm-gke"]
-  iam_project_roles = {
-    (module.project-svc-gke.project_id) = ["roles/container.developer"]
-  }
-}
-
 ################################################################################
 #                                     GKE                                      #
 ################################################################################
@@ -221,9 +216,9 @@ module "cluster-1" {
   source                    = "../../modules/gke-cluster"
   name                      = "cluster-1"
   project_id                = module.project-svc-gke.project_id
-  location                  = "${module.vpc-host.subnet_regions.gke}-b"
-  network                   = module.vpc-host.self_link
-  subnetwork                = module.vpc-host.subnet_self_links.gke
+  location                  = "${module.vpc-shared.subnet_regions.gke}-b"
+  network                   = module.vpc-shared.self_link
+  subnetwork                = module.vpc-shared.subnet_self_links.gke
   secondary_range_pods      = "pods"
   secondary_range_services  = "services"
   default_max_pods_per_node = 32
@@ -254,6 +249,9 @@ module "service-account-gke-node" {
   project_id = module.project-svc-gke.project_id
   names      = ["gke-node"]
   iam_project_roles = {
-    "${local.project}" = ["roles/container.developer", ]
+    (module.project-svc-gke.project_id) = [
+      "roles/logging.logWriter",
+      "roles/monitoring.metricWriter",
+    ]
   }
 }

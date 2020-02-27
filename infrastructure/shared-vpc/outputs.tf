@@ -12,25 +12,42 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-output "vpc_name" {
-  description = "Shared VPC name"
-  value       = module.net-vpc-host.network_name
-}
-
-output "vpc_subnets" {
-  description = "Shared VPC subnets."
-  value       = local.net_subnet_ips
-}
-
-output "host_project_id" {
-  description = "VPC host project id."
-  value       = module.project-svpc-host.project_id
-}
-
-output "service_project_ids" {
-  description = "Service project ids."
+output "gke_clusters" {
+  description = "GKE clusters information."
   value = {
-    gce = module.project-service-gce.project_id
-    gke = module.project-service-gke.project_id
+    cluster-1 = module.cluster-1.endpoint
+  }
+}
+
+output "projects" {
+  description = "Project ids."
+  value = {
+    host        = module.project-host.project_id
+    service-gce = module.project-svc-gce.project_id
+    service-gke = module.project-svc-gke.project_id
+  }
+}
+
+output "service_accounts" {
+  description = "GCE and GKE service accounts."
+  value = {
+    bastion  = module.vm-bastion.service_account_email
+    gke_node = module.service-account-gke-node.email
+  }
+}
+
+output "vpc" {
+  description = "Shared VPC."
+  value = {
+    name    = module.vpc-shared.name
+    subnets = module.vpc-shared.subnet_ips
+  }
+}
+
+output "vms" {
+  description = "GCE VMs."
+  value = {
+    for instance in concat(module.vm-bastion.instances) :
+    instance.name => instance.network_interface.0.network_ip
   }
 }

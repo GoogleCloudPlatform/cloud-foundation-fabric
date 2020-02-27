@@ -17,18 +17,6 @@ variable "billing_account_id" {
   type        = string
 }
 
-variable "kms_keyring_location" {
-  description = "Location used for the KMS keyring."
-  type        = string
-  default     = "europe"
-}
-
-variable "kms_keyring_name" {
-  description = "Name used for the KMS keyring."
-  type        = string
-  default     = "svpc-example"
-}
-
 variable "owners_gce" {
   description = "GCE project owners, in IAM format."
   type        = list(string)
