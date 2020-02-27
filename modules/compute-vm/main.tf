@@ -32,7 +32,11 @@ locals {
   )
   service_account_email = (
     var.service_account_create
-    ? google_service_account.service_account[0].email
+    ? (
+      length(google_service_account.service_account) > 0
+      ? google_service_account.service_account[0].email
+      : null
+    )
     : var.service_account
   )
 }
