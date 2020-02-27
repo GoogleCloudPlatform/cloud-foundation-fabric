@@ -17,7 +17,11 @@
 output "project_id" {
   description = "Project id (depends on services)."
   value       = google_project.project.project_id
-  depends_on  = [google_project_service.project_services]
+  depends_on = [
+    google_project_service.project_services,
+    google_project_iam_binding.authoritative,
+    google_project_iam_member.non_authoritative
+  ]
 }
 
 output "name" {
