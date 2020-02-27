@@ -147,16 +147,17 @@ module "addresses" {
   source     = "../../modules/net-address"
   project_id = module.project-host.project_id
   external_addresses = {
-    nat-1 = module.vpc-shared.subnet_regions["default"],
+    nat-1 = var.region
   }
 }
 
 module "nat" {
-  source        = "../../modules/net-cloudnat"
-  project_id    = module.project-host.project_id
-  region        = var.region
-  name          = "vpc-shared"
-  router_create = true
+  source         = "../../modules/net-cloudnat"
+  project_id     = module.project-host.project_id
+  region         = var.region
+  name           = "vpc-shared"
+  router_create  = true
+  router_network = module.vpc-shared.name
   addresses = [
     module.addresses.external_addresses.nat-1.self_link
   ]
@@ -193,7 +194,7 @@ module "vm-bastion" {
   name       = "bastion"
   network_interfaces = [{
     network    = module.vpc-shared.self_link,
-    subnetwork = module.vpc-shared.subnet_self_links.gce,
+    subnetwork = lookup(module.vpc-shared.subnet_self_links, "gce", null),
     nat        = false,
     addresses  = null
   }]
