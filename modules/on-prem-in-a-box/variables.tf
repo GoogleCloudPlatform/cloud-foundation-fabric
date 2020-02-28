@@ -19,7 +19,7 @@ variable "network" {
   description = "VPC network name. "
 }
 
-variable "subnet" {
+variable "subnet_self_link" {
   type        = string
   description = "VPC subnet self link."
 }
@@ -45,7 +45,30 @@ variable "vpn_gateway_type" {
 variable "peer_ip" {
   type        = string
   description = "IP Address of Cloud VPN Gateway."
-  default     = ""
+}
+
+variable "peer_bgp_session_range" {
+  type        = string
+  description = "Peer BGP sesison range of the BGP interface."
+  default     = "169.254.0.1/30"
+}
+
+variable "local_bgp_session_range" {
+  type        = string
+  description = "Local BGP sesison range of the BGP interface."
+  default     = "169.254.0.2/30"
+}
+
+variable "peer_bgp_asn" {
+  type        = string
+  description = "Peer BGP ASN."
+  default     = "65001"
+}
+
+variable "local_bgp_asn" {
+  type        = string
+  description = "Local BGP ASN."
+  default     = "65002"
 }
 
 variable "local_ip_cidr_range" {
@@ -54,8 +77,9 @@ variable "local_ip_cidr_range" {
 }
 
 variable "remote_ip_cidr_ranges" {
-  type    = list(string)
-  default = []
+  description = "List of comma separated remote CIDR ranges"
+  type        = string
+  default     = ""
 }
 
 variable "shared_secret" {

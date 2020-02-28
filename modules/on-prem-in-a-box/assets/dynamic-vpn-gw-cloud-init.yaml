@@ -288,15 +288,7 @@ write_files:
     </body>
     </html>
 
-# setup script
-- path: /tmp/server-config.sh
-  owner: root:root
-  permissions: '0700'
-  content: |
-    ${server_config_script}
-
 runcmd:
-- /tmp/server-config.sh
-- systemctl daemon-reload
-- systemctl enable docker-onprem
-- systemctl start docker-onprem
+- [systemctl, daemon-reload]
+- [systemctl, enable, docker-onprem.service]
+- [systemctl, start, docker-onprem.service]
