@@ -21,8 +21,9 @@ module "project-host" {
   parent          = var.root_node
   billing_account = var.billing_account_id
   prefix          = var.prefix
-  name            = "vpc-host"
+  name            = "net"
   services        = concat(var.project_services, ["dns.googleapis.com"])
+  # the container.hostServiceAgentUser role is needed for GKE on shared VPC
   iam_roles = [
     "roles/container.hostServiceAgentUser", "roles/owner"
   ]
@@ -54,10 +55,9 @@ module "project-svc-gke" {
   prefix          = var.prefix
   name            = "gke"
   services        = var.project_services
+  # the container.developer role allows transparent access to GKE from bastion
   iam_roles = [
     "roles/container.developer",
-    "roles/logging.logWriter",
-    "roles/monitoring.metricWriter",
     "roles/owner",
   ]
   iam_members = {
@@ -71,10 +71,6 @@ module "project-svc-gke" {
 ################################################################################
 #                                  Networking                                  #
 ################################################################################
-
-data "google_netblock_ip_ranges" "health-checkers" {
-  range_type = "health-checkers"
-}
 
 module "vpc-shared" {
   source          = "../../modules/net-vpc"
@@ -100,6 +96,7 @@ module "vpc-shared" {
       }
     }
   }
+  # roles are given per subnet so that GCE VMs and GKE use different subnets
   iam_roles = {
     gke = ["roles/compute.networkUser", "roles/compute.securityAdmin"]
     gce = ["roles/compute.networkUser"]
@@ -128,19 +125,6 @@ module "vpc-shared-firewall" {
   network              = module.vpc-shared.name
   admin_ranges_enabled = true
   admin_ranges         = values(var.ip_ranges)
-  custom_rules = {
-    health-checks = {
-      description          = "HTTP health checks."
-      direction            = "INGRESS"
-      action               = "allow"
-      sources              = []
-      ranges               = data.google_netblock_ip_ranges.health-checkers.cidr_blocks_ipv4
-      targets              = ["health-checks"]
-      use_service_accounts = false
-      rules                = [{ protocol = "tcp", ports = [80] }]
-      extra_attributes     = {}
-    }
-  }
 }
 
 module "addresses" {
@@ -158,6 +142,7 @@ module "nat" {
   name           = "vpc-shared"
   router_create  = true
   router_network = module.vpc-shared.name
+  # NAT uses a reserved address, reserve and add more if needed
   addresses = [
     module.addresses.external_addresses.nat-1.self_link
   ]
@@ -249,6 +234,7 @@ module "service-account-gke-node" {
   source     = "../../modules/iam-service-accounts"
   project_id = module.project-svc-gke.project_id
   names      = ["gke-node"]
+  # roles assigned have no conflict with those assigned at the project level
   iam_project_roles = {
     (module.project-svc-gke.project_id) = [
       "roles/logging.logWriter",

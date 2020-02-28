@@ -51,3 +51,4 @@ output "vms" {
     instance.name => instance.network_interface.0.network_ip
   }
 }
+
