@@ -1,30 +1,6 @@
 #cloud-config
 
 write_files:
-# turn on IP forwarding
-- path: /etc/sysctl.d/99-forwarding.conf
-  owner: root:root
-  permissions: '0644'
-  content: |
-    net.ipv4.ip_forward=1
-
-# disable systemd-resolved to free port 53 on the loopback interface
-- path: /etc/systemd/resolved.conf
-  permissions: 0644
-  owner: root
-  content: |
-    [Resolve]
-    LLMNR=no
-    DNSStubListener=no
-
-# use external nameservers in resolv.conf
-- path: /etc/resolv.conf
-  permissions: 0644
-  owner: root
-  content: |
-    nameserver 8.8.8.8
-    nameserver 8.8.4.4
-    options edns0
 
 # Docker daemon configuration
 - path: /etc/docker/daemon.json
@@ -52,12 +28,8 @@ write_files:
     [Service]
     ExecStart=/bin/sh -c "cd /var/lib/docker-compose/onprem && docker-compose up"
     ExecStop=/bin/sh -c "cd /var/lib/docker-compose/onprem && docker-compose down"
-    ExecStopPost=-/sbin/ip rule del from ${local_ip_cidr_range} to ${remote_ip_cidr_range} table 200
-    ExecStopPost=-/sbin/ip rule del from ${local_ip_cidr_range} to 199.36.153.4/30 table 200
-    ExecStopPost=-/sbin/ip rule del from ${local_ip_cidr_range} to 35.199.192.0/19 table 200
 
 # Docker compose configuration file for onprem
-# TODO(ludomagno): support multiple remote IP ranges
 - path: /var/lib/docker-compose/onprem/docker-compose.yaml
   permissions: 0644
   owner: root
@@ -65,85 +37,114 @@ write_files:
     version: "3"
     services:
       vpn:
-        image: deltaprojects/strongswan
+        image: gcr.io/pso-cft-fabric/strongswan:latest
         networks:
-          default:
+          onprem:
             ipv4_address: ${vpn_ip_address}
         ports:
           - "500:500/udp"
           - "4500:4500/udp"
+          - "179:179/tcp"
         privileged: true
+        cap_add:
+          - NET_ADMIN
         volumes:
           - "/lib/modules:/lib/modules:ro"
           - "/etc/localtime:/etc/localtime:ro"
-          - "/var/lib/docker-compose/onprem/ipsec:/etc/ipsec.docker:ro"
+          - "/var/lib/docker-compose/onprem/ipsec/ipsec.conf:/etc/ipsec.conf:ro"
+          - "/var/lib/docker-compose/onprem/ipsec/ipsec.secrets:/etc/ipsec.secrets:ro"
+          - "/var/lib/docker-compose/onprem/ipsec/vti.conf:/etc/strongswan.d/vti.conf:ro"
+      bird:
+        image: pierky/bird
+        network_mode: service:vpn
+        cap_add:
+          - NET_ADMIN
+          - NET_BROADCAST
+          - NET_RAW
+        privileged: true
+        volumes:
+          - "/var/lib/docker-compose/onprem/bird/bird.conf:/etc/bird/bird.conf:ro"
       dns:
         image: coredns/coredns
         command: "-conf /etc/coredns/Corefile"
         depends_on:
           - "vpn"
+          - "bird"
         networks:
-          default:
+          onprem:
             ipv4_address: ${dns_ip_address}
         volumes:
           - "/var/lib/docker-compose/onprem/coredns:/etc/coredns:ro"
-        # network_mode: "service:vpn"
+      routing_sidecar_dns:
+        image: alpine
+        network_mode: service:dns
+        command: | 
+          /bin/sh -c "\
+             ip route del default &&\
+             ip route add default via ${vpn_ip_address}"
+        privileged: true
       web:
         image: nginx:stable-alpine
         depends_on:
           - "vpn"
+          - "bird"
           - "dns"
         dns:
           - ${dns_ip_address}
         networks:
-          default:
+          onprem:
             ipv4_address: ${web_ip_address}
         volumes:
           - "/var/lib/docker-compose/onprem/nginx:/usr/share/nginx/html:ro"
-      shell:
+      routing_sidecar_web:
+        image: alpine
+        network_mode: service:web
+        command: | 
+          /bin/sh -c "\
+             ip route del default &&\
+             ip route add default via ${vpn_ip_address}"
+        privileged: true
+      toolbox:
         image: gcr.io/google.com/ludo-sce-test/toolbox
+        networks:
+          onprem:
+            ipv4_address: ${toolbox_ip_address}
         depends_on:
           - "vpn"
           - "dns"
           - "web"
         dns:
           - ${dns_ip_address}
-      routing:
+      routing_sidecar_toolbox:
         image: alpine
-        network_mode: host
-        privileged: true
-        command: |
+        network_mode: service:toolbox
+        command: | 
           /bin/sh -c "\
-            ip rule add from ${local_ip_cidr_range} to ${remote_ip_cidr_range} table 200 && \
-            ip route add ${remote_ip_cidr_range} via ${vpn_ip_address} table 200 && \
-            ip rule add from ${local_ip_cidr_range} to 199.36.153.4/30 table 200 && \
-            ip route add 199.36.153.4/30 via ${vpn_ip_address} table 200"
-            ip rule add from ${local_ip_cidr_range} to 35.199.192.0/19 table 200 && \
-            ip route add 35.199.192.0/19 via ${vpn_ip_address} table 200"
-        depends_on:
-          - "vpn"
+             ip route del default &&\
+             ip route add default via ${vpn_ip_address}"
+        privileged: true
     networks:
-      default:
+      onprem:
         ipam:
           driver: default
           config:
             - subnet: ${local_ip_cidr_range}
 
 # IPSEC tunnel secret
-- path: /var/lib/docker-compose/onprem/ipsec/ipsec.gc.secrets
+- path: /var/lib/docker-compose/onprem/ipsec/ipsec.secrets
   owner: root:root
   permissions: '0600'
   content: |
     : PSK "${shared_secret}"
 
 # IPSEC tunnel configuration
-- path: /var/lib/docker-compose/onprem/ipsec/ipsec.gc.conf
+- path: /var/lib/docker-compose/onprem/ipsec/ipsec.conf
   owner: root:root
   permissions: '0644'
   content: |
     conn %default
-      ikelifetime=600m # 36,000 s
-      keylife=180m # 10,800 s
+      ikelifetime=600m
+      keylife=180m
       rekeymargin=3m
       keyingtries=3
       keyexchange=ikev2
@@ -151,20 +152,100 @@ write_files:
       ike=aes256gcm16-sha512-modp2048
       esp=aes256gcm16-sha512-modp8192
       authby=psk
-
+    
     conn gcp
+      leftupdown="/var/lib/strongswan/ipsec-vti.sh 0 ${peer_bgp_session_range} ${local_bgp_session_range}"
       left=%any
       leftid=%any
-      leftsubnet=${local_ip_cidr_range}
+      leftsubnet=0.0.0.0/0
       leftauth=psk
-      right=${peer_ip_wildcard}
+      right=${peer_ip}
       rightid=${peer_ip}
-      rightsubnet=172.16.0.0/16
+      rightsubnet=0.0.0.0/0
       rightauth=psk
       type=tunnel
       auto=start
       dpdaction=restart
       closeaction=restart
+      mark=%unique
+
+# Charon configuration
+- path: /var/lib/docker-compose/onprem/ipsec/vti.conf
+  owner: root:root
+  permissions: '0644'
+  content: |
+    charon {
+        install_routes = no
+    }
+
+# BIRD bgp routing configuration
+- path: /var/lib/docker-compose/onprem/bird/bird.conf
+  owner: root:root
+  permissions: '0644'
+  content: |
+    router id ${local_bgp_ip};
+
+    # Watch interface up/down events
+    protocol device {
+          scan time 10;
+    }
+
+    # Sync routes to kernel
+    protocol kernel {
+          learn;
+          merge paths on; # For ECMP
+          export filter { 
+                  krt_prefsrc = ${vpn_ip_address}; # Internal IP Address of the strongSwan VM. 
+                  accept; # Sync all routes to kernel
+          };       
+          import all; # Required due to /32 on GCE VMs for the static route below
+    }
+
+    # Configure a static route to make sure route exists
+    protocol static {
+          # Network connected to eth0
+          route ${local_ip_cidr_range} recursive ${local_gw_ip};
+          # Private google access
+          route 199.36.153.4/30 via ${peer_bgp_ip};
+          # Cloud DNS forwarding zone 
+          route 35.199.192.0/19 via ${peer_bgp_ip};  
+    }
+    # Prefix lists for routing security
+    # Allow any possible GCP Subnet
+    define GCP_VPC_A_PREFIXES = [ 10.0.0.0/8{9,29}, 172.16.0.0/12{12,29}, 192.168.0.0/16{16,29} ]; 
+    define LOCAL_PREFIXES     = [ ${local_ip_cidr_range} ];  
+
+    # Filter received prefixes
+    filter gcp_vpc_a_in
+    {
+          if (net ~ GCP_VPC_A_PREFIXES) then accept;
+          else reject;
+    }
+
+    # Filter advertised prefixes
+    filter gcp_vpc_a_out
+    {
+          if (net ~ LOCAL_PREFIXES) then accept;
+          else reject;
+    }
+
+    template bgp gcp_vpc_a {
+          keepalive time 20;
+          hold time 60;
+          graceful restart aware; # Cloud Router uses GR during maintenance
+
+          import filter gcp_vpc_a_in;
+          import limit 10 action warn; # restart | block | disable
+
+          export filter gcp_vpc_a_out;
+          export limit 10 action warn; # restart | block | disable
+    }
+
+    protocol bgp gcp_vpc_a_tun1 from gcp_vpc_a
+    {
+          local ${local_bgp_ip} as ${local_bgp_asn};
+          neighbor ${peer_bgp_ip} as ${peer_bgp_asn};
+    }
 
 # CoreDNS configuration
 - path: /var/lib/docker-compose/onprem/coredns/Corefile
@@ -191,6 +272,7 @@ write_files:
     ${vpn_ip_address} gw.onprem
     ${dns_ip_address} ns.onprem
     ${web_ip_address} www.onprem
+    ${toolbox_ip_address} toolbox.onprem
 
 # Minimal nginx index page
 - path: /var/lib/docker-compose/onprem/nginx/index.html
@@ -214,7 +296,6 @@ write_files:
     ${server_config_script}
 
 runcmd:
-- /sbin/sysctl -w net.ipv4.ip_forward=1
 - /tmp/server-config.sh
 - systemctl daemon-reload
 - systemctl enable docker-onprem
