@@ -16,6 +16,8 @@
 #                          Host and service projects                          #
 ###############################################################################
 
+# the container.hostServiceAgentUser role is needed for GKE on shared VPC
+
 module "project-host" {
   source          = "../../modules/project"
   parent          = var.root_node
@@ -23,7 +25,6 @@ module "project-host" {
   prefix          = var.prefix
   name            = "net"
   services        = concat(var.project_services, ["dns.googleapis.com"])
-  # the container.hostServiceAgentUser role is needed for GKE on shared VPC
   iam_roles = [
     "roles/container.hostServiceAgentUser", "roles/owner"
   ]
@@ -57,6 +58,9 @@ module "project-svc-gce" {
   }
 }
 
+# the container.developer role assigned to the bastion instance service account
+# allows to fetch GKE credentials from bastion for clusters in this project
+
 module "project-svc-gke" {
   source          = "../../modules/project"
   parent          = var.root_node
@@ -64,7 +68,6 @@ module "project-svc-gke" {
   prefix          = var.prefix
   name            = "gke"
   services        = var.project_services
-  # the container.developer role allows transparent access to GKE from bastion
   iam_roles = [
     "roles/container.developer",
     "roles/owner",
@@ -78,6 +81,8 @@ module "project-svc-gke" {
 ################################################################################
 #                                  Networking                                  #
 ################################################################################
+
+# subnet IAM bindings control which identities can use the individual subnets
 
 module "vpc-shared" {
   source          = "../../modules/net-vpc"
@@ -103,7 +108,6 @@ module "vpc-shared" {
       }
     }
   }
-  # roles are given per subnet so that GCE VMs and GKE use different subnets
   iam_roles = {
     gke = ["roles/compute.networkUser", "roles/compute.securityAdmin"]
     gce = ["roles/compute.networkUser"]
@@ -142,6 +146,8 @@ module "addresses" {
   }
 }
 
+# NAT uses a reserved address, more can be reserved and added if needed
+
 module "nat" {
   source         = "../../modules/net-cloudnat"
   project_id     = module.project-host.project_id
@@ -149,7 +155,6 @@ module "nat" {
   name           = "vpc-shared"
   router_create  = true
   router_network = module.vpc-shared.name
-  # NAT uses a reserved address, reserve and add more if needed
   addresses = [
     module.addresses.external_addresses.nat-1.self_link
   ]
@@ -205,10 +210,13 @@ module "vm-bastion" {
 #                                     GKE                                      #
 ################################################################################
 
+# cluster lifecycle depends on the host service agent role, so we need
+# to use the project module output that depends on IAM roles to set project id
+
 module "cluster-1" {
   source                    = "../../modules/gke-cluster"
   name                      = "cluster-1"
-  project_id                = module.project-svc-gke.project_id
+  project_id                = module.project-svc-gke.iam_project_id
   location                  = "${module.vpc-shared.subnet_regions.gke}-b"
   network                   = module.vpc-shared.self_link
   subnetwork                = module.vpc-shared.subnet_self_links.gke
@@ -237,11 +245,13 @@ module "cluster-1-nodepool-1" {
   node_config_service_account = module.service-account-gke-node.email
 }
 
+# roles assigned via this module use non-authoritative IAM bindings at the
+# project level, with no risk of conflicts with pre-existing roles
+
 module "service-account-gke-node" {
   source     = "../../modules/iam-service-accounts"
   project_id = module.project-svc-gke.project_id
   names      = ["gke-node"]
-  # roles assigned here use non-authoritative IAM bindings at the project level
   iam_project_roles = {
     (module.project-svc-gke.project_id) = [
       "roles/logging.logWriter",
