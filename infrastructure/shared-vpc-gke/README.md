@@ -42,7 +42,7 @@ Cluster access from the bastion can leverage the instance service account's `con
 
 ## Destroying
 
-There's a minor glitch that can surface running `terraform destroy`, where the service project attachments to the Shared VPC will not get destroyed even with the relevant API call succeeding. We are investigating the issue, in the meantime just manually remove the attachment in the Cloud console or via the `gcloud` command when `terraform destroy` fails, and then relaunch the command.
+There's a minor glitch that can surface running `terraform destroy`, where the service project attachments to the Shared VPC will not get destroyed even with the relevant API call succeeding. We are investigating the issue, in the meantime just manually remove the attachment in the Cloud console or via the `gcloud beta compute shared-vpc associated-projects remove` command when `terraform destroy` fails, and then relaunch the command.
 
 <!-- BEGIN TFDOC -->
 ## Variables
