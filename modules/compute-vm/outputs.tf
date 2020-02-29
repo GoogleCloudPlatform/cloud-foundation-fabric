@@ -83,6 +83,11 @@ output "service_account_email" {
   value       = local.service_account_email
 }
 
+output "service_account_iam_email" {
+  description = "Service account email."
+  value       = "serviceAccount:${local.service_account_email}"
+}
+
 output "template" {
   description = "Template resource."
   value = (
