@@ -83,6 +83,14 @@ output "service_account_email" {
   value       = local.service_account_email
 }
 
+output "service_account_iam_email" {
+  description = "Service account email."
+  value = join("", [
+    "serviceAccount:",
+    local.service_account_email == null ? "" : local.service_account_email
+  ])
+}
+
 output "template" {
   description = "Template resource."
   value = (
