@@ -10,6 +10,9 @@ elements {
       	card dns {
          name "Private zone"
         }
+        card nat {
+         name "NAT"
+        }
       }
 
       group vpc_host {

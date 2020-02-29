@@ -45,7 +45,9 @@ module "project-svc-gce" {
   oslogin         = true
   oslogin_admins  = var.owners_gce
   iam_roles = [
-    "roles/logging.logWriter", "roles/monitoring.metricWriter", "roles/owner"
+    "roles/logging.logWriter",
+    "roles/monitoring.metricWriter",
+    "roles/owner"
   ]
   iam_members = {
     "roles/logging.logWriter"       = [module.vm-bastion.service_account_iam_email],

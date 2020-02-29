@@ -1,8 +1,8 @@
 # Shared VPC sample
 
-This sample creates a basic [Shared VPC](https://cloud.google.com/vpc/docs/shared-vpc) infrastructure, where two service projects are connected to separate subnets, and the host project exposes Cloud DNS and Cloud KMS as centralized services. The service projects are slightly different, as they are meant to illustrate the IAM-level differences that need to be taken into account when sharing subnets for GCE or GKE.
+This sample creates a basic [Shared VPC](https://cloud.google.com/vpc/docs/shared-vpc) setup using one host project and two service projects, each with a specific subnet in the shared VPC. The setup also includes the specific IAM-level configurations needed for [GKE on Shared VPC](https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-shared-vpc) to enable cluster creation in one of the two service projects.
 
-The purpose of this sample is showing how to wire different [Cloud Foundation Fabric](https://github.com/search?q=topic%3Acft-fabric+org%3Aterraform-google-modules&type=Repositories) modules to create Shared VPC infrastructures, and as such it is meant to be used for prototyping, or to experiment with networking configurations. Additional best practices and security considerations need to be taken into account for real world usage (eg removal of default service accounts, disabling of external IPs, firewall design, etc).
+The sample has been purposefully kept simple so that it can be used as a basis for different Shared VPC configurations. This is the high level diagram:
 
 ![High-level diagram](diagram.png "High-level diagram")
 
@@ -10,26 +10,39 @@ The purpose of this sample is showing how to wire different [Cloud Foundation Fa
 
 This sample creates several distinct groups of resources:
 
-- three projects (Shared VPC host and two service projects)
-- VPC-level resources (VPC, subnets, firewall rules, etc.) in the host project
-- one internal Cloud DNS zone in the host project
-- one Cloud KMS keyring with one key in the host project
-- IAM roles to wire all the above resource together
-- one test instance in each project, with their associated DNS records
+- projects
+  - host project
+  - service project configured for GKE clusters
+  - service project configured for GCE instances
+- networking
+  - the VPC network
+  - one subnet with secondary ranges for GKE clusters
+  - one subnet for GCE instances
+  - firewall rules for SSH access via IAP and open communication within the VPC
+  - Cloud NAT service with a reserved address
+- IAM
+  - one service account for the bastion CGE instance
+  - one service account for the GKE nodes
+  - optional owner role bindings on each project
+  - optional [OS Login](https://cloud.google.com/compute/docs/oslogin/) role bindings on the GCE service project
+  - role bindings to allow the GCE instance and GKE nodes logging and monitoring write access
+  - role binding to allow the GCE instance cluster access
+- DNS
+  - one private zone
+- GCE
+  - one instance used to access the internal GKE cluster
+- GKE
+  - one private cluster with one nodepool
 
-## Test resources
+## Accessing the bastion instance and GKE cluster
 
-A set of test resources are included for convenience, as they facilitate experimenting with different networking configurations (firewall rules, external connectivity via VPN, etc.). They are encapsulated in the `test-resources.tf` file, and can be safely removed as a single unit.
+The bastion VM has no public address so access is mediated via [IAP](https://cloud.google.com/iap/docs), which is supported transparently in the `gcloud compute ssh` command. Authentication is via OS Login set as a project default.
 
-SSH access to instances is configured via [OS Login](https://cloud.google.com/compute/docs/oslogin/), except for the GKE project instance since [GKE nodes do not support OS Login](https://cloud.google.com/compute/docs/instances/managing-instance-access#limitations). To access the GKe instance, use a SSH key set at the project or instance level. External access is allowed via the default SSH rule created by the firewall module, and corresponding `ssh` tags on the instances.
-
-The GCE instance is somewhat special, as it's configured to run a containerized MySQL server using the [`cos-mysql` module](https://github.com/terraform-google-modules/terraform-google-container-vm/tree/master/modules/cos-mysql), to show a practical example of using this module with KMS encryption for its secret, and to demonstrate how to define a custom firewall rule in the firewall module.
-
-The networking and GKE instances have `dig` and the `mysql` client installed via startup scripts, so that tests can be run as soon as they are created.
+Cluster access from the bastion can leverage the instance service account's `container.developer` role: the only configuration needed is to fetch cluster credentials via `gcloud container clusters get-credentials` passing the correct cluster name, location and project via command options.
 
 ## Destroying
 
-There's a minor glitch that can surface running `terraform destroy`, with a simple workaround. The glitch is due to a delay between the API reporting service project removal from the Shared VPC as successful (`google_compute_shared_vpc_service_project` resources destroyed), and the Shared VPC resource being aligned with that event. This results in an error that prevents disabling the Shared VPC feature: `Error disabling Shared VPC Host [...] Cannot disable project as a shared VPC host because it has active service projects.`. The workaround is to run `terraform destroy` again after a few seconds, giving the Shared VPC resource time to be in sync with service project removal.
+There's a minor glitch that can surface running `terraform destroy`, where the service project attachments to the Shared VPC will not get destroyed even with the relevant API call succeeding. We are investigating the issue, in the meantime just manually remove the attachment in the Cloud console or via the `gcloud` command when `terraform destroy` fails, and then relaunch the command.
 
 <!-- BEGIN TFDOC -->
 ## Variables
