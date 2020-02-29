@@ -138,16 +138,6 @@ module "vpc-shared-firewall" {
   admin_ranges         = values(var.ip_ranges)
 }
 
-module "addresses" {
-  source     = "../../modules/net-address"
-  project_id = module.project-host.project_id
-  external_addresses = {
-    nat-1 = var.region
-  }
-}
-
-# NAT uses a reserved address, more can be reserved and added if needed
-
 module "nat" {
   source         = "../../modules/net-cloudnat"
   project_id     = module.project-host.project_id
@@ -155,9 +145,6 @@ module "nat" {
   name           = "vpc-shared"
   router_create  = true
   router_network = module.vpc-shared.name
-  addresses = [
-    module.addresses.external_addresses.nat-1.self_link
-  ]
 }
 
 ################################################################################
@@ -173,9 +160,7 @@ module "host-dns" {
   client_networks = [module.vpc-shared.self_link]
   recordsets = [
     { name = "localhost", type = "A", ttl = 300, records = ["127.0.0.1"] },
-    { name = "bastion", type = "A", ttl = 300, records = [
-      module.vm-bastion.internal_ips.0
-    ] },
+    { name = "bastion", type = "A", ttl = 300, records = module.vm-bastion.internal_ips },
   ]
 }
 

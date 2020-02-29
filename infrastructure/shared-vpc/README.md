@@ -19,7 +19,7 @@ This sample creates several distinct groups of resources:
   - one subnet with secondary ranges for GKE clusters
   - one subnet for GCE instances
   - firewall rules for SSH access via IAP and open communication within the VPC
-  - Cloud NAT service with a reserved address
+  - Cloud NAT service
 - IAM
   - one service account for the bastion CGE instance
   - one service account for the GKE nodes
