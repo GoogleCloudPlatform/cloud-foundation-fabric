@@ -82,11 +82,17 @@ module "project-svc-gke" {
 #                                  Networking                                  #
 ################################################################################
 
+# the service project GKE robot needs the `hostServiceAgent` role throughout
+# the entire life of its clusters; the `iam_project_id` project output is used
+# here to set the project id so that the VPC depends on that binding, and any
+# cluster using it then also depends on it indirectly; you can of course use
+# the `project_id` output instead if you don't care about destroying
+
 # subnet IAM bindings control which identities can use the individual subnets
 
 module "vpc-shared" {
   source          = "../../modules/net-vpc"
-  project_id      = module.project-host.project_id
+  project_id      = module.project-host.iam_project_id
   name            = "shared-vpc"
   shared_vpc_host = true
   shared_vpc_service_projects = [
@@ -195,13 +201,10 @@ module "vm-bastion" {
 #                                     GKE                                      #
 ################################################################################
 
-# cluster lifecycle depends on the host service agent role, so we need
-# to use the project module output that depends on IAM roles to set project id
-
 module "cluster-1" {
   source                    = "../../modules/gke-cluster"
   name                      = "cluster-1"
-  project_id                = module.project-svc-gke.iam_project_id
+  project_id                = module.project-svc-gke.project_id
   location                  = "${module.vpc-shared.subnet_regions.gke}-b"
   network                   = module.vpc-shared.self_link
   subnetwork                = module.vpc-shared.subnet_self_links.gke
