@@ -44,8 +44,15 @@ module "project-svc-gce" {
   services        = var.project_services
   oslogin         = true
   oslogin_admins  = var.owners_gce
-  iam_roles       = ["roles/owner"]
-  iam_members     = { "roles/owner" = var.owners_gce }
+  iam_roles = [
+    "roles/logging.logWriter", "roles/monitoring.metricWriter", "roles/owner"
+  ]
+  iam_members = {
+    "roles/logging.logWriter"       = [module.vm-bastion.service_account_iam_email],
+    "roles/monitoring.metricWriter" = [module.vm-bastion.service_account_iam_email],
+    "roles/owner"                   = var.owners_gce,
+
+  }
 }
 
 module "project-svc-gke" {
@@ -61,10 +68,8 @@ module "project-svc-gke" {
     "roles/owner",
   ]
   iam_members = {
-    "roles/owner" = var.owners_gke
-    "roles/container.developer" = [
-      "serviceAccount:${module.vm-bastion.service_account_email}"
-    ]
+    "roles/owner"               = var.owners_gke
+    "roles/container.developer" = [module.vm-bastion.service_account_iam_email]
   }
 }
 
@@ -234,7 +239,7 @@ module "service-account-gke-node" {
   source     = "../../modules/iam-service-accounts"
   project_id = module.project-svc-gke.project_id
   names      = ["gke-node"]
-  # roles assigned have no conflict with those assigned at the project level
+  # roles assigned here use non-authoritative IAM bindings at the project level
   iam_project_roles = {
     (module.project-svc-gke.project_id) = [
       "roles/logging.logWriter",
