@@ -103,6 +103,7 @@ module "debian-test" {
 | self_links | Instance self links. |  |
 | service_account | Service account resource. |  |
 | service_account_email | Service account email. |  |
+| service_account_iam_email | Service account email. |  |
 | template | Template resource. |  |
 | template_name | Template name. |  |
 <!-- END TFDOC -->
