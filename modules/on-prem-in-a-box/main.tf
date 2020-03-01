@@ -1,3 +1,19 @@
+/**
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 resource "google_compute_address" "static" {
   project      = var.project_id
   name         = var.name
@@ -14,7 +30,7 @@ resource "google_compute_instance" "on_prem_in_a_box" {
 
   boot_disk {
     initialize_params {
-      image = "debian-cloud/debian-9"
+      image = "ubuntu-os-cloud/ubuntu-1804-lts"
     }
   }
 
@@ -29,7 +45,6 @@ resource "google_compute_instance" "on_prem_in_a_box" {
     user-data = data.template_file.vpn-gw.rendered
   }
 
-  metadata_startup_script = file(format("%s/assets/server-config.sh", path.module))
 }
 
 data "template_file" "vpn-gw" {

@@ -1,5 +1,30 @@
 #cloud-config
 
+# Copyright 2020 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+package_update: true
+package_upgrade: true
+package_reboot_if_required: true
+
+packages:
+  - apt-transport-https
+  - ca-certificates
+  - curl
+  - gnupg-agent
+  - software-properties-common
+
 write_files:
 
 # Docker daemon configuration
@@ -26,8 +51,8 @@ write_files:
     After=network-online.target docker.socket
     Wants=network-online.target docker.socket
     [Service]
-    ExecStart=/bin/sh -c "cd /var/lib/docker-compose/onprem && docker-compose up"
-    ExecStop=/bin/sh -c "cd /var/lib/docker-compose/onprem && docker-compose down"
+    ExecStart=/bin/sh -c "cd /var/lib/docker-compose/onprem && /usr/local/bin/docker-compose up"
+    ExecStop=/bin/sh -c "cd /var/lib/docker-compose/onprem && /usr/local/bin/docker-compose down"
 
 # Docker compose configuration file for onprem
 - path: /var/lib/docker-compose/onprem/docker-compose.yaml
@@ -44,7 +69,6 @@ write_files:
         ports:
           - "500:500/udp"
           - "4500:4500/udp"
-          - "179:179/tcp"
         privileged: true
         cap_add:
           - NET_ADMIN
@@ -53,23 +77,11 @@ write_files:
           - "/etc/localtime:/etc/localtime:ro"
           - "/var/lib/docker-compose/onprem/ipsec/ipsec.conf:/etc/ipsec.conf:ro"
           - "/var/lib/docker-compose/onprem/ipsec/ipsec.secrets:/etc/ipsec.secrets:ro"
-          - "/var/lib/docker-compose/onprem/ipsec/vti.conf:/etc/strongswan.d/vti.conf:ro"
-      bird:
-        image: pierky/bird
-        network_mode: service:vpn
-        cap_add:
-          - NET_ADMIN
-          - NET_BROADCAST
-          - NET_RAW
-        privileged: true
-        volumes:
-          - "/var/lib/docker-compose/onprem/bird/bird.conf:/etc/bird/bird.conf:ro"
       dns:
         image: coredns/coredns
         command: "-conf /etc/coredns/Corefile"
         depends_on:
           - "vpn"
-          - "bird"
         networks:
           onprem:
             ipv4_address: ${dns_ip_address}
@@ -87,7 +99,6 @@ write_files:
         image: nginx:stable-alpine
         depends_on:
           - "vpn"
-          - "bird"
           - "dns"
         dns:
           - ${dns_ip_address}
@@ -154,98 +165,18 @@ write_files:
       authby=psk
     
     conn gcp
-      leftupdown="/var/lib/strongswan/ipsec-vti.sh 0 ${peer_bgp_session_range} ${local_bgp_session_range}"
       left=%any
       leftid=%any
-      leftsubnet=0.0.0.0/0
+      leftsubnet=${local_ip_cidr_range}
       leftauth=psk
-      right=${peer_ip}
+      right=%${peer_ip}
       rightid=${peer_ip}
-      rightsubnet=0.0.0.0/0
+      rightsubnet=199.36.153.4/30,35.199.192.0/19,${remote_ip_cidr_ranges}
       rightauth=psk
       type=tunnel
       auto=start
       dpdaction=restart
       closeaction=restart
-      mark=%unique
-
-# Charon configuration
-- path: /var/lib/docker-compose/onprem/ipsec/vti.conf
-  owner: root:root
-  permissions: '0644'
-  content: |
-    charon {
-        install_routes = no
-    }
-
-# BIRD bgp routing configuration
-- path: /var/lib/docker-compose/onprem/bird/bird.conf
-  owner: root:root
-  permissions: '0644'
-  content: |
-    router id ${local_bgp_ip};
-
-    # Watch interface up/down events
-    protocol device {
-          scan time 10;
-    }
-
-    # Sync routes to kernel
-    protocol kernel {
-          learn;
-          merge paths on; # For ECMP
-          export filter { 
-                  krt_prefsrc = ${vpn_ip_address}; # Internal IP Address of the strongSwan VM. 
-                  accept; # Sync all routes to kernel
-          };       
-          import all; # Required due to /32 on GCE VMs for the static route below
-    }
-
-    # Configure a static route to make sure route exists
-    protocol static {
-          # Network connected to eth0
-          route ${local_ip_cidr_range} recursive ${local_gw_ip};
-          # Private google access
-          route 199.36.153.4/30 via ${peer_bgp_ip};
-          # Cloud DNS forwarding zone 
-          route 35.199.192.0/19 via ${peer_bgp_ip};  
-    }
-    # Prefix lists for routing security
-    # Allow any possible GCP Subnet
-    define GCP_VPC_A_PREFIXES = [ 10.0.0.0/8{9,29}, 172.16.0.0/12{12,29}, 192.168.0.0/16{16,29} ]; 
-    define LOCAL_PREFIXES     = [ ${local_ip_cidr_range} ];  
-
-    # Filter received prefixes
-    filter gcp_vpc_a_in
-    {
-          if (net ~ GCP_VPC_A_PREFIXES) then accept;
-          else reject;
-    }
-
-    # Filter advertised prefixes
-    filter gcp_vpc_a_out
-    {
-          if (net ~ LOCAL_PREFIXES) then accept;
-          else reject;
-    }
-
-    template bgp gcp_vpc_a {
-          keepalive time 20;
-          hold time 60;
-          graceful restart aware; # Cloud Router uses GR during maintenance
-
-          import filter gcp_vpc_a_in;
-          import limit 10 action warn; # restart | block | disable
-
-          export filter gcp_vpc_a_out;
-          export limit 10 action warn; # restart | block | disable
-    }
-
-    protocol bgp gcp_vpc_a_tun1 from gcp_vpc_a
-    {
-          local ${local_bgp_ip} as ${local_bgp_asn};
-          neighbor ${peer_bgp_ip} as ${peer_bgp_asn};
-    }
 
 # CoreDNS configuration
 - path: /var/lib/docker-compose/onprem/coredns/Corefile
@@ -288,15 +219,15 @@ write_files:
     </body>
     </html>
 
-# setup script
-- path: /tmp/server-config.sh
-  owner: root:root
-  permissions: '0700'
-  content: |
-    ${server_config_script}
-
 runcmd:
-- /tmp/server-config.sh
-- systemctl daemon-reload
-- systemctl enable docker-onprem
-- systemctl start docker-onprem
+- [systemctl, daemon-reload]
+- [ sh, -c, 'curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -' ]
+- [ sh, -c, 'add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"' ]
+- [ sh, -c, 'apt update' ]
+- [ sh, -c, 'apt install -y docker-ce docker-ce-cli containerd.io' ]
+- [ sh, -c, 'curl -L https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep "tag_name" | cut -d \" -f4)/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose' ]
+- [ sh, -c, 'chmod 755 /usr/local/bin/docker-compose' ]
+- [systemctl, enable, docker.service]
+- [systemctl, start, docker.service]
+- [systemctl, enable, docker-onprem.service]
+- [systemctl, start, docker-onprem.service]
