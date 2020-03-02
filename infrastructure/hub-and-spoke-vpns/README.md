@@ -21,7 +21,7 @@ This sample creates several distinct groups of resources:
 
 ## Operational considerations
 
-Hub and spokes use the same pre-existing project to keep the example variables and complexity to a minimum, in a real world scenario each spoke would probably use a separate project.
+A single pre-existing project is used in this example to keep variables and complexity to a minimum, in a real world scenarios each spoke would probably use a separate project.
 
 The example does not account for HA, but the VPN gateways can be easily upgraded to use HA VPN via the relevant [module](../../modules/net-vpn-ha).
 
