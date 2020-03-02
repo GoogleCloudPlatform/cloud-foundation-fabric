@@ -10,14 +10,24 @@ The example has been purposefully kept simple to show how to use and wire the VP
 
 This sample creates several distinct groups of resources:
 
-- one vpc each for hub and each spoke
-- one set of firewall rules for each vpc
+- one VPC for each hub and each spoke
+- one set of firewall rules for each VPC
 - one VPN gateway, one tunnel and one Cloud Router for each spoke
-- two VPN gateways, two tunnels and two Cloud Routers for the hub
+- two VPN gateways, two tunnels and two Cloud Routers for the hub (one for each spoke)
 - one DNS private zone in the hub
 - one DNS peering zone in each spoke
 - one Cloud NAT configuration for each spoke
 - one test instance for each spoke
+
+Note that the code for this example does not create project where the resources listed above are created. You must provide a pre-existing project with a valid billing account and the compute and DNS APIs enabled. You can easily create such a project with the following commands:
+
+``` shell
+MY_PROJECT_ID="<desired project id>"
+MY_BILLING_ACCOUNT=XXXXXX-XXXXXX-XXXXXX
+gcloud projects create $MY_PROJECT_ID
+gcloud alpha billing projects link --billing-account=$MY_BILLING_ACCOUNT $MY_PROJECT_ID
+gcloud services enable --project=$MY_PROJECT_ID {compute,dns}.googleapis.com
+```
 
 ## Operational considerations
 
