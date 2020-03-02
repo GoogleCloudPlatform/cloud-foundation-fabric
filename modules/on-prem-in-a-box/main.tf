@@ -67,6 +67,9 @@ data "template_file" "vpn-gw" {
     local_bgp_ip            = split("/", var.local_bgp_session_range)[0]
     peer_bgp_asn            = var.peer_bgp_asn
     local_bgp_asn           = var.local_bgp_asn
+    cloud_dns_zone          = var.cloud_dns_zone
+    cloud_dns_forwarder_ip  = var.cloud_dns_forwarder_ip
+    on_prem_dns_zone        = var.on_prem_dns_zone
   }
 }
 

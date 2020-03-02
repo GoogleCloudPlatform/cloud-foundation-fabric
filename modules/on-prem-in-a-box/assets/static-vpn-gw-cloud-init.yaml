@@ -191,6 +191,11 @@ write_files:
       log
       errors
     }
+    ${cloud_dns_zone} {
+      forward . ${cloud_dns_forwarder_ip}
+      log
+      errors
+    } 
     . {
       forward . 8.8.8.8
       log
