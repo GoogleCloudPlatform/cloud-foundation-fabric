@@ -185,7 +185,7 @@ write_files:
   owner: root:root
   permissions: '0644'
   content: |
-    onprem {
+    ${on_prem_dns_zone} {
       root /etc/coredns
       hosts onprem.hosts
       log
@@ -207,10 +207,10 @@ write_files:
   owner: root:root
   permissions: '0644'
   content: |
-    ${vpn_ip_address} gw.onprem
-    ${dns_ip_address} ns.onprem
-    ${web_ip_address} www.onprem
-    ${toolbox_ip_address} toolbox.onprem
+    ${vpn_ip_address} gw.${on_prem_dns_zone}
+    ${dns_ip_address} ns.${on_prem_dns_zone}
+    ${web_ip_address} www.${on_prem_dns_zone}
+    ${toolbox_ip_address} toolbox.${on_prem_dns_zone}
 
 # Minimal nginx index page
 - path: /var/lib/docker-compose/onprem/nginx/index.html
