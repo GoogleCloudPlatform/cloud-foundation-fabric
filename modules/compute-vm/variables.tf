@@ -205,10 +205,12 @@ variable "service_account_create" {
   default     = false
 }
 
+# scopes and scope aliases list
+# https://cloud.google.com/sdk/gcloud/reference/compute/instances/create#--scopes
 variable "service_account_scopes" {
   description = "Scopes applied to service account."
   type        = list(string)
-  default     = ["https://www.googleapis.com/auth/cloud-platform"]
+  default     = []
 }
 
 variable "tags" {
