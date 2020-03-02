@@ -19,23 +19,20 @@ This sample creates several distinct groups of resources:
 - one Cloud NAT configuration for each spoke
 - one test instance for each spoke
 
-Note that the code for this example does not create project where the resources listed above are created. You must provide a pre-existing project with a valid billing account and the compute and DNS APIs enabled. You can easily create such a project with the following commands:
+## Operational considerations
+
+A single pre-existing project is used in this example to keep variables and complexity to a minimum, in a real world scenarios each spoke would probably use a separate project. The provided project needs a valid billing account and the Compute and DNS APIs enabled. You can easily create such a project  with the [project module](../../modules/project) or with the following commands:
 
 ``` shell
 MY_PROJECT_ID="<desired project id>"
-MY_BILLING_ACCOUNT=XXXXXX-XXXXXX-XXXXXX
 gcloud projects create $MY_PROJECT_ID
-gcloud alpha billing projects link --billing-account=$MY_BILLING_ACCOUNT $MY_PROJECT_ID
+gcloud alpha billing projects link --billing-account=XXXXXX-XXXXXX-XXXXXX $MY_PROJECT_ID
 gcloud services enable --project=$MY_PROJECT_ID {compute,dns}.googleapis.com
 ```
 
-## Operational considerations
+The example does not account for HA, but the VPN gateways can be easily upgraded to use HA VPN via the [net-vpn-ha module](../../modules/net-vpn-ha).
 
-A single pre-existing project is used in this example to keep variables and complexity to a minimum, in a real world scenarios each spoke would probably use a separate project.
-
-The example does not account for HA, but the VPN gateways can be easily upgraded to use HA VPN via the relevant [module](../../modules/net-vpn-ha).
-
-If a single router and VPN gateway is used in the hub to manage all tunnels, particular care must be taken in announcing ranges from hub to spokes as Cloud Router does not explicitly support transitivity, and overlapping routes received from both sides create unintended side effects. The simple workaround is to announce a single aggregated route to spokes so that it does not overlap with any of the spokes' ranges.
+If a single router and VPN gateway are used in the hub to manage all tunnels, particular care must be taken in announcing ranges from hub to spokes, as Cloud Router does not explicitly support transitivity and overlapping routes received from both sides create unintended side effects. The simple workaround is to announce a single aggregated route from hub to spokes so that it does not overlap with any of the ranges advertised by each spoke to the hub.
 
 <!-- BEGIN TFDOC -->
 ## Variables
