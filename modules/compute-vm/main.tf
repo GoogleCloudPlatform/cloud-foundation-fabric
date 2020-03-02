@@ -39,6 +39,19 @@ locals {
     )
     : var.service_account
   )
+  service_account_scopes = (
+    length(var.service_account_scopes) > 0
+    ? var.service_account_scopes
+    : (
+      var.service_account_create
+      ? ["https://www.googleapis.com/auth/cloud-platform"]
+      : [
+        "https://www.googleapis.com/auth/devstorage.read_only",
+        "https://www.googleapis.com/auth/logging.write",
+        "https://www.googleapis.com/auth/monitoring.write"
+      ]
+    )
+  )
 }
 
 resource "google_compute_disk" "disks" {
@@ -133,7 +146,7 @@ resource "google_compute_instance" "default" {
 
   service_account {
     email  = local.service_account_email
-    scopes = var.service_account_scopes
+    scopes = local.service_account_scopes
   }
 
   # guest_accelerator
@@ -197,7 +210,7 @@ resource "google_compute_instance_template" "default" {
 
   service_account {
     email  = local.service_account_email
-    scopes = var.service_account_scopes
+    scopes = local.service_account_scopes
   }
 
   lifecycle {

@@ -1,4 +1,4 @@
-# Copyright 2019 Google LLC
+# Copyright 2020 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,332 +13,294 @@
 # limitations under the License.
 
 locals {
-  hub_subnet_regions         = [for subnet in var.hub_subnets : subnet["subnet_region"]]
-  spoke_1_subnet_regions     = [for subnet in var.spoke_1_subnets : subnet["subnet_region"]]
-  spoke_2_subnet_regions     = [for subnet in var.spoke_2_subnets : subnet["subnet_region"]]
-  hub_subnet_cidr_ranges     = [for subnet in var.hub_subnets : subnet["subnet_ip"]]
-  spoke_1_subnet_cidr_ranges = [for subnet in var.spoke_1_subnets : subnet["subnet_ip"]]
-  spoke_2_subnet_cidr_ranges = [for subnet in var.spoke_2_subnets : subnet["subnet_ip"]]
-  all_subnet_cidrs           = concat(local.hub_subnet_cidr_ranges, local.spoke_1_subnet_cidr_ranges, local.spoke_2_subnet_cidr_ranges)
-  hub_to_spoke_1_router      = var.spoke_to_spoke_route_advertisement ? element(concat(google_compute_router.hub-to-spoke-1-custom.*.name, list("")), 0) : element(concat(google_compute_router.hub-to-spoke-1-default.*.name, list("")), 0)
-  hub_to_spoke_2_router      = var.spoke_to_spoke_route_advertisement ? element(concat(google_compute_router.hub-to-spoke-2-custom.*.name, list("")), 0) : element(concat(google_compute_router.hub-to-spoke-2-default.*.name, list("")), 0)
+  vm-instances = concat(
+    module.vm-spoke-1.instances, module.vm-spoke-2.instances
+  )
+  vm-startup-script = join("\n", [
+    "#! /bin/bash",
+    "apt-get update && apt-get install -y dnsutils"
+  ])
 }
 
-##############################################################
-#                              VPCs                          #
-##############################################################
+################################################################################
+#                                Hub networking                                #
+################################################################################
 
 module "vpc-hub" {
-  source  = "terraform-google-modules/network/google"
-  version = "~> 1.4.3"
-
-  project_id   = var.hub_project_id
-  network_name = "hub-network"
-  subnets      = var.hub_subnets
-  routing_mode = "GLOBAL"
+  source     = "../../modules/net-vpc"
+  project_id = var.project_id
+  name       = "hub"
+  subnets = {
+    a = {
+      ip_cidr_range      = var.ip_ranges.hub-a
+      region             = var.regions.a
+      secondary_ip_range = {}
+    }
+    b = {
+      ip_cidr_range      = var.ip_ranges.hub-b
+      region             = var.regions.b
+      secondary_ip_range = {}
+    }
+  }
 }
+
+module "vpc-hub-firewall" {
+  source               = "../../modules/net-vpc-firewall"
+  project_id           = var.project_id
+  network              = module.vpc-hub.name
+  admin_ranges_enabled = true
+  admin_ranges         = values(var.ip_ranges)
+}
+
+module "vpn-hub-a" {
+  source     = "../../modules/net-vpn-dynamic"
+  project_id = var.project_id
+  region     = module.vpc-hub.subnet_regions["a"]
+  network    = module.vpc-hub.name
+  name       = "hub-a"
+  router_asn = var.bgp_asn.hub
+  tunnels = {
+    spoke-1 = {
+      bgp_peer = {
+        address = cidrhost(var.bgp_interface_ranges.spoke-1, 2)
+        asn     = var.bgp_asn.spoke-1
+      }
+      bgp_peer_options = {
+        advertise_groups = ["ALL_SUBNETS"]
+        advertise_ip_ranges = {
+          (var.bgp_custom_advertisements.hub-to-spoke-1) = "spoke-2"
+        }
+        advertise_mode = "CUSTOM"
+        route_priority = 1000
+      }
+      bgp_session_range = "${cidrhost(var.bgp_interface_ranges.spoke-1, 1)}/30"
+      ike_version       = 2
+      peer_ip           = module.vpn-spoke-1.address
+      shared_secret     = ""
+    }
+  }
+}
+
+module "vpn-hub-b" {
+  source     = "../../modules/net-vpn-dynamic"
+  project_id = var.project_id
+  region     = module.vpc-hub.subnet_regions["b"]
+  network    = module.vpc-hub.name
+  name       = "hub-b"
+  router_asn = var.bgp_asn.hub
+  tunnels = {
+    spoke-2 = {
+      bgp_peer = {
+        address = cidrhost(var.bgp_interface_ranges.spoke-2, 2)
+        asn     = var.bgp_asn.spoke-2
+      }
+      bgp_peer_options = {
+        advertise_groups = ["ALL_SUBNETS"]
+        advertise_ip_ranges = {
+          (var.bgp_custom_advertisements.hub-to-spoke-2) = "spoke-1"
+        }
+        advertise_mode = "CUSTOM"
+        route_priority = 1000
+      }
+      bgp_session_range = "${cidrhost(var.bgp_interface_ranges.spoke-2, 1)}/30"
+      ike_version       = 2
+      peer_ip           = module.vpn-spoke-2.address
+      shared_secret     = ""
+    }
+  }
+}
+
+################################################################################
+#                              Spoke 1 networking                              #
+################################################################################
 
 module "vpc-spoke-1" {
-  source  = "terraform-google-modules/network/google"
-  version = "~> 1.4.3"
-
-  project_id   = var.spoke_1_project_id
-  network_name = "spoke-1-network"
-  subnets      = var.spoke_1_subnets
-  routing_mode = "GLOBAL"
+  source     = "../../modules/net-vpc"
+  project_id = var.project_id
+  name       = "spoke-1"
+  subnets = {
+    a = {
+      ip_cidr_range      = var.ip_ranges.spoke-1-a
+      region             = var.regions.a
+      secondary_ip_range = {}
+    }
+    b = {
+      ip_cidr_range      = var.ip_ranges.spoke-1-b
+      region             = var.regions.a
+      secondary_ip_range = {}
+    }
+  }
 }
+
+module "vpc-spoke-1-firewall" {
+  source               = "../../modules/net-vpc-firewall"
+  project_id           = var.project_id
+  network              = module.vpc-spoke-1.name
+  admin_ranges_enabled = true
+  admin_ranges         = values(var.ip_ranges)
+}
+
+module "vpn-spoke-1" {
+  source     = "../../modules/net-vpn-dynamic"
+  project_id = var.project_id
+  region     = module.vpc-spoke-1.subnet_regions["a"]
+  network    = module.vpc-spoke-1.name
+  name       = "spoke-1"
+  router_asn = var.bgp_asn.spoke-1
+  tunnels = {
+    hub = {
+      bgp_peer = {
+        address = cidrhost(var.bgp_interface_ranges.spoke-1, 1)
+        asn     = var.bgp_asn.hub
+      }
+      bgp_peer_options  = null
+      bgp_session_range = "${cidrhost(var.bgp_interface_ranges.spoke-1, 2)}/30"
+      ike_version       = 2
+      peer_ip           = module.vpn-hub-a.address
+      shared_secret     = module.vpn-hub-a.random_secret
+    }
+  }
+}
+
+module "nat-spoke-1" {
+  source        = "../../modules/net-cloudnat"
+  project_id    = var.project_id
+  region        = module.vpc-spoke-1.subnet_regions["a"]
+  name          = "spoke-1"
+  router_create = false
+  router_name   = module.vpn-spoke-1.router_name
+}
+
+################################################################################
+#                              Spoke 2 networking                              #
+################################################################################
 
 module "vpc-spoke-2" {
-  source  = "terraform-google-modules/network/google"
-  version = "~> 1.4.3"
-
-  project_id   = var.spoke_2_project_id
-  network_name = "spoke-2-network"
-  subnets      = var.spoke_2_subnets
-  routing_mode = "GLOBAL"
-}
-
-##############################################################
-#                           Firewalls                        #
-##############################################################
-
-module "firewall-hub" {
-  source  = "terraform-google-modules/network/google//modules/fabric-net-firewall"
-  version = "~> 1.2"
-
-  project_id           = var.hub_project_id
-  network              = module.vpc-hub.network_name
-  admin_ranges_enabled = true
-  admin_ranges         = local.all_subnet_cidrs
-}
-
-module "firewall-spoke-1" {
-  source  = "terraform-google-modules/network/google//modules/fabric-net-firewall"
-  version = "~> 1.2"
-
-  project_id           = var.spoke_1_project_id
-  network              = module.vpc-spoke-1.network_name
-  admin_ranges_enabled = true
-  admin_ranges         = local.all_subnet_cidrs
-}
-
-module "firewall-spoke-2" {
-  source  = "terraform-google-modules/network/google//modules/fabric-net-firewall"
-  version = "~> 1.2"
-
-  project_id           = var.spoke_2_project_id
-  network              = module.vpc-spoke-2.network_name
-  admin_ranges_enabled = true
-  admin_ranges         = local.all_subnet_cidrs
-}
-
-##############################################################
-#                        Cloud Routers                       #
-##############################################################
-
-resource "google_compute_router" "hub-to-spoke-1-custom" {
-  count   = var.spoke_to_spoke_route_advertisement ? 1 : 0
-  name    = "hub-to-spoke-1-custom"
-  region  = element(local.hub_subnet_regions, 0)
-  network = module.vpc-hub.network_name
-  project = var.hub_project_id
-  bgp {
-    asn               = var.hub_bgp_asn
-    advertise_mode    = "CUSTOM"
-    advertised_groups = ["ALL_SUBNETS"]
-
-    dynamic "advertised_ip_ranges" {
-      for_each = toset(local.spoke_2_subnet_cidr_ranges)
-      content {
-        range = advertised_ip_ranges.value
-      }
+  source     = "../../modules/net-vpc"
+  project_id = var.project_id
+  name       = "spoke-2"
+  subnets = {
+    a = {
+      ip_cidr_range      = var.ip_ranges.spoke-2-a
+      region             = var.regions.b
+      secondary_ip_range = {}
+    }
+    b = {
+      ip_cidr_range      = var.ip_ranges.spoke-2-b
+      region             = var.regions.b
+      secondary_ip_range = {}
     }
   }
 }
 
-resource "google_compute_router" "hub-to-spoke-2-custom" {
-  count   = var.spoke_to_spoke_route_advertisement ? 1 : 0
-  name    = "hub-to-spoke-2-custom"
-  region  = element(local.hub_subnet_regions, 1)
-  network = module.vpc-hub.network_name
-  project = var.hub_project_id
-  bgp {
-    asn               = var.hub_bgp_asn
-    advertise_mode    = "CUSTOM"
-    advertised_groups = ["ALL_SUBNETS"]
-    dynamic "advertised_ip_ranges" {
-      for_each = toset(local.spoke_1_subnet_cidr_ranges)
-      content {
-        range = advertised_ip_ranges.value
+module "vpc-spoke-2-firewall" {
+  source               = "../../modules/net-vpc-firewall"
+  project_id           = var.project_id
+  network              = module.vpc-spoke-2.name
+  admin_ranges_enabled = true
+  admin_ranges         = values(var.ip_ranges)
+}
+
+module "vpn-spoke-2" {
+  source     = "../../modules/net-vpn-dynamic"
+  project_id = var.project_id
+  region     = module.vpc-spoke-2.subnet_regions["a"]
+  network    = module.vpc-spoke-2.name
+  name       = "spoke-2"
+  router_asn = var.bgp_asn.spoke-2
+  tunnels = {
+    hub = {
+      bgp_peer = {
+        address = cidrhost(var.bgp_interface_ranges.spoke-2, 1)
+        asn     = var.bgp_asn.hub
       }
+      bgp_peer_options  = null
+      bgp_session_range = "${cidrhost(var.bgp_interface_ranges.spoke-2, 2)}/30"
+      ike_version       = 2
+      peer_ip           = module.vpn-hub-b.address
+      shared_secret     = module.vpn-hub-b.random_secret
     }
   }
 }
 
-resource "google_compute_router" "hub-to-spoke-1-default" {
-  count   = var.spoke_to_spoke_route_advertisement ? 0 : 1
-  name    = "hub-to-spoke-1-default"
-  region  = element(local.hub_subnet_regions, 0)
-  network = module.vpc-hub.network_name
-  project = var.hub_project_id
-  bgp {
-    asn = var.hub_bgp_asn
-  }
-}
-resource "google_compute_router" "hub-to-spoke-2-default" {
-  count   = var.spoke_to_spoke_route_advertisement ? 0 : 1
-  name    = "hub-to-spoke-2-default"
-  region  = element(local.hub_subnet_regions, 1)
-  network = module.vpc-hub.network_name
-  project = var.hub_project_id
-  bgp {
-    asn = var.hub_bgp_asn
-  }
-}
-resource "google_compute_router" "spoke-1" {
-  name    = "spoke-1"
-  region  = element(local.spoke_1_subnet_regions, 0)
-  network = module.vpc-spoke-1.network_name
-  project = var.spoke_1_project_id
-  bgp {
-    asn = var.spoke_1_bgp_asn
-  }
-}
-resource "google_compute_router" "spoke-2" {
-  name    = "spoke-2"
-  region  = element(local.spoke_2_subnet_regions, 1)
-  network = module.vpc-spoke-2.network_name
-  project = var.spoke_2_project_id
-  bgp {
-    asn = var.spoke_2_bgp_asn
-  }
+module "nat-spoke-2" {
+  source        = "../../modules/net-cloudnat"
+  project_id    = var.project_id
+  region        = module.vpc-spoke-2.subnet_regions["a"]
+  name          = "spoke-2"
+  router_create = false
+  router_name   = module.vpn-spoke-2.router_name
 }
 
-##############################################################
-#                              VPNs                          #
-##############################################################
+################################################################################
+#                                   Test VMs                                   #
+################################################################################
 
-module "vpn-hub-to-spoke-1" {
-  source  = "terraform-google-modules/vpn/google"
-  version = "~> 1.1"
-
-  project_id               = var.hub_project_id
-  network                  = module.vpc-hub.network_name
-  region                   = element(local.hub_subnet_regions, 0)
-  gateway_name             = "hub-to-spoke-1-gtw"
-  tunnel_name_prefix       = "hub-to-spoke-1"
-  peer_ips                 = [module.vpn-spoke-1-to-hub.gateway_ip]
-  bgp_cr_session_range     = ["169.254.0.1/30"]
-  bgp_remote_session_range = ["169.254.0.2"]
-  peer_asn                 = [var.spoke_1_bgp_asn]
-  cr_name                  = local.hub_to_spoke_1_router
+module "vm-spoke-1" {
+  source     = "../../modules/compute-vm"
+  project_id = var.project_id
+  region     = module.vpc-spoke-1.subnet_regions.b
+  zone       = "${module.vpc-spoke-1.subnet_regions.b}-b"
+  name       = "spoke-1-test"
+  network_interfaces = [{
+    network    = module.vpc-spoke-1.self_link,
+    subnetwork = module.vpc-spoke-1.subnet_self_links.b,
+    nat        = false,
+    addresses  = null
+  }]
+  metadata = { startup-script = local.vm-startup-script }
 }
 
-module "vpn-hub-to-spoke-2" {
-  source  = "terraform-google-modules/vpn/google"
-  version = "~> 1.1"
-
-  project_id               = var.hub_project_id
-  network                  = module.vpc-hub.network_name
-  region                   = element(local.hub_subnet_regions, 1)
-  gateway_name             = "hub-to-spoke-2-gtw"
-  tunnel_name_prefix       = "hub-to-spoke-2"
-  peer_ips                 = [module.vpn-spoke-2-to-hub.gateway_ip]
-  bgp_cr_session_range     = ["169.254.1.1/30"]
-  bgp_remote_session_range = ["169.254.1.2"]
-  peer_asn                 = [var.spoke_2_bgp_asn]
-  cr_name                  = local.hub_to_spoke_2_router
+module "vm-spoke-2" {
+  source     = "../../modules/compute-vm"
+  project_id = var.project_id
+  region     = module.vpc-spoke-2.subnet_regions.b
+  zone       = "${module.vpc-spoke-2.subnet_regions.b}-b"
+  name       = "spoke-2-test"
+  network_interfaces = [{
+    network    = module.vpc-spoke-2.self_link,
+    subnetwork = module.vpc-spoke-2.subnet_self_links.b,
+    nat        = false,
+    addresses  = null
+  }]
+  metadata = { startup-script = local.vm-startup-script }
 }
 
-module "vpn-spoke-1-to-hub" {
-  source  = "terraform-google-modules/vpn/google"
-  version = "~> 1.1"
+################################################################################
+#                                  DNS zones                                   #
+################################################################################
 
-  project_id               = var.spoke_1_project_id
-  network                  = module.vpc-spoke-1.network_name
-  region                   = element(local.spoke_1_subnet_regions, 0)
-  gateway_name             = "spoke-1-to-hub-gtw"
-  tunnel_name_prefix       = "spoke-1-to-hub"
-  shared_secret            = module.vpn-hub-to-spoke-1.ipsec_secret-dynamic[0]
-  peer_ips                 = [module.vpn-hub-to-spoke-1.gateway_ip]
-  bgp_cr_session_range     = ["169.254.0.2/30"]
-  bgp_remote_session_range = ["169.254.0.1"]
-  peer_asn                 = [var.hub_bgp_asn]
-  cr_name                  = google_compute_router.spoke-1.name
+module "dns-host" {
+  source          = "../../modules/dns"
+  project_id      = var.project_id
+  type            = "private"
+  name            = "example"
+  domain          = "example.com."
+  client_networks = [module.vpc-hub.self_link]
+  recordsets = [
+    for instance in local.vm-instances : {
+      name    = instance.name, type = "A", ttl = 300,
+      records = [instance.network_interface.0.network_ip]
+    }
+  ]
 }
 
-module "vpn-spoke-2-to-hub" {
-  source  = "terraform-google-modules/vpn/google"
-  version = "~> 1.1"
-
-  project_id               = var.spoke_2_project_id
-  network                  = module.vpc-spoke-2.network_name
-  region                   = element(local.spoke_2_subnet_regions, 1)
-  gateway_name             = "spoke-2-to-hub-gtw"
-  tunnel_name_prefix       = "spoke-2-to-hub"
-  shared_secret            = module.vpn-hub-to-spoke-2.ipsec_secret-dynamic[0]
-  peer_ips                 = [module.vpn-hub-to-spoke-2.gateway_ip]
-  bgp_cr_session_range     = ["169.254.1.2/30"]
-  bgp_remote_session_range = ["169.254.1.1"]
-  peer_asn                 = [var.hub_bgp_asn]
-  cr_name                  = google_compute_router.spoke-2.name
+module "dns-spoke-1" {
+  source          = "../../modules/dns"
+  project_id      = var.project_id
+  type            = "peering"
+  name            = "spoke-1"
+  domain          = "example.com."
+  client_networks = [module.vpc-spoke-1.self_link]
+  peer_network    = module.vpc-hub.self_link
 }
 
-##############################################################
-#                           DNS Zones                        #
-##############################################################
-
-module "hub-private-zone" {
-  source  = "terraform-google-modules/cloud-dns/google"
-  version = "~> 2.0"
-
-  project_id = var.hub_project_id
-  type       = "private"
-  name       = "${var.private_dns_zone_name}-hub-private"
-  domain     = var.private_dns_zone_domain
-
-  private_visibility_config_networks = [module.vpc-hub.network_self_link]
-}
-
-module "hub-forwarding-zone" {
-  source  = "terraform-google-modules/cloud-dns/google"
-  version = "~> 2.0"
-
-  project_id = var.hub_project_id
-  type       = "forwarding"
-  name       = "${var.forwarding_dns_zone_name}-hub-forwarding"
-  domain     = var.forwarding_dns_zone_domain
-
-  private_visibility_config_networks = [module.vpc-hub.network_self_link]
-  target_name_server_addresses       = var.forwarding_zone_server_addresses
-}
-
-module "spoke-1-peering-zone-to-hub-private-zone" {
-  source  = "terraform-google-modules/cloud-dns/google"
-  version = "~> 2.0"
-
-  project_id = var.spoke_1_project_id
-  type       = "peering"
-  name       = "${var.private_dns_zone_name}-spoke-1-peering-to-hub-private"
-  domain     = var.private_dns_zone_domain
-
-  private_visibility_config_networks = [module.vpc-spoke-1.network_self_link]
-  target_network                     = module.vpc-hub.network_self_link
-}
-
-module "spoke-2-peering-zone-to-hub-private-zone" {
-  source  = "terraform-google-modules/cloud-dns/google"
-  version = "~> 2.0"
-
-  project_id = var.spoke_2_project_id
-  type       = "peering"
-  name       = "${var.private_dns_zone_name}-spoke-2-peering-to-hub-private"
-  domain     = var.private_dns_zone_domain
-
-  private_visibility_config_networks = [module.vpc-spoke-2.network_self_link]
-  target_network                     = module.vpc-hub.network_self_link
-}
-
-module "spoke-1-peering-zone-to-hub-forwarding-zone" {
-  source  = "terraform-google-modules/cloud-dns/google"
-  version = "~> 2.0"
-
-  project_id = var.spoke_1_project_id
-  type       = "peering"
-  name       = "${var.private_dns_zone_name}-spoke-1-peering-to-hub-forwarding"
-  domain     = var.forwarding_dns_zone_domain
-
-  private_visibility_config_networks = [module.vpc-spoke-1.network_self_link]
-  target_network                     = module.vpc-hub.network_self_link
-}
-
-module "spoke-2-peering-zone-to-hub-forwarding-zone" {
-  source  = "terraform-google-modules/cloud-dns/google"
-  version = "~> 2.0"
-
-  project_id = var.spoke_2_project_id
-  type       = "peering"
-  name       = "${var.private_dns_zone_name}-spoke-2-peering-to-hub-forwarding"
-  domain     = var.forwarding_dns_zone_domain
-
-  private_visibility_config_networks = [module.vpc-spoke-2.network_self_link]
-  target_network                     = module.vpc-hub.network_self_link
-}
-
-##############################################################
-#                   Inbount DNS Forwarding                   #
-##############################################################
-
-# TODO Provide resolver addresses in the output once https://github.com/terraform-providers/terraform-provider-google/issues/3753 resolved.
-# For now please refer to the documentation on how to get the compute addresses for the DNS Resolver https://cloud.google.com/dns/zones/#creating_a_dns_policy_that_enables_inbound_dns_forwarding
-resource "google_dns_policy" "google_dns_policy" {
-  provider = "google-beta"
-
-  project                   = var.hub_project_id
-  name                      = "inbound-dns-forwarding-policy"
-  enable_inbound_forwarding = true
-
-  networks {
-    network_url = module.vpc-hub.network_self_link
-  }
+module "dns-spoke-2" {
+  source          = "../../modules/dns"
+  project_id      = var.project_id
+  type            = "peering"
+  name            = "spoke-2"
+  domain          = "example.com."
+  client_networks = [module.vpc-spoke-2.self_link]
+  peer_network    = module.vpc-hub.self_link
 }
