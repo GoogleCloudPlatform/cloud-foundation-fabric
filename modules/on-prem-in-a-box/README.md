@@ -1,6 +1,6 @@
 # On-prem-in-a-box Module
 
-This module allows emulating on-premise enviroment in a box (Compute VM) via connecting Docker Network to Cloud Network with `static` or `dynamic (bgp)`  VPN connection. It also provides a good playground for testing around Hybrid DNS connectivity between on-premise and Google Cloud Environment.
+This module allows emulating an on-premise enviroment in a single GCE VM, by connecting a Docker Network to a VPC via a static or dynamic (BGP) VPN connection implemented with Strongswan. It provides a good playground for testing private access and hybrid DNS connectivity between on-premise and Google Cloud.
 
 To see this module in action, please refer to the folowing end-to-end network examples:
 - [shared-vpc](../../infrastructure/shared-vpc/)
