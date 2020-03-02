@@ -53,27 +53,16 @@ SSH access to instances is configured via [OS Login](https://cloud.google.com/co
 
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
-| hub_project_id | Hub Project id. Same project can be used for hub and spokes. | <code title="">string</code> | ✓ |  |
-| spoke_1_project_id | Spoke 1 Project id. Same project can be used for hub and spokes. | <code title="">string</code> | ✓ |  |
-| spoke_2_project_id | Spoke 2 Project id. Same project can be used for hub and spokes. | <code title="">string</code> | ✓ |  |
-| *forwarding_dns_zone_domain* | Forwarding DNS Zone Domain. | <code title="">string</code> |  | <code title="">on-prem.local.</code> |
-| *forwarding_dns_zone_name* | Forwarding DNS Zone Name. | <code title="">string</code> |  | <code title="">on-prem-local</code> |
-| *forwarding_zone_server_addresses* | Forwarding DNS Zone Server Addresses | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">["8.8.8.8", "8.8.4.4"]</code> |
-| *hub_bgp_asn* | Hub BGP ASN. | <code title="">number</code> |  | <code title="">64515</code> |
-| *hub_subnets* | Hub VPC subnets configuration. | <code title="list&#40;object&#40;&#123;&#10;subnet_name   &#61; string&#10;subnet_ip     &#61; string&#10;subnet_region &#61; string&#10;&#125;&#41;&#41;">list(object({...}))</code> |  | <code title="&#91;&#123;&#10;subnet_name   &#61; &#34;subnet-a&#34;&#10;subnet_ip     &#61; &#34;10.10.10.0&#47;24&#34;&#10;subnet_region &#61; &#34;europe-west1&#34;&#10;&#125;,&#10;&#123;&#10;subnet_name   &#61; &#34;subnet-b&#34;&#10;subnet_ip     &#61; &#34;10.10.20.0&#47;24&#34;&#10;subnet_region &#61; &#34;europe-west2&#34;&#10;&#125;,&#10;&#93;">...</code> |
-| *private_dns_zone_domain* | Private DNS Zone Domain. | <code title="">string</code> |  | <code title="">gcp.local.</code> |
-| *private_dns_zone_name* | Private DNS Zone Name. | <code title="">string</code> |  | <code title="">gcp-local</code> |
-| *spoke_1_bgp_asn* | Spoke 1 BGP ASN. | <code title="">number</code> |  | <code title="">64516</code> |
-| *spoke_1_subnets* | Spoke 1 VPC subnets configuration. | <code title=""></code> |  | <code title="&#91;&#123;&#10;subnet_name   &#61; &#34;spoke-1-subnet-a&#34;&#10;subnet_ip     &#61; &#34;10.20.10.0&#47;24&#34;&#10;subnet_region &#61; &#34;europe-west1&#34;&#10;&#125;,&#10;&#123;&#10;subnet_name   &#61; &#34;spoke-1-subnet-b&#34;&#10;subnet_ip     &#61; &#34;10.20.20.0&#47;24&#34;&#10;subnet_region &#61; &#34;europe-west2&#34;&#10;&#125;,&#10;&#93;">...</code> |
-| *spoke_2_bgp_asn* | Spoke 2 BGP ASN. | <code title="">number</code> |  | <code title="">64517</code> |
-| *spoke_2_subnets* | Spoke 2 VPC subnets configuration. | <code title=""></code> |  | <code title="&#91;&#123;&#10;subnet_name   &#61; &#34;spoke-2-subnet-a&#34;&#10;subnet_ip     &#61; &#34;10.30.10.0&#47;24&#34;&#10;subnet_region &#61; &#34;europe-west1&#34;&#10;&#125;,&#10;&#123;&#10;subnet_name   &#61; &#34;spoke-2-subnet-b&#34;&#10;subnet_ip     &#61; &#34;10.30.20.0&#47;24&#34;&#10;subnet_region &#61; &#34;europe-west2&#34;&#10;&#125;,&#10;&#93;">...</code> |
-| *spoke_to_spoke_route_advertisement* | Use custom route advertisement in hub routers to advertise all spoke subnets. | <code title="">bool</code> |  | <code title="">true</code> |
+| project_id | Project id for all resources. | <code title="">string</code> | ✓ |  |
+| *bgp_asn* | BGP ASNs. | <code title="map&#40;number&#41;">map(number)</code> |  | <code title="&#123;&#10;hub     &#61; 64513&#10;spoke-1 &#61; 64514&#10;spoke-2 &#61; 64515&#10;&#125;">...</code> |
+| *bgp_custom_advertisements* | BGP custom advertisement IP CIDR ranges. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="&#123;&#10;hub-to-spoke-1 &#61; &#34;10.0.32.0&#47;20&#34;&#10;hub-to-spoke-2 &#61; &#34;10.0.16.0&#47;20&#34;&#10;&#125;">...</code> |
+| *bgp_interface_ranges* | None | <code title=""></code> |  | <code title="&#123;&#10;spoke-1 &#61; &#34;169.254.1.0&#47;30&#34;&#10;spoke-2 &#61; &#34;169.254.1.4&#47;30&#34;&#10;&#125;">...</code> |
+| *ip_ranges* | IP CIDR ranges. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="&#123;&#10;hub-a     &#61; &#34;10.0.0.0&#47;24&#34;&#10;hub-b     &#61; &#34;10.0.8.0&#47;24&#34;&#10;spoke-1-a &#61; &#34;10.0.16.0&#47;24&#34;&#10;spoke-1-b &#61; &#34;10.0.24.0&#47;24&#34;&#10;spoke-2-a &#61; &#34;10.0.32.0&#47;24&#34;&#10;spoke-2-b &#61; &#34;10.0.40.0&#47;24&#34;&#10;&#125;">...</code> |
+| *regions* | VPC regions. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="&#123;&#10;a &#61; &#34;europe-west1&#34;&#10;b &#61; &#34;europe-west2&#34;&#10;&#125;">...</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| hub | Hub network resources. |  |
-| spoke-1 | Spoke1 network resources. |  |
-| spoke-2 | Spoke2 network resources. |  |
+| vms | GCE VMs. |  |
 <!-- END TFDOC -->
