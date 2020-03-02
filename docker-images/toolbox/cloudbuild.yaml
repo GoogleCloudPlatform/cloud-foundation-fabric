@@ -1,0 +1,16 @@
+
+# In this directory, run the following command to build this builder.
+# $ gcloud builds submit . --config=cloudbuild.yaml
+
+steps:
+- name: 'gcr.io/cloud-builders/docker'
+  args: 
+  - build 
+  - --tag=gcr.io/$PROJECT_ID/toolbox
+  - --tag=gcr.io/$PROJECT_ID/toolbox:latest
+  - .
+    
+images:
+  - 'gcr.io/$PROJECT_ID/toolbox:latest'
+    
+timeout: 1200s

@@ -1,7 +1,7 @@
 
 # StrongSwan docker container
 
-[strongSwan](https://www.strongswan.org/) is an OpenSource IPsec-based VPN Solution
+### [strongSwan](https://www.strongswan.org/) is an OpenSource IPsec-based VPN Solution
 
 ### Docker compose example
 ```yaml

@@ -26,6 +26,9 @@ RUN chmod 0755 /var/lib/strongswan/ipsec-vti.sh
 RUN echo 'ipsec ALL=NOPASSWD:SETENV:/usr/sbin/ipsec,/sbin/ip,/sbin/sysctl' > /etc/sudoers.d/ipsec
 RUN chmod 0440 /etc/sudoers.d/ipsec
 
+ENV VPN_DEVICE=eth0
+ENV LAN_NETWORKS=192.168.0.0/24
+
 EXPOSE 500/udp 4500/udp
 
 ENTRYPOINT ["/entrypoint.sh"]

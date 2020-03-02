@@ -79,6 +79,8 @@ write_files:
           - "/var/lib/docker-compose/onprem/ipsec/ipsec.conf:/etc/ipsec.conf:ro"
           - "/var/lib/docker-compose/onprem/ipsec/ipsec.secrets:/etc/ipsec.secrets:ro"
           - "/var/lib/docker-compose/onprem/ipsec/vti.conf:/etc/strongswan.d/vti.conf:ro"
+        environment:
+          - LAN_NETWORKS=${local_ip_cidr_range}
       bird:
         image: pierky/bird
         network_mode: service:vpn
@@ -130,7 +132,7 @@ write_files:
              ip route add default via ${vpn_ip_address}"
         privileged: true
       toolbox:
-        image: gcr.io/google.com/ludo-sce-test/toolbox
+        image: gcr.io/pso-cft-fabric/toolbox:latest
         networks:
           onprem:
             ipv4_address: ${toolbox_ip_address}
