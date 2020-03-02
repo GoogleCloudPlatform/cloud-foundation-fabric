@@ -52,12 +52,12 @@ module "vpc-hub-firewall" {
   admin_ranges         = values(var.ip_ranges)
 }
 
-module "vpn-hub" {
+module "vpn-hub-a" {
   source     = "../../modules/net-vpn-dynamic"
   project_id = var.project_id
   region     = module.vpc-hub.subnet_regions["a"]
   network    = module.vpc-hub.name
-  name       = "hub"
+  name       = "hub-a"
   router_asn = var.bgp_asn.hub
   tunnels = {
     spoke-1 = {
@@ -78,6 +78,17 @@ module "vpn-hub" {
       peer_ip           = module.vpn-spoke-1.address
       shared_secret     = ""
     }
+  }
+}
+
+module "vpn-hub-b" {
+  source     = "../../modules/net-vpn-dynamic"
+  project_id = var.project_id
+  region     = module.vpc-hub.subnet_regions["b"]
+  network    = module.vpc-hub.name
+  name       = "hub-b"
+  router_asn = var.bgp_asn.hub
+  tunnels = {
     spoke-2 = {
       bgp_peer = {
         address = cidrhost(var.bgp_interface_ranges.spoke-2, 2)
@@ -145,8 +156,8 @@ module "vpn-spoke-1" {
       bgp_peer_options  = null
       bgp_session_range = "${cidrhost(var.bgp_interface_ranges.spoke-1, 2)}/30"
       ike_version       = 2
-      peer_ip           = module.vpn-hub.address
-      shared_secret     = module.vpn-hub.random_secret
+      peer_ip           = module.vpn-hub-a.address
+      shared_secret     = module.vpn-hub-a.random_secret
     }
   }
 }
@@ -206,8 +217,8 @@ module "vpn-spoke-2" {
       bgp_peer_options  = null
       bgp_session_range = "${cidrhost(var.bgp_interface_ranges.spoke-2, 2)}/30"
       ike_version       = 2
-      peer_ip           = module.vpn-hub.address
-      shared_secret     = module.vpn-hub.random_secret
+      peer_ip           = module.vpn-hub-b.address
+      shared_secret     = module.vpn-hub-b.random_secret
     }
   }
 }
