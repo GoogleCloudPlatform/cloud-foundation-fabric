@@ -30,17 +30,20 @@ variable "spoke_2_project_id" {
 variable "hub_subnets" {
   description = "Hub VPC subnets configuration."
   type = map(object({
-    ip_cidr_range = string
-    region        = string
+    ip_cidr_range      = string
+    region             = string
+    secondary_ip_range = map(string)
   }))
   default = {
     hub-subnet-a = {
-      ip_cidr_range = "10.10.10.0/24"
-      region        = "europe-west1"
+      ip_cidr_range      = "10.10.10.0/24"
+      region             = "europe-west1"
+      secondary_ip_range = {}
     }
     hub-subnet-b = {
-      ip_cidr_range = "10.10.20.0/24"
-      region        = "europe-west2"
+      ip_cidr_range      = "10.10.20.0/24"
+      region             = "europe-west2"
+      secondary_ip_range = {}
     }
   }
 }
@@ -48,17 +51,20 @@ variable "hub_subnets" {
 variable "spoke_1_subnets" {
   description = "Spoke 1 VPC subnets configuration."
   type = map(object({
-    ip_cidr_range = string
-    region        = string
+    ip_cidr_range      = string
+    region             = string
+    secondary_ip_range = map(string)
   }))
   default = {
     spoke-1-subnet-a = {
-      ip_cidr_range = "10.20.10.0/24"
-      region        = "europe-west1"
+      ip_cidr_range      = "10.20.10.0/24"
+      region             = "europe-west1"
+      secondary_ip_range = {}
     }
     spoke-1-subnet-b = {
-      ip_cidr_range = "10.20.20.0/24"
-      region        = "europe-west2"
+      ip_cidr_range      = "10.20.20.0/24"
+      region             = "europe-west2"
+      secondary_ip_range = {}
     }
   }
 }
@@ -66,17 +72,20 @@ variable "spoke_1_subnets" {
 variable "spoke_2_subnets" {
   description = "Spoke 2 VPC subnets configuration."
   type = map(object({
-    ip_cidr_range = string
-    region        = string
+    ip_cidr_range      = string
+    region             = string
+    secondary_ip_range = map(string)
   }))
   default = {
     spoke-2-subnet-a = {
-      ip_cidr_range = "10.30.10.0/24"
-      region        = "europe-west1"
+      ip_cidr_range      = "10.30.10.0/24"
+      region             = "europe-west1"
+      secondary_ip_range = {}
     }
     spoke-2-subnet-b = {
-      ip_cidr_range = "10.30.20.0/24"
-      region        = "europe-west2"
+      ip_cidr_range      = "10.30.20.0/24"
+      region             = "europe-west2"
+      secondary_ip_range = {}
     }
   }
 }

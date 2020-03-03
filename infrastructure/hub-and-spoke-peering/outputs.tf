@@ -15,15 +15,9 @@
 output "hub" {
   description = "Hub network resources."
   value = {
-    network_name = module.vpc-hub.network_name
-    subnets_ips = zipmap(
-      module.vpc-hub.subnets_names,
-      module.vpc-hub.subnets_ips
-    )
-    subnets_regions = zipmap(
-      module.vpc-hub.subnets_names,
-      module.vpc-hub.subnets_regions
-    )
+    network_name   = module.vpc-hub.name
+    subnet_ips     = module.vpc-hub.subnet_ips
+    subnet_regions = module.vpc-hub.subnet_regions
     privte_dns_zone = {
       name   = module.hub-private-zone.name
       domain = module.hub-private-zone.domain
@@ -38,15 +32,9 @@ output "hub" {
 output "spoke-1" {
   description = "Spoke1 network resources."
   value = {
-    network_name = module.vpc-spoke-1.network_name
-    subnets_ips = zipmap(
-      module.vpc-spoke-1.subnets_names,
-      module.vpc-spoke-1.subnets_ips
-    )
-    subnets_regions = zipmap(
-      module.vpc-spoke-1.subnets_names,
-      module.vpc-spoke-1.subnets_regions
-    )
+    network_name   = module.vpc-spoke-1.name
+    subnet_ips     = module.vpc-spoke-1.subnet_ips
+    subnet_regions = module.vpc-spoke-1.subnet_regions
     peering_to_hub_private_dns_zone = {
       name   = module.spoke-1-peering-zone-to-hub-private-zone.name
       domain = module.spoke-1-peering-zone-to-hub-private-zone.domain
@@ -61,15 +49,9 @@ output "spoke-1" {
 output "spoke-2" {
   description = "Spoke2 network resources."
   value = {
-    network_name = module.vpc-spoke-2.network_name
-    subnets_ips = zipmap(
-      module.vpc-spoke-2.subnets_names,
-      module.vpc-spoke-2.subnets_ips
-    )
-    subnets_regions = zipmap(
-      module.vpc-spoke-2.subnets_names,
-      module.vpc-spoke-2.subnets_regions
-    )
+    network_name   = module.vpc-spoke-2.name
+    subnet_ips     = module.vpc-spoke-2.subnet_ips
+    subnet_regions = module.vpc-spoke-2.subnet_regions
     peering_to_hub_private_dns_zone = {
       name   = module.spoke-2-peering-zone-to-hub-private-zone.name
       domain = module.spoke-2-peering-zone-to-hub-private-zone.domain
