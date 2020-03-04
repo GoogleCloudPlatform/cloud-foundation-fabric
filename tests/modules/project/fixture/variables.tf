@@ -69,6 +69,11 @@ variable "oslogin_users" {
   default = []
 }
 
+variable "parent" {
+  type    = string
+  default = "folders/12345678"
+}
+
 variable "prefix" {
   type    = string
   default = null

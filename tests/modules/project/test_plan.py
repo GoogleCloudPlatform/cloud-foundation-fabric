@@ -28,3 +28,15 @@ def test_prefix(plan_runner):
   _, resources = plan_runner(FIXTURES_DIR, prefix='foo')
   assert len(resources) == 1
   assert resources[0]['values']['name'] == 'foo-my-project'
+
+
+def test_parent(plan_runner):
+  "Test project parent."
+  _, resources = plan_runner(FIXTURES_DIR)
+  assert len(resources) == 1
+  assert resources[0]['values']['folder_id'] == '12345678'
+  assert resources[0]['values'].get('org_id') == None
+  _, resources = plan_runner(FIXTURES_DIR, parent='organizations/12345678')
+  assert len(resources) == 1
+  assert resources[0]['values']['org_id'] == '12345678'
+  assert resources[0]['values'].get('folder_id') == None

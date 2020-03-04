@@ -16,7 +16,6 @@
 
 module "test" {
   source              = "../../../../modules/project"
-  parent              = "folders/12345678"
   name                = "my-project"
   billing_account     = "12345-12345-12345"
   auto_create_network = var.auto_create_network
@@ -30,6 +29,7 @@ module "test" {
   oslogin             = var.oslogin
   oslogin_admins      = var.oslogin_admins
   oslogin_users       = var.oslogin_users
+  parent              = var.parent
   prefix              = var.prefix
   services            = var.services
 }
