@@ -114,8 +114,8 @@ variable "forwarding_dns_zone_domain" {
   default     = "on-prem.local."
 }
 
-variable "forwarding_zone_server_addresses" {
-  description = "Forwarding DNS Zone Server Addresses"
-  type        = list(string)
-  default     = ["8.8.8.8", "8.8.4.4"]
+variable "on_prem_cidr_range" {
+  description = "On-prem CIDR range for on-prem-in-a-box emulation."
+  type        = string
+  default     = "192.168.192.0/24"
 }

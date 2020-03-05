@@ -22,6 +22,22 @@ output "internal_address" {
   value = google_compute_instance.on_prem_in_a_box.network_interface.0.network_ip
 }
 
-output "name" {
+output "instance_name" {
   value = google_compute_instance.on_prem_in_a_box.name
+}
+
+output "vpn_ip_address" {
+  value = cidrhost(var.local_ip_cidr_range, 2)
+}
+
+output "dns_ip_address" {
+  value = cidrhost(var.local_ip_cidr_range, 3)
+}
+
+output "web_ip_address" {
+  value = cidrhost(var.local_ip_cidr_range, 4)
+}
+
+output "toolbox_ip_address" {
+  value = cidrhost(var.local_ip_cidr_range, 5)
 }
