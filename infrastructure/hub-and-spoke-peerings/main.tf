@@ -212,6 +212,7 @@ module "vm-hub" {
     nat        = false,
     addresses  = null
   }]
+  tags = ["ssh"]
   instance_count = 1
 }
 
@@ -232,6 +233,7 @@ module "vm-spoke-1" {
     nat        = false,
     addresses  = null
   }]
+  tags = ["ssh"]
   instance_count = 1
 }
 
@@ -252,6 +254,7 @@ module "vm-spoke-2" {
     nat        = false,
     addresses  = null
   }]
+  tags = ["ssh"]
   instance_count = 1
 }
 
