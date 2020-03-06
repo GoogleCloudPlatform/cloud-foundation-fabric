@@ -13,10 +13,11 @@
 # limitations under the License.
 
 locals {
-  hub_subnet_cidr_ranges     = [for subnet in keys(var.hub_subnets) : var.hub_subnets[subnet]["ip_cidr_range"]]
-  spoke_1_subnet_cidr_ranges = [for subnet in keys(var.spoke_1_subnets) : var.spoke_1_subnets[subnet]["ip_cidr_range"]]
-  spoke_2_subnet_cidr_ranges = [for subnet in keys(var.spoke_2_subnets) : var.spoke_2_subnets[subnet]["ip_cidr_range"]]
-  all_subnet_cidrs           = concat(local.hub_subnet_cidr_ranges, local.spoke_1_subnet_cidr_ranges, local.spoke_2_subnet_cidr_ranges)
+  hub_subnet_cidr_ranges     = {for subnet in keys(var.hub_subnets) : var.hub_subnets[subnet]["ip_cidr_range"] => subnet}
+  spoke_1_subnet_cidr_ranges = {for subnet in keys(var.spoke_1_subnets) : var.spoke_1_subnets[subnet]["ip_cidr_range"] => subnet}
+  spoke_2_subnet_cidr_ranges = {for subnet in keys(var.spoke_2_subnets) : var.spoke_2_subnets[subnet]["ip_cidr_range"] => subnet}
+  custom_routes_to_spokes    = merge(local.spoke_1_subnet_cidr_ranges, local.spoke_2_subnet_cidr_ranges)
+  all_subnet_cidrs           = concat(keys(local.hub_subnet_cidr_ranges), keys(local.spoke_1_subnet_cidr_ranges), keys(local.spoke_2_subnet_cidr_ranges), [var.on_prem_cidr_range])
 }
 
 ##############################################################
@@ -286,14 +287,14 @@ module "hub-to-onprem-cloud-vpn" {
       shared_secret     = null
       bgp_peer_options = {
         advertise_groups = ["ALL_SUBNETS"]
-        advertise_ip_ranges = {
-        }
-        advertise_mode = "DEFAULT"
+        advertise_ip_ranges = local.custom_routes_to_spokes
+        advertise_mode = "CUSTOM"
         route_priority = 1000
       }
     }
   }
 }
+
 module "vpc-on-prem" {
   source = "../../modules/net-vpc"
 
@@ -325,5 +326,5 @@ module "on-prem-in-a-box" {
   local_bgp_asn           = 65002
   on_prem_dns_zone        = var.forwarding_dns_zone_domain
   cloud_dns_zone          = var.private_dns_zone_domain
-  cloud_dns_forwarder_ip  = cidrhost(module.vpc-hub.subnet_ips[keys(var.hub_subnets).0], 3)
+  cloud_dns_forwarder_ip  = cidrhost(module.vpc-hub.subnet_ips[keys(var.hub_subnets).0], 2)
 }
