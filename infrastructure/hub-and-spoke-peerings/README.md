@@ -1,4 +1,4 @@
-# Hub and Spoke VPNs
+# Hub and Spoke via VPC Peering
 
 This sample creates a simple **Hub and Spoke Peerings** architecture, where the VPC network connects satellite locations (spokes) through a single intermediary location (hub) via [VPC Network Peering](https://cloud.google.com/vpc/docs/vpc-peering). 
 > **NOTE**: This example does not provide full mesh networking, if you need connectivity between spoke networks you will have to create a peering between every two spokes. Make sure you are not going to hit the [VPC Network Peering limits](https://cloud.google.com/vpc/docs/quota#vpc-peering). 
