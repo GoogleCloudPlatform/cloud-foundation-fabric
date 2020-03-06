@@ -248,6 +248,7 @@ module "vm-spoke-1" {
     nat        = false,
     addresses  = null
   }]
+  tags     = ["ssh"]
   metadata = { startup-script = local.vm-startup-script }
 }
 
@@ -263,6 +264,7 @@ module "vm-spoke-2" {
     nat        = false,
     addresses  = null
   }]
+  tags     = ["ssh"]
   metadata = { startup-script = local.vm-startup-script }
 }
 

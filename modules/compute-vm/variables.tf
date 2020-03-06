@@ -216,7 +216,7 @@ variable "service_account_scopes" {
 variable "tags" {
   description = "Instance tags."
   type        = list(string)
-  default     = ["ssh"]
+  default     = []
 }
 
 variable "use_instance_template" {

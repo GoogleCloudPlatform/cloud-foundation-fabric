@@ -186,6 +186,7 @@ module "vm-bastion" {
     addresses  = null
   }]
   instance_count = 1
+  tags           = ["ssh"]
   metadata = {
     startup-script = join("\n", [
       "#! /bin/bash",
