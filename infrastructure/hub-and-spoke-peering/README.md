@@ -37,9 +37,16 @@ gcloud container clusters get-credentials cluster-1 --zone europe-west1-b
 kubectl get all
 ```
 
-The next step is to edit the peering towards the GKE master tenant VPC, and enable export routes. The peering has a name like `gke-xxxxxxxxxxxxxxxxxxxx-xxxx-xxxx-peer`.
+The next step is to edit the peering towards the GKE master tenant VPC, and enable export routes. The peering has a name like `gke-xxxxxxxxxxxxxxxxxxxx-xxxx-xxxx-peer`, you can edit it in the Cloud Console from the *VPC network peering* page or using `gcloud`:
 
-Then run the same commands on the spoke 1 instance, confirm they work, then bring down the VPN connection by deleting one of the tunnels (or disable export routes in the peering), and issue them again. The cluster will become unreachable from the spoke 1 instance, but still be reachable from the spoke 2 instance.
+```
+gcloud compute networks peerings list --project [your project id]
+# find the gke-xxxxxxxxxxxxxxxxxxxx-xxxx-xxxx-peer in the spoke-2 network
+gcloud compute networks peerings update [peering name from above] \
+  --network spoke-2 --export-custom-routes
+```
+
+Then connect via SSH to the spoke 1 instance and run the same commands you ran on the spoke 2 instance above, you should be able to run `kubectl` commands against the cluster. To test the default situation with no supporting VPN, just comment out the two VPN modules in `main.tf` and run `terraform apply` to bring down the VPN gateways and tunnels. GKE should only become accessible from spoke 2.
 
 ## Operational considerations
 
