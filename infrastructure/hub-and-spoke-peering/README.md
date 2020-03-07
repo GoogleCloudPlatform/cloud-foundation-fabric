@@ -19,12 +19,25 @@ The example has been purposefully kept simple to show how to use and wire the VP
 
 This sample creates several distinct groups of resources:
 
-- one vpc each for hub and each spoke
-- one set of firewall rules for each vpc
+- one VPC each for hub and each spoke
+- one set of firewall rules for each VPC
 - one Cloud NAT configuration for each spoke
 - one test instance for each spoke
 - one GKE cluster with a single nodepool in spoke 2
 - one static VPN gateway in hub and spoke 2 with a single tunnel each
+
+## Testing GKE access from spoke 1
+
+As mentioned above, a VPN tunnel is used as a workaround to avoid the peering transitivity issue that would prevent any VPC other than spoke 2 to connect to the GKE master.
+
+To test cluster access, first log on to the spoke 2 instance and confirm cluster and IAM roles are set up correctly:
+
+```bash
+gcloud container clusters get-credentials cluster-1 --zone europe-west1-b
+kubectl get all
+```
+
+Once the above works run the same commands on the spoke 1 instance, confirm they work, then bring down the VPN connection by deleting one of the tunnels, and issue them again. The cluster will become unreachable from the spoke 1 instance, but still be reachable from the spoke 2 instance.
 
 ## Operational considerations
 
