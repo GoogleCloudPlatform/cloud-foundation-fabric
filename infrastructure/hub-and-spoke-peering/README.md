@@ -37,7 +37,9 @@ gcloud container clusters get-credentials cluster-1 --zone europe-west1-b
 kubectl get all
 ```
 
-Once the above works run the same commands on the spoke 1 instance, confirm they work, then bring down the VPN connection by deleting one of the tunnels, and issue them again. The cluster will become unreachable from the spoke 1 instance, but still be reachable from the spoke 2 instance.
+The next step is to edit the peering towards the GKE master tenant VPC, and enable export routes. The peering has a name like `gke-xxxxxxxxxxxxxxxxxxxx-xxxx-xxxx-peer`.
+
+Then run the same commands on the spoke 1 instance, confirm they work, then bring down the VPN connection by deleting one of the tunnels (or disable export routes in the peering), and issue them again. The cluster will become unreachable from the spoke 1 instance, but still be reachable from the spoke 2 instance.
 
 ## Operational considerations
 
