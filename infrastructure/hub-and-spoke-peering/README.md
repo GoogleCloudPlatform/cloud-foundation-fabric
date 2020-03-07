@@ -40,7 +40,7 @@ kubectl get all
 The next step is to edit the peering towards the GKE master tenant VPC, and enable export routes. The peering has a name like `gke-xxxxxxxxxxxxxxxxxxxx-xxxx-xxxx-peer`, you can edit it in the Cloud Console from the *VPC network peering* page or using `gcloud`:
 
 ```
-gcloud compute networks peerings list --project [your project id]
+gcloud compute networks peerings list
 # find the gke-xxxxxxxxxxxxxxxxxxxx-xxxx-xxxx-peer in the spoke-2 network
 gcloud compute networks peerings update [peering name from above] \
   --network spoke-2 --export-custom-routes
