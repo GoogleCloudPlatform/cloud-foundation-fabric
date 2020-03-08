@@ -24,6 +24,8 @@ This sample creates several distinct groups of resources:
 - one Cloud NAT configuration for each spoke
 - one test instance for each spoke
 - one GKE cluster with a single nodepool in spoke 2
+- one service account for the GCE instances
+- one service account for the GKE nodes
 - one static VPN gateway in hub and spoke 2 with a single tunnel each
 
 ## Testing GKE access from spoke 1
