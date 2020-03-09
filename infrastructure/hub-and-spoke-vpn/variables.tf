@@ -32,6 +32,8 @@ variable "bgp_asn" {
 }
 
 variable "bgp_interface_ranges" {
+  description = "BGP interface IP CIDR ranges."
+  type        = map(string)
   default = {
     spoke-1 = "169.254.1.0/30"
     spoke-2 = "169.254.1.4/30"
