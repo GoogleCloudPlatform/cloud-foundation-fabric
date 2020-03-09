@@ -14,3 +14,19 @@
  * limitations under the License.
  */
 
+output "test-instance" {
+  description = "Test instance details."
+  value = join(" ", [
+    module.vm-test.names[0],
+    module.vm-test.internal_ips[0]
+  ])
+}
+
+output "onprem-instance" {
+  description = "Onprem instance details."
+  value = join(" ", [
+    module.on-prem.instance_name,
+    module.on-prem.internal_address,
+    module.on-prem.external_address
+  ])
+}

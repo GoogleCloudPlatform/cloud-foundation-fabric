@@ -60,3 +60,8 @@ variable "region" {
   default     = "europe-west1"
 }
 
+variable "ssh_source_ranges" {
+  description = "IP CIDR ranges that will be allowed to connect via SSH to the onprem instance."
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
+}

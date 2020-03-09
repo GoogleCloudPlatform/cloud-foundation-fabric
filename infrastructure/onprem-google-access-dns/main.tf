@@ -17,6 +17,10 @@
 locals {
   bgp_interface_gcp    = "${cidrhost(var.bgp_interface_ranges.gcp, 1)}"
   bgp_interface_onprem = "${cidrhost(var.bgp_interface_ranges.gcp, 2)}"
+  vm-startup-script = join("\n", [
+    "#! /bin/bash",
+    "apt-get update && apt-get install -y bash-completion dnsutils kubectl"
+  ])
 }
 
 data "google_netblock_ip_ranges" "private-googleapis" {
@@ -46,6 +50,7 @@ module "vpc-firewall" {
   network              = module.vpc.name
   admin_ranges_enabled = true
   admin_ranges         = values(var.ip_ranges)
+  ssh_source_ranges    = var.ssh_source_ranges
 }
 
 module "vpn" {
@@ -77,6 +82,38 @@ module "vpn" {
     }
   }
 }
+
+module "service-account-gce" {
+  source     = "../../modules/iam-service-accounts"
+  project_id = var.project_id
+  names      = ["gce-test"]
+  iam_project_roles = {
+    (var.project_id) = [
+      "roles/logging.logWriter",
+      "roles/monitoring.metricWriter",
+    ]
+  }
+}
+
+module "vm-test" {
+  source     = "../../modules/compute-vm"
+  project_id = var.project_id
+  region     = module.vpc.subnet_regions.default
+  zone       = "${module.vpc.subnet_regions.default}-b"
+  name       = "test"
+  network_interfaces = [{
+    network    = module.vpc.self_link,
+    subnetwork = module.vpc.subnet_self_links.default,
+    nat        = false,
+    addresses  = null
+  }]
+  metadata               = { startup-script = local.vm-startup-script }
+  service_account        = module.service-account-gce.email
+  service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+  tags                   = ["ssh"]
+}
+
+# TODO: add service account, scopes and network tags support to onprem module
 
 module "on-prem" {
   source                  = "../../modules/on-prem-in-a-box/"
