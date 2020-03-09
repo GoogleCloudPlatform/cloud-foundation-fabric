@@ -99,18 +99,11 @@ variable "parent" {
 variable "prefix" {
   description = "Prefix used to generate project id and name."
   type        = string
+  default     = null
 }
 
 variable "services" {
   description = "Service APIs to enable."
   type        = list(string)
   default     = []
-}
-
-# TODO: Once terraform-providers/terraform-provider-google#3582 is
-# fixed, we can remove this variable
-variable "prevent_default_network_deletion" {
-  description = "Prevent deletion of default network (use this if your organization has skipDefaultNetworkCreation enforced)"
-  type        = bool
-  default     = false
 }

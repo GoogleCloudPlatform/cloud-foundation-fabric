@@ -31,18 +31,16 @@ locals {
   }
   parent_type = split("/", var.parent)[0]
   parent_id   = split("/", var.parent)[1]
+  prefix      = var.prefix == null ? "" : "${var.prefix}-"
 }
 
 resource "google_project" "project" {
-  org_id          = local.parent_type == "organizations" ? local.parent_id : ""
-  folder_id       = local.parent_type == "folders" ? local.parent_id : ""
-  project_id      = "${var.prefix}-${var.name}"
-  name            = "${var.prefix}-${var.name}"
-  billing_account = var.billing_account
-  # TODO: Once terraform-providers/terraform-provider-google#3582 is
-  # fixed, we remove the condition and just use
-  # var.auto_create_network
-  auto_create_network = var.prevent_default_network_deletion ? null : var.auto_create_network
+  org_id              = local.parent_type == "organizations" ? local.parent_id : null
+  folder_id           = local.parent_type == "folders" ? local.parent_id : null
+  project_id          = "${local.prefix}${var.name}"
+  name                = "${local.prefix}${var.name}"
+  billing_account     = var.billing_account
+  auto_create_network = var.auto_create_network
   labels              = var.labels
 }
 

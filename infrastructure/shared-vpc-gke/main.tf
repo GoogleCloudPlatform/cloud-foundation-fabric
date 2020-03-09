@@ -54,7 +54,6 @@ module "project-svc-gce" {
     "roles/logging.logWriter"       = [module.vm-bastion.service_account_iam_email],
     "roles/monitoring.metricWriter" = [module.vm-bastion.service_account_iam_email],
     "roles/owner"                   = var.owners_gce,
-
   }
 }
 

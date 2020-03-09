@@ -10,10 +10,10 @@ The example has been purposefully kept simple to show how to use and wire the VP
 
 This sample creates several distinct groups of resources:
 
-- one vpc each for hub and each spoke
-- one set of firewall rules for each vpc
+- one VPC for each hub and each spoke
+- one set of firewall rules for each VPC
 - one VPN gateway, one tunnel and one Cloud Router for each spoke
-- two VPN gateways, two tunnels and two Cloud Routers for the hub
+- two VPN gateways, two tunnels and two Cloud Routers for the hub (one for each spoke)
 - one DNS private zone in the hub
 - one DNS peering zone in each spoke
 - one Cloud NAT configuration for each spoke
@@ -21,11 +21,18 @@ This sample creates several distinct groups of resources:
 
 ## Operational considerations
 
-A single pre-existing project is used in this example to keep variables and complexity to a minimum, in a real world scenarios each spoke would probably use a separate project.
+A single pre-existing project is used in this example to keep variables and complexity to a minimum, in a real world scenarios each spoke would probably use a separate project. The provided project needs a valid billing account and the Compute and DNS APIs enabled. You can easily create such a project  with the [project module](../../modules/project) or with the following commands:
 
-The example does not account for HA, but the VPN gateways can be easily upgraded to use HA VPN via the relevant [module](../../modules/net-vpn-ha).
+``` shell
+MY_PROJECT_ID="<desired project id>"
+gcloud projects create $MY_PROJECT_ID
+gcloud alpha billing projects link --billing-account=XXXXXX-XXXXXX-XXXXXX $MY_PROJECT_ID
+gcloud services enable --project=$MY_PROJECT_ID {compute,dns}.googleapis.com
+```
 
-If a single router and VPN gateway is used in the hub to manage all tunnels, particular care must be taken in announcing ranges from hub to spokes as Cloud Router does not explicitly support transitivity, and overlapping routes received from both sides create unintended side effects. The simple workaround is to announce a single aggregated route to spokes so that it does not overlap with any of the spokes' ranges.
+The example does not account for HA, but the VPN gateways can be easily upgraded to use HA VPN via the [net-vpn-ha module](../../modules/net-vpn-ha).
+
+If a single router and VPN gateway are used in the hub to manage all tunnels, particular care must be taken in announcing ranges from hub to spokes, as Cloud Router does not explicitly support transitivity and overlapping routes received from both sides create unintended side effects. The simple workaround is to announce a single aggregated route from hub to spokes so that it does not overlap with any of the ranges advertised by each spoke to the hub.
 
 <!-- BEGIN TFDOC -->
 ## Variables

@@ -15,10 +15,10 @@ This sample creates several distinct groups of resources:
   - service project configured for GKE clusters
   - service project configured for GCE instances
 - networking
-  - the VPC network
+  - the shared VPC network
   - one subnet with secondary ranges for GKE clusters
   - one subnet for GCE instances
-  - firewall rules for SSH access via IAP and open communication within the VPC
+  - firewall rules for [SSH access via IAP](https://cloud.google.com/iap/docs/using-tcp-forwarding) and open communication within the VPC
   - Cloud NAT service
 - IAM
   - one service account for the bastion CGE instance
