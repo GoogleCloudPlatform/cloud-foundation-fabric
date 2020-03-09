@@ -45,7 +45,7 @@ variable "project_id" {
 }
 
 variable "region" {
-  description = "VPC regions."
+  description = "VPC region."
   type        = string
   default     = "europe-west1"
 }
