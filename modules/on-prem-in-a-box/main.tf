@@ -95,3 +95,19 @@ resource "google_compute_firewall" "allow-vpn" {
     protocol = "icmp"
   }
 }
+
+resource "google_compute_firewall" "allow-iap" {
+  name        = "onprem-in-a-box-allow-iap"
+  description = "Allow SSH traffic to the onprem instance from IAP"
+
+  network = var.network
+  project = var.project_id
+
+  source_ranges = ["35.235.240.0/20"]
+  target_tags   = ["onprem-in-a-box"]
+
+  allow {
+    protocol = "tcp"
+    ports    = ["22"]
+  }
+}

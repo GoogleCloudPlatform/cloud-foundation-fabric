@@ -3,8 +3,6 @@
 This module allows emulating an on-premise enviroment in a single GCE VM, by connecting a Docker Network to a VPC via a static or dynamic (BGP) VPN connection implemented with Strongswan. It provides a good playground for testing private access and hybrid DNS connectivity between on-premise and Google Cloud.
 
 To see this module in action, please refer to the folowing end-to-end network examples:
-- [shared-vpc](../../infrastructure/shared-vpc/)
-- [hub-and-spoke-vpns](../../infrastructure/hub-and-spoke-vpns/)
 - [hub-and-spoke-peerings](../../infrastructure/hub-and-spoke-peerings/)
 
 ## Examples
@@ -122,7 +120,11 @@ module "on-prem" {
 
 | name | description | sensitive |
 |---|---|:---:|
+| dns_ip_address | None |  |
 | external_address | None |  |
+| instance_name | None |  |
 | internal_address | None |  |
-| name | None |  |
+| toolbox_ip_address | None |  |
+| vpn_ip_address | None |  |
+| web_ip_address | None |  |
 <!-- END TFDOC -->
