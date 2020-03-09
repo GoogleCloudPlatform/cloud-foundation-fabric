@@ -5,6 +5,12 @@ This module allows emulating an on-premise enviroment in a single GCE VM, by con
 To see this module in action, please refer to the folowing end-to-end network examples:
 - [hub-and-spoke-peerings](../../infrastructure/hub-and-spoke-peerings/)
 
+## TODO
+
+- [ ] describe how to check and troubleshoot the onprem VPN and services
+- [ ] add support for service account, scopes and network tags
+- [ ] allow passing in arbitrary CoreDNS configurations instead of tweaking a default one via variables
+
 ## Examples
 
 ### Static VPN Gateway
