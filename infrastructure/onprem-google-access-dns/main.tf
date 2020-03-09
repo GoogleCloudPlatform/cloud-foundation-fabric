@@ -31,6 +31,10 @@ data "google_netblock_ip_ranges" "dns-forwarders" {
   range_type = "dns-forwarders"
 }
 
+################################################################################
+#                                  Networking                                  #
+################################################################################
+
 module "vpc" {
   source     = "../../modules/net-vpc"
   project_id = var.project_id
@@ -83,6 +87,59 @@ module "vpn" {
   }
 }
 
+module "nat" {
+  source        = "../../modules/net-cloudnat"
+  project_id    = var.project_id
+  region        = module.vpc.subnet_regions.default
+  name          = "default"
+  router_create = false
+  router_name   = module.vpn.router_name
+}
+
+################################################################################
+#                                     DNS                                      #
+################################################################################
+
+module "dns-gcp" {
+  source          = "../../modules/dns"
+  project_id      = var.project_id
+  type            = "private"
+  name            = "gcp-example"
+  domain          = "gcp.example.com."
+  client_networks = [module.vpc.self_link]
+  recordsets = concat(
+    [{ name = "localhost", type = "A", ttl = 300, records = ["127.0.0.1"] }],
+    [
+      for name, ip in zipmap(module.vm-test.names, module.vm-test.internal_ips) :
+      { name = name, type = "A", ttl = 300, records = [ip] }
+    ]
+  )
+}
+
+module "dns-onprem" {
+  source          = "../../modules/dns"
+  project_id      = var.project_id
+  type            = "forwarding"
+  name            = "onprem-example"
+  domain          = "onprem.example.com."
+  client_networks = [module.vpc.self_link]
+  forwarders      = [cidrhost(var.ip_ranges.onprem, 3)]
+}
+
+resource "google_dns_policy" "example-policy" {
+  provider                  = google-beta
+  name                      = "gcp-inbound"
+  project                   = var.project_id
+  enable_inbound_forwarding = true
+  networks {
+    network_url = module.vpc.self_link
+  }
+}
+
+################################################################################
+#                                Test instance                                 #
+################################################################################
+
 module "service-account-gce" {
   source     = "../../modules/iam-service-accounts"
   project_id = var.project_id
@@ -113,7 +170,12 @@ module "vm-test" {
   tags                   = ["ssh"]
 }
 
+################################################################################
+#                                   On prem                                    #
+################################################################################
+
 # TODO: add service account, scopes and network tags support to onprem module
+# TODO: add CoreDNS configuration for private.googleapis.com
 
 module "on-prem" {
   source                  = "../../modules/on-prem-in-a-box/"
