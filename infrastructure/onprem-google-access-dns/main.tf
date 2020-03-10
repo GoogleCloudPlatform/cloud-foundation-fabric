@@ -126,10 +126,10 @@ module "dns-onprem" {
   forwarders      = [cidrhost(var.ip_ranges.onprem, 3)]
 }
 
-resource "google_dns_policy" "example-policy" {
+resource "google_dns_policy" "inbound" {
   provider                  = google-beta
-  name                      = "gcp-inbound"
   project                   = var.project_id
+  name                      = "gcp-inbound"
   enable_inbound_forwarding = true
   networks {
     network_url = module.vpc.self_link
@@ -174,24 +174,30 @@ module "vm-test" {
 #                                   On prem                                    #
 ################################################################################
 
-# TODO: add service account, scopes and network tags support to onprem module
-# TODO: add CoreDNS configuration for private.googleapis.com
+data "template_file" "corefile" {
+  template = file("assets/Corefile")
+  vars = {
+    resolver_address = var.resolver_address
+  }
+}
 
 module "on-prem" {
-  source                  = "../../modules/on-prem-in-a-box/"
-  project_id              = var.project_id
-  zone                    = "${var.region}-b"
-  network                 = module.vpc.name
-  subnet_self_link        = module.vpc.subnet_self_links.default
-  vpn_gateway_type        = "dynamic"
-  peer_ip                 = module.vpn.address
-  local_ip_cidr_range     = var.ip_ranges.onprem
-  shared_secret           = module.vpn.random_secret
-  peer_bgp_session_range  = "${local.bgp_interface_gcp}/30"
-  local_bgp_session_range = "${local.bgp_interface_gcp}/30"
-  peer_bgp_asn            = var.bgp_asn.gcp
-  local_bgp_asn           = var.bgp_asn.onprem
-  cloud_dns_zone          = var.dns_domains.gcp
-  on_prem_dns_zone        = var.dns_domains.onprem
-  cloud_dns_forwarder_ip  = cidrhost(module.vpc.subnet_ips.default, 2)
+  source              = "../../modules/on-prem-in-a-box/"
+  project_id          = var.project_id
+  zone                = "${var.region}-b"
+  network             = module.vpc.name
+  subnet_self_link    = module.vpc.subnet_self_links.default
+  local_ip_cidr_range = var.ip_ranges.onprem
+  coredns_config      = data.template_file.corefile.rendered
+  vpn_config = {
+    peer_ip       = module.vpn.address
+    shared_secret = module.vpn.random_secret
+    type          = "dynamic"
+  }
+  vpn_dynamic_config = {
+    local_bgp_asn     = var.bgp_asn.onprem
+    local_bgp_address = local.bgp_interface_onprem
+    peer_bgp_asn      = var.bgp_asn.gcp
+    peer_bgp_address  = local.bgp_interface_gcp
+  }
 }

@@ -60,6 +60,12 @@ variable "region" {
   default     = "europe-west1"
 }
 
+variable "resolver_address" {
+  description = "GCP DNS resolver address for the inbound policy."
+  type        = string
+  default     = "10.0.0.2"
+}
+
 variable "ssh_source_ranges" {
   description = "IP CIDR ranges that will be allowed to connect via SSH to the onprem instance."
   type        = list(string)

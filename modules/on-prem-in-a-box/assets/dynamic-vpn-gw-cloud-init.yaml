@@ -105,7 +105,7 @@ write_files:
       routing_sidecar_dns:
         image: alpine
         network_mode: service:dns
-        command: | 
+        command: |
           /bin/sh -c "\
              ip route del default &&\
              ip route add default via ${vpn_ip_address}"
@@ -126,7 +126,7 @@ write_files:
       routing_sidecar_web:
         image: alpine
         network_mode: service:web
-        command: | 
+        command: |
           /bin/sh -c "\
              ip route del default &&\
              ip route add default via ${vpn_ip_address}"
@@ -145,7 +145,7 @@ write_files:
       routing_sidecar_toolbox:
         image: alpine
         network_mode: service:toolbox
-        command: | 
+        command: |
           /bin/sh -c "\
              ip route del default &&\
              ip route add default via ${vpn_ip_address}"
@@ -179,14 +179,14 @@ write_files:
       ike=aes256gcm16-sha512-modp2048
       esp=aes256gcm16-sha512-modp8192
       authby=psk
-    
+
     conn gcp
-      leftupdown="/var/lib/strongswan/ipsec-vti.sh 0 ${peer_bgp_session_range} ${local_bgp_session_range}"
+      leftupdown="/var/lib/strongswan/ipsec-vti.sh 0 ${peer_bgp_address}/30 ${local_bgp_address}/30"
       left=%any
       leftid=%any
       leftsubnet=0.0.0.0/0
       leftauth=psk
-      right=%${peer_ip}
+      right=${peer_ip_wildcard}
       rightid=${peer_ip}
       rightsubnet=0.0.0.0/0
       rightauth=psk
@@ -210,7 +210,7 @@ write_files:
   owner: root:root
   permissions: '0644'
   content: |
-    router id ${local_bgp_ip};
+    router id ${local_bgp_address};
 
     # Watch interface up/down events
     protocol device {
@@ -221,10 +221,10 @@ write_files:
     protocol kernel {
           learn;
           merge paths on; # For ECMP
-          export filter { 
-                  krt_prefsrc = ${vpn_ip_address}; # Internal IP Address of the strongSwan VM. 
+          export filter {
+                  krt_prefsrc = ${vpn_ip_address}; # Internal IP Address of the strongSwan VM.
                   accept; # Sync all routes to kernel
-          };       
+          };
           import all; # Required due to /32 on GCE VMs for the static route below
     }
 
@@ -233,14 +233,14 @@ write_files:
           # Network connected to eth0
           route ${local_ip_cidr_range} recursive ${local_gw_ip};
           # Private google access
-          route 199.36.153.4/30 via ${peer_bgp_ip};
-          # Cloud DNS forwarding zone 
-          route 35.199.192.0/19 via ${peer_bgp_ip};  
+          route 199.36.153.4/30 via ${peer_bgp_address};
+          # Cloud DNS forwarding zone
+          route 35.199.192.0/19 via ${peer_bgp_address};
     }
     # Prefix lists for routing security
     # Allow any possible GCP Subnet
-    define GCP_VPC_A_PREFIXES = [ 10.0.0.0/8{9,29}, 172.16.0.0/12{12,29}, 192.168.0.0/16{16,29} ]; 
-    define LOCAL_PREFIXES     = [ ${local_ip_cidr_range} ];  
+    define GCP_VPC_A_PREFIXES = [ 10.0.0.0/8{9,29}, 172.16.0.0/12{12,29}, 192.168.0.0/16{16,29} ];
+    define LOCAL_PREFIXES     = [ ${local_ip_cidr_range} ];
 
     # Filter received prefixes
     filter gcp_vpc_a_in
@@ -270,8 +270,8 @@ write_files:
 
     protocol bgp gcp_vpc_a_tun1 from gcp_vpc_a
     {
-          local ${local_bgp_ip} as ${local_bgp_asn};
-          neighbor ${peer_bgp_ip} as ${peer_bgp_asn};
+          local ${local_bgp_address} as ${local_bgp_asn};
+          neighbor ${peer_bgp_address} as ${peer_bgp_asn};
     }
 
 # CoreDNS configuration
@@ -279,32 +279,17 @@ write_files:
   owner: root:root
   permissions: '0644'
   content: |
-    ${on_prem_dns_zone} {
-      root /etc/coredns
-      hosts onprem.hosts
-      log
-      errors
-    }
-    ${cloud_dns_zone} {
-      forward . ${cloud_dns_forwarder_ip}
-      log
-      errors
-    } 
-    . {
-      forward . 8.8.8.8
-      log
-      errors
-    }
+    ${coredns_config}
 
 # CoreDNS onprem hosts file
 - path: /var/lib/docker-compose/onprem/coredns/onprem.hosts
   owner: root:root
   permissions: '0644'
   content: |
-    ${vpn_ip_address} gw.${on_prem_dns_zone}
-    ${dns_ip_address} ns.${on_prem_dns_zone}
-    ${web_ip_address} www.${on_prem_dns_zone}
-    ${toolbox_ip_address} toolbox.${on_prem_dns_zone}
+    ${vpn_ip_address} gw.${dns_domain}
+    ${dns_ip_address} ns.${dns_domain}
+    ${web_ip_address} www.${dns_domain}
+    ${toolbox_ip_address} toolbox.${dns_domain}
 
 # Minimal nginx index page
 - path: /var/lib/docker-compose/onprem/nginx/index.html

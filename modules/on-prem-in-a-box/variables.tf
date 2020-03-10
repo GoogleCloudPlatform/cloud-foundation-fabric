@@ -14,108 +14,105 @@
  * limitations under the License.
  */
 
-variable "project_id" {
+variable "coredns_config" {
+  description = "CoreDNS configuration, set to null to use default."
   type        = string
-  description = "Project id."
+  default     = null
 }
 
-variable "name" {
+variable "dns_domain" {
+  description = "DNS domain used for on-prem host records."
   type        = string
-  description = "On-prem-in-a-box compute instance name."
-  default     = "on-prem-in-a-box"
-}
-
-variable "zone" {
-  type        = string
-  description = "Compute zone."
-}
-
-variable "network" {
-  type        = string
-  description = "VPC network name."
-}
-
-variable "subnet_self_link" {
-  type        = string
-  description = "VPC subnet self link."
-}
-
-variable "machine_type" {
-  type        = string
-  description = "Machine type."
-  default     = "g1-small"
-}
-
-variable "network_tags" {
-  type        = list(string)
-  description = "Network tags."
-  default     = ["ssh"]
-}
-
-variable "vpn_gateway_type" {
-  type        = string
-  description = "VPN Gateway type, applicable values are `static` and `dynamic`."
-}
-
-
-variable "peer_ip" {
-  type        = string
-  description = "IP Address of Cloud VPN Gateway."
-}
-
-variable "peer_bgp_session_range" {
-  type        = string
-  description = "Peer BGP sesison range of the BGP interface. Should be provided if `vpn_gateway_type` is `dynamic`."
-  default     = "169.254.0.1/30"
-}
-
-variable "local_bgp_session_range" {
-  type        = string
-  description = "Local BGP sesison range of the BGP interface. Should be provided if `vpn_gateway_type` is `dynamic`."
-  default     = "169.254.0.2/30"
-}
-
-variable "peer_bgp_asn" {
-  type        = string
-  description = "Peer BGP ASN. Should be provided if `vpn_gateway_type` is `dynamic`."
-  default     = "65001"
-}
-
-variable "local_bgp_asn" {
-  type        = string
-  description = "Local BGP ASN. Should be provided if `vpn_gateway_type` is `dynamic`."
-  default     = "65002"
+  default     = "onprem.example.com"
 }
 
 variable "local_ip_cidr_range" {
-  type    = string
-  default = "192.168.192.0/24"
-}
-
-variable "remote_ip_cidr_ranges" {
-  description = "List of comma separated remote CIDR ranges. Should be provided if `vpn_gateway_type` is `static`."
+  description = "IP CIDR range used for the Docker onprem network."
   type        = string
-  default     = ""
+  default     = "192.168.192.0/24"
 }
 
-variable "shared_secret" {
-  type = string
-}
-
-variable "on_prem_dns_zone" {
-  description = "On-premises DNS Private Zone Name."
+variable "machine_type" {
+  description = "Machine type."
   type        = string
-  default     = "onprem.internal"
+  default     = "g1-small"
 }
 
-variable "cloud_dns_zone" {
-  description = "Google Cloud DNS Private Zone Name."
+variable "name" {
+  description = "On-prem-in-a-box compute instance name."
   type        = string
-  default     = "cloud.internal"
+  default     = "onprem"
 }
 
-variable "cloud_dns_forwarder_ip" {
-  description = "Inbound DNS Forwarding ip address."
+variable "network" {
+  description = "VPC network name."
   type        = string
-  default     = "172.16.0.3"
+}
+
+variable "network_tags" {
+  description = "Network tags."
+  type        = list(string)
+  default     = ["ssh"]
+}
+
+variable "project_id" {
+  description = "Project id."
+  type        = string
+}
+
+variable "service_account" {
+  description = "Service account customization."
+  type = object({
+    email  = string
+    scopes = list(string)
+  })
+  default = {
+    email = null
+    scopes = [
+      "https://www.googleapis.com/auth/devstorage.read_only",
+      "https://www.googleapis.com/auth/logging.write",
+      "https://www.googleapis.com/auth/monitoring.write"
+    ]
+  }
+}
+
+variable "subnet_self_link" {
+  description = "VPC subnet self link."
+  type        = string
+}
+
+variable "vpn_config" {
+  description = "VPN configuration, type must be one of 'dynamic' or 'static'."
+  type = object({
+    peer_ip       = string
+    shared_secret = string
+    type          = string
+  })
+}
+
+variable "vpn_dynamic_config" {
+  description = "BGP configuration for dynamic VPN, ignored if VPN type is 'static'."
+  type = object({
+    local_bgp_asn     = number
+    local_bgp_address = string
+    peer_bgp_asn      = number
+    peer_bgp_address  = string
+  })
+  default = {
+    local_bgp_asn     = 65002
+    local_bgp_address = "169.254.0.2"
+    peer_bgp_asn      = 65001
+    peer_bgp_address  = "169.254.0.1"
+  }
+}
+
+variable "vpn_static_ranges" {
+  description = "Remote CIDR ranges for static VPN, ignored if VPN type is 'dynamic'."
+  type        = list(string)
+  default     = []
+}
+
+variable "zone" {
+  description = "Compute zone."
+  type        = string
 }

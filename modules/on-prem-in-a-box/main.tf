@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
+locals {
+  corefile = (
+    var.coredns_config == null || var.coredns_config == ""
+    ? data.template_file.corefile.rendered
+    : var.coredns_config
+  )
+}
+
 resource "google_compute_address" "static" {
   project      = var.project_id
   name         = var.name
@@ -26,7 +34,7 @@ resource "google_compute_instance" "on_prem_in_a_box" {
   name         = var.name
   machine_type = var.machine_type
   zone         = var.zone
-  tags         = concat(var.network_tags, list("onprem-in-a-box"))
+  tags         = concat(var.network_tags, ["onprem"])
 
   boot_disk {
     initialize_params {
@@ -45,67 +53,76 @@ resource "google_compute_instance" "on_prem_in_a_box" {
     user-data = data.template_file.vpn-gw.rendered
   }
 
+  service_account {
+    email  = var.service_account.email
+    scopes = var.service_account.scopes
+  }
+
+}
+
+data "template_file" "corefile" {
+  template = file("${path.module}/assets/Corefile")
+  vars = {
+    dns_domain = var.dns_domain
+  }
 }
 
 data "template_file" "vpn-gw" {
-  template = file(format("%s/assets/%s-vpn-gw-cloud-init.yaml", path.module, var.vpn_gateway_type))
+  template = file(format(
+    "%s/assets/%s-vpn-gw-cloud-init.yaml", path.module, var.vpn_config.type
+  ))
 
   vars = {
-    instance_name           = var.name
-    local_ip_cidr_range     = var.local_ip_cidr_range
-    peer_ip                 = var.peer_ip
-    remote_ip_cidr_ranges   = var.remote_ip_cidr_ranges
-    shared_secret           = var.shared_secret
-    local_gw_ip             = cidrhost(var.local_ip_cidr_range, 1)
-    vpn_ip_address          = cidrhost(var.local_ip_cidr_range, 2)
-    dns_ip_address          = cidrhost(var.local_ip_cidr_range, 3)
-    web_ip_address          = cidrhost(var.local_ip_cidr_range, 4)
-    toolbox_ip_address      = cidrhost(var.local_ip_cidr_range, 5)
-    peer_bgp_session_range  = var.peer_bgp_session_range
-    local_bgp_session_range = var.local_bgp_session_range
-    peer_bgp_ip             = split("/", var.peer_bgp_session_range)[0]
-    local_bgp_ip            = split("/", var.local_bgp_session_range)[0]
-    peer_bgp_asn            = var.peer_bgp_asn
-    local_bgp_asn           = var.local_bgp_asn
-    cloud_dns_zone          = var.cloud_dns_zone
-    cloud_dns_forwarder_ip  = var.cloud_dns_forwarder_ip
-    on_prem_dns_zone        = var.on_prem_dns_zone
+    coredns_config      = indent(4, local.corefile)
+    dns_domain          = var.dns_domain
+    instance_name       = var.name
+    local_ip_cidr_range = var.local_ip_cidr_range
+    local_gw_ip         = cidrhost(var.local_ip_cidr_range, 1)
+    vpn_ip_address      = cidrhost(var.local_ip_cidr_range, 2)
+    dns_ip_address      = cidrhost(var.local_ip_cidr_range, 3)
+    web_ip_address      = cidrhost(var.local_ip_cidr_range, 4)
+    toolbox_ip_address  = cidrhost(var.local_ip_cidr_range, 5)
+    # vpn config
+    peer_ip          = var.vpn_config.peer_ip
+    peer_ip_wildcard = "%${var.vpn_config.peer_ip}"
+    shared_secret    = var.vpn_config.shared_secret
+    # vpn dynamic config
+    local_bgp_asn     = var.vpn_dynamic_config.local_bgp_asn
+    local_bgp_address = var.vpn_dynamic_config.local_bgp_address
+    peer_bgp_asn      = var.vpn_dynamic_config.peer_bgp_asn
+    peer_bgp_address  = var.vpn_dynamic_config.peer_bgp_address
+    # vpn static ranges
+    vpn_static_ranges = join(",", var.vpn_static_ranges)
   }
 }
 
+# TODO: use a narrower firewall rule and tie it to the service account
+
 resource "google_compute_firewall" "allow-vpn" {
-  name        = "onprem-in-a-box-allow-vpn"
-  description = "Allow VPN traffic to the onprem instance"
-
-  network = var.network
-  project = var.project_id
-
-  source_ranges = [format("%s/32", var.peer_ip)]
-  target_tags   = ["onprem-in-a-box"]
-
+  name          = "onprem-in-a-box-allow-vpn"
+  description   = "Allow VPN traffic to the onprem instance"
+  network       = var.network
+  project       = var.project_id
+  source_ranges = [format("%s/32", var.vpn_config.peer_ip)]
+  target_tags   = ["onprem"]
   allow {
     protocol = "tcp"
   }
-
   allow {
     protocol = "udp"
   }
-
   allow {
     protocol = "icmp"
   }
 }
 
 resource "google_compute_firewall" "allow-iap" {
-  name        = "onprem-in-a-box-allow-iap"
-  description = "Allow SSH traffic to the onprem instance from IAP"
-
-  network = var.network
-  project = var.project_id
-
+  name          = "onprem-in-a-box-allow-iap"
+  description   = "Allow SSH traffic to the onprem instance from IAP"
+  network       = var.network
+  project       = var.project_id
   source_ranges = ["35.235.240.0/20"]
-  target_tags   = ["onprem-in-a-box"]
-
+  target_tags   = ["onprem"]
   allow {
     protocol = "tcp"
     ports    = ["22"]

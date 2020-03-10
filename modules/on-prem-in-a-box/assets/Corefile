@@ -1,0 +1,11 @@
+${dns_domain} {
+  root /etc/coredns
+  hosts onprem.hosts
+  log
+  errors
+}
+. {
+  forward . 8.8.8.8
+  log
+  errors
+}
