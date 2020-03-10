@@ -30,7 +30,7 @@ The on-prem module uses a CoreDNS container to expose its DNS service, configure
 
 - the onprem block serving static records for the `onprem.example.com` zone that map to each of the on-prem containers
 - the forwarding block for the `gcp.example.com` zone and for Google Private Access, that map to the IP address of the Cloud DNS inbound policy
-- the `google.internal` block that exposes to containers a name for the instance metadata address, used to fetch service account credentials
+- the `google.internal` block that exposes to containers a name for the instance metadata address
 - the default block that forwards to Google public DNS resolvers
 
 This is the CoreDNS configuration:
