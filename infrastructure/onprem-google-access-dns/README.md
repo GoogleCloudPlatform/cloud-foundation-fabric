@@ -10,6 +10,10 @@ The example has been purposefully kept simple to show how to use and wire the on
 
 ![High-level diagram](diagram.png "High-level diagram")
 
+## TODO
+
+- [ ] explain how to find and set the inbound policy address
+
 ## Managed resources and services
 
 This sample creates several distinct groups of resources:
