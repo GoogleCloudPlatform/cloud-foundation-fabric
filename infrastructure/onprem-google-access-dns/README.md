@@ -123,15 +123,16 @@ The VPN used to connect to the on-premises environment does not account for HA, 
 | project_id | Project id for all resources. | <code title="">string</code> | ✓ |  |
 | *bgp_asn* | BGP ASNs. | <code title="map&#40;number&#41;">map(number)</code> |  | <code title="&#123;&#10;gcp    &#61; 64513&#10;onprem &#61; 64514&#10;&#125;">...</code> |
 | *bgp_interface_ranges* | BGP interface IP CIDR ranges. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="&#123;&#10;gcp &#61; &#34;169.254.1.0&#47;30&#34;&#10;&#125;">...</code> |
-| *dns_domains* | Private DNS domain names. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="&#123;&#10;gcp    &#61; &#34;gcp.example.com&#34;&#10;onprem &#61; &#34;onprem.example.com&#34;&#10;&#125;">...</code> |
 | *ip_ranges* | IP CIDR ranges. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="&#123;&#10;gcp    &#61; &#34;10.0.0.0&#47;24&#34;&#10;onprem &#61; &#34;10.0.16.0&#47;24&#34;&#10;&#125;">...</code> |
 | *region* | VPC region. | <code title="">string</code> |  | <code title="">europe-west1</code> |
+| *resolver_address* | GCP DNS resolver address for the inbound policy. | <code title="">string</code> |  | <code title="">10.0.0.2</code> |
 | *ssh_source_ranges* | IP CIDR ranges that will be allowed to connect via SSH to the onprem instance. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">["0.0.0.0/0"]</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
+| foo | None |  |
 | onprem-instance | Onprem instance details. |  |
 | test-instance | Test instance details. |  |
 <!-- END TFDOC -->

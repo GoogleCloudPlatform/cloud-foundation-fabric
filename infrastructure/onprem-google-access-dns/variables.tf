@@ -31,15 +31,6 @@ variable "bgp_interface_ranges" {
   }
 }
 
-variable "dns_domains" {
-  description = "Private DNS domain names."
-  type        = map(string)
-  default = {
-    gcp    = "gcp.example.com"
-    onprem = "onprem.example.com"
-  }
-}
-
 variable "ip_ranges" {
   description = "IP CIDR ranges."
   type        = map(string)
