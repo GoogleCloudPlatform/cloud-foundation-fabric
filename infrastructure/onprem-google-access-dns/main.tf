@@ -17,6 +17,13 @@
 locals {
   bgp_interface_gcp    = "${cidrhost(var.bgp_interface_ranges.gcp, 1)}"
   bgp_interface_onprem = "${cidrhost(var.bgp_interface_ranges.gcp, 2)}"
+  netblocks = {
+    dns = data.google_netblock_ip_ranges.dns-forwarders.cidr_blocks_ipv4.0
+    api = data.google_netblock_ip_ranges.private-googleapis.cidr_blocks_ipv4.0
+  }
+  vips = {
+    api = [for i in range(4) : cidrhost(local.netblocks.api, i)]
+  }
   vm-startup-script = join("\n", [
     "#! /bin/bash",
     "apt-get update && apt-get install -y bash-completion dnsutils kubectl"
@@ -73,8 +80,8 @@ module "vpn" {
       bgp_peer_options = {
         advertise_groups = ["ALL_SUBNETS"]
         advertise_ip_ranges = {
-          (data.google_netblock_ip_ranges.private-googleapis.cidr_blocks_ipv4.0) = "private-googleapis"
-          (data.google_netblock_ip_ranges.dns-forwarders.cidr_blocks_ipv4.0)     = "dns-forwarders"
+          (local.netblocks.api) = "private-googleapis"
+          (local.netblocks.dns) = "dns-forwarders"
         }
         advertise_mode = "CUSTOM"
         route_priority = 1000
@@ -114,6 +121,23 @@ module "dns-gcp" {
       { name = name, type = "A", ttl = 300, records = [ip] }
     ]
   )
+}
+
+module "dns-api" {
+  source          = "../../modules/dns"
+  project_id      = var.project_id
+  type            = "private"
+  name            = "googleapis"
+  domain          = "googleapis.com."
+  client_networks = [module.vpc.self_link]
+  recordsets = [
+    {
+      name = "*", type = "CNAME", ttl = 300, records = ["private.googleapis.com."]
+    },
+    {
+      name = "private", type = "A", ttl = 300, records = local.vips.api
+    },
+  ]
 }
 
 module "dns-onprem" {
