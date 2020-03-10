@@ -205,6 +205,19 @@ data "template_file" "corefile" {
   }
 }
 
+module "service-account-onprem" {
+  source     = "../../modules/iam-service-accounts"
+  project_id = var.project_id
+  names      = ["gce-onprem"]
+  iam_project_roles = {
+    (var.project_id) = [
+      "roles/compute.viewer",
+      "roles/logging.logWriter",
+      "roles/monitoring.metricWriter",
+    ]
+  }
+}
+
 module "on-prem" {
   source              = "../../modules/on-prem-in-a-box/"
   project_id          = var.project_id
@@ -223,5 +236,9 @@ module "on-prem" {
     local_bgp_address = local.bgp_interface_onprem
     peer_bgp_asn      = var.bgp_asn.gcp
     peer_bgp_address  = local.bgp_interface_gcp
+  }
+  service_account = {
+    email  = module.service-account-onprem.email
+    scopes = ["https://www.googleapis.com/auth/cloud-platform"]
   }
 }

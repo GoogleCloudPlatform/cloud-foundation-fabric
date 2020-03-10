@@ -19,21 +19,95 @@ This sample creates several distinct groups of resources:
 - one Cloud NAT configuration
 - one test instance
 - one service account for the test instance
+- one service account for the onprem instance
 - one dynamic VPN gateway with a single tunnel
 - two DNS zones (private and forwarding) and a DNS inbound policy
 - one emulated on-premises environment in a single GCP instance
 
 ## CoreDNS configuration for on-premises
 
-TODO
+The on-prem module uses a CoreDNS container to expose its DNS service, configured with foru distinct blocks:
 
-## Testing DNS
+- the onprem block serving static records for the `onprem.example.com` zone that map to each of the on-prem containers
+- the forwarding block for the `gcp.example.com` zone and for Google Private Access, that map to the IP address of the Cloud DNS inbound policy
+- the `google.internal` block that exposes to containers a name for the instance metadata address, used to fetch service account credentials
+- the default block that forwards to Google public DNS resolvers
 
-TODO
+This is the CoreDNS configuration:
 
-## Testing Private Access
+```coredns
+onprem.example.com {
+  root /etc/coredns
+  hosts onprem.hosts
+  log
+  errors
+}
+gcp.example.com googleapis.com {
+  forward . ${resolver_address}
+  log
+  errors
+}
+google.internal {
+  hosts {
+    169.254.169.254 metadata.google.internal
+  }
+  no_reverse
+}
+. {
+  forward . 8.8.8.8
+  log
+  errors
+}
+```
 
-TODO
+## Testing
+
+### Onprem to cloud
+
+```bash
+# connect to the onprem instance
+gcloud compute ssh onprem
+
+# check that the BGP session works and the advertised routes are set
+sudo docker exec -it onprem_bird_1 ip route |grep bird
+10.0.0.0/24 via 169.254.1.1 dev vti0  proto bird  src 10.0.16.2
+35.199.192.0/19 via 169.254.1.1 dev vti0  proto bird  src 10.0.16.2
+199.36.153.4/30 via 169.254.1.1 dev vti0  proto bird  src 10.0.16.2
+
+# get a shell on the toolbox container
+sudo docker exec -it onprem_toolbox_1 sh
+
+# test forwarding from CoreDNS via the Cloud DNS inbound policy
+dig test-1.gcp.example.com +short
+10.0.0.3
+
+# test that Private Access is configured correctly
+dig compute.googleapis.com +short
+private.googleapis.com.
+199.36.153.8
+199.36.153.9
+199.36.153.10
+199.36.153.11
+
+# issue an API call via Private Access
+gcloud config set project [your project id]
+gcloud compute instances list
+```
+
+### Cloud to onprem
+
+```bash
+# connect to the test instance
+gcloud compute ssh test-1
+
+# test forwarding from Cloud DNS to onprem CoreDNS (address may differ)
+dig gw.onprem.example.com +short
+10.0.16.2
+
+# test a request to the onprem web server
+curl www.onprem.example.com -s |grep h1
+<h1>On Prem in a Box</h1>
+```
 
 ## Operational considerations
 
