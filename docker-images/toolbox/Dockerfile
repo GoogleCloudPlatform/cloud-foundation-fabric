@@ -12,26 +12,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM debian:buster-slim
 
-ENV DEBIAN_FRONTEND noninteractive
+FROM google/cloud-sdk:alpine
 
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod 0755 /entrypoint.sh
 
-RUN apt-get update && apt-get install -y -qq --no-install-recommends wget curl unzip python openssh-client python-openssl ca-certificates && apt-get clean
+RUN apk update && \
+    apk add bash curl bind-tools busybox-extras netcat-openbsd && \
+    rm /var/cache/apk/*
 
-# Various networking and other tools. net-tools installs arp, netstat, etc.
-RUN apt-get install -u -qq vim \
-    net-tools netcat ipset conntrack inetutils-traceroute bridge-utils \
-    ebtables dnsutils iputils-ping mtr telnet \
-    && apt-get clean
-
-# COPY cos-kernel /usr/local/bin
-RUN wget -O /usr/local/bin/cos-kernel https://raw.githubusercontent.com/GoogleCloudPlatform/cos-toolbox/master/cos-kernel
-
-RUN mkdir /.ssh
-VOLUME ["/.config"]
+RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl && \
+    chmod 755 kubectl && mv kubectl /usr/local/bin/
 
 CMD ["/bin/bash"]
 
