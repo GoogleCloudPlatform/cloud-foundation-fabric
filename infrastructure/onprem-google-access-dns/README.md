@@ -90,7 +90,7 @@ google.internal {
 
 ```bash
 # connect to the onprem instance
-gcloud compute ssh onprem
+gcloud beta compute ssh onprem --tunnel-through-iap
 
 # check that the BGP session works and the advertised routes are set
 sudo docker exec -it onprem_bird_1 ip route |grep bird
@@ -122,7 +122,7 @@ gcloud compute instances list
 
 ```bash
 # connect to the test instance
-gcloud compute ssh test-1
+gcloud beta compute ssh test-1 --tunnel-through-iap
 
 # test forwarding from Cloud DNS to onprem CoreDNS (address may differ)
 dig gw.onprem.example.com +short
