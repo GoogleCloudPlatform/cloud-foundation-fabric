@@ -51,8 +51,8 @@ variable "region" {
   default     = "europe-west1"
 }
 
-variable "resolver_address" {
-  description = "GCP DNS resolver address for the inbound policy."
+variable "forwarder_address" {
+  description = "GCP DNS inbound policy forwarder address."
   type        = string
   default     = "10.0.0.2"
 }

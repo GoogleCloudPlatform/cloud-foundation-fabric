@@ -201,7 +201,7 @@ module "vm-test" {
 data "template_file" "corefile" {
   template = file("assets/Corefile")
   vars = {
-    resolver_address = var.resolver_address
+    forwarder_address = var.forwarder_address
   }
 }
 
