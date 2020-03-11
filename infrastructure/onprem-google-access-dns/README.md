@@ -28,6 +28,30 @@ This sample creates several distinct groups of resources:
 - two DNS zones (private and forwarding) and a DNS inbound policy
 - one emulated on-premises environment in a single GCP instance
 
+## Cloud DNS inbound forwarder entry point
+
+The Cloud DNS inbound policy reserves an IP address in the VPC, which is used by the on-prem DNS server to forward queries to Cloud DNS. This address needs of course to be explicitly set in the on-prem DNS configuration (see below for details), but since there's currently no way for Terraform to find the exact address (cf [Google provider issue](https://github.com/terraform-providers/terraform-provider-google/issues/3753)), the following manual workaround needs to be applied.
+
+### Find out the forwarder entry point address
+
+Run this gcloud command to (find out the address assigned to the inbound forwarder)[https://cloud.google.com/dns/docs/policies#list-in-entrypoints]:
+
+```bash
+gcloud compute addresses list -project [your project id]
+```
+
+In the list of addresses, look for the address with purpose `DNS_RESOLVER` in the subnet `to-onprem-default`. If its IP address is `10.0.0.2` it matches the default value in the Terraform `forwarder_address` variable, which means you're all set. If it's different, proceed to the next step.
+
+### Update the forwarder address variable and recreate on-prem
+
+If the forwader address does not match the Terraform variable, add the correct value in your `terraform.tfvars` (or change the default value in `variables.tf`), then taint the onprem instance and apply to recreate it with the correct value in the DNS configuration:
+
+```bash
+tf apply
+tf taint module.on-prem.google_compute_instance.on_prem_in_a_box
+tf apply
+```
+
 ## CoreDNS configuration for on-premises
 
 The on-prem module uses a CoreDNS container to expose its DNS service, configured with foru distinct blocks:
