@@ -89,7 +89,7 @@ resource "google_billing_account_iam_member" "billing-user" {
 resource "google_storage_bucket" "bucket" {
   for_each           = toset(var.environments)
   project            = var.automation_project_id
-  name               = "${var.prefix}-${var.name}-${each.value}-tfstate"
+  name               = "${var.prefix}-${var.name}-${each.value}-tf"
   location           = var.gcs_defaults.location
   storage_class      = var.gcs_defaults.storage_class
   force_destroy      = false
