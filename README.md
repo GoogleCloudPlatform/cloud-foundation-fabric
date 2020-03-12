@@ -1,6 +1,12 @@
-# Cloud Foundation Toolkit - Fabric
+# Google Cloud Terraform Modules and Examples
 
-Cloud Foundation Fabric provides end-to-end Terraform code examples on GCP, which are meant for prototyping and as minimal samples to aid in designing real-world infrastructures. As such, these samples are meant to be adapted and updated for your different use cases, and often do not implement GCP security best practices for production use.
+This repository provides a **suite of Terraform modules** and **end-to-end examples** for Google Cloud, which are meant for prototyping and as initial samples to aid in designing real-world infrastructures.
+
+The whole repository is meant to be **cloned as a single unit**, and then forked into separate owned repositories for real usage, or used as-is and periodically updated as a complete toolkit for prototyping.
+
+## Modules
+
+All the included modules have **similar interfaces** as they are designed for composition, and as a basis to support custom changes in the fork-and-own model.
 
 All the examples leverage composition, combining different Cloud Foundation Toolkit modules to realize an integrated design. Additional modules can be combined in to tailor the examples to specific needs, and to implement additional best practices. You can check the [full list of Cloud Foundation Toolkit modules here](https://github.com/terraform-google-modules).
 
