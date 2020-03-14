@@ -1,10 +1,11 @@
 # Terraform Examples and Modules for Google Cloud
 
-> This repository provides **end-to-end examples** and a **suite of Terraform modules** for Google Cloud, which support different use cases:
-> - starter kits used to bootstrap real-word cloud foundations and infrastructure
-> - reference examples used to deep dive on network patterns of product features
-> - composable modules that support quick prototyping and test
-> - a comprehensive source of lean modules that lend themselves well to changes
+This repository provides **end-to-end examples** and a **suite of Terraform modules** for Google Cloud, which support different use cases:
+
+- starter kits used to bootstrap real-word cloud foundations and infrastructure
+- reference examples used to deep dive on network patterns of product features
+- composable modules that support quick prototyping and test
+- a comprehensive source of lean modules that lend themselves well to changes
 
 The whole repository is meant to be cloned as a single unit, and then forked into separate owned repositories to seed production usage, or used as-is and periodically updated as a complete toolkit for prototyping.
 
