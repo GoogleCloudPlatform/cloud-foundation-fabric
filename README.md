@@ -38,3 +38,4 @@ Currently available modules:
 - **data** - [GCS](./modules/gcs), [BigQuery dataset](./modules/bigquery)
 - **other** - [KMS](./modules/kms), [on-premises in Docker](./modules/on-prem-in-a-box)
 
+For more information and usage examples see each module's README file.
