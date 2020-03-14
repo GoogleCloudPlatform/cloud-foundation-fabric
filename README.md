@@ -1,4 +1,4 @@
-# Google Cloud Terraform Modules and Examples
+# Terraform Examples and Modules for Google Cloud
 
 > This repository provides **end-to-end examples** and a **suite of Terraform modules** for Google Cloud, which support different use cases:
 > - starter kits used to bootstrap real-word cloud foundations and infrastructure
