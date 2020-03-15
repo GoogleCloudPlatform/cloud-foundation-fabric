@@ -17,7 +17,9 @@ The examples are derived from actual production use cases, and are meant to be u
 
 ### Business Unit / Environment Hierarchy
 
-TODO
+<img src="./business-units/diagram.png" align="left" width="240px"> TODO
+
+<br clear="left">
 
 ## Operational considerations
 
