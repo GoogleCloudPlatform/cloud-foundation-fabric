@@ -11,13 +11,13 @@ The examples are derived from actual production use cases, and are meant to be u
 
 ### Environment Hierarchy
 
-<img src="./environments/diagram.png" align="left" width="240px"> TODO
+<a href="./environments/" title="Environments example"><img src="./environments/diagram.png" align="left" width="240px"></a> TODO
 
 <br clear="left">
 
 ### Business Unit / Environment Hierarchy
 
-<img src="./business-units/diagram.png" align="left" width="240px"> TODO
+<a href="./business-units/" title="Business Units example"><img src="./business-units/diagram.png" align="left" width="240px"></a> TODO
 
 <br clear="left">
 
