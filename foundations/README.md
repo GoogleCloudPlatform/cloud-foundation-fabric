@@ -11,7 +11,9 @@ The examples are derived from actual production use cases, and are meant to be u
 
 ### Environment Hierarchy
 
-<a href="./environments/" title="Environments example"><img src="./environments/diagram.png" align="left" width="240px"></a> This [example](./environments/) implements a simple one-level oganizational layout, which is commonly used to bootstrap small infrastructures, or in situations where lower level folders are managed with separate, more granular Terraform setups. Its simplicity also makes it a good starting point to understand and prototype fondational design.
+<a href="./environments/" title="Environments example"><img src="./environments/diagram.png" align="left" width="240px"></a> This [example](./environments/) implements a simple one-level oganizational layout, which is commonly used to bootstrap small infrastructures, or in situations where lower level folders are managed with separate, more granular Terraform setups.
+
+One authoritative service account used for automation and one folder are created for each environment, together with top-level shared resources. This example's simplicity makes it a good starting point to understand and prototype foundational design.
 
 <br clear="left">
 
