@@ -1,3 +1,11 @@
-# Infrastructure samples
+# Networking and infrastructure examples
 
-These examples showcase typical networking configurations on GCP derived from real-world use cases, and are meant to illustrate how to automate them with Terraform, and to offer an easy way of testing different scenarios. We have a long list of examples we plan on adding, so check back here often.
+The examples in this folder implement **typical network topologies** like hub and spoke, or **end-to-end scenarios** that allow testing specific features like on-premises DNS policies and Private Google Access.
+
+They are meant to be used as minimal but complete strting points to create actual infrastructure, and as playgrounds to experiment with specific Google Cloud features.
+
+## Examples
+
+### Hub and Spoke via Peering
+
+<a href="./hub-and-spoke-peering/" title="Hub and spoke via peering example"><img src="./hub-and-spoke-peering/diagram.png" align="left" width="280px"></a> This [example](./hub-and-spoke-peering/)implements a hub and spoke topology via VPC peering, and highlights some peering limitations: non transitivity between spokes, the need to serialize peering creation/destruction for a single VPC, and limited cnnectivity to managed services like GKE which use private service access via an additional peering.
