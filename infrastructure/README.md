@@ -21,3 +21,9 @@ The sample highlights the lack of transitivity in peering: the absence of connec
 The example shows how to implement spoke transitivity via BGP advertisements, how to expose hub DNS zones to spokes via DNS peering, and allows easy testing of different VPN and BGP configurations.
 
 <br clear="left">
+
+### DNS and Private Access for On-premises
+
+<a href="./onprem-google-access-dns/" title="DNS and Private Access for On-premises"><img src="./onprem-google-access-dns/diagram.png" align="left" width="280px"></a> This [example](./onprem-google-access-dns/) uses an emulated on-premises environment running in Docker containers inside a GCE instance, to allow testing specific features like DNS policies, DNS forwarding zones across VPN, and Private Access for On-premises hosts.
+
+The emulated on-premises environment can be used to test access to different services from outside Google Cloud, by implementing a VPN connection and BGP to Google CLoud via Strongswan and Bird.
