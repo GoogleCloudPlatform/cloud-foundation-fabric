@@ -10,6 +10,6 @@ They are meant to be used as minimal but complete strting points to create actua
 
 <a href="./hub-and-spoke-peering/" title="Hub and spoke via peering example"><img src="./hub-and-spoke-peering/diagram.png" align="left" width="280px"></a> This [example](./hub-and-spoke-peering/) implements a hub and spoke topology via VPC peering, a common design where a landing zone VPC (hub) is conncted to on-premises, and then peered with satellite VPCs (spokes) to further partition the infrastructure.
 
-The sample highlights a few issues around the lack of transitivity in peering: the lack of connectivity between spokes, and the need to work around private service access to managed services that add a peering to a tenant VPC managed by the service provider. One solution for private GKE is shown, allowing access from hub and spoke to GKE masters via a dedicated VPN.
+The sample highlights the lack of transitivity in peering: the absence of connectivity between spokes, and the need create workarounds for private service access to managed services. One such workarund is shown for private GKE, allowing access from hub and all spokes to GKE masters via a dedicated VPN.
 
 <br clear="left">
