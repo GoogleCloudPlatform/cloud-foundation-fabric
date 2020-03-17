@@ -16,8 +16,8 @@ The sample highlights the lack of transitivity in peering: the absence of connec
 
 ### Hub and Spoke via Dynamic VPN
 
-<a href="./hub-and-spoke-vpn/" title="Hub and spoke via dynamic VPN"><img src="./hub-and-spoke-vpn/diagram.png" align="left" width="280px"></a> This [example](./hub-and-spoke-vpn/) implements a hub and spoke topology via VPN tunnels and BGP, a common design where peering cannot be used due to peering limitations on the number of spokes or connectivity to managed services.
+<a href="./hub-and-spoke-vpn/" title="Hub and spoke via dynamic VPN"><img src="./hub-and-spoke-vpn/diagram.png" align="left" width="280px"></a> This [example](./hub-and-spoke-vpn/) implements a hub and spoke topology via dynamic VPN tunnels, a common design where peering cannot be used due to limitations on the number of spokes or connectivity to managed services.
 
-The sample shows how to implement spoke to spoke connectivity via BGP route advertisements, how to expose DNS zones in the hub to spokes via DNS peering, and offers a ready made configuration to test various VPN and BGP configurations.
+The example shows how to implement spoke transitivity via BGP advertisements, how to expose hub DNS zones to spokes via DNS peering, and allows easy testing of different VPN and BGP configurations.
 
 <br clear="left">
