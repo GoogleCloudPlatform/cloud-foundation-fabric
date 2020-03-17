@@ -13,3 +13,11 @@ They are meant to be used as minimal but complete strting points to create actua
 The sample highlights the lack of transitivity in peering: the absence of connectivity between spokes, and the need create workarounds for private service access to managed services. One such workarund is shown for private GKE, allowing access from hub and all spokes to GKE masters via a dedicated VPN.
 
 <br clear="left">
+
+### Hub and Spoke via Dynamic VPN
+
+<a href="./hub-and-spoke-vpn/" title="Hub and spoke via dynamic VPN"><img src="./hub-and-spoke-vpn/diagram.png" align="left" width="280px"></a> This [example](./hub-and-spoke-vpn/) implements a hub and spoke topology via VPN tunnels and BGP, a common design where peering cannot be used due to peering limitations on the number of spokes or connectivity to managed services.
+
+The sample shows how to implement spoke to spoke connectivity via BGP route advertisements, how to expose DNS zones in the hub to spokes via DNS peering, and offers a ready made configuration to test various VPN and BGP configurations.
+
+<br clear="left">
