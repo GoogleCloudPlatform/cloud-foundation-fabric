@@ -14,77 +14,49 @@
 
 output "terraform_project" {
   description = "Project that holds the base Terraform resources."
-  value       = module.project-tf.project_id
+  value       = module.tf-project.project_id
 }
 
 output "bootstrap_tf_gcs_bucket" {
   description = "GCS bucket used for the bootstrap Terraform state."
-  value       = module.gcs-tf-bootstrap.name
-}
-
-output "environment_tf_gcs_buckets" {
-  description = "GCS buckets used for each environment Terraform state."
-  value       = module.gcs-tf-environments.names
-}
-
-output "environment_service_account_keys" {
-  description = "Service account keys used to run each environment Terraform modules."
-  sensitive   = true
-  value       = module.service-accounts-tf-environments.keys
-}
-
-output "environment_service_accounts" {
-  description = "Service accounts used to run each environment Terraform modules."
-  value       = module.service-accounts-tf-environments.emails
+  value       = module.tf-gcs-bootstrap.name
 }
 
 output "shared_folder_id" {
   description = "Shared folder ID."
   value       = module.shared-folder.id
 }
-output "business_unit_1_folder_id" {
-  description = "Business unit 1 top-level folder ID."
-  value       = module.business-unit-1-folders.business_unit_folder_id
+
+output "bu_ml" {
+  description = "Business Unit ML attributes."
+  value = module.busines-unit-ml.unit
 }
 
-output "business_unit_1_environment_folders_ids" {
-  description = "Business unit 1 environment folders."
-  value       = module.business-unit-1-folders.environment_folders_ids
+output "bu_ml_sa_keys" {
+  description = "Business Unit ML Service Accoutns keys."
+  sensitive = true
+  value = module.busines-unit-ml.keys
 }
 
-output "business_unit_2_folder_id" {
-  description = "Business unit 2 top-level folder ID."
-  value       = module.business-unit-2-folders.business_unit_folder_id
+output "bu_bi" {
+  description = "Business Unit BI attributes."
+  value = module.busines-unit-bi.unit
 }
 
-output "business_unit_2_environment_folders_ids" {
-  description = "Business unit 2 environment folders."
-  value       = module.business-unit-2-folders.environment_folders_ids
-}
-
-output "business_unit_3_folder_id" {
-  description = "Business unit 3 top-level folder ID."
-  value       = module.business-unit-3-folders.business_unit_folder_id
-}
-
-output "business_unit_3_environment_folders_ids" {
-  description = "Business unit 3 environment folders."
-  value       = module.business-unit-3-folders.environment_folders_ids
-}
-
-output "audit_logs_bq_dataset" {
-  description = "Bigquery dataset for the audit logs export."
-  value       = module.bq-audit-export.resource_name
+output "bu_bi_sa_keys" {
+  description = "Business Unit BI Service Accoutns keys."
+  sensitive = true
+  value = module.busines-unit-bi.keys
 }
 
 output "audit_logs_project" {
   description = "Project that holds the audit logs export resources."
-  value       = module.project-audit.project_id
+  value       = module.audit-project.project_id
 }
 
 output "shared_resources_project" {
   description = "Project that holdes resources shared across business units."
-  value       = module.project-shared-resources.project_id
+  value       = module.shared-project.project_id
 }
 
 # Add further outputs here for the additional modules that manage shared

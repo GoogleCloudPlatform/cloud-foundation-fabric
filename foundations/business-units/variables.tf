@@ -12,7 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-variable "audit_viewers" {
+variable "audit_filter" {
+  description = "Audit log filter used for the log sink."
+  type        = string
+  default     = <<END
+  logName: "/logs/cloudaudit.googleapis.com%2Factivity"
+  OR
+  logName: "/logs/cloudaudit.googleapis.com%2Fsystem_event"
+  END
+}
+
+variable "iam_audit_viewers" {
   description = "Audit project viewers, in IAM format."
   type        = list(string)
   default     = []
@@ -23,24 +33,61 @@ variable "billing_account_id" {
   type        = string
 }
 
-variable "business_unit_1_name" {
-  description = "Business unit 1 short name."
-  type        = string
+variable "business_unit_bi" {
+  description = "Business unit BI configuration."
+  type = object({
+    name                  = string
+    short_name            = string
+    iam_roles             = list(string)
+    iam_members           = map(list(string))
+    environment_iam_roles = list(string)
+  })
+  default = {
+    name        = "Business Intelligence",
+    short_name  = "bi"
+    iam_roles   = [],
+    iam_members = {},
+    environment_iam_roles = [
+      "roles/compute.networkAdmin",
+      "roles/owner",
+      "roles/resourcemanager.folderAdmin",
+      "roles/resourcemanager.projectCreator",
+    ]
+  }
 }
 
-variable "business_unit_2_name" {
-  description = "Business unit 2 short name."
-  type        = string
+variable "business_unit_ml" {
+  description = "Business unit ML configuration."
+  type = object({
+    name                  = string
+    short_name            = string
+    iam_roles             = list(string)
+    iam_members           = map(list(string))
+    environment_iam_roles = list(string)
+  })
+  default = {
+    name        = "Machine Learning",
+    short_name  = "ml"
+    iam_roles   = [],
+    iam_members = {},
+    environment_iam_roles = [
+      "roles/compute.networkAdmin",
+      "roles/owner",
+      "roles/resourcemanager.folderAdmin",
+      "roles/resourcemanager.projectCreator",
+    ]
+  }
 }
 
-variable "business_unit_3_name" {
-  description = "Business unit 3 short name."
-  type        = string
-}
 
 variable "environments" {
   description = "Environment short names."
-  type        = list(string)
+  type        = map(string)
+  default = {
+    dev = "Development", 
+    test = "Testing", 
+    prod = "Production"
+  }
 }
 
 variable "generate_service_account_keys" {
@@ -49,10 +96,13 @@ variable "generate_service_account_keys" {
   default     = false
 }
 
-variable "gcs_location" {
-  description = "GCS bucket location."
-  type        = string
-  default     = "EU"
+variable "gcs_defaults" {
+  description = "Defaults use for the state GCS buckets."
+  type        = map(string)
+  default = {
+    location      = "EU"
+    storage_class = "MULTI_REGIONAL"
+  }
 }
 
 variable "organization_id" {
@@ -70,17 +120,10 @@ variable "root_node" {
   type        = string
 }
 
-variable "shared_bindings_members" {
-  description = "List of comma-delimited IAM-format members for the additional shared project bindings."
-  # example: ["user:a@example.com,b@example.com", "user:c@example.com"]
-  type    = list(string)
-  default = []
-}
-variable "shared_bindings_roles" {
-  description = "List of roles for additional shared project bindings."
-  # example: ["roles/storage.objectViewer", "roles/storage.admin"]
-  type    = list(string)
-  default = []
+variable "iam_shared_owners" {
+  description = "Shared services project owners, in IAM format."
+  type        = list(string)
+  default     = []
 }
 
 variable "terraform_owners" {
@@ -96,4 +139,16 @@ variable "project_services" {
     "resourceviews.googleapis.com",
     "stackdriver.googleapis.com",
   ]
+}
+
+variable "iam_terraform_owners" {
+  description = "Terraform project owners, in IAM format."
+  type        = list(string)
+  default     = []
+}
+
+variable "generate_keys" {
+  description = "Generate keys for service accounts."
+  type        = bool
+  default     = false
 }

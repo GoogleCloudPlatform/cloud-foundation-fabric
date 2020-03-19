@@ -14,6 +14,31 @@
  * limitations under the License.
  */
 
+variable "organization_id" {
+  description = "Organization id."
+  type        = string
+}
+
+variable "parent" {
+  description = "Parent in folders/folder_id or organizations/org_id format."
+  type        = string
+}
+
+variable "prefix" {
+  description = "Prefix used for GCS bucket names."
+  type        = string
+}
+
+variable "environments" {
+  description = "Unit environments short names."
+  type        = map(string)
+  default = {
+      dev = "development",
+      test = "Testing",
+      prod = "Production"
+  }
+}
+
 variable "automation_project_id" {
   description = "Project id used for automation service accounts."
   type        = string
@@ -27,6 +52,11 @@ variable "billing_account_id" {
 variable "name" {
   description = "Top folder name."
   type        = string
+}
+
+variable "short_name" {
+    description = "Short name."
+    type  = string
 }
 
 variable "gcs_defaults" {
@@ -59,22 +89,8 @@ variable "iam_enviroment_roles" {
   ]
 }
 
-variable "organization_id" {
-  description = "Organization id."
-  type        = string
-}
-
-variable "parent" {
-  description = "Parent in folders/folder_id or organizations/org_id format."
-  type        = string
-}
-
-variable "prefix" {
-  description = "Prefix used for GCS bucket names."
-  type        = string
-}
-
-variable "environments" {
-  description = "Unit environments short names."
-  type        = list(string)
+variable "generate_keys" {
+  description = "Generate keys for service accounts."
+  type        = bool
+  default     = false
 }

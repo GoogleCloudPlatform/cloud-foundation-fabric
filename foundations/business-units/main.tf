@@ -25,7 +25,7 @@ locals {
 ###############################################################################
 
 module "shared-folder" {
-  source = "../modules/folders"
+  source = "../../modules/folders"
   parent = var.root_node
   names  = ["shared"]
 }
@@ -54,40 +54,49 @@ module "tf-gcs-bootstrap" {
   project_id = module.tf-project.project_id
   names      = ["tf-bootstrap"]
   prefix     = "${var.prefix}-tf"
-  location   = var.gcs_location
+  location   = var.gcs_defaults.location
 }
 
 ###############################################################################
 #                              Business units                                 #
 ###############################################################################
 
-# Business unit 1
+# Business unit BI
 
-module "business-unit-1-folders" {
-  source            = "../modules/folders-unit"
+module "busines-unit-bi" {
+  source = "../../modules/folders-unit"
 
-  name              = var.business_unit_1_name
-  automation_project_id = 
-  billing_account_id = 
-  gcs_defaults 
-  iam_roles
-  iam_members
-  iam_enviroment_roles
-  organization_id
-  parent
-  prefix
-  environments      = var.environments
+  name                  = var.business_unit_bi.name
+  short_name            = var.business_unit_bi.short_name
+  automation_project_id = module.tf-project.project_id
+  billing_account_id    = var.billing_account_id
+  gcs_defaults          = var.gcs_defaults
+  iam_roles             = var.business_unit_bi.iam_roles
+  iam_members           = var.business_unit_bi.iam_members
+  organization_id       = var.organization_id
+  parent                = var.root_node
+  prefix                = var.prefix
+  environments          = var.environments
+  generate_keys         = var.generate_keys
 }
 
-# Business unit 2
+# Business unit ML
 
-module "business-unit-2-folders" {
-  source                    = "../modules/folders-unit"
-  business_unit_folder_name = var.business_unit_2_name
-  environments              = var.environments
-  per_folder_admins         = module.service-accounts-tf-environments.iam_emails_list
-  root_node                 = var.root_node
+module "busines-unit-ml" {
+  source = "../../modules/folders-unit"
 
+  name                  = var.business_unit_ml.name
+  short_name            = var.business_unit_ml.short_name
+  automation_project_id = module.tf-project.project_id
+  billing_account_id    = var.billing_account_id
+  gcs_defaults          = var.gcs_defaults
+  iam_roles             = var.business_unit_ml.iam_roles
+  iam_members           = var.business_unit_ml.iam_members
+  organization_id       = var.organization_id
+  parent                = var.root_node
+  prefix                = var.prefix
+  environments          = var.environments
+  generate_keys         = var.generate_keys
 }
 
 ###############################################################################
@@ -148,17 +157,19 @@ module "audit-log-sinks" {
 
 # Shared resources project
 
-module "project-shared-resources" {
-  source                 = "terraform-google-modules/project-factory/google//modules/fabric-project"
-  version                = "5.0.0"
-  parent                 = module.shared-folder.id
-  billing_account        = var.billing_account_id
-  prefix                 = var.prefix
-  name                   = "shared"
-  lien_reason            = "shared"
-  activate_apis          = var.project_services
-  extra_bindings_roles   = var.shared_bindings_roles
-  extra_bindings_members = var.shared_bindings_members
+module "shared-project" {
+  source          = "../../modules/project"
+  name            = "shared"
+  parent          = module.shared-folder.id
+  prefix          = var.prefix
+  billing_account = var.billing_account_id
+  iam_members = {
+    "roles/owner" = var.iam_shared_owners
+  }
+  iam_roles = [
+    "roles/owner"
+  ]
+  services = var.project_services
 }
 
 # Add further modules here for resources that are common to all business units

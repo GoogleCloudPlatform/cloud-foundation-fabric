@@ -21,7 +21,7 @@ locals {
     role => lookup(var.iam_members, role, [])
   }
   iam_service_account_bindings = {
-    for pair in setproduct(var.environments, var.iam_enviroment_roles) :
+    for pair in setproduct(keys(var.environments), var.iam_enviroment_roles) :
     "${pair.0}-${pair.1}" => { environment = pair.0, role = pair.1 }
   }
   service_accounts = {
@@ -40,7 +40,7 @@ resource "google_folder" "unit" {
 }
 
 resource "google_folder" "environment" {
-  for_each     = toset(var.environments)
+  for_each     = var.environments
   display_name = each.value
   parent       = google_folder.unit.name
 }
@@ -57,7 +57,7 @@ resource "google_folder_iam_binding" "environment" {
   folder   = google_folder.environment[each.value.environment].name
   role     = each.value.role
   members = [
-    "serviceAccount:${google_service_account.environment[each.value.environment.email]}"
+    "serviceAccount:${google_service_account.environment[each.value.environment].email}"
   ]
 }
 
@@ -66,10 +66,15 @@ resource "google_folder_iam_binding" "environment" {
 ################################################################################
 
 resource "google_service_account" "environment" {
-  for_each     = toset(var.environments)
+  for_each     = var.environments
   project      = var.automation_project_id
-  account_id   = "${var.name}-${each.value}"
-  display_name = "${var.name} ${each.value} (Terraform managed)."
+  account_id   = "${var.short_name}-${each.key}"
+  display_name = "${var.short_name} ${each.key} (Terraform managed)."
+}
+
+resource "google_service_account_key" "keys" {
+  for_each           = var.generate_keys ? var.environments : {}
+  service_account_id = google_service_account.environment[each.key].email
 }
 
 resource "google_billing_account_iam_member" "billing-user" {
@@ -86,10 +91,10 @@ resource "google_billing_account_iam_member" "billing-user" {
 #                               GCS and GCS IAM                                #
 ################################################################################
 
-resource "google_storage_bucket" "bucket" {
-  for_each           = toset(var.environments)
+resource "google_storage_bucket" "tfstate" {
+  for_each           = var.environments
   project            = var.automation_project_id
-  name               = "${var.prefix}-${var.name}-${each.value}-tf"
+  name               = "${var.prefix}-${var.short_name}-${each.key}-tf"
   location           = var.gcs_defaults.location
   storage_class      = var.gcs_defaults.storage_class
   force_destroy      = false
@@ -100,8 +105,8 @@ resource "google_storage_bucket" "bucket" {
 }
 
 resource "google_storage_bucket_iam_binding" "bindings" {
-  for_each = toset(var.environments)
-  bucket   = google_storage_bucket.bucket[each.value].name
+  for_each = var.environments
+  bucket   = google_storage_bucket.tfstate[each.key].name
   role     = "roles/storage.objectAdmin"
-  members  = [local.service_accounts[each.value]]
+  members  = [local.service_accounts[each.key]]
 }

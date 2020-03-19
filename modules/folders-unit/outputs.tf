@@ -17,18 +17,32 @@
 output "unit" {
   description = "Unit attributes."
   value = {
-    folder     = google_folder.country.name
-    gcs_bucket = google_storage_bucket.bucket.name
     name       = var.name
+    folder     = google_folder.unit.name
+    tf_gcs_buckets = {
+      for env in keys(var.environments) 
+      : env => google_storage_bucket.tfstate[env].name
+    }
+    env_folders = {
+      for key, folder in google_folder.environment 
+      : key => folder.name
+    }
+    service_accounts = {
+      for key, sa in google_service_account.environment 
+      : key => sa.email
+    }
   }
 }
 
-output "environment_folders" {
-  description = "Unit Environments folders."
-  value = {
-    for key, folder in google_folder.environment :
-    key => folder.name
-  }
+output "keys" {
+  description = "Service account keys."
+  sensitive = true
+  value = (
+    var.generate_keys ? {
+      for env in keys(var.environments) :
+      env => lookup(google_service_account_key.keys, env, null)
+    } : {}
+  )
 }
 
 
