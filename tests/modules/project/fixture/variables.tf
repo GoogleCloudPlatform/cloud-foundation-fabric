@@ -34,12 +34,12 @@ variable "iam_roles" {
   default = []
 }
 
-variable "iam_nonauth_members" {
+variable "iam_additive_members" {
   type    = map(list(string))
   default = {}
 }
 
-variable "iam_nonauth_roles" {
+variable "iam_additive_roles" {
   type    = list(string)
   default = []
 }
