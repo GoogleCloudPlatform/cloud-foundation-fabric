@@ -5,35 +5,31 @@ This module allows creating instances (or an instance template) runnning a conta
 ## Example
 
 ```hcl
-module "onprem-dns" {
-  source     = "./modules/compute-vm-cos-coredns"
+module "nginx" {
+  source     = "./modules/compute-vm-cos"
   project_id = var.project_id
   region     = var.region
   zone       = var.zone
-  name       = "coredns"
+  name       = "nginx"
+  image      = "nginx:1.17"
   network_interfaces = [{
     network    = var.vpc_self_link
     subnetwork = var.subnet_self_link
     nat        = false,
     addresses  = null
   }]
-  coredns_corefile = <<END
-  example.com {
-    hosts /etc/coredns/hosts
-    log
-    errors
-  }
-  . {
-    forward . /etc/resolv.conf
-    log
-    errors
-  }
-  END
   files = {
-    "/etc/coredns/hosts" = {
-      content    = "127.0.0.1 localhost.example.com"
+    "/etc/nginx/htdocs/index.html" = {
+      content    = "hello world"
       attributes = null
     }
+  }
+  volumes = {
+    "/etc/nginx/htdocs" : "/usr/share/nginx/html"
+  }
+  exposed_ports = {
+    tcp = [80]
+    udp = null
   }
 }
 ```
