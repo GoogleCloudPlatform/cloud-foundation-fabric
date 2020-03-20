@@ -1,6 +1,6 @@
 # Container Optimized OS module
 
-This module allows creating instances (or an instance template) runnning a containerized application  using CoreDNS. A service account will be created if none is set.
+This module allows creating instances (or an instance template) runnning a containerized application using COS. A service account will be created if none is set.
 
 ## Example
 
