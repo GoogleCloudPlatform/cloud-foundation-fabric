@@ -1,3 +1,4 @@
+# skip boilerplate check
 - path: ${path}
   owner: ${owner}
   permissions: ${permissions}
