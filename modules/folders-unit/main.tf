@@ -14,29 +14,13 @@
  * limitations under the License.
  */
 
-locals {
-
-  iam_bindings = {
-    for role in var.iam_roles :
-    role => lookup(var.iam_members, role, [])
-  }
-  iam_service_account_bindings = {
-    for pair in setproduct(keys(var.environments), var.iam_enviroment_roles) :
-    "${pair.0}-${pair.1}" => { environment = pair.0, role = pair.1 }
-  }
-  service_accounts = {
-    for key, sa in google_service_account.environment :
-    key => "serviceAccount:${sa.email}"
-  }
-}
-
 ################################################################################
 #                            Folders and folder IAM                            #
 ################################################################################
 
 resource "google_folder" "unit" {
   display_name = var.name
-  parent       = var.parent
+  parent       = var.root_node
 }
 
 resource "google_folder" "environment" {
@@ -45,15 +29,15 @@ resource "google_folder" "environment" {
   parent       = google_folder.unit.name
 }
 
-resource "google_folder_iam_binding" "authoritative" {
-  for_each = local.iam_bindings
+resource "google_folder_iam_binding" "unit" {
+  for_each = local.unit_iam_bindings
   folder   = google_folder.unit.name
   role     = each.key
   members  = each.value
 }
 
 resource "google_folder_iam_binding" "environment" {
-  for_each = local.iam_service_account_bindings
+  for_each = local.folder_iam_service_account_bindings
   folder   = google_folder.environment[each.value.environment].name
   role     = each.value.role
   members = [
@@ -62,7 +46,25 @@ resource "google_folder_iam_binding" "environment" {
 }
 
 ################################################################################
-#                         Service Accounts and SA IAM                          #
+#                  Billing Account and Org level IAM Bindings                  #
+################################################################################
+
+resource "google_organization_iam_member" "org_iam_member" {
+  for_each = local.org_iam_service_account_bindings
+  org_id   = var.organization_id
+  role     = each.value.role
+  member   = "serviceAccount:${google_service_account.environment[each.value.environment].email}"
+}
+
+resource "google_billing_account_iam_member" "billing_iam_member" {
+  for_each           = local.billing_iam_service_account_bindings
+  billing_account_id = var.billing_account_id
+  role               = each.value.role
+  member             = "serviceAccount:${google_service_account.environment[each.value.environment].email}"
+}
+
+################################################################################
+#                                Service Accounts                              #
 ################################################################################
 
 resource "google_service_account" "environment" {
@@ -73,19 +75,9 @@ resource "google_service_account" "environment" {
 }
 
 resource "google_service_account_key" "keys" {
-  for_each           = var.generate_keys ? var.environments : {}
+  for_each           = var.service_account_keys ? var.environments : {}
   service_account_id = google_service_account.environment[each.key].email
 }
-
-resource "google_billing_account_iam_member" "billing-user" {
-  for_each           = local.service_accounts
-  billing_account_id = var.billing_account_id
-  role               = "roles/billing.user"
-  member             = each.value
-}
-
-# TODO: remember to add org-level roles if the service accounts need to manage
-#       Shared VPC inside the Prod/Non-prod folders
 
 ################################################################################
 #                               GCS and GCS IAM                                #

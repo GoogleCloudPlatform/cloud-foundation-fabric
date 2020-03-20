@@ -1,16 +1,18 @@
-# Copyright 2019 Google LLC
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     https://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
+/**
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 variable "audit_filter" {
   description = "Audit log filter used for the log sink."
@@ -84,8 +86,8 @@ variable "environments" {
   description = "Environment short names."
   type        = map(string)
   default = {
-    dev = "Development", 
-    test = "Testing", 
+    dev  = "Development",
+    test = "Testing",
     prod = "Production"
   }
 }
@@ -147,8 +149,32 @@ variable "iam_terraform_owners" {
   default     = []
 }
 
-variable "generate_keys" {
-  description = "Generate keys for service accounts."
+variable "service_account_keys" {
+  description = "Generate and store service account keys in the state file."
   type        = bool
   default     = false
+}
+
+variable "iam_xpn_config" {
+  description = "Control granting Shared VPC creation roles to service accounts. Target the root node by default."
+  type = object({
+    grant      = bool
+    target_org = bool
+  })
+  default = {
+    grant      = true
+    target_org = false
+  }
+}
+
+variable "iam_billing_config" {
+  description = "Control granting billing user role to service accounts. Target the billing account by default."
+  type = object({
+    grant      = bool
+    target_org = bool
+  })
+  default = {
+    grant      = true
+    target_org = false
+  }
 }

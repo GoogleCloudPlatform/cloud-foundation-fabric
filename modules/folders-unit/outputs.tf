@@ -14,35 +14,46 @@
  * limitations under the License.
  */
 
-output "unit" {
-  description = "Unit attributes."
+output "unit_folder" {
+  description = "Unit top level folder."
   value = {
-    name       = var.name
-    folder     = google_folder.unit.name
-    tf_gcs_buckets = {
-      for env in keys(var.environments) 
-      : env => google_storage_bucket.tfstate[env].name
-    }
-    env_folders = {
-      for key, folder in google_folder.environment 
-      : key => folder.name
-    }
-    service_accounts = {
-      for key, sa in google_service_account.environment 
-      : key => sa.email
+    id   = google_folder.unit.name,
+    name = google_folder.unit.display_name
+  }
+}
+
+output "env_gcs_buckets" {
+  description = "Unit environments tfstate gcs buckets."
+  value = {
+    for key, bucket in google_storage_bucket.tfstate
+    : key => bucket.name
+  }
+}
+
+output "env_folders" {
+  description = "Unit environments folders."
+  value = {
+    for key, folder in google_folder.environment
+    : key => {
+      id   = folder.name,
+      name = folder.display_name
     }
   }
 }
 
-output "keys" {
-  description = "Service account keys."
-  sensitive = true
-  value = (
-    var.generate_keys ? {
-      for env in keys(var.environments) :
-      env => lookup(google_service_account_key.keys, env, null)
-    } : {}
-  )
+output "env_service_accounts" {
+  description = "Unit environments service accounts."
+  value = {
+    for key, sa in google_service_account.environment
+    : key => sa.email
+  }
 }
 
-
+output "env_sa_keys" {
+  description = "Unit environments service account keys."
+  sensitive   = true
+  value = {
+    for key, sa_key in google_service_account_key.keys :
+    key => sa_key.private_key
+  }
+}

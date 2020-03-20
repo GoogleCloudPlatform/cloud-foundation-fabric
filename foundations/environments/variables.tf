@@ -95,7 +95,7 @@ variable "iam_xpn_config" {
   description = "Control granting Shared VPC creation roles to service accounts. Target the root node by default."
   type = object({
     grant      = bool
-    target_org = string
+    target_org = bool
   })
   default = {
     grant      = true

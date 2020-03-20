@@ -1,18 +1,18 @@
-# Copyright 2019 Google LLC
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     https://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-# TODO(averbukh): simplify log-sink parameters once https://github.com/terraform-google-modules/terraform-google-log-export/issues/28 is done.
+/**
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 locals {
   parent_numeric_id             = element(split("/", var.root_node), 1)
@@ -37,14 +37,14 @@ module "shared-folder" {
 # Terraform project
 
 module "tf-project" {
-  source              = "../../modules/project"
-  name                = "terraform"
-  parent              = module.shared-folder.id
-  prefix              = var.prefix
-  billing_account     = var.billing_account_id
-  iam_nonauth_members = { "roles/owner" = var.iam_terraform_owners }
-  iam_nonauth_roles   = ["roles/owner"]
-  services            = var.project_services
+  source               = "../../modules/project"
+  name                 = "terraform"
+  parent               = module.shared-folder.id
+  prefix               = var.prefix
+  billing_account      = var.billing_account_id
+  iam_additive_members = { "roles/owner" = var.iam_terraform_owners }
+  iam_additive_roles   = ["roles/owner"]
+  services             = var.project_services
 }
 
 # Bootstrap Terraform state GCS bucket
@@ -73,11 +73,13 @@ module "busines-unit-bi" {
   gcs_defaults          = var.gcs_defaults
   iam_roles             = var.business_unit_bi.iam_roles
   iam_members           = var.business_unit_bi.iam_members
+  iam_xpn_config        = var.iam_xpn_config
+  iam_billing_config    = var.iam_billing_config
   organization_id       = var.organization_id
-  parent                = var.root_node
+  root_node             = var.root_node
   prefix                = var.prefix
   environments          = var.environments
-  generate_keys         = var.generate_keys
+  service_account_keys  = var.service_account_keys
 }
 
 # Business unit ML
@@ -92,11 +94,13 @@ module "busines-unit-ml" {
   gcs_defaults          = var.gcs_defaults
   iam_roles             = var.business_unit_ml.iam_roles
   iam_members           = var.business_unit_ml.iam_members
+  iam_xpn_config        = var.iam_xpn_config
+  iam_billing_config    = var.iam_billing_config
   organization_id       = var.organization_id
-  parent                = var.root_node
+  root_node             = var.root_node
   prefix                = var.prefix
   environments          = var.environments
-  generate_keys         = var.generate_keys
+  service_account_keys  = var.service_account_keys
 }
 
 ###############################################################################
@@ -163,10 +167,10 @@ module "shared-project" {
   parent          = module.shared-folder.id
   prefix          = var.prefix
   billing_account = var.billing_account_id
-  iam_members = {
+  iam_additive_members = {
     "roles/owner" = var.iam_shared_owners
   }
-  iam_roles = [
+  iam_additive_roles = [
     "roles/owner"
   ]
   services = var.project_services

@@ -19,7 +19,7 @@ This sample creates several distinct groups of resources:
 - one project in the shared folder to set up and host centralized audit log exports
 - one project in the shared folder to hold services used across environments like GCS, GCR, KMS, Cloud Build, etc.
 
-The number of resources in this sample is kept to a minimum so as to make it generally applicable, more resources can be easily added by leveraging the full array of [Cloud Foundation Toolkit modules](https://github.com/terraform-google-modules), especially in the shared services project.
+The number of resources in this sample is kept to a minimum so as to make it generally applicable, more resources can be easily added by leveraging other [modules from our bundle](../../modules/), or from other sources like the [CFT suite](https://github.com/terraform-google-modules).
 
 ## Shared services
 
@@ -31,37 +31,34 @@ This sample uses a top-level folder to encapsulate projects that host resources 
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
 | billing_account_id | Billing account id used as default for new projects. | <code title="">string</code> | ✓ |  |
-| business_unit_1_name | Business unit 1 short name. | <code title="">string</code> | ✓ |  |
-| business_unit_2_name | Business unit 2 short name. | <code title="">string</code> | ✓ |  |
-| business_unit_3_name | Business unit 3 short name. | <code title="">string</code> | ✓ |  |
-| environments | Environment short names. | <code title="list&#40;string&#41;">list(string)</code> | ✓ |  |
 | organization_id | Organization id. | <code title="">string</code> | ✓ |  |
 | prefix | Prefix used for resources that need unique names. | <code title="">string</code> | ✓ |  |
 | root_node | Root node for the new hierarchy, either 'organizations/org_id' or 'folders/folder_id'. | <code title="">string</code> | ✓ |  |
-| *audit_viewers* | Audit project viewers, in IAM format. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
-| *gcs_location* | GCS bucket location. | <code title="">string</code> |  | <code title="">EU</code> |
+| *audit_filter* | Audit log filter used for the log sink. | <code title="">string</code> |  | <code title="&#60;&#60;END&#10;logName: &#34;&#47;logs&#47;cloudaudit.googleapis.com&#37;2Factivity&#34;&#10;OR&#10;logName: &#34;&#47;logs&#47;cloudaudit.googleapis.com&#37;2Fsystem_event&#34;&#10;END">...</code> |
+| *business_unit_bi* | Business unit BI configuration. | <code title="object&#40;&#123;&#10;name                  &#61; string&#10;short_name            &#61; string&#10;iam_roles             &#61; list&#40;string&#41;&#10;iam_members           &#61; map&#40;list&#40;string&#41;&#41;&#10;environment_iam_roles &#61; list&#40;string&#41;&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;name        &#61; &#34;Business Intelligence&#34;,&#10;short_name  &#61; &#34;bi&#34;&#10;iam_roles   &#61; &#91;&#93;,&#10;iam_members &#61; &#123;&#125;,&#10;environment_iam_roles &#61; &#91;&#10;&#34;roles&#47;compute.networkAdmin&#34;,&#10;&#34;roles&#47;owner&#34;,&#10;&#34;roles&#47;resourcemanager.folderAdmin&#34;,&#10;&#34;roles&#47;resourcemanager.projectCreator&#34;,&#10;&#93;&#10;&#125;">...</code> |
+| *business_unit_ml* | Business unit ML configuration. | <code title="object&#40;&#123;&#10;name                  &#61; string&#10;short_name            &#61; string&#10;iam_roles             &#61; list&#40;string&#41;&#10;iam_members           &#61; map&#40;list&#40;string&#41;&#41;&#10;environment_iam_roles &#61; list&#40;string&#41;&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;name        &#61; &#34;Machine Learning&#34;,&#10;short_name  &#61; &#34;ml&#34;&#10;iam_roles   &#61; &#91;&#93;,&#10;iam_members &#61; &#123;&#125;,&#10;environment_iam_roles &#61; &#91;&#10;&#34;roles&#47;compute.networkAdmin&#34;,&#10;&#34;roles&#47;owner&#34;,&#10;&#34;roles&#47;resourcemanager.folderAdmin&#34;,&#10;&#34;roles&#47;resourcemanager.projectCreator&#34;,&#10;&#93;&#10;&#125;">...</code> |
+| *environments* | Environment short names. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="&#123;&#10;dev &#61; &#34;Development&#34;, &#10;test &#61; &#34;Testing&#34;, &#10;prod &#61; &#34;Production&#34;&#10;&#125;">...</code> |
+| *gcs_defaults* | Defaults use for the state GCS buckets. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="&#123;&#10;location      &#61; &#34;EU&#34;&#10;storage_class &#61; &#34;MULTI_REGIONAL&#34;&#10;&#125;">...</code> |
 | *generate_service_account_keys* | Generate and store service account keys in the state file. | <code title="">bool</code> |  | <code title="">false</code> |
+| *iam_audit_viewers* | Audit project viewers, in IAM format. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
+| *iam_billing_config* | Control granting billing user role to service accounts. Target the billing account by default. | <code title="object&#40;&#123;&#10;grant      &#61; bool&#10;target_org &#61; bool&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;grant      &#61; true&#10;target_org &#61; false&#10;&#125;">...</code> |
+| *iam_shared_owners* | Shared services project owners, in IAM format. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
+| *iam_terraform_owners* | Terraform project owners, in IAM format. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
+| *iam_xpn_config* | Control granting Shared VPC creation roles to service accounts. Target the root node by default. | <code title="object&#40;&#123;&#10;grant      &#61; bool&#10;target_org &#61; bool&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;grant      &#61; true&#10;target_org &#61; false&#10;&#125;">...</code> |
 | *project_services* | Service APIs enabled by default in new projects. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="&#91;&#10;&#34;resourceviews.googleapis.com&#34;,&#10;&#34;stackdriver.googleapis.com&#34;,&#10;&#93;">...</code> |
-| *shared_bindings_members* | List of comma-delimited IAM-format members for the additional shared project bindings. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
-| *shared_bindings_roles* | List of roles for additional shared project bindings. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
+| *service_account_keys* | Generate and store service account keys in the state file. | <code title="">bool</code> |  | <code title="">false</code> |
 | *terraform_owners* | Terraform project owners, in IAM format. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| audit_logs_bq_dataset | Bigquery dataset for the audit logs export. |  |
 | audit_logs_project | Project that holds the audit logs export resources. |  |
 | bootstrap_tf_gcs_bucket | GCS bucket used for the bootstrap Terraform state. |  |
-| business_unit_1_environment_folders_ids | Business unit 1 environment folders. |  |
-| business_unit_1_folder_id | Business unit 1 top-level folder ID. |  |
-| business_unit_2_environment_folders_ids | Business unit 2 environment folders. |  |
-| business_unit_2_folder_id | Business unit 2 top-level folder ID. |  |
-| business_unit_3_environment_folders_ids | Business unit 3 environment folders. |  |
-| business_unit_3_folder_id | Business unit 3 top-level folder ID. |  |
-| environment_service_account_keys | Service account keys used to run each environment Terraform modules. | ✓ |
-| environment_service_accounts | Service accounts used to run each environment Terraform modules. |  |
-| environment_tf_gcs_buckets | GCS buckets used for each environment Terraform state. |  |
+| bu_bi | Business Unit BI attributes. |  |
+| bu_bi_sa_keys | Business Unit BI Service Accoutns keys. | ✓ |
+| bu_ml | Business Unit ML attributes. |  |
+| bu_ml_sa_keys | Business Unit ML Service Accoutns keys. | ✓ |
 | shared_folder_id | Shared folder ID. |  |
 | shared_resources_project | Project that holdes resources shared across business units. |  |
 | terraform_project | Project that holds the base Terraform resources. |  |

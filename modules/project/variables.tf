@@ -44,13 +44,13 @@ variable "iam_roles" {
   default     = []
 }
 
-variable "iam_nonauth_members" {
+variable "iam_additive_members" {
   description = "Map of member lists used to set non authoritative bindings, keyed by role."
   type        = map(list(string))
   default     = {}
 }
 
-variable "iam_nonauth_roles" {
+variable "iam_additive_roles" {
   description = "List of roles used to set non authoritative bindings."
   type        = list(string)
   default     = []

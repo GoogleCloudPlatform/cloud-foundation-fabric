@@ -19,8 +19,8 @@ variable "organization_id" {
   type        = string
 }
 
-variable "parent" {
-  description = "Parent in folders/folder_id or organizations/org_id format."
+variable "root_node" {
+  description = "Root node in folders/folder_id or organizations/org_id format."
   type        = string
 }
 
@@ -33,9 +33,9 @@ variable "environments" {
   description = "Unit environments short names."
   type        = map(string)
   default = {
-      dev = "development",
-      test = "Testing",
-      prod = "Production"
+    dev  = "development",
+    test = "Testing",
+    prod = "Production"
   }
 }
 
@@ -55,8 +55,8 @@ variable "name" {
 }
 
 variable "short_name" {
-    description = "Short name."
-    type  = string
+  description = "Short name."
+  type        = string
 }
 
 variable "gcs_defaults" {
@@ -89,8 +89,32 @@ variable "iam_enviroment_roles" {
   ]
 }
 
-variable "generate_keys" {
-  description = "Generate keys for service accounts."
+variable "service_account_keys" {
+  description = "Generate and store service account keys in the state file."
   type        = bool
   default     = false
+}
+
+variable "iam_xpn_config" {
+  description = "Control granting Shared VPC creation roles to service accounts. Target the root node by default."
+  type = object({
+    grant      = bool
+    target_org = bool
+  })
+  default = {
+    grant      = true
+    target_org = false
+  }
+}
+
+variable "iam_billing_config" {
+  description = "Control granting billing user role to service accounts. Target the billing account by default."
+  type = object({
+    grant      = bool
+    target_org = bool
+  })
+  default = {
+    grant      = true
+    target_org = false
+  }
 }

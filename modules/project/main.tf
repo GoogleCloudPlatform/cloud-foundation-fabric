@@ -19,14 +19,14 @@ locals {
   gce_service_account      = "${google_project.project.number}-compute@developer.gserviceaccount.com"
   gcr_service_account      = "service-${google_project.project.number}@containerregistry.iam.gserviceaccount.com"
   gke_service_account      = "service-${google_project.project.number}@container-engine-robot.iam.gserviceaccount.com"
-  iam_nonauth_pairs = flatten([
-    for role in var.iam_nonauth_roles : [
-      for member in lookup(var.iam_nonauth_members, role, []) :
+  iam_additive_pairs = flatten([
+    for role in var.iam_additive_roles : [
+      for member in lookup(var.iam_additive_members, role, []) :
       { role = role, member = member }
     ]
   ])
-  iam_nonauth = {
-    for pair in local.iam_nonauth_pairs :
+  iam_additive = {
+    for pair in local.iam_additive_pairs :
     "${pair.role}-${pair.member}" => pair
   }
   parent_type = split("/", var.parent)[0]
@@ -81,7 +81,7 @@ resource "google_project_service" "project_services" {
 # IAM notes:
 # - external users need to have accepted the invitation email to join
 # - oslogin roles also require role to list instances
-# - non-authoritative roles might fail due to dynamic values
+# - additive (non-authoritative) roles might fail due to dynamic values
 
 resource "google_project_iam_binding" "authoritative" {
   for_each = toset(var.iam_roles)
@@ -90,8 +90,8 @@ resource "google_project_iam_binding" "authoritative" {
   members  = lookup(var.iam_members, each.value, [])
 }
 
-resource "google_project_iam_member" "non_authoritative" {
-  for_each = length(var.iam_nonauth_roles) > 0 ? local.iam_nonauth : {}
+resource "google_project_iam_member" "additive" {
+  for_each = length(var.iam_additive_roles) > 0 ? local.iam_additive : {}
   project  = google_project.project.project_id
   role     = each.value.role
   member   = each.value.member
