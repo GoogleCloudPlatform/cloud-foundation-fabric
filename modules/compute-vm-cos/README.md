@@ -1,6 +1,6 @@
-# Container Optimized OS CoreDNS module
+# Container Optimized OS module
 
-This module allows creating instances (or an instance template) runnning a containerized DNS server using CoreDNS. A service account will be created if none is set.
+This module allows creating instances (or an instance template) runnning a containerized application  using CoreDNS. A service account will be created if none is set.
 
 ## Example
 
