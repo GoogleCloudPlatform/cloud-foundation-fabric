@@ -16,9 +16,11 @@
 
 locals {
   folder_roles = concat(var.iam_enviroment_roles, local.sa_xpn_folder_roles)
+  iam_members  = var.iam_members == null ? {} : var.iam_members
+  iam_roles    = var.iam_roles == null ? [] : var.iam_roles
   unit_iam_bindings = {
-    for role in var.iam_roles :
-    role => lookup(var.iam_members, role, [])
+    for role in local.iam_roles :
+    role => lookup(local.iam_members, role, [])
   }
   folder_iam_service_account_bindings = {
     for pair in setproduct(keys(var.environments), local.folder_roles) :

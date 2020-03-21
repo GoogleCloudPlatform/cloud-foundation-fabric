@@ -24,63 +24,10 @@ variable "audit_filter" {
   END
 }
 
-variable "iam_audit_viewers" {
-  description = "Audit project viewers, in IAM format."
-  type        = list(string)
-  default     = []
-}
-
 variable "billing_account_id" {
   description = "Billing account id used as default for new projects."
   type        = string
 }
-
-variable "business_unit_bi" {
-  description = "Business unit BI configuration."
-  type = object({
-    name                  = string
-    short_name            = string
-    iam_roles             = list(string)
-    iam_members           = map(list(string))
-    environment_iam_roles = list(string)
-  })
-  default = {
-    name        = "Business Intelligence",
-    short_name  = "bi"
-    iam_roles   = [],
-    iam_members = {},
-    environment_iam_roles = [
-      "roles/compute.networkAdmin",
-      "roles/owner",
-      "roles/resourcemanager.folderAdmin",
-      "roles/resourcemanager.projectCreator",
-    ]
-  }
-}
-
-variable "business_unit_ml" {
-  description = "Business unit ML configuration."
-  type = object({
-    name                  = string
-    short_name            = string
-    iam_roles             = list(string)
-    iam_members           = map(list(string))
-    environment_iam_roles = list(string)
-  })
-  default = {
-    name        = "Machine Learning",
-    short_name  = "ml"
-    iam_roles   = [],
-    iam_members = {},
-    environment_iam_roles = [
-      "roles/compute.networkAdmin",
-      "roles/owner",
-      "roles/resourcemanager.folderAdmin",
-      "roles/resourcemanager.projectCreator",
-    ]
-  }
-}
-
 
 variable "environments" {
   description = "Environment short names."
@@ -92,12 +39,6 @@ variable "environments" {
   }
 }
 
-variable "generate_service_account_keys" {
-  description = "Generate and store service account keys in the state file."
-  type        = bool
-  default     = false
-}
-
 variable "gcs_defaults" {
   description = "Defaults use for the state GCS buckets."
   type        = map(string)
@@ -105,6 +46,24 @@ variable "gcs_defaults" {
     location      = "EU"
     storage_class = "MULTI_REGIONAL"
   }
+}
+
+variable "iam_audit_viewers" {
+  description = "Audit project viewers, in IAM format."
+  type        = list(string)
+  default     = []
+}
+
+variable "iam_shared_owners" {
+  description = "Shared services project owners, in IAM format."
+  type        = list(string)
+  default     = []
+}
+
+variable "iam_terraform_owners" {
+  description = "Terraform project owners, in IAM format."
+  type        = list(string)
+  default     = []
 }
 
 variable "organization_id" {
@@ -117,23 +76,6 @@ variable "prefix" {
   type        = string
 }
 
-variable "root_node" {
-  description = "Root node for the new hierarchy, either 'organizations/org_id' or 'folders/folder_id'."
-  type        = string
-}
-
-variable "iam_shared_owners" {
-  description = "Shared services project owners, in IAM format."
-  type        = list(string)
-  default     = []
-}
-
-variable "terraform_owners" {
-  description = "Terraform project owners, in IAM format."
-  type        = list(string)
-  default     = []
-}
-
 variable "project_services" {
   description = "Service APIs enabled by default in new projects."
   type        = list(string)
@@ -142,39 +84,7 @@ variable "project_services" {
     "stackdriver.googleapis.com",
   ]
 }
-
-variable "iam_terraform_owners" {
-  description = "Terraform project owners, in IAM format."
-  type        = list(string)
-  default     = []
-}
-
-variable "service_account_keys" {
-  description = "Generate and store service account keys in the state file."
-  type        = bool
-  default     = false
-}
-
-variable "iam_xpn_config" {
-  description = "Control granting Shared VPC creation roles to service accounts. Target the root node by default."
-  type = object({
-    grant      = bool
-    target_org = bool
-  })
-  default = {
-    grant      = true
-    target_org = false
-  }
-}
-
-variable "iam_billing_config" {
-  description = "Control granting billing user role to service accounts. Target the billing account by default."
-  type = object({
-    grant      = bool
-    target_org = bool
-  })
-  default = {
-    grant      = true
-    target_org = false
-  }
+variable "root_node" {
+  description = "Root node for the new hierarchy, either 'organizations/org_id' or 'folders/folder_id'."
+  type        = string
 }

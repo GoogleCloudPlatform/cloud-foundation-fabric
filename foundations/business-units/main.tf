@@ -14,25 +14,17 @@
  * limitations under the License.
  */
 
-locals {
-  parent_numeric_id             = element(split("/", var.root_node), 1)
-  log_sink_parent_resource_type = element(split("/", var.root_node), 0) == "organizations" ? "organization" : "folder"
-  log_sink_name                 = element(split("/", var.root_node), 0) == "organizations" ? "logs-audit-org-${local.parent_numeric_id}" : "logs-audit-folder-${local.parent_numeric_id}"
-}
+###############################################################################
+#                        Terraform top-level resources                        #
+###############################################################################
 
-###############################################################################
-#                        Shared resources folder                              #
-###############################################################################
+# Shared folder
 
 module "shared-folder" {
   source = "../../modules/folders"
   parent = var.root_node
   names  = ["shared"]
 }
-
-###############################################################################
-#                        Terraform top-level resources                        #
-###############################################################################
 
 # Terraform project
 
@@ -58,49 +50,37 @@ module "tf-gcs-bootstrap" {
 }
 
 ###############################################################################
-#                              Business units                                 #
+#                                Business units                               #
 ###############################################################################
 
-# Business unit BI
-
-module "busines-unit-bi" {
-  source = "../../modules/folders-unit"
-
-  name                  = var.business_unit_bi.name
-  short_name            = var.business_unit_bi.short_name
+module "bu-business-intelligence" {
+  source                = "../../modules/folders-unit"
+  name                  = "Business Intelligence"
+  short_name            = "bi"
   automation_project_id = module.tf-project.project_id
   billing_account_id    = var.billing_account_id
+  environments          = var.environments
   gcs_defaults          = var.gcs_defaults
-  iam_roles             = var.business_unit_bi.iam_roles
-  iam_members           = var.business_unit_bi.iam_members
-  iam_xpn_config        = var.iam_xpn_config
-  iam_billing_config    = var.iam_billing_config
   organization_id       = var.organization_id
   root_node             = var.root_node
-  prefix                = var.prefix
-  environments          = var.environments
-  service_account_keys  = var.service_account_keys
+  # extra variables from the folders-unit module can be used here to grant
+  # IAM roles to the bu users, configure the automation service accounts, etc.
+  # iam_roles             = ["viewer"]
+  # iam_members           = { viewer = ["user:user@example.com"] }
 }
 
-# Business unit ML
-
-module "busines-unit-ml" {
-  source = "../../modules/folders-unit"
-
-  name                  = var.business_unit_ml.name
-  short_name            = var.business_unit_ml.short_name
+module "bu-machine-learning" {
+  source                = "../../modules/folders-unit"
+  name                  = "Machine Learning"
+  short_name            = "ml"
   automation_project_id = module.tf-project.project_id
   billing_account_id    = var.billing_account_id
+  environments          = var.environments
   gcs_defaults          = var.gcs_defaults
-  iam_roles             = var.business_unit_ml.iam_roles
-  iam_members           = var.business_unit_ml.iam_members
-  iam_xpn_config        = var.iam_xpn_config
-  iam_billing_config    = var.iam_billing_config
   organization_id       = var.organization_id
   root_node             = var.root_node
-  prefix                = var.prefix
-  environments          = var.environments
-  service_account_keys  = var.service_account_keys
+  # extra variables from the folders-unit module can be used here to grant
+  # IAM roles to the bu users, configure the automation service accounts, etc.
 }
 
 ###############################################################################

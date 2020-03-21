@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-################################################################################
-#                            Folders and folder IAM                            #
-################################################################################
+###############################################################################
+#                            Folders and folder IAM                           #
+###############################################################################
 
 resource "google_folder" "unit" {
   display_name = var.name
@@ -40,27 +40,25 @@ resource "google_folder_iam_binding" "environment" {
   for_each = local.folder_iam_service_account_bindings
   folder   = google_folder.environment[each.value.environment].name
   role     = each.value.role
-  members = [
-    "serviceAccount:${google_service_account.environment[each.value.environment].email}"
-  ]
+  members  = [local.service_accounts[each.value.environment]]
 }
 
-################################################################################
-#                  Billing Account and Org level IAM Bindings                  #
-################################################################################
+###############################################################################
+#                         Billing account and org IAM                         #
+###############################################################################
 
 resource "google_organization_iam_member" "org_iam_member" {
   for_each = local.org_iam_service_account_bindings
   org_id   = var.organization_id
   role     = each.value.role
-  member   = "serviceAccount:${google_service_account.environment[each.value.environment].email}"
+  member   = local.service_accounts[each.value.environment]
 }
 
 resource "google_billing_account_iam_member" "billing_iam_member" {
   for_each           = local.billing_iam_service_account_bindings
   billing_account_id = var.billing_account_id
   role               = each.value.role
-  member             = "serviceAccount:${google_service_account.environment[each.value.environment].email}"
+  member             = local.service_accounts[each.value.environment]
 }
 
 ################################################################################
@@ -84,9 +82,12 @@ resource "google_service_account_key" "keys" {
 ################################################################################
 
 resource "google_storage_bucket" "tfstate" {
-  for_each           = var.environments
-  project            = var.automation_project_id
-  name               = "${var.prefix}-${var.short_name}-${each.key}-tf"
+  for_each = var.environments
+  project  = var.automation_project_id
+  name = join("", [
+    var.prefix == null ? "" : "${var.prefix}-",
+    "${var.short_name}-${each.key}-tf"
+  ])
   location           = var.gcs_defaults.location
   storage_class      = var.gcs_defaults.storage_class
   force_destroy      = false
