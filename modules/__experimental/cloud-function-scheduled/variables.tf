@@ -75,7 +75,7 @@ variable "region" {
 }
 
 variable "schedule_config" {
-  description = "Cloud function scheduler job configuration, leave data null to pass the name variable."
+  description = "Cloud function scheduler job configuration, leave data null to pass the name variable, set schedule to null to disable schedule."
   type = object({
     pubsub_data = string
     schedule    = string

@@ -46,6 +46,7 @@ resource "google_pubsub_topic" "topic" {
 }
 
 resource "google_cloud_scheduler_job" "job" {
+  count = var.schedule_config.schedule == null ? 0 : 1
   project   = var.project_id
   region    = var.region
   name      = lookup(local.prefixes, "job", var.name)
