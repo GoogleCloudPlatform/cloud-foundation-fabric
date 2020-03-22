@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Google LLC
+ * Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,22 @@
  * limitations under the License.
  */
 
-output "folder" {
-  description = "Folder resource."
-  value       = google_folder.folder
+output "bucket_name" {
+  description = "Bucket name."
+  value       = local.bucket
 }
 
-output "folder_name" {
-  description = "Folder name."
-  value       = google_folder.folder.name
+output "function_name" {
+  description = "Cloud function name."
+  value       = google_cloudfunctions_function.function.name
+}
+
+output "service_account_email" {
+  description = "Service account email."
+  value       = google_service_account.service_account.email
+}
+
+output "topic_id" {
+  description = "PubSub topic id."
+  value       = google_pubsub_topic.topic.id
 }
