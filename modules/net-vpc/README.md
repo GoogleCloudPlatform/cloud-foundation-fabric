@@ -25,6 +25,7 @@ module "vpc" {
     subnet-2 = {
       ip_cidr_range = "10.0.16.0/24"
       region        = "europe-west1"
+      secondary_ip_range = {}
     }
   }
 }

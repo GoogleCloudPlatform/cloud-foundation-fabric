@@ -17,7 +17,7 @@ This sample creates several distinct groups of resources:
 - one top-level project to set up and host centralized audit log exports (optional)
 - one top-level shared services project
 
-The number of resources in this sample is kept to a minimum so as to make it more generally applicable, further resources can be easily added by leveraging the full array of [Cloud Foundation Toolkit modules](https://github.com/terraform-google-modules), especially in the shared services project.
+The number of resources in this sample is kept to a minimum so as to make it generally applicable, more resources can be easily added by leveraging other [modules from our bundle](../../modules/), or from other sources like the [CFT suite](https://github.com/terraform-google-modules).
 
 ## Shared services project
 
@@ -32,20 +32,23 @@ If no shared services are needed, the shared service project module can of cours
 
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
-| billing_account_id | Billing account id used as default for new projects. | <code title="">string</code> | ✓ |  |
+| billing_account_id | Billing account id used as to create projects. | <code title="">string</code> | ✓ |  |
 | environments | Environment short names. | <code title="list&#40;string&#41;">list(string)</code> | ✓ |  |
-| organization_id | Organization id. | <code title="">string</code> | ✓ |  |
 | prefix | Prefix used for resources that need unique names. | <code title="">string</code> | ✓ |  |
 | root_node | Root node for the new hierarchy, either 'organizations/org_id' or 'folders/folder_id'. | <code title="">string</code> | ✓ |  |
-| *audit_viewers* | Audit project viewers, in IAM format. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
+| *audit_filter* | Audit log filter used for the log sink. | <code title="">string</code> |  | <code title="&#60;&#60;END&#10;logName: &#34;&#47;logs&#47;cloudaudit.googleapis.com&#37;2Factivity&#34;&#10;OR&#10;logName: &#34;&#47;logs&#47;cloudaudit.googleapis.com&#37;2Fsystem_event&#34;&#10;END">...</code> |
 | *gcs_location* | GCS bucket location. | <code title="">string</code> |  | <code title="">EU</code> |
-| *generate_service_account_keys* | Generate and store service account keys in the state file. | <code title="">bool</code> |  | <code title="">false</code> |
-| *grant_xpn_folder_roles* | Grant roles needed for Shared VPC creation to service accounts at the environment folder level. | <code title="">bool</code> |  | <code title="">true</code> |
-| *grant_xpn_org_roles* | Grant roles needed for Shared VPC creation to service accounts at the organization level. | <code title="">bool</code> |  | <code title="">false</code> |
+| *iam_assets_editors* | Shared assets project editors, in IAM format. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
+| *iam_assets_owners* | Shared assets project owners, in IAM format. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
+| *iam_audit_viewers* | Audit project viewers, in IAM format. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
+| *iam_billing_config* | Control granting billing user role to service accounts. Target the billing account by default. | <code title="object&#40;&#123;&#10;grant      &#61; bool&#10;target_org &#61; bool&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;grant      &#61; true&#10;target_org &#61; false&#10;&#125;">...</code> |
+| *iam_folder_roles* | List of roles granted to each service account on its respective folder (excluding XPN roles). | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="&#91;&#10;&#34;roles&#47;compute.networkAdmin&#34;,&#10;&#34;roles&#47;owner&#34;,&#10;&#34;roles&#47;resourcemanager.folderViewer&#34;,&#10;&#34;roles&#47;resourcemanager.projectCreator&#34;,&#10;&#93;">...</code> |
+| *iam_sharedsvc_owners* | Shared services project owners, in IAM format. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
+| *iam_terraform_owners* | Terraform project owners, in IAM format. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
+| *iam_xpn_config* | Control granting Shared VPC creation roles to service accounts. Target the root node by default. | <code title="object&#40;&#123;&#10;grant      &#61; bool&#10;target_org &#61; bool&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;grant      &#61; true&#10;target_org &#61; false&#10;&#125;">...</code> |
+| *organization_id* | Organization id. | <code title="">string</code> |  | <code title="">null</code> |
 | *project_services* | Service APIs enabled by default in new projects. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="&#91;&#10;&#34;resourceviews.googleapis.com&#34;,&#10;&#34;stackdriver.googleapis.com&#34;,&#10;&#93;">...</code> |
-| *shared_bindings_members* | List of comma-delimited IAM-format members for the additional shared project bindings. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
-| *shared_bindings_roles* | List of roles for additional shared project bindings. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
-| *terraform_owners* | Terraform project owners, in IAM format. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
+| *service_account_keys* | Generate and store service account keys in the state file. | <code title="">bool</code> |  | <code title="">true</code> |
 
 ## Outputs
 
@@ -59,5 +62,4 @@ If no shared services are needed, the shared service project module can of cours
 | environment_service_accounts | Service accounts used to run each environment Terraform modules. |  |
 | environment_tf_gcs_buckets | GCS buckets used for each environment Terraform state. |  |
 | shared_resources_project | Project that holdes resources shared across environments. |  |
-| terraform_project | Project that holds the base Terraform resources. |  |
 <!-- END TFDOC -->

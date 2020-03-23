@@ -33,15 +33,6 @@ resource "google_folder" "folders" {
   parent       = var.parent
 }
 
-# give project creation access to service accounts
-# https://cloud.google.com/resource-manager/docs/access-control-folders#granting_folder-specific_roles_to_enable_project_creation
-# - external users need to have accepted the invitation email to join
-# "roles/owner",
-# "roles/resourcemanager.folderViewer",
-# "roles/resourcemanager.projectCreator",
-# "roles/compute.networkAdmin",
-
-
 resource "google_folder_iam_binding" "authoritative" {
   for_each = local.iam_keypairs
   folder   = google_folder.folders[each.value.name].name
@@ -51,9 +42,3 @@ resource "google_folder_iam_binding" "authoritative" {
   )
 }
 
-# resource "google_folder_iam_member" "non_authoritative" {
-#   for_each = length(var.iam_non_authoritative_roles) > 0 ? local.iam_non_authoritative : {}
-#   folder  = google_project.project.project_id
-#   role     = each.value.role
-#   member   = each.value.member
-# }
