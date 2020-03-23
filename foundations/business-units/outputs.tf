@@ -25,40 +25,40 @@ output "bootstrap_tf_gcs_bucket" {
 }
 
 output "shared_folder_id" {
-  description = "Shared folder ID."
+  description = "Shared folder id."
   value       = module.shared-folder.id
 }
 
-output "bu_ml" {
-  description = "Business Unit ML attributes."
+output "bu_machine_learning" {
+  description = "Machine Learning attributes."
   value = {
-    unit_folder          = module.busines-unit-ml.unit_folder,
-    env_gcs_buckets      = module.busines-unit-ml.env_gcs_buckets
-    env_folders          = module.busines-unit-ml.env_folders
-    env_service_accounts = module.busines-unit-ml.env_service_accounts
+    unit_folder          = module.bu-machine-learning.unit_folder,
+    env_gcs_buckets      = module.bu-machine-learning.env_gcs_buckets
+    env_folders          = module.bu-machine-learning.env_folders
+    env_service_accounts = module.bu-machine-learning.env_service_accounts
   }
 }
 
-output "bu_ml_sa_keys" {
-  description = "Business Unit ML Service Accoutns keys."
+output "bu_machine_learning_keys" {
+  description = "Machine Learning service account keys."
   sensitive   = true
-  value       = module.busines-unit-ml.env_sa_keys
+  value       = module.bu-machine-learning.env_sa_keys
 }
 
-output "bu_bi" {
-  description = "Business Unit BI attributes."
+output "bu_business_intelligence" {
+  description = "Business Intelligence attributes."
   value = {
-    unit_folder          = module.busines-unit-bi.unit_folder,
-    env_gcs_buckets      = module.busines-unit-bi.env_gcs_buckets
-    env_folders          = module.busines-unit-bi.env_folders
-    env_service_accounts = module.busines-unit-bi.env_service_accounts
+    unit_folder          = module.bu-business-intelligence.unit_folder,
+    env_gcs_buckets      = module.bu-business-intelligence.env_gcs_buckets
+    env_folders          = module.bu-business-intelligence.env_folders
+    env_service_accounts = module.bu-business-intelligence.env_service_accounts
   }
 }
 
-output "bu_bi_sa_keys" {
-  description = "Business Unit BI Service Accoutns keys."
+output "bu_business_intelligence_keys" {
+  description = "Business Intelligence service account keys."
   sensitive   = true
-  value       = module.busines-unit-bi.env_sa_keys
+  value       = module.bu-business-intelligence.env_sa_keys
 }
 
 output "audit_logs_project" {

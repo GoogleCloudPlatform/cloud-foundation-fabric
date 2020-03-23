@@ -14,31 +14,6 @@
  * limitations under the License.
  */
 
-variable "organization_id" {
-  description = "Organization id."
-  type        = string
-}
-
-variable "root_node" {
-  description = "Root node in folders/folder_id or organizations/org_id format."
-  type        = string
-}
-
-variable "prefix" {
-  description = "Prefix used for GCS bucket names."
-  type        = string
-}
-
-variable "environments" {
-  description = "Unit environments short names."
-  type        = map(string)
-  default = {
-    dev  = "development",
-    test = "Testing",
-    prod = "Production"
-  }
-}
-
 variable "automation_project_id" {
   description = "Project id used for automation service accounts."
   type        = string
@@ -49,14 +24,13 @@ variable "billing_account_id" {
   type        = string
 }
 
-variable "name" {
-  description = "Top folder name."
-  type        = string
-}
-
-variable "short_name" {
-  description = "Short name."
-  type        = string
+variable "environments" {
+  description = "Unit environments short names."
+  type        = map(string)
+  default = {
+    non-prod = "Non production"
+    prod     = "Production"
+  }
 }
 
 variable "gcs_defaults" {
@@ -68,18 +42,20 @@ variable "gcs_defaults" {
   }
 }
 
-variable "iam_roles" {
-  description = "IAM roles applied on the unit folder."
-  type        = list(string)
-}
-
-variable "iam_members" {
-  description = "IAM members for roles applied on the unit folder."
-  type        = map(list(string))
+variable "iam_billing_config" {
+  description = "Grant billing user role to service accounts, defaults to granting on the billing account."
+  type = object({
+    grant      = bool
+    target_org = bool
+  })
+  default = {
+    grant      = true
+    target_org = false
+  }
 }
 
 variable "iam_enviroment_roles" {
-  description = "IAM roles granted to service accounts on the environment sub-folders."
+  description = "IAM roles granted to the environment service account on the environment sub-folder."
   type        = list(string)
   default = [
     "roles/compute.networkAdmin",
@@ -89,32 +65,58 @@ variable "iam_enviroment_roles" {
   ]
 }
 
+variable "iam_members" {
+  description = "IAM members for roles applied on the unit folder."
+  type        = map(list(string))
+  default     = null
+}
+
+variable "iam_roles" {
+  description = "IAM roles applied on the unit folder."
+  type        = list(string)
+  default     = null
+}
+
+variable "iam_xpn_config" {
+  description = "Grant Shared VPC creation roles to service accounts, defaults to granting at folder level."
+  type = object({
+    grant      = bool
+    target_org = bool
+  })
+  default = {
+    grant      = true
+    target_org = false
+  }
+}
+
+variable "name" {
+  description = "Top folder name."
+  type        = string
+}
+
+variable "organization_id" {
+  description = "Organization id."
+  type        = string
+}
+
+variable "prefix" {
+  description = "Optional prefix used for GCS bucket names to ensure uniqueness."
+  type        = string
+  default     = null
+}
+
+variable "root_node" {
+  description = "Root node in folders/folder_id or organizations/org_id format."
+  type        = string
+}
+
 variable "service_account_keys" {
   description = "Generate and store service account keys in the state file."
   type        = bool
   default     = false
 }
 
-variable "iam_xpn_config" {
-  description = "Control granting Shared VPC creation roles to service accounts. Target the root node by default."
-  type = object({
-    grant      = bool
-    target_org = bool
-  })
-  default = {
-    grant      = true
-    target_org = false
-  }
-}
-
-variable "iam_billing_config" {
-  description = "Control granting billing user role to service accounts. Target the billing account by default."
-  type = object({
-    grant      = bool
-    target_org = bool
-  })
-  default = {
-    grant      = true
-    target_org = false
-  }
+variable "short_name" {
+  description = "Short name used as GCS bucket and service account prefixes, do not use capital letters or spaces."
+  type        = string
 }
