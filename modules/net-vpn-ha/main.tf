@@ -16,16 +16,16 @@
  */
 
 locals {
-  router = (
-    var.router_name == ""
-    ? google_compute_router.router[0].name
-    : var.router_name
-  )
   peer_external_gateway = (
     var.peer_external_gateway != null
     ? google_compute_external_vpn_gateway.external_gateway[0].self_link
     : null
 
+  )
+  router = (
+    var.router_create
+    ? google_compute_router.router[0].name
+    : var.router_name
   )
   secret = random_id.secret.b64_url
 }
@@ -55,8 +55,8 @@ resource "google_compute_external_vpn_gateway" "external_gateway" {
 
 resource "google_compute_router" "router" {
   provider = google-beta
-  count    = var.router_name == "" ? 1 : 0
-  name     = "vpn-${var.name}"
+  count    = var.router_create ? 1 : 0
+  name     = var.router_name == "" ? "vpn-${var.name}" : var.router_name
   project  = var.project_id
   region   = var.region
   network  = var.network
@@ -156,8 +156,12 @@ resource "google_compute_vpn_tunnel" "tunnels" {
   peer_gcp_gateway                = var.peer_gcp_gateway
   vpn_gateway_interface           = each.value.vpn_gateway_interface
   ike_version                     = each.value.ike_version
-  shared_secret                   = each.value.shared_secret == "" ? local.secret : each.value.shared_secret
-  vpn_gateway                     = google_compute_ha_vpn_gateway.ha_gateway.self_link
+  shared_secret = (
+    each.value.shared_secret == "" || each.value.shared_secret == null
+    ? local.secret
+    : each.value.shared_secret
+  )
+  vpn_gateway = google_compute_ha_vpn_gateway.ha_gateway.self_link
 }
 
 resource "random_id" "secret" {
