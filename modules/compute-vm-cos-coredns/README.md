@@ -49,10 +49,11 @@ module "onprem-dns" {
 | region | Compute region. | <code title="">string</code> | ✓ |  |
 | zone | Compute zone. | <code title="">string</code> | ✓ |  |
 | *boot_disk* | Boot disk properties. | <code title="object&#40;&#123;&#10;image &#61; string&#10;size  &#61; number&#10;type &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;image &#61; &#34;projects&#47;cos-cloud&#47;global&#47;images&#47;family&#47;cos-stable&#34;&#10;type &#61; &#34;pd-ssd&#34;&#10;size  &#61; 10&#10;&#125;">...</code> |
-| *coredns_corefile* | CoreDNS Corefile path, defaults to sample configuration. | <code title="">string</code> |  | <code title="">null</code> |
+| *coredns_corefile* | CoreDNS Corefile content, defaults to sample configuration. | <code title="">string</code> |  | <code title="">null</code> |
 | *coredns_image* | CoreDNS container image. | <code title="">string</code> |  | <code title="">coredns/coredns</code> |
 | *coredns_log_driver* | CoreDNS container log driver (local, gcplogs, etc.). | <code title="">string</code> |  | <code title="">gcplogs</code> |
 | *cos_config* | Configure COS logging and monitoring. | <code title="object&#40;&#123;&#10;logging    &#61; bool&#10;monitoring &#61; bool&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;logging    &#61; false&#10;monitoring &#61; true&#10;&#125;">...</code> |
+| *files* | Map of files to create on the instances, path as key. Attributes default to 'root' and '0644', set to null if not needed. | <code title="map&#40;object&#40;&#123;&#10;content &#61; string&#10;attributes &#61; object&#40;&#123;&#10;owner       &#61; string&#10;permissions &#61; string&#10;&#125;&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
 | *hostname* | Instance FQDN name. | <code title="">string</code> |  | <code title="">null</code> |
 | *instance_count* | Number of instances to create (only for non-template usage). | <code title="">number</code> |  | <code title="">1</code> |
 | *instance_type* | Instance type. | <code title="">string</code> |  | <code title="">f1-micro</code> |

@@ -103,24 +103,19 @@ module "on-prem" {
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
 | network | VPC network name. | <code title="">string</code> | ✓ |  |
-| peer_ip | IP Address of Cloud VPN Gateway. | <code title="">string</code> | ✓ |  |
 | project_id | Project id. | <code title="">string</code> | ✓ |  |
-| shared_secret | None | <code title="">string</code> | ✓ |  |
 | subnet_self_link | VPC subnet self link. | <code title="">string</code> | ✓ |  |
-| vpn_gateway_type | VPN Gateway type, applicable values are `static` and `dynamic`. | <code title="">string</code> | ✓ |  |
+| vpn_config | VPN configuration, type must be one of 'dynamic' or 'static'. | <code title="object&#40;&#123;&#10;peer_ip       &#61; string&#10;shared_secret &#61; string&#10;type &#61; string&#10;&#125;&#41;">object({...})</code> | ✓ |  |
 | zone | Compute zone. | <code title="">string</code> | ✓ |  |
-| *cloud_dns_forwarder_ip* | Inbound DNS Forwarding ip address. | <code title="">string</code> |  | <code title="">172.16.0.3</code> |
-| *cloud_dns_zone* | Google Cloud DNS Private Zone Name. | <code title="">string</code> |  | <code title="">cloud.internal</code> |
-| *local_bgp_asn* | Local BGP ASN. Should be provided if `vpn_gateway_type` is `dynamic`. | <code title="">string</code> |  | <code title="">65002</code> |
-| *local_bgp_session_range* | Local BGP sesison range of the BGP interface. Should be provided if `vpn_gateway_type` is `dynamic`. | <code title="">string</code> |  | <code title="">169.254.0.2/30</code> |
-| *local_ip_cidr_range* | None | <code title="">string</code> |  | <code title="">192.168.192.0/24</code> |
+| *coredns_config* | CoreDNS configuration, set to null to use default. | <code title="">string</code> |  | <code title="">null</code> |
+| *dns_domain* | DNS domain used for on-prem host records. | <code title="">string</code> |  | <code title="">onprem.example.com</code> |
+| *local_ip_cidr_range* | IP CIDR range used for the Docker onprem network. | <code title="">string</code> |  | <code title="">192.168.192.0/24</code> |
 | *machine_type* | Machine type. | <code title="">string</code> |  | <code title="">g1-small</code> |
-| *name* | On-prem-in-a-box compute instance name. | <code title="">string</code> |  | <code title="">on-prem-in-a-box</code> |
+| *name* | On-prem-in-a-box compute instance name. | <code title="">string</code> |  | <code title="">onprem</code> |
 | *network_tags* | Network tags. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">["ssh"]</code> |
-| *on_prem_dns_zone* | On-premises DNS Private Zone Name. | <code title="">string</code> |  | <code title="">onprem.internal</code> |
-| *peer_bgp_asn* | Peer BGP ASN. Should be provided if `vpn_gateway_type` is `dynamic`. | <code title="">string</code> |  | <code title="">65001</code> |
-| *peer_bgp_session_range* | Peer BGP sesison range of the BGP interface. Should be provided if `vpn_gateway_type` is `dynamic`. | <code title="">string</code> |  | <code title="">169.254.0.1/30</code> |
-| *remote_ip_cidr_ranges* | List of comma separated remote CIDR ranges. Should be provided if `vpn_gateway_type` is `static`. | <code title="">string</code> |  | <code title=""></code> |
+| *service_account* | Service account customization. | <code title="object&#40;&#123;&#10;email  &#61; string&#10;scopes &#61; list&#40;string&#41;&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;email &#61; null&#10;scopes &#61; &#91;&#10;&#34;https:&#47;&#47;www.googleapis.com&#47;auth&#47;devstorage.read_only&#34;,&#10;&#34;https:&#47;&#47;www.googleapis.com&#47;auth&#47;logging.write&#34;,&#10;&#34;https:&#47;&#47;www.googleapis.com&#47;auth&#47;monitoring.write&#34;&#10;&#93;&#10;&#125;">...</code> |
+| *vpn_dynamic_config* | BGP configuration for dynamic VPN, ignored if VPN type is 'static'. | <code title="object&#40;&#123;&#10;local_bgp_asn     &#61; number&#10;local_bgp_address &#61; string&#10;peer_bgp_asn      &#61; number&#10;peer_bgp_address  &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;local_bgp_asn     &#61; 65002&#10;local_bgp_address &#61; &#34;169.254.0.2&#34;&#10;peer_bgp_asn      &#61; 65001&#10;peer_bgp_address  &#61; &#34;169.254.0.1&#34;&#10;&#125;">...</code> |
+| *vpn_static_ranges* | Remote CIDR ranges for static VPN, ignored if VPN type is 'dynamic'. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 
 ## Outputs
 

@@ -14,7 +14,11 @@ module "sinks" {
 
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
-| *sinks* | Logging sinks that will be created, options default to true except for unique_writer_identity. | <code title="list&#40;object&#40;&#123;&#10;name        &#61; string&#10;resource    &#61; string&#10;filter      &#61; string&#10;destination &#61; string&#10;options &#61; object&#40;&#123;&#10;bigquery_partitioned_tables &#61; bool&#10;include_children            &#61; bool&#10;unique_writer_identity      &#61; bool&#10;&#125;&#41;&#10;&#125;&#41;&#41;">list(object({...}))</code> |  | <code title="">[]</code> |
+| destinations | Map of destinations by sink name. | <code title="map&#40;string&#41;">map(string)</code> | ✓ |  |
+| parent | Resource where the sink will be created, eg 'organizations/nnnnnnnn'. | <code title="">string</code> | ✓ |  |
+| sinks | Map of sink name / sink filter. | <code title="map&#40;string&#41;">map(string)</code> | ✓ |  |
+| *default_options* | Default options used for sinks where no specific options are set. | <code title="object&#40;&#123;&#10;bigquery_partitioned_tables &#61; bool&#10;include_children            &#61; bool&#10;unique_writer_identity      &#61; bool&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;bigquery_partitioned_tables &#61; true&#10;include_children            &#61; true&#10;unique_writer_identity      &#61; false&#10;&#125;">...</code> |
+| *sink_options* | Optional map of sink name / sink options. If no options are specified for a sink defaults will be used. | <code title="map&#40;object&#40;&#123;&#10;bigquery_partitioned_tables &#61; bool&#10;include_children            &#61; bool&#10;unique_writer_identity      &#61; bool&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
 
 ## Outputs
 
