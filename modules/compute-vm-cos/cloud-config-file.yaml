@@ -1,6 +1,0 @@
-# skip boilerplate check
-- path: ${path}
-  owner: ${owner}
-  permissions: ${permissions}
-  content: |
-    ${indent(4, content)}

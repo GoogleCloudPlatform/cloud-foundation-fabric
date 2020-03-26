@@ -35,7 +35,13 @@ write_files:
       }
     }
 
-${files}
+%{ for path, data in files }
+- path: ${path}
+  owner: ${lookup(data, "owner", "root")}
+  permissions: ${lookup(data, "permissions", "0644")}
+  content: |
+    ${indent(4, data.content)}
+%{ endfor }
 
 # container service
 - path: /etc/systemd/system/cosapp.service
@@ -51,22 +57,24 @@ ${files}
     ExecStartPre=/usr/bin/docker-credential-gcr configure-docker
     ExecStart=/usr/bin/docker run --rm --name=cosapp  \
       --log-driver=${log_driver} --network host \
-      %{~ if volumes != "" ~}
-      ${volumes} \
-      %{~ endif ~}
+      %{~ for host_path, mount_path in volumes ~}
+      -v ${host_path}:${mount_path} \
+      %{~ endfor ~}
       ${image} ${extra_args}
     ExecStop=/usr/bin/docker stop cosapp
     ExecStopPost=/usr/bin/docker rm cosapp
 
 runcmd:
 - systemctl daemon-reload
-%{ if fw_runcmds != "" ~}
-${fw_runcmds}
-%{ endif ~}
-%{ if pre_runcmds != "" ~}
-${pre_runcmds}
-%{ endif ~}
+%{ for proto, ports in fw_runcmds ~}
+  %{~ for port in ports ~}
+- iptables -I INPUT 1 -p ${proto} -m ${proto} --dport ${port} -m state --state NEW,ESTABLISHED -j ACCEPT
+  %{~ endfor ~}
+%{ endfor ~}
+%{ for cmd in pre_runcmds ~}
+- ${cmd}
+%{ endfor ~}
 - systemctl start cosapp
-%{ if post_runcmds != "" ~}
-${post_runcmds}
-%{ endif ~}
+%{ for cmd in pre_runcmds ~}
+- ${cmd}
+%{ endfor ~}

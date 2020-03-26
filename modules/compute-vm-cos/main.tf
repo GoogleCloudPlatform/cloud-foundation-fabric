@@ -15,70 +15,29 @@
  */
 
 locals {
-  files = {
-    for path, data in var.files :
-    path => merge(data, {
-      attributes = (
-        data.attributes == null
-        ? { owner = "root", permissions = "0644" }
-        : data.attributes
-      )
-    })
+  cc     = var.cloud_config
+  ccvars = var.cloud_config.variables
+
+  use_generic_template = local.cc.template_path == "preset:generic.yaml"
+  template_path        = replace(local.cc.template_path, "/preset:/", "${path.module}/cloud-config/")
+
+  generic_config_vars = {
+    image        = lookup(local.ccvars, "image", "")
+    extra_args   = lookup(local.ccvars, "extra_args", "")
+    log_driver   = lookup(local.ccvars, "log_driver", "gcplogs")
+    volumes      = lookup(local.ccvars, "volumes", {})
+    pre_runcmds  = lookup(local.ccvars, "pre_runcmds", [])
+    post_runcmds = lookup(local.ccvars, "post_runcmds", [])
+    fw_runcmds   = lookup(local.ccvars, "exposed_ports", [])
+    files        = lookup(local.ccvars, "files", {})
   }
-  files_yaml = join("\n", [
-    for _, data in data.template_file.cloud-config-files : data.rendered
-  ])
-  volumes = join(" ", [
-    for host_path, mount_path in var.volumes : "-v ${host_path}:${mount_path}"
-  ])
-  tcp_ports = [
-    for port in coalesce(var.exposed_ports.tcp, [])
-    : "- iptables -I INPUT 1 -p tcp -m tcp --dport ${port} -m state --state NEW,ESTABLISHED -j ACCEPT"
-  ]
-  udp_ports = [
-    for port in coalesce(var.exposed_ports.udp, [])
-    : "- iptables -I INPUT 1 -p udp -m udp --dport ${port} -m state --state NEW,ESTABLISHED -j ACCEPT"
-  ]
-  pre_runcmds = [
-    for cmd in var.pre_runcmds : "- ${cmd}"
-  ]
-  post_runcmds = [
-    for cmd in var.post_runcmds : "- ${cmd}"
-  ]
-  fw_runcmds_yaml   = join("\n", concat(local.tcp_ports, local.udp_ports))
-  pre_runcmds_yaml  = join("\n", local.pre_runcmds)
-  post_runcmds_yaml = join("\n", local.post_runcmds)
+
+  cloud_config_content = (
+    local.use_generic_template
+    ? templatefile(local.template_path, local.generic_config_vars)
+    : templatefile(local.template_path, var.cloud_config.variables)
+  )
 }
-
-data "template_file" "cloud-config-files" {
-  for_each = local.files
-  template = file("${path.module}/cloud-config-file.yaml")
-  vars = {
-    path        = each.key
-    content     = each.value.content
-    owner       = each.value.attributes.owner
-    permissions = each.value.attributes.permissions
-  }
-}
-
-data "template_file" "cloud-config" {
-  template = file("${path.module}/cloud-config.yaml")
-  vars = {
-    files        = local.files_yaml
-    volumes      = local.volumes
-    extra_args   = var.extra_args
-    image        = var.image
-    log_driver   = var.log_driver
-    fw_runcmds   = local.fw_runcmds_yaml
-    pre_runcmds  = local.pre_runcmds_yaml
-    post_runcmds = local.post_runcmds_yaml
-  }
-}
-
-# output "rendered" {
-#   value = data.template_file.cloud-config.rendered
-# }
-
 
 module "vm" {
   source         = "../compute-vm"
@@ -94,7 +53,7 @@ module "vm" {
   metadata = merge(var.metadata, {
     google-logging-enabled    = var.cos_config.logging
     google-monitoring-enabled = var.cos_config.monitoring
-    user-data                 = data.template_file.cloud-config.rendered
+    user-data                 = local.cloud_config_content
   })
   min_cpu_platform      = var.min_cpu_platform
   network_interfaces    = var.network_interfaces

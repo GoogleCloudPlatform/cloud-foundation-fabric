@@ -28,17 +28,6 @@ variable "boot_disk" {
   }
 }
 
-variable "image" {
-  description = "Container image."
-  type        = string
-}
-
-variable "log_driver" {
-  description = "Container log driver (local, gcplogs, etc.)."
-  type        = string
-  default     = "gcplogs"
-}
-
 variable "cos_config" {
   description = "Configure COS logging and monitoring."
   type = object({
@@ -166,38 +155,10 @@ variable "zone" {
   type        = string
 }
 
-variable "volumes" {
-  description = "Map of volumes to mount in the container, key is the host path, value is the mount location inside the container"
-  type        = map(string)
-  default     = {}
-}
-
-variable "exposed_ports" {
-  description = "Ports to expose in the host"
-  type = object({
-    tcp = list(number)
-    udp = list(number)
-  })
-  default = {
-    tcp = []
-    udp = []
-  }
-}
-
-variable "extra_args" {
-  description = "Extra arguments to pass to the container"
-  type        = string
-  default     = ""
-}
-
-variable "pre_runcmds" {
-  description = "Extra commands to run (in the host) before starting the container."
-  type        = list(string)
-  default     = []
-}
-
-variable "post_runcmds" {
-  description = "Extra commands to run (in the host) after starting the container."
-  type        = list(string)
-  default     = []
+variable "cloud_config" {
+  description = "Configuration parameters for cloud-config"
+  # type = object({
+  #   template_path = string
+  #   variables     = map(any)
+  # })
 }
