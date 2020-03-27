@@ -2,7 +2,60 @@
 
 This module allows creating instances (or an instance template) runnning a containerized application using COS. A service account will be created if none is set.
 
-## Example
+This module can be used with a custom cloud-config template or with one of the provided preset configurations.
+
+## Examples
+
+### CoreDNS preset
+
+This preset creates CoreDNS instances. Use `preset:coredns.yaml` as the value for `cloud_config.template_path` and you must specify the following variables:
+
+| name      | description                                                                                                                         | type                         | required |
+|-----------|-------------------------------------------------------------------------------------------------------------------------------------|:----------------------------:|:--------:|
+| corefile  | CoreDNS Corefile content, use `"default"` to use sample configuration.                                                              | <code title="">string</code> | ✓        |
+| logdriver | CoreDNS container log driver (local, gcplogs, etc.).                                                                                | <code title="">string</code> | ✓        |
+| files     | Map of files to create on the instances, path as key, value must be an `object({content=string, owner=string, permissions=string})` | <code title="">object</code> | ✓        |
+
+```hcl
+module "coredns" {
+  source     = "./modules/compute-vm-cos"
+  project_id = var.project_id
+  region     = var.region
+  zone       = var.zone
+  name       = "coredns"
+  network_interfaces = [{
+    network    = var.vpc_self_link
+    subnetwork = var.subnet_self_link
+    nat        = false,
+    addresses  = null
+  }]
+
+  cloud_config = {
+    template_path = "preset:coredns.yaml"
+    variables = {
+      corefile   = "default"
+      log_driver = "gcplogs"
+      files      = {}
+    }
+  }
+}
+```
+
+### Generic preset
+
+This preset creates a COS instance and runs the specfied container image. Use `preset:generic.yaml` as the value for `cloud_config.template_path` and you must specify the following variables:
+
+| name          | description                                                                                                                         | type                                                                 | required |
+|---------------|-------------------------------------------------------------------------------------------------------------------------------------|:--------------------------------------------------------------------:|:--------:|
+| image         | Container image to run                                                                                                              | <code title="">string</code>                                         | ✓        |
+| extra_args    | Extra arguments to pass to the container                                                                                            | <code title="">string</code>                                         | ✓        |
+| logdriver     | Container log driver (local, gcplogs, etc.).                                                                                        | <code title="">string</code>                                         | ✓        |
+| files         | Map of files to create on the instances, path as key, value must be an `object({content=string, owner=string, permissions=string})` | <code title="">object</code>                                         | ✓         |
+| volumes       | Map volumes to mount in the container. Key is the host path and value is the container path                                         | <code title="">map(string)</code>                                    |          |
+| pre_runcmds   | List of commands to run before starting the container                                                                               | <code title="">list(string)</code>                                   |          |
+| post_runcmds  | List of commands to run after starting the container                                                                                | <code title="">list(string)</code>                                   |          |
+| exposed_ports | List of ports to expose in the host.                                                                                                | <code title="">object({tcp = list(string), udp=list(string)})</code> |          |
+
 
 ```hcl
 module "nginx" {
@@ -35,39 +88,40 @@ module "nginx" {
     }
   }
 }
+```
 
-module "coredns" {
-  source     = "../../tmp/cloud-foundation-fabric/modules/compute-vm-cos/"
-  project_id = "jccb-testenv"
-  zone       = "europe-west1-b"
-  region     = "europe-west1"
-  name       = "coredns"
+### User-defined configuration
+
+```hcl
+module "nginx" {
+  source     = "./modules/compute-vm-cos"
+  project_id = var.project_id
+  region     = var.region
+  zone       = var.zone
+  name       = "nginx"
   network_interfaces = [{
-    network    = "net1"
-    subnetwork = "https://www.googleapis.com/compute/v1/projects/jccb-testenv/regions/europe-west1/subnetworks/europe-west1"
+    network    = var.vpc_self_link
+    subnetwork = var.subnet_self_link
     nat        = false,
     addresses  = null
   }]
-  instance_type = "n1-standard-1"
-
   cloud_config = {
-    template_path = "preset:coredns.yaml"
+    template_path = "${module.path}/mytemplate.yaml"
     variables = {
-      corefile   = "default"
-      log_driver = "gcplogs"
-      files      = {}
+      var1 = "value1"
+      var2 = "value2"
     }
   }
 }
-
 ```
+
 
 <!-- BEGIN TFDOC -->
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
-| cloud_config | None | <code title=""></code> | ✓ |  |
+| cloud_config | Configuration for rendering the cloud-config string for the instance. Must be a map with two keys: template_path and variables | <code title=""></code> | ✓ |  |
 | name | Instances base name. | <code title="">string</code> | ✓ |  |
 | network_interfaces | Network interfaces configuration. Use self links for Shared VPC, set addresses to null if not needed. | <code title="list&#40;object&#40;&#123;&#10;nat        &#61; bool&#10;network    &#61; string&#10;subnetwork &#61; string&#10;addresses &#61; object&#40;&#123;&#10;internal &#61; list&#40;string&#41;&#10;external &#61; list&#40;string&#41;&#10;&#125;&#41;&#10;&#125;&#41;&#41;">list(object({...}))</code> | ✓ |  |
 | project_id | Project id. | <code title="">string</code> | ✓ |  |

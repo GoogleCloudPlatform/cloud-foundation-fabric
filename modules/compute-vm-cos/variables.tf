@@ -156,7 +156,7 @@ variable "zone" {
 }
 
 variable "cloud_config" {
-  description = "Configuration parameters for cloud-config"
+  description = "Configuration for rendering the cloud-config string for the instance. Must be a map with two keys: template_path and variables"
   # type = object({
   #   template_path = string
   #   variables     = map(any)
