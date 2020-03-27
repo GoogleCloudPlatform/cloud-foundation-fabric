@@ -41,12 +41,19 @@ write_files:
     LLMNR=no
     DNSStubListener=no
 
-# Write coreDNS config
 - path: /etc/coredns/Corefile
   permissions: 0644
   owner: root
   content: |
+%{ if corefile == "default" ~}
+    . {
+        forward . /etc/resolv.conf
+        log
+        errors
+    }
+%{ else ~}
     ${indent(4, corefile)}
+%{ endif ~}
 
 # coredns container service
 - path: /etc/systemd/system/coredns.service
@@ -61,10 +68,16 @@ write_files:
     ExecStart=/usr/bin/docker run --rm --name=coredns  \
       --log-driver=${log_driver} --network host \
       -v /etc/coredns:/etc/coredns \
-      ${image} -conf /etc/coredns/Corefile
+      coredns/coredns -conf /etc/coredns/Corefile
     ExecStop=/usr/bin/docker stop coredns
 
-${files}
+%{ for path, data in files }
+- path: ${path}
+  owner: ${lookup(data, "owner", "root")}
+  permissions: ${lookup(data, "permissions", "0644")}
+  content: |
+    ${indent(4, data.content)}
+%{ endfor }
 
 runcmd:
 - iptables -I INPUT 1 -p tcp -m tcp --dport 53 -m state --state NEW,ESTABLISHED -j ACCEPT

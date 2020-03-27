@@ -14,9 +14,33 @@
  * limitations under the License.
  */
 
+locals {
+  cc     = var.cloud_config
+  ccvars = var.cloud_config.variables
 
-module "cos-coredns" {
-  source         = "../compute-vm-cos"
+  use_generic_template = local.cc.template_path == "preset:generic.yaml"
+  template_path        = replace(local.cc.template_path, "/preset:/", "${path.module}/cloud-config/")
+
+  generic_config_vars = {
+    image        = lookup(local.ccvars, "image", "")
+    extra_args   = lookup(local.ccvars, "extra_args", "")
+    log_driver   = lookup(local.ccvars, "log_driver", "gcplogs")
+    volumes      = lookup(local.ccvars, "volumes", {})
+    pre_runcmds  = lookup(local.ccvars, "pre_runcmds", [])
+    post_runcmds = lookup(local.ccvars, "post_runcmds", [])
+    fw_runcmds   = lookup(local.ccvars, "exposed_ports", [])
+    files        = lookup(local.ccvars, "files", {})
+  }
+
+  cloud_config_content = (
+    local.use_generic_template
+    ? templatefile(local.template_path, local.generic_config_vars)
+    : templatefile(local.template_path, var.cloud_config.variables)
+  )
+}
+
+module "vm" {
+  source         = "../compute-vm"
   project_id     = var.project_id
   region         = var.region
   zone           = var.zone
@@ -29,42 +53,12 @@ module "cos-coredns" {
   metadata = merge(var.metadata, {
     google-logging-enabled    = var.cos_config.logging
     google-monitoring-enabled = var.cos_config.monitoring
+    user-data                 = local.cloud_config_content
   })
   min_cpu_platform      = var.min_cpu_platform
   network_interfaces    = var.network_interfaces
   options               = var.options
   service_account       = var.service_account
   tags                  = var.tags
-  log_driver            = var.coredns_log_driver
   use_instance_template = var.use_instance_template
-  cos_config            = var.cos_config
-  image                 = var.coredns_image
-  files = {
-    "/etc/systemd/resolved.conf" : {
-      content    = <<-EOT
-        [Resolve]
-        LLMNR=no
-        DNSStubListener=no
-      EOT
-      attributes = null
-    }
-    "/etc/coredns/Corefile" : {
-      content = (var.coredns_corefile == null
-        ? file("${path.module}/Corefile")
-        : var.coredns_corefile
-      )
-      attributes = null
-    }
-  }
-  volumes = {
-    "/etc/coredns" : "/etc/coredns"
-  }
-  pre_runcmds = [
-    "systemctl restart systemd-resolved.service"
-  ]
-  extra_args = "-conf /etc/coredns/Corefile"
-  exposed_ports = {
-    tcp = [53]
-    udp = [53]
-  }
 }
