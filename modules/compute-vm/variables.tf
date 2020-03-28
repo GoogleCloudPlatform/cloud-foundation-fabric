@@ -46,20 +46,6 @@ variable "attached_disk_defaults" {
   }
 }
 
-variable "boot_disk" {
-  description = "Boot disk properties."
-  type = object({
-    image = string
-    size  = number
-    type  = string
-  })
-  default = {
-    image = "projects/debian-cloud/global/images/family/debian-10"
-    type  = "pd-ssd"
-    size  = 10
-  }
-}
-
 variable "group" {
   description = "Instance group (for instance use)."
   type = object({
