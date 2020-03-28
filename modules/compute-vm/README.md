@@ -89,6 +89,8 @@ module "debian-test" {
 | *service_account_scopes* | Scopes applied to service account. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 | *tags* | Instance tags. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 | *use_instance_template* | Create instance template instead of instances. | <code title="">bool</code> |  | <code title="">false</code> |
+| *user_data_template* | Path to the optional cloud config template that will be rendered and set in metadata. | <code title="">string</code> |  | <code title="">null</code> |
+| *user_data_variables* | Map of variables used to render the user data template. | <code title="map&#40;any&#41;">map(any)</code> |  | <code title="">{}</code> |
 
 ## Outputs
 
