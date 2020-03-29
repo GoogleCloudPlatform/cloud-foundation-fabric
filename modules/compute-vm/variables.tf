@@ -59,6 +59,7 @@ variable "boot_disk" {
     size  = 10
   }
 }
+
 variable "group" {
   description = "Instance group (for instance use)."
   type = object({
