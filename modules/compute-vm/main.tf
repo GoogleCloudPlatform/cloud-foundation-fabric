@@ -52,16 +52,6 @@ locals {
       ]
     )
   )
-  user_data = (
-    var.user_data_template == null
-    ? null
-    : templatefile(var.user_data_template, var.user_data_variables)
-  )
-  metadata = (
-    var.user_data_template == null
-    ? var.metadata
-    : merge(var.metadata, { user-data = local.user_data })
-  )
 }
 
 resource "google_compute_disk" "disks" {
@@ -91,7 +81,7 @@ resource "google_compute_instance" "default" {
   can_ip_forward            = var.options.can_ip_forward
   allow_stopping_for_update = var.options.allow_stopping_for_update
   deletion_protection       = var.options.deletion_protection
-  metadata                  = local.metadata
+  metadata                  = var.metadata
   labels                    = var.labels
 
   dynamic attached_disk {
@@ -174,7 +164,7 @@ resource "google_compute_instance_template" "default" {
   machine_type     = var.instance_type
   min_cpu_platform = var.min_cpu_platform
   can_ip_forward   = var.options.can_ip_forward
-  metadata         = local.metadata
+  metadata         = var.metadata
   labels           = var.labels
 
   disk {
