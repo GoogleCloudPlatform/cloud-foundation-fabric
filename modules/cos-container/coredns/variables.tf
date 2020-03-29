@@ -1,0 +1,1 @@
+../../compute-vm/variables.tf
