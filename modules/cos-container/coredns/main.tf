@@ -15,6 +15,10 @@
  */
 
 locals {
+  cloud_config = templatefile(local.template, merge(var.config_variables, {
+    corefile = local.corefile
+    files    = local.files
+  }))
   corefile = (
     var.coredns_config == null
     ? file("${path.module}/Corefile")
@@ -36,8 +40,4 @@ locals {
     ? "${path.module}/cloud-config.yaml"
     : var.cloud_config
   )
-  cloud_config = templatefile(local.template, merge(var.config_variables, {
-    corefile = local.corefile
-    files    = local.files
-  }))
 }

@@ -71,7 +71,10 @@ write_files:
       ${indent(4, data.content)}
   %{ endfor }
 
-  runcmd:
+bootcmd:
+  - systemctl start node-problem-detector
+
+runcmd:
   - iptables -I INPUT 1 -p tcp -m tcp --dport 53 -m state --state NEW,ESTABLISHED -j ACCEPT
   - iptables -I INPUT 1 -p udp -m udp --dport 53 -m state --state NEW,ESTABLISHED -j ACCEPT
   - systemctl daemon-reload
