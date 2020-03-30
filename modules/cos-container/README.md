@@ -34,6 +34,11 @@ It's meant to fullfill different use cases:
 - [ ] write module
 - [ ] add description and examples here
 
+### PostgreSQL
+
+- [ ] write module
+- [ ] add description and examples here
+
 ### Squid forward proxy
 
 - [ ] find a good image or build and deploy one
@@ -43,4 +48,12 @@ It's meant to fullfill different use cases:
 ### Two-containers example
 
 - [ ] find the right example (nginx + git sync of static http docs)
+- [ ] write module
+- [ ] add description and examples here
+
+### Docker compose example
+
+- [ ] find the right example
+- [ ] write module
+- [ ] add description and examples here
 
