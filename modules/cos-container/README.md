@@ -45,6 +45,12 @@ It's meant to fullfill different use cases:
 - [ ] write module
 - [ ] add description and examples here
 
+### Multiple files or directories
+
+- [ ] find the right example (GCS? git?)
+- [ ] write module
+- [ ] add description and examples here
+
 ### Two-containers example
 
 - [ ] find the right example (nginx + git sync of static http docs)
