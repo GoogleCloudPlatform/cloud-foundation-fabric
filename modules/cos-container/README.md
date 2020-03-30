@@ -63,3 +63,8 @@ It's meant to fullfill different use cases:
 - [ ] write module
 - [ ] add description and examples here
 
+### Containerized app
+
+- [ ] find the right example (gitlab?)
+- [ ] write module
+- [ ] add description and examples here
