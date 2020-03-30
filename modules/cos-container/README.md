@@ -9,6 +9,14 @@ It's meant to fullfill different use cases:
 - in production, to easily add glue components for services like DNS (eg to work around inbound/outbound forwarding limitations)
 - as a basis to implement cloud-native production deployments that leverage cloud-init for configuration management
 
+## Updating cloud-config on running instances
+
+- [ ] describe the need to restart
+
+## Combining with the compute-vm module
+
+- [ ] describe and add example
+
 ## Available modules
 
 ### CoreDNS
@@ -28,5 +36,11 @@ It's meant to fullfill different use cases:
 
 ### Squid forward proxy
 
+- [ ] find a good image or build and deploy one
 - [ ] write module
 - [ ] add description and examples here
+
+### Two-containers example
+
+- [ ] find the right example (nginx + git sync of static http docs)
+
