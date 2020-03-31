@@ -16,6 +16,7 @@
 import os
 import pytest
 import re
+import yaml
 
 
 FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
@@ -25,6 +26,7 @@ def test_defaults(apply_runner):
   "Test defalt configuration."
   _, output = apply_runner(FIXTURES_DIR)
   cloud_config = output['cloud_config']
+  yaml.safe_load(cloud_config)
   assert cloud_config.startswith('#cloud-config')
   assert re.findall(r'(?m)^\s+\-\s*path:\s*(\S+)', cloud_config) == [
       '/var/lib/docker/daemon.json', '/etc/systemd/resolved.conf',
