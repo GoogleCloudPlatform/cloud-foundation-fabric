@@ -1,7 +1,68 @@
 # Containerized CoreDNS on Container Optimized OS
 
-- [ ] test module
-- [ ] add description and examples
+This module creates a cloud-config configuration, used to configure and start a containerized [CoreDNS](https://coredns.io/) service on Container Optimized OS, using the [official image](https://hub.docker.com/r/coredns/coredns/).
+
+The CoreDNS configuration and additional files (used for zone or hosts files) can be set via variables. Rules are added to iptables to allow DNS on TCP and UDP, and HTTP for health checks configurable via the CoreDNS [health plugin](https://coredns.io/plugins/health/).
+
+Logging and monitoring are enabled via the [Google Cloud Logging driver](https://docs.docker.com/config/containers/logging/gcplogs/) configured for the CoreDNS container, and the [Node Problem Detector](https://cloud.google.com/container-optimized-os/docs/how-to/monitoring) service started by default on boot.
+
+The module outputs the rendered cloud config to be set in the `user-data` metadata of instances or instance templates. For convenience in test or development setups, a simple instance can be created and managed via the `test_instance` variable. Refer to the [top-level README](../README.md) for details on the instance configuration.
+
+## Examples
+
+### Default CoreDNS configuration
+
+This example will create a cloud-config that uses the module's defaults. No variables are needed, the cloud-config is available from the module's outputs.
+
+```hcl
+module "cos-coredns" {
+  source           = "./modules/cos-container/coredns"
+}
+
+# use it as metadata in a compute instance or template
+resource "google_compute_instance" "default" {
+  metadata = {
+    user-data = module.cos-coredns.cloud_config
+  }
+```
+
+### Custom CoreDNS configuration
+
+This example will create a cloud-config that changes the CoreDNS configuration to use the [CoreDNS hosts plugin](), and adds a simple hosts-format file. Again, the cloud-config is available from the module's outputs.
+
+```hcl
+module "cos-coredns" {
+  source           = "./modules/cos-container/coredns"
+  coredns_config = "./modules/cos-container/coredns/Corefile-hosts"
+  files = {
+    "/etc/coredns/example.hosts" = {
+      content     = "127.0.0.2 foo.example.org foo"
+      owner       = null
+      permissions = "0644"
+    }
+}
+```
+
+### Create the test instance
+
+To create the test instance, simply set the appropriate values in the `test_instance` variable. An instance and a custom service account with logging and monitoring write permissions will be created.
+
+```hcl
+module "cos-coredns" {
+  source           = "./modules/cos-container/coredns"
+  test_instance = {
+    project_id = "my-project"
+    zone       = "europe-west1-b"
+    name       = "cos-coredns"
+    type       = "f1-micro"
+    tags       = ["ssh"]
+    metadata   = {}
+    network    = "default"
+    subnetwork = "https://www.googleapis.com/compute/v1/projects/my-project/regions/europe-west1/subnetworks/my-subnet"
+    disks      = []
+  }
+}
+```
 
 <!-- BEGIN TFDOC -->
 ## Variables

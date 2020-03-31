@@ -15,25 +15,21 @@
  */
 
 variable "cloud_config" {
-  description = "Cloud config template path. If null default will be used."
-  type        = string
-  default     = null
+  type    = string
+  default = null
 }
 
 variable "config_variables" {
-  description = "Additional variables used to render the cloud-config template."
-  type        = map(any)
-  default     = {}
+  type    = map(any)
+  default = {}
 }
 
 variable "coredns_config" {
-  description = "CoreDNS configuration path, if null default will be used."
-  type        = string
-  default     = null
+  type    = string
+  default = null
 }
 
 variable "file_defaults" {
-  description = "Default owner and permissions for files."
   type = object({
     owner       = string
     permissions = string
@@ -45,7 +41,6 @@ variable "file_defaults" {
 }
 
 variable "files" {
-  description = "Map of extra files to create on the instance, path as key. Owner and permissions will use defaults if null."
   type = map(object({
     content     = string
     owner       = string

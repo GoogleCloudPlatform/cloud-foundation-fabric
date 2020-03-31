@@ -19,10 +19,8 @@ locals {
     corefile = local.corefile
     files    = local.files
   }))
-  corefile = (
-    var.coredns_config == null
-    ? file("${path.module}/Corefile")
-    : var.coredns_config
+  corefile = file(
+    var.coredns_config == null ? "${path.module}/Corefile" : var.coredns_config
   )
   files = {
     for path, attrs in var.files : path => {

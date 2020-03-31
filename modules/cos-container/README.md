@@ -9,8 +9,14 @@ It's meant to fullfill different use cases:
 - in production, to easily add glue components for services like DNS (eg to work around inbound/outbound forwarding limitations)
 - as a basis to implement cloud-native production deployments that leverage cloud-init for configuration management
 
+## Using the test instance
+
+- [ ] what it is and how to use it
+- [ ] how to remove it when forking modules
+
 ## Updating cloud-config on running instances
 
+- [ ] describe `/usr/share/cloud/rerun-cloudinit.sh`
 - [ ] describe the need to restart
 
 ## Combining with the compute-vm module

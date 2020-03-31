@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+locals {
+  sa_roles = ["roles/logging.logWriter", "roles/monitoring.metricWriter"]
+}
+
 resource "google_service_account" "default" {
   count        = var.test_instance == null ? 0 : 1
   project      = var.test_instance.project_id
@@ -21,14 +25,23 @@ resource "google_service_account" "default" {
   display_name = "Managed by the cos Terraform module."
 }
 
+resource "google_project_iam_member" "default" {
+  for_each = var.test_instance == null ? toset([]) : toset(local.sa_roles)
+  project  = var.test_instance.project_id
+  role     = each.value
+  member   = "serviceAccount:${google_service_account.default[0].email}"
+}
+
 resource "google_compute_instance" "default" {
-  count        = var.test_instance == null ? 0 : 1
-  project      = var.test_instance.project_id
-  zone         = var.test_instance.zone
-  name         = var.test_instance.name
-  description  = "Managed by the cos Terraform module."
-  tags         = var.test_instance.tags
-  machine_type = var.test_instance.type
+  count       = var.test_instance == null ? 0 : 1
+  project     = var.test_instance.project_id
+  zone        = var.test_instance.zone
+  name        = var.test_instance.name
+  description = "Managed by the cos Terraform module."
+  tags        = var.test_instance.tags
+  machine_type = (
+    var.test_instance.type == null ? "f1-micro" : var.test_instance.type
+  )
   metadata = merge(var.test_instance.metadata, {
     user-data = local.cloud_config
   })
