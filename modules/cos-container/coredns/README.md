@@ -1,12 +1,20 @@
 # Containerized CoreDNS on Container Optimized OS
 
-This module manages a cloud-config configuration that configures and starts a containerized [CoreDNS](https://coredns.io/) service on Container Optimized OS, using the [official image](https://hub.docker.com/r/coredns/coredns/).
+This module manages a `cloud-config` configuration that starts a containerized [CoreDNS](https://coredns.io/) service on Container Optimized OS, using the [official image](https://hub.docker.com/r/coredns/coredns/).
 
-The CoreDNS configuration and additional files (used for zone or hosts files) can be set via variables. Rules are added to iptables to allow DNS on TCP and UDP, and HTTP for health checks configurable via the CoreDNS [health plugin](https://coredns.io/plugins/health/).
+The resulting `cloud-config` can be customized in a number of ways:
+
+- a custom CoreDNS configuration can be set using the `coredns_config` variable
+- additional files (eg for hosts or zone files) can be passed in via the `files` variable
+- a completely custom `cloud-config` can be passed in via the `cloud_config` variable, and additional template variables can be passed in via `config_variables`
+
+The default instance configuration inserts iptables rules to allow traffic on the DNS TCP and UDP ports, and the 8080 port for the optional HTTP health check that can be enabled via the CoreDNS [health plugin](https://coredns.io/plugins/health/).
 
 Logging and monitoring are enabled via the [Google Cloud Logging driver](https://docs.docker.com/config/containers/logging/gcplogs/) configured for the CoreDNS container, and the [Node Problem Detector](https://cloud.google.com/container-optimized-os/docs/how-to/monitoring) service started by default on boot.
 
-The module outputs the rendered cloud config to be set in the `user-data` metadata of instances or instance templates. For convenience in test or development setups, a simple instance can be created and managed via the `test_instance` variable. Refer to the [top-level README](../README.md) for details on the instance configuration.
+The module renders the generated cloud config in the `cloud_config` output, to be used in instances or instance templates via the `user-data` metadata.
+
+For convenience during development or for simple use cases, the module can optionally manage a single instance via the `test_instance` variable. If the instance is not needed the `instance*tf` files can be safely removed. Refer to the [top-level README](../README.md) for more details on the included instance.
 
 ## Examples
 
@@ -43,7 +51,7 @@ module "cos-coredns" {
 }
 ```
 
-### Create the test instance
+### CoreDNS instance
 
 To create the test instance, simply set the appropriate values in the `test_instance` variable. An instance and a custom service account with logging and monitoring write permissions will be created.
 
