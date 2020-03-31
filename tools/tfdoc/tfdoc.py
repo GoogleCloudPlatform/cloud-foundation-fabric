@@ -244,12 +244,14 @@ def main(module=None, replace=True):
   try:
     variables = []
     for path in glob.glob(os.path.join(module, 'variables*tf')):
-      with open(os.path.join(module, path)) as file:
+      with open(path) as file:
         variables += [v for v in parse_items(
             file.read(), RE_VARIABLES, VariableToken, Variable, VariableData)]
-    with open(os.path.join(module, 'outputs.tf')) as file:
-      outputs = [o for o in parse_items(
-          file.read(), RE_OUTPUTS, OutputToken, Output, OutputData)]
+    outputs = []
+    for path in glob.glob(os.path.join(module, 'outputs*tf')):
+      with open(path) as file:
+        outputs += [o for o in parse_items(
+            file.read(), RE_OUTPUTS, OutputToken, Output, OutputData)]
   except (IOError, OSError) as e:
     raise SystemExit(e)
   doc = get_doc(variables, outputs)

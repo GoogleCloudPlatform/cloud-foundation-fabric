@@ -14,16 +14,11 @@
  * limitations under the License.
  */
 
-variable "boot_disk" {
-  description = "Boot disk properties."
-  type = object({
-    image = string
-    size  = number
-    type  = string
+output "test_instance" {
+  description = "Optional test instance name and address"
+  value = (var.test_instance == null ? {} : {
+    address         = google_compute_instance.default[0].network_interface.0.network_ip
+    name            = google_compute_instance.default[0].name
+    service_account = google_service_account.default[0].email
   })
-  default = {
-    image = "projects/debian-cloud/global/images/family/debian-10"
-    type  = "pd-ssd"
-    size  = 10
-  }
 }

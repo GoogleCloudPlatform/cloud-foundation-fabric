@@ -38,3 +38,19 @@ def plan_runner():
     )
 
   return run_plan
+
+
+@pytest.fixture(scope='session')
+def apply_runner():
+  "Returns a function to run Terraform apply on a fixture."
+
+  def run_apply(fixture_path, **tf_vars):
+    "Runs Terraform apply and returns parsed output"
+    tf = tftest.TerraformTest(fixture_path, BASEDIR,
+                              os.environ.get('TERRAFORM', 'terraform'))
+    tf.setup()
+    apply = tf.apply(tf_vars=tf_vars)
+    output = tf.output(json_format=True)
+    return (apply, output)
+
+  return run_apply
