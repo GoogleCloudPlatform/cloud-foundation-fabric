@@ -19,7 +19,7 @@ One authoritative service account, one bucket and one folder are created for eac
 
 ### Business Unit / Environment Hierarchy
 
-<a href="./business-units/" title="Business Units example"><img src="./business-units/diagram.png" align="left" width="280px"></a> This [example](./business-units/) implements a two-level oganizational layout, with a first level usually mapped to business units, and a second level implementing identical environments (prod, test, etc.) under each first-level folder.
+<a href="./business-units/" title="Business Units example"><img src="./business-units/diagram.png" align="left" width="280px"></a> This [example](./business-units/) implements a two-level organizational layout, with a first level usually mapped to business units, and a second level implementing identical environments (prod, test, etc.) under each first-level folder.
 
 This approach maps well to medium sized infrastructures, and can be used as a starting point for more complex scenarios. Separate Terraform stages are then usually implemented for each business unit, implementing fine-grained project and service account creation for individual application teams.
 <br clear="left">
