@@ -1,6 +1,6 @@
 # Containerized CoreDNS on Container Optimized OS
 
-This module creates a cloud-config configuration, used to configure and start a containerized [CoreDNS](https://coredns.io/) service on Container Optimized OS, using the [official image](https://hub.docker.com/r/coredns/coredns/).
+This module manages a cloud-config configuration that configures and starts a containerized [CoreDNS](https://coredns.io/) service on Container Optimized OS, using the [official image](https://hub.docker.com/r/coredns/coredns/).
 
 The CoreDNS configuration and additional files (used for zone or hosts files) can be set via variables. Rules are added to iptables to allow DNS on TCP and UDP, and HTTP for health checks configurable via the CoreDNS [health plugin](https://coredns.io/plugins/health/).
 
