@@ -20,7 +20,7 @@ For convenience during development or for simple use cases, the module can optio
 
 ### Default CoreDNS configuration
 
-This example will create a cloud-config that uses the module's defaults. No variables are needed, the cloud-config is available from the module's outputs.
+This example will create a `cloud-config` that uses the module's defaults, creating a simple DNS forwarder.
 
 ```hcl
 module "cos-coredns" {
@@ -36,7 +36,7 @@ resource "google_compute_instance" "default" {
 
 ### Custom CoreDNS configuration
 
-This example will create a cloud-config that changes the CoreDNS configuration to use the [CoreDNS hosts plugin](), and adds a simple hosts-format file. Again, the cloud-config is available from the module's outputs.
+This example will create a `cloud-config` using a custom CoreDNS configuration, that leverages the [CoreDNS hosts plugin]() to serve a single zone via an included `hosts` format file.
 
 ```hcl
 module "cos-coredns" {
@@ -53,7 +53,7 @@ module "cos-coredns" {
 
 ### CoreDNS instance
 
-To create the test instance, simply set the appropriate values in the `test_instance` variable. An instance and a custom service account with logging and monitoring write permissions will be created.
+This example shows how to create the single instance optionally managed by the module, providing all required attributes in the `test_instance` variable. The instance is purposefully kept simple and should only be used in development, or when designing infrastructures.
 
 ```hcl
 module "cos-coredns" {
