@@ -9,68 +9,17 @@ It's meant to fullfill different use cases:
 - in production, to easily add glue components for services like DNS (eg to work around inbound/outbound forwarding limitations)
 - as a basis to implement cloud-native production deployments that leverage cloud-init for configuration management
 
-## Using the test instance
-
-- [ ] what it is and how to use it
-- [ ] how to remove it when forking modules
-
-## Updating cloud-config on running instances
-
-- [ ] describe `/usr/share/cloud/rerun-cloudinit.sh`
-- [ ] describe the need to restart
-
-## Combining with the compute-vm module
-
-- [ ] describe and add example
-
 ## Available modules
 
-### CoreDNS
+- [CoreDNS](./coredns)
+- [MySQL](./mysql)
+- [ ] Nginx
+- [ ] Squid forward proxy
 
-- [ ] test module
-- [ ] add description and examples here
+## Using the modules
 
-### MySQL
+All modules are designed to be as lightweight as possible, so that specialized modules like [compute-vm](../compute-vm) can be leveraged to manage instances or instance templates, and to allow simple forking to create custom derivatives.
 
-- [ ] test module
-- [ ] add description and examples here
+To use the modules with instances or instance templates, simply set use their `cloud_config` output for the `user-data` metadata. When updating the metadata after a variable change remember to manually restart the instances that use a module's output, or the changes won't effect the running system.
 
-### Nginx
-
-- [ ] write module
-- [ ] add description and examples here
-
-### PostgreSQL
-
-- [ ] write module
-- [ ] add description and examples here
-
-### Squid forward proxy
-
-- [ ] find a good image or build and deploy one
-- [ ] write module
-- [ ] add description and examples here
-
-### Multiple files or directories
-
-- [ ] find the right example (GCS? git?)
-- [ ] write module
-- [ ] add description and examples here
-
-### Two-containers example
-
-- [ ] find the right example (nginx + git sync of static http docs)
-- [ ] write module
-- [ ] add description and examples here
-
-### Docker compose example
-
-- [ ] find the right example
-- [ ] write module
-- [ ] add description and examples here
-
-### Containerized app
-
-- [ ] find the right example (gitlab?)
-- [ ] write module
-- [ ] add description and examples here
+For convenience when developing or prototyping infrastructure, an optional test instance is included in all modules. If it's not needed, the linked `*instance.tf` files can be removed from the modules without harm.
