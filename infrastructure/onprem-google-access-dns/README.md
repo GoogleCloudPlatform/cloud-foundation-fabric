@@ -75,7 +75,6 @@ google.internal {
   hosts {
     169.254.169.254 metadata.google.internal
   }
-  no_reverse
 }
 . {
   forward . 8.8.8.8
