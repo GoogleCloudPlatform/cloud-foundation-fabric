@@ -29,9 +29,8 @@ def test_defaults(apply_runner):
   yaml.safe_load(cloud_config)
   assert cloud_config.startswith('#cloud-config')
   assert re.findall(r'(?m)^\s+\-\s*path:\s*(\S+)', cloud_config) == [
-      '/var/lib/docker/daemon.json', '/run/secrets/mysql-passwd-orig.txt',
-      '/run/mysql-passwd.sh', '/run/mysql/conf.d/my.cnf',
-      '/etc/systemd/system/mysql-data.service',
+      '/var/lib/docker/daemon.json',
+      '/run/mysql/secrets/mysql-passwd.txt',
       '/etc/systemd/system/mysql.service'
   ]
   assert 'gcloud' not in cloud_config
@@ -47,4 +46,10 @@ def test_kms(apply_runner):
   cloud_config = output['cloud_config']
   yaml.safe_load(cloud_config)
   assert cloud_config.startswith('#cloud-config')
+  assert re.findall(r'(?m)^\s+\-\s*path:\s*(\S+)', cloud_config) == [
+      '/var/lib/docker/daemon.json',
+      '/run/mysql/secrets/mysql-passwd-cipher.txt',
+      '/run/mysql/passwd.sh',
+      '/etc/systemd/system/mysql.service'
+  ]
   assert 'gcloud' in cloud_config

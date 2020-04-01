@@ -14,14 +14,6 @@
  * limitations under the License.
  */
 
-variable "attached_disks" {
-  type = map(object({
-    mount_name = string
-    filesystem = string
-  }))
-  default = {}
-}
-
 variable "cloud_config" {
   type    = string
   default = null
@@ -49,6 +41,14 @@ variable "kms_config" {
 
 variable "mysql_config" {
   type    = string
+  default = null
+}
+
+variable "mysql_data_disk" {
+  type = object({
+    filesystem = string
+    name       = string
+  })
   default = null
 }
 

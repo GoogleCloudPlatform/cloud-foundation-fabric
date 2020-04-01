@@ -18,22 +18,17 @@ users:
   - name: mysql
     uid: 2000
 
-%{ if length(attached_disks) > 0 }
+%{~ if mysql_data_disk != null ~}
 fs_setup:
-  %{ for device, attrs in attached_disks }
   - label: None
-    filesystem: ${attrs.filesystem}
-    device: ${device}
+    filesystem: ${mysql_data_disk.filesystem}
+    device: /dev/disk/by-id/${mysql_data_disk.name}
     partition: auto
     overwrite: False
-  %{ endfor }
 
 mounts:
-  %{ for device, attrs in attached_disks }
-  - [ ${device}, /mnt/disks/${attrs.mount_name}]
-  %{ endfor }
-
-%{ endif }
+  - [ /dev/disk/by-id/${mysql_data_disk.name}, /run/mysql-data
+%{~ endif ~}
 
 write_files:
   - path: /var/lib/docker/daemon.json
@@ -47,68 +42,57 @@ write_files:
           "max-size": "1024m"
         }
       }
-  - path: /run/secrets/mysql-passwd-orig.txt
+  - path: /run/mysql/secrets/mysql-passwd${kms_config == null ? "" : "-cipher"}.txt
     permissions: 0600
     owner: root
     content: |
       ${password}
-  - path: /run/mysql-passwd.sh
+  %{~ if kms_config != null ~}
+  - path: /run/mysql/passwd.sh
     permissions: 0700
     owner: root
     content: |
       #!/bin/bash
-      %{ if kms_config != null }
-      base64 -d /run/secrets/mysql-passwd-orig.txt | docker run \
-        --rm -i -v /run/secrets/:/data google/cloud-sdk:alpine \
+      base64 -d /run/mysql/secrets/mysql-passwd-cipher.txt | docker run \
+        --rm -i -v /run/mysql/secrets:/data google/cloud-sdk:alpine \
         gcloud kms decrypt --ciphertext-file -  \
         --plaintext-file /data/mysql-passwd.txt \
         --keyring ${kms_config.keyring} \
         --key ${kms_config.key} \
         --project ${kms_config.project_id} \
         --location ${kms_config.location}
-      %{ else }
-      cp /run/secrets/mysql-passwd-orig.txt /run/secrets/mysql-passwd.txt
-      %{ endif }
-      cp /run/secrets/mysql-passwd.txt /run/mysql/root-passwd.txt
-      chown 2000 /run/mysql/root-passwd.txt
-  - path: /run/mysql/conf.d/my.cnf
+  %{~ endif ~}
+  %{~ if mysql_config != null ~}
+  - path: /run/mysql/etc/my.cnf
     permissions: 0644
     owner: mysql
     content: |
       ${indent(6, mysql_config)}
-  - path: /etc/systemd/system/mysql-data.service
-    permissions: 0644
-    owner: root
-    content: |
-      [Unit]
-      Description=MySQL data disk
-      ConditionPathExists=/dev/disk/by-id/google-mysql-data
-      Before=mysql.service
-      [Service]
-      Type=oneshot
-      ExecStart=/bin/mkdir -p /run/mysql
-      ExecStart=/bin/chown -R 2000 /run/mysql
-      %{ for device, attrs in attached_disks }
-      ExecStart=/bin/chown 2000 /mnt/disks/${attrs.mount_name}
-      %{ endfor }
-      RemainAfterExit=true
+  %{~ endif ~}
   - path: /etc/systemd/system/mysql.service
     permissions: 0644
     owner: root
     content: |
       [Unit]
       Description=MySQL service
-      After=mysql-data.service gcr-online.target docker.socket docker-events-collector.service
-      Wants=mysql-data.service gcr-online.target docker.socket
+      After=gcr-online.target docker.socket docker-events-collector.service
+      Wants=gcr-online.target docker.socket
       [Service]
-      ExecStartPre=/run/mysql-passwd.sh
+      %{~ if kms_config != null ~}
+      ExecStartPre=/run/mysql/passwd.sh
+      %{~ endif ~}
+      ExecStartPre=/bin/mkdir -p /run/mysql/data
+      ExecStartPre=/bin/chown -R 2000 /run/mysql/secrets /run/mysql/data
       ExecStart=/usr/bin/docker run --rm --name=mysql \
         --user 2000:2000 \
         --log-driver=gcplogs \
         --network host \
-        -e MYSQL_ROOT_PASSWORD_FILE=/etc/mysql/root-passwd.txt \
-        -v /mnt/disks/mysql-data:/var/lib/mysql \
-        -v /run/mysql/:/etc/mysql \
+        -e MYSQL_ROOT_PASSWORD_FILE=/etc/secrets/mysql-passwd.txt \
+        -v /run/mysql/secrets:/etc/secrets \
+        -v /run/mysql/data:/var/lib/mysql \
+        %{~ if mysql_config != null ~}
+        -v /run/mysql/etc:/etc/mysql \
+        %{~ endif ~}
         ${image} \
         --ignore-db-dir=lost+found
       ExecStop=/usr/bin/docker stop mysql

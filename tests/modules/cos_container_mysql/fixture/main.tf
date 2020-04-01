@@ -16,11 +16,11 @@
 
 module "test" {
   source           = "../../../../modules/cos-container/mysql"
-  attached_disks   = var.attached_disks
   cloud_config     = var.cloud_config
   config_variables = var.config_variables
   image            = var.image
   kms_config       = var.kms_config
   mysql_config     = var.mysql_config
+  mysql_data_disk  = var.mysql_data_disk
   mysql_password   = var.mysql_password
 }

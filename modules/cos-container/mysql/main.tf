@@ -15,24 +15,13 @@
  */
 
 locals {
-  attached_disks = {
-    for device, attrs in var.attached_disks : device => {
-      mount_name = attrs.mount_name
-      filesystem = attrs.filesystem == null ? "ext4" : attrs.filesystem
-    }
-  }
   cloud_config = templatefile(local.template, merge(var.config_variables, {
-    attached_disks = local.attached_disks
-    image          = var.image
-    kms_config     = var.kms_config
-    mysql_config   = local.mysql_config
-    password       = var.mysql_password
+    image           = var.image
+    kms_config      = var.kms_config
+    mysql_config    = var.mysql_config
+    mysql_data_disk = var.mysql_data_disk
+    password        = var.mysql_password
   }))
-  mysql_config = (
-    var.mysql_config == null
-    ? file("${path.module}/my.cnf")
-    : var.mysql_config
-  )
   template = (
     var.cloud_config == null
     ? "${path.module}/cloud-config.yaml"

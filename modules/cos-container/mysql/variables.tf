@@ -14,15 +14,6 @@
  * limitations under the License.
  */
 
-variable "attached_disks" {
-  description = "Map of attached disks, key is the device path (eg /dev/disk/by-id/google-foo). Mount name is relative to /mnt/disks. Filesystem defaults to ext4 if null."
-  type = map(object({
-    mount_name = string
-    filesystem = string
-  }))
-  default = {}
-}
-
 variable "cloud_config" {
   description = "Cloud config template path. If null default will be used."
   type        = string
@@ -53,9 +44,18 @@ variable "kms_config" {
 }
 
 variable "mysql_config" {
-  description = "MySQL configuration file content, if null default will be used."
+  description = "MySQL configuration file content, if null container default will be used."
   type        = string
   default     = null
+}
+
+variable "mysql_data_disk" {
+  description = "MySQL data partition filesystem type and device name in /dev/disk/by-id/ including  google- prefix. If null the boot disk will be used for data."
+  type = object({
+    filesystem = string
+    name       = string
+  })
+  default = null
 }
 
 variable "mysql_password" {
