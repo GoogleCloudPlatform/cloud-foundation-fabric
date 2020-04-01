@@ -37,7 +37,7 @@ resource "google_compute_instance" "default" {
   }
 ```
 
-### Custome MySQL configuration and KMS encrypted password
+### Custom MySQL configuration and KMS encrypted password
 
 This example will create a `cloud-config` that uses a custom MySQL configuration, and passes in an encrypted password and the KMS attributes required to decrypt it. Please note that the instance service account needs the `roles/cloudkms.cryptoKeyDecrypter` on the specified KMS key.
 
