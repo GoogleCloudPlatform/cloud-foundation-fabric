@@ -2,15 +2,39 @@
 
 Simple Cloud KMS module that allows managing a keyring, zero or more keys in the keyring, and IAM role bindings on individual keys.
 
-## Example
+The `protected` flag in the `key_attributes` variable sets the `prevent_destroy` lifecycle argument on an a per-key basis.
+
+## Examples
+
+### Minimal example
 
 ```hcl
 module "kms" {
   source     = "../modules/kms"
-  project_id = module.project.project_id
-  keyring    = "playground"
+  project_id = "my-project"
+  keyring    = "test"
   location   = "europe"
-  keys       = ["vpn"]
+  keys       = ["key-a", "key-b"]
+}
+```
+
+### Granting access to keys via IAM
+
+```hcl
+module "kms" {
+  source     = "../modules/kms"
+  project_id = "my-project"
+  keyring    = "test"
+  location   = "europe"
+  keys       = ["key-a", "key-b"]
+  iam_roles = {
+    key-a = ["roles/cloudkms.cryptoKeyDecrypter"]
+  }
+  iam_members = {
+    key-a = {
+      "roles/cloudkms.cryptoKeyDecrypter" = ["user:me@example.org"]
+    }
+  }
 }
 ```
 
