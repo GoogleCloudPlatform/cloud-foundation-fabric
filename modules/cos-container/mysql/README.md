@@ -1,7 +1,81 @@
 # Containerized MySQL on Container Optimized OS
 
-- [ ] test module
-- [ ] add description and examples
+This module manages a `cloud-config` configuration that starts a containerized [MySQL](https://www.mysql.com/) service on Container Optimized OS, using the [official image](https://hub.docker.com/_/mysql).
+
+The resulting `cloud-config` can be customized in a number of ways:
+
+- a custom MySQL configuration can be set using the `mysql_config` variable
+- the container image can be changed via the `image` variable
+- a data disk can be specified via the `mysql_data_disk` variable, the configuration will optionally format and mount it for container use
+- a KMS encrypted root password can be passed to the container image, and decrypted at runtime on the instance using the attributes in the `kms_config` variable
+- a completely custom `cloud-config` can be passed in via the `cloud_config` variable, and additional template variables can be passed in via `config_variables`
+
+The default instance configuration inserts a sngle iptables rule to allow traffic on the default MySQL port.
+
+Logging and monitoring are enabled via the [Google Cloud Logging driver](https://docs.docker.com/config/containers/logging/gcplogs/) configured for the CoreDNS container, and the [Node Problem Detector](https://cloud.google.com/container-optimized-os/docs/how-to/monitoring) service started by default on boot.
+
+The module renders the generated cloud config in the `cloud_config` output, to be used in instances or instance templates via the `user-data` metadata.
+
+For convenience during development or for simple use cases, the module can optionally manage a single instance via the `test_instance` variable. Please note that an `f1-micro` instance is too small to run MySQL. If the instance is not needed the `instance*tf` files can be safely removed. Refer to the [top-level README](../README.md) for more details on the included instance.
+
+## Examples
+
+### Default MySQL configuration
+
+This example will create a `cloud-config` that uses the container's default configuration, and a plaintext password for the MySQL root user.
+
+```hcl
+module "cos-mysql" {
+  source         = "./modules/cos-container/mysql"
+  mysql_password = "foo"
+}
+
+# use it as metadata in a compute instance or template
+resource "google_compute_instance" "default" {
+  metadata = {
+    user-data = module.cos-mysql.cloud_config
+  }
+```
+
+### Custome MySQL configuration and KMS encrypted password
+
+This example will create a `cloud-config` that uses a custom MySQL configuration, and passes in an encrypted password and the KMS attributes required to decrypt it. Please note that the instance service account needs the `roles/cloudkms.cryptoKeyDecrypter` on the specified KMS key.
+
+```hcl
+module "cos-mysql" {
+  source         = "./modules/cos-container/mysql"
+  mysql_config   = "./my.cnf"
+  mysql_password = "CiQAsd7WY=="
+  kms_config     = {
+    project_id = "my-project"
+    keyring    = "test-cos"
+    location   = "europe-west1"
+    key        = "mysql"
+  }
+}
+```
+
+### MySQL instance
+
+This example shows how to create the single instance optionally managed by the module, providing all required attributes in the `test_instance` variable. The instance is purposefully kept simple and should only be used in development, or when designing infrastructures.
+
+```hcl
+module "cos-mysql" {
+  source         = "./modules/cos-container/mysql"
+  mysql_password = "foo"
+  test_instance = {
+    project_id = "my-project"
+    zone       = "europe-west1-b"
+    name       = "cos-mysql"
+    type       = "n1-standard-1"
+    tags       = ["ssh"]
+    metadata   = {}
+    network    = "default"
+    subnetwork = "https://www.googleapis.com/compute/v1/projects/my-project/regions/europe-west1/subnetworks/my-subnet"
+    disks      = []
+  }
+}
+```
 
 <!-- BEGIN TFDOC -->
 ## Variables
