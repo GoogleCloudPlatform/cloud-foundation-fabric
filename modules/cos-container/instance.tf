@@ -32,6 +32,15 @@ resource "google_project_iam_member" "default" {
   member   = "serviceAccount:${google_service_account.default[0].email}"
 }
 
+resource "google_compute_disk" "disks" {
+  for_each = var.test_instance.disks
+  project  = var.test_instance.project_id
+  zone     = var.test_instance.zone
+  name     = each.key
+  type     = "pd-ssd"
+  size     = each.value.size
+}
+
 resource "google_compute_instance" "default" {
   count       = var.test_instance == null ? 0 : 1
   project     = var.test_instance.project_id
@@ -50,9 +59,9 @@ resource "google_compute_instance" "default" {
     for_each = var.test_instance.disks
     iterator = disk
     content {
-      device_name = disk.value.name
-      mode        = disk.value.mode
-      source      = disk.value.source
+      device_name = disk.key
+      mode        = disk.value.read_only ? "READ_ONLY" : "READ_WRITE"
+      source      = google_compute_disk.disks[disk.key].name
     }
   }
 

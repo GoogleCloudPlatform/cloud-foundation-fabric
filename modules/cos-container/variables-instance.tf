@@ -25,10 +25,9 @@ variable "test_instance" {
     metadata   = map(string)
     network    = string
     subnetwork = string
-    disks = list(object({
-      device_name = string
-      mode        = string
-      source      = string
+    disks = map(object({
+      read_only = bool
+      size      = number
     }))
   })
   default = null

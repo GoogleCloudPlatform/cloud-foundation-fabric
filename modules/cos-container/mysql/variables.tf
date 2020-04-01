@@ -50,12 +50,9 @@ variable "mysql_config" {
 }
 
 variable "mysql_data_disk" {
-  description = "MySQL data partition filesystem type and device name in /dev/disk/by-id/ including  google- prefix. If null the boot disk will be used for data."
-  type = object({
-    filesystem = string
-    name       = string
-  })
-  default = null
+  description = "MySQL data disk name in /dev/disk/by-id/ including the google- prefix. If null the boot disk will be used for data."
+  type        = string
+  default     = null
 }
 
 variable "mysql_password" {
