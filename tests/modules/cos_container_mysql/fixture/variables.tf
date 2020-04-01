@@ -45,10 +45,7 @@ variable "mysql_config" {
 }
 
 variable "mysql_data_disk" {
-  type = object({
-    filesystem = string
-    name       = string
-  })
+  type    = string
   default = null
 }
 

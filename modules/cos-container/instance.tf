@@ -15,6 +15,7 @@
  */
 
 locals {
+  disks    = var.test_instance == null ? {} : var.test_instance.disks
   sa_roles = ["roles/logging.logWriter", "roles/monitoring.metricWriter"]
 }
 
@@ -33,7 +34,7 @@ resource "google_project_iam_member" "default" {
 }
 
 resource "google_compute_disk" "disks" {
-  for_each = var.test_instance.disks
+  for_each = local.disks
   project  = var.test_instance.project_id
   zone     = var.test_instance.zone
   name     = each.key
@@ -56,7 +57,7 @@ resource "google_compute_instance" "default" {
   })
 
   dynamic attached_disk {
-    for_each = var.test_instance.disks
+    for_each = local.disks
     iterator = disk
     content {
       device_name = disk.key
