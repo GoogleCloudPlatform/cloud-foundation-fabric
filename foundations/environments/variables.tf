@@ -106,7 +106,7 @@ variable "iam_xpn_config" {
 variable "organization_id" {
   description = "Organization id."
   type        = string
-  default     = null
+  default     = ""
 }
 
 variable "prefix" {
