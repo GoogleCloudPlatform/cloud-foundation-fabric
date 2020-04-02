@@ -143,7 +143,7 @@ module "audit-log-sinks" {
   source = "../../modules/logging-sinks"
   parent = var.root_node
   destinations = {
-    audit-logs = "bigquery.googleapis.com/projects/${module.audit-project.project_id}/datasets/${module.audit-datasets.names[0]}"
+    audit-logs = "bigquery.googleapis.com/projects/${module.audit-project.project_id}/datasets/${try(module.audit-datasets.names[0], "")}"
   }
   sinks = {
     audit-logs = var.audit_filter
