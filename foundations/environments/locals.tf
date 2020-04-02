@@ -15,7 +15,8 @@
  */
 
 locals {
-  folder_roles = concat(var.iam_folder_roles, local.sa_xpn_folder_role)
+  folder_roles    = concat(var.iam_folder_roles, local.sa_xpn_folder_role)
+  organization_id = element(split("/", var.organization_id), 1)
   sa_billing_account_role = (
     var.iam_billing_config.target_org ? [] : ["roles/billing.user"]
   )

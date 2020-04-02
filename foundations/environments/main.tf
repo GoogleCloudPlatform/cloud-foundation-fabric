@@ -43,7 +43,7 @@ module "tf-service-accounts" {
   }
   # folder roles are set in the folders module using authoritative bindings
   iam_organization_roles = {
-    (var.organization_id) = concat(
+    (local.organization_id) = concat(
       var.iam_billing_config.grant ? local.sa_billing_org_role : [],
       var.iam_xpn_config.grant ? local.sa_xpn_org_roles : []
     )

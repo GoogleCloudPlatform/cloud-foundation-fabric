@@ -99,14 +99,13 @@ variable "iam_xpn_config" {
   })
   default = {
     grant      = true
-    target_org = false
+    target_org = true
   }
 }
 
 variable "organization_id" {
-  description = "Organization id."
+  description = "Organization id in organizations/nnnnnnnn format."
   type        = string
-  default     = ""
 }
 
 variable "prefix" {
