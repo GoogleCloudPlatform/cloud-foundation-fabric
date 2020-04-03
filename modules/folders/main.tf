@@ -15,7 +15,13 @@
  */
 
 locals {
-  folders = [for name in var.names : google_folder.folders[name]]
+  folders = (
+    local.has_folders
+    ? [for name in var.names : google_folder.folders[name]]
+    : []
+  )
+  # needed when destroying
+  has_folders = length(google_folder.folders) > 0
   iam_pairs = var.iam_roles == null ? [] : flatten([
     for name, roles in var.iam_roles :
     [for role in roles : { name = name, role = role }]

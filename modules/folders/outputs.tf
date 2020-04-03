@@ -16,17 +16,17 @@
 
 output "folder" {
   description = "Folder resource (for single use)."
-  value       = length(var.names) > 0 ? local.folders[0] : null
+  value       = local.has_folders ? local.folders[0] : null
 }
 
 output "id" {
   description = "Folder id (for single use)."
-  value       = length(var.names) > 0 ? local.folders[0].name : null
+  value       = local.has_folders ? local.folders[0].name : null
 }
 
 output "name" {
   description = "Folder name (for single use)."
-  value       = length(var.names) > 0 ? local.folders[0].display_name : null
+  value       = local.has_folders ? local.folders[0].display_name : null
 }
 
 output "folders" {
@@ -36,12 +36,20 @@ output "folders" {
 
 output "ids" {
   description = "Folder ids."
-  value       = zipmap(var.names, [for f in local.folders : f.name])
+  value = (
+    local.has_folders
+    ? zipmap(var.names, [for f in local.folders : f.name])
+    : {}
+  )
 }
 
 output "names" {
   description = "Folder names."
-  value       = zipmap(var.names, [for f in local.folders : f.display_name])
+  value = (
+    local.has_folders
+    ? zipmap(var.names, [for f in local.folders : f.display_name])
+    : {}
+  )
 }
 
 output "ids_list" {
