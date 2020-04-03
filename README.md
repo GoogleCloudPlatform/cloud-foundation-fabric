@@ -1,17 +1,41 @@
-# Cloud Foundation Toolkit - Fabric
+# Terraform Examples and Modules for Google Cloud
 
-Cloud Foundation Fabric provides end-to-end Terraform code examples on GCP, which are meant for prototyping and as minimal samples to aid in designing real-world infrastructures. As such, these samples are meant to be adapted and updated for your different use cases, and often do not implement GCP security best practices for production use.
+This repository provides **end-to-end examples** and a **suite of Terraform modules** for Google Cloud, which support different use cases:
 
-All the examples leverage composition, combining different Cloud Foundation Toolkit modules to realize an integrated design. Additional modules can be combined in to tailor the examples to specific needs, and to implement additional best practices. You can check the [full list of Cloud Foundation Toolkit modules here](https://github.com/terraform-google-modules).
+- starter kits used to bootstrap real-word cloud foundations and infrastructure
+- reference examples used to deep dive on network patterns or product features
+- composable modules that support quick prototyping and testing
+- a comprehensive source of lean modules that lend themselves well to changes
 
-The examples are organized into two main sections: GCP foundational design, and infrastructure design
+The whole repository is meant to be cloned as a single unit, and then forked into separate owned repositories to seed production usage, or used as-is and periodically updated as a complete toolkit for prototyping.
 
-## Foundational examples
+Both the examples and modules require some measure of Terraform skills to be used effectively. If you are looking for a feature-rich black box to manage project or product creation with minimal specific skills, you might be better served by the [Cloud Foundation Toolkit](https://registry.terraform.io/modules/terraform-google-modules) suite of modules.
 
-Foundational examples deal with organization-level management of GCP resources, and take care of folder hierarchy, initial automation requirements (service accounts, GCS buckets), and high level best practices like audit log exports and organization policies.
+## End-to-end examples
 
-They are simplified versions of real-life use cases, and put a particular emphasis on separation of duties at the environment or tenant level, and decoupling high level permissions from the day to day running of infrastructure automation. More details and the actual examples are available in the [foundations folder](foundations).
+The examples in this repository are split in two main sections: **foundational examples** that bootstrap the organizational hierarchy and automation prerequisites, and **infrastructure scenarios** that implement core networking patterns or features.
 
-## Infrastructure examples
+Currently available examples:
 
-Infrastructure examples showcase typical networking configurations on GCP, and are meant to illustrate how to automate them with Terraform, and to offer an easy way of testing different scenarios. Like the foundational examples, they are simplified versions of real-life use cases. More details and the actual examples are available in the [infrastructure folder](infrastructure).
+- **foundations** - [single level hierarchy](./foundations/environments/) (environments), [multiple level hierarchy](./foundations/business-units/) (business units + environments)
+- **infrastructure** - [hub and spoke via peering](./infrastructure/hub-and-spoke-peering/), [hub and spoke via VPN](./infrastructure/hub-and-spoke-vpn/), [DNS and Google Private Access for on-premises](./infrastructure/onprem-google-access-dns/), [Shared VPC with GKE support](./infrastructure/shared-vpc-gke/)
+
+For more information see the README files in the [foundations](./foundations/) and [infrastructure](./infrastructure/) folders.
+
+## Modules
+
+The suite of modules in this repository are designed for rapid composition and reuse, and to be reasonably simple and readable so that they can be forked and changed where use of third party code and sources is not allowed.
+
+All modules share a similar interface where each module tries to stay close to the underlying provider resources, support IAM together with resource creation and modification, offer the option of creating multiple resources where it makes sense (eg not for projects), and be completely free of side-effects (eg no external commands).
+
+The current list of modules supports most of the core foundational and networking components used to design end-to-end infrastructure, with more modules in active development for specialized compute, security, and data scenarios.
+
+Currently available modules:
+
+- **foundational** - [folders](./modules/folders), [log sinks](./modules/logging-sinks), [project](./modules/project), [service accounts](./modules/iam-service-accounts)
+- **networking** - [VPC](./modules/net-vpc), [VPC firewall](./modules/net-vpc-firewall), [VPC peering](./modules/net-vpc-peering), VPN ([static](./modules/net-vpn-static), [dynamic](./modules/net-vpn-dynamic), [HA](./modules/net-vpn-ha)), [NAT](./modules/net-cloudnat), [address reservation](./modules/net-address), [DNS](./modules/dns)
+- **compute** - [VM/VM group](./modules/compute-vm), [GKE cluster](./modules/gke-cluster), [GKE nodepool](./modules/gke-nodepool), [COS container](./modules/compute-vm-cos-coredns)
+- **data** - [GCS](./modules/gcs), [BigQuery dataset](./modules/bigquery)
+- **other** - [KMS](./modules/kms), [on-premises in Docker](./modules/on-prem-in-a-box)
+
+For more information and usage examples see each module's README file.

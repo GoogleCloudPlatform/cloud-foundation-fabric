@@ -23,28 +23,21 @@ steps:
         wget https://releases.hashicorp.com/terraform/${_TERRAFORM_VERSION}/terraform_${_TERRAFORM_VERSION}_linux_amd64.zip &&
         unzip terraform_${_TERRAFORM_VERSION}_linux_amd64.zip -d /builder/home/.local/bin &&
         rm terraform_${_TERRAFORM_VERSION}_linux_amd64.zip &&
-        chmod 755 /builder/home/.local/bin/terraform
-  # TODO(ludoo): split into two triggers with different filters
+        chmod 755 /builder/home/.local/bin/terraform &&
+        mkdir -p /workspace/.terraform.d/plugin-cache
+  # TODO(ludoo): add a step that detects change files and sets tests to run
   - name: python:3-alpine
-    id: test-foundations
+    id: test-modules
     entrypoint: pytest
     args:
       - -v
-      - tests/foundations
+      - tests/modules
     env:
       - PATH=/usr/local/bin:/usr/bin:/bin:/builder/home/.local/bin
-  - name: python:3-alpine
-    id: test-infrastructure
-    entrypoint: pytest
-    args:
-      - -v
-      - tests/infrastructure
-    env:
-      - PATH=/usr/local/bin:/usr/bin:/bin:/builder/home/.local/bin
-      - PYTHONDONTWRITEBYTECODE=true
+      - TF_CLI_CONFIG_FILE=/workspace/.ci/.terraformrc
 
 substitutions:
-  _TERRAFORM_VERSION: 0.12.19
+  _TERRAFORM_VERSION: 0.12.20
 
 tags:
   - "ci"

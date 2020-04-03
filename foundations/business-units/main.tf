@@ -1,130 +1,86 @@
-# Copyright 2019 Google LLC
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     https://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-# TODO(averbukh): simplify log-sink parameters once https://github.com/terraform-google-modules/terraform-google-log-export/issues/28 is done.
-
-locals {
-  parent_numeric_id             = element(split("/", var.root_node), 1)
-  log_sink_parent_resource_type = element(split("/", var.root_node), 0) == "organizations" ? "organization" : "folder"
-  log_sink_name                 = element(split("/", var.root_node), 0) == "organizations" ? "logs-audit-org-${local.parent_numeric_id}" : "logs-audit-folder-${local.parent_numeric_id}"
-}
-
-###############################################################################
-#                        Shared resources folder                              #
-###############################################################################
-
-module "shared-folder" {
-  source  = "terraform-google-modules/folders/google"
-  version = "2.0.2"
-  parent  = var.root_node
-  names   = ["shared"]
-}
+/**
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 ###############################################################################
 #                        Terraform top-level resources                        #
 ###############################################################################
 
-# Terraform project
+# Shared folder
 
-module "project-tf" {
-  source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
-  version         = "5.0.0"
-  parent          = module.shared-folder.id
-  billing_account = var.billing_account_id
-  prefix          = var.prefix
-  name            = "terraform"
-  lien_reason     = "terraform"
-  owners          = var.terraform_owners
-  activate_apis   = var.project_services
+module "shared-folder" {
+  source = "../../modules/folders"
+  parent = var.root_node
+  names  = ["shared"]
 }
 
-# Per environment service accounts
+# Terraform project
 
-module "service-accounts-tf-environments" {
-  source             = "terraform-google-modules/service-accounts/google"
-  version            = "2.0.2"
-  project_id         = module.project-tf.project_id
-  org_id             = var.organization_id
-  billing_account_id = var.billing_account_id
-  prefix             = var.prefix
-  names              = var.environments
-  grant_billing_role = true
-  generate_keys      = var.generate_service_account_keys
+module "tf-project" {
+  source               = "../../modules/project"
+  name                 = "terraform"
+  parent               = module.shared-folder.id
+  prefix               = var.prefix
+  billing_account      = var.billing_account_id
+  iam_additive_members = { "roles/owner" = var.iam_terraform_owners }
+  iam_additive_roles   = ["roles/owner"]
+  services             = var.project_services
 }
 
 # Bootstrap Terraform state GCS bucket
 
-module "gcs-tf-bootstrap" {
-  source     = "terraform-google-modules/cloud-storage/google"
-  version    = "1.0.0"
-  project_id = module.project-tf.project_id
-  prefix     = "${var.prefix}-tf"
+module "tf-gcs-bootstrap" {
+  source     = "../../modules/gcs"
+  project_id = module.tf-project.project_id
   names      = ["tf-bootstrap"]
-  location   = var.gcs_location
-}
-
-# Per environment Terraform state GCS buckets
-
-module "gcs-tf-environments" {
-  source          = "terraform-google-modules/cloud-storage/google"
-  version         = "1.0.0"
-  project_id      = module.project-tf.project_id
-  prefix          = "${var.prefix}-tf"
-  names           = var.environments
-  location        = var.gcs_location
-  set_admin_roles = true
-  bucket_admins = zipmap(
-    var.environments,
-    module.service-accounts-tf-environments.iam_emails_list
-  )
+  prefix     = "${var.prefix}-tf"
+  location   = var.gcs_defaults.location
 }
 
 ###############################################################################
-#                              Business units                                 #
+#                                Business units                               #
 ###############################################################################
 
-# Business unit 1
-
-module "business-unit-1-folders" {
-  source                    = "./modules/business-unit-folders"
-  business_unit_folder_name = var.business_unit_1_name
-  environments              = var.environments
-  per_folder_admins         = module.service-accounts-tf-environments.iam_emails_list
-  root_node                 = var.root_node
-
+module "bu-business-intelligence" {
+  source                = "../../modules/folders-unit"
+  name                  = "Business Intelligence"
+  short_name            = "bi"
+  automation_project_id = module.tf-project.project_id
+  billing_account_id    = var.billing_account_id
+  environments          = var.environments
+  gcs_defaults          = var.gcs_defaults
+  organization_id       = var.organization_id
+  root_node             = var.root_node
+  # extra variables from the folders-unit module can be used here to grant
+  # IAM roles to the bu users, configure the automation service accounts, etc.
+  # iam_roles             = ["viewer"]
+  # iam_members           = { viewer = ["user:user@example.com"] }
 }
 
-# Business unit 2
-
-module "business-unit-2-folders" {
-  source                    = "./modules/business-unit-folders"
-  business_unit_folder_name = var.business_unit_2_name
-  environments              = var.environments
-  per_folder_admins         = module.service-accounts-tf-environments.iam_emails_list
-  root_node                 = var.root_node
-
-}
-
-# Business unit 3
-
-module "business-unit-3-folders" {
-  source                    = "./modules/business-unit-folders"
-  business_unit_folder_name = var.business_unit_3_name
-  environments              = var.environments
-  per_folder_admins         = module.service-accounts-tf-environments.iam_emails_list
-  root_node                 = var.root_node
-
+module "bu-machine-learning" {
+  source                = "../../modules/folders-unit"
+  name                  = "Machine Learning"
+  short_name            = "ml"
+  automation_project_id = module.tf-project.project_id
+  billing_account_id    = var.billing_account_id
+  environments          = var.environments
+  gcs_defaults          = var.gcs_defaults
+  organization_id       = var.organization_id
+  root_node             = var.root_node
+  # extra variables from the folders-unit module can be used here to grant
+  # IAM roles to the bu users, configure the automation service accounts, etc.
 }
 
 ###############################################################################
@@ -133,42 +89,50 @@ module "business-unit-3-folders" {
 
 # Audit logs project
 
-module "project-audit" {
-  source          = "terraform-google-modules/project-factory/google//modules/fabric-project"
-  version         = "5.0.0"
-  parent          = module.shared-folder.id
-  billing_account = var.billing_account_id
-  prefix          = var.prefix
+module "audit-project" {
+  source          = "../../modules/project"
   name            = "audit"
-  lien_reason     = "audit"
-  viewers         = var.audit_viewers
-  activate_apis = concat(var.project_services, [
+  parent          = var.root_node
+  prefix          = var.prefix
+  billing_account = var.billing_account_id
+  iam_members = {
+    "roles/bigquery.dataEditor" = [module.audit-log-sinks.writer_identities[0]]
+    "roles/viewer"              = var.iam_audit_viewers
+  }
+  iam_roles = [
+    "roles/bigquery.dataEditor",
+    "roles/viewer"
+  ]
+  services = concat(var.project_services, [
     "bigquery.googleapis.com",
   ])
 }
 
-# Audit logs destination on BigQuery
+# audit logs dataset and sink
 
-module "bq-audit-export" {
-  source                   = "terraform-google-modules/log-export/google//modules/bigquery"
-  version                  = "3.2.0"
-  project_id               = module.project-audit.project_id
-  dataset_name             = "${replace(local.log_sink_name, "-", "_")}"
-  log_sink_writer_identity = module.log-sink-audit.writer_identity
+module "audit-datasets" {
+  source     = "../../modules/bigquery"
+  project_id = module.audit-project.project_id
+  datasets = {
+    audit_export = {
+      name        = "Audit logs export."
+      description = "Terraform managed."
+      location    = "EU"
+      labels      = null
+      options     = null
+    }
+  }
 }
 
-# Audit log sink for root node
-
-module "log-sink-audit" {
-  source                 = "terraform-google-modules/log-export/google"
-  version                = "3.2.0"
-  filter                 = "logName: \"/logs/cloudaudit.googleapis.com%2Factivity\" OR logName: \"/logs/cloudaudit.googleapis.com%2Fsystem_event\""
-  log_sink_name          = local.log_sink_name
-  parent_resource_type   = local.log_sink_parent_resource_type
-  parent_resource_id     = local.parent_numeric_id
-  include_children       = "true"
-  unique_writer_identity = "true"
-  destination_uri        = "${module.bq-audit-export.destination_uri}"
+module "audit-log-sinks" {
+  source = "../../modules/logging-sinks"
+  parent = var.root_node
+  destinations = {
+    audit-logs = "bigquery.googleapis.com/projects/${module.audit-project.project_id}/datasets/${try(module.audit-datasets.names[0], "")}"
+  }
+  sinks = {
+    audit-logs = var.audit_filter
+  }
 }
 
 ###############################################################################
@@ -177,17 +141,19 @@ module "log-sink-audit" {
 
 # Shared resources project
 
-module "project-shared-resources" {
-  source                 = "terraform-google-modules/project-factory/google//modules/fabric-project"
-  version                = "5.0.0"
-  parent                 = module.shared-folder.id
-  billing_account        = var.billing_account_id
-  prefix                 = var.prefix
-  name                   = "shared"
-  lien_reason            = "shared"
-  activate_apis          = var.project_services
-  extra_bindings_roles   = var.shared_bindings_roles
-  extra_bindings_members = var.shared_bindings_members
+module "shared-project" {
+  source          = "../../modules/project"
+  name            = "shared"
+  parent          = module.shared-folder.id
+  prefix          = var.prefix
+  billing_account = var.billing_account_id
+  iam_additive_members = {
+    "roles/owner" = var.iam_shared_owners
+  }
+  iam_additive_roles = [
+    "roles/owner"
+  ]
+  services = var.project_services
 }
 
 # Add further modules here for resources that are common to all business units

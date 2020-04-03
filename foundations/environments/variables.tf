@@ -22,14 +22,8 @@ variable "audit_filter" {
   END
 }
 
-variable "audit_viewers" {
-  description = "Audit project viewers, in IAM format."
-  type        = list(string)
-  default     = []
-}
-
 variable "billing_account_id" {
-  description = "Billing account id used as default for new projects."
+  description = "Billing account id used as to create projects."
   type        = string
 }
 
@@ -38,32 +32,79 @@ variable "environments" {
   type        = list(string)
 }
 
-variable "generate_service_account_keys" {
-  description = "Generate and store service account keys in the state file."
-  type        = bool
-  default     = false
-}
-
 variable "gcs_location" {
   description = "GCS bucket location."
   type        = string
   default     = "EU"
 }
 
-variable "grant_xpn_org_roles" {
-  description = "Grant roles needed for Shared VPC creation to service accounts at the organization level."
-  type        = bool
-  default     = true
+variable "iam_assets_editors" {
+  description = "Shared assets project editors, in IAM format."
+  type        = list(string)
+  default     = []
 }
 
-variable "grant_xpn_folder_roles" {
-  description = "Grant roles needed for Shared VPC creation to service accounts at the environment folder level."
-  type        = bool
-  default     = false
+variable "iam_assets_owners" {
+  description = "Shared assets project owners, in IAM format."
+  type        = list(string)
+  default     = []
+}
+
+variable "iam_audit_viewers" {
+  description = "Audit project viewers, in IAM format."
+  type        = list(string)
+  default     = []
+}
+
+variable "iam_billing_config" {
+  description = "Control granting billing user role to service accounts. Target the billing account by default."
+  type = object({
+    grant      = bool
+    target_org = bool
+  })
+  default = {
+    grant      = true
+    target_org = false
+  }
+}
+
+variable "iam_folder_roles" {
+  description = "List of roles granted to each service account on its respective folder (excluding XPN roles)."
+  type        = list(string)
+  default = [
+    "roles/compute.networkAdmin",
+    "roles/owner",
+    "roles/resourcemanager.folderViewer",
+    "roles/resourcemanager.projectCreator",
+  ]
+}
+
+variable "iam_sharedsvc_owners" {
+  description = "Shared services project owners, in IAM format."
+  type        = list(string)
+  default     = []
+}
+
+variable "iam_terraform_owners" {
+  description = "Terraform project owners, in IAM format."
+  type        = list(string)
+  default     = []
+}
+
+variable "iam_xpn_config" {
+  description = "Control granting Shared VPC creation roles to service accounts. Target the root node by default."
+  type = object({
+    grant      = bool
+    target_org = bool
+  })
+  default = {
+    grant      = true
+    target_org = true
+  }
 }
 
 variable "organization_id" {
-  description = "Organization id."
+  description = "Organization id in organizations/nnnnnnnn format."
   type        = string
 }
 
@@ -77,25 +118,6 @@ variable "root_node" {
   type        = string
 }
 
-variable "shared_bindings_members" {
-  description = "List of comma-delimited IAM-format members for the additional shared project bindings."
-  # example: ["user:a@example.com,b@example.com", "user:c@example.com"]
-  type    = list(string)
-  default = []
-}
-variable "shared_bindings_roles" {
-  description = "List of roles for additional shared project bindings."
-  # example: ["roles/storage.objectViewer", "roles/storage.admin"]
-  type    = list(string)
-  default = []
-}
-
-variable "terraform_owners" {
-  description = "Terraform project owners, in IAM format."
-  type        = list(string)
-  default     = []
-}
-
 variable "project_services" {
   description = "Service APIs enabled by default in new projects."
   type        = list(string)
@@ -103,4 +125,10 @@ variable "project_services" {
     "resourceviews.googleapis.com",
     "stackdriver.googleapis.com",
   ]
+}
+
+variable "service_account_keys" {
+  description = "Generate and store service account keys in the state file."
+  type        = bool
+  default     = true
 }

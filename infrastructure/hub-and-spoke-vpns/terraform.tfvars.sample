@@ -1,3 +1,0 @@
-hub_project_id     = "automation-examples"
-spoke_1_project_id = "automation-examples"
-spoke_2_project_id = "automation-examples"
