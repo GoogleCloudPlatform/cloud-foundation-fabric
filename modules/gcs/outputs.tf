@@ -16,17 +16,17 @@
 
 output "bucket" {
   description = "Bucket resource (for single use)."
-  value       = length(var.names) > 0 ? local.buckets[0] : null
+  value       = local.has_buckets ? local.buckets[0] : null
 }
 
 output "name" {
   description = "Bucket name (for single use)."
-  value       = length(var.names) > 0 ? local.buckets[0].name : null
+  value       = local.has_buckets ? local.buckets[0].name : null
 }
 
 output "url" {
   description = "Bucket URL (for single use)."
-  value       = length(var.names) > 0 ? local.buckets[0].url : null
+  value       = local.has_buckets ? local.buckets[0].url : null
 }
 
 output "buckets" {
@@ -36,12 +36,20 @@ output "buckets" {
 
 output "names" {
   description = "Bucket names."
-  value       = zipmap(var.names, [for b in local.buckets : b.name])
+  value = (
+    local.has_buckets
+    ? zipmap(var.names, [for b in local.buckets : lookup(b, "name", null)])
+    : {}
+  )
 }
 
 output "urls" {
   description = "Bucket URLs."
-  value       = zipmap(var.names, [for b in local.buckets : b.url])
+  value = (
+    local.has_buckets
+    ? zipmap(var.names, [for b in local.buckets : b.url])
+    : {}
+  )
 }
 
 output "names_list" {

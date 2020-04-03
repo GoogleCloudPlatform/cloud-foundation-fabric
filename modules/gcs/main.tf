@@ -15,7 +15,13 @@
  */
 
 locals {
-  buckets = [for name in var.names : google_storage_bucket.buckets[name]]
+  buckets = (
+    local.has_buckets
+    ? [for name in var.names : google_storage_bucket.buckets[name]]
+    : []
+  )
+  # needed when destroying
+  has_buckets = length(google_storage_bucket.buckets) > 0
   iam_pairs = var.iam_roles == null ? [] : flatten([
     for name, roles in var.iam_roles :
     [for role in roles : { name = name, role = role }]
