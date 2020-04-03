@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+locals {
+  organization_id = element(split("/", var.organization_id), 1)
+}
+
 ###############################################################################
 #                            Folders and folder IAM                           #
 ###############################################################################
@@ -49,7 +53,7 @@ resource "google_folder_iam_binding" "environment" {
 
 resource "google_organization_iam_member" "org_iam_member" {
   for_each = local.org_iam_service_account_bindings
-  org_id   = var.organization_id
+  org_id   = local.organization_id
   role     = each.value.role
   member   = local.service_accounts[each.value.environment]
 }

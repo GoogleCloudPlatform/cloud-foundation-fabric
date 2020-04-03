@@ -67,7 +67,7 @@ variable "iam_terraform_owners" {
 }
 
 variable "organization_id" {
-  description = "Organization id."
+  description = "Organization id in organizations/nnnnnnn format."
   type        = string
 }
 

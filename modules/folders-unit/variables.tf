@@ -95,7 +95,7 @@ variable "name" {
 }
 
 variable "organization_id" {
-  description = "Organization id."
+  description = "Organization id in organizations/nnnnnn format."
   type        = string
 }
 
