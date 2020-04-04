@@ -31,7 +31,7 @@ module "folders-unit" {
 | automation_project_id | Project id used for automation service accounts. | <code title="">string</code> | ✓ |  |
 | billing_account_id | Country billing account account. | <code title="">string</code> | ✓ |  |
 | name | Top folder name. | <code title="">string</code> | ✓ |  |
-| organization_id | Organization id. | <code title="">string</code> | ✓ |  |
+| organization_id | Organization id in organizations/nnnnnn format. | <code title="">string</code> | ✓ |  |
 | root_node | Root node in folders/folder_id or organizations/org_id format. | <code title="">string</code> | ✓ |  |
 | short_name | Short name used as GCS bucket and service account prefixes, do not use capital letters or spaces. | <code title="">string</code> | ✓ |  |
 | *environments* | Unit environments short names. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="&#123;&#10;non-prod &#61; &#34;Non production&#34;&#10;prod     &#61; &#34;Production&#34;&#10;&#125;">...</code> |
