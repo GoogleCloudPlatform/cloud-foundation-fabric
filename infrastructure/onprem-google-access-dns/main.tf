@@ -18,11 +18,13 @@ locals {
   bgp_interface_gcp    = "${cidrhost(var.bgp_interface_ranges.gcp, 1)}"
   bgp_interface_onprem = "${cidrhost(var.bgp_interface_ranges.gcp, 2)}"
   netblocks = {
-    dns = data.google_netblock_ip_ranges.dns-forwarders.cidr_blocks_ipv4.0
-    api = data.google_netblock_ip_ranges.private-googleapis.cidr_blocks_ipv4.0
+    dns        = data.google_netblock_ip_ranges.dns-forwarders.cidr_blocks_ipv4.0
+    private    = data.google_netblock_ip_ranges.private-googleapis.cidr_blocks_ipv4.0
+    restricted = data.google_netblock_ip_ranges.restricted-googleapis.cidr_blocks_ipv4.0
   }
   vips = {
-    api = [for i in range(4) : cidrhost(local.netblocks.api, i)]
+    private    = [for i in range(4) : cidrhost(local.netblocks.private, i)]
+    restricted = [for i in range(4) : cidrhost(local.netblocks.restricted, i)]
   }
   vm-startup-script = join("\n", [
     "#! /bin/bash",
@@ -30,12 +32,16 @@ locals {
   ])
 }
 
+data "google_netblock_ip_ranges" "dns-forwarders" {
+  range_type = "dns-forwarders"
+}
+
 data "google_netblock_ip_ranges" "private-googleapis" {
   range_type = "private-googleapis"
 }
 
-data "google_netblock_ip_ranges" "dns-forwarders" {
-  range_type = "dns-forwarders"
+data "google_netblock_ip_ranges" "restricted-googleapis" {
+  range_type = "restricted-googleapis"
 }
 
 ################################################################################
@@ -80,8 +86,9 @@ module "vpn" {
       bgp_peer_options = {
         advertise_groups = ["ALL_SUBNETS"]
         advertise_ip_ranges = {
-          (local.netblocks.api) = "private-googleapis"
-          (local.netblocks.dns) = "dns-forwarders"
+          (local.netblocks.dns)        = "IAP forwarders"
+          (local.netblocks.private)    = "private.gooogleapis.com"
+          (local.netblocks.restricted) = "restricted.gooogleapis.com"
         }
         advertise_mode = "CUSTOM"
         route_priority = 1000
@@ -112,7 +119,7 @@ module "dns-gcp" {
   project_id      = var.project_id
   type            = "private"
   name            = "gcp-example"
-  domain          = "gcp.example.com."
+  domain          = "gcp.example.org."
   client_networks = [module.vpc.self_link]
   recordsets = concat(
     [{ name = "localhost", type = "A", ttl = 300, records = ["127.0.0.1"] }],
@@ -131,12 +138,9 @@ module "dns-api" {
   domain          = "googleapis.com."
   client_networks = [module.vpc.self_link]
   recordsets = [
-    {
-      name = "*", type = "CNAME", ttl = 300, records = ["private.googleapis.com."]
-    },
-    {
-      name = "private", type = "A", ttl = 300, records = local.vips.api
-    },
+    { name = "*", type = "CNAME", ttl = 300, records = ["private.googleapis.com."] },
+    { name = "private", type = "A", ttl = 300, records = local.vips.private },
+    { name = "restricted", type = "A", ttl = 300, records = local.vips.restricted },
   ]
 }
 
@@ -145,7 +149,7 @@ module "dns-onprem" {
   project_id      = var.project_id
   type            = "forwarding"
   name            = "onprem-example"
-  domain          = "onprem.example.com."
+  domain          = "onprem.example.org."
   client_networks = [module.vpc.self_link]
   forwarders      = [cidrhost(var.ip_ranges.onprem, 3)]
 }
