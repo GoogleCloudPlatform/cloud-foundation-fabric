@@ -15,7 +15,7 @@
  */
 
 module "test" {
-  source           = "../../../../modules/cos-container/mysql"
+  source           = "../../../../modules/cloud-config-container/mysql"
   cloud_config     = var.cloud_config
   config_variables = var.config_variables
   image            = var.image

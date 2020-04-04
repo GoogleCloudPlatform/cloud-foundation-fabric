@@ -15,7 +15,7 @@
  */
 
 module "test" {
-  source           = "../../../../modules/cos-container/coredns"
+  source           = "../../../../modules/cloud-config-container/coredns"
   cloud_config     = var.cloud_config
   config_variables = var.config_variables
   coredns_config   = var.coredns_config
