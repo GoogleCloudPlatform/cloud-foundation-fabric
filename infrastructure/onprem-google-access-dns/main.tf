@@ -88,7 +88,7 @@ module "vpn" {
       }
       bgp_session_range = "${local.bgp_interface_gcp}/30"
       ike_version       = 2
-      peer_ip           = module.on-prem.external_address
+      peer_ip           = module.vm-onprem.external_ips.0
       shared_secret     = ""
     }
   }
@@ -198,10 +198,21 @@ module "vm-test" {
 #                                   On prem                                    #
 ################################################################################
 
-data "template_file" "corefile" {
-  template = file("assets/Corefile")
-  vars = {
-    forwarder_address = var.forwarder_address
+module "config-onprem" {
+  source              = "../../modules/cos-container/onprem"
+  config_variables    = { dns_forwarder_address = var.dns_forwarder_address }
+  coredns_config      = "assets/Corefile"
+  local_ip_cidr_range = var.ip_ranges.onprem
+  vpn_config = {
+    peer_ip       = module.vpn.address
+    shared_secret = module.vpn.random_secret
+    type          = "dynamic"
+  }
+  vpn_dynamic_config = {
+    local_bgp_asn     = var.bgp_asn.onprem
+    local_bgp_address = local.bgp_interface_onprem
+    peer_bgp_asn      = var.bgp_asn.gcp
+    peer_bgp_address  = local.bgp_interface_gcp
   }
 }
 
@@ -218,27 +229,28 @@ module "service-account-onprem" {
   }
 }
 
-module "on-prem" {
-  source              = "../../modules/on-prem-in-a-box/"
-  project_id          = var.project_id
-  zone                = "${var.region}-b"
-  network             = module.vpc.name
-  subnet_self_link    = module.vpc.subnet_self_links.default
-  local_ip_cidr_range = var.ip_ranges.onprem
-  coredns_config      = data.template_file.corefile.rendered
-  vpn_config = {
-    peer_ip       = module.vpn.address
-    shared_secret = module.vpn.random_secret
-    type          = "dynamic"
+module "vm-onprem" {
+  source        = "../../modules/compute-vm"
+  project_id    = var.project_id
+  region        = var.region
+  zone          = "${var.region}-b"
+  instance_type = "f1-micro"
+  name          = "onprem"
+  boot_disk = {
+    image = "ubuntu-os-cloud/ubuntu-1804-lts"
+    type  = "pd-ssd"
+    size  = 10
   }
-  vpn_dynamic_config = {
-    local_bgp_asn     = var.bgp_asn.onprem
-    local_bgp_address = local.bgp_interface_onprem
-    peer_bgp_asn      = var.bgp_asn.gcp
-    peer_bgp_address  = local.bgp_interface_gcp
+  metadata = {
+    user-data = module.config-onprem.cloud_config
   }
-  service_account = {
-    email  = module.service-account-onprem.email
-    scopes = ["https://www.googleapis.com/auth/cloud-platform"]
-  }
+  network_interfaces = [{
+    network    = module.vpc.name
+    subnetwork = module.vpc.subnet_self_links.default
+    nat        = true,
+    addresses  = null
+  }]
+  service_account        = module.service-account-onprem.email
+  service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+  tags                   = ["ssh"]
 }

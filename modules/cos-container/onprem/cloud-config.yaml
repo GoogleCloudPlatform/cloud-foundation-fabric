@@ -105,7 +105,7 @@ write_files:
           %{~ if vpn_config.type == "dynamic" ~}
           - "bird"
           %{~ endif ~}
-          networks:
+        networks:
           onprem:
             ipv4_address: ${local_addresses.dns}
         volumes:

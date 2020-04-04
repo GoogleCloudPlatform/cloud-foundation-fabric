@@ -31,6 +31,12 @@ variable "bgp_interface_ranges" {
   }
 }
 
+variable "dns_forwarder_address" {
+  description = "Address of the DNS server used to forward queries from on-premises."
+  type        = string
+  default     = "10.0.0.2"
+}
+
 variable "ip_ranges" {
   description = "IP CIDR ranges."
   type        = map(string)

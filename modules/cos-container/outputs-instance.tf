@@ -17,8 +17,12 @@
 output "test_instance" {
   description = "Optional test instance name and address"
   value = (var.test_instance == null ? {} : {
-    address         = google_compute_instance.default[0].network_interface.0.network_ip
-    name            = google_compute_instance.default[0].name
+    address = google_compute_instance.default[0].network_interface.0.network_ip
+    name    = google_compute_instance.default[0].name
+    nat_address = try(
+      google_compute_instance.default[0].network_interface.0.access_config.0.nat_ip,
+      null
+    )
     service_account = google_service_account.default[0].email
   })
 }

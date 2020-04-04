@@ -5,7 +5,7 @@ onprem.example.com {
   errors
 }
 gcp.example.com googleapis.com {
-  forward . ${forwarder_address}
+  forward . ${dns_forwarder_address}
   log
   errors
 }

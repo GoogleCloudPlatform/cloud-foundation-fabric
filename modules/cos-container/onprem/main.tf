@@ -17,13 +17,15 @@
 locals {
   cloud_config = templatefile(
     "${path.module}/cloud-config.yaml",
-    local.cloud_config_vars
+    merge(local.cloud_config_vars, var.config_variables)
   )
-  corefile = file(
-    var.coredns_config == null ? "${path.module}/Corefile" : var.coredns_config
+  corefile = (
+    var.coredns_config == null ?
+    "${path.module}/Corefile"
+    : var.coredns_config
   )
   cloud_config_vars = {
-    coredns_config = indent(4, local.corefile)
+    coredns_config = indent(4, templatefile(local.corefile, var.config_variables))
     ip_cidr_ranges = {
       local = var.local_ip_cidr_range
       remote = join(",", concat(
