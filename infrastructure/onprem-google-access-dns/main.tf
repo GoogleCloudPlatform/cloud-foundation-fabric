@@ -86,7 +86,7 @@ module "vpn" {
       bgp_peer_options = {
         advertise_groups = ["ALL_SUBNETS"]
         advertise_ip_ranges = {
-          (local.netblocks.dns)        = "IAP forwarders"
+          (local.netblocks.dns)        = "DNS resolvers"
           (local.netblocks.private)    = "private.gooogleapis.com"
           (local.netblocks.restricted) = "restricted.gooogleapis.com"
         }
