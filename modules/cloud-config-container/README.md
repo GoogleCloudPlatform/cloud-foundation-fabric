@@ -1,13 +1,13 @@
-# Container Optimized OS modules
+# Instance Configuration via `cloud-config`
 
-This set of modules creates specialized [cloud-config](https://cloud.google.com/container-optimized-os/docs/how-to/run-container-instance#starting_a_docker_container_via_cloud-config) configurations for [Container Optimized OS](https://cloud.google.com/container-optimized-os/docs), that are used to quickly spin up containerized services for DNS, HTTP, or databases.
+This set of modules creates specialized [cloud-config](https://cloud.google.com/container-optimized-os/docs/how-to/run-container-instance#starting_a_docker_container_via_cloud-config) configurations, which are designed for use with [Container Optimized OS](https://cloud.google.com/container-optimized-os/docs) (the [onprem module](./onprem/) is the only exception) but can also be used as a basis for other image types or cloud providers.
 
-It's meant to fullfill different use cases:
+These modules are designed for several use cases:
 
-- when designing, to quickly prototype specialized services (eg MySQL access or HTTP serving)
-- when planning migrations, to emulate production services for core infrastructure or perfomance testing
-- in production, to easily add glue components for services like DNS (eg to work around inbound/outbound forwarding limitations)
-- as a basis to implement cloud-native production deployments that leverage cloud-init for configuration management
+- to quickly prototype specialized services (eg MySQL access or HTTP serving) for prototyping infrastructure
+- to emulate production services for perfomance testing
+- to easily add glue components for services like DNS (eg to work around inbound/outbound forwarding limitations)
+- to implement cloud-native production deployments that leverage cloud-init for configuration management, without the need of a separate tool
 
 ## Available modules
 
