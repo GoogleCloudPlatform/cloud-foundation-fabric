@@ -21,7 +21,7 @@ variable "cloud_config" {
 }
 
 variable "config_variables" {
-  description = "Additional variables used to render the cloud-config template."
+  description = "Additional variables used to render the cloud-config and CoreDNS templates."
   type        = map(any)
   default     = {}
 }
