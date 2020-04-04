@@ -30,10 +30,3 @@ output "test-instance" {
     module.vm-test.internal_ips[0]
   ])
 }
-
-output "foo" {
-  value = {
-    dns  = data.google_netblock_ip_ranges.dns-forwarders.cidr_blocks_ipv4
-    apis = data.google_netblock_ip_ranges.private-googleapis.cidr_blocks_ipv4
-  }
-}

@@ -203,7 +203,7 @@ module "vm-test" {
 ################################################################################
 
 module "config-onprem" {
-  source              = "../../modules/cos-container/onprem"
+  source              = "../../modules/cloud-config-container/onprem"
   config_variables    = { dns_forwarder_address = var.dns_forwarder_address }
   coredns_config      = "assets/Corefile"
   local_ip_cidr_range = var.ip_ranges.onprem
