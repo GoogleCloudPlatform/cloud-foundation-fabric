@@ -31,7 +31,7 @@ Specific modules also offer support for non-authoritative bindings (e.g. `google
 
 ## Compute/Container
 
-- [COS container](./modules/compute-vm-cos-coredns)
+- [COS container](./modules/cos-container) (coredns, mysql, onprem)
 - [GKE cluster](./modules/gke-cluster)
 - [GKE nodepool](./modules/gke-nodepool)
 - [VM/VM group](./modules/compute-vm)
@@ -41,7 +41,6 @@ Specific modules also offer support for non-authoritative bindings (e.g. `google
 - [BigQuery dataset](./modules/bigquery)
 - [GCS](./modules/gcs)
 
-## Other
+## Security
 
 - [Cloud KMS](./modules/kms)
-- [on-premises in Docker](./modules/on-prem-in-a-box)

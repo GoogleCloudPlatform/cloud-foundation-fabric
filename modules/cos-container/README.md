@@ -13,6 +13,7 @@ It's meant to fullfill different use cases:
 
 - [CoreDNS](./coredns)
 - [MySQL](./mysql)
+- [On-prem in Docker](./onprem)
 - [ ] Nginx
 - [ ] Squid forward proxy
 

@@ -15,70 +15,15 @@
  */
 
 variable "coredns_config" {
-  description = "CoreDNS configuration, set to null to use default."
+  description = "CoreDNS configuration path, if null default will be used."
   type        = string
   default     = null
-}
-
-variable "dns_domain" {
-  description = "DNS domain used for on-prem host records."
-  type        = string
-  default     = "onprem.example.com"
 }
 
 variable "local_ip_cidr_range" {
   description = "IP CIDR range used for the Docker onprem network."
   type        = string
   default     = "192.168.192.0/24"
-}
-
-variable "machine_type" {
-  description = "Machine type."
-  type        = string
-  default     = "g1-small"
-}
-
-variable "name" {
-  description = "On-prem-in-a-box compute instance name."
-  type        = string
-  default     = "onprem"
-}
-
-variable "network" {
-  description = "VPC network name."
-  type        = string
-}
-
-variable "network_tags" {
-  description = "Network tags."
-  type        = list(string)
-  default     = ["ssh"]
-}
-
-variable "project_id" {
-  description = "Project id."
-  type        = string
-}
-
-variable "service_account" {
-  description = "Service account customization."
-  type = object({
-    email  = string
-    scopes = list(string)
-  })
-  default = {
-    email = null
-    scopes = [
-      "https://www.googleapis.com/auth/devstorage.read_only",
-      "https://www.googleapis.com/auth/logging.write",
-      "https://www.googleapis.com/auth/monitoring.write"
-    ]
-  }
-}
-
-variable "subnet_self_link" {
-  description = "VPC subnet self link."
-  type        = string
 }
 
 variable "vpn_config" {
@@ -109,10 +54,5 @@ variable "vpn_dynamic_config" {
 variable "vpn_static_ranges" {
   description = "Remote CIDR ranges for static VPN, ignored if VPN type is 'dynamic'."
   type        = list(string)
-  default     = []
-}
-
-variable "zone" {
-  description = "Compute zone."
-  type        = string
+  default     = ["10.0.0.0/8"]
 }
