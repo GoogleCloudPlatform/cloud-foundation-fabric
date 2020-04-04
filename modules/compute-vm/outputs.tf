@@ -20,7 +20,7 @@ output "external_ips" {
     var.network_interfaces[0].nat
     ? [
       for name, instance in google_compute_instance.default :
-      instance.network_interface.0.network_ip
+      try(instance.network_interface.0.access_config.0.nat_ip, null)
     ]
     : []
   )
