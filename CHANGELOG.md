@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.2.0] - 2020-03-27
+
+- add squid container to the `cloud-config-container` module
+
 ## [1.1.0] - 2020-03-27
 
 - rename the `cos-container` suite of modules to `cloud-config-container`
