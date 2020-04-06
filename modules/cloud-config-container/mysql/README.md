@@ -68,11 +68,8 @@ module "cos-mysql" {
     zone       = "europe-west1-b"
     name       = "cos-mysql"
     type       = "n1-standard-1"
-    tags       = ["ssh"]
-    metadata   = {}
     network    = "default"
     subnetwork = "https://www.googleapis.com/compute/v1/projects/my-project/regions/europe-west1/subnetworks/my-subnet"
-    disks      = []
   }
 }
 ```
@@ -89,7 +86,8 @@ module "cos-mysql" {
 | *kms_config* | Optional KMS configuration to decrypt passed-in password. Leave null if a plaintext password is used. | <code title="object&#40;&#123;&#10;project_id &#61; string&#10;keyring    &#61; string&#10;location   &#61; string&#10;key        &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 | *mysql_config* | MySQL configuration file content, if null container default will be used. | <code title="">string</code> |  | <code title="">null</code> |
 | *mysql_data_disk* | MySQL data disk name in /dev/disk/by-id/ including the google- prefix. If null the boot disk will be used for data. | <code title="">string</code> |  | <code title="">null</code> |
-| *test_instance* | Test/development instance attributes, leave null to skip creation. | <code title="object&#40;&#123;&#10;project_id &#61; string&#10;zone       &#61; string&#10;name       &#61; string&#10;type &#61; string&#10;tags       &#61; list&#40;string&#41;&#10;metadata   &#61; map&#40;string&#41;&#10;network    &#61; string&#10;subnetwork &#61; string&#10;disks &#61; map&#40;object&#40;&#123;&#10;read_only &#61; bool&#10;size      &#61; number&#10;&#125;&#41;&#41;&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
+| *test_instance* | Test/development instance attributes, leave null to skip creation. | <code title="object&#40;&#123;&#10;project_id &#61; string&#10;zone       &#61; string&#10;name       &#61; string&#10;type &#61; string&#10;network    &#61; string&#10;subnetwork &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
+| *test_instance_defaults* | Test/development instance defaults used for optional configuration. | <code title="object&#40;&#123;&#10;disks &#61; map&#40;object&#40;&#123;&#10;read_only &#61; bool&#10;size      &#61; number&#10;&#125;&#41;&#41;&#10;metadata              &#61; map&#40;string&#41;&#10;service_account_roles &#61; list&#40;string&#41;&#10;tags                  &#61; list&#40;string&#41;&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;disks    &#61; &#123;&#125;&#10;metadata &#61; &#123;&#125;&#10;service_account_roles &#61; &#91;&#10;&#34;roles&#47;logging.logWriter&#34;,&#10;&#34;roles&#47;monitoring.metricWriter&#34;&#10;&#93;&#10;tags &#61; &#91;&#34;ssh&#34;&#93;&#10;&#125;">...</code> |
 
 ## Outputs
 

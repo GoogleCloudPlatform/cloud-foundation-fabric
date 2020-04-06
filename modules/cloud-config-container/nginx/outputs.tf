@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2019 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-module "test" {
-  source           = "../../../../modules/cos-container/mysql"
-  cloud_config     = var.cloud_config
-  config_variables = var.config_variables
-  image            = var.image
-  kms_config       = var.kms_config
-  mysql_config     = var.mysql_config
-  mysql_data_disk  = var.mysql_data_disk
-  mysql_password   = var.mysql_password
+output "cloud_config" {
+  description = "Rendered cloud-config file to be passed as user-data instance metadata."
+  value       = local.cloud_config
 }

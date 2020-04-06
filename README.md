@@ -34,8 +34,8 @@ Currently available modules:
 
 - **foundational** - [folders](./modules/folders), [log sinks](./modules/logging-sinks), [project](./modules/project), [service accounts](./modules/iam-service-accounts)
 - **networking** - [VPC](./modules/net-vpc), [VPC firewall](./modules/net-vpc-firewall), [VPC peering](./modules/net-vpc-peering), VPN ([static](./modules/net-vpn-static), [dynamic](./modules/net-vpn-dynamic), [HA](./modules/net-vpn-ha)), [NAT](./modules/net-cloudnat), [address reservation](./modules/net-address), [DNS](./modules/dns)
-- **compute** - [VM/VM group](./modules/compute-vm), [GKE cluster](./modules/gke-cluster), [GKE nodepool](./modules/gke-nodepool), [COS container](./modules/compute-vm-cos-coredns)
+- **compute** - [VM/VM group](./modules/compute-vm), [GKE cluster](./modules/gke-cluster), [GKE nodepool](./modules/gke-nodepool), [COS container](./modules/cos-container)
 - **data** - [GCS](./modules/gcs), [BigQuery dataset](./modules/bigquery)
-- **other** - [KMS](./modules/kms), [on-premises in Docker](./modules/on-prem-in-a-box)
+- **security** - [KMS](./modules/kms)
 
 For more information and usage examples see each module's README file.

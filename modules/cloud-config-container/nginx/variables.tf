@@ -21,13 +21,19 @@ variable "cloud_config" {
 }
 
 variable "config_variables" {
-  description = "Additional variables used to render the cloud-config template."
+  description = "Additional variables used to render the cloud-config and Nginx templates."
   type        = map(any)
   default     = {}
 }
 
-variable "coredns_config" {
-  description = "CoreDNS configuration path, if null default will be used."
+variable "image" {
+  description = "Nginx container image."
+  type        = string
+  default     = "nginxdemos/hello:plain-text"
+}
+
+variable "nginx_config" {
+  description = "Nginx configuration path, if null container default will be used."
   type        = string
   default     = null
 }

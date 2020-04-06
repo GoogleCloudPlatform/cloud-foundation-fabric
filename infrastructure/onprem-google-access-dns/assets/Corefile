@@ -1,11 +1,11 @@
-onprem.example.com {
+onprem.example.org {
   root /etc/coredns
   hosts onprem.hosts
   log
   errors
 }
-gcp.example.com googleapis.com {
-  forward . ${forwarder_address}
+gcp.example.org googleapis.com {
+  forward . ${dns_forwarder_address}
   log
   errors
 }

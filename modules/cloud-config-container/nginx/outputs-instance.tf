@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-output "onprem-instance" {
-  description = "Onprem instance details."
-  value = {
-    external_ip = module.vm-onprem.external_ips.0
-    internal_ip = module.vm-onprem.internal_ips.0
-    name        = module.vm-onprem.names.0
-  }
-}
-
-output "test-instance" {
-  description = "Test instance details."
-  value = join(" ", [
-    module.vm-test.names[0],
-    module.vm-test.internal_ips[0]
-  ])
+output "test_instance" {
+  description = "Optional test instance name and address"
+  value = (var.test_instance == null ? {} : {
+    address = google_compute_instance.default[0].network_interface.0.network_ip
+    name    = google_compute_instance.default[0].name
+    nat_address = try(
+      google_compute_instance.default[0].network_interface.0.access_config.0.nat_ip,
+      null
+    )
+    service_account = google_service_account.default[0].email
+  })
 }

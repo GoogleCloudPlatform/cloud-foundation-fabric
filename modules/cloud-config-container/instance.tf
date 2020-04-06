@@ -14,32 +14,35 @@
  * limitations under the License.
  */
 
-locals {
-  disks    = var.test_instance == null ? {} : var.test_instance.disks
-  sa_roles = ["roles/logging.logWriter", "roles/monitoring.metricWriter"]
-}
-
 resource "google_service_account" "default" {
   count        = var.test_instance == null ? 0 : 1
   project      = var.test_instance.project_id
-  account_id   = "cos-test-${var.test_instance.name}"
+  account_id   = "fabric-container-${var.test_instance.name}"
   display_name = "Managed by the cos Terraform module."
 }
 
 resource "google_project_iam_member" "default" {
-  for_each = var.test_instance == null ? toset([]) : toset(local.sa_roles)
-  project  = var.test_instance.project_id
-  role     = each.value
-  member   = "serviceAccount:${google_service_account.default[0].email}"
+  for_each = (
+    var.test_instance == null
+    ? toset([])
+    : toset(var.test_instance_defaults.service_account_roles)
+  )
+  project = var.test_instance.project_id
+  role    = each.value
+  member  = "serviceAccount:${google_service_account.default[0].email}"
 }
 
 resource "google_compute_disk" "disks" {
-  for_each = local.disks
-  project  = var.test_instance.project_id
-  zone     = var.test_instance.zone
-  name     = each.key
-  type     = "pd-ssd"
-  size     = each.value.size
+  for_each = (
+    var.test_instance == null
+    ? {}
+    : var.test_instance_defaults.disks
+  )
+  project = var.test_instance.project_id
+  zone    = var.test_instance.zone
+  name    = each.key
+  type    = "pd-ssd"
+  size    = each.value.size
 }
 
 resource "google_compute_instance" "default" {
@@ -48,16 +51,16 @@ resource "google_compute_instance" "default" {
   zone        = var.test_instance.zone
   name        = var.test_instance.name
   description = "Managed by the cos Terraform module."
-  tags        = var.test_instance.tags
+  tags        = var.test_instance_defaults.tags
   machine_type = (
     var.test_instance.type == null ? "f1-micro" : var.test_instance.type
   )
-  metadata = merge(var.test_instance.metadata, {
+  metadata = merge(var.test_instance_defaults.metadata, {
     user-data = local.cloud_config
   })
 
   dynamic attached_disk {
-    for_each = local.disks
+    for_each = var.test_instance_defaults.disks
     iterator = disk
     content {
       device_name = disk.key
@@ -68,15 +71,26 @@ resource "google_compute_instance" "default" {
 
   boot_disk {
     initialize_params {
-      type  = "pd-ssd"
-      image = "projects/cos-cloud/global/images/family/cos-stable"
-      size  = 10
+      type = "pd-ssd"
+      image = (
+        var.test_instance_defaults.image == null
+        ? "projects/cos-cloud/global/images/family/cos-stable"
+        : var.test_instance_defaults.image
+      )
+      size = 10
     }
   }
 
   network_interface {
     network    = var.test_instance.network
     subnetwork = var.test_instance.subnetwork
+    dynamic access_config {
+      for_each = var.test_instance_defaults.nat ? [""] : []
+      iterator = config
+      content {
+        nat_ip = null
+      }
+    }
   }
 
   service_account {

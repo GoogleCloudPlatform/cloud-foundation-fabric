@@ -21,14 +21,34 @@ variable "test_instance" {
     zone       = string
     name       = string
     type       = string
-    tags       = list(string)
-    metadata   = map(string)
     network    = string
     subnetwork = string
+  })
+  default = null
+}
+
+variable "test_instance_defaults" {
+  description = "Test/development instance defaults used for optional configuration. If image is null, COS stable will be used."
+  type = object({
     disks = map(object({
       read_only = bool
       size      = number
     }))
+    image                 = string
+    metadata              = map(string)
+    nat                   = bool
+    service_account_roles = list(string)
+    tags                  = list(string)
   })
-  default = null
+  default = {
+    disks    = {}
+    image    = null
+    metadata = {}
+    nat      = false
+    service_account_roles = [
+      "roles/logging.logWriter",
+      "roles/monitoring.metricWriter"
+    ]
+    tags = ["ssh"]
+  }
 }

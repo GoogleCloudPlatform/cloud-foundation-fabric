@@ -14,11 +14,15 @@
  * limitations under the License.
  */
 
-module "test" {
-  source           = "../../../../modules/cos-container/coredns"
-  cloud_config     = var.cloud_config
-  config_variables = var.config_variables
-  coredns_config   = var.coredns_config
-  file_defaults    = var.file_defaults
-  files            = var.files
+output "test_instance" {
+  description = "Optional test instance name and address"
+  value = (var.test_instance == null ? {} : {
+    address = google_compute_instance.default[0].network_interface.0.network_ip
+    name    = google_compute_instance.default[0].name
+    nat_address = try(
+      google_compute_instance.default[0].network_interface.0.access_config.0.nat_ip,
+      null
+    )
+    service_account = google_service_account.default[0].email
+  })
 }

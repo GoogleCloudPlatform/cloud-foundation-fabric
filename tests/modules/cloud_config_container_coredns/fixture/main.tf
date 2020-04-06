@@ -14,19 +14,11 @@
  * limitations under the License.
  */
 
-output "onprem-instance" {
-  description = "Onprem instance details."
-  value = {
-    external_ip = module.vm-onprem.external_ips.0
-    internal_ip = module.vm-onprem.internal_ips.0
-    name        = module.vm-onprem.names.0
-  }
-}
-
-output "test-instance" {
-  description = "Test instance details."
-  value = join(" ", [
-    module.vm-test.names[0],
-    module.vm-test.internal_ips[0]
-  ])
+module "test" {
+  source           = "../../../../modules/cloud-config-container/coredns"
+  cloud_config     = var.cloud_config
+  config_variables = var.config_variables
+  coredns_config   = var.coredns_config
+  file_defaults    = var.file_defaults
+  files            = var.files
 }

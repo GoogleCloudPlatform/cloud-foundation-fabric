@@ -96,12 +96,13 @@ sudo docker exec -it onprem_bird_1 ip route |grep bird
 10.0.0.0/24 via 169.254.1.1 dev vti0  proto bird  src 10.0.16.2
 35.199.192.0/19 via 169.254.1.1 dev vti0  proto bird  src 10.0.16.2
 199.36.153.4/30 via 169.254.1.1 dev vti0  proto bird  src 10.0.16.2
+199.36.153.8/30 via 169.254.1.1 dev vti0  proto bird  src 10.0.16.2
 
 # get a shell on the toolbox container
 sudo docker exec -it onprem_toolbox_1 sh
 
 # test forwarding from CoreDNS via the Cloud DNS inbound policy
-dig test-1.gcp.example.com +short
+dig test-1.gcp.example.org +short
 10.0.0.3
 
 # test that Private Access is configured correctly
@@ -124,8 +125,8 @@ gcloud compute instances list
 gcloud compute ssh test-1
 
 # test forwarding from Cloud DNS to onprem CoreDNS (address may differ)
-dig gw.onprem.example.com +short
-10.0.16.2
+dig gw.onprem.example.org +short
+10.0.16.1
 
 # test a request to the onprem web server
 curl www.onprem.example.com -s |grep h1

@@ -18,11 +18,13 @@ locals {
   bgp_interface_gcp    = "${cidrhost(var.bgp_interface_ranges.gcp, 1)}"
   bgp_interface_onprem = "${cidrhost(var.bgp_interface_ranges.gcp, 2)}"
   netblocks = {
-    dns = data.google_netblock_ip_ranges.dns-forwarders.cidr_blocks_ipv4.0
-    api = data.google_netblock_ip_ranges.private-googleapis.cidr_blocks_ipv4.0
+    dns        = data.google_netblock_ip_ranges.dns-forwarders.cidr_blocks_ipv4.0
+    private    = data.google_netblock_ip_ranges.private-googleapis.cidr_blocks_ipv4.0
+    restricted = data.google_netblock_ip_ranges.restricted-googleapis.cidr_blocks_ipv4.0
   }
   vips = {
-    api = [for i in range(4) : cidrhost(local.netblocks.api, i)]
+    private    = [for i in range(4) : cidrhost(local.netblocks.private, i)]
+    restricted = [for i in range(4) : cidrhost(local.netblocks.restricted, i)]
   }
   vm-startup-script = join("\n", [
     "#! /bin/bash",
@@ -30,12 +32,16 @@ locals {
   ])
 }
 
+data "google_netblock_ip_ranges" "dns-forwarders" {
+  range_type = "dns-forwarders"
+}
+
 data "google_netblock_ip_ranges" "private-googleapis" {
   range_type = "private-googleapis"
 }
 
-data "google_netblock_ip_ranges" "dns-forwarders" {
-  range_type = "dns-forwarders"
+data "google_netblock_ip_ranges" "restricted-googleapis" {
+  range_type = "restricted-googleapis"
 }
 
 ################################################################################
@@ -80,15 +86,16 @@ module "vpn" {
       bgp_peer_options = {
         advertise_groups = ["ALL_SUBNETS"]
         advertise_ip_ranges = {
-          (local.netblocks.api) = "private-googleapis"
-          (local.netblocks.dns) = "dns-forwarders"
+          (local.netblocks.dns)        = "DNS resolvers"
+          (local.netblocks.private)    = "private.gooogleapis.com"
+          (local.netblocks.restricted) = "restricted.gooogleapis.com"
         }
         advertise_mode = "CUSTOM"
         route_priority = 1000
       }
       bgp_session_range = "${local.bgp_interface_gcp}/30"
       ike_version       = 2
-      peer_ip           = module.on-prem.external_address
+      peer_ip           = module.vm-onprem.external_ips.0
       shared_secret     = ""
     }
   }
@@ -112,7 +119,7 @@ module "dns-gcp" {
   project_id      = var.project_id
   type            = "private"
   name            = "gcp-example"
-  domain          = "gcp.example.com."
+  domain          = "gcp.example.org."
   client_networks = [module.vpc.self_link]
   recordsets = concat(
     [{ name = "localhost", type = "A", ttl = 300, records = ["127.0.0.1"] }],
@@ -131,12 +138,9 @@ module "dns-api" {
   domain          = "googleapis.com."
   client_networks = [module.vpc.self_link]
   recordsets = [
-    {
-      name = "*", type = "CNAME", ttl = 300, records = ["private.googleapis.com."]
-    },
-    {
-      name = "private", type = "A", ttl = 300, records = local.vips.api
-    },
+    { name = "*", type = "CNAME", ttl = 300, records = ["private.googleapis.com."] },
+    { name = "private", type = "A", ttl = 300, records = local.vips.private },
+    { name = "restricted", type = "A", ttl = 300, records = local.vips.restricted },
   ]
 }
 
@@ -145,7 +149,7 @@ module "dns-onprem" {
   project_id      = var.project_id
   type            = "forwarding"
   name            = "onprem-example"
-  domain          = "onprem.example.com."
+  domain          = "onprem.example.org."
   client_networks = [module.vpc.self_link]
   forwarders      = [cidrhost(var.ip_ranges.onprem, 3)]
 }
@@ -198,10 +202,21 @@ module "vm-test" {
 #                                   On prem                                    #
 ################################################################################
 
-data "template_file" "corefile" {
-  template = file("assets/Corefile")
-  vars = {
-    forwarder_address = var.forwarder_address
+module "config-onprem" {
+  source              = "../../modules/cloud-config-container/onprem"
+  config_variables    = { dns_forwarder_address = var.dns_forwarder_address }
+  coredns_config      = "assets/Corefile"
+  local_ip_cidr_range = var.ip_ranges.onprem
+  vpn_config = {
+    peer_ip       = module.vpn.address
+    shared_secret = module.vpn.random_secret
+    type          = "dynamic"
+  }
+  vpn_dynamic_config = {
+    local_bgp_asn     = var.bgp_asn.onprem
+    local_bgp_address = local.bgp_interface_onprem
+    peer_bgp_asn      = var.bgp_asn.gcp
+    peer_bgp_address  = local.bgp_interface_gcp
   }
 }
 
@@ -218,27 +233,28 @@ module "service-account-onprem" {
   }
 }
 
-module "on-prem" {
-  source              = "../../modules/on-prem-in-a-box/"
-  project_id          = var.project_id
-  zone                = "${var.region}-b"
-  network             = module.vpc.name
-  subnet_self_link    = module.vpc.subnet_self_links.default
-  local_ip_cidr_range = var.ip_ranges.onprem
-  coredns_config      = data.template_file.corefile.rendered
-  vpn_config = {
-    peer_ip       = module.vpn.address
-    shared_secret = module.vpn.random_secret
-    type          = "dynamic"
+module "vm-onprem" {
+  source        = "../../modules/compute-vm"
+  project_id    = var.project_id
+  region        = var.region
+  zone          = "${var.region}-b"
+  instance_type = "f1-micro"
+  name          = "onprem"
+  boot_disk = {
+    image = "ubuntu-os-cloud/ubuntu-1804-lts"
+    type  = "pd-ssd"
+    size  = 10
   }
-  vpn_dynamic_config = {
-    local_bgp_asn     = var.bgp_asn.onprem
-    local_bgp_address = local.bgp_interface_onprem
-    peer_bgp_asn      = var.bgp_asn.gcp
-    peer_bgp_address  = local.bgp_interface_gcp
+  metadata = {
+    user-data = module.config-onprem.cloud_config
   }
-  service_account = {
-    email  = module.service-account-onprem.email
-    scopes = ["https://www.googleapis.com/auth/cloud-platform"]
-  }
+  network_interfaces = [{
+    network    = module.vpc.name
+    subnetwork = module.vpc.subnet_self_links.default
+    nat        = true,
+    addresses  = null
+  }]
+  service_account        = module.service-account-onprem.email
+  service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+  tags                   = ["ssh"]
 }

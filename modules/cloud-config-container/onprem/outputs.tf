@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2019 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-output "test_instance" {
-  description = "Optional test instance name and address"
-  value = (var.test_instance == null ? {} : {
-    address         = google_compute_instance.default[0].network_interface.0.network_ip
-    name            = google_compute_instance.default[0].name
-    service_account = google_service_account.default[0].email
-  })
+output "cloud_config" {
+  description = "Rendered cloud-config file to be passed as user-data instance metadata."
+  value       = local.cloud_config
 }
