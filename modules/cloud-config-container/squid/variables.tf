@@ -22,8 +22,8 @@ variable "cloud_config" {
 
 variable "config_variables" {
   description = "Additional variables used to render the cloud-config and Squid templates."
-  # type        = map(any)
-  default = {}
+  type        = map(any)
+  default     = {}
 }
 
 variable "squid_config" {
@@ -52,4 +52,16 @@ variable "files" {
     permissions = string
   }))
   default = {}
+}
+
+variable "whitelist" {
+  description = "List of domains Squid will allow connections to"
+  type        = list(string)
+  default     = []
+}
+
+variable "clients" {
+  description = "List of CIDRs from which Squid will allow connections"
+  type        = list(string)
+  default     = []
 }

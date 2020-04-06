@@ -39,7 +39,7 @@ locals {
     : var.cloud_config
   )
   config_variables = merge(var.config_variables, {
-    whitelist = lookup(var.config_variables, "whitelist", [])
-    clients   = lookup(var.config_variables, "clients", [])
+    whitelist = var.whitelist
+    clients   = var.clients
   })
 }
