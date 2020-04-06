@@ -13,8 +13,8 @@ These modules are designed for several use cases:
 
 - [CoreDNS](./coredns)
 - [MySQL](./mysql)
+- [Nginx](./nginx)
 - [On-prem in Docker](./onprem)
-- [ ] Nginx
 - [ ] Squid forward proxy
 
 ## Using the modules
@@ -24,3 +24,7 @@ All modules are designed to be as lightweight as possible, so that specialized m
 To use the modules with instances or instance templates, simply set use their `cloud_config` output for the `user-data` metadata. When updating the metadata after a variable change remember to manually restart the instances that use a module's output, or the changes won't effect the running system.
 
 For convenience when developing or prototyping infrastructure, an optional test instance is included in all modules. If it's not needed, the linked `*instance.tf` files can be removed from the modules without harm.
+
+## TODO
+
+- [ ] convert all `xxx_config` variables to use file content instead of path
