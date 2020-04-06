@@ -64,7 +64,7 @@ write_files:
       [Service]
       Environment="HOME=/home/squid"
       ExecStartPre=/usr/bin/docker-credential-gcr configure-docker
-      ExecStart=/usr/bin/docker run --rm --name=coredns  \
+      ExecStart=/usr/bin/docker run --rm --name=squid  \
         --log-driver=gcplogs --network host \
         -v /etc/squid:/etc/squid \
         gcr.io/pso-cft-fabric/squid:0.10

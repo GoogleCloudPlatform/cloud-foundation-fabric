@@ -21,13 +21,13 @@ variable "cloud_config" {
 }
 
 variable "config_variables" {
-  description = "Additional variables used to render the cloud-config and CoreDNS templates."
+  description = "Additional variables used to render the cloud-config and Squid templates."
   # type        = map(any)
   default = {}
 }
 
 variable "squid_config" {
-  description = "CoreDNS configuration path, if null default will be used."
+  description = "Squid configuration path, if null default will be used."
   type        = string
   default     = null
 }
