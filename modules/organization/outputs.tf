@@ -21,6 +21,8 @@ output "org_id" {
     google_organization_iam_audit_config,
     google_organization_iam_binding.authoritative,
     google_organization_iam_custom_role.roles,
-    google_organization_iam_member.additive
+    google_organization_iam_member.additive,
+    google_organization_policy.boolean,
+    google_organization_policy.list
   ]
 }
