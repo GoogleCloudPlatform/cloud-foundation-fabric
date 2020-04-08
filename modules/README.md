@@ -12,9 +12,9 @@ Specific modules also offer support for non-authoritative bindings (e.g. `google
 
 - [folders](./modules/folders)
 - [log sinks](./modules/logging-sinks)
+- [organization](./modules/organization)
 - [project](./modules/project)
 - [service accounts](./modules/iam-service-accounts)
-- [ ] TODO: organization policies module
 
 ## Networking modules
 
