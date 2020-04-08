@@ -22,6 +22,11 @@ output "folder" {
 output "id" {
   description = "Folder id (for single use)."
   value       = local.has_folders ? local.folders[0].name : null
+  depends_on = [
+    google_folder_iam_binding.authoritative,
+    google_folder_organization_policy.boolean,
+    google_folder_organization_policy.list
+  ]
 }
 
 output "name" {
@@ -41,6 +46,11 @@ output "ids" {
     ? zipmap(var.names, [for f in local.folders : f.name])
     : {}
   )
+  depends_on = [
+    google_folder_iam_binding.authoritative,
+    google_folder_organization_policy.boolean,
+    google_folder_organization_policy.list
+  ]
 }
 
 output "names" {
@@ -55,6 +65,11 @@ output "names" {
 output "ids_list" {
   description = "List of folder ids."
   value       = [for f in local.folders : f.name]
+  depends_on = [
+    google_folder_iam_binding.authoritative,
+    google_folder_organization_policy.boolean,
+    google_folder_organization_policy.list
+  ]
 }
 
 output "names_list" {

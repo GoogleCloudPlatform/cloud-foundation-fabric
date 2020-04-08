@@ -74,6 +74,21 @@ variable "parent" {
   default = "folders/12345678"
 }
 
+variable "policy_boolean" {
+  type    = map(bool)
+  default = {}
+}
+
+variable "policy_list" {
+  type = map(object({
+    inherit_from_parent = bool
+    suggested_value     = string
+    status              = bool
+    values              = list(string)
+  }))
+  default = {}
+}
+
 variable "prefix" {
   type    = string
   default = null

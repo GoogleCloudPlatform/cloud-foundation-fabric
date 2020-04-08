@@ -1,23 +1,54 @@
 # Project Module
 
-## Example
+## Examples
+
+### Minimal example with IAM
 
 ```hcl
 module "project" {
   source          = "./modules/project"
-  parent          = var.folder.id
-  billing_account = var.billing_account_id
-  prefix          = "foo"
+  billing_account = "123456-123456-123456"
   name            = "project-example"
-  oslogin         = true
-  oslogin_admins  = var.admins
-  services = concat(var.project_services, [
-    "cloudkms.googleapis.com", "accesscontextmanager.googleapis.com"
-  ])
+  parent          = "folders/1234567890"
+  prefix          = "foo"
+  services        = [
+    "resourceviews.googleapis.com",
+    "stackdriver.googleapis.com"
+  ]
   iam_roles = ["roles/container.hostServiceAgentUser"]
-  iam_members = { "roles/container.hostServiceAgentUser" = [
-    "serviceAccount:${var.gke_service_account}"
-  ] }
+  iam_members = {
+    "roles/container.hostServiceAgentUser" = [
+      "serviceAccount:${var.gke_service_account}"
+    ]
+  }
+}
+```
+
+### Organization policies
+
+```hcl
+module "project" {
+  source          = "./modules/project"
+  billing_account = "123456-123456-123456"
+  name            = "project-example"
+  parent          = "folders/1234567890"
+  prefix          = "foo"
+  services        = [
+    "resourceviews.googleapis.com",
+    "stackdriver.googleapis.com"
+  ]
+  policy_boolean = {
+    "constraints/compute.disableGuestAttributesAccess" = true
+    "constraints/compute.skipDefaultNetworkCreation" = true
+  }
+  policy_list = {
+    "constraints/compute.trustedImageProjects" = {
+      inherit_from_parent = null
+      suggested_value = null
+      status = true
+      values = ["projects/my-project"]
+    }
+  }
 }
 ```
 
@@ -40,6 +71,8 @@ module "project" {
 | *oslogin* | Enable OS Login. | <code title="">bool</code> |  | <code title="">false</code> |
 | *oslogin_admins* | List of IAM-style identities that will be granted roles necessary for OS Login administrators. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 | *oslogin_users* | List of IAM-style identities that will be granted roles necessary for OS Login users. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
+| *policy_boolean* | Map of boolean org policies and enforcement value, set value to null for policy restore. | <code title="map&#40;bool&#41;">map(bool)</code> |  | <code title="">{}</code> |
+| *policy_list* | Map of list org policies, status is true for allow, false for deny, null for restore. Values can only be used for allow or deny. | <code title="map&#40;object&#40;&#123;&#10;inherit_from_parent &#61; bool&#10;suggested_value     &#61; string&#10;status              &#61; bool&#10;values              &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
 | *prefix* | Prefix used to generate project id and name. | <code title="">string</code> |  | <code title="">null</code> |
 | *services* | Service APIs to enable. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 
@@ -47,13 +80,12 @@ module "project" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| cloudsvc_service_account | Cloud services service account (depends on services). |  |
+| cloudsvc_service_account | Cloud services service account. |  |
 | custom_roles | Ids of the created custom roles. |  |
-| gce_service_account | Default GCE service account (depends on services). |  |
-| gcr_service_account | Default GCR service account (depends on services). |  |
-| gke_service_account | Default GKE service account (depends on services). |  |
-| iam_project_id | Project id (depends on services and IAM bindings). |  |
-| name | Name (depends on services). |  |
-| number | Project number (depends on services). |  |
-| project_id | Project id (depends on services). |  |
+| gce_service_account | Default GCE service account. |  |
+| gcr_service_account | Default GCR service account. |  |
+| gke_service_account | Default GKE service account. |  |
+| name | Project ame. |  |
+| number | Project number. |  |
+| project_id | Project id. |  |
 <!-- END TFDOC -->

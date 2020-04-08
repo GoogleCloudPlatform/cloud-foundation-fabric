@@ -36,3 +36,20 @@ variable "parent" {
   description = "Parent in folders/folder_id or organizations/org_id format."
   type        = string
 }
+
+variable "policy_boolean" {
+  description = "Map of boolean org policies and enforcement value, set value to null for policy restore."
+  type        = map(bool)
+  default     = {}
+}
+
+variable "policy_list" {
+  description = "Map of list org policies, status is true for allow, false for deny, null for restore. Values can only be used for allow or deny."
+  type = map(object({
+    inherit_from_parent = bool
+    suggested_value     = string
+    status              = bool
+    values              = list(string)
+  }))
+  default = {}
+}
