@@ -30,6 +30,8 @@ module "test" {
   oslogin_admins       = var.oslogin_admins
   oslogin_users        = var.oslogin_users
   parent               = var.parent
+  policy_boolean       = var.policy_boolean
+  policy_list          = var.policy_list
   prefix               = var.prefix
   services             = var.services
 }

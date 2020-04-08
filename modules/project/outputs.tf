@@ -15,55 +15,55 @@
  */
 
 output "project_id" {
-  description = "Project id (depends on services)."
+  description = "Project id."
   value       = google_project.project.project_id
   depends_on = [
+    google_project_organization_policy.boolean,
+    google_project_organization_policy.list,
     google_project_service.project_services
   ]
 }
 
-output "iam_project_id" {
-  description = "Project id (depends on services and IAM bindings)."
-  value       = google_project.project.project_id
+output "name" {
+  description = "Project ame."
+  value       = google_project.project.name
   depends_on = [
-    google_project_service.project_services,
-    google_project_iam_binding.authoritative,
-    google_project_iam_member.non_authoritative
+    google_project_organization_policy.boolean,
+    google_project_organization_policy.list,
+    google_project_service.project_services
   ]
 }
 
-output "name" {
-  description = "Name (depends on services)."
-  value       = google_project.project.name
-  depends_on  = [google_project_service.project_services]
-}
-
 output "number" {
-  description = "Project number (depends on services)."
+  description = "Project number."
   value       = google_project.project.number
-  depends_on  = [google_project_service.project_services]
+  depends_on = [
+    google_project_organization_policy.boolean,
+    google_project_organization_policy.list,
+    google_project_service.project_services
+  ]
 }
 
 output "cloudsvc_service_account" {
-  description = "Cloud services service account (depends on services)."
+  description = "Cloud services service account."
   value       = "${local.cloudsvc_service_account}"
   depends_on  = [google_project_service.project_services]
 }
 
 output "gce_service_account" {
-  description = "Default GCE service account (depends on services)."
+  description = "Default GCE service account."
   value       = local.gce_service_account
   depends_on  = [google_project_service.project_services]
 }
 
 output "gcr_service_account" {
-  description = "Default GCR service account (depends on services)."
+  description = "Default GCR service account."
   value       = local.gcr_service_account
   depends_on  = [google_project_service.project_services]
 }
 
 output "gke_service_account" {
-  description = "Default GKE service account (depends on services)."
+  description = "Default GKE service account."
   value       = local.gke_service_account
   depends_on  = [google_project_service.project_services]
 }
