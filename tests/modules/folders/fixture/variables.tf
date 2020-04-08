@@ -23,3 +23,18 @@ variable "iam_roles" {
   type    = map(list(string))
   default = null
 }
+
+variable "policy_boolean" {
+  type    = map(bool)
+  default = {}
+}
+
+variable "policy_list" {
+  type = map(object({
+    inherit_from_parent = bool
+    suggested_value     = string
+    status              = bool
+    values              = list(string)
+  }))
+  default = {}
+}
