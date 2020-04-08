@@ -10,37 +10,37 @@ Specific modules also offer support for non-authoritative bindings (e.g. `google
 
 ## Foundational modules
 
-- [folders](./modules/folders)
-- [log sinks](./modules/logging-sinks)
-- [organization](./modules/organization)
-- [project](./modules/project)
-- [service accounts](./modules/iam-service-accounts)
+- [folders](./folders)
+- [log sinks](./logging-sinks)
+- [organization](./organization)
+- [project](./project)
+- [service accounts](./iam-service-accounts)
 
 ## Networking modules
 
-- [address reservation](./modules/net-address)
-- [Cloud DNS](./modules/dns)
-- [Cloud NAT](./modules/net-cloudnat)
-- [VPC](./modules/net-vpc)
-- [VPC firewall](./modules/net-vpc-firewall)
-- [VPC peering](./modules/net-vpc-peering)
-- [VPN static](./modules/net-vpn-static)
-- [VPN dynamic](./modules/net-vpn-dynamic)
-- [VPN HA](./modules/net-vpn-ha))
+- [address reservation](./net-address)
+- [Cloud DNS](./dns)
+- [Cloud NAT](./net-cloudnat)
+- [VPC](./net-vpc)
+- [VPC firewall](./net-vpc-firewall)
+- [VPC peering](./net-vpc-peering)
+- [VPN static](./net-vpn-static)
+- [VPN dynamic](./net-vpn-dynamic)
+- [VPN HA](./net-vpn-ha))
 - [ ] TODO: xLB modules
 
 ## Compute/Container
 
-- [COS container](./modules/cos-container) (coredns, mysql, onprem)
-- [GKE cluster](./modules/gke-cluster)
-- [GKE nodepool](./modules/gke-nodepool)
-- [VM/VM group](./modules/compute-vm)
+- [COS container](./cos-container) (coredns, mysql, onprem, squid)
+- [GKE cluster](./gke-cluster)
+- [GKE nodepool](./gke-nodepool)
+- [VM/VM group](./compute-vm)
 
 ## Data
 
-- [BigQuery dataset](./modules/bigquery)
-- [GCS](./modules/gcs)
+- [BigQuery dataset](./bigquery)
+- [GCS](./gcs)
 
 ## Security
 
-- [Cloud KMS](./modules/kms)
+- [Cloud KMS](./kms)
