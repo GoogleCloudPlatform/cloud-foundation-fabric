@@ -15,7 +15,7 @@ These modules are designed for several use cases:
 - [MySQL](./mysql)
 - [Nginx](./nginx)
 - [On-prem in Docker](./onprem)
-- [ ] Squid forward proxy
+- [Squid forward proxy](./squid)
 
 ## Using the modules
 
