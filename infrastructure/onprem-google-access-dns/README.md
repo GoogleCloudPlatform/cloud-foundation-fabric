@@ -44,7 +44,7 @@ If the forwader address does not match the Terraform variable, add the correct v
 
 ```bash
 tf apply
-tf taint module.on-prem.google_compute_instance.on_prem_in_a_box
+tf taint 'module.vm-onprem.google_compute_instance.default["onprem-1"]'
 tf apply
 ```
 
@@ -89,7 +89,7 @@ google.internal {
 
 ```bash
 # connect to the onprem instance
-gcloud compute ssh onprem
+gcloud compute ssh onprem-1
 
 # check that the BGP session works and the advertised routes are set
 sudo docker exec -it onprem_bird_1 ip route |grep bird
@@ -100,6 +100,12 @@ sudo docker exec -it onprem_bird_1 ip route |grep bird
 
 # get a shell on the toolbox container
 sudo docker exec -it onprem_toolbox_1 sh
+
+# test pinging the IP address of the test instance (check outputs for it)
+ping 10.0.0.3
+
+# note: if you are able to ping the IP but the DNS tests below do not work,
+#       refer to the sections above on configuring the DNS inbound fwd IP
 
 # test forwarding from CoreDNS via the Cloud DNS inbound policy
 dig test-1.gcp.example.org +short
