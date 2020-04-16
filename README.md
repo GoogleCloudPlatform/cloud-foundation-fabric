@@ -2,7 +2,7 @@
 
 This repository provides **end-to-end examples** and a **suite of Terraform modules** for Google Cloud, which support different use cases:
 
-- starter kits used to bootstrap real-word cloud foundations and infrastructure
+- starter kits used to bootstrap real-world cloud foundations and infrastructure
 - reference examples used to deep dive on network patterns or product features
 - composable modules that support quick prototyping and testing
 - a comprehensive source of lean modules that lend themselves well to changes
