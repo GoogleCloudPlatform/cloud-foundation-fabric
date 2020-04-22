@@ -78,13 +78,13 @@ variable "router_create" {
 variable "router_name" {
   description = "Router name, leave blank if router will be created to use auto generated name."
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "router_network" {
   description = "Name of the VPC used for auto-created router."
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "subnetworks" {

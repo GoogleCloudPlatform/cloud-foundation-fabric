@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 - fix DNS module internal zone lookup
+- fix Cloud NAT module internal router name lookup
 
 ## [1.3.0] - 2020-04-08
 

@@ -31,7 +31,11 @@ output "region" {
 
 output "router" {
   description = "Cloud NAT router resources (if auto created)."
-  value       = var.router_create ? google_compute_router.router[0] : null
+  value = (
+    var.router_create
+    ? try(google_compute_router.router[0], null)
+    : null
+  )
 }
 
 output "router_name" {

@@ -16,13 +16,15 @@
 
 locals {
   router_name = (
-    var.router_create ? google_compute_router.router[0].name : var.router_name
+    var.router_create
+    ? try(google_compute_router.router[0].name, null)
+    : var.router_name
   )
 }
 
 resource "google_compute_router" "router" {
   count   = var.router_create ? 1 : 0
-  name    = var.router_name == "" ? "${var.name}-nat" : var.router_name
+  name    = var.router_name == null ? "${var.name}-nat" : var.router_name
   project = var.project_id
   region  = var.region
   network = var.router_network
