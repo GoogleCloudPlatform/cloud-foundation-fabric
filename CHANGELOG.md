@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- fix DNS module internal zone lookup
+
 ## [1.3.0] - 2020-04-08
 
 - add organization policy module

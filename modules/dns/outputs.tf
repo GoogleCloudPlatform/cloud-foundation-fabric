@@ -26,15 +26,15 @@ output "zone" {
 
 output "name" {
   description = "The DNS zone name."
-  value       = local.zone.name
+  value       = try(local.zone.name, null)
 }
 
 output "domain" {
   description = "The DNS zone domain."
-  value       = local.zone.dns_name
+  value       = try(local.zone.dns_name, null)
 }
 
 output "name_servers" {
   description = "The DNS zone name servers."
-  value       = local.zone.name_servers
+  value       = try(local.zone.name_servers, null)
 }

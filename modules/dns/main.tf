@@ -20,9 +20,11 @@ locals {
     for record in var.recordsets :
     join("/", [record.name, record.type]) => record
   }
-  zone = element(concat(
-    google_dns_managed_zone.non-public, google_dns_managed_zone.public
-  ), 0)
+  zone = try(
+    google_dns_managed_zone.non-public.0, try(
+      google_dns_managed_zone.public.0, null
+    )
+  )
 }
 
 resource "google_dns_managed_zone" "non-public" {
