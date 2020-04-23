@@ -17,24 +17,26 @@
 variable "addons" {
   description = "Addons enabled in the cluster (true means enabled)."
   type = object({
+    cloudrun_config            = bool
+    dns_cache_config           = bool
     horizontal_pod_autoscaling = bool
     http_load_balancing        = bool
-    network_policy_config      = bool
-    cloudrun_config            = bool
     istio_config = object({
       enabled = bool
       tls     = bool
     })
+    network_policy_config = bool
   })
   default = {
+    cloudrun_config            = false
+    dns_cache_config           = false
     horizontal_pod_autoscaling = true
     http_load_balancing        = true
-    network_policy_config      = false
-    cloudrun_config            = false
     istio_config = {
       enabled = false
       tls     = false
     }
+    network_policy_config = false
   }
 }
 
@@ -169,6 +171,15 @@ variable "node_locations" {
   default     = []
 }
 
+variable "peering_config" {
+  description = "Configure peering with the master VPC for private clusters."
+  type = object({
+    export_routes = bool
+    import_routes = bool
+  })
+  default = null
+}
+
 variable "pod_security_policy" {
   description = "Enable the PodSecurityPolicy feature."
   type        = bool
@@ -176,7 +187,7 @@ variable "pod_security_policy" {
 }
 
 variable "private_cluster_config" {
-  description = "Enable and configure private cluster."
+  description = "Enable and configure private cluster, private nodes must be true if used."
   type = object({
     enable_private_nodes    = bool
     enable_private_endpoint = bool
