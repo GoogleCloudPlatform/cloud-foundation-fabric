@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 
+locals {
+  # The Google provider is unable to validate certain configurations of
+  # private_cluster_config when enable_private_nodes is false (provider docs)
+  is_private = try(var.private_cluster_config.enable_private_nodes, false)
+  peering = try(
+    google_container_cluster.cluster.private_cluster_config.0.peering_name,
+    null
+  )
+}
+
 resource "google_container_cluster" "cluster" {
   provider                    = google-beta
   project                     = var.project_id
@@ -36,8 +46,12 @@ resource "google_container_cluster" "cluster" {
   remove_default_node_pool    = true
 
   # node_config
+  # TODO(ludomagno): compute addons map in locals and use a single dynamic block
 
   addons_config {
+    dns_cache_config {
+      enabled = var.addons.dns_cache_config
+    }
     http_load_balancing {
       disabled = ! var.addons.http_load_balancing
     }
@@ -106,7 +120,7 @@ resource "google_container_cluster" "cluster" {
   }
 
   dynamic private_cluster_config {
-    for_each = var.private_cluster_config != null ? [var.private_cluster_config] : []
+    for_each = local.is_private ? [var.private_cluster_config] : []
     iterator = config
     content {
       enable_private_nodes    = config.value.enable_private_nodes
@@ -194,4 +208,13 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
+}
+
+resource "google_compute_network_peering_routes_config" "gke_master" {
+  count                = local.is_private && local.peering != null ? 1 : 0
+  project              = var.project_id
+  peering              = local.peering
+  network              = var.network
+  import_custom_routes = var.peering_config.import_routes
+  export_custom_routes = var.peering_config.export_routes
 }
