@@ -211,7 +211,7 @@ resource "google_container_cluster" "cluster" {
 }
 
 resource "google_compute_network_peering_routes_config" "gke_master" {
-  count                = local.is_private && local.peering != null ? 1 : 0
+  count                = local.is_private && var.peering_config != null ? 1 : 0
   project              = var.project_id
   peering              = local.peering
   network              = var.network
