@@ -214,7 +214,7 @@ resource "google_compute_network_peering_routes_config" "gke_master" {
   count                = local.is_private && var.peering_config != null ? 1 : 0
   project              = var.project_id
   peering              = local.peering
-  network              = var.network
+  network              = element(reverse(split("/", var.network)), 0)
   import_custom_routes = var.peering_config.import_routes
   export_custom_routes = var.peering_config.export_routes
 }
