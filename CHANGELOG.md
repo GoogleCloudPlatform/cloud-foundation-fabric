@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 - fix DNS module internal zone lookup
 - fix Cloud NAT module internal router name lookup
+- re-enable and update outputs for the foundations environments example
 
 ## [1.3.0] - 2020-04-08
 
