@@ -187,7 +187,7 @@ resource "google_compute_region_instance_group_manager" "managed" {
     }
   }
   dynamic named_port {
-    for_each = var.group.named_ports
+    for_each = var.group_manager.named_ports != null ? var.group_manager.named_ports : {}
     iterator = config
     content {
       name = config.key
@@ -200,7 +200,7 @@ resource "google_compute_region_instance_group_manager" "managed" {
   }
   dynamic version {
     for_each = (
-      var.group_manager.versions == null ? [] : [var.group_manager.versions]
+      var.group_manager.versions == null ? [] : var.group_manager.versions
     )
     iterator = config
     content {
