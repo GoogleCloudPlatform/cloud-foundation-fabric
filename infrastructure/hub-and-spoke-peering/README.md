@@ -30,7 +30,9 @@ This sample creates several distinct groups of resources:
 
 ## Testing GKE access from spoke 1
 
-As mentioned above, a VPN tunnel is used as a workaround to avoid the peering transitivity issue that would prevent any VPC other than spoke 2 to connect to the GKE master.
+As mentioned above, a VPN tunnel is used as a workaround to avoid the peering transitivity issue that would prevent any VPC other than spoke 2 to connect to the GKE master. This diagram illustrates the solution
+
+![Network-level diagram](diagram-network.png "Network-level diagram")
 
 To test cluster access, first log on to the spoke 2 instance and confirm cluster and IAM roles are set up correctly:
 
