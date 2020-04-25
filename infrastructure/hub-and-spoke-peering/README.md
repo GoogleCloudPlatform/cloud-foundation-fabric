@@ -73,7 +73,7 @@ Then connect via SSH to the spoke 1 instance and run the same commands you ran o
 
 A single pre-existing project is used in this example to keep variables and complexity to a minimum, in a real world scenario each spoke would use a separate project (and Shared VPC).
 
-A few APIs need to be enabled in the project, if `apply` fails due to a service not being enabled just click on the link in the errr message to enable it for the project then resume `apply`.
+A few APIs need to be enabled in the project, if `apply` fails due to a service not being enabled just click on the link in the error message to enable it for the project, then resume `apply`.
 
 The VPN used to connect the GKE masters VPC does not account for HA, upgrading to use HA VPN is reasonably simple by using the relevant [module](../../modules/net-vpn-ha).
 
