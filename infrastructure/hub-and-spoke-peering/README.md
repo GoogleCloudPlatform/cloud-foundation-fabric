@@ -49,8 +49,8 @@ Change the GKE cluster module and add a new variable after `private_cluster_conf
 
 ```hcl
   peering_config = {
-    export_routes = bool
-    import_routes = bool
+    export_routes = true
+    import_routes = false
   }
 ```
 
