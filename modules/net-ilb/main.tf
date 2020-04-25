@@ -79,13 +79,6 @@ resource "google_compute_region_backend_service" "default" {
     }
   }
 
-  dynamic log_config {
-    for_each = var.log_sample_rate == null ? [] : [""]
-    content {
-      enable      = true
-      sample_rate = var.log_sample_rate
-    }
-  }
 }
 
 resource "google_compute_health_check" "default" {
@@ -189,7 +182,7 @@ resource "google_compute_health_check" "default" {
   }
 
   dynamic log_config {
-    for_each = var.log_sample_rate != null ? [""] : []
+    for_each = try(var.health_check_config.logging, false) ? [""] : []
     content {
       enable = true
     }

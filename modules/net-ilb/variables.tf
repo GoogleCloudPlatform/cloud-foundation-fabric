@@ -64,16 +64,18 @@ variable "health_check" {
 variable "health_check_config" {
   description = "Configuration of the auto-created helth check."
   type = object({
-    type   = string      # http https tcp ssl http2
-    check  = map(any)    # actual health check block attributes
-    config = map(number) # interval, thresholds, timeout
+    type    = string      # http https tcp ssl http2
+    check   = map(any)    # actual health check block attributes
+    config  = map(number) # interval, thresholds, timeout
+    logging = bool
   })
   default = {
     type = "http"
     check = {
       port_specification = "USE_SERVING_PORT"
     }
-    config = {}
+    config  = {}
+    logging = false
   }
 }
 
@@ -81,12 +83,6 @@ variable "labels" {
   description = "Labels set on resources."
   type        = map(string)
   default     = {}
-}
-
-variable "log_sample_rate" {
-  description = "Set a value between 0 and 1 to enable logging for resources, and set the sampling rate for backend logging."
-  type        = number
-  default     = null
 }
 
 variable "name" {
