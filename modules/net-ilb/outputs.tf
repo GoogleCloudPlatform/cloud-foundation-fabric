@@ -14,3 +14,57 @@
  * limitations under the License.
  */
 
+output "backend" {
+  description = "Backend resource."
+  value       = google_compute_region_backend_service.default
+}
+
+output "backend_id" {
+  description = "Backend id."
+  value       = google_compute_region_backend_service.default.id
+}
+
+output "backend_self_link" {
+  description = "Backend self link."
+  value       = google_compute_region_backend_service.default.self_link
+}
+
+output "forwarding_rule" {
+  description = "Forwarding rule resource."
+  value       = google_compute_forwarding_rule.default
+}
+
+output "forwarding_rule_address" {
+  description = "Forwarding rule address."
+  value       = google_compute_forwarding_rule.default.ip_address
+}
+
+output "forwarding_rule_id" {
+  description = "Forwarding rule id."
+  value       = google_compute_forwarding_rule.default.id
+}
+
+output "forwarding_rule_self_link" {
+  description = "Forwarding rule self link."
+  value       = google_compute_forwarding_rule.default.self_link
+}
+
+output "forwarding_rule" {
+  description = "Forwarding rule resource."
+  value       = google_compute_forwarding_rule.default
+}
+
+output "health_check" {
+  description = "Auto-created health-check resource."
+  value       = try(google_compute_health_check.default.0, {})
+}
+
+output "health_check_self_id" {
+  description = "Auto-created health-check self id."
+  value       = try(google_compute_health_check.default.0.id, null)
+}
+
+output "health_check_self_link" {
+  description = "Auto-created health-check self link."
+  value       = try(google_compute_health_check.default.0.self_link, null)
+}

@@ -23,7 +23,6 @@ locals {
   )
 }
 
-
 resource "google_compute_forwarding_rule" "default" {
   provider              = google-beta
   project               = var.project_id
@@ -45,6 +44,7 @@ resource "google_compute_forwarding_rule" "default" {
 }
 
 resource "google_compute_region_backend_service" "default" {
+  provider              = google-beta
   project               = var.project_id
   name                  = var.name
   description           = "Terraform managed."
@@ -89,6 +89,7 @@ resource "google_compute_region_backend_service" "default" {
 }
 
 resource "google_compute_health_check" "default" {
+  provider    = google-beta
   count       = var.health_check == null ? 1 : 0
   project     = var.project_id
   name        = var.name
