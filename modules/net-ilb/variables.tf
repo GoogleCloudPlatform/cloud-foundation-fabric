@@ -69,8 +69,10 @@ variable "health_check_config" {
     config = map(number) # interval, thresholds, timeout
   })
   default = {
-    type   = "http"
-    check  = {}
+    type = "http"
+    check = {
+      port_specification = "USE_SERVING_PORT"
+    }
     config = {}
   }
 }
@@ -104,7 +106,7 @@ variable "project_id" {
 
 variable "ports" {
   description = "Comma-separated ports, leave null to use all ports."
-  type        = string
+  type        = list(string)
   default     = null
 }
 
@@ -117,6 +119,12 @@ variable "protocol" {
 variable "region" {
   description = "GCP region."
   type        = string
+}
+
+variable "service_label" {
+  description = "Optional prefix of the fully qualified forwarding rule name."
+  type        = string
+  default     = null
 }
 
 variable "subnetwork" {

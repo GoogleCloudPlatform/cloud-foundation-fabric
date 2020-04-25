@@ -18,7 +18,7 @@
 locals {
   health_check = (
     var.health_check == null
-    ? try(google_compute_health_check.default.self_link, null)
+    ? try(google_compute_health_check.default.0.self_link, null)
     : var.health_check
   )
 }
@@ -108,13 +108,13 @@ resource "google_compute_health_check" "default" {
     )
     iterator = check
     content {
-      host               = try(check.host, null)
-      port               = try(check.port, null)
-      port_name          = try(check.port_name, null)
-      port_specification = try(check.port_specification, null)
-      proxy_header       = try(check.proxy_header, null)
-      request_path       = try(check.request_path, null)
-      response           = try(check.response, null)
+      host               = try(check.value.host, null)
+      port               = try(check.value.port, null)
+      port_name          = try(check.value.port_name, null)
+      port_specification = try(check.value.port_specification, null)
+      proxy_header       = try(check.value.proxy_header, null)
+      request_path       = try(check.value.request_path, null)
+      response           = try(check.value.response, null)
     }
   }
 
@@ -126,13 +126,13 @@ resource "google_compute_health_check" "default" {
     )
     iterator = check
     content {
-      host               = try(check.host, null)
-      port               = try(check.port, null)
-      port_name          = try(check.port_name, null)
-      port_specification = try(check.port_specification, null)
-      proxy_header       = try(check.proxy_header, null)
-      request_path       = try(check.request_path, null)
-      response           = try(check.response, null)
+      host               = try(check.value.host, null)
+      port               = try(check.value.port, null)
+      port_name          = try(check.value.port_name, null)
+      port_specification = try(check.value.port_specification, null)
+      proxy_header       = try(check.value.proxy_header, null)
+      request_path       = try(check.value.request_path, null)
+      response           = try(check.value.response, null)
     }
   }
 
@@ -144,12 +144,12 @@ resource "google_compute_health_check" "default" {
     )
     iterator = check
     content {
-      port               = try(check.port, null)
-      port_name          = try(check.port_name, null)
-      port_specification = try(check.port_specification, null)
-      proxy_header       = try(check.proxy_header, null)
-      request            = try(check.request, null)
-      response           = try(check.response, null)
+      port               = try(check.value.port, null)
+      port_name          = try(check.value.port_name, null)
+      port_specification = try(check.value.port_specification, null)
+      proxy_header       = try(check.value.proxy_header, null)
+      request            = try(check.value.request, null)
+      response           = try(check.value.response, null)
     }
   }
 
@@ -161,12 +161,12 @@ resource "google_compute_health_check" "default" {
     )
     iterator = check
     content {
-      port               = try(check.port, null)
-      port_name          = try(check.port_name, null)
-      port_specification = try(check.port_specification, null)
-      proxy_header       = try(check.proxy_header, null)
-      request            = try(check.request, null)
-      response           = try(check.response, null)
+      port               = try(check.value.port, null)
+      port_name          = try(check.value.port_name, null)
+      port_specification = try(check.value.port_specification, null)
+      proxy_header       = try(check.value.proxy_header, null)
+      request            = try(check.value.request, null)
+      response           = try(check.value.response, null)
     }
   }
 
@@ -178,13 +178,13 @@ resource "google_compute_health_check" "default" {
     )
     iterator = check
     content {
-      host               = try(check.host, null)
-      port               = try(check.port, null)
-      port_name          = try(check.port_name, null)
-      port_specification = try(check.port_specification, null)
-      proxy_header       = try(check.proxy_header, null)
-      request_path       = try(check.request_path, null)
-      response           = try(check.response, null)
+      host               = try(check.value.host, null)
+      port               = try(check.value.port, null)
+      port_name          = try(check.value.port_name, null)
+      port_specification = try(check.value.port_specification, null)
+      proxy_header       = try(check.value.proxy_header, null)
+      request_path       = try(check.value.request_path, null)
+      response           = try(check.value.response, null)
     }
   }
 

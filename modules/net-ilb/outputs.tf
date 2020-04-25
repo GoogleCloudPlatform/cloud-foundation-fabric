@@ -49,11 +49,6 @@ output "forwarding_rule_self_link" {
   value       = google_compute_forwarding_rule.default.self_link
 }
 
-output "forwarding_rule" {
-  description = "Forwarding rule resource."
-  value       = google_compute_forwarding_rule.default
-}
-
 output "health_check" {
   description = "Auto-created health-check resource."
   value       = try(google_compute_health_check.default.0, {})
