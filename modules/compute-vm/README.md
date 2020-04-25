@@ -2,10 +2,6 @@
 
 This module allows creating one or multiple instances or an instance template for a specific configuration. A service account is optionally created and assigned if not specified.
 
-## TODO
-
-- [ ] add examples for instance groups
-
 ## Examples
 
 ### Instance leveraging defaults
@@ -59,6 +55,48 @@ module "debian-test" {
   service_account        = "vm-default@my-project.iam.gserviceaccount.com"
   use_instance_template  = true
 }
+```
+
+### Managed instance group
+
+This example shows a basic instance where the module is used to create an instance template, and the template is associated to a basic managed instance group with no autohealing or autoscaling configuration. Instance group support is meant for prototyping, or in those situations where there's no need to manage multiple application versions.
+
+```hcl
+module "instance-group" {
+  source     = "../../cloud-foundation-fabric/modules/compute-vm"
+  project_id = "my-project"
+  region     = "europe-west1"
+  zone       = "europe-west1-b"
+  name       = "ilb-test"
+  network_interfaces = [{
+    network    = local.network_self_link,
+    subnetwork = local.subnetwork_self_link,
+    nat        = false,
+    addresses  = null
+  }]
+  boot_disk = {
+    image = "projects/cos-cloud/global/images/family/cos-stable"
+    type  = "pd-ssd"
+    size  = 10
+  }
+  service_account        = local.service_account_email
+  service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+  use_instance_template  = true
+  metadata = {
+    user-data = local.cloud_config
+  }
+  group_manager = {
+    auto_healing_policies = null
+    options               = null
+    update_policy         = null
+    named_ports           = {}
+    regional              = false
+    target_size           = 2
+    versions              = []
+    default               = module.instance-group.template.self_link
+  }
+}
+
 ```
 
 <!-- BEGIN TFDOC -->

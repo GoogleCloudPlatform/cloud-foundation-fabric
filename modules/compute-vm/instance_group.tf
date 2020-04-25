@@ -113,7 +113,7 @@ resource "google_compute_instance_group_manager" "managed" {
   }
   dynamic version {
     for_each = (
-      var.group_manager.versions == null ? [] : [var.group_manager.versions]
+      var.group_manager.versions == null ? [] : var.group_manager.versions
     )
     iterator = config
     content {
