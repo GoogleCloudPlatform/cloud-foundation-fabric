@@ -57,22 +57,19 @@ variable "health_check" {
 
 variable "health_check_config" {
   type = object({
-    type   = string      # http https tcp ssl http2
-    check  = map(any)    # actual health check block attributes
-    config = map(number) # interval, thresholds, timeout
+    type    = string      # http https tcp ssl http2
+    check   = map(any)    # actual health check block attributes
+    config  = map(number) # interval, thresholds, timeout
+    logging = bool
   })
   default = {
     type = "http"
     check = {
       port_specification = "USE_SERVING_PORT"
     }
-    config = {}
+    config  = {}
+    logging = false
   }
-}
-
-variable "log_sample_rate" {
-  type    = number
-  default = null
 }
 
 variable "ports" {

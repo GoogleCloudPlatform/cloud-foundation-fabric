@@ -29,7 +29,6 @@ module "test" {
   global_access       = var.global_access
   health_check        = var.health_check
   health_check_config = var.health_check_config
-  log_sample_rate     = var.log_sample_rate
   ports               = var.ports
   protocol            = var.protocol
   service_label       = var.service_label
