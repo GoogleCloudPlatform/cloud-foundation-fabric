@@ -43,10 +43,10 @@ module "cluster-1-nodepool-1" {
 | *node_config_service_account* | Service account used for nodes. | <code title="">string</code> |  | <code title="">null</code> |
 | *node_config_shielded_instance_config* | Shielded instance options. | <code title="object&#40;&#123;&#10;enable_secure_boot          &#61; bool&#10;enable_integrity_monitoring &#61; bool&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 | *node_config_tags* | Network tags applied to nodes. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">null</code> |
-| *node_config_workload_metadata_config* | Metadata configuration to expose to workloads on the node pool. | <code title="">string</code> |  | <code title="">SECURE</code> |
 | *node_count* | Number of nodes per instance group, can be updated after creation. Ignored when autoscaling is set. | <code title="">number</code> |  | <code title="">null</code> |
 | *node_locations* | Optional list of zones in which nodes should be located. Uses cluster locations if unset. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">null</code> |
 | *upgrade_config* | Optional node upgrade configuration. | <code title="object&#40;&#123;&#10;max_surge       &#61; number&#10;max_unavailable &#61; number&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
+| *workload_metadata_config* | Metadata configuration to expose to workloads on the node pool. | <code title="">string</code> |  | <code title="">GKE_METADATA_SERVER</code> |
 
 ## Outputs
 
