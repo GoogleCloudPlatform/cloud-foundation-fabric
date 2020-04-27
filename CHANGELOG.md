@@ -8,7 +8,6 @@ All notable changes to this project will be documented in this file.
 - fix Cloud NAT module internal router name lookup
 - re-enable and update outputs for the foundations environments example
 - add peering route configuration for private clusters to GKE cluster module
-- add `workload_metadata_config` variable to GKE cluster module
 - **incompatible changes** in the GKE nodepool module
   - rename `node_config_workload_metadata_config` variable to `workload_metadata_config`
   - new default for `workload_metadata_config` is `GKE_METADATA_SERVER`

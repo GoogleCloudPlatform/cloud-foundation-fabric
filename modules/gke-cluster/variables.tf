@@ -245,9 +245,3 @@ variable "workload_identity" {
   type        = bool
   default     = true
 }
-
-variable "workload_metadata_config" {
-  description = "Define how to expose node metadata to workloads."
-  type        = string
-  default     = "GKE_METADATA_SERVER"
-}

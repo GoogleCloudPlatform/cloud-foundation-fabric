@@ -65,7 +65,6 @@ module "cluster-1" {
 | *resource_usage_export_config* | Configure the ResourceUsageExportConfig feature. | <code title="object&#40;&#123;&#10;enabled &#61; bool&#10;dataset &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;enabled &#61; null&#10;dataset &#61; null&#10;&#125;">...</code> |
 | *vertical_pod_autoscaling* | Enable the Vertical Pod Autoscaling feature. | <code title="">bool</code> |  | <code title="">null</code> |
 | *workload_identity* | Enable the Workload Identity feature. | <code title="">bool</code> |  | <code title="">true</code> |
-| *workload_metadata_config* | Define how to expose node metadata to workloads. | <code title="">string</code> |  | <code title="">GKE_METADATA_SERVER</code> |
 
 ## Outputs
 
