@@ -208,6 +208,10 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
+  workload_metadata_config {
+    node_metadata = var.workload_metadata_config
+  }
+
 }
 
 resource "google_compute_network_peering_routes_config" "gke_master" {
