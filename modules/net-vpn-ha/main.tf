@@ -24,7 +24,7 @@ locals {
   )
   router = (
     var.router_create
-    ? google_compute_router.router[0].name
+    ? try(google_compute_router.router[0].name, null)
     : var.router_name
   )
   secret = random_id.secret.b64_url

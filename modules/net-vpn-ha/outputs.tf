@@ -53,7 +53,7 @@ output "tunnels" {
   description = "VPN tunnel resources."
   value = {
     for name in keys(var.tunnels) :
-    name => google_compute_vpn_tunnel.tunnels[name]
+    name => try(google_compute_vpn_tunnel.tunnels[name], null)
   }
 }
 
@@ -61,7 +61,7 @@ output "tunnel_names" {
   description = "VPN tunnel names."
   value = {
     for name in keys(var.tunnels) :
-    name => google_compute_vpn_tunnel.tunnels[name].name
+    name => try(google_compute_vpn_tunnel.tunnels[name].name, null)
   }
 }
 
@@ -69,7 +69,7 @@ output "tunnel_self_links" {
   description = "VPN tunnel self links."
   value = {
     for name in keys(var.tunnels) :
-    name => google_compute_vpn_tunnel.tunnels[name].self_link
+    name => try(google_compute_vpn_tunnel.tunnels[name].self_link, null)
   }
 }
 
