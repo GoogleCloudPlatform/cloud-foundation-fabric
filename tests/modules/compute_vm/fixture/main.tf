@@ -30,5 +30,4 @@ module "test" {
   instance_count         = var.instance_count
   use_instance_template  = var.use_instance_template
   group                  = var.group
-  group_manager          = var.group_manager
 }
