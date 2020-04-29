@@ -17,7 +17,7 @@ module "cos-nginx" {
   source = "./modules/cloud-config-container/nginx"
 }
 
-module "instance-group" {
+module "nginx-template" {
   source     = "./modules/compute-vm"
   project_id = "my-project"
   region     = "europe-west1"
@@ -49,7 +49,7 @@ module "mig" {
   target_size   = 2
   versions = {
     default = {
-      instance_template = module.instance-group.template.self_link
+      instance_template = module.nginx-template.template.self_link
       target_type = null
       target_size = null
     }
