@@ -43,23 +43,10 @@ module "instance-group" {
     size  = 10
   }
   tags                   = ["http-server", "ssh"]
-  use_instance_template  = true
   metadata = {
     user-data = module.cos-nginx.cloud_config
   }
-  group_manager = {
-    regional      = true
-    default       = module.instance-group.template.self_link
-    target_size   = 2
-    auto_healing_policies = {
-      health_check      = module.ilb.health_check.self_link
-      initial_delay_sec = 90
-    }
-    options       = null
-    update_policy = null
-    named_ports   = {}
-    versions      = []
-  }
+  group = {}
 }
 
 module "ilb" {
@@ -73,7 +60,7 @@ module "ilb" {
   ports         = [80]
   backends = [{
     failover       = false
-    group          = module.instance-group.group_manager.instance_group
+    group          = module.instance-group.group.self_link
     balancing_mode = "CONNECTION"
   }]
   health_check_config = {

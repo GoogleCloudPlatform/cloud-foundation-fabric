@@ -61,7 +61,7 @@ variable "boot_disk" {
 }
 
 variable "group" {
-  description = "Instance group (for instance use)."
+  description = "Define this variable to create an instance group for instances. Disabled for template use."
   type = object({
     named_ports = map(number)
   })
