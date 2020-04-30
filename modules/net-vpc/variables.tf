@@ -109,9 +109,10 @@ variable "shared_vpc_service_projects" {
 }
 
 variable "subnets" {
-  description = "The list of subnets being created"
+  description = "Subnets being created. If name is set to null, a default will be used combining network name and this map key."
   type = map(object({
     ip_cidr_range      = string
+    name               = string
     region             = string
     secondary_ip_range = map(string)
   }))

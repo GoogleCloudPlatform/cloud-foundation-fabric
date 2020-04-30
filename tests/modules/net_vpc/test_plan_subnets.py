@@ -21,11 +21,11 @@ FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
 _VAR_SUBNETS = (
     '{ '
     'a={region = "europe-west1", ip_cidr_range = "10.0.0.0/24",'
-    '   secondary_ip_range=null},'
+    '   name=null, secondary_ip_range=null},'
     'b={region = "europe-west1", ip_cidr_range = "10.0.1.0/24",'
-    '   secondary_ip_range=null},'
+    '   name=null, secondary_ip_range=null},'
     'c={region = "europe-west1", ip_cidr_range = "10.0.2.0/24",'
-    '   secondary_ip_range={a="192.168.0.0/24", b="192.168.1.0/24"}},'
+    '   name="c", secondary_ip_range={a="192.168.0.0/24", b="192.168.1.0/24"}},'
     '}'
 )
 _VAR_LOG_CONFIG = '{a = { flow_sampling = 0.1 }}'
@@ -45,7 +45,7 @@ def test_subnets_simple(plan_runner):
   subnets = [r['values']
              for r in resources if r['type'] == 'google_compute_subnetwork']
   assert set(s['name'] for s in subnets) == set(
-      ['my-vpc-a', 'my-vpc-b', 'my-vpc-c'])
+      ['my-vpc-a', 'my-vpc-b', 'c'])
   assert set(len(s['secondary_ip_range']) for s in subnets) == set([0, 0, 2])
 
 
@@ -75,5 +75,5 @@ def test_subnet_log_configs(plan_runner):
           'metadata': 'INCLUDE_ALL_METADATA'
       }],
       # don't enable
-      'my-vpc-c': []
+      'c': []
   }

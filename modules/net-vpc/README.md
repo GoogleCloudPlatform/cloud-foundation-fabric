@@ -16,6 +16,7 @@ module "vpc" {
   subnets = {
     subnet-1 = {
       ip_cidr_range = "10.0.0.0/24"
+      name          = "production"
       region        = "europe-west1"
       secondary_ip_range = {
         pods     = "172.16.0.0/20"
@@ -24,7 +25,8 @@ module "vpc" {
     }
     subnet-2 = {
       ip_cidr_range = "10.0.16.0/24"
-      region        = "europe-west1"
+      name          = "production"
+      region        = "europe-west2"
       secondary_ip_range = {}
     }
   }
@@ -43,6 +45,7 @@ module "vpc-spoke-1" {
   subnets = {
     subnet-1 = {
       ip_cidr_range = "10.0.0.0/24"
+      name          = null
       region        = "europe-west1"
       secondary_ip_range = {
         pods     = "172.16.0.0/20"
@@ -68,6 +71,7 @@ module "vpc-host" {
   subnets = {
     subnet-1 = {
       ip_cidr_range = "10.0.0.0/24"
+      name          = null
       region        = "europe-west1"
       secondary_ip_range = {
         pods     = "172.16.0.0/20"
@@ -121,7 +125,7 @@ module "vpc-host" {
 | *subnet_descriptions* | Optional map of subnet descriptions, keyed by subnet name. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
 | *subnet_flow_logs* | Optional map of boolean to control flow logs (default is disabled), keyed by subnet name. | <code title="map&#40;bool&#41;">map(bool)</code> |  | <code title="">{}</code> |
 | *subnet_private_access* | Optional map of boolean to control private Google access (default is enabled), keyed by subnet name. | <code title="map&#40;bool&#41;">map(bool)</code> |  | <code title="">{}</code> |
-| *subnets* | The list of subnets being created | <code title="map&#40;object&#40;&#123;&#10;ip_cidr_range      &#61; string&#10;region             &#61; string&#10;secondary_ip_range &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">null</code> |
+| *subnets* | Subnets being created. If name is set to null, a default will be used combining network name and this map key. | <code title="map&#40;object&#40;&#123;&#10;ip_cidr_range      &#61; string&#10;name               &#61; string&#10;region             &#61; string&#10;secondary_ip_range &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">null</code> |
 
 ## Outputs
 
