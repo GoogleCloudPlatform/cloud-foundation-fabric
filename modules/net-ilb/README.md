@@ -16,8 +16,6 @@ This example spins up a simple HTTP server and combines four modules:
 - [`compute-vm`](../compute-vm) to manage the instance template and unmanaged instance group
 - this module to create an Internal Load Balancer in front of the managed instance group
 
-The healtch check is auto-created by this module, and also used for the managed instance group auto-healing.
-
 Note that the example uses the GCE default service account. You might want to create an ad-hoc service account by combining the [`iam-service-accounts`](../iam-service-accounts) module, or by having the GCE VM module create one for you. In both cases, remember to set at least logging write permissions for the service account, or the container on the instances won't be able to start.
 
 ```hcl
