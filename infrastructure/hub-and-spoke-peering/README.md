@@ -41,7 +41,24 @@ gcloud container clusters get-credentials cluster-1 --zone europe-west1-b
 kubectl get all
 ```
 
-The next step is to edit the peering towards the GKE master tenant VPC, and enable export routes. The peering has a name like `gke-xxxxxxxxxxxxxxxxxxxx-xxxx-xxxx-peer`, you can edit it in the Cloud Console from the *VPC network peering* page or using `gcloud`:
+The next step is to edit the peering towards the GKE master tenant VPC, and enable export routes. You can do it directly in Terraform with the GKE module `peering_config' variable, via gcloud, or on the cloud ccnsole. We're leaving it as an option, since one of the goals of this example is to allow testing both working and non-working configurations.
+
+### Export routes via Terraform
+
+Change the GKE cluster module and add a new variable after `private_cluster_config`:
+
+```hcl
+  peering_config = {
+    export_routes = true
+    import_routes = false
+  }
+```
+
+If you added the variable after applying, simply apply Terraform again.
+
+### Export routes via gcloud
+
+The peering has a name like `gke-xxxxxxxxxxxxxxxxxxxx-xxxx-xxxx-peer`, you can edit it in the Cloud Console from the *VPC network peering* page or using `gcloud`:
 
 ```
 gcloud compute networks peerings list
@@ -54,7 +71,9 @@ Then connect via SSH to the spoke 1 instance and run the same commands you ran o
 
 ## Operational considerations
 
-A single pre-existing project is used in this example to keep variables and complexity to a minimum, in a real world scenarios each spoke would probably use a separate project.
+A single pre-existing project is used in this example to keep variables and complexity to a minimum, in a real world scenario each spoke would use a separate project (and Shared VPC).
+
+A few APIs need to be enabled in the project, if `apply` fails due to a service not being enabled just click on the link in the error message to enable it for the project, then resume `apply`.
 
 The VPN used to connect the GKE masters VPC does not account for HA, upgrading to use HA VPN is reasonably simple by using the relevant [module](../../modules/net-vpn-ha).
 

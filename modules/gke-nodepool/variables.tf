@@ -165,12 +165,6 @@ variable "node_config_tags" {
 #   default     = null
 # }
 
-variable "node_config_workload_metadata_config" {
-  description = "Metadata configuration to expose to workloads on the node pool."
-  type        = string
-  default     = "SECURE"
-}
-
 variable "node_count" {
   description = "Number of nodes per instance group, can be updated after creation. Ignored when autoscaling is set."
   type        = number
@@ -195,4 +189,10 @@ variable "upgrade_config" {
     max_unavailable = number
   })
   default = null
+}
+
+variable "workload_metadata_config" {
+  description = "Metadata configuration to expose to workloads on the node pool."
+  type        = string
+  default     = "GKE_METADATA_SERVER"
 }
