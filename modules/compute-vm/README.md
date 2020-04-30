@@ -1,6 +1,11 @@
 # Google Compute Engine VM module
 
-This module allows creating one or multiple instances or an instance template for a specific configuration. A service account is optionally created and assigned if not specified.
+This module can operate in two distinct modes:
+
+- instance creation, with optional unmanaged group
+- instance template creation
+
+In both modes, an optional service account can be created and assigned to either instances or template. If you need a managed instance group when using the module in template mode, refer to the [`compute-mig`](../compute-mig) module.
 
 ## Examples
 
@@ -57,9 +62,9 @@ module "debian-test" {
 }
 ```
 
-### Managed instance group
+### Instance group
 
-This example shows a basic instance where the module is used to create an instance template, and the template is associated to a basic managed instance group with no autohealing or autoscaling configuration. Instance group support is meant for prototyping, or in those situations where there's no need to manage multiple application versions.
+If an instance group is needed when operating in instance mode, simply set the `group` variable to a non null map. The map can contain named port declarations, or be empty if named ports are not needed.
 
 ```hcl
 module "instance-group" {
@@ -85,16 +90,7 @@ module "instance-group" {
   metadata = {
     user-data = local.cloud_config
   }
-  group_manager = {
-    auto_healing_policies = null
-    options               = null
-    update_policy         = null
-    named_ports           = {}
-    regional              = false
-    target_size           = 2
-    versions              = []
-    default               = module.instance-group.template.self_link
-  }
+  group = {}
 }
 
 ```
@@ -112,8 +108,7 @@ module "instance-group" {
 | *attached_disk_defaults* | Defaults for attached disks options. | <code title="object&#40;&#123;&#10;auto_delete &#61; bool&#10;mode        &#61; string&#10;type &#61; string&#10;source      &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;auto_delete &#61; true&#10;source      &#61; null&#10;mode        &#61; &#34;READ_WRITE&#34;&#10;type &#61; &#34;pd-ssd&#34;&#10;&#125;">...</code> |
 | *attached_disks* | Additional disks, if options is null defaults will be used in its place. | <code title="list&#40;object&#40;&#123;&#10;name  &#61; string&#10;image &#61; string&#10;size  &#61; string&#10;options &#61; object&#40;&#123;&#10;auto_delete &#61; bool&#10;mode        &#61; string&#10;source      &#61; string&#10;type &#61; string&#10;&#125;&#41;&#10;&#125;&#41;&#41;">list(object({...}))</code> |  | <code title="">[]</code> |
 | *boot_disk* | Boot disk properties. | <code title="object&#40;&#123;&#10;image &#61; string&#10;size  &#61; number&#10;type &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;image &#61; &#34;projects&#47;debian-cloud&#47;global&#47;images&#47;family&#47;debian-10&#34;&#10;type &#61; &#34;pd-ssd&#34;&#10;size  &#61; 10&#10;&#125;">...</code> |
-| *group* | Instance group (for instance use). | <code title="object&#40;&#123;&#10;named_ports &#61; map&#40;number&#41;&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
-| *group_manager* | Instance group manager (for template use). | <code title="object&#40;&#123;&#10;auto_healing_policies &#61; object&#40;&#123;&#10;health_check      &#61; string&#10;initial_delay_sec &#61; number&#10;&#125;&#41;&#10;named_ports &#61; map&#40;number&#41;&#10;options &#61; object&#40;&#123;&#10;target_pools       &#61; list&#40;string&#41;&#10;wait_for_instances &#61; bool&#10;&#125;&#41;&#10;regional    &#61; bool&#10;target_size &#61; number&#10;update_policy &#61; object&#40;&#123;&#10;type &#61; string &#35; OPPORTUNISTIC &#124; PROACTIVE&#10;minimal_action       &#61; string &#35; REPLACE &#124; RESTART&#10;min_ready_sec        &#61; number&#10;max_surge_type       &#61; string &#35; fixed &#124; percent&#10;max_surge            &#61; number&#10;max_unavailable_type &#61; string&#10;max_unavailable      &#61; number&#10;&#125;&#41;&#10;versions &#61; list&#40;object&#40;&#123;&#10;name              &#61; string&#10;instance_template &#61; string&#10;target_type       &#61; string &#35; fixed &#124; percent&#10;target_size       &#61; number&#10;&#125;&#41;&#41;&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
+| *group* | Define this variable to create an instance group for instances. Disabled for template use. | <code title="object&#40;&#123;&#10;named_ports &#61; map&#40;number&#41;&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 | *hostname* | Instance FQDN name. | <code title="">string</code> |  | <code title="">null</code> |
 | *instance_count* | Number of instances to create (only for non-template usage). | <code title="">number</code> |  | <code title="">1</code> |
 | *instance_type* | Instance type. | <code title="">string</code> |  | <code title="">f1-micro</code> |
@@ -134,7 +129,6 @@ module "instance-group" {
 |---|---|:---:|
 | external_ips | Instance main interface external IP addresses. |  |
 | group | Instance group resource. |  |
-| group_manager | Instance group resource. |  |
 | instances | Instance resources. |  |
 | internal_ips | Instance main interface internal IP addresses. |  |
 | names | Instance names. |  |

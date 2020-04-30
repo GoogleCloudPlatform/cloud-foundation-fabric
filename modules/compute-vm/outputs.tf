@@ -28,24 +28,7 @@ output "external_ips" {
 
 output "group" {
   description = "Instance group resource."
-  value = (
-    length(google_compute_instance_group.unmanaged) > 0
-    ? google_compute_instance_group.unmanaged.0
-    : null
-  )
-}
-
-output "group_manager" {
-  description = "Instance group resource."
-  value = (
-    length(google_compute_instance_group_manager.managed) > 0
-    ? google_compute_instance_group_manager.managed.0
-    : (
-      length(google_compute_region_instance_group_manager.managed) > 0
-      ? google_compute_region_instance_group_manager.managed.0
-      : null
-    )
-  )
+  value       = try(google_compute_instance_group.unmanaged.0, null)
 }
 
 output "instances" {

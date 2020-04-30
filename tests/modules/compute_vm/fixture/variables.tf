@@ -19,11 +19,6 @@ variable "group" {
   default = null
 }
 
-variable "group_manager" {
-  type    = any
-  default = null
-}
-
 variable "instance_count" {
   type    = number
   default = 1

@@ -44,3 +44,12 @@ def test_template(plan_runner):
   assert len(resources) == 1
   assert resources[0]['type'] == 'google_compute_instance_template'
   assert resources[0]['values']['name_prefix'] == 'test-'
+
+
+def test_group(plan_runner):
+  plan, resources = plan_runner(FIXTURES_DIR, instance_count=2,
+                                group='{named_ports={}}')
+  assert len(resources) == 3
+  assert set(r['type'] for r in resources) == set([
+      'google_compute_instance_group', 'google_compute_instance'
+  ])

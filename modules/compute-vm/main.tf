@@ -218,6 +218,32 @@ resource "google_compute_instance_template" "default" {
   }
 }
 
+resource "google_compute_instance_group" "unmanaged" {
+  count = (
+    var.group != null && ! var.use_instance_template ? 1 : 0
+  )
+  project = var.project_id
+  network = (
+    length(var.network_interfaces) > 0
+    ? var.network_interfaces.0.network
+    : ""
+  )
+  zone        = var.zone
+  name        = var.name
+  description = "Terraform-managed."
+  instances = [
+    for name, instance in google_compute_instance.default : instance.self_link
+  ]
+  dynamic named_port {
+    for_each = var.group.named_ports != null ? var.group.named_ports : {}
+    iterator = config
+    content {
+      name = config.key
+      port = config.value
+    }
+  }
+}
+
 resource "google_service_account" "service_account" {
   count        = var.service_account_create ? 1 : 0
   project      = var.project_id
