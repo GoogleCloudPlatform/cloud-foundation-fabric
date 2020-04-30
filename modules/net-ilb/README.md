@@ -4,6 +4,8 @@ This module allows managing a GCE Internal Load Balancer and integrates the forw
 
 ## Issues
 
+TODO(ludoo): check if this is still the case after splitting out MIG from compute-vm
+
 There are some corner cases (eg when switching the instance template from internal service account to an externally managed one) where Terraform raises a cycle error on apply. In these situations, run successive applies targeting resources used in the template first then the template itself, and the cycle should be fixed.
 
 One other issue is a `Provider produced inconsistent final plan` error which is sometimes raised when switching template version. This seems to be related to this [open provider issue](https://github.com/terraform-providers/terraform-provider-google/issues/3937), but it's relatively harmless since the resource is updated, and subsequent applies raise no errors.
