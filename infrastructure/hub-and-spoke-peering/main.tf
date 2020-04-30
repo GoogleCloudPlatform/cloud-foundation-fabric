@@ -34,6 +34,7 @@ module "vpc-hub" {
   subnets = {
     default = {
       ip_cidr_range      = var.ip_ranges.hub
+      name               = null
       region             = var.region
       secondary_ip_range = {}
     }
@@ -59,6 +60,7 @@ module "vpc-spoke-1" {
   subnets = {
     default = {
       ip_cidr_range      = var.ip_ranges.spoke-1
+      name               = null
       region             = var.region
       secondary_ip_range = {}
     }
@@ -101,6 +103,7 @@ module "vpc-spoke-2" {
   subnets = {
     default = {
       ip_cidr_range = var.ip_ranges.spoke-2
+      name          = null
       region        = var.region
       secondary_ip_range = {
         pods     = var.ip_secondary_ranges.spoke-2-pods

@@ -99,6 +99,7 @@ variable "subnets" {
   description = "The list of subnets being created"
   type = map(object({
     ip_cidr_range      = string
+    name               = string
     region             = string
     secondary_ip_range = map(string)
   }))
