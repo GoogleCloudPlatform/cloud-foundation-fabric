@@ -40,7 +40,7 @@ module "nginx-template" {
 module "nginx-mig" {
   source = "./modules/compute-mig"
   project_id = "my-project"
-  region     = "europe-west1"
+  location     = "europe-west1-b"
   name       = "mig-test"
   target_size   = 2
   default_version = {
@@ -58,7 +58,7 @@ If multiple versions are desired, use more `compute-vm` instances for the additi
 module "nginx-mig" {
   source = "./modules/compute-mig"
   project_id = "my-project"
-  region     = "europe-west1"
+  location     = "europe-west1-b"
   name       = "mig-test"
   target_size   = 3
   default_version = {
@@ -83,7 +83,7 @@ Autohealing policies can use an externally defined health check, or have this mo
 module "nginx-mig" {
   source = "./modules/compute-mig"
   project_id = "my-project"
-  region     = "europe-west1"
+  location     = "europe-west1-b"
   name       = "mig-test"
   target_size   = 3
   default_version = {
@@ -111,7 +111,7 @@ The module can create and manage an autoscaler associated with the MIG. When usi
 module "nginx-mig" {
   source = "./modules/compute-mig"
   project_id = "my-project"
-  region     = "europe-west1"
+  location     = "europe-west1-b"
   name       = "mig-test"
   target_size   = 3
   default_version = {
@@ -135,7 +135,7 @@ module "nginx-mig" {
 module "nginx-mig" {
   source = "./modules/compute-mig"
   project_id = "my-project"
-  region     = "europe-west1"
+  location     = "europe-west1-b"
   name       = "mig-test"
   target_size   = 3
   default_version = {
@@ -160,14 +160,14 @@ module "nginx-mig" {
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
 | default_version | Default application version template. Additional versions can be specified via the `versions` variable. | <code title="object&#40;&#123;&#10;instance_template &#61; string&#10;name              &#61; string&#10;&#125;&#41;">object({...})</code> | ✓ |  |
+| location | Compute zone, or region if `regional` is set to true. | <code title="">string</code> | ✓ |  |
 | name | Managed group name. | <code title="">string</code> | ✓ |  |
 | project_id | Project id. | <code title="">string</code> | ✓ |  |
-| zone | Compute zone. | <code title="">string</code> | ✓ |  |
 | *auto_healing_policies* | Auto-healing policies for this group. | <code title="object&#40;&#123;&#10;health_check      &#61; string&#10;initial_delay_sec &#61; number&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 | *autoscaler_config* | Optional autoscaler configuration. Only one of 'cpu_utilization_target' 'load_balancing_utilization_target' or 'metric' can be not null. | <code title="object&#40;&#123;&#10;max_replicas                      &#61; number&#10;min_replicas                      &#61; number&#10;cooldown_period                   &#61; number&#10;cpu_utilization_target            &#61; number&#10;load_balancing_utilization_target &#61; number&#10;metric &#61; object&#40;&#123;&#10;name                       &#61; string&#10;single_instance_assignment &#61; number&#10;target                     &#61; number&#10;type &#61; string &#35; GAUGE, DELTA_PER_SECOND, DELTA_PER_MINUTE&#10;filter                     &#61; string&#10;&#125;&#41;&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 | *health_check_config* | Optional auto-created helth check configuration, use the output self-link to set it in the auto healing policy. Refer to examples for usage. | <code title="object&#40;&#123;&#10;type &#61; string      &#35; http https tcp ssl http2&#10;check   &#61; map&#40;any&#41;    &#35; actual health check block attributes&#10;config  &#61; map&#40;number&#41; &#35; interval, thresholds, timeout&#10;logging &#61; bool&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 | *named_ports* | Named ports. | <code title="map&#40;number&#41;">map(number)</code> |  | <code title="">null</code> |
-| *region* | Compute region, set to use regional group. | <code title="">string</code> |  | <code title="">null</code> |
+| *regional* | Use regional instance group. When set, `location` should be set to the region. | <code title="">bool</code> |  | <code title="">false</code> |
 | *target_pools* | Optional list of URLs for target pools to which new instances in the group are added. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 | *target_size* | Group target size, leave null when using an autoscaler. | <code title="">number</code> |  | <code title="">null</code> |
 | *update_policy* | Update policy. Type can be 'OPPORTUNISTIC' or 'PROACTIVE', action 'REPLACE' or 'restart', surge type 'fixed' or 'percent'. | <code title="object&#40;&#123;&#10;type &#61; string &#35; OPPORTUNISTIC &#124; PROACTIVE&#10;minimal_action       &#61; string &#35; REPLACE &#124; RESTART&#10;min_ready_sec        &#61; number&#10;max_surge_type       &#61; string &#35; fixed &#124; percent&#10;max_surge            &#61; number&#10;max_unavailable_type &#61; string&#10;max_unavailable      &#61; number&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |

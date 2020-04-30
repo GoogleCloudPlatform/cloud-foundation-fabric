@@ -61,6 +61,11 @@ variable "health_check_config" {
   default = null
 }
 
+variable "location" {
+  description = "Compute zone, or region if `regional` is set to true."
+  type        = string
+}
+
 variable "name" {
   description = "Managed group name."
   type        = string
@@ -77,10 +82,10 @@ variable "project_id" {
   type        = string
 }
 
-variable "region" {
-  description = "Compute region, set to use regional group."
-  type        = string
-  default     = null
+variable "regional" {
+  description = "Use regional instance group. When set, `location` should be set to the region."
+  type        = bool
+  default     = false
 }
 
 variable "target_pools" {
@@ -123,9 +128,4 @@ variable "wait_for_instances" {
   description = "Wait for all instances to be created/updated before returning."
   type        = bool
   default     = null
-}
-
-variable "zone" {
-  description = "Compute zone."
-  type        = string
 }

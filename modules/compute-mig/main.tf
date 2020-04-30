@@ -16,11 +16,11 @@
 
 resource "google_compute_autoscaler" "default" {
   provider    = google-beta
-  count       = var.region == null && var.autoscaler_config != null ? 1 : 0
+  count       = var.regional || var.autoscaler_config == null ? 0 : 1
   project     = var.project_id
   name        = var.name
   description = "Terraform managed."
-  zone        = var.zone
+  zone        = var.location
   target      = google_compute_instance_group_manager.default.0.id
 
   autoscaling_policy {
@@ -67,9 +67,9 @@ resource "google_compute_autoscaler" "default" {
 
 resource "google_compute_instance_group_manager" "default" {
   provider           = google-beta
-  count              = var.region == null ? 1 : 0
+  count              = var.regional ? 0 : 1
   project            = var.project_id
-  zone               = var.zone
+  zone               = var.location
   name               = var.name
   base_instance_name = var.name
   description        = "Terraform-managed."
@@ -138,11 +138,11 @@ resource "google_compute_instance_group_manager" "default" {
 
 resource "google_compute_region_autoscaler" "default" {
   provider    = google-beta
-  count       = var.region != null && var.autoscaler_config != null ? 1 : 0
+  count       = var.regional && var.autoscaler_config != null ? 1 : 0
   project     = var.project_id
   name        = var.name
   description = "Terraform managed."
-  region      = var.region
+  region      = var.location
   target      = google_compute_region_instance_group_manager.default.0.id
 
   autoscaling_policy {
@@ -189,9 +189,9 @@ resource "google_compute_region_autoscaler" "default" {
 
 resource "google_compute_region_instance_group_manager" "default" {
   provider           = google-beta
-  count              = var.region != null ? 1 : 0
+  count              = var.regional ? 1 : 0
   project            = var.project_id
-  region             = var.region
+  region             = var.location
   name               = var.name
   base_instance_name = var.name
   description        = "Terraform-managed."
