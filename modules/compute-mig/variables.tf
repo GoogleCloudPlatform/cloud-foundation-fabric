@@ -42,6 +42,14 @@ variable "auto_healing_policies" {
   default = null
 }
 
+variable "default_version" {
+  description = "Default application version template. Additional versions can be specified via the `versions` variable."
+  type = object({
+    instance_template = string
+    name              = string
+  })
+}
+
 variable "health_check_config" {
   description = "Optional auto-created helth check configuration, use the output self-link to set it in the auto healing policy. Refer to examples for usage."
   type = object({
@@ -78,7 +86,7 @@ variable "region" {
 variable "target_pools" {
   description = "Optional list of URLs for target pools to which new instances in the group are added."
   type        = list(string)
-  default     = null
+  default     = []
 }
 
 variable "target_size" {
@@ -102,7 +110,7 @@ variable "update_policy" {
 }
 
 variable "versions" {
-  description = "Application versions, target_type is either 'fixed' or 'percent'."
+  description = "Additional application versions, target_type is either 'fixed' or 'percent'."
   type = map(object({
     instance_template = string
     target_type       = string # fixed | percent

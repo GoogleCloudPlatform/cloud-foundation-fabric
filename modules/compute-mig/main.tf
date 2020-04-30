@@ -112,6 +112,10 @@ resource "google_compute_instance_group_manager" "default" {
       port = config.value
     }
   }
+  version {
+    instance_template = var.default_version.instance_template
+    name              = var.default_version.name
+  }
   dynamic version {
     for_each = var.versions == null ? {} : var.versions
     iterator = version
@@ -228,6 +232,10 @@ resource "google_compute_region_instance_group_manager" "default" {
       name = config.key
       port = config.value
     }
+  }
+  version {
+    instance_template = var.default_version.instance_template
+    name              = var.default_version.name
   }
   dynamic version {
     for_each = var.versions == null ? {} : var.versions
