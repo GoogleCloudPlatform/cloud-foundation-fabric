@@ -91,7 +91,7 @@ module "project-svc-gke" {
 
 module "vpc-shared" {
   source          = "../../modules/net-vpc"
-  project_id      = module.project-host.iam_project_id
+  project_id      = module.project-host.project_id
   name            = "shared-vpc"
   shared_vpc_host = true
   shared_vpc_service_projects = [
