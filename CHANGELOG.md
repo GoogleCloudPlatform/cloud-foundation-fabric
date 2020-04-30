@@ -11,6 +11,8 @@ All notable changes to this project will be documented in this file.
 - **incompatible changes** in the GKE nodepool module
   - rename `node_config_workload_metadata_config` variable to `workload_metadata_config`
   - new default for `workload_metadata_config` is `GKE_METADATA_SERVER`
+- **incompatible change** remove support for MIG from `compute-vm` module
+- add `compute-mig` and `net-ilb` modules
 
 ## [1.3.0] - 2020-04-08
 
