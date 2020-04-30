@@ -33,11 +33,13 @@ module "vpc-hub" {
   subnets = {
     a = {
       ip_cidr_range      = var.ip_ranges.hub-a
+      name               = null
       region             = var.regions.a
       secondary_ip_range = {}
     }
     b = {
       ip_cidr_range      = var.ip_ranges.hub-b
+      name               = null
       region             = var.regions.b
       secondary_ip_range = {}
     }
@@ -121,11 +123,13 @@ module "vpc-spoke-1" {
   subnets = {
     a = {
       ip_cidr_range      = var.ip_ranges.spoke-1-a
+      name               = null
       region             = var.regions.a
       secondary_ip_range = {}
     }
     b = {
       ip_cidr_range      = var.ip_ranges.spoke-1-b
+      name               = null
       region             = var.regions.a
       secondary_ip_range = {}
     }
@@ -182,11 +186,13 @@ module "vpc-spoke-2" {
   subnets = {
     a = {
       ip_cidr_range      = var.ip_ranges.spoke-2-a
+      name               = null
       region             = var.regions.b
       secondary_ip_range = {}
     }
     b = {
       ip_cidr_range      = var.ip_ranges.spoke-2-b
+      name               = null
       region             = var.regions.b
       secondary_ip_range = {}
     }

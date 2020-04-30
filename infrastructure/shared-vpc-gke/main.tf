@@ -101,11 +101,13 @@ module "vpc-shared" {
   subnets = {
     gce = {
       ip_cidr_range      = var.ip_ranges.gce
+      name               = null
       region             = var.region
       secondary_ip_range = {}
     }
     gke = {
       ip_cidr_range = var.ip_ranges.gke
+      name          = null
       region        = var.region
       secondary_ip_range = {
         pods     = var.ip_secondary_ranges.gke-pods

@@ -55,6 +55,7 @@ module "vpc" {
   subnets = {
     default = {
       ip_cidr_range      = var.ip_ranges.gcp
+      name               = null
       region             = var.region
       secondary_ip_range = {}
     }
