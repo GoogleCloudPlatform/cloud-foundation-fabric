@@ -13,6 +13,8 @@ All notable changes to this project will be documented in this file.
   - new default for `workload_metadata_config` is `GKE_METADATA_SERVER`
 - **incompatible change** remove support for MIG from `compute-vm` module
 - add `compute-mig` and `net-ilb` modules
+- **incompatible change** add support for specifying subnet name in `net-vpc`
+  to update to the new module, add an extra `name = false` attribute to each subnet
 
 ## [1.3.0] - 2020-04-08
 
