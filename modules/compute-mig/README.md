@@ -4,13 +4,9 @@ This module allows creating a managed instance group supporting one or more appl
 
 This module can be coupled with the [`compute-vm`](../compute-vm) module which can manage instance templates, and the [`net-ilb`](../net-ilb) module to assign the MIG to a backend wired to an Internal Load Balancer. The first use case is shown in the examples below.
 
-## TODO
-
-- [ ] add examples
-
 ## Examples
 
-### Simple MIG
+This example shows how to manage a simple MIG that leverages the `compute-vm` module to manage the underlying instance template. The following sub-examples will only show how to enable specific features of this module, and won't replicate the combined setup.
 
 ```hcl
 module "cos-nginx" {
@@ -50,6 +46,110 @@ module "nginx-mig" {
   default_version = {
     instance_template = module.nginx-template.template.self_link
     name = "default"
+  }
+}
+```
+
+### Multiple versions
+
+If multiple versions are desired, use more `compute-vm` instances for the additional templates used in each version (not shown here), and reference them like this:
+
+```hcl
+module "nginx-mig" {
+  source = "./modules/compute-mig"
+  project_id = "my-project"
+  region     = "europe-west1"
+  name       = "mig-test"
+  target_size   = 3
+  default_version = {
+    instance_template = module.nginx-template-default.template.self_link
+    name = "default"
+  }
+  versions = {
+    canary = {
+      instance_template = module.nginx-template-default.template.self_link
+      target_type = "fixed"
+      target_size = 1
+    }
+  }
+}
+```
+
+### Health check and autohealing policies
+
+Autohealing policies can use an externally defined health check, or have this module auto-create one:
+
+```hcl
+module "nginx-mig" {
+  source = "./modules/compute-mig"
+  project_id = "my-project"
+  region     = "europe-west1"
+  name       = "mig-test"
+  target_size   = 3
+  default_version = {
+    instance_template = module.nginx-template-default.template.self_link
+    name = "default"
+  }
+  auto_healing_policies = {
+    health_check      = module.nginx-mig.health_check.self_link
+    initial_delay_sec = 30
+  }
+  health_check_config = {
+    type    = "http"
+    check   = { port = 80 }
+    config  = {}
+    logging = true
+  }
+}
+```
+
+### Autoscaling
+
+The module can create and manage an autoscaler associated with the MIG. When using autoscaling do not set the `target_size` variable or set it to `null`. Here we show a CPU utilization autoscaler, the other available modes are load balancing utilization and custom metric, like the underlying autoscaler resource.
+
+```hcl
+module "nginx-mig" {
+  source = "./modules/compute-mig"
+  project_id = "my-project"
+  region     = "europe-west1"
+  name       = "mig-test"
+  target_size   = 3
+  default_version = {
+    instance_template = module.nginx-template-default.template.self_link
+    name = "default"
+  }
+  autoscaler_config = {
+    max_replicas                      = 3
+    min_replicas                      = 1
+    cooldown_period                   = 30
+    cpu_utilization_target            = 0.65
+    load_balancing_utilization_target = null
+    metric                            = null
+  }
+}
+```
+
+### Update policy
+
+```hcl
+module "nginx-mig" {
+  source = "./modules/compute-mig"
+  project_id = "my-project"
+  region     = "europe-west1"
+  name       = "mig-test"
+  target_size   = 3
+  default_version = {
+    instance_template = module.nginx-template-default.template.self_link
+    name = "default"
+  }
+  update_policy = {
+    type                 = "PROACTIVE"
+    minimal_action       = "REPLACE"
+    min_ready_sec        = 30
+    max_surge_type       = "fixed"
+    max_surge            = 1
+    max_unavailable_type = null
+    max_unavailable      = null
   }
 }
 ```

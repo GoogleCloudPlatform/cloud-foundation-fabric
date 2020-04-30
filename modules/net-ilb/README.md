@@ -13,7 +13,7 @@ One other issue is a `Provider produced inconsistent final plan` error which is 
 This example spins up a simple HTTP server and combines four modules:
 
 - [`nginx`](../cloud-config-container/nginx) from the `cloud-config-container` collection, to manage instance configuration
-- [`compute-vm`](../compute-vm) to manage the instante template and managed instance group
+- [`compute-vm`](../compute-vm) to manage the instance template and unmanaged instance group
 - this module to create an Internal Load Balancer in front of the managed instance group
 
 The healtch check is auto-created by this module, and also used for the managed instance group auto-healing.
