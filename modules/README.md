@@ -21,6 +21,7 @@ Specific modules also offer support for non-authoritative bindings (e.g. `google
 - [address reservation](./net-address)
 - [Cloud DNS](./dns)
 - [Cloud NAT](./net-cloudnat)
+- [L4 Internal Load Balancer](./net-ilb)
 - [VPC](./net-vpc)
 - [VPC firewall](./net-vpc-firewall)
 - [VPC peering](./net-vpc-peering)
@@ -34,6 +35,7 @@ Specific modules also offer support for non-authoritative bindings (e.g. `google
 - [COS container](./cos-container) (coredns, mysql, onprem, squid)
 - [GKE cluster](./gke-cluster)
 - [GKE nodepool](./gke-nodepool)
+- [Managed Instance Group](./compute-mig)
 - [VM/VM group](./compute-vm)
 
 ## Data
