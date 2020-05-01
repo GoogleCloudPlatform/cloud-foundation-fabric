@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.4.0] - 2020-05-01
+
 - fix DNS module internal zone lookup
 - fix Cloud NAT module internal router name lookup
 - re-enable and update outputs for the foundations environments example
@@ -38,7 +40,8 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.2...v1.3.0
 [1.2.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.1...v1.2
 [1.1.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.0...v1.1
