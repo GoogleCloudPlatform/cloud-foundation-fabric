@@ -13,8 +13,8 @@ module "vpc" {
   source     = "../modules/net-vpc"
   project_id = "my-project"
   name       = "my-network"
-  subnets = {
-    subnet-1 = {
+  subnets = [
+    {
       ip_cidr_range = "10.0.0.0/24"
       name          = "production"
       region        = "europe-west1"
@@ -22,14 +22,14 @@ module "vpc" {
         pods     = "172.16.0.0/20"
         services = "192.168.0.0/24"
       }
-    }
-    subnet-2 = {
+    },
+    {
       ip_cidr_range = "10.0.16.0/24"
       name          = "production"
       region        = "europe-west2"
       secondary_ip_range = {}
     }
-  }
+  ]
 }
 ```
 
@@ -42,17 +42,17 @@ module "vpc-spoke-1" {
   source     = "../modules/net-vpc"
   project_id = "my-project"
   name       = "my-network"
-  subnets = {
-    subnet-1 = {
+  subnets = [
+    {
       ip_cidr_range = "10.0.0.0/24"
-      name          = null
+      name          = "subnet-1"
       region        = "europe-west1"
       secondary_ip_range = {
         pods     = "172.16.0.0/20"
         services = "192.168.0.0/24"
       }
     }
-  }
+  ]
   peering_config = {
     peer_vpc_self_link = module.vpc-hub.self_link
     export_routes = false
@@ -68,30 +68,30 @@ module "vpc-host" {
   source     = "../modules/net-vpc"
   project_id = "my-project"
   name       = "my-host-network"
-  subnets = {
-    subnet-1 = {
+  subnets = [
+    {
       ip_cidr_range = "10.0.0.0/24"
-      name          = null
+      name          = "subnet-1"
       region        = "europe-west1"
       secondary_ip_range = {
         pods     = "172.16.0.0/20"
         services = "192.168.0.0/24"
       }
     }
-  }
+  ]
   shared_vpc_host = true
   shared_vpc_service_projects = [
     local.service_project_1.project_id,
     local.service_project_2.project_id
   ]
   iam_roles = {
-    subnet-1 = [
+    "europe-west1/subnet-1" = [
       "roles/compute.networkUser",
       "roles/compute.securityAdmin"
     ]
   }
   iam_members = {
-    subnet-1 = {
+    "europe-west1/subnet-1" = {
       "roles/compute.networkUser" = [
         local.service_project_1.cloudsvc_sa,
         local.service_project_1.gke_sa
@@ -113,19 +113,19 @@ module "vpc-host" {
 | project_id | The ID of the project where this VPC will be created | <code title="">string</code> | ✓ |  |
 | *auto_create_subnetworks* | Set to true to create an auto mode subnet, defaults to custom mode. | <code title="">bool</code> |  | <code title="">false</code> |
 | *description* | An optional description of this resource (triggers recreation on change). | <code title="">string</code> |  | <code title="">Terraform-managed.</code> |
-| *iam_members* | List of IAM members keyed by subnet and role. | <code title="map&#40;map&#40;list&#40;string&#41;&#41;&#41;">map(map(list(string)))</code> |  | <code title="">null</code> |
-| *iam_roles* | List of IAM roles keyed by subnet. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">null</code> |
+| *iam_members* | List of IAM members keyed by subnet 'region/name' and role. | <code title="map&#40;map&#40;list&#40;string&#41;&#41;&#41;">map(map(list(string)))</code> |  | <code title="">null</code> |
+| *iam_roles* | List of IAM roles keyed by subnet 'region/name'. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">null</code> |
 | *log_config_defaults* | Default configuration for flow logs when enabled. | <code title="object&#40;&#123;&#10;aggregation_interval &#61; string&#10;flow_sampling        &#61; number&#10;metadata             &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;aggregation_interval &#61; &#34;INTERVAL_5_SEC&#34;&#10;flow_sampling        &#61; 0.5&#10;metadata             &#61; &#34;INCLUDE_ALL_METADATA&#34;&#10;&#125;">...</code> |
-| *log_configs* | Map of per-subnet optional configurations for flow logs when enabled. | <code title="map&#40;map&#40;string&#41;&#41;">map(map(string))</code> |  | <code title="">null</code> |
+| *log_configs* | Map keyed by subnet 'region/name' of optional configurations for flow logs when enabled. | <code title="map&#40;map&#40;string&#41;&#41;">map(map(string))</code> |  | <code title="">null</code> |
 | *peering_config* | VPC peering configuration. | <code title="object&#40;&#123;&#10;peer_vpc_self_link &#61; string&#10;export_routes      &#61; bool&#10;import_routes      &#61; bool&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 | *routes* | Network routes, keyed by name. | <code title="map&#40;object&#40;&#123;&#10;dest_range    &#61; string&#10;priority      &#61; number&#10;tags          &#61; list&#40;string&#41;&#10;next_hop_type &#61; string &#35; gateway, instance, ip, vpn_tunnel, ilb&#10;next_hop      &#61; string&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">null</code> |
 | *routing_mode* | The network routing mode (default 'GLOBAL') | <code title="">string</code> |  | <code title="">GLOBAL</code> |
 | *shared_vpc_host* | Enable shared VPC for this project. | <code title="">bool</code> |  | <code title="">false</code> |
 | *shared_vpc_service_projects* | Shared VPC service projects to register with this host | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
-| *subnet_descriptions* | Optional map of subnet descriptions, keyed by subnet name. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
-| *subnet_flow_logs* | Optional map of boolean to control flow logs (default is disabled), keyed by subnet name. | <code title="map&#40;bool&#41;">map(bool)</code> |  | <code title="">{}</code> |
-| *subnet_private_access* | Optional map of boolean to control private Google access (default is enabled), keyed by subnet name. | <code title="map&#40;bool&#41;">map(bool)</code> |  | <code title="">{}</code> |
-| *subnets* | Subnets being created. If name is set to null, a default will be used combining network name and this map key. | <code title="map&#40;object&#40;&#123;&#10;ip_cidr_range      &#61; string&#10;name               &#61; string&#10;region             &#61; string&#10;secondary_ip_range &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">null</code> |
+| *subnet_descriptions* | Optional map of subnet descriptions, keyed by subnet 'region/name'. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
+| *subnet_flow_logs* | Optional map of boolean to control flow logs (default is disabled), keyed by subnet 'region/name'. | <code title="map&#40;bool&#41;">map(bool)</code> |  | <code title="">{}</code> |
+| *subnet_private_access* | Optional map of boolean to control private Google access (default is enabled), keyed by subnet 'region/name'. | <code title="map&#40;bool&#41;">map(bool)</code> |  | <code title="">{}</code> |
+| *subnets* | The list of subnets being created | <code title="map&#40;object&#40;&#123;&#10;ip_cidr_range      &#61; string&#10;region             &#61; string&#10;secondary_ip_range &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">null</code> |
 
 ## Outputs
 
@@ -136,10 +136,10 @@ module "vpc-host" {
 | network | Network resource. |  |
 | project_id | Shared VPC host project id. |  |
 | self_link | The URI of the VPC being created. |  |
-| subnet_ips | Map of subnet address ranges keyed by name. |  |
-| subnet_regions | Map of subnet regions keyed by name. |  |
-| subnet_secondary_ranges | Map of subnet secondary ranges keyed by name. |  |
-| subnet_self_links | Map of subnet self links keyed by name. |  |
+| subnet_ips | Map of subnet address ranges keyed by 'region/name'. |  |
+| subnet_regions | Map of subnet regions keyed by 'region/name'. |  |
+| subnet_secondary_ranges | Map of subnet secondary ranges keyed by 'region/name'. |  |
+| subnet_self_links | Map of subnet self links keyed by 'region/name'. |  |
 | subnets | Subnet resources. |  |
 <!-- END TFDOC -->
 

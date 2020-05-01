@@ -14,7 +14,8 @@
 
 locals {
   vm-instances = concat(
-    module.vm-spoke-1.instances, module.vm-spoke-2.instances
+    module.vm-spoke-1.instances,
+    module.vm-spoke-2.instances
   )
   vm-startup-script = join("\n", [
     "#! /bin/bash",
@@ -30,20 +31,20 @@ module "vpc-hub" {
   source     = "../../modules/net-vpc"
   project_id = var.project_id
   name       = "hub"
-  subnets = {
-    a = {
+  subnets = [
+    {
       ip_cidr_range      = var.ip_ranges.hub-a
-      name               = null
+      name               = "hub-a"
       region             = var.regions.a
       secondary_ip_range = {}
-    }
-    b = {
+    },
+    {
       ip_cidr_range      = var.ip_ranges.hub-b
-      name               = null
+      name               = "hub-b"
       region             = var.regions.b
       secondary_ip_range = {}
     }
-  }
+  ]
 }
 
 module "vpc-hub-firewall" {
@@ -57,7 +58,7 @@ module "vpc-hub-firewall" {
 module "vpn-hub-a" {
   source     = "../../modules/net-vpn-dynamic"
   project_id = var.project_id
-  region     = module.vpc-hub.subnet_regions["a"]
+  region     = module.vpc-hub.subnet_regions["${var.regions.a}/hub-a"]
   network    = module.vpc-hub.name
   name       = "hub-a"
   router_asn = var.bgp_asn.hub
@@ -86,7 +87,7 @@ module "vpn-hub-a" {
 module "vpn-hub-b" {
   source     = "../../modules/net-vpn-dynamic"
   project_id = var.project_id
-  region     = module.vpc-hub.subnet_regions["b"]
+  region     = module.vpc-hub.subnet_regions["${var.regions.b}/hub-b"]
   network    = module.vpc-hub.name
   name       = "hub-b"
   router_asn = var.bgp_asn.hub
@@ -120,20 +121,20 @@ module "vpc-spoke-1" {
   source     = "../../modules/net-vpc"
   project_id = var.project_id
   name       = "spoke-1"
-  subnets = {
-    a = {
+  subnets = [
+    {
       ip_cidr_range      = var.ip_ranges.spoke-1-a
-      name               = null
+      name               = "spoke-1-a"
       region             = var.regions.a
       secondary_ip_range = {}
-    }
-    b = {
+    },
+    {
       ip_cidr_range      = var.ip_ranges.spoke-1-b
-      name               = null
-      region             = var.regions.a
+      name               = "spoke-1-b"
+      region             = var.regions.b
       secondary_ip_range = {}
     }
-  }
+  ]
 }
 
 module "vpc-spoke-1-firewall" {
@@ -147,7 +148,7 @@ module "vpc-spoke-1-firewall" {
 module "vpn-spoke-1" {
   source     = "../../modules/net-vpn-dynamic"
   project_id = var.project_id
-  region     = module.vpc-spoke-1.subnet_regions["a"]
+  region     = module.vpc-spoke-1.subnet_regions["${var.regions.a}/spoke-1-a"]
   network    = module.vpc-spoke-1.name
   name       = "spoke-1"
   router_asn = var.bgp_asn.spoke-1
@@ -169,7 +170,7 @@ module "vpn-spoke-1" {
 module "nat-spoke-1" {
   source        = "../../modules/net-cloudnat"
   project_id    = var.project_id
-  region        = module.vpc-spoke-1.subnet_regions["a"]
+  region        = module.vpc-spoke-1.subnet_regions["${var.regions.a}/spoke-1-a"]
   name          = "spoke-1"
   router_create = false
   router_name   = module.vpn-spoke-1.router_name
@@ -183,20 +184,20 @@ module "vpc-spoke-2" {
   source     = "../../modules/net-vpc"
   project_id = var.project_id
   name       = "spoke-2"
-  subnets = {
-    a = {
+  subnets = [
+    {
       ip_cidr_range      = var.ip_ranges.spoke-2-a
-      name               = null
-      region             = var.regions.b
+      name               = "spoke-2-a"
+      region             = var.regions.a
       secondary_ip_range = {}
-    }
-    b = {
+    },
+    {
       ip_cidr_range      = var.ip_ranges.spoke-2-b
-      name               = null
+      name               = "spoke-2-b"
       region             = var.regions.b
       secondary_ip_range = {}
     }
-  }
+  ]
 }
 
 module "vpc-spoke-2-firewall" {
@@ -210,7 +211,7 @@ module "vpc-spoke-2-firewall" {
 module "vpn-spoke-2" {
   source     = "../../modules/net-vpn-dynamic"
   project_id = var.project_id
-  region     = module.vpc-spoke-2.subnet_regions["a"]
+  region     = module.vpc-spoke-2.subnet_regions["${var.regions.a}/spoke-2-a"]
   network    = module.vpc-spoke-2.name
   name       = "spoke-2"
   router_asn = var.bgp_asn.spoke-2
@@ -232,7 +233,7 @@ module "vpn-spoke-2" {
 module "nat-spoke-2" {
   source        = "../../modules/net-cloudnat"
   project_id    = var.project_id
-  region        = module.vpc-spoke-2.subnet_regions["a"]
+  region        = module.vpc-spoke-2.subnet_regions["${var.regions.a}/spoke-2-a"]
   name          = "spoke-2"
   router_create = false
   router_name   = module.vpn-spoke-2.router_name
@@ -245,12 +246,12 @@ module "nat-spoke-2" {
 module "vm-spoke-1" {
   source     = "../../modules/compute-vm"
   project_id = var.project_id
-  region     = module.vpc-spoke-1.subnet_regions.b
-  zone       = "${module.vpc-spoke-1.subnet_regions.b}-b"
+  region     = module.vpc-spoke-1.subnet_regions["${var.regions.b}/spoke-1-b"]
+  zone       = "${module.vpc-spoke-1.subnet_regions["${var.regions.b}/spoke-1-b"]}-b"
   name       = "spoke-1-test"
   network_interfaces = [{
     network    = module.vpc-spoke-1.self_link,
-    subnetwork = module.vpc-spoke-1.subnet_self_links.b,
+    subnetwork = module.vpc-spoke-1.subnet_self_links["${var.regions.b}/spoke-1-b"]
     nat        = false,
     addresses  = null
   }]
@@ -261,12 +262,12 @@ module "vm-spoke-1" {
 module "vm-spoke-2" {
   source     = "../../modules/compute-vm"
   project_id = var.project_id
-  region     = module.vpc-spoke-2.subnet_regions.b
-  zone       = "${module.vpc-spoke-2.subnet_regions.b}-b"
+  region     = module.vpc-spoke-2.subnet_regions["${var.regions.b}/spoke-2-b"]
+  zone       = "${module.vpc-spoke-2.subnet_regions["${var.regions.b}/spoke-2-b"]}-b"
   name       = "spoke-2-test"
   network_interfaces = [{
     network    = module.vpc-spoke-2.self_link,
-    subnetwork = module.vpc-spoke-2.subnet_self_links.b,
+    subnetwork = module.vpc-spoke-2.subnet_self_links["${var.regions.b}/spoke-2-b"],
     nat        = false,
     addresses  = null
   }]

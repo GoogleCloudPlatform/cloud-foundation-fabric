@@ -20,6 +20,12 @@ variable "auto_create_subnetworks" {
   default     = false
 }
 
+variable "delete_default_routes_on_create" {
+  description = "Set to true to delete the default routes at creation time."
+  type        = bool
+  default     = false
+}
+
 variable "description" {
   description = "An optional description of this resource (triggers recreation on change)."
   type        = string
@@ -27,19 +33,19 @@ variable "description" {
 }
 
 variable "iam_roles" {
-  description = "List of IAM roles keyed by subnet."
+  description = "List of IAM roles keyed by subnet 'region/name'."
   type        = map(list(string))
   default     = null
 }
 
 variable "iam_members" {
-  description = "List of IAM members keyed by subnet and role."
+  description = "List of IAM members keyed by subnet 'region/name' and role."
   type        = map(map(list(string)))
   default     = null
 }
 
 variable "log_configs" {
-  description = "Map of per-subnet optional configurations for flow logs when enabled."
+  description = "Map keyed by subnet 'region/name' of optional configurations for flow logs when enabled."
   type        = map(map(string))
   default     = null
 }
@@ -109,30 +115,31 @@ variable "shared_vpc_service_projects" {
 }
 
 variable "subnets" {
-  description = "Subnets being created. If name is set to null, a default will be used combining network name and this map key."
-  type = map(object({
+  description = "The list of subnets being created"
+  type = list(object({
+    name               = string
     ip_cidr_range      = string
     name               = string
     region             = string
     secondary_ip_range = map(string)
   }))
-  default = null
+  default = []
 }
 
 variable "subnet_descriptions" {
-  description = "Optional map of subnet descriptions, keyed by subnet name."
+  description = "Optional map of subnet descriptions, keyed by subnet 'region/name'."
   type        = map(string)
   default     = {}
 }
 
 variable "subnet_flow_logs" {
-  description = "Optional map of boolean to control flow logs (default is disabled), keyed by subnet name."
+  description = "Optional map of boolean to control flow logs (default is disabled), keyed by subnet 'region/name'."
   type        = map(bool)
   default     = {}
 }
 
 variable "subnet_private_access" {
-  description = "Optional map of boolean to control private Google access (default is enabled), keyed by subnet name."
+  description = "Optional map of boolean to control private Google access (default is enabled), keyed by subnet 'region/name'."
   type        = map(bool)
   default     = {}
 }

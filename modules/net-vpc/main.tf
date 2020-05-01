@@ -52,7 +52,7 @@ locals {
     name => data if data.next_hop_type == "vpn_tunnel"
   }
   subnet_log_configs = {
-    for name, attrs in local.subnets : name => (
+    for name, attrs in { for s in local.subnets : format("%s/%s", s.region, s.name) => s } : name => (
       lookup(var.subnet_flow_logs, name, false)
       ? [{
         for key, value in var.log_config_defaults : key => lookup(
@@ -62,15 +62,19 @@ locals {
       : []
     )
   }
-  subnets = var.subnets == null ? {} : var.subnets
+  subnets = {
+    for subnet in var.subnets :
+      "${subnet.region}/${subnet.name}" => subnet
+  }
 }
 
 resource "google_compute_network" "network" {
-  project                 = var.project_id
-  name                    = var.name
-  description             = var.description
-  auto_create_subnetworks = var.auto_create_subnetworks
-  routing_mode            = var.routing_mode
+  project                         = var.project_id
+  name                            = var.name
+  description                     = var.description
+  auto_create_subnetworks         = var.auto_create_subnetworks
+  delete_default_routes_on_create = var.delete_default_routes_on_create
+  routing_mode                    = var.routing_mode
 }
 
 resource "google_compute_network_peering" "local" {
@@ -116,16 +120,16 @@ resource "google_compute_subnetwork" "subnetwork" {
   project       = var.project_id
   network       = google_compute_network.network.name
   region        = each.value.region
-  name          = each.value.name != null ? each.value.name : "${var.name}-${each.key}"
+  name          = each.value.name
   ip_cidr_range = each.value.ip_cidr_range
   secondary_ip_range = each.value.secondary_ip_range == null ? [] : [
     for name, range in each.value.secondary_ip_range :
     { range_name = name, ip_cidr_range = range }
   ]
-  description              = lookup(var.subnet_descriptions, each.key, "Terraform-managed.")
-  private_ip_google_access = lookup(var.subnet_private_access, each.key, true)
+  description              = lookup(var.subnet_descriptions, "${each.value.region}/${each.value.name}", "Terraform-managed.")
+  private_ip_google_access = lookup(var.subnet_private_access, "${each.value.region}/${each.value.name}", true)
   dynamic "log_config" {
-    for_each = local.subnet_log_configs[each.key]
+    for_each = local.subnet_log_configs["${each.value.region}/${each.value.name}"]
     iterator = config
     content {
       aggregation_interval = config.value.aggregation_interval

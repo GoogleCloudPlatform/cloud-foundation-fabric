@@ -52,14 +52,14 @@ module "vpc" {
   source     = "../../modules/net-vpc"
   project_id = var.project_id
   name       = "to-onprem"
-  subnets = {
-    default = {
+  subnets = [
+    {
       ip_cidr_range      = var.ip_ranges.gcp
-      name               = null
+      name               = "subnet"
       region             = var.region
       secondary_ip_range = {}
     }
-  }
+  ]
 }
 
 module "vpc-firewall" {
@@ -74,7 +74,7 @@ module "vpc-firewall" {
 module "vpn" {
   source     = "../../modules/net-vpn-dynamic"
   project_id = var.project_id
-  region     = module.vpc.subnet_regions["default"]
+  region     = module.vpc.subnet_regions["${var.region}/subnet"]
   network    = module.vpc.name
   name       = "to-onprem"
   router_asn = var.bgp_asn.gcp
@@ -105,7 +105,7 @@ module "vpn" {
 module "nat" {
   source        = "../../modules/net-cloudnat"
   project_id    = var.project_id
-  region        = module.vpc.subnet_regions.default
+  region     = module.vpc.subnet_regions["${var.region}/subnet"]
   name          = "default"
   router_create = false
   router_name   = module.vpn.router_name
@@ -184,12 +184,12 @@ module "service-account-gce" {
 module "vm-test" {
   source     = "../../modules/compute-vm"
   project_id = var.project_id
-  region     = module.vpc.subnet_regions.default
-  zone       = "${module.vpc.subnet_regions.default}-b"
+  region     = module.vpc.subnet_regions["${var.region}/subnet"]
+  zone       = "${module.vpc.subnet_regions["${var.region}/subnet"]}-b"
   name       = "test"
   network_interfaces = [{
     network    = module.vpc.self_link,
-    subnetwork = module.vpc.subnet_self_links.default,
+    subnetwork = module.vpc.subnet_self_links["${var.region}/subnet"]
     nat        = false,
     addresses  = null
   }]
@@ -251,7 +251,7 @@ module "vm-onprem" {
   }
   network_interfaces = [{
     network    = module.vpc.name
-    subnetwork = module.vpc.subnet_self_links.default
+    subnetwork = module.vpc.subnet_self_links["${var.region}/subnet"]
     nat        = true,
     addresses  = null
   }]
