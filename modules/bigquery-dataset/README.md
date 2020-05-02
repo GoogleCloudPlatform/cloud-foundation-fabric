@@ -122,7 +122,7 @@ module "bigquery-dataset" {
 |---|---|:---: |:---:|:---:|
 | id | Dataset id. | <code title="">string</code> | ✓ |  |
 | project_id | Id of the project where datasets will be created. | <code title="">string</code> | ✓ |  |
-| *access* | Dataset access rules keyed by role, valid identity types are `domain`, `group_by_email`, `special_group` and `user_by_email`. Mode can be controlled via the `access_authoritative` variable. | <code title="map&#40;object&#40;&#123;&#10;identity_type &#61; string&#10;identity      &#61; string&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
+| *access* | Dataset access rules keyed by role, valid identity types are `domain`, `group_by_email`, `special_group` and `user_by_email`. Mode can be controlled via the `access_authoritative` variable. | <code title="map&#40;list&#40;object&#40;&#123;&#10;identity_type &#61; string&#10;identity      &#61; string&#10;&#125;&#41;&#41;&#41;">map(list(object({...})))</code> |  | <code title="">{}</code> |
 | *access_authoritative* | Use authoritative access instead of additive. | <code title="">bool</code> |  | <code title="">false</code> |
 | *access_views* | Dataset access rules for views. Mode can be controlled via the `access_authoritative` variable. | <code title="list&#40;object&#40;&#123;&#10;project_id &#61; string&#10;dataset_id &#61; string&#10;table_id   &#61; string&#10;&#125;&#41;&#41;">list(object({...}))</code> |  | <code title="">[]</code> |
 | *encryption_key* | Self link of the KMS key that will be used to protect destination table. | <code title="">string</code> |  | <code title="">null</code> |
@@ -130,7 +130,7 @@ module "bigquery-dataset" {
 | *labels* | Dataset labels. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
 | *location* | Dataset location. | <code title="">string</code> |  | <code title="">EU</code> |
 | *options* | Dataset options. | <code title="object&#40;&#123;&#10;default_table_expiration_ms     &#61; number&#10;default_partition_expiration_ms &#61; number&#10;delete_contents_on_destroy      &#61; bool&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;default_table_expiration_ms     &#61; null&#10;default_partition_expiration_ms &#61; null&#10;delete_contents_on_destroy      &#61; false&#10;&#125;">...</code> |
-| *tables* | Table definitions. Not needed attributes can be set to null. | <code title="map&#40;object&#40;&#123;&#10;clustering      &#61; list&#40;string&#41;&#10;encryption_key  &#61; string&#10;expiration_time &#61; number&#10;friendly_name   &#61; string&#10;labels          &#61; map&#40;string&#41;&#10;range_partitioning &#61; object&#40;&#123;&#10;end      &#61; number&#10;interval &#61; number&#10;start    &#61; number&#10;&#125;&#41;&#10;time_partitioning &#61; object&#40;&#123;&#10;expiration_ms &#61; number&#10;field         &#61; string&#10;type &#61; string&#10;&#125;&#41;&#10;schema &#61; string&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
+| *tables* | Table definitions. Options and partitioning default to null. Partitioning can only use `range` or `time`, set the unused one to null. | <code title="map&#40;object&#40;&#123;&#10;friendly_name &#61; string&#10;labels        &#61; map&#40;string&#41;&#10;options &#61; object&#40;&#123;&#10;clustering      &#61; list&#40;string&#41;&#10;encryption_key  &#61; string&#10;expiration_time &#61; number&#10;&#125;&#41;&#10;partitioning &#61; object&#40;&#123;&#10;field &#61; string&#10;range &#61; object&#40;&#123;&#10;end      &#61; number&#10;interval &#61; number&#10;start    &#61; number&#10;&#125;&#41;&#10;time &#61; object&#40;&#123;&#10;expiration_ms &#61; number&#10;type &#61; string&#10;&#125;&#41;&#10;&#125;&#41;&#10;schema &#61; string&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
 | *views* | View definitions. | <code title="map&#40;object&#40;&#123;&#10;friendly_name  &#61; string&#10;labels         &#61; map&#40;string&#41;&#10;query          &#61; string&#10;use_legacy_sql &#61; bool&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
 
 ## Outputs
@@ -138,6 +138,7 @@ module "bigquery-dataset" {
 | name | description | sensitive |
 |---|---|:---:|
 | dataset | Dataset resource. |  |
+| dataset_id | Dataset full id. |  |
 | id | Dataset id. |  |
 | self_link | Dataset self link. |  |
 | tables | Table resources. |  |
