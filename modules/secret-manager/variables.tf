@@ -44,11 +44,10 @@ variable "project_id" {
 }
 
 variable "versions" {
-  description = "Optional versions to manage for each secret. Version names are only used internally to track each version and must be unique for each secret/version pair."
-  type = map(list(object({
+  description = "Optional versions to manage for each secret. Version names are only used internally to track individual versions."
+  type = map(map(object({
     enabled = bool
     data    = string
-    name    = string
   })))
   default = {}
 }

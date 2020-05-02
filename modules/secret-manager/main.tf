@@ -21,16 +21,15 @@ locals {
     [for role in roles : { name = name, role = role }]
   ])
   iam_keypairs = {
-    for pair in local.iam_pairs :
-    "${pair.name}-${pair.role}" => pair
+    for pair in local.iam_pairs : "${pair.name}-${pair.role}" => pair
   }
   version_pairs = flatten([
-    for name, versions in var.versions :
-    [for version in versions : merge(version, { secret = name })]
+    for secret, versions in var.versions : [
+      for name, attrs in versions : merge(attrs, { name = name, secret = secret })
+    ]
   ])
   version_keypairs = {
-    for pair in local.version_pairs :
-    "${pair.secret}:${pair.name}" => pair
+    for pair in local.version_pairs : "${pair.secret}:${pair.name}" => pair
   }
 }
 

@@ -63,13 +63,13 @@ module "secret-manager" {
     test-manual = ["europe-west1", "europe-west4"]
   }
   versions = {
-    test-auto = [
-      { enabled = false, data = "auto foo bar baz", name = "v1" },
-      { enabled = true, data = "auto foo bar spam", name = "v2" },
-    ],
-    test-manual = [
-      { enabled = true, data = "manual foo bar spam", name = "v1" }
-    ]
+    test-auto = {
+      v1 = { enabled = false, data = "auto foo bar baz" }
+      v2 = { enabled = true, data = "auto foo bar spam" }
+    },
+    test-manual = {
+      v1 = { enabled = true, data = "manual foo bar spam" }
+    }
   }
 }
 ```
