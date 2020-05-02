@@ -40,7 +40,7 @@ Specific modules also offer support for non-authoritative bindings (e.g. `google
 
 ## Data
 
-- [BigQuery dataset](./bigquery)
+- [BigQuery dataset](./bigquery-dataset)
 - [GCS](./gcs)
 
 ## Security
