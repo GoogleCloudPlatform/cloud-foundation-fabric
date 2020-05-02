@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- `secret-manager` module
+
 ## [1.4.0] - 2020-05-01
 
 - fix DNS module internal zone lookup
