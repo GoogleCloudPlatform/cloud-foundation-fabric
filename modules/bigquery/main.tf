@@ -40,15 +40,14 @@ resource "google_bigquery_dataset" "datasets" {
 
   dynamic access {
     for_each = each.value.access
-    iterator = config
     content {
-      role           = config.value.role
-      domain         = each.value.identity_type == "domain" ? each.value.identity : null
-      group_by_email = each.value.identity_type == "group_by_email" ? each.value.identity : null
-      special_group  = each.value.identity_type == "special_group" ? each.value.identity : null
-      user_by_email  = each.value.identity_type == "user_by_email" ? each.value.identity : null
+      role           = access.value.role
+      domain         = access.value.identity_type == "domain" ? access.value.identity : null
+      group_by_email = access.value.identity_type == "group_by_email" ? access.value.identity : null
+      special_group  = access.value.identity_type == "special_group" ? access.value.identity : null
+      user_by_email  = access.value.identity_type == "user_by_email" ? access.value.identity : null
       dynamic view {
-        for_each = each.value.identity_type == "view" ? [""] : []
+        for_each = access.value.identity_type == "view" ? [""] : []
         content {
           project_id = view.value.project_id
           dataset_id = view.value.dataset_id
