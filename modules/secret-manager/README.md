@@ -4,7 +4,7 @@ Simple Secret Manager module that allows managing one or more secrets, their ver
 
 Secret Manager locations are available via the `gcloud secrets locations list` command.
 
-**Warning:** managing versions will persist their data (the actual secret you want to protect) in the Terraform state in unencrypted form, and be accessible to any identity able to read or pull the state file.
+**Warning:** managing versions will persist their data (the actual secret you want to protect) in the Terraform state in unencrypted form, accessible to any identity able to read or pull the state file.
 
 ## Examples
 
