@@ -45,7 +45,7 @@ output "environment_service_accounts" {
 
 output "audit_logs_bq_dataset" {
   description = "Bigquery dataset for the audit logs export."
-  value       = module.audit-datasets.datasets[0].dataset_id
+  value       = module.audit-dataset.id
 }
 
 output "audit_logs_project" {

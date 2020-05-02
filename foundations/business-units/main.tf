@@ -110,25 +110,18 @@ module "audit-project" {
 
 # audit logs dataset and sink
 
-module "audit-datasets" {
-  source     = "../../modules/bigquery"
-  project_id = module.audit-project.project_id
-  datasets = {
-    audit_export = {
-      name        = "Audit logs export."
-      description = "Terraform managed."
-      location    = "EU"
-      labels      = null
-      options     = null
-    }
-  }
+module "audit-dataset" {
+  source        = "../../modules/bigquery-dataset"
+  project_id    = module.audit-project.project_id
+  id            = "audit_export"
+  friendly_name = "Audit logs export."
 }
 
 module "audit-log-sinks" {
   source = "../../modules/logging-sinks"
   parent = var.root_node
   destinations = {
-    audit-logs = "bigquery.googleapis.com/projects/${module.audit-project.project_id}/datasets/${try(module.audit-datasets.names[0], "")}"
+    audit-logs = "bigquery.googleapis.com/${module.audit-dataset.id}"
   }
   sinks = {
     audit-logs = var.audit_filter
