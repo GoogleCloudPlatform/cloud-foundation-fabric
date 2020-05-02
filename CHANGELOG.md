@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- **incompatible change** the `bigquery` module has been removed and replaced by the new `bigquery-dataset` module
+
 ## [1.4.1] - 2020-05-02
 
 - new `secret-manager` module
