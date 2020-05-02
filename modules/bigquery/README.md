@@ -6,6 +6,12 @@ The module interface is designed to allow setting default values for dataset acc
 
 Access configuration supports specifying different [identity types](https://www.terraform.io/docs/providers/google/r/bigquery_dataset.html#access) via the `identity_type` attribute in access variables. The supported identity types are: `domain`, `group_by_email`, `special_group` (eg `projectOwners`), `user_by_email`.
 
+## TODO
+
+- [ ] add support for `google_bigquery_dataset_access`
+- [ ] add support for `google_bigquery_table`
+- [ ] change the access interface so it's similar to the IAM interface in other modules
+
 ## Example
 
 ```hcl
