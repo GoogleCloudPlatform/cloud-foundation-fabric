@@ -2,6 +2,12 @@
 
 This module allows managing a single BigQuery dataset, including access configuration, tables and views.
 
+## TODO
+
+- [ ] add support for dynamic values in access identities
+- [ ] check for dynamic values in tables and views
+- [ ] add support for external tables
+
 ## Examples
 
 ### Simple dataset with access configuration
