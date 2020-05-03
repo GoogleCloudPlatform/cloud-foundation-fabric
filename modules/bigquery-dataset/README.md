@@ -13,13 +13,11 @@ module "bigquery-dataset" {
   source     = "./modules/bigquery-dataset"
   project_id = "my-project
   id         = "my-dataset"
-  access = [
-    {
-      role          = "OWNER"
-      identity_type = "group_by_email"
-      identity      = "dataset-owners@example.com"
-    }
-  ]
+  access = {
+    "OWNER" = [
+      { identity_type = "group_by_email",  identity      = "dataset-owners@example.com" }
+    ]
+  }
 }
 ```
 
