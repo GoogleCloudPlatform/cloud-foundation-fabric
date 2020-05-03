@@ -14,29 +14,35 @@
  * limitations under the License.
  */
 
-variable "access" {
-  description = "Dataset access rules keyed by role, valid identity types are `domain`, `group_by_email`, `special_group` and `user_by_email`. Mode can be controlled via the `access_authoritative` variable."
-  type = map(list(object({
-    identity_type = string
-    identity      = string
-  })))
+variable "access_identities" {
+  description = "Map of access identities used for access roles with type different from `view`. A separate variable is needed as identities can be set to dynamic values."
+  type        = map(string)
+  default     = {}
+}
+
+variable "access_roles" {
+  description = "Map of access rules with role and identity type. Keys are arbitrary and only used to combine identities with each role. Valid types are `domain`, `group_by_email`, `special_group`, `user_by_email`, `view`."
+  type = map(object({
+    role = string
+    type = string
+  }))
   default = {}
 }
 
-variable "access_authoritative" {
-  description = "Use authoritative access instead of additive."
-  type        = bool
-  default     = false
-}
-
 variable "access_views" {
-  description = "Dataset access rules for views. Mode can be controlled via the `access_authoritative` variable."
-  type = list(object({
+  description = "Map of view data for access roles with identity type equal to `view`. A separate variable is needed as identities can be set to dynamic values."
+  type = map(object({
     project_id = string
     dataset_id = string
     table_id   = string
   }))
-  default = []
+  default = {}
+}
+
+variable "dataset_access" {
+  description = "Set access in the dataset resource instead of using separate resources."
+  type        = bool
+  default     = false
 }
 
 variable "encryption_key" {

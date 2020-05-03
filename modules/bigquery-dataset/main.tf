@@ -15,18 +15,20 @@
  */
 
 locals {
-  access_list = flatten([
-    for role, accesses in var.access : [
-      for access in accesses : merge(access, { role = role })
-    ]
-  ])
-  access_default = {
-    for access in local.access_list :
-    "${access.role}-${access.identity_type}-${access.identity}" => access
+  access_domain = {
+    for k, v in var.access_roles : k => v if v.type == "domain"
   }
-  access_views = {
-    for access in var.access_views :
-    "${access.project_id}-${access.dataset_id}-${access.table_id}" => access
+  access_group = {
+    for k, v in var.access_roles : k => v if v.type == "group_by_email"
+  }
+  access_special = {
+    for k, v in var.access_roles : k => v if v.type == "special_group"
+  }
+  access_user = {
+    for k, v in var.access_roles : k => v if v.type == "user_by_email"
+  }
+  access_view = {
+    for k, v in var.access_roles : k => v if v.type == "view"
   }
 }
 
@@ -43,31 +45,44 @@ resource "google_bigquery_dataset" "default" {
   default_partition_expiration_ms = var.options.default_partition_expiration_ms
 
   dynamic access {
-    for_each = var.access_authoritative ? local.access_default : {}
+    for_each = var.dataset_access ? local.access_domain : {}
     content {
-      role = access.value.role
-      domain = (
-        access.value.identity_type == "domain" ? access.value.identity : null
-      )
-      group_by_email = (
-        access.value.identity_type == "group_by_email" ? access.value.identity : null
-      )
-      special_group = (
-        access.value.identity_type == "special_group" ? access.value.identity : null
-      )
-      user_by_email = (
-        access.value.identity_type == "user_by_email" ? access.value.identity : null
-      )
+      role   = access.value.role
+      domain = try(var.access_identities[access.key])
     }
   }
 
   dynamic access {
-    for_each = var.access_authoritative ? local.access_views : {}
+    for_each = var.dataset_access ? local.access_group : {}
+    content {
+      role           = access.value.role
+      group_by_email = try(var.access_identities[access.key])
+    }
+  }
+
+  dynamic access {
+    for_each = var.dataset_access ? local.access_special : {}
+    content {
+      role          = access.value.role
+      special_group = try(var.access_identities[access.key])
+    }
+  }
+
+  dynamic access {
+    for_each = var.dataset_access ? local.access_user : {}
+    content {
+      role          = access.value.role
+      user_by_email = try(var.access_identities[access.key])
+    }
+  }
+
+  dynamic access {
+    for_each = var.dataset_access ? local.access_view : {}
     content {
       view {
-        project_id = access.value.project_id
-        dataset_id = access.value.dataset_id
-        table_id   = access.value.table_id
+        project_id = try(var.access.views[access.key].project_id, null)
+        dataset_id = try(var.access.views[access.key].dataset_id, null)
+        table_id   = try(var.access.views[access.key].table_id, null)
       }
     }
   }
@@ -81,34 +96,46 @@ resource "google_bigquery_dataset" "default" {
 }
 
 
-resource "google_bigquery_dataset_access" "default" {
-  for_each   = var.access_authoritative ? {} : local.access_default
+resource "google_bigquery_dataset_access" "domain" {
+  for_each   = var.dataset_access ? {} : local.access_domain
   project    = var.project_id
   dataset_id = google_bigquery_dataset.default.dataset_id
   role       = each.value.role
-  domain = (
-    each.value.identity_type == "domain" ? each.value.identity : null
-  )
-  group_by_email = (
-    each.value.identity_type == "group_by_email" ? each.value.identity : null
-  )
-  special_group = (
-    each.value.identity_type == "special_group" ? each.value.identity : null
-  )
-  user_by_email = (
-    each.value.identity_type == "user_by_email" ? each.value.identity : null
-  )
+  domain     = try(var.access_identities[each.key])
 }
 
+resource "google_bigquery_dataset_access" "group_by_email" {
+  for_each       = var.dataset_access ? {} : local.access_group
+  project        = var.project_id
+  dataset_id     = google_bigquery_dataset.default.dataset_id
+  role           = each.value.role
+  group_by_email = try(var.access_identities[each.key])
+}
+
+resource "google_bigquery_dataset_access" "special_group" {
+  for_each      = var.dataset_access ? {} : local.access_special
+  project       = var.project_id
+  dataset_id    = google_bigquery_dataset.default.dataset_id
+  role          = each.value.role
+  special_group = try(var.access_identities[each.key])
+}
+
+resource "google_bigquery_dataset_access" "user_by_email" {
+  for_each      = var.dataset_access ? {} : local.access_user
+  project       = var.project_id
+  dataset_id    = google_bigquery_dataset.default.dataset_id
+  role          = each.value.role
+  user_by_email = try(var.access_identities[each.key])
+}
 
 resource "google_bigquery_dataset_access" "views" {
-  for_each   = var.access_authoritative ? {} : local.access_views
+  for_each   = var.dataset_access ? {} : local.access_view
   project    = var.project_id
   dataset_id = google_bigquery_dataset.default.dataset_id
   view {
-    project_id = each.value.project
-    dataset_id = each.value.dataset_id
-    table_id   = each.value.table_id
+    project_id = try(var.access_views[each.key].project_id, null)
+    dataset_id = try(var.access_views[each.key].dataset_id, null)
+    table_id   = try(var.access_views[each.key].table_id, null)
   }
 }
 
