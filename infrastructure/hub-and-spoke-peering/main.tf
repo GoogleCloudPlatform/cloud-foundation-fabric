@@ -31,14 +31,14 @@ module "vpc-hub" {
   source     = "../../modules/net-vpc"
   project_id = var.project_id
   name       = "hub"
-  subnets = {
-    default = {
+  subnets = [
+    {
       ip_cidr_range      = var.ip_ranges.hub
-      name               = null
+      name               = "hub-default"
       region             = var.region
       secondary_ip_range = {}
     }
-  }
+  ]
 }
 
 module "vpc-hub-firewall" {
@@ -57,14 +57,14 @@ module "vpc-spoke-1" {
   source     = "../../modules/net-vpc"
   project_id = var.project_id
   name       = "spoke-1"
-  subnets = {
-    default = {
+  subnets = [
+    {
       ip_cidr_range      = var.ip_ranges.spoke-1
-      name               = null
+      name               = "spoke-1-default"
       region             = var.region
       secondary_ip_range = {}
     }
-  }
+  ]
 }
 
 module "vpc-spoke-1-firewall" {
@@ -78,7 +78,7 @@ module "vpc-spoke-1-firewall" {
 module "nat-spoke-1" {
   source         = "../../modules/net-cloudnat"
   project_id     = var.project_id
-  region         = module.vpc-spoke-1.subnet_regions.default
+  region         = module.vpc-spoke-1.subnet_regions["${var.region}/spoke-1-default"]
   name           = "spoke-1"
   router_name    = "spoke-1"
   router_network = module.vpc-spoke-1.self_link
@@ -100,17 +100,17 @@ module "vpc-spoke-2" {
   source     = "../../modules/net-vpc"
   project_id = var.project_id
   name       = "spoke-2"
-  subnets = {
-    default = {
+  subnets = [
+    {
       ip_cidr_range = var.ip_ranges.spoke-2
-      name          = null
+      name          = "spoke-2-default"
       region        = var.region
       secondary_ip_range = {
         pods     = var.ip_secondary_ranges.spoke-2-pods
         services = var.ip_secondary_ranges.spoke-2-services
       }
     }
-  }
+  ]
 }
 
 module "vpc-spoke-2-firewall" {
@@ -124,7 +124,7 @@ module "vpc-spoke-2-firewall" {
 module "nat-spoke-2" {
   source         = "../../modules/net-cloudnat"
   project_id     = var.project_id
-  region         = module.vpc-spoke-2.subnet_regions.default
+  region         = module.vpc-spoke-2.subnet_regions["${var.region}/spoke-2-default"]
   name           = "spoke-2"
   router_name    = "spoke-2"
   router_network = module.vpc-spoke-2.self_link
@@ -146,12 +146,12 @@ module "hub-to-spoke-2-peering" {
 module "vm-spoke-1" {
   source     = "../../modules/compute-vm"
   project_id = var.project_id
-  region     = module.vpc-spoke-1.subnet_regions.default
-  zone       = "${module.vpc-spoke-1.subnet_regions.default}-b"
+  region     = module.vpc-spoke-1.subnet_regions["${var.region}/spoke-1-default"]
+  zone       = "${module.vpc-spoke-1.subnet_regions["${var.region}/spoke-1-default"]}-b"
   name       = "spoke-1-test"
   network_interfaces = [{
     network    = module.vpc-spoke-1.self_link,
-    subnetwork = module.vpc-spoke-1.subnet_self_links.default,
+    subnetwork = module.vpc-spoke-1.subnet_self_links["${var.region}/spoke-1-default"]
     nat        = false,
     addresses  = null
   }]
@@ -164,12 +164,12 @@ module "vm-spoke-1" {
 module "vm-spoke-2" {
   source     = "../../modules/compute-vm"
   project_id = var.project_id
-  region     = module.vpc-spoke-2.subnet_regions.default
-  zone       = "${module.vpc-spoke-2.subnet_regions.default}-b"
+  region     = module.vpc-spoke-2.subnet_regions["${var.region}/spoke-2-default"]
+  zone       = "${module.vpc-spoke-2.subnet_regions["${var.region}/spoke-2-default"]}-b"
   name       = "spoke-2-test"
   network_interfaces = [{
     network    = module.vpc-spoke-2.self_link,
-    subnetwork = module.vpc-spoke-2.subnet_self_links.default,
+    subnetwork = module.vpc-spoke-2.subnet_self_links["${var.region}/spoke-2-default"]
     nat        = false,
     addresses  = null
   }]
@@ -200,9 +200,9 @@ module "cluster-1" {
   source                    = "../../modules/gke-cluster"
   name                      = "cluster-1"
   project_id                = var.project_id
-  location                  = "${module.vpc-spoke-2.subnet_regions.default}-b"
+  location                  = "${module.vpc-spoke-2.subnet_regions["${var.region}/spoke-2-default"]}-b"
   network                   = module.vpc-spoke-2.self_link
-  subnetwork                = module.vpc-spoke-2.subnet_self_links.default
+  subnetwork                = module.vpc-spoke-2.subnet_self_links["${var.region}/spoke-2-default"]
   secondary_range_pods      = "pods"
   secondary_range_services  = "services"
   default_max_pods_per_node = 32
@@ -273,7 +273,7 @@ module "vpn-spoke-2" {
   # routes exchanged via peering
   remote_ranges = ["10.0.0.0/8"]
   tunnels = {
-    spoke-2 = {
+    hub = {
       ike_version       = 2
       peer_ip           = module.vpn-hub.address
       shared_secret     = module.vpn-hub.random_secret

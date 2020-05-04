@@ -98,34 +98,34 @@ module "vpc-shared" {
     module.project-svc-gce.project_id,
     module.project-svc-gke.project_id
   ]
-  subnets = {
-    gce = {
+  subnets = [
+    {
       ip_cidr_range      = var.ip_ranges.gce
-      name               = null
+      name               = "gce"
       region             = var.region
       secondary_ip_range = {}
-    }
-    gke = {
+    },
+    {
       ip_cidr_range = var.ip_ranges.gke
-      name          = null
+      name          = "gke"
       region        = var.region
       secondary_ip_range = {
         pods     = var.ip_secondary_ranges.gke-pods
         services = var.ip_secondary_ranges.gke-services
       }
     }
-  }
+  ]
   iam_roles = {
-    gke = ["roles/compute.networkUser", "roles/compute.securityAdmin"]
-    gce = ["roles/compute.networkUser"]
+    "${var.region}/gke" = ["roles/compute.networkUser", "roles/compute.securityAdmin"]
+    "${var.region}/gce" = ["roles/compute.networkUser"]
   }
   iam_members = {
-    gce = {
+    "${var.region}/gce" = {
       "roles/compute.networkUser" = concat(var.owners_gce, [
         "serviceAccount:${module.project-svc-gce.cloudsvc_service_account}",
       ])
     }
-    gke = {
+    "${var.region}/gke" = {
       "roles/compute.networkUser" = concat(var.owners_gke, [
         "serviceAccount:${module.project-svc-gke.cloudsvc_service_account}",
         "serviceAccount:${module.project-svc-gke.gke_service_account}",
@@ -178,12 +178,12 @@ module "host-dns" {
 module "vm-bastion" {
   source     = "../../modules/compute-vm"
   project_id = module.project-svc-gce.project_id
-  region     = module.vpc-shared.subnet_regions.gce
-  zone       = "${module.vpc-shared.subnet_regions.gce}-b"
+  region     = module.vpc-shared.subnet_regions["${var.region}/gce"]
+  zone       = "${module.vpc-shared.subnet_regions["${var.region}/gce"]}-b"
   name       = "bastion"
   network_interfaces = [{
     network    = module.vpc-shared.self_link,
-    subnetwork = lookup(module.vpc-shared.subnet_self_links, "gce", null),
+    subnetwork = lookup(module.vpc-shared.subnet_self_links, "${var.region}/gce", null),
     nat        = false,
     addresses  = null
   }]
@@ -207,9 +207,9 @@ module "cluster-1" {
   source                    = "../../modules/gke-cluster"
   name                      = "cluster-1"
   project_id                = module.project-svc-gke.project_id
-  location                  = "${module.vpc-shared.subnet_regions.gke}-b"
+  location                  = "${module.vpc-shared.subnet_regions["${var.region}/gke"]}-b"
   network                   = module.vpc-shared.self_link
-  subnetwork                = module.vpc-shared.subnet_self_links.gke
+  subnetwork                = module.vpc-shared.subnet_self_links["${var.region}/gke"]
   secondary_range_pods      = "pods"
   secondary_range_services  = "services"
   default_max_pods_per_node = 32
