@@ -28,6 +28,12 @@ variable "bundle_config" {
   })
 }
 
+variable "environment_variables" {
+  description = "Cloud function environment variables."
+  type        = map(string)
+  default     = {}
+}
+
 variable "function_config" {
   description = "Cloud function configuration."
   type = object({

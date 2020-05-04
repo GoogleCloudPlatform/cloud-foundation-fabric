@@ -46,7 +46,7 @@ resource "google_pubsub_topic" "topic" {
 }
 
 resource "google_cloud_scheduler_job" "job" {
-  count = var.schedule_config.schedule == null ? 0 : 1
+  count     = var.schedule_config.schedule == null ? 0 : 1
   project   = var.project_id
   region    = var.region
   name      = lookup(local.prefixes, "job", var.name)
@@ -91,6 +91,7 @@ resource "google_cloudfunctions_function" "function" {
   max_instances         = var.function_config.instances
   timeout               = var.function_config.timeout
   entry_point           = var.function_config.entry_point
+  environment_variables = var.environment_variables
   service_account_email = google_service_account.service_account.email
 
   # source_repository {
