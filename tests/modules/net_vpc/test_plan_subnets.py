@@ -28,14 +28,6 @@ _VAR_SUBNETS = (
     '   secondary_ip_range={a="192.168.0.0/24", b="192.168.1.0/24"}},'
     ']'
 )
-_VAR_LOG_CONFIG = '{a = { flow_sampling = 0.1 }}'
-_VAR_LOG_CONFIG_DEFAULTS = (
-    '{'
-    'aggregation_interval = "INTERVAL_10_MIN", '
-    'flow_sampling = 0.5, '
-    'metadata = "INCLUDE_ALL_METADATA"'
-    '}'
-)
 
 
 def test_subnets_simple(plan_runner):
@@ -51,10 +43,16 @@ def test_subnets_simple(plan_runner):
 
 def test_subnet_log_configs(plan_runner):
   "Test subnets flow logs configuration and defaults."
+  log_config = '{"europe-west1/a" = { flow_sampling = 0.1 }}'
+  log_config_defaults = (
+      '{aggregation_interval = "INTERVAL_10_MIN", flow_sampling = 0.5, '
+      'metadata = "INCLUDE_ALL_METADATA"}'
+  )
+  subnet_flow_logs = '{"europe-west1/a"=true, "europe-west1/b"=true}'
   _, resources = plan_runner(FIXTURES_DIR, subnets=_VAR_SUBNETS,
-                             log_configs=_VAR_LOG_CONFIG,
-                             log_config_defaults=_VAR_LOG_CONFIG_DEFAULTS,
-                             subnet_flow_logs='{a=true, b=true}')
+                             log_configs=log_config,
+                             log_config_defaults=log_config_defaults,
+                             subnet_flow_logs=subnet_flow_logs)
   assert len(resources) == 4
   flow_logs = {}
   for r in resources:
@@ -63,17 +61,17 @@ def test_subnet_log_configs(plan_runner):
     flow_logs[r['values']['name']] = r['values']['log_config']
   assert flow_logs == {
       # enable, override one default option
-      'europe-west1/a': [{
+      'a': [{
           'aggregation_interval': 'INTERVAL_10_MIN',
           'flow_sampling': 0.1,
           'metadata': 'INCLUDE_ALL_METADATA'
       }],
       # enable, use defaults
-      'europe-west1/b': [{
+      'b': [{
           'aggregation_interval': 'INTERVAL_10_MIN',
           'flow_sampling': 0.5,
           'metadata': 'INCLUDE_ALL_METADATA'
       }],
       # don't enable
-      'europe-west1/c': []
+      'c': []
   }

@@ -97,13 +97,14 @@ variable "shared_vpc_service_projects" {
 
 variable "subnets" {
   description = "The list of subnets being created"
-  type = map(object({
+  type = list(object({
+    name               = string
     ip_cidr_range      = string
     name               = string
     region             = string
     secondary_ip_range = map(string)
   }))
-  default = null
+  default = []
 }
 
 variable "subnet_descriptions" {
