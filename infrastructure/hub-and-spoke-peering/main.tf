@@ -78,7 +78,7 @@ module "vpc-spoke-1-firewall" {
 module "nat-spoke-1" {
   source         = "../../modules/net-cloudnat"
   project_id     = var.project_id
-  region         = module.vpc-spoke-1.subnet_regions["${var.region}/spoke-1-default"]
+  region         = var.region
   name           = "spoke-1"
   router_name    = "spoke-1"
   router_network = module.vpc-spoke-1.self_link
@@ -124,7 +124,7 @@ module "vpc-spoke-2-firewall" {
 module "nat-spoke-2" {
   source         = "../../modules/net-cloudnat"
   project_id     = var.project_id
-  region         = module.vpc-spoke-2.subnet_regions["${var.region}/spoke-2-default"]
+  region         = var.region
   name           = "spoke-2"
   router_name    = "spoke-2"
   router_network = module.vpc-spoke-2.self_link
@@ -146,8 +146,8 @@ module "hub-to-spoke-2-peering" {
 module "vm-spoke-1" {
   source     = "../../modules/compute-vm"
   project_id = var.project_id
-  region     = module.vpc-spoke-1.subnet_regions["${var.region}/spoke-1-default"]
-  zone       = "${module.vpc-spoke-1.subnet_regions["${var.region}/spoke-1-default"]}-b"
+  region     = var.region
+  zone       = "${var.region}-b"
   name       = "spoke-1-test"
   network_interfaces = [{
     network    = module.vpc-spoke-1.self_link,
@@ -164,8 +164,8 @@ module "vm-spoke-1" {
 module "vm-spoke-2" {
   source     = "../../modules/compute-vm"
   project_id = var.project_id
-  region     = module.vpc-spoke-2.subnet_regions["${var.region}/spoke-2-default"]
-  zone       = "${module.vpc-spoke-2.subnet_regions["${var.region}/spoke-2-default"]}-b"
+  region     = var.region
+  zone       = "${var.region}-b"
   name       = "spoke-2-test"
   network_interfaces = [{
     network    = module.vpc-spoke-2.self_link,
@@ -200,7 +200,7 @@ module "cluster-1" {
   source                    = "../../modules/gke-cluster"
   name                      = "cluster-1"
   project_id                = var.project_id
-  location                  = "${module.vpc-spoke-2.subnet_regions["${var.region}/spoke-2-default"]}-b"
+  location                  = "${var.region}-b"
   network                   = module.vpc-spoke-2.self_link
   subnetwork                = module.vpc-spoke-2.subnet_self_links["${var.region}/spoke-2-default"]
   secondary_range_pods      = "pods"

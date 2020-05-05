@@ -105,7 +105,7 @@ module "vpn" {
 module "nat" {
   source        = "../../modules/net-cloudnat"
   project_id    = var.project_id
-  region     = module.vpc.subnet_regions["${var.region}/subnet"]
+  region        = var.region
   name          = "default"
   router_create = false
   router_name   = module.vpn.router_name
@@ -184,8 +184,8 @@ module "service-account-gce" {
 module "vm-test" {
   source     = "../../modules/compute-vm"
   project_id = var.project_id
-  region     = module.vpc.subnet_regions["${var.region}/subnet"]
-  zone       = "${module.vpc.subnet_regions["${var.region}/subnet"]}-b"
+  region     = var.region
+  zone       = "${var.region}-b"
   name       = "test"
   network_interfaces = [{
     network    = module.vpc.self_link,

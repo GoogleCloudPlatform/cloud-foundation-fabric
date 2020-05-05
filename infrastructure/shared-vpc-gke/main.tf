@@ -178,8 +178,8 @@ module "host-dns" {
 module "vm-bastion" {
   source     = "../../modules/compute-vm"
   project_id = module.project-svc-gce.project_id
-  region     = module.vpc-shared.subnet_regions["${var.region}/gce"]
-  zone       = "${module.vpc-shared.subnet_regions["${var.region}/gce"]}-b"
+  region     = var.region
+  zone       = "${var.region}-b"
   name       = "bastion"
   network_interfaces = [{
     network    = module.vpc-shared.self_link,
@@ -207,7 +207,7 @@ module "cluster-1" {
   source                    = "../../modules/gke-cluster"
   name                      = "cluster-1"
   project_id                = module.project-svc-gke.project_id
-  location                  = "${module.vpc-shared.subnet_regions["${var.region}/gke"]}-b"
+  location                  = "${var.region}-b"
   network                   = module.vpc-shared.self_link
   subnetwork                = module.vpc-shared.subnet_self_links["${var.region}/gke"]
   secondary_range_pods      = "pods"
