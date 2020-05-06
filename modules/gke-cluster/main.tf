@@ -45,9 +45,11 @@ resource "google_container_cluster" "cluster" {
   initial_node_count          = 1
   remove_default_node_pool    = true
 
-  # node_config
-  # TODO(ludomagno): compute addons map in locals and use a single dynamic block
+  # node_config {}
+  # NOTE: Default node_pool is deleted, so node_config (here) is extranneous.
+  # Specify that node_config as an parameter to gke-nodepool module instead.
 
+  # TODO(ludomagno): compute addons map in locals and use a single dynamic block
   addons_config {
     dns_cache_config {
       enabled = var.addons.dns_cache_config
