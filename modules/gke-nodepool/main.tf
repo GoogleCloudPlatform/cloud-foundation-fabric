@@ -86,8 +86,8 @@ resource "google_container_node_pool" "nodepool" {
     for_each = var.autoscaling_config != null ? [var.autoscaling_config] : []
     iterator = config
     content {
-      min_node_count = config.min_node_count
-      max_node_count = config.max_node_count
+      min_node_count = config.value.min_node_count
+      max_node_count = config.value.max_node_count
     }
   }
 
@@ -95,8 +95,8 @@ resource "google_container_node_pool" "nodepool" {
     for_each = var.management_config != null ? [var.management_config] : []
     iterator = config
     content {
-      auto_repair  = config.auto_repair
-      auto_upgrade = config.auto_upgrade
+      auto_repair  = config.value.auto_repair
+      auto_upgrade = config.value.auto_upgrade
     }
   }
 
@@ -104,8 +104,8 @@ resource "google_container_node_pool" "nodepool" {
     for_each = var.upgrade_config != null ? [var.upgrade_config] : []
     iterator = config
     content {
-      max_surge       = config.max_surge
-      max_unavailable = config.max_unavailable
+      max_surge       = config.value.max_surge
+      max_unavailable = config.value.max_unavailable
     }
   }
 }
