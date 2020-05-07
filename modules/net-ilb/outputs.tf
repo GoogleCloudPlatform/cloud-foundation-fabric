@@ -51,15 +51,15 @@ output "forwarding_rule_self_link" {
 
 output "health_check" {
   description = "Auto-created health-check resource."
-  value       = try(google_compute_health_check.default.0, {})
+  value       = local.health_check_resource
 }
 
 output "health_check_self_id" {
   description = "Auto-created health-check self id."
-  value       = try(google_compute_health_check.default.0.id, null)
+  value       = try(local.health_check_resource.id, null)
 }
 
 output "health_check_self_link" {
   description = "Auto-created health-check self link."
-  value       = try(google_compute_health_check.default.0.self_link, null)
+  value       = try(local.health_check_resource.self_link, null)
 }

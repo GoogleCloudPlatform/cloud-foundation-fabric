@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Google LLC
+ * Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 
 variable "autoscaler_config" {
-  description = "Optional autoscaler configuration. Only one of 'cpu_utilization_target' 'load_balancing_utilization_target' or 'metric' can be not null."
   type = object({
     max_replicas                      = number
     min_replicas                      = number
@@ -34,7 +33,6 @@ variable "autoscaler_config" {
 }
 
 variable "auto_healing_policies" {
-  description = "Auto-healing policies for this group."
   type = object({
     health_check      = string
     initial_delay_sec = number
@@ -42,16 +40,7 @@ variable "auto_healing_policies" {
   default = null
 }
 
-variable "default_version" {
-  description = "Default application version template. Additional versions can be specified via the `versions` variable."
-  type = object({
-    instance_template = string
-    name              = string
-  })
-}
-
 variable "health_check_config" {
-  description = "Optional auto-created health check configuration, use the output self-link to set it in the auto healing policy. Refer to examples for usage."
   type = object({
     type    = string      # http https tcp ssl http2
     check   = map(any)    # actual health check block attributes
@@ -61,47 +50,17 @@ variable "health_check_config" {
   default = null
 }
 
-variable "location" {
-  description = "Compute zone, or region if `regional` is set to true."
-  type        = string
-}
-
-variable "name" {
-  description = "Managed group name."
-  type        = string
-}
-
 variable "named_ports" {
-  description = "Named ports."
-  type        = map(number)
-  default     = null
-}
-
-variable "project_id" {
-  description = "Project id."
-  type        = string
+  type    = map(number)
+  default = null
 }
 
 variable "regional" {
-  description = "Use regional instance group. When set, `location` should be set to the region."
-  type        = bool
-  default     = false
-}
-
-variable "target_pools" {
-  description = "Optional list of URLs for target pools to which new instances in the group are added."
-  type        = list(string)
-  default     = []
-}
-
-variable "target_size" {
-  description = "Group target size, leave null when using an autoscaler."
-  type        = number
-  default     = null
+  type    = bool
+  default = false
 }
 
 variable "update_policy" {
-  description = "Update policy. Type can be 'OPPORTUNISTIC' or 'PROACTIVE', action 'REPLACE' or 'restart', surge type 'fixed' or 'percent'."
   type = object({
     type                 = string # OPPORTUNISTIC | PROACTIVE
     minimal_action       = string # REPLACE | RESTART
@@ -115,17 +74,10 @@ variable "update_policy" {
 }
 
 variable "versions" {
-  description = "Additional application versions, target_type is either 'fixed' or 'percent'."
   type = map(object({
     instance_template = string
     target_type       = string # fixed | percent
     target_size       = number
   }))
   default = null
-}
-
-variable "wait_for_instances" {
-  description = "Wait for all instances to be created/updated before returning."
-  type        = bool
-  default     = null
 }
