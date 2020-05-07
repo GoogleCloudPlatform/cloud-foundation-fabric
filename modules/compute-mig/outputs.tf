@@ -34,7 +34,16 @@ output "group_manager" {
 
 output "health_check" {
   description = "Auto-created health-check resource."
-  value = var.health_check_config == null ? null : try(
-    google_compute_health_check.default.0, {}
+  value = (
+    var.health_check_config == null
+    ? null
+    : try(
+      google_compute_health_check.http.0,
+      google_compute_health_check.https.0,
+      google_compute_health_check.tcp.0,
+      google_compute_health_check.ssl.0,
+      google_compute_health_check.http2.0,
+      {}
+    )
   )
 }
