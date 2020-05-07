@@ -81,7 +81,7 @@ variable "project_services" {
   description = "Service APIs enabled by default in new projects."
   type        = list(string)
   default = [
-    "resourceviews.googleapis.com",
+    "container.googleapis.com",
     "stackdriver.googleapis.com",
   ]
 }

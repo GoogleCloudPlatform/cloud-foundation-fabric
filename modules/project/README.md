@@ -12,7 +12,7 @@ module "project" {
   parent          = "folders/1234567890"
   prefix          = "foo"
   services        = [
-    "resourceviews.googleapis.com",
+    "container.googleapis.com",
     "stackdriver.googleapis.com"
   ]
   iam_roles = ["roles/container.hostServiceAgentUser"]
@@ -34,7 +34,7 @@ module "project" {
   parent          = "folders/1234567890"
   prefix          = "foo"
   services        = [
-    "resourceviews.googleapis.com",
+    "container.googleapis.com",
     "stackdriver.googleapis.com"
   ]
   policy_boolean = {

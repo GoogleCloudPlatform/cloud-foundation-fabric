@@ -31,7 +31,7 @@ This sample uses a top-level folder to encapsulate projects that host resources 
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
 | billing_account_id | Billing account id used as default for new projects. | <code title="">string</code> | ✓ |  |
-| organization_id | Organization id. | <code title="">string</code> | ✓ |  |
+| organization_id | Organization id in organizations/nnnnnnn format. | <code title="">string</code> | ✓ |  |
 | prefix | Prefix used for resources that need unique names. | <code title="">string</code> | ✓ |  |
 | root_node | Root node for the new hierarchy, either 'organizations/org_id' or 'folders/folder_id'. | <code title="">string</code> | ✓ |  |
 | *audit_filter* | Audit log filter used for the log sink. | <code title="">string</code> |  | <code title="&#60;&#60;END&#10;logName: &#34;&#47;logs&#47;cloudaudit.googleapis.com&#37;2Factivity&#34;&#10;OR&#10;logName: &#34;&#47;logs&#47;cloudaudit.googleapis.com&#37;2Fsystem_event&#34;&#10;END">...</code> |
@@ -40,7 +40,7 @@ This sample uses a top-level folder to encapsulate projects that host resources 
 | *iam_audit_viewers* | Audit project viewers, in IAM format. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 | *iam_shared_owners* | Shared services project owners, in IAM format. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 | *iam_terraform_owners* | Terraform project owners, in IAM format. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
-| *project_services* | Service APIs enabled by default in new projects. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="&#91;&#10;&#34;resourceviews.googleapis.com&#34;,&#10;&#34;stackdriver.googleapis.com&#34;,&#10;&#93;">...</code> |
+| *project_services* | Service APIs enabled by default in new projects. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="&#91;&#10;&#34;container.googleapis.com&#34;,&#10;&#34;stackdriver.googleapis.com&#34;,&#10;&#93;">...</code> |
 
 ## Outputs
 
@@ -48,10 +48,10 @@ This sample uses a top-level folder to encapsulate projects that host resources 
 |---|---|:---:|
 | audit_logs_project | Project that holds the audit logs export resources. |  |
 | bootstrap_tf_gcs_bucket | GCS bucket used for the bootstrap Terraform state. |  |
-| bu_bi | Business Intelligence attributes. |  |
-| bu_bi_sa_keys | Business Intelligence service account keys. | ✓ |
-| bu_ml | Machine Learning attributes. |  |
-| bu_ml_sa_keys | Machine Learning service account keys. | ✓ |
+| bu_business_intelligence | Business Intelligence attributes. |  |
+| bu_business_intelligence_keys | Business Intelligence service account keys. | ✓ |
+| bu_machine_learning | Machine Learning attributes. |  |
+| bu_machine_learning_keys | Machine Learning service account keys. | ✓ |
 | shared_folder_id | Shared folder id. |  |
 | shared_resources_project | Project that holdes resources shared across business units. |  |
 | terraform_project | Project that holds the base Terraform resources. |  |
