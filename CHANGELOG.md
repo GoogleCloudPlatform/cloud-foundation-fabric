@@ -6,6 +6,9 @@ All notable changes to this project will be documented in this file.
 
 - **incompatible change** the `bigquery` module has been removed and replaced by the new `bigquery-dataset` module
 - **incompatible change** subnets in the `net-vpc` modules are now passed as a list instead of map, and all related variables for IAM and flow logs use `region/name` instead of `name` keys; it's now possible to have the same subnet name in different regions
+- replace all references to the removed `resourceviews.googleapis.com` API with `container.googleapis.com`
+- fix advanced options in `gke-nodepool` module
+- fix health checks in `compute-mig` and `net-ilb` modules
 
 ## [1.4.1] - 2020-05-02
 
