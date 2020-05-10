@@ -9,6 +9,10 @@ All notable changes to this project will be documented in this file.
 - replace all references to the removed `resourceviews.googleapis.com` API with `container.googleapis.com`
 - fix advanced options in `gke-nodepool` module
 - fix health checks in `compute-mig` and `net-ilb` modules
+- new `cos-generic-metadata` module in the `cloud-config-container` suite
+- new `envoy-traffic-director` module in the `cloud-config-container` suite
+- new `pubsub` module (untested)
+
 
 ## [1.4.1] - 2020-05-02
 
