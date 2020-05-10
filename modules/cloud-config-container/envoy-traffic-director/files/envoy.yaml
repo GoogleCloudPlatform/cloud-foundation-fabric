@@ -1,6 +1,20 @@
+# Copyright 2020 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 node:
   id: "_ENVOY_NODE_ID_"
-  cluster: cluster  # unused
+  cluster: cluster # unused
   locality:
     zone: "_ENVOY_ZONE_"
   metadata:
@@ -12,40 +26,40 @@ node:
     TRAFFICDIRECTOR_INBOUND_BACKEND_PORTS: ""
 
 dynamic_resources:
-  lds_config: {ads: {}}
-  cds_config: {ads: {}}
+  lds_config: { ads: {} }
+  cds_config: { ads: {} }
   ads_config:
     api_type: GRPC
     grpc_services:
-    - google_grpc:
-        target_uri: trafficdirector.googleapis.com:443
-        stat_prefix: trafficdirector
-        channel_credentials:
-          ssl_credentials:
-            root_certs:
-              filename: /etc/ssl/certs/ca-certificates.crt
-        call_credentials:
-          google_compute_engine: {}
+      - google_grpc:
+          target_uri: trafficdirector.googleapis.com:443
+          stat_prefix: trafficdirector
+          channel_credentials:
+            ssl_credentials:
+              root_certs:
+                filename: /etc/ssl/certs/ca-certificates.crt
+          call_credentials:
+            google_compute_engine: {}
 
 cluster_manager:
   load_stats_config:
     api_type: GRPC
     grpc_services:
-    - google_grpc:
-        target_uri: trafficdirector.googleapis.com:443
-        stat_prefix: trafficdirector
-        channel_credentials:
-          ssl_credentials:
-            root_certs:
-              filename: /etc/ssl/certs/ca-certificates.crt
-        call_credentials:
-          google_compute_engine: {}
+      - google_grpc:
+          target_uri: trafficdirector.googleapis.com:443
+          stat_prefix: trafficdirector
+          channel_credentials:
+            ssl_credentials:
+              root_certs:
+                filename: /etc/ssl/certs/ca-certificates.crt
+          call_credentials:
+            google_compute_engine: {}
 
 admin:
   access_log_path: /dev/stdout
   address:
     socket_address:
-      address: 127.0.0.1  # Admin page is only accessible locally.
+      address: 127.0.0.1 # Admin page is only accessible locally.
       port_value: 15000
 
 tracing:
@@ -58,83 +72,83 @@ tracing:
 
 layered_runtime:
   layers:
-  - name: rtds_layer
-    rtds_layer:
-      name: traffic_director_runtime
-      rtds_config: {ads: {}}
-  - name: static_layer
-    static_layer:
-      envoy:
-        deprecated_features:
-          cluster:
-            proto:ORIGINAL_DST_LB: "true"
-            proto:extension_protocol_options: "true"
-            proto:tls_context: "true"
-          health_check:
-            proto:use_http2: "true"
-          http_connection_manager:
-            proto:operation_name: "true"
-          listener:
-            proto:tls_context: "true"
-          listener_components:
-            proto:config: "true"
-          route_components:
-            proto:allow_origin: "true"
-            proto:method: "true"
-            proto:pattern: "true"
-            proto:regex: "true"
-            proto:regex_match: "true"
-            proto:value: "true"
-          string:
-            proto:regex: "true"
-          trace:
-            proto:HTTP_JSON_V1: "true"
-        deprecated_features:envoy:
-          api:
-            v2:
-              Cluster:
-                LbPolicy:
-                  ORIGINAL_DST_LB: "true"
-                extension_protocol_options: "true"
-                tls_context: "true"
-              Listener:
-                tls_context: "true"
-              core:
-                HealthCheck:
-                  HttpHealthCheck:
-                    use_http2: "true"
-              listener:
-                Filter:
-                  config: "true"
-                ListenerFilter:
-                  config: "true"
-              route:
-                CorsPolicy:
-                  allow_origin: "true"
-                HeaderMatcher:
-                  regex_match: "true"
-                QueryParameterMatcher:
-                  regex: "true"
-                  value: "true"
-                RouteMatch:
-                  regex: "true"
-                VirtualCluster:
-                  method: "true"
-                  pattern: "true"
-          config:
-            filter:
-              network:
-                http_connection_manager:
-                  v2:
-                    HttpConnectionManager:
-                      Tracing:
-                        operation_name: "true"
+    - name: rtds_layer
+      rtds_layer:
+        name: traffic_director_runtime
+        rtds_config: { ads: {} }
+    - name: static_layer
+      static_layer:
+        envoy:
+          deprecated_features:
+            cluster:
+              proto:ORIGINAL_DST_LB: "true"
+              proto:extension_protocol_options: "true"
+              proto:tls_context: "true"
+            health_check:
+              proto:use_http2: "true"
+            http_connection_manager:
+              proto:operation_name: "true"
+            listener:
+              proto:tls_context: "true"
+            listener_components:
+              proto:config: "true"
+            route_components:
+              proto:allow_origin: "true"
+              proto:method: "true"
+              proto:pattern: "true"
+              proto:regex: "true"
+              proto:regex_match: "true"
+              proto:value: "true"
+            string:
+              proto:regex: "true"
             trace:
+              proto:HTTP_JSON_V1: "true"
+          deprecated_features:envoy:
+            api:
               v2:
-                ZipkinConfig:
-                  CollectorEndpointVersion:
-                    HTTP_JSON_V1: "true"
-          type:
-            matcher:
-              StringMatcher:
-                regex: "true"
+                Cluster:
+                  LbPolicy:
+                    ORIGINAL_DST_LB: "true"
+                  extension_protocol_options: "true"
+                  tls_context: "true"
+                Listener:
+                  tls_context: "true"
+                core:
+                  HealthCheck:
+                    HttpHealthCheck:
+                      use_http2: "true"
+                listener:
+                  Filter:
+                    config: "true"
+                  ListenerFilter:
+                    config: "true"
+                route:
+                  CorsPolicy:
+                    allow_origin: "true"
+                  HeaderMatcher:
+                    regex_match: "true"
+                  QueryParameterMatcher:
+                    regex: "true"
+                    value: "true"
+                  RouteMatch:
+                    regex: "true"
+                  VirtualCluster:
+                    method: "true"
+                    pattern: "true"
+            config:
+              filter:
+                network:
+                  http_connection_manager:
+                    v2:
+                      HttpConnectionManager:
+                        Tracing:
+                          operation_name: "true"
+              trace:
+                v2:
+                  ZipkinConfig:
+                    CollectorEndpointVersion:
+                      HTTP_JSON_V1: "true"
+            type:
+              matcher:
+                StringMatcher:
+                  regex: "true"
