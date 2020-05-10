@@ -15,7 +15,7 @@
  */
 
 module "cos-envoy-td" {
-  source = "./modules/cos-generic-metadata"
+  source = "../cos-generic-metadata"
 
   boot_commands = [
     "systemctl start node-problem-detector",
@@ -26,9 +26,7 @@ module "cos-envoy-td" {
   container_args  = "-c /etc/envoy/envoy.yaml --log-level info --allow-unknown-static-fields"
 
   container_volumes = [
-    { host      = "/etc/envoy/envoy.yaml",
-      container = "/etc/envoy/envoy.yaml"
-    }
+    { host = "/etc/envoy/envoy.yaml", container = "/etc/envoy/envoy.yaml" }
   ]
 
   docker_args = "--network host --pid host"
