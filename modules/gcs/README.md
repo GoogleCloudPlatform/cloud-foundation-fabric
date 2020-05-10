@@ -1,5 +1,9 @@
 # Google Cloud Storage Module
 
+## TODO
+
+- [ ] add support for defining [notifications](https://www.terraform.io/docs/providers/google/r/storage_notification.html)
+
 ## Example
 
 ```hcl
