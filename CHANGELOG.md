@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.5.0] - 2020-05-11
+
 - **incompatible change** the `bigquery` module has been removed and replaced by the new `bigquery-dataset` module
 - **incompatible change** subnets in the `net-vpc` modules are now passed as a list instead of map, and all related variables for IAM and flow logs use `region/name` instead of `name` keys; it's now possible to have the same subnet name in different regions
 - replace all references to the removed `resourceviews.googleapis.com` API with `container.googleapis.com`
@@ -11,7 +13,7 @@ All notable changes to this project will be documented in this file.
 - fix health checks in `compute-mig` and `net-ilb` modules
 - new `cos-generic-metadata` module in the `cloud-config-container` suite
 - new `envoy-traffic-director` module in the `cloud-config-container` suite
-- new `pubsub` module (untested)
+- new `pubsub` module
 
 
 ## [1.4.1] - 2020-05-02
@@ -55,7 +57,8 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.4.1...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.5.0...HEAD
+[1.5.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.4.1...v1.5.0
 [1.4.1]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.2...v1.3.0
