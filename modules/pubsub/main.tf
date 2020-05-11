@@ -31,8 +31,8 @@ locals {
   }
   subscriptions = {
     for k, v in var.subscriptions : k => {
-      labels  = v.labels != null ? v.labels : var.labels
-      options = v.options != null ? v.options : var.defaults
+      labels  = try(v.labels, v, null) == null ? var.labels : v.labels
+      options = try(v.options, v, null) == null ? var.defaults : v.options
     }
   }
 }

@@ -15,7 +15,7 @@
  */
 
 variable "dead_letter_configs" {
-  description = "Per-subscription dead letter policy configurations that override defaults."
+  description = "Per-subscription dead letter policy configuration."
   type = map(object({
     topic                = string
     max_delivery_attemps = number
@@ -30,17 +30,12 @@ variable "defaults" {
     message_retention_duration = number
     retain_acked_messages      = bool
     expiration_policy_ttl      = string
-    dead_letter_policy = object({
-      topic                = string
-      max_delivery_attemps = number
-    })
   })
   default = {
     ack_deadline_seconds       = null
     message_retention_duration = null
     retain_acked_messages      = null
     expiration_policy_ttl      = null
-    dead_letter_policy         = null
   }
 }
 
