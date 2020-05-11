@@ -21,9 +21,7 @@ module "cos-envoy" {
   container_args  = "-c /etc/envoy/envoy.yaml --log-level info --allow-unknown-static-fields"
 
   container_volumes = [
-    { host      = "/etc/envoy/envoy.yaml",
-      container = "/etc/envoy/envoy.yaml"
-    }
+    { host = "/etc/envoy/envoy.yaml", container = "/etc/envoy/envoy.yaml" }
   ]
 
   docker_args = "--network host --pid host"
@@ -63,25 +61,25 @@ module "cos-envoy" {
 <!-- BEGIN TFDOC -->
 ## Variables
 
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| container\_image | Container image. | `string` | n/a | yes |
-| boot\_commands | List of cloud-init `bootcmd`s | `list(string)` | `[]` | no |
-| cloud\_config | Cloud config template path. If provided, takes precedence over all other arguments. | `string` | `null` | no |
-| config\_variables | Additional variables used to render the template passed via `cloud_config` | `map(any)` | `{}` | no |
-| container\_args | Arguments for container | `string` | `""` | no |
-| container\_name | Name of the container to be run | `string` | `"container"` | no |
-| container\_volumes | List of volumes | <pre>list(object({<br>    host      = string,<br>    container = string<br>  }))</pre> | `[]` | no |
-| docker\_args | Extra arguments to be passed for docker | `string` | `null` | no |
-| file\_defaults | Default owner and permissions for files. | <pre>object({<br>    owner       = string<br>    permissions = string<br>  })</pre> | <pre>{<br>  "owner": "root",<br>  "permissions": "0644"<br>}</pre> | no |
-| files | Map of extra files to create on the instance, path as key. Owner and permissions will use defaults if null. | <pre>map(object({<br>    content     = string<br>    owner       = string<br>    permissions = string<br>  }))</pre> | `{}` | no |
-| gcp\_logging | Should container logs be sent to Google Cloud Logging | `bool` | `true` | no |
-| run\_commands | List of cloud-init `runcmd`s | `list(string)` | `[]` | no |
-| users | List of usernames to be created. If provided, first user will be used to run the container. | <pre>list(object({<br>    username = string,<br>    uid      = number,<br>  }))</pre> | `[]` | no |
+| name | description | type | required | default |
+|---|---|:---: |:---:|:---:|
+| container_image | Container image. | <code title="">string</code> | ✓ |  |
+| *boot_commands* | List of cloud-init `bootcmd`s | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
+| *cloud_config* | Cloud config template path. If provided, takes precedence over all other arguments. | <code title="">string</code> |  | <code title="">null</code> |
+| *config_variables* | Additional variables used to render the template passed via `cloud_config` | <code title="map&#40;any&#41;">map(any)</code> |  | <code title="">{}</code> |
+| *container_args* | Arguments for container | <code title="">string</code> |  | <code title=""></code> |
+| *container_name* | Name of the container to be run | <code title="">string</code> |  | <code title="">container</code> |
+| *container_volumes* | List of volumes | <code title="list&#40;object&#40;&#123;&#10;host      &#61; string,&#10;container &#61; string&#10;&#125;&#41;&#41;">list(object({...}))</code> |  | <code title="">[]</code> |
+| *docker_args* | Extra arguments to be passed for docker | <code title="">string</code> |  | <code title="">null</code> |
+| *file_defaults* | Default owner and permissions for files. | <code title="object&#40;&#123;&#10;owner       &#61; string&#10;permissions &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;owner       &#61; &#34;root&#34;&#10;permissions &#61; &#34;0644&#34;&#10;&#125;">...</code> |
+| *files* | Map of extra files to create on the instance, path as key. Owner and permissions will use defaults if null. | <code title="map&#40;object&#40;&#123;&#10;content     &#61; string&#10;owner       &#61; string&#10;permissions &#61; string&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
+| *gcp_logging* | Should container logs be sent to Google Cloud Logging | <code title="">bool</code> |  | <code title="">true</code> |
+| *run_commands* | List of cloud-init `runcmd`s | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
+| *users* | List of usernames to be created. If provided, first user will be used to run the container. | <code title="list&#40;object&#40;&#123;&#10;username &#61; string,&#10;uid      &#61; number,&#10;&#125;&#41;&#41;">list(object({...}))</code> |  | <code title="&#91;&#10;&#93;">...</code> |
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| cloud\_config | Rendered cloud-config file to be passed as user-data instance metadata. |
+| name | description | sensitive |
+|---|---|:---:|
+| cloud_config | Rendered cloud-config file to be passed as user-data instance metadata. |  |
 <!-- END TFDOC -->
