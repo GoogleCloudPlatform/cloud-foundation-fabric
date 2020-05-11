@@ -158,6 +158,3 @@ module "bigquery-dataset" {
 | views | View resources. |  |
 <!-- END TFDOC -->
 
-## TODO
-
-- [ ] add support for tables
