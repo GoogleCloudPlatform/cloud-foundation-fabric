@@ -147,14 +147,15 @@ resource "google_container_cluster" "cluster" {
       enabled = true
       resource_limits {
         resource_type = "cpu"
-        minimum       = config.cpu_min
-        maximum       = config.cpu_max
+        minimum       = config.value.cpu_min
+        maximum       = config.value.cpu_max
       }
       resource_limits {
         resource_type = "memory"
-        minimum       = config.memory_min
-        maximum       = config.memory_max
+        minimum       = config.value.memory_min
+        maximum       = config.value.memory_max
       }
+      // TODO: support GPUs too
     }
   }
 
