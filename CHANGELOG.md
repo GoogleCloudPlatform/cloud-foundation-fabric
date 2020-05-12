@@ -3,6 +3,8 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+- Add output to `gke-cluster` exposing the cluster's CA certificate
+- Fix `gke-cluster` autoscaling options
 
 ## [1.5.0] - 2020-05-11
 
