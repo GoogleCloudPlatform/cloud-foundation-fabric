@@ -70,6 +70,7 @@ module "cluster-1" {
 
 | name | description | sensitive |
 |---|---|:---:|
+| ca_certificate | Public certificate of the cluster (base64-encoded). | ✓ |
 | cluster | Cluster resource. | ✓ |
 | endpoint | Cluster endpoint. |  |
 | location | Cluster location. |  |
