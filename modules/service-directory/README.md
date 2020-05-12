@@ -12,7 +12,7 @@ It can be used in conjunction with the [DNS](../dns) module to create service-di
 ```hcl
 module "service-directory" {
   source      = "./modules/service-directory"
-  project_id  = "my-project
+  project_id  = "my-project"
   location    = "europe-west1"
   name        = "sd-1"
   iam_members = {
@@ -23,6 +23,7 @@ module "service-directory" {
   iam_roles = [
     "roles/servicedirectory.editor"
   ]
+}
 ```
 
 ### Services with IAM and endpoints
@@ -30,7 +31,7 @@ module "service-directory" {
 ```hcl
 module "service-directory" {
   source      = "./modules/service-directory"
-  project_id  = "my-project
+  project_id  = "my-project"
   location    = "europe-west1"
   name        = "sd-1"
   services = {
@@ -58,15 +59,32 @@ module "service-directory" {
 
 ### DNS based zone
 
-TODO
+Wiring a service directory namespace to a private DNS zone allows querying the namespace, and delegating control of DNS records at the namespace or service level. This effectively allows fine grained ACL control of Cloud DNS zones.
 
 ```hcl
 module "service-directory" {
   source      = "./modules/service-directory"
-  project_id  = "my-project
+  project_id  = "my-project"
   location    = "europe-west1"
-  name        = "sd-1"
+  name       = "apps"
+  services = {
+    app1 = { endpoints = ["one"], metadata = null }
+  }
+  endpoint_config = {
+    "app1/one" = { address = "127.0.0.1", port = 80, metadata = {} }
+  }
 }
+
+module "dns-sd" {
+  source                      = "./modules/dns"
+  project_id                  = "my-project"
+  type                        = "service-directory"
+  name                        = "apps"
+  domain                      = "apps.example.org."
+  client_networks             = [local.vpc_self_link]
+  service_directory_namespace = module.service-directory.id
+}
+
 ```
 
 <!-- BEGIN TFDOC -->
