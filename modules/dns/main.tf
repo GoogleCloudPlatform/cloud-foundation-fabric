@@ -38,14 +38,11 @@ resource "google_dns_managed_zone" "non-public" {
 
   dynamic forwarding_config {
     for_each = (
-      var.type == "forwarding" && var.forwarders != null
-      ? { config = var.forwarders }
-      : {}
+      var.type == "forwarding" && var.forwarders != null ? [""] : []
     )
-    iterator = config
     content {
       dynamic "target_name_servers" {
-        for_each = config.value
+        for_each = var.forwarders
         iterator = address
         content {
           ipv4_address = address.value
@@ -56,14 +53,11 @@ resource "google_dns_managed_zone" "non-public" {
 
   dynamic peering_config {
     for_each = (
-      var.type == "peering" && var.peer_network != null
-      ? { config = var.peer_network }
-      : {}
+      var.type == "peering" && var.peer_network != null ? [""] : []
     )
-    iterator = config
     content {
       target_network {
-        network_url = config.value
+        network_url = var.peer_network
       }
     }
   }
@@ -74,6 +68,19 @@ resource "google_dns_managed_zone" "non-public" {
       iterator = network
       content {
         network_url = network.value
+      }
+    }
+  }
+
+  dynamic service_directory_config {
+    for_each = (
+      var.type == "service-directory" && var.service_directory_namespace != null
+      ? [""]
+      : []
+    )
+    content {
+      namespace {
+        namespace_url = var.service_directory_namespace
       }
     }
   }
