@@ -2,7 +2,7 @@
 
 This module allows managing a single [Service Directory](https://cloud.google.com/service-directory) namespace, including multiple services, endpoints and IAM bindings at the namespace and service levels.
 
-It can be used in conjunction with the [DNS](../dns) module to create service-directory based DNS zones, offloading IAM control of `A` and `SRV` records at the namespace or service level to Service Directory. The last examples shows how to wire the two modules together.
+It can be used in conjunction with the [DNS](../dns) module to create [service-directory based DNS zones](https://cloud.google.com/service-directory/docs/configuring-service-directory-zone, offloading IAM control of `A` and `SRV` records at the namespace or service level to Service Directory. The last examples shows how to wire the two modules together.
 
 
 ## Examples
