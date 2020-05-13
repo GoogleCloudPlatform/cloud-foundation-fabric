@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 - add output to `gke-cluster` exposing the cluster's CA certificate
-- xix `gke-cluster` autoscaling options
+- fix `gke-cluster` autoscaling options
 - add support for Service Directory bound zones to the `dns` module
 - new `service-directory` module
 
