@@ -67,6 +67,14 @@ module "service-directory" {
   project_id  = "my-project"
   location    = "europe-west1"
   name       = "apps"
+  iam_members = {
+    "roles/servicedirectory.editor" = [
+      "serviceAccount:namespace-editor@example.com"
+    ]
+  }
+  iam_roles = [
+    "roles/servicedirectory.editor"
+  ]
   services = {
     app1 = { endpoints = ["one"], metadata = null }
   }
