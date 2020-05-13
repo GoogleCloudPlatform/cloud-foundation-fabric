@@ -27,7 +27,7 @@ Specific modules also offer support for non-authoritative bindings (e.g. `google
 - [VPC peering](./net-vpc-peering)
 - [VPN static](./net-vpn-static)
 - [VPN dynamic](./net-vpn-dynamic)
-- [VPN HA](./net-vpn-ha))
+- [VPN HA](./net-vpn-ha)
 - [ ] TODO: xLB modules
 
 ## Compute/Container
