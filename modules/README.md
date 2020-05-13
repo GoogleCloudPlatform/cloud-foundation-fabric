@@ -42,6 +42,7 @@ Specific modules also offer support for non-authoritative bindings (e.g. `google
 
 - [BigQuery dataset](./bigquery-dataset)
 - [GCS](./gcs)
+- [Pub/Sub](./modules/pubsub)
 
 ## Security
 
