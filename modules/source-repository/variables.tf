@@ -32,6 +32,6 @@ variable "iam_roles" {
 }
 
 variable "name" {
-  description = "PubSub topic name."
+  description = "Repository topic name."
   type        = string
 }

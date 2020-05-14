@@ -24,7 +24,7 @@ module "repo" {
 
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
-| name | PubSub topic name. | <code title="">string</code> | ✓ |  |
+| name | Repository topic name. | <code title="">string</code> | ✓ |  |
 | project_id | Project used for resources. | <code title="">string</code> | ✓ |  |
 | *iam_members* | IAM members for each topic role. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
 | *iam_roles* | IAM roles for topic. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
