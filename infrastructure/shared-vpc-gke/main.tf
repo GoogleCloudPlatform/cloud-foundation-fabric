@@ -17,6 +17,7 @@
 ###############################################################################
 
 # the container.hostServiceAgentUser role is needed for GKE on shared VPC
+# see: https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-shared-vpc#grant_host_service_agent_role
 
 module "project-host" {
   source          = "../../modules/project"
@@ -80,12 +81,6 @@ module "project-svc-gke" {
 ################################################################################
 #                                  Networking                                  #
 ################################################################################
-
-# the service project GKE robot needs the `hostServiceAgent` role throughout
-# the entire life of its clusters; the `iam_project_id` project output is used
-# here to set the project id so that the VPC depends on that binding, and any
-# cluster using it then also depends on it indirectly; you can of course use
-# the `project_id` output instead if you don't care about destroying
 
 # subnet IAM bindings control which identities can use the individual subnets
 
