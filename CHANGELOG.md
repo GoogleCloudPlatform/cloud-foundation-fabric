@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 - fix `gke-cluster` autoscaling options
 - add support for Service Directory bound zones to the `dns` module
 - new `service-directory` module
+- new `source-repository` module
 
 ## [1.5.0] - 2020-05-11
 
