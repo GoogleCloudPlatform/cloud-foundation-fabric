@@ -14,6 +14,19 @@ module "datafusion" {
 }
 ```
 
+## Example - Pre allocated IP range
+```hcl
+module "datafusion" {
+  source               = "./modules/datafusion"
+  name                 = "my-datafusion"
+  region               = "europe-west1"
+  project_id           = "my-project"
+  network              = "my-network-name"
+  ip_allocation_create = false
+  ip_allocation        = "10.0.0.0/22"
+}
+```
+
 <!-- BEGIN TFDOC -->
 ## Variables
 
