@@ -1,6 +1,6 @@
-# Google Cloud DNS Module
+# Google Cloud Data Fusion Module
 
-This module allows simple management of ['Google Data Fusion'](https://cloud.google.com/data-fusion) instances. It supports creating Basi or Enterprise, public or private instances. 
+This module allows simple management of ['Google Data Fusion'](https://cloud.google.com/data-fusion) instances. It supports creating Basic or Enterprise, public or private instances. 
 
 ## Example
 

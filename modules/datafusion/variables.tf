@@ -52,7 +52,7 @@ variable "network" {
   type        = string
 }
 
-variable "network_firewall_rules" {
+variable "network_firewall_rules_create" {
   description = "Create Network firewall rules to enable SSH."
   type        = bool
   default     = true
@@ -80,12 +80,16 @@ variable "region" {
   type        = string
 }
 
-variable "shared_network_config" {
-  description = "Shared Network Configuration parameters."
-  type = map(object({
-    project_number = number
-  }))
-  default = {}
+variable "ip_allocation_create" {
+  description = "Create Ip range for datafusion instance."
+  type        = bool
+  default     = true
+}
+
+variable "ip_allocation" {
+  description = "Ip allocated for datafusion instance when not using the auto created one and created outside of the module."
+  type        = string
+  default     = null
 }
 
 variable "type" {

@@ -1,5 +1,5 @@
 /**
- * Copyright 2018 Google LLC
+ * Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,21 +15,24 @@
  */
 
 locals {
-  prefix_length      = 22
-  address_type       = "INTERNAL"
-  porpuse            = "VPC_PEERING"
-  datafusion_network = var.network != "" ? var.network : ""
-  ip_allocation      = var.network != "" ? "${google_compute_global_address.default.address}/${local.prefix_length}" : ""
-  tenant_project_re  = "cloud-datafusion-management-sa@([\\w-]+).iam.gserviceaccount.com"
-  tenant_project     = regex(local.tenant_project_re, google_data_fusion_instance.default.service_account)[0]
+  prefix_length = 22
+  ip_allocation = (
+    var.ip_allocation_create
+    ? "${google_compute_global_address.default[0].address}/${local.prefix_length}"
+    : var.ip_allocation
+  )
+  tenant_project = regex(
+    "cloud-datafusion-management-sa@([\\w-]+).iam.gserviceaccount.com",
+    google_data_fusion_instance.default.service_account
+  )[0]
 }
 
 resource "google_compute_global_address" "default" {
-  #count         = var.private_instance == true ? 1 : 0
+  count         = var.ip_allocation_create ? 1 : 0
   project       = var.project_id
   name          = "cdf-${var.region}-${var.name}"
-  purpose       = local.porpuse
-  address_type  = local.address_type
+  purpose       = "VPC_PEERING"
+  address_type  = "INTERNAL"
   prefix_length = local.prefix_length
   network       = var.network
 }
@@ -44,7 +47,7 @@ resource "google_compute_network_peering" "default" {
 }
 
 resource "google_compute_firewall" "default" {
-  count   = var.network_firewall_rules == true ? 1 : 0
+  count   = var.network_firewall_rules_create == true ? 1 : 0
   name    = "${var.name}-allow-ssh"
   project = var.project_id
   network = var.network
@@ -70,7 +73,7 @@ resource "google_data_fusion_instance" "default" {
   enable_stackdriver_logging    = var.enable_stackdriver_logging
   enable_stackdriver_monitoring = var.enable_stackdriver_monitoring
   network_config {
-    network       = local.datafusion_network
+    network       = var.network
     ip_allocation = local.ip_allocation
   }
 }

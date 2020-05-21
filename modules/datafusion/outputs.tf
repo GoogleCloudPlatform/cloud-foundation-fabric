@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Google LLC
+ * Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 output "id" {
   description = "DataFusion instance ID."
   value       = google_data_fusion_instance.default.id
@@ -21,6 +22,11 @@ output "id" {
 output "ip_allocation" {
   description = "IP range reserved for Data Fusion instance in case of a private instance."
   value       = "${local.ip_allocation}"
+}
+
+output "resource" {
+  description = "DataFusion resource."
+  value       = google_data_fusion_instance.default
 }
 
 output "service_account" {
