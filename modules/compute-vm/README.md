@@ -86,11 +86,10 @@ module "instance-group" {
   }
   service_account        = local.service_account_email
   service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
-  use_instance_template  = true
   metadata = {
     user-data = local.cloud_config
   }
-  group = {}
+  group = { named_ports = {} }
 }
 
 ```

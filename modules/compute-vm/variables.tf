@@ -25,6 +25,7 @@ variable "attached_disks" {
       mode        = string
       source      = string
       type        = string
+      kms_key     = string
     })
   }))
   default = []
@@ -37,26 +38,30 @@ variable "attached_disk_defaults" {
     mode        = string
     type        = string
     source      = string
+    kms_key     = string
   })
   default = {
     auto_delete = true
     source      = null
     mode        = "READ_WRITE"
     type        = "pd-ssd"
+    kms_key     = null
   }
 }
 
 variable "boot_disk" {
   description = "Boot disk properties."
   type = object({
-    image = string
-    size  = number
-    type  = string
+    image   = string
+    size    = number
+    type    = string
+    kms_key = string
   })
   default = {
-    image = "projects/debian-cloud/global/images/family/debian-10"
-    type  = "pd-ssd"
-    size  = 10
+    image   = "projects/debian-cloud/global/images/family/debian-10"
+    type    = "pd-ssd"
+    size    = 10
+    kms_key = null
   }
 }
 

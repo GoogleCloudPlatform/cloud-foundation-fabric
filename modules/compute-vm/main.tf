@@ -66,6 +66,36 @@ resource "google_compute_disk" "disks" {
     disk_type = local.attached_disks[each.value.disk_name].options.type
     image     = local.attached_disks[each.value.disk_name].image
   })
+
+  dynamic disk_encryption_key {
+    for_each = local.attached_disks[each.value.disk_name].options.kms_key != null ? [""] : []
+
+    content {
+      kms_key_self_link = local.attached_disks[each.value.disk_name].options.kms_key
+    }
+  }
+}
+
+resource "google_compute_disk" "boot" {
+  for_each = var.use_instance_template ? {} : local.names
+  project  = var.project_id
+  zone     = var.zone
+  name     = each.key
+  type     = var.boot_disk.type
+  size     = var.boot_disk.size
+  labels = merge(var.labels, {
+    disk_name = each.key
+    disk_type = var.boot_disk.type
+    image     = regex("/?([^/]+)$", var.boot_disk.image)[0]
+  })
+
+  dynamic disk_encryption_key {
+    for_each = var.boot_disk.kms_key != null ? [""] : []
+
+    content {
+      kms_key_self_link = var.boot_disk.kms_key
+    }
+  }
 }
 
 resource "google_compute_instance" "default" {
@@ -98,11 +128,7 @@ resource "google_compute_instance" "default" {
   }
 
   boot_disk {
-    initialize_params {
-      type  = var.boot_disk.type
-      image = var.boot_disk.image
-      size  = var.boot_disk.size
-    }
+    source = google_compute_disk.boot[each.key].self_link
   }
 
   dynamic network_interface {
@@ -172,6 +198,13 @@ resource "google_compute_instance_template" "default" {
     disk_type    = var.boot_disk.type
     disk_size_gb = var.boot_disk.size
     boot         = true
+    dynamic disk_encryption_key {
+      for_each = var.boot_disk.kms_key != null ? [""] : []
+
+      content {
+        kms_key_self_link = var.boot_disk.kms_key
+      }
+    }
   }
 
   dynamic disk {
@@ -186,6 +219,13 @@ resource "google_compute_instance_template" "default" {
       source_image = config.value.image
       source       = config.value.options.source
       type         = "PERSISTENT"
+      dynamic disk_encryption_key {
+        for_each = config.value.options.kms_key != null ? [""] : null
+
+        content {
+          kms_key_self_link = config.value.options.kms_key
+        }
+      }
     }
   }
 
@@ -235,7 +275,7 @@ resource "google_compute_instance_group" "unmanaged" {
     for name, instance in google_compute_instance.default : instance.self_link
   ]
   dynamic named_port {
-    for_each = var.group.named_ports != null ? var.group.named_ports : {}
+    for_each = var.group != null ? var.group.named_ports : {}
     iterator = config
     content {
       name = config.key
