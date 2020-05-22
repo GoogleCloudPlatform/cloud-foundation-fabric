@@ -2,7 +2,9 @@
 
 This module allows simple management of ['Google Data Fusion'](https://cloud.google.com/data-fusion) instances. It supports creating Basic or Enterprise, public or private instances. 
 
-## Example
+## Examples
+
+## Auto-managed IP allocation
 
 ```hcl
 module "datafusion" {
@@ -14,7 +16,8 @@ module "datafusion" {
 }
 ```
 
-## Example - Pre allocated IP range
+### Externally managed IP allocation
+
 ```hcl
 module "datafusion" {
   source               = "./modules/datafusion"
@@ -39,11 +42,12 @@ module "datafusion" {
 | *description* | DataFuzion instance description. | <code title="">string</code> |  | <code title="">Terraform managed.</code> |
 | *enable_stackdriver_logging* | Option to enable Stackdriver Logging. | <code title="">bool</code> |  | <code title="">false</code> |
 | *enable_stackdriver_monitoring* | Option to enable Stackdriver Monitorig. | <code title="">bool</code> |  | <code title="">false</code> |
+| *ip_allocation* | Ip allocated for datafusion instance when not using the auto created one and created outside of the module. | <code title="">string</code> |  | <code title="">null</code> |
+| *ip_allocation_create* | Create Ip range for datafusion instance. | <code title="">bool</code> |  | <code title="">true</code> |
 | *labels* | The resource labels for instance to use to annotate any related underlying resources, such as Compute Engine VMs. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
-| *network_firewall_rules* | Create Network firewall rules to enable SSH. | <code title="">bool</code> |  | <code title="">true</code> |
+| *network_firewall_rules_create* | Create Network firewall rules to enable SSH. | <code title="">bool</code> |  | <code title="">true</code> |
 | *network_peering* | Create Network peering between project and DataFusion tenant project. | <code title="">bool</code> |  | <code title="">true</code> |
 | *private_instance* | Create private instance. | <code title="">bool</code> |  | <code title="">true</code> |
-| *shared_network_config* | Shared Network Configuration parameters. | <code title="map&#40;object&#40;&#123;&#10;project_number &#61; number&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
 | *type* | Datafusion Instance type. It can be BASIC or ENTERPRISE (default value). | <code title="">string</code> |  | <code title="">ENTERPRISE</code> |
 
 ## Outputs
@@ -52,6 +56,7 @@ module "datafusion" {
 |---|---|:---:|
 | id | DataFusion instance ID. |  |
 | ip_allocation | IP range reserved for Data Fusion instance in case of a private instance. |  |
+| resource | DataFusion resource. |  |
 | service_account | DataFusion Service Account. |  |
 | service_endpoint | DataFusion Service Endpoint. |  |
 | version | DataFusion version. |  |
