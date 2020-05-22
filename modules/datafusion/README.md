@@ -42,10 +42,10 @@ module "datafusion" {
 | *description* | DataFuzion instance description. | <code title="">string</code> |  | <code title="">Terraform managed.</code> |
 | *enable_stackdriver_logging* | Option to enable Stackdriver Logging. | <code title="">bool</code> |  | <code title="">false</code> |
 | *enable_stackdriver_monitoring* | Option to enable Stackdriver Monitorig. | <code title="">bool</code> |  | <code title="">false</code> |
+| *firewall_create* | Create Network firewall rules to enable SSH. | <code title="">bool</code> |  | <code title="">true</code> |
 | *ip_allocation* | Ip allocated for datafusion instance when not using the auto created one and created outside of the module. | <code title="">string</code> |  | <code title="">null</code> |
 | *ip_allocation_create* | Create Ip range for datafusion instance. | <code title="">bool</code> |  | <code title="">true</code> |
 | *labels* | The resource labels for instance to use to annotate any related underlying resources, such as Compute Engine VMs. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
-| *network_firewall_rules_create* | Create Network firewall rules to enable SSH. | <code title="">bool</code> |  | <code title="">true</code> |
 | *network_peering* | Create Network peering between project and DataFusion tenant project. | <code title="">bool</code> |  | <code title="">true</code> |
 | *private_instance* | Create private instance. | <code title="">bool</code> |  | <code title="">true</code> |
 | *type* | Datafusion Instance type. It can be BASIC or ENTERPRISE (default value). | <code title="">string</code> |  | <code title="">ENTERPRISE</code> |

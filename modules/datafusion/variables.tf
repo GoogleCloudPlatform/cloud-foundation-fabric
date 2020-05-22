@@ -52,7 +52,7 @@ variable "network" {
   type        = string
 }
 
-variable "network_firewall_rules_create" {
+variable "firewall_create" {
   description = "Create Network firewall rules to enable SSH."
   type        = bool
   default     = true

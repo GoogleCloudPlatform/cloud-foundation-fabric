@@ -30,16 +30,16 @@ locals {
 resource "google_compute_global_address" "default" {
   count         = var.ip_allocation_create ? 1 : 0
   project       = var.project_id
-  name          = "cdf-${var.region}-${var.name}"
-  purpose       = "VPC_PEERING"
+  name          = "cdf-${var.name}"
   address_type  = "INTERNAL"
+  purpose       = "VPC_PEERING"
   prefix_length = local.prefix_length
   network       = var.network
 }
 
 resource "google_compute_network_peering" "default" {
   count                = var.network_peering == true ? 1 : 0
-  name                 = "cdf-${var.region}-${var.name}"
+  name                 = "cdf-${var.name}"
   network              = "projects/${var.project_id}/global/networks/${var.network}"
   peer_network         = "projects/${local.tenant_project}/global/networks/${var.region}-${google_data_fusion_instance.default.name}"
   export_custom_routes = true
@@ -47,18 +47,17 @@ resource "google_compute_network_peering" "default" {
 }
 
 resource "google_compute_firewall" "default" {
-  count   = var.network_firewall_rules_create == true ? 1 : 0
-  name    = "${var.name}-allow-ssh"
-  project = var.project_id
-  network = var.network
+  count         = var.firewall_create == true ? 1 : 0
+  name          = "${var.name}-allow-ssh"
+  project       = var.project_id
+  network       = var.network
+  source_ranges = [local.ip_allocation]
+  target_tags   = ["${var.name}-allow-ssh"]
 
   allow {
     protocol = "tcp"
     ports    = ["22"]
   }
-
-  source_ranges = [local.ip_allocation]
-  target_tags   = ["${var.name}-allow-ssh"]
 }
 
 resource "google_data_fusion_instance" "default" {
