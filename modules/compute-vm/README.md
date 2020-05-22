@@ -31,7 +31,7 @@ module "simple-vm-example" {
 }
 ```
 
-### Instance Ecrypting disk with Cloud KMSleveraging defaults
+### Instance Ecrypting disk with Cloud KMS
 
 This example show how to use the module to manage an instace that defines a Cloud KMS CryptoKey to encrypt boot and attached disk. 
 
