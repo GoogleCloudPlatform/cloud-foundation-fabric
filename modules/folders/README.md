@@ -8,7 +8,7 @@ This module allow creation and management of sets of folders sharing a common pa
 
 ```hcl
 module "folder" {
-  source = "./modules/folder"
+  source = "./modules/folders"
   parent = "organizations/1234567890"
   names  = ["Folder one", "Folder two]
   iam_members = {
@@ -26,7 +26,7 @@ module "folder" {
 
 ```hcl
 module "folder" {
-  source = "./modules/folder"
+  source = "./modules/folders"
   parent = "organizations/1234567890"
   names  = ["Folder one", "Folder two]
   policy_boolean = {
