@@ -31,12 +31,54 @@ module "simple-vm-example" {
 }
 ```
 
+### Instance Ecrypting disk with Cloud KMSleveraging defaults
+
+This example show how to use the module to manage an instace that defines a Cloud KMS CryptoKey to encrypt boot and attached disk. 
+
+```hcl
+module "kms-vm-example" {
+  source     = "../modules/compute-vm"
+  project_id = local.project_id
+  region     = local.region
+  zone       = local.zone
+  name       = "kms-test"
+  network_interfaces = [{
+    network    = local.network_self_link,
+    subnetwork = local.subnet_self_link,
+    nat        = false,
+    addresses  = null
+  }]
+  attached_disks = [
+    {
+      name  = "attached-disk"
+      size  = 10
+      image = null
+      options = {
+        auto_delete = true
+        mode        = null
+        source      = null
+        type        = null
+        kms_key     = local.kms_key.self_link
+      }
+    }
+  ]
+  service_account_create = true
+  instance_count         = 1
+  boot_disk = {
+    image        = "projects/debian-cloud/global/images/family/debian-10"
+    type         = "pd-ssd"
+    size         = 10
+    kms_key      = local.kms_key.self_link
+  }
+}
+```
+
 ### Instance template
 
 This example shows how to use the module to manage an instance template that defines an additional attached disk for each instance, and overrides defaults for the boot disk image and service account.
 
 ```hcl
-module "debian-test" {
+module "cos-test" {
   source     = "../modules/compute-vm"
   project_id = "my-project"
   region     = "europe-west1"

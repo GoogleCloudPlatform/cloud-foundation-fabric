@@ -83,6 +83,7 @@ resource "google_compute_disk" "boot" {
   name     = each.key
   type     = var.boot_disk.type
   size     = var.boot_disk.size
+  image    = var.boot_disk.image
   labels = merge(var.labels, {
     disk_name = each.key
     disk_type = var.boot_disk.type
