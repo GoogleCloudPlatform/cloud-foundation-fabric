@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- new `datafusion` module
+
 ## [1.6.0] - 2020-05-20
 
 - add output to `gke-cluster` exposing the cluster's CA certificate
@@ -11,7 +13,6 @@ All notable changes to this project will be documented in this file.
 - add support for Service Directory bound zones to the `dns` module
 - new `service-directory` module
 - new `source-repository` module
-- new `datafusion` module
 
 ## [1.5.0] - 2020-05-11
 
