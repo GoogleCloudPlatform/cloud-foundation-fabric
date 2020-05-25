@@ -10,7 +10,7 @@ This module allow creation and management of sets of folders sharing a common pa
 module "folder" {
   source = "./modules/folders"
   parent = "organizations/1234567890"
-  names  = ["Folder one", "Folder two]
+  names  = ["Folder one", "Folder two"]
   iam_members = {
     "Folder one" = {
       "roles/owner" => ["group:users@example.com"]
