@@ -28,7 +28,7 @@ module "folder" {
 module "folder" {
   source = "./modules/folders"
   parent = "organizations/1234567890"
-  names  = ["Folder one", "Folder two]
+  names  = ["Folder one", "Folder two"]
   policy_boolean = {
     "constraints/compute.disableGuestAttributesAccess" = true
     "constraints/compute.skipDefaultNetworkCreation" = true
