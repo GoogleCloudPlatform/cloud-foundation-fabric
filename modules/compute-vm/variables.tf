@@ -25,7 +25,6 @@ variable "attached_disks" {
       mode        = string
       source      = string
       type        = string
-      kms_key     = string
     })
   }))
   default = []
@@ -38,31 +37,37 @@ variable "attached_disk_defaults" {
     mode        = string
     type        = string
     source      = string
-    kms_key     = string
   })
   default = {
     auto_delete = true
     source      = null
     mode        = "READ_WRITE"
     type        = "pd-ssd"
-    kms_key     = null
   }
 }
 
 variable "boot_disk" {
   description = "Boot disk properties."
   type = object({
-    image   = string
-    size    = number
-    type    = string
-    kms_key = string
+    image = string
+    size  = number
+    type  = string
   })
   default = {
-    image   = "projects/debian-cloud/global/images/family/debian-10"
-    type    = "pd-ssd"
-    size    = 10
-    kms_key = null
+    image = "projects/debian-cloud/global/images/family/debian-10"
+    type  = "pd-ssd"
+    size  = 10
   }
+}
+
+variable "encryption" {
+  description = "Encryption options. Only one of kms_key_self_link and disk_encryption_key_raw may be set. You can specify if you want to encrypt boot disk."
+  type = object({
+    encrypt_boot            = bool
+    disk_encryption_key_raw = string
+    kms_key_self_link       = string
+  })
+  default = null
 }
 
 variable "group" {
