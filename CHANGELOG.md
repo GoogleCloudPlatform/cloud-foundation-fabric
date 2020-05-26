@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 - new `datafusion` module
 - new `container-registry` module
+- new `artifact-registry` module
 
 ## [1.6.0] - 2020-05-20
 
