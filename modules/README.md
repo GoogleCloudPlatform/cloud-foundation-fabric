@@ -42,8 +42,14 @@ Specific modules also offer support for non-authoritative bindings (e.g. `google
 ## Data
 
 - [BigQuery dataset](./bigquery-dataset)
+- [Datafusion](./datafusion)
 - [GCS](./gcs)
-- [Pub/Sub](./modules/pubsub)
+- [Pub/Sub](./pubsub)
+
+## Development
+
+- [Container Registry](./container-registry)
+- [Source Repository](./source-repository)
 
 ## Security
 
