@@ -48,6 +48,7 @@ Specific modules also offer support for non-authoritative bindings (e.g. `google
 
 ## Development
 
+- [Artifact Registry](./artifact-registry)
 - [Container Registry](./container-registry)
 - [Source Repository](./source-repository)
 
