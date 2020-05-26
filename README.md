@@ -37,6 +37,6 @@ Currently available modules:
 - **compute** - [VM/VM group](./modules/compute-vm), [MIG](./modules/compute-mig), [GKE cluster](./modules/gke-cluster), [GKE nodepool](./modules/gke-nodepool), [COS container](./modules/cos-container) (coredns, mysql, onprem, squid)
 - **data** - [GCS](./modules/gcs), [BigQuery dataset](./modules/bigquery-dataset), [Pub/Sub](./modules/pubsub)
 - **security** - [KMS](./modules/kms), [SecretManager](./modules/secret-manager)
-- **development** - [Cloud Source Repository](./modules/source-repository)
+- **development** - [Cloud Source Repository](./modules/source-repository), [Container Registry](./modules/container-registry)
 
 For more information and usage examples see each module's README file.
