@@ -20,6 +20,7 @@ module "pubsub" {
     "roles/pubsub.viewer"     = ["group:foo@example.com"]
     "roles/pubsub.subscriber" = ["user:user1@example.com"]
   }
+}
 ```
 
 ### Subscriptions
