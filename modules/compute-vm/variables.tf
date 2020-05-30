@@ -60,6 +60,16 @@ variable "boot_disk" {
   }
 }
 
+variable "encryption" {
+  description = "Encryption options. Only one of kms_key_self_link and disk_encryption_key_raw may be set. If needed, you can specify to encrypt or not the boot disk."
+  type = object({
+    encrypt_boot            = bool
+    disk_encryption_key_raw = string
+    kms_key_self_link       = string
+  })
+  default = null
+}
+
 variable "group" {
   description = "Define this variable to create an instance group for instances. Disabled for template use."
   type = object({

@@ -66,6 +66,14 @@ resource "google_compute_disk" "disks" {
     disk_type = local.attached_disks[each.value.disk_name].options.type
     image     = local.attached_disks[each.value.disk_name].image
   })
+  dynamic disk_encryption_key {
+    for_each = var.encryption != null ? [""] : []
+
+    content {
+      raw_key           = var.encryption.disk_encryption_key_raw
+      kms_key_self_link = var.encryption.kms_key_self_link
+    }
+  }
 }
 
 resource "google_compute_instance" "default" {
@@ -103,6 +111,8 @@ resource "google_compute_instance" "default" {
       image = var.boot_disk.image
       size  = var.boot_disk.size
     }
+    disk_encryption_key_raw = var.encryption != null ? var.encryption.disk_encryption_key_raw : null
+    kms_key_self_link       = var.encryption != null ? var.encryption.kms_key_self_link : null
   }
 
   dynamic network_interface {
