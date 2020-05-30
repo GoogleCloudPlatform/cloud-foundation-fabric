@@ -5,6 +5,9 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 - add support for disk encryption to the `compute-vm` module
+- new `datafusion` module
+- new `container-registry` module
+- new `artifact-registry` module
 
 ## [1.6.0] - 2020-05-20
 

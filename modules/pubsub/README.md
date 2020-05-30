@@ -10,7 +10,7 @@ This module allows managing a single Pub/Sub topic, including multiple subscript
 ```hcl
 module "pubsub" {
   source     = "./modules/pubsub"
-  project_id = "my-project
+  project_id = "my-project"
   name       = "my-topic"
   iam_roles = [
     "roles/pubsub.viewer",
@@ -20,6 +20,7 @@ module "pubsub" {
     "roles/pubsub.viewer"     = ["group:foo@example.com"]
     "roles/pubsub.subscriber" = ["user:user1@example.com"]
   }
+}
 ```
 
 ### Subscriptions
