@@ -31,7 +31,7 @@ module "project-host" {
   ]
   iam_members = {
     "roles/container.hostServiceAgentUser" = [
-      "serviceAccount:${module.project-svc-gke.gke_service_account}"
+      "serviceAccount:${module.project-svc-gke.service_accounts.robots.container-engine}"
     ]
     "roles/owner" = var.owners_host
   }
@@ -126,7 +126,7 @@ module "vpc-shared" {
         "serviceAccount:${module.project-svc-gke.service_accounts.robots.container-engine}",
       ])
       "roles/compute.securityAdmin" = [
-        "serviceAccount:${module.project-svc-gke.robots.container-engine}",
+        "serviceAccount:${module.project-svc-gke.service_accounts.robots.container-engine}",
       ]
     }
   }
