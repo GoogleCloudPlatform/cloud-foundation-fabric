@@ -18,14 +18,19 @@ locals {
   service_account_cloud_services = "${google_project.project.number}@cloudservices.gserviceaccount.com"
   service_accounts_default = {
     compute = "${google_project.project.number}-compute@developer.gserviceaccount.com"
+    gae     = "${google_project.project.project_id}@appspot.gserviceaccount.com"
   }
   service_accounts_robot_services = {
-    compute           = "compute-system",
-    container-engine  = "container-engine-robot",
-    containerregistry = "containerregistry",
-    dataproc          = "dataproc-accounts",
-    gcf               = "gcf-admin-robot",
+    cloudasset        = "gcp-sa-cloudasset"
+    cloudbuild        = "gcp-sa-cloudbuild"
+    compute           = "compute-system"
+    container-engine  = "container-engine-robot"
+    containerregistry = "containerregistry"
+    dataproc          = "dataproc-accounts"
+    gae-flex          = "gae-api-prod"
+    gcf               = "gcf-admin-robot"
     pubsub            = "gcp-sa-pubsub"
+    storage           = "gs-project-accounts"
   }
   service_accounts_robots = {
     for service, name in local.service_accounts_robot_services :
