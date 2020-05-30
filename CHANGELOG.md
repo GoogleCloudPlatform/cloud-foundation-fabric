@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.7.0] - 2020-05-30
+
 - add support for disk encryption to the `compute-vm` module
 - new `datafusion` module
 - new `container-registry` module
@@ -70,7 +72,8 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.6.0...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.7.0...HEAD
+[1.7.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.4.1...v1.5.0
 [1.4.1]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.4.0...v1.4.1
