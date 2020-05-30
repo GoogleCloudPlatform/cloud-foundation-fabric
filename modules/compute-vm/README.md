@@ -58,7 +58,6 @@ module "kms-vm-example" {
         mode        = null
         source      = null
         type        = null
-        kms_key     = local.kms_key.self_link
       }
     }
   ]
@@ -68,7 +67,11 @@ module "kms-vm-example" {
     image        = "projects/debian-cloud/global/images/family/debian-10"
     type         = "pd-ssd"
     size         = 10
-    kms_key      = local.kms_key.self_link
+  }
+  encryption = {
+    encrypt_boot            = true
+    disk_encryption_key_raw = null
+    kms_key_self_link       = local.kms_key.self_link
   }
 }
 ```
