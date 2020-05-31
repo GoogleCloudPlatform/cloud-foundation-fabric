@@ -31,8 +31,8 @@ locals {
   }
   keyring = (
     var.keyring_create
-    ? google_kms_key_ring.key_ring
-    : data.google_kms_key_ring.key_ring
+    ? google_kms_key_ring.default
+    : data.google_kms_key_ring.default
   )
 }
 
@@ -52,8 +52,7 @@ resource "google_kms_key_ring" "default" {
 
 resource "google_kms_key_ring_iam_binding" "default" {
   for_each    = toset(var.iam_roles)
-  project     = var.project_id
-  key_ring_id = loca.keyring.self_link
+  key_ring_id = local.keyring.self_link
   role        = each.value
   members     = lookup(var.iam_members, each.value, [])
 }
