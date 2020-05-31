@@ -15,53 +15,79 @@
  */
 
 variable "iam_members" {
+  description = "Keyring IAM members."
+  type        = map(list(string))
+  default     = {}
+}
+
+variable "iam_roles" {
+  description = "Keyring IAM roles."
+  type        = list(string)
+  default     = []
+}
+
+variable "key_attributes" {
+  description = "Per-key extended attributes, if not set defaults will be used."
+  type = map(object({
+    purpose = string
+    version_template = object({
+      algorithm        = string
+      protection_level = string
+    })
+  }))
+  default = {}
+}
+
+variable "key_attributes_defaults" {
+  description = "Defaults used for keys when not defined at the key level."
+  type = object({
+    purpose = string
+    version_template = object({
+      algorithm        = string
+      protection_level = string
+    })
+  })
+  default = {
+    purpose          = null
+    version_template = null
+  }
+}
+
+# cf https://cloud.google.com/kms/docs/locations
+
+variable "keyring" {
+  description = "Keyring attributes."
+  type = object({
+    location = string
+    name     = string
+  })
+}
+
+variable "keyring_create" {
+  description = "Set to false to manage keys and IAM bindings in an existing keyring."
+  type        = bool
+  default     = true
+}
+
+variable "keys" {
+  description = "Key names and base attributes. Set attributes to null if not needed."
+  type = map(object({
+    rotation_period = string
+    labels          = map(string)
+  }))
+  default = {}
+}
+
+variable "keys_iam_members" {
   description = "IAM members keyed by key name and role."
   type        = map(map(list(string)))
   default     = {}
 }
 
-variable "iam_roles" {
+variable "keys_iam_roles" {
   description = "IAM roles keyed by key name."
   type        = map(list(string))
   default     = {}
-}
-
-variable "keyring" {
-  description = "Keyring name."
-  type        = string
-}
-
-variable "key_attributes" {
-  description = "Optional key attributes per key."
-  type = map(object({
-    protected       = bool
-    rotation_period = string
-  }))
-  default = {}
-}
-
-variable "key_defaults" {
-  description = "Key attribute defaults."
-  type = object({
-    protected       = bool
-    rotation_period = string
-  })
-  default = {
-    protected       = true
-    rotation_period = "100000s"
-  }
-}
-
-variable "keys" {
-  description = "Key names."
-  type        = list(string)
-  default     = []
-}
-
-# cf https://cloud.google.com/kms/docs/locations
-variable "location" {
-  description = "Location for the keyring."
-  type        = string
 }
 
 variable "project_id" {
