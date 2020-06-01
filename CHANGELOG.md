@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- add support for PD CSI driver in GKE module
+
 ## [1.7.0] - 2020-05-30
 
 - add support for disk encryption to the `compute-vm` module
