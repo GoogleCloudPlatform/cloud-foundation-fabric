@@ -20,23 +20,6 @@ variable "generate_keys" {
   default     = false
 }
 
-variable "names" {
-  description = "Names of the service accounts to create."
-  type        = list(string)
-  default     = []
-}
-
-variable "prefix" {
-  description = "Prefix applied to service account names."
-  type        = string
-  default     = ""
-}
-
-variable "project_id" {
-  description = "Project id where service account will be created."
-  type        = string
-}
-
 variable "iam_members" {
   description = "Map of member lists which are granted authoritative roles on the service accounts, keyed by role."
   type        = map(list(string))
@@ -77,4 +60,21 @@ variable "iam_storage_roles" {
   description = "Storage roles granted to all service accounts, by bucket name."
   type        = map(list(string))
   default     = {}
+}
+
+variable "names" {
+  description = "Names of the service accounts to create."
+  type        = list(string)
+  default     = []
+}
+
+variable "prefix" {
+  description = "Prefix applied to service account names."
+  type        = string
+  default     = null
+}
+
+variable "project_id" {
+  description = "Project id where service account will be created."
+  type        = string
 }
