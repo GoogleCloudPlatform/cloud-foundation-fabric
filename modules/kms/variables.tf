@@ -26,8 +26,20 @@ variable "iam_roles" {
   default     = []
 }
 
-variable "key_attributes" {
-  description = "Per-key extended attributes, if not set defaults will be used."
+variable "key_iam_members" {
+  description = "IAM members keyed by key name and role."
+  type        = map(map(list(string)))
+  default     = {}
+}
+
+variable "key_iam_roles" {
+  description = "IAM roles keyed by key name."
+  type        = map(list(string))
+  default     = {}
+}
+
+variable "key_purpose" {
+  description = "Per-key purpose, if not set defaults will be used. If purpose is not `ENCRYPT_DECRYPT` (the default), `version_template.algorithm` is required."
   type = map(object({
     purpose = string
     version_template = object({
@@ -38,8 +50,8 @@ variable "key_attributes" {
   default = {}
 }
 
-variable "key_attributes_defaults" {
-  description = "Defaults used for keys when not defined at the key level."
+variable "key_purpose_defaults" {
+  description = "Defaults used for key purpose when not defined at the key level. If purpose is not `ENCRYPT_DECRYPT` (the default), `version_template.algorithm` is required."
   type = object({
     purpose = string
     version_template = object({
@@ -76,18 +88,6 @@ variable "keys" {
     labels          = map(string)
   }))
   default = {}
-}
-
-variable "keys_iam_members" {
-  description = "IAM members keyed by key name and role."
-  type        = map(map(list(string)))
-  default     = {}
-}
-
-variable "keys_iam_roles" {
-  description = "IAM roles keyed by key name."
-  type        = map(list(string))
-  default     = {}
 }
 
 variable "project_id" {

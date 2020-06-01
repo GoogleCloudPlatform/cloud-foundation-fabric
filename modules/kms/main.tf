@@ -15,24 +15,23 @@
  */
 
 locals {
-  # distinct is needed to make the expanding function argument work
-  attributes = {
-    for key, attrs in var.keys : key => try(
-      var.key_attributes[key], var.key_attributes_defaults
-    )
-  }
-  iam_pairs = flatten([
-    for name, roles in var.keys_iam_roles :
+  key_iam_pairs = flatten([
+    for name, roles in var.key_iam_roles :
     [for role in roles : { name = name, role = role }]
   ])
-  iam_keypairs = {
-    for pair in local.iam_pairs :
+  key_iam_keypairs = {
+    for pair in local.key_iam_pairs :
     "${pair.name}-${pair.role}" => pair
+  }
+  key_purpose = {
+    for key, attrs in var.keys : key => try(
+      var.key_purpose[key], var.key_purpose_defaults
+    )
   }
   keyring = (
     var.keyring_create
-    ? google_kms_key_ring.default
-    : data.google_kms_key_ring.default
+    ? google_kms_key_ring.default.0
+    : data.google_kms_key_ring.default.0
   )
 }
 
@@ -48,6 +47,9 @@ resource "google_kms_key_ring" "default" {
   project  = var.project_id
   name     = var.keyring.name
   location = var.keyring.location
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
 
 resource "google_kms_key_ring_iam_binding" "default" {
@@ -63,21 +65,24 @@ resource "google_kms_crypto_key" "default" {
   name            = each.key
   rotation_period = try(each.value.rotation_period, null)
   labels          = try(each.value.labels, null)
-  purpose         = try(local.attributes[each.key], null)
+  purpose         = try(local.key_purpose[each.key].purpose, null)
   dynamic version_template {
-    for_each = local.attributes[each.key].version_template == null ? [] : [""]
+    for_each = local.key_purpose[each.key].version_template == null ? [] : [""]
     content {
-      algorithm        = local.attributes[each.key].version_template.algorithm
-      protection_level = local.attributes[each.key].version_template.protection_level
+      algorithm        = local.key_purpose[each.key].version_template.algorithm
+      protection_level = local.key_purpose[each.key].version_template.protection_level
     }
   }
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
 
 resource "google_kms_crypto_key_iam_binding" "default" {
-  for_each      = local.iam_keypairs
+  for_each      = local.key_iam_keypairs
   role          = each.value.role
   crypto_key_id = google_kms_crypto_key.default[each.value.name].self_link
   members = lookup(
-    lookup(var.keys_iam_members, each.value.name, {}), each.value.role, []
+    lookup(var.key_iam_members, each.value.name, {}), each.value.role, []
   )
 }
