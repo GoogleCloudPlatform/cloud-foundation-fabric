@@ -15,10 +15,6 @@
  */
 
 locals {
-  cloudsvc_service_account = "${google_project.project.number}@cloudservices.gserviceaccount.com"
-  gce_service_account      = "${google_project.project.number}-compute@developer.gserviceaccount.com"
-  gcr_service_account      = "service-${google_project.project.number}@containerregistry.iam.gserviceaccount.com"
-  gke_service_account      = "service-${google_project.project.number}@container-engine-robot.iam.gserviceaccount.com"
   iam_additive_pairs = flatten([
     for role in var.iam_additive_roles : [
       for member in lookup(var.iam_additive_members, role, []) :

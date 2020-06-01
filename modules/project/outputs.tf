@@ -44,28 +44,14 @@ output "number" {
   ]
 }
 
-output "cloudsvc_service_account" {
-  description = "Cloud services service account."
-  value       = "${local.cloudsvc_service_account}"
-  depends_on  = [google_project_service.project_services]
-}
-
-output "gce_service_account" {
-  description = "Default GCE service account."
-  value       = local.gce_service_account
-  depends_on  = [google_project_service.project_services]
-}
-
-output "gcr_service_account" {
-  description = "Default GCR service account."
-  value       = local.gcr_service_account
-  depends_on  = [google_project_service.project_services]
-}
-
-output "gke_service_account" {
-  description = "Default GKE service account."
-  value       = local.gke_service_account
-  depends_on  = [google_project_service.project_services]
+output "service_accounts" {
+  description = "Product robot service accounts in project."
+  value = {
+    cloud_services = local.service_account_cloud_services
+    default        = local.service_accounts_default
+    robots         = local.service_accounts_robots
+  }
+  depends_on = [google_project_service.project_services]
 }
 
 output "custom_roles" {

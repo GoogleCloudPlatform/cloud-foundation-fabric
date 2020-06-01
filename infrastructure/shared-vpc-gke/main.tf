@@ -31,7 +31,7 @@ module "project-host" {
   ]
   iam_members = {
     "roles/container.hostServiceAgentUser" = [
-      "serviceAccount:${module.project-svc-gke.gke_service_account}"
+      "serviceAccount:${module.project-svc-gke.service_accounts.robots.container-engine}"
     ]
     "roles/owner" = var.owners_host
   }
@@ -117,16 +117,16 @@ module "vpc-shared" {
   iam_members = {
     "${var.region}/gce" = {
       "roles/compute.networkUser" = concat(var.owners_gce, [
-        "serviceAccount:${module.project-svc-gce.cloudsvc_service_account}",
+        "serviceAccount:${module.project-svc-gce.service_accounts.cloud_services}",
       ])
     }
     "${var.region}/gke" = {
       "roles/compute.networkUser" = concat(var.owners_gke, [
-        "serviceAccount:${module.project-svc-gke.cloudsvc_service_account}",
-        "serviceAccount:${module.project-svc-gke.gke_service_account}",
+        "serviceAccount:${module.project-svc-gke.service_accounts.cloud_services}",
+        "serviceAccount:${module.project-svc-gke.service_accounts.robots.container-engine}",
       ])
       "roles/compute.securityAdmin" = [
-        "serviceAccount:${module.project-svc-gke.gke_service_account}",
+        "serviceAccount:${module.project-svc-gke.service_accounts.robots.container-engine}",
       ]
     }
   }

@@ -80,12 +80,9 @@ module "project" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| cloudsvc_service_account | Cloud services service account. |  |
 | custom_roles | Ids of the created custom roles. |  |
-| gce_service_account | Default GCE service account. |  |
-| gcr_service_account | Default GCR service account. |  |
-| gke_service_account | Default GKE service account. |  |
 | name | Project ame. |  |
 | number | Project number. |  |
 | project_id | Project id. |  |
+| service_accounts | Product robot service accounts in project. |  |
 <!-- END TFDOC -->
