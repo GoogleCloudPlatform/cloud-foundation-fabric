@@ -75,6 +75,9 @@ resource "google_container_cluster" "cluster" {
       disabled = ! var.addons.istio_config.enabled
       auth     = var.addons.istio_config.tls ? "AUTH_MUTUAL_TLS" : "AUTH_NONE"
     }
+    gce_persistent_disk_csi_driver_config {
+      enabled = var.addons.gce_persistent_disk_csi_driver_config
+    }
   }
 
   # TODO(ludomagno): support setting address ranges instead of range names

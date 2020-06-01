@@ -26,6 +26,7 @@ variable "addons" {
       tls     = bool
     })
     network_policy_config = bool
+    gce_persistent_disk_csi_driver_config = bool
   })
   default = {
     cloudrun_config            = false
@@ -37,6 +38,7 @@ variable "addons" {
       tls     = false
     }
     network_policy_config = false
+    gce_persistent_disk_csi_driver_config = false
   }
 }
 
