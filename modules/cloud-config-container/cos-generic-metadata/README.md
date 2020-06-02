@@ -64,6 +64,7 @@ module "cos-envoy" {
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
 | container_image | Container image. | <code title="">string</code> | ✓ |  |
+| *authenticate_gcr* | Setup docker to pull images from private GCR. Requires at least one user since the token is stored in the home of the first user defined. | <code title="">bool</code> |  | <code title="">false</code> |
 | *boot_commands* | List of cloud-init `bootcmd`s | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 | *cloud_config* | Cloud config template path. If provided, takes precedence over all other arguments. | <code title="">string</code> |  | <code title="">null</code> |
 | *config_variables* | Additional variables used to render the template passed via `cloud_config` | <code title="map&#40;any&#41;">map(any)</code> |  | <code title="">{}</code> |
