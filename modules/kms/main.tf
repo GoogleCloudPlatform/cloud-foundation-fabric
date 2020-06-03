@@ -15,59 +15,74 @@
  */
 
 locals {
-  # distinct is needed to make the expanding function argument work
-  iam_pairs = flatten([
-    for name, roles in var.iam_roles :
+  key_iam_pairs = flatten([
+    for name, roles in var.key_iam_roles :
     [for role in roles : { name = name, role = role }]
   ])
-  iam_keypairs = {
-    for pair in local.iam_pairs :
+  key_iam_keypairs = {
+    for pair in local.key_iam_pairs :
     "${pair.name}-${pair.role}" => pair
   }
-  key_attributes = {
-    for name in var.keys :
-    name => lookup(var.key_attributes, name, var.key_defaults)
+  key_purpose = {
+    for key, attrs in var.keys : key => try(
+      var.key_purpose[key], var.key_purpose_defaults
+    )
   }
-  keys = merge(
-    { for name, resource in google_kms_crypto_key.keys : name => resource },
-    { for name, resource in google_kms_crypto_key.keys-ephemeral : name => resource }
+  keyring = (
+    var.keyring_create
+    ? google_kms_key_ring.default.0
+    : data.google_kms_key_ring.default.0
   )
 }
 
-resource "google_kms_key_ring" "key_ring" {
-  name     = var.keyring
+data "google_kms_key_ring" "default" {
+  count    = var.keyring_create ? 0 : 1
   project  = var.project_id
-  location = var.location
+  name     = var.keyring.name
+  location = var.keyring.location
 }
 
-resource "google_kms_crypto_key" "keys" {
-  for_each = {
-    for name, attrs in local.key_attributes :
-    name => attrs if attrs.protected
-  }
+resource "google_kms_key_ring" "default" {
+  count    = var.keyring_create ? 1 : 0
+  project  = var.project_id
+  name     = var.keyring.name
+  location = var.keyring.location
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
+}
+
+resource "google_kms_key_ring_iam_binding" "default" {
+  for_each    = toset(var.iam_roles)
+  key_ring_id = local.keyring.self_link
+  role        = each.value
+  members     = lookup(var.iam_members, each.value, [])
+}
+
+resource "google_kms_crypto_key" "default" {
+  for_each        = var.keys
+  key_ring        = local.keyring.self_link
   name            = each.key
-  key_ring        = google_kms_key_ring.key_ring.self_link
-  rotation_period = each.value.rotation_period
-  lifecycle {
-    prevent_destroy = true
+  rotation_period = try(each.value.rotation_period, null)
+  labels          = try(each.value.labels, null)
+  purpose         = try(local.key_purpose[each.key].purpose, null)
+  dynamic version_template {
+    for_each = local.key_purpose[each.key].version_template == null ? [] : [""]
+    content {
+      algorithm        = local.key_purpose[each.key].version_template.algorithm
+      protection_level = local.key_purpose[each.key].version_template.protection_level
+    }
   }
+  # lifecycle {
+  #   prevent_destroy = true
+  # }
 }
 
-resource "google_kms_crypto_key" "keys-ephemeral" {
-  for_each = {
-    for name, attrs in local.key_attributes :
-    name => attrs if ! attrs.protected
-  }
-  name            = each.key
-  key_ring        = google_kms_key_ring.key_ring.self_link
-  rotation_period = each.value.rotation_period
-}
-
-resource "google_kms_crypto_key_iam_binding" "bindings" {
-  for_each      = local.iam_keypairs
+resource "google_kms_crypto_key_iam_binding" "default" {
+  for_each      = local.key_iam_keypairs
   role          = each.value.role
-  crypto_key_id = local.keys[each.value.name].self_link
+  crypto_key_id = google_kms_crypto_key.default[each.value.name].self_link
   members = lookup(
-    lookup(var.iam_members, each.value.name, {}), each.value.role, []
+    lookup(var.key_iam_members, each.value.name, {}), each.value.role, []
   )
 }

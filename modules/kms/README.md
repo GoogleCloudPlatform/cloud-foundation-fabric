@@ -1,40 +1,71 @@
 # Google KMS Module
 
-Simple Cloud KMS module that allows managing a keyring, zero or more keys in the keyring, and IAM role bindings on individual keys.
+This module allows creating and managing KMS crypto keys and IAM bindings at both the keyring and crypto key level. An existing keyring can be used, or a new one can be created and managed by the module if needed.
 
-The `protected` flag in the `key_attributes` variable sets the `prevent_destroy` lifecycle argument on an a per-key basis.
+When using an existing keyring be mindful about applying IAM bindings, as all bindings used by this module are authoritative, and you might inadvertently override bindings managed by the keyring creator.
+
+## Protecting against destroy
+
+In this module **no lifecycle blocks are set on resources to prevent destroy**, in order to allow for experimentation and testing where rapid `apply`/`destroy` cycles are needed. If you plan on using this module to manage non-development resources, **clone it and uncomment the lifecycle blocks** found in `main.tf`.
 
 ## Examples
 
-### Minimal example
+### Using an existing keyring
 
 ```hcl
 module "kms" {
-  source     = "../modules/kms"
-  project_id = "my-project"
-  keyring    = "test"
-  location   = "europe"
-  keys       = ["key-a", "key-b"]
+  source         = "../modules/kms"
+  project_id     = "my-project"
+  iam_roles      = ["roles/owner"]
+  iam_members    = {
+    "roles/owner" = ["user:user1@example.com"]
+  }
+  keyring        = { location = "europe-west1", name = "test" }
+  keyring_create = false
+  keys           = { key-a = null, key-b = null, key-c = null }
 }
 ```
 
-### Granting access to keys via IAM
+### Keyring creation and crypto key rotation and IAM roles
 
 ```hcl
 module "kms" {
-  source     = "../modules/kms"
-  project_id = "my-project"
-  keyring    = "test"
-  location   = "europe"
-  keys       = ["key-a", "key-b"]
-  iam_roles = {
-    key-a = ["roles/cloudkms.cryptoKeyDecrypter"]
+  source           = "../modules/kms"
+  project_id       = "my-project"
+  key_iam_roles    = {
+    key-a = ["roles/owner"]
   }
-  iam_members = {
+  key_iam_members = {
     key-a = {
-      "roles/cloudkms.cryptoKeyDecrypter" = ["user:me@example.org"]
+      "roles/owner" = ["user:user1@example.com"]
     }
   }
+  keyring         = { location = "europe-west1", name = "test" }
+  keys            = {
+    key-a = null
+    key-b = { rotation_period = "604800s", labels = null }
+    key-c = { rotation_period = null, labels = { env = "test" } }
+  }
+}
+```
+
+### Crypto key purpose
+
+```hcl
+module "kms" {
+  source      = "../modules/kms"
+  project_id  = "my-project"
+  key_purpose = {
+    key-c = {
+      purpose = "ASYMMETRIC_SIGN"
+      version_template = {
+        algorithm        = "EC_SIGN_P384_SHA384"
+        protection_level = null
+      }
+    }
+  }
+  keyring     = { location = "europe-west1", name = "test" }
+  keys        = { key-a = null, key-b = null, key-c = null }
 }
 ```
 
@@ -43,14 +74,16 @@ module "kms" {
 
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
-| keyring | Keyring name. | <code title="">string</code> | ✓ |  |
-| location | Location for the keyring. | <code title="">string</code> | ✓ |  |
+| keyring | Keyring attributes. | <code title="object&#40;&#123;&#10;location &#61; string&#10;name     &#61; string&#10;&#125;&#41;">object({...})</code> | ✓ |  |
 | project_id | Project id where the keyring will be created. | <code title="">string</code> | ✓ |  |
-| *iam_members* | IAM members keyed by key name and role. | <code title="map&#40;map&#40;list&#40;string&#41;&#41;&#41;">map(map(list(string)))</code> |  | <code title="">{}</code> |
-| *iam_roles* | IAM roles keyed by key name. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
-| *key_attributes* | Optional key attributes per key. | <code title="map&#40;object&#40;&#123;&#10;protected       &#61; bool&#10;rotation_period &#61; string&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
-| *key_defaults* | Key attribute defaults. | <code title="object&#40;&#123;&#10;protected       &#61; bool&#10;rotation_period &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;protected       &#61; true&#10;rotation_period &#61; &#34;100000s&#34;&#10;&#125;">...</code> |
-| *keys* | Key names. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
+| *iam_members* | Keyring IAM members. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
+| *iam_roles* | Keyring IAM roles. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
+| *key_iam_members* | IAM members keyed by key name and role. | <code title="map&#40;map&#40;list&#40;string&#41;&#41;&#41;">map(map(list(string)))</code> |  | <code title="">{}</code> |
+| *key_iam_roles* | IAM roles keyed by key name. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
+| *key_purpose* | Per-key purpose, if not set defaults will be used. If purpose is not `ENCRYPT_DECRYPT` (the default), `version_template.algorithm` is required. | <code title="map&#40;object&#40;&#123;&#10;purpose &#61; string&#10;version_template &#61; object&#40;&#123;&#10;algorithm        &#61; string&#10;protection_level &#61; string&#10;&#125;&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
+| *key_purpose_defaults* | Defaults used for key purpose when not defined at the key level. If purpose is not `ENCRYPT_DECRYPT` (the default), `version_template.algorithm` is required. | <code title="object&#40;&#123;&#10;purpose &#61; string&#10;version_template &#61; object&#40;&#123;&#10;algorithm        &#61; string&#10;protection_level &#61; string&#10;&#125;&#41;&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;purpose          &#61; null&#10;version_template &#61; null&#10;&#125;">...</code> |
+| *keyring_create* | Set to false to manage keys and IAM bindings in an existing keyring. | <code title="">bool</code> |  | <code title="">true</code> |
+| *keys* | Key names and base attributes. Set attributes to null if not needed. | <code title="map&#40;object&#40;&#123;&#10;rotation_period &#61; string&#10;labels          &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
 
 ## Outputs
 
@@ -59,25 +92,7 @@ module "kms" {
 | key_self_links | Key self links. |  |
 | keyring | Keyring resource. |  |
 | keys | Key resources. |  |
-| location | Keyring self link. |  |
-| name | Keyring self link. |  |
+| location | Keyring location. |  |
+| name | Keyring name. |  |
 | self_link | Keyring self link. |  |
 <!-- END TFDOC -->
-
-## Requirements
-
-These sections describe requirements for using this module.
-
-### IAM
-
-The following roles must be used to provision the resources of this module:
-
-- Cloud KMS Admin: `roles/cloudkms.admin` or
-- Owner: `roles/owner`
-
-### APIs
-
-A project with the following APIs enabled must be used to host the
-resources of this module:
-
-- Google Cloud Key Management Service: `cloudkms.googleapis.com`

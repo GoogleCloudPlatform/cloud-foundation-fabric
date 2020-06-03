@@ -1,5 +1,5 @@
 /**
- * Copyright 2018 Google LLC
+ * Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,31 +15,34 @@
  */
 
 variable "iam_members" {
-  description = "Keyring IAM members."
-  type        = map(list(string))
-  default     = {}
+  type = map(list(string))
+  default = {
+    "roles/owner" = ["user:ludo@ludomagno.net"]
+  }
 }
 
 variable "iam_roles" {
-  description = "Keyring IAM roles."
-  type        = list(string)
-  default     = []
+  type    = list(string)
+  default = ["roles/owner"]
 }
 
 variable "key_iam_members" {
-  description = "IAM members keyed by key name and role."
-  type        = map(map(list(string)))
-  default     = {}
+  type = map(map(list(string)))
+  default = {
+    key-a = {
+      "roles/owner" = ["user:ludo@ludomagno.net"]
+    }
+  }
 }
 
 variable "key_iam_roles" {
-  description = "IAM roles keyed by key name."
-  type        = map(list(string))
-  default     = {}
+  type = map(list(string))
+  default = {
+    key-a = ["roles/owner"]
+  }
 }
 
 variable "key_purpose" {
-  description = "Per-key purpose, if not set defaults will be used. If purpose is not `ENCRYPT_DECRYPT` (the default), `version_template.algorithm` is required."
   type = map(object({
     purpose = string
     version_template = object({
@@ -47,11 +50,22 @@ variable "key_purpose" {
       protection_level = string
     })
   }))
-  default = {}
+  default = {
+    key-b = {
+      purpose          = "ENCRYPT_DECRYPT"
+      version_template = null
+    }
+    key-c = {
+      purpose = "ASYMMETRIC_SIGN"
+      version_template = {
+        algorithm        = "EC_SIGN_P384_SHA384"
+        protection_level = null
+      }
+    }
+  }
 }
 
 variable "key_purpose_defaults" {
-  description = "Defaults used for key purpose when not defined at the key level. If purpose is not `ENCRYPT_DECRYPT` (the default), `version_template.algorithm` is required."
   type = object({
     purpose = string
     version_template = object({
@@ -65,32 +79,35 @@ variable "key_purpose_defaults" {
   }
 }
 
-# cf https://cloud.google.com/kms/docs/locations
-
 variable "keyring" {
-  description = "Keyring attributes."
   type = object({
     location = string
     name     = string
   })
+  default = {
+    location = "europe-west1"
+    name     = "test-module"
+  }
 }
 
 variable "keyring_create" {
-  description = "Set to false to manage keys and IAM bindings in an existing keyring."
-  type        = bool
-  default     = true
+  type    = bool
+  default = true
 }
 
 variable "keys" {
-  description = "Key names and base attributes. Set attributes to null if not needed."
   type = map(object({
     rotation_period = string
     labels          = map(string)
   }))
-  default = {}
+  default = {
+    key-a = null
+    key-b = { rotation_period = "604800s", labels = null }
+    key-c = { rotation_period = null, labels = { env = "test" } }
+  }
 }
 
 variable "project_id" {
-  description = "Project id where the keyring will be created."
-  type        = string
+  type    = string
+  default = "my-project"
 }
