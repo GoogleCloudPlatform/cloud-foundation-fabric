@@ -1,6 +1,6 @@
 # Google KMS Module
 
-This module allows creating and managing KMS keys and IAM bindings at both the keyring and key level. An existing keyring can be used, or a new one can be created and managed by the module if needed.
+This module allows creating and managing KMS crypto keys and IAM bindings at both the keyring and crypto key level. An existing keyring can be used, or a new one can be created and managed by the module if needed.
 
 When using an existing keyring be mindful about applying IAM bindings, as all bindings used by this module are authoritative, and you might inadvertently override bindings managed by the keyring creator.
 
@@ -26,7 +26,7 @@ module "kms" {
 }
 ```
 
-### Keyring creation and key rotation and IAM roles
+### Keyring creation and crypto key rotation and IAM roles
 
 ```hcl
 module "kms" {
@@ -49,7 +49,7 @@ module "kms" {
 }
 ```
 
-### Key purpose
+### Crypto key purpose
 
 ```hcl
 module "kms" {
