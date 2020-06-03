@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- **incompatible change** the `kms` module has been refactored and will be incompatible with previous state
 - **incompatible change** robot and default service accounts outputs in the `project` module have been refactored and are now exposed via a single `service_account` output (cf [#82])
 - add support for PD CSI driver in GKE module
 - refactor `iam-service-accounts` module outputs to be more resilient
