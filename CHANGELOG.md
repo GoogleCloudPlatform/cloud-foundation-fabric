@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.8.0] - 2020-06-03
+
 - **incompatible change** the `kms` module has been refactored and will be incompatible with previous state
 - **incompatible change** robot and default service accounts outputs in the `project` module have been refactored and are now exposed via a single `service_account` output (cf [#82])
 - add support for PD CSI driver in GKE module
@@ -79,6 +81,7 @@ All notable changes to this project will be documented in this file.
 - merge development branch with suite of new modules and end-to-end examples
 
 [Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.7.0...HEAD
+[1.8.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.4.1...v1.5.0
