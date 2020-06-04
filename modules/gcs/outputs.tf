@@ -21,7 +21,7 @@ output "bucket" {
 
 output "kms_keys" {
   description = "List of bucket Encryption Keys."
-  value       = [for bucket, key in var.kms_keys : "${bucket} => ${key}"]
+  value       = [for bucket, key in local.kms_keys : "${bucket} => ${key}"]
 }
 
 output "name" {

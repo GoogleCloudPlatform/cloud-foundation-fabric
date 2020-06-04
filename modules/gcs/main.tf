@@ -32,6 +32,11 @@ locals {
   }
   iam_members = var.iam_members == null ? {} : var.iam_members
   prefix      = var.prefix == "" ? "" : join("-", [var.prefix, lower(var.location), ""])
+  kms_keys = (
+    var.kms_keys != null
+    ? var.kms_keys
+    : {}
+  )
 }
 
 resource "google_storage_bucket" "buckets" {
