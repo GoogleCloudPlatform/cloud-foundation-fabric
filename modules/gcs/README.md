@@ -26,7 +26,7 @@ module "buckets" {
 }
 ```
 
-`### Examle with Cloud KMS
+### Example with Cloud KMS
 
 ```hcl
 module "buckets" {
@@ -62,7 +62,7 @@ module "buckets" {
 | *force_destroy* | Optional map to set force destroy keyed by name, defaults to false. | <code title="map&#40;bool&#41;">map(bool)</code> |  | <code title="">{}</code> |
 | *iam_members* | IAM members keyed by bucket name and role. | <code title="map&#40;map&#40;list&#40;string&#41;&#41;&#41;">map(map(list(string)))</code> |  | <code title="">null</code> |
 | *iam_roles* | IAM roles keyed by bucket name. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">null</code> |
-| *kms_keys* | Cloud KMS key that will be used to encrypt objects in buckets. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">null</code> |
+| *kms_keys* | Cloud KMS key that will be used to encrypt objects inserted into the bucket. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">null</code> |
 | *labels* | Labels to be attached to all buckets. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
 | *location* | Bucket location. | <code title="">string</code> |  | <code title="">EU</code> |
 | *prefix* | Prefix used to generate the bucket name. | <code title="">string</code> |  | <code title=""></code> |

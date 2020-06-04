@@ -39,7 +39,7 @@ variable "iam_roles" {
 }
 
 variable "kms_keys" {
-  description = "Cloud KMS key that will be used to encrypt objects in buckets."
+  description = "Cloud KMS key that will be used to encrypt objects inserted into the bucket."
   type        = map(string)
   default     = null
 }
