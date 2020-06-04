@@ -19,6 +19,11 @@ output "bucket" {
   value       = local.has_buckets ? local.buckets[0] : null
 }
 
+output "kms_keys" {
+  description = "List of bucket Encryption Keys."
+  value       = [for bucket, key in var.kms_keys : "${bucket} => ${key}"]
+}
+
 output "name" {
   description = "Bucket name (for single use)."
   value       = local.has_buckets ? local.buckets[0].name : null

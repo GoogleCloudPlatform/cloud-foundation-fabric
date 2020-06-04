@@ -26,6 +26,31 @@ module "buckets" {
 }
 ```
 
+`### Examle with Cloud KMS
+
+```hcl
+module "buckets" {
+  source     = "./modules/gcs"
+  project_id = "myproject"
+  prefix     = "test"
+  names      = ["bucket-one", "bucket-two"]
+  bucket_policy_only = {
+    bucket-one = false
+  }
+  iam_members = {
+    bucket-two = {
+      "roles/storage.admin" = ["group:storage@example.com"]
+    }
+  }
+  iam_roles = {
+    bucket-two = ["roles/storage.admin"]
+  }
+  kms_keys = {
+    bucket-two = local.kms_key.self_link,
+  }
+}
+```
+
 <!-- BEGIN TFDOC -->
 ## Variables
 
@@ -37,6 +62,7 @@ module "buckets" {
 | *force_destroy* | Optional map to set force destroy keyed by name, defaults to false. | <code title="map&#40;bool&#41;">map(bool)</code> |  | <code title="">{}</code> |
 | *iam_members* | IAM members keyed by bucket name and role. | <code title="map&#40;map&#40;list&#40;string&#41;&#41;&#41;">map(map(list(string)))</code> |  | <code title="">null</code> |
 | *iam_roles* | IAM roles keyed by bucket name. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">null</code> |
+| *kms_keys* | Cloud KMS key that will be used to encrypt objects in buckets. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">null</code> |
 | *labels* | Labels to be attached to all buckets. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
 | *location* | Bucket location. | <code title="">string</code> |  | <code title="">EU</code> |
 | *prefix* | Prefix used to generate the bucket name. | <code title="">string</code> |  | <code title=""></code> |
@@ -49,6 +75,7 @@ module "buckets" {
 |---|---|:---:|
 | bucket | Bucket resource (for single use). |  |
 | buckets | Bucket resources. |  |
+| kms_keys | List of bucket Encryption Keys. |  |
 | name | Bucket name (for single use). |  |
 | names | Bucket names. |  |
 | names_list | List of bucket names. |  |

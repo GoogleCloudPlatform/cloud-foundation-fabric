@@ -50,6 +50,14 @@ resource "google_storage_bucket" "buckets" {
     name          = lower(each.key)
     storage_class = lower(var.storage_class)
   })
+
+  dynamic encryption {
+    for_each = lookup(var.kms_keys, each.key, null) != null ? [""] : []
+
+    content {
+      default_kms_key_name = lookup(var.kms_keys, each.key, false)
+    }
+  }
 }
 
 resource "google_storage_bucket_iam_binding" "bindings" {
