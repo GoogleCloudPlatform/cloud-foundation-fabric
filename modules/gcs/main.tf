@@ -57,10 +57,10 @@ resource "google_storage_bucket" "buckets" {
   })
 
   dynamic encryption {
-    for_each = lookup(var.kms_keys, each.key, null) != null ? [""] : []
+    for_each = lookup(local.kms_keys, each.key, null) != null ? [""] : []
 
     content {
-      default_kms_key_name = lookup(var.kms_keys, each.key, false)
+      default_kms_key_name = lookup(local.kms_keys, each.key, false)
     }
   }
 }
