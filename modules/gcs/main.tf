@@ -31,8 +31,12 @@ locals {
     "${pair.name}-${pair.role}" => pair
   }
   iam_members = var.iam_members == null ? {} : var.iam_members
-  prefix      = var.prefix == null ? "" : join("-", [var.prefix, lower(var.location), ""])
-  kms_keys    = { for name in var.names : name => lookup(var.kms_keys, name, null) }
+  prefix = (
+    var.prefix == null || var.prefix == "" # keep "" for backward compatibility
+    ? ""
+    : join("-", [var.prefix, lower(var.location), ""])
+  )
+  kms_keys = { for name in var.names : name => lookup(var.encryption_keys, name, null) }
 }
 
 resource "google_storage_bucket" "buckets" {

@@ -38,8 +38,8 @@ variable "iam_roles" {
   default     = {}
 }
 
-variable "encryption_key" {
-  description = "Cloud KMS key that will be used to encrypt objects inserted into the bucket."
+variable "encryption_keys" {
+  description = "Per-bucket KMS keys that will be used for encryption."
   type        = map(string)
   default     = {}
 }
