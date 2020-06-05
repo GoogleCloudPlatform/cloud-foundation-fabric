@@ -41,7 +41,7 @@ variable "labels" {
 
 variable "prefix" {
   type    = string
-  default = ""
+  default = null
 }
 
 variable "storage_class" {
