@@ -5,7 +5,7 @@ This module allows managing a GCE Internal Load Balancer and integrates the forw
 ## TODO
 
 - [ ] do not create health check resource if `var.health_check` is not `null` (workaround is to set `var.health_check_config` to `null`
-- [ ] add a variable for setting address purpose to `SHARED_LOADBALANCER_VIP` and an output for the address
+- [ ] add a variable for setting address purpose to `SHARED_LOADBALANCER_VIP` and an output for the address once the [provider support has been implemented](https://github.com/terraform-providers/terraform-provider-google/issues/6499)
 
 ## Issues
 
