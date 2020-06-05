@@ -31,7 +31,8 @@ locals {
     "${pair.name}-${pair.role}" => pair
   }
   iam_members = var.iam_members == null ? {} : var.iam_members
-  prefix      = var.prefix == "" ? "" : join("-", [var.prefix, lower(var.location), ""])
+  prefix      = var.prefix == null ? "" : join("-", [var.prefix, lower(var.location), ""])
+  kms_keys    = { for name in var.names : name => lookup(var.kms_keys, name, null) }
 }
 
 resource "google_storage_bucket" "buckets" {
@@ -52,10 +53,10 @@ resource "google_storage_bucket" "buckets" {
   })
 
   dynamic encryption {
-    for_each = lookup(var.encryption_key, each.key, null) != null ? [""] : []
+    for_each = local.kms_keys[each.key] == null ? [] : [""]
 
     content {
-      default_kms_key_name = lookup(var.encryption_key, each.key, false)
+      default_kms_key_name = local.kms_keys[each.key]
     }
   }
 }
