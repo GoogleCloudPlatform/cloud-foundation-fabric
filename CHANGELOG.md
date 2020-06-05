@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 - use `all` instead of specifying protocols in the admin firewall rule of the `net-vpc-firewall` module
+- add support for encryption keys in `gcs` module
 
 ## [1.8.0] - 2020-06-03
 
