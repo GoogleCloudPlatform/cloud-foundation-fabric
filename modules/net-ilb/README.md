@@ -2,6 +2,11 @@
 
 This module allows managing a GCE Internal Load Balancer and integrates the forwarding rule, regional backend, and optional health check resources. It's designed to be a simple match for the [`compute-vm`](../compute-vm) module, which can be used to manage instance templates and instance groups.
 
+## TODO
+
+- [ ] do not create health check resource if `var.health_check` is not `null` (workaround is to set `var.health_check_config` to `null`
+- [ ] add a variable for setting address purpose to `SHARED_LOADBALANCER_VIP` and an output for the address
+
 ## Issues
 
 TODO(ludoo): check if this is still the case after splitting out MIG from compute-vm
