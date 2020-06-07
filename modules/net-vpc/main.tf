@@ -64,7 +64,7 @@ locals {
   }
   subnets = {
     for subnet in var.subnets :
-      "${subnet.region}/${subnet.name}" => subnet
+    "${subnet.region}/${subnet.name}" => subnet
   }
 }
 
@@ -184,6 +184,8 @@ resource "google_compute_route" "instance" {
   priority          = each.value.priority
   tags              = each.value.tags
   next_hop_instance = each.value.next_hop
+  # not setting the instance zone will trigger a refresh
+  next_hop_instance_zone = regex("zones/([^/]+)/", each.value.next_hop)[0]
 }
 
 resource "google_compute_route" "ip" {
