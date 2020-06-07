@@ -35,19 +35,19 @@ variable "description" {
 variable "iam_roles" {
   description = "List of IAM roles keyed by subnet 'region/name'."
   type        = map(list(string))
-  default     = null
+  default     = {}
 }
 
 variable "iam_members" {
   description = "List of IAM members keyed by subnet 'region/name' and role."
   type        = map(map(list(string)))
-  default     = null
+  default     = {}
 }
 
 variable "log_configs" {
   description = "Map keyed by subnet 'region/name' of optional configurations for flow logs when enabled."
   type        = map(map(string))
-  default     = null
+  default     = {}
 }
 
 variable "log_config_defaults" {
@@ -93,7 +93,7 @@ variable "routes" {
     next_hop_type = string # gateway, instance, ip, vpn_tunnel, ilb
     next_hop      = string
   }))
-  default = null
+  default = {}
 }
 
 variable "routing_mode" {
