@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+- new `net-neg` module
 
 ## [1.8.1] - 2020-06-07
 
