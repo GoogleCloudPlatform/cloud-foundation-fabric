@@ -29,16 +29,6 @@ This sample creates several distinct groups of resources:
 - GCS
   - One bucket encrypted with a CMEK Cryptokey hosted in Cloud KMS
 
-## Accessing the bastion instance and GKE cluster
-
-The bastion VM has no public address so access is mediated via [IAP](https://cloud.google.com/iap/docs), which is supported transparently in the `gcloud compute ssh` command. Authentication is via OS Login set as a project default.
-
-Cluster access from the bastion can leverage the instance service account's `container.developer` role: the only configuration needed is to fetch cluster credentials via `gcloud container clusters get-credentials` passing the correct cluster name, location and project via command options.
-
-## Destroying
-
-There's a minor glitch that can surface running `terraform destroy`, where the service project attachments to the Shared VPC will not get destroyed even with the relevant API call succeeding. We are investigating the issue, in the meantime just manually remove the attachment in the Cloud console or via the `gcloud beta compute shared-vpc associated-projects remove` command when `terraform destroy` fails, and then relaunch the command.
-
 <!-- BEGIN TFDOC -->
 ## Variables
 
