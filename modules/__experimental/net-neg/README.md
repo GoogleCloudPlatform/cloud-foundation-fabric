@@ -2,6 +2,8 @@
 
 This modules allows creating zonal network endpoint groups.
 
+Note: this module will integrated into a general-purpose load balancing module in the future.
+
 ## Example
 ```hcl
 module "neg" {
