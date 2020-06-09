@@ -19,9 +19,16 @@ module "big-table-instance" {
   name                 = "instance"
   cluster_id           = "instance"
   instance_type        = "PRODUCTION"
-  tables               = ["table1","table2"]
-  access_roles         = ["viewer"]
-  access_roles_binding = {
+  tables               = {
+    test1 = { table_options = null },
+    test2 = { table_options = {
+      split_keys    = ["a", "b", "c"]
+      column_family = null
+      }
+    }
+  }
+  iam_roles         = ["viewer"]
+  iam_members       = {
     viewer = ["user:viewer@testdomain.com"]
   }
 }
@@ -32,20 +39,19 @@ module "big-table-instance" {
 
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
-| name | he name of the Cloud Bigtable instance. | <code title="">string</code> | ✓ |  |
+| name | The name of the Cloud Bigtable instance. | <code title="">string</code> | ✓ |  |
 | project_id | Id of the project where datasets will be created. | <code title="">string</code> | ✓ |  |
-| *access_roles* | Authoritative for a given role. Updates the IAM policy to grant a role to a list of members. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
-| *access_roles_binding* | Authoritative for a given role. Updates the IAM policy to grant a role to a list of members. Other roles within the IAM policy for the instance are preserved. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
+| zone | The zone to create the Cloud Bigtable cluster in. | <code title="">string</code> | ✓ |  |
 | *cluster_id* | The ID of the Cloud Bigtable cluster. | <code title="">string</code> |  | <code title="">europe-west1</code> |
 | *deletion_protection* | Whether or not to allow Terraform to destroy the instance. Unless this field is set to false in Terraform state, a terraform destroy or terraform apply that would delete the instance will fail. | <code title=""></code> |  | <code title="">true</code> |
 | *display_name* | The human-readable display name of the Bigtable instance. | <code title=""></code> |  | <code title="">null</code> |
+| *iam_members* | Authoritative for a given role. Updates the IAM policy to grant a role to a list of members. Other roles within the IAM policy for the instance are preserved. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
+| *iam_roles* | Authoritative for a given role. Updates the IAM policy to grant a role to a list of members. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 | *instance_type* | None | <code title="">string</code> |  | <code title="">DEVELOPMENT</code> |
 | *num_nodes* | The number of nodes in your Cloud Bigtable cluster. | <code title="">number</code> |  | <code title="">1</code> |
 | *storage_type* | The storage type to use. | <code title="">string</code> |  | <code title="">SSD</code> |
-| *table_options_default* | Default option of tables created in the BigTable instnace. | <code title="object&#40;&#123;&#10;split_keys    &#61; list&#40;string&#41;&#10;column_family &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;split_keys    &#61; &#91;&#93;&#10;column_family &#61; null&#10;&#125;">...</code> |
-| *tables* | Tables to be created in the BigTable instnace. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
-| *tables_options* | Tables to be created in the BigTable instnace. | <code title="map&#40;object&#40;&#123;&#10;split_keys    &#61; list&#40;string&#41;&#10;column_family &#61; string&#10;&#125;&#41;&#10;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
-| *zone* | The zone to create the Cloud Bigtable cluster in. | <code title="">string</code> |  | <code title="">europe-west1-b</code> |
+| *table_options_defaults* | Default option of tables created in the BigTable instance. | <code title="object&#40;&#123;&#10;split_keys    &#61; list&#40;string&#41;&#10;column_family &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;split_keys    &#61; &#91;&#93;&#10;column_family &#61; null&#10;&#125;">...</code> |
+| *tables* | Tables to be created in the BigTable instance. | <code title="map&#40;object&#40;&#123;&#10;table_options &#61; object&#40;&#123;&#10;split_keys    &#61; list&#40;string&#41;&#10;column_family &#61; string&#10;&#125;&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
 
 ## Outputs
 
