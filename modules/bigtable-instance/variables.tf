@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-variable "access_roles" {
+variable "iam_roles" {
   description = "Authoritative for a given role. Updates the IAM policy to grant a role to a list of members."
   type        = list(string)
   default     = []
 }
 
-variable "access_roles_binding" {
+variable "iam_members" {
   description = "Authoritative for a given role. Updates the IAM policy to grant a role to a list of members. Other roles within the IAM policy for the instance are preserved."
   type        = map(list(string))
   default     = {}
@@ -49,7 +49,7 @@ variable "instance_type" {
 }
 
 variable "name" {
-  description = "he name of the Cloud Bigtable instance."
+  description = "The name of the Cloud Bigtable instance."
   type        = string
 }
 
@@ -71,23 +71,18 @@ variable "storage_type" {
 }
 
 variable "tables" {
-  description = "Tables to be created in the BigTable instnace."
-  type        = list(string)
-  default     = []
-}
-
-variable "tables_options" {
-  description = "Tables to be created in the BigTable instnace."
+  description = "Tables to be created in the BigTable instance."
   type = map(object({
-    split_keys    = list(string)
-    column_family = string
+    table_options = object({
+      split_keys    = list(string)
+      column_family = string
     })
-  )
+  }))
   default = {}
 }
 
-variable "table_options_default" {
-  description = "Default option of tables created in the BigTable instnace."
+variable "table_options_defaults" {
+  description = "Default option of tables created in the BigTable instance."
   type = object({
     split_keys    = list(string)
     column_family = string
@@ -101,5 +96,4 @@ variable "table_options_default" {
 variable "zone" {
   description = "The zone to create the Cloud Bigtable cluster in."
   type        = string
-  default     = "europe-west1-b"
 }
