@@ -45,6 +45,7 @@ Specific modules also offer support for non-authoritative bindings (e.g. `google
 - [Datafusion](./datafusion)
 - [GCS](./gcs)
 - [Pub/Sub](./pubsub)
+- [Bigtable instance](./bigtable-instance)
 
 ## Development
 
