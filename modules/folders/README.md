@@ -13,7 +13,7 @@ module "folder" {
   names  = ["Folder one", "Folder two"]
   iam_members = {
     "Folder one" = {
-      "roles/owner" => ["group:users@example.com"]
+      "roles/owner" = ["group:users@example.com"]
     }
   }
   iam_roles = {
