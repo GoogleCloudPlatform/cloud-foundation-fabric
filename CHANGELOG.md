@@ -3,7 +3,11 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+
+## [1.9.0] - 2020-06-10
+
 - new `bigtable-instance` module
+- add support for IAM bindings to `compute-vm` module
 
 ## [1.8.1] - 2020-06-07
 
@@ -87,7 +91,8 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.8.1...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.9.0...HEAD
+[1.9.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.8.1...v1.9.0
 [1.8.1]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.8.0...v1.8.1
 [1.8.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.6.0...v1.7.0
