@@ -6,6 +6,6 @@ They are meant to be used as minimal but complete starting points to create actu
 
 ## Examples
 
-### Cloud KMS with Cloud Storage and Compute Engine
+### CMEK for Cloud Storage and Compute Engine via centralized KMS
 
-<a href="./cloud-kms/" title="Cloud KMS with Cloud Storage and Compute Engine"><img src="./cloud-kms/diagram.png" align="left" width="280px"></a> This [example](./cloud-kms/) implements a project that hosts a centralized Cloud KMS instance, and a second project where KMS keys will be used to encrypt resources at rest (CMEK). The roles and permissions needed to use the services are part of the example.
+<a href="./cloud-kms/" title="Cloud KMS with Cloud Storage and Compute Engine"><img src="./cloud-kms/diagram.png" align="left" width="280px"></a> This [example](./cloud-kms/) implements [CMEK](https://cloud.google.com/kms/docs/cmek) for GCS and GCE, via keys hosted in KMS running in a centralized project. The example shows the basic resources and permissions for the typical use case of application projects implementing encryption at rest via a centrally managed KMS service.
