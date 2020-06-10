@@ -4,7 +4,7 @@ This example creates a sample centralized [Cloud KMS](https://cloud.google.com/k
 
 The example is designed to match real-world use cases with a minimum amount of resources, and be used as a starting point for scenarios where application projects implement CMEK using keys managed by a central team. It also includes the IAM wiring needd to make such scenarios work.
 
-This is the hgh level diagram:
+This is the high level diagram:
 
 ![High-level diagram](diagram.png "High-level diagram")
 
