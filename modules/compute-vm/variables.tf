@@ -84,6 +84,18 @@ variable "hostname" {
   default     = null
 }
 
+variable "iam_members" {
+  description = "Map of member lists used to set authoritative bindings, keyed by role. Ignored for template use."
+  type        = map(list(string))
+  default     = {}
+}
+
+variable "iam_roles" {
+  description = "List of roles used to set authoritative bindings. Ignored for template use."
+  type        = list(string)
+  default     = []
+}
+
 variable "instance_count" {
   description = "Number of instances to create (only for non-template usage)."
   type        = number

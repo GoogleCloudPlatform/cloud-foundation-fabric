@@ -25,6 +25,10 @@ locals {
     for pair in setproduct(keys(local.names), keys(local.attached_disks)) :
     "${pair[0]}-${pair[1]}" => { name = pair[0], disk_name = pair[1] }
   }
+  iam_roles = var.use_instance_template ? {} : {
+    for pair in setproduct(var.iam_roles, keys(local.names)) :
+    "${pair.0}/${pair.1}" => { role = pair.0, name = pair.1 }
+  }
   names = (
     var.use_instance_template
     ? { "${var.name}" = 0 }
@@ -162,6 +166,15 @@ resource "google_compute_instance" "default" {
   # guest_accelerator
   # shielded_instance_config
 
+}
+
+resource "google_compute_instance_iam_binding" "default" {
+  for_each      = local.iam_roles
+  project       = var.project_id
+  zone          = var.zone
+  instance_name = each.value.name
+  role          = each.value.role
+  members       = lookup(var.iam_members, each.value.role, [])
 }
 
 resource "google_compute_instance_template" "default" {
