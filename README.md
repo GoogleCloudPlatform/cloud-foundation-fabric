@@ -19,8 +19,9 @@ Currently available examples:
 
 - **foundations** - [single level hierarchy](./foundations/environments/) (environments), [multiple level hierarchy](./foundations/business-units/) (business units + environments)
 - **infrastructure** - [hub and spoke via peering](./infrastructure/hub-and-spoke-peering/), [hub and spoke via VPN](./infrastructure/hub-and-spoke-vpn/), [DNS and Google Private Access for on-premises](./infrastructure/onprem-google-access-dns/), [Shared VPC with GKE support](./infrastructure/shared-vpc-gke/)
+- **data solutions** - [Cloud KMS with Cloud Storage and Compute Engine](./data-solutions/cloud-kms/)
 
-For more information see the README files in the [foundations](./foundations/) and [infrastructure](./infrastructure/) folders.
+For more information see the README files in the [foundations](./foundations/), [infrastructure](./infrastructure/) and [data solutions](./data-solutions/) folders.
 
 ## Modules
 
