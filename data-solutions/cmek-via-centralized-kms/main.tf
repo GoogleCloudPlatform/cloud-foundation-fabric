@@ -150,7 +150,7 @@ module "kms-gcs" {
   project_id = module.project-service.project_id
   prefix     = "my-bucket-001"
   names      = ["kms-gcs"]
-  encryption_key = {
+  encryption_keys = {
     kms-gcs = module.kms.keys.key-gce.self_link,
   }
 }
