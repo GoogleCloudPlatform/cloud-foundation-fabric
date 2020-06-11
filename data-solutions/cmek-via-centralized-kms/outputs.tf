@@ -39,7 +39,7 @@ output "projects" {
 output "vm" {
   description = "GCE VMs."
   value = {
-    for instance in concat(module.kms_vm_example.instances) :
+    for instance in module.kms_vm_example.instances :
     instance.name => instance.network_interface.0.network_ip
   }
 }
