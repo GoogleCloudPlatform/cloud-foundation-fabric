@@ -3,6 +3,8 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+- new `data-solutions` section
+- new `cmek-via-centralized-kms` e2e example 
 
 ## [1.9.0] - 2020-06-10
 
