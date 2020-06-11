@@ -12,6 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+output "bucket" {
+  description = "GCS Bucket Cloud KMS crypto keys."
+  value = {
+    for bucket in module.kms-gcs.buckets :
+    bucket.name => bucket.url
+  }
+}
+
+output "bucket_keys" {
+  description = "GCS Bucket Cloud KMS crypto keys."
+  value = {
+    for bucket in module.kms-gcs.buckets :
+    bucket.name => bucket.encryption
+  }
+}
+
 output "projects" {
   description = "Project ids."
   value = {
@@ -20,18 +36,18 @@ output "projects" {
   }
 }
 
-output "vms_keys" {
-  description = "GCE VMs Cloud KMS crypto keys."
+output "vm" {
+  description = "GCE VMs."
   value = {
-    for instance in module.kms_vm_example.instances :
-    instance.name => instance.boot_disk.0.kms_key_self_link
+    for instance in concat(module.kms_vm_example.instances) :
+    instance.name => instance.network_interface.0.network_ip
   }
 }
 
-output "buckets_keys" {
-  description = "GCS Buckets Cloud KMS crypto keys."
+output "vm_keys" {
+  description = "GCE VM Cloud KMS crypto keys."
   value = {
-    for bucket in module.kms-gcs.buckets :
-    bucket.name => bucket.encryption
+    for instance in module.kms_vm_example.instances :
+    instance.name => instance.boot_disk.0.kms_key_self_link
   }
 }

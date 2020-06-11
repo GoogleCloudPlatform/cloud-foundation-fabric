@@ -35,21 +35,23 @@ This sample creates several distinct groups of resources:
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
 | billing_account | Billing account id used as default for new projects. | <code title="">string</code> | ✓ |  |
-| projects_parent | The resource name of the parent Folder or Organization. Must be of the form folders/folder_id or organizations/org_id. | <code title="">string</code> | ✓ |  |
+| root_node | The resource name of the parent Folder or Organization. Must be of the form folders/folder_id or organizations/org_id. | <code title="">string</code> | ✓ |  |
+| *location* | The location where resources will be deployed. | <code title="">string</code> |  | <code title="">europe</code> |
 | *project_kms_name* | Name for the new KMS Project. | <code title="">string</code> |  | <code title="">my-project-kms-001</code> |
 | *project_service_name* | Name for the new Service Project. | <code title="">string</code> |  | <code title="">my-project-service-001</code> |
-| *resource_location* | The location where resources will be deployed. | <code title="">string</code> |  | <code title="">europe</code> |
-| *resource_region* | The region where resources will be deployed. | <code title="">string</code> |  | <code title="">europe-west1</code> |
-| *resource_zone* | The zone where resources will be deployed. | <code title="">string</code> |  | <code title="">europe-west1-b</code> |
+| *region* | The region where resources will be deployed. | <code title="">string</code> |  | <code title="">europe-west1</code> |
 | *vpc_ip_cidr_range* | Ip range used in the subnet deployef in the Service Project. | <code title="">string</code> |  | <code title="">10.0.0.0/20</code> |
 | *vpc_name* | Name of the VPC created in the Service Project. | <code title="">string</code> |  | <code title="">local</code> |
 | *vpc_subnet_name* | Name of the subnet created in the Service Project. | <code title="">string</code> |  | <code title="">subnet</code> |
+| *zone* | The zone where resources will be deployed. | <code title="">string</code> |  | <code title="">europe-west1-b</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| buckets_keys | GCS Buckets Cloud KMS crypto keys. |  |
+| bucket | GCS Bucket Cloud KMS crypto keys. |  |
+| bucket_keys | GCS Bucket Cloud KMS crypto keys. |  |
 | projects | Project ids. |  |
-| vms_keys | GCE VMs Cloud KMS crypto keys. |  |
+| vm | GCE VMs. |  |
+| vm_keys | GCE VM Cloud KMS crypto keys. |  |
 <!-- END TFDOC -->

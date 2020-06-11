@@ -18,6 +18,12 @@ variable "billing_account" {
   type        = string
 }
 
+variable "location" {
+  description = "The location where resources will be deployed."
+  type        = string
+  default     = "europe"
+}
+
 variable "project_service_name" {
   description = "Name for the new Service Project."
   type        = string
@@ -30,27 +36,15 @@ variable "project_kms_name" {
   default     = "my-project-kms-001"
 }
 
-variable "projects_parent" {
-  description = "The resource name of the parent Folder or Organization. Must be of the form folders/folder_id or organizations/org_id."
-  type        = string
-}
-
-variable "resource_location" {
-  description = "The location where resources will be deployed."
-  type        = string
-  default     = "europe"
-}
-
-variable "resource_region" {
+variable "region" {
   description = "The region where resources will be deployed."
   type        = string
   default     = "europe-west1"
 }
 
-variable "resource_zone" {
-  description = "The zone where resources will be deployed."
+variable "root_node" {
+  description = "The resource name of the parent Folder or Organization. Must be of the form folders/folder_id or organizations/org_id."
   type        = string
-  default     = "europe-west1-b"
 }
 
 variable "vpc_name" {
@@ -69,4 +63,10 @@ variable "vpc_ip_cidr_range" {
   description = "Ip range used in the subnet deployef in the Service Project."
   type        = string
   default     = "10.0.0.0/20"
+}
+
+variable "zone" {
+  description = "The zone where resources will be deployed."
+  type        = string
+  default     = "europe-west1-b"
 }

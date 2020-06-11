@@ -19,7 +19,7 @@
 module "project-service" {
   source          = "../../modules/project"
   name            = var.project_service_name
-  parent          = var.projects_parent
+  parent          = var.root_node
   billing_account = var.billing_account
   services = [
     "compute.googleapis.com",
@@ -32,7 +32,7 @@ module "project-service" {
 module "project-kms" {
   source          = "../../modules/project"
   name            = var.project_kms_name
-  parent          = var.projects_parent
+  parent          = var.root_node
   billing_account = var.billing_account
   services = [
     "cloudkms.googleapis.com",
@@ -53,7 +53,7 @@ module "vpc" {
     {
       ip_cidr_range      = var.vpc_ip_cidr_range
       name               = var.vpc_subnet_name
-      region             = var.resource_region
+      region             = var.region
       secondary_ip_range = {}
     }
   ]
@@ -65,7 +65,6 @@ module "vpc-firewall" {
   network              = module.vpc.name
   admin_ranges_enabled = true
   admin_ranges         = [var.vpc_ip_cidr_range]
-  ssh_source_ranges    = ["0.0.0.0/0"]
 }
 
 ###############################################################################
@@ -77,7 +76,7 @@ module "kms" {
   project_id = module.project-kms.project_id
   keyring = {
     name     = "my-keyring",
-    location = var.resource_location
+    location = var.location
   }
   keys = { key-gce = null, key-gcs = null }
   key_iam_roles = {
@@ -104,12 +103,12 @@ module "kms" {
 module "kms_vm_example" {
   source     = "../../modules/compute-vm"
   project_id = module.project-service.project_id
-  region     = var.resource_region
-  zone       = var.resource_zone
+  region     = var.region
+  zone       = var.zone
   name       = "kms-vm"
   network_interfaces = [{
     network    = module.vpc.self_link,
-    subnetwork = module.vpc.subnet_self_links["${var.resource_region}/subnet"],
+    subnetwork = module.vpc.subnet_self_links["${var.region}/subnet"],
     nat        = false,
     addresses  = null
   }]
