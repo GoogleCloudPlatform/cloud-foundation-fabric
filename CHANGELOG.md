@@ -3,8 +3,11 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
-- new `data-solutions` section
-- new `cmek-via-centralized-kms` e2e example 
+
+## [2.0.0] - 2020-06-11
+
+- new `data-solutions` section and `cmek-via-centralized-kms` example 
+- **incompatible change** static VPN routes now interpolate the VPN gateway name to enforce uniqueness, upgrading from a previous version will drop and recreate routes
 
 ## [1.9.0] - 2020-06-10
 
@@ -93,7 +96,8 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.9.0...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.9.0...v2.0.0
 [1.9.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.8.1...v1.9.0
 [1.8.1]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.8.0...v1.8.1
 [1.8.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.7.0...v1.8.0
