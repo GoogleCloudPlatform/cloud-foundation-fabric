@@ -1,9 +1,10 @@
-# CMEK on Cloud Storage and Compute Engine via centralized Cloud KMS
+# GCE and GCS CMEK via centralized Cloud KMS
 
-This sample creates a sample [Cloud KMS](https://cloud.google.com/kms?hl=it) configuration to be used with [Cloud Storage](https://cloud.google.com/storage/docs/encryption/using-customer-managed-keys) and [Copute Engine](https://cloud.google.com/compute/docs/disks/customer-managed-encryption).
-Cloud KMS is deployed in a separate project to highlight the IAM binding needed and to mock a more real scenario where you usually have a project to manage keys across all your projects in one single place.
+This example creates a sample centralized [Cloud KMS](https://cloud.google.com/kms?hl=it) configuration, and uses it to implement CMEK for [Cloud Storage](https://cloud.google.com/storage/docs/encryption/using-customer-managed-keys) and [Compute Engine](https://cloud.google.com/compute/docs/disks/customer-managed-encryption) in a separate project.
 
-The sample has been purposefully kept simple so that it can be used as a basis for different and more complex configuration. This is the high level diagram:
+The example is designed to match real-world use cases with a minimum amount of resources, and be used as a starting point for scenarios where application projects implement CMEK using keys managed by a central team. It also includes the IAM wiring needed to make such scenarios work.
+
+This is the high level diagram:
 
 ![High-level diagram](diagram.png "High-level diagram")
 
