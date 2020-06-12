@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- **incompatible change** routes in the `net-vpc` module now interpolate the VPC name to ensure uniqueness, upgrading from a previous version will drop and recreate routes
+
 ## [2.0.0] - 2020-06-11
 
 - new `data-solutions` section and `cmek-via-centralized-kms` example 

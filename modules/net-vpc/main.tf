@@ -154,7 +154,7 @@ resource "google_compute_route" "gateway" {
   for_each         = local.routes_gateway
   project          = var.project_id
   network          = google_compute_network.network.name
-  name             = each.key
+  name             = "${var.name}-${each.key}"
   description      = "Terraform-managed."
   dest_range       = each.value.dest_range
   priority         = each.value.priority
@@ -166,7 +166,7 @@ resource "google_compute_route" "ilb" {
   for_each     = local.routes_ilb
   project      = var.project_id
   network      = google_compute_network.network.name
-  name         = each.key
+  name         = "${var.name}-${each.key}"
   description  = "Terraform-managed."
   dest_range   = each.value.dest_range
   priority     = each.value.priority
@@ -178,7 +178,7 @@ resource "google_compute_route" "instance" {
   for_each          = local.routes_instance
   project           = var.project_id
   network           = google_compute_network.network.name
-  name              = each.key
+  name              = "${var.name}-${each.key}"
   description       = "Terraform-managed."
   dest_range        = each.value.dest_range
   priority          = each.value.priority
@@ -192,7 +192,7 @@ resource "google_compute_route" "ip" {
   for_each    = local.routes_ip
   project     = var.project_id
   network     = google_compute_network.network.name
-  name        = each.key
+  name        = "${var.name}-${each.key}"
   description = "Terraform-managed."
   dest_range  = each.value.dest_range
   priority    = each.value.priority
@@ -204,7 +204,7 @@ resource "google_compute_route" "vpn_tunnel" {
   for_each            = local.routes_vpn_tunnel
   project             = var.project_id
   network             = google_compute_network.network.name
-  name                = each.key
+  name                = "${var.name}-${each.key}"
   description         = "Terraform-managed."
   dest_range          = each.value.dest_range
   priority            = each.value.priority

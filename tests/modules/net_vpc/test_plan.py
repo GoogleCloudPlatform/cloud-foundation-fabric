@@ -86,5 +86,5 @@ def test_vpc_routes(plan_runner):
     _, resources = plan_runner(FIXTURES_DIR, routes=_var_routes)
     assert len(resources) == 3
     resource = [r for r in resources if r['values']
-                ['name'] == 'next-hop-test'][0]
+                ['name'] == 'my-vpc-next-hop-test'][0]
     assert resource['values']['next_hop_%s' % next_hop_type]
