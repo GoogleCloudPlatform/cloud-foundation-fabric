@@ -4,11 +4,11 @@ This module manages a `cloud-config` configuration that starts an emulated on-pr
 
 The emulated on-premises infrastructure is composed of:
 
-- a Strongswan container managing the VPN tunnel to GCP
+- a [Strongswan container](./docker-images/strongswan) managing the VPN tunnel to GCP
 - an optional Bird container managing the BGP session
 - a CoreDNS container servng local DNS and forwarding to GCP
 - an Nginx container serving a simple static web page
-- a generic Linux container used as a jump host inside the on-premises network
+- a [generic Linux container](./docker-images/toolbox) used as a jump host inside the on-premises network
 
 A [complete scenario using this module](../../../infrastructure/onprem-google-access-dns) is available in the infrastructure examples.
 

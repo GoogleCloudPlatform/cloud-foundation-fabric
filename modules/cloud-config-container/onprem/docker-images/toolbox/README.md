@@ -3,7 +3,7 @@
 
 Lightweight container with some basic console tools used for testing and probing.
 
-## Building
+## Build
 
 ```bash
 gcloud builds submit . --config=cloudbuild.yaml
