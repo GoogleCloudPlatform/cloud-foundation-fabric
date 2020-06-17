@@ -38,3 +38,8 @@ output "name_servers" {
   description = "The DNS zone name servers."
   value       = try(local.zone.name_servers, null)
 }
+
+output "dns_keys" {
+  description = "DNSKEY and DS records of DNSSEC-signed managed zones."
+  value       = local.dns_keys
+}
