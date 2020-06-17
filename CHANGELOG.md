@@ -5,10 +5,11 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 - **incompatible change** routes in the `net-vpc` module now interpolate the VPC name to ensure uniqueness, upgrading from a previous version will drop and recreate routes
+- the top-level `docker-images` folder has been moved inside `modules/cloud-config-container/onprem`
 
 ## [2.0.0] - 2020-06-11
 
-- new `data-solutions` section and `cmek-via-centralized-kms` example 
+- new `data-solutions` section and `cmek-via-centralized-kms` example
 - **incompatible change** static VPN routes now interpolate the VPN gateway name to enforce uniqueness, upgrading from a previous version will drop and recreate routes
 
 ## [1.9.0] - 2020-06-10
