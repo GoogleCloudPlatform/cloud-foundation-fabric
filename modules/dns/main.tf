@@ -15,7 +15,6 @@
  */
 
 locals {
-  is_static_zone = var.type == "public" || var.type == "private"
   recordsets = var.recordsets == null ? {} : {
     for record in var.recordsets :
     join("/", [record.name, record.type]) => record
@@ -24,6 +23,9 @@ locals {
     google_dns_managed_zone.non-public.0, try(
       google_dns_managed_zone.public.0, null
     )
+  )
+  dns_keys = try(
+    data.google_dns_keys.dns_keys.0, null
   )
 }
 
@@ -118,6 +120,11 @@ resource "google_dns_managed_zone" "public" {
     }
   }
 
+}
+
+data "google_dns_keys" "dns_keys" {
+  count        = var.dnssec_config == {} || var.type != "public" ? 0 : 1
+  managed_zone = google_dns_managed_zone.public.0.id
 }
 
 resource "google_dns_record_set" "cloud-static-records" {

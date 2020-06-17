@@ -43,6 +43,7 @@ module "private-dns" {
 
 | name | description | sensitive |
 |---|---|:---:|
+| dns_keys | DNSKEY and DS records of DNSSEC-signed managed zones. |  |
 | domain | The DNS zone domain. |  |
 | name | The DNS zone name. |  |
 | name_servers | The DNS zone name servers. |  |
