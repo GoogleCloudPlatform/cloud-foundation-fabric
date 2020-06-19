@@ -15,7 +15,40 @@ There are some corner cases (eg when switching the instance template from intern
 
 One other issue is a `Provider produced inconsistent final plan` error which is sometimes raised when switching template version. This seems to be related to this [open provider issue](https://github.com/terraform-providers/terraform-provider-google/issues/3937), but it's relatively harmless since the resource is updated, and subsequent applies raise no errors.
 
-## Example
+## Examples
+
+### Externally managed instances
+
+This examples shows how to create an ILB by combining externally managed instances (in a custom module or even outside of the current root module) in an unmanaged group.
+
+```hcl
+module "ilb" {
+  source        = "./modules/net-ilb"
+  project_id    = "my-project"
+  region        = "europe-west1"
+  name          = "ilb-test"
+  service_label = "ilb-test"
+  network       = local.network_self_link
+  subnetwork    = local.subnetwork_self_link
+  group_configs = {
+    my-group = {
+      zone = europe-west1-b, named_ports = null, instances = [
+        local.instance1_self_link, local.instance2_self_link
+      ]
+    }
+  }
+  backends = [{
+    failover       = false
+    group          = module.ilb.groups.my-group.self_link
+    balancing_mode = "CONNECTION"
+  }]
+  health_check_config = {
+    type = "http", check = { port = 80 }, config = {}, logging = true
+  }
+}
+```
+
+### End to end example
 
 This example spins up a simple HTTP server and combines four modules:
 
