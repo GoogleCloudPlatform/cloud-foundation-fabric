@@ -29,6 +29,7 @@ locals {
     google_compute_health_check.http2.0,
     {}
   )
+  health_check_type = try(var.health_check_config.type, null)
 }
 
 resource "google_compute_forwarding_rule" "default" {
@@ -107,8 +108,10 @@ resource "google_compute_instance_group" "unmanaged" {
 }
 
 resource "google_compute_health_check" "http" {
-  provider    = google-beta
-  count       = try(var.health_check_config.type, null) == "http" ? 1 : 0
+  provider = google-beta
+  count = (
+    var.health_check == null && local.health_check_type == "http" ? 1 : 0
+  )
   project     = var.project_id
   name        = var.name
   description = "Terraform managed."
@@ -137,8 +140,10 @@ resource "google_compute_health_check" "http" {
 }
 
 resource "google_compute_health_check" "https" {
-  provider    = google-beta
-  count       = try(var.health_check_config.type, null) == "https" ? 1 : 0
+  provider = google-beta
+  count = (
+    var.health_check == null && local.health_check_type == "https" ? 1 : 0
+  )
   project     = var.project_id
   name        = var.name
   description = "Terraform managed."
@@ -167,8 +172,10 @@ resource "google_compute_health_check" "https" {
 }
 
 resource "google_compute_health_check" "tcp" {
-  provider    = google-beta
-  count       = try(var.health_check_config.type, null) == "tcp" ? 1 : 0
+  provider = google-beta
+  count = (
+    var.health_check == null && local.health_check_type == "tcp" ? 1 : 0
+  )
   project     = var.project_id
   name        = var.name
   description = "Terraform managed."
@@ -196,8 +203,10 @@ resource "google_compute_health_check" "tcp" {
 }
 
 resource "google_compute_health_check" "ssl" {
-  provider    = google-beta
-  count       = try(var.health_check_config.type, null) == "ssl" ? 1 : 0
+  provider = google-beta
+  count = (
+    var.health_check == null && local.health_check_type == "ssl" ? 1 : 0
+  )
   project     = var.project_id
   name        = var.name
   description = "Terraform managed."
@@ -225,8 +234,10 @@ resource "google_compute_health_check" "ssl" {
 }
 
 resource "google_compute_health_check" "http2" {
-  provider    = google-beta
-  count       = try(var.health_check_config.type, null) == "http2" ? 1 : 0
+  provider = google-beta
+  count = (
+    var.health_check == null && local.health_check_type == "http2" ? 1 : 0
+  )
   project     = var.project_id
   name        = var.name
   description = "Terraform managed."
