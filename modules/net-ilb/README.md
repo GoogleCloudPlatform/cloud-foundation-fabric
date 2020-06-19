@@ -4,7 +4,6 @@ This module allows managing a GCE Internal Load Balancer and integrates the forw
 
 ## TODO
 
-- [ ] do not create health check resource if `var.health_check` is not `null` (workaround is to set `var.health_check_config` to `null`
 - [ ] add a variable for setting address purpose to `SHARED_LOADBALANCER_VIP` and an output for the address once the [provider support has been implemented](https://github.com/terraform-providers/terraform-provider-google/issues/6499)
 
 ## Issues
@@ -19,7 +18,7 @@ One other issue is a `Provider produced inconsistent final plan` error which is 
 
 ### Externally managed instances
 
-This examples shows how to create an ILB by combining externally managed instances (in a custom module or even outside of the current root module) in an unmanaged group.
+This examples shows how to create an ILB by combining externally managed instances (in a custom module or even outside of the current root module) in an unmanaged group. When using internally managed groups, remember to run `terraform apply` each time group instances change.
 
 ```hcl
 module "ilb" {
