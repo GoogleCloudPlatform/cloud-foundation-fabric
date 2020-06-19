@@ -89,6 +89,23 @@ resource "google_compute_region_backend_service" "default" {
 
 }
 
+resource "google_compute_instance_group" "unmanaged" {
+  for_each    = var.group_configs
+  project     = var.project_id
+  zone        = each.value.zone
+  name        = each.key
+  description = "Terraform-managed."
+  instances   = each.value.instances
+  dynamic named_port {
+    for_each = each.value.named_ports != null ? each.value.named_ports : {}
+    iterator = config
+    content {
+      name = config.key
+      port = config.value
+    }
+  }
+}
+
 resource "google_compute_health_check" "http" {
   provider    = google-beta
   count       = try(var.health_check_config.type, null) == "http" ? 1 : 0
