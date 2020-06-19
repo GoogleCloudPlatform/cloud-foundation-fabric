@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 - **incompatible change** routes in the `net-vpc` module now interpolate the VPC name to ensure uniqueness, upgrading from a previous version will drop and recreate routes
 - the top-level `docker-images` folder has been moved inside `modules/cloud-config-container/onprem`
 - `dns_keys` output added to the `dns` module
+- add `group-config` variable, `groups` and `group_self_links` outputs to `net-ilb` module to allow creating ILBs for externally managed instances
 
 ## [2.0.0] - 2020-06-11
 
