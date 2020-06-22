@@ -175,6 +175,7 @@ resource "google_compute_instance_iam_binding" "default" {
   instance_name = each.value.name
   role          = each.value.role
   members       = lookup(var.iam_members, each.value.role, [])
+  depends_on    = [google_compute_instance.default]
 }
 
 resource "google_compute_instance_template" "default" {

@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 - the top-level `docker-images` folder has been moved inside `modules/cloud-config-container/onprem`
 - `dns_keys` output added to the `dns` module
 - add `group-config` variable, `groups` and `group_self_links` outputs to `net-ilb` module to allow creating ILBs for externally managed instances
+- make the IAM bindings depend on the compute instance in the `compute-vm` module
 
 ## [2.0.0] - 2020-06-11
 
