@@ -25,8 +25,8 @@ locals {
     for pair in local.iam_additive_pairs :
     "${pair.role}-${pair.member}" => pair
   }
-  parent_type = split("/", var.parent)[0]
-  parent_id   = split("/", var.parent)[1]
+  parent_type = var.parent == null ? null : split("/", var.parent)[0]
+  parent_id   = var.parent == null ? null : split("/", var.parent)[1]
   prefix      = var.prefix == null ? "" : "${var.prefix}-"
   project = (
     var.project_create ? google_project.project.0 : data.google_project.project.0

@@ -23,7 +23,7 @@ variable "auto_create_network" {
 variable "billing_account" {
   description = "Billing account id."
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "custom_roles" {
@@ -92,8 +92,9 @@ variable "oslogin_users" {
 }
 
 variable "parent" {
-  description = "The resource name of the parent Folder or Organization. Must be of the form folders/folder_id or organizations/org_id."
+  description = "Parent folder or organization in 'folders/folder_id' or 'organizations/org_id' format."
   type        = string
+  default     = null
 }
 
 variable "policy_boolean" {
