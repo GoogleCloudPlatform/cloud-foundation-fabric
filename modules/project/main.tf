@@ -79,8 +79,8 @@ resource "google_project_service" "project_services" {
   for_each                   = toset(var.services)
   project                    = local.project.project_id
   service                    = each.value
-  disable_on_destroy         = true
-  disable_dependent_services = true
+  disable_on_destroy         = var.service_config.disable_on_destroy
+  disable_dependent_services = var.service_config.disable_dependent_services
 }
 
 # IAM notes:

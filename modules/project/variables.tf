@@ -130,3 +130,15 @@ variable "services" {
   type        = list(string)
   default     = []
 }
+
+variable "service_config" {
+  description = "Configure service API activation."
+  type = object({
+    disable_on_destroy         = bool
+    disable_dependent_services = bool
+  })
+  default = {
+    disable_on_destroy         = true
+    disable_dependent_services = true
+  }
+}
