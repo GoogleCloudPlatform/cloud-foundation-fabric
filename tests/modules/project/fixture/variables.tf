@@ -71,7 +71,7 @@ variable "oslogin_users" {
 
 variable "parent" {
   type    = string
-  default = "folders/12345678"
+  default = null
 }
 
 variable "policy_boolean" {
