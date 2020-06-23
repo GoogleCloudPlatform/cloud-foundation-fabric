@@ -104,6 +104,10 @@ resource "google_project_iam_member" "additive" {
   project  = local.project.project_id
   role     = each.value.role
   member   = each.value.member
+  depends_on = [
+    google_project_service.project_services,
+    google_project_iam_custom_role.roles
+  ]
 }
 
 resource "google_project_iam_member" "oslogin_iam_serviceaccountuser" {
