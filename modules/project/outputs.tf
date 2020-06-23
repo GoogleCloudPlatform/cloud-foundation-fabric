@@ -56,5 +56,8 @@ output "service_accounts" {
 
 output "custom_roles" {
   description = "Ids of the created custom roles."
-  value       = [for role in google_project_iam_custom_role.roles : role.role_id]
+  value = {
+    for name, role in google_project_iam_custom_role.roles :
+    name => role.id
+  }
 }
