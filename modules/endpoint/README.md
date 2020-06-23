@@ -1,4 +1,4 @@
-# Google Cloud Data Fusion Module
+# Google Cloud Endpoints
 
 This module allows simple management of ['Google Cloud Endpoints'](https://cloud.google.com/endpoints/) services. It supports creating ['OpenAPI'](https://cloud.google.com/endpoints/docs/openapi) or ['gRPC'](https://cloud.google.com/endpoints/docs/grpc/about-grpc). 
 
@@ -9,15 +9,17 @@ This module allows simple management of ['Google Cloud Endpoints'](https://cloud
 ```hcl
 module "endpoint" {
   source         = "../../modules/endpoint"
-  project_id     = local.project_id
-  service_name   = local.service_name
-  openapi_config = local.openapi_config
+  project_id     = "my-project"
+  service_name   = "my-project"
+  openapi_config = "echo-api.endpoints.YOUR-PROJECT-ID.cloud.goog"
   iam_roles      = ["servicemanagement.serviceController"]
   iam_members    = {
     "servicemanagement.serviceController" = ["serviceAccount:PROJECT_NUMBER-compute@developer.gserviceaccount.com"]
   }
 }
 ```
+
+[Here](https://github.com/GoogleCloudPlatform/python-docs-samples/blob/master/endpoints/getting-started/openapi.yaml) you can find an example of a openapi.yaml file.
 
 <!-- BEGIN TFDOC -->
 ## Variables

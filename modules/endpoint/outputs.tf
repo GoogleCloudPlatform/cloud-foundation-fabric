@@ -19,7 +19,7 @@ output "service_name" {
   value       = google_endpoints_service.default.service_name
 }
 
-output "endpoint_service" {
+output "endpoints_service" {
   description = "The Endpoint service resource."
   value       = google_endpoints_service.default
 }
