@@ -16,7 +16,7 @@
 
 output "project_id" {
   description = "Project id."
-  value       = google_project.project.project_id
+  value       = local.project.project_id
   depends_on = [
     google_project_organization_policy.boolean,
     google_project_organization_policy.list,
@@ -25,8 +25,8 @@ output "project_id" {
 }
 
 output "name" {
-  description = "Project ame."
-  value       = google_project.project.name
+  description = "Project name."
+  value       = local.project.name
   depends_on = [
     google_project_organization_policy.boolean,
     google_project_organization_policy.list,
@@ -36,7 +36,7 @@ output "name" {
 
 output "number" {
   description = "Project number."
-  value       = google_project.project.number
+  value       = local.project.number
   depends_on = [
     google_project_organization_policy.boolean,
     google_project_organization_policy.list,

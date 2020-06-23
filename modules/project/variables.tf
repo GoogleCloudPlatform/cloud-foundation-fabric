@@ -119,6 +119,12 @@ variable "prefix" {
   default     = null
 }
 
+variable "project_create" {
+  description = "Create project. When set to false, uses a data source to reference existing project."
+  type        = bool
+  default     = true
+}
+
 variable "services" {
   description = "Service APIs to enable."
   type        = list(string)

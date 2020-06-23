@@ -74,6 +74,7 @@ module "project" {
 | *policy_boolean* | Map of boolean org policies and enforcement value, set value to null for policy restore. | <code title="map&#40;bool&#41;">map(bool)</code> |  | <code title="">{}</code> |
 | *policy_list* | Map of list org policies, status is true for allow, false for deny, null for restore. Values can only be used for allow or deny. | <code title="map&#40;object&#40;&#123;&#10;inherit_from_parent &#61; bool&#10;suggested_value     &#61; string&#10;status              &#61; bool&#10;values              &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
 | *prefix* | Prefix used to generate project id and name. | <code title="">string</code> |  | <code title="">null</code> |
+| *project_create* | Create project. When set to false, uses a data source to reference existing project. | <code title="">bool</code> |  | <code title="">true</code> |
 | *services* | Service APIs to enable. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 
 ## Outputs
@@ -81,7 +82,7 @@ module "project" {
 | name | description | sensitive |
 |---|---|:---:|
 | custom_roles | Ids of the created custom roles. |  |
-| name | Project ame. |  |
+| name | Project name. |  |
 | number | Project number. |  |
 | project_id | Project id. |  |
 | service_accounts | Product robot service accounts in project. |  |
