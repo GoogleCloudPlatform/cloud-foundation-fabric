@@ -1,6 +1,6 @@
 # Google Cloud Endpoints
 
-This module allows simple management of ['Google Cloud Endpoints'](https://cloud.google.com/endpoints/) services. It supports creating ['OpenAPI'](https://cloud.google.com/endpoints/docs/openapi) or ['gRPC'](https://cloud.google.com/endpoints/docs/grpc/about-grpc). 
+This module allows simple management of ['Google Cloud Endpoints'](https://cloud.google.com/endpoints/) services. It supports creating ['OpenAPI'](https://cloud.google.com/endpoints/docs/openapi) or ['gRPC'](https://cloud.google.com/endpoints/docs/grpc/about-grpc) endpoints. 
 
 ## Examples
 
@@ -19,7 +19,7 @@ module "endpoint" {
 }
 ```
 
-[Here](https://github.com/GoogleCloudPlatform/python-docs-samples/blob/master/endpoints/getting-started/openapi.yaml) you can find an example of a openapi.yaml file.
+[Here](https://github.com/GoogleCloudPlatform/python-docs-samples/blob/master/endpoints/getting-started/openapi.yaml) you can find an example of an openapi.yaml file.
 
 <!-- BEGIN TFDOC -->
 ## Variables
