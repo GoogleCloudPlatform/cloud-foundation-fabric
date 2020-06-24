@@ -27,8 +27,8 @@ module "endpoint" {
 
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
-| grpc_config | The configuration for a gRPC enpoint. Either this, openapi_config must be specified. | <code title="object&#40;&#123;&#10;yaml_path          &#61; string&#10;protoc_output_path &#61; string&#10;&#125;&#41;">object({...})</code> | ✓ |  |
-| openapi_config | The configuration for an OpenAPI endopoint. Either this, grpc_config must be specified. | <code title="object&#40;&#123;&#10;yaml_path &#61; string&#10;&#125;&#41;">object({...})</code> | ✓ |  |
+| grpc_config | The configuration for a gRPC enpoint. Either this or openapi_config must be specified. | <code title="object&#40;&#123;&#10;yaml_path          &#61; string&#10;protoc_output_path &#61; string&#10;&#125;&#41;">object({...})</code> | ✓ |  |
+| openapi_config | The configuration for an OpenAPI endopoint. Either this or grpc_config must be specified. | <code title="object&#40;&#123;&#10;yaml_path &#61; string&#10;&#125;&#41;">object({...})</code> | ✓ |  |
 | service_name | The name of the service. Usually of the form '$apiname.endpoints.$projectid.cloud.goog'. | <code title="">string</code> | ✓ |  |
 | *iam_members* | Authoritative for a given role. Updates the IAM policy to grant a role to a list of members. Other roles within the IAM policy for the instance are preserved. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
 | *iam_roles* | Authoritative for a given role. Updates the IAM policy to grant a role to a list of members. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
