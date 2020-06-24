@@ -10,8 +10,9 @@ This module allows simple management of ['Google Cloud Endpoints'](https://cloud
 module "endpoint" {
   source         = "../../modules/endpoint"
   project_id     = "my-project"
-  service_name   = "my-project"
-  openapi_config = "echo-api.endpoints.YOUR-PROJECT-ID.cloud.goog"
+  service_name   = "YOUR-API.endpoints.YOUR-PROJECT-ID.cloud.goog"
+  openapi_config = { "yaml_path" = "openapi.yaml" }
+  grpc_config    = null
   iam_roles      = ["servicemanagement.serviceController"]
   iam_members    = {
     "servicemanagement.serviceController" = ["serviceAccount:PROJECT_NUMBER-compute@developer.gserviceaccount.com"]
