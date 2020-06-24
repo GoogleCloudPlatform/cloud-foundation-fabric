@@ -21,6 +21,7 @@ Specific modules also offer support for non-authoritative bindings (e.g. `google
 - [address reservation](./net-address)
 - [Cloud DNS](./dns)
 - [Cloud NAT](./net-cloudnat)
+- [Cloud Endpoints](./endpoints)
 - [L4 Internal Load Balancer](./net-ilb)
 - [Service Directory](./service-directory)
 - [VPC](./net-vpc)
