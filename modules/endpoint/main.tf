@@ -23,23 +23,13 @@ locals {
 resource "google_endpoints_service" "default" {
   project              = var.project_id
   service_name         = var.service_name
-
-  openapi_config       = var.openapi_config != null ? file(var.openapi_config) : null
-  grpc_config          = var.grpc_config != null ? file(var.grpc_config) : null
-
-  protoc_output_base64 = var.protoc_output_base64 != null ? base64encode(file(var.protoc_output_base64)) : null
-}
-
-resource "google_project_service" "default" {
-  project                    = var.project_id
-  service                    = google_endpoints_service.default.service_name
-  disable_on_destroy         = true
-  disable_dependent_services = true
+  openapi_config       = var.openapi_config != null ? file(var.openapi_config.yaml_path) : null
+  grpc_config          = var.grpc_config != null ? file(var.grpc_config.yaml_path) : null
+  protoc_output_base64 = var.grpc_config != null ? base64encode(file(var.grpc_config.protoc_output_path)) : null
 }
 
 resource "google_endpoints_service_iam_binding" "default" {
   for_each     = local.iam_roles_bindings
-
   service_name = google_endpoints_service.default.service_name
   role         = "roles/${each.key}"
   members      = each.value
