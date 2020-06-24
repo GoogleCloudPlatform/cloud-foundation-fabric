@@ -3,11 +3,15 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+- new 'Cloud Endpoints' module
+
+## [2.1.0] - 2020-06-22
 
 - **incompatible change** routes in the `net-vpc` module now interpolate the VPC name to ensure uniqueness, upgrading from a previous version will drop and recreate routes
 - the top-level `docker-images` folder has been moved inside `modules/cloud-config-container/onprem`
 - `dns_keys` output added to the `dns` module
-- new 'Cloud Endpoints' module
+- add `group-config` variable, `groups` and `group_self_links` outputs to `net-ilb` module to allow creating ILBs for externally managed instances
+- make the IAM bindings depend on the compute instance in the `compute-vm` module
 
 ## [2.0.0] - 2020-06-11
 
@@ -101,7 +105,8 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.0.0...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.1.0...HEAD
+[2.1.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.9.0...v2.0.0
 [1.9.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.8.1...v1.9.0
 [1.8.1]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.8.0...v1.8.1
