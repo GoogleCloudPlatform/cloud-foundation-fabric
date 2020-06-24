@@ -170,6 +170,18 @@ variable "region" {
   type        = string
 }
 
+variable "routes_config" {
+  description = "Define routes that will have one of the instances as next hop. Instance id is zero based and defaults to 0 if null."
+  type = map(object({
+    network     = string
+    dest_range  = string
+    priority    = number
+    tags        = list(string)
+    instance_id = number
+  }))
+  default = {}
+}
+
 variable "scratch_disks" {
   description = "Scratch disks configuration."
   type = object({

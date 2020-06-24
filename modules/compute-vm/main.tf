@@ -178,6 +178,23 @@ resource "google_compute_instance_iam_binding" "default" {
   depends_on    = [google_compute_instance.default]
 }
 
+resource "google_compute_route" "instance" {
+  for_each    = var.routes_config
+  project     = var.project_id
+  network     = each.value.network
+  name        = each.key
+  description = "Terraform-managed (compute-vm)."
+  dest_range  = each.value.dest_range
+  priority    = each.value.priority
+  tags        = each.value.tags
+  next_hop_instance = try(
+    google_compute_instance.default["${var.name}-${each.value.instance_id + 1}"].self_link,
+    null
+  )
+  # not setting the instance zone will trigger a refresh
+  next_hop_instance_zone = var.zone
+}
+
 resource "google_compute_instance_template" "default" {
   count            = var.use_instance_template ? 1 : 0
   project          = var.project_id
