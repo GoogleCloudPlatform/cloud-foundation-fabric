@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 - new 'Cloud Endpoints' module
+- make project creation optional in `project` module to allow managing a pre-existing project
 
 ## [2.1.0] - 2020-06-22
 
