@@ -1,0 +1,18 @@
+[
+    {
+        "name": "name",
+        "type": "STRING"
+    },
+    {
+        "name": "surname",
+        "type": "STRING"
+    },
+    {
+        "name": "age",
+        "type": "NUMERIC"
+    },
+    {
+        "name": "_TIMESTAMP",
+        "type": "TIMESTAMP"
+    }
+]
