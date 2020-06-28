@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- make project creation optional in `project` module to allow managing a pre-existing project
 - new `cloud-endpoints` module
 - new `cloud-function` module
 
