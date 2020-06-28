@@ -15,10 +15,10 @@
  */
 
 locals {
-  service_account_cloud_services = "${google_project.project.number}@cloudservices.gserviceaccount.com"
+  service_account_cloud_services = "${local.project.number}@cloudservices.gserviceaccount.com"
   service_accounts_default = {
-    compute = "${google_project.project.number}-compute@developer.gserviceaccount.com"
-    gae     = "${google_project.project.project_id}@appspot.gserviceaccount.com"
+    compute = "${local.project.number}-compute@developer.gserviceaccount.com"
+    gae     = "${local.project.project_id}@appspot.gserviceaccount.com"
   }
   service_accounts_robot_services = {
     cloudasset        = "gcp-sa-cloudasset"
@@ -34,6 +34,6 @@ locals {
   }
   service_accounts_robots = {
     for service, name in local.service_accounts_robot_services :
-    service => "service-${google_project.project.number}@${name}.iam.gserviceaccount.com"
+    service => "service-${local.project.number}@${name}.iam.gserviceaccount.com"
   }
 }
