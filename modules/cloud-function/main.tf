@@ -15,13 +15,26 @@
  */
 
 locals {
+  bucket = (
+    var.bucket_name != null
+    ? var.bucket_name
+    : (
+      length(google_storage_bucket.bucket) > 0
+      ? google_storage_bucket.bucket[0].name
+      : null
+    )
+  )
   prefix = var.prefix == null ? "" : "${var.prefix}-"
+  service_account_email = (
+    var.service_account_create
+    ? (
+      length(google_service_account.service_account) > 0
+      ? google_service_account.service_account[0].email
+      : null
+    )
+    : var.service_account
+  )
 }
-
-
-###############################################################################
-#                      Cloud Function and GCS code bundle                     #
-###############################################################################
 
 resource "google_cloudfunctions_function" "function" {
   project               = var.project_id
@@ -34,27 +47,53 @@ resource "google_cloudfunctions_function" "function" {
   timeout               = var.function_config.timeout
   entry_point           = var.function_config.entry_point
   environment_variables = var.environment_variables
-  service_account_email = google_service_account.service_account.email
+  service_account_email = local.service_account_email
   source_archive_bucket = local.bucket
   source_archive_object = google_storage_bucket_object.bundle.name
+  labels                = var.labels
+  trigger_http          = var.trigger_config == null ? true : null
 
-  event_trigger {
-    event_type = "providers/cloud.pubsub/eventTypes/topic.publish"
-    resource   = google_pubsub_topic.topic.id
+  dynamic event_trigger {
+    for_each = var.trigger_config == null ? [] : [""]
+    content {
+      event_type = var.trigger_config.event
+      resource   = var.trigger_config.resource
+      dynamic failure_policy {
+        for_each = var.trigger_config.retry == null ? [] : [""]
+        content {
+          retry = var.trigger_config.retry
+        }
+      }
+    }
   }
 
 }
 
+resource "google_cloudfunctions_function_iam_binding" "default" {
+  for_each       = toset(var.iam_roles)
+  project        = var.project_id
+  region         = var.region
+  cloud_function = google_cloudfunctions_function.function.name
+  role           = each.value
+  members        = try(var.iam_members[each.value], {})
+}
+
 resource "google_storage_bucket" "bucket" {
-  count   = var.bucket_name == null ? 1 : 0
+  count   = var.bucket_config == null ? 0 : 1
   project = var.project_id
-  name    = lookup(local.prefixes, "bucket", var.name)
-  lifecycle_rule {
-    action {
-      type = "Delete"
-    }
-    condition {
-      age = "30"
+  name    = "${local.prefix}${var.bucket_name}"
+  location = (
+    var.bucket_config.location == null
+    ? var.region
+    : var.bucket_config.location
+  )
+  labels = var.labels
+
+  dynamic lifecycle_rule {
+    for_each = var.bucket_config.lifecycle_delete_age == null ? [] : [""]
+    content {
+      action { type = "Delete" }
+      condition { age = var.bucket_config.lifecycle_delete_age }
     }
   }
 }
@@ -66,7 +105,18 @@ resource "google_storage_bucket_object" "bundle" {
 }
 
 data "archive_file" "bundle" {
-  type        = "zip"
-  source_dir  = var.bundle_config.source_dir
-  output_path = var.bundle_config.output_path
+  type       = "zip"
+  source_dir = var.bundle_config.source_dir
+  output_path = (
+    var.bundle_config.output_path == null
+    ? "/tmp/bundle.zip"
+    : var.bundle_config.output_path
+  )
+}
+
+resource "google_service_account" "service_account" {
+  count        = var.service_account_create ? 1 : 0
+  project      = var.project_id
+  account_id   = "tf-cf-${var.name}"
+  display_name = "Terraform Cloud Function ${var.name}."
 }
