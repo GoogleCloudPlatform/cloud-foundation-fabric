@@ -58,3 +58,7 @@ Specific modules also offer support for non-authoritative bindings (e.g. `google
 
 - [Cloud KMS](./kms)
 - [Secret Manager](./secret-manager)
+
+## Serverless
+
+- [Cloud Functions](./cloud-function)
