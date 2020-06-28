@@ -14,3 +14,42 @@
  * limitations under the License.
  */
 
+output "bucket" {
+  description = "Bucket resource (only if auto-created)."
+  value       = var.bucket_config == null ? null : google_storage_bucket.bucket.0
+}
+
+output "bucket_name" {
+  description = "Bucket name."
+  value       = local.bucket
+}
+
+output "function" {
+  description = "Cloud function resources."
+  value       = google_cloudfunctions_function.function
+}
+
+output "function_name" {
+  description = "Cloud function name."
+  value       = google_cloudfunctions_function.function.name
+}
+
+output "service_account" {
+  description = "Service account resource."
+  value = (
+    var.service_account_create ? google_service_account.service_account[0] : null
+  )
+}
+
+output "service_account_email" {
+  description = "Service account email."
+  value       = local.service_account_email
+}
+
+output "service_account_iam_email" {
+  description = "Service account email."
+  value = join("", [
+    "serviceAccount:",
+    local.service_account_email == null ? "" : local.service_account_email
+  ])
+}
