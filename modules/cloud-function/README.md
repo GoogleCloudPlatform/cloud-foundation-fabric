@@ -6,7 +6,9 @@ The GCS object used for deployment uses a hash of the bundle zip contents in its
 
 ## TODO
 
-- [ ] add support for source repository
+- [ ] add support for `ingress_settings`
+- [ ] add support for `vpc_connector` and `vpc_connector_egress_settings`
+- [ ] add support for `source_repository`
 
 ## Examples
 
@@ -49,9 +51,9 @@ module "cf-http" {
 }
 ```
 
-### Anonymous HTTP access
+### Controlling HTTP access
 
-To allow anonymous access to the function, grant the `roles/cloudfunctions.invoker` role to the special `allUsers` identifier.
+To allow anonymous access to the function, grant the `roles/cloudfunctions.invoker` role to the special `allUsers` identifier. Use specific identities (service accounts, groups, etc.) instead of `allUsers` to only allow selective access.
 
 ```hcl
 module "cf-http" {
@@ -93,7 +95,7 @@ module "cf-http" {
 
 ### Service account management
 
-To use a custom service account managed by the module, set `service_account_create` to `true` and leave `service_account` set to the `null` value (the default).
+To use a custom service account managed by the module, set `service_account_create` to `true` and leave `service_account` set to `null` value (default).
 
 ```hcl
 module "cf-http" {

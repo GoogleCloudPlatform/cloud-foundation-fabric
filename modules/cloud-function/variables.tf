@@ -97,7 +97,7 @@ variable "project_id" {
 variable "region" {
   description = "Region used for all resources."
   type        = string
-  default     = "us-central1"
+  default     = "europe-west1"
 }
 
 variable "service_account" {
@@ -121,8 +121,3 @@ variable "trigger_config" {
   })
   default = null
 }
-
-# variable "source_repository_url" {
-#   type    = string
-#   default = ""
-# }
