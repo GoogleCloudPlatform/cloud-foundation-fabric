@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.2.0] - 2020-06-29
+
 - make project creation optional in `project` module to allow managing a pre-existing project
 - new `cloud-endpoints` module
 - new `cloud-function` module
@@ -108,7 +110,8 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.1.0...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.2.0...HEAD
+[2.2.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.9.0...v2.0.0
 [1.9.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.8.1...v1.9.0
