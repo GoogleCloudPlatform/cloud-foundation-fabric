@@ -32,7 +32,7 @@ def test_prefix(plan_runner):
 
 def test_parent(plan_runner):
   "Test project parent."
-  _, resources = plan_runner(FIXTURES_DIR)
+  _, resources = plan_runner(FIXTURES_DIR, parent='folders/12345678')
   assert len(resources) == 1
   assert resources[0]['values']['folder_id'] == '12345678'
   assert resources[0]['values'].get('org_id') == None
@@ -40,3 +40,11 @@ def test_parent(plan_runner):
   assert len(resources) == 1
   assert resources[0]['values']['org_id'] == '12345678'
   assert resources[0]['values'].get('folder_id') == None
+
+
+def test_no_parent(plan_runner):
+  "Test null project parent."
+  _, resources = plan_runner(FIXTURES_DIR)
+  assert len(resources) == 1
+  assert resources[0]['values'].get('folder_id') == None
+  assert resources[0]['values'].get('org_id') == None
