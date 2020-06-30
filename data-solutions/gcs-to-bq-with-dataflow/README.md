@@ -1,4 +1,4 @@
-# GCE and GCS CMEK via centralized Cloud KMS
+# Cloud Storage to Bigquery with Cloud Dataflow
 
 This example creates the infrastructure needed to run a [Cloud Dataflow](https://cloud.google.com/dataflow) pipeline to import data from [GCS](https://cloud.google.com/storage) to [Bigquery](https://cloud.google.com/bigquery).
 

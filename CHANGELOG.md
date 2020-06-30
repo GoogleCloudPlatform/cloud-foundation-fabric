@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+- new 'Cloud Storage to Bigquery with Cloud Dataflow' end to end data solution
 - new 'Cloud Endpoints' module
 
 ## [2.1.0] - 2020-06-22
