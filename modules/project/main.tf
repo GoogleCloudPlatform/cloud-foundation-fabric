@@ -16,8 +16,8 @@
 
 locals {
   iam_additive_pairs = flatten([
-    for role in var.iam_additive_roles : [
-      for member in lookup(var.iam_additive_members, role, []) :
+    for member in var.iam_additive_members : [
+      for role in lookup(var.iam_additive_roles, member, []) :
       { role = role, member = member }
     ]
   ])
