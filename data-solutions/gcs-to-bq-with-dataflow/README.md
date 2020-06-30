@@ -3,9 +3,9 @@
 This example creates the infrastructure needed to run a [Cloud Dataflow](https://cloud.google.com/dataflow) pipeline to import data from [GCS](https://cloud.google.com/storage) to [Bigquery](https://cloud.google.com/bigquery).
 
 The solution will use:
- - internal IP for GCE and Dataflow instances
- - CMEK encription for GCS bucket, GCE instances, DataFlow instances and BigQuery Tables
- - Cloud NAT to let resource comunicate to internet to run updates and packages installation
+ - internal IPs for GCE and Dataflow instances
+ - CMEK encription for GCS bucket, GCE instances, DataFlow instances and BigQuery tables
+ - Cloud NAT to let resources comunicate to the Internet, run system updates, and install packages
  
 The example is designed to match real-world use cases with a minimum amount of resources. It can be used as a starting point for more complex scenarios.
 
@@ -41,33 +41,6 @@ This sample creates several distinct groups of resources:
 - BQ
   - One dataset encrypted with a CMEK Cryptokey hosted in Cloud KMS
   - Two tables encrypted with a CMEK Cryptokey hosted in Cloud KMS
-
-<!-- BEGIN TFDOC -->
-## Variables
-
-| name | description | type | required | default |
-|---|---|:---: |:---:|:---:|
-| billing_account | Billing account id used as default for new projects. | <code title="">string</code> | ✓ |  |
-| project_kms_name | Name for the new KMS Project. | <code title="">string</code> | ✓ |  |
-| project_service_name | Name for the new Service Project. | <code title="">string</code> | ✓ |  |
-| root_node | The resource name of the parent Folder or Organization. Must be of the form folders/folder_id or organizations/org_id. | <code title="">string</code> | ✓ |  |
-| *location* | The location where resources will be deployed. | <code title="">string</code> |  | <code title="">europe</code> |
-| *region* | The region where resources will be deployed. | <code title="">string</code> |  | <code title="">europe-west1</code> |
-| *ssh_source_ranges* | IP CIDR ranges that will be allowed to connect via SSH to the onprem instance. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">["0.0.0.0/0"]</code> |
-| *vpc_ip_cidr_range* | Ip range used in the subnet deployef in the Service Project. | <code title="">string</code> |  | <code title="">10.0.0.0/20</code> |
-| *vpc_name* | Name of the VPC created in the Service Project. | <code title="">string</code> |  | <code title="">local</code> |
-| *vpc_subnet_name* | Name of the subnet created in the Service Project. | <code title="">string</code> |  | <code title="">subnet</code> |
-| *zone* | The zone where resources will be deployed. | <code title="">string</code> |  | <code title="">europe-west1-b</code> |
-
-## Outputs
-
-| name | description | sensitive |
-|---|---|:---:|
-| bq_tables | Bigquery Tables. |  |
-| buckets | GCS Bucket Cloud KMS crypto keys. |  |
-| projects | Project ids. |  |
-| vm | GCE VMs. |  |
-<!-- END TFDOC -->
 
 ## Test your environment with Cloud Dataflow
 You can now connect to the GCE instance with the following command:
@@ -136,3 +109,30 @@ schema_bq_import.json
 ```
 
 You can check data imported into Google BigQuery from the Google Cloud Console UI.
+
+<!-- BEGIN TFDOC -->
+## Variables
+
+| name | description | type | required | default |
+|---|---|:---: |:---:|:---:|
+| billing_account | Billing account id used as default for new projects. | <code title="">string</code> | ✓ |  |
+| project_kms_name | Name for the new KMS Project. | <code title="">string</code> | ✓ |  |
+| project_service_name | Name for the new Service Project. | <code title="">string</code> | ✓ |  |
+| root_node | The resource name of the parent Folder or Organization. Must be of the form folders/folder_id or organizations/org_id. | <code title="">string</code> | ✓ |  |
+| *location* | The location where resources will be deployed. | <code title="">string</code> |  | <code title="">europe</code> |
+| *region* | The region where resources will be deployed. | <code title="">string</code> |  | <code title="">europe-west1</code> |
+| *ssh_source_ranges* | IP CIDR ranges that will be allowed to connect via SSH to the onprem instance. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">["0.0.0.0/0"]</code> |
+| *vpc_ip_cidr_range* | Ip range used in the subnet deployef in the Service Project. | <code title="">string</code> |  | <code title="">10.0.0.0/20</code> |
+| *vpc_name* | Name of the VPC created in the Service Project. | <code title="">string</code> |  | <code title="">local</code> |
+| *vpc_subnet_name* | Name of the subnet created in the Service Project. | <code title="">string</code> |  | <code title="">subnet</code> |
+| *zone* | The zone where resources will be deployed. | <code title="">string</code> |  | <code title="">europe-west1-b</code> |
+
+## Outputs
+
+| name | description | sensitive |
+|---|---|:---:|
+| bq_tables | Bigquery Tables. |  |
+| buckets | GCS Bucket Cloud KMS crypto keys. |  |
+| projects | Project ids. |  |
+| vm | GCE VMs. |  |
+<!-- END TFDOC -->
