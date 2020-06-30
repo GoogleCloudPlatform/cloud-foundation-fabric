@@ -28,7 +28,7 @@ Create a new virtual environment (recommended) and install requirements:
 ```
 virtualenv env
 source ./env/bin/activate
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 ```
 
 ## 4. Upload files into Google Cloud Storage
@@ -63,7 +63,7 @@ python data_ingestion.py \
 or you can run the pipeline on Google Dataflow using the following command:
 
 ```
-python pipelines/data_ingestion_configurable.py \
+python data_ingestion.py \
 --runner=DataflowRunner \
 --max_num_workers=100 \
 --autoscaling_algorithm=THROUGHPUT_BASED \
@@ -71,10 +71,27 @@ python pipelines/data_ingestion_configurable.py \
 --staging_location=###PUT HERE GCS STAGING LOCATION### \
 --temp_location=###PUT HERE GCS TMP LOCATION###\
 --project=###PUT HERE PROJECT ID### \
---input-bucket=###PUT HERE GCS BUCKET NAME### \
---input-path=###PUT HERE INPUT FOLDER### \
---input-files=###PUT HERE FILE NAMES### \
---bq-dataset=###PUT HERE BQ DATASET NAME###
+--input=###PUT HERE GCS BUCKET NAME. EXAMPLE: gs://bucket_name/person.csv### \
+--output=###PUT HERE BQ DATASET NAME. EXAMPLE: bq_dataset.df_import### \
+```
+
+Below an example to run the pipeline specifying Network and Subnetwork, using private IPs and using a KMS key to encrypt data at rest:
+
+```
+python data_ingestion.py \
+--runner=DataflowRunner \
+--max_num_workers=100 \
+--autoscaling_algorithm=THROUGHPUT_BASED \
+--region=###PUT HERE REGION### \
+--staging_location=###PUT HERE GCS STAGING LOCATION### \
+--temp_location=###PUT HERE GCS TMP LOCATION###\
+--project=###PUT HERE PROJECT ID### \
+--network=###PUT HERE YOUR NETWORK### \
+--subnetwork=###PUT HERE YOUR SUBNETWORK. EXAMPLE: regions/europe-west1/subnetworks/subnet### \
+--dataflowKmsKey=###PUT HERE KMES KEY. Example: projects/lcaggio-d-4-kms/locations/europe-west1/keyRings/my-keyring-regional/cryptoKeys/key-df### \
+--input=###PUT HERE GCS BUCKET NAME. EXAMPLE: gs://bucket_name/person.csv### \
+--output=###PUT HERE BQ DATASET NAME. EXAMPLE: bq_dataset.df_import### \
+--no_use_public_ips
 ```
 
 ## 6. Check results

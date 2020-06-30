@@ -15,7 +15,8 @@
 locals {
   vm-startup-script = join("\n", [
     "#! /bin/bash",
-    "apt-get update && apt-get install -y bash-completion git python3-venv gcc build-essential python-dev"
+    "apt-get update && apt-get install -y bash-completion git python3-venv gcc build-essential python-dev python3-dev",
+    "pip3 install --upgrade setuptools pip"
   ])
 }
 
@@ -230,7 +231,7 @@ module "vm_example" {
       }
     }
   ]
-  instance_count = 1
+  instance_count = 2
   boot_disk = {
     image        = "projects/debian-cloud/global/images/family/debian-10"
     type         = "pd-ssd"

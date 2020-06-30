@@ -69,7 +69,7 @@ This sample creates several distinct groups of resources:
 | vm | GCE VMs. |  |
 <!-- END TFDOC -->
 
-## Test your environment
+## Test your environment with Cloud Dataflow
 You can now connect to the GCE instance with the following command:
 
 ```hcl
@@ -106,14 +106,33 @@ python data_ingestion.py \
 --region=europe-west1 \
 --staging_location=gs://lc-001-eu-df-tmplocation/ \
 --temp_location=gs://lc-001-eu-df-tmplocation/ \
---project=lcaggio-demo-001 \
---input=gs://lc-001-eu-data/person.csv \
+--project=lcaggio-demo \
+--input=gs://lc-eu-data/person.csv \
 --output=bq_dataset.df_import \
---service_account_email=df-test@lcaggio-aa-demo-001.iam.gserviceaccount.com \
+--service_account_email=df-test@lcaggio-demo.iam.gserviceaccount.com \
 --network=local \
 --subnetwork=regions/europe-west1/subnetworks/subnet \
 --dataflow_kms_key=projects/lcaggio-demo-kms/locations/europe-west1/keyRings/my-keyring-regional/cryptoKeys/key-df \
 --no_use_public_ips
+```
+
+You can check data imported into Google BigQuery from the Google Cloud Console UI.
+
+## Test your environment with 'bq' CLI
+You can now connect to the GCE instance with the following command:
+
+```hcl
+ gcloud compute ssh vm-example-1
+```
+
+You can run now a simple 'bq load' command to import data into Bigquery. Below an example command:
+
+```hcl
+bq load \
+--source_format=CSV \
+bq_dataset.bq_import \
+gs://my-bucket/person.csv \
+schema_bq_import.json
 ```
 
 You can check data imported into Google BigQuery from the Google Cloud Console UI.
