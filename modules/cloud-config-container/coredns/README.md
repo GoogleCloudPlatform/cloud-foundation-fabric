@@ -24,7 +24,7 @@ This example will create a `cloud-config` that uses the module's defaults, creat
 
 ```hcl
 module "cos-coredns" {
-  source           = "./modules/cos-container/coredns"
+  source           = "./modules/cloud-config-container/coredns"
 }
 
 # use it as metadata in a compute instance or template
@@ -40,8 +40,8 @@ This example will create a `cloud-config` using a custom CoreDNS configuration, 
 
 ```hcl
 module "cos-coredns" {
-  source           = "./modules/cos-container/coredns"
-  coredns_config = "./modules/cos-container/coredns/Corefile-hosts"
+  source           = "./modules/cloud-config-container/coredns"
+  coredns_config = "./modules/cloud-config-container/coredns/Corefile-hosts"
   files = {
     "/etc/coredns/example.hosts" = {
       content     = "127.0.0.2 foo.example.org foo"
@@ -57,7 +57,7 @@ This example shows how to create the single instance optionally managed by the m
 
 ```hcl
 module "cos-coredns" {
-  source           = "./modules/cos-container/coredns"
+  source           = "./modules/cloud-config-container/coredns"
   test_instance = {
     project_id = "my-project"
     zone       = "europe-west1-b"
