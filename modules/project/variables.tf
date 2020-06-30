@@ -44,18 +44,12 @@ variable "iam_roles" {
   default     = []
 }
 
-variable "iam_additive_members" {
-  description = "List of members used to set non authoritative bindings."
-  type        = list(string)
-  default     = []
-}
 
-variable "iam_additive_roles" {
-  description = "Map of roles lists, used to set non authoritative bindings, keyed by members."
+variable "iam_additive_bindings" {
+  description = "Map of roles lists used to set non authoritative bindings, keyed by members"
   type        = map(list(string))
   default     = {}
 }
-
 
 variable "labels" {
   description = "Resource labels."
