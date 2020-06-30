@@ -64,7 +64,8 @@ def test_autoscaler(plan_runner):
       'load_balancing_utilization': [],
       'max_replicas': 3,
       'metric': [],
-      'min_replicas': 1
+      'min_replicas': 1,
+      'mode': 'ON'
   }]
   _, resources = plan_runner(
       FIXTURES_DIR, autoscaler_config=autoscaler_config, regional='true')
