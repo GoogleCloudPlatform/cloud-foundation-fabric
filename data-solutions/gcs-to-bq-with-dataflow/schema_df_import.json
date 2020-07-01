@@ -1,0 +1,22 @@
+[
+    {
+        "mode": "NULLABLE",
+        "name": "name",
+        "type": "STRING"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "surname",
+        "type": "STRING"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "age",
+        "type": "NUMERIC"
+    },
+    {
+        "mode": "NULLABLE",
+        "name": "_TIMESTAMP",
+        "type": "TIMESTAMP"
+    }
+]

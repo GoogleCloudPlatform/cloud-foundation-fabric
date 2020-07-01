@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- new 'Cloud Storage to Bigquery with Cloud Dataflow' end to end data solution
+
 ## [2.2.0] - 2020-06-29
 
 - make project creation optional in `project` module to allow managing a pre-existing project
