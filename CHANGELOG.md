@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- fix external IP assignment in `compute-vm`
+
 ## [2.3.0] - 2020-07-02
 
 - new 'Cloud Storage to Bigquery with Cloud Dataflow' end to end data solution
