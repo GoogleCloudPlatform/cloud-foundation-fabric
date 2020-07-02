@@ -37,7 +37,7 @@ resource "google_compute_address" "internal" {
   description  = "Terraform managed."
   address_type = "INTERNAL"
   region       = each.value.region
-  subnetwork   = each.value.subnetwork
+  subnetwork   = "projects/${each.value.host_project == "null" ? var.project_id : each.value.host_project}/regions/${each.value.region}/subnetworks/${each.value.subnetwork}"
   address      = lookup(var.internal_address_addresses, each.key, null)
   network_tier = lookup(var.internal_address_tiers, each.key, null)
   # labels       = lookup(var.internal_address_labels, each.key, {})
