@@ -131,6 +131,12 @@ module "audit-dataset" {
   project_id    = module.audit-project.project_id
   id            = "audit_export"
   friendly_name = "Audit logs export."
+  # disable delete on destroy for actual use
+  options = {
+    default_table_expiration_ms     = null
+    default_partition_expiration_ms = null
+    delete_contents_on_destroy      = true
+  }
 }
 
 module "audit-log-sinks" {
