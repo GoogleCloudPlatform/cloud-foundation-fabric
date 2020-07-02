@@ -34,14 +34,9 @@ variable "iam_roles" {
   default = []
 }
 
-variable "iam_additive_members" {
+variable "iam_additive_bindings" {
   type    = map(list(string))
   default = {}
-}
-
-variable "iam_additive_roles" {
-  type    = list(string)
-  default = []
 }
 
 variable "labels" {

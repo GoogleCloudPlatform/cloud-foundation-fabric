@@ -16,8 +16,8 @@
 
 locals {
   iam_additive_pairs = flatten([
-    for role in var.iam_additive_roles : [
-      for member in lookup(var.iam_additive_members, role, []) :
+    for member, roles in var.iam_additive_bindings : [
+      for role in roles :
       { role = role, member = member }
     ]
   ])
@@ -29,7 +29,9 @@ locals {
   parent_id   = var.parent == null ? null : split("/", var.parent)[1]
   prefix      = var.prefix == null ? "" : "${var.prefix}-"
   project = (
-    var.project_create ? google_project.project.0 : data.google_project.project.0
+    var.project_create
+    ? try(google_project.project.0, null)
+    : try(data.google_project.project.0, null)
   )
 }
 
@@ -100,7 +102,7 @@ resource "google_project_iam_binding" "authoritative" {
 }
 
 resource "google_project_iam_member" "additive" {
-  for_each = length(var.iam_additive_roles) > 0 ? local.iam_additive : {}
+  for_each = length(var.iam_additive_bindings) > 0 ? local.iam_additive : {}
   project  = local.project.project_id
   role     = each.value.role
   member   = each.value.member

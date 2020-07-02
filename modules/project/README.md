@@ -24,6 +24,33 @@ module "project" {
 }
 ```
 
+### Minimal example with IAM additive roles
+
+```hcl
+module "project" {
+  source          = "./modules/project"
+  name            = "project-example"
+  project_create  = false
+
+  iam_additive_bindings = {
+    "group:usergroup_watermlon_experimentation@lemonadeinc.io" = [
+	    "roles/viewer",
+	    "roles/storage.objectAdmin"
+    ],
+    "group:usergroup_gcp_admin@lemonadeinc.io" = [
+	    "roles/owner",
+    ],
+    "group:usergroup_gcp_privilege_access@lemonadeinc.io" = [
+	    "roles/editor"
+    ],
+    "group:engineering@lemonadeinc.io" = [
+	    "roles/pubsub.subscriber",
+	    "roles/storage.objectViewer"
+    ],
+  }
+}
+```
+
 ### Organization policies
 
 ```hcl
@@ -61,8 +88,7 @@ module "project" {
 | *auto_create_network* | Whether to create the default network for the project | <code title="">bool</code> |  | <code title="">false</code> |
 | *billing_account* | Billing account id. | <code title="">string</code> |  | <code title="">null</code> |
 | *custom_roles* | Map of role name => list of permissions to create in this project. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
-| *iam_additive_members* | Map of member lists used to set non authoritative bindings, keyed by role. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
-| *iam_additive_roles* | List of roles used to set non authoritative bindings. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
+| *iam_additive_bindings* | Map of roles list used to set non authoritative bindings, keyed by member. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 | *iam_members* | Map of member lists used to set authoritative bindings, keyed by role. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
 | *iam_roles* | List of roles used to set authoritative bindings. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 | *labels* | Resource labels. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
@@ -88,3 +114,4 @@ module "project" {
 | project_id | Project id. |  |
 | service_accounts | Product robot service accounts in project. |  |
 <!-- END TFDOC -->
+

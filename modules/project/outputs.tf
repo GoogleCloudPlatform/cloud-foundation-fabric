@@ -16,7 +16,7 @@
 
 output "project_id" {
   description = "Project id."
-  value       = local.project.project_id
+  value       = try(local.project.project_id, null)
   depends_on = [
     google_project_organization_policy.boolean,
     google_project_organization_policy.list,
