@@ -29,7 +29,9 @@ locals {
   parent_id   = var.parent == null ? null : split("/", var.parent)[1]
   prefix      = var.prefix == null ? "" : "${var.prefix}-"
   project = (
-    var.project_create ? google_project.project.0 : data.google_project.project.0
+    var.project_create
+    ? try(google_project.project.0, null)
+    : try(data.google_project.project.0, null)
   )
 }
 
