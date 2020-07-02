@@ -143,7 +143,7 @@ module "cf-http" {
 | *iam_roles* | List of roles used to set authoritative bindings. Ignored for template use. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 | *labels* | Resource labels | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
 | *prefix* | Optional prefix used for resource names. | <code title="">string</code> |  | <code title="">null</code> |
-| *region* | Region used for all resources. | <code title="">string</code> |  | <code title="">us-central1</code> |
+| *region* | Region used for all resources. | <code title="">string</code> |  | <code title="">europe-west1</code> |
 | *service_account* | Service account email. Unused if service account is auto-created. | <code title="">string</code> |  | <code title="">null</code> |
 | *service_account_create* | Auto-create service account. | <code title="">bool</code> |  | <code title="">false</code> |
 | *trigger_config* | Function trigger configuration. Leave null for HTTP trigger. | <code title="object&#40;&#123;&#10;event    &#61; string&#10;resource &#61; string&#10;retry    &#61; bool&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |

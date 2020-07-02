@@ -28,8 +28,8 @@ module "nat" {
 | *config_timeouts* | Timeout configurations. | <code title="object&#40;&#123;&#10;icmp            &#61; number&#10;tcp_established &#61; number&#10;tcp_transitory  &#61; number&#10;udp             &#61; number&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;icmp            &#61; 30&#10;tcp_established &#61; 1200&#10;tcp_transitory  &#61; 30&#10;udp             &#61; 30&#10;&#125;">...</code> |
 | *router_asn* | Router ASN used for auto-created router. | <code title="">number</code> |  | <code title="">64514</code> |
 | *router_create* | Create router. | <code title="">bool</code> |  | <code title="">true</code> |
-| *router_name* | Router name, leave blank if router will be created to use auto generated name. | <code title="">string</code> |  | <code title=""></code> |
-| *router_network* | Name of the VPC used for auto-created router. | <code title="">string</code> |  | <code title=""></code> |
+| *router_name* | Router name, leave blank if router will be created to use auto generated name. | <code title="">string</code> |  | <code title="">null</code> |
+| *router_network* | Name of the VPC used for auto-created router. | <code title="">string</code> |  | <code title="">null</code> |
 | *subnetworks* | Subnetworks to NAT, only used when config_source_subnets equals LIST_OF_SUBNETWORKS. | <code title="list&#40;object&#40;&#123;&#10;self_link            &#61; string,&#10;config_source_ranges &#61; list&#40;string&#41;&#10;secondary_ranges     &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">list(object({...}))</code> |  | <code title="">[]</code> |
 
 ## Outputs

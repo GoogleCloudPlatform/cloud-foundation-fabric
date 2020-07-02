@@ -24,7 +24,7 @@ module "container_registry" {
 | project_id | Registry project id. | <code title="">string</code> | ✓ |  |
 | *iam_members* | Map of member lists used to set authoritative bindings, keyed by role. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">null</code> |
 | *iam_roles* | List of roles used to set authoritative bindings. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">null</code> |
-| *location* | Bucket location. Can be US, EU, ASIA or empty | <code title="">string</code> |  | <code title=""></code> |
+| *location* | Registry location. Can be US, EU, ASIA or empty | <code title="">string</code> |  | <code title=""></code> |
 
 ## Outputs
 
