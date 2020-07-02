@@ -63,6 +63,10 @@ resource "google_access_context_manager_service_perimeter" "standard" {
     resources           = formatlist("projects/%s", lookup(var.vpc_sc_perimeters_projects, each.key, []))
     restricted_services = each.value.restricted_services
   }
+  
+  lifecycle {
+    ignore_changes = [status[0].resources]
+  }  
 }
 
 resource "google_access_context_manager_service_perimeter" "bridge" {
@@ -75,6 +79,11 @@ resource "google_access_context_manager_service_perimeter" "bridge" {
     resources           = formatlist("projects/%s", lookup(var.vpc_sc_perimeters_projects, each.key, []))
     restricted_services = each.value.restricted_services
   }
+
+  lifecycle {
+    ignore_changes = [status[0].resources]
+  }
+
   depends_on = [
     google_access_context_manager_service_perimeter.standard,
   ]

@@ -75,6 +75,8 @@ module "project" {
 | *policy_list* | Map of list org policies, status is true for allow, false for deny, null for restore. Values can only be used for allow or deny. | <code title="map&#40;object&#40;&#123;&#10;inherit_from_parent &#61; bool&#10;suggested_value     &#61; string&#10;status              &#61; bool&#10;values              &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
 | *prefix* | Prefix used to generate project id and name. | <code title="">string</code> |  | <code title="">null</code> |
 | *services* | Service APIs to enable. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
+| *vpc_sc_perimeter* | Name of the VPC-SC perimeter the project belong to. | <code title="">string</code> |  | <code title="">null</code> |
+| *vpc_sc_perimeter_bridges* | List of VPC-SC perimeter bridges the project belong to. Must be of the form accessPolicies/{policy_id}/servicePerimeters/{short_name} | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 
 ## Outputs
 

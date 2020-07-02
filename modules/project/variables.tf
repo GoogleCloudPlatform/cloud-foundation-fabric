@@ -124,3 +124,15 @@ variable "services" {
   type        = list(string)
   default     = []
 }
+
+variable "vpc_sc_perimeter" {
+  description = "Name of the VPC-SC perimeter the project belong to. Must be of the form accessPolicies/{policy_id}/servicePerimeters/{short_name}"
+  type        = string
+  default     = null
+}
+
+variable "vpc_sc_perimeter_bridges" {
+  description = "List of VPC-SC perimeter bridges the project belong to. Must be of the form accessPolicies/{policy_id}/servicePerimeters/{short_name}"
+  type        = list(string)
+  default     = []
+}

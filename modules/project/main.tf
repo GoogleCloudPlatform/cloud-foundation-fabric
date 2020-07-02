@@ -201,3 +201,18 @@ resource "google_project_organization_policy" "list" {
     }
   }
 }
+
+resource "google_access_context_manager_service_perimeter_resource" "standard" {
+  count          = var.vpc_sc_perimeter != "" ? 1 : 0
+  perimeter_name = var.vpc_sc_perimeter
+  resource       = format("projects/%s", google_project.project.number)
+}
+
+resource "google_access_context_manager_service_perimeter_resource" "bridges" {
+  count = length(var.vpc_sc_perimeter_bridges)
+  perimeter_name = var.vpc_sc_perimeter_bridges[count.index]
+  resource       = format("projects/%s", google_project.project.number)
+  depends_on = [
+    google_access_context_manager_service_perimeter_resource.standard,
+  ]  
+}
