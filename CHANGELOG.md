@@ -4,7 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.3.0] - 2020-07-02
+
 - new 'Cloud Storage to Bigquery with Cloud Dataflow' end to end data solution
+- **incompatible change** additive IAM bindings are now keyed by identity instead of role, and use a single `iam_additive_bindings` variable, refer to [#103] for details
+- set `delete_contents_on_destroy` in the foundations examples audit dataset to allow destroying
+- trap errors raised by the `project` module on destroy
 
 ## [2.2.0] - 2020-06-29
 
@@ -112,7 +117,8 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.2.0...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.3.0...HEAD
+[2.3.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.2.0...v2.3.0
 [2.2.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.9.0...v2.0.0
@@ -129,3 +135,4 @@ All notable changes to this project will be documented in this file.
 [1.1.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v1.0...v1.1
 [1.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v0.1...v1.0
 [#82]: https://github.com/terraform-google-modules/cloud-foundation-fabric/pull/82
+[#103]: https://github.com/terraform-google-modules/cloud-foundation-fabric/pull/103
