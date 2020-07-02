@@ -37,6 +37,7 @@ variable "internal_addresses" {
   type = map(object({
     region     = string
     subnetwork = string
+    host_project    = string
   }))
   default = {}
 }
