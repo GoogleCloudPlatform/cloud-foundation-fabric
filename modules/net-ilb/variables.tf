@@ -55,6 +55,16 @@ variable "global_access" {
   default     = null
 }
 
+variable "group_configs" {
+  description = "Optional unmanaged groups to create. Can be referenced in backends via outputs."
+  type = map(object({
+    instances   = list(string)
+    named_ports = map(number)
+    zone        = string
+  }))
+  default = {}
+}
+
 variable "health_check" {
   description = "Name of existing health check to use, disables auto-created health check."
   type        = string

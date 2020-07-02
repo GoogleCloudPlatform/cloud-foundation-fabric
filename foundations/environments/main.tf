@@ -19,14 +19,15 @@
 # Terraform project
 
 module "tf-project" {
-  source               = "../../modules/project"
-  name                 = "terraform"
-  parent               = var.root_node
-  prefix               = var.prefix
-  billing_account      = var.billing_account_id
-  iam_additive_members = { "roles/owner" = var.iam_terraform_owners }
-  iam_additive_roles   = ["roles/owner"]
-  services             = var.project_services
+  source          = "../../modules/project"
+  name            = "terraform"
+  parent          = var.root_node
+  prefix          = var.prefix
+  billing_account = var.billing_account_id
+  iam_additive_bindings = {
+    for name in var.iam_terraform_owners : (name) => ["roles/owner"]
+  }
+  services = var.project_services
 }
 
 # per-environment service accounts
@@ -130,6 +131,12 @@ module "audit-dataset" {
   project_id    = module.audit-project.project_id
   id            = "audit_export"
   friendly_name = "Audit logs export."
+  # disable delete on destroy for actual use
+  options = {
+    default_table_expiration_ms     = null
+    default_partition_expiration_ms = null
+    delete_contents_on_destroy      = true
+  }
 }
 
 module "audit-log-sinks" {
@@ -156,12 +163,9 @@ module "sharedsvc-project" {
   parent          = var.root_node
   prefix          = var.prefix
   billing_account = var.billing_account_id
-  iam_additive_members = {
-    "roles/owner" = var.iam_sharedsvc_owners
+  iam_additive_bindings = {
+    for name in var.iam_shared_owners : (name) => ["roles/owner"]
   }
-  iam_additive_roles = [
-    "roles/owner"
-  ]
   services = var.project_services
 }
 

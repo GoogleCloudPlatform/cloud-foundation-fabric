@@ -15,7 +15,6 @@
  */
 
 locals {
-  is_static_zone = var.type == "public" || var.type == "private"
   recordsets = var.recordsets == null ? {} : {
     for record in var.recordsets :
     join("/", [record.name, record.type]) => record
@@ -24,6 +23,9 @@ locals {
     google_dns_managed_zone.non-public.0, try(
       google_dns_managed_zone.public.0, null
     )
+  )
+  dns_keys = try(
+    data.google_dns_keys.dns_keys.0, null
   )
 }
 
@@ -38,14 +40,11 @@ resource "google_dns_managed_zone" "non-public" {
 
   dynamic forwarding_config {
     for_each = (
-      var.type == "forwarding" && var.forwarders != null
-      ? { config = var.forwarders }
-      : {}
+      var.type == "forwarding" && var.forwarders != null ? [""] : []
     )
-    iterator = config
     content {
       dynamic "target_name_servers" {
-        for_each = config.value
+        for_each = var.forwarders
         iterator = address
         content {
           ipv4_address = address.value
@@ -56,14 +55,11 @@ resource "google_dns_managed_zone" "non-public" {
 
   dynamic peering_config {
     for_each = (
-      var.type == "peering" && var.peer_network != null
-      ? { config = var.peer_network }
-      : {}
+      var.type == "peering" && var.peer_network != null ? [""] : []
     )
-    iterator = config
     content {
       target_network {
-        network_url = config.value
+        network_url = var.peer_network
       }
     }
   }
@@ -74,6 +70,19 @@ resource "google_dns_managed_zone" "non-public" {
       iterator = network
       content {
         network_url = network.value
+      }
+    }
+  }
+
+  dynamic service_directory_config {
+    for_each = (
+      var.type == "service-directory" && var.service_directory_namespace != null
+      ? [""]
+      : []
+    )
+    content {
+      namespace {
+        namespace_url = var.service_directory_namespace
       }
     }
   }
@@ -111,6 +120,11 @@ resource "google_dns_managed_zone" "public" {
     }
   }
 
+}
+
+data "google_dns_keys" "dns_keys" {
+  count        = var.dnssec_config == {} || var.type != "public" ? 0 : 1
+  managed_zone = google_dns_managed_zone.public.0.id
 }
 
 resource "google_dns_record_set" "cloud-static-records" {

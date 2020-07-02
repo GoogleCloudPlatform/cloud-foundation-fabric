@@ -25,6 +25,10 @@ locals {
     for pair in setproduct(keys(local.names), keys(local.attached_disks)) :
     "${pair[0]}-${pair[1]}" => { name = pair[0], disk_name = pair[1] }
   }
+  iam_roles = var.use_instance_template ? {} : {
+    for pair in setproduct(var.iam_roles, keys(local.names)) :
+    "${pair.0}/${pair.1}" => { role = pair.0, name = pair.1 }
+  }
   names = (
     var.use_instance_template
     ? { "${var.name}" = 0 }
@@ -66,6 +70,14 @@ resource "google_compute_disk" "disks" {
     disk_type = local.attached_disks[each.value.disk_name].options.type
     image     = local.attached_disks[each.value.disk_name].image
   })
+  dynamic disk_encryption_key {
+    for_each = var.encryption != null ? [""] : []
+
+    content {
+      raw_key           = var.encryption.disk_encryption_key_raw
+      kms_key_self_link = var.encryption.kms_key_self_link
+    }
+  }
 }
 
 resource "google_compute_instance" "default" {
@@ -103,6 +115,8 @@ resource "google_compute_instance" "default" {
       image = var.boot_disk.image
       size  = var.boot_disk.size
     }
+    disk_encryption_key_raw = var.encryption != null ? var.encryption.disk_encryption_key_raw : null
+    kms_key_self_link       = var.encryption != null ? var.encryption.kms_key_self_link : null
   }
 
   dynamic network_interface {
@@ -121,7 +135,7 @@ resource "google_compute_instance" "default" {
         iterator = nat_addresses
         content {
           nat_ip = nat_addresses.value == null ? null : (
-            length(nat_addresses.value) == 0 ? null : nat_addresses.value[each.value]
+            length(nat_addresses.value) == 0 ? null : nat_addresses.value.external[each.value]
           )
         }
       }
@@ -152,6 +166,16 @@ resource "google_compute_instance" "default" {
   # guest_accelerator
   # shielded_instance_config
 
+}
+
+resource "google_compute_instance_iam_binding" "default" {
+  for_each      = local.iam_roles
+  project       = var.project_id
+  zone          = var.zone
+  instance_name = each.value.name
+  role          = each.value.role
+  members       = lookup(var.iam_members, each.value.role, [])
+  depends_on    = [google_compute_instance.default]
 }
 
 resource "google_compute_instance_template" "default" {

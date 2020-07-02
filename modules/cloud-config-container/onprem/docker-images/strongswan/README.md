@@ -1,9 +1,14 @@
 
 # StrongSwan docker container
 
-### [strongSwan](https://www.strongswan.org/) is an OpenSource IPsec-based VPN Solution
+## Build
 
-### Docker compose example
+```bash
+gcloud builds submit . --config=cloudbuild.yaml
+```
+
+## Docker compose example
+
 ```yaml
 version: "3"
 services:
@@ -36,9 +41,4 @@ services:
     volumes:
       - "/var/lib/docker-compose/onprem/bird/bird.conf:/etc/bird/bird.conf:ro"
 
-```
-
-### Build
-```bash
-gcloud builds submit . --config=cloudbuild.yaml
 ```

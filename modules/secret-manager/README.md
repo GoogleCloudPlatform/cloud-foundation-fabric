@@ -84,7 +84,7 @@ module "secret-manager" {
 | *iam_roles* | IAM roles keyed by secret name. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
 | *labels* | Optional labels for each secret. | <code title="map&#40;map&#40;string&#41;&#41;">map(map(string))</code> |  | <code title="">{}</code> |
 | *secrets* | Map of secrets to manage and their locations. If locations is null, automatic management will be set. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
-| *versions* | Optional versions to manage for each secret. Version names are only used internally to track each version and must be unique for each secret/version pair. | <code title="map&#40;list&#40;object&#40;&#123;&#10;enabled &#61; bool&#10;data    &#61; string&#10;name    &#61; string&#10;&#125;&#41;&#41;&#41;">map(list(object({...})))</code> |  | <code title="">{}</code> |
+| *versions* | Optional versions to manage for each secret. Version names are only used internally to track individual versions. | <code title="map&#40;map&#40;object&#40;&#123;&#10;enabled &#61; bool&#10;data    &#61; string&#10;&#125;&#41;&#41;&#41;">map(map(object({...})))</code> |  | <code title="">{}</code> |
 
 ## Outputs
 

@@ -30,9 +30,6 @@ variable "description" {
   default     = "Terraform managed."
 }
 
-# TODO(ludoo): add link to DNSSEC documentation in README
-# https://www.terraform.io/docs/providers/google/r/dns_managed_zone.html#dnssec_config
-
 variable "default_key_specs_key" {
   description = "DNSSEC default key signing specifications: algorithm, key_length, key_type, kind."
   type        = any
@@ -71,7 +68,7 @@ variable "name" {
 variable "peer_network" {
   description = "Peering network self link, only valid for 'peering' zone types."
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "project_id" {
@@ -90,8 +87,14 @@ variable "recordsets" {
   default     = []
 }
 
+variable "service_directory_namespace" {
+  description = "Service directory namespace id (URL), only valid for 'service-directory' zone types."
+  type        = string
+  default     = null
+}
+
 variable "type" {
-  description = "Type of zone to create, valid values are 'public', 'private', 'forwarding', 'peering'."
+  description = "Type of zone to create, valid values are 'public', 'private', 'forwarding', 'peering', 'service-directory'."
   type        = string
   default     = "private"
 }

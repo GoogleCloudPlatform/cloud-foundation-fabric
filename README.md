@@ -19,8 +19,9 @@ Currently available examples:
 
 - **foundations** - [single level hierarchy](./foundations/environments/) (environments), [multiple level hierarchy](./foundations/business-units/) (business units + environments)
 - **infrastructure** - [hub and spoke via peering](./infrastructure/hub-and-spoke-peering/), [hub and spoke via VPN](./infrastructure/hub-and-spoke-vpn/), [DNS and Google Private Access for on-premises](./infrastructure/onprem-google-access-dns/), [Shared VPC with GKE support](./infrastructure/shared-vpc-gke/)
+- **data solutions** - [GCE/GCS CMEK via centralized Cloud KMS](./data-solutions/cmek-via-centralized-kms/), [Cloud Storage to Bigquery with Cloud Dataflow](./data-solutions/gcs-to-bq-with-dataflow/)
 
-For more information see the README files in the [foundations](./foundations/) and [infrastructure](./infrastructure/) folders.
+For more information see the README files in the [foundations](./foundations/), [infrastructure](./infrastructure/) and [data solutions](./data-solutions/) folders.
 
 ## Modules
 
@@ -33,9 +34,11 @@ The current list of modules supports most of the core foundational and networkin
 Currently available modules:
 
 - **foundational** - [folders](./modules/folders), [log sinks](./modules/logging-sinks), [organization](./modules/organization), [project](./modules/project), [service accounts](./modules/iam-service-accounts)
-- **networking** - [VPC](./modules/net-vpc), [VPC firewall](./modules/net-vpc-firewall), [VPC peering](./modules/net-vpc-peering), [VPN static](./modules/net-vpn-static), [VPN dynamic](./modules/net-vpn-dynamic), [VPN HA](./modules/net-vpn-ha), [NAT](./modules/net-cloudnat), [address reservation](./modules/net-address), [DNS](./modules/dns), [L4 ILB](./modules/net-ilb)
+- **networking** - [VPC](./modules/net-vpc), [VPC firewall](./modules/net-vpc-firewall), [VPC peering](./modules/net-vpc-peering), [VPN static](./modules/net-vpn-static), [VPN dynamic](./modules/net-vpn-dynamic), [VPN HA](./modules/net-vpn-ha), [NAT](./modules/net-cloudnat), [address reservation](./modules/net-address), [DNS](./modules/dns), [L4 ILB](./modules/net-ilb), [Service Directory](./modules/service-directory), [Cloud Endpoints](./modules/cloudenpoints)
 - **compute** - [VM/VM group](./modules/compute-vm), [MIG](./modules/compute-mig), [GKE cluster](./modules/gke-cluster), [GKE nodepool](./modules/gke-nodepool), [COS container](./modules/cos-container) (coredns, mysql, onprem, squid)
-- **data** - [GCS](./modules/gcs), [BigQuery dataset](./modules/bigquery-dataset)
+- **data** - [GCS](./modules/gcs), [BigQuery dataset](./modules/bigquery-dataset), [Pub/Sub](./modules/pubsub), [Datafusion](./modules/datafusion), [Bigtable instance](./modules/bigtable-instance)
+- **development** - [Cloud Source Repository](./modules/source-repository), [Container Registry](./modules/container-registry), [Artifact Registry](./modules/artifact-registry)
 - **security** - [KMS](./modules/kms), [SecretManager](./modules/secret-manager)
+- **serverless** - [Cloud Functions](./cloud-functions)
 
 For more information and usage examples see each module's README file.

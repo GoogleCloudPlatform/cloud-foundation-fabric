@@ -20,7 +20,7 @@ The access variables are split into `access_roles` and `access_identities` varia
 ```hcl
 module "bigquery-dataset" {
   source     = "./modules/bigquery-dataset"
-  project_id = "my-project
+  project_id = "my-project"
   id          = "my-dataset"
   access_roles = {
     reader-group = { role = "READER", type = "group_by_email" }
@@ -40,7 +40,7 @@ Dataset options are set via the `options` variable. all options must be specifie
 ```hcl
 module "bigquery-dataset" {
   source     = "./modules/bigquery-dataset"
-  project_id = "my-project
+  project_id = "my-project"
   id         = "my-dataset"
   options = {
     default_table_expiration_ms     = 3600000
@@ -57,7 +57,7 @@ Tables are created via the `tables` variable, or the `view` variable for views. 
 ```hcl
 module "bigquery-dataset" {
   source     = "./modules/bigquery-dataset"
-  project_id = "my-project
+  project_id = "my-project"
   id         = "my-dataset"
   tables = {
     table_a = {
@@ -76,7 +76,7 @@ If partitioning is needed, populate the `partitioning` variable using either the
 ```hcl
 module "bigquery-dataset" {
   source     = "./modules/bigquery-dataset"
-  project_id = "my-project
+  project_id = "my-project"
   id         = "my-dataset"
   tables = {
     table_a = {
@@ -99,7 +99,7 @@ To create views use the `view` variable. If you're querying a table created by t
 ```hcl
 module "bigquery-dataset" {
   source     = "./modules/bigquery-dataset"
-  project_id = "my-project
+  project_id = "my-project"
   id         = "my-dataset"
   tables = {
     table_a = {
@@ -158,6 +158,3 @@ module "bigquery-dataset" {
 | views | View resources. |  |
 <!-- END TFDOC -->
 
-## TODO
-
-- [ ] add support for tables

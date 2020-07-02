@@ -34,9 +34,7 @@ resource "google_compute_firewall" "allow-admins" {
   network       = var.network
   project       = var.project_id
   source_ranges = var.admin_ranges
-  allow { protocol = "icmp" }
-  allow { protocol = "tcp" }
-  allow { protocol = "udp" }
+  allow { protocol = "all" }
 }
 
 ###############################################################################

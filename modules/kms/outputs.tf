@@ -16,30 +16,51 @@
 
 output "keyring" {
   description = "Keyring resource."
-  value       = google_kms_key_ring.key_ring
+  value       = local.keyring
+  depends_on = [
+    google_kms_key_ring_iam_binding.default
+  ]
 }
 
 output "location" {
-  description = "Keyring self link."
-  value       = google_kms_key_ring.key_ring.location
+  description = "Keyring location."
+  value       = local.keyring.location
+  depends_on = [
+    google_kms_key_ring_iam_binding.default
+  ]
 }
 
 output "name" {
-  description = "Keyring self link."
-  value       = google_kms_key_ring.key_ring.name
+  description = "Keyring name."
+  value       = local.keyring.name
+  depends_on = [
+    google_kms_key_ring_iam_binding.default
+  ]
 }
 
 output "self_link" {
   description = "Keyring self link."
-  value       = google_kms_key_ring.key_ring.self_link
+  value       = local.keyring.self_link
+  depends_on = [
+    google_kms_key_ring_iam_binding.default
+  ]
 }
 
 output "keys" {
   description = "Key resources."
-  value       = local.keys
+  value       = google_kms_crypto_key.default
+  depends_on = [
+    google_kms_crypto_key_iam_binding.default
+  ]
 }
 
 output "key_self_links" {
   description = "Key self links."
-  value       = { for name, resource in local.keys : name => resource.self_link }
+  value = {
+    for name, resource in google_kms_crypto_key.default :
+    name => resource.self_link
+  }
+  depends_on = [
+    google_kms_crypto_key_iam_binding.default
+  ]
 }

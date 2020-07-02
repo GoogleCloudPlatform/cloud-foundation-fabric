@@ -11,3 +11,4 @@ backend.tf
 backend-config.hcl
 credentials.json
 key.json
+terraform-ls.tf

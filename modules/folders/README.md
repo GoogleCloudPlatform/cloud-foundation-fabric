@@ -8,12 +8,12 @@ This module allow creation and management of sets of folders sharing a common pa
 
 ```hcl
 module "folder" {
-  source = "./modules/folder"
+  source = "./modules/folders"
   parent = "organizations/1234567890"
-  names  = ["Folder one", "Folder two]
+  names  = ["Folder one", "Folder two"]
   iam_members = {
     "Folder one" = {
-      "roles/owner" => ["group:users@example.com"]
+      "roles/owner" = ["group:users@example.com"]
     }
   }
   iam_roles = {
@@ -26,9 +26,9 @@ module "folder" {
 
 ```hcl
 module "folder" {
-  source = "./modules/folder"
+  source = "./modules/folders"
   parent = "organizations/1234567890"
-  names  = ["Folder one", "Folder two]
+  names  = ["Folder one", "Folder two"]
   policy_boolean = {
     "constraints/compute.disableGuestAttributesAccess" = true
     "constraints/compute.skipDefaultNetworkCreation" = true

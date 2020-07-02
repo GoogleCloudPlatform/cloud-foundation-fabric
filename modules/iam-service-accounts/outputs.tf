@@ -21,27 +21,30 @@ output "service_account" {
 
 output "service_accounts" {
   description = "Service account resources."
-  value       = local.resources
+  value       = google_service_account.service_accounts
 }
 
 output "email" {
   description = "Service account email (for single use)."
-  value       = local.resource == null ? null : local.resource.email
+  value       = try(local.resource.email, null)
 }
 
 output "iam_email" {
   description = "IAM-format service account email (for single use)."
-  value       = local.resource == null ? null : "serviceAccount:${local.resource.email}"
+  value       = try("serviceAccount:${local.resource.email}", null)
 }
 
 output "key" {
   description = "Service account key (for single use)."
-  value       = lookup(local.keys, var.names[0], null)
+  value       = try(local.keys[var.names[0]], null)
 }
 
 output "emails" {
   description = "Service account emails."
-  value       = { for name, resource in local.resources : name => resource.email }
+  value = {
+    for name, resource in google_service_account.service_accounts :
+    name => resource.email
+  }
 }
 
 output "iam_emails" {
@@ -51,12 +54,18 @@ output "iam_emails" {
 
 output "emails_list" {
   description = "Service account emails."
-  value       = [for name, resource in local.resources : resource.email]
+  value = [
+    for name, resource in google_service_account.service_accounts :
+    resource.email
+  ]
 }
 
 output "iam_emails_list" {
   description = "IAM-format service account emails."
-  value       = [for name, resource in local.resources : "serviceAccount:${resource.email}"]
+  value = [
+    for name, resource in google_service_account.service_accounts :
+    "serviceAccount:${resource.email}"
+  ]
 }
 
 output "keys" {
