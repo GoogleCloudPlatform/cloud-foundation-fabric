@@ -14,6 +14,18 @@
  * limitations under the License.
  */
 
+variable "access_policy_title" {
+  description = "Access Policy title to be created."
+  type        = string
+  default     = ""
+}
+
+variable "access_policy_name" {
+  description = "Access Policy name. No Access Policy will be created."
+  type        = string
+  default     = null
+}
+
 variable "custom_roles" {
   description = "Map of role name => list of permissions to create in this project."
   type        = map(list(string))
@@ -75,4 +87,19 @@ variable "policy_list" {
     values              = list(string)
   }))
   default = {}
+}
+
+variable "vpc_sc_perimeters" {
+  description = "Set of Perimeters."
+  type = map(object({
+    type                = string
+    restricted_services = list(string)
+  }))
+  default = {}
+}
+
+variable "vpc_sc_perimeters_projects" {
+  description = "Perimeter - Project Number mapping in `projects/project_number` format.."
+  type        = map(list(string))
+  default     = {}
 }

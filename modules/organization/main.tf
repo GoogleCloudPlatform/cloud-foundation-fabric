@@ -25,6 +25,59 @@ locals {
     for pair in local.iam_additive_pairs :
     "${pair.role}-${pair.member}" => pair
   }
+
+  standard_perimeters = {
+    for key, value in var.vpc_sc_perimeters :
+    key => value
+    if value.type == "PERIMETER_TYPE_REGULAR"
+  }
+
+  perimeter_create = var.access_policy_name != null || var.access_policy_title != null ? true : false
+
+  bridge_perimeters = {
+    for key, value in var.vpc_sc_perimeters :
+    key => value
+    if value.type == "PERIMETER_TYPE_BRIDGE"
+  }
+
+  access_policy_name = (
+    var.access_policy_name == null
+    ? try(google_access_context_manager_access_policy.default.0.name, null)
+    : try(var.access_policy_name, null)
+  )
+}
+
+resource "google_access_context_manager_access_policy" "default" {
+  count  = var.access_policy_name == null ? 1 : 0
+  parent = format("organizations/%s", var.org_id)
+  title  = var.access_policy_title
+}
+
+resource "google_access_context_manager_service_perimeter" "standard" {
+  for_each       = local.perimeter_create ? local.standard_perimeters : {}
+  parent         = "accessPolicies/${local.access_policy_name}"
+  name           = "accessPolicies/${local.access_policy_name}/servicePerimeters/${each.key}"
+  title          = each.key
+  perimeter_type = each.value.type
+  status {
+    resources           = formatlist("projects/%s", lookup(var.vpc_sc_perimeters_projects, each.key, []))
+    restricted_services = each.value.restricted_services
+  }
+}
+
+resource "google_access_context_manager_service_perimeter" "bridge" {
+  for_each       = local.perimeter_create != null ? local.bridge_perimeters : {}
+  parent         = "accessPolicies/${local.access_policy_name}"
+  name           = "accessPolicies/${local.access_policy_name}/servicePerimeters/${each.key}"
+  title          = each.key
+  perimeter_type = each.value.type
+  status {
+    resources           = formatlist("projects/%s", lookup(var.vpc_sc_perimeters_projects, each.key, []))
+    restricted_services = each.value.restricted_services
+  }
+  depends_on = [
+    google_access_context_manager_service_perimeter.standard,
+  ]
 }
 
 resource "google_organization_iam_custom_role" "roles" {
