@@ -19,14 +19,15 @@
 # Terraform project
 
 module "tf-project" {
-  source               = "../../modules/project"
-  name                 = "terraform"
-  parent               = var.root_node
-  prefix               = var.prefix
-  billing_account      = var.billing_account_id
+  source          = "../../modules/project"
+  name            = "terraform"
+  parent          = var.root_node
+  prefix          = var.prefix
+  billing_account = var.billing_account_id
   iam_additive_bindings = {
-    for name in var.iam_terraform_owners : (name) => ["roles/owner" ]}
-  services             = var.project_services
+    for name in var.iam_terraform_owners : (name) => ["roles/owner"]
+  }
+  services = var.project_services
 }
 
 # per-environment service accounts
@@ -157,7 +158,8 @@ module "sharedsvc-project" {
   prefix          = var.prefix
   billing_account = var.billing_account_id
   iam_additive_bindings = {
-    for name in var.iam_terraform_owners : (name) => ["roles/owner" ]}
+    for name in var.iam_shared_owners : (name) => ["roles/owner"]
+  }
   services = var.project_services
 }
 

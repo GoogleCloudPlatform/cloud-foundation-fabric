@@ -29,14 +29,15 @@ module "shared-folder" {
 # Terraform project
 
 module "tf-project" {
-  source               = "../../modules/project"
-  name                 = "terraform"
-  parent               = module.shared-folder.id
-  prefix               = var.prefix
-  billing_account      = var.billing_account_id
-  iam_additive_members = { "roles/owner" = var.iam_terraform_owners }
-  iam_additive_roles   = ["roles/owner"]
-  services             = var.project_services
+  source          = "../../modules/project"
+  name            = "terraform"
+  parent          = module.shared-folder.id
+  prefix          = var.prefix
+  billing_account = var.billing_account_id
+  iam_additive_bindings = {
+    for name in var.iam_terraform_owners : (name) => ["roles/owner"]
+  }
+  services = var.project_services
 }
 
 # Bootstrap Terraform state GCS bucket
@@ -140,12 +141,9 @@ module "shared-project" {
   parent          = module.shared-folder.id
   prefix          = var.prefix
   billing_account = var.billing_account_id
-  iam_additive_members = {
-    "roles/owner" = var.iam_shared_owners
+  iam_additive_bindings = {
+    for name in var.iam_shared_owners : (name) => ["roles/owner"]
   }
-  iam_additive_roles = [
-    "roles/owner"
-  ]
   services = var.project_services
 }
 
