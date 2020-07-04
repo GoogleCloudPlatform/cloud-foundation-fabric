@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-output "command_cf_logs" {
+output "cf_logs" {
   description = "Cloud Function logs read command."
   value       = <<END
 gcloud logging read '
@@ -26,7 +26,7 @@ gcloud logging read '
   END
 }
 
-output "command_feed_create" {
+output "feed_create" {
   description = "Feed gcloud command."
   value       = <<END
 gcloud asset feeds create ${var.name} \
@@ -37,7 +37,17 @@ gcloud asset feeds create ${var.name} \
   END
 }
 
-output "command_instance_add_tag" {
+output "subscription_pull" {
+  description = "Subscription pull command."
+  value       = <<END
+gcloud pubsub subscriptions pull ${var.name}-default \
+  --auto-ack \
+  --format "value(message.data)" \
+  --project ${module.project.project_id}
+  END
+}
+
+output "tag_add" {
   description = "Instance add tag command."
   value       = <<END
 gcloud compute instances add-tags ${var.name}-1 \
@@ -47,12 +57,12 @@ gcloud compute instances add-tags ${var.name}-1 \
   END
 }
 
-output "command_subscription_pull" {
-  description = "Subscription pull command."
+output "tag_show" {
+  description = "Instance add tag command."
   value       = <<END
-gcloud pubsub subscriptions pull ${var.name}-default \
-  --auto-ack \
-  --format "value(message.data)" \
-  --project ${module.project.project_id}
+gcloud compute instances describe ${var.name}-1 \
+  --project ${module.project.project_id} \
+  --zone ${var.region}-b \
+  --format 'yaml(tags)'
   END
 }
