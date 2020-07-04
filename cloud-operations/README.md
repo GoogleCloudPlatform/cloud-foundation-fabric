@@ -10,7 +10,7 @@ The examples in this folder show how to wire together different Google Cloud ser
 
 The tracked resources in the example are compute instances, and the Cloud Function is used to enforce policy compliance on their tags, and can esaily be adapted to suit different use cases.
 
-<br break="left">
+<br clear="left">
 
 ### Granular Cloud DNS IAM via Service Directory
 
