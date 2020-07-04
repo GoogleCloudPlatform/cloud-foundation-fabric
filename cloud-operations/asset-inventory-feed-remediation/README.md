@@ -17,5 +17,31 @@ The resources created in this example are shown in the high level diagram below:
 
 ![Asset Inventory Feed diagram](diagram.png "Asset Inventory Feed diagram")
 
-## Testing the example
+## Running the example
+
+TODO
+
+## Testing remediation
+
+TODO
+
+<!-- BEGIN TFDOC -->
+## Variables
+
+| name | description | type | required | default |
+|---|---|:---: |:---:|:---:|
+| project_id | Project id that references existing project. | <code title="">string</code> | ✓ |  |
+| *name* | Arbitrary string used to name created resources. | <code title="">string</code> |  | <code title="">asset-feed</code> |
+| *region* | Compute region used in the example. | <code title="">string</code> |  | <code title="">europe-west1</code> |
+| *tag* | Extra tag to apply on the test instance. | <code title="">string</code> |  | <code title="">null</code> |
+
+## Outputs
+
+| name | description | sensitive |
+|---|---|:---:|
+| command_cf_logs | Cloud Function logs read command. |  |
+| command_feed_create | Feed gcloud command. |  |
+| command_instance_add_tag | Instance add tag command. |  |
+| command_subscription_pull | Subscription pull command. |  |
+<!-- END TFDOC -->
 
