@@ -15,7 +15,7 @@ With simple changes to the [monitored asset](https://cloud.google.com/asset-inve
 
 The resources created in this example are shown in the high level diagram below:
 
-![Asset Inventory Feed diagram](diagram.png "Asset Inventory Feed diagram")
+<img src="diagram.png" width="720px">
 
 ## Running the example
 
