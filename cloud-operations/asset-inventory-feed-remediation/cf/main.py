@@ -15,12 +15,12 @@
 '''Cloud Function module to do simple instance tag enforcement.
 
 This module is designed to be plugged in a Cloud Function, attached to a PubSub
-trigger that receives Cloud Inventory Asset updateds on the instance type. Its
+trigger that receives Cloud Inventory Asset updates on the instance type. Its
 purpose is to do live checking, validation and remediation of instance tags.
 
 Tags are validated using two simple rules: global allowed tags must match the
-fixed prefix in the `_TAG_SHARED_PREFIX` constant, while project local tags
-must be prefixed with the project id.
+fixed prefixes in the `_TAG_SHARED_PREFIXES` constant, while project local
+tags must be prefixed with the project id.
 
 Quickstart to create the feed and deploy the function, assuming
 all other prerequisites are in place:
