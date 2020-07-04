@@ -29,7 +29,7 @@ module "cf-http" {
 }
 ```
 
-### Non-HTTP triggers
+### PubSub and non-HTTP triggers
 
 Other trigger types other than HTTP are configured via the `trigger_config` variable. This example shows a PubSub trigger.
 
