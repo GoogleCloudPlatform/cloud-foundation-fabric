@@ -23,7 +23,7 @@ module "cf-http" {
   name          = "test-cf-http"
   bucket_name   = "test-cf-bundles"
   bundle_config = {
-    source_dir = "my-cf-source-folder
+    source_dir = "my-cf-source-folder"
     output_path = "bundle.zip"
   }
 }
@@ -40,7 +40,7 @@ module "cf-http" {
   name          = "test-cf-http"
   bucket_name   = "test-cf-bundles"
   bundle_config = {
-    source_dir = "my-cf-source-folder
+    source_dir = "my-cf-source-folder"
     output_path = "bundle.zip"
   }
   trigger_config = {
@@ -62,7 +62,7 @@ module "cf-http" {
   name          = "test-cf-http"
   bucket_name   = "test-cf-bundles"
   bundle_config = {
-    source_dir = "my-cf-source-folder
+    source_dir = "my-cf-source-folder"
     output_path = "bundle.zip"
   }
   iam_roles     = ["roles/cloudfunctions.invoker"]
@@ -87,7 +87,7 @@ module "cf-http" {
     lifecycle_delete_age = 1
   }
   bundle_config = {
-    source_dir = "my-cf-source-folder
+    source_dir = "my-cf-source-folder"
     output_path = "bundle.zip"
   }
 }
@@ -104,7 +104,7 @@ module "cf-http" {
   name          = "test-cf-http"
   bucket_name   = "test-cf-bundles"
   bundle_config = {
-    source_dir = "my-cf-source-folder
+    source_dir = "my-cf-source-folder"
     output_path = "bundle.zip"
   }
   service_account_create = true
@@ -120,7 +120,7 @@ module "cf-http" {
   name          = "test-cf-http"
   bucket_name   = "test-cf-bundles"
   bundle_config = {
-    source_dir = "my-cf-source-folder
+    source_dir = "my-cf-source-folder"
     output_path = "bundle.zip"
   }
   service_account = local.service_account_email
