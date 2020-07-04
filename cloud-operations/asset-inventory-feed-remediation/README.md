@@ -15,7 +15,7 @@ With simple changes to the [monitored asset](https://cloud.google.com/asset-inve
 
 The resources created in this example are shown in the high level diagram below:
 
-<img src="diagram.png" width="720px">
+<img src="diagram.png" width="640px">
 
 ## Running the example
 
