@@ -11,7 +11,7 @@ The Cloud Function can then be used for different purposes:
 
 This example shows a simple remediation use case: how to enforce policies on instance tags and revert non-compliant changes in near-real time, thus adding an additional measure of control when using tags for firewall rule scoping.
 
-With simple changes to the [monitored asset](https://cloud.google.com/asset-inventory/docs/supported-asset-types) and the remediation logic, the example can be adapted to fit other common use cases: enforcing a centrally defined Cloud Armor policy in backend services, creating custom DNS records in private zones for instances or forwarding rules, etc.
+With simple changes to the [monitored asset](https://cloud.google.com/asset-inventory/docs/supported-asset-types) and the remediation logic, the example can be adapted to fit other common use cases: enforcing a centrally defined Cloud Armor policy in backend services, creating custom DNS records for instances or forwarding rules, etc.
 
 The resources created in this example are shown in the high level diagram below:
 
