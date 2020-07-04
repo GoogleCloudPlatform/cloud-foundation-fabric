@@ -18,7 +18,7 @@ This deploys a Cloud Function with an HTTP endpoint, using a pre-existing GCS bu
 
 ```hcl
 module "cf-http" {
-  source        = "../modules/net-cloudnat"
+  source        = "../modules/cloud-function"
   project_id    = "my-project"
   name          = "test-cf-http"
   bucket_name   = "test-cf-bundles"
@@ -35,7 +35,7 @@ Other trigger types other than HTTP are configured via the `trigger_config` vari
 
 ```hcl
 module "cf-http" {
-  source        = "../modules/net-cloudnat"
+  source        = "../modules/cloud-function"
   project_id    = "my-project"
   name          = "test-cf-http"
   bucket_name   = "test-cf-bundles"
@@ -57,7 +57,7 @@ To allow anonymous access to the function, grant the `roles/cloudfunctions.invok
 
 ```hcl
 module "cf-http" {
-  source        = "../modules/net-cloudnat"
+  source        = "../modules/cloud-function"
   project_id    = "my-project"
   name          = "test-cf-http"
   bucket_name   = "test-cf-bundles"
@@ -78,7 +78,7 @@ You can have the module auto-create the GCS bucket used for deployment via the `
 
 ```hcl
 module "cf-http" {
-  source        = "../modules/net-cloudnat"
+  source        = "../modules/cloud-function"
   project_id    = "my-project"
   name          = "test-cf-http"
   bucket_name   = "test-cf-bundles"
@@ -99,7 +99,7 @@ To use a custom service account managed by the module, set `service_account_crea
 
 ```hcl
 module "cf-http" {
-  source        = "../modules/net-cloudnat"
+  source        = "../modules/cloud-function"
   project_id    = "my-project"
   name          = "test-cf-http"
   bucket_name   = "test-cf-bundles"
@@ -115,7 +115,7 @@ To use an externally managed service account, pass its email in `service_account
 
 ```hcl
 module "cf-http" {
-  source        = "../modules/net-cloudnat"
+  source        = "../modules/cloud-function"
   project_id    = "my-project"
   name          = "test-cf-http"
   bucket_name   = "test-cf-bundles"
