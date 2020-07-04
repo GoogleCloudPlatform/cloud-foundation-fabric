@@ -22,7 +22,7 @@ The example uses a single project for eas of testing, for actual use a few chang
 
 The resources created in this example are shown in the high level diagram below:
 
-<img src="diagram.png" width="720px">
+<img src="diagram.png" width="640px">
 
 
 ## Running the example
