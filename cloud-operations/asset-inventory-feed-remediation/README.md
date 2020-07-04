@@ -37,7 +37,7 @@ Once done testing, you can clean up resources by running `terraform destroy`. To
 
 ## Testing the example
 
-Several commands are available in the terraform outputs to allow you to finish configuring and test the example:
+The terraform outputs generate preset `gcloud` commands that you can copy and run in the console, to complete configuration and test the example:
 
 - `feed_create` is run once to create the feed, as there's currently no Terraform resource available for Cloud Asset feeds
 - `subscription_pull` shows messages in the PubSub queue, to check feed message format if the Cloud Function is disabled
