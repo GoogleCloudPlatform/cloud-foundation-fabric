@@ -14,7 +14,7 @@ This example shows a simple remediation use case: how to enforce policies on ins
 - enforcing a centrally defined Cloud Armor policy in backend services
 - creating custom DNS records for instances or forwarding rules
 
-The example uses a single project for eas of testing, for actual use a few changes would be needed to make it effective at the resource hierarchy level:
+The example uses a single project for ease of testing, in actual use a few changes are needed to operate at the resource hierarchy level:
 
 - the feed should be set at the folder or organization level
 - the custom role used to assign tag changing permissions should be defined at the organization level
