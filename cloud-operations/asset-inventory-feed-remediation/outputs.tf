@@ -21,7 +21,7 @@ gcloud logging read '
   logName="projects/${var.project_id}/logs/cloudfunctions.googleapis.com%2Fcloud-functions" AND
   resource.labels.function_name="${var.name}"' \
   --project ${var.project_id} \
-  --format "value(severity, textPayload)" \
+  --format "value(severity, timestamp, textPayload)" \
   --limit 10
   END
 }

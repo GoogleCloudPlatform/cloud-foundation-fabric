@@ -31,9 +31,9 @@ TODO
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
 | project_id | Project id that references existing project. | <code title="">string</code> | ✓ |  |
+| *bundle_path* | Path used to write the intermediate Cloud Function code bundle. | <code title="">string</code> |  | <code title="">./bundle.zip</code> |
 | *name* | Arbitrary string used to name created resources. | <code title="">string</code> |  | <code title="">asset-feed</code> |
 | *region* | Compute region used in the example. | <code title="">string</code> |  | <code title="">europe-west1</code> |
-| *tag* | Extra tag to apply on the test instance. | <code title="">string</code> |  | <code title="">null</code> |
 
 ## Outputs
 

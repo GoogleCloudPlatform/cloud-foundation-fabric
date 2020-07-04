@@ -51,7 +51,7 @@ from googleapiclient.errors import HttpError
 
 _SELF_LINK_RE = re.compile(
     r'/projects/([^/]+)/zones/([^/]+)/instances/([^/]+)')
-_TAG_SHARED_PREFIX = 'shared-'
+_TAG_SHARED_PREFIXES = ['shared-', 'gke-cluster-']
 
 
 class Error(Exception):
@@ -121,7 +121,8 @@ def _validate_tags(project, tags):
   'Validate a set of tags and return valid tags in the set.'
   _tags = []
   for tag in tags:
-    if tag.startswith(_TAG_SHARED_PREFIX) or tag.startswith(project):
+    shared_valid = any(tag.startswith(p) for p in _TAG_SHARED_PREFIXES)
+    if shared_valid or tag.startswith(project):
       _tags.append(tag)
   return _tags
 

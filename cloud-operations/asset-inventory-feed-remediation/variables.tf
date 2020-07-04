@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+variable "bundle_path" {
+  description = "Path used to write the intermediate Cloud Function code bundle."
+  type        = string
+  default     = "./bundle.zip"
+}
+
 variable "name" {
   description = "Arbitrary string used to name created resources."
   type        = string
@@ -29,10 +35,4 @@ variable "region" {
   description = "Compute region used in the example."
   type        = string
   default     = "europe-west1"
-}
-
-variable "tag" {
-  description = "Extra tag to apply on the test instance."
-  type        = string
-  default     = null
 }

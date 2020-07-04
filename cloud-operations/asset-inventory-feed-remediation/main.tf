@@ -61,7 +61,7 @@ module "pubsub" {
   subscriptions = { "${var.name}-default" = null }
 }
 
-module "service-account-cf" {
+module "service-account" {
   source            = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/iam-service-accounts?ref=v2.3.0"
   project_id        = module.project.project_id
   names             = ["${var.name}-cf"]
@@ -78,9 +78,10 @@ module "cf" {
     lifecycle_delete_age = null
   }
   bundle_config = {
-    source_dir  = "../cf"
-    output_path = "../bundle.zip"
+    source_dir  = "cf"
+    output_path = var.bundle_path
   }
+  service_account = module.service-account.email
   trigger_config = {
     event    = "google.pubsub.topic.publish"
     resource = module.pubsub.topic.id
@@ -100,10 +101,7 @@ module "simple-vm-example" {
     nat        = false,
     addresses  = null
   }]
-  tags = concat(
-    ["${var.project_id}-test-feed", "shared-test-feed"],
-    (var.tag == null ? [] : [var.tag])
-  )
+  tags           = ["${var.project_id}-test-feed", "shared-test-feed"]
   instance_count = 1
 }
 
