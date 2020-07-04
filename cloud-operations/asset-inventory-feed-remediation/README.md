@@ -19,7 +19,13 @@ The resources created in this example are shown in the high level diagram below:
 
 ## Running the example
 
-TODO
+Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fcloud-foundation-fabric&cloudshell_git_branch=ludo-asset-feeds&cloudshell_print=cloud-shell-readme.txt&cloudshell_working_dir=cloud-operations%2Fasset-inventory-feed-remediation), then go through the following steps to create resources:
+
+- `terraform init`
+- `terraform apply -var project_id=my-project-id`
+- copy and paste the `command_feed_create` output to create the feed
+
+Once done testing, you can clean up resources by running `terraform destroy`. To persist state, check out the `backend.tf.sample` file.
 
 ## Testing remediation
 
