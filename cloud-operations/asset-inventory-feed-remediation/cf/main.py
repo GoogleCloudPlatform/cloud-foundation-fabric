@@ -84,14 +84,14 @@ def _parse_asset(data):
   try:
     asset_type = data['asset']['assetType']
     if asset_type != 'compute.googleapis.com/Instance':
-      raise Error('ignoring sset type %s', asset_type)
+      raise Error('ignoring sset type %s' % asset_type)
     instance = data['asset']['resource']['data']
   except KeyError:
     raise Error('missing asset data')
   # ensure we have at least status and selfLink
   for k in ('status', 'selfLink'):
     if k not in instance:
-      raise Error('no %s attribute in instance data', k)
+      raise Error('no %s attribute in instance data' % k)
   return instance
 
 
@@ -101,19 +101,21 @@ def _parse_event(event):
     raise Error('no event received, or no data in event')
   logging.info('parsing event data')
   try:
-    data = json.loads(base64.b64decode(event['data']))
+    data = base64.b64decode(event['data'])
+    return json.loads(data)
   except binascii.Error as e:
-    raise Error('cannot decode event data: %s', e)
+    logging.info('received event: %s' % event)
+    raise Error('cannot decode event data: %s' % e)
   except json.JSONDecodeError as e:
-    raise Error('event data not in JSON format: %s', e)
-  return data
+    logging.info('received data: %s', data)
+    raise Error('event data not in JSON format: %s' % e)
 
 
 def _parse_self_link(self_link):
   'Parse instance self link and return project, zone, and instance name.'
   m = _SELF_LINK_RE.search(self_link)
   if not m:
-    raise Error('invalid self link %s', self_link)
+    raise Error('invalid self link %s' % self_link)
   return m.groups()
 
 
@@ -135,8 +137,8 @@ def main(event=None, context=None):
     instance = _parse_asset(data)
     project, zone, name = _parse_self_link(instance['selfLink'])
   except Error as e:
-    logging.error(e.args[0])
-    sys.exit(1)
+    logging.critical(e.args[0])
+    return
   logging.info('checking %s', instance['selfLink'])
   if instance['status'] not in ('RUNNING', 'TERMINATED'):
     logging.info('ignoring status %s', instance['status'])
@@ -154,5 +156,4 @@ def main(event=None, context=None):
   try:
     _set_tags(project, zone, name, tags.get('fingerprint'), valid_tags)
   except Error as e:
-    logging.error(e.args[0])
-    sys.exit(1)
+    logging.critical(e.args[0])
