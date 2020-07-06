@@ -28,16 +28,14 @@ locals {
 
   standard_perimeters = {
     for key, value in var.vpc_sc_perimeters :
-    key => value
-    if value.type == "PERIMETER_TYPE_REGULAR"
+    key => value if value.type == "PERIMETER_TYPE_REGULAR"
   }
 
   perimeter_create = var.access_policy_name != null || var.access_policy_title != null ? true : false
 
   bridge_perimeters = {
     for key, value in var.vpc_sc_perimeters :
-    key => value
-    if value.type == "PERIMETER_TYPE_BRIDGE"
+    key => value if value.type == "PERIMETER_TYPE_BRIDGE"
   }
 
   access_policy_name = (
@@ -49,7 +47,7 @@ locals {
 
 resource "google_access_context_manager_access_policy" "default" {
   count  = var.access_policy_name == null ? 1 : 0
-  parent = format("organizations/%s", var.org_id)
+  parent = "organizations/${var.org_id}"
   title  = var.access_policy_title
 }
 
@@ -64,9 +62,11 @@ resource "google_access_context_manager_service_perimeter" "standard" {
     restricted_services = each.value.restricted_services
   }
   
-  lifecycle {
-    ignore_changes = [status[0].resources]
-  }  
+  # Uncomment if used alongside `google_access_context_manager_service_perimeter_resource`, 
+  # so they don't fight over which resources should be in the policy.
+  # lifecycle {
+  #   ignore_changes = [status[0].resources]
+  # }  
 }
 
 resource "google_access_context_manager_service_perimeter" "bridge" {
@@ -80,9 +80,11 @@ resource "google_access_context_manager_service_perimeter" "bridge" {
     restricted_services = each.value.restricted_services
   }
 
-  lifecycle {
-    ignore_changes = [status[0].resources]
-  }
+  # Uncomment if used alongside `google_access_context_manager_service_perimeter_resource`, 
+  # so they don't fight over which resources should be in the policy.
+  # lifecycle {
+  #   ignore_changes = [status[0].resources]
+  # }  
 
   depends_on = [
     google_access_context_manager_service_perimeter.standard,
