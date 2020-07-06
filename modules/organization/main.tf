@@ -53,7 +53,34 @@ resource "google_access_context_manager_service_perimeter" "standard" {
   perimeter_type = each.value.type
   status {
     resources           = formatlist("projects/%s", lookup(var.vpc_sc_perimeters_projects, each.key, []))
-    restricted_services = each.value.restricted_services
+    restricted_services = each.value.enforced_config.restricted_services
+
+    dynamic "vpc_accessible_services" {
+      for_each = each.value.enforced_config.vpc_accessible_services != [] ? [""] : []
+
+      content {
+        enable_restriction = true
+        allowed_services = each.value.enforced_config.vpc_accessible_services
+      }
+    }
+  }
+  use_explicit_dry_run_spec = each.value.dry_run_config != [] ? true : false
+  dynamic "spec" {
+    for_each = each.value.dry_run_config != [] ? [""] : []
+
+    content {
+      resources           = formatlist("projects/%s", lookup(var.vpc_sc_perimeters_projects, each.key, []))
+      restricted_services = try(each.value.dry_run_config.restricted_services, null)
+
+      dynamic "vpc_accessible_services" {
+        for_each = try(each.value.dry_run_config.vpc_accessible_services != [] ? [""] : [],[])
+
+        content {
+          enable_restriction = true
+          allowed_services = try(each.value.dry_run_config.vpc_accessible_services, null)
+        }
+      }
+    }
   }
   
   # Uncomment if used alongside `google_access_context_manager_service_perimeter_resource`, 
@@ -71,7 +98,6 @@ resource "google_access_context_manager_service_perimeter" "bridge" {
   perimeter_type = each.value.type
   status {
     resources           = formatlist("projects/%s", lookup(var.vpc_sc_perimeters_projects, each.key, []))
-    restricted_services = each.value.restricted_services
   }
 
   # Uncomment if used alongside `google_access_context_manager_service_perimeter_resource`, 

@@ -80,8 +80,17 @@ variable "policy_list" {
 variable "vpc_sc_perimeters" {
   description = "Set of Perimeters."
   type = map(object({
-    type                = string
-    restricted_services = list(string)
+    type            = string
+    dry_run_config  = object({
+      access_levels           = list(string)
+      restricted_services     = list(string)
+      vpc_accessible_services = list(string)
+    })
+    enforced_config = object({
+      access_levels           = list(string)
+      restricted_services     = list(string)
+      vpc_accessible_services = list(string)
+    })
   }))
   default = {}
 }
