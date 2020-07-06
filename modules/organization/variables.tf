@@ -108,7 +108,7 @@ variable "vpc_sc_perimeters" {
   default = {}
 }
 
-variable "vpc_sc_perimeters_projects" {
+variable "vpc_sc_perimeter_projects" {
   description = "Perimeter - Project Number mapping in `projects/project_number` format."
   type        = map(list(string))
   default     = {}

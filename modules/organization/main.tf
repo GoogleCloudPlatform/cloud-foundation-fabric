@@ -74,7 +74,7 @@ resource "google_access_context_manager_service_perimeter" "standard" {
   title          = each.key
   perimeter_type = each.value.type
   status {
-    resources           = formatlist("projects/%s", lookup(var.vpc_sc_perimeters_projects, each.key, []))
+    resources           = formatlist("projects/%s", lookup(var.vpc_sc_perimeter_projects, each.key, []))
     restricted_services = each.value.enforced_config.restricted_services
     access_levels       = formatlist("accessPolicies/${local.access_policy_name}/accessLevels/%s", lookup(local.perimeters_access_levels, each.key, []))
 
@@ -92,7 +92,7 @@ resource "google_access_context_manager_service_perimeter" "standard" {
     for_each = each.value.dry_run_config != [] ? [""] : []
 
     content {
-      resources           = formatlist("projects/%s", lookup(var.vpc_sc_perimeters_projects, each.key, []))
+      resources           = formatlist("projects/%s", lookup(var.vpc_sc_perimeter_projects, each.key, []))
       restricted_services = try(each.value.dry_run_config.restricted_services, null)
 
       dynamic "vpc_accessible_services" {
@@ -124,7 +124,7 @@ resource "google_access_context_manager_service_perimeter" "bridge" {
   title          = each.key
   perimeter_type = each.value.type
   status {
-    resources           = formatlist("projects/%s", lookup(var.vpc_sc_perimeters_projects, each.key, []))
+    resources           = formatlist("projects/%s", lookup(var.vpc_sc_perimeter_projects, each.key, []))
   }
 
   # Uncomment if used alongside `google_access_context_manager_service_perimeter_resource`, 
