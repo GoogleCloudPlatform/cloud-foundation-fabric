@@ -103,8 +103,8 @@ module "project" {
 | *project_create* | Create project. When set to false, uses a data source to reference existing project. | <code title="">bool</code> |  | <code title="">true</code> |
 | *service_config* | Configure service API activation. | <code title="object&#40;&#123;&#10;disable_on_destroy         &#61; bool&#10;disable_dependent_services &#61; bool&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;disable_on_destroy         &#61; true&#10;disable_dependent_services &#61; true&#10;&#125;">...</code> |
 | *services* | Service APIs to enable. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
-| *vpc_sc_perimeter* | Name of the VPC-SC perimeter the project belong to. | <code title="">string</code> |  | <code title="">null</code> |
-| *vpc_sc_perimeter_bridges* | List of VPC-SC perimeter bridges the project belong to. Must be of the form accessPolicies/{policy_id}/servicePerimeters/{short_name} | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
+| *vpc_sc_perimeter* | None | <code title="">string</code> |  | <code title="">null</code> |
+| *vpc_sc_perimeter_bridges* | None | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 
 ## Outputs
 
