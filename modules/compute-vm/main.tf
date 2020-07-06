@@ -135,7 +135,7 @@ resource "google_compute_instance" "default" {
         iterator = nat_addresses
         content {
           nat_ip = nat_addresses.value == null ? null : (
-            length(nat_addresses.value) == 0 ? null : nat_addresses.value.external[each.value]
+            length(nat_addresses.value) == 0 ? null : nat_addresses.value[each.value]
           )
         }
       }
