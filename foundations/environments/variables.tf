@@ -38,18 +38,6 @@ variable "gcs_location" {
   default     = "EU"
 }
 
-variable "iam_assets_editors" {
-  description = "Shared assets project editors, in IAM format."
-  type        = list(string)
-  default     = []
-}
-
-variable "iam_assets_owners" {
-  description = "Shared assets project owners, in IAM format."
-  type        = list(string)
-  default     = []
-}
-
 variable "iam_audit_viewers" {
   description = "Audit project viewers, in IAM format."
   type        = list(string)
@@ -79,7 +67,7 @@ variable "iam_folder_roles" {
   ]
 }
 
-variable "iam_sharedsvc_owners" {
+variable "iam_shared_owners" {
   description = "Shared services project owners, in IAM format."
   type        = list(string)
   default     = []

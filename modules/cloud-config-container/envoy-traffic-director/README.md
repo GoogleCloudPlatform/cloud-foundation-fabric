@@ -2,6 +2,10 @@
 
 This module manages a `cloud-config` configuration that starts a containerized Envoy Proxy on Container Optimized OS connected to Traffic Director. The default configuration creates a reverse proxy exposed on the node's port 80. Traffic routing policies and management should be managed by other means via Traffic Director.
 
+The generated cloud config is rendered in the `cloud_config` output, and is meant to be used in instances or instance templates via the `user-data` metadata.
+
+This module depends on the [`cos-generic-metadata` module](../cos-generic-metadata) being the parent folder. If you change its location be sure to adjust the `source` attribute in `main.tf`.
+
 ## Examples
 
 ### Default configuration
@@ -46,14 +50,14 @@ module "vm-cos" {
 <!-- BEGIN TFDOC -->
 ## Variables
 
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| envoy\_image | Envoy Proxy container image to use. | `string` | `"envoyproxy/envoy:v1.14.1"` | no |
-| gcp\_logging | Should container logs be sent to Google Cloud Logging | `bool` | `true` | no |
+| name | description | type | required | default |
+|---|---|:---: |:---:|:---:|
+| *envoy_image* | Envoy Proxy container image to use. | <code title="">string</code> |  | <code title="">envoyproxy/envoy:v1.14.1</code> |
+| *gcp_logging* | Should container logs be sent to Google Cloud Logging | <code title="">bool</code> |  | <code title="">true</code> |
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| cloud\_config | Rendered cloud-config file to be passed as user-data instance metadata. |
+| name | description | sensitive |
+|---|---|:---:|
+| cloud_config | Rendered cloud-config file to be passed as user-data instance metadata. |  |
 <!-- END TFDOC -->

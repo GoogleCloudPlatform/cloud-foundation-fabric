@@ -22,8 +22,7 @@ module "test" {
   custom_roles         = var.custom_roles
   iam_members          = var.iam_members
   iam_roles            = var.iam_roles
-  iam_additive_members = var.iam_additive_members
-  iam_additive_roles   = var.iam_additive_roles
+  iam_additive_bindings = var.iam_additive_bindings
   labels               = var.labels
   lien_reason          = var.lien_reason
   oslogin              = var.oslogin

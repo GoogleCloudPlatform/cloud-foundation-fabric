@@ -42,6 +42,7 @@ resource "google_compute_external_vpn_gateway" "external_gateway" {
   provider        = google-beta
   count           = var.peer_external_gateway != null ? 1 : 0
   name            = "external-${var.name}"
+  project         = var.project_id
   redundancy_type = var.peer_external_gateway.redundancy_type
   description     = "Terraform managed external VPN gateway"
   dynamic "interface" {

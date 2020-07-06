@@ -23,7 +23,7 @@ variable "auto_create_network" {
 variable "billing_account" {
   description = "Billing account id."
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "custom_roles" {
@@ -44,16 +44,11 @@ variable "iam_roles" {
   default     = []
 }
 
-variable "iam_additive_members" {
-  description = "Map of member lists used to set non authoritative bindings, keyed by role."
+
+variable "iam_additive_bindings" {
+  description = "Map of roles lists used to set non authoritative bindings, keyed by members"
   type        = map(list(string))
   default     = {}
-}
-
-variable "iam_additive_roles" {
-  description = "List of roles used to set non authoritative bindings."
-  type        = list(string)
-  default     = []
 }
 
 variable "labels" {
@@ -92,8 +87,9 @@ variable "oslogin_users" {
 }
 
 variable "parent" {
-  description = "The resource name of the parent Folder or Organization. Must be of the form folders/folder_id or organizations/org_id."
+  description = "Parent folder or organization in 'folders/folder_id' or 'organizations/org_id' format."
   type        = string
+  default     = null
 }
 
 variable "policy_boolean" {
@@ -119,10 +115,28 @@ variable "prefix" {
   default     = null
 }
 
+variable "project_create" {
+  description = "Create project. When set to false, uses a data source to reference existing project."
+  type        = bool
+  default     = true
+}
+
 variable "services" {
   description = "Service APIs to enable."
   type        = list(string)
   default     = []
+}
+
+variable "service_config" {
+  description = "Configure service API activation."
+  type = object({
+    disable_on_destroy         = bool
+    disable_dependent_services = bool
+  })
+  default = {
+    disable_on_destroy         = true
+    disable_dependent_services = true
+  }
 }
 
 variable "vpc_sc_perimeter" {

@@ -15,13 +15,9 @@
  */
 
 locals {
-  cloudsvc_service_account = "${google_project.project.number}@cloudservices.gserviceaccount.com"
-  gce_service_account      = "${google_project.project.number}-compute@developer.gserviceaccount.com"
-  gcr_service_account      = "service-${google_project.project.number}@containerregistry.iam.gserviceaccount.com"
-  gke_service_account      = "service-${google_project.project.number}@container-engine-robot.iam.gserviceaccount.com"
   iam_additive_pairs = flatten([
-    for role in var.iam_additive_roles : [
-      for member in lookup(var.iam_additive_members, role, []) :
+    for member, roles in var.iam_additive_bindings : [
+      for role in roles :
       { role = role, member = member }
     ]
   ])
@@ -29,12 +25,23 @@ locals {
     for pair in local.iam_additive_pairs :
     "${pair.role}-${pair.member}" => pair
   }
-  parent_type = split("/", var.parent)[0]
-  parent_id   = split("/", var.parent)[1]
+  parent_type = var.parent == null ? null : split("/", var.parent)[0]
+  parent_id   = var.parent == null ? null : split("/", var.parent)[1]
   prefix      = var.prefix == null ? "" : "${var.prefix}-"
+  project = (
+    var.project_create
+    ? try(google_project.project.0, null)
+    : try(data.google_project.project.0, null)
+  )
+}
+
+data "google_project" "project" {
+  count      = var.project_create ? 0 : 1
+  project_id = "${local.prefix}${var.name}"
 }
 
 resource "google_project" "project" {
+  count               = var.project_create ? 1 : 0
   org_id              = local.parent_type == "organizations" ? local.parent_id : null
   folder_id           = local.parent_type == "folders" ? local.parent_id : null
   project_id          = "${local.prefix}${var.name}"
@@ -46,7 +53,7 @@ resource "google_project" "project" {
 
 resource "google_project_iam_custom_role" "roles" {
   for_each    = var.custom_roles
-  project     = google_project.project.project_id
+  project     = local.project.project_id
   role_id     = each.key
   title       = "Custom role ${each.key}"
   description = "Terraform-managed"
@@ -55,7 +62,7 @@ resource "google_project_iam_custom_role" "roles" {
 
 resource "google_compute_project_metadata_item" "oslogin_meta" {
   count   = var.oslogin ? 1 : 0
-  project = google_project.project.project_id
+  project = local.project.project_id
   key     = "enable-oslogin"
   value   = "TRUE"
   # depend on services or it will fail on destroy
@@ -64,7 +71,7 @@ resource "google_compute_project_metadata_item" "oslogin_meta" {
 
 resource "google_resource_manager_lien" "lien" {
   count        = var.lien_reason != "" ? 1 : 0
-  parent       = "projects/${google_project.project.number}"
+  parent       = "projects/${local.project.number}"
   restrictions = ["resourcemanager.projects.delete"]
   origin       = "created-by-terraform"
   reason       = var.lien_reason
@@ -72,10 +79,10 @@ resource "google_resource_manager_lien" "lien" {
 
 resource "google_project_service" "project_services" {
   for_each                   = toset(var.services)
-  project                    = google_project.project.project_id
+  project                    = local.project.project_id
   service                    = each.value
-  disable_on_destroy         = true
-  disable_dependent_services = true
+  disable_on_destroy         = var.service_config.disable_on_destroy
+  disable_dependent_services = var.service_config.disable_dependent_services
 }
 
 # IAM notes:
@@ -85,7 +92,7 @@ resource "google_project_service" "project_services" {
 
 resource "google_project_iam_binding" "authoritative" {
   for_each = toset(var.iam_roles)
-  project  = google_project.project.project_id
+  project  = local.project.project_id
   role     = each.value
   members  = lookup(var.iam_members, each.value, [])
   depends_on = [
@@ -95,43 +102,47 @@ resource "google_project_iam_binding" "authoritative" {
 }
 
 resource "google_project_iam_member" "additive" {
-  for_each = length(var.iam_additive_roles) > 0 ? local.iam_additive : {}
-  project  = google_project.project.project_id
+  for_each = length(var.iam_additive_bindings) > 0 ? local.iam_additive : {}
+  project  = local.project.project_id
   role     = each.value.role
   member   = each.value.member
+  depends_on = [
+    google_project_service.project_services,
+    google_project_iam_custom_role.roles
+  ]
 }
 
 resource "google_project_iam_member" "oslogin_iam_serviceaccountuser" {
   for_each = var.oslogin ? toset(distinct(concat(var.oslogin_admins, var.oslogin_users))) : toset([])
-  project  = google_project.project.project_id
+  project  = local.project.project_id
   role     = "roles/iam.serviceAccountUser"
   member   = each.value
 }
 
 resource "google_project_iam_member" "oslogin_compute_viewer" {
   for_each = var.oslogin ? toset(distinct(concat(var.oslogin_admins, var.oslogin_users))) : toset([])
-  project  = google_project.project.project_id
+  project  = local.project.project_id
   role     = "roles/compute.viewer"
   member   = each.value
 }
 
 resource "google_project_iam_member" "oslogin_admins" {
   for_each = var.oslogin ? toset(var.oslogin_admins) : toset([])
-  project  = google_project.project.project_id
+  project  = local.project.project_id
   role     = "roles/compute.osAdminLogin"
   member   = each.value
 }
 
 resource "google_project_iam_member" "oslogin_users" {
   for_each = var.oslogin ? toset(var.oslogin_users) : toset([])
-  project  = google_project.project.project_id
+  project  = local.project.project_id
   role     = "roles/compute.osLogin"
   member   = each.value
 }
 
 resource "google_project_organization_policy" "boolean" {
   for_each   = var.policy_boolean
-  project    = google_project.project.project_id
+  project    = local.project.project_id
   constraint = each.key
 
   dynamic boolean_policy {
@@ -152,7 +163,7 @@ resource "google_project_organization_policy" "boolean" {
 
 resource "google_project_organization_policy" "list" {
   for_each   = var.policy_list
-  project    = google_project.project.project_id
+  project    = local.project.project_id
   constraint = each.key
 
   dynamic list_policy {

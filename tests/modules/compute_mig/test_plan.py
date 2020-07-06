@@ -21,53 +21,55 @@ FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
 
 
 def test_defaults(plan_runner):
-  "Test variable defaults."
-  _, resources = plan_runner(FIXTURES_DIR)
-  assert len(resources) == 1
-  mig = resources[0]
-  assert mig['type'] == 'google_compute_instance_group_manager'
-  assert mig['values']['target_size'] == 2
-  assert mig['values']['zone']
-  _, resources = plan_runner(FIXTURES_DIR, regional='true')
-  assert len(resources) == 1
-  mig = resources[0]
-  assert mig['type'] == 'google_compute_region_instance_group_manager'
-  assert mig['values']['target_size'] == 2
-  assert mig['values']['region']
+    "Test variable defaults."
+    _, resources = plan_runner(FIXTURES_DIR)
+    assert len(resources) == 1
+    mig = resources[0]
+    assert mig['type'] == 'google_compute_instance_group_manager'
+    assert mig['values']['target_size'] == 2
+    assert mig['values']['zone']
+    _, resources = plan_runner(FIXTURES_DIR, regional='true')
+    assert len(resources) == 1
+    mig = resources[0]
+    assert mig['type'] == 'google_compute_region_instance_group_manager'
+    assert mig['values']['target_size'] == 2
+    assert mig['values']['region']
 
 
 def test_health_check(plan_runner):
-  "Test health check resource."
-  health_check_config = '{type="tcp", check={port=80}, config=null, logging=false}'
-  _, resources = plan_runner(
-      FIXTURES_DIR, health_check_config=health_check_config)
-  assert len(resources) == 2
-  assert any(r['type'] == 'google_compute_health_check' for r in resources)
+    "Test health check resource."
+    health_check_config = '{type="tcp", check={port=80}, config=null, logging=false}'
+    _, resources = plan_runner(
+        FIXTURES_DIR, health_check_config=health_check_config)
+    assert len(resources) == 2
+    assert any(r['type'] == 'google_compute_health_check' for r in resources)
 
 
 def test_autoscaler(plan_runner):
-  "Test autoscaler resource."
-  autoscaler_config = (
-      '{'
-      'max_replicas=3, min_replicas=1, cooldown_period=60,'
-      'cpu_utilization_target=65, load_balancing_utilization_target=null,'
-      'metric=null'
-      '}'
-  )
-  _, resources = plan_runner(FIXTURES_DIR, autoscaler_config=autoscaler_config)
-  assert len(resources) == 2
-  autoscaler = resources[0]
-  assert autoscaler['type'] == 'google_compute_autoscaler'
-  assert autoscaler['values']['autoscaling_policy'] == [{
-      'cooldown_period': 60,
-      'cpu_utilization': [{'target': 65}],
-      'load_balancing_utilization': [],
-      'max_replicas': 3,
-      'metric': [],
-      'min_replicas': 1
-  }]
-  _, resources = plan_runner(
-      FIXTURES_DIR, autoscaler_config=autoscaler_config, regional='true')
-  assert len(resources) == 2
-  autoscaler = resources[0]
-  assert autoscaler['type'] == 'google_compute_region_autoscaler'
+    "Test autoscaler resource."
+    autoscaler_config = (
+        '{'
+        'max_replicas=3, min_replicas=1, cooldown_period=60,'
+        'cpu_utilization_target=65, load_balancing_utilization_target=null,'
+        'metric=null'
+        '}'
+    )
+    _, resources = plan_runner(
+        FIXTURES_DIR, autoscaler_config=autoscaler_config)
+    assert len(resources) == 2
+    autoscaler = resources[0]
+    assert autoscaler['type'] == 'google_compute_autoscaler'
+    assert autoscaler['values']['autoscaling_policy'] == [{
+        'cooldown_period': 60,
+        'cpu_utilization': [{'target': 65}],
+        'load_balancing_utilization': [],
+        'max_replicas': 3,
+        'metric': [],
+        'min_replicas': 1,
+        'mode': 'ON'
+    }]
+    _, resources = plan_runner(
+        FIXTURES_DIR, autoscaler_config=autoscaler_config, regional='true')
+    assert len(resources) == 2
+    autoscaler = resources[0]
+    assert autoscaler['type'] == 'google_compute_region_autoscaler'

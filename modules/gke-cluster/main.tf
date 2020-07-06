@@ -75,6 +75,9 @@ resource "google_container_cluster" "cluster" {
       disabled = ! var.addons.istio_config.enabled
       auth     = var.addons.istio_config.tls ? "AUTH_MUTUAL_TLS" : "AUTH_NONE"
     }
+    gce_persistent_disk_csi_driver_config {
+      enabled = var.addons.gce_persistent_disk_csi_driver_config
+    }
   }
 
   # TODO(ludomagno): support setting address ranges instead of range names
@@ -147,14 +150,15 @@ resource "google_container_cluster" "cluster" {
       enabled = true
       resource_limits {
         resource_type = "cpu"
-        minimum       = config.cpu_min
-        maximum       = config.cpu_max
+        minimum       = config.value.cpu_min
+        maximum       = config.value.cpu_max
       }
       resource_limits {
         resource_type = "memory"
-        minimum       = config.memory_min
-        maximum       = config.memory_max
+        minimum       = config.value.memory_min
+        maximum       = config.value.memory_max
       }
+      // TODO: support GPUs too
     }
   }
 

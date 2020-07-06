@@ -21,13 +21,15 @@ Specific modules also offer support for non-authoritative bindings (e.g. `google
 - [address reservation](./net-address)
 - [Cloud DNS](./dns)
 - [Cloud NAT](./net-cloudnat)
+- [Cloud Endpoints](./endpoints)
 - [L4 Internal Load Balancer](./net-ilb)
+- [Service Directory](./service-directory)
 - [VPC](./net-vpc)
 - [VPC firewall](./net-vpc-firewall)
 - [VPC peering](./net-vpc-peering)
 - [VPN static](./net-vpn-static)
 - [VPN dynamic](./net-vpn-dynamic)
-- [VPN HA](./net-vpn-ha))
+- [VPN HA](./net-vpn-ha)
 - [ ] TODO: xLB modules
 
 ## Compute/Container
@@ -41,9 +43,22 @@ Specific modules also offer support for non-authoritative bindings (e.g. `google
 ## Data
 
 - [BigQuery dataset](./bigquery-dataset)
+- [Datafusion](./datafusion)
 - [GCS](./gcs)
+- [Pub/Sub](./pubsub)
+- [Bigtable instance](./bigtable-instance)
+
+## Development
+
+- [Artifact Registry](./artifact-registry)
+- [Container Registry](./container-registry)
+- [Source Repository](./source-repository)
 
 ## Security
 
 - [Cloud KMS](./kms)
 - [Secret Manager](./secret-manager)
+
+## Serverless
+
+- [Cloud Functions](./cloud-function)

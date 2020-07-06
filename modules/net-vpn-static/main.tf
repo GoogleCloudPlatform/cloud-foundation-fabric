@@ -67,7 +67,7 @@ resource "google_compute_forwarding_rule" "udp-4500" {
 
 resource "google_compute_route" "route" {
   for_each            = local.route_pairs
-  name                = "vpn-${each.key}"
+  name                = "vpn-${var.name}-${each.key}"
   project             = var.project_id
   network             = var.network
   dest_range          = each.value.range

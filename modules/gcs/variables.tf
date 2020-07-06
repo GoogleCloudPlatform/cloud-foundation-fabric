@@ -29,13 +29,19 @@ variable "force_destroy" {
 variable "iam_members" {
   description = "IAM members keyed by bucket name and role."
   type        = map(map(list(string)))
-  default     = null
+  default     = {}
 }
 
 variable "iam_roles" {
   description = "IAM roles keyed by bucket name."
   type        = map(list(string))
-  default     = null
+  default     = {}
+}
+
+variable "encryption_keys" {
+  description = "Per-bucket KMS keys that will be used for encryption."
+  type        = map(string)
+  default     = {}
 }
 
 variable "labels" {
@@ -58,7 +64,7 @@ variable "names" {
 variable "prefix" {
   description = "Prefix used to generate the bucket name."
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "project_id" {
