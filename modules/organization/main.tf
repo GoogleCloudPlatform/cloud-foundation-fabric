@@ -37,6 +37,8 @@ locals {
     for key, value in var.vpc_sc_perimeters :
     key => value if value.type == "PERIMETER_TYPE_BRIDGE"
   }
+
+  perimeters_access_levels = try(transpose(var.vpc_sc_access_levels_perimeters), null)
 }
 
 resource "google_access_context_manager_access_policy" "default" {
@@ -45,7 +47,7 @@ resource "google_access_context_manager_access_policy" "default" {
   title     = each.key
 }
 
-resource "google_access_context_manager_access_level" "access-level" {
+resource "google_access_context_manager_access_level" "default" {
   for_each = var.access_levels
   parent   = "accessPolicies/${local.access_policy_name}"
   name     = "accessPolicies/${local.access_policy_name}/accessLevels/${each.key}"
@@ -74,6 +76,7 @@ resource "google_access_context_manager_service_perimeter" "standard" {
   status {
     resources           = formatlist("projects/%s", lookup(var.vpc_sc_perimeters_projects, each.key, []))
     restricted_services = each.value.enforced_config.restricted_services
+    access_levels       = formatlist("accessPolicies/${local.access_policy_name}/accessLevels/%s", lookup(local.perimeters_access_levels, each.key, []))
 
     dynamic "vpc_accessible_services" {
       for_each = each.value.enforced_config.vpc_accessible_services != [] ? [""] : []
@@ -108,6 +111,10 @@ resource "google_access_context_manager_service_perimeter" "standard" {
   # lifecycle {
   #   ignore_changes = [status[0].resources]
   # }  
+
+  depends_on = [
+    google_access_context_manager_access_level.default,
+  ]
 }
 
 resource "google_access_context_manager_service_perimeter" "bridge" {
@@ -128,6 +135,7 @@ resource "google_access_context_manager_service_perimeter" "bridge" {
 
   depends_on = [
     google_access_context_manager_service_perimeter.standard,
+    google_access_context_manager_access_level.default,    
   ]
 }
 
