@@ -15,6 +15,8 @@
  */
 
 locals {
+  access_policy_name = try(google_access_context_manager_access_policy.default[var.access_policy_title].name, null)
+
   iam_additive_pairs = flatten([
     for member, roles in var.iam_additive_bindings : [
       for role in roles :
@@ -31,28 +33,20 @@ locals {
     key => value if value.type == "PERIMETER_TYPE_REGULAR"
   }
 
-  perimeter_create = var.access_policy_name != null || var.access_policy_title != null ? true : false
-
   bridge_perimeters = {
     for key, value in var.vpc_sc_perimeters :
     key => value if value.type == "PERIMETER_TYPE_BRIDGE"
   }
-
-  access_policy_name = (
-    var.access_policy_name == null
-    ? try(google_access_context_manager_access_policy.default.0.name, null)
-    : try(var.access_policy_name, null)
-  )
 }
 
 resource "google_access_context_manager_access_policy" "default" {
-  count  = var.access_policy_name == null ? 1 : 0
-  parent = "organizations/${var.org_id}"
-  title  = var.access_policy_title
+  for_each  = toset([var.access_policy_title])
+  parent    = "organizations/${var.org_id}"
+  title     = each.key
 }
 
 resource "google_access_context_manager_service_perimeter" "standard" {
-  for_each       = local.perimeter_create ? local.standard_perimeters : {}
+  for_each       = local.standard_perimeters
   parent         = "accessPolicies/${local.access_policy_name}"
   name           = "accessPolicies/${local.access_policy_name}/servicePerimeters/${each.key}"
   title          = each.key
@@ -70,7 +64,7 @@ resource "google_access_context_manager_service_perimeter" "standard" {
 }
 
 resource "google_access_context_manager_service_perimeter" "bridge" {
-  for_each       = local.perimeter_create != null ? local.bridge_perimeters : {}
+  for_each       = local.bridge_perimeters
   parent         = "accessPolicies/${local.access_policy_name}"
   name           = "accessPolicies/${local.access_policy_name}/servicePerimeters/${each.key}"
   title          = each.key

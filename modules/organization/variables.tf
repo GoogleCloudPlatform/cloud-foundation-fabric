@@ -20,12 +20,6 @@ variable "access_policy_title" {
   default     = ""
 }
 
-variable "access_policy_name" {
-  description = "Access Policy name. No Access Policy will be created."
-  type        = string
-  default     = null
-}
-
 variable "custom_roles" {
   description = "Map of role name => list of permissions to create in this project."
   type        = map(list(string))
