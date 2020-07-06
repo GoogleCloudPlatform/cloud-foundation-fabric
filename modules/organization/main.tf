@@ -45,6 +45,26 @@ resource "google_access_context_manager_access_policy" "default" {
   title     = each.key
 }
 
+resource "google_access_context_manager_access_level" "access-level" {
+  for_each = var.access_levels
+  parent   = "accessPolicies/${local.access_policy_name}"
+  name     = "accessPolicies/${local.access_policy_name}/accessLevels/${each.key}"
+  title    = each.key
+
+  dynamic "basic" {
+    for_each = try(toset(each.value.conditions), [])
+
+    content {
+      combining_function = try(each.value.combining_function, null)
+      conditions         {
+        ip_subnetworks   = try(basic.value.ip_subnetworks,null)
+        members          = try(basic.value.members,null)
+        negate           = try(basic.value.negate,null)
+      }
+    }
+  }
+}
+
 resource "google_access_context_manager_service_perimeter" "standard" {
   for_each       = local.standard_perimeters
   parent         = "accessPolicies/${local.access_policy_name}"

@@ -14,10 +14,23 @@
  * limitations under the License.
  */
 
+variable "access_levels" {
+  description = "Access Levels."
+  type        = map(object({
+    combining_function = string
+    conditions         = list(object({
+      ip_subnetworks   = list(string)
+      members          = list(string)
+      negate           = string
+    }))
+  }))
+  default = {}
+}
+
 variable "access_policy_title" {
   description = "Access Policy title to be created."
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "custom_roles" {
@@ -97,6 +110,12 @@ variable "vpc_sc_perimeters" {
 
 variable "vpc_sc_perimeters_projects" {
   description = "Perimeter - Project Number mapping in `projects/project_number` format."
+  type        = map(list(string))
+  default     = {}
+}
+
+variable "vpc_sc_access_levels_perimeters" {
+  description = "Access Levels -Perimeter mapping."
   type        = map(list(string))
   default     = {}
 }
