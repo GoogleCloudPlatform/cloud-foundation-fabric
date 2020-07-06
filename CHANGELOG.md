@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 - fix external IP assignment in `compute-vm`
+- new top-level `cloud-operations` example folder
+- Cloud Asset Inventory end to end example in `cloud-operations`
 
 ## [2.3.0] - 2020-07-02
 
