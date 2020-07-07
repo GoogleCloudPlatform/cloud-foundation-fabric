@@ -4,8 +4,16 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-- fix external IP assignment in `compute-vm`
+## [2.4.1] - 2020-07-06
+
+- better fix external IP assignment in `compute-vm`
 - new `vpc-sc` module
+
+## [2.4.0] - 2020-07-06
+
+- fix external IP assignment in `compute-vm`
+- new top-level `cloud-operations` example folder
+- Cloud Asset Inventory end to end example in `cloud-operations`
 
 ## [2.3.0] - 2020-07-02
 
@@ -120,7 +128,9 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.3.0...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.4.1...HEAD
+[2.4.1]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.4.0...v2.4.1
+[2.4.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.3.0...v2.4.0
 [2.3.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.2.0...v2.3.0
 [2.2.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.1.0...v2.2.0
 [2.1.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.0.0...v2.1.0
