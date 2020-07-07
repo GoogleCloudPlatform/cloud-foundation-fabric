@@ -14,25 +14,6 @@
  * limitations under the License.
  */
 
-variable "access_levels" {
-  description = "Access Levels."
-  type        = map(object({
-    combining_function = string
-    conditions         = list(object({
-      ip_subnetworks   = list(string)
-      members          = list(string)
-      negate           = string
-    }))
-  }))
-  default = {}
-}
-
-variable "access_policy_title" {
-  description = "Access Policy title to be created."
-  type        = string
-  default     = null
-}
-
 variable "custom_roles" {
   description = "Map of role name => list of permissions to create in this project."
   type        = map(list(string))
@@ -88,34 +69,4 @@ variable "policy_list" {
     values              = list(string)
   }))
   default = {}
-}
-
-variable "vpc_sc_perimeters" {
-  description = "Set of Perimeters."
-  type = map(object({
-    type            = string
-    dry_run_config  = object({
-      access_levels           = list(string)
-      restricted_services     = list(string)
-      vpc_accessible_services = list(string)
-    })
-    enforced_config = object({
-      access_levels           = list(string)
-      restricted_services     = list(string)
-      vpc_accessible_services = list(string)
-    })
-  }))
-  default = {}
-}
-
-variable "vpc_sc_perimeter_projects" {
-  description = "Perimeter - Project Number mapping in `projects/project_number` format."
-  type        = map(list(string))
-  default     = {}
-}
-
-variable "vpc_sc_access_levels_perimeters" {
-  description = "Access Levels -Perimeter mapping."
-  type        = map(list(string))
-  default     = {}
 }
