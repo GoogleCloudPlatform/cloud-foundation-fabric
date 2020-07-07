@@ -138,25 +138,3 @@ variable "service_config" {
     disable_dependent_services = true
   }
 }
-
-variable "vpc_sc_perimeter" {
-  description = <<EOF
-    Name of the VPC-SC perimeter the project belongs to. Must be of the form accessPolicies/{policy_id}/servicePerimeters/{short_name}.
-    If this resource is used alongside a `google_access_context_manager_service_perimeter` resource, 
-    the service perimeter resource must have a lifecycle block with ignore_changes = [status[0].resources] 
-    so they don't fight over which resources should be in the policy.
-  EOF
-  type        = string
-  default     = null
-}
-
-variable "vpc_sc_perimeter_bridges" {
-  description = <<EOF
-    List of VPC-SC perimeter bridges the project belongs to. Must be of the form accessPolicies/{policy_id}/servicePerimeters/{short_name}.
-    If this resource is used alongside a `google_access_context_manager_service_perimeter` resource, 
-    the service perimeter resource must have a lifecycle block with ignore_changes = [status[0].resources] 
-    so they don't fight over which resources should be in the policy.
-  EOF
-  type        = list(string)
-  default     = []
-}

@@ -212,18 +212,3 @@ resource "google_project_organization_policy" "list" {
     }
   }
 }
-
-resource "google_access_context_manager_service_perimeter_resource" "standard" {
-  for_each       = toset([var.vpc_sc_perimeter])
-  perimeter_name = each.key
-  resource       = "projects/${google_project.project.number}"
-}
-
-resource "google_access_context_manager_service_perimeter_resource" "bridges" {
-  for_each       = toset(var.vpc_sc_perimeter_bridges)
-  perimeter_name = each.key
-  resource       = "projects/${google_project.project.number}"
-  depends_on = [
-    google_access_context_manager_service_perimeter_resource.standard,
-  ]  
-}
