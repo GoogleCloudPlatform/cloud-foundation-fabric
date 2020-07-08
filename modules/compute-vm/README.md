@@ -167,6 +167,7 @@ module "instance-group" {
 | *service_account* | Service account email. Unused if service account is auto-created. | <code title="">string</code> |  | <code title="">null</code> |
 | *service_account_create* | Auto-create service account. | <code title="">bool</code> |  | <code title="">false</code> |
 | *service_account_scopes* | Scopes applied to service account. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
+| *shielded_config* | Shielded VM configuration of the instances. | <code title="object&#40;&#123;&#10;enable_secure_boot          &#61; bool&#10;enable_vtpm                 &#61; bool&#10;enable_integrity_monitoring &#61; bool&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 | *tags* | Instance tags. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 | *use_instance_template* | Create instance template instead of instances. | <code title="">bool</code> |  | <code title="">false</code> |
 
