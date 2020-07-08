@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- add support for Shielded VM to `compute-vm`
+
 ## [2.4.1] - 2020-07-06
 
 - better fix external IP assignment in `compute-vm`
