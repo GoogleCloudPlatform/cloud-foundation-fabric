@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.4.2] - 2020-07-09
+
 - add support for Shielded VM to `compute-vm`
 
 ## [2.4.1] - 2020-07-06
