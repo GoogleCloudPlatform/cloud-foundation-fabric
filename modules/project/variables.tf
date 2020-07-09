@@ -138,3 +138,15 @@ variable "service_config" {
     disable_dependent_services = true
   }
 }
+
+variable "shared_vpc_config" {
+  description = "Configure Shared VPC for project."
+  type = object({
+    enabled          = bool
+    service_projects = list(string)
+  })
+  default = {
+    enabled          = false
+    service_projects = []
+  }
+}

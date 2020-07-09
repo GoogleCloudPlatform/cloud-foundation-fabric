@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- add support for Shared VPC to the `project` module
+
 ## [2.4.2] - 2020-07-09
 
 - add support for Shielded VM to `compute-vm`
