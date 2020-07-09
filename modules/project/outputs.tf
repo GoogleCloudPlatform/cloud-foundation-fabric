@@ -20,7 +20,8 @@ output "project_id" {
   depends_on = [
     google_project_organization_policy.boolean,
     google_project_organization_policy.list,
-    google_project_service.project_services
+    google_project_service.project_services,
+    google_compute_shared_vpc_service_project
   ]
 }
 
@@ -30,7 +31,8 @@ output "name" {
   depends_on = [
     google_project_organization_policy.boolean,
     google_project_organization_policy.list,
-    google_project_service.project_services
+    google_project_service.project_services,
+    google_compute_shared_vpc_service_project
   ]
 }
 
@@ -40,7 +42,8 @@ output "number" {
   depends_on = [
     google_project_organization_policy.boolean,
     google_project_organization_policy.list,
-    google_project_service.project_services
+    google_project_service.project_services,
+    google_compute_shared_vpc_service_project
   ]
 }
 
