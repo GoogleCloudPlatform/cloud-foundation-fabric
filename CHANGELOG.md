@@ -4,8 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.5.0] - 2020-07-10
+
 - new `vpc-sc` module
 - add support for Shared VPC to the `project` module
+- fix bug with `compute-vm` address reservations introduced in [2.4.1]
 
 ## [2.4.2] - 2020-07-09
 
@@ -134,7 +137,8 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.4.2...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.5.0...HEAD
+[2.5.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.4.2...v2.5.0
 [2.4.2]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.4.1...v2.4.2
 [2.4.1]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.4.0...v2.4.1
 [2.4.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.3.0...v2.4.0
