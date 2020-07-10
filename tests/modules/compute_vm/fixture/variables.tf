@@ -34,6 +34,24 @@ variable "instance_count" {
   default = 1
 }
 
+variable "network_interfaces" {
+  type = list(object({
+    nat        = bool
+    network    = string
+    subnetwork = string
+    addresses = object({
+      internal = list(string)
+      external = list(string)
+    })
+  }))
+  default = [{
+    network    = "https://www.googleapis.com/compute/v1/projects/my-project/global/networks/default",
+    subnetwork = "https://www.googleapis.com/compute/v1/projects/my-project/regions/europe-west1/subnetworks/default-default",
+    nat        = false,
+    addresses  = null
+  }]
+}
+
 variable "use_instance_template" {
   type    = bool
   default = false

@@ -15,17 +15,12 @@
  */
 
 module "test" {
-  source     = "../../../../modules/compute-vm"
-  project_id = "my-project"
-  region     = "europe-west1"
-  zone       = "europe-west1-b"
-  name       = "test"
-  network_interfaces = [{
-    network    = "https://www.googleapis.com/compute/v1/projects/my-project/global/networks/default",
-    subnetwork = "https://www.googleapis.com/compute/v1/projects/my-project/regions/europe-west1/subnetworks/default-default",
-    nat        = false,
-    addresses  = null
-  }]
+  source                 = "../../../../modules/compute-vm"
+  project_id             = "my-project"
+  region                 = "europe-west1"
+  zone                   = "europe-west1-b"
+  name                   = "test"
+  network_interfaces     = var.network_interfaces
   service_account_create = var.service_account_create
   instance_count         = var.instance_count
   use_instance_template  = var.use_instance_template
