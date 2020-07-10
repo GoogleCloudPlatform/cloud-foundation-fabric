@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- new `vpc-sc` module
 - add support for Shared VPC to the `project` module
 
 ## [2.4.2] - 2020-07-09
