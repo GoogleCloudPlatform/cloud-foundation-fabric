@@ -13,6 +13,13 @@ module "vpn_ha-1" {
   name            = "net1-to-net-2"
   peer_gcp_gateway = module.vpn_ha-2.self_link
   router_asn = 64514
+  router_advertise_config = {
+    groups = ["ALL_SUBNETS"]
+    ip_ranges = {
+      "10.0.0.0/8" = "default"
+    }
+    mode = "CUSTOM"
+  }
   tunnels = {
     remote-0 = {
       bgp_peer = {

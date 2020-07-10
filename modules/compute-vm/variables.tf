@@ -218,3 +218,13 @@ variable "zone" {
   description = "Compute zone."
   type        = string
 }
+
+variable "shielded_config" {
+  description = "Shielded VM configuration of the instances."
+  type = object({
+    enable_secure_boot          = bool
+    enable_vtpm                 = bool
+    enable_integrity_monitoring = bool
+  })
+  default = null
+}

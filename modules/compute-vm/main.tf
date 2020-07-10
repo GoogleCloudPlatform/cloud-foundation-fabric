@@ -163,9 +163,17 @@ resource "google_compute_instance" "default" {
     scopes = local.service_account_scopes
   }
 
-  # guest_accelerator
-  # shielded_instance_config
+  dynamic shielded_instance_config {
+    for_each = var.shielded_config != null ? [var.shielded_config] : []
+    iterator = config
+    content {
+      enable_secure_boot          = config.value.enable_secure_boot
+      enable_vtpm                 = config.value.enable_vtpm
+      enable_integrity_monitoring = config.value.enable_integrity_monitoring
+    }
+  }
 
+  # guest_accelerator
 }
 
 resource "google_compute_instance_iam_binding" "default" {
