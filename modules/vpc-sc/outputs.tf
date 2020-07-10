@@ -17,7 +17,7 @@
 output "org_id" {
   description = "Organization id dependent on module resources."
   value       = var.org_id
-  depends_on  = [
+  depends_on = [
     google_organization_iam_audit_config,
     google_organization_iam_binding.authoritative,
     google_organization_iam_custom_role.roles,
@@ -34,7 +34,7 @@ output "access_policy_name" {
 
 output "access_levels" {
   description = "Access Levels."
-  value       = {
+  value = {
     for key, value in google_access_context_manager_access_level.default :
     key => value
   }
@@ -42,7 +42,7 @@ output "access_levels" {
 
 output "perimeters_standard" {
   description = "VPC-SC standard perimeter resources."
-  value       = {
+  value = {
     for key, value in google_access_context_manager_service_perimeter.standard :
     key => value
   }
@@ -50,7 +50,7 @@ output "perimeters_standard" {
 
 output "perimeters_bridge" {
   description = "VPC-SC bridge perimeter resources."
-  value       = {
+  value = {
     for key, value in google_access_context_manager_service_perimeter.bridge :
     key => value
   }

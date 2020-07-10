@@ -6,7 +6,7 @@ This module allows managing VPC Service Control (VPC-SC) properties:
 - [Access Levels](https://cloud.google.com/access-context-manager/docs/manage-access-levels)
 - [VPC-SC Perimeters](https://cloud.google.com/vpc-service-controls/docs/service-perimeters)
 
-Before you begin, check you are running the script with a service account having the [correct permissions](https://cloud.google.com/access-context-manager/docs/access-control) to use Access Context Manager.
+The Use of this module requires credentials with the [correct permissions](https://cloud.google.com/access-context-manager/docs/access-control) to use Access Context Manager.
 
 ## Example VCP-SC standard perimeter
 

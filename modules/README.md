@@ -27,7 +27,6 @@ Specific modules also offer support for non-authoritative bindings (e.g. `google
 - [VPC](./net-vpc)
 - [VPC firewall](./net-vpc-firewall)
 - [VPC peering](./net-vpc-peering)
-- [VPC Service Control](./vpc-sc)
 - [VPN static](./net-vpn-static)
 - [VPN dynamic](./net-vpn-dynamic)
 - [VPN HA](./net-vpn-ha)
@@ -59,6 +58,7 @@ Specific modules also offer support for non-authoritative bindings (e.g. `google
 
 - [Cloud KMS](./kms)
 - [Secret Manager](./secret-manager)
+- [VPC Service Control](./vpc-sc)
 
 ## Serverless
 

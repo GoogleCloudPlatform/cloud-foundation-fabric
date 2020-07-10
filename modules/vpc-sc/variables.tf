@@ -16,12 +16,12 @@
 
 variable "access_levels" {
   description = "Access Levels."
-  type        = map(object({
+  type = map(object({
     combining_function = string
-    conditions         = list(object({
-      ip_subnetworks   = list(string)
-      members          = list(string)
-      negate           = string
+    conditions = list(object({
+      ip_subnetworks = list(string)
+      members        = list(string)
+      negate         = string
     }))
   }))
   default = {}
@@ -46,8 +46,8 @@ variable "org_id" {
 variable "perimeters" {
   description = "Set of Perimeters."
   type = map(object({
-    type            = string
-    dry_run_config  = object({
+    type = string
+    dry_run_config = object({
       restricted_services     = list(string)
       vpc_accessible_services = list(string)
     })

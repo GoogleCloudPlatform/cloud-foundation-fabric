@@ -4,10 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- new `vpc-sc` module
+
 ## [2.4.1] - 2020-07-06
 
 - better fix external IP assignment in `compute-vm`
-- new `vpc-sc` module
 
 ## [2.4.0] - 2020-07-06
 

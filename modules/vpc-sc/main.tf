@@ -15,7 +15,7 @@
  */
 
 locals {
-  access_policy_name = try(google_access_context_manager_access_policy.default[var.access_policy_title].name, null)
+  access_policy_name = google_access_context_manager_access_policy.default.name
 
   standard_perimeters = {
     for key, value in var.perimeters :
@@ -32,9 +32,8 @@ locals {
 }
 
 resource "google_access_context_manager_access_policy" "default" {
-  for_each  = toset([var.access_policy_title])
-  parent    = "organizations/${var.org_id}"
-  title     = each.key
+  parent = "organizations/${var.org_id}"
+  title  = var.access_policy_title
 }
 
 resource "google_access_context_manager_access_level" "default" {
@@ -48,10 +47,10 @@ resource "google_access_context_manager_access_level" "default" {
 
     content {
       combining_function = try(each.value.combining_function, null)
-      conditions         {
-        ip_subnetworks   = try(basic.value.ip_subnetworks,null)
-        members          = try(basic.value.members,null)
-        negate           = try(basic.value.negate,null)
+      conditions {
+        ip_subnetworks = try(basic.value.ip_subnetworks, null)
+        members        = try(basic.value.members, null)
+        negate         = try(basic.value.negate, null)
       }
     }
   }
@@ -70,18 +69,23 @@ resource "google_access_context_manager_service_perimeter" "standard" {
     for_each = each.value.enforced_config != null ? [""] : []
 
     content {
-        resources           = formatlist("projects/%s", try(lookup(var.perimeter_projects, each.key, {}).enforced, []))
-        restricted_services = each.value.enforced_config.restricted_services
-        access_levels       = formatlist("accessPolicies/${local.access_policy_name}/accessLevels/%s", try(lookup(local.perimeter_access_levels_enforced, each.key, []), []))
+      resources = formatlist(
+        "projects/%s", try(lookup(var.perimeter_projects, each.key, {}).enforced, [])
+      )
+      restricted_services = each.value.enforced_config.restricted_services
+      access_levels = formatlist(
+        "accessPolicies/${local.access_policy_name}/accessLevels/%s",
+        try(lookup(local.perimeter_access_levels_enforced, each.key, []), [])
+      )
 
-        dynamic "vpc_accessible_services" {
-            for_each = each.value.enforced_config.vpc_accessible_services != [] ? [""] : []
+      dynamic "vpc_accessible_services" {
+        for_each = each.value.enforced_config.vpc_accessible_services != [] ? [""] : []
 
-            content {
-                enable_restriction = true
-                allowed_services = each.value.enforced_config.vpc_accessible_services
-            }
+        content {
+          enable_restriction = true
+          allowed_services   = each.value.enforced_config.vpc_accessible_services
         }
+      }
     }
   }
 
@@ -91,22 +95,26 @@ resource "google_access_context_manager_service_perimeter" "standard" {
     for_each = each.value.dry_run_config != null ? [""] : []
 
     content {
-      resources           = formatlist("projects/%s", try(lookup(var.perimeter_projects, each.key, {}).dry_run, []))
+      resources = formatlist(
+        "projects/%s", try(lookup(var.perimeter_projects, each.key, {}).dry_run, [])
+      )
       restricted_services = try(each.value.dry_run_config.restricted_services, null)
-      access_levels       = formatlist("accessPolicies/${local.access_policy_name}/accessLevels/%s", try(lookup(local.perimeter_access_levels_dry_run, each.key, []), []))
-
+      access_levels = formatlist(
+        "accessPolicies/${local.access_policy_name}/accessLevels/%s",
+        try(lookup(local.perimeter_access_levels_dry_run, each.key, []), [])
+      )
 
       dynamic "vpc_accessible_services" {
-        for_each = try(each.value.dry_run_config.vpc_accessible_services != [] ? [""] : [],[])
+        for_each = try(each.value.dry_run_config.vpc_accessible_services != [] ? [""] : [], [])
 
         content {
           enable_restriction = true
-          allowed_services = try(each.value.dry_run_config.vpc_accessible_services, null)
+          allowed_services   = try(each.value.dry_run_config.vpc_accessible_services, null)
         }
       }
     }
   }
-  
+
   # Uncomment if used alongside `google_access_context_manager_service_perimeter_resource`, 
   # so they don't fight over which resources should be in the policy.
   # lifecycle {
@@ -152,6 +160,6 @@ resource "google_access_context_manager_service_perimeter" "bridge" {
 
   depends_on = [
     google_access_context_manager_service_perimeter.standard,
-    google_access_context_manager_access_level.default,    
+    google_access_context_manager_access_level.default,
   ]
 }
