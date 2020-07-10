@@ -131,11 +131,11 @@ resource "google_compute_instance" "default" {
         : config.value.addresses.internal[each.value]
       )
       dynamic access_config {
-        for_each = config.value.nat ? [config.value.addresses.external] : []
-        iterator = nat_addresses
+        for_each = config.value.nat ? [config.value.addresses] : []
+        iterator = addresses
         content {
-          nat_ip = nat_addresses.value == null ? null : (
-            length(nat_addresses.value) == 0 ? null : nat_addresses.value[each.value]
+          nat_ip = addresses.value == null ? null : (
+            length(addresses.value.external) == 0 ? null : addresses.value.external[each.value]
           )
         }
       }
