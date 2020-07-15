@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- fix optional IAM permissions in folder unit module
+
 ## [2.5.0] - 2020-07-10
 
 - new `vpc-sc` module
