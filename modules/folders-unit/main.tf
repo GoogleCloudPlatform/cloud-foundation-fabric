@@ -59,7 +59,7 @@ resource "google_organization_iam_member" "org_iam_member" {
 }
 
 resource "google_billing_account_iam_member" "billing_iam_member" {
-  for_each           = local.billing_iam_service_account_bindings
+  for_each           = var.iam_billing_config.grant ? local.billing_iam_service_account_bindings : []
   billing_account_id = var.billing_account_id
   role               = each.value.role
   member             = local.service_accounts[each.value.environment]
