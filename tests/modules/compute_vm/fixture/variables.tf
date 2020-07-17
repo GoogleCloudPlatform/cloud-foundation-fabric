@@ -61,3 +61,8 @@ variable "service_account_create" {
   type    = bool
   default = false
 }
+
+variable "zones" {
+  type    = list(string)
+  default = []
+}

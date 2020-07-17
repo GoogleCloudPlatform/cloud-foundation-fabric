@@ -23,16 +23,16 @@ locals {
   }
   attached_disks_pairs = {
     for pair in setproduct(keys(local.names), keys(local.attached_disks)) :
-    "${pair[0]}-${pair[1]}" => { name = pair[0], disk_name = pair[1] }
+    "${pair[0]}-${pair[1]}" => { disk_name = pair[1], name = pair[0] }
   }
   iam_roles = var.use_instance_template ? {} : {
     for pair in setproduct(var.iam_roles, keys(local.names)) :
     "${pair.0}/${pair.1}" => { role = pair.0, name = pair.1 }
   }
   names = (
-    var.use_instance_template
-    ? { "${var.name}" = 0 }
-    : { for i in range(0, var.instance_count) : "${var.name}-${i + 1}" => i }
+    var.use_instance_template ? { "${var.name}" = 0 } : {
+      for i in range(0, var.instance_count) : "${var.name}-${i + 1}" => i
+    }
   )
   service_account_email = (
     var.service_account_create
@@ -56,12 +56,16 @@ locals {
       ]
     )
   )
+  zones_list = length(var.zones) == 0 ? ["${var.region}-b"] : var.zones
+  zones = {
+    for name, i in local.names : name => element(local.zones_list, i)
+  }
 }
 
 resource "google_compute_disk" "disks" {
   for_each = var.use_instance_template ? {} : local.attached_disks_pairs
   project  = var.project_id
-  zone     = var.zone
+  zone     = local.zones[each.value.name]
   name     = each.key
   type     = local.attached_disks[each.value.disk_name].options.type
   size     = local.attached_disks[each.value.disk_name].size
@@ -83,7 +87,7 @@ resource "google_compute_disk" "disks" {
 resource "google_compute_instance" "default" {
   for_each                  = var.use_instance_template ? {} : local.names
   project                   = var.project_id
-  zone                      = var.zone
+  zone                      = local.zones[each.key]
   name                      = each.key
   hostname                  = var.hostname
   description               = "Managed by the compute-vm Terraform module."
@@ -179,7 +183,7 @@ resource "google_compute_instance" "default" {
 resource "google_compute_instance_iam_binding" "default" {
   for_each      = local.iam_roles
   project       = var.project_id
-  zone          = var.zone
+  zone          = local.zones[each.value.name]
   instance_name = each.value.name
   role          = each.value.role
   members       = lookup(var.iam_members, each.value.role, [])
@@ -260,7 +264,7 @@ resource "google_compute_instance_group" "unmanaged" {
     ? var.network_interfaces.0.network
     : ""
   )
-  zone        = var.zone
+  zone        = local.zones_list[0]
   name        = var.name
   description = "Terraform-managed."
   instances = [

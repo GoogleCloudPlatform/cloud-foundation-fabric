@@ -18,7 +18,7 @@ module "test" {
   source                 = "../../../../modules/compute-vm"
   project_id             = "my-project"
   region                 = "europe-west1"
-  zone                   = "europe-west1-b"
+  zones                  = var.zones
   name                   = "test"
   network_interfaces     = var.network_interfaces
   service_account_create = var.service_account_create

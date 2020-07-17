@@ -148,7 +148,6 @@ module "instance-group" {
 | network_interfaces | Network interfaces configuration. Use self links for Shared VPC, set addresses to null if not needed. | <code title="list&#40;object&#40;&#123;&#10;nat        &#61; bool&#10;network    &#61; string&#10;subnetwork &#61; string&#10;addresses &#61; object&#40;&#123;&#10;internal &#61; list&#40;string&#41;&#10;external &#61; list&#40;string&#41;&#10;&#125;&#41;&#10;&#125;&#41;&#41;">list(object({...}))</code> | ✓ |  |
 | project_id | Project id. | <code title="">string</code> | ✓ |  |
 | region | Compute region. | <code title="">string</code> | ✓ |  |
-| zone | Compute zone. | <code title="">string</code> | ✓ |  |
 | *attached_disk_defaults* | Defaults for attached disks options. | <code title="object&#40;&#123;&#10;auto_delete &#61; bool&#10;mode        &#61; string&#10;type &#61; string&#10;source      &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;auto_delete &#61; true&#10;source      &#61; null&#10;mode        &#61; &#34;READ_WRITE&#34;&#10;type &#61; &#34;pd-ssd&#34;&#10;&#125;">...</code> |
 | *attached_disks* | Additional disks, if options is null defaults will be used in its place. | <code title="list&#40;object&#40;&#123;&#10;name  &#61; string&#10;image &#61; string&#10;size  &#61; string&#10;options &#61; object&#40;&#123;&#10;auto_delete &#61; bool&#10;mode        &#61; string&#10;source      &#61; string&#10;type &#61; string&#10;&#125;&#41;&#10;&#125;&#41;&#41;">list(object({...}))</code> |  | <code title="">[]</code> |
 | *boot_disk* | Boot disk properties. | <code title="object&#40;&#123;&#10;image &#61; string&#10;size  &#61; number&#10;type &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;image &#61; &#34;projects&#47;debian-cloud&#47;global&#47;images&#47;family&#47;debian-10&#34;&#10;type &#61; &#34;pd-ssd&#34;&#10;size  &#61; 10&#10;&#125;">...</code> |
@@ -170,6 +169,7 @@ module "instance-group" {
 | *shielded_config* | Shielded VM configuration of the instances. | <code title="object&#40;&#123;&#10;enable_secure_boot          &#61; bool&#10;enable_vtpm                 &#61; bool&#10;enable_integrity_monitoring &#61; bool&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 | *tags* | Instance tags. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 | *use_instance_template* | Create instance template instead of instances. | <code title="">bool</code> |  | <code title="">false</code> |
+| *zones* | Compute zone, instance will cycle through the list, defaults to the 'b' zone in the region. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 
 ## Outputs
 
