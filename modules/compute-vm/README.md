@@ -18,7 +18,6 @@ module "simple-vm-example" {
   source     = "../modules/compute-vm"
   project_id = "my-project"
   region     = "europe-west1"
-  zone       = "europe-west1-b"
   name       = "test"
   network_interfaces = [{
     network    = local.network_self_link,
@@ -40,7 +39,6 @@ module "kms-vm-example" {
   source     = "../modules/compute-vm"
   project_id = local.project_id
   region     = local.region
-  zone       = local.zone
   name       = "kms-test"
   network_interfaces = [{
     network    = local.network_self_link,
@@ -85,7 +83,6 @@ module "cos-test" {
   source     = "../modules/compute-vm"
   project_id = "my-project"
   region     = "europe-west1"
-  zone       = "europe-west1-b"
   name       = "test"
   network_interfaces = [{
     network    = local.network_self_link,
@@ -116,7 +113,6 @@ module "instance-group" {
   source     = "../../cloud-foundation-fabric/modules/compute-vm"
   project_id = "my-project"
   region     = "europe-west1"
-  zone       = "europe-west1-b"
   name       = "ilb-test"
   network_interfaces = [{
     network    = local.network_self_link,
