@@ -90,10 +90,9 @@ module "cf" {
 }
 
 module "simple-vm-example" {
-  source     = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/compute-vm?ref=v2.3.0"
+  source     = "../../modules/compute-vm"
   project_id = module.project.project_id
   region     = var.region
-  zone       = "${var.region}-b"
   name       = var.name
   network_interfaces = [{
     network    = module.vpc.self_link,

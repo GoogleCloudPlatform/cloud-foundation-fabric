@@ -185,7 +185,6 @@ module "vm-test" {
   source     = "../../modules/compute-vm"
   project_id = var.project_id
   region     = var.region
-  zone       = "${var.region}-b"
   name       = "test"
   network_interfaces = [{
     network    = module.vpc.self_link,
@@ -238,7 +237,6 @@ module "vm-onprem" {
   source        = "../../modules/compute-vm"
   project_id    = var.project_id
   region        = var.region
-  zone          = "${var.region}-b"
   instance_type = "f1-micro"
   name          = "onprem"
   boot_disk = {

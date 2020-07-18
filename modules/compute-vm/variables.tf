@@ -214,9 +214,10 @@ variable "use_instance_template" {
   default     = false
 }
 
-variable "zone" {
-  description = "Compute zone."
-  type        = string
+variable "zones" {
+  description = "Compute zone, instance will cycle through the list, defaults to the 'b' zone in the region."
+  type        = list(string)
+  default     = []
 }
 
 variable "shielded_config" {

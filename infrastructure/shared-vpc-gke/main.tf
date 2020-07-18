@@ -174,7 +174,6 @@ module "vm-bastion" {
   source     = "../../modules/compute-vm"
   project_id = module.project-svc-gce.project_id
   region     = var.region
-  zone       = "${var.region}-b"
   name       = "bastion"
   network_interfaces = [{
     network    = module.vpc-shared.self_link,

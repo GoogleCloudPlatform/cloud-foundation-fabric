@@ -247,7 +247,6 @@ module "vm-spoke-1" {
   source     = "../../modules/compute-vm"
   project_id = var.project_id
   region     = var.regions.b
-  zone       = "${var.regions.b}-b"
   name       = "spoke-1-test"
   network_interfaces = [{
     network    = module.vpc-spoke-1.self_link,
@@ -263,7 +262,6 @@ module "vm-spoke-2" {
   source     = "../../modules/compute-vm"
   project_id = var.project_id
   region     = var.regions.b
-  zone       = "${var.regions.b}-b"
   name       = "spoke-2-test"
   network_interfaces = [{
     network    = module.vpc-spoke-2.self_link,
