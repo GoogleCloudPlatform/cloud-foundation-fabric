@@ -48,6 +48,12 @@ variable "config_timeouts" {
   }
 }
 
+variable "logging_filter" {
+  description = "Enables logging if not null, value is one of 'ERRORS_ONLY', 'TRANSLATIONS_ONLY', 'ALL'."
+  type        = string
+  default     = null
+}
+
 variable "name" {
   description = "Name of the Cloud NAT resource."
   type        = string
