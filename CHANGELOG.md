@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [2.6.0] - 2020-07-19
+
+- **incompatible changes** setting zone in the `compute-vm` module is now done via an optional `zones` variable, that accepts a list of zones
 - fix optional IAM permissions in folder unit module
 
 ## [2.5.0] - 2020-07-10
@@ -139,7 +142,8 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.5.0...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.6.0...HEAD
+[2.6.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.5.0...v2.6.0
 [2.5.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.4.2...v2.5.0
 [2.4.2]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.4.1...v2.4.2
 [2.4.1]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.4.0...v2.4.1
