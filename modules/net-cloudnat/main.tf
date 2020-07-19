@@ -49,7 +49,7 @@ resource "google_compute_router_nat" "nat" {
 
   log_config {
     enable = var.logging_filter == null ? false : true
-    filter = var.logging_filter
+    filter = var.logging_filter == null ? "ALL" : var.logging_filter
   }
 
   dynamic "subnetwork" {
