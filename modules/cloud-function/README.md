@@ -139,6 +139,7 @@ module "cf-http" {
 | *function_config* | Cloud function configuration. | <code title="object&#40;&#123;&#10;entry_point      &#61; string&#10;ingress_settings &#61; string&#10;instances        &#61; number&#10;memory           &#61; number&#10;runtime          &#61; string&#10;timeout          &#61; number&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;entry_point      &#61; &#34;main&#34;&#10;ingress_settings &#61; null&#10;instances        &#61; 1&#10;memory           &#61; 256&#10;runtime          &#61; &#34;python37&#34;&#10;timeout          &#61; 180&#10;&#125;">...</code> |
 | *iam_members* | Map of member lists used to set authoritative bindings, keyed by role. Ignored for template use. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
 | *iam_roles* | List of roles used to set authoritative bindings. Ignored for template use. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
+| *ingress_settings* | Control traffic that reaches the cloud function. Allowed values are ALLOW_ALL and ALLOW_INTERNAL_ONLY. | <code title="">string</code> |  | <code title="">null</code> |
 | *labels* | Resource labels | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
 | *prefix* | Optional prefix used for resource names. | <code title="">string</code> |  | <code title="">null</code> |
 | *region* | Region used for all resources. | <code title="">string</code> |  | <code title="">europe-west1</code> |

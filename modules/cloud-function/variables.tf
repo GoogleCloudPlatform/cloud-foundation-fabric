@@ -74,6 +74,12 @@ variable "function_config" {
   }
 }
 
+variable "ingress_settings" {
+  description = "Control traffic that reaches the cloud function. Allowed values are ALLOW_ALL and ALLOW_INTERNAL_ONLY."
+  type        = string
+  default     = null
+}
+
 variable "labels" {
   description = "Resource labels"
   type        = map(string)
@@ -83,19 +89,6 @@ variable "labels" {
 variable "name" {
   description = "Name used for cloud function and associated resources."
   type        = string
-}
-
-variable "vpc_connector_config" {
-  description = "VPC connector configuration. Set `create_config` attributes to trigger creation."
-  type = object({
-    egress_settings = string
-    name            = string
-    create_config = object({
-      ip_cidr_range = string
-      network       = string
-    })
-  })
-  default = null
 }
 
 variable "prefix" {
@@ -133,6 +126,19 @@ variable "trigger_config" {
     event    = string
     resource = string
     retry    = bool
+  })
+  default = null
+}
+
+variable "vpc_connector_config" {
+  description = "VPC connector configuration. Set `create_config` attributes to trigger creation."
+  type = object({
+    egress_settings = string
+    name            = string
+    create_config = object({
+      ip_cidr_range = string
+      network       = string
+    })
   })
   default = null
 }

@@ -40,7 +40,7 @@ locals {
     : (
       var.vpc_connector_config.create_config == null
       ? var.vpc_connector_config.name
-      : module.google_vpc_access_connector.default.id
+      : google_vpc_access_connector.connector.id
     )
   )
 }
@@ -71,7 +71,7 @@ resource "google_cloudfunctions_function" "function" {
   source_archive_object = google_storage_bucket_object.bundle.name
   labels                = var.labels
   trigger_http          = var.trigger_config == null ? true : null
-  ingress_settings      = var.function_config.ingress_settings
+  ingress_settings      = var.ingress_settings
 
   vpc_connector = local.vpc_connector
   vpc_connector_egress_settings = try(
