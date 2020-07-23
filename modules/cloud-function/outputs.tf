@@ -56,5 +56,5 @@ output "service_account_iam_email" {
 
 output "vpc_connector" {
   description = "VPC connector resource if created."
-  value       = google_vpc_access_connector.connector.0.id
+  value       = try(google_vpc_access_connector.connector.0.id, null)
 }
