@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- add support for logging in `net-cloudnat` module
+
 ## [2.6.0] - 2020-07-19
 
 - **incompatible changes** setting zone in the `compute-vm` module is now done via an optional `zones` variable, that accepts a list of zones
