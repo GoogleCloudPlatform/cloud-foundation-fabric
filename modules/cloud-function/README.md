@@ -142,6 +142,7 @@ module "cf-http" {
 | *iam_members* | Map of member lists used to set authoritative bindings, keyed by role. Ignored for template use. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
 | *iam_roles* | List of roles used to set authoritative bindings. Ignored for template use. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 | *labels* | Resource labels | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
+| *networking_config* | Ingress/egress function configuration. | <code title="object&#40;&#123;&#10;ingress_settings              &#61; string&#10;vpc_connector                 &#61; string&#10;vpc_connector_egress_settings &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 | *prefix* | Optional prefix used for resource names. | <code title="">string</code> |  | <code title="">null</code> |
 | *region* | Region used for all resources. | <code title="">string</code> |  | <code title="">europe-west1</code> |
 | *service_account* | Service account email. Unused if service account is auto-created. | <code title="">string</code> |  | <code title="">null</code> |

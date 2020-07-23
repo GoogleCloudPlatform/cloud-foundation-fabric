@@ -83,6 +83,16 @@ variable "name" {
   type        = string
 }
 
+variable "networking_config" {
+  description = "Ingress/egress function configuration."
+  type = object({
+    ingress_settings              = string
+    vpc_connector                 = string
+    vpc_connector_egress_settings = string
+  })
+  default = null
+}
+
 variable "prefix" {
   description = "Optional prefix used for resource names."
   type        = string

@@ -52,6 +52,11 @@ resource "google_cloudfunctions_function" "function" {
   source_archive_object = google_storage_bucket_object.bundle.name
   labels                = var.labels
   trigger_http          = var.trigger_config == null ? true : null
+  ingress_settings      = try(var.networking_config.ingress_settings, null)
+  vpc_connector         = try(var.networking_config.vpc_connector, null)
+  vpc_connector_egress_settings = try(
+    var.networking_config.vpc_connector_egress_settings, null
+  )
 
   dynamic event_trigger {
     for_each = var.trigger_config == null ? [] : [""]
