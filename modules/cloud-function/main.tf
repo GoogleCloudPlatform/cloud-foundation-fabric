@@ -40,7 +40,7 @@ locals {
     : (
       var.vpc_connector_config.create_config == null
       ? var.vpc_connector_config.name
-      : google_vpc_access_connector.connector.id
+      : google_vpc_access_connector.connector.0.id
     )
   )
 }
