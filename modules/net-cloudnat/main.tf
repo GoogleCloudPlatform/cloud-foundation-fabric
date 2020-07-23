@@ -47,6 +47,11 @@ resource "google_compute_router_nat" "nat" {
   tcp_established_idle_timeout_sec   = var.config_timeouts.tcp_established
   tcp_transitory_idle_timeout_sec    = var.config_timeouts.tcp_transitory
 
+  log_config {
+    enable = var.logging_filter == null ? false : true
+    filter = var.logging_filter == null ? "ALL" : var.logging_filter
+  }
+
   dynamic "subnetwork" {
     for_each = var.subnetworks
     content {
