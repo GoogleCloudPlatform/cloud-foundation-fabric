@@ -34,7 +34,26 @@ locals {
     )
     : var.service_account
   )
+  vpc_connector = (
+    var.vpc_connector_config == null
+    ? null
+    : (
+      var.vpc_connector_config.create_config == null
+      ? var.vpc_connector_config.name
+      : google_vpc_access_connector.connector.0.id
+    )
+  )
 }
+
+resource "google_vpc_access_connector" "connector" {
+  count         = try(var.vpc_connector_config.create_config, null) != null ? 1 : 0
+  project       = var.project_id
+  name          = var.vpc_connector_config.name
+  region        = var.region
+  ip_cidr_range = var.vpc_connector_config.create_config.ip_cidr_range
+  network       = var.vpc_connector_config.create_config.network
+}
+
 
 resource "google_cloudfunctions_function" "function" {
   project               = var.project_id
@@ -52,6 +71,12 @@ resource "google_cloudfunctions_function" "function" {
   source_archive_object = google_storage_bucket_object.bundle.name
   labels                = var.labels
   trigger_http          = var.trigger_config == null ? true : null
+  ingress_settings      = var.ingress_settings
+
+  vpc_connector = local.vpc_connector
+  vpc_connector_egress_settings = try(
+    var.vpc_connector_config.egress_settings, null
+  )
 
   dynamic event_trigger {
     for_each = var.trigger_config == null ? [] : [""]

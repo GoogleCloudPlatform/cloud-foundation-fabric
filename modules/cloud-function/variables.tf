@@ -57,19 +57,27 @@ variable "iam_roles" {
 variable "function_config" {
   description = "Cloud function configuration."
   type = object({
-    entry_point = string
-    instances   = number
-    memory      = number
-    runtime     = string
-    timeout     = number
+    entry_point      = string
+    ingress_settings = string
+    instances        = number
+    memory           = number
+    runtime          = string
+    timeout          = number
   })
   default = {
-    entry_point = "main"
-    instances   = 1
-    memory      = 256
-    runtime     = "python37"
-    timeout     = 180
+    entry_point      = "main"
+    ingress_settings = null
+    instances        = 1
+    memory           = 256
+    runtime          = "python37"
+    timeout          = 180
   }
+}
+
+variable "ingress_settings" {
+  description = "Control traffic that reaches the cloud function. Allowed values are ALLOW_ALL and ALLOW_INTERNAL_ONLY."
+  type        = string
+  default     = null
 }
 
 variable "labels" {
@@ -118,6 +126,19 @@ variable "trigger_config" {
     event    = string
     resource = string
     retry    = bool
+  })
+  default = null
+}
+
+variable "vpc_connector_config" {
+  description = "VPC connector configuration. Set `create_config` attributes to trigger creation."
+  type = object({
+    egress_settings = string
+    name            = string
+    create_config = object({
+      ip_cidr_range = string
+      network       = string
+    })
   })
   default = null
 }

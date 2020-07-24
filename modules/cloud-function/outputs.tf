@@ -53,3 +53,8 @@ output "service_account_iam_email" {
     local.service_account_email == null ? "" : local.service_account_email
   ])
 }
+
+output "vpc_connector" {
+  description = "VPC connector resource if created."
+  value       = try(google_vpc_access_connector.connector.0.id, null)
+}
