@@ -24,7 +24,7 @@ This example will create a `cloud-config` that uses the module's defaults, creat
 
 ```hcl
 module "cos-nginx" {
-  source           = "./modules/cos-container/nginx"
+  source           = "./modules/cloud-config-container/nginx"
 }
 
 # use it as metadata in a compute instance or template
@@ -40,7 +40,7 @@ This example shows how to create the single instance optionally managed by the m
 
 ```hcl
 module "cos-nginx" {
-  source           = "./modules/cos-container/nginx"
+  source           = "./modules/cloud-config-container/nginx"
   test_instance = {
     project_id = "my-project"
     zone       = "europe-west1-b"
