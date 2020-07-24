@@ -4,7 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-- add support for logging in `net-cloudnat` module
+## [2.7.0] - 2020-07-24
+
+- add support for VPC connector and ingress settings to `cloud-function` module
+- add support for logging to `net-cloudnat` module
 
 ## [2.6.0] - 2020-07-19
 
@@ -144,7 +147,8 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.6.0...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.7.0...HEAD
+[2.7.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.6.0...v2.7.0
 [2.6.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.5.0...v2.6.0
 [2.5.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.4.2...v2.5.0
 [2.4.2]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.4.1...v2.4.2
