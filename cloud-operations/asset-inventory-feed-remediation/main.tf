@@ -20,7 +20,7 @@ locals {
 }
 
 module "project" {
-  source         = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/project?ref=v2.3.0"
+  source         = "../../modules/project"
   name           = var.project_id
   project_create = false
   services = [
@@ -43,7 +43,7 @@ module "project" {
 }
 
 module "vpc" {
-  source     = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/net-vpc?ref=v2.3.0"
+  source     = "../../modules/net-vpc"
   project_id = module.project.project_id
   name       = var.name
   subnets = [{
@@ -55,21 +55,21 @@ module "vpc" {
 }
 
 module "pubsub" {
-  source        = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/pubsub?ref=v2.3.0"
+  source        = "../../modules/pubsub"
   project_id    = module.project.project_id
   name          = var.name
   subscriptions = { "${var.name}-default" = null }
 }
 
 module "service-account" {
-  source            = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/iam-service-accounts?ref=v2.3.0"
+  source            = "../../modules/iam-service-accounts"
   project_id        = module.project.project_id
   names             = ["${var.name}-cf"]
   iam_project_roles = { (module.project.project_id) = [local.role_id] }
 }
 
 module "cf" {
-  source      = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/cloud-function?ref=v2.3.0"
+  source      = "../../modules/cloud-function"
   project_id  = module.project.project_id
   name        = var.name
   bucket_name = "${var.name}-${random_pet.random.id}"
