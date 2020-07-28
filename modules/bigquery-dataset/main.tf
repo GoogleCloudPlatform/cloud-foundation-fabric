@@ -98,6 +98,7 @@ resource "google_bigquery_dataset" "default" {
 
 resource "google_bigquery_dataset_access" "domain" {
   for_each   = var.dataset_access ? {} : local.access_domain
+  provider   = google-beta
   project    = var.project_id
   dataset_id = google_bigquery_dataset.default.dataset_id
   role       = each.value.role
@@ -106,6 +107,7 @@ resource "google_bigquery_dataset_access" "domain" {
 
 resource "google_bigquery_dataset_access" "group_by_email" {
   for_each       = var.dataset_access ? {} : local.access_group
+  provider       = google-beta
   project        = var.project_id
   dataset_id     = google_bigquery_dataset.default.dataset_id
   role           = each.value.role
@@ -114,6 +116,7 @@ resource "google_bigquery_dataset_access" "group_by_email" {
 
 resource "google_bigquery_dataset_access" "special_group" {
   for_each      = var.dataset_access ? {} : local.access_special
+  provider      = google-beta
   project       = var.project_id
   dataset_id    = google_bigquery_dataset.default.dataset_id
   role          = each.value.role
@@ -122,6 +125,7 @@ resource "google_bigquery_dataset_access" "special_group" {
 
 resource "google_bigquery_dataset_access" "user_by_email" {
   for_each      = var.dataset_access ? {} : local.access_user
+  provider      = google-beta
   project       = var.project_id
   dataset_id    = google_bigquery_dataset.default.dataset_id
   role          = each.value.role
@@ -130,6 +134,7 @@ resource "google_bigquery_dataset_access" "user_by_email" {
 
 resource "google_bigquery_dataset_access" "views" {
   for_each   = var.dataset_access ? {} : local.access_view
+  provider   = google-beta
   project    = var.project_id
   dataset_id = google_bigquery_dataset.default.dataset_id
   view {
