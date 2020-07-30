@@ -17,6 +17,9 @@
 output "id" {
   description = "Topic id."
   value       = google_pubsub_topic.default.id
+  depends_on = [
+    google_pubsub_topic_iam_binding.default
+  ]
 }
 
 output "subscriptions" {
