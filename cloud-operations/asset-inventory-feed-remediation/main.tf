@@ -59,6 +59,14 @@ module "pubsub" {
   project_id    = module.project.project_id
   name          = var.name
   subscriptions = { "${var.name}-default" = null }
+  iam_roles = [
+    "roles/pubsub.publisher"
+  ]
+  iam_members = {
+    "roles/pubsub.publisher" = [
+      "serviceAccount:${module.project.service_accounts.robots.cloudasset}"
+    ]
+  }
 }
 
 module "service-account" {
