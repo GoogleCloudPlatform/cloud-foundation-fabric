@@ -1,20 +1,17 @@
 # Fine-grained Cloud DNS IAM via Service Directory
 
-This example shows how to leverage [Service Directory](https://cloud.google.com/blog/products/networking/introducing-service-directory) and Cloud DNS Service Directory private zones, to implement fine-grained IAM controls on DNS.
+This example shows how to leverage [Service Directory](https://cloud.google.com/blog/products/networking/introducing-service-directory) and Cloud DNS Service Directory private zones, to implement fine-grained IAM controls on DNS by
 
-<!-- A [companion Medium article](https://medium.com/google-cloud/using-cloud-asset-inventory-feeds-for-dynamic-configuration-and-policy-enforcement-c37b6a590c49) has been published for this example, refer to it for more details on the context and the specifics of running the example. -->
-
-This example:
-
-- creates a Service Directory namespace with two services and their endpoints
-- creates a Cloud DNS private zone that uses the namespace as its authoritative source
-- creates two service accounts and assigns them the `roles/servicedirectory.editor` role on the namespace and on one service respectively
-- creates two VMs and sets them to use the two service accounts, so that DNS queries and `gcloud` commands can be used to verify the setup
+- creating a Service Directory namespace with two services and their endpoints
+- creating a Cloud DNS private zone that uses the namespace as its authoritative source
+- creating two service accounts and assigning them the `roles/servicedirectory.editor` role on the namespace and on one service respectively
+- creating two VMs and setting them to use the two service accounts, so that DNS queries and `gcloud` commands can be used to verify the setup
 
 The resources created in this example are shown in the high level diagram below:
 
 <img src="diagram.png" width="640px">
 
+<!-- A [companion Medium article](https://medium.com/google-cloud/using-cloud-asset-inventory-feeds-for-dynamic-configuration-and-policy-enforcement-c37b6a590c49) has been published for this example, refer to it for more details on the context and the specifics of running the example. -->
 
 ## Running the example
 
