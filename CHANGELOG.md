@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 ## [2.8.0] - 2020-08-01
 
 - fine-grained Cloud DNS IAM via Service Directory example
+- add feed id output dependency on IAM roles in `pubsub` module
 
 ## [2.7.1] - 2020-07-24
 
