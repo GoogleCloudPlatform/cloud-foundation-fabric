@@ -15,8 +15,17 @@
  */
 
 output "vms" {
+  description = "VM names."
   value = {
-    dir-editor = module.vm-dir-editor.names.0
+    ns-editor  = module.vm-ns-editor.names.0
     svc-editor = module.vm-svc-editor.names.0
+  }
+}
+
+output "gcloud_commands" {
+  description = "Commands used to SSH to the VMs."
+  value = {
+    ns-editor  = "gcloud compute ssh ${module.vm-ns-editor.names.0} --zone ${var.region}-b --tunnel-through-iap"
+    svc-editor = "gcloud compute ssh ${module.vm-svc-editor.names.0} --zone ${var.region}-b --tunnel-through-iap"
   }
 }

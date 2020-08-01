@@ -78,7 +78,7 @@ module "service-directory" {
   name       = var.name
   iam_members = {
     "roles/servicedirectory.editor" = [
-      module.vm-dir-editor.service_account_iam_email
+      module.vm-ns-editor.service_account_iam_email
     ]
   }
   iam_roles = ["roles/servicedirectory.editor"]
@@ -104,11 +104,11 @@ module "service-directory" {
   }
 }
 
-module "vm-dir-editor" {
+module "vm-ns-editor" {
   source     = "../../modules/compute-vm"
   project_id = module.project.project_id
   region     = var.region
-  name       = "${var.name}-dir"
+  name       = "${var.name}-ns"
   network_interfaces = [{
     network    = module.vpc.self_link,
     subnetwork = module.vpc.subnet_self_links["${var.region}/${var.name}-default"],
