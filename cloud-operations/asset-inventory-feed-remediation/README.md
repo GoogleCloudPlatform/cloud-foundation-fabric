@@ -9,6 +9,8 @@ The Cloud Function can then be used for different purposes:
 - adapting the configuration of separate related resources
 - implementing remediation steps that enforce policy compliance by tweaking or reverting the changes.
 
+A [companion Medium article](https://medium.com/google-cloud/using-cloud-asset-inventory-feeds-for-dynamic-configuration-and-policy-enforcement-c37b6a590c49) has been published for this example, refer to it for more details on the context and the specifics of running the example.
+
 This example shows a simple remediation use case: how to enforce policies on instance tags and revert non-compliant changes in near-real time, thus adding an additional measure of control when using tags for firewall rule scoping. Changing the [monitored asset](https://cloud.google.com/asset-inventory/docs/supported-asset-types) and the function logic allows simple adaptation to other common use cases:
 
 - enforcing a centrally defined Cloud Armor policy in backend services
