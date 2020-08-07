@@ -11,7 +11,7 @@ The resources created in this example are shown in the high level diagram below:
 
 <img src="diagram.png" width="640px">
 
-<!-- A [companion Medium article](https://medium.com/google-cloud/using-cloud-asset-inventory-feeds-for-dynamic-configuration-and-policy-enforcement-c37b6a590c49) has been published for this example, refer to it for more details on the context and the specifics of running the example. -->
+A [companion Medium article](https://medium.com/google-cloud/fine-grained-cloud-dns-iam-via-service-directory-446058b4362e) has been published for this example, you can refer to it for more details on the context, and the specifics of running the example.
 
 ## Running the example
 
