@@ -4,7 +4,7 @@ This module manages a `cloud-config` configuration that starts a containerized E
 
 The generated cloud config is rendered in the `cloud_config` output, and is meant to be used in instances or instance templates via the `user-data` metadata.
 
-This module depends on the [`cos-generic-metadata` module](../cos-generic-metadata) being the parent folder. If you change its location be sure to adjust the `source` attribute in `main.tf`.
+This module depends on the [`cos-generic-metadata` module](../cos-generic-metadata) being in the parent folder. If you change its location be sure to adjust the `source` attribute in `main.tf`.
 
 ## Examples
 
@@ -21,7 +21,6 @@ module "vm-cos" {
   source     = "./modules/compute-vm"
   project_id = local.project_id
   region     = local.region
-  zone       = local.zone
   name       = "cos-envoy-td"
   network_interfaces = [{
     network    = local.vpc.self_link,
