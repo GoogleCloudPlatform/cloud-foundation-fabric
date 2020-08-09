@@ -94,7 +94,7 @@ resource "google_compute_instance" "default" {
   tags                      = var.tags
   machine_type              = var.instance_type
   min_cpu_platform          = var.min_cpu_platform
-  can_ip_forward            = var.options.can_ip_forward
+  can_ip_forward            = var.can_ip_forward
   allow_stopping_for_update = var.options.allow_stopping_for_update
   deletion_protection       = var.options.deletion_protection
   metadata                  = var.metadata
@@ -199,7 +199,7 @@ resource "google_compute_instance_template" "default" {
   tags             = var.tags
   machine_type     = var.instance_type
   min_cpu_platform = var.min_cpu_platform
-  can_ip_forward   = var.options.can_ip_forward
+  can_ip_forward   = var.can_ip_forward
   metadata         = var.metadata
   labels           = var.labels
 
