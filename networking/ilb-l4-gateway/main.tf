@@ -15,9 +15,12 @@
  */
 
 locals {
+  addresses = {
+    for k, v in module.addresses.internal_addresses :
+    trimprefix(k, local.prefix) => v.address
+  }
   prefix = var.prefix == null || var.prefix == "" ? "" : "${var.prefix}-"
 }
-
 
 module "project" {
   source         = "../../modules/project"
@@ -36,11 +39,26 @@ module "project" {
 module "service-accounts" {
   source     = "../../modules/iam-service-accounts"
   project_id = var.project_id
-  names      = ["${local.prefix}gce-vm", "${local.prefix}gce-gw"]
+  names      = ["${local.prefix}gce-vm"]
   iam_project_roles = {
     (var.project_id) = [
       "roles/logging.logWriter",
       "roles/monitoring.metricWriter",
     ]
+  }
+}
+
+module "addresses" {
+  source     = "../../modules/net-address"
+  project_id = var.project_id
+  internal_addresses = {
+    "${local.prefix}ilb-left" = {
+      region     = var.region,
+      subnetwork = values(module.vpc-left.subnet_self_links)[0]
+    },
+    "${local.prefix}ilb-right" = {
+      region     = var.region,
+      subnetwork = values(module.vpc-right.subnet_self_links)[0]
+    }
   }
 }

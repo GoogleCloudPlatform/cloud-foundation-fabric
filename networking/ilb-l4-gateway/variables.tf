@@ -14,23 +14,31 @@
  * limitations under the License.
  */
 
-# e2-small
+variable "ilb_right_enable" {
+  description = "Route right to left traffic through ILB."
+  type        = bool
+  default     = false
+}
+
+variable "ilb_session_affinity" {
+  description = "Session affinity configuration for ILBs."
+  type        = string
+  default     = "CLIENT_IP"
+}
 
 variable "ip_ranges" {
   description = "IP CIDR ranges used for VPC subnets."
   type        = map(string)
   default = {
-    hub     = "10.0.0.0/24"
-    hub-vip = "10.0.1.0/24"
-    landing = "172.16.0.0/24"
-    onprem  = "10.0.16.0/24"
+    left  = "10.0.0.0/24"
+    right = "10.0.1.0/24"
   }
 }
 
 variable "prefix" {
   description = "Prefix used for resource names."
   type        = string
-  default     = "ilb-gw"
+  default     = "ilb-test"
 }
 
 variable "project_id" {

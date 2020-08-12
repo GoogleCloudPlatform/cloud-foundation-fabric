@@ -1,6 +1,6 @@
 # Internal Load Balancer for Gateways
 
-Using Cisco CSR1000v virtual appliances.
+iftop -i ens4 -F 10.0.0.2/32
 
 ![High-level diagram](diagram.png "High-level diagram")
 

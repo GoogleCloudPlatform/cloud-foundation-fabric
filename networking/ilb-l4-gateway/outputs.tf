@@ -14,24 +14,7 @@
  * limitations under the License.
  */
 
-module "vpc-landing" {
-  source     = "../../modules/net-vpc"
-  project_id = var.project_id
-  name       = "${local.prefix}landing"
-  subnets = [
-    {
-      ip_cidr_range      = var.ip_ranges.landing
-      name               = "landing-default"
-      region             = var.region
-      secondary_ip_range = {}
-    }
-  ]
-}
-
-module "firewall-landing" {
-  source               = "../../modules/net-vpc-firewall"
-  project_id           = var.project_id
-  network              = module.vpc-landing.name
-  admin_ranges_enabled = true
-  admin_ranges         = [var.ip_ranges.landing]
+output "addresses" {
+  description = "Internal addresses of created VMS."
+  value       = null
 }
