@@ -21,7 +21,7 @@ module "vpc-landing" {
   subnets = [
     {
       ip_cidr_range      = var.ip_ranges.landing
-      name               = "landing-default"
+      name               = "${local.prefix}landing"
       region             = var.region
       secondary_ip_range = {}
     }

@@ -14,7 +14,20 @@
  * limitations under the License.
  */
 
-# e2-small
+variable "gateway_config" {
+  description = "Gateway configuration."
+  type = object({
+    image          = string
+    instance_count = number
+    instance_type  = string
+  })
+  default = {
+    # image        = "projects/cisco-public/global/csr1000v1721r-byol"
+    image          = "projects/ubuntu-os-cloud/global/images/family/ubuntu-2004-lts"
+    instance_count = 2
+    instance_type  = "f1-micro"
+  }
+}
 
 variable "ip_ranges" {
   description = "IP CIDR ranges used for VPC subnets."
@@ -24,17 +37,23 @@ variable "ip_ranges" {
     hub-vip = "10.0.1.0/24"
     landing = "172.16.0.0/24"
     onprem  = "10.0.16.0/24"
+    tunnels = "192.168.0.0/24"
   }
 }
 
 variable "prefix" {
   description = "Prefix used for resource names."
   type        = string
-  default     = "ilb-gw"
+  default     = "ilb-test"
 }
 
 variable "project_id" {
   description = "Existing project id."
+  type        = string
+}
+
+variable "public_key_path" {
+  description = "Path to the public key used for the admin user on the gateways. If null a key pair will be generated."
   type        = string
 }
 

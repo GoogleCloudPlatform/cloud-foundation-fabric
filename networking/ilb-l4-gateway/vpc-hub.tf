@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-module "vpc-onprem" {
+module "vpc-hub" {
   source     = "../../modules/net-vpc"
   project_id = var.project_id
-  name       = "${local.prefix}onprem"
+  name       = "${local.prefix}hub"
   subnets = [
     {
-      ip_cidr_range      = var.ip_ranges.onprem
-      name               = "onprem-default"
+      ip_cidr_range      = var.ip_ranges.hub
+      name               = "${local.prefix}hub"
+      region             = var.region
+      secondary_ip_range = {}
+    },
+    {
+      ip_cidr_range      = var.ip_ranges.hub-vip
+      name               = "${local.prefix}hub-vip"
       region             = var.region
       secondary_ip_range = {}
     }
@@ -37,20 +43,20 @@ module "vpc-onprem" {
   }
 }
 
-module "firewall-onprem" {
+module "firewall-hub" {
   source               = "../../modules/net-vpc-firewall"
   project_id           = var.project_id
-  network              = module.vpc-onprem.name
+  network              = module.vpc-hub.name
   admin_ranges_enabled = true
   admin_ranges = [
-    var.ip_ranges.hub, var.ip_ranges.onprem
+    var.ip_ranges.hub, var.ip_ranges.hub-vip, var.ip_ranges.onprem
   ]
 }
 
-module "nat-onprem" {
+module "nat-hub" {
   source         = "../../modules/net-cloudnat"
   project_id     = var.project_id
   region         = var.region
-  name           = "${local.prefix}onprem"
-  router_network = module.vpc-onprem.name
+  name           = "${local.prefix}hub"
+  router_network = module.vpc-hub.name
 }
