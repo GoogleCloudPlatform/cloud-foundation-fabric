@@ -27,4 +27,6 @@ module "test" {
   group                  = var.group
   iam_roles              = var.iam_roles
   iam_members            = var.iam_members
+  metadata               = var.metadata
+  metadata_list          = var.metadata_list
 }

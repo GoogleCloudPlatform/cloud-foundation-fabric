@@ -97,8 +97,10 @@ resource "google_compute_instance" "default" {
   can_ip_forward            = var.can_ip_forward
   allow_stopping_for_update = var.options.allow_stopping_for_update
   deletion_protection       = var.options.deletion_protection
-  metadata                  = var.metadata
   labels                    = var.labels
+  metadata = merge(
+    var.metadata, try(element(var.metadata_list, each.value), {})
+  )
 
   dynamic attached_disk {
     for_each = {

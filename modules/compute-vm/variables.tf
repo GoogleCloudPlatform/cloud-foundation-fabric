@@ -126,6 +126,12 @@ variable "metadata" {
   default     = {}
 }
 
+variable "metadata_list" {
+  description = "List of instance metadata that will be cycled through. Ignored for template use."
+  type        = list(map(string))
+  default     = []
+}
+
 variable "min_cpu_platform" {
   description = "Minimum CPU platform."
   type        = string
