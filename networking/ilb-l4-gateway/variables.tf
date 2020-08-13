@@ -46,11 +46,6 @@ variable "project_id" {
   type        = string
 }
 
-variable "public_key_path" {
-  description = "Path to the public key used for the admin user on the gateways. If null a key pair will be generated."
-  type        = string
-}
-
 variable "region" {
   description = "Region used for resources."
   type        = string

@@ -20,13 +20,8 @@ module "vpc-left" {
   name       = "${local.prefix}left"
   subnets = [
     {
-<<<<<<< HEAD:networking/ilb-l4-gateway/left.tf
       ip_cidr_range      = var.ip_ranges.left
       name               = "${local.prefix}left"
-=======
-      ip_cidr_range      = var.ip_ranges.onprem
-      name               = "${local.prefix}onprem"
->>>>>>> ecd7c4d543904b2a666bf897481261f23089c843:networking/ilb-l4-gateway/vpc-onprem.tf
       region             = var.region
       secondary_ip_range = {}
     },
