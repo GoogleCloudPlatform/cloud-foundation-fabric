@@ -15,7 +15,7 @@
  */
 
 module "test" {
-  source         = "../../../../networking/ilb-gateway"
+  source         = "../../../../networking/ilb-next-hop"
   project_create = var.project_create
   project_id     = var.project_id
 }
