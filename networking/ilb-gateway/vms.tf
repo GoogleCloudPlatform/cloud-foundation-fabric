@@ -24,7 +24,7 @@ END
 
 module "vm-left" {
   source        = "../../modules/compute-vm"
-  project_id    = var.project_id
+  project_id    = module.project.project_id
   region        = var.region
   name          = "${local.prefix}vm-left"
   instance_type = "f1-micro"
@@ -49,7 +49,7 @@ module "vm-left" {
 
 module "vm-right" {
   source        = "../../modules/compute-vm"
-  project_id    = var.project_id
+  project_id    = module.project.project_id
   region        = var.region
   name          = "${local.prefix}vm-right"
   instance_type = "f1-micro"

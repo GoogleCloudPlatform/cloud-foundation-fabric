@@ -16,7 +16,7 @@
 
 module "gw" {
   source        = "../../modules/compute-vm"
-  project_id    = var.project_id
+  project_id    = module.project.project_id
   region        = var.region
   name          = "${local.prefix}gw"
   instance_type = "f1-micro"
@@ -44,7 +44,7 @@ module "gw" {
   tags           = ["ssh"]
   can_ip_forward = true
   metadata = {
-    user-data = templatefile("assets/gw.yaml", {
+    user-data = templatefile("${path.module}/assets/gw.yaml", {
       gw_right      = cidrhost(var.ip_ranges.right, 1)
       ip_cidr_right = var.ip_ranges.right
     })
@@ -59,7 +59,7 @@ module "gw" {
 
 module "ilb-left" {
   source     = "../../modules/net-ilb"
-  project_id = var.project_id
+  project_id = module.project.project_id
   region     = var.region
   name       = "${local.prefix}ilb-left"
   network    = module.vpc-left.self_link
@@ -83,7 +83,7 @@ module "ilb-left" {
 
 module "ilb-right" {
   source     = "../../modules/net-ilb"
-  project_id = var.project_id
+  project_id = module.project.project_id
   region     = var.region
   name       = "${local.prefix}ilb-right"
   network    = module.vpc-right.self_link

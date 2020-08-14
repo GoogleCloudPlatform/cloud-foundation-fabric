@@ -41,6 +41,12 @@ variable "prefix" {
   default     = "ilb-test"
 }
 
+variable "project_create" {
+  description = "Create project instead of using an existing one."
+  type        = bool
+  default     = false
+}
+
 variable "project_id" {
   description = "Existing project id."
   type        = string

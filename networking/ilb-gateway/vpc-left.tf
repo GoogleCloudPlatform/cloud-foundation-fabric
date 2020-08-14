@@ -16,7 +16,7 @@
 
 module "vpc-left" {
   source     = "../../modules/net-vpc"
-  project_id = var.project_id
+  project_id = module.project.project_id
   name       = "${local.prefix}left"
   subnets = [
     {
@@ -39,7 +39,7 @@ module "vpc-left" {
 
 module "firewall-left" {
   source               = "../../modules/net-vpc-firewall"
-  project_id           = var.project_id
+  project_id           = module.project.project_id
   network              = module.vpc-left.name
   admin_ranges_enabled = true
   admin_ranges         = values(var.ip_ranges)
@@ -48,7 +48,7 @@ module "firewall-left" {
 
 module "nat-left" {
   source         = "../../modules/net-cloudnat"
-  project_id     = var.project_id
+  project_id     = module.project.project_id
   region         = var.region
   name           = "${local.prefix}left"
   router_network = module.vpc-left.name

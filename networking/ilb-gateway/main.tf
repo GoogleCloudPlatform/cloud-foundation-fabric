@@ -25,7 +25,7 @@ locals {
 module "project" {
   source         = "../../modules/project"
   name           = var.project_id
-  project_create = false
+  project_create = var.project_create
   services = [
     "compute.googleapis.com",
     "dns.googleapis.com",
@@ -38,7 +38,7 @@ module "project" {
 
 module "service-accounts" {
   source     = "../../modules/iam-service-accounts"
-  project_id = var.project_id
+  project_id = module.project.project_id
   names      = ["${local.prefix}gce-vm"]
   iam_project_roles = {
     (var.project_id) = [
@@ -50,7 +50,7 @@ module "service-accounts" {
 
 module "addresses" {
   source     = "../../modules/net-address"
-  project_id = var.project_id
+  project_id = module.project.project_id
   internal_addresses = {
     "${local.prefix}ilb-left" = {
       region     = var.region,
