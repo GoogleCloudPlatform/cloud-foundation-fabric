@@ -18,10 +18,8 @@ module "test" {
   source               = "../../../../foundations/environments"
   billing_account_id   = var.billing_account_id
   environments         = var.environments
-  iam_assets_editors   = var.iam_assets_editors
-  iam_assets_owners    = var.iam_assets_owners
   iam_audit_viewers    = var.iam_audit_viewers
-  iam_sharedsvc_owners = var.iam_sharedsvc_owners
+  iam_shared_owners    = var.iam_shared_owners
   iam_terraform_owners = var.iam_terraform_owners
   iam_xpn_config       = var.iam_xpn_config
   organization_id      = var.organization_id
