@@ -14,42 +14,56 @@
  * limitations under the License.
  */
 
-module "vpc-left" {
+module "vpc-right" {
   source     = "../../modules/net-vpc"
   project_id = var.project_id
-  name       = "${local.prefix}left"
+  name       = "${local.prefix}right"
   subnets = [
     {
-      ip_cidr_range      = var.ip_ranges.left
-      name               = "${local.prefix}left"
+      ip_cidr_range      = var.ip_ranges.right
+      name               = "${local.prefix}right"
       region             = var.region
       secondary_ip_range = {}
     },
   ]
   routes = {
-    left-to-right = {
-      dest_range    = var.ip_ranges.right
-      priority      = null
+    to-left-ilb = {
+      dest_range    = var.ip_ranges.left
+      priority      = var.ilb_right_enable ? 900 : 1100
       tags          = null
       next_hop_type = "ilb"
-      next_hop      = module.ilb-left.forwarding_rule.self_link
+      next_hop      = module.ilb-right.forwarding_rule.self_link
+    }
+    to-left-gw-1 = {
+      dest_range    = var.ip_ranges.left
+      priority      = null
+      tags          = null
+      next_hop_type = "instance"
+      next_hop      = module.gw.instances.0.self_link
+    }
+    to-left-gw-2 = {
+      dest_range    = var.ip_ranges.left
+      priority      = null
+      tags          = null
+      next_hop_type = "instance"
+      next_hop      = module.gw.instances.1.self_link
     }
   }
 }
 
-module "firewall-left" {
+module "firewall-right" {
   source               = "../../modules/net-vpc-firewall"
   project_id           = var.project_id
-  network              = module.vpc-left.name
+  network              = module.vpc-right.name
   admin_ranges_enabled = true
   admin_ranges         = values(var.ip_ranges)
   ssh_source_ranges    = ["35.235.240.0/20", "35.191.0.0/16", "130.211.0.0/22"]
 }
 
-module "nat-left" {
+module "nat-right" {
   source         = "../../modules/net-cloudnat"
   project_id     = var.project_id
   region         = var.region
-  name           = "${local.prefix}left"
-  router_network = module.vpc-left.name
+  name           = "${local.prefix}right"
+  router_network = module.vpc-right.name
 }

@@ -44,7 +44,10 @@ module "gw" {
   tags           = ["ssh"]
   can_ip_forward = true
   metadata = {
-    user-data = file("assets/gw.yaml")
+    user-data = templatefile("assets/gw.yaml", {
+      gw_right      = cidrhost(var.ip_ranges.right, 1)
+      ip_cidr_right = var.ip_ranges.right
+    })
   }
   service_account = try(
     module.service-accounts.emails["${local.prefix}gce-vm"], null

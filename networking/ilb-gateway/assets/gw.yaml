@@ -33,22 +33,30 @@ write_files:
             dhcp4: true
             routes:
             - to: 0.0.0.0/0
-              via: 10.0.1.1
+              via: ${gw_right}
               table: 102
             routing-policy:
-              - from: 10.0.1.0/24
+              - from: ${ip_cidr_right}
                 to: 35.191.0.0/16
                 table: 102
-              - from: 10.0.1.0/24
+              - from: ${ip_cidr_right}
                 to: 130.211.0.0/22
                 table: 102
         version: 2
+  - path: /root/start.sh
+    permissions: "0755"
+    owner: root
+    content: |
+      #!/bin/bash
+      iptables -D INPUT -s 35.191.0.0/16 -j REJECT
+      iptables -D INPUT -s 130.211.0.0/22 -j REJECT
   - path: /root/stop.sh
     permissions: "0755"
     owner: root
     content: |
       #!/bin/bash
-      ip route del default via 10.0.1.1 dev ens5 proto static onlink table 102
+      iptables -I INPUT -s 35.191.0.0/16 -j REJECT
+      iptables -I INPUT -s 130.211.0.0/22 -j REJECT
 package_update: true
 package_upgrade: true
 package_reboot_if_required: true
@@ -57,3 +65,4 @@ packages:
   - tcpdump
 runcmd:
   - sysctl -p
+  - netplan apply
