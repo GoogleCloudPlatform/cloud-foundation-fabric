@@ -6,33 +6,17 @@ The sample has been purposefully kept simple so that it can be used as a basis f
 
 ![High-level diagram](diagram.png "High-level diagram")
 
-## Managed resources and services
+## Applying the example
 
-This sample creates several distinct groups of resources:
+The example cannot be applied from scratch with a single `terraform apply` command, as Terraform is unable to manage Shared VPC project registration for multiple projects, before those are created and exist in state. To apply the example from scratch, follow this order:
 
-- projects
-  - host project
-  - service project configured for GKE clusters
-  - service project configured for GCE instances
-- networking
-  - the shared VPC network
-  - one subnet with secondary ranges for GKE clusters
-  - one subnet for GCE instances
-  - firewall rules for [SSH access via IAP](https://cloud.google.com/iap/docs/using-tcp-forwarding) and open communication within the VPC
-  - Cloud NAT service
-- IAM
-  - one service account for the bastion CGE instance
-  - one service account for the GKE nodes
-  - optional owner role bindings on each project
-  - optional [OS Login](https://cloud.google.com/compute/docs/oslogin/) role bindings on the GCE service project
-  - role bindings to allow the GCE instance and GKE nodes logging and monitoring write access
-  - role binding to allow the GCE instance cluster access
-- DNS
-  - one private zone
-- GCE
-  - one instance used to access the internal GKE cluster
-- GKE
-  - one private cluster with one nodepool
+```bash
+tf apply -target module.project-svc-gce
+tf apply -target module.project-svc-gke
+tf apply
+```
+
+Once the first two commands have run successfully, the service projects exist in state and can be referenced by the multiple resource in the host project module that deals with project registration.
 
 ## Accessing the bastion instance and GKE cluster
 
