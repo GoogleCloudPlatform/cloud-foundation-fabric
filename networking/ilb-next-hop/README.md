@@ -1,6 +1,6 @@
 # Internal Load Balancer for Gateways
 
-This example allows testing [ILB as next hop](https://cloud.google.com/load-balancing/docs/internal/ilb-next-hop-overview) using simple Linux gateway VMS between two VPCs, to emulate virtual appliances. An optional additional ILB can be enabled to test multiple load balancer configurations and hashing.
+This example allows testing [ILB as next hop](https://cloud.google.com/load-balancing/docs/internal/ilb-next-hop-overview), using simple Linux gateway VMs between two VPCs to emulate virtual appliances. An optional additional ILB can be enabled to test multiple load balancer configurations and hashing.
 
 The following diagram shows the resources created by this example
 
