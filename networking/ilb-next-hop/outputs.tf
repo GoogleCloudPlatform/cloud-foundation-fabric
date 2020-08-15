@@ -13,8 +13,3 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-output "addresses" {
-  description = "Internal addresses of created VMS."
-  value       = null
-}
