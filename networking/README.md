@@ -32,6 +32,7 @@ The emulated on-premises environment can be used to test access to different ser
 <a href="./shared-vpc-gke/" title="Shared VPC with GKE"><img src="./shared-vpc-gke/diagram.png" align="left" width="280px"></a> This [example](./shared-vpc-gke/) shows how to configure a Shared VPC, including the specific IAM configurations needed for GKE, and to give different level of access to the VPC subnets to different identities.
 
 It is meant to be used as a starting point for most Shared VPC configurations, and to be integrated to the above examples where Shared VPC is needed in more complex network topologies.
+<br clear="left">
 
 ### ILB as next hop
 
