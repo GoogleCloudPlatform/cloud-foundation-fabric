@@ -1,0 +1,72 @@
+#cloud-config
+
+# Copyright 2020 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+write_files:
+  - path: /etc/sysctl.conf
+    permissions: "0644"
+    owner: root
+    content: |
+      net.ipv4.ip_forward = 1
+      net.ipv6.conf.all.forwarding = 1
+      net.ipv4.conf.all.accept_redirects = 0
+      net.ipv4.conf.all.send_redirects = 0
+      # https://tldp.org/HOWTO/Adv-Routing-HOWTO/lartc.kernel.rpf.html
+      net.ipv4.conf.all.rp_filter = 2
+      net.ipv4.conf.ens4.rp_filter = 2
+      net.ipv4.conf.ens5.rp_filter = 2
+  - path: /etc/netplan/99-nic2-routing.yaml
+    permissions: "0644"
+    owner: root
+    content: |
+      network:
+        ethernets:
+          ens5:
+            dhcp4: true
+            routes:
+            - to: 0.0.0.0/0
+              via: ${gw_right}
+              table: 102
+            routing-policy:
+              - from: ${ip_cidr_right}
+                to: 35.191.0.0/16
+                table: 102
+              - from: ${ip_cidr_right}
+                to: 130.211.0.0/22
+                table: 102
+        version: 2
+  - path: /root/start.sh
+    permissions: "0755"
+    owner: root
+    content: |
+      #!/bin/bash
+      iptables -D INPUT -s 35.191.0.0/16 -j REJECT
+      iptables -D INPUT -s 130.211.0.0/22 -j REJECT
+  - path: /root/stop.sh
+    permissions: "0755"
+    owner: root
+    content: |
+      #!/bin/bash
+      iptables -I INPUT -s 35.191.0.0/16 -j REJECT
+      iptables -I INPUT -s 130.211.0.0/22 -j REJECT
+package_update: true
+package_upgrade: true
+package_reboot_if_required: true
+packages:
+  - iftop
+  - tcpdump
+runcmd:
+  - sysctl -p
+  - netplan apply

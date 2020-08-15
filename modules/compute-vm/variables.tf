@@ -60,6 +60,12 @@ variable "boot_disk" {
   }
 }
 
+variable "can_ip_forward" {
+  description = "Enable IP forwarding."
+  type        = bool
+  default     = false
+}
+
 variable "encryption" {
   description = "Encryption options. Only one of kms_key_self_link and disk_encryption_key_raw may be set. If needed, you can specify to encrypt or not the boot disk."
   type = object({
@@ -120,6 +126,12 @@ variable "metadata" {
   default     = {}
 }
 
+variable "metadata_list" {
+  description = "List of instance metadata that will be cycled through. Ignored for template use."
+  type        = list(map(string))
+  default     = []
+}
+
 variable "min_cpu_platform" {
   description = "Minimum CPU platform."
   type        = string
@@ -148,13 +160,11 @@ variable "options" {
   description = "Instance options."
   type = object({
     allow_stopping_for_update = bool
-    can_ip_forward            = bool
     deletion_protection       = bool
     preemptible               = bool
   })
   default = {
     allow_stopping_for_update = true
-    can_ip_forward            = false
     deletion_protection       = false
     preemptible               = false
   }

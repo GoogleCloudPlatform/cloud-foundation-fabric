@@ -34,6 +34,16 @@ variable "instance_count" {
   default = 1
 }
 
+variable "metadata" {
+  type    = map(string)
+  default = {}
+}
+
+variable "metadata_list" {
+  type    = list(map(string))
+  default = []
+}
+
 variable "network_interfaces" {
   type = list(object({
     nat        = bool

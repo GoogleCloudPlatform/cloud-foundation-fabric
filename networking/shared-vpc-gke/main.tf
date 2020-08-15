@@ -26,6 +26,13 @@ module "project-host" {
   prefix          = var.prefix
   name            = "net"
   services        = concat(var.project_services, ["dns.googleapis.com"])
+  shared_vpc_config = {
+    enabled = true
+    service_projects = [
+      module.project-svc-gce.project_id,
+      module.project-svc-gke.project_id
+    ]
+  }
   iam_roles = [
     "roles/container.hostServiceAgentUser", "roles/owner"
   ]
@@ -70,11 +77,15 @@ module "project-svc-gke" {
   services        = var.project_services
   iam_roles = [
     "roles/container.developer",
+    "roles/logging.logWriter",
+    "roles/monitoring.metricWriter",
     "roles/owner",
   ]
   iam_members = {
-    "roles/owner"               = var.owners_gke
-    "roles/container.developer" = [module.vm-bastion.service_account_iam_email]
+    "roles/container.developer"     = [module.vm-bastion.service_account_iam_email],
+    "roles/logging.logWriter"       = [module.service-account-gke-node.iam_email],
+    "roles/monitoring.metricWriter" = [module.service-account-gke-node.iam_email],
+    "roles/owner"                   = var.owners_gke
   }
 }
 
@@ -85,14 +96,9 @@ module "project-svc-gke" {
 # subnet IAM bindings control which identities can use the individual subnets
 
 module "vpc-shared" {
-  source          = "../../modules/net-vpc"
-  project_id      = module.project-host.project_id
-  name            = "shared-vpc"
-  shared_vpc_host = true
-  shared_vpc_service_projects = [
-    module.project-svc-gce.project_id,
-    module.project-svc-gke.project_id
-  ]
+  source     = "../../modules/net-vpc"
+  project_id = module.project-host.project_id
+  name       = "shared-vpc"
   subnets = [
     {
       ip_cidr_range      = var.ip_ranges.gce
@@ -236,10 +242,4 @@ module "service-account-gke-node" {
   source     = "../../modules/iam-service-accounts"
   project_id = module.project-svc-gke.project_id
   names      = ["gke-node"]
-  iam_project_roles = {
-    (module.project-svc-gke.project_id) = [
-      "roles/logging.logWriter",
-      "roles/monitoring.metricWriter",
-    ]
-  }
 }

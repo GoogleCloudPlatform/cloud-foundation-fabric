@@ -15,14 +15,6 @@
  */
 
 module "test" {
-  source               = "../../../../foundations/environments"
-  billing_account_id   = var.billing_account_id
-  environments         = var.environments
-  iam_audit_viewers    = var.iam_audit_viewers
-  iam_shared_owners    = var.iam_shared_owners
-  iam_terraform_owners = var.iam_terraform_owners
-  iam_xpn_config       = var.iam_xpn_config
-  organization_id      = var.organization_id
-  prefix               = var.prefix
-  root_node            = var.root_node
+  source     = "../../../../networking/hub-and-spoke-vpn"
+  project_id = var.project_id
 }

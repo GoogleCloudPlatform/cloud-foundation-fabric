@@ -2,8 +2,7 @@
 
 This repository provides **end-to-end examples** and a **suite of Terraform modules** for Google Cloud, which support different use cases:
 
-- starter kits used to bootstrap real-world cloud foundations and infrastructure
-- reference examples used to deep dive on network patterns or product features
+- starter kits used to bootstrap real-world cloud foundations, and reference examples used to deep dive on network patterns or product features
 - composable modules that support quick prototyping and testing
 - a comprehensive source of lean modules that lend themselves well to changes
 
@@ -13,16 +12,16 @@ Both the examples and modules require some measure of Terraform skills to be use
 
 ## End-to-end examples
 
-The examples in this repository are split in two main sections: **foundational examples** that bootstrap the organizational hierarchy and automation prerequisites, and **infrastructure scenarios** that implement core networking patterns or features.
+The examples in this repository are split in several main sections: **foundational examples** that bootstrap the organizational hierarchy and automation prerequisites, **networking examples** that implement core patterns or features, **data solutions examples** that demonstrate how to integrate data services in complete scenarios, and **cloud operations examples** that leverage specific products to meet specific operational needs.
 
 Currently available examples:
 
 - **foundations** - [single level hierarchy](./foundations/environments/) (environments), [multiple level hierarchy](./foundations/business-units/) (business units + environments)
-- **infrastructure** - [hub and spoke via peering](./infrastructure/hub-and-spoke-peering/), [hub and spoke via VPN](./infrastructure/hub-and-spoke-vpn/), [DNS and Google Private Access for on-premises](./infrastructure/onprem-google-access-dns/), [Shared VPC with GKE support](./infrastructure/shared-vpc-gke/)
+- **networking** - [hub and spoke via peering](./networking/hub-and-spoke-peering/), [hub and spoke via VPN](./networking/hub-and-spoke-vpn/), [DNS and Google Private Access for on-premises](./networking/onprem-google-access-dns/), [Shared VPC with GKE support](./networking/shared-vpc-gke/), [ILB as next hop](./networking/ilb-next-hop)
 - **data solutions** - [GCE/GCS CMEK via centralized Cloud KMS](./data-solutions/cmek-via-centralized-kms/), [Cloud Storage to Bigquery with Cloud Dataflow](./data-solutions/gcs-to-bq-with-dataflow/)
 - **cloud operations** - [Resource tracking and remediation via Cloud Asset feeds](.//cloud-operations/asset-inventory-feed-remediation), [Granular Cloud DNS IAM via Service Directory](./cloud-operations/dns-fine-grained-iam)
 
-For more information see the README files in the [foundations](./foundations/), [infrastructure](./infrastructure/), [data solutions](./data-solutions/) and [cloud operations](./cloud-operations/) folders.
+For more information see the README files in the [foundations](./foundations/), [networking](./networking/), [data solutions](./data-solutions/) and [cloud operations](./cloud-operations/) folders.
 
 ## Modules
 
