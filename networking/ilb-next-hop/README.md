@@ -1,4 +1,4 @@
-# Internal Load Balancer for Gateways
+# Internal Load Balancer as Next Hop
 
 This example bootstraps a minimal infrastructure for testing [ILB as next hop](https://cloud.google.com/load-balancing/docs/internal/ilb-next-hop-overview),  using simple Linux gateway VMS between two VPCs, to emulate virtual appliances.
 
