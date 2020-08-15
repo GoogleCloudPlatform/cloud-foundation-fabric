@@ -182,6 +182,15 @@ variable "peering_config" {
   default = null
 }
 
+variable "peering_config_shared_vpc" {
+  description = "Configure peering with a shared VPC."
+  type = object({
+    project_id = string
+    network    = string
+  })
+  default = null
+}
+
 variable "pod_security_policy" {
   description = "Enable the PodSecurityPolicy feature."
   type        = bool

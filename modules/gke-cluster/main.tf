@@ -22,6 +22,8 @@ locals {
     google_container_cluster.cluster.private_cluster_config.0.peering_name,
     null
   )
+  peering_project_id = try (var.peering_config_shared_vpc.project_id, "")
+  peering_network = try (var.peering_config_shared_vpc.network, "")
 }
 
 resource "google_container_cluster" "cluster" {
@@ -218,9 +220,9 @@ resource "google_container_cluster" "cluster" {
 
 resource "google_compute_network_peering_routes_config" "gke_master" {
   count                = local.is_private && var.peering_config != null ? 1 : 0
-  project              = var.project_id
+  project              = local.peering_project_id == "" ? var.project_id : local.peering_project_id
   peering              = local.peering
-  network              = var.project_id == google_container_cluster.cluster.project ? element(reverse(split("/", var.network)), 0) : var.network
+  network              = local.peering_network == "" ? element(reverse(split("/", var.network)), 0) : local.peering_network
   import_custom_routes = var.peering_config.import_routes
   export_custom_routes = var.peering_config.export_routes
 }
