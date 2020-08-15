@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 - **incompatible change** the top-level `infrastructure` folder has been renamed to `networking`
 - add end-to-end example for ILB as next hop
 - add basic tests for `foundations` and `networking` end-to-end examples
+- fix Shared VPC end-to-end example and documentation
 
 ## [2.8.0] - 2020-08-01
 
