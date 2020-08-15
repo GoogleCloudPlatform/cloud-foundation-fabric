@@ -56,7 +56,7 @@ watch '\
 
 A sample testing session using `tmux`:
 
-<a href="./test_session.png" title="Test session screenshot"><img src="./test_session.png" width="640px" alt="Test session screenshot"></img>
+<a href="https://raw.githubusercontent.com/terraform-google-modules/cloud-foundation-fabric/master/networking/ilb-next-hop/test_session.png" title="Test session screenshot"><img src="./test_session.png" width="640px" alt="Test session screenshot"></img>
 
 <!-- BEGIN TFDOC -->
 ## Variables
