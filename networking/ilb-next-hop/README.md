@@ -73,7 +73,4 @@ A sample testing session using `tmux`:
 
 ## Outputs
 
-| name | description | sensitive |
-|---|---|:---:|
-| addresses | Internal addresses of created VMS. |  |
 <!-- END TFDOC -->
