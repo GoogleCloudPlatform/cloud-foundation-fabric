@@ -23,6 +23,10 @@ write_files:
       net.ipv6.conf.all.forwarding = 1
       net.ipv4.conf.all.accept_redirects = 0
       net.ipv4.conf.all.send_redirects = 0
+      # https://tldp.org/HOWTO/Adv-Routing-HOWTO/lartc.kernel.rpf.html
+      net.ipv4.conf.all.rp_filter = 2
+      net.ipv4.conf.ens4.rp_filter = 2
+      net.ipv4.conf.ens5.rp_filter = 2
   - path: /etc/netplan/99-nic2-routing.yaml
     permissions: "0644"
     owner: root
