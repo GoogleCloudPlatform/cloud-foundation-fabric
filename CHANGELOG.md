@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [3.0.0] - 2020-08-15
+
+- **incompatible change** the top-level `infrastructure` folder has been renamed to `networking`
+- add end-to-end example for ILB as next hop
+
 ## [2.8.0] - 2020-08-01
 
 - fine-grained Cloud DNS IAM via Service Directory example
@@ -156,7 +161,8 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.8.0...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.0.0...HEAD
+[3.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.8.0...v3.0.0
 [2.8.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.7.1...v2.8.0
 [2.7.1]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.7.0...v2.7.1
 [2.7.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.6.0...v2.7.0
