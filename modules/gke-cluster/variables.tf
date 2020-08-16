@@ -178,6 +178,7 @@ variable "peering_config" {
   type = object({
     export_routes = bool
     import_routes = bool
+    project_id    = string
   })
   default = null
 }

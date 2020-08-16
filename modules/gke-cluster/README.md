@@ -58,7 +58,7 @@ module "cluster-1" {
 | *min_master_version* | Minimum version of the master, defaults to the version of the most recent official release. | <code title="">string</code> |  | <code title="">null</code> |
 | *monitoring_service* | Monitoring service (disable with an empty string). | <code title="">string</code> |  | <code title="">monitoring.googleapis.com/kubernetes</code> |
 | *node_locations* | Zones in which the cluster's nodes are located. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
-| *peering_config* | Configure peering with the master VPC for private clusters. | <code title="object&#40;&#123;&#10;export_routes &#61; bool&#10;import_routes &#61; bool&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
+| *peering_config* | Configure peering with the master VPC for private clusters. | <code title="object&#40;&#123;&#10;export_routes &#61; bool&#10;import_routes &#61; bool&#10;project_id &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 | *pod_security_policy* | Enable the PodSecurityPolicy feature. | <code title="">bool</code> |  | <code title="">null</code> |
 | *private_cluster_config* | Enable and configure private cluster, private nodes must be true if used. | <code title="object&#40;&#123;&#10;enable_private_nodes    &#61; bool&#10;enable_private_endpoint &#61; bool&#10;master_ipv4_cidr_block  &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 | *release_channel* | Release channel for GKE upgrades. | <code title="">string</code> |  | <code title="">null</code> |
