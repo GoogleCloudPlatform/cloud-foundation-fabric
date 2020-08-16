@@ -178,15 +178,7 @@ variable "peering_config" {
   type = object({
     export_routes = bool
     import_routes = bool
-  })
-  default = null
-}
-
-variable "peering_config_shared_vpc" {
-  description = "Configure peering with a shared VPC."
-  type = object({
-    project_id = string
-    network    = string
+    project_id    = string
   })
   default = null
 }
