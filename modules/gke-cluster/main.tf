@@ -22,7 +22,11 @@ locals {
     google_container_cluster.cluster.private_cluster_config.0.peering_name,
     null
   )
-  peering_project_id = try(var.peering_config.project_id, "") == "" ? var.project_id                    : (var.peering_config.project_id == "" ? var.project_id : var.peering_config.project_id)
+  peering_project_id = (
+    try(var.peering_config.project_id, null) == null
+    ? var.project_id
+    : var.peering_config.project_id
+  )
 }
 
 resource "google_container_cluster" "cluster" {
