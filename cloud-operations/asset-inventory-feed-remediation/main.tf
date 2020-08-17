@@ -15,21 +15,22 @@
  */
 
 locals {
-  role_id   = "projects/${module.project.project_id}/roles/${local.role_name}"
+  role_id   = "projects/${var.project_id}/roles/${local.role_name}"
   role_name = "feeds_cf"
 }
 
 module "project" {
   source         = "../../modules/project"
   name           = var.project_id
-  project_create = false
+  project_create = var.project_create
   services = [
     "cloudasset.googleapis.com",
     "compute.googleapis.com",
     "cloudfunctions.googleapis.com"
   ]
   service_config = {
-    disable_on_destroy = false, disable_dependent_services = false
+    disable_on_destroy         = false,
+    disable_dependent_services = false
   }
   custom_roles = {
     (local.role_name) = [
@@ -39,6 +40,10 @@ module "project" {
       "compute.zoneOperations.get",
       "compute.zoneOperations.list"
     ]
+  }
+  iam_roles = [local.role_id]
+  iam_members = {
+    (local.role_id) = [module.service-account.iam_email]
   }
 }
 
@@ -70,10 +75,10 @@ module "pubsub" {
 }
 
 module "service-account" {
-  source            = "../../modules/iam-service-accounts"
-  project_id        = module.project.project_id
-  names             = ["${var.name}-cf"]
-  iam_project_roles = { (module.project.project_id) = [local.role_id] }
+  source     = "../../modules/iam-service-accounts"
+  project_id = module.project.project_id
+  names      = ["${var.name}-cf"]
+  # iam_project_roles = { (module.project.project_id) = [local.role_id] }
 }
 
 module "cf" {

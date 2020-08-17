@@ -24,14 +24,15 @@ locals {
 module "project" {
   source         = "../../modules/project"
   name           = var.project_id
-  project_create = false
+  project_create = var.project_create
   services = [
     "compute.googleapis.com",
     "dns.googleapis.com",
     "servicedirectory.googleapis.com"
   ]
   service_config = {
-    disable_on_destroy = false, disable_dependent_services = false
+    disable_on_destroy         = false,
+    disable_dependent_services = false
   }
 }
 

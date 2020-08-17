@@ -26,6 +26,12 @@ variable "name" {
   default     = "asset-feed"
 }
 
+variable "project_create" {
+  description = "Create project instead ofusing an existing one."
+  type        = bool
+  default     = false
+}
+
 variable "project_id" {
   description = "Project id that references existing project."
   type        = string

@@ -20,6 +20,12 @@ variable "name" {
   default     = "dns-sd-test"
 }
 
+variable "project_create" {
+  description = "Create project instead ofusing an existing one."
+  type        = bool
+  default     = false
+}
+
 variable "project_id" {
   description = "Existing project id."
   type        = string
