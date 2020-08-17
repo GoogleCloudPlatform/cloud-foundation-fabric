@@ -16,7 +16,9 @@
 
 output "bucket" {
   description = "Bucket resource (only if auto-created)."
-  value       = var.bucket_config == null ? null : google_storage_bucket.bucket.0
+  value       = try(
+    var.bucket_config == null ? null : google_storage_bucket.bucket.0, null
+  )
 }
 
 output "bucket_name" {
