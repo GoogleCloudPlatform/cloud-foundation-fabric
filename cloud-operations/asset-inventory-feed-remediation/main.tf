@@ -109,7 +109,7 @@ module "simple-vm-example" {
   name       = var.name
   network_interfaces = [{
     network    = module.vpc.self_link,
-    subnetwork = module.vpc.subnet_self_links["${var.region}/${var.name}-default"],
+    subnetwork = try(module.vpc.subnet_self_links["${var.region}/${var.name}-default"], ""),
     nat        = false,
     addresses  = null
   }]
