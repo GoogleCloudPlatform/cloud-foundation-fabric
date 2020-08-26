@@ -171,7 +171,7 @@ All notable changes to this project will be documented in this file.
 - merge development branch with suite of new modules and end-to-end examples
 
 [Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.1.1...HEAD
-[3.1.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.1.0...v3.1.1
+[3.1.1]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.1.0...v3.1.1
 [3.1.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.0.0...v3.1.0
 [3.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.8.0...v3.0.0
 [2.8.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.7.1...v2.8.0
