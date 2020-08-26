@@ -21,7 +21,7 @@ output "project_id" {
     google_project_organization_policy.boolean,
     google_project_organization_policy.list,
     google_project_service.project_services,
-    google_compute_shared_vpc_service_project
+    google_compute_shared_vpc_service_project.service_projects
   ]
 }
 
@@ -32,7 +32,7 @@ output "name" {
     google_project_organization_policy.boolean,
     google_project_organization_policy.list,
     google_project_service.project_services,
-    google_compute_shared_vpc_service_project
+    google_compute_shared_vpc_service_project.service_projects
   ]
 }
 
@@ -43,7 +43,7 @@ output "number" {
     google_project_organization_policy.boolean,
     google_project_organization_policy.list,
     google_project_service.project_services,
-    google_compute_shared_vpc_service_project
+    google_compute_shared_vpc_service_project.service_projects
   ]
 }
 
