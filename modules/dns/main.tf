@@ -132,8 +132,8 @@ resource "google_dns_managed_zone" "public" {
 }
 
 data "google_dns_keys" "dns_keys" {
-  count        = var.dnssec_config == {} || var.type != "public" ? 0 : 1
-  managed_zone = google_dns_managed_zone.public.0.id
+  count        = var.zone_create && ( var.dnssec_config == {} || var.type != "public" ) ? 0 : 1
+  managed_zone = local.zone.id
 }
 
 resource "google_dns_record_set" "cloud-static-records" {
