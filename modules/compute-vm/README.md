@@ -24,6 +24,7 @@ module "simple-vm-example" {
     subnetwork = local.subnet_self_link,
     nat        = false,
     addresses  = null
+    alias_ips  = null
   }]
   service_account_create = true
   instance_count = 1
@@ -45,6 +46,7 @@ module "kms-vm-example" {
     subnetwork = local.subnet_self_link,
     nat        = false,
     addresses  = null
+    alias_ips  = null
   }]
   attached_disks = [
     {
@@ -89,6 +91,7 @@ module "cos-test" {
     subnetwork = local.subnet_self_link,
     nat        = false,
     addresses  = null
+    alias_ips  = null
   }]
   instance_count = 1
   boot_disk      = {
@@ -119,6 +122,7 @@ module "instance-group" {
     subnetwork = local.subnetwork_self_link,
     nat        = false,
     addresses  = null
+    alias_ips  = null
   }]
   boot_disk = {
     image = "projects/cos-cloud/global/images/family/cos-stable"
@@ -141,7 +145,7 @@ module "instance-group" {
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
 | name | Instances base name. | <code title="">string</code> | ✓ |  |
-| network_interfaces | Network interfaces configuration. Use self links for Shared VPC, set addresses to null if not needed. | <code title="list&#40;object&#40;&#123;&#10;nat        &#61; bool&#10;network    &#61; string&#10;subnetwork &#61; string&#10;addresses &#61; object&#40;&#123;&#10;internal &#61; list&#40;string&#41;&#10;external &#61; list&#40;string&#41;&#10;&#125;&#41;&#10;&#125;&#41;&#41;">list(object({...}))</code> | ✓ |  |
+| network_interfaces | Network interfaces configuration. Use self links for Shared VPC, set addresses and alias_ips to null if not needed. | <code title="list&#40;object&#40;&#123;&#10;nat        &#61; bool&#10;network    &#61; string&#10;subnetwork &#61; string&#10;addresses &#61; object&#40;&#123;&#10;internal &#61; list&#40;string&#41;&#10;external &#61; list&#40;string&#41;&#10;&#125;&#41;&#10;alias_ips &#61; list&#40;object&#40;&#123;&#10;ip_cidr_range         &#61; string&#10;subnetwork_range_name &#61; string&#10;&#125;&#41;&#41;&#10;&#125;&#41;&#41;">list(object({...}))</code> | ✓ |  |
 | project_id | Project id. | <code title="">string</code> | ✓ |  |
 | region | Compute region. | <code title="">string</code> | ✓ |  |
 | *attached_disk_defaults* | Defaults for attached disks options. | <code title="object&#40;&#123;&#10;auto_delete &#61; bool&#10;mode        &#61; string&#10;type &#61; string&#10;source      &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;auto_delete &#61; true&#10;source      &#61; null&#10;mode        &#61; &#34;READ_WRITE&#34;&#10;type &#61; &#34;pd-ssd&#34;&#10;&#125;">...</code> |

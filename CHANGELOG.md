@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+- add alias IP support in `cloud-vm` module
 
 ## [3.1.1] - 2020-08-26
 - fix error in `project` module
