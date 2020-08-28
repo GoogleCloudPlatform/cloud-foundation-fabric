@@ -18,7 +18,7 @@ output "org_id" {
   description = "Organization id dependent on module resources."
   value       = var.org_id
   depends_on = [
-    google_organization_iam_audit_config,
+    google_organization_iam_audit_config.config,
     google_organization_iam_binding.authoritative,
     google_organization_iam_custom_role.roles,
     google_organization_iam_member.additive,
