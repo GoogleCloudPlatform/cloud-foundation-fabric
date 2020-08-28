@@ -249,10 +249,11 @@ module "vm-spoke-1" {
   region     = var.regions.b
   name       = "spoke-1-test"
   network_interfaces = [{
-    network    = module.vpc-spoke-1.self_link,
+    network    = module.vpc-spoke-1.self_link
     subnetwork = module.vpc-spoke-1.subnet_self_links["${var.regions.b}/spoke-1-b"]
-    nat        = false,
+    nat        = false
     addresses  = null
+    alias_ips  = null
   }]
   tags     = ["ssh"]
   metadata = { startup-script = local.vm-startup-script }
@@ -264,10 +265,11 @@ module "vm-spoke-2" {
   region     = var.regions.b
   name       = "spoke-2-test"
   network_interfaces = [{
-    network    = module.vpc-spoke-2.self_link,
-    subnetwork = module.vpc-spoke-2.subnet_self_links["${var.regions.b}/spoke-2-b"],
-    nat        = false,
+    network    = module.vpc-spoke-2.self_link
+    subnetwork = module.vpc-spoke-2.subnet_self_links["${var.regions.b}/spoke-2-b"]
+    nat        = false
     addresses  = null
+    alias_ips  = null
   }]
   tags     = ["ssh"]
   metadata = { startup-script = local.vm-startup-script }

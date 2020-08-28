@@ -20,9 +20,9 @@ module "simple-vm-example" {
   region     = "europe-west1"
   name       = "test"
   network_interfaces = [{
-    network    = local.network_self_link,
-    subnetwork = local.subnet_self_link,
-    nat        = false,
+    network    = local.network_self_link
+    subnetwork = local.subnet_self_link
+    nat        = false
     addresses  = null
     alias_ips  = null
   }]
@@ -42,9 +42,9 @@ module "kms-vm-example" {
   region     = local.region
   name       = "kms-test"
   network_interfaces = [{
-    network    = local.network_self_link,
-    subnetwork = local.subnet_self_link,
-    nat        = false,
+    network    = local.network_self_link
+    subnetwork = local.subnet_self_link
+    nat        = false
     addresses  = null
     alias_ips  = null
   }]
@@ -87,9 +87,9 @@ module "cos-test" {
   region     = "europe-west1"
   name       = "test"
   network_interfaces = [{
-    network    = local.network_self_link,
-    subnetwork = local.subnet_self_link,
-    nat        = false,
+    network    = local.network_self_link
+    subnetwork = local.subnet_self_link
+    nat        = false
     addresses  = null
     alias_ips  = null
   }]
@@ -118,9 +118,9 @@ module "instance-group" {
   region     = "europe-west1"
   name       = "ilb-test"
   network_interfaces = [{
-    network    = local.network_self_link,
-    subnetwork = local.subnetwork_self_link,
-    nat        = false,
+    network    = local.network_self_link
+    subnetwork = local.subnetwork_self_link
+    nat        = false
     addresses  = null
     alias_ips  = null
   }]

@@ -182,10 +182,11 @@ module "vm-bastion" {
   region     = var.region
   name       = "bastion"
   network_interfaces = [{
-    network    = module.vpc-shared.self_link,
-    subnetwork = lookup(module.vpc-shared.subnet_self_links, "${var.region}/gce", null),
-    nat        = false,
+    network    = module.vpc-shared.self_link
+    subnetwork = lookup(module.vpc-shared.subnet_self_links, "${var.region}/gce", null)
+    nat        = false
     addresses  = null
+    alias_ips  = null
   }]
   instance_count = 1
   tags           = ["ssh"]

@@ -108,10 +108,11 @@ module "simple-vm-example" {
   region     = var.region
   name       = var.name
   network_interfaces = [{
-    network    = module.vpc.self_link,
-    subnetwork = try(module.vpc.subnet_self_links["${var.region}/${var.name}-default"], ""),
-    nat        = false,
+    network    = module.vpc.self_link
+    subnetwork = try(module.vpc.subnet_self_links["${var.region}/${var.name}-default"], "")
+    nat        = false
     addresses  = null
+    alias_ips  = null
   }]
   tags           = ["${var.project_id}-test-feed", "shared-test-feed"]
   instance_count = 1
