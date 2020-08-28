@@ -38,6 +38,7 @@ module "private-dns" {
 | *recordsets* | List of DNS record objects to manage. | <code title="list&#40;object&#40;&#123;&#10;name    &#61; string&#10;type &#61; string&#10;ttl     &#61; number&#10;records &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">list(object({...}))</code> |  | <code title="">[]</code> |
 | *service_directory_namespace* | Service directory namespace id (URL), only valid for 'service-directory' zone types. | <code title="">string</code> |  | <code title="">null</code> |
 | *type* | Type of zone to create, valid values are 'public', 'private', 'forwarding', 'peering', 'service-directory'. | <code title="">string</code> |  | <code title="">private</code> |
+| *zone_create* | Create zone. When set to false, uses a data source to reference existing project. | <code title="">bool</code> |  | <code title="">true</code> |
 
 ## Outputs
 
