@@ -30,17 +30,13 @@ Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/c
 |---|---|:---: |:---:|:---:|
 | project_id | Project id that references existing project. | <code title="">string</code> | ✓ |  |
 | *bundle_path* | Path used to write the intermediate Cloud Function code bundle. | <code title="">string</code> |  | <code title="">./bundle.zip</code> |
-| *name* | Arbitrary string used to name created resources. | <code title="">string</code> |  | <code title="">asset-feed</code> |
+| *name* | Arbitrary string used to name created resources. | <code title="">string</code> |  | <code title="">quota-monitor</code> |
+| *project_create* | Create project instead ofusing an existing one. | <code title="">bool</code> |  | <code title="">false</code> |
+| *quota_config* | Cloud function configuration. | <code title="object&#40;&#123;&#10;filters  &#61; list&#40;string&#41;&#10;projects &#61; list&#40;string&#41;&#10;regions  &#61; list&#40;string&#41;&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;filters  &#61; null&#10;projects &#61; null&#10;regions  &#61; null&#10;&#125;">...</code> |
 | *region* | Compute region used in the example. | <code title="">string</code> |  | <code title="">europe-west1</code> |
+| *schedule_config* | Schedule timer configuration in crontab format | <code title="">string</code> |  | <code title="">0 * * * *</code> |
 
 ## Outputs
 
-| name | description | sensitive |
-|---|---|:---:|
-| cf_logs | Cloud Function logs read command. |  |
-| feed_create | Feed gcloud command. |  |
-| subscription_pull | Subscription pull command. |  |
-| tag_add | Instance add tag command. |  |
-| tag_show | Instance add tag command. |  |
 <!-- END TFDOC -->
 
