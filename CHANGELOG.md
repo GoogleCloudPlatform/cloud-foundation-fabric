@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 - add alias IP support in `cloud-vm` module
 - add tests for `data-solutions` examples
 - fix apply errors on dynamic resources in dataflow example
+- make zone creation optional in `dns` module
 
 ## [3.1.1] - 2020-08-26
 
