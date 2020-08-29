@@ -63,12 +63,6 @@ variable "vpc_ip_cidr_range" {
   default     = "10.0.0.0/20"
 }
 
-variable "zone" {
-  description = "The zone where resources will be deployed."
-  type        = string
-  default     = "europe-west1-b"
-}
-
 variable "ssh_source_ranges" {
   description = "IP CIDR ranges that will be allowed to connect via SSH to the onprem instance."
   type        = list(string)

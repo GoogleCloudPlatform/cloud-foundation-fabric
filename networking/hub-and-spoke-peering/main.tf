@@ -149,10 +149,11 @@ module "vm-spoke-1" {
   region     = var.region
   name       = "spoke-1-test"
   network_interfaces = [{
-    network    = module.vpc-spoke-1.self_link,
+    network    = module.vpc-spoke-1.self_link
     subnetwork = module.vpc-spoke-1.subnet_self_links["${var.region}/spoke-1-default"]
-    nat        = false,
+    nat        = false
     addresses  = null
+    alias_ips  = null
   }]
   metadata               = { startup-script = local.vm-startup-script }
   service_account        = module.service-account-gce.email
@@ -166,10 +167,11 @@ module "vm-spoke-2" {
   region     = var.region
   name       = "spoke-2-test"
   network_interfaces = [{
-    network    = module.vpc-spoke-2.self_link,
+    network    = module.vpc-spoke-2.self_link
     subnetwork = module.vpc-spoke-2.subnet_self_links["${var.region}/spoke-2-default"]
-    nat        = false,
+    nat        = false
     addresses  = null
+    alias_ips  = null
   }]
   metadata               = { startup-script = local.vm-startup-script }
   service_account        = module.service-account-gce.email

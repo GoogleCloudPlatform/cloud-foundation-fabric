@@ -144,7 +144,7 @@ variable "name" {
 }
 
 variable "network_interfaces" {
-  description = "Network interfaces configuration. Use self links for Shared VPC, set addresses to null if not needed."
+  description = "Network interfaces configuration. Use self links for Shared VPC, set addresses and alias_ips to null if not needed."
   type = list(object({
     nat        = bool
     network    = string
@@ -153,6 +153,10 @@ variable "network_interfaces" {
       internal = list(string)
       external = list(string)
     })
+    alias_ips = list(object({
+      ip_cidr_range         = string
+      subnetwork_range_name = string
+    }))
   }))
 }
 
