@@ -3,9 +3,13 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+
 - add alias IP support in `cloud-vm` module
+- add tests for `data-solutions` examples
+- fix apply errors on dynamic resources in dataflow example
 
 ## [3.1.1] - 2020-08-26
+
 - fix error in `project` module
 
 ## [3.1.0] - 2020-08-16
