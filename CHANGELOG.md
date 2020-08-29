@@ -4,10 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-- add alias IP support in `cloud-vm` module
+## [3.2.0] - 2020-08-29
+
+- **incompatible change** aadd alias IP support in `cloud-vm` module
 - add tests for `data-solutions` examples
 - fix apply errors on dynamic resources in dataflow example
 - make zone creation optional in `dns` module
+- new `quota-monitoring` end-to-end example in `cloud-operations`
 
 ## [3.1.1] - 2020-08-26
 
@@ -176,7 +179,8 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.1.1...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.2.0...HEAD
+[3.2.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.1.1...v3.2.0
 [3.1.1]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.1.0...v3.1.1
 [3.1.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.0.0...v3.1.0
 [3.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.8.0...v3.0.0
