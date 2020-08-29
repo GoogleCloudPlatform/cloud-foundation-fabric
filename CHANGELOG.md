@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ## [3.2.0] - 2020-08-29
 
-- **incompatible change** aadd alias IP support in `cloud-vm` module
+- **incompatible change** add alias IP support in `cloud-vm` module
 - add tests for `data-solutions` examples
 - fix apply errors on dynamic resources in dataflow example
 - make zone creation optional in `dns` module
