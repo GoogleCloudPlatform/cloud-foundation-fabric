@@ -19,10 +19,14 @@ locals {
     for record in var.recordsets :
     join("/", [record.name, record.type]) => record
   }
-  zone = try(
-    google_dns_managed_zone.non-public.0, try(
-      google_dns_managed_zone.public.0, null
-    )
+  zone = (
+    var.zone_create
+    ? try(
+    	google_dns_managed_zone.non-public.0, try(
+      	  google_dns_managed_zone.public.0, null
+    	)
+      )
+    : try(data.google_dns_managed_zone.public.0, null)
   )
   dns_keys = try(
     data.google_dns_keys.dns_keys.0, null
@@ -30,7 +34,7 @@ locals {
 }
 
 resource "google_dns_managed_zone" "non-public" {
-  count       = var.type != "public" ? 1 : 0
+  count      = (var.zone_create && var.type != "public" ) ? 1 : 0
   provider    = google-beta
   project     = var.project_id
   name        = var.name
@@ -89,8 +93,13 @@ resource "google_dns_managed_zone" "non-public" {
 
 }
 
+data "google_dns_managed_zone" "public" {
+  count      = var.zone_create ? 0 : 1
+  name = var.name
+}
+
 resource "google_dns_managed_zone" "public" {
-  count       = var.type == "public" ? 1 : 0
+  count      = (var.zone_create && var.type == "public" ) ? 1 : 0
   project     = var.project_id
   name        = var.name
   dns_name    = var.domain
@@ -123,8 +132,8 @@ resource "google_dns_managed_zone" "public" {
 }
 
 data "google_dns_keys" "dns_keys" {
-  count        = var.dnssec_config == {} || var.type != "public" ? 0 : 1
-  managed_zone = google_dns_managed_zone.public.0.id
+  count        = var.zone_create && ( var.dnssec_config == {} || var.type != "public" ) ? 0 : 1
+  managed_zone = local.zone.id
 }
 
 resource "google_dns_record_set" "cloud-static-records" {
