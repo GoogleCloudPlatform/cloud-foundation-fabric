@@ -17,7 +17,7 @@
 locals {
   projects = (
     var.quota_config.projects == null
-    ? [module.project.project_id]
+    ? [var.project_id]
     : var.quota_config.projects
   )
 }
