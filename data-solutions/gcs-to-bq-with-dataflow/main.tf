@@ -301,7 +301,6 @@ module "bigquery-dataset" {
     owner        = { role = "OWNER", type = "user_by_email" }
   }
   access_identities = {
-    reader-group = "caggioland.com"
     owner        = module.service-account-bq.email
   }
   encryption_key = module.kms.keys.key-bq.self_link
