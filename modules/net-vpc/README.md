@@ -127,6 +127,7 @@ module "vpc-host" {
 | *subnet_flow_logs* | Optional map of boolean to control flow logs (default is disabled), keyed by subnet 'region/name'. | <code title="map&#40;bool&#41;">map(bool)</code> |  | <code title="">{}</code> |
 | *subnet_private_access* | Optional map of boolean to control private Google access (default is enabled), keyed by subnet 'region/name'. | <code title="map&#40;bool&#41;">map(bool)</code> |  | <code title="">{}</code> |
 | *subnets* | The list of subnets being created | <code title="list&#40;object&#40;&#123;&#10;name               &#61; string&#10;ip_cidr_range      &#61; string&#10;name               &#61; string&#10;region             &#61; string&#10;secondary_ip_range &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">list(object({...}))</code> |  | <code title="">[]</code> |
+| *vpc_create* | Create VPC. When set to false, uses a data source to reference existing VPC. | <code title="">bool</code> |  | <code title="">true</code> |
 
 ## Outputs
 
