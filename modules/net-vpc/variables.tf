@@ -143,3 +143,9 @@ variable "subnet_private_access" {
   type        = map(bool)
   default     = {}
 }
+
+variable "vpc_create" {
+  description = "Create VPC. When set to false, uses a data source to reference existing VPC."
+  type        = bool
+  default     = true
+}
