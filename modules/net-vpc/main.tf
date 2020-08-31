@@ -92,7 +92,7 @@ resource "google_compute_network" "network" {
 resource "google_compute_network_peering" "local" {
   provider             = google-beta
   count                = var.peering_config == null ? 0 : 1
-  name                 = "${local.network.name}-${local.peer_network}"
+  name                 = "${var.name}-${local.peer_network}"
   network              = local.network.self_link
   peer_network         = var.peering_config.peer_vpc_self_link
   export_custom_routes = var.peering_config.export_routes
@@ -102,7 +102,7 @@ resource "google_compute_network_peering" "local" {
 resource "google_compute_network_peering" "remote" {
   provider             = google-beta
   count                = var.peering_config == null ? 0 : 1
-  name                 = "${local.peer_network}-${local.network.name}"
+  name                 = "${local.peer_network}-${var.name}"
   network              = var.peering_config.peer_vpc_self_link
   peer_network         = local.network.self_link
   export_custom_routes = var.peering_config.import_routes
