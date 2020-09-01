@@ -37,6 +37,7 @@ locals {
     : join("-", [var.prefix, lower(var.location), ""])
   )
   kms_keys = { for name in var.names : name => lookup(var.encryption_keys, name, null) }
+  retention_policy = { for name in var.names : name => lookup(var.retention_policies, name, null) }
 }
 
 resource "google_storage_bucket" "buckets" {
@@ -61,6 +62,14 @@ resource "google_storage_bucket" "buckets" {
 
     content {
       default_kms_key_name = local.kms_keys[each.key]
+    }
+  }
+
+  dynamic retention_policy {
+    for_each = local.retention_policy[each.key] == null ? [] : [""]
+    content {
+      retention_period = local.retention_policy[each.key]["retention_period"]
+      is_locked = lookup(local.retention_policy[each.key], "is_locked", false)
     }
   }
 }

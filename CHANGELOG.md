@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 - Fix GCS2BQ (issue: 128)
 - make VPC creation optional in `net-vpc` module to allow managing a pre-existing VPC
+- add retention_policy in `gcs` module
 
 ## [3.2.0] - 2020-08-29
 

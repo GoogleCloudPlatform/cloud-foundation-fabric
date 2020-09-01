@@ -83,3 +83,9 @@ variable "versioning" {
   type        = map(bool)
   default     = {}
 }
+
+variable "retention_policies" {
+  description = "Per-bucket retention policy."
+  type        = map(map(string))
+  default     = {}
+}
