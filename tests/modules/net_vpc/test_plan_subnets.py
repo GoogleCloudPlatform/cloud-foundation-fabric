@@ -58,7 +58,8 @@ def test_subnet_log_configs(plan_runner):
   for r in resources:
     if r['type'] != 'google_compute_subnetwork':
       continue
-    flow_logs[r['values']['name']] = r['values']['log_config']
+    flow_logs[r['values']['name']] = {key: r['values']['log_config'][key] for key in r['values']['log_config'].keys()
+                             & {'aggregation_interval', 'flow_sampling', 'metadata'}}
   assert flow_logs == {
       # enable, override one default option
       'a': [{
