@@ -31,6 +31,7 @@ resource "google_compute_address" "external" {
 }
 
 resource "google_compute_address" "internal" {
+  provider     = google-beta
   for_each     = var.internal_addresses
   project      = var.project_id
   name         = each.key
@@ -40,5 +41,6 @@ resource "google_compute_address" "internal" {
   subnetwork   = each.value.subnetwork
   address      = lookup(var.internal_address_addresses, each.key, null)
   network_tier = lookup(var.internal_address_tiers, each.key, null)
+  purpose      = lookup(var.internal_address_purposes, each.key, null)
   # labels       = lookup(var.internal_address_labels, each.key, {})
 }
