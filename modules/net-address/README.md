@@ -1,14 +1,46 @@
 # Net Address Reservation Module
 
-## Example
+This module allows reserving Compute Engine external, global, and internal addresses.
+
+## Examples
+
+### External and global addresses
 
 ```hcl
 module "addresses" {
   source     = "./modules/net-address"
   project_id = local.projects.host
   external_addresses = {
-    nat-1      = module.vpc.subnet_regions["default"],
-    vpn-remote = module.vpc.subnet_regions["default"],
+    nat-1      = var.region
+    vpn-remote = var.region
+  }
+  global_addresses = ["app-1", "app-2"]
+}
+```
+
+### Internal addresses
+
+```hcl
+module "addresses" {
+  source     = "./modules/net-address"
+  project_id = local.projects.host
+  internal_addresses = {
+    ilb-1      = {
+      region = var.region
+      subnetwork = module.vpc.subnet_self_links["${var.region}-test"]
+    }
+    ilb-2      = {
+      region = var.region
+      subnetwork = module.vpc.subnet_self_links["${var.region}-test"]
+    }
+  }
+  # optional configuration
+  internal_addresses_config = {
+    ilb-1 = {
+      address = null
+      purpose = "SHARED_LOADBALANCER_VIP"
+      tier = null
+    }
   }
 }
 ```
