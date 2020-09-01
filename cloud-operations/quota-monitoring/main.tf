@@ -66,6 +66,10 @@ module "cf" {
     source_dir  = "cf"
     output_path = var.bundle_path
   }
+  environment_variables = {
+    USE_WORKER_V2                         = "true"
+    PYTHON37_DRAIN_LOGS_ON_CRASH_WAIT_SEC = "5"
+  }
   service_account_create = true
   trigger_config = {
     event    = "google.pubsub.topic.publish"
