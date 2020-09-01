@@ -31,7 +31,6 @@ output "global_addresses" {
     address.name => {
       address   = address.address
       self_link = address.self_link
-      status    = address.status
     }
   }
 }

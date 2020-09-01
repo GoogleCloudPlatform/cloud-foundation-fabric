@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Google LLC
+ * Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-terraform {
-  required_version = ">= 0.12.6"
-  required_providers {
-    google-beta = "~> 3.28.0"
-  }
+module "test" {
+  source                    = "../../../../modules/net-address"
+  external_addresses        = var.external_addresses
+  global_addresses          = var.global_addresses
+  internal_addresses        = var.internal_addresses
+  internal_addresses_config = var.internal_addresses_config
+  project_id                = var.project_id
 }
