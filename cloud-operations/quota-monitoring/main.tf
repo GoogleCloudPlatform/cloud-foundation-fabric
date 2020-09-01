@@ -66,6 +66,8 @@ module "cf" {
     source_dir  = "cf"
     output_path = var.bundle_path
   }
+  # https://github.com/hashicorp/terraform-provider-archive/issues/40
+  # https://issuetracker.google.com/issues/155215191
   environment_variables = {
     USE_WORKER_V2                         = "true"
     PYTHON37_DRAIN_LOGS_ON_CRASH_WAIT_SEC = "5"
