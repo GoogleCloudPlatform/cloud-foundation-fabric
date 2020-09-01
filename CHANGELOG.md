@@ -18,6 +18,8 @@ All notable changes to this project will be documented in this file.
 
 - fix error in `project` module
 
+- **incompatible change** make HA VPN Gateway creation optional for `net-vpn-ha` module. Now an existing HA VPN Gateway can be used. Updating to the new version of the module will cause VPN Gateway recreation which can be handled by `terraform state rm/terraform import` operations.  
+
 ## [3.1.0] - 2020-08-16
 
 - **incompatible change** add support for specifying a different project id in the GKE cluster module; if using the `peering_config` variable, `peering_config.project_id` now needs to be explicitly set, a `null` value will reuse the `project_id` variable for the peering
