@@ -47,6 +47,12 @@ variable "internal_address_addresses" {
   default     = {}
 }
 
+variable "internal_address_purposes" {
+  description = "Optional purpose for internal addresses, keyed by name."
+  type        = map(string)
+  default     = {}
+}
+
 variable "internal_address_tiers" {
   description = "Optional network tiers for internal addresses, keyed by name."
   type        = map(string)
