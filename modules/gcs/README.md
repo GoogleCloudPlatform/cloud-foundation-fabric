@@ -93,9 +93,9 @@ module "buckets" {
 | *labels* | Labels to be attached to all buckets. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
 | *location* | Bucket location. | <code title="">string</code> |  | <code title="">EU</code> |
 | *prefix* | Prefix used to generate the bucket name. | <code title="">string</code> |  | <code title="">null</code> |
+| *retention_policies* | Per-bucket retention policy. | <code title="map&#40;map&#40;string&#41;&#41;">map(map(string))</code> |  | <code title="">{}</code> |
 | *storage_class* | Bucket storage class. | <code title="">string</code> |  | <code title="">MULTI_REGIONAL</code> |
 | *versioning* | Optional map to set versioning keyed by name, defaults to false. | <code title="map&#40;bool&#41;">map(bool)</code> |  | <code title="">{}</code> |
-| *retention_policies* | Optional map to set up retention policy keyed by bucket name. | <code title="map&#40;bool&#41;">map(map(string))</code> |  | <code title="">{}</code> |
 
 ## Outputs
 
