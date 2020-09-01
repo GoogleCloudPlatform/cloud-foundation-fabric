@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Google LLC
+ * Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,25 +15,16 @@
  */
 
 variable "external_addresses" {
-  description = "Map of external address regions, keyed by name."
-  type        = map(string)
-  default     = {}
+  type    = map(string)
+  default = {}
 }
 
-# variable "external_address_labels" {
-#   description = "Optional labels for external addresses, keyed by address name."
-#   type        = map(map(string))
-#   default     = {}
-# }
-
 variable "global_addresses" {
-  description = "List of global addresses to create."
-  type        = list(string)
-  default     = []
+  type    = list(string)
+  default = []
 }
 
 variable "internal_addresses" {
-  description = "Map of internal addresses to create, keyed by name."
   type = map(object({
     region     = string
     subnetwork = string
@@ -42,7 +33,6 @@ variable "internal_addresses" {
 }
 
 variable "internal_addresses_config" {
-  description = "Optional configuration for internal addresses, keyed by name. Unused options can be set to null."
   type = map(object({
     address = string
     purpose = string
@@ -51,13 +41,7 @@ variable "internal_addresses_config" {
   default = {}
 }
 
-# variable "internal_address_labels" {
-#   description = "Optional labels for internal addresses, keyed by address name."
-#   type        = map(map(string))
-#   default     = {}
-# }
-
 variable "project_id" {
-  description = "Project where the addresses will be created."
-  type        = string
+  type    = string
+  default = "my-project"
 }
