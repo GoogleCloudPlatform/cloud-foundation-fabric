@@ -3,9 +3,14 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
-- Fix GCS2BQ (issue: 128)
+
+## [3.3.0] - 2020-09-01
+
+- remove extra readers in `gcs-to-bq-with-dataflow` example (issue: 128)
 - make VPC creation optional in `net-vpc` module to allow managing a pre-existing VPC
+- make HA VPN gateway creation optional in `net-vpn-ha` module
 - add retention_policy in `gcs` module
+- refactor `net-address` module variables, and add support for internal address `purpose`
 
 ## [3.2.0] - 2020-08-29
 
@@ -184,7 +189,8 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.2.0...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.3.0...HEAD
+[3.3.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.2.0...v3.3.0
 [3.2.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.1.1...v3.2.0
 [3.1.1]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.1.0...v3.1.1
 [3.1.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.0.0...v3.1.0
