@@ -89,3 +89,9 @@ variable "retention_policies" {
   type        = map(map(string))
   default     = {}
 }
+
+variable "logging" {
+  description = "Per-bucket logging."
+  type        = map(map(string))
+  default     = {}
+}
