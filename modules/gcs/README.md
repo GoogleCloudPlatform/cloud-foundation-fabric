@@ -73,7 +73,12 @@ module "buckets" {
 
   retention_policies = {
     bucket-one = { retention_period = 100 , is_locked = true}
-    bucket-two = { retention_period = 900 }
+    bucket-two = { retention_period = 900 , is_locked = false}
+  }
+
+  logging_config = {
+    bucket-one = { log_bucket = bucket_name_for_logging , log_object_prefix = null}
+    bucket-two = { log_bucket = bucket_name_for_logging , log_object_prefix = "logs_for_bucket_two"}
   }
 }
 ```
@@ -92,8 +97,9 @@ module "buckets" {
 | *iam_roles* | IAM roles keyed by bucket name. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
 | *labels* | Labels to be attached to all buckets. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
 | *location* | Bucket location. | <code title="">string</code> |  | <code title="">EU</code> |
+| *logging* | Per-bucket logging. | <code title="map&#40;map&#40;string&#41;&#41;">map(object)</code> |  | <code title="">{}</code> |
 | *prefix* | Prefix used to generate the bucket name. | <code title="">string</code> |  | <code title="">null</code> |
-| *retention_policies* | Per-bucket retention policy. | <code title="map&#40;map&#40;string&#41;&#41;">map(map(string))</code> |  | <code title="">{}</code> |
+| *retention_policies* | Per-bucket retention policy. | <code title="map&#40;map&#40;string&#41;&#41;">map(object)</code> |  | <code title="">{}</code> |
 | *storage_class* | Bucket storage class. | <code title="">string</code> |  | <code title="">MULTI_REGIONAL</code> |
 | *versioning* | Optional map to set versioning keyed by name, defaults to false. | <code title="map&#40;bool&#41;">map(bool)</code> |  | <code title="">{}</code> |
 

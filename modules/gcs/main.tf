@@ -38,6 +38,7 @@ locals {
   )
   kms_keys = { for name in var.names : name => lookup(var.encryption_keys, name, null) }
   retention_policy = { for name in var.names : name => lookup(var.retention_policies, name, null) }
+  logging_config = { for name in var.names : name => lookup(var.logging_config, name, null) }
 }
 
 resource "google_storage_bucket" "buckets" {
@@ -69,7 +70,15 @@ resource "google_storage_bucket" "buckets" {
     for_each = local.retention_policy[each.key] == null ? [] : [""]
     content {
       retention_period = local.retention_policy[each.key]["retention_period"]
-      is_locked = lookup(local.retention_policy[each.key], "is_locked", false)
+      is_locked = local.retention_policy[each.key]["is_locked"]
+    }
+  }
+
+  dynamic logging {
+    for_each = local.logging_config[each.key] == null ? [] : [""]
+    content {
+      log_bucket = local.logging_config[each.key]["log_bucket"]
+      log_object_prefix = local.logging_config[each.key]["log_object_prefix"]
     }
   }
 }
