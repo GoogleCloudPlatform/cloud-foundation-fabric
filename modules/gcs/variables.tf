@@ -87,17 +87,17 @@ variable "versioning" {
 variable "retention_policies" {
   description = "Per-bucket retention policy."
   type = map(object({
-  		retention_period = number
-		is_locked        = bool
-	}))
-  default     = {}
+    retention_period = number
+    is_locked        = bool
+  }))
+  default = {}
 }
 
 variable "logging_config" {
   description = "Per-bucket logging."
   type = map(object({
-  		log_bucket = string
-  		log_object_prefix = string
-	}))
-  default     = {}
+    log_bucket        = string
+    log_object_prefix = string
+  }))
+  default = {}
 }
