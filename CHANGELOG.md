@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- add support for logging and better type for the `retention_policies` variable in `gcs` module
+
 ## [3.3.0] - 2020-09-01
 
 - remove extra readers in `gcs-to-bq-with-dataflow` example (issue: 128)
