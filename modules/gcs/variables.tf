@@ -90,8 +90,11 @@ variable "retention_policies" {
   default     = {}
 }
 
-variable "logging" {
+variable "logging_config" {
   description = "Per-bucket logging."
-  type        = map(map(string))
+  type = map(object({
+  		log_bucket = string
+  		log_object_prefix = string
+	}))
   default     = {}
 }
