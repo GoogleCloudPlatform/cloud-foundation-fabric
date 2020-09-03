@@ -86,7 +86,10 @@ variable "versioning" {
 
 variable "retention_policies" {
   description = "Per-bucket retention policy."
-  type        = map(map(string))
+  type = map(object({
+  		retention_period = number
+		is_locked        = bool
+	}))
   default     = {}
 }
 

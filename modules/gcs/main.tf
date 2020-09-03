@@ -70,7 +70,7 @@ resource "google_storage_bucket" "buckets" {
     for_each = local.retention_policy[each.key] == null ? [] : [""]
     content {
       retention_period = local.retention_policy[each.key]["retention_period"]
-      is_locked = lookup(local.retention_policy[each.key], "is_locked", false)
+      is_locked = local.retention_policy[each.key]["is_locked"]
     }
   }
 
