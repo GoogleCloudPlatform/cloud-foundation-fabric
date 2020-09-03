@@ -56,6 +56,15 @@ variable "location" {
   default     = "EU"
 }
 
+variable "logging_config" {
+  description = "Per-bucket logging."
+  type = map(object({
+    log_bucket        = string
+    log_object_prefix = string
+  }))
+  default = {}
+}
+
 variable "names" {
   description = "Bucket name suffixes."
   type        = list(string)
@@ -72,6 +81,15 @@ variable "project_id" {
   type        = string
 }
 
+variable "retention_policies" {
+  description = "Per-bucket retention policy."
+  type = map(object({
+    retention_period = number
+    is_locked        = bool
+  }))
+  default = {}
+}
+
 variable "storage_class" {
   description = "Bucket storage class."
   type        = string
@@ -82,22 +100,4 @@ variable "versioning" {
   description = "Optional map to set versioning keyed by name, defaults to false."
   type        = map(bool)
   default     = {}
-}
-
-variable "retention_policies" {
-  description = "Per-bucket retention policy."
-  type = map(object({
-    retention_period = number
-    is_locked        = bool
-  }))
-  default = {}
-}
-
-variable "logging_config" {
-  description = "Per-bucket logging."
-  type = map(object({
-    log_bucket        = string
-    log_object_prefix = string
-  }))
-  default = {}
 }

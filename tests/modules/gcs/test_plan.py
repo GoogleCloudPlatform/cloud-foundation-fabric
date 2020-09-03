@@ -55,6 +55,18 @@ def test_map_values(plan_runner):
   assert versioning == {
       'bucket-a': [{'enabled': True}], 'bucket-b': [{'enabled': False}]
   }
+  logging_config = dict((r['values']['name'], r['values']['logging'])
+                        for r in resources)
+  assert logging_config == {
+      'bucket-a': [{'log_bucket': 'foo'}],
+      'bucket-b': []
+  }
+  retention_policies = dict((r['values']['name'], r['values']['retention_policy'])
+                            for r in resources)
+  assert retention_policies == {
+      'bucket-a': [],
+      'bucket-b': [{'is_locked': False, 'retention_period': 5}]
+  }
   for r in resources:
     assert r['values']['labels'] == {
         'environment': 'test', 'location': 'eu',
