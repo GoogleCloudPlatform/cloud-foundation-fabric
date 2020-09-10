@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+###############################################################################
+#                                Projects                                     #
+###############################################################################
+
 module "project" {
   source          = "../../modules/project"
   name            = var.project_id
@@ -48,6 +52,10 @@ module "service-account" {
   }
 }
 
+###############################################################################
+#                                Pub/Sub                                      #
+###############################################################################
+
 module "pubsub" {
   source     = "../../modules/pubsub"
   project_id = module.project.project_id
@@ -58,6 +66,10 @@ module "pubsub" {
   # the Cloud Scheduler robot service account already has pubsub.topics.publish
   # at the project level via roles/cloudscheduler.serviceAgent
 }
+
+###############################################################################
+#                             Cloud Function                                  #
+###############################################################################
 
 module "cf" {
   source      = "../../modules/cloud-function"
@@ -83,6 +95,14 @@ module "cf" {
     retry    = null
   }
 }
+
+resource "random_pet" "random" {
+  length = 1
+}
+
+###############################################################################
+#                            Cloud Scheduler                                  #
+###############################################################################
 
 resource "google_app_engine_application" "app" {
   project     = module.project.project_id
@@ -110,6 +130,10 @@ resource "google_cloud_scheduler_job" "job" {
   }
 }
 
+###############################################################################
+#                                Bigquery                                     #
+###############################################################################
+
 module "bigquery-dataset" {
   source     = "../../modules/bigquery-dataset"
   project_id = module.project.project_id
@@ -120,8 +144,4 @@ module "bigquery-dataset" {
   access_identities = {
     owner = module.service-account.email
   }
-}
-
-resource "random_pet" "random" {
-  length = 1
 }
