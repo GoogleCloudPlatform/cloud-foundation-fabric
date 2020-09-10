@@ -1,0 +1,26 @@
+{{- $fullName := include "iap-connector.fullname" . -}}
+{{- $name := include "iap-connector.name" . -}}
+{{- $labels := include "iap-connector.labels" . -}}
+{{- $releaseName := .Release.Name -}}
+{{- $serviceAccountName := include "iap-connector.serviceAccountName" . -}}
+{{- range $ai := .Values.ambassadorInstances }}
+{{- if $ai.autoscaling.enabled }}
+---
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ $fullName }}-{{ $ai.ambassadorID }}
+  labels:
+    id: {{ $ai.ambassadorID }}
+{{ $labels | indent 4 }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ $fullName }}-{{ $ai.ambassadorID }}
+  minReplicas: {{ $ai.autoscaling.minReplicas }}
+  maxReplicas: {{ $ai.autoscaling.maxReplicas }}
+  metrics:
+    {{- toYaml $ai.autoscaling.metrics | nindent 4 }}
+{{- end }}
+{{- end }}

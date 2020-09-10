@@ -1,0 +1,8 @@
+apiVersion: v1
+appVersion: "1.4.2"
+description: A Helm chart for gke iap connector
+name: iap-connector
+version: 0.1.0
+maintainers:
+  - name: Ala Raddaoui
+    email: araddaoui@google.com

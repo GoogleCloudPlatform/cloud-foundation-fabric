@@ -1,0 +1,16 @@
+{{- $ns := .Release.Namespace -}}
+Congratuations! You've successfully installed iap-connector.
+
+To get the a list of all Global loadbalancers created, run the following commands:
+kubectl get ingress --namespace {{ $ns }}
+
+To get the a list of all available services created, run the following commands:
+kubectl get svc --namespace {{ $ns }}
+
+{{- range $ai := .Values.ambassadorInstances }}
+--------
+ to check ambassador diagnostic UI for deployment with ID = {{ $ai.ambassadorID }}
+export POD_NAME=$(kubectl get pods --namespace {{ $ns }} -l "id={{ $ai.ambassadorID }},service=ambassador" -o jsonpath="{.items[0].metadata.name}")
+kubectl port-forward $POD_NAME 8877
+Visit http://localhost:8877/ambassador/v0/diag/ to use your application
+{{- end }}

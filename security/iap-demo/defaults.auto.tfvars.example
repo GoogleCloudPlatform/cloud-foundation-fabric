@@ -1,0 +1,59 @@
+# In this example, 192.168.0.0/16 is reserved for on-prem
+
+asn_local          = 16550
+asn_peer           = 65029
+billing_account_id = "012345-6789AB-CDEF01"
+root_node          = "folders/897979775040"
+project_id         = "unique-project-id-to-create"
+project_owners     = ["user:admin@example.com"]
+
+# optional
+#name               = "iap-demo"
+
+region         = "europe-west3"
+dns_zone       = "corp.example.com."
+dns_resolvers  = ["192.168.0.50", "192.168.0.51"] # on-prem IPs
+peer_vpn_ip    = "123.123.123.123" # Public on-prem VPN endpoint
+shared_secret  = "abcdefghijklmopqrstuvwxyzABCDEFG"
+# optional
+#tunnel_0_link_range = "169.254.3.0/30"
+#tunnel_1_link_range = "169.254.4.0/30"
+
+range_master             = "10.252.255.0/28"
+range_nodes              = "10.248.0.0/14"
+range_pods               = "10.252.0.0/18"
+range_services           = "172.31.0.0/24"
+master_authorized_ranges = "0.0.0.0/0" # consider setting a restricted value
+
+cert_name    = "iap-demo"
+cert_domains = [
+  "app1.corp.example.com", # both domains will have to be configured to point to the load balancer before the certificate is fully emitted!
+  "app2.corp.example.com"
+]
+
+mappings = [
+  {
+    name        = "app1"
+    # example of how the application will be requested by a user on the internet
+    source      = "app1.corp.example.com"
+    # example of to what urls will these requests will be forwarded. In this case, the public domain and the on-prem domain are the same
+    destination = "http://app1.corp.example.com/"
+  },
+  {
+    name        = "app2"
+    source      = "app2.corp.example.com"
+    # in this example, the public domain differs from the on-prem domain for the app2 service.
+    destination = "https://app2.on-prem-corp.example.com/"
+  }
+]
+
+support_email  = "admin@example.com"
+
+# Beware: If this list is empty (by default it is) no one will be able to access the applications through IAP.
+#web_user_principals = [
+#  "domain:google.com", # Non-org principals can only access services once the IAP brand is manually changed to external.
+#  "domain:example.com",
+#]
+
+# optional
+#policy_name    = "accessPolicies/205698341220"

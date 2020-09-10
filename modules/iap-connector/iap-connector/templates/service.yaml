@@ -1,0 +1,49 @@
+{{- $fullName := include "iap-connector.fullname" . -}}
+{{- $name := include "iap-connector.name" . -}}
+{{- $labels := include "iap-connector.labels" . -}}
+{{- $releaseName := .Release.Name -}}
+{{- $urlRegex := "(http|https)\\:\\/\\/([^:\\/\\n]+)(:\\d+)?(\\/\\S*)?" -}}
+{{- range $ingress := .Values.ingresses }}
+{{- range $.Values.mappings }}
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $fullName }}-{{ .name }}
+  labels:
+{{ $labels | indent 4 }}
+    service: ambassador
+  annotations:
+    beta.cloud.google.com/backend-config: '{"default": "{{ $fullName }}-config"}'
+    {{- if $ingress.enable_container_native_lb }}
+    cloud.google.com/neg: '{"ingress": true}'
+    {{- end }}
+    getambassador.io/config: |
+      ---
+      apiVersion: ambassador/v1
+      kind: Mapping
+      name: {{ .name }}_mapping
+      ambassador_id: ambassador
+      prefix: {{ regexReplaceAll $urlRegex .destination "${4}" | default "/" }}
+      host: {{ regexReplaceAll $urlRegex .source "${2}"}}
+      service: {{ regexReplaceAll $urlRegex .destination "${1}" }}://{{ regexReplaceAll $urlRegex .destination "${2}" }}
+      host_rewrite: {{ regexReplaceAll $urlRegex .destination "${2}" }}
+      timeout_ms: 3800000
+      connect_timeout_ms: 10000
+      retry_policy:
+        num_retries: 10
+        retry_on: 5xx
+spec:
+  type: NodePort
+  ports:
+    - name: {{ .name }}-http
+      targetPort: 8080
+      port: 80
+  selector:
+    app.kubernetes.io/name: {{ $name }}
+    app.kubernetes.io/instance: {{ $releaseName }}
+    service: ambassador
+    id: ambassador
+{{- end }}
+{{- end }}

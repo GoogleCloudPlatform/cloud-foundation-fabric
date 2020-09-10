@@ -1,0 +1,57 @@
+# Default values for iap-connector.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+ambassadorInstances:
+  - ambassadorID: ambassador
+    replicaCount: 3
+    resources:
+      limits:
+        cpu: 1
+        memory: 400Mi
+      requests:
+        cpu: 200m
+        memory: 300Mi
+    image:
+      repository: quay.io/datawire/ambassador
+      tag: 1.4.2
+      pullPolicy: Always
+    autoscaling:
+      enabled: true
+      minReplicas: 3
+      maxReplicas: 3
+      metrics:
+        - type: Resource
+          resource:
+            name: cpu
+            targetAverageUtilization: 70
+        - type: Resource
+          resource:
+            name: memory
+            targetAverageUtilization: 70
+
+
+#ingresses:
+#  - name: ingress
+#    externalIpName: iap
+#    certs:
+#      - iap
+#    enable_container_native_lb: true
+#    routing:
+#      - name: router
+#        ambassadorID: ambassador
+#        optional_configurations:
+#          timeout_ms: 3800000
+#          connect_timeout_ms: 10000
+#          retry_policy:
+#            num_retries: 10
+#            retry_on: 5xx
+
+nameOverride: ""
+fullnameOverride: ""
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ambassador

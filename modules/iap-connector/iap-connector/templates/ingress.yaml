@@ -1,0 +1,28 @@
+{{- $fullName := include "iap-connector.fullname" . -}}
+{{- $labels := include "iap-connector.labels" . -}}
+{{- range $ingress := .Values.ingresses }}
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}-{{ $ingress.name }}
+  labels:
+{{ $labels | indent 4 }}
+  annotations:
+    kubernetes.io/ingress.global-static-ip-name: {{ $ingress.externalIpName | quote }}
+    ingress.gcp.kubernetes.io/pre-shared-cert: {{ include "helm-toolkit.utils.joinListWithComma" $ingress.certs }}
+    {{- with $ingress.annotations }}
+    {{- toYaml . | nindent 4 }}
+    {{- end }}
+spec:
+  rules:
+  {{- range $route := $.Values.mappings }}
+    - host: {{ $route.source | quote }}
+      http:
+        paths:
+          - path: /*
+            backend:
+              serviceName: {{ $fullName }}-{{ $route.name }}
+              servicePort: 80
+  {{- end }}
+{{- end }}

@@ -1,0 +1,85 @@
+{{- $fullName := include "iap-connector.fullname" . -}}
+{{- $name := include "iap-connector.name" . -}}
+{{- $labels := include "iap-connector.labels" . -}}
+{{- $releaseName := .Release.Name -}}
+{{- $serviceAccountName := include "iap-connector.serviceAccountName" . -}}
+{{- range $ai := .Values.ambassadorInstances }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ $fullName }}-{{ $ai.ambassadorID }}
+  labels:
+    service: ambassador
+    id: {{ $ai.ambassadorID }}
+{{ $labels | indent 4 }}
+spec:
+  replicas: {{ $ai.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ $name }}
+      app.kubernetes.io/instance: {{ $releaseName }}
+      service: ambassador
+      id: {{ $ai.ambassadorID }}
+  template:
+    metadata:
+      annotations:
+        consul.hashicorp.com/connect-inject: "false"
+        sidecar.istio.io/inject: "false"
+      labels:
+        app.kubernetes.io/name: {{ $name }}
+        app.kubernetes.io/instance: {{ $releaseName }}
+        service: ambassador
+        id: {{ $ai.ambassadorID }}
+    spec:
+      serviceAccount: {{ $serviceAccountName }}
+      containers:
+      - name: ambassador
+        image: "{{ $ai.image.repository }}:{{ $ai.image.tag }}"
+        imagePullPolicy: {{ $ai.image.pullPolicy }}
+        ports:
+        - containerPort: 8080
+          name: http
+        - containerPort: 8443
+          name: https
+        - containerPort: 8877
+          name: admin
+        resources:
+          {{- toYaml $ai.resources | nindent 12 }}
+        env:
+        - name: STATSD_ENABLED
+          value: "true"
+        - name: AMBASSADOR_ID
+          value: {{ $ai.ambassadorID }}
+        - name: AMBASSADOR_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        livenessProbe:
+          httpGet:
+            path: /ambassador/v0/check_alive
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /ambassador/v0/check_ready
+            port: 8080
+          initialDelaySeconds: 30
+          periodSeconds: 3
+        volumeMounts:
+        - mountPath: /tmp/ambassador-pod-info
+          name: ambassador-pod-info
+      restartPolicy: Always
+      securityContext:
+        runAsUser: 8888
+      volumes:
+      - downwardAPI:
+          defaultMode: 420
+          items:
+          - fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.labels
+            path: labels
+        name: ambassador-pod-info
+{{- end }}

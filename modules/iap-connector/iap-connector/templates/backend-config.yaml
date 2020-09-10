@@ -1,0 +1,16 @@
+{{- $fullName := include "iap-connector.fullname" . -}}
+{{- $name := include "iap-connector.name" . -}}
+{{- $labels := include "iap-connector.labels" . -}}
+{{- $releaseName := .Release.Name -}}
+{{- $secret := .Values.oauth.client.secret -}}
+---
+
+apiVersion: cloud.google.com/v1beta1
+kind: BackendConfig
+metadata:
+  name: {{ $fullName }}-config
+spec:
+  iap:
+    enabled: true
+    oauthclientCredentials:
+      secretName: {{ $fullName }}-secret
