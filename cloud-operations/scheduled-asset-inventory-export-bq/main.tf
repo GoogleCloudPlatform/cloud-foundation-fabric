@@ -17,18 +17,12 @@
 ###############################################################################
 #                                Projects                                     #
 ###############################################################################
-
 module "project" {
   source          = "../../modules/project"
   name            = var.project_id
   parent          = "folders/572946148602"
   billing_account = "0074F6-6FDF57-1B2DD0"
   project_create  = var.project_create
-  iam_additive_bindings = {
-    "user:admin@caggioland.com" = [
-      "roles/owner"
-    ]
-  }
   services = [
     "bigquery.googleapis.com",
     "cloudasset.googleapis.com",
@@ -55,7 +49,6 @@ module "service-account" {
 ###############################################################################
 #                                Pub/Sub                                      #
 ###############################################################################
-
 module "pubsub" {
   source     = "../../modules/pubsub"
   project_id = module.project.project_id
@@ -70,7 +63,6 @@ module "pubsub" {
 ###############################################################################
 #                             Cloud Function                                  #
 ###############################################################################
-
 module "cf" {
   source      = "../../modules/cloud-function"
   project_id  = module.project.project_id
@@ -103,7 +95,6 @@ resource "random_pet" "random" {
 ###############################################################################
 #                            Cloud Scheduler                                  #
 ###############################################################################
-
 resource "google_app_engine_application" "app" {
   project     = module.project.project_id
   location_id = "europe-west"
@@ -133,7 +124,6 @@ resource "google_cloud_scheduler_job" "job" {
 ###############################################################################
 #                                Bigquery                                     #
 ###############################################################################
-
 module "bigquery-dataset" {
   source     = "../../modules/bigquery-dataset"
   project_id = module.project.project_id
