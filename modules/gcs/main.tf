@@ -54,7 +54,7 @@ resource "google_storage_bucket" "buckets" {
   location           = var.location
   storage_class      = var.storage_class
   force_destroy      = lookup(var.force_destroy, each.key, false)
-  bucket_policy_only = lookup(var.bucket_policy_only, each.key, true)
+  uniform_bucket_level_access = lookup(var.uniform_bucket_level_access, each.key, true)
   versioning {
     enabled = lookup(var.versioning, each.key, false)
   }
