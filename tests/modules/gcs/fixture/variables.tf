@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-variable "bucket_policy_only" {
+variable "uniform_bucket_level_access" {
   type    = map(bool)
   default = { bucket-a = false }
 }

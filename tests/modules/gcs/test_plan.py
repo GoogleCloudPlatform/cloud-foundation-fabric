@@ -44,7 +44,7 @@ def test_prefix(plan_runner):
 def test_map_values(plan_runner):
   "Test that map values set the correct attributes on buckets."
   _, resources = plan_runner(FIXTURES_DIR)
-  bpo = dict((r['values']['name'], r['values']['bucket_policy_only'])
+  bpo = dict((r['values']['name'], r['values']['uniform_bucket_level_access'])
              for r in resources)
   assert bpo == {'bucket-a': False, 'bucket-b': True}
   force_destroy = dict((r['values']['name'], r['values']['force_destroy'])

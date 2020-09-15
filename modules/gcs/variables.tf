@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-variable "bucket_policy_only" {
-  description = "Optional map to disable object ACLS keyed by name, defaults to true."
+variable "uniform_bucket_level_access" {
+  description = "Optional map to allow using object ACLs (false) or not (true, this is the recommended behavior) , defaults to true (which is the recommended practice, but not the behavior of storage API)."
   type        = map(bool)
   default     = {}
 }
