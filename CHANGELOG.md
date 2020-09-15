@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 - add support for logging and better type for the `retention_policies` variable in `gcs` module
+- **incompatible change** deprecate bucket_policy_only in favor of uniform_bucket_level_access in `gcs` module
 
 ## [3.3.0] - 2020-09-01
 
