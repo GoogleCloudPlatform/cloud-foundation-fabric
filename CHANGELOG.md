@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+ - end to end example: `Scheduled Cloud Asset Inventory Export to Bigquery`
 
 ## [3.1.1] - 2020-08-26
 - fix error in `project` module

@@ -7,19 +7,18 @@ The data stored in Bigquery can then be used for different purposes:
 - dashboarding
 - analysis
 
-This example shows a export to Bigquery scheduled on a daily basis. 
+This example shows an export to Bigquery scheduled on a daily basis. 
 
 The resources created in this example are shown in the high level diagram below:
 
 <img src="diagram.png" width="640px">
 
-## Running the example
-
-### Prerequisites
+## Prerequisites
 Ensure that you grant your account one of the following roles on your project, folder, or organization.
  - Cloud Asset Viewer role (roles/cloudasset.viewer)
  - Owner primitive role (roles/owner)
 
+## Running the example
 Clone this repository, specify your variables in a `terraform.tvars` and then go through the following steps to create resources:
 
 - `terraform init`
@@ -29,7 +28,7 @@ Once done testing, you can clean up resources by running `terraform destroy`. To
 
 ## Testing the example
 
-You can now run queries on the data you exported on Bigquery. Here you can find some explample of queries you can run.
+You can now run queries on the data you exported on Bigquery. [Here](https://cloud.google.com/asset-inventory/docs/exporting-to-bigquery#querying_an_asset_snapshot) you can find some example of queries you can run.
 
 You can also create a dashborad connecting [Datalab](https://datastudio.google.com/) or any other BI tools of your choice to your Bigquery datase..
 <!-- BEGIN TFDOC -->
@@ -51,4 +50,3 @@ You can also create a dashborad connecting [Datalab](https://datastudio.google.c
 | bq-dataset | Bigquery instance details. |  |
 | cloud-function | Bigquery instance details. |  |
 <!-- END TFDOC -->
-
