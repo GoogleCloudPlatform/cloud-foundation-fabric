@@ -98,3 +98,11 @@ variable "type" {
   type        = string
   default     = "private"
 }
+
+variable "zone_create" {
+  description = "Create zone. When set to false, uses a data source to reference existing zone."
+  type        = bool
+  default     = true
+}
+
+

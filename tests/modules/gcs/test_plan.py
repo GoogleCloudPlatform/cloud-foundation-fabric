@@ -44,7 +44,7 @@ def test_prefix(plan_runner):
 def test_map_values(plan_runner):
   "Test that map values set the correct attributes on buckets."
   _, resources = plan_runner(FIXTURES_DIR)
-  bpo = dict((r['values']['name'], r['values']['bucket_policy_only'])
+  bpo = dict((r['values']['name'], r['values']['uniform_bucket_level_access'])
              for r in resources)
   assert bpo == {'bucket-a': False, 'bucket-b': True}
   force_destroy = dict((r['values']['name'], r['values']['force_destroy'])
@@ -54,6 +54,18 @@ def test_map_values(plan_runner):
                     for r in resources)
   assert versioning == {
       'bucket-a': [{'enabled': True}], 'bucket-b': [{'enabled': False}]
+  }
+  logging_config = dict((r['values']['name'], r['values']['logging'])
+                        for r in resources)
+  assert logging_config == {
+      'bucket-a': [{'log_bucket': 'foo'}],
+      'bucket-b': []
+  }
+  retention_policies = dict((r['values']['name'], r['values']['retention_policy'])
+                            for r in resources)
+  assert retention_policies == {
+      'bucket-a': [],
+      'bucket-b': [{'is_locked': False, 'retention_period': 5}]
   }
   for r in resources:
     assert r['values']['labels'] == {

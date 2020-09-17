@@ -95,7 +95,7 @@ resource "google_storage_bucket" "tfstate" {
   location           = var.gcs_defaults.location
   storage_class      = var.gcs_defaults.storage_class
   force_destroy      = false
-  bucket_policy_only = true
+  uniform_bucket_level_access = true
   versioning {
     enabled = true
   }

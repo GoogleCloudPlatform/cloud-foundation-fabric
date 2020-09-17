@@ -66,9 +66,21 @@ locals {
     for subnet in var.subnets :
     "${subnet.region}/${subnet.name}" => subnet
   }
+  network = (
+    var.vpc_create
+    ? try(google_compute_network.network.0, null)
+    : try(data.google_compute_network.network.0, null)
+  )
+}
+
+data "google_compute_network" "network" {
+  count   = var.vpc_create ? 0 : 1
+  project = var.project_id
+  name    = var.name
 }
 
 resource "google_compute_network" "network" {
+  count                           = var.vpc_create ? 1 : 0
   project                         = var.project_id
   name                            = var.name
   description                     = var.description
@@ -80,8 +92,8 @@ resource "google_compute_network" "network" {
 resource "google_compute_network_peering" "local" {
   provider             = google-beta
   count                = var.peering_config == null ? 0 : 1
-  name                 = "${google_compute_network.network.name}-${local.peer_network}"
-  network              = google_compute_network.network.self_link
+  name                 = "${var.name}-${local.peer_network}"
+  network              = local.network.self_link
   peer_network         = var.peering_config.peer_vpc_self_link
   export_custom_routes = var.peering_config.export_routes
   import_custom_routes = var.peering_config.import_routes
@@ -90,9 +102,9 @@ resource "google_compute_network_peering" "local" {
 resource "google_compute_network_peering" "remote" {
   provider             = google-beta
   count                = var.peering_config == null ? 0 : 1
-  name                 = "${local.peer_network}-${google_compute_network.network.name}"
+  name                 = "${local.peer_network}-${var.name}"
   network              = var.peering_config.peer_vpc_self_link
-  peer_network         = google_compute_network.network.self_link
+  peer_network         = local.network.self_link
   export_custom_routes = var.peering_config.import_routes
   import_custom_routes = var.peering_config.export_routes
   depends_on           = [google_compute_network_peering.local]
@@ -101,7 +113,7 @@ resource "google_compute_network_peering" "remote" {
 resource "google_compute_shared_vpc_host_project" "shared_vpc_host" {
   count      = var.shared_vpc_host ? 1 : 0
   project    = var.project_id
-  depends_on = [google_compute_network.network]
+  depends_on = [local.network]
 }
 
 resource "google_compute_shared_vpc_service_project" "service_projects" {
@@ -118,7 +130,7 @@ resource "google_compute_shared_vpc_service_project" "service_projects" {
 resource "google_compute_subnetwork" "subnetwork" {
   for_each      = local.subnets
   project       = var.project_id
-  network       = google_compute_network.network.name
+  network       = local.network.name
   region        = each.value.region
   name          = each.value.name
   ip_cidr_range = each.value.ip_cidr_range
@@ -153,7 +165,7 @@ resource "google_compute_subnetwork_iam_binding" "binding" {
 resource "google_compute_route" "gateway" {
   for_each         = local.routes_gateway
   project          = var.project_id
-  network          = google_compute_network.network.name
+  network          = local.network.name
   name             = "${var.name}-${each.key}"
   description      = "Terraform-managed."
   dest_range       = each.value.dest_range
@@ -165,7 +177,7 @@ resource "google_compute_route" "gateway" {
 resource "google_compute_route" "ilb" {
   for_each     = local.routes_ilb
   project      = var.project_id
-  network      = google_compute_network.network.name
+  network      = local.network.name
   name         = "${var.name}-${each.key}"
   description  = "Terraform-managed."
   dest_range   = each.value.dest_range
@@ -177,7 +189,7 @@ resource "google_compute_route" "ilb" {
 resource "google_compute_route" "instance" {
   for_each          = local.routes_instance
   project           = var.project_id
-  network           = google_compute_network.network.name
+  network           = local.network.name
   name              = "${var.name}-${each.key}"
   description       = "Terraform-managed."
   dest_range        = each.value.dest_range
@@ -191,7 +203,7 @@ resource "google_compute_route" "instance" {
 resource "google_compute_route" "ip" {
   for_each    = local.routes_ip
   project     = var.project_id
-  network     = google_compute_network.network.name
+  network     = local.network.name
   name        = "${var.name}-${each.key}"
   description = "Terraform-managed."
   dest_range  = each.value.dest_range
@@ -203,7 +215,7 @@ resource "google_compute_route" "ip" {
 resource "google_compute_route" "vpn_tunnel" {
   for_each            = local.routes_vpn_tunnel
   project             = var.project_id
-  network             = google_compute_network.network.name
+  network             = local.network.name
   name                = "${var.name}-${each.key}"
   description         = "Terraform-managed."
   dest_range          = each.value.dest_range

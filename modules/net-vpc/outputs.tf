@@ -16,17 +16,17 @@
 
 output "network" {
   description = "Network resource."
-  value       = google_compute_network.network
+  value       = local.network
 }
 
 output "name" {
   description = "The name of the VPC being created."
-  value       = google_compute_network.network.name
+  value       = local.network.name
 }
 
 output "self_link" {
   description = "The URI of the VPC being created."
-  value       = google_compute_network.network.self_link
+  value       = local.network.self_link
 }
 
 output "project_id" {

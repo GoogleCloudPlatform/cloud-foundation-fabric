@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-variable "bucket_policy_only" {
+variable "uniform_bucket_level_access" {
   type    = map(bool)
   default = { bucket-a = false }
 }
@@ -39,9 +39,34 @@ variable "labels" {
   default = { environment = "test" }
 }
 
+variable "logging_config" {
+  type = map(object({
+    log_bucket        = string
+    log_object_prefix = string
+  }))
+  default = {
+    bucket-a = { log_bucket = "foo", log_object_prefix = null }
+  }
+}
+
 variable "prefix" {
   type    = string
   default = null
+}
+
+variable "project_id" {
+  type    = string
+  default = "my-project"
+}
+
+variable "retention_policies" {
+  type = map(object({
+    retention_period = number
+    is_locked        = bool
+  }))
+  default = {
+    bucket-b = { retention_period = 5, is_locked = false }
+  }
 }
 
 variable "storage_class" {

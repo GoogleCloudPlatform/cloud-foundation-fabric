@@ -27,11 +27,17 @@ locals {
     ? try(google_compute_router.router[0].name, null)
     : var.router_name
   )
+  vpn_gateway = (
+    var.vpn_gateway_create
+    ? try(google_compute_ha_vpn_gateway.ha_gateway[0].self_link, null)
+    : var.vpn_gateway
+  )
   secret = random_id.secret.b64_url
 }
 
 resource "google_compute_ha_vpn_gateway" "ha_gateway" {
   provider = google-beta
+  count    = var.vpn_gateway_create ? 1 : 0
   name     = var.name
   project  = var.project_id
   region   = var.region
@@ -55,12 +61,11 @@ resource "google_compute_external_vpn_gateway" "external_gateway" {
 }
 
 resource "google_compute_router" "router" {
-  provider = google-beta
-  count    = var.router_create ? 1 : 0
-  name     = var.router_name == "" ? "vpn-${var.name}" : var.router_name
-  project  = var.project_id
-  region   = var.region
-  network  = var.network
+  count   = var.router_create ? 1 : 0
+  name    = var.router_name == "" ? "vpn-${var.name}" : var.router_name
+  project = var.project_id
+  region  = var.region
+  network = var.network
   bgp {
     advertise_mode = (
       var.router_advertise_config == null
@@ -135,7 +140,6 @@ resource "google_compute_router_peer" "bgp_peer" {
 }
 
 resource "google_compute_router_interface" "router_interface" {
-  provider   = google-beta
   for_each   = var.tunnels
   project    = var.project_id
   region     = var.region
@@ -162,7 +166,7 @@ resource "google_compute_vpn_tunnel" "tunnels" {
     ? local.secret
     : each.value.shared_secret
   )
-  vpn_gateway = google_compute_ha_vpn_gateway.ha_gateway.self_link
+  vpn_gateway = local.vpn_gateway
 }
 
 resource "random_id" "secret" {

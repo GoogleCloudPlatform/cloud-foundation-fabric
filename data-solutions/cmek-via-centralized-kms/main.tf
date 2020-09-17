@@ -104,13 +104,13 @@ module "kms_vm_example" {
   source     = "../../modules/compute-vm"
   project_id = module.project-service.project_id
   region     = var.region
-  zone       = var.zone
   name       = "kms-vm"
   network_interfaces = [{
     network    = module.vpc.self_link,
     subnetwork = module.vpc.subnet_self_links["${var.region}/subnet"],
     nat        = false,
     addresses  = null
+    alias_ips  = null
   }]
   attached_disks = [
     {

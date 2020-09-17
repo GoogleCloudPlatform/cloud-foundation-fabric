@@ -41,16 +41,14 @@ variable "internal_addresses" {
   default = {}
 }
 
-variable "internal_address_addresses" {
-  description = "Optional explicit addresses for internal addresses, keyed by name."
-  type        = map(string)
-  default     = {}
-}
-
-variable "internal_address_tiers" {
-  description = "Optional network tiers for internal addresses, keyed by name."
-  type        = map(string)
-  default     = {}
+variable "internal_addresses_config" {
+  description = "Optional configuration for internal addresses, keyed by name. Unused options can be set to null."
+  type = map(object({
+    address = string
+    purpose = string
+    tier    = string
+  }))
+  default = {}
 }
 
 # variable "internal_address_labels" {
