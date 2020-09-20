@@ -1,21 +1,8 @@
 # IAP Demo
 
-[This demo](https://source.cloud.google.com/drebes-play-org-repos-88ed/iap-demo) aims to show the use of Enterprise BeyondCorp features to expose HTTP(S) services running on-prem via Cloud IAP using the [IAP connector](https://github.com/GoogleCloudPlatform/iap-connector) and Cloud VPN HA for connectivity.
+[This demo](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/security/iap-demo) aims to show the use of Enterprise BeyondCorp features to expose HTTP(S) services running on-prem via Cloud IAP using the [IAP connector](https://github.com/GoogleCloudPlatform/iap-connector) and Cloud VPN HA for connectivity.
 
 ## Requirements
-
-### Services
-
-The following services need to be enabled for the project:
-
-* `cloudresourcemanager.googleapis.com` - For granting the GKE service account and the web app users the appropriate IAM permissions at the project level
-* `compute.googleapis.com` - For the VPC, Cloud VPN, Cloud Router, Cloud NAT
-* `container.googleapis.com` - For creating and managing the GKE cluster
-* `dns.googleapis.com` - For setting up Cloud DNS outbound forwarding to on-prem
-* `iam.googleapis.com` - For creating the service account the GKE nodes run as
-* `iap.googleapis.com` - For setting up Cloud IAP
-* `logging.googleapis.com` - For GKE nodes logging
-* `monitoring.googleapis.com` - For GKE nodes monitoring
 
 ## Resource Management
 
