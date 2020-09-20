@@ -19,11 +19,14 @@ shared_secret  = "abcdefghijklmopqrstuvwxyzABCDEFG"
 #tunnel_0_link_range = "169.254.3.0/30"
 #tunnel_1_link_range = "169.254.4.0/30"
 
-range_master             = "10.252.255.0/28"
-range_nodes              = "10.248.0.0/14"
-range_pods               = "10.252.0.0/18"
-range_services           = "172.31.0.0/24"
-master_authorized_ranges = "0.0.0.0/0" # consider setting a restricted value
+gke_ranges = {
+  "master"                   = "10.252.255.0/28"
+  "nodes"                    = "10.248.0.0/14"
+  "pods"                     = "10.252.0.0/18"
+  "services"                 = "172.31.0.0/24"
+  "master_authorized_ranges" = "0.0.0.0/0" # consider setting a restricted value
+}
+
 
 cert_name    = "iap-demo"
 cert_domains = [
