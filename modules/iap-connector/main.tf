@@ -1,3 +1,19 @@
+/**
+ * Copyright 2020 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 locals {
   address_name        = var.address_name != null ? var.address_name : google_compute_global_address.address[0].name
   cert_domains        = var.cert_domains
@@ -7,7 +23,7 @@ locals {
   name                = var.name
   web_user_principals = var.web_user_principals
   project_id          = var.project_id
-  loadbalancerb_ip    = var.address_name != null ? data.google_compute_global_address.address[0].address : google_compute_global_address.address[0].address
+  loadbalancer_ip    = var.address_name != null ? data.google_compute_global_address.address[0].address : google_compute_global_address.address[0].address
 }
 
 data "google_compute_global_address" "address" {
