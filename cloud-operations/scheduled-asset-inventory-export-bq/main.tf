@@ -20,8 +20,8 @@
 module "project" {
   source          = "../../modules/project"
   name            = var.project_id
-  parent          = "folders/572946148602"
-  billing_account = "0074F6-6FDF57-1B2DD0"
+  parent          = var.root_node
+  billing_account = var.billing_account
   project_create  = var.project_create
   services = [
     "bigquery.googleapis.com",
@@ -39,9 +39,8 @@ module "service-account" {
   project_id = module.project.project_id
   names      = ["${var.name}-cf"]
   iam_project_roles = {
-    (module.project.name) = [
-      "roles/cloudasset.viewer",
-      "roles/cloudfunctions.invoker"
+    (var.project_id) = [
+      "roles/cloudasset.viewer"
     ]
   }
 }
@@ -77,10 +76,6 @@ module "cf" {
     output_path = var.bundle_path
   }
   service_account = module.service-account.email
-  iam_roles       = ["roles/cloudfunctions.invoker"]
-  iam_members = {
-    "roles/cloudfunctions.invoker" = ["serviceAccount:${module.service-account.email}"]
-  }
   trigger_config = {
     event    = "google.pubsub.topic.publish"
     resource = module.pubsub.topic.id
@@ -97,26 +92,25 @@ resource "random_pet" "random" {
 ###############################################################################
 resource "google_app_engine_application" "app" {
   project     = module.project.project_id
-  location_id = "europe-west"
+  location_id = var.location
 }
 
 resource "google_cloud_scheduler_job" "job" {
-  project          = module.project.project_id
+  project          = google_app_engine_application.app.project
   region           = var.region
   name             = "test-job"
   description      = "test http job"
   schedule         = "* 9 * * 1"
   time_zone        = "Etc/UTC"
-  attempt_deadline = "320s"
 
   pubsub_target {
     attributes = {}
     topic_name = module.pubsub.topic.id
     data = base64encode(jsonencode({
-      organization = var.cai_config.organization
-      bq_project   = var.project_id
-      bq_dataset   = var.cai_config.bq_dataset
-      bq_table     = var.cai_config.bq_table
+      project    = module.project.project_id
+      bq_project = module.project.project_id
+      bq_dataset = var.cai_config.bq_dataset
+      bq_table   = var.cai_config.bq_table
     }))
   }
 }
@@ -124,7 +118,7 @@ resource "google_cloud_scheduler_job" "job" {
 ###############################################################################
 #                                Bigquery                                     #
 ###############################################################################
-module "bigquery-dataset" {
+module "bq" {
   source     = "../../modules/bigquery-dataset"
   project_id = module.project.project_id
   id         = var.cai_config.bq_dataset
@@ -133,5 +127,10 @@ module "bigquery-dataset" {
   }
   access_identities = {
     owner = module.service-account.email
+  }
+  options = {
+    default_table_expiration_ms     = null
+    default_partition_expiration_ms = null
+    delete_contents_on_destroy      = true
   }
 }

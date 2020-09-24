@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-output "bq-dataset" {
-  description = "Bigquery instance details."
-  value       = module.bq.dataset
-}
+# output "bq-dataset" {
+#   description = "Bigquery instance details."
+#   value       = module.bq.dataset
+# }
 
-output "cloud-function" {
-  description = "Bigquery instance details."
-  value       = module.bq.dataset
-}
+# output "cloud-function" {
+#   description = "Cloud Function instance details."
+#   value       = module.cf.function
+# }

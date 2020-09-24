@@ -14,11 +14,31 @@
  * limitations under the License.
  */
 
+variable "billing_account" {
+  description = "Billing account id used as default for new projects."
+  type        = string
+}
+
 variable "bundle_path" {
   description = "Path used to write the intermediate Cloud Function code bundle."
   type        = string
   default     = "./bundle.zip"
 }
+
+variable "cai_config" {
+  description = "Cloud Asset inventory export config."
+  type = object({
+    bq_dataset   = string
+    bq_table     = string
+  })
+}
+
+variable "location" {
+  description = "Appe Engine location used in the example."
+  type        = string
+  default     = "europe-west"
+}
+
 
 variable "name" {
   description = "Arbitrary string used to name created resources."
@@ -29,7 +49,7 @@ variable "name" {
 variable "project_create" {
   description = "Create project instead ofusing an existing one."
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "project_id" {
@@ -43,11 +63,7 @@ variable "region" {
   default     = "europe-west1"
 }
 
-variable "cai_config" {
-  description = "Cloud Asset inventory export config."
-  type = object({
-    organization = string
-    bq_dataset   = string
-    bq_table     = string
-  })
+variable "root_node" {
+  description = "The resource name of the parent Folder or Organization. Must be of the form folders/folder_id or organizations/org_id."
+  type        = string
 }
