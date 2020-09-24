@@ -145,6 +145,14 @@ resource "google_compute_instance" "default" {
           )
         }
       }
+      dynamic alias_ip_range {
+        for_each = config.value.alias_ips != null ? config.value.alias_ips : []
+        iterator = alias_ips
+        content {
+          ip_cidr_range         = alias_ips.value.ip_cidr_range
+          subnetwork_range_name = alias_ips.value.subnetwork_range_name
+        }
+      }
     }
   }
 

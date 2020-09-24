@@ -19,8 +19,7 @@ Currently available examples:
 - **foundations** - [single level hierarchy](./foundations/environments/) (environments), [multiple level hierarchy](./foundations/business-units/) (business units + environments)
 - **networking** - [hub and spoke via peering](./networking/hub-and-spoke-peering/), [hub and spoke via VPN](./networking/hub-and-spoke-vpn/), [DNS and Google Private Access for on-premises](./networking/onprem-google-access-dns/), [Shared VPC with GKE support](./networking/shared-vpc-gke/), [ILB as next hop](./networking/ilb-next-hop)
 - **data solutions** - [GCE/GCS CMEK via centralized Cloud KMS](./data-solutions/cmek-via-centralized-kms/), [Cloud Storage to Bigquery with Cloud Dataflow](./data-solutions/gcs-to-bq-with-dataflow/)
-- **cloud operations** - [Resource tracking and remediation via Cloud Asset feeds](.//cloud-operations/asset-inventory-feed-remediation), [Scheduled Cloud Asset Inventory Export to Bigquery](./cloud-operations/scheduled-asset-inventory-export-bq), [Granular Cloud DNS IAM via Service Directory](./cloud-operations/dns-fine-grained-iam)
-
+- **cloud operations** - [Resource tracking and remediation via Cloud Asset feeds](.//cloud-operations/asset-inventory-feed-remediation), [Granular Cloud DNS IAM via Service Directory](./cloud-operations/dns-fine-grained-iam), [Compute Engine quota monitoring](./cloud-operations/quota-monitoring), [Scheduled Cloud Asset Inventory Export to Bigquery](./cloud-operations/scheduled-asset-inventory-export-bq)
 For more information see the README files in the [foundations](./foundations/), [networking](./networking/), [data solutions](./data-solutions/) and [cloud operations](./cloud-operations/) folders.
 
 ## Modules

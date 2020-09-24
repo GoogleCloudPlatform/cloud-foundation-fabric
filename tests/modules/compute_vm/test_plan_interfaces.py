@@ -26,6 +26,7 @@ def test_no_addresses(plan_runner):
     subnetwork = "https://www.googleapis.com/compute/v1/projects/my-project/regions/europe-west1/subnetworks/default-default",
     nat        = false,
     addresses  = {external=[], internal=[]}
+    alias_ips  = null
   }]
   '''
   _, resources = plan_runner(
@@ -39,6 +40,7 @@ def test_internal_addresses(plan_runner):
     subnetwork = "https://www.googleapis.com/compute/v1/projects/my-project/regions/europe-west1/subnetworks/default-default",
     nat        = false,
     addresses  = {external=[], internal=["1.1.1.2", "1.1.1.3"]}
+    alias_ips  = null
   }]
   '''
   _, resources = plan_runner(
@@ -53,6 +55,7 @@ def test_internal_addresses_nat(plan_runner):
     subnetwork = "https://www.googleapis.com/compute/v1/projects/my-project/regions/europe-west1/subnetworks/default-default",
     nat        = true,
     addresses  = {external=[], internal=["1.1.1.2", "1.1.1.3"]}
+    alias_ips  = null
   }]
   '''
   _, resources = plan_runner(
@@ -67,6 +70,7 @@ def test_all_addresses(plan_runner):
     subnetwork = "https://www.googleapis.com/compute/v1/projects/my-project/regions/europe-west1/subnetworks/default-default",
     nat        = true,
     addresses  = {external=["2.2.2.2", "2.2.2.3"], internal=["1.1.1.2", "1.1.1.3"]}
+    alias_ips  = null
   }]
   '''
   _, resources = plan_runner(

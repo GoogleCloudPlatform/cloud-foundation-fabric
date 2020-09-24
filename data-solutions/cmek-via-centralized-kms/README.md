@@ -44,7 +44,6 @@ This sample creates several distinct groups of resources:
 | *vpc_ip_cidr_range* | Ip range used in the subnet deployef in the Service Project. | <code title="">string</code> |  | <code title="">10.0.0.0/20</code> |
 | *vpc_name* | Name of the VPC created in the Service Project. | <code title="">string</code> |  | <code title="">local</code> |
 | *vpc_subnet_name* | Name of the subnet created in the Service Project. | <code title="">string</code> |  | <code title="">subnet</code> |
-| *zone* | The zone where resources will be deployed. | <code title="">string</code> |  | <code title="">europe-west1-b</code> |
 
 ## Outputs
 

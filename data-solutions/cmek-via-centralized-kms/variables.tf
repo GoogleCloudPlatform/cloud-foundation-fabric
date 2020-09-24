@@ -64,9 +64,3 @@ variable "vpc_ip_cidr_range" {
   type        = string
   default     = "10.0.0.0/20"
 }
-
-variable "zone" {
-  description = "The zone where resources will be deployed."
-  type        = string
-  default     = "europe-west1-b"
-}

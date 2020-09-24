@@ -5,8 +5,30 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
  - end to end example: `Scheduled Cloud Asset Inventory Export to Bigquery`
 
+- add support for logging and better type for the `retention_policies` variable in `gcs` module
+- **incompatible change** deprecate bucket_policy_only in favor of uniform_bucket_level_access in `gcs` module
+
+## [3.3.0] - 2020-09-01
+
+- remove extra readers in `gcs-to-bq-with-dataflow` example (issue: 128)
+- make VPC creation optional in `net-vpc` module to allow managing a pre-existing VPC
+- make HA VPN gateway creation optional in `net-vpn-ha` module
+- add retention_policy in `gcs` module
+- refactor `net-address` module variables, and add support for internal address `purpose`
+
+## [3.2.0] - 2020-08-29
+
+- **incompatible change** add alias IP support in `cloud-vm` module
+- add tests for `data-solutions` examples
+- fix apply errors on dynamic resources in dataflow example
+- make zone creation optional in `dns` module
+- new `quota-monitoring` end-to-end example in `cloud-operations`
+
 ## [3.1.1] - 2020-08-26
+
 - fix error in `project` module
+
+- **incompatible change** make HA VPN Gateway creation optional for `net-vpn-ha` module. Now an existing HA VPN Gateway can be used. Updating to the new version of the module will cause VPN Gateway recreation which can be handled by `terraform state rm/terraform import` operations.  
 
 ## [3.1.0] - 2020-08-16
 
@@ -171,7 +193,9 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.1.1...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.3.0...HEAD
+[3.3.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.2.0...v3.3.0
+[3.2.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.1.1...v3.2.0
 [3.1.1]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.1.0...v3.1.1
 [3.1.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.0.0...v3.1.0
 [3.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.8.0...v3.0.0
