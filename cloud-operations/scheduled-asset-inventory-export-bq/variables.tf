@@ -28,8 +28,8 @@ variable "bundle_path" {
 variable "cai_config" {
   description = "Cloud Asset inventory export config."
   type = object({
-    bq_dataset   = string
-    bq_table     = string
+    bq_dataset = string
+    bq_table   = string
   })
 }
 
@@ -64,6 +64,7 @@ variable "region" {
 }
 
 variable "root_node" {
-  description = "The resource name of the parent Folder or Organization. Must be of the form folders/folder_id or organizations/org_id."
+  description = "The resource name of the parent folder or organization for project creation, in 'folders/folder_id' or 'organizations/org_id' format."
   type        = string
+  default     = null
 }
