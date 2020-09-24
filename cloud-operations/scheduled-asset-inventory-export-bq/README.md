@@ -1,6 +1,5 @@
 # Scheduled Cloud Asset Inventory Export to Bigquery
 
-<<<<<<< HEAD
 This example shows how to leverage [Cloud Asset Inventory Exporting to Bigquery](https://cloud.google.com/asset-inventory/docs/exporting-to-bigquery) feature to keep track of your project wide assets over time storing information in Bigquery.
 
 The data stored in Bigquery can then be used for different purposes:
@@ -8,17 +7,12 @@ The data stored in Bigquery can then be used for different purposes:
 - dashboarding
 - analysis
 
-The example uses export resources at project level for ease of testing, in actual use a few changes are needed to operate at the resource hierarchy level:
+The example uses export resources at the project level for ease of testing, in actual use a few changes are needed to operate at the resource hierarchy level:
 
- - the export should be set at the folder or organization level
- - the `roles/cloudasset.viewer` on the service account should be set at folder or organization level
+- the export should be set at the folder or organization level
+- the `roles/cloudasset.viewer` on the service account should be set at the folder or organization level
 
 The resources created in this example are shown in the high level diagram below:
-=======
-This example shows how to leverage the [Cloud Asset Inventory Exporting to Bigquery](https://cloud.google.com/asset-inventory/docs/exporting-to-bigquery) feature, to keep track of your organization's assets over time storing information in Bigquery. The data stored in Bigquery can then be used for different purposes like dashboarding or analysis.
-
-This example shows an export to Bigquery scheduled on a daily basis. The resources created in this example are shown in the high level diagram below:
->>>>>>> a2392aeda1c0a3da04b80666d3eb4b09061eeb04
 
 <img src="diagram.png" width="640px">
 
