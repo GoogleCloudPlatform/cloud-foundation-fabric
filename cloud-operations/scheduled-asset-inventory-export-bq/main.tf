@@ -39,9 +39,7 @@ module "service-account" {
   project_id = module.project.project_id
   names      = ["${var.name}-cf"]
   iam_project_roles = {
-    (var.project_id) = [
-      "roles/cloudasset.viewer"
-    ]
+    (var.project_id) = ["roles/cloudasset.viewer"]
   }
 }
 
@@ -96,12 +94,12 @@ resource "google_app_engine_application" "app" {
 }
 
 resource "google_cloud_scheduler_job" "job" {
-  project          = google_app_engine_application.app.project
-  region           = var.region
-  name             = "test-job"
-  description      = "test http job"
-  schedule         = "* 9 * * 1"
-  time_zone        = "Etc/UTC"
+  project     = google_app_engine_application.app.project
+  region      = var.region
+  name        = "test-job"
+  description = "test http job"
+  schedule    = "* 9 * * 1"
+  time_zone   = "Etc/UTC"
 
   pubsub_target {
     attributes = {}
