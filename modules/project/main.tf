@@ -214,17 +214,23 @@ resource "google_project_organization_policy" "list" {
 }
 
 resource "google_compute_shared_vpc_host_project" "shared_vpc_host" {
-  count   = try(var.shared_vpc_config.enabled, false) ? 1 : 0
+  count   = try(var.shared_vpc_host_config.enabled, false) ? 1 : 0
   project = local.project.project_id
 }
 
 resource "google_compute_shared_vpc_service_project" "service_projects" {
   for_each = (
-    try(var.shared_vpc_config.enabled, false)
-    ? toset(var.shared_vpc_config.service_projects)
+    try(var.shared_vpc_host_config.enabled, false)
+    ? toset(coalesce(var.shared_vpc_host_config.service_projects, []))
     : toset([])
   )
   host_project    = local.project.project_id
   service_project = each.value
   depends_on      = [google_compute_shared_vpc_host_project.shared_vpc_host]
+}
+
+resource "google_compute_shared_vpc_service_project" "shared_vpc_service" {
+  count           = try(var.shared_vpc_service_config.attach, false) ? 1 : 0
+  host_project    = var.shared_vpc_service_config.host_project
+  service_project = local.project.project_id
 }

@@ -139,8 +139,8 @@ variable "service_config" {
   }
 }
 
-variable "shared_vpc_config" {
-  description = "Configure Shared VPC for project."
+variable "shared_vpc_host_config" {
+  description = "Configures this project as a Shared VPC host project (mutually exclusive with shared_vpc_service_project)."
   type = object({
     enabled          = bool
     service_projects = list(string)
@@ -148,5 +148,17 @@ variable "shared_vpc_config" {
   default = {
     enabled          = false
     service_projects = []
+  }
+}
+
+variable "shared_vpc_service_config" {
+  description = "Configures this project as a Shared VPC service project (mutually exclusive with shared_vpc_host_config)."
+  type = object({
+    attach       = bool
+    host_project = string
+  })
+  default = {
+    attach       = false
+    host_project = ""
   }
 }

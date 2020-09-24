@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 - add support for logging and better type for the `retention_policies` variable in `gcs` module
 - **incompatible change** deprecate bucket_policy_only in favor of uniform_bucket_level_access in `gcs` module
+- **incompatible change** allow project module to configure itself as both shared VPC service and host project
 
 ## [3.3.0] - 2020-09-01
 
