@@ -26,7 +26,7 @@ module "project-host" {
   prefix          = var.prefix
   name            = "net"
   services        = concat(var.project_services, ["dns.googleapis.com"])
-  shared_vpc_config = {
+  shared_vpc_host_config = {
     enabled = true
     service_projects = [
       module.project-svc-gce.project_id,
