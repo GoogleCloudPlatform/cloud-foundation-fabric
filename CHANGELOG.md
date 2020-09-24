@@ -4,8 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [3.4.0] - 2020-09-24
+
 - add support for logging and better type for the `retention_policies` variable in `gcs` module
-- **incompatible change** deprecate bucket_policy_only in favor of uniform_bucket_level_access in `gcs` module
+- **incompatible change** deprecate `bucket_policy_only` in favor of `uniform_bucket_level_access` in `gcs` module
 - **incompatible change** allow project module to configure itself as both shared VPC service and host project
 
 ## [3.3.0] - 2020-09-01
@@ -193,7 +195,8 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.3.0...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.4.0...HEAD
+[3.4.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.3.0...v3.4.0
 [3.3.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.2.0...v3.3.0
 [3.2.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.1.1...v3.2.0
 [3.1.1]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.1.0...v3.1.1
