@@ -44,14 +44,14 @@ You can also create a dashboard connecting [Datalab](https://datastudio.google.c
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
 | billing_account | Billing account id used as default for new projects. | <code title="">string</code> | ✓ |  |
-| cai_config | Cloud Asset inventory export config. | <code title="object&#40;&#123;&#10;bq_dataset   &#61; string&#10;bq_table     &#61; string&#10;&#125;&#41;">object({...})</code> | ✓ |  |
+| cai_config | Cloud Asset inventory export config. | <code title="object&#40;&#123;&#10;bq_dataset &#61; string&#10;bq_table   &#61; string&#10;&#125;&#41;">object({...})</code> | ✓ |  |
 | project_id | Project id that references existing project. | <code title="">string</code> | ✓ |  |
-| root_node | The resource name of the parent Folder or Organization. Must be of the form folders/folder_id or organizations/org_id. | <code title="">string</code> | ✓ |  |
 | *bundle_path* | Path used to write the intermediate Cloud Function code bundle. | <code title="">string</code> |  | <code title="">./bundle.zip</code> |
 | *location* | Appe Engine location used in the example. | <code title="">string</code> |  | <code title="">europe-west</code> |
 | *name* | Arbitrary string used to name created resources. | <code title="">string</code> |  | <code title="">asset-inventory</code> |
 | *project_create* | Create project instead ofusing an existing one. | <code title="">bool</code> |  | <code title="">true</code> |
 | *region* | Compute region used in the example. | <code title="">string</code> |  | <code title="">europe-west1</code> |
+| *root_node* | The resource name of the parent folder or organization for project creation, in 'folders/folder_id' or 'organizations/org_id' format. | <code title="">string</code> |  | <code title="">null</code> |
 
 ## Outputs
 
