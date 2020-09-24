@@ -10,6 +10,12 @@ The example's feed tracks changes to Google Compute instances, and the Cloud Fun
 
 <br clear="left">
 
+## Scheduled Cloud Asset Inventory Export to Bigquery
+
+<a href="./scheduled-asset-inventory-export-bq" title="Scheduled Cloud Asset Inventory Export to Bigquery"><img src="./scheduled-asset-inventory-export-bq/diagram.png" align="left" width="280px"></a> This [example](./scheduled-asset-inventory-export-bq) shows how to leverage the [Cloud Asset Inventory Exporting to Bigquery](https://cloud.google.com/asset-inventory/docs/exporting-to-bigquery) feature, to keep track of your organization's assets over time storing information in Bigquery. Data stored in Bigquery can then be used for different purposes like dashboarding or analysis.
+
+<br clear="left">
+
 ## Granular Cloud DNS IAM via Service Directory
 
 <a href="./dns-fine-grained-iam" title="Fine-grained Cloud DNS IAM with Service Directory"><img src="./dns-fine-grained-iam/diagram.png" align="left" width="280px"></a> This [example](./dns-fine-grained-iam) shows how to leverage [Service Directory](https://cloud.google.com/blog/products/networking/introducing-service-directory) and Cloud DNS Service Directory private zones, to implement fine-grained IAM controls on DNS. The example creates a Service Directory namespace, a Cloud DNS private zone that uses it as its authoritative source, service accounts with different levels of permissions, and VMs to test them.
