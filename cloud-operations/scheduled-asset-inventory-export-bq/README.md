@@ -48,8 +48,9 @@ You can also create a dashboard connecting [Datalab](https://datastudio.google.c
 | project_id | Project id that references existing project. | <code title="">string</code> | ✓ |  |
 | root_node | The resource name of the parent Folder or Organization. Must be of the form folders/folder_id or organizations/org_id. | <code title="">string</code> | ✓ |  |
 | *bundle_path* | Path used to write the intermediate Cloud Function code bundle. | <code title="">string</code> |  | <code title="">./bundle.zip</code> |
+| *location* | Appe Engine location used in the example. | <code title="">string</code> |  | <code title="">europe-west</code> |
 | *name* | Arbitrary string used to name created resources. | <code title="">string</code> |  | <code title="">asset-inventory</code> |
-| *project_create* | Create project instead ofusing an existing one. | <code title="">bool</code> |  | <code title="">false</code> |
+| *project_create* | Create project instead ofusing an existing one. | <code title="">bool</code> |  | <code title="">true</code> |
 | *region* | Compute region used in the example. | <code title="">string</code> |  | <code title="">europe-west1</code> |
 
 ## Outputs
