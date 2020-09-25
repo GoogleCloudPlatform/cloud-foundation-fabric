@@ -68,13 +68,8 @@ resource "google_container_cluster" "cluster" {
     network_policy_config {
       disabled = ! var.addons.network_policy_config
     }
-    # beta addons
-    # cloudrun is dynamic as it tends to trigger cluster recreation on change
-    dynamic cloudrun_config {
-      for_each = var.addons.istio_config.enabled && var.addons.cloudrun_config ? [""] : []
-      content {
-        disabled = false
-      }
+    cloudrun_config {
+      disabled = ! var.addons.cloudrun_config
     }
     istio_config {
       disabled = ! var.addons.istio_config.enabled
