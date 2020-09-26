@@ -184,6 +184,7 @@ resource "google_bigquery_table" "default" {
 
 
 resource "google_bigquery_table" "views" {
+  depends_on    = [google_bigquery_table.default]
   for_each      = var.views
   project       = var.project_id
   dataset_id    = google_bigquery_dataset.default.dataset_id
