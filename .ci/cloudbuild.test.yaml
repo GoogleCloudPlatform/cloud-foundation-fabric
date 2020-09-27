@@ -30,7 +30,7 @@ steps:
     id: test-modules
     entrypoint: pytest
     args:
-      - -v
+      - -vv
       - tests/modules
     env:
       - PATH=/usr/local/bin:/usr/bin:/bin:/builder/home/.local/bin
@@ -39,7 +39,7 @@ steps:
     id: test-environments
     entrypoint: pytest
     args:
-      - -v
+      - -vv
       - tests/foundations
       - tests/networking
     env:
