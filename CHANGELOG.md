@@ -3,7 +3,10 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
- - end to end example: `Scheduled Cloud Asset Inventory Export to Bigquery`
+
+- end to end example for scheduled Cloud Asset Inventory export to Bigquery
+- decouple Cloud Run from Istio in GKE cluster module
+- depend views on tables in bigquery dataset module
 
 ## [3.4.0] - 2020-09-24
 
