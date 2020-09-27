@@ -30,7 +30,7 @@ steps:
     id: test-modules
     entrypoint: pytest
     args:
-      - -v
+      - -vv
       - tests/modules
     env:
       - PATH=/usr/local/bin:/usr/bin:/bin:/builder/home/.local/bin
@@ -39,7 +39,7 @@ steps:
     id: test-environments
     entrypoint: pytest
     args:
-      - -v
+      - -vv
       - tests/foundations
       - tests/networking
     env:
@@ -47,7 +47,7 @@ steps:
       - TF_CLI_CONFIG_FILE=/workspace/.ci/.terraformrc
 
 substitutions:
-  _TERRAFORM_VERSION: 0.12.20
+  _TERRAFORM_VERSION: 0.13.3
 
 tags:
   - "ci"
