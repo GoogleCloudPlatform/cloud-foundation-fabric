@@ -30,7 +30,7 @@ locals {
     "${pair.0}/${pair.1}" => { role = pair.0, name = pair.1 }
   }
   names = (
-    var.use_instance_template ? { "${var.name}" = 0 } : {
+    var.use_instance_template ? { (var.name) = 0 } : {
       for i in range(0, var.instance_count) : "${var.name}-${i + 1}" => i
     }
   )

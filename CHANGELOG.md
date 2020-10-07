@@ -7,6 +7,8 @@ All notable changes to this project will be documented in this file.
 - end to end example for scheduled Cloud Asset Inventory export to Bigquery
 - decouple Cloud Run from Istio in GKE cluster module
 - depend views on tables in bigquery dataset module
+- bring back logging options for firewall rules in `net-vpc-firewall` module
+- removed interpolation-only expressions causing terraform warnings
 
 ## [3.4.0] - 2020-09-24
 
