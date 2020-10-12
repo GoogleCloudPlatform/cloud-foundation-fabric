@@ -53,7 +53,8 @@ module "peering-a-c" {
 | *export_local_custom_routes* | Export custom routes to peer network from local network. | <code title="">bool</code> |  | <code title="">false</code> |
 | *export_peer_custom_routes* | Export custom routes to local network from peer network. | <code title="">bool</code> |  | <code title="">false</code> |
 | *module_depends_on* | List of modules or resources this module depends on. | <code title="">list</code> |  | <code title="">[]</code> |
-| *prefix* | Name prefix for the network peerings | <code title="">string</code> |  | <code title="">network-peering</code> |
+| *peer_create_peering* | Create the peering on the remote side. If false, only the peering from this network to the remote network is created. | <code title="">bool</code> |  | <code title="">true</code> |
+| *prefix* | Name prefix for the network peerings. | <code title="">string</code> |  | <code title="">network-peering</code> |
 
 ## Outputs
 

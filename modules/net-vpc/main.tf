@@ -101,7 +101,7 @@ resource "google_compute_network_peering" "local" {
 
 resource "google_compute_network_peering" "remote" {
   provider             = google-beta
-  count                = var.peering_config == null ? 0 : 1
+  count                = var.peering_config != null && var.peering_create_remote_end ? 1 : 0
   name                 = "${local.peer_network}-${var.name}"
   network              = var.peering_config.peer_vpc_self_link
   peer_network         = local.network.self_link

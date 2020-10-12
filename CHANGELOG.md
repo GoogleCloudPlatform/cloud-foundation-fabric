@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file.
 - add support for virtual displays in `compute-vm`
 - add examples of alias IPs in `compute-vm` module
 - fix support for creating disks from images in `compute-vm`
+- allow creating single-sided peerings in `net-vpc` and `net-vpc-peering`
 
 ## [3.4.0] - 2020-09-24
 

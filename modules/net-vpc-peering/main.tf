@@ -30,6 +30,7 @@ resource "google_compute_network_peering" "local_network_peering" {
 }
 
 resource "google_compute_network_peering" "peer_network_peering" {
+  count                = var.peer_create_peering ? 1 : 0
   name                 = "${var.prefix}-${local.peer_network_name}-${local.local_network_name}"
   network              = var.peer_network
   peer_network         = var.local_network

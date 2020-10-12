@@ -37,6 +37,8 @@ module "vpc" {
 
 A single peering can be configured for the VPC, so as to allow management of simple scenarios, and more complex configurations like hub and spoke by defining the peering configuration on the spoke VPCs. Care must be taken so as a single peering is created/changed/destroyed at a time, due to the specific behaviour of the peering API calls.
 
+If you only want to create the "local" side of the peering, use `peering_create_remote_end` to `false`. This is useful if you don't have permissions on the remote project/VPC to create peerings.
+
 ```hcl
 module "vpc-spoke-1" {
   source     = "../modules/net-vpc"
@@ -119,6 +121,7 @@ module "vpc-host" {
 | *log_config_defaults* | Default configuration for flow logs when enabled. | <code title="object&#40;&#123;&#10;aggregation_interval &#61; string&#10;flow_sampling        &#61; number&#10;metadata             &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;aggregation_interval &#61; &#34;INTERVAL_5_SEC&#34;&#10;flow_sampling        &#61; 0.5&#10;metadata             &#61; &#34;INCLUDE_ALL_METADATA&#34;&#10;&#125;">...</code> |
 | *log_configs* | Map keyed by subnet 'region/name' of optional configurations for flow logs when enabled. | <code title="map&#40;map&#40;string&#41;&#41;">map(map(string))</code> |  | <code title="">{}</code> |
 | *peering_config* | VPC peering configuration. | <code title="object&#40;&#123;&#10;peer_vpc_self_link &#61; string&#10;export_routes      &#61; bool&#10;import_routes      &#61; bool&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
+| *peering_create_remote_end* | Skip creation of peering on the remote end when using peering_config | <code title="">bool</code> |  | <code title="">true</code> |
 | *routes* | Network routes, keyed by name. | <code title="map&#40;object&#40;&#123;&#10;dest_range    &#61; string&#10;priority      &#61; number&#10;tags          &#61; list&#40;string&#41;&#10;next_hop_type &#61; string &#35; gateway, instance, ip, vpn_tunnel, ilb&#10;next_hop      &#61; string&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
 | *routing_mode* | The network routing mode (default 'GLOBAL') | <code title="">string</code> |  | <code title="">GLOBAL</code> |
 | *shared_vpc_host* | Enable shared VPC for this project. | <code title="">bool</code> |  | <code title="">false</code> |

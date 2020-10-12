@@ -79,6 +79,12 @@ variable "peering_config" {
   default = null
 }
 
+variable "peering_create_remote_end" {
+  description = "Skip creation of peering on the remote end when using peering_config"
+  type        = bool
+  default     = true
+}
+
 variable "project_id" {
   description = "The ID of the project where this VPC will be created"
   type        = string
