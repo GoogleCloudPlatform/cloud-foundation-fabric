@@ -53,10 +53,7 @@ variable "network_interfaces" {
       internal = list(string)
       external = list(string)
     })
-    alias_ips = list(object({
-      ip_cidr_range         = string
-      subnetwork_range_name = string
-    }))
+    alias_ips = map(list(string))
   }))
   default = [{
     network    = "https://www.googleapis.com/compute/v1/projects/my-project/global/networks/default",
