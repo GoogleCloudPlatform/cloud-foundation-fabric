@@ -153,10 +153,7 @@ variable "network_interfaces" {
       internal = list(string)
       external = list(string)
     })
-    alias_ips = list(object({
-      ip_cidr_range         = string
-      subnetwork_range_name = string
-    }))
+    alias_ips = map(list(string))
   }))
 }
 
@@ -242,4 +239,10 @@ variable "shielded_config" {
     enable_integrity_monitoring = bool
   })
   default = null
+}
+
+variable "enable_display" {
+  description = "Enable virtual display on the instances"
+  type        = bool
+  default     = false
 }

@@ -9,6 +9,11 @@ All notable changes to this project will be documented in this file.
 - depend views on tables in bigquery dataset module
 - bring back logging options for firewall rules in `net-vpc-firewall` module
 - removed interpolation-only expressions causing terraform warnings
+- **incompatible change** simplify alias IP specification in `compute-vm`. We now use a map (alias range name to list of IPs) instead of a list of maps.
+- allow using alias IPs with `instance_count` in `compute-vm`
+- add support for virtual displays in `compute-vm`
+- add examples of alias IPs in `compute-vm` module
+- fix support for creating disks from images in `compute-vm`
 
 ## [3.4.0] - 2020-09-24
 

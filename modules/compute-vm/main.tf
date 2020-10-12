@@ -69,10 +69,14 @@ resource "google_compute_disk" "disks" {
   name     = each.key
   type     = local.attached_disks[each.value.disk_name].options.type
   size     = local.attached_disks[each.value.disk_name].size
+  image    = local.attached_disks[each.value.disk_name].image
   labels = merge(var.labels, {
     disk_name = local.attached_disks[each.value.disk_name].name
     disk_type = local.attached_disks[each.value.disk_name].options.type
-    image     = local.attached_disks[each.value.disk_name].image
+
+    # Disk images usually have slashes, which is against label
+    # restrictions
+    # image     = local.attached_disks[each.value.disk_name].image
   })
   dynamic disk_encryption_key {
     for_each = var.encryption != null ? [""] : []
@@ -97,6 +101,7 @@ resource "google_compute_instance" "default" {
   can_ip_forward            = var.can_ip_forward
   allow_stopping_for_update = var.options.allow_stopping_for_update
   deletion_protection       = var.options.deletion_protection
+  enable_display            = var.enable_display
   labels                    = var.labels
   metadata = merge(
     var.metadata, try(element(var.metadata_list, each.value), {})
@@ -146,11 +151,11 @@ resource "google_compute_instance" "default" {
         }
       }
       dynamic alias_ip_range {
-        for_each = config.value.alias_ips != null ? config.value.alias_ips : []
+        for_each = config.value.alias_ips != null ? config.value.alias_ips : {}
         iterator = alias_ips
         content {
-          ip_cidr_range         = alias_ips.value.ip_cidr_range
-          subnetwork_range_name = alias_ips.value.subnetwork_range_name
+          subnetwork_range_name = alias_ips.key
+          ip_cidr_range         = alias_ips.value[each.value]
         }
       }
     }

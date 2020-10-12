@@ -76,6 +76,34 @@ module "kms-vm-example" {
 }
 ```
 
+### Using Alias IPs
+
+This example shows how add additional [Alias IPs](https://cloud.google.com/vpc/docs/alias-ip) to your VM.
+
+```hcl
+module "vm-with-alias-ips" {
+  source     = "../modules/compute-vm"
+  project_id = "my-project"
+  region     = "europe-west1"
+  name       = "test"
+  network_interfaces = [{
+    network    = local.network_self_link
+    subnetwork = local.subnet_self_link
+    nat        = false
+    addresses  = null
+    alias_ips = {
+      alias1 = [
+        "10.16.0.10/32", # alias1 IP for first instance
+        "10.16.0.11/32", # alias1 IP for second instance
+        "10.16.0.12/32", # alias1 IP for third instance
+      ]
+    }
+  }]
+  service_account_create = true
+  instance_count         = 3
+}
+```
+
 ### Instance template
 
 This example shows how to use the module to manage an instance template that defines an additional attached disk for each instance, and overrides defaults for the boot disk image and service account.
