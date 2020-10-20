@@ -57,9 +57,9 @@ module "project-kms" {
 ###############################################################################
 
 module "service-account-bq" {
-  source     = "../../modules/iam-service-accounts"
+  source     = "../../modules/iam-service-account"
   project_id = module.project-service.project_id
-  names      = ["bq-test"]
+  name       = "bq-test"
   iam_project_roles = {
     (var.project_service_name) = [
       "roles/logging.logWriter",
@@ -70,9 +70,9 @@ module "service-account-bq" {
 }
 
 module "service-account-gce" {
-  source     = "../../modules/iam-service-accounts"
+  source     = "../../modules/iam-service-account"
   project_id = module.project-service.project_id
-  names      = ["gce-test"]
+  name       = "gce-test"
   iam_project_roles = {
     (var.project_service_name) = [
       "roles/logging.logWriter",
@@ -86,9 +86,9 @@ module "service-account-gce" {
 }
 
 module "service-account-df" {
-  source     = "../../modules/iam-service-accounts"
+  source     = "../../modules/iam-service-account"
   project_id = module.project-service.project_id
-  names      = ["df-test"]
+  name       = "df-test"
   iam_project_roles = {
     (var.project_service_name) = [
       "roles/dataflow.worker",
@@ -301,7 +301,7 @@ module "bigquery-dataset" {
     owner        = { role = "OWNER", type = "user_by_email" }
   }
   access_identities = {
-    owner        = module.service-account-bq.email
+    owner = module.service-account-bq.email
   }
   encryption_key = module.kms.keys.key-bq.self_link
   tables = {

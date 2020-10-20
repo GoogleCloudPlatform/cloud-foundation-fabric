@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-variable "generate_keys" {
+variable "generate_key" {
   type    = bool
   default = false
 }

@@ -37,9 +37,9 @@ module "project" {
 }
 
 module "service-accounts" {
-  source     = "../../modules/iam-service-accounts"
+  source     = "../../modules/iam-service-account"
   project_id = module.project.project_id
-  names      = ["${local.prefix}gce-vm"]
+  name       = "${local.prefix}gce-vm"
   iam_project_roles = {
     (var.project_id) = [
       "roles/logging.logWriter",

@@ -240,7 +240,7 @@ module "cluster-1-nodepool-1" {
 # project level, with no risk of conflicts with pre-existing roles
 
 module "service-account-gke-node" {
-  source     = "../../modules/iam-service-accounts"
+  source     = "../../modules/iam-service-account"
   project_id = module.project-svc-gke.project_id
-  names      = ["gke-node"]
+  name       = "gke-node"
 }

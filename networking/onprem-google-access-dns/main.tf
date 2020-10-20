@@ -170,9 +170,9 @@ resource "google_dns_policy" "inbound" {
 ################################################################################
 
 module "service-account-gce" {
-  source     = "../../modules/iam-service-accounts"
+  source     = "../../modules/iam-service-account"
   project_id = var.project_id
-  names      = ["gce-test"]
+  name       = "gce-test"
   iam_project_roles = {
     (var.project_id) = [
       "roles/logging.logWriter",
@@ -222,9 +222,9 @@ module "config-onprem" {
 }
 
 module "service-account-onprem" {
-  source     = "../../modules/iam-service-accounts"
+  source     = "../../modules/iam-service-account"
   project_id = var.project_id
-  names      = ["gce-onprem"]
+  name       = "gce-onprem"
   iam_project_roles = {
     (var.project_id) = [
       "roles/compute.viewer",
