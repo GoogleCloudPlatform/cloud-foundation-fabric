@@ -15,13 +15,13 @@
  */
 
 variable "iam_members" {
-  type    = map(map(list(string)))
-  default = null
+  type    = map(list(string))
+  default = {}
 }
 
 variable "iam_roles" {
-  type    = map(list(string))
-  default = null
+  type    = list(string)
+  default = []
 }
 
 variable "policy_boolean" {

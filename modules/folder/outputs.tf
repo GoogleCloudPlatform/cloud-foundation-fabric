@@ -14,12 +14,22 @@
  * limitations under the License.
  */
 
-module "test" {
-  source         = "../../../../modules/folder"
-  parent         = "organizations/12345678"
-  name           = "folder-a"
-  iam_members    = var.iam_members
-  iam_roles      = var.iam_roles
-  policy_boolean = var.policy_boolean
-  policy_list    = var.policy_list
+output "folder" {
+  description = "Folder resource."
+  value       = google_folder.folder
+}
+
+output "id" {
+  description = "Folder id."
+  value       = google_folder.folder.name
+  depends_on = [
+    google_folder_iam_binding.authoritative,
+    google_folder_organization_policy.boolean,
+    google_folder_organization_policy.list
+  ]
+}
+
+output "name" {
+  description = "Folder name."
+  value       = google_folder.folder.display_name
 }
