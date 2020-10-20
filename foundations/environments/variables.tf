@@ -29,7 +29,7 @@ variable "billing_account_id" {
 
 variable "environments" {
   description = "Environment short names."
-  type        = list(string)
+  type        = set(string)
 }
 
 variable "gcs_location" {

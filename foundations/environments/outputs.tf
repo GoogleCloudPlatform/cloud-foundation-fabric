@@ -24,7 +24,7 @@ output "bootstrap_tf_gcs_bucket" {
 
 output "environment_folders" {
   description = "Top-level environment folders."
-  value       = module.environment-folders.ids
+  value       = { for folder in module.environment-folders : folder.name => folder.id }
 }
 
 output "environment_tf_gcs_buckets" {

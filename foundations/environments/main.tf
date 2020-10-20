@@ -85,17 +85,14 @@ module "tf-gcs-environments" {
 ###############################################################################
 
 module "environment-folders" {
-  source = "../../modules/folders"
-  parent = var.root_node
-  names  = var.environments
-  iam_roles = {
-    for name in var.environments : (name) => local.folder_roles
-  }
+  source    = "../../modules/folder"
+  for_each  = var.environments
+  parent    = var.root_node
+  name      = each.value
+  iam_roles = local.folder_roles
   iam_members = {
-    for name in var.environments : (name) => {
-      for role in local.folder_roles :
-      (role) => [module.tf-service-accounts.iam_emails[name]]
-    }
+    for role in local.folder_roles :
+    (role) => [module.tf-service-accounts.iam_emails[each.value]]
   }
 }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright 2018 Google LLC
+ * Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,26 +15,29 @@
  */
 
 variable "iam_members" {
-  description = "List of IAM members keyed by folder name and role."
-  type        = map(map(list(string)))
+  description = "List of IAM members keyed by role."
+  type        = map(set(string))
   default     = null
 }
 
 variable "iam_roles" {
-  description = "List of IAM roles keyed by folder name."
-  type        = map(list(string))
+  description = "List of IAM roles."
+  type        = set(string)
   default     = null
 }
 
-variable "names" {
-  description = "Folder names."
-  type        = list(string)
-  default     = []
+variable "name" {
+  description = "Folder name."
+  type        = string
 }
 
 variable "parent" {
   description = "Parent in folders/folder_id or organizations/org_id format."
   type        = string
+  validation {
+    condition     = can(regex("(organizations|folders)/[0-9]+", var.parent))
+    error_message = "Parent must be of the form folders/folder_id or organizations/organization_id."
+  }
 }
 
 variable "policy_boolean" {

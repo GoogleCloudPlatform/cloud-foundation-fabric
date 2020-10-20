@@ -1,6 +1,6 @@
 # Google Cloud Folder Module
 
-This module allow creation and management of sets of folders sharing a common parent, and their individual IAM bindings. It also allows setting a common set of organization policies on all folders.
+This module allows the creation and management of folders together with their individual IAM bindings and organization policies.
 
 ## Examples
 
@@ -8,17 +8,13 @@ This module allow creation and management of sets of folders sharing a common pa
 
 ```hcl
 module "folder" {
-  source = "./modules/folders"
+  source = "./modules/folder"
   parent = "organizations/1234567890"
-  names  = ["Folder one", "Folder two"]
+  name  = "Folder name"
   iam_members = {
-    "Folder one" = {
-      "roles/owner" = ["group:users@example.com"]
-    }
+    "roles/owner" = ["group:users@example.com"]
   }
-  iam_roles = {
-    "Folder one" = ["roles/owner"]
-  }
+  iam_roles = ["roles/owner"]
 }
 ```
 
@@ -26,9 +22,9 @@ module "folder" {
 
 ```hcl
 module "folder" {
-  source = "./modules/folders"
+  source = "./modules/folder"
   parent = "organizations/1234567890"
-  names  = ["Folder one", "Folder two"]
+  name  = "Folder name"
   policy_boolean = {
     "constraints/compute.disableGuestAttributesAccess" = true
     "constraints/compute.skipDefaultNetworkCreation" = true
@@ -49,10 +45,10 @@ module "folder" {
 
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
-| parent | Parent in folders/folder_id or organizations/org_id format. | <code title="">string</code> | ✓ |  |
-| *iam_members* | List of IAM members keyed by folder name and role. | <code title="map&#40;map&#40;list&#40;string&#41;&#41;&#41;">map(map(list(string)))</code> |  | <code title="">null</code> |
-| *iam_roles* | List of IAM roles keyed by folder name. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">null</code> |
-| *names* | Folder names. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
+| name | Folder name. | <code title="">string</code> | ✓ |  |
+| parent | Parent in folders/folder_id or organizations/org_id format. | <code title="string&#10;validation &#123;&#10;condition     &#61; can&#40;regex&#40;&#34;&#40;organizations&#124;folders&#41;&#47;&#91;0-9&#93;&#43;&#34;, var.parent&#41;&#41;&#10;error_message &#61; &#34;Parent must be of the form folders&#47;folder_id or organizations&#47;organization_id.&#34;&#10;&#125;">string</code> | ✓ |  |
+| *iam_members* | List of IAM members keyed by role. | <code title="map&#40;set&#40;string&#41;&#41;">map(set(string))</code> |  | <code title="">null</code> |
+| *iam_roles* | List of IAM roles. | <code title="set&#40;string&#41;">set(string)</code> |  | <code title="">null</code> |
 | *policy_boolean* | Map of boolean org policies and enforcement value, set value to null for policy restore. | <code title="map&#40;bool&#41;">map(bool)</code> |  | <code title="">{}</code> |
 | *policy_list* | Map of list org policies, status is true for allow, false for deny, null for restore. Values can only be used for allow or deny. | <code title="map&#40;object&#40;&#123;&#10;inherit_from_parent &#61; bool&#10;suggested_value     &#61; string&#10;status              &#61; bool&#10;values              &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
 
@@ -60,12 +56,7 @@ module "folder" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| folder | Folder resource (for single use). |  |
-| folders | Folder resources. |  |
-| id | Folder id (for single use). |  |
-| ids | Folder ids. |  |
-| ids_list | List of folder ids. |  |
-| name | Folder name (for single use). |  |
-| names | Folder names. |  |
-| names_list | List of folder names. |  |
+| folder | Folder resource. |  |
+| id | Folder id. |  |
+| name | Folder name. |  |
 <!-- END TFDOC -->
