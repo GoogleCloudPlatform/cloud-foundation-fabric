@@ -14,58 +14,63 @@
  * limitations under the License.
  */
 
-variable "generate_keys" {
-  description = "Generate keys for service accounts."
+variable "generate_key" {
+  description = "Generate a key for service account."
   type        = bool
   default     = false
 }
 
 variable "iam_members" {
-  description = "Map of member lists which are granted authoritative roles on the service accounts, keyed by role."
-  type        = map(list(string))
+  description = "Map of members which are granted authoritative roles on the service account, keyed by role."
+  type        = map(set(string))
   default     = {}
 }
 
 variable "iam_roles" {
-  description = "List of authoritative roles granted on the service accounts."
-  type        = list(string)
+  description = "Authoritative roles granted on the service account."
+  type        = set(string)
   default     = []
 }
 
 variable "iam_billing_roles" {
-  description = "Project roles granted to all service accounts, by billing account id."
-  type        = map(list(string))
+  description = "Project roles granted to the service account, by billing account id."
+  type        = map(set(string))
   default     = {}
 }
 
 variable "iam_folder_roles" {
-  description = "Project roles granted to all service accounts, by folder id."
-  type        = map(list(string))
+  description = "Project roles granted to the service account, by folder id."
+  type        = map(set(string))
   default     = {}
 }
 
 variable "iam_organization_roles" {
-  description = "Project roles granted to all service accounts, by organization id."
-  type        = map(list(string))
+  description = "Project roles granted to the service account, by organization id."
+  type        = map(set(string))
   default     = {}
 }
 
 variable "iam_project_roles" {
-  description = "Project roles granted to all service accounts, by project id."
-  type        = map(list(string))
+  description = "Project roles granted to the service account, by project id."
+  type        = map(set(string))
   default     = {}
 }
 
 variable "iam_storage_roles" {
-  description = "Storage roles granted to all service accounts, by bucket name."
-  type        = map(list(string))
+  description = "Storage roles granted to the service account, by bucket name."
+  type        = map(set(string))
   default     = {}
 }
 
-variable "names" {
-  description = "Names of the service accounts to create."
-  type        = list(string)
-  default     = []
+variable "name" {
+  description = "Name of the service account to create."
+  type        = string
+}
+
+variable "display_name" {
+  description = "Display name of the service account to create."
+  type        = string
+  default     = "Terraform-managed."
 }
 
 variable "prefix" {
