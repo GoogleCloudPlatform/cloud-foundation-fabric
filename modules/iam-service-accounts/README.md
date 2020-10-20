@@ -13,7 +13,7 @@ module "myproject-default-service-accounts" {
   # authoritative roles granted *on* the service accounts to other identities
   iam_roles         = ["roles/iam.serviceAccountUser"]
   iam_members       = {
-    "roles/iam.serviceAccountUser" => ["user:foo@example.com"]
+    "roles/iam.serviceAccountUser" = ["user:foo@example.com"]
   }
   # non-authoritative roles granted *to* the service accounts on other resources
   iam_project_roles = {
