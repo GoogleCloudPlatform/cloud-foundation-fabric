@@ -26,12 +26,6 @@ variable "iam_members" {
   default     = {}
 }
 
-variable "iam_roles" {
-  description = "Authoritative roles granted on the service account."
-  type        = set(string)
-  default     = []
-}
-
 variable "iam_billing_roles" {
   description = "Project roles granted to the service account, by billing account id."
   type        = map(set(string))

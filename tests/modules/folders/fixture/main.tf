@@ -19,7 +19,6 @@ module "test" {
   parent         = "organizations/12345678"
   name           = "folder-a"
   iam_members    = var.iam_members
-  iam_roles      = var.iam_roles
   policy_boolean = var.policy_boolean
   policy_list    = var.policy_list
 }

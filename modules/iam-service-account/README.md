@@ -39,7 +39,6 @@ module "myproject-default-service-accounts" {
 | *iam_members* | Map of members which are granted authoritative roles on the service account, keyed by role. | <code title="map&#40;set&#40;string&#41;&#41;">map(set(string))</code> |  | <code title="">{}</code> |
 | *iam_organization_roles* | Project roles granted to the service account, by organization id. | <code title="map&#40;set&#40;string&#41;&#41;">map(set(string))</code> |  | <code title="">{}</code> |
 | *iam_project_roles* | Project roles granted to the service account, by project id. | <code title="map&#40;set&#40;string&#41;&#41;">map(set(string))</code> |  | <code title="">{}</code> |
-| *iam_roles* | Authoritative roles granted on the service account. | <code title="set&#40;string&#41;">set(string)</code> |  | <code title="">[]</code> |
 | *iam_storage_roles* | Storage roles granted to the service account, by bucket name. | <code title="map&#40;set&#40;string&#41;&#41;">map(set(string))</code> |  | <code title="">{}</code> |
 | *prefix* | Prefix applied to service account names. | <code title="">string</code> |  | <code title="">null</code> |
 

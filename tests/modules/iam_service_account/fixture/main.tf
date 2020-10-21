@@ -21,7 +21,6 @@ module "test" {
   prefix                 = var.prefix
   generate_key           = var.generate_key
   iam_members            = var.iam_members
-  iam_roles              = var.iam_roles
   iam_billing_roles      = var.iam_billing_roles
   iam_folder_roles       = var.iam_folder_roles
   iam_organization_roles = var.iam_organization_roles

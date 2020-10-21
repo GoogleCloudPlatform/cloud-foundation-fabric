@@ -30,34 +30,22 @@ def test_folder(plan_runner):
   assert resource['values']['parent'] == 'organizations/12345678'
 
 
-def test_iam_roles_only(plan_runner):
-  "Test folder resources with only iam roles passed."
-  _, resources = plan_runner(FIXTURES_DIR,
-                             iam_roles='["roles/owner"]')
-  assert len(resources) == 2
-
-
 def test_iam(plan_runner):
   "Test folder resources with iam roles and members."
-  iam_roles = '["roles/owner"]'
   iam_members = '{"roles/owner" = ["user:a@b.com"] }'
   _, resources = plan_runner(FIXTURES_DIR,
-                             iam_roles=iam_roles,
                              iam_members=iam_members)
   assert len(resources) == 2
 
 def test_iam_multiple_members(plan_runner):
   "Test folder resources with multiple iam members."
-  iam_roles = '["roles/owner"]'
   iam_members = '{"roles/owner" = ["user:a@b.com", "user:c@d.com"] }'
   _, resources = plan_runner(FIXTURES_DIR,
-                             iam_roles=iam_roles,
                              iam_members=iam_members)
   assert len(resources) == 2
 
 def test_iam_multiple_roles(plan_runner):
   "Test folder resources with multiple iam roles."
-  iam_roles = '["roles/owner", "roles/viewer"]'
   iam_members = (
     '{ '
     '"roles/owner" = ["user:a@b.com"], '
@@ -65,6 +53,5 @@ def test_iam_multiple_roles(plan_runner):
     '} '
   )
   _, resources = plan_runner(FIXTURES_DIR,
-                             iam_roles=iam_roles,
                              iam_members=iam_members)
   assert len(resources) == 3

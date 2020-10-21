@@ -24,11 +24,6 @@ variable "iam_members" {
   default = {}
 }
 
-variable "iam_roles" {
-  type    = list(string)
-  default = []
-}
-
 variable "iam_billing_roles" {
   type    = map(list(string))
   default = {}

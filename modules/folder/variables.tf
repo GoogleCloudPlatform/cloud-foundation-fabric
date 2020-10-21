@@ -20,12 +20,6 @@ variable "iam_members" {
   default     = null
 }
 
-variable "iam_roles" {
-  description = "List of IAM roles."
-  type        = set(string)
-  default     = null
-}
-
 variable "name" {
   description = "Folder name."
   type        = string

@@ -19,11 +19,6 @@ variable "iam_members" {
   default = {}
 }
 
-variable "iam_roles" {
-  type    = list(string)
-  default = []
-}
-
 variable "policy_boolean" {
   type    = map(bool)
   default = {}

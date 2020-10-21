@@ -37,7 +37,6 @@ def test_resources(plan_runner):
 def test_iam_roles(plan_runner):
   "Test iam roles with one member."
   variables = dict(
-    iam_roles='["roles/iam.serviceAccountUser"]',
     iam_members=(
       '{'
       '"roles/iam.serviceAccountUser" = ["user:a@b.com"] '
