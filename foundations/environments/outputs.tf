@@ -35,12 +35,12 @@ output "environment_tf_gcs_buckets" {
 output "environment_service_account_keys" {
   description = "Service account keys used to run each environment Terraform modules."
   sensitive   = true
-  value       = module.tf-service-accounts.keys
+  value       = { for env, sa in module.tf-service-accounts : env => sa.key }
 }
 
 output "environment_service_accounts" {
   description = "Service accounts used to run each environment Terraform modules."
-  value       = module.tf-service-accounts.emails
+  value       = { for env, sa in module.tf-service-accounts : env => sa.email }
 }
 
 output "audit_logs_bq_dataset" {

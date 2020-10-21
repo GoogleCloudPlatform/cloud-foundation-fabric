@@ -15,11 +15,11 @@
  */
 
 module "test" {
-  source                 = "../../../../modules/iam-service-accounts"
+  source                 = "../../../../modules/iam-service-account"
   project_id             = var.project_id
-  names                  = ["sa-one", "sa-two", "sa-three"]
+  name                   = "sa-one"
   prefix                 = var.prefix
-  generate_keys          = var.generate_keys
+  generate_key           = var.generate_key
   iam_members            = var.iam_members
   iam_roles              = var.iam_roles
   iam_billing_roles      = var.iam_billing_roles

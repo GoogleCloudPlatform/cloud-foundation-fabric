@@ -75,9 +75,9 @@ module "pubsub" {
 }
 
 module "service-account" {
-  source     = "../../modules/iam-service-accounts"
+  source     = "../../modules/iam-service-account"
   project_id = module.project.project_id
-  names      = ["${var.name}-cf"]
+  name       = "${var.name}-cf"
   # iam_project_roles = { (module.project.project_id) = [local.role_id] }
 }
 

@@ -33,9 +33,10 @@ module "tf-project" {
 # per-environment service accounts
 
 module "tf-service-accounts" {
-  source     = "../../modules/iam-service-accounts"
+  source     = "../../modules/iam-service-account"
   project_id = module.tf-project.project_id
-  names      = var.environments
+  for_each   = var.environments
+  name       = each.value
   prefix     = var.prefix
   iam_billing_roles = {
     (var.billing_account_id) = (
@@ -49,7 +50,7 @@ module "tf-service-accounts" {
       var.iam_xpn_config.grant ? local.sa_xpn_org_roles : []
     )
   }
-  generate_keys = var.service_account_keys
+  generate_key = var.service_account_keys
 }
 
 # bootstrap Terraform state GCS bucket
@@ -75,7 +76,7 @@ module "tf-gcs-environments" {
   }
   iam_members = {
     for name in var.environments : (name) => {
-      "roles/storage.objectAdmin" = [module.tf-service-accounts.iam_emails[name]]
+      "roles/storage.objectAdmin" = [module.tf-service-accounts[name].iam_email]
     }
   }
 }
@@ -92,7 +93,7 @@ module "environment-folders" {
   iam_roles = local.folder_roles
   iam_members = {
     for role in local.folder_roles :
-    (role) => [module.tf-service-accounts.iam_emails[each.value]]
+    (role) => [module.tf-service-accounts[each.value].iam_email]
   }
 }
 
