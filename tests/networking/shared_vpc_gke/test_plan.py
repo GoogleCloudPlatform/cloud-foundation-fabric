@@ -22,9 +22,6 @@ FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
 
 def test_resources(e2e_plan_runner):
   "Test that plan works and the numbers of resources is as expected."
-  modules, resources = e2e_plan_runner(FIXTURES_DIR, targets=[
-      "module.test.module.project-svc-gce",
-      "module.test.module.project-svc-gke"
-  ])
-  assert len(modules) == 4
-  assert len(resources) == 16
+  modules, resources = e2e_plan_runner(FIXTURES_DIR)
+  assert len(modules) == 11
+  assert len(resources) == 43

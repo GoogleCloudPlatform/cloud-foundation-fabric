@@ -27,11 +27,8 @@ module "project-host" {
   name            = "net"
   services        = concat(var.project_services, ["dns.googleapis.com"])
   shared_vpc_host_config = {
-    enabled = true
-    service_projects = [
-      module.project-svc-gce.project_id,
-      module.project-svc-gke.project_id
-    ]
+    enabled          = true
+    service_projects = [] # defined later
   }
   iam_roles = [
     "roles/container.hostServiceAgentUser", "roles/owner"
@@ -53,6 +50,10 @@ module "project-svc-gce" {
   services        = var.project_services
   oslogin         = true
   oslogin_admins  = var.owners_gce
+  shared_vpc_service_config = {
+    attach       = true
+    host_project = module.project-host.project_id
+  }
   iam_roles = [
     "roles/logging.logWriter",
     "roles/monitoring.metricWriter",
@@ -75,6 +76,10 @@ module "project-svc-gke" {
   prefix          = var.prefix
   name            = "gke"
   services        = var.project_services
+  shared_vpc_service_config = {
+    attach       = true
+    host_project = module.project-host.project_id
+  }
   iam_roles = [
     "roles/container.developer",
     "roles/logging.logWriter",
