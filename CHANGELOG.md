@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [3.5.0] - 2020-10-27
+
 - end to end example for scheduled Cloud Asset Inventory export to Bigquery
 - decouple Cloud Run from Istio in GKE cluster module
 - depend views on tables in bigquery dataset module
@@ -208,7 +210,8 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.4.0...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.5.0...HEAD
+[3.5.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.4.0...v3.5.0
 [3.4.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.3.0...v3.4.0
 [3.3.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.2.0...v3.3.0
 [3.2.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.1.1...v3.2.0
