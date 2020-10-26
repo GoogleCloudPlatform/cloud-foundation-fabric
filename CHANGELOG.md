@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file.
 - add examples of alias IPs in `compute-vm` module
 - fix support for creating disks from images in `compute-vm`
 - allow creating single-sided peerings in `net-vpc` and `net-vpc-peering`
+- use service project registration to Shared VPC in GKE example to remove need for two-step apply
 
 ## [3.4.0] - 2020-09-24
 
