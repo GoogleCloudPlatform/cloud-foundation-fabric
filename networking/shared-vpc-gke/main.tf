@@ -27,11 +27,8 @@ module "project-host" {
   name            = "net"
   services        = concat(var.project_services, ["dns.googleapis.com"])
   shared_vpc_host_config = {
-    enabled = true
-    service_projects = [
-      module.project-svc-gce.project_id,
-      module.project-svc-gke.project_id
-    ]
+    enabled          = true
+    service_projects = [] # defined later
   }
   iam_members = {
     "roles/container.hostServiceAgentUser" = [
@@ -50,6 +47,10 @@ module "project-svc-gce" {
   services        = var.project_services
   oslogin         = true
   oslogin_admins  = var.owners_gce
+  shared_vpc_service_config = {
+    attach       = true
+    host_project = module.project-host.project_id
+  }
   iam_members = {
     "roles/logging.logWriter"       = [module.vm-bastion.service_account_iam_email],
     "roles/monitoring.metricWriter" = [module.vm-bastion.service_account_iam_email],
@@ -67,6 +68,10 @@ module "project-svc-gke" {
   prefix          = var.prefix
   name            = "gke"
   services        = var.project_services
+  shared_vpc_service_config = {
+    attach       = true
+    host_project = module.project-host.project_id
+  }
   iam_members = {
     "roles/container.developer"     = [module.vm-bastion.service_account_iam_email],
     "roles/logging.logWriter"       = [module.service-account-gke-node.iam_email],

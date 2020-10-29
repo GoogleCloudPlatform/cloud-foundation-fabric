@@ -6,19 +6,6 @@ The sample has been purposefully kept simple so that it can be used as a basis f
 
 ![High-level diagram](diagram.png "High-level diagram")
 
-## Applying the example
-
-The example cannot be applied from scratch with a single `terraform apply` command, as Terraform is unable to manage Shared VPC project registration for multiple projects, before those are created and exist in state. To apply the example from scratch, follow this order:
-
-```bash
-tf apply \
-  -target module.project-svc-gce \
-  -target module.project-svc-gke
-tf apply
-```
-
-Once the first command has run successfully, the service projects exist in state and can be referenced by the multiple resource in the host project module that manages project registration.
-
 ## Accessing the bastion instance and GKE cluster
 
 The bastion VM has no public address so access is mediated via [IAP](https://cloud.google.com/iap/docs), which is supported transparently in the `gcloud compute ssh` command. Authentication is via OS Login set as a project default.
