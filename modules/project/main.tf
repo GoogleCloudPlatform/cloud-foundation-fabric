@@ -1,5 +1,5 @@
 /**
- * Copyright 2018 Google LLC
+ * Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,10 +91,10 @@ resource "google_project_service" "project_services" {
 # - additive (non-authoritative) roles might fail due to dynamic values
 
 resource "google_project_iam_binding" "authoritative" {
-  for_each = toset(var.iam_roles)
+  for_each = var.iam_members
   project  = local.project.project_id
-  role     = each.value
-  members  = lookup(var.iam_members, each.value, [])
+  role     = each.key
+  members  = each.value
   depends_on = [
     google_project_service.project_services,
     google_project_iam_custom_role.roles

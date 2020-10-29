@@ -108,10 +108,6 @@ module "audit-project" {
     "roles/bigquery.dataEditor" = [module.audit-log-sinks.writer_identities[0]]
     "roles/viewer"              = var.iam_audit_viewers
   }
-  iam_roles = [
-    "roles/bigquery.dataEditor",
-    "roles/viewer"
-  ]
   services = concat(var.project_services, [
     "bigquery.googleapis.com",
   ])

@@ -15,22 +15,21 @@
  */
 
 module "test" {
-  source               = "../../../../modules/project"
-  name                 = "my-project"
-  billing_account      = "12345-12345-12345"
-  auto_create_network  = var.auto_create_network
-  custom_roles         = var.custom_roles
-  iam_members          = var.iam_members
-  iam_roles            = var.iam_roles
+  source                = "../../../../modules/project"
+  name                  = "my-project"
+  billing_account       = "12345-12345-12345"
+  auto_create_network   = var.auto_create_network
+  custom_roles          = var.custom_roles
+  iam_members           = var.iam_members
   iam_additive_bindings = var.iam_additive_bindings
-  labels               = var.labels
-  lien_reason          = var.lien_reason
-  oslogin              = var.oslogin
-  oslogin_admins       = var.oslogin_admins
-  oslogin_users        = var.oslogin_users
-  parent               = var.parent
-  policy_boolean       = var.policy_boolean
-  policy_list          = var.policy_list
-  prefix               = var.prefix
-  services             = var.services
+  labels                = var.labels
+  lien_reason           = var.lien_reason
+  oslogin               = var.oslogin
+  oslogin_admins        = var.oslogin_admins
+  oslogin_users         = var.oslogin_users
+  parent                = var.parent
+  policy_boolean        = var.policy_boolean
+  policy_list           = var.policy_list
+  prefix                = var.prefix
+  services              = var.services
 }

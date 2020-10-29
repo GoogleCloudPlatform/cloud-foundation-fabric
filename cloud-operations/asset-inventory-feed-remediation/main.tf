@@ -41,7 +41,6 @@ module "project" {
       "compute.zoneOperations.list"
     ]
   }
-  iam_roles = [local.role_id]
   iam_members = {
     (local.role_id) = [module.service-account.iam_email]
   }
