@@ -257,35 +257,30 @@ module "kms-gcs" {
   source     = "../../modules/gcs"
   project_id = module.project-service.project_id
   prefix     = module.project-service.project_id
-  names      = ["data", "df-tmplocation"]
-  iam_roles = {
-    data           = ["roles/storage.admin", "roles/storage.objectViewer"],
-    df-tmplocation = ["roles/storage.admin"]
-  }
-  iam_members = {
+  for_each = {
     data = {
-      "roles/storage.admin" = [
-        "serviceAccount:${module.service-account-gce.email}",
-      ],
-      "roles/storage.viewer" = [
-        "serviceAccount:${module.service-account-df.email}",
-      ],
-    },
+      members = {
+        "roles/storage.admin" = [
+          "serviceAccount:${module.service-account-gce.email}",
+        ],
+        "roles/storage.objectViewer" = [
+          "serviceAccount:${module.service-account-df.email}",
+        ]
+      }
+    }
     df-tmplocation = {
-      "roles/storage.admin" = [
-        "serviceAccount:${module.service-account-gce.email}",
-        "serviceAccount:${module.service-account-df.email}",
-      ]
+      members = {
+        "roles/storage.admin" = [
+          "serviceAccount:${module.service-account-gce.email}",
+          "serviceAccount:${module.service-account-df.email}",
+        ]
+      }
     }
   }
-  encryption_keys = {
-    data           = module.kms.keys.key-gcs.self_link,
-    df-tmplocation = module.kms.keys.key-gcs.self_link,
-  }
-  force_destroy = {
-    data           = true,
-    df-tmplocation = true,
-  }
+  name           = each.key
+  iam_members    = each.value.members
+  encryption_key = module.kms.keys.key-gcs.self_link
+  force_destroy  = true
 }
 
 ###############################################################################
@@ -297,11 +292,12 @@ module "bigquery-dataset" {
   project_id = module.project-service.project_id
   id         = "bq_dataset"
   access_roles = {
-    reader-group = { role = "READER", type = "domain" }
+    reader-group = { role = "READER", type = "service_account" }
     owner        = { role = "OWNER", type = "user_by_email" }
   }
   access_identities = {
-    owner = module.service-account-bq.email
+    reader-group = module.service-account-bq.email
+    owner        = module.service-account-bq.email
   }
   encryption_key = module.kms.keys.key-bq.self_link
   tables = {

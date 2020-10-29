@@ -14,13 +14,13 @@
 
 output "bq_tables" {
   description = "Bigquery Tables."
-  value = module.bigquery-dataset.table_ids
+  value       = module.bigquery-dataset.table_ids
 }
 
 output "buckets" {
   description = "GCS Bucket Cloud KMS crypto keys."
   value = {
-    for bucket in module.kms-gcs.buckets :
+    for name, bucket in module.kms-gcs :
     bucket.name => bucket.url
   }
 }

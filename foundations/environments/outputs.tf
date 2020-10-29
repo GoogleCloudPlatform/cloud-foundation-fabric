@@ -29,7 +29,7 @@ output "environment_folders" {
 
 output "environment_tf_gcs_buckets" {
   description = "GCS buckets used for each environment Terraform state."
-  value       = module.tf-gcs-environments.names
+  value       = { for env, bucket in module.tf-gcs-environments : env => bucket.name }
 }
 
 output "environment_service_account_keys" {

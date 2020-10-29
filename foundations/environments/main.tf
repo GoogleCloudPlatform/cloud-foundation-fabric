@@ -58,7 +58,7 @@ module "tf-service-accounts" {
 module "tf-gcs-bootstrap" {
   source     = "../../modules/gcs"
   project_id = module.tf-project.project_id
-  names      = ["tf-bootstrap"]
+  name       = "tf-bootstrap"
   prefix     = "${var.prefix}-tf"
   location   = var.gcs_location
 }
@@ -68,16 +68,12 @@ module "tf-gcs-bootstrap" {
 module "tf-gcs-environments" {
   source     = "../../modules/gcs"
   project_id = module.tf-project.project_id
-  names      = var.environments
+  for_each   = var.environments
+  name       = each.value
   prefix     = "${var.prefix}-tf"
   location   = var.gcs_location
-  iam_roles = {
-    for name in var.environments : (name) => ["roles/storage.objectAdmin"]
-  }
   iam_members = {
-    for name in var.environments : (name) => {
-      "roles/storage.objectAdmin" = [module.tf-service-accounts[name].iam_email]
-    }
+    "roles/storage.objectAdmin" = [module.tf-service-accounts[each.value].iam_email]
   }
 }
 

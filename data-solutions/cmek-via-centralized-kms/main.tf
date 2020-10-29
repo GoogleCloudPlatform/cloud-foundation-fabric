@@ -81,6 +81,7 @@ module "kms" {
   keys = { key-gce = null, key-gcs = null }
   key_iam_roles = {
     key-gce = ["roles/cloudkms.cryptoKeyEncrypterDecrypter"]
+    key-gcs = ["roles/cloudkms.cryptoKeyEncrypterDecrypter"]
   }
   key_iam_members = {
     key-gce = {
@@ -145,11 +146,9 @@ module "kms_vm_example" {
 ###############################################################################
 
 module "kms-gcs" {
-  source     = "../../modules/gcs"
-  project_id = module.project-service.project_id
-  prefix     = "my-bucket-001"
-  names      = ["kms-gcs"]
-  encryption_keys = {
-    kms-gcs = module.kms.keys.key-gce.self_link,
-  }
+  source         = "../../modules/gcs"
+  project_id     = module.project-service.project_id
+  prefix         = "my-bucket-001"
+  name           = "kms-gcs"
+  encryption_key = module.kms.keys.key-gcs.self_link
 }
