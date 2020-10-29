@@ -37,10 +37,10 @@ resource "google_organization_iam_custom_role" "roles" {
 }
 
 resource "google_organization_iam_binding" "authoritative" {
-  for_each = toset(keys(var.iam_members))
+  for_each = var.iam_members
   org_id   = var.org_id
-  role     = each.value
-  members  = lookup(var.iam_members, each.value, [])
+  role     = each.key
+  members  = each.value
 }
 
 resource "google_organization_iam_member" "additive" {

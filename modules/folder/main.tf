@@ -21,10 +21,10 @@ resource "google_folder" "folder" {
 }
 
 resource "google_folder_iam_binding" "authoritative" {
-  for_each = toset(keys(var.iam_members))
+  for_each = var.iam_members
   folder   = google_folder.folder.name
   role     = each.key
-  members  = lookup(var.iam_members, each.key, [])
+  members  = each.value
 }
 
 resource "google_folder_organization_policy" "boolean" {

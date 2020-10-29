@@ -67,10 +67,10 @@ resource "google_service_account_key" "key" {
 }
 
 resource "google_service_account_iam_binding" "roles" {
-  for_each           = toset(keys(var.iam_members))
+  for_each           = var.iam_members
   service_account_id = google_service_account.service_account.name
   role               = each.key
-  members            = lookup(var.iam_members, each.key, [])
+  members            = each.value
 }
 
 resource "google_billing_account_iam_member" "billing-roles" {
