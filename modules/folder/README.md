@@ -14,7 +14,6 @@ module "folder" {
   iam_members = {
     "roles/owner" = ["group:users@example.com"]
   }
-  iam_roles = ["roles/owner"]
 }
 ```
 

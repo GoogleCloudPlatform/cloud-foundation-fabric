@@ -6,12 +6,11 @@ This module allows simplified creation and management of one a service account a
 
 ```hcl
 module "myproject-default-service-accounts" {
-  source            = "./modules/iam-service-accounts"
+  source            = "./modules/iam-service-account"
   project_id        = "myproject"
   name              = "vm-default"
   generate_key      = true
   # authoritative roles granted *on* the service accounts to other identities
-  iam_roles         = ["roles/iam.serviceAccountUser"]
   iam_members       = {
     "roles/iam.serviceAccountUser" = ["user:foo@example.com"]
   }
