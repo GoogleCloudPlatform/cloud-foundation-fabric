@@ -25,9 +25,9 @@ locals {
     for pair in setproduct(keys(local.names), keys(local.attached_disks)) :
     "${pair[0]}-${pair[1]}" => { disk_name = pair[1], name = pair[0] }
   }
-  iam_roles = var.use_instance_template ? {} : {
-    for pair in setproduct(var.iam_roles, keys(local.names)) :
-    "${pair.0}/${pair.1}" => { role = pair.0, name = pair.1 }
+  iam_members = var.use_instance_template ? {} : {
+    for pair in setproduct(keys(var.iam_members), keys(local.names)) :
+    "${pair.0}/${pair.1}" => { role = pair.0, name = pair.1, members = var.iam_members[pair.0] }
   }
   names = (
     var.use_instance_template ? { (var.name) = 0 } : {
@@ -196,12 +196,12 @@ resource "google_compute_instance" "default" {
 }
 
 resource "google_compute_instance_iam_binding" "default" {
-  for_each      = local.iam_roles
+  for_each      = local.iam_members
   project       = var.project_id
   zone          = local.zones[each.value.name]
   instance_name = each.value.name
   role          = each.value.role
-  members       = lookup(var.iam_members, each.value.role, [])
+  members       = each.value.members
   depends_on    = [google_compute_instance.default]
 }
 

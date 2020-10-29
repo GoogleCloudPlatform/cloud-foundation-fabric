@@ -49,10 +49,9 @@ def test_group(plan_runner):
 
 
 def test_iam(plan_runner):
-  iam_roles = '["roles/a", "roles/b"]'
   iam_members = '{"roles/a" = ["user:a@a.com"], "roles/b" = ["user:a@a.com"]}'
   _, resources = plan_runner(FIXTURES_DIR, instance_count=3,
-                             iam_roles=iam_roles, iam_members=iam_members,
+                             iam_members=iam_members,
                              zones='["a", "b"]')
   iam_bindings = dict(
       (r['index'], r['values']['zone']) for r in resources if r['type']

@@ -25,7 +25,6 @@ module "test" {
   instance_count         = var.instance_count
   use_instance_template  = var.use_instance_template
   group                  = var.group
-  iam_roles              = var.iam_roles
   iam_members            = var.iam_members
   metadata               = var.metadata
   metadata_list          = var.metadata_list

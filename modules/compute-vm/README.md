@@ -184,8 +184,7 @@ module "instance-group" {
 | *encryption* | Encryption options. Only one of kms_key_self_link and disk_encryption_key_raw may be set. If needed, you can specify to encrypt or not the boot disk. | <code title="object&#40;&#123;&#10;encrypt_boot            &#61; bool&#10;disk_encryption_key_raw &#61; string&#10;kms_key_self_link       &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 | *group* | Define this variable to create an instance group for instances. Disabled for template use. | <code title="object&#40;&#123;&#10;named_ports &#61; map&#40;number&#41;&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 | *hostname* | Instance FQDN name. | <code title="">string</code> |  | <code title="">null</code> |
-| *iam_members* | Map of member lists used to set authoritative bindings, keyed by role. Ignored for template use. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
-| *iam_roles* | List of roles used to set authoritative bindings. Ignored for template use. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
+| *iam_members* | Map of member lists used to set authoritative bindings, keyed by role. Ignored for template use. | <code title="map&#40;set&#40;string&#41;&#41;">map(set(string))</code> |  | <code title="">{}</code> |
 | *instance_count* | Number of instances to create (only for non-template usage). | <code title="">number</code> |  | <code title="">1</code> |
 | *instance_type* | Instance type. | <code title="">string</code> |  | <code title="">f1-micro</code> |
 | *labels* | Instance labels. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
