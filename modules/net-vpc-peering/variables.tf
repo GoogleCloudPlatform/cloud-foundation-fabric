@@ -42,12 +42,6 @@ variable "export_local_custom_routes" {
   default     = false
 }
 
-variable "module_depends_on" {
-  description = "List of modules or resources this module depends on."
-  type        = list
-  default     = []
-}
-
 variable "peer_create_peering" {
   description = "Create the peering on the remote side. If false, only the peering from this network to the remote network is created."
   type        = bool
