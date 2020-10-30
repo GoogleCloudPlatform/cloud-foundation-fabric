@@ -15,14 +15,15 @@
  */
 
 locals {
-  key_iam_pairs = flatten([
-    for name, roles in var.key_iam_roles :
-    [for role in roles : { name = name, role = role }]
+  key_iam_members = flatten([
+    for key, roles in var.key_iam_members : [
+      for role, members in roles : {
+        key     = key
+        role    = role
+        members = members
+      }
+    ]
   ])
-  key_iam_keypairs = {
-    for pair in local.key_iam_pairs :
-    "${pair.name}-${pair.role}" => pair
-  }
   key_purpose = {
     for key, attrs in var.keys : key => try(
       var.key_purpose[key], var.key_purpose_defaults
@@ -47,16 +48,13 @@ resource "google_kms_key_ring" "default" {
   project  = var.project_id
   name     = var.keyring.name
   location = var.keyring.location
-  # lifecycle {
-  #   prevent_destroy = true
-  # }
 }
 
 resource "google_kms_key_ring_iam_binding" "default" {
-  for_each    = toset(var.iam_roles)
+  for_each    = var.iam_members
   key_ring_id = local.keyring.self_link
-  role        = each.value
-  members     = lookup(var.iam_members, each.value, [])
+  role        = each.key
+  members     = each.value
 }
 
 resource "google_kms_crypto_key" "default" {
@@ -73,16 +71,14 @@ resource "google_kms_crypto_key" "default" {
       protection_level = local.key_purpose[each.key].version_template.protection_level
     }
   }
-  # lifecycle {
-  #   prevent_destroy = true
-  # }
 }
 
 resource "google_kms_crypto_key_iam_binding" "default" {
-  for_each      = local.key_iam_keypairs
+  for_each = {
+    for binding in local.key_iam_members :
+    "${binding.key}.${binding.role}" => binding
+  }
   role          = each.value.role
-  crypto_key_id = google_kms_crypto_key.default[each.value.name].self_link
-  members = lookup(
-    lookup(var.key_iam_members, each.value.name, {}), each.value.role, []
-  )
+  crypto_key_id = google_kms_crypto_key.default[each.value.key].self_link
+  members       = each.value.members
 }

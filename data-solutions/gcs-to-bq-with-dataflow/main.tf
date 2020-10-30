@@ -120,11 +120,6 @@ module "kms" {
     location = var.location
   }
   keys = { key-gce = null, key-gcs = null, key-bq = null }
-  key_iam_roles = {
-    key-gce = ["roles/cloudkms.cryptoKeyEncrypterDecrypter"]
-    key-gcs = ["roles/cloudkms.cryptoKeyEncrypterDecrypter"]
-    key-bq  = ["roles/cloudkms.cryptoKeyEncrypterDecrypter"]
-  }
   key_iam_members = {
     key-gce = {
       "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
@@ -155,9 +150,6 @@ module "kms-regional" {
     location = var.region
   }
   keys = { key-df = null }
-  key_iam_roles = {
-    key-df = ["roles/cloudkms.cryptoKeyEncrypterDecrypter"]
-  }
   key_iam_members = {
     key-df = {
       "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [

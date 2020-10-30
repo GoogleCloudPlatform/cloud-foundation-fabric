@@ -79,10 +79,6 @@ module "kms" {
     location = var.location
   }
   keys = { key-gce = null, key-gcs = null }
-  key_iam_roles = {
-    key-gce = ["roles/cloudkms.cryptoKeyEncrypterDecrypter"]
-    key-gcs = ["roles/cloudkms.cryptoKeyEncrypterDecrypter"]
-  }
   key_iam_members = {
     key-gce = {
       "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [

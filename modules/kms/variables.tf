@@ -16,25 +16,13 @@
 
 variable "iam_members" {
   description = "Keyring IAM members."
-  type        = map(list(string))
+  type        = map(set(string))
   default     = {}
-}
-
-variable "iam_roles" {
-  description = "Keyring IAM roles."
-  type        = list(string)
-  default     = []
 }
 
 variable "key_iam_members" {
   description = "IAM members keyed by key name and role."
-  type        = map(map(list(string)))
-  default     = {}
-}
-
-variable "key_iam_roles" {
-  description = "IAM roles keyed by key name."
-  type        = map(list(string))
+  type        = map(map(set(string)))
   default     = {}
 }
 

@@ -21,24 +21,12 @@ variable "iam_members" {
   }
 }
 
-variable "iam_roles" {
-  type    = list(string)
-  default = ["roles/owner"]
-}
-
 variable "key_iam_members" {
   type = map(map(list(string)))
   default = {
     key-a = {
       "roles/owner" = ["user:ludo@ludomagno.net"]
     }
-  }
-}
-
-variable "key_iam_roles" {
-  type = map(list(string))
-  default = {
-    key-a = ["roles/owner"]
   }
 }
 
