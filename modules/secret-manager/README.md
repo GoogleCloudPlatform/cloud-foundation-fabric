@@ -25,7 +25,7 @@ module "secret-manager" {
 
 ### Secret IAM bindings
 
-IAM bindings can be set per secret in the same way as for most other modules supporting IAM, via `iam_roles` and `iam_members` variables.
+IAM bindings can be set per secret in the same way as for most other modules supporting IAM, using the `iam_members` variable.
 
 ```hcl
 module "secret-manager" {
@@ -34,10 +34,6 @@ module "secret-manager" {
   secrets    = {
     test-auto   = null
     test-manual = ["europe-west1", "europe-west4"]
-  }
-  iam_roles  = {
-    test-auto   = ["roles/secretmanager.secretAccessor"]
-    test-manual = ["roles/secretmanager.secretAccessor"]
   }
   iam_members = {
     test-auto   = {
@@ -80,8 +76,7 @@ module "secret-manager" {
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
 | project_id | Project id where the keyring will be created. | <code title="">string</code> | ✓ |  |
-| *iam_members* | IAM members keyed by secret name and role. | <code title="map&#40;map&#40;list&#40;string&#41;&#41;&#41;">map(map(list(string)))</code> |  | <code title="">{}</code> |
-| *iam_roles* | IAM roles keyed by secret name. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
+| *iam_members* | IAM members keyed by secret name and role. | <code title="map&#40;map&#40;set&#40;string&#41;&#41;&#41;">map(map(set(string)))</code> |  | <code title="">{}</code> |
 | *labels* | Optional labels for each secret. | <code title="map&#40;map&#40;string&#41;&#41;">map(map(string))</code> |  | <code title="">{}</code> |
 | *secrets* | Map of secrets to manage and their locations. If locations is null, automatic management will be set. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
 | *versions* | Optional versions to manage for each secret. Version names are only used internally to track individual versions. | <code title="map&#40;map&#40;object&#40;&#123;&#10;enabled &#61; bool&#10;data    &#61; string&#10;&#125;&#41;&#41;&#41;">map(map(object({...})))</code> |  | <code title="">{}</code> |

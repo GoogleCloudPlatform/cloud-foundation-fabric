@@ -16,13 +16,7 @@
 
 variable "iam_members" {
   description = "IAM members keyed by secret name and role."
-  type        = map(map(list(string)))
-  default     = {}
-}
-
-variable "iam_roles" {
-  description = "IAM roles keyed by secret name."
-  type        = map(list(string))
+  type        = map(map(set(string)))
   default     = {}
 }
 
