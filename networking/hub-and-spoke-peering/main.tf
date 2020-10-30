@@ -136,7 +136,7 @@ module "hub-to-spoke-2-peering" {
   peer_network               = module.vpc-spoke-2.self_link
   export_local_custom_routes = true
   export_peer_custom_routes  = false
-  module_depends_on          = [module.hub-to-spoke-1-peering.complete]
+  depends_on                 = [module.hub-to-spoke-1-peering]
 }
 
 ################################################################################
