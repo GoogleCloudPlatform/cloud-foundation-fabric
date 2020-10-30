@@ -107,10 +107,6 @@ module "vpc-shared" {
       }
     }
   ]
-  iam_roles = {
-    "${var.region}/gke" = ["roles/compute.networkUser", "roles/compute.securityAdmin"]
-    "${var.region}/gce" = ["roles/compute.networkUser"]
-  }
   iam_members = {
     "${var.region}/gce" = {
       "roles/compute.networkUser" = concat(var.owners_gce, [

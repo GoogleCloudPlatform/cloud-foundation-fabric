@@ -16,14 +16,16 @@
 
 locals {
   iam_members = var.iam_members == null ? {} : var.iam_members
-  iam_pairs = var.iam_roles == null ? [] : flatten([
-    for subnet, roles in var.iam_roles :
-    [for role in roles : { subnet = subnet, role = role }]
+  subnet_iam_members = flatten([
+    for subnet, roles in local.iam_members : [
+      for role, members in roles : {
+        subnet  = subnet
+        role    = role
+        members = members
+      }
+    ]
   ])
-  iam_keypairs = {
-    for pair in local.iam_pairs :
-    "${pair.subnet}-${pair.role}" => pair
-  }
+
   log_configs = var.log_configs == null ? {} : var.log_configs
   peer_network = (
     var.peering_config == null
@@ -152,14 +154,15 @@ resource "google_compute_subnetwork" "subnetwork" {
 }
 
 resource "google_compute_subnetwork_iam_binding" "binding" {
-  for_each   = local.iam_keypairs
+  for_each = {
+    for binding in local.subnet_iam_members :
+    "${binding.subnet}.${binding.role}" => binding
+  }
   project    = var.project_id
   subnetwork = google_compute_subnetwork.subnetwork[each.value.subnet].name
   region     = google_compute_subnetwork.subnetwork[each.value.subnet].region
   role       = each.value.role
-  members = lookup(
-    lookup(local.iam_members, each.value.subnet, {}), each.value.role, []
-  )
+  members    = each.value.members
 }
 
 resource "google_compute_route" "gateway" {

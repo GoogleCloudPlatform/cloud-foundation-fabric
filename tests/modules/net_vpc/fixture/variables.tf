@@ -29,13 +29,8 @@ variable "auto_create_subnetworks" {
   default = false
 }
 
-variable "iam_roles" {
-  type    = map(list(string))
-  default = null
-}
-
 variable "iam_members" {
-  type    = map(map(list(string)))
+  type    = map(map(set(string)))
   default = null
 }
 
