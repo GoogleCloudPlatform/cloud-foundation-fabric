@@ -15,17 +15,15 @@
  */
 
 locals {
-  iam_pairs = var.subscription_iam_roles == null ? [] : flatten([
-    for name, roles in var.subscription_iam_roles :
-    [for role in roles : { name = name, role = role }]
+  sub_iam_members = flatten([
+    for sub, roles in var.subscription_iam_members : [
+      for role, members in roles : {
+        sub     = sub
+        role    = role
+        members = members
+      }
+    ]
   ])
-  iam_keypairs = {
-    for pair in local.iam_pairs :
-    "${pair.name}-${pair.role}" => pair
-  }
-  iam_members = (
-    var.subscription_iam_members == null ? {} : var.subscription_iam_members
-  )
   oidc_config = {
     for k, v in var.push_configs : k => v.oidc_token
   }
@@ -52,11 +50,11 @@ resource "google_pubsub_topic" "default" {
 }
 
 resource "google_pubsub_topic_iam_binding" "default" {
-  for_each = toset(var.iam_roles)
+  for_each = var.iam_members
   project  = var.project_id
   topic    = google_pubsub_topic.default.name
-  role     = each.value
-  members  = lookup(var.iam_members, each.value, [])
+  role     = each.key
+  members  = each.value
 }
 
 resource "google_pubsub_subscription" "default" {
@@ -103,11 +101,12 @@ resource "google_pubsub_subscription" "default" {
 }
 
 resource "google_pubsub_subscription_iam_binding" "default" {
-  for_each     = local.iam_keypairs
+  for_each = {
+    for binding in local.sub_iam_members :
+    "${binding.sub}.${binding.role}" => binding
+  }
   project      = var.project_id
-  subscription = google_pubsub_subscription.default[each.value.name].name
+  subscription = google_pubsub_subscription.default[each.value.sub].name
   role         = each.value.role
-  members = lookup(
-    lookup(local.iam_members, each.value.name, {}), each.value.role, []
-  )
+  members      = each.value.members
 }

@@ -44,14 +44,8 @@ variable "environment_variables" {
 
 variable "iam_members" {
   description = "Map of member lists used to set authoritative bindings, keyed by role. Ignored for template use."
-  type        = map(list(string))
+  type        = map(set(string))
   default     = {}
-}
-
-variable "iam_roles" {
-  description = "List of roles used to set authoritative bindings. Ignored for template use."
-  type        = list(string)
-  default     = []
 }
 
 variable "function_config" {

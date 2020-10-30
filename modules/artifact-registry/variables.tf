@@ -16,14 +16,8 @@
 
 variable "iam_members" {
   description = "Map of member lists used to set authoritative bindings, keyed by role."
-  type        = map(list(string))
+  type        = map(set(string))
   default     = {}
-}
-
-variable "iam_roles" {
-  description = "List of roles used to set authoritative bindings."
-  type        = list(string)
-  default     = []
 }
 
 variable "location" {

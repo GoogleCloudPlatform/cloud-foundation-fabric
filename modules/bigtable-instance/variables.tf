@@ -14,15 +14,9 @@
  * limitations under the License.
  */
 
-variable "iam_roles" {
-  description = "Authoritative for a given role. Updates the IAM policy to grant a role to a list of members."
-  type        = list(string)
-  default     = []
-}
-
 variable "iam_members" {
   description = "Authoritative for a given role. Updates the IAM policy to grant a role to a list of members. Other roles within the IAM policy for the instance are preserved."
-  type        = map(list(string))
+  type        = map(set(string))
   default     = {}
 }
 

@@ -18,10 +18,6 @@ locals {
   tables = {
     for k, v in var.tables : k => v.table_options != null ? v.table_options : var.table_options_defaults
   }
-
-  iam_roles_bindings = {
-    for k in var.iam_roles : k => lookup(var.iam_members, k, [])
-  }
 }
 
 resource "google_bigtable_instance" "default" {
@@ -39,11 +35,11 @@ resource "google_bigtable_instance" "default" {
 }
 
 resource "google_bigtable_instance_iam_binding" "default" {
-  for_each = local.iam_roles_bindings
+  for_each = var.iam_members
 
   project  = var.project_id
   instance = google_bigtable_instance.default.name
-  role     = "roles/bigtable.${each.key}"
+  role     = each.key
   members  = each.value
 }
 

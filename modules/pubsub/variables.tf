@@ -41,14 +41,8 @@ variable "defaults" {
 
 variable "iam_members" {
   description = "IAM members for each topic role."
-  type        = map(list(string))
+  type        = map(set(string))
   default     = {}
-}
-
-variable "iam_roles" {
-  description = "IAM roles for topic."
-  type        = list(string)
-  default     = []
 }
 
 variable "kms_key" {
@@ -109,12 +103,6 @@ variable "subscriptions" {
 
 variable "subscription_iam_members" {
   description = "IAM members for each subscription and role."
-  type        = map(map(list(string)))
-  default     = {}
-}
-
-variable "subscription_iam_roles" {
-  description = "IAM roles for each subscription."
-  type        = map(list(string))
+  type        = map(map(set(string)))
   default     = {}
 }

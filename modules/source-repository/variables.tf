@@ -21,14 +21,8 @@ variable "project_id" {
 
 variable "iam_members" {
   description = "IAM members for each topic role."
-  type        = map(list(string))
+  type        = map(set(string))
   default     = {}
-}
-
-variable "iam_roles" {
-  description = "IAM roles for topic."
-  type        = list(string)
-  default     = []
 }
 
 variable "name" {

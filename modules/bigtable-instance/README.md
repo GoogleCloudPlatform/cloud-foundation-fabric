@@ -27,7 +27,6 @@ module "big-table-instance" {
       }
     }
   }
-  iam_roles         = ["viewer"]
   iam_members       = {
     viewer = ["user:viewer@testdomain.com"]
   }
@@ -45,8 +44,7 @@ module "big-table-instance" {
 | *cluster_id* | The ID of the Cloud Bigtable cluster. | <code title="">string</code> |  | <code title="">europe-west1</code> |
 | *deletion_protection* | Whether or not to allow Terraform to destroy the instance. Unless this field is set to false in Terraform state, a terraform destroy or terraform apply that would delete the instance will fail. | <code title=""></code> |  | <code title="">true</code> |
 | *display_name* | The human-readable display name of the Bigtable instance. | <code title=""></code> |  | <code title="">null</code> |
-| *iam_members* | Authoritative for a given role. Updates the IAM policy to grant a role to a list of members. Other roles within the IAM policy for the instance are preserved. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
-| *iam_roles* | Authoritative for a given role. Updates the IAM policy to grant a role to a list of members. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
+| *iam_members* | Authoritative for a given role. Updates the IAM policy to grant a role to a list of members. Other roles within the IAM policy for the instance are preserved. | <code title="map&#40;set&#40;string&#41;&#41;">map(set(string))</code> |  | <code title="">{}</code> |
 | *instance_type* | None | <code title="">string</code> |  | <code title="">DEVELOPMENT</code> |
 | *num_nodes* | The number of nodes in your Cloud Bigtable cluster. | <code title="">number</code> |  | <code title="">1</code> |
 | *storage_type* | The storage type to use. | <code title="">string</code> |  | <code title="">SSD</code> |
