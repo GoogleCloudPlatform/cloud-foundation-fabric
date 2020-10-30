@@ -15,7 +15,6 @@ module "project" {
     "container.googleapis.com",
     "stackdriver.googleapis.com"
   ]
-  iam_roles = ["roles/container.hostServiceAgentUser"]
   iam_members = {
     "roles/container.hostServiceAgentUser" = [
       "serviceAccount:${var.gke_service_account}"
