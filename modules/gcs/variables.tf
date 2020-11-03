@@ -88,6 +88,10 @@ variable "storage_class" {
   description = "Bucket storage class."
   type        = string
   default     = "MULTI_REGIONAL"
+  validation {
+    condition     = contains(["STANDARD", "MULTI_REGIONAL", "REGIONAL", "NEARLINE", "COLDLINE", "ARCHIVE"], var.storage_class)
+    error_message = "Storage class must be one of STANDARD, MULTI_REGIONAL, REGIONAL, NEARLINE, COLDLINE, ARCHIVE."
+  }
 }
 
 variable "versioning" {

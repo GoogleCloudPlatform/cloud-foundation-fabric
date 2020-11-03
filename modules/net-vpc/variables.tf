@@ -100,6 +100,11 @@ variable "routing_mode" {
   description = "The network routing mode (default 'GLOBAL')"
   type        = string
   default     = "GLOBAL"
+  validation {
+    condition     = var.routing_mode == "GLOBAL" || var.routing_mode == "REGIONAL"
+    error_message = "Routing type must be GLOBAL or REGIONAL."
+  }
+
 }
 
 variable "shared_vpc_host" {
