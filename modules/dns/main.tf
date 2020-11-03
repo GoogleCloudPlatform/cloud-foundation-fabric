@@ -34,12 +34,12 @@ locals {
 }
 
 resource "google_dns_managed_zone" "non-public" {
-  count      = (var.zone_create && var.type != "public" ) ? 1 : 0
+  count       = (var.zone_create && var.type != "public") ? 1 : 0
   provider    = google-beta
   project     = var.project_id
   name        = var.name
   dns_name    = var.domain
-  description = "Terraform-managed zone."
+  description = var.description
   visibility  = "private"
 
   dynamic forwarding_config {
