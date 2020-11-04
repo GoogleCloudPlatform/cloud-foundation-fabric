@@ -84,7 +84,7 @@ variable "parent" {
   type        = string
   default     = null
   validation {
-    condition     = can(regex("(organizations|folders)/[0-9]+", var.parent))
+    condition     = var.parent == null || can(regex("(organizations|folders)/[0-9]+", var.parent))
     error_message = "Parent must be of the form folders/folder_id or organizations/organization_id."
   }
 }
