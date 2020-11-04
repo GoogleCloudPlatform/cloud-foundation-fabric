@@ -20,7 +20,7 @@ module "test" {
   billing_account       = "12345-12345-12345"
   auto_create_network   = var.auto_create_network
   custom_roles          = var.custom_roles
-  iam_members           = var.iam_members
+  iam                   = var.iam
   iam_additive          = var.iam_additive
   labels                = var.labels
   lien_reason           = var.lien_reason

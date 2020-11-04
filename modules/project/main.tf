@@ -91,7 +91,7 @@ resource "google_project_service" "project_services" {
 # - additive (non-authoritative) roles might fail due to dynamic values
 
 resource "google_project_iam_binding" "authoritative" {
-  for_each = var.iam_members
+  for_each = var.iam
   project  = local.project.project_id
   role     = each.key
   members  = each.value
