@@ -26,7 +26,7 @@ resource "google_artifact_registry_repository" "registry" {
 
 resource "google_artifact_registry_repository_iam_binding" "bindings" {
   provider   = google-beta
-  for_each   = var.iam_members
+  for_each   = var.iam
   project    = var.project_id
   location   = google_artifact_registry_repository.registry.location
   repository = google_artifact_registry_repository.registry.name

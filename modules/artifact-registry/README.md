@@ -13,7 +13,7 @@ module "docker_artifact_registry" {
   location   = "europe-west1"
   format     = "DOCKER"
   id         = "myregistry"
-  iam_members = {
+  iam = {
     "roles/artifactregistry.admin" = ["group:cicd@example.com"]
   }
 }
@@ -28,7 +28,7 @@ module "docker_artifact_registry" {
 | project_id | Registry project id. | <code title="">string</code> | ✓ |  |
 | *description* | An optional description for the repository | <code title="">string</code> |  | <code title="">Terraform-managed registry</code> |
 | *format* | Repository format. One of DOCKER or UNSPECIFIED | <code title="">string</code> |  | <code title="">DOCKER</code> |
-| *iam_members* | Map of member lists used to set authoritative bindings, keyed by role. | <code title="map&#40;set&#40;string&#41;&#41;">map(set(string))</code> |  | <code title="">{}</code> |
+| *iam* | IAM bindings in {ROLE => [MEMBERS]} format. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
 | *labels* | Labels to be attached to the registry. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
 | *location* | Registry location. Use `gcloud beta artifacts locations list' to get valid values | <code title="">string</code> |  | <code title=""></code> |
 
