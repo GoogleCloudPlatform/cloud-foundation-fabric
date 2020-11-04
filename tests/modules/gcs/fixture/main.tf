@@ -19,7 +19,7 @@ module "test" {
   project_id                  = "my-project"
   uniform_bucket_level_access = var.uniform_bucket_level_access
   force_destroy               = var.force_destroy
-  iam_members                 = var.iam_members
+  iam                         = var.iam
   labels                      = var.labels
   logging_config              = var.logging_config
   name                        = "bucket-a"

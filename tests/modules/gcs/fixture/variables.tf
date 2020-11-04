@@ -24,8 +24,8 @@ variable "force_destroy" {
   default = true
 }
 
-variable "iam_members" {
-  type    = map(set(string))
+variable "iam" {
+  type    = map(list(string))
   default = {}
 }
 

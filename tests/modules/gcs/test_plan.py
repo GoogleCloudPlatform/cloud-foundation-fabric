@@ -55,7 +55,6 @@ def test_config_values(plan_runner):
 
 def test_iam(plan_runner):
   "Test bucket resources with iam roles and members."
-  iam_members = '{ "roles/storage.admin" = ["user:a@b.com"] }'
-  _, resources = plan_runner(
-      FIXTURES_DIR, iam_members=iam_members)
+  iam = '{ "roles/storage.admin" = ["user:a@b.com"] }'
+  _, resources = plan_runner(FIXTURES_DIR, iam=iam)
   assert len(resources) == 2

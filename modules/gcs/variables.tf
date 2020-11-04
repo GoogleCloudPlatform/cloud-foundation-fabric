@@ -26,9 +26,9 @@ variable "force_destroy" {
   default     = false
 }
 
-variable "iam_members" {
-  description = "IAM members keyed by bucket name and role."
-  type        = map(set(string))
+variable "iam" {
+  description = "IAM bindings in {ROLE => [MEMBERS]} format."
+  type        = map(list(string))
   default     = {}
 }
 
