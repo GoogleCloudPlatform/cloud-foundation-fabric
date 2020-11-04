@@ -38,7 +38,7 @@ variable "iam_members" {
   default     = {}
 }
 
-variable "iam_additive_bindings" {
+variable "iam_additive" {
   description = "Map of roles lists used to set non authoritative bindings, keyed by members"
   type        = map(list(string))
   default     = {}

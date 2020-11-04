@@ -16,7 +16,7 @@
 
 locals {
   iam_additive_pairs = flatten([
-    for member, roles in var.iam_additive_bindings : [
+    for member, roles in var.iam_additive : [
       for role in roles :
       { role = role, member = member }
     ]
@@ -102,7 +102,7 @@ resource "google_project_iam_binding" "authoritative" {
 }
 
 resource "google_project_iam_member" "additive" {
-  for_each = length(var.iam_additive_bindings) > 0 ? local.iam_additive : {}
+  for_each = length(var.iam_additive) > 0 ? local.iam_additive : {}
   project  = local.project.project_id
   role     = each.value.role
   member   = each.value.member

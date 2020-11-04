@@ -29,7 +29,7 @@ variable "iam_members" {
   default = {}
 }
 
-variable "iam_additive_bindings" {
+variable "iam_additive" {
   type    = map(list(string))
   default = {}
 }
