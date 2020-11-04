@@ -19,12 +19,12 @@ variable "custom_roles" {
   default = {}
 }
 
-variable "iam_members" {
+variable "iam" {
   type    = map(list(string))
   default = {}
 }
 
-variable "iam_additive_bindings" {
+variable "iam_additive" {
   type    = map(list(string))
   default = {}
 }
