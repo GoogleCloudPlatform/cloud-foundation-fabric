@@ -25,16 +25,10 @@ variable "endpoint_config" {
   default = {}
 }
 
-variable "iam_members" {
-  description = "IAM members for each namespace role."
+variable "iam" {
+  description = "IAM bindings for namespace, in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
   default     = {}
-}
-
-variable "iam_roles" {
-  description = "IAM roles for the namespace."
-  type        = list(string)
-  default     = []
 }
 
 variable "labels" {
@@ -58,15 +52,9 @@ variable "project_id" {
   type        = string
 }
 
-variable "service_iam_members" {
-  description = "IAM members for each service and role."
+variable "service_iam" {
+  description = "IAM bindings for services, in {SERVICE => {ROLE => [MEMBERS]}} format."
   type        = map(map(list(string)))
-  default     = {}
-}
-
-variable "service_iam_roles" {
-  description = "IAM roles for each service."
-  type        = map(list(string))
   default     = {}
 }
 
