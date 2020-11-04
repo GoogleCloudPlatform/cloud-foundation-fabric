@@ -21,7 +21,7 @@ resource "google_folder" "folder" {
 }
 
 resource "google_folder_iam_binding" "authoritative" {
-  for_each = var.iam_members
+  for_each = var.iam
   folder   = google_folder.folder.name
   role     = each.key
   members  = each.value

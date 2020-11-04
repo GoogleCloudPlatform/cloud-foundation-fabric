@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-variable "iam_members" {
-  description = "List of IAM members keyed by role."
+variable "iam" {
+  description = "IAM bindings in {ROLE => [MEMBERS]} format."
   type        = map(set(string))
-  default     = null
+  default     = {}
 }
 
 variable "name" {
