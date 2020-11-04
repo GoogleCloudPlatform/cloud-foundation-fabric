@@ -72,7 +72,7 @@ module "tf-gcs-environments" {
   name       = each.value
   prefix     = "${var.prefix}-tf"
   location   = var.gcs_location
-  iam_members = {
+  iam = {
     "roles/storage.objectAdmin" = [module.tf-service-accounts[each.value].iam_email]
   }
 }

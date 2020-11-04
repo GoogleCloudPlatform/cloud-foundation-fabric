@@ -246,9 +246,7 @@ module "vm_example" {
 ###############################################################################
 
 module "kms-gcs" {
-  source     = "../../modules/gcs"
-  project_id = module.project-service.project_id
-  prefix     = module.project-service.project_id
+  source = "../../modules/gcs"
   for_each = {
     data = {
       members = {
@@ -269,8 +267,10 @@ module "kms-gcs" {
       }
     }
   }
+  project_id     = module.project-service.project_id
+  prefix         = module.project-service.project_id
   name           = each.key
-  iam_members    = each.value.members
+  iam            = each.value.members
   encryption_key = module.kms.keys.key-gcs.self_link
   force_destroy  = true
 }
