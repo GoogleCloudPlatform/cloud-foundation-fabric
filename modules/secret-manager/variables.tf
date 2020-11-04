@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-variable "iam_members" {
-  description = "IAM members keyed by secret name and role."
-  type        = map(map(set(string)))
+variable "iam" {
+  description = "IAM bindings in {SECRET => {ROLE => [MEMBERS]}} format."
+  type        = map(map(list(string)))
   default     = {}
 }
 

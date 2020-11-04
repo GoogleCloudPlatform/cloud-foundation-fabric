@@ -16,8 +16,8 @@
 
 locals {
   # distinct is needed to make the expanding function argument work
-  iam_members = flatten([
-    for secret, roles in var.iam_members : [
+  iam = flatten([
+    for secret, roles in var.iam : [
       for role, members in roles : {
         secret  = secret
         role    = role
@@ -77,8 +77,7 @@ resource "google_secret_manager_secret_version" "default" {
 resource "google_secret_manager_secret_iam_binding" "default" {
   provider = google-beta
   for_each = {
-    for binding in local.iam_members :
-    "${binding.secret}.${binding.role}" => binding
+    for binding in local.iam : "${binding.secret}.${binding.role}" => binding
   }
   role      = each.value.role
   secret_id = google_secret_manager_secret.default[each.value.secret].id
