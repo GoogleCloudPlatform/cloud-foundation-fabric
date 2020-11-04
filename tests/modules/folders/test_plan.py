@@ -32,26 +32,25 @@ def test_folder(plan_runner):
 
 def test_iam(plan_runner):
   "Test folder resources with iam roles and members."
-  iam_members = '{"roles/owner" = ["user:a@b.com"] }'
-  _, resources = plan_runner(FIXTURES_DIR,
-                             iam_members=iam_members)
+  iam = '{"roles/owner" = ["user:a@b.com"] }'
+  _, resources = plan_runner(FIXTURES_DIR, iam=iam)
   assert len(resources) == 2
+
 
 def test_iam_multiple_members(plan_runner):
   "Test folder resources with multiple iam members."
-  iam_members = '{"roles/owner" = ["user:a@b.com", "user:c@d.com"] }'
-  _, resources = plan_runner(FIXTURES_DIR,
-                             iam_members=iam_members)
+  iam = '{"roles/owner" = ["user:a@b.com", "user:c@d.com"] }'
+  _, resources = plan_runner(FIXTURES_DIR, iam=iam)
   assert len(resources) == 2
+
 
 def test_iam_multiple_roles(plan_runner):
   "Test folder resources with multiple iam roles."
-  iam_members = (
-    '{ '
-    '"roles/owner" = ["user:a@b.com"], '
-    '"roles/viewer" = ["user:c@d.com"] '
-    '} '
+  iam = (
+      '{ '
+      '"roles/owner" = ["user:a@b.com"], '
+      '"roles/viewer" = ["user:c@d.com"] '
+      '} '
   )
-  _, resources = plan_runner(FIXTURES_DIR,
-                             iam_members=iam_members)
+  _, resources = plan_runner(FIXTURES_DIR, iam=iam)
   assert len(resources) == 3

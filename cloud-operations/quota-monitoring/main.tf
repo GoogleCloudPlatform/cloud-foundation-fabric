@@ -34,7 +34,7 @@ module "project" {
     disable_on_destroy         = false,
     disable_dependent_services = false
   }
-  iam_members = {
+  iam = {
     "roles/monitoring.metricWriter" = [module.cf.service_account_iam_email]
   }
 }

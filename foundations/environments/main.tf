@@ -24,7 +24,7 @@ module "tf-project" {
   parent          = var.root_node
   prefix          = var.prefix
   billing_account = var.billing_account_id
-  iam_additive_bindings = {
+  iam_additive = {
     for name in var.iam_terraform_owners : (name) => ["roles/owner"]
   }
   services = var.project_services
@@ -34,8 +34,8 @@ module "tf-project" {
 
 module "tf-service-accounts" {
   source     = "../../modules/iam-service-account"
-  project_id = module.tf-project.project_id
   for_each   = var.environments
+  project_id = module.tf-project.project_id
   name       = each.value
   prefix     = var.prefix
   iam_billing_roles = {
@@ -67,8 +67,8 @@ module "tf-gcs-bootstrap" {
 
 module "tf-gcs-environments" {
   source     = "../../modules/gcs"
-  project_id = module.tf-project.project_id
   for_each   = var.environments
+  project_id = module.tf-project.project_id
   name       = each.value
   prefix     = "${var.prefix}-tf"
   location   = var.gcs_location
@@ -86,7 +86,7 @@ module "environment-folders" {
   for_each = var.environments
   parent   = var.root_node
   name     = each.value
-  iam_members = {
+  iam = {
     for role in local.folder_roles :
     (role) => [module.tf-service-accounts[each.value].iam_email]
   }
@@ -104,7 +104,7 @@ module "audit-project" {
   parent          = var.root_node
   prefix          = var.prefix
   billing_account = var.billing_account_id
-  iam_members = {
+  iam = {
     "roles/bigquery.dataEditor" = [module.audit-log-sinks.writer_identities[0]]
     "roles/viewer"              = var.iam_audit_viewers
   }
@@ -152,7 +152,7 @@ module "sharedsvc-project" {
   parent          = var.root_node
   prefix          = var.prefix
   billing_account = var.billing_account_id
-  iam_additive_bindings = {
+  iam_additive = {
     for name in var.iam_shared_owners : (name) => ["roles/owner"]
   }
   services = var.project_services

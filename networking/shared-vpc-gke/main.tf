@@ -30,7 +30,7 @@ module "project-host" {
     enabled          = true
     service_projects = [] # defined later
   }
-  iam_members = {
+  iam = {
     "roles/container.hostServiceAgentUser" = [
       "serviceAccount:${module.project-svc-gke.service_accounts.robots.container-engine}"
     ]
@@ -51,7 +51,7 @@ module "project-svc-gce" {
     attach       = true
     host_project = module.project-host.project_id
   }
-  iam_members = {
+  iam = {
     "roles/logging.logWriter"       = [module.vm-bastion.service_account_iam_email],
     "roles/monitoring.metricWriter" = [module.vm-bastion.service_account_iam_email],
     "roles/owner"                   = var.owners_gce,
@@ -72,7 +72,7 @@ module "project-svc-gke" {
     attach       = true
     host_project = module.project-host.project_id
   }
-  iam_members = {
+  iam = {
     "roles/container.developer"     = [module.vm-bastion.service_account_iam_email],
     "roles/logging.logWriter"       = [module.service-account-gke-node.iam_email],
     "roles/monitoring.metricWriter" = [module.service-account-gke-node.iam_email],

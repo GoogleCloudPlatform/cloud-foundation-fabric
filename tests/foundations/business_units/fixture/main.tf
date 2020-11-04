@@ -15,10 +15,9 @@
  */
 
 module "test" {
-  source         = "../../../../modules/folder"
-  parent         = "organizations/12345678"
-  name           = "folder-a"
-  iam            = var.iam
-  policy_boolean = var.policy_boolean
-  policy_list    = var.policy_list
+  source             = "../../../../foundations/business-units"
+  billing_account_id = var.billing_account_id
+  organization_id    = var.organization_id
+  prefix             = var.prefix
+  root_node          = var.root_node
 }

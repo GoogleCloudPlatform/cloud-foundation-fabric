@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-variable "iam_members" {
+variable "iam" {
   type    = map(list(string))
   default = {}
 }

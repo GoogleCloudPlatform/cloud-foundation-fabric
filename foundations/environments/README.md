@@ -33,7 +33,7 @@ If no shared services are needed, the shared service project module can of cours
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
 | billing_account_id | Billing account id used as to create projects. | <code title="">string</code> | ✓ |  |
-| environments | Environment short names. | <code title="list&#40;string&#41;">list(string)</code> | ✓ |  |
+| environments | Environment short names. | <code title="set&#40;string&#41;">set(string)</code> | ✓ |  |
 | organization_id | Organization id in organizations/nnnnnnnn format. | <code title="">string</code> | ✓ |  |
 | prefix | Prefix used for resources that need unique names. | <code title="">string</code> | ✓ |  |
 | root_node | Root node for the new hierarchy, either 'organizations/org_id' or 'folders/folder_id'. | <code title="">string</code> | ✓ |  |
