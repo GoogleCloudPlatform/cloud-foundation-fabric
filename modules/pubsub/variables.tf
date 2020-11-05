@@ -39,9 +39,9 @@ variable "defaults" {
   }
 }
 
-variable "iam_members" {
-  description = "IAM members for each topic role."
-  type        = map(set(string))
+variable "iam" {
+  description = "IAM bindings for topic in {ROLE => [MEMBERS]} format."
+  type        = map(list(string))
   default     = {}
 }
 
@@ -101,8 +101,8 @@ variable "subscriptions" {
   default = {}
 }
 
-variable "subscription_iam_members" {
-  description = "IAM members for each subscription and role."
-  type        = map(map(set(string)))
+variable "subscription_iam" {
+  description = "IAM bindings for subscriptions in {SUBSCRIPTION => {ROLE => [MEMBERS]}} format."
+  type        = map(map(list(string)))
   default     = {}
 }

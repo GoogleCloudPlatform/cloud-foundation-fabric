@@ -16,7 +16,7 @@
 
 locals {
   sub_iam_members = flatten([
-    for sub, roles in var.subscription_iam_members : [
+    for sub, roles in var.subscription_iam : [
       for role, members in roles : {
         sub     = sub
         role    = role
@@ -50,7 +50,7 @@ resource "google_pubsub_topic" "default" {
 }
 
 resource "google_pubsub_topic_iam_binding" "default" {
-  for_each = var.iam_members
+  for_each = var.iam
   project  = var.project_id
   topic    = google_pubsub_topic.default.name
   role     = each.key
