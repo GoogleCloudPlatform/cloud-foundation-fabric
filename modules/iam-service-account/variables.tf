@@ -28,31 +28,31 @@ variable "iam" {
 
 variable "iam_billing_roles" {
   description = "Project roles granted to the service account, by billing account id."
-  type        = map(set(string))
+  type        = map(list(string))
   default     = {}
 }
 
 variable "iam_folder_roles" {
   description = "Project roles granted to the service account, by folder id."
-  type        = map(set(string))
+  type        = map(list(string))
   default     = {}
 }
 
 variable "iam_organization_roles" {
   description = "Project roles granted to the service account, by organization id."
-  type        = map(set(string))
+  type        = map(list(string))
   default     = {}
 }
 
 variable "iam_project_roles" {
   description = "Project roles granted to the service account, by project id."
-  type        = map(set(string))
+  type        = map(list(string))
   default     = {}
 }
 
 variable "iam_storage_roles" {
   description = "Storage roles granted to the service account, by bucket name."
-  type        = map(set(string))
+  type        = map(list(string))
   default     = {}
 }
 
