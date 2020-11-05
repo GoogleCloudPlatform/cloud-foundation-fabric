@@ -29,7 +29,7 @@ variable "auto_create_subnetworks" {
   default = false
 }
 
-variable "iam_members" {
+variable "iam" {
   type    = map(map(set(string)))
   default = null
 }

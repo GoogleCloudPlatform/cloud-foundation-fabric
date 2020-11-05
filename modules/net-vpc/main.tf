@@ -15,7 +15,7 @@
  */
 
 locals {
-  iam_members = var.iam_members == null ? {} : var.iam_members
+  iam_members = var.iam == null ? {} : var.iam
   subnet_iam_members = flatten([
     for subnet, roles in local.iam_members : [
       for role, members in roles : {

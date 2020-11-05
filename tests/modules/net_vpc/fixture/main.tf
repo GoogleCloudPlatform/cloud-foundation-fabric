@@ -18,7 +18,7 @@ module "test" {
   source                      = "../../../../modules/net-vpc"
   project_id                  = var.project_id
   name                        = var.name
-  iam_members                 = var.iam_members
+  iam                         = var.iam
   log_configs                 = var.log_configs
   log_config_defaults         = var.log_config_defaults
   peering_config              = var.peering_config

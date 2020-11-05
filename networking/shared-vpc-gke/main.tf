@@ -107,7 +107,7 @@ module "vpc-shared" {
       }
     }
   ]
-  iam_members = {
+  iam = {
     "${var.region}/gce" = {
       "roles/compute.networkUser" = concat(var.owners_gce, [
         "serviceAccount:${module.project-svc-gce.service_accounts.cloud_services}",

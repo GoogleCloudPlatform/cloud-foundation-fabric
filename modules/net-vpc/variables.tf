@@ -32,8 +32,8 @@ variable "description" {
   default     = "Terraform-managed."
 }
 
-variable "iam_members" {
-  description = "List of IAM members keyed by subnet 'region/name' and role."
+variable "iam" {
+  description = "Subnet IAM bindings in {REGION/NAME => {ROLE => [MEMBERS]} format."
   type        = map(map(list(string)))
   default     = {}
 }
