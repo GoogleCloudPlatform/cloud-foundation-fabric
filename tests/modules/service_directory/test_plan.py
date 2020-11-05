@@ -31,12 +31,12 @@ def test_resource_count(resources):
   assert len(resources) == 9
 
 
-def test_service_iam(resources):
-  "Test service IAM binding resources."
+def test_iam(resources):
+  "Test IAM binding resources."
   bindings = [r['values'] for r in resources if r['type']
               == 'google_service_directory_namespace_iam_binding']
   assert len(bindings) == 1
-  assert bindings[0]['role'] == 'roles/servicedirectory.editor'
+  assert bindings[0]['role'] == 'roles/servicedirectory.viewer'
 
 
 def test_services(resources):
