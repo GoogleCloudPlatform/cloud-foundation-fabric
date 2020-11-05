@@ -20,9 +20,9 @@ variable "generate_key" {
   default     = false
 }
 
-variable "iam_members" {
-  description = "Map of members which are granted authoritative roles on the service account, keyed by role."
-  type        = map(set(string))
+variable "iam" {
+  description = "IAM bindings on the service account in {ROLE => [MEMBERS]} format."
+  type        = map(list(string))
   default     = {}
 }
 

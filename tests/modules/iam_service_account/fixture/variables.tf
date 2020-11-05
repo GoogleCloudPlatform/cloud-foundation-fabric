@@ -19,7 +19,7 @@ variable "generate_key" {
   default = false
 }
 
-variable "iam_members" {
+variable "iam" {
   type    = map(list(string))
   default = {}
 }

@@ -36,13 +36,8 @@ def test_resources(plan_runner):
 
 def test_iam_roles(plan_runner):
   "Test iam roles with one member."
-  variables = dict(
-    iam_members=(
-      '{'
-      '"roles/iam.serviceAccountUser" = ["user:a@b.com"] '
-      '}')
-  )
-  _, resources = plan_runner(FIXTURES_DIR, **variables)
+  iam=('{"roles/iam.serviceAccountUser" = ["user:a@b.com"]}')
+  _, resources = plan_runner(FIXTURES_DIR, iam=iam)
   assert len(resources) == 2
   iam_resources = [r for r in resources
                    if r['type'] != 'google_service_account']

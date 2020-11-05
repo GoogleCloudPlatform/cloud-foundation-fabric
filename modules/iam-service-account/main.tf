@@ -67,7 +67,7 @@ resource "google_service_account_key" "key" {
 }
 
 resource "google_service_account_iam_binding" "roles" {
-  for_each           = var.iam_members
+  for_each           = var.iam
   service_account_id = google_service_account.service_account.name
   role               = each.key
   members            = each.value

@@ -11,7 +11,7 @@ module "myproject-default-service-accounts" {
   name              = "vm-default"
   generate_key      = true
   # authoritative roles granted *on* the service accounts to other identities
-  iam_members       = {
+  iam       = {
     "roles/iam.serviceAccountUser" = ["user:foo@example.com"]
   }
   # non-authoritative roles granted *to* the service accounts on other resources
