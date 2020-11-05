@@ -20,7 +20,7 @@ resource "google_sourcerepo_repository" "default" {
 }
 
 resource "google_sourcerepo_repository_iam_binding" "default" {
-  for_each   = var.iam_members
+  for_each   = var.iam
   project    = var.project_id
   repository = google_sourcerepo_repository.default.name
   role       = each.key

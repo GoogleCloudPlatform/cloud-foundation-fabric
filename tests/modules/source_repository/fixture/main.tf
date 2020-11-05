@@ -14,18 +14,9 @@
  * limitations under the License.
  */
 
-variable "project_id" {
-  description = "Project used for resources."
-  type        = string
-}
-
-variable "iam" {
-  description = "IAM bindings in {ROLE => [MEMBERS]} format."
-  type        = map(list(string))
-  default     = {}
-}
-
-variable "name" {
-  description = "Repository name."
-  type        = string
+module "test" {
+  source     = "../../../../modules/source-repository"
+  project_id = var.project_id
+  name       = var.name
+  iam        = var.iam
 }

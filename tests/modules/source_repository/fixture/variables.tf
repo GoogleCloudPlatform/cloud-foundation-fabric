@@ -15,17 +15,18 @@
  */
 
 variable "project_id" {
-  description = "Project used for resources."
-  type        = string
+  type    = string
+  default = "test-project"
 }
 
 variable "iam" {
-  description = "IAM bindings in {ROLE => [MEMBERS]} format."
-  type        = map(list(string))
-  default     = {}
+  type = map(list(string))
+  default = {
+    "roles/source.reader" = ["foo@example.org"]
+  }
 }
 
 variable "name" {
-  description = "Repository name."
-  type        = string
+  type    = string
+  default = "test"
 }
