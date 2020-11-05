@@ -19,7 +19,7 @@ variable "group" {
   default = null
 }
 
-variable "iam_members" {
+variable "iam" {
   type    = map(set(string))
   default = {}
 }

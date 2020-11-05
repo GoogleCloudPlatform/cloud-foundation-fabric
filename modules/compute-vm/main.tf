@@ -26,8 +26,8 @@ locals {
     "${pair[0]}-${pair[1]}" => { disk_name = pair[1], name = pair[0] }
   }
   iam_members = var.use_instance_template ? {} : {
-    for pair in setproduct(keys(var.iam_members), keys(local.names)) :
-    "${pair.0}/${pair.1}" => { role = pair.0, name = pair.1, members = var.iam_members[pair.0] }
+    for pair in setproduct(keys(var.iam), keys(local.names)) :
+    "${pair.0}/${pair.1}" => { role = pair.0, name = pair.1, members = var.iam[pair.0] }
   }
   names = (
     var.use_instance_template ? { (var.name) = 0 } : {

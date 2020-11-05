@@ -90,9 +90,9 @@ variable "hostname" {
   default     = null
 }
 
-variable "iam_members" {
-  description = "Map of member lists used to set authoritative bindings, keyed by role. Ignored for template use."
-  type        = map(set(string))
+variable "iam" {
+  description = "IAM bindings in {ROLE => [MEMBERS]} format."
+  type        = map(list(string))
   default     = {}
 }
 
