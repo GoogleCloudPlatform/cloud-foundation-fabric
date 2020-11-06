@@ -20,12 +20,13 @@ variable "grpc_config" {
     yaml_path          = string
     protoc_output_path = string
   })
+  default = null
 }
 
 
-variable "iam_members" {
-  description = "Authoritative for a given role. Updates the IAM policy to grant a role to a list of members. Other roles within the IAM policy for the instance are preserved."
-  type        = map(set(string))
+variable "iam" {
+  description = "IAM bindings for topic in {ROLE => [MEMBERS]} format."
+  type        = map(list(string))
   default     = {}
 }
 

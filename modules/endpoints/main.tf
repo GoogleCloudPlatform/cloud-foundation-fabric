@@ -23,7 +23,7 @@ resource "google_endpoints_service" "default" {
 }
 
 resource "google_endpoints_service_iam_binding" "default" {
-  for_each     = var.iam_members
+  for_each     = var.iam
   service_name = google_endpoints_service.default.service_name
   role         = each.key
   members      = each.value
