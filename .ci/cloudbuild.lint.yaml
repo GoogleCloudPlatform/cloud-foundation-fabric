@@ -28,7 +28,15 @@ steps:
     args: ["/workspace"]
   - name: python:3-alpine
     id: documentation
-    args: ["/workspace/tools/check_documentation.py"]
+    args:
+      [
+        "/workspace/tools/check_documentation.py",
+        "modules",
+        "cloud-operations",
+        "data-solutions",
+        "foundations",
+        "networking",
+      ]
 tags:
   - ci
   - lint
