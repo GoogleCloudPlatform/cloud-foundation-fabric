@@ -17,6 +17,7 @@
 ###############################################################################
 #                                Projects                                     #
 ###############################################################################
+
 module "project" {
   source          = "../../modules/project"
   name            = var.project_id
@@ -46,6 +47,7 @@ module "service-account" {
 ###############################################################################
 #                                Pub/Sub                                      #
 ###############################################################################
+
 module "pubsub" {
   source     = "../../modules/pubsub"
   project_id = module.project.project_id
@@ -60,6 +62,7 @@ module "pubsub" {
 ###############################################################################
 #                             Cloud Function                                  #
 ###############################################################################
+
 module "cf" {
   source      = "../../modules/cloud-function"
   project_id  = module.project.project_id
@@ -88,6 +91,7 @@ resource "random_pet" "random" {
 ###############################################################################
 #                            Cloud Scheduler                                  #
 ###############################################################################
+
 resource "google_app_engine_application" "app" {
   project     = module.project.project_id
   location_id = var.location
@@ -116,6 +120,7 @@ resource "google_cloud_scheduler_job" "job" {
 ###############################################################################
 #                                Bigquery                                     #
 ###############################################################################
+
 module "bq" {
   source     = "../../modules/bigquery-dataset"
   project_id = module.project.project_id
