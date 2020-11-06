@@ -9,7 +9,7 @@ module "container_registry" {
   source     = "../../modules/container-registry"
   project_id = "myproject"
   location   = "EU"
-  iam_members = {
+  iam = {
     "roles/storage.admin" = ["group:cicd@example.com"]
   }
 }
@@ -21,7 +21,7 @@ module "container_registry" {
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
 | project_id | Registry project id. | <code title="">string</code> | ✓ |  |
-| *iam_members* | Map of member lists used to set authoritative bindings, keyed by role. | <code title="map&#40;set&#40;string&#41;&#41;">map(set(string))</code> |  | <code title="">null</code> |
+| *iam* | IAM bindings for topic in {ROLE => [MEMBERS]} format. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
 | *location* | Registry location. Can be US, EU, ASIA or empty | <code title="">string</code> |  | <code title=""></code> |
 
 ## Outputs
