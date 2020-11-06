@@ -16,13 +16,15 @@
 
 locals {
   # distinct is needed to make the expanding function argument work
-  iam_pairs = flatten([
-    for name, roles in var.iam_roles :
-    [for role in roles : { name = name, role = role }]
+  iam = flatten([
+    for secret, roles in var.iam : [
+      for role, members in roles : {
+        secret  = secret
+        role    = role
+        members = members
+      }
+    ]
   ])
-  iam_keypairs = {
-    for pair in local.iam_pairs : "${pair.name}-${pair.role}" => pair
-  }
   version_pairs = flatten([
     for secret, versions in var.versions : [
       for name, attrs in versions : merge(attrs, { name = name, secret = secret })
@@ -73,11 +75,11 @@ resource "google_secret_manager_secret_version" "default" {
 }
 
 resource "google_secret_manager_secret_iam_binding" "default" {
-  provider  = google-beta
-  for_each  = local.iam_keypairs
+  provider = google-beta
+  for_each = {
+    for binding in local.iam : "${binding.secret}.${binding.role}" => binding
+  }
   role      = each.value.role
-  secret_id = google_secret_manager_secret.default[each.value.name].id
-  members = lookup(
-    lookup(var.iam_members, each.value.name, {}), each.value.role, []
-  )
+  secret_id = google_secret_manager_secret.default[each.value.secret].id
+  members   = each.value.members
 }

@@ -34,7 +34,7 @@ resource "google_folder" "environment" {
 }
 
 resource "google_folder_iam_binding" "unit" {
-  for_each = local.unit_iam_bindings
+  for_each = var.iam
   folder   = google_folder.unit.name
   role     = each.key
   members  = each.value
@@ -92,9 +92,9 @@ resource "google_storage_bucket" "tfstate" {
     var.prefix == null ? "" : "${var.prefix}-",
     "${var.short_name}-${each.key}-tf"
   ])
-  location           = var.gcs_defaults.location
-  storage_class      = var.gcs_defaults.storage_class
-  force_destroy      = false
+  location                    = var.gcs_defaults.location
+  storage_class               = var.gcs_defaults.storage_class
+  force_destroy               = false
   uniform_bucket_level_access = true
   versioning {
     enabled = true

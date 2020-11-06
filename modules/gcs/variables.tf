@@ -1,5 +1,5 @@
 /**
- * Copyright 2018 Google LLC
+ * Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,33 +15,27 @@
  */
 
 variable "uniform_bucket_level_access" {
-  description = "Optional map to allow using object ACLs (false) or not (true, this is the recommended behavior) , defaults to true (which is the recommended practice, but not the behavior of storage API)."
-  type        = map(bool)
-  default     = {}
+  description = "Allow using object ACLs (false) or not (true, this is the recommended behavior) , defaults to true (which is the recommended practice, but not the behavior of storage API)."
+  type        = bool
+  default     = true
 }
 
 variable "force_destroy" {
   description = "Optional map to set force destroy keyed by name, defaults to false."
-  type        = map(bool)
-  default     = {}
+  type        = bool
+  default     = false
 }
 
-variable "iam_members" {
-  description = "IAM members keyed by bucket name and role."
-  type        = map(map(list(string)))
-  default     = {}
-}
-
-variable "iam_roles" {
-  description = "IAM roles keyed by bucket name."
+variable "iam" {
+  description = "IAM bindings in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
   default     = {}
 }
 
-variable "encryption_keys" {
-  description = "Per-bucket KMS keys that will be used for encryption."
-  type        = map(string)
-  default     = {}
+variable "encryption_key" {
+  description = "KMS key that will be used for encryption."
+  type        = string
+  default     = null
 }
 
 variable "labels" {
@@ -57,17 +51,17 @@ variable "location" {
 }
 
 variable "logging_config" {
-  description = "Per-bucket logging."
-  type = map(object({
+  description = "Bucket logging configuration."
+  type = object({
     log_bucket        = string
     log_object_prefix = string
-  }))
-  default = {}
+  })
+  default = null
 }
 
-variable "names" {
-  description = "Bucket name suffixes."
-  type        = list(string)
+variable "name" {
+  description = "Bucket name suffix."
+  type        = string
 }
 
 variable "prefix" {
@@ -81,23 +75,27 @@ variable "project_id" {
   type        = string
 }
 
-variable "retention_policies" {
-  description = "Per-bucket retention policy."
-  type = map(object({
+variable "retention_policy" {
+  description = "Bucket retention policy."
+  type = object({
     retention_period = number
     is_locked        = bool
-  }))
-  default = {}
+  })
+  default = null
 }
 
 variable "storage_class" {
   description = "Bucket storage class."
   type        = string
   default     = "MULTI_REGIONAL"
+  validation {
+    condition     = contains(["STANDARD", "MULTI_REGIONAL", "REGIONAL", "NEARLINE", "COLDLINE", "ARCHIVE"], var.storage_class)
+    error_message = "Storage class must be one of STANDARD, MULTI_REGIONAL, REGIONAL, NEARLINE, COLDLINE, ARCHIVE."
+  }
 }
 
 variable "versioning" {
-  description = "Optional map to set versioning keyed by name, defaults to false."
-  type        = map(bool)
-  default     = {}
+  description = "Enable versioning, defaults to false."
+  type        = bool
+  default     = false
 }

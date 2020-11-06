@@ -32,21 +32,14 @@ variable "custom_roles" {
   default     = {}
 }
 
-variable "iam_members" {
-  description = "Map of member lists used to set authoritative bindings, keyed by role."
-  type        = map(list(string))
+variable "iam" {
+  description = "IAM bindings in {ROLE => [MEMBERS]} format."
+  type        = map(set(string))
   default     = {}
 }
 
-variable "iam_roles" {
-  description = "List of roles used to set authoritative bindings."
-  type        = list(string)
-  default     = []
-}
-
-
-variable "iam_additive_bindings" {
-  description = "Map of roles lists used to set non authoritative bindings, keyed by members"
+variable "iam_additive" {
+  description = "IAM additive bindings in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
   default     = {}
 }
@@ -90,6 +83,10 @@ variable "parent" {
   description = "Parent folder or organization in 'folders/folder_id' or 'organizations/org_id' format."
   type        = string
   default     = null
+  validation {
+    condition     = var.parent == null || can(regex("(organizations|folders)/[0-9]+", var.parent))
+    error_message = "Parent must be of the form folders/folder_id or organizations/organization_id."
+  }
 }
 
 variable "policy_boolean" {

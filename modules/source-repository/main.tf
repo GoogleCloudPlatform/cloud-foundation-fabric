@@ -20,11 +20,11 @@ resource "google_sourcerepo_repository" "default" {
 }
 
 resource "google_sourcerepo_repository_iam_binding" "default" {
-  for_each   = toset(var.iam_roles)
+  for_each   = var.iam
   project    = var.project_id
   repository = google_sourcerepo_repository.default.name
-  role       = each.value
-  members    = lookup(var.iam_members, each.value, [])
+  role       = each.key
+  members    = each.value
 
   depends_on = [
     google_sourcerepo_repository.default

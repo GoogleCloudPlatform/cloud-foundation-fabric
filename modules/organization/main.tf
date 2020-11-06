@@ -16,7 +16,7 @@
 
 locals {
   iam_additive_pairs = flatten([
-    for member, roles in var.iam_additive_bindings : [
+    for member, roles in var.iam_additive : [
       for role in roles :
       { role = role, member = member }
     ]
@@ -37,14 +37,14 @@ resource "google_organization_iam_custom_role" "roles" {
 }
 
 resource "google_organization_iam_binding" "authoritative" {
-  for_each = toset(var.iam_roles)
+  for_each = var.iam
   org_id   = var.org_id
-  role     = each.value
-  members  = lookup(var.iam_members, each.value, [])
+  role     = each.key
+  members  = each.value
 }
 
 resource "google_organization_iam_member" "additive" {
-  for_each = length(var.iam_additive_bindings) > 0 ? local.iam_additive : {}
+  for_each = length(var.iam_additive) > 0 ? local.iam_additive : {}
   org_id   = var.org_id
   role     = each.value.role
   member   = each.value.member

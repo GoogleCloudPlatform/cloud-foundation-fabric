@@ -42,7 +42,7 @@ module "vm-left" {
     startup-script = local.vm_startup_script
   }
   service_account = try(
-    module.service-accounts.emails["${local.prefix}gce-vm"], null
+    module.service-accounts.email, null
   )
   service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
   instance_count         = 2
@@ -68,7 +68,7 @@ module "vm-right" {
     startup-script = local.vm_startup_script
   }
   service_account = try(
-    module.service-accounts.emails["${local.prefix}gce-vm"], null
+    module.service-accounts.email, null
   )
   service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
   instance_count         = 2

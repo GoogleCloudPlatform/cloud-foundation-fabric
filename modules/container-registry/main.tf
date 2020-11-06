@@ -20,8 +20,8 @@ resource "google_container_registry" "registry" {
 }
 
 resource "google_storage_bucket_iam_binding" "bindings" {
-  for_each = toset(var.iam_roles)
+  for_each = var.iam
   bucket   = google_container_registry.registry.id
-  role     = each.value
-  members  = lookup(var.iam_members, each.value, [])
+  role     = each.key
+  members  = each.value
 }

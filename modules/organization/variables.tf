@@ -20,20 +20,14 @@ variable "custom_roles" {
   default     = {}
 }
 
-variable "iam_members" {
-  description = "Map of member lists used to set authoritative bindings, keyed by role."
+variable "iam" {
+  description = "IAM bindings, in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
   default     = {}
 }
 
-variable "iam_roles" {
-  description = "List of roles used to set authoritative bindings."
-  type        = list(string)
-  default     = []
-}
-
-variable "iam_additive_bindings" {
-  description = "Map of roles lists used to set non authoritative bindings, keyed by members."
+variable "iam_additive" {
+  description = "Non authoritative IAM bindings, in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
   default     = {}
 }

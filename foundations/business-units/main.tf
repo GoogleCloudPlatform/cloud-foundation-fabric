@@ -21,9 +21,9 @@
 # Shared folder
 
 module "shared-folder" {
-  source = "../../modules/folders"
+  source = "../../modules/folder"
   parent = var.root_node
-  names  = ["shared"]
+  name   = "shared"
 }
 
 # Terraform project
@@ -34,7 +34,7 @@ module "tf-project" {
   parent          = module.shared-folder.id
   prefix          = var.prefix
   billing_account = var.billing_account_id
-  iam_additive_bindings = {
+  iam_additive = {
     for name in var.iam_terraform_owners : (name) => ["roles/owner"]
   }
   services = var.project_services
@@ -45,7 +45,7 @@ module "tf-project" {
 module "tf-gcs-bootstrap" {
   source     = "../../modules/gcs"
   project_id = module.tf-project.project_id
-  names      = ["tf-bootstrap"]
+  name       = "tf-bootstrap"
   prefix     = "${var.prefix}-tf"
   location   = var.gcs_defaults.location
 }
@@ -96,14 +96,10 @@ module "audit-project" {
   parent          = var.root_node
   prefix          = var.prefix
   billing_account = var.billing_account_id
-  iam_members = {
+  iam = {
     "roles/bigquery.dataEditor" = [module.audit-log-sinks.writer_identities[0]]
     "roles/viewer"              = var.iam_audit_viewers
   }
-  iam_roles = [
-    "roles/bigquery.dataEditor",
-    "roles/viewer"
-  ]
   services = concat(var.project_services, [
     "bigquery.googleapis.com",
   ])
@@ -147,7 +143,7 @@ module "shared-project" {
   parent          = module.shared-folder.id
   prefix          = var.prefix
   billing_account = var.billing_account_id
-  iam_additive_bindings = {
+  iam_additive = {
     for name in var.iam_shared_owners : (name) => ["roles/owner"]
   }
   services = var.project_services

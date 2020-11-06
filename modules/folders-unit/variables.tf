@@ -42,6 +42,12 @@ variable "gcs_defaults" {
   }
 }
 
+variable "iam" {
+  description = "IAM bindings for the top-level folder in {ROLE => [MEMBERS]} format."
+  type        = map(list(string))
+  default     = {}
+}
+
 variable "iam_billing_config" {
   description = "Grant billing user role to service accounts, defaults to granting on the billing account."
   type = object({
@@ -63,18 +69,6 @@ variable "iam_enviroment_roles" {
     "roles/resourcemanager.folderAdmin",
     "roles/resourcemanager.projectCreator",
   ]
-}
-
-variable "iam_members" {
-  description = "IAM members for roles applied on the unit folder."
-  type        = map(list(string))
-  default     = null
-}
-
-variable "iam_roles" {
-  description = "IAM roles applied on the unit folder."
-  type        = list(string)
-  default     = null
 }
 
 variable "iam_xpn_config" {

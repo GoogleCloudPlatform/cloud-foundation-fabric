@@ -32,14 +32,8 @@ variable "description" {
   default     = "Terraform-managed."
 }
 
-variable "iam_roles" {
-  description = "List of IAM roles keyed by subnet 'region/name'."
-  type        = map(list(string))
-  default     = {}
-}
-
-variable "iam_members" {
-  description = "List of IAM members keyed by subnet 'region/name' and role."
+variable "iam" {
+  description = "Subnet IAM bindings in {REGION/NAME => {ROLE => [MEMBERS]} format."
   type        = map(map(list(string)))
   default     = {}
 }
@@ -106,6 +100,11 @@ variable "routing_mode" {
   description = "The network routing mode (default 'GLOBAL')"
   type        = string
   default     = "GLOBAL"
+  validation {
+    condition     = var.routing_mode == "GLOBAL" || var.routing_mode == "REGIONAL"
+    error_message = "Routing type must be GLOBAL or REGIONAL."
+  }
+
 }
 
 variable "shared_vpc_host" {

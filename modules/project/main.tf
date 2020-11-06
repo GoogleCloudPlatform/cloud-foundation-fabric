@@ -1,5 +1,5 @@
 /**
- * Copyright 2018 Google LLC
+ * Copyright 2020 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 locals {
   iam_additive_pairs = flatten([
-    for member, roles in var.iam_additive_bindings : [
+    for member, roles in var.iam_additive : [
       for role in roles :
       { role = role, member = member }
     ]
@@ -91,10 +91,10 @@ resource "google_project_service" "project_services" {
 # - additive (non-authoritative) roles might fail due to dynamic values
 
 resource "google_project_iam_binding" "authoritative" {
-  for_each = toset(var.iam_roles)
+  for_each = var.iam
   project  = local.project.project_id
-  role     = each.value
-  members  = lookup(var.iam_members, each.value, [])
+  role     = each.key
+  members  = each.value
   depends_on = [
     google_project_service.project_services,
     google_project_iam_custom_role.roles
@@ -102,7 +102,7 @@ resource "google_project_iam_binding" "authoritative" {
 }
 
 resource "google_project_iam_member" "additive" {
-  for_each = length(var.iam_additive_bindings) > 0 ? local.iam_additive : {}
+  for_each = length(var.iam_additive) > 0 ? local.iam_additive : {}
   project  = local.project.project_id
   role     = each.value.role
   member   = each.value.member

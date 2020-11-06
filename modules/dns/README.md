@@ -37,7 +37,7 @@ module "private-dns" {
 | *peer_network* | Peering network self link, only valid for 'peering' zone types. | <code title="">string</code> |  | <code title="">null</code> |
 | *recordsets* | List of DNS record objects to manage. | <code title="list&#40;object&#40;&#123;&#10;name    &#61; string&#10;type &#61; string&#10;ttl     &#61; number&#10;records &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">list(object({...}))</code> |  | <code title="">[]</code> |
 | *service_directory_namespace* | Service directory namespace id (URL), only valid for 'service-directory' zone types. | <code title="">string</code> |  | <code title="">null</code> |
-| *type* | Type of zone to create, valid values are 'public', 'private', 'forwarding', 'peering', 'service-directory'. | <code title="">string</code> |  | <code title="">private</code> |
+| *type* | Type of zone to create, valid values are 'public', 'private', 'forwarding', 'peering', 'service-directory'. | <code title="">string</code> |  | <code title="private&#10;validation &#123;&#10;condition     &#61; contains&#40;&#91;&#34;public&#34;, &#34;private&#34;, &#34;forwarding&#34;, &#34;peering&#34;, &#34;service-directory&#34;&#93;, var.type&#41;&#10;error_message &#61; &#34;Zone must be one of &#39;public&#39;, &#39;private&#39;, &#39;forwarding&#39;, &#39;peering&#39;, &#39;service-directory&#39;.&#34;&#10;&#125;">...</code> |
 | *zone_create* | Create zone. When set to false, uses a data source to reference existing zone. | <code title="">bool</code> |  | <code title="">true</code> |
 
 ## Outputs

@@ -30,10 +30,7 @@ module "project-host" {
     enabled          = true
     service_projects = [] # defined later
   }
-  iam_roles = [
-    "roles/container.hostServiceAgentUser", "roles/owner"
-  ]
-  iam_members = {
+  iam = {
     "roles/container.hostServiceAgentUser" = [
       "serviceAccount:${module.project-svc-gke.service_accounts.robots.container-engine}"
     ]
@@ -54,12 +51,7 @@ module "project-svc-gce" {
     attach       = true
     host_project = module.project-host.project_id
   }
-  iam_roles = [
-    "roles/logging.logWriter",
-    "roles/monitoring.metricWriter",
-    "roles/owner"
-  ]
-  iam_members = {
+  iam = {
     "roles/logging.logWriter"       = [module.vm-bastion.service_account_iam_email],
     "roles/monitoring.metricWriter" = [module.vm-bastion.service_account_iam_email],
     "roles/owner"                   = var.owners_gce,
@@ -80,13 +72,7 @@ module "project-svc-gke" {
     attach       = true
     host_project = module.project-host.project_id
   }
-  iam_roles = [
-    "roles/container.developer",
-    "roles/logging.logWriter",
-    "roles/monitoring.metricWriter",
-    "roles/owner",
-  ]
-  iam_members = {
+  iam = {
     "roles/container.developer"     = [module.vm-bastion.service_account_iam_email],
     "roles/logging.logWriter"       = [module.service-account-gke-node.iam_email],
     "roles/monitoring.metricWriter" = [module.service-account-gke-node.iam_email],
@@ -121,11 +107,7 @@ module "vpc-shared" {
       }
     }
   ]
-  iam_roles = {
-    "${var.region}/gke" = ["roles/compute.networkUser", "roles/compute.securityAdmin"]
-    "${var.region}/gce" = ["roles/compute.networkUser"]
-  }
-  iam_members = {
+  iam = {
     "${var.region}/gce" = {
       "roles/compute.networkUser" = concat(var.owners_gce, [
         "serviceAccount:${module.project-svc-gce.service_accounts.cloud_services}",
@@ -245,7 +227,7 @@ module "cluster-1-nodepool-1" {
 # project level, with no risk of conflicts with pre-existing roles
 
 module "service-account-gke-node" {
-  source     = "../../modules/iam-service-accounts"
+  source     = "../../modules/iam-service-account"
   project_id = module.project-svc-gke.project_id
-  names      = ["gke-node"]
+  name       = "gke-node"
 }
