@@ -33,7 +33,7 @@ The current list of modules supports most of the core foundational and networkin
 
 Currently available modules:
 
-- **foundational** - [folders](./modules/folders), [log sinks](./modules/logging-sinks), [organization](./modules/organization), [project](./modules/project), [service accounts](./modules/iam-service-accounts)
+- **foundational** - [folder](./modules/folder), [log sinks](./modules/logging-sinks), [organization](./modules/organization), [project](./modules/project), [service accounts](./modules/iam-service-account)
 - **networking** - [VPC](./modules/net-vpc), [VPC firewall](./modules/net-vpc-firewall), [VPC peering](./modules/net-vpc-peering), [VPN static](./modules/net-vpn-static), [VPN dynamic](./modules/net-vpn-dynamic), [VPN HA](./modules/net-vpn-ha), [NAT](./modules/net-cloudnat), [address reservation](./modules/net-address), [DNS](./modules/dns), [L4 ILB](./modules/net-ilb), [Service Directory](./modules/service-directory), [Cloud Endpoints](./modules/cloudenpoints)
 - **compute** - [VM/VM group](./modules/compute-vm), [MIG](./modules/compute-mig), [GKE cluster](./modules/gke-cluster), [GKE nodepool](./modules/gke-nodepool), [COS container](./modules/cos-container) (coredns, mysql, onprem, squid)
 - **data** - [GCS](./modules/gcs), [BigQuery dataset](./modules/bigquery-dataset), [Pub/Sub](./modules/pubsub), [Datafusion](./modules/datafusion), [Bigtable instance](./modules/bigtable-instance)
