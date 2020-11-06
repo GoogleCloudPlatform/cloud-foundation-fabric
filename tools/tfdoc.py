@@ -179,7 +179,7 @@ def format_variables(variables, required_first=True):
       '| {required} | {default} |'
   )
   for v in variables:
-    default = default_spec = type_spec = ''
+    default = type_spec = ''
     if not v.required:
       default = '<code title="{title}">{default}</code>'
       if '\n' in v.default:
@@ -256,17 +256,19 @@ def get_outputs(path):
   return outputs
 
 
-def is_doc_up_to_date(path):
+def check_state(path):
   """Determine if a module's README has all its variables and outputs
-  documentation up-to-date"""
-  variables = get_variables(path)
-  outputs = get_outputs(path)
-  doc = get_doc(variables, outputs)
-  readme = open(os.path.join(path, 'README.md')).read()
+  documentation up-to-date."""
+  try:
+    variables = get_variables(path)
+    outputs = get_outputs(path)
+    readme = open(os.path.join(path, 'README.md')).read()
+  except (IOError, OSError):
+    return
   m = re.search('(?sm)%s.*%s' % (MARK_BEGIN, MARK_END), readme)
   if not m:
-    return True
-  return doc in readme
+    return
+  return get_doc(variables, outputs) in readme
 
 
 @click.command()

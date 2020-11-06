@@ -12,4 +12,3 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from .tfdoc import is_doc_up_to_date

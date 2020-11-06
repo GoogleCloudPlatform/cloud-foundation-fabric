@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
 steps:
   - name: python:3-alpine
     id: prepare
@@ -20,16 +19,24 @@ steps:
     args:
       - -c
       - |
-        python -m pip install --user --no-warn-script-location -r /workspace/tools/tfdoc/REQUIREMENTS.txt
+        python -m pip install --user --no-warn-script-location -r /workspace/tools/REQUIREMENTS.txt
   - name: python:3-alpine
     id: boilerplate
-    args: ["/workspace/.ci/scripts/check_boilerplate.py", "/workspace"]
-  - name: python:3-alpine
-    id: documentation
-    args: ["/workspace/.ci/scripts/check_documentation.py"]
+    args: ["/workspace/tools/check_boilerplate.py", "/workspace"]
   - name: wata727/tflint
     id: lint
     args: ["/workspace"]
+  - name: python:3-alpine
+    id: documentation
+    args:
+      [
+        "/workspace/tools/check_documentation.py",
+        "modules",
+        "cloud-operations",
+        "data-solutions",
+        "foundations",
+        "networking",
+      ]
 tags:
   - ci
   - lint
