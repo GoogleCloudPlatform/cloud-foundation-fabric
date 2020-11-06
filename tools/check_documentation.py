@@ -45,6 +45,7 @@ def check_path(pathname):
     doc = subpath / 'README.md'
     if not doc.exists():
       yield DocState.MISSING, subpath.stem
+      continue
     state = tfdoc.check_state(subpath)
     if state is False:
       yield DocState.STALE, subpath.stem
