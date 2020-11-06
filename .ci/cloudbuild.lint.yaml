@@ -15,6 +15,13 @@
 
 steps:
   - name: python:3-alpine
+    id: prepare
+    entrypoint: sh
+    args:
+      - -c
+      - |
+        python -m pip install --user --no-warn-script-location -r /workspace/tools/tfdoc/REQUIREMENTS.txt
+  - name: python:3-alpine
     id: boilerplate
     args: ["/workspace/.ci/scripts/check_boilerplate.py", "/workspace"]
   - name: python:3-alpine
