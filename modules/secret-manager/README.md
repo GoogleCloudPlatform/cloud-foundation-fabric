@@ -25,7 +25,7 @@ module "secret-manager" {
 
 ### Secret IAM bindings
 
-IAM bindings can be set per secret in the same way as for most other modules supporting IAM, using the `iam_members` variable.
+IAM bindings can be set per secret in the same way as for most other modules supporting IAM, using the `iam` variable.
 
 ```hcl
 module "secret-manager" {

@@ -15,7 +15,7 @@ module "project" {
     "container.googleapis.com",
     "stackdriver.googleapis.com"
   ]
-  iam_members = {
+  iam = {
     "roles/container.hostServiceAgentUser" = [
       "serviceAccount:${var.gke_service_account}"
     ]
@@ -31,7 +31,7 @@ module "project" {
   name            = "project-example"
   project_create  = false
 
-  iam_additive_bindings = {
+  iam_additive = {
     "group:usergroup_watermlon_experimentation@lemonadeinc.io" = [
 	    "roles/viewer",
 	    "roles/storage.objectAdmin"
