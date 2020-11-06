@@ -120,7 +120,7 @@ module "kms" {
     location = var.location
   }
   keys = { key-gce = null, key-gcs = null, key-bq = null }
-  key_iam_members = {
+  key_iam = {
     key-gce = {
       "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
         "serviceAccount:${module.project-service.service_accounts.robots.compute}",
@@ -150,7 +150,7 @@ module "kms-regional" {
     location = var.region
   }
   keys = { key-df = null }
-  key_iam_members = {
+  key_iam = {
     key-df = {
       "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
         "serviceAccount:${module.project-service.service_accounts.robots.dataflow}",

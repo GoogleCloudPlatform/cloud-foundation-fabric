@@ -79,7 +79,7 @@ module "kms" {
     location = var.location
   }
   keys = { key-gce = null, key-gcs = null }
-  key_iam_members = {
+  key_iam = {
     key-gce = {
       "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
         "serviceAccount:${module.project-service.service_accounts.robots.compute}",
