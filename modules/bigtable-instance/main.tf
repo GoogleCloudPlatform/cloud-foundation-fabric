@@ -16,7 +16,7 @@
 
 locals {
   tables = {
-    for k, v in var.tables : k => v.table_options != null ? v.table_options : var.table_options_defaults
+    for k, v in var.tables : k => v != null ? v : var.table_options_defaults
   }
 }
 
@@ -35,8 +35,7 @@ resource "google_bigtable_instance" "default" {
 }
 
 resource "google_bigtable_instance_iam_binding" "default" {
-  for_each = var.iam_members
-
+  for_each = var.iam
   project  = var.project_id
   instance = google_bigtable_instance.default.name
   role     = each.key
