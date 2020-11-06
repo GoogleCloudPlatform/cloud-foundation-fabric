@@ -12,17 +12,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-steps:
-  - name: python:3-alpine
-    id: boilerplate
-    args: ["/workspace/.ci/scripts/check_boilerplate.py", "/workspace"]
-  - name: python:3-alpine
-    id: documentation
-    args: ["/workspace/.ci/scripts/check_documentation.py"]
-  - name: wata727/tflint
-    id: lint
-    args: ["/workspace"]
-tags:
-  - ci
-  - lint
+from .tfdoc import is_doc_up_to_date
