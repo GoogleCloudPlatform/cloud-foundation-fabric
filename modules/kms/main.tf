@@ -16,7 +16,7 @@
 
 locals {
   key_iam_members = flatten([
-    for key, roles in var.key_iam_members : [
+    for key, roles in var.key_iam : [
       for role, members in roles : {
         key     = key
         role    = role
@@ -51,7 +51,7 @@ resource "google_kms_key_ring" "default" {
 }
 
 resource "google_kms_key_ring_iam_binding" "default" {
-  for_each    = var.iam_members
+  for_each    = var.iam
   key_ring_id = local.keyring.self_link
   role        = each.key
   members     = each.value

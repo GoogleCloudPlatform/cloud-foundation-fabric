@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-variable "iam_members" {
-  description = "Keyring IAM members."
-  type        = map(set(string))
+variable "iam" {
+  description = "Keyring IAM bindings for topic in {ROLE => [MEMBERS]} format."
+  type        = map(list(string))
   default     = {}
 }
 
-variable "key_iam_members" {
-  description = "IAM members keyed by key name and role."
-  type        = map(map(set(string)))
+variable "key_iam" {
+  description = "Key IAM bindings for topic in {KEY => {ROLE => [MEMBERS]}} format."
+  type        = map(map(list(string)))
   default     = {}
 }
 

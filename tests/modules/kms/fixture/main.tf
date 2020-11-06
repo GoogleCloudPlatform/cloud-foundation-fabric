@@ -16,8 +16,8 @@
 
 module "test" {
   source               = "../../../../modules/kms"
-  iam_members          = var.iam_members
-  key_iam_members      = var.key_iam_members
+  iam                  = var.iam
+  key_iam              = var.key_iam
   key_purpose          = var.key_purpose
   key_purpose_defaults = var.key_purpose_defaults
   keyring              = var.keyring
