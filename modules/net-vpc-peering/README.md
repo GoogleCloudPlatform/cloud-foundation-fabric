@@ -21,7 +21,7 @@ module "peering" {
 }
 ```
 
-If you need to create more than one peering for the same VPC Network `(A -> B, A -> C)` you have to use output from the first module as a dependency for the second one to keep order of peering creation (It is not currently possible to create more than one peering connection for a VPC Network at the same time).
+If you need to create more than one peering for the same VPC Network `(A -> B, A -> C)` you use a `depends_on` for second one to keep order of peering creation (It is not currently possible to create more than one peering connection for a VPC Network at the same time).
 
 ```hcl
 module "peering-a-b" {
@@ -39,7 +39,7 @@ module "peering-a-c" {
   local_network = "<A NETWORK SELF LINK>"
   peer_network  = "<C NETWORK SELF LINK>"
 
-  module_depends_on = [module.peering-a-b.complete]
+  depends_on = [ module.peering-a-b ]
 }
 ```
 
@@ -52,7 +52,6 @@ module "peering-a-c" {
 | peer_network | Resource link of the peer network. | <code title="">string</code> | ✓ |  |
 | *export_local_custom_routes* | Export custom routes to peer network from local network. | <code title="">bool</code> |  | <code title="">false</code> |
 | *export_peer_custom_routes* | Export custom routes to local network from peer network. | <code title="">bool</code> |  | <code title="">false</code> |
-| *module_depends_on* | List of modules or resources this module depends on. | <code title="">list</code> |  | <code title="">[]</code> |
 | *peer_create_peering* | Create the peering on the remote side. If false, only the peering from this network to the remote network is created. | <code title="">bool</code> |  | <code title="">true</code> |
 | *prefix* | Name prefix for the network peerings. | <code title="">string</code> |  | <code title="">network-peering</code> |
 
@@ -60,7 +59,6 @@ module "peering-a-c" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| complete | Output to be used as a module dependency. |  |
 | local_network_peering | Network peering resource. |  |
 | peer_network_peering | Peer network peering resource. |  |
 <!-- END TFDOC -->

@@ -15,23 +15,18 @@
  */
 
 variable "uniform_bucket_level_access" {
-  type    = map(bool)
-  default = { bucket-a = false }
+  type    = bool
+  default = false
 }
 
 variable "force_destroy" {
-  type    = map(bool)
-  default = { bucket-a = true }
+  type    = bool
+  default = true
 }
 
-variable "iam_members" {
-  type    = map(map(list(string)))
-  default = null
-}
-
-variable "iam_roles" {
+variable "iam" {
   type    = map(list(string))
-  default = null
+  default = {}
 }
 
 variable "labels" {
@@ -40,12 +35,13 @@ variable "labels" {
 }
 
 variable "logging_config" {
-  type = map(object({
+  type = object({
     log_bucket        = string
     log_object_prefix = string
-  }))
+  })
   default = {
-    bucket-a = { log_bucket = "foo", log_object_prefix = null }
+    log_bucket        = "foo"
+    log_object_prefix = null
   }
 }
 
@@ -59,13 +55,14 @@ variable "project_id" {
   default = "my-project"
 }
 
-variable "retention_policies" {
-  type = map(object({
+variable "retention_policy" {
+  type = object({
     retention_period = number
     is_locked        = bool
-  }))
+  })
   default = {
-    bucket-b = { retention_period = 5, is_locked = false }
+    retention_period = 5
+    is_locked        = false
   }
 }
 
@@ -75,6 +72,6 @@ variable "storage_class" {
 }
 
 variable "versioning" {
-  type    = map(bool)
-  default = { bucket-a = true }
+  type    = bool
+  default = true
 }

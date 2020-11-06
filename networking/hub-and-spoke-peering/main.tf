@@ -136,7 +136,7 @@ module "hub-to-spoke-2-peering" {
   peer_network               = module.vpc-spoke-2.self_link
   export_local_custom_routes = true
   export_peer_custom_routes  = false
-  module_depends_on          = [module.hub-to-spoke-1-peering.complete]
+  depends_on                 = [module.hub-to-spoke-1-peering]
 }
 
 ################################################################################
@@ -180,9 +180,9 @@ module "vm-spoke-2" {
 }
 
 module "service-account-gce" {
-  source     = "../../modules/iam-service-accounts"
+  source     = "../../modules/iam-service-account"
   project_id = var.project_id
-  names      = ["gce-test"]
+  name       = "gce-test"
   iam_project_roles = {
     (var.project_id) = [
       "roles/container.developer",
@@ -232,9 +232,9 @@ module "cluster-1-nodepool-1" {
 # project level, with no risk of conflicts with pre-existing roles
 
 module "service-account-gke-node" {
-  source     = "../../modules/iam-service-accounts"
+  source     = "../../modules/iam-service-account"
   project_id = var.project_id
-  names      = ["gke-node"]
+  name       = "gke-node"
   iam_project_roles = {
     (var.project_id) = [
       "roles/logging.logWriter", "roles/monitoring.metricWriter",

@@ -77,25 +77,21 @@ module "service-directory" {
   project_id = module.project.project_id
   location   = var.region
   name       = var.name
-  iam_members = {
+  iam = {
     "roles/servicedirectory.editor" = [
       module.vm-ns-editor.service_account_iam_email
     ]
   }
-  iam_roles = ["roles/servicedirectory.editor"]
   services = {
     app1 = { endpoints = ["vm1", "vm2"], metadata = null }
     app2 = { endpoints = ["vm1", "vm2"], metadata = null }
   }
-  service_iam_members = {
+  service_iam = {
     app1 = {
       "roles/servicedirectory.editor" = [
         module.vm-svc-editor.service_account_iam_email
       ]
     }
-  }
-  service_iam_roles = {
-    app1 = ["roles/servicedirectory.editor"]
   }
   endpoint_config = {
     "app1/vm1" = { address = "127.0.0.2", port = 80, metadata = {} }

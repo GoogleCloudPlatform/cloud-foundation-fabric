@@ -97,6 +97,10 @@ variable "type" {
   description = "Type of zone to create, valid values are 'public', 'private', 'forwarding', 'peering', 'service-directory'."
   type        = string
   default     = "private"
+  validation {
+    condition     = contains(["public", "private", "forwarding", "peering", "service-directory"], var.type)
+    error_message = "Zone must be one of 'public', 'private', 'forwarding', 'peering', 'service-directory'."
+  }
 }
 
 variable "zone_create" {
@@ -104,5 +108,6 @@ variable "zone_create" {
   type        = bool
   default     = true
 }
+
 
 

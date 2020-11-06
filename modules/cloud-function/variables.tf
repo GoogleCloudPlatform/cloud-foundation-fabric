@@ -42,18 +42,6 @@ variable "environment_variables" {
   default     = {}
 }
 
-variable "iam_members" {
-  description = "Map of member lists used to set authoritative bindings, keyed by role. Ignored for template use."
-  type        = map(list(string))
-  default     = {}
-}
-
-variable "iam_roles" {
-  description = "List of roles used to set authoritative bindings. Ignored for template use."
-  type        = list(string)
-  default     = []
-}
-
 variable "function_config" {
   description = "Cloud function configuration."
   type = object({
@@ -72,6 +60,12 @@ variable "function_config" {
     runtime          = "python37"
     timeout          = 180
   }
+}
+
+variable "iam" {
+  description = "IAM bindings for topic in {ROLE => [MEMBERS]} format."
+  type        = map(list(string))
+  default     = {}
 }
 
 variable "ingress_settings" {

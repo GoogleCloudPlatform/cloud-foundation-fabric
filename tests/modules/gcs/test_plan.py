@@ -19,75 +19,42 @@ import pytest
 
 FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
 
-
 def test_buckets(plan_runner):
   "Test bucket resources."
   _, resources = plan_runner(FIXTURES_DIR)
-  assert len(resources) == 2
-  assert set(r['type'] for r in resources) == set(['google_storage_bucket'])
-  assert set(r['values']['name'] for r in resources) == set([
-      'bucket-a', 'bucket-b'
-  ])
-  assert set(r['values']['project'] for r in resources) == set([
-      'my-project'
-  ])
-
+  assert len(resources) == 1
+  r = resources[0]
+  assert r['type'] == 'google_storage_bucket'
+  assert r['values']['name'] == 'bucket-a'
+  assert r['values']['project'] == 'my-project'
 
 def test_prefix(plan_runner):
   "Test bucket name when prefix is set."
   _, resources = plan_runner(FIXTURES_DIR, prefix='foo')
-  assert set(r['values']['name'] for r in resources) == set([
-      'foo-eu-bucket-a', 'foo-eu-bucket-b'
-  ])
+  assert resources[0]['values']['name'] == 'foo-eu-bucket-a'
 
 
-def test_map_values(plan_runner):
-  "Test that map values set the correct attributes on buckets."
-  _, resources = plan_runner(FIXTURES_DIR)
-  bpo = dict((r['values']['name'], r['values']['uniform_bucket_level_access'])
-             for r in resources)
-  assert bpo == {'bucket-a': False, 'bucket-b': True}
-  force_destroy = dict((r['values']['name'], r['values']['force_destroy'])
-                       for r in resources)
-  assert force_destroy == {'bucket-a': True, 'bucket-b': False}
-  versioning = dict((r['values']['name'], r['values']['versioning'])
-                    for r in resources)
-  assert versioning == {
-      'bucket-a': [{'enabled': True}], 'bucket-b': [{'enabled': False}]
-  }
-  logging_config = dict((r['values']['name'], r['values']['logging'])
-                        for r in resources)
-  assert logging_config == {
-      'bucket-a': [{'log_bucket': 'foo'}],
-      'bucket-b': []
-  }
-  retention_policies = dict((r['values']['name'], r['values']['retention_policy'])
-                            for r in resources)
-  assert retention_policies == {
-      'bucket-a': [],
-      'bucket-b': [{'is_locked': False, 'retention_period': 5}]
-  }
-  for r in resources:
-    assert r['values']['labels'] == {
-        'environment': 'test', 'location': 'eu',
-        'storage_class': 'multi_regional', 'name': r['values']['name']
-    }
-
-
-def test_iam_roles_only(plan_runner):
-  "Test bucket resources with only iam roles passed."
-  _, resources = plan_runner(
-      FIXTURES_DIR, iam_roles='{bucket-a = [ "roles/storage.admin"]}')
-  assert len(resources) == 3
+def test_config_values(plan_runner):
+  "Test that variables set the correct attributes on buckets."
+  variables = dict(
+    uniform_bucket_level_access='true',
+    force_destroy='true',
+    versioning='true'
+  )
+  _, resources = plan_runner(FIXTURES_DIR, **variables)
+  assert len(resources) == 1
+  r = resources[0]
+  assert r['values']['uniform_bucket_level_access'] is True
+  assert r['values']['force_destroy'] is True
+  assert r['values']['versioning'] == [{'enabled': True}]
+  assert r['values']['logging'] == [{'log_bucket': 'foo'}]
+  assert r['values']['retention_policy'] == [
+    {'is_locked': False, 'retention_period': 5}
+  ]
 
 
 def test_iam(plan_runner):
   "Test bucket resources with iam roles and members."
-  iam_roles = (
-      '{bucket-a = ["roles/storage.admin"], '
-      'bucket-b = ["roles/storage.objectAdmin"]}'
-  )
-  iam_members = '{folder-a = { "roles/storage.admin" = ["user:a@b.com"] }}'
-  _, resources = plan_runner(
-      FIXTURES_DIR, iam_roles=iam_roles, iam_members=iam_members)
-  assert len(resources) == 4
+  iam = '{ "roles/storage.admin" = ["user:a@b.com"] }'
+  _, resources = plan_runner(FIXTURES_DIR, iam=iam)
+  assert len(resources) == 2

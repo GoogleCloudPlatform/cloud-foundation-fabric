@@ -40,6 +40,8 @@ steps:
     entrypoint: pytest
     args:
       - -vv
+      - tests/cloud_operations
+      - tests/data_solutions
       - tests/foundations
       - tests/networking
     env:

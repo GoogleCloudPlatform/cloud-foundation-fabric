@@ -41,8 +41,7 @@ module "project" {
       "compute.zoneOperations.list"
     ]
   }
-  iam_roles = [local.role_id]
-  iam_members = {
+  iam = {
     (local.role_id) = [module.service-account.iam_email]
   }
 }
@@ -64,10 +63,7 @@ module "pubsub" {
   project_id    = module.project.project_id
   name          = var.name
   subscriptions = { "${var.name}-default" = null }
-  iam_roles = [
-    "roles/pubsub.publisher"
-  ]
-  iam_members = {
+  iam = {
     "roles/pubsub.publisher" = [
       "serviceAccount:${module.project.service_accounts.robots.cloudasset}"
     ]
@@ -75,9 +71,9 @@ module "pubsub" {
 }
 
 module "service-account" {
-  source     = "../../modules/iam-service-accounts"
+  source     = "../../modules/iam-service-account"
   project_id = module.project.project_id
-  names      = ["${var.name}-cf"]
+  name       = "${var.name}-cf"
   # iam_project_roles = { (module.project.project_id) = [local.role_id] }
 }
 

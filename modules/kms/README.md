@@ -16,8 +16,7 @@ In this module **no lifecycle blocks are set on resources to prevent destroy**, 
 module "kms" {
   source         = "../modules/kms"
   project_id     = "my-project"
-  iam_roles      = ["roles/owner"]
-  iam_members    = {
+  iam    = {
     "roles/owner" = ["user:user1@example.com"]
   }
   keyring        = { location = "europe-west1", name = "test" }
@@ -32,10 +31,7 @@ module "kms" {
 module "kms" {
   source           = "../modules/kms"
   project_id       = "my-project"
-  key_iam_roles    = {
-    key-a = ["roles/owner"]
-  }
-  key_iam_members = {
+  key_iam = {
     key-a = {
       "roles/owner" = ["user:user1@example.com"]
     }
@@ -76,10 +72,8 @@ module "kms" {
 |---|---|:---: |:---:|:---:|
 | keyring | Keyring attributes. | <code title="object&#40;&#123;&#10;location &#61; string&#10;name     &#61; string&#10;&#125;&#41;">object({...})</code> | ✓ |  |
 | project_id | Project id where the keyring will be created. | <code title="">string</code> | ✓ |  |
-| *iam_members* | Keyring IAM members. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
-| *iam_roles* | Keyring IAM roles. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
-| *key_iam_members* | IAM members keyed by key name and role. | <code title="map&#40;map&#40;list&#40;string&#41;&#41;&#41;">map(map(list(string)))</code> |  | <code title="">{}</code> |
-| *key_iam_roles* | IAM roles keyed by key name. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
+| *iam* | Keyring IAM bindings for topic in {ROLE => [MEMBERS]} format. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
+| *key_iam* | Key IAM bindings for topic in {KEY => {ROLE => [MEMBERS]}} format. | <code title="map&#40;map&#40;list&#40;string&#41;&#41;&#41;">map(map(list(string)))</code> |  | <code title="">{}</code> |
 | *key_purpose* | Per-key purpose, if not set defaults will be used. If purpose is not `ENCRYPT_DECRYPT` (the default), `version_template.algorithm` is required. | <code title="map&#40;object&#40;&#123;&#10;purpose &#61; string&#10;version_template &#61; object&#40;&#123;&#10;algorithm        &#61; string&#10;protection_level &#61; string&#10;&#125;&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
 | *key_purpose_defaults* | Defaults used for key purpose when not defined at the key level. If purpose is not `ENCRYPT_DECRYPT` (the default), `version_template.algorithm` is required. | <code title="object&#40;&#123;&#10;purpose &#61; string&#10;version_template &#61; object&#40;&#123;&#10;algorithm        &#61; string&#10;protection_level &#61; string&#10;&#125;&#41;&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;purpose          &#61; null&#10;version_template &#61; null&#10;&#125;">...</code> |
 | *keyring_create* | Set to false to manage keys and IAM bindings in an existing keyring. | <code title="">bool</code> |  | <code title="">true</code> |

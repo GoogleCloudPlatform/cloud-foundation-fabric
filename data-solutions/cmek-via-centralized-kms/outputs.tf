@@ -13,19 +13,13 @@
 # limitations under the License.
 
 output "bucket" {
-  description = "GCS Bucket Cloud KMS crypto keys."
-  value = {
-    for bucket in module.kms-gcs.buckets :
-    bucket.name => bucket.url
-  }
+  description = "GCS Bucket URL."
+  value       = module.kms-gcs.url
 }
 
 output "bucket_keys" {
   description = "GCS Bucket Cloud KMS crypto keys."
-  value = {
-    for bucket in module.kms-gcs.buckets :
-    bucket.name => bucket.encryption
-  }
+  value       = module.kms-gcs.bucket.encryption
 }
 
 output "projects" {

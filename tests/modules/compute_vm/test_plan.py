@@ -56,13 +56,12 @@ def test_group(plan_runner):
 
 
 def test_iam(plan_runner):
-  iam_roles = '["roles/compute.instanceAdmin", "roles/iam.serviceAccountUser"]'
-  iam_members = (
+  iam = (
       '{"roles/compute.instanceAdmin" = ["user:a@a.com", "user:b@a.com"],'
       '"roles/iam.serviceAccountUser" = ["user:a@a.com"]}'
   )
   _, resources = plan_runner(
-      FIXTURES_DIR, instance_count=2, iam_roles=iam_roles, iam_members=iam_members)
+      FIXTURES_DIR, instance_count=2, iam=iam)
   assert len(resources) == 6
   assert set(r['type'] for r in resources) == set([
       'google_compute_instance', 'google_compute_instance_iam_binding'])

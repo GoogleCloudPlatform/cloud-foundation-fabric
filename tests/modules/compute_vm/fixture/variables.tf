@@ -19,14 +19,9 @@ variable "group" {
   default = null
 }
 
-variable "iam_members" {
-  type    = map(list(string))
+variable "iam" {
+  type    = map(set(string))
   default = {}
-}
-
-variable "iam_roles" {
-  type    = list(string)
-  default = []
 }
 
 variable "instance_count" {

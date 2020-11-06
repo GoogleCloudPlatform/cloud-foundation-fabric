@@ -57,9 +57,9 @@ module "project-kms" {
 ###############################################################################
 
 module "service-account-bq" {
-  source     = "../../modules/iam-service-accounts"
+  source     = "../../modules/iam-service-account"
   project_id = module.project-service.project_id
-  names      = ["bq-test"]
+  name       = "bq-test"
   iam_project_roles = {
     (var.project_service_name) = [
       "roles/logging.logWriter",
@@ -70,9 +70,9 @@ module "service-account-bq" {
 }
 
 module "service-account-gce" {
-  source     = "../../modules/iam-service-accounts"
+  source     = "../../modules/iam-service-account"
   project_id = module.project-service.project_id
-  names      = ["gce-test"]
+  name       = "gce-test"
   iam_project_roles = {
     (var.project_service_name) = [
       "roles/logging.logWriter",
@@ -86,9 +86,9 @@ module "service-account-gce" {
 }
 
 module "service-account-df" {
-  source     = "../../modules/iam-service-accounts"
+  source     = "../../modules/iam-service-account"
   project_id = module.project-service.project_id
-  names      = ["df-test"]
+  name       = "df-test"
   iam_project_roles = {
     (var.project_service_name) = [
       "roles/dataflow.worker",
@@ -120,12 +120,7 @@ module "kms" {
     location = var.location
   }
   keys = { key-gce = null, key-gcs = null, key-bq = null }
-  key_iam_roles = {
-    key-gce = ["roles/cloudkms.cryptoKeyEncrypterDecrypter"]
-    key-gcs = ["roles/cloudkms.cryptoKeyEncrypterDecrypter"]
-    key-bq  = ["roles/cloudkms.cryptoKeyEncrypterDecrypter"]
-  }
-  key_iam_members = {
+  key_iam = {
     key-gce = {
       "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
         "serviceAccount:${module.project-service.service_accounts.robots.compute}",
@@ -155,10 +150,7 @@ module "kms-regional" {
     location = var.region
   }
   keys = { key-df = null }
-  key_iam_roles = {
-    key-df = ["roles/cloudkms.cryptoKeyEncrypterDecrypter"]
-  }
-  key_iam_members = {
+  key_iam = {
     key-df = {
       "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
         "serviceAccount:${module.project-service.service_accounts.robots.dataflow}",
@@ -254,38 +246,33 @@ module "vm_example" {
 ###############################################################################
 
 module "kms-gcs" {
-  source     = "../../modules/gcs"
-  project_id = module.project-service.project_id
-  prefix     = module.project-service.project_id
-  names      = ["data", "df-tmplocation"]
-  iam_roles = {
-    data           = ["roles/storage.admin", "roles/storage.objectViewer"],
-    df-tmplocation = ["roles/storage.admin"]
-  }
-  iam_members = {
+  source = "../../modules/gcs"
+  for_each = {
     data = {
-      "roles/storage.admin" = [
-        "serviceAccount:${module.service-account-gce.email}",
-      ],
-      "roles/storage.viewer" = [
-        "serviceAccount:${module.service-account-df.email}",
-      ],
-    },
+      members = {
+        "roles/storage.admin" = [
+          "serviceAccount:${module.service-account-gce.email}",
+        ],
+        "roles/storage.objectViewer" = [
+          "serviceAccount:${module.service-account-df.email}",
+        ]
+      }
+    }
     df-tmplocation = {
-      "roles/storage.admin" = [
-        "serviceAccount:${module.service-account-gce.email}",
-        "serviceAccount:${module.service-account-df.email}",
-      ]
+      members = {
+        "roles/storage.admin" = [
+          "serviceAccount:${module.service-account-gce.email}",
+          "serviceAccount:${module.service-account-df.email}",
+        ]
+      }
     }
   }
-  encryption_keys = {
-    data           = module.kms.keys.key-gcs.self_link,
-    df-tmplocation = module.kms.keys.key-gcs.self_link,
-  }
-  force_destroy = {
-    data           = true,
-    df-tmplocation = true,
-  }
+  project_id     = module.project-service.project_id
+  prefix         = module.project-service.project_id
+  name           = each.key
+  iam            = each.value.members
+  encryption_key = module.kms.keys.key-gcs.self_link
+  force_destroy  = true
 }
 
 ###############################################################################
@@ -297,10 +284,11 @@ module "bigquery-dataset" {
   project_id = module.project-service.project_id
   id         = "bq_dataset"
   access_roles = {
-    reader-group = { role = "READER", type = "domain" }
+    reader-group = { role = "READER", type = "service_account" }
     owner        = { role = "OWNER", type = "user_by_email" }
   }
   access_identities = {
+    reader-group = module.service-account-bq.email
     owner        = module.service-account-bq.email
   }
   encryption_key = module.kms.keys.key-bq.self_link
