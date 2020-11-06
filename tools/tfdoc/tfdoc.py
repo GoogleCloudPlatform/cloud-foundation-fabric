@@ -236,25 +236,31 @@ def replace_doc(module, doc):
     raise SystemExit('Error replacing in README: %s' % e)
 
 
-def get_variables_outputs(path):
-  "Get variables and output for the module in a path"
+def get_variables(path):
+  "Get variables for the module in a path"
   variables = []
   for path in glob.glob(os.path.join(path, 'variables*tf')):
     with open(path) as file:
       variables += [v for v in parse_items(
           file.read(), RE_VARIABLES, VariableToken, Variable, VariableData)]
+  return variables
+
+
+def get_outputs(path):
+  "Get outputs for the module in a path"
   outputs = []
   for path in glob.glob(os.path.join(path, 'outputs*tf')):
     with open(path) as file:
       outputs += [o for o in parse_items(
           file.read(), RE_OUTPUTS, OutputToken, Output, OutputData)]
-  return variables, outputs
+  return outputs
 
 
 def is_doc_up_to_date(path):
   """Determine if a module's README has all its variables and outputs
   documentation up-to-date"""
-  variables, outputs = get_variables_outputs(path)
+  variables = get_variables(path)
+  outputs = get_outputs(path)
   doc = get_doc(variables, outputs)
   readme = open(os.path.join(path, 'README.md')).read()
   m = re.search('(?sm)%s.*%s' % (MARK_BEGIN, MARK_END), readme)
@@ -269,7 +275,8 @@ def is_doc_up_to_date(path):
 def main(module=None, replace=True):
   "Program entry point."
   try:
-    variables, outputs = get_variables_outputs(module)
+    variables = get_variables(module)
+    outputs = get_outputs(module)
   except (IOError, OSError) as e:
     raise SystemExit(e)
   doc = get_doc(variables, outputs)
