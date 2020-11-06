@@ -26,7 +26,7 @@ Subscriptions are defined with the `subscriptions` variable, allowing optional c
 ```hcl
 module "pubsub" {
   source     = "./modules/pubsub"
-  project_id = "my-project
+  project_id = "my-project"
   name       = "my-topic"
   subscriptions = {
     test-pull = null
@@ -50,7 +50,7 @@ Push subscriptions need extra configuration in the `push_configs` variable.
 ```hcl
 module "pubsub" {
   source     = "./modules/pubsub"
-  project_id = "my-project
+  project_id = "my-project"
   name       = "my-topic"
   subscriptions = {
     test-push = null
@@ -70,7 +70,7 @@ module "pubsub" {
 ```hcl
 module "pubsub" {
   source     = "./modules/pubsub"
-  project_id = "my-project
+  project_id = "my-project"
   name       = "my-topic"
   subscriptions = {
     test-1 = null
