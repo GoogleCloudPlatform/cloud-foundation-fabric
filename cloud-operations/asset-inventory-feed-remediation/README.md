@@ -62,6 +62,7 @@ Run the `subscription_pull` command until it returns nothing, then run the follo
 | project_id | Project id that references existing project. | <code title="">string</code> | ✓ |  |
 | *bundle_path* | Path used to write the intermediate Cloud Function code bundle. | <code title="">string</code> |  | <code title="">./bundle.zip</code> |
 | *name* | Arbitrary string used to name created resources. | <code title="">string</code> |  | <code title="">asset-feed</code> |
+| *project_create* | Create project instead ofusing an existing one. | <code title="">bool</code> |  | <code title="">false</code> |
 | *region* | Compute region used in the example. | <code title="">string</code> |  | <code title="">europe-west1</code> |
 
 ## Outputs

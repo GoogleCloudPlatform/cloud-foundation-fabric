@@ -179,7 +179,7 @@ def format_variables(variables, required_first=True):
       '| {required} | {default} |'
   )
   for v in variables:
-    default = default_spec = type_spec = ''
+    default = type_spec = ''
     if not v.required:
       default = '<code title="{title}">{default}</code>'
       if '\n' in v.default:
@@ -236,22 +236,49 @@ def replace_doc(module, doc):
     raise SystemExit('Error replacing in README: %s' % e)
 
 
+def get_variables(path):
+  "Get variables for the module in a path"
+  variables = []
+  for path in glob.glob(os.path.join(path, 'variables*tf')):
+    with open(path) as file:
+      variables += [v for v in parse_items(
+          file.read(), RE_VARIABLES, VariableToken, Variable, VariableData)]
+  return variables
+
+
+def get_outputs(path):
+  "Get outputs for the module in a path"
+  outputs = []
+  for path in glob.glob(os.path.join(path, 'outputs*tf')):
+    with open(path) as file:
+      outputs += [o for o in parse_items(
+          file.read(), RE_OUTPUTS, OutputToken, Output, OutputData)]
+  return outputs
+
+
+def check_state(path):
+  """Determine if a module's README has all its variables and outputs
+  documentation up-to-date."""
+  try:
+    variables = get_variables(path)
+    outputs = get_outputs(path)
+    readme = open(os.path.join(path, 'README.md')).read()
+  except (IOError, OSError):
+    return
+  m = re.search('(?sm)%s.*%s' % (MARK_BEGIN, MARK_END), readme)
+  if not m:
+    return
+  return get_doc(variables, outputs) in readme
+
+
 @click.command()
 @click.argument('module', type=click.Path(exists=True))
 @click.option('--replace/--no-replace', default=True)
 def main(module=None, replace=True):
   "Program entry point."
   try:
-    variables = []
-    for path in glob.glob(os.path.join(module, 'variables*tf')):
-      with open(path) as file:
-        variables += [v for v in parse_items(
-            file.read(), RE_VARIABLES, VariableToken, Variable, VariableData)]
-    outputs = []
-    for path in glob.glob(os.path.join(module, 'outputs*tf')):
-      with open(path) as file:
-        outputs += [o for o in parse_items(
-            file.read(), RE_OUTPUTS, OutputToken, Output, OutputData)]
+    variables = get_variables(module)
+    outputs = get_outputs(module)
   except (IOError, OSError) as e:
     raise SystemExit(e)
   doc = get_doc(variables, outputs)

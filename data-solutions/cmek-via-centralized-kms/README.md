@@ -49,7 +49,7 @@ This sample creates several distinct groups of resources:
 
 | name | description | sensitive |
 |---|---|:---:|
-| bucket | GCS Bucket Cloud KMS crypto keys. |  |
+| bucket | GCS Bucket URL. |  |
 | bucket_keys | GCS Bucket Cloud KMS crypto keys. |  |
 | projects | Project ids. |  |
 | vm | GCE VMs. |  |
