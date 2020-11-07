@@ -14,6 +14,7 @@ module "datafusion" {
   project_id = "my-project"
   network    = "my-network-name"
 }
+# tftest:modules=1:resources=4
 ```
 
 ### Externally managed IP allocation
@@ -28,6 +29,7 @@ module "datafusion" {
   ip_allocation_create = false
   ip_allocation        = "10.0.0.0/22"
 }
+# tftest:modules=1:resources=3
 ```
 
 <!-- BEGIN TFDOC -->

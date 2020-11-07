@@ -22,7 +22,7 @@ module "vpn-dynamic" {
       }
       bgp_session_range = "169.254.139.133/30"
       ike_version       = 2
-      peer_ip           = var.remote_vpn_gateway.address
+      peer_ip           = "1.1.1.1"
       shared_secret     = null
       bgp_peer_options = {
         advertise_groups = ["ALL_SUBNETS"]
@@ -35,6 +35,7 @@ module "vpn-dynamic" {
     }
   }
 }
+# tftest:modules=1:resources=10
 ```
 
 <!-- BEGIN TFDOC -->

@@ -9,13 +9,14 @@ This module allows managing a single Cloud Source Repository, including IAM bind
 
 ```hcl
 module "repo" {
-  source    e = "./modules/source-repository"
+  source     = "./modules/source-repository"
   project_id = "my-project"
   name       = "my-repo"
   iam = {
     "roles/source.reader" = ["user:foo@example.com"]
   }
 }
+# tftest:modules=1:resources=2
 ```
 
 <!-- BEGIN TFDOC -->

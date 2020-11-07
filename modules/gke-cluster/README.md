@@ -6,12 +6,12 @@ This module allows simplified creation and management of GKE clusters and should
 
 ```hcl
 module "cluster-1" {
-  source = "./modules/gke-cluster"
+  source                    = "./modules/gke-cluster"
   project_id                = "myproject"
   name                      = "cluster-1"
   location                  = "europe-west1-b"
-  network                   = var.network_self_link
-  subnetwork                = var.subnet_self_link
+  network                   = var.vpc.self_link
+  subnetwork                = var.subnet.self_link
   secondary_range_pods      = "pods"
   secondary_range_services  = "services"
   default_max_pods_per_node = 32
@@ -27,6 +27,7 @@ module "cluster-1" {
     environment = "dev"
   }
 }
+# tftest:modules=1:resources=1
 ```
 
 <!-- BEGIN TFDOC -->

@@ -21,6 +21,7 @@ module "secret-manager" {
     test-manual = ["europe-west1", "europe-west4"]
   }
 }
+# tftest:modules=1:resources=2
 ```
 
 ### Secret IAM bindings
@@ -44,6 +45,7 @@ module "secret-manager" {
     }
   }
 }
+# tftest:modules=1:resources=4
 ```
 
 ### Secret versions
@@ -68,6 +70,7 @@ module "secret-manager" {
     }
   }
 }
+# tftest:modules=1:resources=5
 ```
 
 <!-- BEGIN TFDOC -->

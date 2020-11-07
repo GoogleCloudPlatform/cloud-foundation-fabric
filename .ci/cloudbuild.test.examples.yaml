@@ -27,25 +27,11 @@ steps:
         mkdir -p /workspace/.terraform.d/plugin-cache
   # TODO(ludoo): add a step that detects change files and sets tests to run
   - name: python:3-alpine
-    id: test-modules
+    id: test-examples
     entrypoint: pytest
     args:
       - -vv
-      - --ignore
       - tests/modules/examples
-      - tests/modules
-    env:
-      - PATH=/usr/local/bin:/usr/bin:/bin:/builder/home/.local/bin
-      - TF_CLI_CONFIG_FILE=/workspace/.ci/.terraformrc
-  - name: python:3-alpine
-    id: test-environments
-    entrypoint: pytest
-    args:
-      - -vv
-      - tests/cloud_operations
-      - tests/data_solutions
-      - tests/foundations
-      - tests/networking
     env:
       - PATH=/usr/local/bin:/usr/bin:/bin:/builder/home/.local/bin
       - TF_CLI_CONFIG_FILE=/workspace/.ci/.terraformrc

@@ -22,6 +22,7 @@ module "firewall" {
   admin_ranges_enabled = true
   admin_ranges         = ["10.0.0.0/8"]
 }
+# tftest:modules=1:resources=4
 ```
 
 ### Custom rules
@@ -30,7 +31,7 @@ This is an example of how to define custom rules, with a sample rule allowing op
 
 ```hcl
 module "firewall" {
-  source               = "../modules/net-vpc-firewall"
+  source               = "./modules/net-vpc-firewall"
   project_id           = "my-project"
   network              = "my-network"
   admin_ranges_enabled = true
@@ -49,6 +50,7 @@ module "firewall" {
     }
   }
 }
+# tftest:modules=1:resources=5
 ```
 
 <!-- BEGIN TFDOC -->

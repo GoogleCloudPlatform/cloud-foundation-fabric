@@ -23,16 +23,18 @@ This examples shows how to create an ILB by combining externally managed instanc
 ```hcl
 module "ilb" {
   source        = "./modules/net-ilb"
-  project_id    = "my-project"
+  project_id    = var.project_id
   region        = "europe-west1"
   name          = "ilb-test"
   service_label = "ilb-test"
-  network       = local.network_self_link
-  subnetwork    = local.subnetwork_self_link
+  network       = var.vpc.self_link
+  subnetwork    = var.subnet.self_link
   group_configs = {
     my-group = {
-      zone = europe-west1-b, named_ports = null, instances = [
-        local.instance1_self_link, local.instance2_self_link
+      zone = "europe-west1-b", named_ports = null
+      instances = [
+        "instance-1-self-link",
+        "instance-2-self-link"
       ]
     }
   }
@@ -45,6 +47,7 @@ module "ilb" {
     type = "http", check = { port = 80 }, config = {}, logging = true
   }
 }
+# tftest:modules=1:resources=4
 ```
 
 ### End to end example
@@ -64,36 +67,37 @@ module "cos-nginx" {
 
 module "instance-group" {
   source     = "./modules/compute-vm"
-  project_id = "my-project"
+  project_id = var.project_id
   region     = "europe-west1"
-  zone       = "europe-west1-b"
+  zones      = ["europe-west1-b", "europe-west1-c"]
   name       = "ilb-test"
   network_interfaces = [{
-    network    = local.network_self_link,
-    subnetwork = local.subnetwork_self_link,
-    nat        = false,
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+    nat        = false
     addresses  = null
+    alias_ips  = null
   }]
   boot_disk = {
     image = "projects/cos-cloud/global/images/family/cos-stable"
     type  = "pd-ssd"
     size  = 10
   }
-  tags                   = ["http-server", "ssh"]
+  tags = ["http-server", "ssh"]
   metadata = {
     user-data = module.cos-nginx.cloud_config
   }
-  group = {}
+  group = { named_ports = {} }
 }
 
 module "ilb" {
   source        = "./modules/net-ilb"
-  project_id    = "my-project"
+  project_id    = var.project_id
   region        = "europe-west1"
   name          = "ilb-test"
   service_label = "ilb-test"
-  network       = local.network_self_link
-  subnetwork    = local.subnetwork_self_link
+  network       = var.vpc.self_link
+  subnetwork    = var.subnet.self_link
   ports         = [80]
   backends = [{
     failover       = false
@@ -104,7 +108,7 @@ module "ilb" {
     type = "http", check = { port = 80 }, config = {}, logging = true
   }
 }
-
+# tftest:modules=2:resources=5
 ```
 
 <!-- BEGIN TFDOC -->

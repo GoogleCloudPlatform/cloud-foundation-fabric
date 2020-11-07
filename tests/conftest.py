@@ -56,6 +56,26 @@ def plan_runner():
 
 
 @pytest.fixture(scope='session')
+def example_plan_runner():
+  "Returns a function to run Terraform plan on an example."
+
+  def run_plan(fixture_path, is_module=True, targets=None, **tf_vars):
+    "Runs Terraform plan and returns parsed output"
+    tf = tftest.TerraformTest(fixture_path, BASEDIR,
+                              os.environ.get('TERRAFORM', 'terraform'))
+    tf.setup()
+    plan = tf.plan(output=True, tf_vars=tf_vars, targets=targets)
+    modules = plan.modules
+    resources = []
+    for name, module in modules.items():
+      for _, resource in module.resources.items():
+        resources.append(resource)
+    return plan, modules, resources
+
+  return run_plan
+
+
+@pytest.fixture(scope='session')
 def apply_runner():
   "Returns a function to run Terraform apply on a fixture."
 

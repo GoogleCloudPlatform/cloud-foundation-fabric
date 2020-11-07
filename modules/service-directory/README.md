@@ -21,6 +21,7 @@ module "service-directory" {
     ]
   }
 }
+# tftest:modules=1:resources=2
 ```
 
 ### Services with IAM and endpoints
@@ -49,6 +50,7 @@ module "service-directory" {
     "one/second" = { address = "127.0.0.2", port = 80, metadata = {} }
   }
 }
+# tftest:modules=1:resources=5
 ```
 
 ### DNS based zone
@@ -80,10 +82,10 @@ module "dns-sd" {
   type                        = "service-directory"
   name                        = "apps"
   domain                      = "apps.example.org."
-  client_networks             = [local.vpc_self_link]
+  client_networks             = [var.vpc.self_link]
   service_directory_namespace = module.service-directory.id
 }
-
+# tftest:modules=2:resources=5
 ```
 
 <!-- BEGIN TFDOC -->

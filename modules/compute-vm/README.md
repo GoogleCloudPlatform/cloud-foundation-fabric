@@ -15,13 +15,13 @@ The simplest example leverages defaults for the boot disk image and size, and us
 
 ```hcl
 module "simple-vm-example" {
-  source     = "../modules/compute-vm"
-  project_id = "my-project"
-  region     = "europe-west1"
+  source     = "./modules/compute-vm"
+  project_id = var.project_id
+  region     = var.region
   name       = "test"
   network_interfaces = [{
-    network    = local.network_self_link
-    subnetwork = local.subnet_self_link
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
     nat        = false
     addresses  = null
     alias_ips  = null
@@ -29,6 +29,8 @@ module "simple-vm-example" {
   service_account_create = true
   instance_count = 1
 }
+# tftest:modules=1:resources=2
+
 ```
 
 ### Disk encryption with Cloud KMS
@@ -37,13 +39,13 @@ This example shows how to control disk encryption via the the `encryption` varia
 
 ```hcl
 module "kms-vm-example" {
-  source     = "../modules/compute-vm"
-  project_id = local.project_id
-  region     = local.region
+  source     = "./modules/compute-vm"
+  project_id = var.project_id
+  region     = var.region
   name       = "kms-test"
   network_interfaces = [{
-    network    = local.network_self_link
-    subnetwork = local.subnet_self_link
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
     nat        = false
     addresses  = null
     alias_ips  = null
@@ -71,9 +73,10 @@ module "kms-vm-example" {
   encryption = {
     encrypt_boot            = true
     disk_encryption_key_raw = null
-    kms_key_self_link       = local.kms_key.self_link
+    kms_key_self_link       = var.kms_key.self_link
   }
 }
+# tftest:modules=1:resources=3
 ```
 
 ### Using Alias IPs
@@ -82,13 +85,13 @@ This example shows how add additional [Alias IPs](https://cloud.google.com/vpc/d
 
 ```hcl
 module "vm-with-alias-ips" {
-  source     = "../modules/compute-vm"
+  source     = "./modules/compute-vm"
   project_id = "my-project"
   region     = "europe-west1"
   name       = "test"
   network_interfaces = [{
-    network    = local.network_self_link
-    subnetwork = local.subnet_self_link
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
     nat        = false
     addresses  = null
     alias_ips = {
@@ -102,6 +105,7 @@ module "vm-with-alias-ips" {
   service_account_create = true
   instance_count         = 3
 }
+# tftest:modules=1:resources=4
 ```
 
 ### Instance template
@@ -110,13 +114,13 @@ This example shows how to use the module to manage an instance template that def
 
 ```hcl
 module "cos-test" {
-  source     = "../modules/compute-vm"
+  source     = "./modules/compute-vm"
   project_id = "my-project"
   region     = "europe-west1"
   name       = "test"
   network_interfaces = [{
-    network    = local.network_self_link
-    subnetwork = local.subnet_self_link
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
     nat        = false
     addresses  = null
     alias_ips  = null
@@ -133,6 +137,7 @@ module "cos-test" {
   service_account        = "vm-default@my-project.iam.gserviceaccount.com"
   use_instance_template  = true
 }
+# tftest:modules=1:resources=1
 ```
 
 ### Instance group
@@ -140,14 +145,18 @@ module "cos-test" {
 If an instance group is needed when operating in instance mode, simply set the `group` variable to a non null map. The map can contain named port declarations, or be empty if named ports are not needed.
 
 ```hcl
+locals {
+  cloud_config = "my cloud config"
+}
+
 module "instance-group" {
-  source     = "../../cloud-foundation-fabric/modules/compute-vm"
+  source     = "./modules/compute-vm"
   project_id = "my-project"
   region     = "europe-west1"
   name       = "ilb-test"
   network_interfaces = [{
-    network    = local.network_self_link
-    subnetwork = local.subnetwork_self_link
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
     nat        = false
     addresses  = null
     alias_ips  = null
@@ -157,14 +166,14 @@ module "instance-group" {
     type  = "pd-ssd"
     size  = 10
   }
-  service_account        = local.service_account_email
+  service_account        = var.service_account.email
   service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
   metadata = {
     user-data = local.cloud_config
   }
   group = { named_ports = {} }
 }
-
+# tftest:modules=1:resources=2
 ```
 
 <!-- BEGIN TFDOC -->
