@@ -6,7 +6,7 @@ All notable changes to this project will be documented in this file.
 
 - **incompatible change** rename prefix for node configuration variables in `gke-nodepool` module [#156]
 - add support for internally managed service account in `gke-nodepool` module [#156]
-- add made examples in READMEs runnable and testable [#157]
+- made examples in READMEs runnable and testable [#157]
 
 
 ## [4.0.0] - 2020-11-06
