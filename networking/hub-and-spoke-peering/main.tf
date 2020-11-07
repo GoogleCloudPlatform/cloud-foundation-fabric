@@ -220,12 +220,12 @@ module "cluster-1" {
 }
 
 module "cluster-1-nodepool-1" {
-  source                      = "../../modules/gke-nodepool"
-  name                        = "nodepool-1"
-  project_id                  = var.project_id
-  location                    = module.cluster-1.location
-  cluster_name                = module.cluster-1.name
-  node_config_service_account = module.service-account-gke-node.email
+  source               = "../../modules/gke-nodepool"
+  name                 = "nodepool-1"
+  project_id           = var.project_id
+  location             = module.cluster-1.location
+  cluster_name         = module.cluster-1.name
+  node_service_account = module.service-account-gke-node.email
 }
 
 # roles assigned via this module use non-authoritative IAM bindings at the
