@@ -14,7 +14,7 @@ In this module **no lifecycle blocks are set on resources to prevent destroy**, 
 
 ```hcl
 module "kms" {
-  source         = "../modules/kms"
+  source         = "./modules/kms"
   project_id     = "my-project"
   iam    = {
     "roles/owner" = ["user:user1@example.com"]
@@ -23,33 +23,35 @@ module "kms" {
   keyring_create = false
   keys           = { key-a = null, key-b = null, key-c = null }
 }
+# tftest:skip
 ```
 
 ### Keyring creation and crypto key rotation and IAM roles
 
 ```hcl
 module "kms" {
-  source           = "../modules/kms"
-  project_id       = "my-project"
+  source     = "./modules/kms"
+  project_id = "my-project"
   key_iam = {
     key-a = {
       "roles/owner" = ["user:user1@example.com"]
     }
   }
-  keyring         = { location = "europe-west1", name = "test" }
-  keys            = {
+  keyring = { location = "europe-west1", name = "test" }
+  keys = {
     key-a = null
     key-b = { rotation_period = "604800s", labels = null }
     key-c = { rotation_period = null, labels = { env = "test" } }
   }
 }
+# tftest:modules=1:resources=5
 ```
 
 ### Crypto key purpose
 
 ```hcl
 module "kms" {
-  source      = "../modules/kms"
+  source      = "./modules/kms"
   project_id  = "my-project"
   key_purpose = {
     key-c = {
@@ -63,6 +65,7 @@ module "kms" {
   keyring     = { location = "europe-west1", name = "test" }
   keys        = { key-a = null, key-b = null, key-c = null }
 }
+# tftest:modules=1:resources=4
 ```
 
 <!-- BEGIN TFDOC -->

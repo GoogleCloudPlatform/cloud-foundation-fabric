@@ -6,12 +6,13 @@ Simple Cloud NAT management, with optional router creation.
 
 ```hcl
 module "nat" {
-  source         = "../modules/net-cloudnat"
+  source         = "./modules/net-cloudnat"
   project_id     = "my-project"
   region         = "europe-west1"
   name           = "default"
   router_network = "my-vpc"
 }
+# tftest:modules=1:resources=2
 ```
 
 <!-- BEGIN TFDOC -->

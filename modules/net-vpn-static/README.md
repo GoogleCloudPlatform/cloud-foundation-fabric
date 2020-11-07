@@ -3,23 +3,33 @@
 ## Example
 
 ```hcl
+module "addresses" {
+  source     = "./modules/net-address"
+  project_id = var.project_id
+  external_addresses = {
+    vpn = "europe-west1"
+  }
+}
+
 module "vpn" {
   source          = "./modules/net-vpn-static"
   project_id      = var.project_id
   region          = var.region
-  network         = var.network
+  network         = var.vpc.self_link
   name            = "remote"
-  # gateway_address = var.gateway_address
-  remote_ranges   = [var.remote_ranges]
+  gateway_address_create = false
+  gateway_address        = module.addresses.external_addresses["vpn"].address
+  remote_ranges   = ["10.10.0.0/24"]
   tunnels = {
     remote-0 = {
       ike_version       = 2
-      peer_ip           = var.remote_vpn_gateway_address
-      shared_secret     = ""
-      traffic_selectors = { local = ["0.0.0.0/0"], remote = null }
+      peer_ip           = "1.1.1.1"
+      shared_secret     = "mysecret"
+      traffic_selectors = { local = ["0.0.0.0/0"], remote = ["0.0.0.0/0"] }
     }
   }
 }
+# tftest:modules=2:resources=8
 ```
 
 <!-- BEGIN TFDOC -->

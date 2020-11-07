@@ -22,6 +22,7 @@ module "myproject-default-service-accounts" {
     ]
   }
 }
+# tftest:modules=1:resources=5
 ```
 
 <!-- BEGIN TFDOC -->

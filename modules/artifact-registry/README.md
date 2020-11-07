@@ -17,6 +17,7 @@ module "docker_artifact_registry" {
     "roles/artifactregistry.admin" = ["group:cicd@example.com"]
   }
 }
+# tftest:modules=1:resources=2
 ```
 
 <!-- BEGIN TFDOC -->

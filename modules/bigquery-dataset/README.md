@@ -31,6 +31,7 @@ module "bigquery-dataset" {
     owner        = "ludo@ludomagno.net"
   }
 }
+# tftest:modules=1:resources=3
 ```
 
 ### Dataset options
@@ -48,6 +49,7 @@ module "bigquery-dataset" {
     delete_contents_on_destroy      = false
   }
 }
+# tftest:modules=1:resources=1
 ```
 
 ### Tables and views
@@ -69,6 +71,7 @@ module "bigquery-dataset" {
     }
   }
 }
+# tftest:skip
 ```
 
 If partitioning is needed, populate the `partitioning` variable using either the `time` or `range` attribute.
@@ -92,6 +95,7 @@ module "bigquery-dataset" {
     }
   }
 }
+# tftest:skip
 ```
 
 To create views use the `view` variable. If you're querying a table created by the same module `terraform apply` will initially fail and eventually succeed once the underlying table has been created. You can probably also use the module's output in the view's query to create a dependency on the table.
@@ -123,6 +127,7 @@ module "bigquery-dataset" {
     }
   }
 }
+# tftest:skip
 ```
 
 <!-- BEGIN TFDOC -->

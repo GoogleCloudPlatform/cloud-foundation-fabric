@@ -27,6 +27,7 @@ module "org" {
     }
   }
 }
+# tftest:modules=1:resources=4
 ```
 
 <!-- BEGIN TFDOC -->

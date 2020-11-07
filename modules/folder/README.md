@@ -15,6 +15,7 @@ module "folder" {
     "roles/owner" = ["group:users@example.com"]
   }
 }
+# tftest:modules=1:resources=2
 ```
 
 ### Organization policies
@@ -37,6 +38,7 @@ module "folder" {
     }
   }
 }
+# tftest:modules=1:resources=4
 ```
 
 <!-- BEGIN TFDOC -->

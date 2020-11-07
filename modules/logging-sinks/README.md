@@ -4,11 +4,6 @@ This module allows easy creation of one or more logging sinks.
 
 ## Example
 
-```hcl
-module "sinks" {
-}
-```
-
 <!-- BEGIN TFDOC -->
 ## Variables
 

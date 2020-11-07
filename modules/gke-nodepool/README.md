@@ -6,12 +6,13 @@ This module allows simplified creation and management of individual GKE nodepool
 
 ```hcl
 module "cluster-1-nodepool-1" {
-  source                      = "../modules/gke-nodepool"
+  source                      = "./modules/gke-nodepool"
   project_id                  = "myproject"
   cluster_name                = "cluster-1"
   location                    = "europe-west1-b"
   name                        = "nodepool-1"
 }
+# tftest:modules=1:resources=1
 ```
 
 <!-- BEGIN TFDOC -->

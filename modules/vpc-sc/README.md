@@ -12,81 +12,85 @@ The Use of this module requires credentials with the [correct permissions](https
 
 ```hcl
 module "vpc-sc" {
-  source      = "../../modules/vpc-sc"
-  org_id      = 1234567890
+  source              = "./modules/vpc-sc"
+  org_id              = 112233
   access_policy_title = "My Access Policy"
   access_levels = {
-    my_trusted_proxy = {  
+    my_trusted_proxy = {
       combining_function = "AND"
-      conditions         = [{
-        ip_subnetworks   = ["85.85.85.52/32"]
-        members          = []
-        negate           = false
+      conditions = [{
+        ip_subnetworks = ["85.85.85.52/32"]
+        members        = []
+        negate         = false
       }]
     }
   }
   access_level_perimeters = {
-    my_trusted_proxy  = ["perimeter"]
-  } 
-  perimeters = { 
+    my_trusted_proxy = {
+      my_trusted_proxy = ["perimeter"]
+    }
+  }
+  perimeters = {
     perimeter = {
-      type                = "PERIMETER_TYPE_REGULAR"
-      dry_run_config      = null
-      enforced_config     = {
-      restricted_services     = ["storage.googleapis.com"]
-      vpc_accessible_services = ["storage.googleapis.com"]
+      type           = "PERIMETER_TYPE_REGULAR"
+      dry_run_config = null
+      enforced_config = {
+        restricted_services     = ["storage.googleapis.com"]
+        vpc_accessible_services = ["storage.googleapis.com"]
       }
     }
   }
   perimeter_projects = {
     perimeter = {
-      enforced = [111111111,222222222]
+      enforced = [111111111, 222222222]
     }
   }
 }
+# tftest:modules=1:resources=3
 ```
 
 ## Example VCP-SC standard perimeter with one service and one project in dry run mode
 ```hcl
 module "vpc-sc" {
-  source      = "../../modules/vpc-sc"
-  org_id      = 1234567890
+  source              = "./modules/vpc-sc"
+  org_id              = 112233
   access_policy_title = "My Access Policy"
   access_levels = {
-    my_trusted_proxy = {  
+    my_trusted_proxy = {
       combining_function = "AND"
-      conditions         = [{
-        ip_subnetworks   = ["85.85.85.52/32"]
-        members          = []
-        negate           = false
+      conditions = [{
+        ip_subnetworks = ["85.85.85.52/32"]
+        members        = []
+        negate         = false
       }]
     }
   }
   access_level_perimeters = {
     enforced = {
-      my_trusted_proxy  = ["perimeter"]
+      my_trusted_proxy = ["perimeter"]
     }
-  } 
-  perimeters = { 
+  }
+  perimeters = {
     perimeter = {
-      type                = "PERIMETER_TYPE_REGULAR"
-      dry_run_config      = {
+      type = "PERIMETER_TYPE_REGULAR"
+      dry_run_config = {
         restricted_services     = ["storage.googleapis.com", "bigquery.googleapis.com"]
         vpc_accessible_services = ["storage.googleapis.com", "bigquery.googleapis.com"]
       }
-      enforced_config     = {
-      restricted_services     = ["storage.googleapis.com"]
-      vpc_accessible_services = ["storage.googleapis.com"]
+      enforced_config = {
+        restricted_services     = ["storage.googleapis.com"]
+        vpc_accessible_services = ["storage.googleapis.com"]
       }
     }
   }
   perimeter_projects = {
     perimeter = {
-      enforced = [111111111,222222222]
+      enforced = [111111111, 222222222]
       dry_run  = [333333333]
     }
   }
 }
+# tftest:modules=1:resources=3
 ```
 
 <!-- BEGIN TFDOC -->

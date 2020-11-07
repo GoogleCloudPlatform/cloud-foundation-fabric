@@ -6,13 +6,13 @@ This module makes it easy to deploy either GCP-to-GCP or GCP-to-On-prem [Cloud H
 ### GCP to GCP
 ```hcl
 module "vpn_ha-1" {
-  source = "../modules/net-vpn-ha"
-  project_id  = "<PROJECT_ID>"
-  region  = "europe-west4"
-  network         = "https://www.googleapis.com/compute/v1/projects/<PROJECT_ID>/global/networks/network-1"
-  name            = "net1-to-net-2"
+  source           = "./modules/net-vpn-ha"
+  project_id       = "<PROJECT_ID>"
+  region           = "europe-west4"
+  network          = "https://www.googleapis.com/compute/v1/projects/<PROJECT_ID>/global/networks/network-1"
+  name             = "net1-to-net-2"
   peer_gcp_gateway = module.vpn_ha-2.self_link
-  router_asn = 64514
+  router_asn       = 64514
   router_advertise_config = {
     groups = ["ALL_SUBNETS"]
     ip_ranges = {
@@ -26,35 +26,35 @@ module "vpn_ha-1" {
         address = "169.254.1.1"
         asn     = 64513
       }
-      bgp_peer_options  = null
-      bgp_session_range = "169.254.1.2/30"
-      ike_version       = 2
-      vpn_gateway_interface = 0
+      bgp_peer_options                = null
+      bgp_session_range               = "169.254.1.2/30"
+      ike_version                     = 2
+      vpn_gateway_interface           = 0
       peer_external_gateway_interface = null
-      shared_secret     = ""
+      shared_secret                   = ""
     }
     remote-1 = {
       bgp_peer = {
         address = "169.254.2.1"
         asn     = 64513
       }
-      bgp_peer_options  = null
-      bgp_session_range = "169.254.2.2/30"
-      ike_version       = 2
-      vpn_gateway_interface = 1
+      bgp_peer_options                = null
+      bgp_session_range               = "169.254.2.2/30"
+      ike_version                     = 2
+      vpn_gateway_interface           = 1
       peer_external_gateway_interface = null
-      shared_secret     = ""
+      shared_secret                   = ""
     }
   }
 }
 
 module "vpn_ha-2" {
-  source = "../modules/net-vpn-ha"
-  project_id  = "<PROJECT_ID>"
-  region  = "europe-west4"
-  network         = "https://www.googleapis.com/compute/v1/projects/<PROJECT_ID>/global/networks/local-network"
-  name            = "net2-to-net1"
-  router_asn = 64513
+  source           = "./modules/net-vpn-ha"
+  project_id       = "<PROJECT_ID>"
+  region           = "europe-west4"
+  network          = "https://www.googleapis.com/compute/v1/projects/<PROJECT_ID>/global/networks/local-network"
+  name             = "net2-to-net1"
+  router_asn       = 64513
   peer_gcp_gateway = module.vpn_ha-1.self_link
   tunnels = {
     remote-0 = {
@@ -62,44 +62,44 @@ module "vpn_ha-2" {
         address = "169.254.1.2"
         asn     = 64514
       }
-      bgp_peer_options  = null
-      bgp_session_range = "169.254.1.1/30"
-      ike_version       = 2
-      vpn_gateway_interface = 0
+      bgp_peer_options                = null
+      bgp_session_range               = "169.254.1.1/30"
+      ike_version                     = 2
+      vpn_gateway_interface           = 0
       peer_external_gateway_interface = null
-      shared_secret     = module.vpn_ha-1.random_secret
+      shared_secret                   = module.vpn_ha-1.random_secret
     }
     remote-1 = {
       bgp_peer = {
         address = "169.254.2.2"
         asn     = 64514
       }
-      bgp_peer_options  = null
-      bgp_session_range = "169.254.2.1/30"
-      ike_version       = 2
-      vpn_gateway_interface = 1
+      bgp_peer_options                = null
+      bgp_session_range               = "169.254.2.1/30"
+      ike_version                     = 2
+      vpn_gateway_interface           = 1
       peer_external_gateway_interface = null
-      shared_secret     = module.vpn_ha-1.random_secret
+      shared_secret                   = module.vpn_ha-1.random_secret
     }
   }
 }
+# tftest:modules=2:resources=18
 ```
 ### GCP to on-prem
 
-```
+```hcl
 module "vpn_ha" {
-  source = "../modules/net-vpn-ha"
-  project_id  = "<PROJECT_ID>"
-  region  = "europe-west4"
-  network         = "https://www.googleapis.com/compute/v1/projects/<PROJECT_ID>/global/networks/my-network"
-  name            = "mynet-to-onprem"
+  source     = "./modules/net-vpn-ha"
+  project_id = var.project_id
+  region     = var.region
+  network    = var.vpc.self_link
+  name       = "mynet-to-onprem"
   peer_external_gateway = {
-      redundancy_type = "SINGLE_IP_INTERNALLY_REDUNDANT"
-      interfaces = [{
-          id = 0
-          ip_address = "8.8.8.8" # on-prem router ip address
-
-      }]
+    redundancy_type = "SINGLE_IP_INTERNALLY_REDUNDANT"
+    interfaces = [{
+      id         = 0
+      ip_address = "8.8.8.8" # on-prem router ip address
+    }]
   }
   router_asn = 64514
   tunnels = {
@@ -108,27 +108,28 @@ module "vpn_ha" {
         address = "169.254.1.1"
         asn     = 64513
       }
-      bgp_peer_options  = null
-      bgp_session_range = "169.254.1.2/30"
-      ike_version       = 2
-      vpn_gateway_interface = 0
+      bgp_peer_options                = null
+      bgp_session_range               = "169.254.1.2/30"
+      ike_version                     = 2
+      vpn_gateway_interface           = 0
       peer_external_gateway_interface = 0
-      shared_secret     = "mySecret"
+      shared_secret                   = "mySecret"
     }
     remote-1 = {
       bgp_peer = {
         address = "169.254.2.1"
         asn     = 64513
       }
-      bgp_peer_options  = null
-      bgp_session_range = "169.254.2.2/30"
-      ike_version       = 2
-      vpn_gateway_interface = 1
+      bgp_peer_options                = null
+      bgp_session_range               = "169.254.2.2/30"
+      ike_version                     = 2
+      vpn_gateway_interface           = 1
       peer_external_gateway_interface = 0
-      shared_secret     = "mySecret"
+      shared_secret                   = "mySecret"
     }
   }
 }
+# tftest:modules=1:resources=10
 ```
 
 <!-- BEGIN TFDOC -->

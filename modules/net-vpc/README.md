@@ -10,7 +10,7 @@ The module allows for several different VPC configurations, some of the most com
 
 ```hcl
 module "vpc" {
-  source     = "../modules/net-vpc"
+  source     = "./modules/net-vpc"
   project_id = "my-project"
   name       = "my-network"
   subnets = [
@@ -31,6 +31,7 @@ module "vpc" {
     }
   ]
 }
+# tftest:modules=1:resources=3
 ```
 
 ### Peering
@@ -40,34 +41,53 @@ A single peering can be configured for the VPC, so as to allow management of sim
 If you only want to create the "local" side of the peering, use `peering_create_remote_end` to `false`. This is useful if you don't have permissions on the remote project/VPC to create peerings.
 
 ```hcl
+module "vpc-hub" {
+  source     = "./modules/net-vpc"
+  project_id = "hub"
+  name       = "vpc-hub"
+  subnets = [{
+    ip_cidr_range      = "10.0.0.0/24"
+    name               = "subnet-1"
+    region             = "europe-west1"
+    secondary_ip_range = null
+  }]
+}
+
 module "vpc-spoke-1" {
-  source     = "../modules/net-vpc"
-  project_id = "my-project"
-  name       = "my-network"
-  subnets = [
-    {
-      ip_cidr_range = "10.0.0.0/24"
-      name          = "subnet-1"
-      region        = "europe-west1"
-      secondary_ip_range = {
-        pods     = "172.16.0.0/20"
-        services = "192.168.0.0/24"
-      }
-    }
-  ]
+  source     = "./modules/net-vpc"
+  project_id = "spoke1"
+  name       = "vpc-spoke1"
+  subnets = [{
+    ip_cidr_range      = "10.0.1.0/24"
+    name               = "subnet-2"
+    region             = "europe-west1"
+    secondary_ip_range = null
+  }]
   peering_config = {
     peer_vpc_self_link = module.vpc-hub.self_link
-    export_routes = false
-    import_routes = true
+    export_routes      = false
+    import_routes      = true
   }
 }
+# tftest:modules=2:resources=6
 ```
 
 ### Shared VPC
 
 ```hcl
+locals {
+  service_project_1 = {
+    project_id = "project1"
+    gke_service_account = "gke"
+    cloud_services_service_account = "cloudsvc"
+  }
+  service_project_2 = {
+    project_id = "project2"
+  }
+}
+
 module "vpc-host" {
-  source     = "../modules/net-vpc"
+  source     = "./modules/net-vpc"
   project_id = "my-project"
   name       = "my-host-network"
   subnets = [
@@ -89,15 +109,16 @@ module "vpc-host" {
   iam = {
     "europe-west1/subnet-1" = {
       "roles/compute.networkUser" = [
-        local.service_project_1.cloudsvc_sa,
-        local.service_project_1.gke_sa
+        local.service_project_1.cloud_services_service_account,
+        local.service_project_1.gke_service_account
       ]
       "roles/compute.securityAdmin" = [
-        local.service_project_1.gke_sa
+        local.service_project_1.gke_service_account
       ]
     }
   }
 }
+# tftest:modules=1:resources=7
 ```
 
 <!-- BEGIN TFDOC -->

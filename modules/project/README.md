@@ -5,6 +5,10 @@
 ### Minimal example with IAM
 
 ```hcl
+locals {
+  gke_service_account = "my_gke_service_account"
+}
+
 module "project" {
   source          = "./modules/project"
   billing_account = "123456-123456-123456"
@@ -17,10 +21,11 @@ module "project" {
   ]
   iam = {
     "roles/container.hostServiceAgentUser" = [
-      "serviceAccount:${var.gke_service_account}"
+      "serviceAccount:${local.gke_service_account}"
     ]
   }
 }
+# tftest:modules=1:resources=4
 ```
 
 ### Minimal example with IAM additive roles
@@ -31,7 +36,7 @@ module "project" {
   name            = "project-example"
   project_create  = false
 
-  iam_additive = {
+  iam = {
     "group:usergroup_watermlon_experimentation@lemonadeinc.io" = [
 	    "roles/viewer",
 	    "roles/storage.objectAdmin"
@@ -48,6 +53,7 @@ module "project" {
     ],
   }
 }
+# tftest:skip
 ```
 
 ### Organization policies
@@ -76,6 +82,7 @@ module "project" {
     }
   }
 }
+# tftest:modules=1:resources=6
 ```
 
 <!-- BEGIN TFDOC -->

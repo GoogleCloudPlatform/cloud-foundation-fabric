@@ -16,6 +16,7 @@ module "bucket" {
     "roles/storage.admin" = ["group:storage@example.com"]
   }
 }
+# tftest:modules=1:resources=2
 ```
 
 ### Example with Cloud KMS
@@ -29,8 +30,9 @@ module "bucket" {
   iam = {
     "roles/storage.admin" = ["group:storage@example.com"]
   }
-  encryption_keys = local.kms_key.self_link
+  encryption_key = "my-encryption-key"
 }
+# tftest:modules=1:resources=2
 ```
 
 ### Example with retention policy
@@ -45,16 +47,17 @@ module "bucket" {
     "roles/storage.admin" = ["group:storage@example.com"]
   }
 
-  retention_policies = {
+  retention_policy = {
     retention_period = 100
     is_locked        = true
   }
 
   logging_config = {
-    log_bucket        = bucket_name_for_logging
+    log_bucket        = var.bucket
     log_object_prefix = null
   }
 }
+# tftest:modules=1:resources=2
 ```
 
 <!-- BEGIN TFDOC -->

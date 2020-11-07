@@ -6,13 +6,14 @@ This module simplifies the creation of GCS buckets used by Google Container Regi
 
 ```hcl
 module "container_registry" {
-  source     = "../../modules/container-registry"
+  source     = "./modules/container-registry"
   project_id = "myproject"
   location   = "EU"
   iam = {
     "roles/storage.admin" = ["group:cicd@example.com"]
   }
 }
+# tftest:modules=1:resources=2
 ```
 
 <!-- BEGIN TFDOC -->
