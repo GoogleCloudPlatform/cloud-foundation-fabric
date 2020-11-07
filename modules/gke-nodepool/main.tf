@@ -14,6 +14,38 @@
  * limitations under the License.
  */
 
+locals {
+  service_account_email = (
+    var.node_service_account_create
+    ? (
+      length(google_service_account.service_account) > 0
+      ? google_service_account.service_account[0].email
+      : null
+    )
+    : var.node_service_account
+  )
+  service_account_scopes = (
+    length(var.node_service_account_scopes) > 0
+    ? var.node_service_account_scopes
+    : (
+      var.node_service_account_create
+      ? ["https://www.googleapis.com/auth/cloud-platform"]
+      : [
+        "https://www.googleapis.com/auth/devstorage.read_only",
+        "https://www.googleapis.com/auth/logging.write",
+        "https://www.googleapis.com/auth/monitoring.write"
+      ]
+    )
+  )
+}
+
+resource "google_service_account" "service_account" {
+  count        = var.node_service_account_create ? 1 : 0
+  project      = var.project_id
+  account_id   = "tf-gke-${var.cluster_name}-${var.name}"
+  display_name = "Terraform GKE ${var.cluster_name} ${var.name}."
+}
+
 resource "google_container_node_pool" "nodepool" {
   provider = google-beta
 
@@ -29,21 +61,21 @@ resource "google_container_node_pool" "nodepool" {
   version            = var.gke_version
 
   node_config {
-    disk_size_gb     = var.node_config_disk_size
-    disk_type        = var.node_config_disk_type
-    image_type       = var.node_config_image_type
-    labels           = var.node_config_labels
-    local_ssd_count  = var.node_config_local_ssd_count
-    machine_type     = var.node_config_machine_type
-    metadata         = var.node_config_metadata
-    min_cpu_platform = var.node_config_min_cpu_platform
-    oauth_scopes     = var.node_config_oauth_scopes
-    preemptible      = var.node_config_preemptible
-    service_account  = var.node_config_service_account
-    tags             = var.node_config_tags
+    disk_size_gb     = var.node_disk_size
+    disk_type        = var.node_disk_type
+    image_type       = var.node_image_type
+    labels           = var.node_labels
+    local_ssd_count  = var.node_local_ssd_count
+    machine_type     = var.node_machine_type
+    metadata         = var.node_metadata
+    min_cpu_platform = var.node_min_cpu_platform
+    oauth_scopes     = local.service_account_scopes
+    preemptible      = var.node_preemptible
+    service_account  = local.service_account_email
+    tags             = var.node_tags
 
     dynamic guest_accelerator {
-      for_each = var.node_config_guest_accelerator
+      for_each = var.node_guest_accelerator
       iterator = config
       content {
         type  = config.key
@@ -53,8 +85,8 @@ resource "google_container_node_pool" "nodepool" {
 
     dynamic sandbox_config {
       for_each = (
-        var.node_config_sandbox_config != null
-        ? [var.node_config_sandbox_config]
+        var.node_sandbox_config != null
+        ? [var.node_sandbox_config]
         : []
       )
       iterator = config
@@ -65,8 +97,8 @@ resource "google_container_node_pool" "nodepool" {
 
     dynamic shielded_instance_config {
       for_each = (
-        var.node_config_shielded_instance_config != null
-        ? [var.node_config_shielded_instance_config]
+        var.node_shielded_instance_config != null
+        ? [var.node_shielded_instance_config]
         : []
       )
       iterator = config
