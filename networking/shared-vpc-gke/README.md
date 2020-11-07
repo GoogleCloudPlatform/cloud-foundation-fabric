@@ -39,7 +39,6 @@ There's a minor glitch that can surface running `terraform destroy`, where the s
 |---|---|:---:|
 | gke_clusters | GKE clusters information. |  |
 | projects | Project ids. |  |
-| service_accounts | GCE and GKE service accounts. |  |
 | vms | GCE VMs. |  |
 | vpc | Shared VPC. |  |
 <!-- END TFDOC -->
