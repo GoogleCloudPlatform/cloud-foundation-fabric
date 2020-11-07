@@ -19,7 +19,7 @@ from pathlib import Path
 
 import marko
 
-MODULES_PATH = Path(__file__, '../../../../modules/').resolve()
+MODULES_PATH = Path(__file__, '../../../modules/').resolve()
 VARIABLES_PATH = Path(__file__, '../variables.tf').resolve()
 EXPECTED_RESOURCES_RE = re.compile(r'# tftest:modules=(\d+):resources=(\d+)')
 

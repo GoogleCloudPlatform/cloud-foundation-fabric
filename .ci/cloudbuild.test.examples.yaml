@@ -31,7 +31,7 @@ steps:
     entrypoint: pytest
     args:
       - -vv
-      - tests/modules/examples
+      - tests/examples
     env:
       - PATH=/usr/local/bin:/usr/bin:/bin:/builder/home/.local/bin
       - TF_CLI_CONFIG_FILE=/workspace/.ci/.terraformrc

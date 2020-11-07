@@ -17,7 +17,7 @@ from pathlib import Path
 import marko
 
 
-MODULES_PATH = Path(__file__).parents[3] / 'modules/'
+MODULES_PATH = Path(__file__).parents[2] / 'modules/'
 
 
 def pytest_generate_tests(metafunc):
