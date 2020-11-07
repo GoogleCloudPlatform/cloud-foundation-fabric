@@ -31,7 +31,8 @@ steps:
     entrypoint: pytest
     args:
       - -vv
-      - --ignore tests/modules/examples
+      - --ignore
+      - tests/modules/examples
       - tests/modules
     env:
       - PATH=/usr/local/bin:/usr/bin:/bin:/builder/home/.local/bin
