@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- **incompatible change** rename prefix for node configuration variables in `gke-nodepool` module [#156]
+- add support for internally managed service account in `gke-nodepool` module [#156]
+
+
 ## [4.0.0] - 2020-11-06
 
 - This is a major refactor adding support for Terraform 0.13 features
@@ -255,3 +259,4 @@ All notable changes to this project will be documented in this file.
 [1.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v0.1...v1.0
 [#82]: https://github.com/terraform-google-modules/cloud-foundation-fabric/pull/82
 [#103]: https://github.com/terraform-google-modules/cloud-foundation-fabric/pull/103
+[#156]: https://github.com/terraform-google-modules/cloud-foundation-fabric/pull/156
