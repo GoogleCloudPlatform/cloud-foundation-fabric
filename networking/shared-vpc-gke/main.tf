@@ -74,8 +74,8 @@ module "project-svc-gke" {
   }
   iam = {
     "roles/container.developer"     = [module.vm-bastion.service_account_iam_email],
-    "roles/logging.logWriter"       = [module.service-account-gke-node.iam_email],
-    "roles/monitoring.metricWriter" = [module.service-account-gke-node.iam_email],
+    "roles/logging.logWriter"       = [module.cluster-1-nodepool-1.service_account_iam_email],
+    "roles/monitoring.metricWriter" = [module.cluster-1-nodepool-1.service_account_iam_email],
     "roles/owner"                   = var.owners_gke
   }
 }
@@ -220,14 +220,5 @@ module "cluster-1-nodepool-1" {
   project_id                  = module.project-svc-gke.project_id
   location                    = module.cluster-1.location
   cluster_name                = module.cluster-1.name
-  node_config_service_account = module.service-account-gke-node.email
-}
-
-# roles assigned via this module use non-authoritative IAM bindings at the
-# project level, with no risk of conflicts with pre-existing roles
-
-module "service-account-gke-node" {
-  source     = "../../modules/iam-service-account"
-  project_id = module.project-svc-gke.project_id
-  name       = "gke-node"
+  node_service_account_create = true
 }
