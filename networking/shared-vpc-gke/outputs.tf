@@ -28,14 +28,6 @@ output "projects" {
   }
 }
 
-output "service_accounts" {
-  description = "GCE and GKE service accounts."
-  value = {
-    bastion  = module.vm-bastion.service_account_email
-    gke_node = module.service-account-gke-node.email
-  }
-}
-
 output "vpc" {
   description = "Shared VPC."
   value = {
