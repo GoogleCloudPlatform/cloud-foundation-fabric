@@ -31,8 +31,8 @@ steps:
     entrypoint: pytest
     args:
       - -vv
-      - --ignore
-      - tests/modules/examples
+      - --ignore=tests/modules/examples
+      - --numprocesses=8
       - tests/modules
     env:
       - PATH=/usr/local/bin:/usr/bin:/bin:/builder/home/.local/bin
@@ -42,6 +42,7 @@ steps:
     entrypoint: pytest
     args:
       - -vv
+      - --numprocesses=8
       - tests/cloud_operations
       - tests/data_solutions
       - tests/foundations

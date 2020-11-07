@@ -16,6 +16,8 @@
 
 import os
 import pytest
+import shutil
+import tempfile
 import tftest
 
 
@@ -41,16 +43,20 @@ def plan_runner():
 
   def run_plan(fixture_path, is_module=True, targets=None, **tf_vars):
     "Runs Terraform plan and returns parsed output"
-    tf = tftest.TerraformTest(fixture_path, BASEDIR,
-                              os.environ.get('TERRAFORM', 'terraform'))
-    tf.setup()
-    plan = tf.plan(output=True, tf_vars=tf_vars, targets=targets)
-    root_module = plan.planned_values['root_module']['child_modules'][0]
-    if is_module:
-      return (plan, root_module['resources'])
-    modules = dict((mod['address'], mod['resources'])
-                   for mod in root_module['child_modules'])
-    return plan, modules
+
+    fixture_dir = os.path.dirname(fixture_path)
+    with tempfile.TemporaryDirectory(dir=fixture_dir) as tmp_path:
+      shutil.copytree(fixture_path, tmp_path, dirs_exist_ok=True)
+      tf = tftest.TerraformTest(tmp_path, BASEDIR,
+                                os.environ.get('TERRAFORM', 'terraform'))
+      tf.setup()
+      plan = tf.plan(output=True, tf_vars=tf_vars, targets=targets)
+      root_module = plan.planned_values['root_module']['child_modules'][0]
+      if is_module:
+        return (plan, root_module['resources'])
+      modules = dict((mod['address'], mod['resources'])
+                     for mod in root_module['child_modules'])
+      return plan, modules
 
   return run_plan
 
@@ -81,11 +87,14 @@ def apply_runner():
 
   def run_apply(fixture_path, **tf_vars):
     "Runs Terraform apply and returns parsed output"
-    tf = tftest.TerraformTest(fixture_path, BASEDIR,
-                              os.environ.get('TERRAFORM', 'terraform'))
-    tf.setup()
-    apply = tf.apply(tf_vars=tf_vars)
-    output = tf.output(json_format=True)
-    return apply, output
+    fixture_dir = os.path.dirname(fixture_path)
+    with tempfile.TemporaryDirectory(dir=fixture_dir) as tmp_path:
+      shutil.copytree(fixture_path, tmp_path, dirs_exist_ok=True)
+      tf = tftest.TerraformTest(tmp_path, BASEDIR,
+                                os.environ.get('TERRAFORM', 'terraform'))
+      tf.setup()
+      apply = tf.apply(tf_vars=tf_vars)
+      output = tf.output(json_format=True)
+      return apply, output
 
   return run_apply
