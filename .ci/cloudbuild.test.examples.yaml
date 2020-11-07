@@ -43,3 +43,6 @@ substitutions:
 tags:
   - "ci"
   - "test"
+
+options:
+ machineType: 'N1_HIGHCPU_8'
