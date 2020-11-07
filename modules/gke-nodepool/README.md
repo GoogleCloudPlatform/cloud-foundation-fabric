@@ -10,7 +10,7 @@ If no specific node configuration is set via variables, the module uses the prov
 
 ```hcl
 module "cluster-1-nodepool-1" {
-  source                      = "../modules/gke-nodepool"
+  source                      = "./modules/gke-nodepool"
   project_id                  = "myproject"
   cluster_name                = "cluster-1"
   location                    = "europe-west1-b"
@@ -31,7 +31,7 @@ module "cluster-1-nodepool-1" {
   name                        = "nodepool-1"
   node_service_account_create = true
 }
-# tftest:modules=1:resources=1
+# tftest:modules=1:resources=2
 ```
 
 <!-- BEGIN TFDOC -->
