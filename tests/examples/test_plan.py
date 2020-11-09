@@ -33,6 +33,6 @@ def test_example(example_plan_runner, tmp_path, example):
   expected_modules = int(match.group(1)) if match is not None else 1
   expected_resources = int(match.group(2)) if match is not None else 1
 
-  plan, modules, resources = example_plan_runner(str(tmp_path))
-  assert expected_modules == len(modules)
-  assert expected_resources == len(resources)
+  num_modules, num_resources = example_plan_runner(str(tmp_path))
+  assert expected_modules == num_modules
+  assert expected_resources == num_resources

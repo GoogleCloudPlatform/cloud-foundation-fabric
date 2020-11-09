@@ -25,16 +25,6 @@ steps:
         rm terraform_${_TERRAFORM_VERSION}_linux_amd64.zip &&
         chmod 755 /builder/home/.local/bin/terraform &&
         mkdir -p /workspace/.terraform.d/plugin-cache
-  # TODO(ludoo): add a step that detects change files and sets tests to run
-  - name: python:3-alpine
-    id: test-modules
-    entrypoint: pytest
-    args:
-      - -vv
-      - tests/modules
-    env:
-      - PATH=/usr/local/bin:/usr/bin:/bin:/builder/home/.local/bin
-      - TF_CLI_CONFIG_FILE=/workspace/.ci/.terraformrc
   - name: python:3-alpine
     id: test-environments
     entrypoint: pytest
