@@ -30,6 +30,22 @@ def test_audit_config(plan_runner):
   assert log_types == set(['DATA_READ', 'DATA_WRITE'])
 
 
+def test_iam_additive_members(plan_runner):
+  "Test IAM additive members."
+  iam = (
+      '{"user:one@example.org" = ["roles/owner"],'
+      '"user:two@example.org" = ["roles/owner", "roles/editor"]}'
+  )
+  _, resources = plan_runner(FIXTURES_DIR, iam_additive_members=iam)
+  roles = set((r['values']['role'], r['values']['member'])
+              for r in resources if r['type'] == 'google_organization_iam_member')
+  assert roles == set([
+      ('roles/owner', 'user:one@example.org'),
+      ('roles/owner', 'user:two@example.org'),
+      ('roles/editor', 'user:two@example.org')
+  ])
+
+
 def test_policy_boolean(plan_runner):
   "Test boolean org policy."
   policy_boolean = '{policy-a = true, policy-b = false, policy-c = null}'
