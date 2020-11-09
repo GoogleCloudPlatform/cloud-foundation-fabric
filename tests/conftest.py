@@ -18,8 +18,6 @@ import os
 import pytest
 import tftest
 
-import filelock
-
 
 BASEDIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -30,11 +28,10 @@ def _plan_runner():
 
   def run_plan(fixture_path, targets=None, **tf_vars):
     "Runs Terraform plan and returns parsed output."
-    with filelock.FileLock(os.path.join(fixture_path, '.test.lock')):
-      tf = tftest.TerraformTest(fixture_path, BASEDIR,
-                                os.environ.get('TERRAFORM', 'terraform'))
-      tf.setup()
-      return tf.plan(output=True, tf_vars=tf_vars, targets=targets)
+    tf = tftest.TerraformTest(fixture_path, BASEDIR,
+                              os.environ.get('TERRAFORM', 'terraform'))
+    tf.setup()
+    return tf.plan(output=True, tf_vars=tf_vars, targets=targets)
 
   return run_plan
 
@@ -91,12 +88,11 @@ def apply_runner():
 
   def run_apply(fixture_path, **tf_vars):
     "Runs Terraform apply and returns parsed output"
-    with filelock.FileLock(os.path.join(fixture_path, '.test.lock')):
-      tf = tftest.TerraformTest(fixture_path, BASEDIR,
-                                os.environ.get('TERRAFORM', 'terraform'))
-      tf.setup()
-      apply = tf.apply(tf_vars=tf_vars)
-      output = tf.output(json_format=True)
+    tf = tftest.TerraformTest(fixture_path, BASEDIR,
+                              os.environ.get('TERRAFORM', 'terraform'))
+    tf.setup()
+    apply = tf.apply(tf_vars=tf_vars)
+    output = tf.output(json_format=True)
     return apply, output
 
   return run_apply
