@@ -42,7 +42,7 @@ locals {
 resource "google_service_account" "service_account" {
   count        = var.node_service_account_create ? 1 : 0
   project      = var.project_id
-  account_id   = "tf-gke-${var.cluster_name}-${var.name}"
+  account_id   = "tf-gke-${var.name}"
   display_name = "Terraform GKE ${var.cluster_name} ${var.name}."
 }
 
