@@ -40,6 +40,7 @@ steps:
     entrypoint: pytest
     args:
       - -vv
+      - "-n=8"
       - tests/cloud_operations
       - tests/data_solutions
       - tests/foundations
@@ -47,6 +48,9 @@ steps:
     env:
       - PATH=/usr/local/bin:/usr/bin:/bin:/builder/home/.local/bin
       - TF_CLI_CONFIG_FILE=/workspace/.ci/.terraformrc
+
+options:
+  machineType: "N1_HIGHCPU_8"
 
 substitutions:
   _TERRAFORM_VERSION: 0.13.3
