@@ -1,5 +1,6 @@
 filelock==3.0.12
 pytest>=4.6.0
+pytest-xdist>=2.1.0
 PyYAML>=5.3
 tftest>=1.5.2
 marko>=0.9.1

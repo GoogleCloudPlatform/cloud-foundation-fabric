@@ -31,6 +31,7 @@ steps:
     entrypoint: pytest
     args:
       - -vv
+      - --numprocesses=8
       - tests/modules
     env:
       - PATH=/usr/local/bin:/usr/bin:/bin:/builder/home/.local/bin
