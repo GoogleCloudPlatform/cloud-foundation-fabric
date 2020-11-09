@@ -40,7 +40,7 @@ steps:
     entrypoint: pytest
     args:
       - -vv
-      - "-n=8"
+      - --numprocesses=8
       - tests/cloud_operations
       - tests/data_solutions
       - tests/foundations
