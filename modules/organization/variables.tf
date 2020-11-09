@@ -32,6 +32,12 @@ variable "iam_additive" {
   default     = {}
 }
 
+variable "iam_additive_members" {
+  description = "IAM additive bindings in {MEMBERS => [ROLE]} format. This might break if members are dynamic values."
+  type        = map(list(string))
+  default     = {}
+}
+
 variable "iam_audit_config" {
   description = "Service audit logging configuration. Service as key, map of log permission (eg DATA_READ) and excluded members as value for each service."
   type        = map(map(list(string)))

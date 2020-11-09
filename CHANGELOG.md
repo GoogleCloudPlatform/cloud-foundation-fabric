@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 - **incompatible change** rename prefix for node configuration variables in `gke-nodepool` module [#156]
 - add support for internally managed service account in `gke-nodepool` module [#156]
 - made examples in READMEs runnable and testable [#157]
+- **incompatible change** `iam_additive` is now keyed by role to be more resilient with dynamic values, a new `iam_additive_members` variable has been added for backwards compatibility.
 
 
 ## [4.0.0] - 2020-11-06

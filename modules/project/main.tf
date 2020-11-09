@@ -16,13 +16,17 @@
 
 locals {
   iam_additive_pairs = flatten([
-    for member, roles in var.iam_additive : [
-      for role in roles :
-      { role = role, member = member }
+    for role, members in var.iam_additive : [
+      for member in members : { role = role, member = member }
+    ]
+  ])
+  iam_additive_member_pairs = flatten([
+    for member, roles in var.iam_additive_members : [
+      for role in roles : { role = role, member = member }
     ]
   ])
   iam_additive = {
-    for pair in local.iam_additive_pairs :
+    for pair in concat(local.iam_additive_pairs, local.iam_additive_member_pairs) :
     "${pair.role}-${pair.member}" => pair
   }
   parent_type = var.parent == null ? null : split("/", var.parent)[0]
@@ -102,10 +106,14 @@ resource "google_project_iam_binding" "authoritative" {
 }
 
 resource "google_project_iam_member" "additive" {
-  for_each = length(var.iam_additive) > 0 ? local.iam_additive : {}
-  project  = local.project.project_id
-  role     = each.value.role
-  member   = each.value.member
+  for_each = (
+    length(var.iam_additive) + length(var.iam_additive_members) > 0
+    ? local.iam_additive
+    : {}
+  )
+  project = local.project.project_id
+  role    = each.value.role
+  member  = each.value.member
   depends_on = [
     google_project_service.project_services,
     google_project_iam_custom_role.roles

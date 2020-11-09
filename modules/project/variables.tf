@@ -44,6 +44,12 @@ variable "iam_additive" {
   default     = {}
 }
 
+variable "iam_additive_members" {
+  description = "IAM additive bindings in {MEMBERS => [ROLE]} format. This might break if members are dynamic values."
+  type        = map(list(string))
+  default     = {}
+}
+
 variable "labels" {
   description = "Resource labels."
   type        = map(string)

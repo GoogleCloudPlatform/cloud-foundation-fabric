@@ -34,6 +34,11 @@ variable "iam_additive" {
   default = {}
 }
 
+variable "iam_additive_members" {
+  type    = map(list(string))
+  default = {}
+}
+
 variable "labels" {
   type    = map(string)
   default = {}

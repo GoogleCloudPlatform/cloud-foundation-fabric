@@ -29,6 +29,11 @@ variable "iam_additive" {
   default = {}
 }
 
+variable "iam_additive_members" {
+  type    = map(list(string))
+  default = {}
+}
+
 variable "iam_audit_config" {
   type    = map(map(list(string)))
   default = {}
