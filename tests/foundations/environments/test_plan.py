@@ -20,9 +20,9 @@ import pytest
 FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
 
 
-def test_folder_roles(plan_runner):
+def test_folder_roles(e2e_plan_runner):
   "Test folder roles."
-  _, modules = plan_runner(FIXTURES_DIR, is_module=False)
+  modules, _ = e2e_plan_runner(FIXTURES_DIR)
   for env in ['test', 'prod']:
     resources = modules[f'module.test.module.environment-folders["{env}"]']
     folders = [r for r in resources if r['type'] == 'google_folder']
@@ -35,13 +35,13 @@ def test_folder_roles(plan_runner):
     assert len(bindings) == 5
 
 
-def test_org_roles(plan_runner):
+def test_org_roles(e2e_plan_runner):
   "Test folder roles."
-  vars = {
+  tf_vars = {
       'organization_id': 'organizations/123',
       'iam_xpn_config': '{grant = true, target_org = true}'
   }
-  _, modules = plan_runner(FIXTURES_DIR, is_module=False, **vars)
+  modules, _ = e2e_plan_runner(FIXTURES_DIR, **tf_vars)
   for env in ['test', 'prod']:
     resources = modules[f'module.test.module.environment-folders["{env}"]']
     folder_bindings = [r['index']
@@ -53,6 +53,6 @@ def test_org_roles(plan_runner):
                     if r['type'] == 'google_organization_iam_member']
     assert len(org_bindings) == 2
     assert {b['values']['role'] for b in org_bindings} == {
-      'roles/resourcemanager.organizationViewer',
-      'roles/compute.xpnAdmin'
+        'roles/resourcemanager.organizationViewer',
+        'roles/compute.xpnAdmin'
     }
