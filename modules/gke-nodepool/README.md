@@ -54,6 +54,7 @@ module "cluster-1-nodepool-1" {
 | *node_guest_accelerator* | Map of type and count of attached accelerator cards. | <code title="map&#40;number&#41;">map(number)</code> |  | <code title="">{}</code> |
 | *node_image_type* | Nodes image type. | <code title="">string</code> |  | <code title="">null</code> |
 | *node_labels* | Kubernetes labels attached to nodes. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
+| *node_taints* | Kubernetes taints attached to nodes. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 | *node_local_ssd_count* | Number of local SSDs attached to nodes. | <code title="">number</code> |  | <code title="">0</code> |
 | *node_locations* | Optional list of zones in which nodes should be located. Uses cluster locations if unset. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">null</code> |
 | *node_machine_type* | Nodes machine type. | <code title="">string</code> |  | <code title="">n1-standard-1</code> |

@@ -96,6 +96,12 @@ variable "node_labels" {
   default     = {}
 }
 
+variable "node_taints" {
+  description = "Kubernetes taints applied to nodes. E.g. type=blue:NoSchedule"
+  type        = list(string)
+  default     = []
+}
+
 variable "node_local_ssd_count" {
   description = "Number of local SSDs attached to nodes."
   type        = number
@@ -166,12 +172,6 @@ variable "node_tags" {
   type        = list(string)
   default     = null
 }
-
-# variable "node_taint" {
-#   description = "Kubernetes taints applied to nodes."
-#   type        = string
-#   default     = null
-# }
 
 variable "node_count" {
   description = "Number of nodes per instance group, can be updated after creation. Ignored when autoscaling is set."
