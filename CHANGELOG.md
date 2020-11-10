@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 - add support for internally managed service account in `gke-nodepool` module [#156]
 - made examples in READMEs runnable and testable [#157]
 - **incompatible change** `iam_additive` is now keyed by role to be more resilient with dynamic values, a new `iam_additive_members` variable has been added for backwards compatibility.
+- add support for node taints in `gke-nodepool` module
 
 
 ## [4.0.0] - 2020-11-06
