@@ -40,7 +40,7 @@ variable "access_policy_title" {
 
 variable "organization_id" {
   description = "Organization id in organizations/nnnnnn format."
-  type        = number
+  type        = string
 }
 
 variable "perimeters" {
