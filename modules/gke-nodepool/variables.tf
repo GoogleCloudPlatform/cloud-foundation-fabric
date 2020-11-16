@@ -66,6 +66,12 @@ variable "name" {
   default     = null
 }
 
+variable "node_boot_disk_kms_key" {
+  description = "Customer Managed Encryption Key used to encrypt the boot disk attached to each node"
+  type        = string
+  default     = null
+}
+
 variable "node_disk_size" {
   description = "Node disk size, defaults to 100GB."
   type        = number

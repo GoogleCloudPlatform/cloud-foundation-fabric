@@ -48,6 +48,7 @@ module "cluster-1-nodepool-1" {
 | *management_config* | Optional node management configuration. | <code title="object&#40;&#123;&#10;auto_repair  &#61; bool&#10;auto_upgrade &#61; bool&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 | *max_pods_per_node* | Maximum number of pods per node. | <code title="">number</code> |  | <code title="">null</code> |
 | *name* | Optional nodepool name. | <code title="">string</code> |  | <code title="">null</code> |
+| *node_boot_disk_kms_key* | Customer Managed Encryption Key used to encrypt the boot disk attached to each node | <code title="">string</code> |  | <code title="">null</code> |
 | *node_count* | Number of nodes per instance group, can be updated after creation. Ignored when autoscaling is set. | <code title="">number</code> |  | <code title="">null</code> |
 | *node_disk_size* | Node disk size, defaults to 100GB. | <code title="">number</code> |  | <code title="">100</code> |
 | *node_disk_type* | Node disk type, defaults to pd-standard. | <code title="">string</code> |  | <code title="">pd-standard</code> |

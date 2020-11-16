@@ -75,19 +75,20 @@ resource "google_container_node_pool" "nodepool" {
   version            = var.gke_version
 
   node_config {
-    disk_size_gb     = var.node_disk_size
-    disk_type        = var.node_disk_type
-    image_type       = var.node_image_type
-    labels           = var.node_labels
-    taint            = local.node_taints
-    local_ssd_count  = var.node_local_ssd_count
-    machine_type     = var.node_machine_type
-    metadata         = var.node_metadata
-    min_cpu_platform = var.node_min_cpu_platform
-    oauth_scopes     = local.service_account_scopes
-    preemptible      = var.node_preemptible
-    service_account  = local.service_account_email
-    tags             = var.node_tags
+    disk_size_gb      = var.node_disk_size
+    disk_type         = var.node_disk_type
+    image_type        = var.node_image_type
+    labels            = var.node_labels
+    taint             = local.node_taints
+    local_ssd_count   = var.node_local_ssd_count
+    machine_type      = var.node_machine_type
+    metadata          = var.node_metadata
+    min_cpu_platform  = var.node_min_cpu_platform
+    oauth_scopes      = local.service_account_scopes
+    preemptible       = var.node_preemptible
+    service_account   = local.service_account_email
+    tags              = var.node_tags
+    boot_disk_kms_key = var.node_boot_disk_kms_key
 
     dynamic guest_accelerator {
       for_each = var.node_guest_accelerator
