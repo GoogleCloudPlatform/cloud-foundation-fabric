@@ -59,6 +59,7 @@ module "cluster-1-nodepool-1" {
 | *node_machine_type* | Nodes machine type. | <code title="">string</code> |  | <code title="">n1-standard-1</code> |
 | *node_metadata* | Metadata key/value pairs assigned to nodes. Set disable-legacy-endpoints to true when using this variable. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">null</code> |
 | *node_min_cpu_platform* | Minimum CPU platform for nodes. | <code title="">string</code> |  | <code title="">null</code> |
+| *node_node_boot_disk_kms_key* | Customer Managed Encryption Key used to encrypt the boot disk attached to each node in the node pool | <code title="">string</code> |  | <code title="">null</code> |
 | *node_preemptible* | Use preemptible VMs for nodes. | <code title="">bool</code> |  | <code title="">null</code> |
 | *node_sandbox_config* | GKE Sandbox configuration. Needs image_type set to COS_CONTAINERD and node_version set to 1.12.7-gke.17 when using this variable. | <code title="">string</code> |  | <code title="">null</code> |
 | *node_service_account* | Service account email. Unused if service account is auto-created. | <code title="">string</code> |  | <code title="">null</code> |
