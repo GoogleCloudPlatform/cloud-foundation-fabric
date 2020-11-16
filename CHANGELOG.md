@@ -4,12 +4,14 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [4.1.0] - 2020-11-16
+
 - **incompatible change** rename prefix for node configuration variables in `gke-nodepool` module [#156]
 - add support for internally managed service account in `gke-nodepool` module [#156]
 - made examples in READMEs runnable and testable [#157]
 - **incompatible change** `iam_additive` is now keyed by role to be more resilient with dynamic values, a new `iam_additive_members` variable has been added for backwards compatibility.
 - add support for node taints in `gke-nodepool` module
-
+- add support for CMEK in `gke-nodepool` module
 
 ## [4.0.0] - 2020-11-06
 
@@ -227,7 +229,8 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.0.0...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.1.0...HEAD
+[4.1.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.0.0...v4.1.0
 [4.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.5.0...v4.0.0
 [3.5.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.4.0...v3.5.0
 [3.4.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.3.0...v3.4.0
