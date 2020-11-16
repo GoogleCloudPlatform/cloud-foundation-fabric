@@ -37,6 +37,20 @@ locals {
       ]
     )
   )
+  node_taint_effect = {
+    "NoExecute"        = "NO_EXECUTE",
+    "NoSchedule"       = "NO_SCHEDULE"
+    "PreferNoSchedule" = "PREFER_NO_SCHEDULE"
+  }
+  temp_node_pools_taints = [
+    for taint in var.node_taints :
+    {
+      "key"    = element(split("=", taint), 0),
+      "value"  = element(split(":", element(split("=", taint), 1)), 0),
+      "effect" = lookup(local.node_taint_effect, element(split(":", taint), 1)),
+    }
+  ]
+  node_taints = local.temp_node_pools_taints
 }
 
 resource "google_service_account" "service_account" {
@@ -65,6 +79,7 @@ resource "google_container_node_pool" "nodepool" {
     disk_type        = var.node_disk_type
     image_type       = var.node_image_type
     labels           = var.node_labels
+    taint            = local.node_taints
     local_ssd_count  = var.node_local_ssd_count
     machine_type     = var.node_machine_type
     metadata         = var.node_metadata

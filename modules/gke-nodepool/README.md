@@ -66,6 +66,7 @@ module "cluster-1-nodepool-1" {
 | *node_service_account_scopes* | Scopes applied to service account. Default to: 'cloud-platform' when creating a service account; 'devstorage.read_only', 'logging.write', 'monitoring.write' otherwise. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 | *node_shielded_instance_config* | Shielded instance options. | <code title="object&#40;&#123;&#10;enable_secure_boot          &#61; bool&#10;enable_integrity_monitoring &#61; bool&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 | *node_tags* | Network tags applied to nodes. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">null</code> |
+| *node_taints* | Kubernetes taints applied to nodes. E.g. type=blue:NoSchedule | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 | *upgrade_config* | Optional node upgrade configuration. | <code title="object&#40;&#123;&#10;max_surge       &#61; number&#10;max_unavailable &#61; number&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 | *workload_metadata_config* | Metadata configuration to expose to workloads on the node pool. | <code title="">string</code> |  | <code title="">GKE_METADATA_SERVER</code> |
 
