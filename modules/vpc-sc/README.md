@@ -13,7 +13,7 @@ The Use of this module requires credentials with the [correct permissions](https
 ```hcl
 module "vpc-sc" {
   source              = "./modules/vpc-sc"
-  org_id              = 112233
+  organization_id     = "organizations/112233"
   access_policy_title = "My Access Policy"
   access_levels = {
     my_trusted_proxy = {
@@ -53,7 +53,7 @@ module "vpc-sc" {
 ```hcl
 module "vpc-sc" {
   source              = "./modules/vpc-sc"
-  org_id              = 112233
+  organization_id     = "organizations/112233"
   access_policy_title = "My Access Policy"
   access_levels = {
     my_trusted_proxy = {
@@ -99,7 +99,7 @@ module "vpc-sc" {
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
 | access_policy_title | Access Policy title to be created. | <code title="">string</code> | ✓ |  |
-| org_id | Organization id in nnnnnn format. | <code title="">number</code> | ✓ |  |
+| organization_id | Organization id in organizations/nnnnnn format. | <code title="">number</code> | ✓ |  |
 | *access_level_perimeters* | Enforced mode -> Access Level -> Perimeters mapping. Enforced mode can be 'enforced' or 'dry_run' | <code title="map&#40;map&#40;list&#40;string&#41;&#41;&#41;">map(map(list(string)))</code> |  | <code title="">{}</code> |
 | *access_levels* | Access Levels. | <code title="map&#40;object&#40;&#123;&#10;combining_function &#61; string&#10;conditions &#61; list&#40;object&#40;&#123;&#10;ip_subnetworks &#61; list&#40;string&#41;&#10;members        &#61; list&#40;string&#41;&#10;negate         &#61; string&#10;&#125;&#41;&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
 | *perimeter_projects* | Perimeter -> Enforced Mode -> Projects Number mapping. Enforced mode can be 'enforced' or 'dry_run'. | <code title="map&#40;map&#40;list&#40;number&#41;&#41;&#41;">map(map(list(number)))</code> |  | <code title="">{}</code> |
@@ -111,7 +111,7 @@ module "vpc-sc" {
 |---|---|:---:|
 | access_levels | Access Levels. |  |
 | access_policy_name | Access Policy resource |  |
-| org_id | Organization id dependent on module resources. |  |
+| organization_id | Organization id dependent on module resources. |  |
 | perimeters_bridge | VPC-SC bridge perimeter resources. |  |
 | perimeters_standard | VPC-SC standard perimeter resources. |  |
 <!-- END TFDOC -->

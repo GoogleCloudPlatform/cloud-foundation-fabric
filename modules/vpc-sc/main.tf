@@ -32,7 +32,7 @@ locals {
 }
 
 resource "google_access_context_manager_access_policy" "default" {
-  parent = "organizations/${var.org_id}"
+  parent = var.organization_id
   title  = var.access_policy_title
 }
 
@@ -115,11 +115,11 @@ resource "google_access_context_manager_service_perimeter" "standard" {
     }
   }
 
-  # Uncomment if used alongside `google_access_context_manager_service_perimeter_resource`, 
+  # Uncomment if used alongside `google_access_context_manager_service_perimeter_resource`,
   # so they don't fight over which resources should be in the policy.
   # lifecycle {
   #   ignore_changes = [status[0].resources]
-  # }  
+  # }
 
   depends_on = [
     google_access_context_manager_access_level.default,
@@ -152,11 +152,11 @@ resource "google_access_context_manager_service_perimeter" "bridge" {
     }
   }
 
-  # Uncomment if used alongside `google_access_context_manager_service_perimeter_resource`, 
+  # Uncomment if used alongside `google_access_context_manager_service_perimeter_resource`,
   # so they don't fight over which resources should be in the policy.
   # lifecycle {
   #   ignore_changes = [status[0].resources]
-  # }  
+  # }
 
   depends_on = [
     google_access_context_manager_service_perimeter.standard,

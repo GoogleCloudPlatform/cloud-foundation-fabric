@@ -38,8 +38,8 @@ variable "access_policy_title" {
   type        = string
 }
 
-variable "org_id" {
-  description = "Organization id in nnnnnn format."
+variable "organization_id" {
+  description = "Organization id in organizations/nnnnnn format."
   type        = number
 }
 
