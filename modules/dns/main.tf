@@ -48,10 +48,11 @@ resource "google_dns_managed_zone" "non-public" {
     )
     content {
       dynamic "target_name_servers" {
-        for_each = var.forwarders
-        iterator = address
+        for_each = { for target_server in var.forwarders : target_server.ipv4_address => target_server.forwarding_path }
+        iterator = target_server
         content {
-          ipv4_address = address.value
+          ipv4_address    = target_server.key
+          forwarding_path = target_server.value
         }
       }
     }

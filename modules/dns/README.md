@@ -34,7 +34,7 @@ module "private-dns" {
 | *default_key_specs_zone* | DNSSEC default zone signing specifications: algorithm, key_length, key_type, kind. | <code title="">any</code> |  | <code title="">{}</code> |
 | *description* | Domain description. | <code title="">string</code> |  | <code title="">Terraform managed.</code> |
 | *dnssec_config* | DNSSEC configuration: kind, non_existence, state. | <code title="">any</code> |  | <code title="">{}</code> |
-| *forwarders* | List of target name servers, only valid for 'forwarding' zone types. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
+| *forwarders* | List of target name servers objects, only valid for 'forwarding' zone types. | <code title="list&#40;string&#41;">list(object({...}))</code> |  | <code title="">[]</code> |
 | *peer_network* | Peering network self link, only valid for 'peering' zone types. | <code title="">string</code> |  | <code title="">null</code> |
 | *recordsets* | List of DNS record objects to manage. | <code title="list&#40;object&#40;&#123;&#10;name    &#61; string&#10;type &#61; string&#10;ttl     &#61; number&#10;records &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">list(object({...}))</code> |  | <code title="">[]</code> |
 | *service_directory_namespace* | Service directory namespace id (URL), only valid for 'service-directory' zone types. | <code title="">string</code> |  | <code title="">null</code> |
