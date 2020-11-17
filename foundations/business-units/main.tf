@@ -64,6 +64,7 @@ module "bu-business-intelligence" {
   gcs_defaults          = var.gcs_defaults
   organization_id       = var.organization_id
   root_node             = var.root_node
+  prefix                = var.prefix
   # extra variables from the folders-unit module can be used here to grant
   # IAM roles to the bu users, configure the automation service accounts, etc.
   # iam_roles             = ["viewer"]
@@ -80,6 +81,7 @@ module "bu-machine-learning" {
   gcs_defaults          = var.gcs_defaults
   organization_id       = var.organization_id
   root_node             = var.root_node
+  prefix                = var.prefix
   # extra variables from the folders-unit module can be used here to grant
   # IAM roles to the bu users, configure the automation service accounts, etc.
 }
