@@ -58,6 +58,11 @@ variable "log_config_defaults" {
   }
 }
 
+variable "mtu" {
+  description = "Maximum Transmission Unit in bytes. The minimum value for this field is 1460 and the maximum value is 1500 bytes."
+  default     = null
+}
+
 variable "name" {
   description = "The name of the network being created"
   type        = string
