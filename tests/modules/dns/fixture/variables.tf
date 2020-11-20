@@ -15,8 +15,8 @@
  */
 
 variable "forwarders" {
-  type    = list(string)
-  default = null
+  type    = map(string)
+  default = {}
 }
 
 variable "peer_network" {

@@ -4,7 +4,9 @@ This module allows simple management of Google Cloud DNS zones and records. It s
 
 For DNSSEC configuration, refer to the [`dns_managed_zone` documentation](https://www.terraform.io/docs/providers/google/r/dns_managed_zone.html#dnssec_config).
 
-## Example
+## Examples
+
+### Private Zone
 
 ```hcl
 module "private-dns" {
@@ -19,6 +21,21 @@ module "private-dns" {
   ]
 }
 # tftest:modules=1:resources=2
+```
+
+### Forwarding Zone
+
+```hcl
+module "private-dns" {
+  source          = "./modules/dns"
+  project_id      = "myproject"
+  type            = "forwarding"
+  name            = "test-example"
+  domain          = "test.example."
+  client_networks = [var.vpc.self_link]
+  forwarders      = { "10.0.1.1" = null, "1.2.3.4" = "private" }
+}
+# tftest:modules=1:resources=1
 ```
 
 <!-- BEGIN TFDOC -->
