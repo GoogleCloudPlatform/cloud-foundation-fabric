@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 - **incompatible change** the `org_id` variable and output in the `vpc-sc` module have been renamed to `organization_id`, the variable now accepts values in `organizations/nnnnnnnn` format
+- **incompatible change** the `forwarders` variable in the `dns` module has a different type, to support specifying forwarding path
 - add support for MTU in `net-vpc` module
 
 ## [4.1.0] - 2020-11-16
