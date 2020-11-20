@@ -47,12 +47,12 @@ def test_forwarding(plan_runner):
   "Test forwarding zone with single forwarder."
   _, resources = plan_runner(
       FIXTURES_DIR, type='forwarding', recordsets='null',
-      forwarders='["dummy-vpc-self-link"]')
+      forwarders='{ "1.2.3.4" = null }')
   assert len(resources) == 1
   resource = resources[0]
   assert resource['type'] == 'google_dns_managed_zone'
   assert resource['values']['forwarding_config'] == [{'target_name_servers': [
-      {'forwarding_path': '', 'ipv4_address': 'dummy-vpc-self-link'}]}]
+      {'forwarding_path': '', 'ipv4_address': '1.2.3.4'}]}]
 
 
 def test_peering(plan_runner):

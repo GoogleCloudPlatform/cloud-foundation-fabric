@@ -44,14 +44,19 @@ resource "google_dns_managed_zone" "non-public" {
 
   dynamic forwarding_config {
     for_each = (
-      var.type == "forwarding" && var.forwarders != null ? [""] : []
+      var.type == "forwarding" &&
+      var.forwarders != null &&
+      length(var.forwarders) > 0
+      ? [""]
+      : []
     )
     content {
       dynamic "target_name_servers" {
         for_each = var.forwarders
-        iterator = address
+        iterator = forwarder
         content {
-          ipv4_address = address.value
+          ipv4_address    = forwarder.key
+          forwarding_path = forwarder.value
         }
       }
     }

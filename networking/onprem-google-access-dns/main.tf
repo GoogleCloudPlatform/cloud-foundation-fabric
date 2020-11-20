@@ -152,7 +152,7 @@ module "dns-onprem" {
   name            = "onprem-example"
   domain          = "onprem.example.org."
   client_networks = [module.vpc.self_link]
-  forwarders      = [cidrhost(var.ip_ranges.onprem, 3)]
+  forwarders      = { cidrhost(var.ip_ranges.onprem, 3) = null }
 }
 
 resource "google_dns_policy" "inbound" {

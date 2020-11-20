@@ -53,11 +53,10 @@ variable "domain" {
   type        = string
 }
 
-# TODO(ludoo): add support for forwarding path attribute
 variable "forwarders" {
-  description = "List of target name servers, only valid for 'forwarding' zone types."
-  type        = list(string)
-  default     = []
+  description = "Map of {IPV4_ADDRESS => FORWARDING_PATH} for 'forwarding' zone types. Path can be 'default', 'private', or null for provider default."
+  type        = map(string)
+  default     = {}
 }
 
 variable "name" {
