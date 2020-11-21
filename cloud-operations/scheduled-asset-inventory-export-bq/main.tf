@@ -125,8 +125,8 @@ module "bq" {
   source     = "../../modules/bigquery-dataset"
   project_id = module.project.project_id
   id         = var.cai_config.bq_dataset
-  access_roles = {
-    owner = { role = "OWNER", type = "user_by_email" }
+  access = {
+    owner = { role = "OWNER", type = "user" }
   }
   access_identities = {
     owner = module.service-account.email
