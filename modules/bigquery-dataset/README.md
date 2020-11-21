@@ -22,17 +22,39 @@ module "bigquery-dataset" {
   source     = "./modules/bigquery-dataset"
   project_id = "my-project"
   id          = "my-dataset"
-  access_roles = {
-    reader-group = { role = "READER", type = "group_by_email" }
-    owner        = { role = "OWNER", type = "user_by_email" }
+  access = {
+    reader-group   = { role = "READER", type = "group" }
+    owner          = { role = "OWNER", type = "user" }
+    project_owners = { role = "OWNER", type = "special_group" }
+    view_1         = { role = "READER", type = "view" }
   }
   access_identities = {
-    reader-group = "playground-test@ludomagno.net"
-    owner        = "ludo@ludomagno.net"
+    reader-group   = "playground-test@ludomagno.net"
+    owner          = "ludo@ludomagno.net"
+    project_owners = "projectOwners"
+    view_1         = "my-project|my-dataset|my-table"
   }
 }
-# tftest:modules=1:resources=3
+# tftest:modules=1:resources=5
 ```
+
+### IAM roles
+
+Access configuration can also be specified via IAM instead of basic roles via the `iam` variable. When using IAM, basic roles cannot be used via the `access` family variables.
+
+```hcl
+module "bigquery-dataset" {
+  source     = "./modules/bigquery-dataset"
+  project_id = "my-project"
+  id          = "my-dataset"
+  iam = {
+    "roles/bigquery.dataOwner" = ["user:user1@example.org"]
+  }
+}
+# tftest:modules=1:resources=2
+```
+
+roles/bigquery.dataOwner
 
 ### Dataset options
 
@@ -137,12 +159,12 @@ module "bigquery-dataset" {
 |---|---|:---: |:---:|:---:|
 | id | Dataset id. | <code title="">string</code> | ✓ |  |
 | project_id | Id of the project where datasets will be created. | <code title="">string</code> | ✓ |  |
-| *access_identities* | Map of access identities used for access roles with type different from `view`. A separate variable is needed as identities can be set to dynamic values. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
-| *access_roles* | Map of access rules with role and identity type. Keys are arbitrary and only used to combine identities with each role. Valid types are `domain`, `group_by_email`, `special_group`, `user_by_email`, `view`. | <code title="map&#40;object&#40;&#123;&#10;role &#61; string&#10;type &#61; string&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
-| *access_views* | Map of view data for access roles with identity type equal to `view`. A separate variable is needed as identities can be set to dynamic values. | <code title="map&#40;object&#40;&#123;&#10;project_id &#61; string&#10;dataset_id &#61; string&#10;table_id   &#61; string&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
+| *access* | Map of access rules with role and identity type. Keys are arbitrary and must match those in the `access_identities` variable, types are `domain`, `group`, `special_group`, `user`, `view`. | <code title="map&#40;object&#40;&#123;&#10;role &#61; string&#10;type &#61; string&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="&#123;&#125;&#10;validation &#123;&#10;condition &#61; can&#40;&#91;&#10;for k, v in var.access :&#10;index&#40;&#91;&#34;OWNER&#34;, &#34;READER&#34;, &#34;WRITER&#34;&#93;, v.role&#41;&#10;&#93;&#41;&#10;error_message &#61; &#34;Access role must be one of &#39;OWNER&#39;, &#39;READER&#39;, &#39;WRITER&#39;.&#34;&#10;&#125;&#10;validation &#123;&#10;condition &#61; can&#40;&#91;&#10;for k, v in var.access :&#10;index&#40;&#91;&#34;domain&#34;, &#34;group&#34;, &#34;special_group&#34;, &#34;user&#34;, &#34;view&#34;&#93;, v.type&#41;&#10;&#93;&#41;&#10;error_message &#61; &#34;Access type must be one of &#39;domain&#39;, &#39;group&#39;, &#39;special_group&#39;, &#39;user&#39;, &#39;view&#39;.&#34;&#10;&#125;">...</code> |
+| *access_identities* | Map of access identities used for basic access roles. View identities have the format 'project_id|dataset_id|table_id'. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
 | *dataset_access* | Set access in the dataset resource instead of using separate resources. | <code title="">bool</code> |  | <code title="">false</code> |
 | *encryption_key* | Self link of the KMS key that will be used to protect destination table. | <code title="">string</code> |  | <code title="">null</code> |
 | *friendly_name* | Dataset friendly name. | <code title="">string</code> |  | <code title="">null</code> |
+| *iam* | IAM bindings in {ROLE => [MEMBERS]} format. Mutually exclusive with the access_* variables used for basic roles. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
 | *labels* | Dataset labels. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
 | *location* | Dataset location. | <code title="">string</code> |  | <code title="">EU</code> |
 | *options* | Dataset options. | <code title="object&#40;&#123;&#10;default_table_expiration_ms     &#61; number&#10;default_partition_expiration_ms &#61; number&#10;delete_contents_on_destroy      &#61; bool&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;default_table_expiration_ms     &#61; null&#10;default_partition_expiration_ms &#61; null&#10;delete_contents_on_destroy      &#61; false&#10;&#125;">...</code> |

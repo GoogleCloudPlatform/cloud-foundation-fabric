@@ -14,29 +14,33 @@
  * limitations under the License.
  */
 
-variable "access_identities" {
-  description = "Map of access identities used for access roles with type different from `view`. A separate variable is needed as identities can be set to dynamic values."
-  type        = map(string)
-  default     = {}
-}
-
-variable "access_roles" {
-  description = "Map of access rules with role and identity type. Keys are arbitrary and only used to combine identities with each role. Valid types are `domain`, `group_by_email`, `special_group`, `user_by_email`, `view`."
+variable "access" {
+  description = "Map of access rules with role and identity type. Keys are arbitrary and must match those in the `access_identities` variable, types are `domain`, `group`, `special_group`, `user`, `view`."
   type = map(object({
     role = string
     type = string
   }))
   default = {}
+  validation {
+    condition = can([
+      for k, v in var.access :
+      index(["OWNER", "READER", "WRITER"], v.role)
+    ])
+    error_message = "Access role must be one of 'OWNER', 'READER', 'WRITER'."
+  }
+  validation {
+    condition = can([
+      for k, v in var.access :
+      index(["domain", "group", "special_group", "user", "view"], v.type)
+    ])
+    error_message = "Access type must be one of 'domain', 'group', 'special_group', 'user', 'view'."
+  }
 }
 
-variable "access_views" {
-  description = "Map of view data for access roles with identity type equal to `view`. A separate variable is needed as identities can be set to dynamic values."
-  type = map(object({
-    project_id = string
-    dataset_id = string
-    table_id   = string
-  }))
-  default = {}
+variable "access_identities" {
+  description = "Map of access identities used for basic access roles. View identities have the format 'project_id|dataset_id|table_id'."
+  type        = map(string)
+  default     = {}
 }
 
 variable "dataset_access" {
@@ -49,6 +53,12 @@ variable "encryption_key" {
   description = "Self link of the KMS key that will be used to protect destination table."
   type        = string
   default     = null
+}
+
+variable "iam" {
+  description = "IAM bindings in {ROLE => [MEMBERS]} format. Mutually exclusive with the access_* variables used for basic roles."
+  type        = map(list(string))
+  default     = {}
 }
 
 variable "labels" {

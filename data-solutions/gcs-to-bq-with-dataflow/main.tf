@@ -283,9 +283,9 @@ module "bigquery-dataset" {
   source     = "../../modules/bigquery-dataset"
   project_id = module.project-service.project_id
   id         = "bq_dataset"
-  access_roles = {
-    reader-group = { role = "READER", type = "service_account" }
-    owner        = { role = "OWNER", type = "user_by_email" }
+  access = {
+    reader-group = { role = "READER", type = "user" }
+    owner        = { role = "OWNER", type = "user" }
   }
   access_identities = {
     reader-group = module.service-account-bq.email
