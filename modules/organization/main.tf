@@ -29,6 +29,16 @@ locals {
     for pair in concat(local.iam_additive_pairs, local.iam_additive_member_pairs) :
     "${pair.role}-${pair.member}" => pair
   }
+  extended_rules = flatten([
+    for policy, rules in var.firewall_policies : [
+      for rule_name, rule in rules :
+      merge(rule, { policy = policy, name = rule_name })
+    ]
+  ])
+  rules_map = {
+    for rule in local.extended_rules :
+    "${rule.policy}-${rule.name}" => rule
+  }
 }
 
 resource "google_organization_iam_custom_role" "roles" {
@@ -143,4 +153,49 @@ resource "google_organization_policy" "list" {
       default = true
     }
   }
+}
+
+resource "google_compute_organization_security_policy" "policy" {
+  provider = google-beta
+  for_each = var.firewall_policies
+
+  display_name = each.key
+  parent       = "organizations/${var.org_id}"
+}
+
+resource "google_compute_organization_security_policy_rule" "rule" {
+  provider = google-beta
+  for_each = local.rules_map
+
+  policy_id               = google_compute_organization_security_policy.policy[each.value.policy].id
+  action                  = each.value.action
+  direction               = each.value.direction
+  priority                = each.value.priority
+  target_resources        = each.value.target_resources
+  target_service_accounts = each.value.target_service_accounts
+  enable_logging          = each.value.logging
+  # preview                 = each.value.preview
+  match {
+    description = each.value.description
+    config {
+      src_ip_ranges  = each.value.direction == "INGRESS" ? each.value.ranges : null
+      dest_ip_ranges = each.value.direction == "EGRESS" ? each.value.ranges : null
+      dynamic "layer4_config" {
+        for_each = each.value.ports
+        iterator = port
+        content {
+          ip_protocol = port.key
+          ports       = port.value
+        }
+      }
+    }
+  }
+}
+
+resource "google_compute_organization_security_policy_association" "attachment" {
+  provider      = google-beta
+  for_each      = var.firewall_policy_attachments
+  name          = "organizations/${var.org_id}-${each.key}"
+  attachment_id = "organizations/${var.org_id}"
+  policy_id     = each.value
 }

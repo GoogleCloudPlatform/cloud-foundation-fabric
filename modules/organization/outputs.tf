@@ -26,3 +26,19 @@ output "org_id" {
     google_organization_policy.list
   ]
 }
+
+output "firewall_policies" {
+  description = "Map of firewall policy resources created in the organization."
+  value = {
+    for name, _ in var.firewall_policies :
+    name => google_compute_organization_security_policy.policy[name]
+  }
+}
+
+output "firewall_policy_id" {
+  description = "Map of firewall policy ids created in the organization."
+  value = {
+    for name, _ in var.firewall_policies :
+    name => google_compute_organization_security_policy.policy[name].id
+  }
+}

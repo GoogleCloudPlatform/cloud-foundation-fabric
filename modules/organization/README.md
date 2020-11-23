@@ -30,6 +30,35 @@ module "org" {
 # tftest:modules=1:resources=4
 ```
 
+## Hierarchical firewall rules
+```hcl
+module "org" {
+  source = "./modules/organization"
+  org_id = 11223344
+  firewall_policies = {
+    iap-policy = {
+      allow-iap-ssh = {
+        description = "Always allow ssh from IAP"
+        direction   = "INGRESS"
+        action      = "allow"
+        priority    = 100
+        ranges      = ["35.235.240.0/20"]
+        ports = {
+          tcp = ["22"]
+        }
+        target_service_accounts = null
+        target_resources        = null
+        logging                 = false
+      }
+    }
+  }
+  firewall_policy_attachments = {
+    iap_policy = module.org.firewall_policy_id["iap-policy"]
+  }
+}
+# tftest:modules=1:resources=3
+```
+
 <!-- BEGIN TFDOC -->
 ## Variables
 
