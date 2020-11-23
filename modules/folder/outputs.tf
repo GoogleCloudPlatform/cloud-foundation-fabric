@@ -33,3 +33,19 @@ output "name" {
   description = "Folder name."
   value       = google_folder.folder.display_name
 }
+
+output "firewall_policies" {
+  description = "Map of firewall policy resources created in this folder."
+  value = {
+    for name, _ in var.firewall_policies :
+    name => google_compute_organization_security_policy.policy[name]
+  }
+}
+
+output "firewall_policy_id" {
+  description = "Map of firewall policy ids created in this folder."
+  value = {
+    for name, _ in var.firewall_policies :
+    name => google_compute_organization_security_policy.policy[name].id
+  }
+}

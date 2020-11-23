@@ -15,7 +15,7 @@
 # common variables used for examples
 
 variable "organization_id" {
-  default = "organization/organization"
+  default = "organizations/1122334455"
 }
 
 variable "project_id" {

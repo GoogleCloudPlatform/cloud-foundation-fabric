@@ -41,6 +41,48 @@ module "folder" {
 # tftest:modules=1:resources=4
 ```
 
+### Hierarchical firewall policies
+
+```hcl
+module "folder1" {
+  source = "./modules/folder"
+  parent = var.organization_id
+  name   = "policy-container"
+
+  firewall_policies = {
+    iap-policy = {
+      allow-iap-ssh = {
+        description = "Always allow ssh from IAP"
+        direction   = "INGRESS"
+        action      = "allow"
+        priority    = 100
+        ranges      = ["35.235.240.0/20"]
+        ports = {
+          tcp = ["22"]
+        }
+        target_service_accounts = null
+        target_resources        = null
+        logging                 = false
+      }
+    }
+  }
+  firewall_policy_attachments = {
+    iap-policy = module.folder1.firewall_policy_id["iap-policy"]
+  }
+}
+
+module "folder2" {
+  source = "./modules/folder"
+  parent = var.organization_id
+  name   = "hf2"
+  firewall_policy_attachments = {
+    iap-policy = module.folder1.firewall_policy_id["iap-policy"]
+  }
+}
+# tftest:modules=2:resources=6
+```
+
+
 <!-- BEGIN TFDOC -->
 ## Variables
 
@@ -48,6 +90,8 @@ module "folder" {
 |---|---|:---: |:---:|:---:|
 | name | Folder name. | <code title="">string</code> | ✓ |  |
 | parent | Parent in folders/folder_id or organizations/org_id format. | <code title="string&#10;validation &#123;&#10;condition     &#61; can&#40;regex&#40;&#34;&#40;organizations&#124;folders&#41;&#47;&#91;0-9&#93;&#43;&#34;, var.parent&#41;&#41;&#10;error_message &#61; &#34;Parent must be of the form folders&#47;folder_id or organizations&#47;organization_id.&#34;&#10;&#125;">string</code> | ✓ |  |
+| *firewall_policies* | Hierarchical firewall policies to *create* in this folder. | <code title="map&#40;map&#40;object&#40;&#123;&#10;description             &#61; string&#10;direction               &#61; string&#10;action                  &#61; string&#10;priority                &#61; number&#10;ranges                  &#61; list&#40;string&#41;&#10;ports                   &#61; map&#40;list&#40;string&#41;&#41;&#10;target_service_accounts &#61; list&#40;string&#41;&#10;target_resources        &#61; list&#40;string&#41;&#10;logging                 &#61; bool&#10;&#125;&#41;&#41;&#41;">map(map(object({...})))</code> |  | <code title="">{}</code> |
+| *firewall_policy_attachments* | List of hierarchical firewall policy IDs to *attach* to this folder. | <code title="set&#40;string&#41;">set(string)</code> |  | <code title="">[]</code> |
 | *iam* | IAM bindings in {ROLE => [MEMBERS]} format. | <code title="map&#40;set&#40;string&#41;&#41;">map(set(string))</code> |  | <code title="">{}</code> |
 | *policy_boolean* | Map of boolean org policies and enforcement value, set value to null for policy restore. | <code title="map&#40;bool&#41;">map(bool)</code> |  | <code title="">{}</code> |
 | *policy_list* | Map of list org policies, status is true for allow, false for deny, null for restore. Values can only be used for allow or deny. | <code title="map&#40;object&#40;&#123;&#10;inherit_from_parent &#61; bool&#10;suggested_value     &#61; string&#10;status              &#61; bool&#10;values              &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
@@ -56,6 +100,8 @@ module "folder" {
 
 | name | description | sensitive |
 |---|---|:---:|
+| firewall_policies | Map of firewall policy resources created in this folder. |  |
+| firewall_policy_id | Map of firewall policy ids created in this folder. |  |
 | folder | Folder resource. |  |
 | id | Folder id. |  |
 | name | Folder name. |  |
