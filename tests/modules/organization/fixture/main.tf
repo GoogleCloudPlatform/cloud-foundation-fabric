@@ -15,13 +15,15 @@
  */
 
 module "test" {
-  source               = "../../../../modules/organization"
-  org_id               = 1234567890
-  custom_roles         = var.custom_roles
-  iam                  = var.iam
-  iam_additive         = var.iam_additive
-  iam_additive_members = var.iam_additive_members
-  iam_audit_config     = var.iam_audit_config
-  policy_boolean       = var.policy_boolean
-  policy_list          = var.policy_list
+  source                      = "../../../../modules/organization"
+  org_id                      = 1234567890
+  custom_roles                = var.custom_roles
+  iam                         = var.iam
+  iam_additive                = var.iam_additive
+  iam_additive_members        = var.iam_additive_members
+  iam_audit_config            = var.iam_audit_config
+  policy_boolean              = var.policy_boolean
+  policy_list                 = var.policy_list
+  firewall_policies           = var.firewall_policies
+  firewall_policy_attachments = var.firewall_policy_attachments
 }

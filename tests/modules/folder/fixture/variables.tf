@@ -33,3 +33,23 @@ variable "policy_list" {
   }))
   default = {}
 }
+
+variable "firewall_policies" {
+  type = map(map(object({
+    description             = string
+    direction               = string
+    action                  = string
+    priority                = number
+    ranges                  = list(string)
+    ports                   = map(list(string))
+    target_service_accounts = list(string)
+    target_resources        = list(string)
+    logging                 = bool
+  })))
+  default = {}
+}
+
+variable "firewall_policy_attachments" {
+  type    = map(string)
+  default = {}
+}

@@ -63,14 +63,12 @@ variable "firewall_policies" {
     target_service_accounts = list(string)
     target_resources        = list(string)
     logging                 = bool
-    #preview                 = bool
   })))
   default = {}
 }
 
 variable "firewall_policy_attachments" {
   description = "List of hierarchical firewall policy IDs to *attach* to this folder."
-  # set to avoid manual casting with toset()
-  type    = map(string)
-  default = {}
+  type        = map(string)
+  default     = {}
 }
