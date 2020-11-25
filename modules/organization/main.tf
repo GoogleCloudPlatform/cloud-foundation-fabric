@@ -15,6 +15,7 @@
  */
 
 locals {
+  organization_id_numeric = split("/", var.organization_id)[1]
   iam_additive_pairs = flatten([
     for role, members in var.iam_additive : [
       for member in members : { role = role, member = member }
@@ -43,7 +44,7 @@ locals {
 
 resource "google_organization_iam_custom_role" "roles" {
   for_each    = var.custom_roles
-  org_id      = var.org_id
+  org_id      = local.organization_id_numeric
   role_id     = each.key
   title       = "Custom role ${each.key}"
   description = "Terraform-managed"
@@ -52,7 +53,7 @@ resource "google_organization_iam_custom_role" "roles" {
 
 resource "google_organization_iam_binding" "authoritative" {
   for_each = var.iam
-  org_id   = var.org_id
+  org_id   = local.organization_id_numeric
   role     = each.key
   members  = each.value
 }
@@ -63,14 +64,14 @@ resource "google_organization_iam_member" "additive" {
     ? local.iam_additive
     : {}
   )
-  org_id = var.org_id
+  org_id = local.organization_id_numeric
   role   = each.value.role
   member = each.value.member
 }
 
 resource "google_organization_iam_audit_config" "config" {
   for_each = var.iam_audit_config
-  org_id   = var.org_id
+  org_id   = local.organization_id_numeric
   service  = each.key
   dynamic audit_log_config {
     for_each = each.value
@@ -84,7 +85,7 @@ resource "google_organization_iam_audit_config" "config" {
 
 resource "google_organization_policy" "boolean" {
   for_each   = var.policy_boolean
-  org_id     = var.org_id
+  org_id     = local.organization_id_numeric
   constraint = each.key
 
   dynamic boolean_policy {
@@ -105,7 +106,7 @@ resource "google_organization_policy" "boolean" {
 
 resource "google_organization_policy" "list" {
   for_each   = var.policy_list
-  org_id     = var.org_id
+  org_id     = local.organization_id_numeric
   constraint = each.key
 
   dynamic list_policy {
@@ -160,7 +161,7 @@ resource "google_compute_organization_security_policy" "policy" {
   for_each = var.firewall_policies
 
   display_name = each.key
-  parent       = "organizations/${var.org_id}"
+  parent       = var.organization_id
 }
 
 resource "google_compute_organization_security_policy_rule" "rule" {
@@ -195,7 +196,7 @@ resource "google_compute_organization_security_policy_rule" "rule" {
 resource "google_compute_organization_security_policy_association" "attachment" {
   provider      = google-beta
   for_each      = var.firewall_policy_attachments
-  name          = "organizations/${var.org_id}-${each.key}"
-  attachment_id = "organizations/${var.org_id}"
+  name          = "${var.organization_id}-${each.key}"
+  attachment_id = var.organization_id
   policy_id     = each.value
 }

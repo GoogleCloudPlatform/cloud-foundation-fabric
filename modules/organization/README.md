@@ -64,7 +64,7 @@ module "org" {
 
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
-| org_id | Organization id in nnnnnn format. | <code title="">number</code> | ✓ |  |
+| organization_id | Organization id in organizations/nnnnnn format. | <code title="string&#10;validation &#123;&#10;condition     &#61; can&#40;regex&#40;&#34;&#94;organizations&#47;&#91;0-9&#93;&#43;&#34;, var.organization_id&#41;&#41;&#10;error_message &#61; &#34;The organization_id must in the form organizations&#47;nnn.&#34;&#10;&#125;">string</code> | ✓ |  |
 | *custom_roles* | Map of role name => list of permissions to create in this project. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
 | *firewall_policies* | Hierarchical firewall policies to *create* in the organization. | <code title="map&#40;map&#40;object&#40;&#123;&#10;description             &#61; string&#10;direction               &#61; string&#10;action                  &#61; string&#10;priority                &#61; number&#10;ranges                  &#61; list&#40;string&#41;&#10;ports                   &#61; map&#40;list&#40;string&#41;&#41;&#10;target_service_accounts &#61; list&#40;string&#41;&#10;target_resources        &#61; list&#40;string&#41;&#10;logging                 &#61; bool&#10;&#125;&#41;&#41;&#41;">map(map(object({...})))</code> |  | <code title="">{}</code> |
 | *firewall_policy_attachments* | List of hierarchical firewall policy IDs to *attach* to the organization | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
@@ -81,5 +81,5 @@ module "org" {
 |---|---|:---:|
 | firewall_policies | Map of firewall policy resources created in the organization. |  |
 | firewall_policy_id | Map of firewall policy ids created in the organization. |  |
-| org_id | Organization id dependent on module resources. |  |
+| organization_id | Organization id dependent on module resources. |  |
 <!-- END TFDOC -->

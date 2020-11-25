@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-output "org_id" {
+output "organization_id" {
   description = "Organization id dependent on module resources."
-  value       = var.org_id
+  value       = var.organization_id
   depends_on = [
     google_organization_iam_audit_config.config,
     google_organization_iam_binding.authoritative,
