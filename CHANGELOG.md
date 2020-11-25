@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 - add support for MTU in `net-vpc` module
 - **incompatible change** access variables have been renamed in the `bigquery-dataset` module
 - add support for IAM to the `bigquery-dataset` module
+- fix default OAuth scopes in `gke-nodepool` module
 
 ## [4.1.0] - 2020-11-16
 
