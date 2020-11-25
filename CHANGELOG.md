@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 - **incompatible change** access variables have been renamed in the `bigquery-dataset` module
 - add support for IAM to the `bigquery-dataset` module
 - fix default OAuth scopes in `gke-nodepool` module
+- add support for hierarchical firewalls to the `folder` and `organization` modules
 
 ## [4.1.0] - 2020-11-16
 
