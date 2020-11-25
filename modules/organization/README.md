@@ -11,19 +11,19 @@ This module allows managing several organization properties:
 
 ```hcl
 module "org" {
-  source      = "./modules/organization"
-  org_id      = 1234567890
-  iam = { "roles/projectCreator" = ["group:cloud-admins@example.org"] }
+  source          = "./modules/organization"
+  organization_id = "organizations/1234567890"
+  iam             = { "roles/projectCreator" = ["group:cloud-admins@example.org"] }
   policy_boolean = {
     "constraints/compute.disableGuestAttributesAccess" = true
-    "constraints/compute.skipDefaultNetworkCreation" = true
+    "constraints/compute.skipDefaultNetworkCreation"   = true
   }
   policy_list = {
     "constraints/compute.trustedImageProjects" = {
       inherit_from_parent = null
-      suggested_value = null
-      status = true
-      values = ["projects/my-project"]
+      suggested_value     = null
+      status              = true
+      values              = ["projects/my-project"]
     }
   }
 }
@@ -33,8 +33,8 @@ module "org" {
 ## Hierarchical firewall rules
 ```hcl
 module "org" {
-  source = "./modules/organization"
-  org_id = 11223344
+  source          = "./modules/organization"
+  organization_id = var.organization_id
   firewall_policies = {
     iap-policy = {
       allow-iap-ssh = {
