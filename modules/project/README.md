@@ -34,7 +34,6 @@ module "project" {
 module "project" {
   source          = "./modules/project"
   name            = "project-example"
-  project_create  = false
 
   iam_additive = {
     "group:usergroup_watermlon_experimentation@lemonadeinc.io" = [
@@ -53,7 +52,7 @@ module "project" {
     ],
   }
 }
-# tftest:skip
+# tftest:modules=1:resources=7
 ```
 
 ### Organization policies
