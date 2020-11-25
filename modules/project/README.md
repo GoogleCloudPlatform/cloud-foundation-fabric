@@ -36,7 +36,7 @@ module "project" {
   name            = "project-example"
   project_create  = false
 
-  iam = {
+  iam_additive = {
     "group:usergroup_watermlon_experimentation@lemonadeinc.io" = [
 	    "roles/viewer",
 	    "roles/storage.objectAdmin"
