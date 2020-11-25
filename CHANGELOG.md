@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 - add support for IAM to the `bigquery-dataset` module
 - fix default OAuth scopes in `gke-nodepool` module
 - add support for hierarchical firewalls to the `folder` and `organization` modules
+- **incompatible change** the `org_id` variable and output in the `organization` module have been renamed to `organization_id`, the variable now accepts values in `organizations/nnnnnnnn` format
 
 ## [4.1.0] - 2020-11-16
 
