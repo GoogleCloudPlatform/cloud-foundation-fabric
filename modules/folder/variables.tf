@@ -50,3 +50,25 @@ variable "policy_list" {
   }))
   default = {}
 }
+
+variable "firewall_policies" {
+  description = "Hierarchical firewall policies to *create* in this folder."
+  type = map(map(object({
+    description             = string
+    direction               = string
+    action                  = string
+    priority                = number
+    ranges                  = list(string)
+    ports                   = map(list(string))
+    target_service_accounts = list(string)
+    target_resources        = list(string)
+    logging                 = bool
+  })))
+  default = {}
+}
+
+variable "firewall_policy_attachments" {
+  description = "List of hierarchical firewall policy IDs to *attach* to this folder."
+  type        = map(string)
+  default     = {}
+}

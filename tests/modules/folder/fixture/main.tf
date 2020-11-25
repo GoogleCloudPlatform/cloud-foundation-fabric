@@ -15,10 +15,12 @@
  */
 
 module "test" {
-  source         = "../../../../modules/folder"
-  parent         = "organizations/12345678"
-  name           = "folder-a"
-  iam            = var.iam
-  policy_boolean = var.policy_boolean
-  policy_list    = var.policy_list
+  source                      = "../../../../modules/folder"
+  parent                      = "organizations/12345678"
+  name                        = "folder-a"
+  iam                         = var.iam
+  policy_boolean              = var.policy_boolean
+  policy_list                 = var.policy_list
+  firewall_policies           = var.firewall_policies
+  firewall_policy_attachments = var.firewall_policy_attachments
 }
