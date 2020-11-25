@@ -14,17 +14,7 @@
  * limitations under the License.
  */
 
-{{- $fullName := include "iap-connector.fullname" . -}}
-{{- $name := include "iap-connector.name" . -}}
-{{- $labels := include "iap-connector.labels" . -}}
-{{- $releaseName := .Release.Name -}}
-{{- $client_id := .Values.oauth.client.id -}}
-{{- $client_secret := .Values.oauth.client.secret -}}
----
-apiVersion: v1
-kind: Secret
-metadata:
-  name: {{ $fullName }}-secret
-data:
-  client_id: {{ $client_id }}
-  client_secret: {{ $client_secret }}
+output "name" {
+  value      = var.name
+  depends_on = [google_compute_global_address.address, google_compute_managed_ssl_certificate.cert]
+}

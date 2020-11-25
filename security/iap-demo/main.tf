@@ -28,27 +28,28 @@ locals {
   ]
 }
 
-
 # Project where resources will be created
-module "project-iap" {
+module "project" {
   source          = "../../modules/project"
   parent          = var.root_node
   billing_account = var.billing_account_id
   name            = var.project_id
+  project_create  = var.project_create
   services        = local.project_services
-  iam_roles = [
-    "roles/owner"
-  ]
-  iam_members = {
+  service_config = {
+    disable_on_destroy         = false,
+    disable_dependent_services = false
+  }
+  iam_additive = {
     "roles/owner" = var.project_owners
   }
 }
 
 // # ACM Access Level for corp. managed devices only.
 // module "level-device-corp-owned" {
-//   source = "../../modules/acm-level-basic"
+//   source = "../../modules/iap/acm-level-basic"
 //   policy = var.policy_name
-//   project_id = module.project-iap.project_id
+//   project_id = module.project.project_id
 //   title  = var.name
 
 //   device_policies = {
@@ -58,17 +59,17 @@ module "project-iap" {
 
 # Cloud IAP Brand & Client
 module "iap-brand" {
-  source        = "../../modules/iap-brand"
-  project_id    = module.project-iap.project_id
+  source        = "../../modules/iap/iap-brand"
+  project_id    = module.project.project_id
   support_email = var.support_email
 }
 
 # Google-managed Certificate
 module "cert" {
-  source     = "../../modules/google-cert"
+  source     = "../../modules/iap/google-cert"
   domains    = var.cert_domains
   name       = var.cert_name
-  project_id = module.project-iap.project_id
+  project_id = module.project.project_id
 }
 
 # VPC Network
@@ -76,16 +77,16 @@ module "vpc" {
   source = "../../modules/net-vpc"
 
   name       = var.name
-  project_id = module.project-iap.project_id
+  project_id = module.project.project_id
 
   subnets = [
     {
-      ip_cidr_range = var.range_nodes
+      ip_cidr_range = var.gke_ranges.nodes
       name          = var.name
       region        = var.region
       secondary_ip_range = {
-        pods     = var.range_pods
-        services = var.range_services
+        pods     = var.gke_ranges.pods
+        services = var.gke_ranges.services
       }
     },
   ]
@@ -97,7 +98,7 @@ module "vpn_ha" {
 
   network    = module.vpc.self_link
   name       = "${var.name}-to-onprem"
-  project_id = module.project-iap.project_id
+  project_id = module.project.project_id
   region     = var.region
   router_asn = var.asn_local
 
@@ -148,7 +149,7 @@ module "nat" {
   source = "../../modules/net-cloudnat"
 
   name           = var.name
-  project_id     = module.project-iap.project_id
+  project_id     = module.project.project_id
   region         = var.region
   router_create  = false
   router_name    = module.vpn_ha.router_name
@@ -163,17 +164,17 @@ module "dns" {
   domain          = var.dns_zone
   forwarders      = var.dns_resolvers
   name            = var.name
-  project_id      = module.project-iap.project_id
+  project_id      = module.project.project_id
   type            = "forwarding"
 }
 
 # Service account for the GKE nodes
 module "gke-sa" {
-  source     = "../../modules/iam-service-accounts"
-  project_id = module.project-iap.project_id
-  names      = ["gke-node"]
+  source     = "../../modules/iam-service-account"
+  project_id = module.project.project_id
+  name       = "gke-node"
   iam_project_roles = {
-    (module.project-iap.project_id) = [
+    (var.project_id) = [
       "roles/logging.logWriter",
       "roles/monitoring.metricWriter",
     ]
@@ -184,7 +185,7 @@ module "gke-sa" {
 module "gke-cluster" {
   source                    = "../../modules/gke-cluster"
   name                      = var.name
-  project_id                = module.project-iap.project_id
+  project_id                = module.project.project_id
   location                  = var.region
   network                   = module.vpc.self_link
   subnetwork                = module.vpc.subnet_self_links["${var.region}/${var.name}"]
@@ -193,29 +194,29 @@ module "gke-cluster" {
   default_max_pods_per_node = 32
 
   master_authorized_ranges = {
-    "allowed" = var.master_authorized_ranges
+    "allowed" = var.gke_ranges.master_authorized_ranges
   }
 
   private_cluster_config = {
     enable_private_nodes    = true
     enable_private_endpoint = false
-    master_ipv4_cidr_block  = var.range_master
+    master_ipv4_cidr_block  = var.gke_ranges.master
   }
 }
 
 # GKE nodepool
 module "gke-nodepool" {
-  source                      = "../../modules/gke-nodepool"
-  name                        = var.name
-  project_id                  = module.project-iap.project_id
-  location                    = module.gke-cluster.location
-  cluster_name                = module.gke-cluster.name
-  node_config_service_account = module.gke-sa.email
+  source               = "../../modules/gke-nodepool"
+  name                 = var.name
+  project_id           = module.project.project_id
+  location             = module.gke-cluster.location
+  cluster_name         = module.gke-cluster.name
+  node_service_account = module.gke-sa.email
 }
 
 # IAP connector
 module "connector" {
-  source = "../../modules/iap-connector"
+  source = "../../modules/iap/iap-connector"
 
   address_name        = module.cert.name
   cert_name           = module.cert.name
@@ -224,5 +225,5 @@ module "connector" {
   mappings            = var.mappings
   name                = var.name
   web_user_principals = var.web_user_principals
-  project_id          = module.project-iap.project_id
+  project_id          = module.project.project_id
 }

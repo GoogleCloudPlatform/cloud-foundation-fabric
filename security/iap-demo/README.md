@@ -153,7 +153,7 @@ The following list of parameters can be defined.
 ## Troubleshooting
 
 * The following Terraform dependency is not properly detected, which can lead to issues when updating/destroying projects/<project-id>/global/targetHttpsProxies/k8s-tps-default-iap-connector-ingress--46ad5a296bf9a1b7 -> projects/<project-id>/global/sslCertificates/iap-demo.
-* Terraform can't keep track of the google_iap_brand resource. This has a consequence that in case of a destroy, a recreation will fail because the resource will have been destroyed locally, but it will keep existing in GCP (https://www.terraform.io/docs/providers/google/r/iap_brand.html). Terraform-importing the brand doesn't work out of the box, so recreating the project is the best option.
+* Terraform can't keep track of the google_iap_brand resource. This has a consequence that in case of a destroy, a recreation will fail because the resource will have been destroyed locally, but it will keep existing in GCP (https://www.terraform.io/docs/providers/google/r/iap_brand.html). Terraform-importing the brand doesn't work out of the box, so recreating the project is the easiest option.
 * The IAP connector can take longer than 5 minutes to create, which can lead to terraform failing on creation. Reapplying fixes this problem.
 * Destroying and recreating the module.connector.helm_release.iap_connector might require a manual pause in-between because kubectl will return before the resources are actually fully destroyed.
 * Please keep in mind that Cloud DNS [doesn't support routes for 35.199.192.0/19](https://cloud.google.com/vpc/docs/routes#cloud-dns). For this reason, the name servers can only be located in the *same* VPC network or the on-premises network.

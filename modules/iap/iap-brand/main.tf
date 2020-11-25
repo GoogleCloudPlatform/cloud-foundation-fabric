@@ -14,7 +14,15 @@
  * limitations under the License.
  */
 
-output "name" {
-  value      = local.name
-  depends_on = [google_compute_global_address.address, google_compute_managed_ssl_certificate.cert]
+resource "google_iap_brand" "brand" {
+  application_title = var.application_title
+  project           = var.project_id  
+  support_email     = var.support_email
+}
+
+resource "google_iap_client" "client" {
+  count        = var.create_client ? 1 : 0
+
+  display_name = var.client_name
+  brand        = google_iap_brand.brand.name
 }

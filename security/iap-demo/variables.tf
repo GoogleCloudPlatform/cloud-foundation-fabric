@@ -45,7 +45,7 @@ variable "dns_zone" {
 }
 
 variable "dns_resolvers" {
-  type        = list(string)
+  type        = map(string)
   description = "List of remote (on-prem) DNS resolvers to forward requests to. The name servers can be located in the same VPC network or the on-premises network."
 }
 
@@ -56,11 +56,6 @@ variable "mappings" {
     destination = string
   }))
   description = "List of mappings between frontend and backend URLs. Backend urls are the destination urls. The source domain name identifies which inbound requests will be forwarded to on-prem."
-}
-
-variable "master_authorized_ranges" {
-  type        = string
-  description = "IP range authorized to contact the GKE master. It can be 0.0.0.0/0, but its strongly recommended to set it to trusted IPs that will manage the cluster."
 }
 
 variable "name" {
@@ -85,29 +80,32 @@ variable "project_owners" {
   type        = list(string)
 }
 
+variable "project_create" {
+  description = "Create project instead of using an existing one."
+  type        = bool
+  default     = false
+}
+
 variable "project_id" {
+  description = "Project id that references existing project."
   type        = string
-  description = "Project ID where resources will be deployed. The project will be created."
 }
 
-variable "range_master" {
-  type        = string
-  description = "RFC1918 IP range to be used for the GKE master. Must be at least a /28."
-}
-
-variable "range_nodes" {
-  type        = string
-  description = "RFC1918 IP range to be used for the GKE nodes."
-}
-
-variable "range_pods" {
-  type        = string
-  description = "RFC1918 IP range to be used for the GKE pods."
-}
-
-variable "range_services" {
-  type        = string
-  description = "RFC1918 IP range to be used for the GKE services."
+variable "gke_ranges" {
+  type = object({
+    master = string
+    nodes = string
+    pods = string
+    services = string
+    master_authorized_ranges = string
+  })
+  description = <<EOF
+* master: RFC1918 IP range to be used for the GKE master. Must be at least a /28.
+* nodes: RFC1918 IP range to be used for the GKE nodes.
+* pods: RFC1918 IP range to be used for the GKE pods.
+* services: RFC1918 IP range to be used for the GKE services.
+* master_authorized_ranges: IP range authorized to contact the GKE master. It can be 0.0.0.0/0, but its strongly recommended to set it to trusted IPs that will manage the cluster.
+EOF
 }
 
 variable "region" {
