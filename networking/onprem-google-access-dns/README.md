@@ -135,7 +135,7 @@ dig gw.onprem.example.org +short
 10.0.16.1
 
 # test a request to the onprem web server
-curl www.onprem.example.com -s |grep h1
+curl www.onprem.example.org -s |grep h1
 <h1>On Prem in a Box</h1>
 ```
 
