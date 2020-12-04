@@ -98,3 +98,20 @@ variable "firewall_policy_attachments" {
   type    = map(string)
   default = {}
 }
+
+variable "logging_sinks" {
+  description = "Logging sinks to create for this organization."
+  type = map(object({
+    destination = string
+    type        = string
+    filter      = string
+    grant       = bool
+  }))
+  default = {}
+}
+
+variable "logging_exclusions" {
+  description = "Logging exclusions for this organization in the form {NAME -> FILTER}."
+  type        = map(string)
+  default     = {}
+}
