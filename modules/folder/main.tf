@@ -41,23 +41,34 @@ locals {
       if sink.grant && sink.type == type
     }
   }
+  folder = (
+    var.folder_create
+    ? try(google_folder.folder.0, null)
+    : try(data.google_folder.folder.0, null)
+  )
+}
+
+data "google_folder" "folder" {
+  count  = var.folder_create ? 0 : 1
+  folder = var.id
 }
 
 resource "google_folder" "folder" {
+  count        = var.folder_create ? 1 : 0
   display_name = var.name
   parent       = var.parent
 }
 
 resource "google_folder_iam_binding" "authoritative" {
   for_each = var.iam
-  folder   = google_folder.folder.name
+  folder   = local.folder.name
   role     = each.key
   members  = each.value
 }
 
 resource "google_folder_organization_policy" "boolean" {
   for_each   = var.policy_boolean
-  folder     = google_folder.folder.name
+  folder     = local.folder.name
   constraint = each.key
 
   dynamic boolean_policy {
@@ -78,7 +89,7 @@ resource "google_folder_organization_policy" "boolean" {
 
 resource "google_folder_organization_policy" "list" {
   for_each   = var.policy_list
-  folder     = google_folder.folder.name
+  folder     = local.folder.name
   constraint = each.key
 
   dynamic list_policy {
@@ -133,7 +144,7 @@ resource "google_compute_organization_security_policy" "policy" {
   for_each = var.firewall_policies
 
   display_name = each.key
-  parent       = google_folder.folder.id
+  parent       = local.folder.id
 }
 
 resource "google_compute_organization_security_policy_rule" "rule" {
@@ -168,8 +179,8 @@ resource "google_compute_organization_security_policy_rule" "rule" {
 resource "google_compute_organization_security_policy_association" "attachment" {
   provider      = google-beta
   for_each      = var.firewall_policy_attachments
-  name          = "${google_folder.folder.id}-${each.key}"
-  attachment_id = google_folder.folder.id
+  name          = "${local.folder.id}-${each.key}"
+  attachment_id = local.folder.id
   policy_id     = each.value
 }
 
@@ -177,7 +188,7 @@ resource "google_logging_folder_sink" "sink" {
   for_each = local.logging_sinks
   name     = each.key
   #description = "${each.key} (Terraform-managed)"
-  folder      = google_folder.folder.name
+  folder      = local.folder.name
   destination = "${local.sink_type_destination[each.value.type]}/${each.value.destination}"
   filter      = each.value.filter
 }
@@ -215,7 +226,7 @@ resource "google_pubsub_topic_iam_binding" "pubsub-sinks-binding" {
 resource "google_logging_folder_exclusion" "logging-exclusion" {
   for_each    = coalesce(var.logging_exclusions, {})
   name        = each.key
-  folder      = google_folder.folder.name
+  folder      = local.folder.name
   description = "${each.key} (Terraform-managed)"
   filter      = each.value
 }

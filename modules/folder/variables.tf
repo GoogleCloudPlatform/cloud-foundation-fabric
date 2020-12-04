@@ -23,13 +23,15 @@ variable "iam" {
 variable "name" {
   description = "Folder name."
   type        = string
+  default     = null
 }
 
 variable "parent" {
   description = "Parent in folders/folder_id or organizations/org_id format."
   type        = string
+  default     = null
   validation {
-    condition     = can(regex("(organizations|folders)/[0-9]+", var.parent))
+    condition     = var.parent == null || can(regex("(organizations|folders)/[0-9]+", var.parent))
     error_message = "Parent must be of the form folders/folder_id or organizations/organization_id."
   }
 }
@@ -88,4 +90,16 @@ variable "logging_exclusions" {
   description = "Logging exclusions for this folder in the form {NAME -> FILTER}."
   type        = map(string)
   default     = {}
+}
+
+variable "folder_create" {
+  description = "Create folder. When set to false, uses id to reference an existing folder."
+  type        = bool
+  default     = true
+}
+
+variable "id" {
+  description = "Folder ID in case you use folder_create=false"
+  type        = string
+  default     = null
 }
