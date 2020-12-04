@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+- add support for creating logging sinks and logging exclusions in the `project`, `folder` and `organization` modules
 
 ## [4.2.0] - 2020-11-25
 
