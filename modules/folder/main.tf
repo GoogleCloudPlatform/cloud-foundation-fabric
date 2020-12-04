@@ -25,6 +25,22 @@ locals {
     for rule in local.extended_rules :
     "${rule.policy}-${rule.name}" => rule
   }
+  logging_sinks = coalesce(var.logging_sinks, {})
+  sink_type_destination = {
+    gcs      = "storage.googleapis.com"
+    bigquery = "bigquery.googleapis.com"
+    pubsub   = "pubsub.googleapis.com"
+    # TODO: add logging buckets support
+    # logging  = "logging.googleapis.com"
+  }
+  sink_bindings = {
+    for type in ["gcs", "bigquery", "pubsub", "logging"] :
+    type => {
+      for name, sink in local.logging_sinks :
+      name => sink
+      if sink.grant && sink.type == type
+    }
+  }
 }
 
 resource "google_folder" "folder" {
@@ -155,4 +171,51 @@ resource "google_compute_organization_security_policy_association" "attachment" 
   name          = "${google_folder.folder.id}-${each.key}"
   attachment_id = google_folder.folder.id
   policy_id     = each.value
+}
+
+resource "google_logging_folder_sink" "sink" {
+  for_each = local.logging_sinks
+  name     = each.key
+  #description = "${each.key} (Terraform-managed)"
+  folder      = google_folder.folder.name
+  destination = "${local.sink_type_destination[each.value.type]}/${each.value.destination}"
+  filter      = each.value.filter
+}
+
+resource "google_storage_bucket_iam_binding" "gcs-sinks-binding" {
+  for_each = local.sink_bindings["gcs"]
+  bucket   = each.value.destination
+  role     = "roles/storage.objectCreator"
+  members  = [google_logging_folder_sink.sink[each.key].writer_identity]
+}
+
+resource "google_bigquery_dataset_iam_binding" "bq-sinks-binding" {
+  for_each   = local.sink_bindings["bigquery"]
+  project    = split("/", each.value.destination)[1]
+  dataset_id = split("/", each.value.destination)[3]
+  role       = "roles/bigquery.dataEditor"
+  members    = [google_logging_folder_sink.sink[each.key].writer_identity]
+}
+
+resource "google_pubsub_topic_iam_binding" "pubsub-sinks-binding" {
+  for_each = local.sink_bindings["pubsub"]
+  project  = split("/", each.value.destination)[1]
+  topic    = split("/", each.value.destination)[3]
+  role     = "roles/pubsub.publisher"
+  members  = [google_logging_folder_sink.sink[each.key].writer_identity]
+}
+
+# resource "google_storage_bucket_iam_binding" "gcs-sinks-bindings" {
+#   for_each = local.sink_grants["gcs"]
+#   bucket   = each.value.destination
+#   role     = "roles/storage.objectCreator"
+#   members  = [google_logging_folder_sink.sink[each.key].writer_identity]
+# }
+
+resource "google_logging_folder_exclusion" "logging-exclusion" {
+  for_each    = coalesce(var.logging_exclusions, {})
+  name        = each.key
+  folder      = google_folder.folder.name
+  description = "${each.key} (Terraform-managed)"
+  filter      = each.value
 }

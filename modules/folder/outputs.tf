@@ -49,3 +49,10 @@ output "firewall_policy_id" {
     name => google_compute_organization_security_policy.policy[name].id
   }
 }
+
+output "sink_writer_identities" {
+  description = ""
+  value = {
+    for name, sink in google_logging_folder_sink.sink : name => sink.writer_identity
+  }
+}

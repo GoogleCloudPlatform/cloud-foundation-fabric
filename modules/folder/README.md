@@ -41,6 +41,59 @@ module "folder" {
 # tftest:modules=1:resources=4
 ```
 
+### Logging Sinks
+
+```hcl
+module "gcs" {
+  source        = "./modules/gcs"
+  project_id    = "my-project"
+  name          = "gcs_sink"
+  force_destroy = true
+}
+
+module "dataset" {
+  source     = "./modules/bigquery-dataset"
+  project_id = "my-project"
+  id         = "bq_sink"
+}
+
+module "pubsub" {
+  source     = "./modules/pubsub"
+  project_id = "my-project"
+  name       = "pubsub_sink"
+}
+
+module "folder-sink" {
+  source = "./modules/folder"
+  parent = "folders/657104291943"
+  name   = "my-folder"
+  logging_sinks = {
+    warnings = {
+      type        = "gcs"
+      destination = module.gcs.name
+      filter      = "severity=WARNING"
+      grant       = false
+    }
+    info = {
+      type        = "bigquery"
+      destination = module.dataset.id
+      filter      = "severity=INFO"
+      grant       = false
+    }
+    notice = {
+      type        = "pubsub"
+      destination = module.pubsub.id
+      filter      = "severity=NOTICE"
+      grant       = true
+    }
+  }
+  logging_exclusions = {
+    no-gce-instances = "resource.type=gce_instance"
+  }
+}
+# tftest:modules=4:resources=9
+```
+
 ### Hierarchical firewall policies
 
 ```hcl
@@ -93,6 +146,8 @@ module "folder2" {
 | *firewall_policies* | Hierarchical firewall policies to *create* in this folder. | <code title="map&#40;map&#40;object&#40;&#123;&#10;description             &#61; string&#10;direction               &#61; string&#10;action                  &#61; string&#10;priority                &#61; number&#10;ranges                  &#61; list&#40;string&#41;&#10;ports                   &#61; map&#40;list&#40;string&#41;&#41;&#10;target_service_accounts &#61; list&#40;string&#41;&#10;target_resources        &#61; list&#40;string&#41;&#10;logging                 &#61; bool&#10;&#125;&#41;&#41;&#41;">map(map(object({...})))</code> |  | <code title="">{}</code> |
 | *firewall_policy_attachments* | List of hierarchical firewall policy IDs to *attach* to this folder. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
 | *iam* | IAM bindings in {ROLE => [MEMBERS]} format. | <code title="map&#40;set&#40;string&#41;&#41;">map(set(string))</code> |  | <code title="">{}</code> |
+| *logging_exclusions* | Logging exclusions for this folder in the form {NAME -> FILTER}. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
+| *logging_sinks* | Logging sinks to create for this folder. | <code title="map&#40;object&#40;&#123;&#10;destination &#61; string&#10;type &#61; string&#10;filter      &#61; string&#10;grant       &#61; bool&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
 | *policy_boolean* | Map of boolean org policies and enforcement value, set value to null for policy restore. | <code title="map&#40;bool&#41;">map(bool)</code> |  | <code title="">{}</code> |
 | *policy_list* | Map of list org policies, status is true for allow, false for deny, null for restore. Values can only be used for allow or deny. | <code title="map&#40;object&#40;&#123;&#10;inherit_from_parent &#61; bool&#10;suggested_value     &#61; string&#10;status              &#61; bool&#10;values              &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
 
@@ -105,4 +160,5 @@ module "folder2" {
 | folder | Folder resource. |  |
 | id | Folder id. |  |
 | name | Folder name. |  |
+| sink_writer_identities | None |  |
 <!-- END TFDOC -->
