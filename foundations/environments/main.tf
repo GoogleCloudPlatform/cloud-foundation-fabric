@@ -127,20 +127,22 @@ module "audit-dataset" {
   }
 }
 
-module "root_org" {
-  count           = local.root_node_type == "organizations" ? 1 : 0
-  source          = "../../modules/organization"
-  organization_id = var.root_node
-  logging_sinks   = local.logging_sinks
-}
+# uncomment the next two modules to create the logging sinks
 
-module "root_folder" {
-  count         = local.root_node_type == "folders" ? 1 : 0
-  source        = "../../modules/folder"
-  id            = var.root_node
-  folder_create = false
-  logging_sinks = local.logging_sinks
-}
+# module "root_org" {
+#   count           = local.root_node_type == "organizations" ? 1 : 0
+#   source          = "../../modules/organization"
+#   organization_id = var.root_node
+#   logging_sinks   = local.logging_sinks
+# }
+
+# module "root_folder" {
+#   count         = local.root_node_type == "folders" ? 1 : 0
+#   source        = "../../modules/folder"
+#   id            = var.root_node
+#   folder_create = false
+#   logging_sinks = local.logging_sinks
+# }
 
 
 ###############################################################################
