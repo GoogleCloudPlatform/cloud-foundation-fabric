@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+variable "confidential_compute" {
+  type    = bool
+  default = false
+}
+
 variable "group" {
   type    = any
   default = null
