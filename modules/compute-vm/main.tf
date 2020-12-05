@@ -219,6 +219,7 @@ resource "google_compute_instance_iam_binding" "default" {
 }
 
 resource "google_compute_instance_template" "default" {
+  provider         = google-beta
   count            = var.use_instance_template ? 1 : 0
   project          = var.project_id
   region           = var.region
@@ -236,6 +237,13 @@ resource "google_compute_instance_template" "default" {
     disk_type    = var.boot_disk.type
     disk_size_gb = var.boot_disk.size
     boot         = true
+  }
+
+  dynamic confidential_instance_config {
+    for_each = var.confidential_compute ? [""] : []
+    content {
+      enable_confidential_compute = true
+    }
   }
 
   dynamic disk {
@@ -268,7 +276,7 @@ resource "google_compute_instance_template" "default" {
 
   scheduling {
     automatic_restart   = ! var.options.preemptible
-    on_host_maintenance = var.options.preemptible ? "TERMINATE" : "MIGRATE"
+    on_host_maintenance = local.on_host_maintenance
     preemptible         = var.options.preemptible
   }
 

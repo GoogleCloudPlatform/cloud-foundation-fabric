@@ -84,3 +84,13 @@ def test_confidential_compute(plan_runner):
   assert resources[0]['values']['confidential_instance_config'] == [
       {'enable_confidential_compute': True}]
   assert resources[0]['values']['scheduling'][0]['on_host_maintenance'] == 'TERMINATE'
+
+
+def test_confidential_compute_template(plan_runner):
+  _, resources = plan_runner(FIXTURES_DIR, instance_count=1,
+                             confidential_compute='true',
+                             use_instance_template='true')
+  assert len(resources) == 1
+  assert resources[0]['values']['confidential_instance_config'] == [
+      {'enable_confidential_compute': True}]
+  assert resources[0]['values']['scheduling'][0]['on_host_maintenance'] == 'TERMINATE'
