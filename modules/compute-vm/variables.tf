@@ -66,6 +66,12 @@ variable "can_ip_forward" {
   default     = false
 }
 
+variable "confidential_compute" {
+  description = "Enable Confidential Compute for these instances."
+  type        = bool
+  default     = false
+}
+
 variable "encryption" {
   description = "Encryption options. Only one of kms_key_self_link and disk_encryption_key_raw may be set. If needed, you can specify to encrypt or not the boot disk."
   type = object({

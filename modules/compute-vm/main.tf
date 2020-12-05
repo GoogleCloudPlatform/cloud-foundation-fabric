@@ -25,6 +25,11 @@ locals {
     for pair in setproduct(keys(local.names), keys(local.attached_disks)) :
     "${pair[0]}-${pair[1]}" => { disk_name = pair[1], name = pair[0] }
   }
+  on_host_maintenance = (
+    var.options.preemptible || var.confidential_compute
+    ? "TERMINATE"
+    : "MIGRATE"
+  )
   iam_members = var.use_instance_template ? {} : {
     for pair in setproduct(keys(var.iam), keys(local.names)) :
     "${pair.0}/${pair.1}" => { role = pair.0, name = pair.1, members = var.iam[pair.0] }
@@ -89,6 +94,7 @@ resource "google_compute_disk" "disks" {
 }
 
 resource "google_compute_instance" "default" {
+  provider                  = google-beta
   for_each                  = var.use_instance_template ? {} : local.names
   project                   = var.project_id
   zone                      = local.zones[each.key]
@@ -130,6 +136,13 @@ resource "google_compute_instance" "default" {
     kms_key_self_link       = var.encryption != null ? var.encryption.kms_key_self_link : null
   }
 
+  dynamic confidential_instance_config {
+    for_each = var.confidential_compute ? [""] : []
+    content {
+      enable_confidential_compute = true
+    }
+  }
+
   dynamic network_interface {
     for_each = var.network_interfaces
     iterator = config
@@ -163,7 +176,7 @@ resource "google_compute_instance" "default" {
 
   scheduling {
     automatic_restart   = ! var.options.preemptible
-    on_host_maintenance = var.options.preemptible ? "TERMINATE" : "MIGRATE"
+    on_host_maintenance = local.on_host_maintenance
     preemptible         = var.options.preemptible
   }
 
@@ -206,6 +219,7 @@ resource "google_compute_instance_iam_binding" "default" {
 }
 
 resource "google_compute_instance_template" "default" {
+  provider         = google-beta
   count            = var.use_instance_template ? 1 : 0
   project          = var.project_id
   region           = var.region
@@ -223,6 +237,13 @@ resource "google_compute_instance_template" "default" {
     disk_type    = var.boot_disk.type
     disk_size_gb = var.boot_disk.size
     boot         = true
+  }
+
+  dynamic confidential_instance_config {
+    for_each = var.confidential_compute ? [""] : []
+    content {
+      enable_confidential_compute = true
+    }
   }
 
   dynamic disk {
@@ -255,7 +276,7 @@ resource "google_compute_instance_template" "default" {
 
   scheduling {
     automatic_restart   = ! var.options.preemptible
-    on_host_maintenance = var.options.preemptible ? "TERMINATE" : "MIGRATE"
+    on_host_maintenance = local.on_host_maintenance
     preemptible         = var.options.preemptible
   }
 

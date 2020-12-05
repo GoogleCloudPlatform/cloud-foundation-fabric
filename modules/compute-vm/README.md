@@ -9,7 +9,7 @@ In both modes, an optional service account can be created and assigned to either
 
 ## Examples
 
-### Instance leveraging defaults
+### Instance using defaults
 
 The simplest example leverages defaults for the boot disk image and size, and uses a service account created by the module. Multiple instances can be managed via the `instance_count` variable.
 
@@ -189,6 +189,7 @@ module "instance-group" {
 | *attached_disks* | Additional disks, if options is null defaults will be used in its place. | <code title="list&#40;object&#40;&#123;&#10;name  &#61; string&#10;image &#61; string&#10;size  &#61; string&#10;options &#61; object&#40;&#123;&#10;auto_delete &#61; bool&#10;mode        &#61; string&#10;source      &#61; string&#10;type &#61; string&#10;&#125;&#41;&#10;&#125;&#41;&#41;">list(object({...}))</code> |  | <code title="">[]</code> |
 | *boot_disk* | Boot disk properties. | <code title="object&#40;&#123;&#10;image &#61; string&#10;size  &#61; number&#10;type &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;image &#61; &#34;projects&#47;debian-cloud&#47;global&#47;images&#47;family&#47;debian-10&#34;&#10;type &#61; &#34;pd-ssd&#34;&#10;size  &#61; 10&#10;&#125;">...</code> |
 | *can_ip_forward* | Enable IP forwarding. | <code title="">bool</code> |  | <code title="">false</code> |
+| *confidential_compute* | Enable Confidential Compute for these instances. | <code title="">bool</code> |  | <code title="">false</code> |
 | *enable_display* | Enable virtual display on the instances | <code title="">bool</code> |  | <code title="">false</code> |
 | *encryption* | Encryption options. Only one of kms_key_self_link and disk_encryption_key_raw may be set. If needed, you can specify to encrypt or not the boot disk. | <code title="object&#40;&#123;&#10;encrypt_boot            &#61; bool&#10;disk_encryption_key_raw &#61; string&#10;kms_key_self_link       &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 | *group* | Define this variable to create an instance group for instances. Disabled for template use. | <code title="object&#40;&#123;&#10;named_ports &#61; map&#40;number&#41;&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |

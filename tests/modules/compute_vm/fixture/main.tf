@@ -24,6 +24,7 @@ module "test" {
   service_account_create = var.service_account_create
   instance_count         = var.instance_count
   use_instance_template  = var.use_instance_template
+  confidential_compute   = var.confidential_compute
   group                  = var.group
   iam                    = var.iam
   metadata               = var.metadata
