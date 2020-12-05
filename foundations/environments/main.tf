@@ -105,8 +105,7 @@ module "audit-project" {
   prefix          = var.prefix
   billing_account = var.billing_account_id
   iam = {
-    "roles/bigquery.dataEditor" = [module.audit-log-sinks.writer_identities[0]]
-    "roles/viewer"              = var.iam_audit_viewers
+    "roles/viewer" = var.iam_audit_viewers
   }
   services = concat(var.project_services, [
     "bigquery.googleapis.com",
@@ -128,16 +127,21 @@ module "audit-dataset" {
   }
 }
 
-module "audit-log-sinks" {
-  source = "../../modules/logging-sinks"
-  parent = var.root_node
-  destinations = {
-    audit-logs = "bigquery.googleapis.com/${module.audit-dataset.id}"
-  }
-  sinks = {
-    audit-logs = var.audit_filter
-  }
+module "root_org" {
+  count           = local.root_node_type == "organizations" ? 1 : 0
+  source          = "../../modules/organization"
+  organization_id = var.root_node
+  logging_sinks   = local.logging_sinks
 }
+
+module "root_folder" {
+  count         = local.root_node_type == "folders" ? 1 : 0
+  source        = "../../modules/folder"
+  id            = var.root_node
+  folder_create = false
+  logging_sinks = local.logging_sinks
+}
+
 
 ###############################################################################
 #                    Shared resources (GCR, GCS, KMS, etc.)                   #

@@ -26,12 +26,12 @@ BASEDIR = os.path.dirname(os.path.dirname(__file__))
 def _plan_runner():
   "Returns a function to run Terraform plan on a fixture."
 
-  def run_plan(fixture_path, targets=None, **tf_vars):
+  def run_plan(fixture_path, targets=None, refresh=True, **tf_vars):
     "Runs Terraform plan and returns parsed output."
     tf = tftest.TerraformTest(fixture_path, BASEDIR,
                               os.environ.get('TERRAFORM', 'terraform'))
     tf.setup()
-    return tf.plan(output=True, tf_vars=tf_vars, targets=targets)
+    return tf.plan(output=True, refresh=refresh, tf_vars=tf_vars, targets=targets)
 
   return run_plan
 
@@ -54,9 +54,9 @@ def plan_runner(_plan_runner):
 def e2e_plan_runner(_plan_runner):
   "Returns a function to run Terraform plan on an end-to-end fixture."
 
-  def run_plan(fixture_path, targets=None, **tf_vars):
+  def run_plan(fixture_path, targets=None, refresh=True, **tf_vars):
     "Runs Terraform plan on an end-to-end module using defaults, returns data."
-    plan = _plan_runner(fixture_path, targets=targets, **tf_vars)
+    plan = _plan_runner(fixture_path, targets=targets, refresh=refresh, **tf_vars)
     # skip the fixture
     root_module = plan.root_module['child_modules'][0]
     modules = dict((mod['address'], mod['resources'])
