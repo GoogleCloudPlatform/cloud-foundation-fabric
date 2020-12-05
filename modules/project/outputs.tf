@@ -64,3 +64,10 @@ output "custom_roles" {
     name => role.id
   }
 }
+
+output "sink_writer_identities" {
+  description = ""
+  value = {
+    for name, sink in google_logging_project_sink.sink : name => sink.writer_identity
+  }
+}

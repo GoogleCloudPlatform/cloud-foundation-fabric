@@ -59,6 +59,59 @@ module "org" {
 # tftest:modules=1:resources=3
 ```
 
+## Logging Sinks
+```hcl
+module "gcs" {
+  source        = "./modules/gcs"
+  project_id    = var.project_id
+  name          = "gcs_sink"
+  force_destroy = true
+}
+
+module "dataset" {
+  source     = "./modules/bigquery-dataset"
+  project_id = var.project_id
+  id         = "bq_sink"
+}
+
+module "pubsub" {
+  source     = "./modules/pubsub"
+  project_id = var.project_id
+  name       = "pubsub_sink"
+}
+
+module "org" {
+  source          = "./modules/organization"
+  organization_id = var.organization_id
+
+  logging_sinks = {
+    warnings = {
+      type        = "gcs"
+      destination = module.gcs.name
+      filter      = "severity=WARNING"
+      grant       = false
+    }
+    info = {
+      type        = "bigquery"
+      destination = module.dataset.id
+      filter      = "severity=INFO"
+      grant       = false
+    }
+    notice = {
+      type        = "pubsub"
+      destination = module.pubsub.id
+      filter      = "severity=NOTICE"
+      grant       = true
+    }
+  }
+  logging_exclusions = {
+    no-gce-instances = "resource.type=gce_instance"
+  }
+}
+# tftest:modules=4:resources=8
+```
+
+
 <!-- BEGIN TFDOC -->
 ## Variables
 
@@ -72,6 +125,8 @@ module "org" {
 | *iam_additive* | Non authoritative IAM bindings, in {ROLE => [MEMBERS]} format. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
 | *iam_additive_members* | IAM additive bindings in {MEMBERS => [ROLE]} format. This might break if members are dynamic values. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
 | *iam_audit_config* | Service audit logging configuration. Service as key, map of log permission (eg DATA_READ) and excluded members as value for each service. | <code title="map&#40;map&#40;list&#40;string&#41;&#41;&#41;">map(map(list(string)))</code> |  | <code title="">{}</code> |
+| *logging_exclusions* | Logging exclusions for this organization in the form {NAME -> FILTER}. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
+| *logging_sinks* | Logging sinks to create for this organization. | <code title="map&#40;object&#40;&#123;&#10;destination &#61; string&#10;type &#61; string&#10;filter      &#61; string&#10;grant       &#61; bool&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
 | *policy_boolean* | Map of boolean org policies and enforcement value, set value to null for policy restore. | <code title="map&#40;bool&#41;">map(bool)</code> |  | <code title="">{}</code> |
 | *policy_list* | Map of list org policies, status is true for allow, false for deny, null for restore. Values can only be used for allow or deny. | <code title="map&#40;object&#40;&#123;&#10;inherit_from_parent &#61; bool&#10;suggested_value     &#61; string&#10;status              &#61; bool&#10;values              &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
 
@@ -82,4 +137,5 @@ module "org" {
 | firewall_policies | Map of firewall policy resources created in the organization. |  |
 | firewall_policy_id | Map of firewall policy ids created in the organization. |  |
 | organization_id | Organization id dependent on module resources. |  |
+| sink_writer_identities | None |  |
 <!-- END TFDOC -->

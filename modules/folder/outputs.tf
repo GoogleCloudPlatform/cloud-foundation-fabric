@@ -16,12 +16,12 @@
 
 output "folder" {
   description = "Folder resource."
-  value       = google_folder.folder
+  value       = local.folder
 }
 
 output "id" {
   description = "Folder id."
-  value       = google_folder.folder.name
+  value       = local.folder.name
   depends_on = [
     google_folder_iam_binding.authoritative,
     google_folder_organization_policy.boolean,
@@ -31,7 +31,7 @@ output "id" {
 
 output "name" {
   description = "Folder name."
-  value       = google_folder.folder.display_name
+  value       = local.folder.display_name
 }
 
 output "firewall_policies" {
@@ -47,5 +47,12 @@ output "firewall_policy_id" {
   value = {
     for name, _ in var.firewall_policies :
     name => google_compute_organization_security_policy.policy[name].id
+  }
+}
+
+output "sink_writer_identities" {
+  description = ""
+  value = {
+    for name, sink in google_logging_folder_sink.sink : name => sink.writer_identity
   }
 }

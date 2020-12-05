@@ -84,6 +84,60 @@ module "project" {
 # tftest:modules=1:resources=6
 ```
 
+## Logging Sinks
+```hcl
+module "gcs" {
+  source        = "./modules/gcs"
+  project_id    = var.project_id
+  name          = "gcs_sink"
+  force_destroy = true
+}
+
+module "dataset" {
+  source     = "./modules/bigquery-dataset"
+  project_id = var.project_id
+  id         = "bq_sink"
+}
+
+module "pubsub" {
+  source     = "./modules/pubsub"
+  project_id = var.project_id
+  name       = "pubsub_sink"
+}
+
+module "project-host" {
+  source          = "./modules/project"
+  name            = "my-project"
+  billing_account = "123456-123456-123456"
+  parent          = "folders/1234567890"
+  logging_sinks = {
+    warnings = {
+      type        = "gcs"
+      destination = module.gcs.name
+      filter      = "severity=WARNING"
+      grant       = false
+    }
+    info = {
+      type        = "bigquery"
+      destination = module.dataset.id
+      filter      = "severity=INFO"
+      grant       = false
+    }
+    notice = {
+      type        = "pubsub"
+      destination = module.pubsub.id
+      filter      = "severity=NOTICE"
+      grant       = true
+    }
+  }
+  logging_exclusions = {
+    no-gce-instances = "resource.type=gce_instance"
+  }
+}
+# tftest:modules=4:resources=9
+```
+
+
 <!-- BEGIN TFDOC -->
 ## Variables
 
@@ -98,6 +152,8 @@ module "project" {
 | *iam_additive_members* | IAM additive bindings in {MEMBERS => [ROLE]} format. This might break if members are dynamic values. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
 | *labels* | Resource labels. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
 | *lien_reason* | If non-empty, creates a project lien with this description. | <code title="">string</code> |  | <code title=""></code> |
+| *logging_exclusions* | Logging exclusions for this project in the form {NAME -> FILTER}. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
+| *logging_sinks* | Logging sinks to create for this project. | <code title="map&#40;object&#40;&#123;&#10;destination &#61; string&#10;type &#61; string&#10;filter      &#61; string&#10;grant       &#61; bool&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
 | *oslogin* | Enable OS Login. | <code title="">bool</code> |  | <code title="">false</code> |
 | *oslogin_admins* | List of IAM-style identities that will be granted roles necessary for OS Login administrators. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 | *oslogin_users* | List of IAM-style identities that will be granted roles necessary for OS Login users. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
@@ -120,5 +176,6 @@ module "project" {
 | number | Project number. |  |
 | project_id | Project id. |  |
 | service_accounts | Product robot service accounts in project. |  |
+| sink_writer_identities | None |  |
 <!-- END TFDOC -->
 

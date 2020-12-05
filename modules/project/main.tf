@@ -37,6 +37,22 @@ locals {
     ? try(google_project.project.0, null)
     : try(data.google_project.project.0, null)
   )
+  logging_sinks = coalesce(var.logging_sinks, {})
+  sink_type_destination = {
+    gcs      = "storage.googleapis.com"
+    bigquery = "bigquery.googleapis.com"
+    pubsub   = "pubsub.googleapis.com"
+    # TODO: add logging buckets support
+    # logging  = "logging.googleapis.com"
+  }
+  sink_bindings = {
+    for type in ["gcs", "bigquery", "pubsub", "logging"] :
+    type => {
+      for name, sink in local.logging_sinks :
+      name => sink
+      if sink.grant && sink.type == type
+    }
+  }
 }
 
 data "google_project" "project" {
@@ -241,4 +257,51 @@ resource "google_compute_shared_vpc_service_project" "shared_vpc_service" {
   count           = try(var.shared_vpc_service_config.attach, false) ? 1 : 0
   host_project    = var.shared_vpc_service_config.host_project
   service_project = local.project.project_id
+}
+
+resource "google_logging_project_sink" "sink" {
+  for_each = local.logging_sinks
+  name     = each.key
+  #description = "${each.key} (Terraform-managed)"
+  project     = local.project.project_id
+  destination = "${local.sink_type_destination[each.value.type]}/${each.value.destination}"
+  filter      = each.value.filter
+}
+
+resource "google_storage_bucket_iam_binding" "gcs-sinks-binding" {
+  for_each = local.sink_bindings["gcs"]
+  bucket   = each.value.destination
+  role     = "roles/storage.objectCreator"
+  members  = [google_logging_project_sink.sink[each.key].writer_identity]
+}
+
+resource "google_bigquery_dataset_iam_binding" "bq-sinks-binding" {
+  for_each   = local.sink_bindings["bigquery"]
+  project    = split("/", each.value.destination)[1]
+  dataset_id = split("/", each.value.destination)[3]
+  role       = "roles/bigquery.dataEditor"
+  members    = [google_logging_project_sink.sink[each.key].writer_identity]
+}
+
+resource "google_pubsub_topic_iam_binding" "pubsub-sinks-binding" {
+  for_each = local.sink_bindings["pubsub"]
+  project  = split("/", each.value.destination)[1]
+  topic    = split("/", each.value.destination)[3]
+  role     = "roles/pubsub.publisher"
+  members  = [google_logging_project_sink.sink[each.key].writer_identity]
+}
+
+# resource "google_storage_bucket_iam_binding" "gcs-sinks-bindings" {
+#   for_each = local.sink_grants["gcs"]
+#   bucket   = each.value.destination
+#   role     = "roles/storage.objectCreator"
+#   members  = [google_logging_project_sink.sink[each.key].writer_identity]
+# }
+
+resource "google_logging_project_exclusion" "logging-exclusion" {
+  for_each    = coalesce(var.logging_exclusions, {})
+  name        = each.key
+  project     = local.project.project_id
+  description = "${each.key} (Terraform-managed)"
+  filter      = each.value
 }
