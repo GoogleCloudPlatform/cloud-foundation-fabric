@@ -53,7 +53,7 @@ locals {
     type => {
       for name, sink in local.logging_sinks :
       name => sink
-      if sink.grant && sink.type == type
+      if sink.iam && sink.type == type
     }
   }
 }
@@ -248,13 +248,6 @@ resource "google_pubsub_topic_iam_binding" "pubsub-sinks-binding" {
   role     = "roles/pubsub.publisher"
   members  = [google_logging_organization_sink.sink[each.key].writer_identity]
 }
-
-# resource "google_storage_bucket_iam_binding" "gcs-sinks-bindings" {
-#   for_each = local.sink_grants["gcs"]
-#   bucket   = each.value.destination
-#   role     = "roles/storage.objectCreator"
-#   members  = [google_logging_organization_sink.sink[each.key].writer_identity]
-# }
 
 resource "google_logging_organization_exclusion" "logging-exclusion" {
   for_each    = coalesce(var.logging_exclusions, {})

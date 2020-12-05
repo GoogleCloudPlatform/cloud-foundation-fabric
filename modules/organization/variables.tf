@@ -105,7 +105,7 @@ variable "logging_sinks" {
     destination = string
     type        = string
     filter      = string
-    grant       = bool
+    iam         = bool
   }))
   default = {}
 }
