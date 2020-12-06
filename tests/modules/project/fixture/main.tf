@@ -33,4 +33,6 @@ module "test" {
   policy_list          = var.policy_list
   prefix               = var.prefix
   services             = var.services
+  logging_sinks        = var.logging_sinks
+  logging_exclusions   = var.logging_exclusions
 }
