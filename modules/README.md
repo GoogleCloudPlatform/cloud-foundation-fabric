@@ -11,7 +11,6 @@ Specific modules also offer support for non-authoritative bindings (e.g. `google
 ## Foundational modules
 
 - [folder](./folder)
-- [log sinks](./logging-sinks)
 - [organization](./organization)
 - [project](./project)
 - [service account](./iam-service-account)

@@ -22,7 +22,7 @@ FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
 
 def test_folder_roles(e2e_plan_runner):
   "Test folder roles."
-  modules, _ = e2e_plan_runner(FIXTURES_DIR)
+  modules, _ = e2e_plan_runner(FIXTURES_DIR, refresh=False)
   for env in ['test', 'prod']:
     resources = modules[f'module.test.module.environment-folders["{env}"]']
     folders = [r for r in resources if r['type'] == 'google_folder']
@@ -41,7 +41,7 @@ def test_org_roles(e2e_plan_runner):
       'organization_id': 'organizations/123',
       'iam_xpn_config': '{grant = true, target_org = true}'
   }
-  modules, _ = e2e_plan_runner(FIXTURES_DIR, **tf_vars)
+  modules, _ = e2e_plan_runner(FIXTURES_DIR, refresh=False, **tf_vars)
   for env in ['test', 'prod']:
     resources = modules[f'module.test.module.environment-folders["{env}"]']
     folder_bindings = [r['index']

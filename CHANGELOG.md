@@ -3,7 +3,8 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
-- add support for creating logging sinks and logging exclusions in the `project`, `folder` and `organization` modules
+- **incompatible change** removed the `logging-sinks` module. Logging sinks can now be created the `logging_sinks` variable in the in the `project`, `folder` and `organization` modules
+- add support for creating logging exclusions in the `project`, `folder` and `organization` modules
 - add support for Confidential Compute to `compute-vm` module
 
 ## [4.2.0] - 2020-11-25

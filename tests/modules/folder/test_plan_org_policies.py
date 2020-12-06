@@ -20,8 +20,8 @@ import pytest
 FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
 
 
-def test_policy_boolean(plan_runner):
-  "Test boolean folder policy."
+def test_sink(plan_runner):
+  "Test folder-level sink."
   policy_boolean = '{policy-a = true, policy-b = false, policy-c = null}'
   _, resources = plan_runner(FIXTURES_DIR, policy_boolean=policy_boolean)
 
@@ -46,8 +46,8 @@ def test_policy_boolean(plan_runner):
   ]
 
 
-def test_policy_list(plan_runner):
-  "Test list org policy."
+def test_exclussions(plan_runner):
+  "Test folder-level logging exclusions."
   policy_list = (
       '{'
       'policy-a = {inherit_from_parent = true, suggested_value = null, status = true, values = []}, '

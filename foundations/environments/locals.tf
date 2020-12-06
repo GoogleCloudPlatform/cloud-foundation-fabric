@@ -36,4 +36,14 @@ locals {
     ||
     substr(var.root_node, 0, 13) == "organizations"
   )
+  logging_sinks = {
+    audit-logs = {
+      type             = "bigquery"
+      destination      = module.audit-dataset.id
+      filter           = var.audit_filter
+      iam              = true
+      include_children = true
+    }
+  }
+  root_node_type = split("/", var.root_node)[0]
 }

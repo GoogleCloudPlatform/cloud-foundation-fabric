@@ -26,4 +26,6 @@ module "test" {
   policy_list                 = var.policy_list
   firewall_policies           = var.firewall_policies
   firewall_policy_attachments = var.firewall_policy_attachments
+  logging_sinks               = var.logging_sinks
+  logging_exclusions          = var.logging_exclusions
 }
