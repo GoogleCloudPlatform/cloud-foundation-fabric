@@ -56,10 +56,11 @@ variable "firewall_policy_attachments" {
 
 variable "logging_sinks" {
   type = map(object({
-    destination = string
-    type        = string
-    filter      = string
-    iam         = bool
+    destination      = string
+    type             = string
+    filter           = string
+    iam              = bool
+    include_children = bool
   }))
   default = {}
 }

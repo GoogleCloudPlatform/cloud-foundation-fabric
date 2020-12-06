@@ -221,9 +221,10 @@ resource "google_logging_organization_sink" "sink" {
   for_each = local.logging_sinks
   name     = each.key
   #description = "${each.key} (Terraform-managed)"
-  org_id      = local.organization_id_numeric
-  destination = "${local.sink_type_destination[each.value.type]}/${each.value.destination}"
-  filter      = each.value.filter
+  org_id           = local.organization_id_numeric
+  destination      = "${local.sink_type_destination[each.value.type]}/${each.value.destination}"
+  filter           = each.value.filter
+  include_children = each.value.include_children
 }
 
 resource "google_storage_bucket_iam_binding" "gcs-sinks-binding" {

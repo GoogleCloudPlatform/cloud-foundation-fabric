@@ -188,9 +188,10 @@ resource "google_logging_folder_sink" "sink" {
   for_each = local.logging_sinks
   name     = each.key
   #description = "${each.key} (Terraform-managed)"
-  folder      = local.folder.name
-  destination = "${local.sink_type_destination[each.value.type]}/${each.value.destination}"
-  filter      = each.value.filter
+  folder           = local.folder.name
+  destination      = "${local.sink_type_destination[each.value.type]}/${each.value.destination}"
+  filter           = each.value.filter
+  include_children = each.value.include_children
 }
 
 resource "google_storage_bucket_iam_binding" "gcs-sinks-binding" {

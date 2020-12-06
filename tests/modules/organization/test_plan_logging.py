@@ -25,22 +25,25 @@ def test_sinks(plan_runner):
   "Test folder-level sinks."
   logging_sinks = """ {
     warning = {
-      type        = "gcs"
-      destination = "mybucket"
-      filter      = "severity=WARNING"
-      iam         = true
+      type             = "gcs"
+      destination      = "mybucket"
+      filter           = "severity=WARNING"
+      iam              = true
+      include_children = true
     }
     info = {
-      type        = "bigquery"
-      destination = "projects/myproject/datasets/mydataset"
-      filter      = "severity=INFO"
-      iam         = true
-    }
+      type             = "bigquery"
+      destination      = "projects/myproject/datasets/mydataset"
+      filter           = "severity=INFO"
+      iam              = true
+      include_children = true
+   }
     notice = {
-      type        = "pubsub"
-      destination = "projects/myproject/topics/mytopic"
-      filter      = "severity=NOTICE"
-      iam         = true
+      type             = "pubsub"
+      destination      = "projects/myproject/topics/mytopic"
+      filter           = "severity=NOTICE"
+      iam              = true
+      include_children = false
     }
   }
   """
@@ -62,16 +65,19 @@ def test_sinks(plan_runner):
       'notice',
       'warning',
   ]
-  values = [(r['index'], r['values']['filter'], r['values']['destination'])
+  values = [(r['index'], r['values']['filter'], r['values']['destination'],
+             r['values']['include_children'])
             for r in sinks]
   assert sorted(values) == [
     ('info',
      'severity=INFO',
-     'bigquery.googleapis.com/projects/myproject/datasets/mydataset'),
+     'bigquery.googleapis.com/projects/myproject/datasets/mydataset',
+     True),
     ('notice',
      'severity=NOTICE',
-     'pubsub.googleapis.com/projects/myproject/topics/mytopic'),
-    ('warning', 'severity=WARNING', 'storage.googleapis.com/mybucket')]
+     'pubsub.googleapis.com/projects/myproject/topics/mytopic',
+     False),
+    ('warning', 'severity=WARNING', 'storage.googleapis.com/mybucket', True)]
 
   bindings = [r for r in resources
               if 'binding' in r['type']]
