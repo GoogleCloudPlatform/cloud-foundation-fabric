@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 - **incompatible change** removed the `logging-sinks` module. Logging sinks can now be created the `logging_sinks` variable in the in the `project`, `folder` and `organization` modules
 - add support for creating logging exclusions in the `project`, `folder` and `organization` modules
 - add support for Confidential Compute to `compute-vm` module
+- add support for handling IAM policy (bindings, audit config) as fully authoritative in the `organization` module
 
 ## [4.2.0] - 2020-11-25
 
