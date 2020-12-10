@@ -85,6 +85,37 @@ resource "google_organization_iam_member" "additive" {
   member = each.value.member
 }
 
+resource "google_organization_iam_policy" "authoritative" {
+  count       = var.iam_bindings_authoritative != null || var.iam_audit_config_authoritative != null ? 1 : 0
+  org_id      = local.organization_id_numeric
+  policy_data = data.google_iam_policy.authoritative.policy_data
+}
+
+data "google_iam_policy" "authoritative" {
+  dynamic "binding" {
+    for_each = var.iam_bindings_authoritative != null ? var.iam_bindings_authoritative : {}
+    content {
+      role    = binding.key
+      members = binding.value
+    }
+  }
+
+  dynamic "audit_config" {
+    for_each = var.iam_audit_config_authoritative != null ? var.iam_audit_config_authoritative : {}
+    content {
+      service = audit_config.key
+      dynamic "audit_log_configs" {
+        for_each = audit_config.value
+        iterator = config
+        content {
+          log_type         = config.key
+          exempted_members = config.value
+        }
+      }
+    }
+  }
+}
+
 resource "google_organization_iam_audit_config" "config" {
   for_each = var.iam_audit_config
   org_id   = local.organization_id_numeric
