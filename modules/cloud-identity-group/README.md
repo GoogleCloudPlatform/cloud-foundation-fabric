@@ -45,6 +45,6 @@ module "group" {
 
 | name | description | sensitive |
 |---|---|:---:|
- | id | Group ID. |  |
+| id | Group ID. |  |
 | name | Group name. |  |
 <!-- END TFDOC -->
