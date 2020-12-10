@@ -34,16 +34,6 @@ variable "customer_id" {
   default = "customers/C01234567"
 }
 
-variable "owners" {
-  type    = list(string)
-  default = []
-}
-
-variable "managers" {
-  type    = list(string)
-  default = []
-}
-
 variable "members" {
   type    = list(string)
   default = []

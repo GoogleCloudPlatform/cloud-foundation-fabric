@@ -39,17 +39,17 @@ variable "customer_id" {
   }
 }
 
-variable "owners" {
-  description = "List of group owners."
-  type        = list(string)
-  default     = []
-}
+# variable "owners" {
+#   description = "List of group owners."
+#   type        = list(string)
+#   default     = []
+# }
 
-variable "managers" {
-  description = "List of group managers."
-  type        = list(string)
-  default     = []
-}
+# variable "managers" {
+#   description = "List of group managers."
+#   type        = list(string)
+#   default     = []
+# }
 
 variable "members" {
   description = "List of group members."

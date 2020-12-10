@@ -17,15 +17,13 @@ module "group" {
   name         = "mygroup@example.com"
   display_name = "My group name"
   description  = "My group Description"
-  owners       = ["admin@example.com"]
-  managers     = ["manager@example.com"]
   members = [
     "user1@example.com",
     "user2@example.com",
     "service-account@my-gcp-project.iam.gserviceaccount.com"
   ]
 }
-# tftest:modules=1:resources=6
+# tftest:modules=1:resources=4
 ```
 
 <!-- BEGIN TFDOC -->
@@ -37,9 +35,7 @@ module "group" {
 | display_name | Group display name. | <code title="">string</code> | ✓ |  |
 | name | Group ID (usually an email). | <code title="">string</code> | ✓ |  |
 | *description* | Group description | <code title="">string</code> |  | <code title="">null</code> |
-| *managers* | List of group managers. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 | *members* | List of group members. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
-| *owners* | List of group owners. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 
 ## Outputs
 

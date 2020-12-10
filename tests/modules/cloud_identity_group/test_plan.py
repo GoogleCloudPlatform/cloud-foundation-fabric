@@ -25,8 +25,6 @@ FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
 def test_group(plan_runner):
   "Test group."
   _, resources = plan_runner(FIXTURES_DIR)
-  import pprint
-  pprint.pprint(resources)
   assert len(resources) == 1
   r = resources[0]
   assert r['type'] == 'google_cloud_identity_group'
@@ -36,30 +34,16 @@ def test_group(plan_runner):
 
 
 def test_members(plan_runner):
-  "Test group owners."
-  owners = '["owner@example.com"]'
-  managers = '["manager@example.com"]'
+  "Test group members."
   members = '["member@example.com"]'
-  _, resources = plan_runner(FIXTURES_DIR, owners=owners, managers=managers,
-                             members=members)
+  _, resources = plan_runner(FIXTURES_DIR, members=members)
 
   resource_types = Counter([r['type'] for r in resources])
   assert resource_types == {
     'google_cloud_identity_group': 1,
-    'google_cloud_identity_group_membership': 3,
+    'google_cloud_identity_group_membership': 1,
   }
 
-  # members
   values = next(r['values'] for r in resources if r['name'] == 'members')
   assert values['preferred_member_key'][0]['id'] == 'member@example.com'
   assert [role['name'] for role in values['roles']] == ['MEMBER']
-
-  # managers
-  values = next(r['values'] for r in resources if r['name'] == 'managers')
-  assert values['preferred_member_key'][0]['id'] == 'manager@example.com'
-  assert [role['name'] for role in values['roles']] == ['MEMBER', 'MANAGER']
-
-  # owners
-  values = next(r['values'] for r in resources if r['name'] == 'owners')
-  assert values['preferred_member_key'][0]['id'] == 'owner@example.com'
-  assert [role['name'] for role in values['roles']] == ['OWNER', 'MEMBER', 'MANAGER']

@@ -27,22 +27,22 @@ resource "google_cloud_identity_group" "group" {
   }
 }
 
-resource "google_cloud_identity_group_membership" "owners" {
-  group    = google_cloud_identity_group.group.id
-  for_each = toset(var.owners)
-  preferred_member_key { id = each.key }
-  roles { name = "OWNER" }
-  roles { name = "MEMBER" }
-  roles { name = "MANAGER" }
-}
+# resource "google_cloud_identity_group_membership" "owners" {
+#   group    = google_cloud_identity_group.group.id
+#   for_each = toset(var.owners)
+#   preferred_member_key { id = each.key }
+#   roles { name = "OWNER" }
+#   roles { name = "MEMBER" }
+#   roles { name = "MANAGER" }
+# }
 
-resource "google_cloud_identity_group_membership" "managers" {
-  group    = google_cloud_identity_group.group.id
-  for_each = toset(var.managers)
-  preferred_member_key { id = each.key }
-  roles { name = "MEMBER" }
-  roles { name = "MANAGER" }
-}
+# resource "google_cloud_identity_group_membership" "managers" {
+#   group    = google_cloud_identity_group.group.id
+#   for_each = toset(var.managers)
+#   preferred_member_key { id = each.key }
+#   roles { name = "MEMBER" }
+#   roles { name = "MANAGER" }
+# }
 
 resource "google_cloud_identity_group_membership" "members" {
   group    = google_cloud_identity_group.group.id
