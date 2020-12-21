@@ -38,6 +38,8 @@ variable "vpn_config" {
     peer_ip       = string
     shared_secret = string
     type          = string
+    peer_ip2      = string
+    shared_secret2 = string
   })
 }
 
@@ -48,12 +50,20 @@ variable "vpn_dynamic_config" {
     local_bgp_address = string
     peer_bgp_asn      = number
     peer_bgp_address  = string
+    local_bgp_asn2     = number
+    local_bgp_address2 = string
+    peer_bgp_asn2      = number
+    peer_bgp_address2  = string
   })
   default = {
-    local_bgp_asn     = 65002
-    local_bgp_address = "169.254.0.2"
-    peer_bgp_asn      = 65001
-    peer_bgp_address  = "169.254.0.1"
+    local_bgp_asn     = 64514
+    local_bgp_address = "169.254.1.2"
+    peer_bgp_asn      = 64513
+    peer_bgp_address  = "169.254.1.1"
+    local_bgp_asn2     = 64514
+    local_bgp_address2 = "169.254.2.2"
+    peer_bgp_asn2      = 64520
+    peer_bgp_address2  = "169.254.2.1"
   }
 }
 

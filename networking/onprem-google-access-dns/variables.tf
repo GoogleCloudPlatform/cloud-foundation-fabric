@@ -19,7 +19,9 @@ variable "bgp_asn" {
   type        = map(number)
   default = {
     gcp    = 64513
+    gcp2    = 64520
     onprem = 64514
+    onprem2 = 64514
   }
 }
 
@@ -28,6 +30,7 @@ variable "bgp_interface_ranges" {
   type        = map(string)
   default = {
     gcp = "169.254.1.0/30"
+    gcp2 = "169.254.2.0/30"
   }
 }
 
@@ -42,6 +45,7 @@ variable "ip_ranges" {
   type        = map(string)
   default = {
     gcp    = "10.0.0.0/24"
+    gcp2    = "10.10.0.0/24"
     onprem = "10.0.16.0/24"
   }
 }
@@ -53,8 +57,11 @@ variable "project_id" {
 
 variable "region" {
   description = "VPC region."
-  type        = string
-  default     = "europe-west1"
+  type        = map(string)
+  default = {
+    gcp     = "europe-west1"
+    gcp2    = "europe-west2"
+  }
 }
 
 variable "forwarder_address" {

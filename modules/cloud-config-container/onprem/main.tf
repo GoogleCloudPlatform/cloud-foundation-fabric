@@ -38,6 +38,7 @@ locals {
       dns   = cidrhost(var.local_ip_cidr_range, 3)
       www   = cidrhost(var.local_ip_cidr_range, 4)
       shell = cidrhost(var.local_ip_cidr_range, 5)
+      vpn2   = cidrhost(var.local_ip_cidr_range, 6)
     }
     netblocks          = local.netblocks
     vpn_config         = local.vpn_config
@@ -50,6 +51,7 @@ locals {
   )
   vpn_config = merge(var.vpn_config, {
     peer_ip_wildcard = "%${var.vpn_config.peer_ip}"
+    peer_ip_wildcard2 = "%${var.vpn_config.peer_ip2}"
   })
 }
 

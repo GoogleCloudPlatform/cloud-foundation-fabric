@@ -17,6 +17,8 @@
 locals {
   bgp_interface_gcp    = "${cidrhost(var.bgp_interface_ranges.gcp, 1)}"
   bgp_interface_onprem = "${cidrhost(var.bgp_interface_ranges.gcp, 2)}"
+  bgp_interface_gcp2    = "${cidrhost(var.bgp_interface_ranges.gcp2, 1)}"
+  bgp_interface_onprem2 = "${cidrhost(var.bgp_interface_ranges.gcp2, 2)}"
   netblocks = {
     dns        = data.google_netblock_ip_ranges.dns-forwarders.cidr_blocks_ipv4.0
     private    = data.google_netblock_ip_ranges.private-googleapis.cidr_blocks_ipv4.0
@@ -56,7 +58,13 @@ module "vpc" {
     {
       ip_cidr_range      = var.ip_ranges.gcp
       name               = "subnet"
-      region             = var.region
+      region             = var.region.gcp
+      secondary_ip_range = {}
+    },
+    {
+      ip_cidr_range      = var.ip_ranges.gcp2
+      name               = "subnet2"
+      region             = var.region.gcp2
       secondary_ip_range = {}
     }
   ]
@@ -74,9 +82,9 @@ module "vpc-firewall" {
 module "vpn" {
   source     = "../../modules/net-vpn-dynamic"
   project_id = var.project_id
-  region     = module.vpc.subnet_regions["${var.region}/subnet"]
+  region     = var.region.gcp
   network    = module.vpc.name
-  name       = "to-onprem"
+  name       = "to-onprem1"
   router_asn = var.bgp_asn.gcp
   tunnels = {
     onprem = {
@@ -102,13 +110,53 @@ module "vpn" {
   }
 }
 
+module "vpn2" {
+  source     = "../../modules/net-vpn-dynamic"
+  project_id = var.project_id
+  region     = var.region.gcp2
+  network    = module.vpc.name
+  name       = "to-onprem2"
+  router_asn = var.bgp_asn.gcp2
+  tunnels = {
+    onprem = {
+      bgp_peer = {
+        address = local.bgp_interface_onprem2
+        asn     = var.bgp_asn.onprem2
+      }
+      bgp_peer_options = {
+        advertise_groups = ["ALL_SUBNETS"]
+        advertise_ip_ranges = {
+          (local.netblocks.dns)        = "DNS resolvers"
+          (local.netblocks.private)    = "private.gooogleapis.com"
+          (local.netblocks.restricted) = "restricted.gooogleapis.com"
+        }
+        advertise_mode = "CUSTOM"
+        route_priority = 1000
+      }
+      bgp_session_range = "${local.bgp_interface_gcp2}/30"
+      ike_version       = 2
+      peer_ip           = module.vm-onprem.external_ips.0
+      #peer_ip           = "35.10.10.10"
+      shared_secret     = ""
+    }
+  }
+}
+
 module "nat" {
   source        = "../../modules/net-cloudnat"
   project_id    = var.project_id
-  region        = var.region
+  region        = var.region.gcp
   name          = "default"
   router_create = false
   router_name   = module.vpn.router_name
+}
+module "nat2" {
+  source        = "../../modules/net-cloudnat"
+  project_id    = var.project_id
+  region        = var.region.gcp2
+  name          = "default"
+  router_create = false
+  router_name   = module.vpn2.router_name
 }
 
 ################################################################################
@@ -184,11 +232,29 @@ module "service-account-gce" {
 module "vm-test" {
   source     = "../../modules/compute-vm"
   project_id = var.project_id
-  region     = var.region
+  region     = var.region.gcp
   name       = "test"
   network_interfaces = [{
     network    = module.vpc.self_link
-    subnetwork = module.vpc.subnet_self_links["${var.region}/subnet"]
+    subnetwork = module.vpc.subnet_self_links["${var.region.gcp}/subnet"]
+    nat        = false
+    addresses  = null
+    alias_ips  = null
+  }]
+  metadata               = { startup-script = local.vm-startup-script }
+  service_account        = module.service-account-gce.email
+  service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+  tags                   = ["ssh"]
+}
+
+module "vm-test2" {
+  source     = "../../modules/compute-vm"
+  project_id = var.project_id
+  region     = var.region.gcp2
+  name       = "test-2"
+  network_interfaces = [{
+    network    = module.vpc.self_link
+    subnetwork = module.vpc.subnet_self_links["${var.region.gcp2}/subnet2"]
     nat        = false
     addresses  = null
     alias_ips  = null
@@ -210,7 +276,9 @@ module "config-onprem" {
   local_ip_cidr_range = var.ip_ranges.onprem
   vpn_config = {
     peer_ip       = module.vpn.address
+    peer_ip2       = module.vpn2.address
     shared_secret = module.vpn.random_secret
+    shared_secret2 = module.vpn2.random_secret
     type          = "dynamic"
   }
   vpn_dynamic_config = {
@@ -218,6 +286,10 @@ module "config-onprem" {
     local_bgp_address = local.bgp_interface_onprem
     peer_bgp_asn      = var.bgp_asn.gcp
     peer_bgp_address  = local.bgp_interface_gcp
+    local_bgp_asn2     = var.bgp_asn.onprem2
+    local_bgp_address2 = local.bgp_interface_onprem2
+    peer_bgp_asn2      = var.bgp_asn.gcp2
+    peer_bgp_address2  = local.bgp_interface_gcp2
   }
 }
 
@@ -237,7 +309,7 @@ module "service-account-onprem" {
 module "vm-onprem" {
   source        = "../../modules/compute-vm"
   project_id    = var.project_id
-  region        = var.region
+  region        = var.region.gcp
   instance_type = "f1-micro"
   name          = "onprem"
   boot_disk = {
@@ -250,7 +322,7 @@ module "vm-onprem" {
   }
   network_interfaces = [{
     network    = module.vpc.name
-    subnetwork = module.vpc.subnet_self_links["${var.region}/subnet"]
+    subnetwork = module.vpc.subnet_self_links["${var.region.gcp}/subnet"]
     nat        = true
     addresses  = null
     alias_ips  = null
