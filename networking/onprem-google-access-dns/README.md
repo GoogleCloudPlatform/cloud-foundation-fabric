@@ -14,13 +14,13 @@ The example has been purposefully kept simple to show how to use and wire the on
 
 This sample creates several distinct groups of resources:
 
-- one VPC
+- one VPC with two regions
 - one set of firewall rules
-- one Cloud NAT configuration
-- one test instance
-- one service account for the test instance
+- one Cloud NAT configuration per region
+- one test instance on each region
+- one service account for the test instances
 - one service account for the onprem instance
-- one dynamic VPN gateway with a single tunnel
+- two dynamic VPN gateways in each of the regions with a single tunnel
 - two DNS zones (private and forwarding) and a DNS inbound policy
 - one emulated on-premises environment in a single GCP instance
 
@@ -88,28 +88,84 @@ google.internal {
 ### Onprem to cloud
 
 ```bash
+# check containers are running
+sudo docker ps
+
 # connect to the onprem instance
 gcloud compute ssh onprem-1
 
-# check that the BGP session works and the advertised routes are set
-sudo docker exec -it onprem_bird_1 ip route |grep bird
-10.0.0.0/24 via 169.254.1.1 dev vti0  proto bird  src 10.0.16.2
-35.199.192.0/19 via 169.254.1.1 dev vti0  proto bird  src 10.0.16.2
-199.36.153.4/30 via 169.254.1.1 dev vti0  proto bird  src 10.0.16.2
-199.36.153.8/30 via 169.254.1.1 dev vti0  proto bird  src 10.0.16.2
+# check that the VPN tunnels are up
+sudo docker exec -it onprem_vpn_1 ipsec statusall
+
+Status of IKE charon daemon (strongSwan 5.8.1, Linux 5.4.0-1029-gcp, x86_64):
+  uptime: 6 minutes, since Nov 30 08:42:08 2020
+  worker threads: 11 of 16 idle, 5/0/0/0 working, job queue: 0/0/0/0, scheduled: 8
+  loaded plugins: charon aesni mgf1 random nonce x509 revocation constraints pubkey pkcs1 pkcs7 pkcs8 pkcs12 pgp dnskey sshkey pem openssl fips-prf gmp curve25519 xcbc cmac curl sqlite attr kernel-netlink resolve socket-default farp stroke vici updown eap-identity eap-sim eap-aka eap-aka-3gpp2 eap-simaka-pseudonym eap-simaka-reauth eap-md5 eap-mschapv2 eap-radius eap-tls xauth-generic xauth-eap dhcp unity counters
+Listening IP addresses:
+  10.0.16.2
+  169.254.1.2
+  169.254.2.2
+Connections:
+         gcp:  %any...35.233.104.67,0.0.0.0/0,::/0  IKEv2, dpddelay=30s
+         gcp:   local:  uses pre-shared key authentication
+         gcp:   remote: [35.233.104.67] uses pre-shared key authentication
+         gcp:   child:  0.0.0.0/0 === 0.0.0.0/0 TUNNEL, dpdaction=restart
+        gcp2:  %any...35.246.101.51,0.0.0.0/0,::/0  IKEv2, dpddelay=30s
+        gcp2:   local:  uses pre-shared key authentication
+        gcp2:   remote: [35.246.101.51] uses pre-shared key authentication
+        gcp2:   child:  0.0.0.0/0 === 0.0.0.0/0 TUNNEL, dpdaction=restart
+Security Associations (2 up, 0 connecting):
+        gcp2[4]: ESTABLISHED 6 minutes ago, 10.0.16.2[34.76.57.103]...35.246.101.51[35.246.101.51]
+        gcp2[4]: IKEv2 SPIs: 227cb2c52085a743_i 13b18b0ad5d4de2b_r*, pre-shared key reauthentication in 9 hours
+        gcp2[4]: IKE proposal: AES_GCM_16_256/PRF_HMAC_SHA2_512/MODP_2048
+        gcp2{4}:  INSTALLED, TUNNEL, reqid 2, ESP in UDP SPIs: cb6fdb84_i eea28dee_o
+        gcp2{4}:  AES_GCM_16_256, 3298 bytes_i, 3051 bytes_o (48 pkts, 3s ago), rekeying in 2 hours
+        gcp2{4}:   0.0.0.0/0 === 0.0.0.0/0
+         gcp[3]: ESTABLISHED 6 minutes ago, 10.0.16.2[34.76.57.103]...35.233.104.67[35.233.104.67]
+         gcp[3]: IKEv2 SPIs: e2cffed5395b63dd_i 99f343468625507c_r*, pre-shared key reauthentication in 9 hours
+         gcp[3]: IKE proposal: AES_GCM_16_256/PRF_HMAC_SHA2_512/MODP_2048
+         gcp{3}:  INSTALLED, TUNNEL, reqid 1, ESP in UDP SPIs: c3f09701_i 4e8cc8d5_o
+         gcp{3}:  AES_GCM_16_256, 3438 bytes_i, 3135 bytes_o (49 pkts, 8s ago), rekeying in 2 hours
+         gcp{3}:   0.0.0.0/0 === 0.0.0.0/0
+
+# check that the BGP sessions works and the advertised routes are set
+sudo docker exec -it onprem_bird_1 ip route 
+default via 10.0.16.1 dev eth0 
+10.0.0.0/24  proto bird  src 10.0.16.2 
+        nexthop via 169.254.1.1  dev vti0 weight 1
+        nexthop via 169.254.2.1  dev vti1 weight 1
+10.0.16.0/24 dev eth0  proto kernel  scope link  src 10.0.16.2 
+10.10.0.0/24  proto bird  src 10.0.16.2 
+        nexthop via 169.254.1.1  dev vti0 weight 1
+        nexthop via 169.254.2.1  dev vti1 weight 1
+35.199.192.0/19  proto bird  src 10.0.16.2 
+        nexthop via 169.254.1.1  dev vti0 weight 1
+        nexthop via 169.254.2.1  dev vti1 weight 1
+169.254.1.0/30 dev vti0  proto kernel  scope link  src 169.254.1.2 
+169.254.2.0/30 dev vti1  proto kernel  scope link  src 169.254.2.2 
+199.36.153.4/30  proto bird  src 10.0.16.2 
+        nexthop via 169.254.1.1  dev vti0 weight 1
+        nexthop via 169.254.2.1  dev vti1 weight 1
+199.36.153.8/30  proto bird  src 10.0.16.2 
+        nexthop via 169.254.1.1  dev vti0 weight 1
+        nexthop via 169.254.2.1  dev vti1 weight 1
+
 
 # get a shell on the toolbox container
 sudo docker exec -it onprem_toolbox_1 sh
 
-# test pinging the IP address of the test instance (check outputs for it)
+# test pinging the IP address of the test instances (check outputs for it)
 ping 10.0.0.3
+ping 10.10.0.3
 
 # note: if you are able to ping the IP but the DNS tests below do not work,
 #       refer to the sections above on configuring the DNS inbound fwd IP
 
 # test forwarding from CoreDNS via the Cloud DNS inbound policy
-dig test-1.gcp.example.org +short
+dig test-1-1.gcp.example.org +short
 10.0.0.3
+dig test-2-1.gcp.example.org +short
+10.10.0.3
 
 # test that Private Access is configured correctly
 dig compute.googleapis.com +short
@@ -143,7 +199,7 @@ curl www.onprem.example.org -s |grep h1
 
 A single pre-existing project is used in this example to keep variables and complexity to a minimum, in a real world scenarios each spoke would probably use a separate project.
 
-The VPN used to connect to the on-premises environment does not account for HA, upgrading to use HA VPN is reasonably simple by using the relevant [module](../../modules/net-vpn-ha).
+The VPN-s used to connect to the on-premises environment do not account for HA, upgrading to use HA VPN is reasonably simple by using the relevant [module](../../modules/net-vpn-ha).
 
 <!-- BEGIN TFDOC -->
 ## Variables
