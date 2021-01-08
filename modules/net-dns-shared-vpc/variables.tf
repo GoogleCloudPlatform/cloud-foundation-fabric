@@ -12,25 +12,25 @@ variable "folder_id" {
 }
 
 variable "shared_vpc_link" {
-    description = "Shared VPC self link, used for DNS peering"
+  description = "Shared VPC self link, used for DNS peering"
 }
 
 variable "project_services" {
-    description = "Service APIs enabled by default"
-    default = [
-        "compute.googleapis.com",
-        "dns.googleapis.com",
-    ]
+  description = "Service APIs enabled by default"
+  default = [
+    "compute.googleapis.com",
+    "dns.googleapis.com",
+  ]
 }
 
 variable "teams" {
-    description = "List of application teams requiring their own Cloud DNS instance"
-    default = [
-        "team1",
-        "team2",
-    ]
+  description = "List of application teams requiring their own Cloud DNS instance"
+  default = [
+    "team1",
+    "team2",
+  ]
 }
 
 variable "dns_domain" {
-    description = "DNS domain under which each application team DNS domain will be created"
+  description = "DNS domain under which each application team DNS domain will be created"
 }

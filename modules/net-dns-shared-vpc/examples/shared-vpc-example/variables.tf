@@ -5,7 +5,7 @@ variable "host_project" {
 
 variable "service_projects" {
   description = "List of service project names"
-  type        = list
+  type        = list(any)
   default = [
     "app-team1",
     "app-team2",
