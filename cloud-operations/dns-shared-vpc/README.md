@@ -11,6 +11,8 @@ This module will:
 * Create a Cloud DNS private zone per application team in the form of `[teamname].[dns_domain]`, with `teamname` and `dns_domain` being set in the inputs (see next section of this README)
 * Configure DNS peering for each private zone from the Shared VPC to the DNS VPC of each application team
 
+Note that Terraform 0.13 at least is required due to the use of for_each with modules.
+
 ## Inputs
 
 | Name | Description | Type | Default | Required |

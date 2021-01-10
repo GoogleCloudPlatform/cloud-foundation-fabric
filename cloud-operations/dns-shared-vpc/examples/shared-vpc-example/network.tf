@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-module "vpc" {
-  source = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/net-vpc?ref=v3.3.0"
+module "shared-vpc" {
+  source = "../../../../modules/net-vpc"
 
   project_id = module.project-host.project_id
   name       = "shared-vpc"
@@ -35,8 +35,8 @@ module "cloud-dns" {
   source = "../../"
 
   billing_account = var.billing_account
-  folder_id       = google_folder.customer_folder.id
-  shared_vpc_link = module.vpc.self_link
+  folder_id       = module.folder.id
+  shared_vpc_link = module.shared-vpc.self_link
 
   teams      = var.teams
   dns_domain = var.dns_domain

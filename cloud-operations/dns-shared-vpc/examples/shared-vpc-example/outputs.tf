@@ -21,5 +21,5 @@ output "host_project_id" {
 
 output "shared_vpc_self_link" {
   description = "Shared VPC Self link"
-  value       = module.vpc.self_link
+  value       = module.shared-vpc.self_link
 }

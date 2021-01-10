@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-# folder for customer
-resource "google_folder" "customer_folder" {
-  display_name = var.prefix
-  parent       = "organizations/${var.organization_id}"
+# root folder
+module "folder" {
+  source = "../../../../modules/folder"
+  parent = "organizations/${var.organization_id}"
+  name   = var.prefix
 }
 
 # Generating a random id for project ids
@@ -27,9 +28,9 @@ resource "random_id" "id" {
 
 # Creating the host project
 module "project-host" {
-  source = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/project?ref=v4.2.0"
+  source = "../../../../modules/project"
 
-  parent          = google_folder.customer_folder.id
+  parent          = module.folder.id
   billing_account = var.billing_account
   prefix          = var.prefix
   name            = "${random_id.id.hex}-${var.host_project}"
@@ -43,9 +44,9 @@ module "project-host" {
 
 # Note that by default, this module doesn't create the default Network.
 module "project-service-1" {
-  source = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/project?ref=v4.2.0"
+  source = "../../../../modules/project"
 
-  parent          = google_folder.customer_folder.id
+  parent          = module.folder.id
   billing_account = var.billing_account
   prefix          = var.prefix
   name            = "${random_id.id.hex}-${var.service_projects[0]}"
@@ -58,9 +59,9 @@ module "project-service-1" {
 }
 
 module "project-service-2" {
-  source = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/project?ref=v4.2.0"
+  source = "../../../../modules/project"
 
-  parent          = google_folder.customer_folder.id
+  parent          = module.folder.id
   billing_account = var.billing_account
   prefix          = var.prefix
   name            = "${random_id.id.hex}-${var.service_projects[1]}"

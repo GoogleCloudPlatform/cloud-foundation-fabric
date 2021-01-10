@@ -17,58 +17,41 @@
  # This file is only for testing purposes
 
 # Creating 2 VMs, one in each service project
-resource "google_compute_instance" "vm1" {
-  project      = module.project-service-1.project_id
-  name         = "test-vm1"
-  machine_type = "n1-standard-1"
-  zone         = "europe-west1-c"
-
+module "vm1" {
+  source     = "../../../../modules/compute-vm"
+  project_id = module.project-service-1.project_id
+  region     = var.region
+  name       = "test-vm"
+  network_interfaces = [{
+    network    = module.shared-vpc.self_link
+    subnetwork = module.shared-vpc.subnet_self_links["${var.region}/subnet-01"]
+    nat        = false
+    addresses  = null
+    alias_ips  = null
+  }]
   tags = ["test-dns"]
-
-  boot_disk {
-    initialize_params {
-      image = "debian-cloud/debian-9"
-    }
-  }
-
-  network_interface {
-    subnetwork         = "subnet-01"
-    subnetwork_project = module.project-host.project_id
-
-    access_config {
-    }
-  }
 }
 
-resource "google_compute_instance" "vm2" {
-  project      = module.project-service-2.project_id
-  name         = "test-vm2"
-  machine_type = "n1-standard-1"
-  zone         = "europe-west1-c"
-
+module "vm2" {
+  source     = "../../../../modules/compute-vm"
+  project_id = module.project-service-2.project_id
+  region     = var.region
+  name       = "test-vm"
+  network_interfaces = [{
+    network    = module.shared-vpc.self_link
+    subnetwork = module.shared-vpc.subnet_self_links["${var.region}/subnet-01"]
+    nat        = false
+    addresses  = null
+    alias_ips  = null
+  }]
   tags = ["test-dns"]
-
-  boot_disk {
-    initialize_params {
-      image = "debian-cloud/debian-9"
-    }
-  }
-
-  network_interface {
-    subnetwork         = "subnet-01"
-    subnetwork_project = module.project-host.project_id
-
-    access_config {
-    }
-  }
 }
 
 # Creating firewall rule for ICMP and SSH
-
 resource "google_compute_firewall" "test-firewall" {
   name    = "test-firewall"
   project = module.project-host.project_id
-  network = module.vpc.self_link
+  network = module.shared-vpc.self_link
 
   allow {
     protocol = "icmp"
@@ -83,25 +66,26 @@ resource "google_compute_firewall" "test-firewall" {
 }
 
 # Creating DNS records
-
 resource "google_dns_record_set" "record-vm1" {
   name         = "test.${var.teams[0]}.${var.dns_domain}."
-  project      = module.cloud-dns.teams_dns_networks[0][var.teams[0]]["project"]
+  # Extracting project ID from the VPC self link
+  project  = regex("/projects/(.*?)/.*", module.cloud-dns.teams_dns_networks[var.teams[0]].network.self_link)[0]
   managed_zone = var.teams[0]
   type         = "A"
   ttl          = 300
 
-  rrdatas = [google_compute_instance.vm1.network_interface[0].network_ip]
+  rrdatas = [module.vm1.internal_ips[0]]
 }
 
 resource "google_dns_record_set" "record-vm2" {
   name         = "test.${var.teams[1]}.${var.dns_domain}."
-  project      = module.cloud-dns.teams_dns_networks[0][var.teams[1]]["project"]
+  # Extracting project ID from the VPC self link
+  project  = regex("/projects/(.*?)/.*", module.cloud-dns.teams_dns_networks[var.teams[1]].network.self_link)[0]
   managed_zone = var.teams[1]
   type         = "A"
   ttl          = 300
 
-  rrdatas = [google_compute_instance.vm2.network_interface[0].network_ip]
+  rrdatas = [module.vm2.internal_ips[0]]
 }
 
 # Next step: SSH to the instances and ensure you can resolve the above DNS records

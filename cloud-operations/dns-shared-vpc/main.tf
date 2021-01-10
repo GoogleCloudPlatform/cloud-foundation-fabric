@@ -21,92 +21,57 @@ resource "random_id" "id" {
 }
 
 # Creating a GCP project for each team for Cloud DNS
-resource "google_project" "dns_projects" {
+module "dns_projects" {
   for_each = toset(var.teams)
 
-  name                = "dns-${each.value}"
-  project_id          = "${random_id.id.hex}-${each.value}"
-  folder_id           = var.folder_id
-  billing_account     = var.billing_account
-  auto_create_network = false
-}
+  source          = "../../modules/project"
+  name            = "${random_id.id.hex}-${each.value}"
+  billing_account = var.billing_account
+  parent          = var.folder_id
 
-# Enabling DNS and Compute APIs
-resource "google_project_service" "compute_api" {
-  for_each = toset(var.teams)
-
-  project = "${random_id.id.hex}-${each.value}"
-  service = "compute.googleapis.com"
-
-  disable_dependent_services = true
-}
-
-resource "google_project_service" "dns_api" {
-  for_each = toset(var.teams)
-
-  project = "${random_id.id.hex}-${each.value}"
-  service = "dns.googleapis.com"
-
-  disable_dependent_services = true
+  services = var.project_services
+  service_config = {
+    disable_on_destroy         = false,
+    disable_dependent_services = false
+  }
 }
 
 # Creating a VPC dedicated to Cloud DNS for each team
-resource "google_compute_network" "dns_vpc_network" {
+module "dns_vpc_network" {
   for_each = toset(var.teams)
 
-  name                    = "dns-vpc"
-  project                 = "${random_id.id.hex}-${each.value}"
-  auto_create_subnetworks = false
-}
-
-# Creating a map of Projet IDs => network self links for DNS application projects
-locals {
-  networks_map = {
-    for network in google_compute_network.dns_vpc_network :
-    network.project => network.self_link
-  }
+  source     = "../../modules/net-vpc"
+  project_id = "${random_id.id.hex}-${each.value}"
+  name       = "dns-vpc"
+  depends_on = [module.dns_projects]
 }
 
 # Creating Cloud DNS instance for each team
-resource "google_dns_managed_zone" "application-dns-zone" {
+module "dns-application-private-zone" {
   for_each = toset(var.teams)
 
+  source      = "../../modules/dns"
+  project_id  = "${random_id.id.hex}-${each.value}"
+  type        = "private"
   name        = each.key
-  project     = "${random_id.id.hex}-${each.value}"
-  dns_name    = "${each.key}.${var.dns_domain}."
+  domain      = "${each.key}.${var.dns_domain}."
   description = "DNS zone for ${each.key}"
 
-  visibility = "private"
-
-  private_visibility_config {
-    networks {
-      network_url = local.networks_map["${random_id.id.hex}-${each.value}"]
-    }
-  }
+  client_networks = [module.dns_vpc_network[each.key].network.self_link]
 }
 
-# Creating DNS peerings from env Cloud DNS to team Cloud DNS
-resource "google_dns_managed_zone" "peering-zone" {
-  provider = google-beta
+# Creating DNS peerings from Shared VPC Cloud DNS to team Cloud DNS
+module "dns-peering-zone" {
   for_each = toset(var.teams)
 
-  name = "peering-${each.key}"
+  source = "../../modules/dns"
   # Extracting project ID from the Shared VPC self link
-  project     = regex("/projects/(.*?)/.*", var.shared_vpc_link)[0]
-  dns_name    = "${each.key}.${var.dns_domain}."
+  project_id  = regex("/projects/(.*?)/.*", var.shared_vpc_link)[0]
+  name        = "peering-${each.key}"
+  domain      = "${each.key}.${var.dns_domain}."
   description = "DNS peering for ${each.key}"
 
-  visibility = "private"
-
-  private_visibility_config {
-    networks {
-      network_url = var.shared_vpc_link
-    }
-  }
-
-  peering_config {
-    target_network {
-      network_url = local.networks_map["${random_id.id.hex}-${each.value}"]
-    }
-  }
+  type            = "peering"
+  peer_network    = module.dns_vpc_network[each.key].network.self_link
+  client_networks = [var.shared_vpc_link]
 }
