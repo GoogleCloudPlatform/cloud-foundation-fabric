@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-output "teams_dns_networks" {
-  description = "Networks for the DNS projects for application teams"
-  value       = module.dns_vpc_network
+output "teams" {
+  description = "Team resources"
+  value = {
+    for k, v in local.projects : k => {
+      project = v
+      zone    = module.dns-private[k].domain
+    }
+  }
 }

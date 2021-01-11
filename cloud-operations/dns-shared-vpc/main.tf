@@ -14,64 +14,54 @@
  * limitations under the License.
  */
 
-# Generating a random id for project ids
-resource "random_id" "id" {
-  byte_length = 2
-  prefix      = var.prefix
+locals {
+  projects = {
+    for k, v in module.project : k => v.project_id
+  }
+  svpc_project_id = regex("/projects/(.*?)/.*", var.shared_vpc_link)[0]
 }
 
-# Creating a GCP project for each team for Cloud DNS
-module "dns_projects" {
-  for_each = toset(var.teams)
-
+module "project" {
   source          = "../../modules/project"
-  name            = "${random_id.id.hex}-${each.value}"
-  billing_account = var.billing_account
+  for_each        = toset(var.teams)
+  billing_account = var.billing_account_id
+  name            = each.value
   parent          = var.folder_id
-
-  services = var.project_services
+  prefix          = var.prefix
+  services        = var.project_services
   service_config = {
     disable_on_destroy         = false,
     disable_dependent_services = false
   }
 }
 
-# Creating a VPC dedicated to Cloud DNS for each team
-module "dns_vpc_network" {
-  for_each = toset(var.teams)
-
+module "vpc" {
   source     = "../../modules/net-vpc"
-  project_id = "${random_id.id.hex}-${each.value}"
+  for_each   = local.projects
+  project_id = each.value
   name       = "dns-vpc"
-  depends_on = [module.dns_projects]
+  depends_on = [module.project]
 }
 
-# Creating Cloud DNS instance for each team
-module "dns-application-private-zone" {
-  for_each = toset(var.teams)
-
-  source      = "../../modules/dns"
-  project_id  = "${random_id.id.hex}-${each.value}"
-  type        = "private"
-  name        = each.key
-  domain      = "${each.key}.${var.dns_domain}."
-  description = "DNS zone for ${each.key}"
-
-  client_networks = [module.dns_vpc_network[each.key].network.self_link]
+module "dns-private" {
+  source          = "../../modules/dns"
+  for_each        = local.projects
+  project_id      = each.value
+  type            = "private"
+  name            = each.key
+  domain          = "${each.key}.${var.dns_domain}."
+  description     = "DNS zone for ${each.key}"
+  client_networks = [module.vpc[each.key].self_link]
 }
 
-# Creating DNS peerings from Shared VPC Cloud DNS to team Cloud DNS
-module "dns-peering-zone" {
-  for_each = toset(var.teams)
-
-  source = "../../modules/dns"
-  # Extracting project ID from the Shared VPC self link
-  project_id  = regex("/projects/(.*?)/.*", var.shared_vpc_link)[0]
-  name        = "peering-${each.key}"
-  domain      = "${each.key}.${var.dns_domain}."
-  description = "DNS peering for ${each.key}"
-
+module "dns-peering" {
+  source          = "../../modules/dns"
+  for_each        = local.projects
+  project_id      = local.svpc_project_id
+  name            = "peering-${each.key}"
+  domain          = "${each.key}.${var.dns_domain}."
+  description     = "DNS peering for ${each.key}"
   type            = "peering"
-  peer_network    = module.dns_vpc_network[each.key].network.self_link
+  peer_network    = module.vpc[each.key].self_link
   client_networks = [var.shared_vpc_link]
 }

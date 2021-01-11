@@ -26,7 +26,7 @@ Note that Terraform 0.13 at least is required due to the use of `for_each` with 
 
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
-| billing_account | Billing account associated with the GCP Projects that will be created for each team. | <code title="">string</code> | ✓ |  |
+| billing_account_id | Billing account associated with the GCP Projects that will be created for each team. | <code title="">string</code> | ✓ |  |
 | folder_id | Folder ID in which DNS projects will be created. | <code title="">string</code> | ✓ |  |
 | shared_vpc_link | Shared VPC self link, used for DNS peering. | <code title="">string</code> | ✓ |  |
 | *dns_domain* | DNS domain under which each application team DNS domain will be created. | <code title="">string</code> |  | <code title="">example.org</code> |
@@ -38,5 +38,5 @@ Note that Terraform 0.13 at least is required due to the use of `for_each` with 
 
 | name | description | sensitive |
 |---|---|:---:|
-| teams_dns_networks | Networks for the DNS projects for application teams |  |
+| teams | Team resources |  |
 <!-- END TFDOC -->

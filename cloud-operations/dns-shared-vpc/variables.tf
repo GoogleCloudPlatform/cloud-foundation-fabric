@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-variable "billing_account" {
+variable "billing_account_id" {
   description = "Billing account associated with the GCP Projects that will be created for each team."
   type        = string
 }
