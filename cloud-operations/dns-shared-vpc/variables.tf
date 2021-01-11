@@ -15,38 +15,46 @@
  */
 
 variable "billing_account" {
-  description = "Billing account associated with the GCP Projects that will be created for each team"
+  description = "Billing account associated with the GCP Projects that will be created for each team."
+  type        = string
 }
 
-variable "prefix" {
-  description = "Customer name to use as prefix for resources' naming"
-  default     = "test-dns"
+variable "dns_domain" {
+  description = "DNS domain under which each application team DNS domain will be created."
+  type        = string
+  default     = "example.org"
 }
 
 variable "folder_id" {
-  description = "Folder ID in which DNS projects will be created"
+  description = "Folder ID in which DNS projects will be created."
+  type        = string
 }
 
-variable "shared_vpc_link" {
-  description = "Shared VPC self link, used for DNS peering"
+variable "prefix" {
+  description = "Customer name to use as prefix for resources' naming."
+  type        = string
+  default     = "test-dns"
 }
 
 variable "project_services" {
-  description = "Service APIs enabled by default"
+  description = "Service APIs enabled by default."
+  type        = list(string)
   default = [
     "compute.googleapis.com",
     "dns.googleapis.com",
   ]
 }
 
+variable "shared_vpc_link" {
+  description = "Shared VPC self link, used for DNS peering."
+  type        = string
+}
+
 variable "teams" {
-  description = "List of application teams requiring their own Cloud DNS instance"
+  description = "List of application teams requiring their own Cloud DNS instance."
+  type        = list(string)
   default = [
     "team1",
     "team2",
   ]
-}
-
-variable "dns_domain" {
-  description = "DNS domain under which each application team DNS domain will be created"
 }
