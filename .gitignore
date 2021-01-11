@@ -2,6 +2,7 @@
 **/terraform.tfstate*
 **/terraform.tfvars
 **/.terraform.tfstate.lock.info
+**/.terraform.lock.hcl
 !tests/**/terraform.tfvars
 **/__pycache__
 **/.pytest_cache
