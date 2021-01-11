@@ -15,9 +15,7 @@ The example will:
 
 The resources created in this example are shown in the high level diagram below:
 
-TODO: diagram
-
-<!--img src="diagram.png" width="640px"-->
+<img src="diagram.png" width="640px">
 
 Note that Terraform 0.13 at least is required due to the use of `for_each` with modules.
 
