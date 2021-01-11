@@ -40,7 +40,6 @@ module "vpc" {
   for_each   = local.projects
   project_id = each.value
   name       = "dns-vpc"
-  depends_on = [module.project]
 }
 
 module "dns-private" {
