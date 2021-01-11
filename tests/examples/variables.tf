@@ -14,6 +14,20 @@
 
 # common variables used for examples
 
+variable "bucket" {
+  default = "bucket"
+}
+
+variable "billing_account_id" {
+  default = "billing_account_id"
+}
+
+variable "kms_key" {
+  default = {
+    self_link = "kms_key_self_link"
+  }
+}
+
 variable "organization_id" {
   default = "organizations/1122334455"
 }
@@ -22,26 +36,15 @@ variable "project_id" {
   default = "projects/project-id"
 }
 
-variable "billing_account_id" {
-  default = "billing_account_id"
-}
-
-variable "bucket" {
-  default = "bucket"
-}
-
 variable "region" {
   default = "region"
 }
 
-variable "zone" {
-  default = "zone"
-}
-
-variable "vpc" {
+variable "service_account" {
   default = {
-    name      = "vpc_name"
-    self_link = "vpc_self_link"
+    id        = "service_account_id"
+    email     = "service_account_email"
+    iam_email = "service_account_iam_email"
   }
 }
 
@@ -54,16 +57,20 @@ variable "subnet" {
   }
 }
 
-variable "kms_key" {
+variable "vpc" {
   default = {
-    self_link = "kms_key_self_link"
+    name      = "vpc_name"
+    self_link = "vpc_self_link"
   }
 }
 
-variable "service_account" {
+variable "vpc2" {
   default = {
-    id        = "service_account_id"
-    email     = "service_account_email"
-    iam_email = "service_account_iam_email"
+    name      = "vpc2_name"
+    self_link = "vpc2_self_link"
   }
+}
+
+variable "zone" {
+  default = "zone"
 }

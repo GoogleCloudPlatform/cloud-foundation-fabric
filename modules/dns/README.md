@@ -48,7 +48,7 @@ module "private-dns" {
   name            = "test-example"
   domain          = "test.example."
   client_networks = [var.vpc.self_link]
-  peer_network    = var.peer_vpc.self_link
+  peer_network    = var.vpc2.self_link
 }
 # tftest:modules=1:resources=1
 ```
