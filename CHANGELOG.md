@@ -3,6 +3,10 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+
+## [4.3.0] - 2021-01-11
+
+- new DNS for Shared VPC example
 - **incompatible change** removed the `logging-sinks` module. Logging sinks can now be created the `logging_sinks` variable in the in the `project`, `folder` and `organization` modules
 - add support for creating logging exclusions in the `project`, `folder` and `organization` modules
 - add support for Confidential Compute to `compute-vm` module
@@ -244,7 +248,8 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.2.0...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.3.0...HEAD
+[4.3.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.2.0...v4.3.0
 [4.2.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.1.0...v4.2.0
 [4.1.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.0.0...v4.1.0
 [4.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.5.0...v4.0.0
