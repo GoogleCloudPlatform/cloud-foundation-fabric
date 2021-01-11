@@ -38,6 +38,21 @@ module "private-dns" {
 # tftest:modules=1:resources=1
 ```
 
+### Peering Zone
+
+```hcl
+module "private-dns" {
+  source          = "./modules/dns"
+  project_id      = "myproject"
+  type            = "peering"
+  name            = "test-example"
+  domain          = "test.example."
+  client_networks = [var.vpc.self_link]
+  peer_network    = var.peer_vpc.self_link
+}
+# tftest:modules=1:resources=1
+```
+
 <!-- BEGIN TFDOC -->
 ## Variables
 
