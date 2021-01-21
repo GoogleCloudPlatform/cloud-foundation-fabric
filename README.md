@@ -39,6 +39,6 @@ Currently available modules:
 - **data** - [GCS](./modules/gcs), [BigQuery dataset](./modules/bigquery-dataset), [Pub/Sub](./modules/pubsub), [Datafusion](./modules/datafusion), [Bigtable instance](./modules/bigtable-instance)
 - **development** - [Cloud Source Repository](./modules/source-repository), [Container Registry](./modules/container-registry), [Artifact Registry](./modules/artifact-registry)
 - **security** - [KMS](./modules/kms), [SecretManager](./modules/secret-manager), [VPC Service Control](./modules/vpc-sc)
-- **serverless** - [Cloud Functions](./cloud-functions)
+- **serverless** - [Cloud Functions](./modules/cloud-functions)
 
 For more information and usage examples see each module's README file.
