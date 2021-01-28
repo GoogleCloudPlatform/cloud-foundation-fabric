@@ -23,10 +23,17 @@ output "onprem-instance" {
   }
 }
 
-output "test-instance" {
+output "test-instance1" {
   description = "Test instance details."
   value = join(" ", [
-    module.vm-test.names[0],
-    module.vm-test.internal_ips[0]
+    module.vm-test1.names[0],
+    module.vm-test1.internal_ips[0]
+  ])
+}
+output "test-instance2" {
+  description = "Test instance details."
+  value = join(" ", [
+    module.vm-test2.names[0],
+    module.vm-test2.internal_ips[0]
   ])
 }
