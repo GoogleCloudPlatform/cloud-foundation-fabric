@@ -278,17 +278,17 @@ module "config-onprem" {
   coredns_config      = "${path.module}/assets/Corefile"
   local_ip_cidr_range = var.ip_ranges.onprem
   vpn_config = {
-    peer_ip       = module.vpn1.address
+    peer_ip        = module.vpn1.address
     peer_ip2       = module.vpn2.address
-    shared_secret = module.vpn1.random_secret
+    shared_secret  = module.vpn1.random_secret
     shared_secret2 = module.vpn2.random_secret
-    type          = "dynamic"
+    type           = "dynamic"
   }
   vpn_dynamic_config = {
-    local_bgp_asn     = var.bgp_asn.onprem1
-    local_bgp_address = local.bgp_interface_onprem1
-    peer_bgp_asn      = var.bgp_asn.gcp1
-    peer_bgp_address  = local.bgp_interface_gcp1
+    local_bgp_asn      = var.bgp_asn.onprem1
+    local_bgp_address  = local.bgp_interface_onprem1
+    peer_bgp_asn       = var.bgp_asn.gcp1
+    peer_bgp_address   = local.bgp_interface_gcp1
     local_bgp_asn2     = var.bgp_asn.onprem2
     local_bgp_address2 = local.bgp_interface_onprem2
     peer_bgp_asn2      = var.bgp_asn.gcp2

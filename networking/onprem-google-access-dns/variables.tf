@@ -59,8 +59,8 @@ variable "region" {
   description = "VPC region."
   type        = map(string)
   default = {
-    gcp1    = "europe-west1"
-    gcp2    = "europe-west2"
+    gcp1 = "europe-west1"
+    gcp2 = "europe-west2"
   }
 }
 
