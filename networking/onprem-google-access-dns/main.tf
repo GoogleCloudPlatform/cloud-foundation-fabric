@@ -15,10 +15,10 @@
  */
 
 locals {
-  bgp_interface_gcp1    = "${cidrhost(var.bgp_interface_ranges.gcp1, 1)}"
-  bgp_interface_onprem1 = "${cidrhost(var.bgp_interface_ranges.gcp1, 2)}"
-  bgp_interface_gcp2    = "${cidrhost(var.bgp_interface_ranges.gcp2, 1)}"
-  bgp_interface_onprem2 = "${cidrhost(var.bgp_interface_ranges.gcp2, 2)}"
+  bgp_interface_gcp1    = cidrhost(var.bgp_interface_ranges.gcp1, 1)
+  bgp_interface_onprem1 = cidrhost(var.bgp_interface_ranges.gcp1, 2)
+  bgp_interface_gcp2    = cidrhost(var.bgp_interface_ranges.gcp2, 1)
+  bgp_interface_onprem2 = cidrhost(var.bgp_interface_ranges.gcp2, 2)
   netblocks = {
     dns        = data.google_netblock_ip_ranges.dns-forwarders.cidr_blocks_ipv4.0
     private    = data.google_netblock_ip_ranges.private-googleapis.cidr_blocks_ipv4.0
@@ -203,7 +203,7 @@ module "dns-onprem" {
   name            = "onprem-example"
   domain          = "onprem.example.org."
   client_networks = [module.vpc.self_link]
-  forwarders      = [cidrhost(var.ip_ranges.onprem, 3)]
+  forwarders      = map(cidrhost(var.ip_ranges.onprem, 3), null)
 }
 
 resource "google_dns_policy" "inbound" {
@@ -221,9 +221,9 @@ resource "google_dns_policy" "inbound" {
 ################################################################################
 
 module "service-account-gce" {
-  source     = "../../modules/iam-service-accounts"
+  source     = "../../modules/iam-service-account"
   project_id = var.project_id
-  names      = ["gce-test"]
+  name       = "gce-test"
   iam_project_roles = {
     (var.project_id) = [
       "roles/logging.logWriter",
@@ -297,9 +297,9 @@ module "config-onprem" {
 }
 
 module "service-account-onprem" {
-  source     = "../../modules/iam-service-accounts"
+  source     = "../../modules/iam-service-account"
   project_id = var.project_id
-  names      = ["gce-onprem"]
+  name       = "gce-onprem"
   iam_project_roles = {
     (var.project_id) = [
       "roles/compute.viewer",
