@@ -39,7 +39,7 @@ options:
   machineType: "N1_HIGHCPU_8"
 
 substitutions:
-  _TERRAFORM_VERSION: 0.13.3
+  _TERRAFORM_VERSION: 0.14.5
 
 tags:
   - "ci"
