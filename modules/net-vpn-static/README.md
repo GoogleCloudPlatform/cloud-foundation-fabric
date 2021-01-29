@@ -54,7 +54,7 @@ module "vpn" {
 | address | VPN gateway address. |  |
 | gateway | VPN gateway resource. |  |
 | name | VPN gateway name. |  |
-| random_secret | Generated secret. | ✓ |
+| random_secret | Generated secret. |  |
 | self_link | VPN gateway self link. |  |
 | tunnel_names | VPN tunnel names. |  |
 | tunnel_self_links | VPN tunnel self links. |  |

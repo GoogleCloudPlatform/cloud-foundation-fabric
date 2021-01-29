@@ -159,7 +159,7 @@ module "vpn_ha" {
 | external_gateway | External VPN gateway resource. |  |
 | gateway | VPN gateway resource (only if auto-created). |  |
 | name | VPN gateway name (only if auto-created).  |  |
-| random_secret | Generated secret. | ✓ |
+| random_secret | Generated secret. |  |
 | router | Router resource (only if auto-created). |  |
 | router_name | Router name. |  |
 | self_link | HA VPN gateway self link. |  |
