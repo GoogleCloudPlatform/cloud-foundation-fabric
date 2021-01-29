@@ -67,7 +67,8 @@ def test_autoscaler(plan_runner):
       'metric': [],
       'min_replicas': 1,
       'mode': 'ON',
-      'scale_in_control': []
+      'scale_in_control': [],
+      'scaling_schedules': [],
   }]
   _, resources = plan_runner(
       FIXTURES_DIR, autoscaler_config=autoscaler_config, regional='true')

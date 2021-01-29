@@ -63,7 +63,7 @@ module "vpn-dynamic" {
 | address | VPN gateway address. |  |
 | gateway | VPN gateway resource. |  |
 | name | VPN gateway name. |  |
-| random_secret | Generated secret. | ✓ |
+| random_secret | Generated secret. |  |
 | router | Router resource (only if auto-created). |  |
 | router_name | Router name. |  |
 | self_link | VPN gateway self link. |  |

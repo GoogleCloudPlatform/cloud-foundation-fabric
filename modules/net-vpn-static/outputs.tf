@@ -60,6 +60,5 @@ output "tunnel_self_links" {
 
 output "random_secret" {
   description = "Generated secret."
-  sensitive   = true
   value       = local.secret
 }
