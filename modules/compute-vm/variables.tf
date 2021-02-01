@@ -23,6 +23,7 @@ variable "attached_disks" {
     options = object({
       auto_delete = bool
       mode        = string
+      regional    = bool
       source      = string
       type        = string
     })
@@ -35,13 +36,15 @@ variable "attached_disk_defaults" {
   type = object({
     auto_delete = bool
     mode        = string
-    type        = string
+    regional    = bool
     source      = string
+    type        = string
   })
   default = {
     auto_delete = true
-    source      = null
     mode        = "READ_WRITE"
+    regional    = false
+    source      = null
     type        = "pd-ssd"
   }
 }
