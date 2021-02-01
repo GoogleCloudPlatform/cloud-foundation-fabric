@@ -33,6 +33,48 @@ module "simple-vm-example" {
 
 ```
 
+### Disk sources
+
+Attached disks can be created and optionally initialized from a pre-existing source, or attached to VMs when pre-existing. The `source` and `source_type` attributes of the `attached_disks` variable allows several modes of operation:
+
+- `source_type = "image"` can be used with zonal disks in instances and templates, set `source` to the image name or link
+- `source_type = "snapshot"` can be used with instances only, set `source` to the snapshot name or link
+- `source_type = "existing"` can be used for both instances and templates, set source to the name (for zonal disks) or link (for regional disks) of the existing disk to attach; no disk will be created
+- `source_type = null` can be used where an empty disk is needed, `source` becomes irrelevant and can be left null
+
+This is an example of attaching a pre-existing regional PD to a new instance:
+
+```hcl
+module "simple-vm-example" {
+  source     = "./modules/compute-vm"
+  project_id = var.project_id
+  region     = var.region
+  name       = "test"
+  network_interfaces = [{
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+    nat        = false
+    addresses  = null
+    alias_ips  = null
+  }]
+  attached_disks = [{
+    name        = "repd-1"
+    size        = 200
+    source_type = "existing"
+    source      = "projects/${var.project_id}/regions/${var.region}/disks/repd-test-1-repd-1"
+    options = {
+      auto_delete = true
+      mode        = null
+      regional    = true
+      type        = null
+    }
+  }]
+  service_account_create = true
+  instance_count = 1
+}
+# tftest:modules=1:resources=2
+```
+
 ### Disk encryption with Cloud KMS
 
 This example shows how to control disk encryption via the the `encryption` variable, in this case the self link to a KMS CryptoKey that will be used to encrypt boot and attached disk. Managing the key with the `../kms` module is of course possible, but is not shown here.
@@ -53,14 +95,10 @@ module "kms-vm-example" {
   attached_disks = [
     {
       name  = "attached-disk"
-      size  = 10
-      image = null
-      options = {
-        auto_delete = true
-        mode        = null
-        source      = null
-        type        = null
-      }
+      size        = 10
+      source      = null
+      source_type = null
+      options     = null
     }
   ]
   service_account_create = true
@@ -132,7 +170,13 @@ module "cos-test" {
     size  = 10
   }
   attached_disks = [
-    { name = "disk-1", size = 10, image = null, options = null }
+    {
+      name        = "disk-1"
+      size        = 10
+      source      = null
+      source_type = null
+      options     = null
+    }
   ]
   service_account        = "vm-default@my-project.iam.gserviceaccount.com"
   use_instance_template  = true
