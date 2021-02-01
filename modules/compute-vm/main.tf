@@ -100,6 +100,7 @@ resource "google_compute_disk" "disks" {
 }
 
 resource "google_compute_region_disk" "disks" {
+  provider      = google-beta
   for_each      = var.use_instance_template ? {} : local.attached_region_disks_pairs
   project       = var.project_id
   region        = var.region
@@ -107,7 +108,6 @@ resource "google_compute_region_disk" "disks" {
   name          = each.key
   type          = local.attached_disks[each.value.disk_name].options.type
   size          = local.attached_disks[each.value.disk_name].size
-  image         = local.attached_disks[each.value.disk_name].image
   labels = merge(var.labels, {
     disk_name = local.attached_disks[each.value.disk_name].name
     disk_type = local.attached_disks[each.value.disk_name].options.type
@@ -115,8 +115,8 @@ resource "google_compute_region_disk" "disks" {
   dynamic "disk_encryption_key" {
     for_each = var.encryption != null ? [""] : []
     content {
-      raw_key           = var.encryption.disk_encryption_key_raw
-      kms_key_self_link = var.encryption.kms_key_self_link
+      raw_key      = var.encryption.disk_encryption_key_raw
+      kms_key_name = var.encryption.kms_key_self_link
     }
   }
 }
@@ -153,7 +153,7 @@ resource "google_compute_instance" "default" {
       mode        = config.value.options.mode
       source = (
         config.value.options.regional
-        ? google_compute_region_disk.disks[config.key].name
+        ? google_compute_region_disk.disks[config.key].id
         : google_compute_disk.disks[config.key].name
       )
     }
