@@ -39,7 +39,7 @@ Attached disks can be created and optionally initialized from a pre-existing sou
 
 - `source_type = "image"` can be used with zonal disks in instances and templates, set `source` to the image name or link
 - `source_type = "snapshot"` can be used with instances only, set `source` to the snapshot name or link
-- `source_type = "existing"` can be used for both instances and templates, set source to the name (for zonal disks) or link (for regional disks) of the existing disk to attach; no disk will be created
+- `source_type = "attach"` can be used for both instances and templates to attach an existing disk, set source to the name (for zonal disks) or link (for regional disks) of the existing disk to attach; no disk will be created
 - `source_type = null` can be used where an empty disk is needed, `source` becomes irrelevant and can be left null
 
 This is an example of attaching a pre-existing regional PD to a new instance:
@@ -59,18 +59,50 @@ module "simple-vm-example" {
   }]
   attached_disks = [{
     name        = "repd-1"
-    size        = 200
-    source_type = "existing"
-    source      = "projects/${var.project_id}/regions/${var.region}/disks/repd-test-1-repd-1"
+    size        = null
+    source_type = "attach"
+    source      = "regions/${var.region}/disks/repd-test-1"
     options = {
-      auto_delete = true
+      auto_delete = false
       mode        = null
       regional    = true
       type        = null
     }
   }]
   service_account_create = true
-  instance_count = 1
+}
+# tftest:modules=1:resources=2
+```
+
+And the same example for an instance template (where not using the full self link of the disk triggers recreation of the template)
+
+```hcl
+module "simple-vm-example" {
+  source     = "./modules/compute-vm"
+  project_id = var.project_id
+  region     = var.region
+  name       = "test"
+  network_interfaces = [{
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+    nat        = false
+    addresses  = null
+    alias_ips  = null
+  }]
+  attached_disks = [{
+    name        = "repd"
+    size        = null
+    source_type = "attach"
+    source      = "https://www.googleapis.com/compute/v1/projects/${var.project_id}/regions/${var.region}/disks/repd-test-1"
+    options = {
+      auto_delete = false
+      mode        = null
+      regional    = true
+      type        = null
+    }
+  }]
+  service_account_create = true
+  use_instance_template  = true
 }
 # tftest:modules=1:resources=2
 ```
@@ -230,7 +262,7 @@ module "instance-group" {
 | project_id | Project id. | <code title="">string</code> | ✓ |  |
 | region | Compute region. | <code title="">string</code> | ✓ |  |
 | *attached_disk_defaults* | Defaults for attached disks options. | <code title="object&#40;&#123;&#10;auto_delete &#61; bool&#10;mode        &#61; string&#10;regional    &#61; bool&#10;type &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;auto_delete &#61; true&#10;mode        &#61; &#34;READ_WRITE&#34;&#10;regional    &#61; false&#10;type &#61; &#34;pd-ssd&#34;&#10;&#125;">...</code> |
-| *attached_disks* | Additional disks, if options is null defaults will be used in its place. Source type is one of 'image' (zonal vm and template), 'snapshot' (vm), 'existing', and null. | <code title="list&#40;object&#40;&#123;&#10;name        &#61; string&#10;size        &#61; string&#10;source_type &#61; string &#35; image &#47; snapshot &#47; existing &#47; null&#10;source      &#61; string&#10;options &#61; object&#40;&#123;&#10;auto_delete &#61; bool&#10;mode        &#61; string&#10;regional    &#61; bool&#10;type &#61; string&#10;&#125;&#41;&#10;&#125;&#41;&#41;">list(object({...}))</code> |  | <code title="&#91;&#93;&#10;validation &#123;&#10;condition &#61; length&#40;&#91;&#10;for d in var.attached_disks : d if&#40;&#10;d.source_type &#61;&#61; null&#10;&#124;&#124;&#10;contains&#40;&#91;&#34;image&#34;, &#34;snapshot&#34;, &#34;existing&#34;&#93;, coalesce&#40;d.source_type, &#34;1&#34;&#41;&#41;&#10;&#41;&#10;&#93;&#41; &#61;&#61; length&#40;var.attached_disks&#41;&#10;error_message &#61; &#34;Source type must be one of &#39;image&#39;, &#39;snapshot&#39;, &#39;existing&#39;, null.&#34;&#10;&#125;">...</code> |
+| *attached_disks* | Additional disks, if options is null defaults will be used in its place. Source type is one of 'image' (zonal disks in vms and template), 'snapshot' (vm), 'existing', and null. | <code title="list&#40;object&#40;&#123;&#10;name        &#61; string&#10;size        &#61; string&#10;source_type &#61; string &#35; image &#47; snapshot &#47; existing &#47; null&#10;source      &#61; string&#10;options &#61; object&#40;&#123;&#10;auto_delete &#61; bool&#10;mode        &#61; string&#10;regional    &#61; bool&#10;type &#61; string&#10;&#125;&#41;&#10;&#125;&#41;&#41;">list(object({...}))</code> |  | <code title="&#91;&#93;&#10;validation &#123;&#10;condition &#61; length&#40;&#91;&#10;for d in var.attached_disks : d if&#40;&#10;d.source_type &#61;&#61; null&#10;&#124;&#124;&#10;contains&#40;&#91;&#34;image&#34;, &#34;snapshot&#34;, &#34;attach&#34;&#93;, coalesce&#40;d.source_type, &#34;1&#34;&#41;&#41;&#10;&#41;&#10;&#93;&#41; &#61;&#61; length&#40;var.attached_disks&#41;&#10;error_message &#61; &#34;Source type must be one of &#39;image&#39;, &#39;snapshot&#39;, &#39;attach&#39;, null.&#34;&#10;&#125;">...</code> |
 | *boot_disk* | Boot disk properties. | <code title="object&#40;&#123;&#10;image &#61; string&#10;size  &#61; number&#10;type &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;image &#61; &#34;projects&#47;debian-cloud&#47;global&#47;images&#47;family&#47;debian-10&#34;&#10;type &#61; &#34;pd-ssd&#34;&#10;size  &#61; 10&#10;&#125;">...</code> |
 | *can_ip_forward* | Enable IP forwarding. | <code title="">bool</code> |  | <code title="">false</code> |
 | *confidential_compute* | Enable Confidential Compute for these instances. | <code title="">bool</code> |  | <code title="">false</code> |

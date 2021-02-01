@@ -78,7 +78,7 @@ locals {
 resource "google_compute_disk" "disks" {
   for_each = var.use_instance_template ? {} : {
     for k, v in local.attached_zone_disks_pairs :
-    k => v if local.attached_disks[v.disk_name].source_type != "existing"
+    k => v if local.attached_disks[v.disk_name].source_type != "attach"
   }
   project = var.project_id
   zone    = local.zones[each.value.name]
@@ -115,7 +115,7 @@ resource "google_compute_region_disk" "disks" {
   provider = google-beta
   for_each = var.use_instance_template ? {} : {
     for k, v in local.attached_region_disks_pairs :
-    k => v if local.attached_disks[v.disk_name].source_type != "existing"
+    k => v if local.attached_disks[v.disk_name].source_type != "attach"
   }
   project       = var.project_id
   region        = var.region
@@ -172,7 +172,7 @@ resource "google_compute_instance" "default" {
       device_name = config.value.name
       mode        = config.value.options.mode
       source = (
-        config.value.source_type == "existing"
+        config.value.source_type == "attach"
         ? config.value.source
         : (
           config.value.options.regional
@@ -307,19 +307,26 @@ resource "google_compute_instance_template" "default" {
     for_each = local.attached_disks
     iterator = config
     content {
-      auto_delete  = config.value.options.auto_delete
-      device_name  = config.value.name
-      disk_type    = config.value.options.type
-      disk_size_gb = config.value.size
-      mode         = config.value.options.mode
+      auto_delete = config.value.options.auto_delete
+      device_name = config.value.name
+      # Cannot use `source` with any of the fields in
+      # [disk_size_gb disk_name disk_type source_image labels]
+      disk_type = (
+        config.value.source_type != "attach" ? config.value.options.type : null
+      )
+      disk_size_gb = (
+        config.value.source_type != "attach" ? config.value.size : null
+      )
+      mode = config.value.options.mode
       source_image = (
         config.value.source_type == "image" ? config.value.source : null
       )
       source = (
-        config.value.source == "existing" ? config.value.source : null
+        config.value.source_type == "attach" ? config.value.source : null
       )
-      # TODO: disk_name (should attach existing disk)
-      # TODO: verify source works as expected for templates
+      disk_name = (
+        config.value.source_type != "attach" ? config.value.name : null
+      )
       type = "PERSISTENT"
     }
   }

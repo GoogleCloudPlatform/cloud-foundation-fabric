@@ -15,7 +15,7 @@
  */
 
 variable "attached_disks" {
-  description = "Additional disks, if options is null defaults will be used in its place. Source type is one of 'image' (zonal vm and template), 'snapshot' (vm), 'existing', and null."
+  description = "Additional disks, if options is null defaults will be used in its place. Source type is one of 'image' (zonal disks in vms and template), 'snapshot' (vm), 'existing', and null."
   type = list(object({
     name        = string
     size        = string
@@ -34,10 +34,10 @@ variable "attached_disks" {
       for d in var.attached_disks : d if(
         d.source_type == null
         ||
-        contains(["image", "snapshot", "existing"], coalesce(d.source_type, "1"))
+        contains(["image", "snapshot", "attach"], coalesce(d.source_type, "1"))
       )
     ]) == length(var.attached_disks)
-    error_message = "Source type must be one of 'image', 'snapshot', 'existing', null."
+    error_message = "Source type must be one of 'image', 'snapshot', 'attach', null."
   }
 }
 
@@ -79,6 +79,12 @@ variable "can_ip_forward" {
 
 variable "confidential_compute" {
   description = "Enable Confidential Compute for these instances."
+  type        = bool
+  default     = false
+}
+
+variable "enable_display" {
+  description = "Enable virtual display on the instances"
   type        = bool
   default     = false
 }
@@ -250,10 +256,4 @@ variable "shielded_config" {
     enable_integrity_monitoring = bool
   })
   default = null
-}
-
-variable "enable_display" {
-  description = "Enable virtual display on the instances"
-  type        = bool
-  default     = false
 }
