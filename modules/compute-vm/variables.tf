@@ -15,20 +15,30 @@
  */
 
 variable "attached_disks" {
-  description = "Additional disks, if options is null defaults will be used in its place."
+  description = "Additional disks, if options is null defaults will be used in its place. Source type is one of 'image' (zonal vm and template), 'snapshot' (vm), 'existing', and null."
   type = list(object({
-    name  = string
-    image = string
-    size  = string
+    name        = string
+    size        = string
+    source_type = string # image / snapshot / existing / null
+    source      = string
     options = object({
       auto_delete = bool
       mode        = string
       regional    = bool
-      source      = string
       type        = string
     })
   }))
   default = []
+  validation {
+    condition = length([
+      for d in var.attached_disks : d if(
+        d.source_type == null
+        ||
+        contains(["image", "snapshot", "existing"], coalesce(d.source_type, "1"))
+      )
+    ]) == length(var.attached_disks)
+    error_message = "Source type must be one of 'image', 'snapshot', 'existing', null."
+  }
 }
 
 variable "attached_disk_defaults" {
@@ -37,14 +47,12 @@ variable "attached_disk_defaults" {
     auto_delete = bool
     mode        = string
     regional    = bool
-    source      = string
     type        = string
   })
   default = {
     auto_delete = true
     mode        = "READ_WRITE"
     regional    = false
-    source      = null
     type        = "pd-ssd"
   }
 }

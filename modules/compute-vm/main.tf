@@ -76,13 +76,25 @@ locals {
 }
 
 resource "google_compute_disk" "disks" {
-  for_each = var.use_instance_template ? {} : local.attached_zone_disks_pairs
-  project  = var.project_id
-  zone     = local.zones[each.value.name]
-  name     = each.key
-  type     = local.attached_disks[each.value.disk_name].options.type
-  size     = local.attached_disks[each.value.disk_name].size
-  image    = local.attached_disks[each.value.disk_name].image
+  for_each = var.use_instance_template ? {} : {
+    for k, v in local.attached_zone_disks_pairs :
+    k => v if local.attached_disks[v.disk_name].source_type != "existing"
+  }
+  project = var.project_id
+  zone    = local.zones[each.value.name]
+  name    = each.key
+  type    = local.attached_disks[each.value.disk_name].options.type
+  size    = local.attached_disks[each.value.disk_name].size
+  image = (
+    local.attached_disks[each.value.disk_name].source_type == "image"
+    ? local.attached_disks[each.value.disk_name].source
+    : null
+  )
+  snapshot = (
+    local.attached_disks[each.value.disk_name].source_type == "snapshot"
+    ? local.attached_disks[each.value.disk_name].source
+    : null
+  )
   labels = merge(var.labels, {
     disk_name = local.attached_disks[each.value.disk_name].name
     disk_type = local.attached_disks[each.value.disk_name].options.type
@@ -100,14 +112,22 @@ resource "google_compute_disk" "disks" {
 }
 
 resource "google_compute_region_disk" "disks" {
-  provider      = google-beta
-  for_each      = var.use_instance_template ? {} : local.attached_region_disks_pairs
+  provider = google-beta
+  for_each = var.use_instance_template ? {} : {
+    for k, v in local.attached_region_disks_pairs :
+    k => v if local.attached_disks[v.disk_name].source_type != "existing"
+  }
   project       = var.project_id
   region        = var.region
   replica_zones = var.zones
   name          = each.key
   type          = local.attached_disks[each.value.disk_name].options.type
   size          = local.attached_disks[each.value.disk_name].size
+  snapshot = (
+    local.attached_disks[each.value.disk_name].source_type == "snapshot"
+    ? local.attached_disks[each.value.disk_name].source
+    : null
+  )
   labels = merge(var.labels, {
     disk_name = local.attached_disks[each.value.disk_name].name
     disk_type = local.attached_disks[each.value.disk_name].options.type
@@ -288,11 +308,15 @@ resource "google_compute_instance_template" "default" {
       disk_type    = config.value.options.type
       disk_size_gb = config.value.size
       mode         = config.value.options.mode
-      source_image = config.value.image
+      source_image = (
+        config.value.source_type == "image" ? config.value.source : null
+      )
+      source = (
+        config.value.source == "existing" ? config.value.source : null
+      )
       # TODO: disk_name (should attach existing disk)
       # TODO: verify source works as expected for templates
-      source = config.value.options.source
-      type   = "PERSISTENT"
+      type = "PERSISTENT"
     }
   }
 
