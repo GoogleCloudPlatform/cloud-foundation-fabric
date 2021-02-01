@@ -19,8 +19,8 @@ variable "attached_disks" {
   type = list(object({
     name        = string
     size        = string
-    source_type = string # image / snapshot / existing / null
     source      = string
+    source_type = string
     options = object({
       auto_delete = bool
       mode        = string
