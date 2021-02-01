@@ -172,9 +172,13 @@ resource "google_compute_instance" "default" {
       device_name = config.value.name
       mode        = config.value.options.mode
       source = (
-        config.value.options.regional
-        ? google_compute_region_disk.disks[config.key].id
-        : google_compute_disk.disks[config.key].name
+        config.value.source_type == "existing"
+        ? config.value.source
+        : (
+          config.value.options.regional
+          ? google_compute_region_disk.disks[config.key].id
+          : google_compute_disk.disks[config.key].name
+        )
       )
     }
   }
