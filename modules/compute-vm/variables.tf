@@ -15,19 +15,30 @@
  */
 
 variable "attached_disks" {
-  description = "Additional disks, if options is null defaults will be used in its place."
+  description = "Additional disks, if options is null defaults will be used in its place. Source type is one of 'image' (zonal disks in vms and template), 'snapshot' (vm), 'existing', and null."
   type = list(object({
-    name  = string
-    image = string
-    size  = string
+    name        = string
+    size        = string
+    source      = string
+    source_type = string
     options = object({
       auto_delete = bool
       mode        = string
-      source      = string
+      regional    = bool
       type        = string
     })
   }))
   default = []
+  validation {
+    condition = length([
+      for d in var.attached_disks : d if(
+        d.source_type == null
+        ||
+        contains(["image", "snapshot", "attach"], coalesce(d.source_type, "1"))
+      )
+    ]) == length(var.attached_disks)
+    error_message = "Source type must be one of 'image', 'snapshot', 'attach', null."
+  }
 }
 
 variable "attached_disk_defaults" {
@@ -35,13 +46,13 @@ variable "attached_disk_defaults" {
   type = object({
     auto_delete = bool
     mode        = string
+    regional    = bool
     type        = string
-    source      = string
   })
   default = {
     auto_delete = true
-    source      = null
     mode        = "READ_WRITE"
+    regional    = false
     type        = "pd-ssd"
   }
 }
@@ -68,6 +79,12 @@ variable "can_ip_forward" {
 
 variable "confidential_compute" {
   description = "Enable Confidential Compute for these instances."
+  type        = bool
+  default     = false
+}
+
+variable "enable_display" {
+  description = "Enable virtual display on the instances"
   type        = bool
   default     = false
 }
@@ -239,10 +256,4 @@ variable "shielded_config" {
     enable_integrity_monitoring = bool
   })
   default = null
-}
-
-variable "enable_display" {
-  description = "Enable virtual display on the instances"
-  type        = bool
-  default     = false
 }

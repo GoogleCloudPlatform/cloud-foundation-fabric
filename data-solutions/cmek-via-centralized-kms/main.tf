@@ -111,15 +111,11 @@ module "kms_vm_example" {
   }]
   attached_disks = [
     {
-      name  = "attacheddisk"
-      size  = 10
-      image = null
-      options = {
-        auto_delete = true
-        mode        = null
-        source      = null
-        type        = null
-      }
+      name        = "attacheddisk"
+      size        = 10
+      source      = null
+      source_type = null
+      options     = null
     }
   ]
   instance_count = 1
