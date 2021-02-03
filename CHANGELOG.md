@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- add support for a region region in the onprem networking example
+- **incompatible change** the `attached_disks` variable type has changed in the `compute-vm` module, to add support for regional persistend disks, and attaching existing disks to instances / templates
+
 ## [4.3.0] - 2021-01-11
 
 - new DNS for Shared VPC example
