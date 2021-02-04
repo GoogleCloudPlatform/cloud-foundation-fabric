@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 - add support for a region region in the onprem networking example
 - **incompatible change** the `attached_disks` variable type has changed in the `compute-vm` module, to add support for regional persistend disks, and attaching existing disks to instances / templates
+- the hub and spoke via peering example now supports project creation, resource prefix, and GKE peering configuration
 
 ## [4.3.0] - 2021-01-11
 
