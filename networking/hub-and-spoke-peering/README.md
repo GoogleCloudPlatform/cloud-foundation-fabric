@@ -41,7 +41,7 @@ gcloud container clusters get-credentials cluster-1 --zone europe-west1-b
 kubectl get all
 ```
 
-The next step is to edit the peering towards the GKE master tenant VPC, and enable export routes. You can do it directly in Terraform with the GKE module `peering_config' variable, via gcloud, or on the cloud ccnsole. We're leaving it as an option, since one of the goals of this example is to allow testing both working and non-working configurations.
+The example configures the peering with the GKE master VPC to export routes for you, so that VPN routes are passed through the peering. You can diable by hand in the console or by editing the `peering_config' variable in the cluster module, to test non-working configurations or switch to using the [GKE proxy](https://cloud.google.com/solutions/creating-kubernetes-engine-private-clusters-with-net-proxies).
 
 ### Export routes via Terraform
 
@@ -82,15 +82,18 @@ The VPN used to connect the GKE masters VPC does not account for HA, upgrading t
 
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
-| project_id | Project id for all resources. | <code title="">string</code> | ✓ |  |
+| project_id | Project id used for all resources. | <code title="">string</code> | ✓ |  |
 | *ip_ranges* | IP CIDR ranges. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="&#123;&#10;hub     &#61; &#34;10.0.0.0&#47;24&#34;&#10;spoke-1 &#61; &#34;10.0.16.0&#47;24&#34;&#10;spoke-2 &#61; &#34;10.0.32.0&#47;24&#34;&#10;&#125;">...</code> |
 | *ip_secondary_ranges* | Secondary IP CIDR ranges. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="&#123;&#10;spoke-2-pods     &#61; &#34;10.128.0.0&#47;18&#34;&#10;spoke-2-services &#61; &#34;172.16.0.0&#47;24&#34;&#10;&#125;">...</code> |
+| *prefix* | Arbitrary string used to prefix resource names. | <code title="">string</code> |  | <code title="">null</code> |
 | *private_service_ranges* | Private service IP CIDR ranges. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="&#123;&#10;spoke-2-cluster-1 &#61; &#34;192.168.0.0&#47;28&#34;&#10;&#125;">...</code> |
+| *project_create* | Set to non null if project needs to be created. | <code title="object&#40;&#123;&#10;billing_account &#61; string&#10;oslogin         &#61; bool&#10;parent          &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="null&#10;validation &#123;&#10;condition &#61; &#40;&#10;var.project_create &#61;&#61; null&#10;&#63; true&#10;: can&#40;regex&#40;&#34;&#40;organizations&#124;folders&#41;&#47;&#91;0-9&#93;&#43;&#34;, var.project_create.parent&#41;&#41;&#10;&#41;&#10;error_message &#61; &#34;Project parent must be of the form folders&#47;folder_id or organizations&#47;organization_id.&#34;&#10;&#125;">...</code> |
 | *region* | VPC region. | <code title="">string</code> |  | <code title="">europe-west1</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
+| project | Project id. |  |
 | vms | GCE VMs. |  |
 <!-- END TFDOC -->

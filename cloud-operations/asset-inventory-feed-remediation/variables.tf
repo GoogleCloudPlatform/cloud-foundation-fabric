@@ -27,7 +27,7 @@ variable "name" {
 }
 
 variable "project_create" {
-  description = "Create project instead ofusing an existing one."
+  description = "Create project instead of using an existing one."
   type        = bool
   default     = false
 }

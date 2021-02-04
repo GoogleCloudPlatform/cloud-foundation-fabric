@@ -31,6 +31,12 @@ variable "ip_secondary_ranges" {
   }
 }
 
+variable "prefix" {
+  description = "Arbitrary string used to prefix resource names."
+  type        = string
+  default     = null
+}
+
 variable "private_service_ranges" {
   description = "Private service IP CIDR ranges."
   type        = map(string)
@@ -39,8 +45,26 @@ variable "private_service_ranges" {
   }
 }
 
+variable "project_create" {
+  description = "Set to non null if project needs to be created."
+  type = object({
+    billing_account = string
+    oslogin         = bool
+    parent          = string
+  })
+  default = null
+  validation {
+    condition = (
+      var.project_create == null
+      ? true
+      : can(regex("(organizations|folders)/[0-9]+", var.project_create.parent))
+    )
+    error_message = "Project parent must be of the form folders/folder_id or organizations/organization_id."
+  }
+}
+
 variable "project_id" {
-  description = "Project id for all resources."
+  description = "Project id used for all resources."
   type        = string
 }
 

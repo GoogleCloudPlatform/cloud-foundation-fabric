@@ -16,5 +16,10 @@
 
 module "test" {
   source     = "../../../../networking/hub-and-spoke-peering"
+  project_create = {
+    billing_account = "123456-123456-123456"
+    oslogin         = true
+    parent          = "folders/123456789"
+  }
   project_id = var.project_id
 }

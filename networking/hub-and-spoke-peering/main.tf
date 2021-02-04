@@ -13,7 +13,9 @@
 # limitations under the License.
 
 locals {
+  prefix = var.prefix != null && var.prefix != "" ? "${var.prefix}-" : ""
   vm-instances = concat(
+    module.vm-hub.instances,
     module.vm-spoke-1.instances,
     module.vm-spoke-2.instances
   )
@@ -23,22 +25,52 @@ locals {
   ])
 }
 
+###############################################################################
+#                                   project                                   #
+###############################################################################
+
+module "project" {
+  source          = "../../modules/project"
+  project_create  = var.project_create != null
+  billing_account = try(var.project_create.billing_account, null)
+  oslogin         = try(var.project_create.oslogin, null)
+  parent          = try(var.project_create.parent, null)
+  name            = var.project_id
+  services = [
+    "compute.googleapis.com",
+    "container.googleapis.com"
+  ]
+  service_config = {
+    disable_on_destroy         = false,
+    disable_dependent_services = false
+  }
+}
+
 ################################################################################
 #                                Hub networking                                #
 ################################################################################
 
 module "vpc-hub" {
   source     = "../../modules/net-vpc"
-  project_id = var.project_id
-  name       = "hub"
+  project_id = module.project.project_id
+  name       = "${local.prefix}hub"
   subnets = [
     {
       ip_cidr_range      = var.ip_ranges.hub
-      name               = "hub-default"
+      name               = "${local.prefix}hub-1"
       region             = var.region
       secondary_ip_range = {}
     }
   ]
+}
+
+module "nat-hub" {
+  source         = "../../modules/net-cloudnat"
+  project_id     = module.project.project_id
+  region         = var.region
+  name           = "${local.prefix}hub"
+  router_name    = "${local.prefix}hub"
+  router_network = module.vpc-hub.self_link
 }
 
 module "vpc-hub-firewall" {
@@ -55,12 +87,12 @@ module "vpc-hub-firewall" {
 
 module "vpc-spoke-1" {
   source     = "../../modules/net-vpc"
-  project_id = var.project_id
-  name       = "spoke-1"
+  project_id = module.project.project_id
+  name       = "${local.prefix}spoke-1"
   subnets = [
     {
       ip_cidr_range      = var.ip_ranges.spoke-1
-      name               = "spoke-1-default"
+      name               = "${local.prefix}spoke-1-1"
       region             = var.region
       secondary_ip_range = {}
     }
@@ -69,7 +101,7 @@ module "vpc-spoke-1" {
 
 module "vpc-spoke-1-firewall" {
   source               = "../../modules/net-vpc-firewall"
-  project_id           = var.project_id
+  project_id           = module.project.project_id
   network              = module.vpc-spoke-1.name
   admin_ranges_enabled = true
   admin_ranges         = values(var.ip_ranges)
@@ -77,10 +109,10 @@ module "vpc-spoke-1-firewall" {
 
 module "nat-spoke-1" {
   source         = "../../modules/net-cloudnat"
-  project_id     = var.project_id
+  project_id     = module.project.project_id
   region         = var.region
-  name           = "spoke-1"
-  router_name    = "spoke-1"
+  name           = "${local.prefix}spoke-1"
+  router_name    = "${local.prefix}spoke-1"
   router_network = module.vpc-spoke-1.self_link
 }
 
@@ -98,12 +130,12 @@ module "hub-to-spoke-1-peering" {
 
 module "vpc-spoke-2" {
   source     = "../../modules/net-vpc"
-  project_id = var.project_id
-  name       = "spoke-2"
+  project_id = module.project.project_id
+  name       = "${local.prefix}spoke-2"
   subnets = [
     {
       ip_cidr_range = var.ip_ranges.spoke-2
-      name          = "spoke-2-default"
+      name          = "${local.prefix}spoke-2-1"
       region        = var.region
       secondary_ip_range = {
         pods     = var.ip_secondary_ranges.spoke-2-pods
@@ -115,7 +147,7 @@ module "vpc-spoke-2" {
 
 module "vpc-spoke-2-firewall" {
   source               = "../../modules/net-vpc-firewall"
-  project_id           = var.project_id
+  project_id           = module.project.project_id
   network              = module.vpc-spoke-2.name
   admin_ranges_enabled = true
   admin_ranges         = values(var.ip_ranges)
@@ -123,10 +155,10 @@ module "vpc-spoke-2-firewall" {
 
 module "nat-spoke-2" {
   source         = "../../modules/net-cloudnat"
-  project_id     = var.project_id
+  project_id     = module.project.project_id
   region         = var.region
-  name           = "spoke-2"
-  router_name    = "spoke-2"
+  name           = "${local.prefix}spoke-2"
+  router_name    = "${local.prefix}spoke-2"
   router_network = module.vpc-spoke-2.self_link
 }
 
@@ -143,14 +175,32 @@ module "hub-to-spoke-2-peering" {
 #                                   Test VMs                                   #
 ################################################################################
 
+module "vm-hub" {
+  source     = "../../modules/compute-vm"
+  project_id = module.project.project_id
+  region     = var.region
+  name       = "${local.prefix}hub"
+  network_interfaces = [{
+    network    = module.vpc-hub.self_link
+    subnetwork = module.vpc-hub.subnet_self_links["${var.region}/${local.prefix}hub-1"]
+    nat        = false
+    addresses  = null
+    alias_ips  = null
+  }]
+  metadata               = { startup-script = local.vm-startup-script }
+  service_account        = module.service-account-gce.email
+  service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+  tags                   = ["ssh"]
+}
+
 module "vm-spoke-1" {
   source     = "../../modules/compute-vm"
-  project_id = var.project_id
+  project_id = module.project.project_id
   region     = var.region
-  name       = "spoke-1-test"
+  name       = "${local.prefix}spoke-1"
   network_interfaces = [{
     network    = module.vpc-spoke-1.self_link
-    subnetwork = module.vpc-spoke-1.subnet_self_links["${var.region}/spoke-1-default"]
+    subnetwork = module.vpc-spoke-1.subnet_self_links["${var.region}/${local.prefix}spoke-1-1"]
     nat        = false
     addresses  = null
     alias_ips  = null
@@ -163,12 +213,12 @@ module "vm-spoke-1" {
 
 module "vm-spoke-2" {
   source     = "../../modules/compute-vm"
-  project_id = var.project_id
+  project_id = module.project.project_id
   region     = var.region
-  name       = "spoke-2-test"
+  name       = "${local.prefix}spoke-2"
   network_interfaces = [{
     network    = module.vpc-spoke-2.self_link
-    subnetwork = module.vpc-spoke-2.subnet_self_links["${var.region}/spoke-2-default"]
+    subnetwork = module.vpc-spoke-2.subnet_self_links["${var.region}/${local.prefix}spoke-2-1"]
     nat        = false
     addresses  = null
     alias_ips  = null
@@ -181,8 +231,8 @@ module "vm-spoke-2" {
 
 module "service-account-gce" {
   source     = "../../modules/iam-service-account"
-  project_id = var.project_id
-  name       = "gce-test"
+  project_id = module.project.project_id
+  name       = "${local.prefix}gce-test"
   iam_project_roles = {
     (var.project_id) = [
       "roles/container.developer",
@@ -198,11 +248,11 @@ module "service-account-gce" {
 
 module "cluster-1" {
   source                    = "../../modules/gke-cluster"
-  name                      = "cluster-1"
-  project_id                = var.project_id
+  name                      = "${local.prefix}cluster-1"
+  project_id                = module.project.project_id
   location                  = "${var.region}-b"
   network                   = module.vpc-spoke-2.self_link
-  subnetwork                = module.vpc-spoke-2.subnet_self_links["${var.region}/spoke-2-default"]
+  subnetwork                = module.vpc-spoke-2.subnet_self_links["${var.region}/${local.prefix}spoke-2-1"]
   secondary_range_pods      = "pods"
   secondary_range_services  = "services"
   default_max_pods_per_node = 32
@@ -217,12 +267,17 @@ module "cluster-1" {
     enable_private_endpoint = true
     master_ipv4_cidr_block  = var.private_service_ranges.spoke-2-cluster-1
   }
+  peering_config = {
+    export_routes = true
+    import_routes = false
+    project_id    = null
+  }
 }
 
 module "cluster-1-nodepool-1" {
   source               = "../../modules/gke-nodepool"
-  name                 = "nodepool-1"
-  project_id           = var.project_id
+  name                 = "${local.prefix}nodepool-1"
+  project_id           = module.project.project_id
   location             = module.cluster-1.location
   cluster_name         = module.cluster-1.name
   node_service_account = module.service-account-gke-node.email
@@ -233,8 +288,8 @@ module "cluster-1-nodepool-1" {
 
 module "service-account-gke-node" {
   source     = "../../modules/iam-service-account"
-  project_id = var.project_id
-  name       = "gke-node"
+  project_id = module.project.project_id
+  name       = "${local.prefix}gke-node"
   iam_project_roles = {
     (var.project_id) = [
       "roles/logging.logWriter", "roles/monitoring.metricWriter",
@@ -248,10 +303,10 @@ module "service-account-gke-node" {
 
 module "vpn-hub" {
   source        = "../../modules/net-vpn-static"
-  project_id    = var.project_id
+  project_id    = module.project.project_id
   region        = var.region
   network       = module.vpc-hub.name
-  name          = "hub"
+  name          = "${local.prefix}hub"
   remote_ranges = values(var.private_service_ranges)
   tunnels = {
     spoke-2 = {
@@ -265,10 +320,10 @@ module "vpn-hub" {
 
 module "vpn-spoke-2" {
   source     = "../../modules/net-vpn-static"
-  project_id = var.project_id
+  project_id = module.project.project_id
   region     = var.region
   network    = module.vpc-spoke-2.name
-  name       = "spoke-2"
+  name       = "${local.prefix}spoke-2"
   # use an aggregate of the remote ranges, so as to be less specific than the
   # routes exchanged via peering
   remote_ranges = ["10.0.0.0/8"]
