@@ -41,7 +41,7 @@ gcloud container clusters get-credentials cluster-1 --zone europe-west1-b
 kubectl get all
 ```
 
-The next step is to edit the peering towards the GKE master tenant VPC, and enable export routes. You can do it directly in Terraform with the GKE module `peering_config' variable, via gcloud, or on the cloud ccnsole. We're leaving it as an option, since one of the goals of this example is to allow testing both working and non-working configurations.
+The example configures the peering with the GKE master VPC to export routes for you, so that VPN routes are passed through the peering. You can diable by hand in the console or by editing the `peering_config' variable in the cluster module, to test non-working configurations or switch to using the [GKE proxy](https://cloud.google.com/solutions/creating-kubernetes-engine-private-clusters-with-net-proxies).
 
 ### Export routes via Terraform
 
