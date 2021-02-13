@@ -108,7 +108,7 @@ module "bu-machine-learning" {
 module "audit-project" {
   source          = "../../modules/project"
   name            = "audit"
-  parent          = var.root_node
+  parent          = module.shared-folder.id
   prefix          = var.prefix
   billing_account = var.billing_account_id
   iam = {
