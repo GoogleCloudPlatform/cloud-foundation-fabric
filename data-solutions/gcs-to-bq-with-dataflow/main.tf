@@ -100,13 +100,13 @@ module "service-account-df" {
   }
 }
 
-data "google_bigquery_default_service_account" "bq_sa" {
-  project = module.project-service.project_id
-}
+# data "google_bigquery_default_service_account" "bq_sa" {
+#   project = module.project-service.project_id
+# }
 
-data "google_storage_project_service_account" "gcs_account" {
-  project = module.project-service.project_id
-}
+# data "google_storage_project_service_account" "gcs_account" {
+#   project = module.project-service.project_id
+# }
 
 ###############################################################################
 #                                   KMS                                       #
@@ -128,15 +128,14 @@ module "kms" {
     },
     key-gcs = {
       "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
-        #"serviceAccount:${module.project-service.service_accounts.robots.storage}",
-        "serviceAccount:${data.google_storage_project_service_account.gcs_account.email_address}"
+        "serviceAccount:${module.project-service.service_accounts.robots.storage}",
+        #"serviceAccount:${data.google_storage_project_service_account.gcs_account.email_address}"
       ]
     },
     key-bq = {
       "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
-        # TODO: Find a better place to store BQ service account
-        #"serviceAccount:${module.project-service.service_accounts.default.bq}",
-        "serviceAccount:${data.google_bigquery_default_service_account.bq_sa.email}",
+        "serviceAccount:${module.project-service.service_accounts.default.bq}",
+        #"serviceAccount:${data.google_bigquery_default_service_account.bq_sa.email}",
       ]
     },
   }
