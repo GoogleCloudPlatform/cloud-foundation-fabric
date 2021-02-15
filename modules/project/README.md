@@ -36,20 +36,12 @@ module "project" {
   name            = "project-example"
 
   iam_additive = {
-    "group:usergroup_watermlon_experimentation@lemonadeinc.io" = [
-	    "roles/viewer",
-	    "roles/storage.objectAdmin"
-    ],
-    "group:usergroup_gcp_admin@lemonadeinc.io" = [
-	    "roles/owner",
-    ],
-    "group:usergroup_gcp_privilege_access@lemonadeinc.io" = [
-	    "roles/editor"
-    ],
-    "group:engineering@lemonadeinc.io" = [
-	    "roles/pubsub.subscriber",
-	    "roles/storage.objectViewer"
-    ],
+    "roles/viewer"               = ["group:usergroup_watermlon_experimentation@lemonadeinc.io],
+    "roles/storage.objectAdmin"  = ["group:usergroup_watermlon_experimentation@lemonadeinc.io],
+    "roles/owner"                = ["group:usergroup_gcp_admin@lemonadeinc.io],
+    "roles/editor"               = ["group:usergroup_gcp_privilege_access@lemonadeinc.io],
+    "roles/pubsub.subscriber"    = ["group:engineering@lemonadeinc.io],
+    "roles/storage.objectViewer" = ["group:engineering@lemonadeinc.io],
   }
 }
 # tftest:modules=1:resources=7
