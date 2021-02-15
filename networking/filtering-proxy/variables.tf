@@ -32,6 +32,7 @@ variable "root_node" {
 variable "region" {
   description = "Default region for resources"
   type        = string
+  default     = "europe-west1"
 }
 
 variable "cidrs" {
@@ -53,4 +54,13 @@ variable "mig" {
   description = "Enables the creation of an autoscaling managed instance group of squid instances."
   type        = bool
   default     = false
+}
+
+variable "allowed_domains" {
+  description = "List of domains allowed by the squid proxy."
+  type        = list(string)
+  default = [
+    ".google.com",
+    ".github.com"
+  ]
 }

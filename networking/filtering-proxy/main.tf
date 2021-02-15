@@ -124,10 +124,8 @@ module "service-account-squid" {
 }
 
 module "cos-squid" {
-  source = "../../modules/cloud-config-container/squid"
-  allow = [
-    ".github.com",
-  ]
+  source  = "../../modules/cloud-config-container/squid"
+  allow   = var.allowed_domains
   clients = [var.cidrs.apps]
 }
 
@@ -250,7 +248,7 @@ module "folder-apps" {
 module "project-app" {
   source          = "../../modules/project"
   billing_account = var.billing_account
-  name            = "app"
+  name            = "app1"
   parent          = module.folder-apps.id
   prefix          = var.prefix
   services        = ["compute.googleapis.com"]

@@ -22,11 +22,12 @@ You can optionally deploy the Squid server as [Managed Instance Group](https://c
 |---|---|:---: |:---:|:---:|
 | billing_account | Billing account id used as default for new projects. | <code title="">string</code> | ✓ |  |
 | prefix | Prefix used for resources that need unique names. | <code title="">string</code> | ✓ |  |
-| region | Default region for resources | <code title="">string</code> | ✓ |  |
 | root_node | Root node for the new hierarchy, either 'organizations/org_id' or 'folders/folder_id'. | <code title="">string</code> | ✓ |  |
+| *allowed_domains* | List of domains allowed by the squid proxy. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="&#91;&#10;&#34;.google.com&#34;,&#10;&#34;.github.com&#34;&#10;&#93;">...</code> |
 | *cidrs* | CIDR ranges for subnets | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="&#123;&#10;apps  &#61; &#34;10.0.0.0&#47;24&#34;&#10;proxy &#61; &#34;10.0.1.0&#47;28&#34;&#10;&#125;">...</code> |
 | *mig* | Enables the creation of an autoscaling managed instance group of squid instances. | <code title="">bool</code> |  | <code title="">false</code> |
 | *nat_logging* | Enables Cloud NAT logging if not null, value is one of 'ERRORS_ONLY', 'TRANSLATIONS_ONLY', 'ALL'. | <code title="">string</code> |  | <code title="">ERRORS_ONLY</code> |
+| *region* | Default region for resources | <code title="">string</code> |  | <code title="">europe-west1</code> |
 
 ## Outputs
 
