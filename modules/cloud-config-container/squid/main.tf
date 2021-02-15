@@ -39,7 +39,9 @@ locals {
     : var.cloud_config
   )
   config_variables = merge(var.config_variables, {
-    whitelist = var.whitelist
-    clients   = var.clients
+    allow          = var.allow
+    deny           = var.deny
+    clients        = var.clients
+    default_action = var.default_action
   })
 }
