@@ -23,7 +23,7 @@ locals {
 }
 
 ###############################################################################
-#                               Top level folder                              #
+#                    Folder with network-related resources                    #
 ###############################################################################
 
 module "folder-netops" {
@@ -111,6 +111,23 @@ module "nat" {
   logging_filter = var.nat_logging
 }
 
+module "private-dns" {
+  source          = "../../modules/dns"
+  project_id      = module.project-host.project_id
+  type            = "private"
+  name            = "internal"
+  domain          = "internal."
+  client_networks = [module.vpc.self_link]
+  recordsets = [
+    { name = "squid", type = "A", ttl = 60, records = [local.squid_address] },
+    { name = "proxy", type = "CNAME", ttl = 3600, records = ["squid.internal."] }
+  ]
+}
+
+###############################################################################
+#                               Squid resources                               #
+###############################################################################
+
 module "service-account-squid" {
   source     = "../../modules/iam-service-account"
   project_id = module.project-host.project_id
@@ -143,9 +160,9 @@ module "squid-vm" {
     alias_ips  = null
   }]
   boot_disk = {
-    image = "projects/cos-cloud/global/images/family/cos-stable"
+    image = "cos-cloud/cos-stable"
     type  = "pd-standard"
-    size  = 15
+    size  = 10
   }
   service_account        = module.service-account-squid.email
   service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
@@ -209,23 +226,6 @@ module "squid-ilb" {
   }
 }
 
-module "private-dns" {
-  source          = "../../modules/dns"
-  project_id      = module.project-host.project_id
-  type            = "private"
-  name            = "internal"
-  domain          = "internal."
-  client_networks = [module.vpc.self_link]
-  recordsets = [
-    {
-      name    = "squid"
-      type    = "A"
-      ttl     = 60
-      records = [local.squid_address]
-    }
-  ]
-}
-
 ###############################################################################
 #                               Service project                               #
 ###############################################################################
@@ -256,4 +256,26 @@ module "project-app" {
     attach       = true
     host_project = module.project-host.project_id
   }
+}
+
+module "test-vm" {
+  source        = "../../modules/compute-vm"
+  project_id    = module.project-app.project_id
+  region        = var.region
+  name          = "test-vm"
+  instance_type = "e2-micro"
+  tags          = ["ssh"]
+  network_interfaces = [{
+    network    = module.vpc.self_link
+    subnetwork = module.vpc.subnet_self_links["${var.region}/apps"]
+    nat        = false
+    addresses  = null
+    alias_ips  = null
+  }]
+  boot_disk = {
+    image = "debian-cloud/debian-10"
+    type  = "pd-standard"
+    size  = 10
+  }
+  service_account_create = true
 }
