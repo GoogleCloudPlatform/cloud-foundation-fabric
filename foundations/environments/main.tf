@@ -24,8 +24,8 @@ module "tf-project" {
   parent          = var.root_node
   prefix          = var.prefix
   billing_account = var.billing_account_id
-  iam_additive = {
-    for name in var.iam_terraform_owners : (name) => ["roles/owner"]
+  iam_additive    = {
+    "roles/owner" = var.iam_terraform_owners
   }
   services = var.project_services
 }
@@ -158,8 +158,8 @@ module "sharedsvc-project" {
   parent          = var.root_node
   prefix          = var.prefix
   billing_account = var.billing_account_id
-  iam_additive = {
-    for name in var.iam_shared_owners : (name) => ["roles/owner"]
+  iam_additive    = {
+    "roles/owner" = var.iam_shared_owners
   }
   services = var.project_services
 }
