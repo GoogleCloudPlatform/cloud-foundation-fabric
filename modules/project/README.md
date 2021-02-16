@@ -36,15 +36,12 @@ module "project" {
   name            = "project-example"
 
   iam_additive = {
-    "roles/viewer"               = ["group:usergroup_watermlon_experimentation@lemonadeinc.io],
-    "roles/storage.objectAdmin"  = ["group:usergroup_watermlon_experimentation@lemonadeinc.io],
-    "roles/owner"                = ["group:usergroup_gcp_admin@lemonadeinc.io],
-    "roles/editor"               = ["group:usergroup_gcp_privilege_access@lemonadeinc.io],
-    "roles/pubsub.subscriber"    = ["group:engineering@lemonadeinc.io],
-    "roles/storage.objectViewer" = ["group:engineering@lemonadeinc.io],
+    "roles/viewer"               = ["group:one@example.org", "group:two@xample.org"],
+    "roles/storage.objectAdmin"  = ["group:two@example.org"],
+    "roles/owner"                = ["group:three@example.org"],
   }
 }
-# tftest:modules=1:resources=7
+# tftest:modules=1:resources=5
 ```
 
 ### Organization policies
