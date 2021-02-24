@@ -169,7 +169,7 @@ resource "google_project_organization_policy" "boolean" {
   project    = local.project.project_id
   constraint = each.key
 
-  dynamic boolean_policy {
+  dynamic "boolean_policy" {
     for_each = each.value == null ? [] : [each.value]
     iterator = policy
     content {
@@ -177,7 +177,7 @@ resource "google_project_organization_policy" "boolean" {
     }
   }
 
-  dynamic restore_policy {
+  dynamic "restore_policy" {
     for_each = each.value == null ? [""] : []
     content {
       default = true
@@ -190,13 +190,13 @@ resource "google_project_organization_policy" "list" {
   project    = local.project.project_id
   constraint = each.key
 
-  dynamic list_policy {
+  dynamic "list_policy" {
     for_each = each.value.status == null ? [] : [each.value]
     iterator = policy
     content {
       inherit_from_parent = policy.value.inherit_from_parent
       suggested_value     = policy.value.suggested_value
-      dynamic allow {
+      dynamic "allow" {
         for_each = policy.value.status ? [""] : []
         content {
           values = (
@@ -211,7 +211,7 @@ resource "google_project_organization_policy" "list" {
           )
         }
       }
-      dynamic deny {
+      dynamic "deny" {
         for_each = policy.value.status ? [] : [""]
         content {
           values = (
@@ -229,7 +229,7 @@ resource "google_project_organization_policy" "list" {
     }
   }
 
-  dynamic restore_policy {
+  dynamic "restore_policy" {
     for_each = each.value.status == null ? [true] : []
     content {
       default = true
@@ -297,4 +297,13 @@ resource "google_logging_project_exclusion" "logging-exclusion" {
   project     = local.project.project_id
   description = "${each.key} (Terraform-managed)"
   filter      = each.value
+}
+
+resource "google_essential_contacts_contact" "contact" {
+  provider                            = google-beta
+  for_each                            = var.contacts
+  parent                              = "projects/${local.project.project_id}"
+  email                               = each.key
+  language_tag                        = "en"
+  notification_category_subscriptions = each.value
 }

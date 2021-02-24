@@ -120,7 +120,7 @@ resource "google_organization_iam_audit_config" "config" {
   for_each = var.iam_audit_config
   org_id   = local.organization_id_numeric
   service  = each.key
-  dynamic audit_log_config {
+  dynamic "audit_log_config" {
     for_each = each.value
     iterator = config
     content {
@@ -135,7 +135,7 @@ resource "google_organization_policy" "boolean" {
   org_id     = local.organization_id_numeric
   constraint = each.key
 
-  dynamic boolean_policy {
+  dynamic "boolean_policy" {
     for_each = each.value == null ? [] : [each.value]
     iterator = policy
     content {
@@ -143,7 +143,7 @@ resource "google_organization_policy" "boolean" {
     }
   }
 
-  dynamic restore_policy {
+  dynamic "restore_policy" {
     for_each = each.value == null ? [""] : []
     content {
       default = true
@@ -156,13 +156,13 @@ resource "google_organization_policy" "list" {
   org_id     = local.organization_id_numeric
   constraint = each.key
 
-  dynamic list_policy {
+  dynamic "list_policy" {
     for_each = each.value.status == null ? [] : [each.value]
     iterator = policy
     content {
       inherit_from_parent = policy.value.inherit_from_parent
       suggested_value     = policy.value.suggested_value
-      dynamic allow {
+      dynamic "allow" {
         for_each = policy.value.status ? [""] : []
         content {
           values = (
@@ -177,7 +177,7 @@ resource "google_organization_policy" "list" {
           )
         }
       }
-      dynamic deny {
+      dynamic "deny" {
         for_each = policy.value.status ? [] : [""]
         content {
           values = (
@@ -195,7 +195,7 @@ resource "google_organization_policy" "list" {
     }
   }
 
-  dynamic restore_policy {
+  dynamic "restore_policy" {
     for_each = each.value.status == null ? [true] : []
     content {
       default = true
@@ -287,4 +287,13 @@ resource "google_logging_organization_exclusion" "logging-exclusion" {
   org_id      = local.organization_id_numeric
   description = "${each.key} (Terraform-managed)"
   filter      = each.value
+}
+
+resource "google_essential_contacts_contact" "contact" {
+  provider                            = google-beta
+  for_each                            = var.contacts
+  parent                              = var.organization_id
+  email                               = each.key
+  language_tag                        = "en"
+  notification_category_subscriptions = each.value
 }
