@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 - **incompatible change** the `attached_disks` variable type has changed in the `compute-vm` module, to add support for regional persistend disks, and attaching existing disks to instances / templates
 - the hub and spoke via peering example now supports project creation, resource prefix, and GKE peering configuration
 - make the `project_id` output from the `project` module non-dynamic. This means you can use this output as a key for map fed into a `for_each` (for example, as a key for `iam_project_bindings` in the `iam-service-accounts` module)
+- add support for essential contacts in the in the `project`, `folder` and `organization` modules
 
 ## [4.3.0] - 2021-01-11
 
