@@ -98,6 +98,7 @@ variable "tunnels" {
     bgp_session_range = string
     ike_version       = number
     peer_ip           = string
+    router            = string
     shared_secret     = string
   }))
   default = {}
