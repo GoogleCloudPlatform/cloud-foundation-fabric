@@ -4,7 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-- add support for a region region in the onprem networking example
+- net `filtering_proxy` networking example
+- add support for a second region in the onprem networking example
 - **incompatible change** the `attached_disks` variable type has changed in the `compute-vm` module, to add support for regional persistent disks, and attaching existing disks to instances / templates
 - the hub and spoke via peering example now supports project creation, resource prefix, and GKE peering configuration
 - make the `project_id` output from the `project` module non-dynamic. This means you can use this output as a key for map fed into a `for_each` (for example, as a key for `iam_project_bindings` in the `iam-service-accounts` module)
