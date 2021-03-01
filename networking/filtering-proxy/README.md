@@ -2,8 +2,8 @@
 
 This example shows how to deploy a filtering HTTP proxy to restrict Internet access. Here we show one way to do this using a VPC with two subnets:
 
-- The first subnet (called "apps" in this example) hosts the VMs that will have their Internet access tightly controlled a non-caching filtering forward proxy.
-- The second subnet (called "proxy" in this example) hosts a Cloud NAT instance and a Squid Server [Squid](http://www.squid-cache.org/).
+- The `apps` subnet hosts the VMs that will have their Internet access tightly controlled by a non-caching filtering forward proxy.
+- The `proxy` subnet hosts a Cloud NAT instance and a [Squid](http://www.squid-cache.org/) server.
 
 The VPC is a Shared VPC and all the service projects will be located under a folder enforcing the `compute.vmExternalIpAccess` [organization policies](https://cloud.google.com/resource-manager/docs/organization-policy/org-policy-constraints). This prevents the service projects from having external IPs thus forcing all outbound Internet connections through the proxy.
 
