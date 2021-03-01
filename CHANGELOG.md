@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-- net `filtering_proxy` networking example
+- new `filtering_proxy` networking example
 - add support for a second region in the onprem networking example
 - **incompatible change** the `attached_disks` variable type has changed in the `compute-vm` module, to add support for regional persistent disks, and attaching existing disks to instances / templates
 - the hub and spoke via peering example now supports project creation, resource prefix, and GKE peering configuration
