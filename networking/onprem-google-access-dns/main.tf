@@ -105,6 +105,7 @@ module "vpn1" {
       bgp_session_range = "${local.bgp_interface_gcp1}/30"
       ike_version       = 2
       peer_ip           = module.vm-onprem.external_ips.0
+      router            = null
       shared_secret     = ""
     }
   }
@@ -136,6 +137,7 @@ module "vpn2" {
       bgp_session_range = "${local.bgp_interface_gcp2}/30"
       ike_version       = 2
       peer_ip           = module.vm-onprem.external_ips.0
+      router            = null
       shared_secret     = ""
     }
   }
