@@ -115,9 +115,10 @@ variable "tunnels" {
     # from the 169.254.0.0/16 block.
     bgp_session_range               = string
     ike_version                     = number
-    vpn_gateway_interface           = number
     peer_external_gateway_interface = number
+    router                          = string
     shared_secret                   = string
+    vpn_gateway_interface           = number
   }))
   default = {}
 }

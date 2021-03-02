@@ -79,6 +79,7 @@ module "vpn-hub-a" {
       bgp_session_range = "${cidrhost(var.bgp_interface_ranges.spoke-1, 1)}/30"
       ike_version       = 2
       peer_ip           = module.vpn-spoke-1.address
+      router            = null
       shared_secret     = ""
     }
   }
@@ -108,6 +109,7 @@ module "vpn-hub-b" {
       bgp_session_range = "${cidrhost(var.bgp_interface_ranges.spoke-2, 1)}/30"
       ike_version       = 2
       peer_ip           = module.vpn-spoke-2.address
+      router            = null
       shared_secret     = ""
     }
   }
@@ -162,6 +164,7 @@ module "vpn-spoke-1" {
       bgp_session_range = "${cidrhost(var.bgp_interface_ranges.spoke-1, 2)}/30"
       ike_version       = 2
       peer_ip           = module.vpn-hub-a.address
+      router            = null
       shared_secret     = module.vpn-hub-a.random_secret
     }
   }
@@ -225,6 +228,7 @@ module "vpn-spoke-2" {
       bgp_session_range = "${cidrhost(var.bgp_interface_ranges.spoke-2, 2)}/30"
       ike_version       = 2
       peer_ip           = module.vpn-hub-b.address
+      router            = null
       shared_secret     = module.vpn-hub-b.random_secret
     }
   }

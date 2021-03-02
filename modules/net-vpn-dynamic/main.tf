@@ -83,7 +83,7 @@ resource "google_compute_router" "router" {
         : var.router_advertise_config.groups
       )
     )
-    dynamic advertised_ip_ranges {
+    dynamic "advertised_ip_ranges" {
       for_each = (
         var.router_advertise_config == null ? {} : (
           var.router_advertise_config.mode != "CUSTOM"
@@ -106,7 +106,7 @@ resource "google_compute_router_peer" "bgp_peer" {
   region          = var.region
   project         = var.project_id
   name            = "${var.name}-${each.key}"
-  router          = local.router
+  router          = each.value.router == null ? local.router : each.value.router
   peer_ip_address = each.value.bgp_peer.address
   peer_asn        = each.value.bgp_peer.asn
   advertised_route_priority = (
@@ -126,7 +126,7 @@ resource "google_compute_router_peer" "bgp_peer" {
       : each.value.bgp_peer_options.advertise_groups
     )
   )
-  dynamic advertised_ip_ranges {
+  dynamic "advertised_ip_ranges" {
     for_each = (
       each.value.bgp_peer_options == null ? {} : (
         each.value.bgp_peer_options.advertise_mode != "CUSTOM"
@@ -148,7 +148,7 @@ resource "google_compute_router_interface" "router_interface" {
   project    = var.project_id
   region     = var.region
   name       = "${var.name}-${each.key}"
-  router     = local.router
+  router     = each.value.router == null ? local.router : each.value.router
   ip_range   = each.value.bgp_session_range == "" ? null : each.value.bgp_session_range
   vpn_tunnel = google_compute_vpn_tunnel.tunnels[each.key].name
 }
@@ -165,7 +165,7 @@ resource "google_compute_vpn_tunnel" "tunnels" {
   project     = var.project_id
   region      = var.region
   name        = "${var.name}-${each.key}"
-  router      = local.router
+  router      = each.value.router == null ? local.router : each.value.router
   peer_ip     = each.value.peer_ip
   ike_version = each.value.ike_version
   shared_secret = (
