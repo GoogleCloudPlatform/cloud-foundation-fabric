@@ -4,8 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [4.4.0] - 2021-03-02
+
 - new `filtering_proxy` networking example
 - add support for a second region in the onprem networking example
+- dd support for per-tunnel router to VPN HA and VPN dynamic modules
 - **incompatible change** the `attached_disks` variable type has changed in the `compute-vm` module, to add support for regional persistent disks, and attaching existing disks to instances / templates
 - the hub and spoke via peering example now supports project creation, resource prefix, and GKE peering configuration
 - make the `project_id` output from the `project` module non-dynamic. This means you can use this output as a key for map fed into a `for_each` (for example, as a key for `iam_project_bindings` in the `iam-service-accounts` module)
@@ -255,7 +258,8 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.3.0...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.4.0...HEAD
+[4.4.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.3.0...v4.4.0
 [4.3.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.2.0...v4.3.0
 [4.2.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.1.0...v4.2.0
 [4.1.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.0.0...v4.1.0
