@@ -169,10 +169,13 @@ variable "shared_vpc_service_config" {
 variable "logging_sinks" {
   description = "Logging sinks to create for this project."
   type = map(object({
-    destination = string
-    type        = string
-    filter      = string
-    iam         = bool
+    destination   = string
+    type          = string
+    filter        = string
+    iam           = bool
+    unique_writer = bool
+    # TODO exclusions also support description and disabled
+    exclusions = map(string)
   }))
   default = {}
 }

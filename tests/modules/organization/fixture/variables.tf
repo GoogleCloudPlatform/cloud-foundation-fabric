@@ -81,6 +81,7 @@ variable "logging_sinks" {
     filter           = string
     iam              = bool
     include_children = bool
+    exclusions       = map(string)
   }))
   default = {}
 }

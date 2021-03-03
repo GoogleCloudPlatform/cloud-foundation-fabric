@@ -80,6 +80,13 @@ module "pubsub" {
   name       = "pubsub_sink"
 }
 
+module "bucket" {
+  source      = "./modules/logging-bucket"
+  parent_type = "project"
+  parent      = "my-project"
+  id          = "bucket"
+}
+
 module "org" {
   source          = "./modules/organization"
   organization_id = var.organization_id
@@ -91,6 +98,7 @@ module "org" {
       filter           = "severity=WARNING"
       iam              = false
       include_children = true
+      exclusions       = {}
     }
     info = {
       type             = "bigquery"
@@ -98,6 +106,7 @@ module "org" {
       filter           = "severity=INFO"
       iam              = false
       include_children = true
+      exclusions       = {}
     }
     notice = {
       type             = "pubsub"
@@ -105,13 +114,24 @@ module "org" {
       filter           = "severity=NOTICE"
       iam              = true
       include_children = true
+      exclusions       = {}
+    }
+    debug = {
+      type             = "logging"
+      destination      = module.bucket.id
+      filter           = "severity=DEBUG"
+      iam              = true
+      include_children = false
+      exclusions = {
+        no-compute = "logName:compute"
+      }
     }
   }
   logging_exclusions = {
     no-gce-instances = "resource.type=gce_instance"
   }
 }
-# tftest:modules=4:resources=8
+# tftest:modules=5:resources=10
 ```
 
 
@@ -132,7 +152,7 @@ module "org" {
 | *iam_audit_config_authoritative* | IAM Authoritative service audit logging configuration. Service as key, map of log permission (eg DATA_READ) and excluded members as value for each service. Audit config should also be authoritative when using authoritative bindings. Use with caution. | <code title="map&#40;map&#40;list&#40;string&#41;&#41;&#41;">map(map(list(string)))</code> |  | <code title="">null</code> |
 | *iam_bindings_authoritative* | IAM authoritative bindings, in {ROLE => [MEMBERS]} format. Roles and members not explicitly listed will be cleared. Bindings should also be authoritative when using authoritative audit config. Use with caution. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">null</code> |
 | *logging_exclusions* | Logging exclusions for this organization in the form {NAME -> FILTER}. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
-| *logging_sinks* | Logging sinks to create for this organization. | <code title="map&#40;object&#40;&#123;&#10;destination      &#61; string&#10;type &#61; string&#10;filter           &#61; string&#10;iam              &#61; bool&#10;include_children &#61; bool&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
+| *logging_sinks* | Logging sinks to create for this organization. | <code title="map&#40;object&#40;&#123;&#10;destination      &#61; string&#10;type &#61; string&#10;filter           &#61; string&#10;iam              &#61; bool&#10;include_children &#61; bool&#10;exclusions &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
 | *policy_boolean* | Map of boolean org policies and enforcement value, set value to null for policy restore. | <code title="map&#40;bool&#41;">map(bool)</code> |  | <code title="">{}</code> |
 | *policy_list* | Map of list org policies, status is true for allow, false for deny, null for restore. Values can only be used for allow or deny. | <code title="map&#40;object&#40;&#123;&#10;inherit_from_parent &#61; bool&#10;suggested_value     &#61; string&#10;status              &#61; bool&#10;values              &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
 

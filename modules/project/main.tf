@@ -42,8 +42,7 @@ locals {
     gcs      = "storage.googleapis.com"
     bigquery = "bigquery.googleapis.com"
     pubsub   = "pubsub.googleapis.com"
-    # TODO: add logging buckets support
-    # logging  = "logging.googleapis.com"
+    logging  = "logging.googleapis.com"
   }
   sink_bindings = {
     for type in ["gcs", "bigquery", "pubsub", "logging"] :
@@ -263,9 +262,19 @@ resource "google_logging_project_sink" "sink" {
   for_each = local.logging_sinks
   name     = each.key
   #description = "${each.key} (Terraform-managed)"
-  project     = local.project.project_id
-  destination = "${local.sink_type_destination[each.value.type]}/${each.value.destination}"
-  filter      = each.value.filter
+  project                = local.project.project_id
+  destination            = "${local.sink_type_destination[each.value.type]}/${each.value.destination}"
+  filter                 = each.value.filter
+  unique_writer_identity = each.value.unique_writer
+
+  dynamic "exclusions" {
+    for_each = each.value.exclusions
+    iterator = exclusion
+    content {
+      name   = exclusion.key
+      filter = exclusion.value
+    }
+  }
 }
 
 resource "google_storage_bucket_iam_binding" "gcs-sinks-binding" {

@@ -63,6 +63,13 @@ module "pubsub" {
   name       = "pubsub_sink"
 }
 
+module "bucket" {
+  source      = "./modules/logging-bucket"
+  parent_type = "project"
+  parent      = "my-project"
+  id          = "bucket"
+}
+
 module "folder-sink" {
   source = "./modules/folder"
   parent = "folders/657104291943"
@@ -74,6 +81,7 @@ module "folder-sink" {
       filter           = "severity=WARNING"
       iam              = false
       include_children = true
+      exclusions       = {}
     }
     info = {
       type             = "bigquery"
@@ -81,6 +89,7 @@ module "folder-sink" {
       filter           = "severity=INFO"
       iam              = false
       include_children = true
+      exclusions       = {}
     }
     notice = {
       type             = "pubsub"
@@ -88,13 +97,24 @@ module "folder-sink" {
       filter           = "severity=NOTICE"
       iam              = true
       include_children = true
+      exclusions       = {}
+    }
+    debug = {
+      type             = "logging"
+      destination      = module.bucket.id
+      filter           = "severity=DEBUG"
+      iam              = true
+      include_children = true
+      exclusions = {
+        no-compute = "logName:compute"
+      }
     }
   }
   logging_exclusions = {
     no-gce-instances = "resource.type=gce_instance"
   }
 }
-# tftest:modules=4:resources=9
+# tftest:modules=5:resources=11
 ```
 
 ### Hierarchical firewall policies
@@ -151,7 +171,7 @@ module "folder2" {
 | *iam* | IAM bindings in {ROLE => [MEMBERS]} format. | <code title="map&#40;set&#40;string&#41;&#41;">map(set(string))</code> |  | <code title="">{}</code> |
 | *id* | Folder ID in case you use folder_create=false | <code title="">string</code> |  | <code title="">null</code> |
 | *logging_exclusions* | Logging exclusions for this folder in the form {NAME -> FILTER}. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
-| *logging_sinks* | Logging sinks to create for this folder. | <code title="map&#40;object&#40;&#123;&#10;destination      &#61; string&#10;type &#61; string&#10;filter           &#61; string&#10;iam              &#61; bool&#10;include_children &#61; bool&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
+| *logging_sinks* | Logging sinks to create for this folder. | <code title="map&#40;object&#40;&#123;&#10;destination      &#61; string&#10;type &#61; string&#10;filter           &#61; string&#10;iam              &#61; bool&#10;include_children &#61; bool&#10;exclusions &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
 | *name* | Folder name. | <code title="">string</code> |  | <code title="">null</code> |
 | *parent* | Parent in folders/folder_id or organizations/org_id format. | <code title="">string</code> |  | <code title="null&#10;validation &#123;&#10;condition     &#61; var.parent &#61;&#61; null &#124;&#124; can&#40;regex&#40;&#34;&#40;organizations&#124;folders&#41;&#47;&#91;0-9&#93;&#43;&#34;, var.parent&#41;&#41;&#10;error_message &#61; &#34;Parent must be of the form folders&#47;folder_id or organizations&#47;organization_id.&#34;&#10;&#125;">...</code> |
 | *policy_boolean* | Map of boolean org policies and enforcement value, set value to null for policy restore. | <code title="map&#40;bool&#41;">map(bool)</code> |  | <code title="">{}</code> |
