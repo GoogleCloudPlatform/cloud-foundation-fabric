@@ -30,8 +30,7 @@ locals {
     gcs      = "storage.googleapis.com"
     bigquery = "bigquery.googleapis.com"
     pubsub   = "pubsub.googleapis.com"
-    # TODO: add logging buckets support
-    # logging  = "logging.googleapis.com"
+    logging  = "logging.googleapis.com"
   }
   sink_bindings = {
     for type in ["gcs", "bigquery", "pubsub", "logging"] :
@@ -192,6 +191,15 @@ resource "google_logging_folder_sink" "sink" {
   destination      = "${local.sink_type_destination[each.value.type]}/${each.value.destination}"
   filter           = each.value.filter
   include_children = each.value.include_children
+
+  dynamic "exclusions" {
+    for_each = each.value.exclusions
+    iterator = exclusion
+    content {
+      name   = exclusion.key
+      filter = exclusion.value
+    }
+  }
 }
 
 resource "google_storage_bucket_iam_binding" "gcs-sinks-binding" {

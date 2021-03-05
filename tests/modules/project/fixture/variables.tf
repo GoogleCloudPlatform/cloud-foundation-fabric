@@ -96,10 +96,12 @@ variable "services" {
 
 variable "logging_sinks" {
   type = map(object({
-    destination = string
-    type        = string
-    filter      = string
-    iam         = bool
+    destination   = string
+    type          = string
+    filter        = string
+    iam           = bool
+    exclusions    = map(string)
+    unique_writer = bool
   }))
   default = {}
 }
