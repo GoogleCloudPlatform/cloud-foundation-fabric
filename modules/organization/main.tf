@@ -149,6 +149,14 @@ resource "google_organization_policy" "boolean" {
       default = true
     }
   }
+
+  depends_on = [
+    google_organization_iam_audit_config.config,
+    google_organization_iam_binding.authoritative,
+    google_organization_iam_custom_role.roles,
+    google_organization_iam_member.additive,
+    google_organization_iam_policy.authoritative,
+  ]
 }
 
 resource "google_organization_policy" "list" {
@@ -201,20 +209,33 @@ resource "google_organization_policy" "list" {
       default = true
     }
   }
+
+  depends_on = [
+    google_organization_iam_audit_config.config,
+    google_organization_iam_binding.authoritative,
+    google_organization_iam_custom_role.roles,
+    google_organization_iam_member.additive,
+    google_organization_iam_policy.authoritative,
+  ]
 }
 
 resource "google_compute_organization_security_policy" "policy" {
-  provider = google-beta
-  for_each = var.firewall_policies
-
+  provider     = google-beta
+  for_each     = var.firewall_policies
   display_name = each.key
   parent       = var.organization_id
+  depends_on = [
+    google_organization_iam_audit_config.config,
+    google_organization_iam_binding.authoritative,
+    google_organization_iam_custom_role.roles,
+    google_organization_iam_member.additive,
+    google_organization_iam_policy.authoritative,
+  ]
 }
 
 resource "google_compute_organization_security_policy_rule" "rule" {
-  provider = google-beta
-  for_each = local.rules_map
-
+  provider                = google-beta
+  for_each                = local.rules_map
   policy_id               = google_compute_organization_security_policy.policy[each.value.policy].id
   action                  = each.value.action
   direction               = each.value.direction
@@ -249,9 +270,8 @@ resource "google_compute_organization_security_policy_association" "attachment" 
 }
 
 resource "google_logging_organization_sink" "sink" {
-  for_each = local.logging_sinks
-  name     = each.key
-  #description = "${each.key} (Terraform-managed)"
+  for_each         = local.logging_sinks
+  name             = each.key
   org_id           = local.organization_id_numeric
   destination      = "${local.sink_type_destination[each.value.type]}/${each.value.destination}"
   filter           = each.value.filter
