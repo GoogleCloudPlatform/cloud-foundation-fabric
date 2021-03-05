@@ -267,7 +267,8 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.4.1...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.4.2...HEAD
+[4.4.2]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.4.1...v4.4.2
 [4.4.1]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.4.0...v4.4.1
 [4.4.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.3.0...v4.4.0
 [4.3.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.2.0...v4.3.0
