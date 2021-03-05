@@ -3,6 +3,9 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+- new `logging-bucket` to create Cloud Logging Buckets
+- add support to create logging sinks using logging buckets as the destination
+- **incompatible change** extended logging sinks to support per-sink exclusions
 
 ## [4.4.2] - 2021-03-05
 
@@ -17,7 +20,7 @@ All notable changes to this project will be documented in this file.
 
 - new `filtering_proxy` networking example
 - add support for a second region in the onprem networking example
-- dd support for per-tunnel router to VPN HA and VPN dynamic modules
+- add support for per-tunnel router to VPN HA and VPN dynamic modules
 - **incompatible change** the `attached_disks` variable type has changed in the `compute-vm` module, to add support for regional persistent disks, and attaching existing disks to instances / templates
 - the hub and spoke via peering example now supports project creation, resource prefix, and GKE peering configuration
 - make the `project_id` output from the `project` module non-dynamic. This means you can use this output as a key for map fed into a `for_each` (for example, as a key for `iam_project_bindings` in the `iam-service-accounts` module)
