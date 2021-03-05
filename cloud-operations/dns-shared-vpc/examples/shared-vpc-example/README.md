@@ -12,8 +12,8 @@ You should create a `backend.tf` file with the following configuration:
 ``` terraform
 terraform {
   required_providers {
-    google = "~> 3.51.0"
-    google-beta = "~> 3.51.0"
+    google = ">= 3.51.0"
+    google-beta = ">= 3.51.0"
   }
 
   backend "gcs" {
