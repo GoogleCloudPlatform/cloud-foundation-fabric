@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [4.4.2] - 2021-03-05
+
+- fix versions constraints on modules to avoid the `no available releases match the given constraints` error
+
 ## [4.4.1] - 2021-03-05
 
 - depend specific org module resources (eg policies) from IAM bindings
