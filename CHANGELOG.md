@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [4.4.1] - 2021-03-05
+
+- depend specific org module resources (eg policies) from IAM bindings
+- set version for google-beta provider in project module
+
 ## [4.4.0] - 2021-03-02
 
 - new `filtering_proxy` networking example
@@ -258,7 +263,8 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.4.0...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.4.1...HEAD
+[4.4.1]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.4.0...v4.4.1
 [4.4.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.3.0...v4.4.0
 [4.3.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.2.0...v4.3.0
 [4.2.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.1.0...v4.2.0
