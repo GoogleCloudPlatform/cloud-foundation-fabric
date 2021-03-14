@@ -81,7 +81,7 @@ rule-name: # descriptive name, naming convention is adjusted by the module
 Firewall rules example yaml configuration
 
 ```bash
-cat ./production/core-network/common-rules.yaml
+cat ./prod/core-network/common-rules.yaml
 # allow ingress from GCLB to all instances in the network
 lb-health-checks:
   allow:
@@ -103,7 +103,7 @@ deny-all:
   destination_ranges:
   - 0.0.0.0/0
 
-cat ./development/team-a/web-app-a.yaml
+cat ./dev/team-a/web-app-a.yaml
 # Myapp egress
 web-app-a-egress:
   allow:
