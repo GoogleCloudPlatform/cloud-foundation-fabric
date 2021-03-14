@@ -15,7 +15,7 @@ module "prod-firewall" {
   source      = "./modules/net-vpc-firewall-yaml"
   project_id  = "my-prod-project"
   network     = "my-prod-network"
-  config_path = "./production"
+  config_path = "./prod"
   log_config  = {
     metadata = "INCLUDE_ALL_METADATA"
   }
@@ -25,15 +25,16 @@ module "dev-firewall" {
   source      = "./modules/net-vpc-firewall-yaml"
   project_id  = "my-dev-project"
   network     = "my-dev-network"
-  config_path = "./development"
+  config_path = "./dev"
 }
+# tftest:skip
 ```
 
 ### Configuration Structure
 
 ```bash
-├── development
-│   ├── core-network
+├── dev
+│   ├── core
 │   │   └── common-rules.yaml
 │   ├── team-a
 │   │   ├── databases.yaml
@@ -41,8 +42,8 @@ module "dev-firewall" {
 │   └── team-b
 │       ├── backend.yaml
 │       └── frontend.yaml
-└── production
-    ├── core-network
+└── prod
+    ├── core
     │   └── common-rules.yaml
     ├── team-a
     │   ├── databases.yaml
@@ -144,4 +145,3 @@ web-app-a-ingress:
 | ingress_allow_rules | Ingress rules with allow blocks. |  |
 | ingress_deny_rules | Ingress rules with deny blocks. |  |
 <!-- END TFDOC -->
-

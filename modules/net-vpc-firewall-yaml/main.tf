@@ -34,7 +34,8 @@ resource "google_compute_firewall" "rules" {
   for_each = local.firewall_rules
   project  = var.project_id
   name = format(
-    "fwr-%s-%s-%s",
+    "fwr-%s-%s-%s-%s",
+    var.network,
     (try(each.value.target_service_accounts, null) != null ? "sac" : try(each.value.target_tags, null) != null ? "vpc" : "all"),
     substr(lower(each.value.direction), 0, 1),
     each.key
