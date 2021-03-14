@@ -92,7 +92,7 @@ lb-health-checks:
   - 35.191.0.0/16
   - 130.211.0.0/22
 
-# deny all eggress
+# deny all egress
 deny-all:
   deny:
   - ports: []
