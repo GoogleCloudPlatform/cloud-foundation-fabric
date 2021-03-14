@@ -1,0 +1,20 @@
+# allow ingress from GCLB to all instances in the network
+lb-health-checks:
+  allow:
+  - ports: []
+    protocol: tcp
+  direction: INGRESS
+  priority: 1001
+  source_ranges:
+  - 35.191.0.0/16
+  - 130.211.0.0/22
+
+# deny all egress
+deny-all:
+  deny:
+  - ports: []
+    protocol: all
+  direction: EGRESS
+  priority: 65535
+  destination_ranges:
+  - 0.0.0.0/0
