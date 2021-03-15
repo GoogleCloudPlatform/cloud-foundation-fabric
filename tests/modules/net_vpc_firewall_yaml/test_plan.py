@@ -28,7 +28,7 @@ def test_firewall_simple(plan_runner):
         'google_compute_firewall', 'time_static'
     ])
     firewall_values = [r['values'] for r in resources if r['type']
-            == 'google_compute_firewall']
+                       == 'google_compute_firewall']
     assert set([f['project'] for f in firewall_values]) == set(['my-project'])
     assert set([f['network'] for f in firewall_values]) == set(['my-network'])
 
@@ -46,5 +46,5 @@ def test_firewall_log_config(plan_runner):
         'google_compute_firewall', 'time_static'
     ])
     firewall_values = [r['values'] for r in resources if r['type']
-            == 'google_compute_firewall']
-    assert all(f['log_config'] == log_config_value for f in firewall_values) 
+                       == 'google_compute_firewall']
+    assert all(f['log_config'] == log_config_value for f in firewall_values)
