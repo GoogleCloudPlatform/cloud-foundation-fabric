@@ -3,9 +3,10 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
-- new `logging-bucket` to create Cloud Logging Buckets
+- new `logging-bucket` module to create Cloud Logging Buckets
 - add support to create logging sinks using logging buckets as the destination
 - **incompatible change** extended logging sinks to support per-sink exclusions
+- new `net-vpc-firewall-yaml` module
 
 ## [4.4.2] - 2021-03-05
 
