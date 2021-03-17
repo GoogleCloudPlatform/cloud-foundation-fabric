@@ -48,9 +48,12 @@ resource "google_access_context_manager_access_level" "default" {
     content {
       combining_function = try(each.value.combining_function, null)
       conditions {
-        ip_subnetworks = try(basic.value.ip_subnetworks, null)
-        members        = try(basic.value.members, null)
-        negate         = try(basic.value.negate, null)
+        ip_subnetworks         = try(basic.value.ip_subnetworks, null)
+        required_access_levels = try(basic.value.required_access_levels, null)
+        members                = try(basic.value.members, null)
+        negate                 = try(basic.value.negate, null)
+        device_policy          = try(basic.value.device_policy, null)
+        regions                = try(basic.value.regions, null)
       }
     }
   }

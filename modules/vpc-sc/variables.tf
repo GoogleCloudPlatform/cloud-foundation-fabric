@@ -15,7 +15,7 @@
  */
 
 variable "access_levels" {
-  description = "Access Levels."
+  description = "Map of Access Levels to be created. For each Access Level you can specify 'ip_subnetworks, required_access_levels, members, nagete, device_policy or regions'."
   type = map(object({
     combining_function = string
     conditions = list(object({
