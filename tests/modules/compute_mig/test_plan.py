@@ -61,7 +61,7 @@ def test_autoscaler(plan_runner):
   assert autoscaler['type'] == 'google_compute_autoscaler'
   assert autoscaler['values']['autoscaling_policy'] == [{
       'cooldown_period': 60,
-      'cpu_utilization': [{'target': 65}],
+      'cpu_utilization': [{'predictive_method': 'NONE', 'target': 65}],
       'load_balancing_utilization': [],
       'max_replicas': 3,
       'metric': [],
