@@ -15,13 +15,22 @@
  */
 
 variable "access_levels" {
-  description = "Map of Access Levels to be created. For each Access Level you can specify 'ip_subnetworks, required_access_levels, members, nagete, device_policy or regions'."
+  description = "Map of Access Levels to be created. For each Access Level you can specify 'ip_subnetworks, required_access_levels, members, negate, device_policy or regions'."
   type = map(object({
     combining_function = string
     conditions = list(object({
-      ip_subnetworks = list(string)
-      members        = list(string)
-      negate         = string
+      ip_subnetworks         = list(string)
+      required_access_levels = list(string)
+      members                = list(string)
+      negate                 = string
+      device_policy          = object({
+        require_screen_lock              = bool
+        allowed_encryption_statuses      = string
+        allowed_device_management_levels = string
+        require_admin_approval           = bool
+        require_corp_owned               = bool
+      })
+      regions                = list(string)
     }))
   }))
   default = {}
