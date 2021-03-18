@@ -63,8 +63,11 @@ module "vpc-sc" {
       combining_function = "AND"
       conditions = [{
         ip_subnetworks = ["85.85.85.52/32"]
+        required_access_levels = null
         members        = []
         negate         = false
+        device_policy  = null
+        regions        = null
       }]
     }
   }
