@@ -20,8 +20,11 @@ module "vpc-sc" {
       combining_function = "AND"
       conditions = [{
         ip_subnetworks = ["85.85.85.52/32"]
+        required_access_levels = null
         members        = []
         negate         = false
+        device_policy  = null
+        regions        = null
       }]
     }
   }
@@ -60,8 +63,11 @@ module "vpc-sc" {
       combining_function = "AND"
       conditions = [{
         ip_subnetworks = ["85.85.85.52/32"]
+        required_access_levels = null
         members        = []
         negate         = false
+        device_policy  = null
+        regions        = null
       }]
     }
   }
@@ -101,7 +107,7 @@ module "vpc-sc" {
 | access_policy_title | Access Policy title to be created. | <code title="">string</code> | ✓ |  |
 | organization_id | Organization id in organizations/nnnnnn format. | <code title="">string</code> | ✓ |  |
 | *access_level_perimeters* | Enforced mode -> Access Level -> Perimeters mapping. Enforced mode can be 'enforced' or 'dry_run' | <code title="map&#40;map&#40;list&#40;string&#41;&#41;&#41;">map(map(list(string)))</code> |  | <code title="">{}</code> |
-| *access_levels* | Access Levels. | <code title="map&#40;object&#40;&#123;&#10;combining_function &#61; string&#10;conditions &#61; list&#40;object&#40;&#123;&#10;ip_subnetworks &#61; list&#40;string&#41;&#10;members        &#61; list&#40;string&#41;&#10;negate         &#61; string&#10;&#125;&#41;&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
+| *access_levels* | Map of Access Levels to be created. For each Access Level you can specify 'ip_subnetworks, required_access_levels, members, negate, device_policy or regions'. | <code title="map&#40;object&#40;&#123;&#10;combining_function &#61; string&#10;conditions &#61; list&#40;object&#40;&#123;&#10;ip_subnetworks         &#61; list&#40;string&#41;&#10;required_access_levels &#61; list&#40;string&#41;&#10;members                &#61; list&#40;string&#41;&#10;negate                 &#61; string&#10;device_policy          &#61; object&#40;&#123;&#10;require_screen_lock              &#61; bool&#10;allowed_encryption_statuses      &#61; string&#10;allowed_device_management_levels &#61; string&#10;require_admin_approval           &#61; bool&#10;require_corp_owned               &#61; bool&#10;&#125;&#41;&#10;regions                &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
 | *perimeter_projects* | Perimeter -> Enforced Mode -> Projects Number mapping. Enforced mode can be 'enforced' or 'dry_run'. | <code title="map&#40;map&#40;list&#40;number&#41;&#41;&#41;">map(map(list(number)))</code> |  | <code title="">{}</code> |
 | *perimeters* | Set of Perimeters. | <code title="map&#40;object&#40;&#123;&#10;type &#61; string&#10;dry_run_config &#61; object&#40;&#123;&#10;restricted_services     &#61; list&#40;string&#41;&#10;vpc_accessible_services &#61; list&#40;string&#41;&#10;&#125;&#41;&#10;enforced_config &#61; object&#40;&#123;&#10;restricted_services     &#61; list&#40;string&#41;&#10;vpc_accessible_services &#61; list&#40;string&#41;&#10;&#125;&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
 

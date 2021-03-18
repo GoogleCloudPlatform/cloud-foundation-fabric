@@ -44,13 +44,23 @@ resource "google_access_context_manager_access_level" "default" {
 
   dynamic "basic" {
     for_each = try(toset(each.value.conditions), [])
+    iterator = condition
 
     content {
       combining_function = try(each.value.combining_function, null)
       conditions {
-        ip_subnetworks = try(basic.value.ip_subnetworks, null)
-        members        = try(basic.value.members, null)
-        negate         = try(basic.value.negate, null)
+        ip_subnetworks         = try(condition.value.ip_subnetworks, null)
+        required_access_levels = try(condition.value.required_access_levels, null)
+        members                = try(condition.value.members, null)
+        negate                 = try(condition.value.negate, null)
+        device_policy          {
+          require_screen_lock              = try(condition.value.device_policy.require_screen_lock, null)
+          allowed_encryption_statuses      = try(condition.value.device_policy.allowed_encryption_statuses, null)
+          allowed_device_management_levels = try(condition.value.device_policy.allowed_device_management_levels, null)
+          require_admin_approval           = try(condition.value.device_policy.require_admin_approval, null)
+          require_corp_owned               = try(condition.value.device_policy.require_corp_owned, null)
+        }
+        regions                = try(condition.value.regions, null)
       }
     }
   }
