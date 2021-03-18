@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 - add support to create logging sinks using logging buckets as the destination
 - **incompatible change** extended logging sinks to support per-sink exclusions
 - new `net-vpc-firewall-yaml` module
+- add support for regions, device policy and access policy dependency to `vpc-sc` module
 
 ## [4.4.2] - 2021-03-05
 
