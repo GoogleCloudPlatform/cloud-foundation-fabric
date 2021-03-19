@@ -316,3 +316,21 @@ resource "google_essential_contacts_contact" "contact" {
   language_tag                        = "en"
   notification_category_subscriptions = each.value
 }
+
+resource "google_access_context_manager_service_perimeter_resource" "service-perimeter-resource-standard" {
+  count          = var.service_perimeter_standard != null ? 1 : 0
+
+  # If used, remember to uncomment 'lifecycle' block in the 
+  # modules/vpc-sc/google_access_context_manager_service_perimeter resource.
+  perimeter_name = var.service_perimeter_standard
+  resource       = "projects/${local.project.number}"
+}
+
+resource "google_access_context_manager_service_perimeter_resource" "service-perimeter-resource-bridges" {
+  for_each       = toset(var.service_perimeter_bridges != null ? var.service_perimeter_bridges : [])
+
+  # If used, remember to uncomment 'lifecycle' block in the 
+  # modules/vpc-sc/google_access_context_manager_service_perimeter resource.
+  perimeter_name = each.value
+  resource       = "projects/${local.project.number}"
+}

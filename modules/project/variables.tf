@@ -192,3 +192,16 @@ variable "contacts" {
   type        = map(list(string))
   default     = {}
 }
+
+variable "service_perimeter_standard" {
+  description = "Name of VPC-SC Standard perimeter to add project into. Specify the name in the form of 'accessPolicies/ACCESS_POLICY_NAME/servicePerimeters/PERIMETER_NAME'."
+  type        = string
+  default     = null    
+}
+
+
+variable "service_perimeter_bridges" {
+  description = "Name of VPC-SC Bridge perimeters to add project into. Specify the name in the form of 'accessPolicies/ACCESS_POLICY_NAME/servicePerimeters/PERIMETER_NAME'."
+  type        = list(string)
+  default     = null
+}
