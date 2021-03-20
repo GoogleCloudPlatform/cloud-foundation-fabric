@@ -61,7 +61,10 @@ locals {
     ? var.service_account_scopes
     : (
       var.service_account_create
-      ? ["https://www.googleapis.com/auth/cloud-platform"]
+      ? [
+        "https://www.googleapis.com/auth/cloud-platform",
+        "https://www.googleapis.com/auth/userinfo.email"
+        ]
       : [
         "https://www.googleapis.com/auth/devstorage.read_only",
         "https://www.googleapis.com/auth/logging.write",
