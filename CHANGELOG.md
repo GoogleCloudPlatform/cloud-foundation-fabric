@@ -8,6 +8,8 @@ All notable changes to this project will be documented in this file.
 - **incompatible change** extended logging sinks to support per-sink exclusions
 - new `net-vpc-firewall-yaml` module
 - add support for regions, device policy and access policy dependency to `vpc-sc` module
+- add support for joining VPC-SC perimeters in `project` module
+- add `userinfo.email` to default scopes in `compute-vm` module
 
 ## [4.4.2] - 2021-03-05
 
