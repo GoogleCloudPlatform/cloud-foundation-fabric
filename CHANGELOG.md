@@ -3,6 +3,9 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+
+## [4.5.0] - 2021-03-20
+
 - new `logging-bucket` module to create Cloud Logging Buckets
 - add support to create logging sinks using logging buckets as the destination
 - **incompatible change** extended logging sinks to support per-sink exclusions
@@ -274,7 +277,8 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.4.2...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.5.0...HEAD
+[4.5.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.4.2...v4.5.0
 [4.4.2]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.4.1...v4.4.2
 [4.4.1]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.4.0...v4.4.1
 [4.4.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.3.0...v4.4.0
