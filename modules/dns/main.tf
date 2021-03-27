@@ -42,7 +42,7 @@ resource "google_dns_managed_zone" "non-public" {
   description = var.description
   visibility  = "private"
 
-  dynamic forwarding_config {
+  dynamic "forwarding_config" {
     for_each = (
       var.type == "forwarding" &&
       var.forwarders != null &&
@@ -62,7 +62,7 @@ resource "google_dns_managed_zone" "non-public" {
     }
   }
 
-  dynamic peering_config {
+  dynamic "peering_config" {
     for_each = (
       var.type == "peering" && var.peer_network != null ? [""] : []
     )
@@ -73,17 +73,20 @@ resource "google_dns_managed_zone" "non-public" {
     }
   }
 
-  private_visibility_config {
-    dynamic "networks" {
-      for_each = var.client_networks
-      iterator = network
-      content {
-        network_url = network.value
+  dynamic "private_visibility_config" {
+    for_each = length(var.client_networks) > 0 ? [""] : []
+    content {
+      dynamic "networks" {
+        for_each = var.client_networks
+        iterator = network
+        content {
+          network_url = network.value
+        }
       }
     }
   }
 
-  dynamic service_directory_config {
+  dynamic "service_directory_config" {
     for_each = (
       var.type == "service-directory" && var.service_directory_namespace != null
       ? [""]
