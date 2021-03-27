@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
+variable "client_networks" {
+  type = list(string)
+  default = [
+    "https://www.googleapis.com/compute/v1/projects/my-project/global/networks/default"
+  ]
+}
+
 variable "forwarders" {
   type    = map(string)
   default = {}

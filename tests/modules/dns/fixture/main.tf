@@ -15,15 +15,13 @@
  */
 
 module "test" {
-  source     = "../../../../modules/dns"
-  project_id = "my-project"
-  name       = "test"
-  domain     = "test.example."
-  client_networks = [
-    "https://www.googleapis.com/compute/v1/projects/my-project/global/networks/default"
-  ]
-  type         = var.type
-  forwarders   = var.forwarders
-  peer_network = var.peer_network
-  recordsets   = var.recordsets
+  source          = "../../../../modules/dns"
+  project_id      = "my-project"
+  name            = "test"
+  domain          = "test.example."
+  client_networks = var.client_networks
+  type            = var.type
+  forwarders      = var.forwarders
+  peer_network    = var.peer_network
+  recordsets      = var.recordsets
 }

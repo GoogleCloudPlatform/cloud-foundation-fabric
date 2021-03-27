@@ -34,6 +34,20 @@ def test_private(plan_runner):
     assert len(r['values']['private_visibility_config']) == 1
 
 
+def test_private_no_networks(plan_runner):
+  "Test private zone not exposed to any network."
+  _, resources = plan_runner(FIXTURES_DIR, client_networks='[]')
+  assert len(resources) == 3
+  assert set(r['type'] for r in resources) == set([
+      'google_dns_record_set', 'google_dns_managed_zone'
+  ])
+  for r in resources:
+    if r['type'] != 'google_dns_managed_zone':
+      continue
+    assert r['values']['visibility'] == 'private'
+    assert len(r['values']['private_visibility_config']) == 0
+
+
 def test_forwarding_recordsets_null_forwarders(plan_runner):
   "Test forwarding zone with wrong set of attributes does not break."
   _, resources = plan_runner(FIXTURES_DIR, type='forwarding')
