@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,10 @@
  * limitations under the License.
  */
 
-variable "iam_members" {
-  description = "Map of member lists used to set authoritative bindings, keyed by role."
+variable "iam" {
+  description = "IAM bindings in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
   default     = {}
-}
-
-variable "iam_roles" {
-  description = "List of roles used to set authoritative bindings."
-  type        = list(string)
-  default     = []
 }
 
 variable "location" {

@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,13 +29,8 @@ variable "auto_create_subnetworks" {
   default = false
 }
 
-variable "iam_roles" {
-  type    = map(list(string))
-  default = null
-}
-
-variable "iam_members" {
-  type    = map(map(list(string)))
+variable "iam" {
+  type    = map(map(set(string)))
   default = null
 }
 

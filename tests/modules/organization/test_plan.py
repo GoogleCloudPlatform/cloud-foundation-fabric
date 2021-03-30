@@ -1,4 +1,4 @@
-# Copyright 2020 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,6 +30,22 @@ def test_audit_config(plan_runner):
   assert log_types == set(['DATA_READ', 'DATA_WRITE'])
 
 
+def test_iam_additive_members(plan_runner):
+  "Test IAM additive members."
+  iam = (
+      '{"user:one@example.org" = ["roles/owner"],'
+      '"user:two@example.org" = ["roles/owner", "roles/editor"]}'
+  )
+  _, resources = plan_runner(FIXTURES_DIR, iam_additive_members=iam)
+  roles = set((r['values']['role'], r['values']['member'])
+              for r in resources if r['type'] == 'google_organization_iam_member')
+  assert roles == set([
+      ('roles/owner', 'user:one@example.org'),
+      ('roles/owner', 'user:two@example.org'),
+      ('roles/editor', 'user:two@example.org')
+  ])
+
+
 def test_policy_boolean(plan_runner):
   "Test boolean org policy."
   policy_boolean = '{policy-a = true, policy-b = false, policy-c = null}'
@@ -59,8 +75,6 @@ def test_policy_list(plan_runner):
       '}'
   )
   _, resources = plan_runner(FIXTURES_DIR, policy_list=policy_list)
-  # from pprint import pprint
-  # pprint(resources)
   assert len(resources) == 3
   values = [r['values'] for r in resources]
   assert [r['constraint']
@@ -70,3 +84,78 @@ def test_policy_list(plan_runner):
   assert values[1]['list_policy'][0]['deny'] == [
       {'all': False, 'values': ["bar"]}]
   assert values[2]['restore_policy'] == [{'default': True}]
+
+
+def test_firweall_policy(plan_runner):
+  "Test boolean folder policy."
+  policy = """
+  {
+    policy1 = {
+      allow-ingress = {
+        description = ""
+        direction   = "INGRESS"
+        action      = "allow"
+        priority    = 100
+        ranges      = ["10.0.0.0/8"]
+        ports = {
+          tcp = ["22"]
+        }
+        target_service_accounts = null
+        target_resources        = null
+        logging                 = false
+      }
+      deny-egress = {
+        description = ""
+        direction   = "EGRESS"
+        action      = "deny"
+        priority    = 200
+        ranges      = ["192.168.0.0/24"]
+        ports = {
+          tcp = ["443"]
+        }
+        target_service_accounts = null
+        target_resources        = null
+        logging                 = false
+      }
+    }
+  }
+  """
+  attachment = '{ iap_policy = "policy1" }'
+  _, resources = plan_runner(FIXTURES_DIR, firewall_policies=policy,
+                             firewall_policy_attachments=attachment)
+  assert len(resources) == 4
+
+  policies = [r for r in resources
+           if r['type'] == 'google_compute_organization_security_policy']
+  assert len(policies) == 1
+
+  rules = [r for r in resources
+           if r['type'] == 'google_compute_organization_security_policy_rule']
+  assert len(rules) == 2
+
+  rule_values = []
+  for rule in rules:
+    name = rule['name']
+    index = rule['index']
+    action = rule['values']['action']
+    direction = rule['values']['direction']
+    priority = rule['values']['priority']
+    config = rule['values']['match']
+    assert len(config) == 1
+    config = config[0]['config']
+    rule_values.append((name, index, action, direction, priority, config))
+
+  assert sorted(rule_values) == sorted([
+    ('rule', 'policy1-allow-ingress', 'allow', 'INGRESS', 100,[
+      {
+        'dest_ip_ranges': None,
+        'layer4_config': [{'ip_protocol': 'tcp', 'ports': ['22']}],
+        'src_ip_ranges': ['10.0.0.0/8']
+      }]),
+    ('rule', 'policy1-deny-egress', 'deny', 'EGRESS', 200, [
+      {
+        'dest_ip_ranges': ['192.168.0.0/24'],
+        'layer4_config': [{'ip_protocol': 'tcp', 'ports': ['443']}],
+        'src_ip_ranges': None
+      }])
+  ])

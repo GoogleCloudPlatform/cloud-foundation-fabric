@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,34 @@
  * limitations under the License.
  */
 
+variable "confidential_compute" {
+  type    = bool
+  default = false
+}
+
 variable "group" {
   type    = any
   default = null
 }
 
-variable "iam_members" {
-  type    = map(list(string))
+variable "iam" {
+  type    = map(set(string))
   default = {}
-}
-
-variable "iam_roles" {
-  type    = list(string)
-  default = []
 }
 
 variable "instance_count" {
   type    = number
   default = 1
+}
+
+variable "metadata" {
+  type    = map(string)
+  default = {}
+}
+
+variable "metadata_list" {
+  type    = list(map(string))
+  default = []
 }
 
 variable "network_interfaces" {
@@ -43,12 +53,14 @@ variable "network_interfaces" {
       internal = list(string)
       external = list(string)
     })
+    alias_ips = map(list(string))
   }))
   default = [{
     network    = "https://www.googleapis.com/compute/v1/projects/my-project/global/networks/default",
     subnetwork = "https://www.googleapis.com/compute/v1/projects/my-project/regions/europe-west1/subnetworks/default-default",
     nat        = false,
     addresses  = null
+    alias_ips  = null
   }]
 }
 

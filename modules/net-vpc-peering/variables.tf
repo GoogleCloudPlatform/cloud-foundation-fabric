@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,7 @@
  */
 
 variable "prefix" {
-  description = "Name prefix for the network peerings"
+  description = "Name prefix for the network peerings."
   type        = string
   default     = "network-peering"
 }
@@ -42,8 +42,8 @@ variable "export_local_custom_routes" {
   default     = false
 }
 
-variable "module_depends_on" {
-  description = "List of modules or resources this module depends on."
-  type        = list
-  default     = []
+variable "peer_create_peering" {
+  description = "Create the peering on the remote side. If false, only the peering from this network to the remote network is created."
+  type        = bool
+  default     = true
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,10 +26,10 @@ resource "google_artifact_registry_repository" "registry" {
 
 resource "google_artifact_registry_repository_iam_binding" "bindings" {
   provider   = google-beta
-  for_each   = toset(var.iam_roles)
+  for_each   = var.iam
   project    = var.project_id
   location   = google_artifact_registry_repository.registry.location
   repository = google_artifact_registry_repository.registry.name
-  role       = each.value
-  members    = lookup(var.iam_members, each.value, [])
+  role       = each.key
+  members    = each.value
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,6 @@
  * limitations under the License.
  */
 
-output "org_id" {
-  description = "Organization id dependent on module resources."
-  value       = var.org_id
-  depends_on = [
-    google_organization_iam_audit_config,
-    google_organization_iam_binding.authoritative,
-    google_organization_iam_custom_role.roles,
-    google_organization_iam_member.additive,
-    google_organization_policy.boolean,
-    google_organization_policy.list
-  ]
-}
-
 output "access_policy_name" {
   description = "Access Policy resource"
   value       = local.access_policy_name
@@ -38,6 +25,14 @@ output "access_levels" {
     for key, value in google_access_context_manager_access_level.default :
     key => value
   }
+}
+
+output "organization_id" {
+  description = "Organization id dependent on module resources."
+  value       = var.organization_id
+  depends_on = [
+    google_access_context_manager_access_policy.default
+  ]
 }
 
 output "perimeters_standard" {

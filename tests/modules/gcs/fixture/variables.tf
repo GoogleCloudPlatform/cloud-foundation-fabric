@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,24 +14,19 @@
  * limitations under the License.
  */
 
-variable "bucket_policy_only" {
-  type    = map(bool)
-  default = { bucket-a = false }
+variable "uniform_bucket_level_access" {
+  type    = bool
+  default = false
 }
 
 variable "force_destroy" {
-  type    = map(bool)
-  default = { bucket-a = true }
+  type    = bool
+  default = true
 }
 
-variable "iam_members" {
-  type    = map(map(list(string)))
-  default = null
-}
-
-variable "iam_roles" {
+variable "iam" {
   type    = map(list(string))
-  default = null
+  default = {}
 }
 
 variable "labels" {
@@ -39,9 +34,36 @@ variable "labels" {
   default = { environment = "test" }
 }
 
+variable "logging_config" {
+  type = object({
+    log_bucket        = string
+    log_object_prefix = string
+  })
+  default = {
+    log_bucket        = "foo"
+    log_object_prefix = null
+  }
+}
+
 variable "prefix" {
   type    = string
   default = null
+}
+
+variable "project_id" {
+  type    = string
+  default = "my-project"
+}
+
+variable "retention_policy" {
+  type = object({
+    retention_period = number
+    is_locked        = bool
+  })
+  default = {
+    retention_period = 5
+    is_locked        = false
+  }
 }
 
 variable "storage_class" {
@@ -50,6 +72,6 @@ variable "storage_class" {
 }
 
 variable "versioning" {
-  type    = map(bool)
-  default = { bucket-a = true }
+  type    = bool
+  default = true
 }

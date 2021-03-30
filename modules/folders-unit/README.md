@@ -21,6 +21,7 @@ module "folders-unit" {
   }
   service_account_keys  = true
 }
+# tftest:modules=1:resources=37
 ```
 
 <!-- BEGIN TFDOC -->
@@ -36,10 +37,9 @@ module "folders-unit" {
 | short_name | Short name used as GCS bucket and service account prefixes, do not use capital letters or spaces. | <code title="">string</code> | ✓ |  |
 | *environments* | Unit environments short names. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="&#123;&#10;non-prod &#61; &#34;Non production&#34;&#10;prod     &#61; &#34;Production&#34;&#10;&#125;">...</code> |
 | *gcs_defaults* | Defaults use for the state GCS buckets. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="&#123;&#10;location      &#61; &#34;EU&#34;&#10;storage_class &#61; &#34;MULTI_REGIONAL&#34;&#10;&#125;">...</code> |
+| *iam* | IAM bindings for the top-level folder in {ROLE => [MEMBERS]} format. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
 | *iam_billing_config* | Grant billing user role to service accounts, defaults to granting on the billing account. | <code title="object&#40;&#123;&#10;grant      &#61; bool&#10;target_org &#61; bool&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;grant      &#61; true&#10;target_org &#61; false&#10;&#125;">...</code> |
 | *iam_enviroment_roles* | IAM roles granted to the environment service account on the environment sub-folder. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="&#91;&#10;&#34;roles&#47;compute.networkAdmin&#34;,&#10;&#34;roles&#47;owner&#34;,&#10;&#34;roles&#47;resourcemanager.folderAdmin&#34;,&#10;&#34;roles&#47;resourcemanager.projectCreator&#34;,&#10;&#93;">...</code> |
-| *iam_members* | IAM members for roles applied on the unit folder. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">null</code> |
-| *iam_roles* | IAM roles applied on the unit folder. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">null</code> |
 | *iam_xpn_config* | Grant Shared VPC creation roles to service accounts, defaults to granting at folder level. | <code title="object&#40;&#123;&#10;grant      &#61; bool&#10;target_org &#61; bool&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;grant      &#61; true&#10;target_org &#61; false&#10;&#125;">...</code> |
 | *prefix* | Optional prefix used for GCS bucket names to ensure uniqueness. | <code title="">string</code> |  | <code title="">null</code> |
 | *service_account_keys* | Generate and store service account keys in the state file. | <code title="">bool</code> |  | <code title="">false</code> |

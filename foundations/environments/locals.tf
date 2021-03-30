@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,4 +36,14 @@ locals {
     ||
     substr(var.root_node, 0, 13) == "organizations"
   )
+  logging_sinks = {
+    audit-logs = {
+      type             = "bigquery"
+      destination      = module.audit-dataset.id
+      filter           = var.audit_filter
+      iam              = true
+      include_children = true
+    }
+  }
+  root_node_type = split("/", var.root_node)[0]
 }

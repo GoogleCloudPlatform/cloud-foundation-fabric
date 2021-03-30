@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,14 +15,15 @@
  */
 
 module "test" {
-  source             = "../../../../modules/gcs"
-  project_id         = "my-project"
-  names              = ["bucket-a", "bucket-b"]
-  prefix             = var.prefix
-  iam_members        = var.iam_members
-  iam_roles          = var.iam_roles
-  labels             = var.labels
-  bucket_policy_only = var.bucket_policy_only
-  force_destroy      = var.force_destroy
-  versioning         = var.versioning
+  source                      = "../../../../modules/gcs"
+  project_id                  = "my-project"
+  uniform_bucket_level_access = var.uniform_bucket_level_access
+  force_destroy               = var.force_destroy
+  iam                         = var.iam
+  labels                      = var.labels
+  logging_config              = var.logging_config
+  name                        = "bucket-a"
+  prefix                      = var.prefix
+  retention_policy            = var.retention_policy
+  versioning                  = var.versioning
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2018 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,17 @@
 
 locals {
   iam_additive_pairs = flatten([
-    for member, roles in var.iam_additive_bindings : [
-      for role in roles :
-      { role = role, member = member }
+    for role, members in var.iam_additive : [
+      for member in members : { role = role, member = member }
+    ]
+  ])
+  iam_additive_member_pairs = flatten([
+    for member, roles in var.iam_additive_members : [
+      for role in roles : { role = role, member = member }
     ]
   ])
   iam_additive = {
-    for pair in local.iam_additive_pairs :
+    for pair in concat(local.iam_additive_pairs, local.iam_additive_member_pairs) :
     "${pair.role}-${pair.member}" => pair
   }
   parent_type = var.parent == null ? null : split("/", var.parent)[0]
@@ -33,6 +37,21 @@ locals {
     ? try(google_project.project.0, null)
     : try(data.google_project.project.0, null)
   )
+  logging_sinks = coalesce(var.logging_sinks, {})
+  sink_type_destination = {
+    gcs      = "storage.googleapis.com"
+    bigquery = "bigquery.googleapis.com"
+    pubsub   = "pubsub.googleapis.com"
+    logging  = "logging.googleapis.com"
+  }
+  sink_bindings = {
+    for type in ["gcs", "bigquery", "pubsub", "logging"] :
+    type => {
+      for name, sink in local.logging_sinks :
+      name => sink
+      if sink.iam && sink.type == type
+    }
+  }
 }
 
 data "google_project" "project" {
@@ -91,10 +110,10 @@ resource "google_project_service" "project_services" {
 # - additive (non-authoritative) roles might fail due to dynamic values
 
 resource "google_project_iam_binding" "authoritative" {
-  for_each = toset(var.iam_roles)
+  for_each = var.iam
   project  = local.project.project_id
-  role     = each.value
-  members  = lookup(var.iam_members, each.value, [])
+  role     = each.key
+  members  = each.value
   depends_on = [
     google_project_service.project_services,
     google_project_iam_custom_role.roles
@@ -102,10 +121,14 @@ resource "google_project_iam_binding" "authoritative" {
 }
 
 resource "google_project_iam_member" "additive" {
-  for_each = length(var.iam_additive_bindings) > 0 ? local.iam_additive : {}
-  project  = local.project.project_id
-  role     = each.value.role
-  member   = each.value.member
+  for_each = (
+    length(var.iam_additive) + length(var.iam_additive_members) > 0
+    ? local.iam_additive
+    : {}
+  )
+  project = local.project.project_id
+  role    = each.value.role
+  member  = each.value.member
   depends_on = [
     google_project_service.project_services,
     google_project_iam_custom_role.roles
@@ -145,7 +168,7 @@ resource "google_project_organization_policy" "boolean" {
   project    = local.project.project_id
   constraint = each.key
 
-  dynamic boolean_policy {
+  dynamic "boolean_policy" {
     for_each = each.value == null ? [] : [each.value]
     iterator = policy
     content {
@@ -153,7 +176,7 @@ resource "google_project_organization_policy" "boolean" {
     }
   }
 
-  dynamic restore_policy {
+  dynamic "restore_policy" {
     for_each = each.value == null ? [""] : []
     content {
       default = true
@@ -166,13 +189,13 @@ resource "google_project_organization_policy" "list" {
   project    = local.project.project_id
   constraint = each.key
 
-  dynamic list_policy {
+  dynamic "list_policy" {
     for_each = each.value.status == null ? [] : [each.value]
     iterator = policy
     content {
       inherit_from_parent = policy.value.inherit_from_parent
       suggested_value     = policy.value.suggested_value
-      dynamic allow {
+      dynamic "allow" {
         for_each = policy.value.status ? [""] : []
         content {
           values = (
@@ -187,7 +210,7 @@ resource "google_project_organization_policy" "list" {
           )
         }
       }
-      dynamic deny {
+      dynamic "deny" {
         for_each = policy.value.status ? [] : [""]
         content {
           values = (
@@ -205,7 +228,7 @@ resource "google_project_organization_policy" "list" {
     }
   }
 
-  dynamic restore_policy {
+  dynamic "restore_policy" {
     for_each = each.value.status == null ? [true] : []
     content {
       default = true
@@ -214,17 +237,100 @@ resource "google_project_organization_policy" "list" {
 }
 
 resource "google_compute_shared_vpc_host_project" "shared_vpc_host" {
-  count   = try(var.shared_vpc_config.enabled, false) ? 1 : 0
+  count   = try(var.shared_vpc_host_config.enabled, false) ? 1 : 0
   project = local.project.project_id
 }
 
 resource "google_compute_shared_vpc_service_project" "service_projects" {
   for_each = (
-    try(var.shared_vpc_config.enabled, false)
-    ? toset(var.shared_vpc_config.service_projects)
+    try(var.shared_vpc_host_config.enabled, false)
+    ? toset(coalesce(var.shared_vpc_host_config.service_projects, []))
     : toset([])
   )
   host_project    = local.project.project_id
   service_project = each.value
   depends_on      = [google_compute_shared_vpc_host_project.shared_vpc_host]
+}
+
+resource "google_compute_shared_vpc_service_project" "shared_vpc_service" {
+  count           = try(var.shared_vpc_service_config.attach, false) ? 1 : 0
+  host_project    = var.shared_vpc_service_config.host_project
+  service_project = local.project.project_id
+}
+
+resource "google_logging_project_sink" "sink" {
+  for_each = local.logging_sinks
+  name     = each.key
+  #description = "${each.key} (Terraform-managed)"
+  project                = local.project.project_id
+  destination            = "${local.sink_type_destination[each.value.type]}/${each.value.destination}"
+  filter                 = each.value.filter
+  unique_writer_identity = each.value.unique_writer
+
+  dynamic "exclusions" {
+    for_each = each.value.exclusions
+    iterator = exclusion
+    content {
+      name   = exclusion.key
+      filter = exclusion.value
+    }
+  }
+}
+
+resource "google_storage_bucket_iam_binding" "gcs-sinks-binding" {
+  for_each = local.sink_bindings["gcs"]
+  bucket   = each.value.destination
+  role     = "roles/storage.objectCreator"
+  members  = [google_logging_project_sink.sink[each.key].writer_identity]
+}
+
+resource "google_bigquery_dataset_iam_binding" "bq-sinks-binding" {
+  for_each   = local.sink_bindings["bigquery"]
+  project    = split("/", each.value.destination)[1]
+  dataset_id = split("/", each.value.destination)[3]
+  role       = "roles/bigquery.dataEditor"
+  members    = [google_logging_project_sink.sink[each.key].writer_identity]
+}
+
+resource "google_pubsub_topic_iam_binding" "pubsub-sinks-binding" {
+  for_each = local.sink_bindings["pubsub"]
+  project  = split("/", each.value.destination)[1]
+  topic    = split("/", each.value.destination)[3]
+  role     = "roles/pubsub.publisher"
+  members  = [google_logging_project_sink.sink[each.key].writer_identity]
+}
+
+resource "google_logging_project_exclusion" "logging-exclusion" {
+  for_each    = coalesce(var.logging_exclusions, {})
+  name        = each.key
+  project     = local.project.project_id
+  description = "${each.key} (Terraform-managed)"
+  filter      = each.value
+}
+
+resource "google_essential_contacts_contact" "contact" {
+  provider                            = google-beta
+  for_each                            = var.contacts
+  parent                              = "projects/${local.project.project_id}"
+  email                               = each.key
+  language_tag                        = "en"
+  notification_category_subscriptions = each.value
+}
+
+resource "google_access_context_manager_service_perimeter_resource" "service-perimeter-resource-standard" {
+  count          = var.service_perimeter_standard != null ? 1 : 0
+
+  # If used, remember to uncomment 'lifecycle' block in the 
+  # modules/vpc-sc/google_access_context_manager_service_perimeter resource.
+  perimeter_name = var.service_perimeter_standard
+  resource       = "projects/${local.project.number}"
+}
+
+resource "google_access_context_manager_service_perimeter_resource" "service-perimeter-resource-bridges" {
+  for_each       = toset(var.service_perimeter_bridges != null ? var.service_perimeter_bridges : [])
+
+  # If used, remember to uncomment 'lifecycle' block in the 
+  # modules/vpc-sc/google_access_context_manager_service_perimeter resource.
+  perimeter_name = each.value
+  resource       = "projects/${local.project.number}"
 }

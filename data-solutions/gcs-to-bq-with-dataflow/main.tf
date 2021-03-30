@@ -1,4 +1,4 @@
-# Copyright 2020 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -57,40 +57,40 @@ module "project-kms" {
 ###############################################################################
 
 module "service-account-bq" {
-  source     = "../../modules/iam-service-accounts"
+  source     = "../../modules/iam-service-account"
   project_id = module.project-service.project_id
-  names      = ["bq-test"]
+  name       = "bq-test"
   iam_project_roles = {
-    (module.project-service.project_id) = [
+    (var.project_service_name) = [
       "roles/logging.logWriter",
-      "roles/monitoring.metricWriter",      
+      "roles/monitoring.metricWriter",
       "roles/bigquery.admin"
     ]
   }
 }
 
 module "service-account-gce" {
-  source     = "../../modules/iam-service-accounts"
+  source     = "../../modules/iam-service-account"
   project_id = module.project-service.project_id
-  names      = ["gce-test"]
+  name       = "gce-test"
   iam_project_roles = {
-    (module.project-service.project_id) = [
+    (var.project_service_name) = [
       "roles/logging.logWriter",
       "roles/monitoring.metricWriter",
       "roles/dataflow.admin",
       "roles/iam.serviceAccountUser",
-      "roles/bigquery.dataOwner", 
+      "roles/bigquery.dataOwner",
       "roles/bigquery.jobUser" # Needed to import data using 'bq' command
     ]
   }
 }
 
 module "service-account-df" {
-  source     = "../../modules/iam-service-accounts"
+  source     = "../../modules/iam-service-account"
   project_id = module.project-service.project_id
-  names      = ["df-test"]
+  name       = "df-test"
   iam_project_roles = {
-    (module.project-service.project_id) = [
+    (var.project_service_name) = [
       "roles/dataflow.worker",
       "roles/bigquery.dataOwner",
       "roles/bigquery.metadataViewer",
@@ -100,13 +100,13 @@ module "service-account-df" {
   }
 }
 
-data "google_bigquery_default_service_account" "bq_sa" {
-  project = module.project-service.project_id
-}
+# data "google_bigquery_default_service_account" "bq_sa" {
+#   project = module.project-service.project_id
+# }
 
-data "google_storage_project_service_account" "gcs_account" {
-  project = module.project-service.project_id
-}
+# data "google_storage_project_service_account" "gcs_account" {
+#   project = module.project-service.project_id
+# }
 
 ###############################################################################
 #                                   KMS                                       #
@@ -120,12 +120,7 @@ module "kms" {
     location = var.location
   }
   keys = { key-gce = null, key-gcs = null, key-bq = null }
-  key_iam_roles = {
-    key-gce = ["roles/cloudkms.cryptoKeyEncrypterDecrypter"]
-    key-gcs = ["roles/cloudkms.cryptoKeyEncrypterDecrypter"]
-    key-bq  = ["roles/cloudkms.cryptoKeyEncrypterDecrypter"]
-  }
-  key_iam_members = {
+  key_iam = {
     key-gce = {
       "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
         "serviceAccount:${module.project-service.service_accounts.robots.compute}",
@@ -133,17 +128,16 @@ module "kms" {
     },
     key-gcs = {
       "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
-        #"serviceAccount:${module.project-service.service_accounts.robots.storage}",
-        "serviceAccount:${data.google_storage_project_service_account.gcs_account.email_address}"
+        "serviceAccount:${module.project-service.service_accounts.robots.storage}",
+        #"serviceAccount:${data.google_storage_project_service_account.gcs_account.email_address}"
       ]
     },
     key-bq = {
       "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
-        # TODO: Find a better place to store BQ service account
-        #"serviceAccount:${module.project-service.service_accounts.default.bq}",
-        "serviceAccount:${data.google_bigquery_default_service_account.bq_sa.email}",
+        "serviceAccount:${module.project-service.service_accounts.default.bq}",
+        #"serviceAccount:${data.google_bigquery_default_service_account.bq_sa.email}",
       ]
-    },     
+    },
   }
 }
 
@@ -155,16 +149,13 @@ module "kms-regional" {
     location = var.region
   }
   keys = { key-df = null }
-  key_iam_roles = {
-    key-df  = ["roles/cloudkms.cryptoKeyEncrypterDecrypter"]
-  }
-  key_iam_members = {
+  key_iam = {
     key-df = {
       "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
         "serviceAccount:${module.project-service.service_accounts.robots.dataflow}",
         "serviceAccount:${module.project-service.service_accounts.robots.compute}",
       ]
-    }      
+    }
   }
 }
 
@@ -210,25 +201,21 @@ module "vm_example" {
   source     = "../../modules/compute-vm"
   project_id = module.project-service.project_id
   region     = var.region
-  zone       = var.zone
   name       = "vm-example"
   network_interfaces = [{
     network    = module.vpc.self_link,
     subnetwork = module.vpc.subnet_self_links["${var.region}/${var.vpc_subnet_name}"],
     nat        = false,
     addresses  = null
+    alias_ips  = null
   }]
   attached_disks = [
     {
-      name  = "attacheddisk"
-      size  = 10
-      image = null
-      options = {
-        auto_delete = true
-        mode        = null
-        source      = null
-        type        = null
-      }
+      name        = "attacheddisk"
+      size        = 10
+      source      = null
+      source_type = null
+      options     = null
     }
   ]
   instance_count = 2
@@ -254,38 +241,33 @@ module "vm_example" {
 ###############################################################################
 
 module "kms-gcs" {
-  source     = "../../modules/gcs"
-  project_id = module.project-service.project_id
-  prefix     = module.project-service.project_id
-  names      = ["data", "df-tmplocation"]
-  iam_roles = {
-    data           = ["roles/storage.admin","roles/storage.objectViewer"],
-    df-tmplocation = ["roles/storage.admin"]
-  }   
-  iam_members = {
+  source = "../../modules/gcs"
+  for_each = {
     data = {
-      "roles/storage.admin" = [
-        "serviceAccount:${module.service-account-gce.email}",
-      ],
-      "roles/storage.viewer" = [
-        "serviceAccount:${module.service-account-df.email}",
-      ],      
-    },
+      members = {
+        "roles/storage.admin" = [
+          "serviceAccount:${module.service-account-gce.email}",
+        ],
+        "roles/storage.objectViewer" = [
+          "serviceAccount:${module.service-account-df.email}",
+        ]
+      }
+    }
     df-tmplocation = {
-      "roles/storage.admin" = [
-        "serviceAccount:${module.service-account-gce.email}",
-        "serviceAccount:${module.service-account-df.email}",
-      ]
-    }    
-  } 
-  encryption_keys = {
-    data           = module.kms.keys.key-gcs.self_link,
-    df-tmplocation = module.kms.keys.key-gcs.self_link,
+      members = {
+        "roles/storage.admin" = [
+          "serviceAccount:${module.service-account-gce.email}",
+          "serviceAccount:${module.service-account-df.email}",
+        ]
+      }
+    }
   }
-  force_destroy = {
-    data           = true,
-    df-tmplocation = true,    
-  }
+  project_id     = module.project-service.project_id
+  prefix         = module.project-service.project_id
+  name           = each.key
+  iam            = each.value.members
+  encryption_key = module.kms.keys.key-gcs.self_link
+  force_destroy  = true
 }
 
 ###############################################################################
@@ -293,15 +275,15 @@ module "kms-gcs" {
 ###############################################################################
 
 module "bigquery-dataset" {
-  source         = "../../modules/bigquery-dataset"
-  project_id     = module.project-service.project_id
-  id             = "bq_dataset"
-  access_roles = {
-    reader-group = { role = "READER", type = "domain" }
-    owner        = { role = "OWNER", type = "user_by_email" }
+  source     = "../../modules/bigquery-dataset"
+  project_id = module.project-service.project_id
+  id         = "bq_dataset"
+  access = {
+    reader-group = { role = "READER", type = "user" }
+    owner        = { role = "OWNER", type = "user" }
   }
   access_identities = {
-    reader-group = "caggioland.com"
+    reader-group = module.service-account-bq.email
     owner        = module.service-account-bq.email
   }
   encryption_key = module.kms.keys.key-bq.self_link
@@ -315,11 +297,11 @@ module "bigquery-dataset" {
         range = null # use start/end/interval for range
         time  = null
       }
-      schema = file("schema_bq_import.json")
+      schema = file("${path.module}/schema_bq_import.json")
       options = {
-        clustering = null
-        expiration_time = null        
-        encryption_key = module.kms.keys.key-bq.self_link
+        clustering      = null
+        expiration_time = null
+        encryption_key  = module.kms.keys.key-bq.self_link
       }
     },
     df_import = {
@@ -331,11 +313,11 @@ module "bigquery-dataset" {
         range = null # use start/end/interval for range
         time  = null
       }
-      schema = file("schema_df_import.json")
+      schema = file("${path.module}/schema_df_import.json")
       options = {
-        clustering = null
+        clustering      = null
         expiration_time = null
-        encryption_key = module.kms.keys.key-bq.self_link
+        encryption_key  = module.kms.keys.key-bq.self_link
       }
     }
   }

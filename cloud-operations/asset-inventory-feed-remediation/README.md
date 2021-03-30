@@ -9,6 +9,8 @@ The Cloud Function can then be used for different purposes:
 - adapting the configuration of separate related resources
 - implementing remediation steps that enforce policy compliance by tweaking or reverting the changes.
 
+A [companion Medium article](https://medium.com/google-cloud/using-cloud-asset-inventory-feeds-for-dynamic-configuration-and-policy-enforcement-c37b6a590c49) has been published for this example, refer to it for more details on the context and the specifics of running the example.
+
 This example shows a simple remediation use case: how to enforce policies on instance tags and revert non-compliant changes in near-real time, thus adding an additional measure of control when using tags for firewall rule scoping. Changing the [monitored asset](https://cloud.google.com/asset-inventory/docs/supported-asset-types) and the function logic allows simple adaptation to other common use cases:
 
 - enforcing a centrally defined Cloud Armor policy in backend services
@@ -60,6 +62,7 @@ Run the `subscription_pull` command until it returns nothing, then run the follo
 | project_id | Project id that references existing project. | <code title="">string</code> | ✓ |  |
 | *bundle_path* | Path used to write the intermediate Cloud Function code bundle. | <code title="">string</code> |  | <code title="">./bundle.zip</code> |
 | *name* | Arbitrary string used to name created resources. | <code title="">string</code> |  | <code title="">asset-feed</code> |
+| *project_create* | Create project instead of using an existing one. | <code title="">bool</code> |  | <code title="">false</code> |
 | *region* | Compute region used in the example. | <code title="">string</code> |  | <code title="">europe-west1</code> |
 
 ## Outputs

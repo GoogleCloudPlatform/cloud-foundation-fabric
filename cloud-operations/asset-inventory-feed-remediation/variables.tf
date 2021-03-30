@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,12 @@ variable "name" {
   description = "Arbitrary string used to name created resources."
   type        = string
   default     = "asset-feed"
+}
+
+variable "project_create" {
+  description = "Create project instead of using an existing one."
+  type        = bool
+  default     = false
 }
 
 variable "project_id" {

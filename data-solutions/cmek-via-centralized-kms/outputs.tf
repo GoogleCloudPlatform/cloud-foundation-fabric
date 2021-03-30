@@ -1,4 +1,4 @@
-# Copyright 2020 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,19 +13,13 @@
 # limitations under the License.
 
 output "bucket" {
-  description = "GCS Bucket Cloud KMS crypto keys."
-  value = {
-    for bucket in module.kms-gcs.buckets :
-    bucket.name => bucket.url
-  }
+  description = "GCS Bucket URL."
+  value       = module.kms-gcs.url
 }
 
 output "bucket_keys" {
   description = "GCS Bucket Cloud KMS crypto keys."
-  value = {
-    for bucket in module.kms-gcs.buckets :
-    bucket.name => bucket.encryption
-  }
+  value       = module.kms-gcs.bucket.encryption
 }
 
 output "projects" {

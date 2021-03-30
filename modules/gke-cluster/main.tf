@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,11 @@ locals {
   peering = try(
     google_container_cluster.cluster.private_cluster_config.0.peering_name,
     null
+  )
+  peering_project_id = (
+    try(var.peering_config.project_id, null) == null
+    ? var.project_id
+    : var.peering_config.project_id
   )
 }
 
@@ -63,13 +68,8 @@ resource "google_container_cluster" "cluster" {
     network_policy_config {
       disabled = ! var.addons.network_policy_config
     }
-    # beta addons
-    # cloudrun is dynamic as it tends to trigger cluster recreation on change
-    dynamic cloudrun_config {
-      for_each = var.addons.istio_config.enabled && var.addons.cloudrun_config ? [""] : []
-      content {
-        disabled = false
-      }
+    cloudrun_config {
+      disabled = ! var.addons.cloudrun_config
     }
     istio_config {
       disabled = ! var.addons.istio_config.enabled
@@ -218,7 +218,7 @@ resource "google_container_cluster" "cluster" {
 
 resource "google_compute_network_peering_routes_config" "gke_master" {
   count                = local.is_private && var.peering_config != null ? 1 : 0
-  project              = var.project_id
+  project              = local.peering_project_id
   peering              = local.peering
   network              = element(reverse(split("/", var.network)), 0)
   import_custom_routes = var.peering_config.import_routes

@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,9 @@
 output "id" {
   description = "Topic id."
   value       = google_pubsub_topic.default.id
+  depends_on = [
+    google_pubsub_topic_iam_binding.default
+  ]
 }
 
 output "subscriptions" {

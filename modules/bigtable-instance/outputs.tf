@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@ output "id" {
   description = "An identifier for the resource with format projects/{{project}}/instances/{{name}}."
   value       = google_bigtable_instance.default.id
   depends_on = [
-    google_bigtable_instance_iam_binding,
-    google_bigtable_table
+    google_bigtable_instance_iam_binding.default,
+    google_bigtable_table.default
   ]
 }
 
@@ -27,8 +27,8 @@ output "instance" {
   description = "BigTable intance."
   value       = google_bigtable_instance.default
   depends_on = [
-    google_bigtable_instance_iam_binding,
-    google_bigtable_table
+    google_bigtable_instance_iam_binding.default,
+    google_bigtable_table.default
   ]
 }
 

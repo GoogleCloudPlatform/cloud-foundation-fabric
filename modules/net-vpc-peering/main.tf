@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,26 +25,15 @@ resource "google_compute_network_peering" "local_network_peering" {
   peer_network         = var.peer_network
   export_custom_routes = var.export_local_custom_routes
   import_custom_routes = var.export_peer_custom_routes
-
-  depends_on = [null_resource.module_depends_on]
 }
 
 resource "google_compute_network_peering" "peer_network_peering" {
+  count                = var.peer_create_peering ? 1 : 0
   name                 = "${var.prefix}-${local.peer_network_name}-${local.local_network_name}"
   network              = var.peer_network
   peer_network         = var.local_network
   export_custom_routes = var.export_peer_custom_routes
   import_custom_routes = var.export_local_custom_routes
 
-  depends_on = [null_resource.module_depends_on, google_compute_network_peering.local_network_peering]
-}
-
-resource "null_resource" "module_depends_on" {
-  triggers = {
-    value = length(var.module_depends_on)
-  }
-}
-
-resource "null_resource" "complete" {
-  depends_on = [google_compute_network_peering.local_network_peering, google_compute_network_peering.peer_network_peering]
+  depends_on = [google_compute_network_peering.local_network_peering]
 }

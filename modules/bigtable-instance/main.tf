@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,7 @@
 
 locals {
   tables = {
-    for k, v in var.tables : k => v.table_options != null ? v.table_options : var.table_options_defaults
-  }
-
-  iam_roles_bindings = {
-    for k in var.iam_roles : k => lookup(var.iam_members, k, [])
+    for k, v in var.tables : k => v != null ? v : var.table_options_defaults
   }
 }
 
@@ -39,11 +35,10 @@ resource "google_bigtable_instance" "default" {
 }
 
 resource "google_bigtable_instance_iam_binding" "default" {
-  for_each = local.iam_roles_bindings
-
+  for_each = var.iam
   project  = var.project_id
   instance = google_bigtable_instance.default.name
-  role     = "roles/bigtable.${each.key}"
+  role     = each.key
   members  = each.value
 }
 

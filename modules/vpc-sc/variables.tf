@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,15 @@
  */
 
 variable "access_levels" {
-  description = "Access Levels."
+  description = "Map of Access Levels to be created. For each Access Level you can specify 'ip_subnetworks, required_access_levels, members, negate or regions'."
   type = map(object({
     combining_function = string
     conditions = list(object({
-      ip_subnetworks = list(string)
-      members        = list(string)
-      negate         = string
+      ip_subnetworks         = list(string)
+      required_access_levels = list(string)
+      members                = list(string)
+      negate                 = string
+      regions                = list(string)
     }))
   }))
   default = {}
@@ -38,9 +40,9 @@ variable "access_policy_title" {
   type        = string
 }
 
-variable "org_id" {
-  description = "Organization id in nnnnnn format."
-  type        = number
+variable "organization_id" {
+  description = "Organization id in organizations/nnnnnn format."
+  type        = string
 }
 
 variable "perimeters" {

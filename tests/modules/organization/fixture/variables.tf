@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,21 +19,20 @@ variable "custom_roles" {
   default = {}
 }
 
-variable "iam_members" {
+variable "iam" {
   type    = map(list(string))
   default = {}
 }
 
-variable "iam_roles" {
-  type    = list(string)
-  default = []
-}
-
-variable "iam_additive_bindings" {
+variable "iam_additive" {
   type    = map(list(string))
   default = {}
 }
 
+variable "iam_additive_members" {
+  type    = map(list(string))
+  default = {}
+}
 
 variable "iam_audit_config" {
   type    = map(map(list(string)))
@@ -52,5 +51,42 @@ variable "policy_list" {
     status              = bool
     values              = list(string)
   }))
+  default = {}
+}
+
+variable "firewall_policies" {
+  type = map(map(object({
+    description             = string
+    direction               = string
+    action                  = string
+    priority                = number
+    ranges                  = list(string)
+    ports                   = map(list(string))
+    target_service_accounts = list(string)
+    target_resources        = list(string)
+    logging                 = bool
+  })))
+  default = {}
+}
+
+variable "firewall_policy_attachments" {
+  type    = map(string)
+  default = {}
+}
+
+variable "logging_sinks" {
+  type = map(object({
+    destination      = string
+    type             = string
+    filter           = string
+    iam              = bool
+    include_children = bool
+    exclusions       = map(string)
+  }))
+  default = {}
+}
+
+variable "logging_exclusions" {
+  type    = map(string)
   default = {}
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,13 +45,13 @@ variable "ssh_source_ranges" {
 variable "http_source_ranges" {
   description = "List of IP CIDR ranges for tag-based HTTP rule, defaults to the health checkers ranges."
   type        = list(string)
-  default     = ["35.191.0.0/16", "130.211.0.0/22"]
+  default     = ["35.191.0.0/16", "130.211.0.0/22", "209.85.152.0/22", "209.85.204.0/22"]
 }
 
 variable "https_source_ranges" {
   description = "List of IP CIDR ranges for tag-based HTTPS rule, defaults to the health checkers ranges."
   type        = list(string)
-  default     = ["35.191.0.0/16", "130.211.0.0/22"]
+  default     = ["35.191.0.0/16", "130.211.0.0/22", "209.85.152.0/22", "209.85.204.0/22"]
 }
 
 variable "custom_rules" {

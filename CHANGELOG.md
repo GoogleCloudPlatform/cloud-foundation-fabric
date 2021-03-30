@@ -4,6 +4,140 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [4.5.1] - 2021-03-27
+
+- allow creating private DNS zones with no visible VPCs in `dns` module
+
+## [4.5.0] - 2021-03-20
+
+- new `logging-bucket` module to create Cloud Logging Buckets
+- add support to create logging sinks using logging buckets as the destination
+- **incompatible change** extended logging sinks to support per-sink exclusions
+- new `net-vpc-firewall-yaml` module
+- add support for regions, device policy and access policy dependency to `vpc-sc` module
+- add support for joining VPC-SC perimeters in `project` module
+- add `userinfo.email` to default scopes in `compute-vm` module
+
+## [4.4.2] - 2021-03-05
+
+- fix versions constraints on modules to avoid the `no available releases match the given constraints` error
+
+## [4.4.1] - 2021-03-05
+
+- depend specific org module resources (eg policies) from IAM bindings
+- set version for google-beta provider in project module
+
+## [4.4.0] - 2021-03-02
+
+- new `filtering_proxy` networking example
+- add support for a second region in the onprem networking example
+- add support for per-tunnel router to VPN HA and VPN dynamic modules
+- **incompatible change** the `attached_disks` variable type has changed in the `compute-vm` module, to add support for regional persistent disks, and attaching existing disks to instances / templates
+- the hub and spoke via peering example now supports project creation, resource prefix, and GKE peering configuration
+- make the `project_id` output from the `project` module non-dynamic. This means you can use this output as a key for map fed into a `for_each` (for example, as a key for `iam_project_bindings` in the `iam-service-accounts` module)
+- add support for essential contacts in the in the `project`, `folder` and `organization` modules
+
+## [4.3.0] - 2021-01-11
+
+- new DNS for Shared VPC example
+- **incompatible change** removed the `logging-sinks` module. Logging sinks can now be created the `logging_sinks` variable in the in the `project`, `folder` and `organization` modules
+- add support for creating logging exclusions in the `project`, `folder` and `organization` modules
+- add support for Confidential Compute to `compute-vm` module
+- add support for handling IAM policy (bindings, audit config) as fully authoritative in the `organization` module
+
+## [4.2.0] - 2020-11-25
+
+- **incompatible change** the `org_id` variable and output in the `vpc-sc` module have been renamed to `organization_id`, the variable now accepts values in `organizations/nnnnnnnn` format
+- **incompatible change** the `forwarders` variable in the `dns` module has a different type, to support specifying forwarding path
+- add support for MTU in `net-vpc` module
+- **incompatible change** access variables have been renamed in the `bigquery-dataset` module
+- add support for IAM to the `bigquery-dataset` module
+- fix default OAuth scopes in `gke-nodepool` module
+- add support for hierarchical firewalls to the `folder` and `organization` modules
+- **incompatible change** the `org_id` variable and output in the `organization` module have been renamed to `organization_id`, the variable now accepts values in `organizations/nnnnnnnn` format
+
+## [4.1.0] - 2020-11-16
+
+- **incompatible change** rename prefix for node configuration variables in `gke-nodepool` module [#156]
+- add support for internally managed service account in `gke-nodepool` module [#156]
+- made examples in READMEs runnable and testable [#157]
+- **incompatible change** `iam_additive` is now keyed by role to be more resilient with dynamic values, a new `iam_additive_members` variable has been added for backwards compatibility.
+- add support for node taints in `gke-nodepool` module
+- add support for CMEK in `gke-nodepool` module
+
+## [4.0.0] - 2020-11-06
+
+- This is a major refactor adding support for Terraform 0.13 features
+- **incompatible change** minimum required terraform version is now 0.13.0
+- **incompatible change** `folders` module renamed to `folder`
+- **incompatible change** `iam-service-accounts` module renamed to `iam-service-account`
+- **incompatible change** all `iam_roles` and `iam_member` variables merged into a single `iam` variable. This change affects most modules
+- **incompatible change** modules like `folder`, `gcs`, `iam-service-account` now create a single resource. Use for_each at the module level if you need multiple instances
+- added basic variable validations to some modules
+
+## [3.5.0] - 2020-10-27
+
+- end to end example for scheduled Cloud Asset Inventory export to Bigquery
+- decouple Cloud Run from Istio in GKE cluster module
+- depend views on tables in bigquery dataset module
+- bring back logging options for firewall rules in `net-vpc-firewall` module
+- removed interpolation-only expressions causing terraform warnings
+- **incompatible change** simplify alias IP specification in `compute-vm`. We now use a map (alias range name to list of IPs) instead of a list of maps.
+- allow using alias IPs with `instance_count` in `compute-vm`
+- add support for virtual displays in `compute-vm`
+- add examples of alias IPs in `compute-vm` module
+- fix support for creating disks from images in `compute-vm`
+- allow creating single-sided peerings in `net-vpc` and `net-vpc-peering`
+- use service project registration to Shared VPC in GKE example to remove need for two-step apply
+
+## [3.4.0] - 2020-09-24
+
+- add support for logging and better type for the `retention_policies` variable in `gcs` module
+- **incompatible change** deprecate `bucket_policy_only` in favor of `uniform_bucket_level_access` in `gcs` module
+- **incompatible change** allow project module to configure itself as both shared VPC service and host project
+
+## [3.3.0] - 2020-09-01
+
+- remove extra readers in `gcs-to-bq-with-dataflow` example (issue: 128)
+- make VPC creation optional in `net-vpc` module to allow managing a pre-existing VPC
+- make HA VPN gateway creation optional in `net-vpn-ha` module
+- add retention_policy in `gcs` module
+- refactor `net-address` module variables, and add support for internal address `purpose`
+
+## [3.2.0] - 2020-08-29
+
+- **incompatible change** add alias IP support in `cloud-vm` module
+- add tests for `data-solutions` examples
+- fix apply errors on dynamic resources in dataflow example
+- make zone creation optional in `dns` module
+- new `quota-monitoring` end-to-end example in `cloud-operations`
+
+## [3.1.1] - 2020-08-26
+
+- fix error in `project` module
+
+- **incompatible change** make HA VPN Gateway creation optional for `net-vpn-ha` module. Now an existing HA VPN Gateway can be used. Updating to the new version of the module will cause VPN Gateway recreation which can be handled by `terraform state rm/terraform import` operations.  
+
+## [3.1.0] - 2020-08-16
+
+- **incompatible change** add support for specifying a different project id in the GKE cluster module; if using the `peering_config` variable, `peering_config.project_id` now needs to be explicitly set, a `null` value will reuse the `project_id` variable for the peering
+
+## [3.0.0] - 2020-08-15
+
+- **incompatible change** the top-level `infrastructure` folder has been renamed to `networking`
+- add end-to-end example for ILB as next hop
+- add basic tests for `foundations` and `networking` end-to-end examples
+- fix Shared VPC end-to-end example and documentation
+
+## [2.8.0] - 2020-08-01
+
+- fine-grained Cloud DNS IAM via Service Directory example
+- add feed id output dependency on IAM roles in `pubsub` module
+
+## [2.7.1] - 2020-07-24
+
+- fix provider issue in bigquery module
+
 ## [2.7.0] - 2020-07-24
 
 - add support for VPC connector and ingress settings to `cloud-function` module
@@ -147,7 +281,25 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.7.0...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.5.1...HEAD
+[4.5.1]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.5.0...v4.5.1
+[4.5.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.4.2...v4.5.0
+[4.4.2]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.4.1...v4.4.2
+[4.4.1]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.4.0...v4.4.1
+[4.4.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.3.0...v4.4.0
+[4.3.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.2.0...v4.3.0
+[4.2.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.1.0...v4.2.0
+[4.1.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.0.0...v4.1.0
+[4.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.5.0...v4.0.0
+[3.5.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.4.0...v3.5.0
+[3.4.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.3.0...v3.4.0
+[3.3.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.2.0...v3.3.0
+[3.2.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.1.1...v3.2.0
+[3.1.1]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.1.0...v3.1.1
+[3.1.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v3.0.0...v3.1.0
+[3.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.8.0...v3.0.0
+[2.8.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.7.1...v2.8.0
+[2.7.1]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.7.0...v2.7.1
 [2.7.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.6.0...v2.7.0
 [2.6.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.5.0...v2.6.0
 [2.5.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v2.4.2...v2.5.0
@@ -172,3 +324,4 @@ All notable changes to this project will be documented in this file.
 [1.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v0.1...v1.0
 [#82]: https://github.com/terraform-google-modules/cloud-foundation-fabric/pull/82
 [#103]: https://github.com/terraform-google-modules/cloud-foundation-fabric/pull/103
+[#156]: https://github.com/terraform-google-modules/cloud-foundation-fabric/pull/156

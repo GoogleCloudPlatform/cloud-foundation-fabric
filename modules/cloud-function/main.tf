@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,12 +95,12 @@ resource "google_cloudfunctions_function" "function" {
 }
 
 resource "google_cloudfunctions_function_iam_binding" "default" {
-  for_each       = toset(var.iam_roles)
+  for_each       = var.iam
   project        = var.project_id
   region         = var.region
   cloud_function = google_cloudfunctions_function.function.name
-  role           = each.value
-  members        = try(var.iam_members[each.value], {})
+  role           = each.key
+  members        = each.value
 }
 
 resource "google_storage_bucket" "bucket" {

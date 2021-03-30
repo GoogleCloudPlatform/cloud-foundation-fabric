@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,17 +24,17 @@ variable "custom_roles" {
   default = {}
 }
 
-variable "iam_members" {
+variable "iam" {
   type    = map(list(string))
   default = {}
 }
 
-variable "iam_roles" {
-  type    = list(string)
-  default = []
+variable "iam_additive" {
+  type    = map(list(string))
+  default = {}
 }
 
-variable "iam_additive_bindings" {
+variable "iam_additive_members" {
   type    = map(list(string))
   default = {}
 }
@@ -92,4 +92,21 @@ variable "prefix" {
 variable "services" {
   type    = list(string)
   default = []
+}
+
+variable "logging_sinks" {
+  type = map(object({
+    destination   = string
+    type          = string
+    filter        = string
+    iam           = bool
+    exclusions    = map(string)
+    unique_writer = bool
+  }))
+  default = {}
+}
+
+variable "logging_exclusions" {
+  type    = map(string)
+  default = {}
 }

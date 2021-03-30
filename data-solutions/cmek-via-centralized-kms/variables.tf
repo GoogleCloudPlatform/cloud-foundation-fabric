@@ -1,4 +1,4 @@
-# Copyright 2020 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -63,10 +63,4 @@ variable "vpc_ip_cidr_range" {
   description = "Ip range used in the subnet deployef in the Service Project."
   type        = string
   default     = "10.0.0.0/20"
-}
-
-variable "zone" {
-  description = "The zone where resources will be deployed."
-  type        = string
-  default     = "europe-west1-b"
 }

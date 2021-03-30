@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,7 @@ module "test" {
   source                      = "../../../../modules/net-vpc"
   project_id                  = var.project_id
   name                        = var.name
-  iam_members                 = var.iam_members
-  iam_roles                   = var.iam_roles
+  iam                         = var.iam
   log_configs                 = var.log_configs
   log_config_defaults         = var.log_config_defaults
   peering_config              = var.peering_config

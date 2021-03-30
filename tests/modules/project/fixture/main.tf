@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,9 @@ module "test" {
   billing_account      = "12345-12345-12345"
   auto_create_network  = var.auto_create_network
   custom_roles         = var.custom_roles
-  iam_members          = var.iam_members
-  iam_roles            = var.iam_roles
-  iam_additive_bindings = var.iam_additive_bindings
+  iam                  = var.iam
+  iam_additive         = var.iam_additive
+  iam_additive_members = var.iam_additive_members
   labels               = var.labels
   lien_reason          = var.lien_reason
   oslogin              = var.oslogin
@@ -33,4 +33,6 @@ module "test" {
   policy_list          = var.policy_list
   prefix               = var.prefix
   services             = var.services
+  logging_sinks        = var.logging_sinks
+  logging_exclusions   = var.logging_exclusions
 }

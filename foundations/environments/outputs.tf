@@ -1,4 +1,4 @@
-# Copyright 2019 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,23 +24,23 @@ output "bootstrap_tf_gcs_bucket" {
 
 output "environment_folders" {
   description = "Top-level environment folders."
-  value       = module.environment-folders.ids
+  value       = { for folder in module.environment-folders : folder.name => folder.id }
 }
 
 output "environment_tf_gcs_buckets" {
   description = "GCS buckets used for each environment Terraform state."
-  value       = module.tf-gcs-environments.names
+  value       = { for env, bucket in module.tf-gcs-environments : env => bucket.name }
 }
 
 output "environment_service_account_keys" {
   description = "Service account keys used to run each environment Terraform modules."
   sensitive   = true
-  value       = module.tf-service-accounts.keys
+  value       = { for env, sa in module.tf-service-accounts : env => sa.key }
 }
 
 output "environment_service_accounts" {
   description = "Service accounts used to run each environment Terraform modules."
-  value       = module.tf-service-accounts.emails
+  value       = { for env, sa in module.tf-service-accounts : env => sa.email }
 }
 
 output "audit_logs_bq_dataset" {

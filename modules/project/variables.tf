@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,21 +32,20 @@ variable "custom_roles" {
   default     = {}
 }
 
-variable "iam_members" {
-  description = "Map of member lists used to set authoritative bindings, keyed by role."
+variable "iam" {
+  description = "IAM bindings in {ROLE => [MEMBERS]} format."
+  type        = map(set(string))
+  default     = {}
+}
+
+variable "iam_additive" {
+  description = "IAM additive bindings in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
   default     = {}
 }
 
-variable "iam_roles" {
-  description = "List of roles used to set authoritative bindings."
-  type        = list(string)
-  default     = []
-}
-
-
-variable "iam_additive_bindings" {
-  description = "Map of roles lists used to set non authoritative bindings, keyed by members"
+variable "iam_additive_members" {
+  description = "IAM additive bindings in {MEMBERS => [ROLE]} format. This might break if members are dynamic values."
   type        = map(list(string))
   default     = {}
 }
@@ -90,6 +89,10 @@ variable "parent" {
   description = "Parent folder or organization in 'folders/folder_id' or 'organizations/org_id' format."
   type        = string
   default     = null
+  validation {
+    condition     = var.parent == null || can(regex("(organizations|folders)/[0-9]+", var.parent))
+    error_message = "Parent must be of the form folders/folder_id or organizations/organization_id."
+  }
 }
 
 variable "policy_boolean" {
@@ -139,8 +142,8 @@ variable "service_config" {
   }
 }
 
-variable "shared_vpc_config" {
-  description = "Configure Shared VPC for project."
+variable "shared_vpc_host_config" {
+  description = "Configures this project as a Shared VPC host project (mutually exclusive with shared_vpc_service_project)."
   type = object({
     enabled          = bool
     service_projects = list(string)
@@ -149,4 +152,56 @@ variable "shared_vpc_config" {
     enabled          = false
     service_projects = []
   }
+}
+
+variable "shared_vpc_service_config" {
+  description = "Configures this project as a Shared VPC service project (mutually exclusive with shared_vpc_host_config)."
+  type = object({
+    attach       = bool
+    host_project = string
+  })
+  default = {
+    attach       = false
+    host_project = ""
+  }
+}
+
+variable "logging_sinks" {
+  description = "Logging sinks to create for this project."
+  type = map(object({
+    destination   = string
+    type          = string
+    filter        = string
+    iam           = bool
+    unique_writer = bool
+    # TODO exclusions also support description and disabled
+    exclusions = map(string)
+  }))
+  default = {}
+}
+
+variable "logging_exclusions" {
+  description = "Logging exclusions for this project in the form {NAME -> FILTER}."
+  type        = map(string)
+  default     = {}
+}
+
+
+variable "contacts" {
+  description = "List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES"
+  type        = map(list(string))
+  default     = {}
+}
+
+variable "service_perimeter_standard" {
+  description = "Name of VPC-SC Standard perimeter to add project into. Specify the name in the form of 'accessPolicies/ACCESS_POLICY_NAME/servicePerimeters/PERIMETER_NAME'."
+  type        = string
+  default     = null    
+}
+
+
+variable "service_perimeter_bridges" {
+  description = "Name of VPC-SC Bridge perimeters to add project into. Specify the name in the form of 'accessPolicies/ACCESS_POLICY_NAME/servicePerimeters/PERIMETER_NAME'."
+  type        = list(string)
+  default     = null
 }

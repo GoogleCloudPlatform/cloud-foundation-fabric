@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,11 +53,10 @@ variable "domain" {
   type        = string
 }
 
-# TODO(ludoo): add support for forwarding path attribute
 variable "forwarders" {
-  description = "List of target name servers, only valid for 'forwarding' zone types."
-  type        = list(string)
-  default     = []
+  description = "Map of {IPV4_ADDRESS => FORWARDING_PATH} for 'forwarding' zone types. Path can be 'default', 'private', or null for provider default."
+  type        = map(string)
+  default     = {}
 }
 
 variable "name" {
@@ -97,4 +96,17 @@ variable "type" {
   description = "Type of zone to create, valid values are 'public', 'private', 'forwarding', 'peering', 'service-directory'."
   type        = string
   default     = "private"
+  validation {
+    condition     = contains(["public", "private", "forwarding", "peering", "service-directory"], var.type)
+    error_message = "Zone must be one of 'public', 'private', 'forwarding', 'peering', 'service-directory'."
+  }
 }
+
+variable "zone_create" {
+  description = "Create zone. When set to false, uses a data source to reference existing zone."
+  type        = bool
+  default     = true
+}
+
+
+

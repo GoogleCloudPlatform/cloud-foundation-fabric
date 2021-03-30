@@ -1,4 +1,4 @@
-# Copyright 2019 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,8 +24,8 @@ module "tf-project" {
   parent          = var.root_node
   prefix          = var.prefix
   billing_account = var.billing_account_id
-  iam_additive_bindings = {
-    for name in var.iam_terraform_owners : (name) => ["roles/owner"]
+  iam_additive    = {
+    "roles/owner" = var.iam_terraform_owners
   }
   services = var.project_services
 }
@@ -33,9 +33,10 @@ module "tf-project" {
 # per-environment service accounts
 
 module "tf-service-accounts" {
-  source     = "../../modules/iam-service-accounts"
+  source     = "../../modules/iam-service-account"
+  for_each   = var.environments
   project_id = module.tf-project.project_id
-  names      = var.environments
+  name       = each.value
   prefix     = var.prefix
   iam_billing_roles = {
     (var.billing_account_id) = (
@@ -49,7 +50,7 @@ module "tf-service-accounts" {
       var.iam_xpn_config.grant ? local.sa_xpn_org_roles : []
     )
   }
-  generate_keys = var.service_account_keys
+  generate_key = var.service_account_keys
 }
 
 # bootstrap Terraform state GCS bucket
@@ -57,7 +58,7 @@ module "tf-service-accounts" {
 module "tf-gcs-bootstrap" {
   source     = "../../modules/gcs"
   project_id = module.tf-project.project_id
-  names      = ["tf-bootstrap"]
+  name       = "tf-bootstrap"
   prefix     = "${var.prefix}-tf"
   location   = var.gcs_location
 }
@@ -66,17 +67,13 @@ module "tf-gcs-bootstrap" {
 
 module "tf-gcs-environments" {
   source     = "../../modules/gcs"
+  for_each   = var.environments
   project_id = module.tf-project.project_id
-  names      = var.environments
+  name       = each.value
   prefix     = "${var.prefix}-tf"
   location   = var.gcs_location
-  iam_roles = {
-    for name in var.environments : (name) => ["roles/storage.objectAdmin"]
-  }
-  iam_members = {
-    for name in var.environments : (name) => {
-      "roles/storage.objectAdmin" = [module.tf-service-accounts.iam_emails[name]]
-    }
+  iam = {
+    "roles/storage.objectAdmin" = [module.tf-service-accounts[each.value].iam_email]
   }
 }
 
@@ -85,17 +82,13 @@ module "tf-gcs-environments" {
 ###############################################################################
 
 module "environment-folders" {
-  source = "../../modules/folders"
-  parent = var.root_node
-  names  = var.environments
-  iam_roles = {
-    for name in var.environments : (name) => local.folder_roles
-  }
-  iam_members = {
-    for name in var.environments : (name) => {
-      for role in local.folder_roles :
-      (role) => [module.tf-service-accounts.iam_emails[name]]
-    }
+  source   = "../../modules/folder"
+  for_each = var.environments
+  parent   = var.root_node
+  name     = each.value
+  iam = {
+    for role in local.folder_roles :
+    (role) => [module.tf-service-accounts[each.value].iam_email]
   }
 }
 
@@ -111,14 +104,9 @@ module "audit-project" {
   parent          = var.root_node
   prefix          = var.prefix
   billing_account = var.billing_account_id
-  iam_members = {
-    "roles/bigquery.dataEditor" = [module.audit-log-sinks.writer_identities[0]]
-    "roles/viewer"              = var.iam_audit_viewers
+  iam = {
+    "roles/viewer" = var.iam_audit_viewers
   }
-  iam_roles = [
-    "roles/bigquery.dataEditor",
-    "roles/viewer"
-  ]
   services = concat(var.project_services, [
     "bigquery.googleapis.com",
   ])
@@ -139,16 +127,23 @@ module "audit-dataset" {
   }
 }
 
-module "audit-log-sinks" {
-  source = "../../modules/logging-sinks"
-  parent = var.root_node
-  destinations = {
-    audit-logs = "bigquery.googleapis.com/${module.audit-dataset.id}"
-  }
-  sinks = {
-    audit-logs = var.audit_filter
-  }
-}
+# uncomment the next two modules to create the logging sinks
+
+# module "root_org" {
+#   count           = local.root_node_type == "organizations" ? 1 : 0
+#   source          = "../../modules/organization"
+#   organization_id = var.root_node
+#   logging_sinks   = local.logging_sinks
+# }
+
+# module "root_folder" {
+#   count         = local.root_node_type == "folders" ? 1 : 0
+#   source        = "../../modules/folder"
+#   id            = var.root_node
+#   folder_create = false
+#   logging_sinks = local.logging_sinks
+# }
+
 
 ###############################################################################
 #                    Shared resources (GCR, GCS, KMS, etc.)                   #
@@ -163,8 +158,8 @@ module "sharedsvc-project" {
   parent          = var.root_node
   prefix          = var.prefix
   billing_account = var.billing_account_id
-  iam_additive_bindings = {
-    for name in var.iam_shared_owners : (name) => ["roles/owner"]
+  iam_additive    = {
+    "roles/owner" = var.iam_shared_owners
   }
   services = var.project_services
 }

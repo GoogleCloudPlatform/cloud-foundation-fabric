@@ -1,5 +1,5 @@
 /**
- * Copyright 2018 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,27 +14,15 @@
  * limitations under the License.
  */
 
-variable "iam_members" {
-  description = "Keyring IAM members."
+variable "iam" {
+  description = "Keyring IAM bindings for topic in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
   default     = {}
 }
 
-variable "iam_roles" {
-  description = "Keyring IAM roles."
-  type        = list(string)
-  default     = []
-}
-
-variable "key_iam_members" {
-  description = "IAM members keyed by key name and role."
+variable "key_iam" {
+  description = "Key IAM bindings for topic in {KEY => {ROLE => [MEMBERS]}} format."
   type        = map(map(list(string)))
-  default     = {}
-}
-
-variable "key_iam_roles" {
-  description = "IAM roles keyed by key name."
-  type        = map(list(string))
   default     = {}
 }
 

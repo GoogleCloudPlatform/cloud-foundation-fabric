@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,20 @@
  */
 
 variable "name" {
-  description = "VPN gateway name, and prefix used for dependent resources."
+  description = "VPN Gateway name (if an existing VPN Gateway is not used), and prefix used for dependent resources."
   type        = string
+}
+
+variable "vpn_gateway_create" {
+  description = "Create HA VPN Gateway."
+  type        = bool
+  default     = true
+}
+
+variable "vpn_gateway" {
+  description = "HA VPN Gateway Self Link for using an existing HA VPN Gateway, leave empty if `vpn_gateway_create` is set to `true`."
+  type        = string
+  default     = null
 }
 
 variable "network" {
@@ -81,7 +93,7 @@ variable "router_create" {
 }
 
 variable "router_name" {
-  description = "Router name used for auto created router, or to specify existing router to use. Leave blank to use VPN name for auto created router."
+  description = "Router name used for auto created router, or to specify an existing router to use if `router_create` is set to `true`. Leave blank to use VPN name for auto created router."
   type        = string
   default     = ""
 }
@@ -103,9 +115,10 @@ variable "tunnels" {
     # from the 169.254.0.0/16 block.
     bgp_session_range               = string
     ike_version                     = number
-    vpn_gateway_interface           = number
     peer_external_gateway_interface = number
+    router                          = string
     shared_secret                   = string
+    vpn_gateway_interface           = number
   }))
   default = {}
 }

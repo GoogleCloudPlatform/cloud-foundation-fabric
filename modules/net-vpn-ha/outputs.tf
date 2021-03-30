@@ -1,6 +1,5 @@
-
 /**
- * Copyright 2019 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +15,12 @@
  */
 
 output "gateway" {
-  description = "HA VPN gateway resource."
-  value       = google_compute_ha_vpn_gateway.ha_gateway
+  description = "VPN gateway resource (only if auto-created)."
+  value = (
+    var.vpn_gateway_create
+    ? google_compute_ha_vpn_gateway.ha_gateway[0]
+    : null
+  )
 }
 
 output "external_gateway" {
@@ -30,13 +33,21 @@ output "external_gateway" {
 }
 
 output "name" {
-  description = "VPN gateway name."
-  value       = google_compute_ha_vpn_gateway.ha_gateway.name
+  description = "VPN gateway name (only if auto-created). "
+  value = (
+    var.vpn_gateway_create
+    ? google_compute_ha_vpn_gateway.ha_gateway[0].name
+    : null
+  )
 }
 
 output "router" {
   description = "Router resource (only if auto-created)."
-  value       = var.router_name == "" ? google_compute_router.router[0] : null
+  value = (
+    var.router_name == ""
+    ? google_compute_router.router[0]
+    : null
+  )
 }
 
 output "router_name" {
@@ -46,7 +57,7 @@ output "router_name" {
 
 output "self_link" {
   description = "HA VPN gateway self link."
-  value       = google_compute_ha_vpn_gateway.ha_gateway.self_link
+  value       = local.vpn_gateway
 }
 
 output "tunnels" {
@@ -75,6 +86,5 @@ output "tunnel_self_links" {
 
 output "random_secret" {
   description = "Generated secret."
-  sensitive   = true
   value       = local.secret
 }

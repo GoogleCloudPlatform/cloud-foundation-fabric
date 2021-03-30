@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,14 +54,30 @@ variable "files" {
   default = {}
 }
 
-variable "whitelist" {
-  description = "List of domains Squid will allow connections to"
+variable "allow" {
+  description = "List of domains Squid will allow connections to."
+  type        = list(string)
+  default     = []
+}
+
+variable "deny" {
+  description = "List of domains Squid will deny connections to."
   type        = list(string)
   default     = []
 }
 
 variable "clients" {
-  description = "List of CIDRs from which Squid will allow connections"
+  description = "List of CIDR ranges from which Squid will allow connections."
   type        = list(string)
   default     = []
+}
+
+variable "default_action" {
+  description = "Default action for domains not matching neither the allow or deny lists"
+  type        = string
+  default     = "deny"
+  validation {
+    condition     = var.default_action == "deny" || var.default_action == "allow"
+    error_message = "Default action must be allow or deny."
+  }
 }

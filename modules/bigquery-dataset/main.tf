@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,20 +15,19 @@
  */
 
 locals {
-  access_domain = {
-    for k, v in var.access_roles : k => v if v.type == "domain"
-  }
-  access_group = {
-    for k, v in var.access_roles : k => v if v.type == "group_by_email"
-  }
-  access_special = {
-    for k, v in var.access_roles : k => v if v.type == "special_group"
-  }
-  access_user = {
-    for k, v in var.access_roles : k => v if v.type == "user_by_email"
-  }
-  access_view = {
-    for k, v in var.access_roles : k => v if v.type == "view"
+  access_domain  = { for k, v in var.access : k => v if v.type == "domain" }
+  access_group   = { for k, v in var.access : k => v if v.type == "group" }
+  access_special = { for k, v in var.access : k => v if v.type == "special_group" }
+  access_user    = { for k, v in var.access : k => v if v.type == "user" }
+  access_view    = { for k, v in var.access : k => v if v.type == "view" }
+  identities_view = {
+    for k, v in local.access_view : k => try(
+      zipmap(
+        ["project", "dataset", "table"],
+        split("|", var.access_identities[k])
+      ),
+      { project = null, dataset = null, table = null }
+    )
   }
 }
 
@@ -80,9 +79,9 @@ resource "google_bigquery_dataset" "default" {
     for_each = var.dataset_access ? local.access_view : {}
     content {
       view {
-        project_id = try(var.access.views[access.key].project_id, null)
-        dataset_id = try(var.access.views[access.key].dataset_id, null)
-        table_id   = try(var.access.views[access.key].table_id, null)
+        project_id = local.identities_view[access.key].project
+        dataset_id = local.identities_view[access.key].dataset
+        table_id   = local.identities_view[access.key].table
       }
     }
   }
@@ -95,9 +94,9 @@ resource "google_bigquery_dataset" "default" {
   }
 }
 
-
 resource "google_bigquery_dataset_access" "domain" {
   for_each   = var.dataset_access ? {} : local.access_domain
+  provider   = google-beta
   project    = var.project_id
   dataset_id = google_bigquery_dataset.default.dataset_id
   role       = each.value.role
@@ -106,6 +105,7 @@ resource "google_bigquery_dataset_access" "domain" {
 
 resource "google_bigquery_dataset_access" "group_by_email" {
   for_each       = var.dataset_access ? {} : local.access_group
+  provider       = google-beta
   project        = var.project_id
   dataset_id     = google_bigquery_dataset.default.dataset_id
   role           = each.value.role
@@ -114,6 +114,7 @@ resource "google_bigquery_dataset_access" "group_by_email" {
 
 resource "google_bigquery_dataset_access" "special_group" {
   for_each      = var.dataset_access ? {} : local.access_special
+  provider      = google-beta
   project       = var.project_id
   dataset_id    = google_bigquery_dataset.default.dataset_id
   role          = each.value.role
@@ -122,6 +123,7 @@ resource "google_bigquery_dataset_access" "special_group" {
 
 resource "google_bigquery_dataset_access" "user_by_email" {
   for_each      = var.dataset_access ? {} : local.access_user
+  provider      = google-beta
   project       = var.project_id
   dataset_id    = google_bigquery_dataset.default.dataset_id
   role          = each.value.role
@@ -130,13 +132,21 @@ resource "google_bigquery_dataset_access" "user_by_email" {
 
 resource "google_bigquery_dataset_access" "views" {
   for_each   = var.dataset_access ? {} : local.access_view
+  provider   = google-beta
   project    = var.project_id
   dataset_id = google_bigquery_dataset.default.dataset_id
   view {
-    project_id = try(var.access_views[each.key].project_id, null)
-    dataset_id = try(var.access_views[each.key].dataset_id, null)
-    table_id   = try(var.access_views[each.key].table_id, null)
+    project_id = local.identities_view[each.key].project
+    dataset_id = local.identities_view[each.key].dataset
+    table_id   = local.identities_view[each.key].table
   }
+}
+
+resource "google_bigquery_dataset_iam_binding" "bindings" {
+  for_each   = var.iam
+  dataset_id = google_bigquery_dataset.default.dataset_id
+  role       = each.key
+  members    = each.value
 }
 
 resource "google_bigquery_table" "default" {
@@ -181,7 +191,6 @@ resource "google_bigquery_table" "default" {
   }
 
 }
-
 
 resource "google_bigquery_table" "views" {
   depends_on    = [google_bigquery_table.default]

@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,14 +32,8 @@ variable "description" {
   default     = "Terraform-managed."
 }
 
-variable "iam_roles" {
-  description = "List of IAM roles keyed by subnet 'region/name'."
-  type        = map(list(string))
-  default     = {}
-}
-
-variable "iam_members" {
-  description = "List of IAM members keyed by subnet 'region/name' and role."
+variable "iam" {
+  description = "Subnet IAM bindings in {REGION/NAME => {ROLE => [MEMBERS]} format."
   type        = map(map(list(string)))
   default     = {}
 }
@@ -64,6 +58,11 @@ variable "log_config_defaults" {
   }
 }
 
+variable "mtu" {
+  description = "Maximum Transmission Unit in bytes. The minimum value for this field is 1460 and the maximum value is 1500 bytes."
+  default     = null
+}
+
 variable "name" {
   description = "The name of the network being created"
   type        = string
@@ -77,6 +76,12 @@ variable "peering_config" {
     import_routes      = bool
   })
   default = null
+}
+
+variable "peering_create_remote_end" {
+  description = "Skip creation of peering on the remote end when using peering_config"
+  type        = bool
+  default     = true
 }
 
 variable "project_id" {
@@ -100,6 +105,11 @@ variable "routing_mode" {
   description = "The network routing mode (default 'GLOBAL')"
   type        = string
   default     = "GLOBAL"
+  validation {
+    condition     = var.routing_mode == "GLOBAL" || var.routing_mode == "REGIONAL"
+    error_message = "Routing type must be GLOBAL or REGIONAL."
+  }
+
 }
 
 variable "shared_vpc_host" {
@@ -142,4 +152,10 @@ variable "subnet_private_access" {
   description = "Optional map of boolean to control private Google access (default is enabled), keyed by subnet 'region/name'."
   type        = map(bool)
   default     = {}
+}
+
+variable "vpc_create" {
+  description = "Create VPC. When set to false, uses a data source to reference existing VPC."
+  type        = bool
+  default     = true
 }

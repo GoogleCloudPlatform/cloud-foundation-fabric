@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,19 @@
  * limitations under the License.
  */
 
+locals {
+  logging_sinks = {
+    audit-logs = {
+      type             = "bigquery"
+      destination      = module.audit-dataset.id
+      filter           = var.audit_filter
+      iam              = true
+      include_children = true
+    }
+  }
+  root_node_type = split("/", var.root_node)[0]
+}
+
 ###############################################################################
 #                        Terraform top-level resources                        #
 ###############################################################################
@@ -21,9 +34,9 @@
 # Shared folder
 
 module "shared-folder" {
-  source = "../../modules/folders"
+  source = "../../modules/folder"
   parent = var.root_node
-  names  = ["shared"]
+  name   = "shared"
 }
 
 # Terraform project
@@ -34,7 +47,7 @@ module "tf-project" {
   parent          = module.shared-folder.id
   prefix          = var.prefix
   billing_account = var.billing_account_id
-  iam_additive_bindings = {
+  iam_additive = {
     for name in var.iam_terraform_owners : (name) => ["roles/owner"]
   }
   services = var.project_services
@@ -45,7 +58,7 @@ module "tf-project" {
 module "tf-gcs-bootstrap" {
   source     = "../../modules/gcs"
   project_id = module.tf-project.project_id
-  names      = ["tf-bootstrap"]
+  name       = "tf-bootstrap"
   prefix     = "${var.prefix}-tf"
   location   = var.gcs_defaults.location
 }
@@ -64,6 +77,7 @@ module "bu-business-intelligence" {
   gcs_defaults          = var.gcs_defaults
   organization_id       = var.organization_id
   root_node             = var.root_node
+  prefix                = var.prefix
   # extra variables from the folders-unit module can be used here to grant
   # IAM roles to the bu users, configure the automation service accounts, etc.
   # iam_roles             = ["viewer"]
@@ -80,6 +94,7 @@ module "bu-machine-learning" {
   gcs_defaults          = var.gcs_defaults
   organization_id       = var.organization_id
   root_node             = var.root_node
+  prefix                = var.prefix
   # extra variables from the folders-unit module can be used here to grant
   # IAM roles to the bu users, configure the automation service accounts, etc.
 }
@@ -93,17 +108,12 @@ module "bu-machine-learning" {
 module "audit-project" {
   source          = "../../modules/project"
   name            = "audit"
-  parent          = var.root_node
+  parent          = module.shared-folder.id
   prefix          = var.prefix
   billing_account = var.billing_account_id
-  iam_members = {
-    "roles/bigquery.dataEditor" = [module.audit-log-sinks.writer_identities[0]]
-    "roles/viewer"              = var.iam_audit_viewers
+  iam = {
+    "roles/viewer" = var.iam_audit_viewers
   }
-  iam_roles = [
-    "roles/bigquery.dataEditor",
-    "roles/viewer"
-  ]
   services = concat(var.project_services, [
     "bigquery.googleapis.com",
   ])
@@ -124,16 +134,22 @@ module "audit-dataset" {
   }
 }
 
-module "audit-log-sinks" {
-  source = "../../modules/logging-sinks"
-  parent = var.root_node
-  destinations = {
-    audit-logs = "bigquery.googleapis.com/${module.audit-dataset.id}"
-  }
-  sinks = {
-    audit-logs = var.audit_filter
-  }
-}
+# uncomment the next two modules to create the logging sinks
+
+# module "root_org" {
+#   count           = local.root_node_type == "organizations" ? 1 : 0
+#   source          = "../../modules/organization"
+#   organization_id = var.root_node
+#   logging_sinks   = local.logging_sinks
+# }
+
+# module "root_folder" {
+#   count         = local.root_node_type == "folders" ? 1 : 0
+#   source        = "../../modules/folder"
+#   id            = var.root_node
+#   folder_create = false
+#   logging_sinks = local.logging_sinks
+# }
 
 ###############################################################################
 #                    Shared resources (GCR, GCS, KMS, etc.)                   #
@@ -147,7 +163,7 @@ module "shared-project" {
   parent          = module.shared-folder.id
   prefix          = var.prefix
   billing_account = var.billing_account_id
-  iam_additive_bindings = {
+  iam_additive = {
     for name in var.iam_shared_owners : (name) => ["roles/owner"]
   }
   services = var.project_services

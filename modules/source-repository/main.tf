@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,11 @@ resource "google_sourcerepo_repository" "default" {
 }
 
 resource "google_sourcerepo_repository_iam_binding" "default" {
-  for_each   = toset(var.iam_roles)
+  for_each   = var.iam
   project    = var.project_id
   repository = google_sourcerepo_repository.default.name
-  role       = each.value
-  members    = lookup(var.iam_members, each.value, [])
+  role       = each.key
+  members    = each.value
 
   depends_on = [
     google_sourcerepo_repository.default

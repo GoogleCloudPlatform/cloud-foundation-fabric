@@ -1,6 +1,6 @@
 #cloud-config
 
-# Copyright 2020 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -39,11 +39,17 @@ write_files:
     content: |
       ${indent(6, squid_config)}
 
-  - path: /etc/squid/whitelist.txt
+  - path: /etc/squid/allowlist.txt
     permissions: 0644
     owner: root
     content: |
-      ${indent(6, join("\n", whitelist))}
+      ${indent(6, join("\n", allow))}
+
+  - path: /etc/squid/denylist.txt
+    permissions: 0644
+    owner: root
+    content: |
+      ${indent(6, join("\n", deny))}
 
   - path: /etc/squid/clients.txt
     permissions: 0644

@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,19 +15,30 @@
  */
 
 variable "attached_disks" {
-  description = "Additional disks, if options is null defaults will be used in its place."
+  description = "Additional disks, if options is null defaults will be used in its place. Source type is one of 'image' (zonal disks in vms and template), 'snapshot' (vm), 'existing', and null."
   type = list(object({
-    name  = string
-    image = string
-    size  = string
+    name        = string
+    size        = string
+    source      = string
+    source_type = string
     options = object({
       auto_delete = bool
       mode        = string
-      source      = string
+      regional    = bool
       type        = string
     })
   }))
   default = []
+  validation {
+    condition = length([
+      for d in var.attached_disks : d if(
+        d.source_type == null
+        ||
+        contains(["image", "snapshot", "attach"], coalesce(d.source_type, "1"))
+      )
+    ]) == length(var.attached_disks)
+    error_message = "Source type must be one of 'image', 'snapshot', 'attach', null."
+  }
 }
 
 variable "attached_disk_defaults" {
@@ -35,13 +46,13 @@ variable "attached_disk_defaults" {
   type = object({
     auto_delete = bool
     mode        = string
+    regional    = bool
     type        = string
-    source      = string
   })
   default = {
     auto_delete = true
-    source      = null
     mode        = "READ_WRITE"
+    regional    = false
     type        = "pd-ssd"
   }
 }
@@ -58,6 +69,24 @@ variable "boot_disk" {
     type  = "pd-ssd"
     size  = 10
   }
+}
+
+variable "can_ip_forward" {
+  description = "Enable IP forwarding."
+  type        = bool
+  default     = false
+}
+
+variable "confidential_compute" {
+  description = "Enable Confidential Compute for these instances."
+  type        = bool
+  default     = false
+}
+
+variable "enable_display" {
+  description = "Enable virtual display on the instances"
+  type        = bool
+  default     = false
 }
 
 variable "encryption" {
@@ -84,16 +113,10 @@ variable "hostname" {
   default     = null
 }
 
-variable "iam_members" {
-  description = "Map of member lists used to set authoritative bindings, keyed by role. Ignored for template use."
+variable "iam" {
+  description = "IAM bindings in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
   default     = {}
-}
-
-variable "iam_roles" {
-  description = "List of roles used to set authoritative bindings. Ignored for template use."
-  type        = list(string)
-  default     = []
 }
 
 variable "instance_count" {
@@ -120,6 +143,12 @@ variable "metadata" {
   default     = {}
 }
 
+variable "metadata_list" {
+  description = "List of instance metadata that will be cycled through. Ignored for template use."
+  type        = list(map(string))
+  default     = []
+}
+
 variable "min_cpu_platform" {
   description = "Minimum CPU platform."
   type        = string
@@ -132,7 +161,7 @@ variable "name" {
 }
 
 variable "network_interfaces" {
-  description = "Network interfaces configuration. Use self links for Shared VPC, set addresses to null if not needed."
+  description = "Network interfaces configuration. Use self links for Shared VPC, set addresses and alias_ips to null if not needed."
   type = list(object({
     nat        = bool
     network    = string
@@ -141,6 +170,7 @@ variable "network_interfaces" {
       internal = list(string)
       external = list(string)
     })
+    alias_ips = map(list(string))
   }))
 }
 
@@ -148,13 +178,11 @@ variable "options" {
   description = "Instance options."
   type = object({
     allow_stopping_for_update = bool
-    can_ip_forward            = bool
     deletion_protection       = bool
     preemptible               = bool
   })
   default = {
     allow_stopping_for_update = true
-    can_ip_forward            = false
     deletion_protection       = false
     preemptible               = false
   }

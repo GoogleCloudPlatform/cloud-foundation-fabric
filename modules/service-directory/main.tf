@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,17 +23,14 @@ locals {
   endpoints = {
     for ep in local.endpoint_list : "${ep.service}/${ep.endpoint}" => ep
   }
-  iam_pairs = var.service_iam_roles == null ? [] : flatten([
-    for name, roles in var.service_iam_roles :
-    [for role in roles : { name = name, role = role }]
+  iam_pairs = var.service_iam == null ? [] : flatten([
+    for name, bindings in var.service_iam :
+    [for role in keys(bindings) : { name = name, role = role }]
   ])
   iam_keypairs = {
     for pair in local.iam_pairs :
     "${pair.name}-${pair.role}" => pair
   }
-  iam_members = (
-    var.service_iam_members == null ? {} : var.service_iam_members
-  )
 }
 
 resource "google_service_directory_namespace" "default" {
@@ -46,10 +43,10 @@ resource "google_service_directory_namespace" "default" {
 
 resource "google_service_directory_namespace_iam_binding" "default" {
   provider = google-beta
-  for_each = toset(var.iam_roles)
+  for_each = var.iam
   name     = google_service_directory_namespace.default.name
-  role     = each.value
-  members  = lookup(var.iam_members, each.value, [])
+  role     = each.key
+  members  = each.value
 }
 
 resource "google_service_directory_service" "default" {
@@ -66,7 +63,7 @@ resource "google_service_directory_service_iam_binding" "default" {
   name     = google_service_directory_service.default[each.value.name].name
   role     = each.value.role
   members = lookup(
-    lookup(local.iam_members, each.value.name, {}), each.value.role, []
+    lookup(var.service_iam, each.value.name, {}), each.value.role, []
   )
 }
 

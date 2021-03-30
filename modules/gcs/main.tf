@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,61 +15,57 @@
  */
 
 locals {
-  buckets = (
-    local.has_buckets
-    ? [for name in var.names : google_storage_bucket.buckets[name]]
-    : []
-  )
-  # needed when destroying
-  has_buckets = length(google_storage_bucket.buckets) > 0
-  iam_pairs = var.iam_roles == null ? [] : flatten([
-    for name, roles in var.iam_roles :
-    [for role in roles : { name = name, role = role }]
-  ])
-  iam_keypairs = {
-    for pair in local.iam_pairs :
-    "${pair.name}-${pair.role}" => pair
-  }
-  iam_members = var.iam_members == null ? {} : var.iam_members
   prefix = (
     var.prefix == null || var.prefix == "" # keep "" for backward compatibility
     ? ""
     : join("-", [var.prefix, lower(var.location), ""])
   )
-  kms_keys = { for name in var.names : name => lookup(var.encryption_keys, name, null) }
 }
 
-resource "google_storage_bucket" "buckets" {
-  for_each           = toset(var.names)
-  name               = "${local.prefix}${lower(each.key)}"
-  project            = var.project_id
-  location           = var.location
-  storage_class      = var.storage_class
-  force_destroy      = lookup(var.force_destroy, each.key, false)
-  bucket_policy_only = lookup(var.bucket_policy_only, each.key, true)
+resource "google_storage_bucket" "bucket" {
+  name                        = "${local.prefix}${lower(var.name)}"
+  project                     = var.project_id
+  location                    = var.location
+  storage_class               = var.storage_class
+  force_destroy               = var.force_destroy
+  uniform_bucket_level_access = var.uniform_bucket_level_access
   versioning {
-    enabled = lookup(var.versioning, each.key, false)
+    enabled = var.versioning
   }
   labels = merge(var.labels, {
     location      = lower(var.location)
-    name          = lower(each.key)
+    name          = lower(var.name)
     storage_class = lower(var.storage_class)
   })
 
   dynamic encryption {
-    for_each = local.kms_keys[each.key] == null ? [] : [""]
+    for_each = var.encryption_key == null ? [] : [""]
 
     content {
-      default_kms_key_name = local.kms_keys[each.key]
+      default_kms_key_name = var.encryption_key
+    }
+  }
+
+  dynamic retention_policy {
+    for_each = var.retention_policy == null ? [] : [""]
+    content {
+      retention_period = var.retention_policy.retention_period
+      is_locked        = var.retention_policy.is_locked
+    }
+  }
+
+  dynamic logging {
+    for_each = var.logging_config == null ? [] : [""]
+    content {
+      log_bucket        = var.logging_config.log_bucket
+      log_object_prefix = var.logging_config.log_object_prefix
     }
   }
 }
 
 resource "google_storage_bucket_iam_binding" "bindings" {
-  for_each = local.iam_keypairs
-  bucket   = google_storage_bucket.buckets[each.value.name].name
-  role     = each.value.role
-  members = lookup(
-    lookup(local.iam_members, each.value.name, {}), each.value.role, []
-  )
+  for_each = var.iam
+  bucket   = google_storage_bucket.bucket.name
+  role     = each.key
+  members  = each.value
 }

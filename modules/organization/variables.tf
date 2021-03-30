@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,20 +20,20 @@ variable "custom_roles" {
   default     = {}
 }
 
-variable "iam_members" {
-  description = "Map of member lists used to set authoritative bindings, keyed by role."
+variable "iam" {
+  description = "IAM bindings, in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
   default     = {}
 }
 
-variable "iam_roles" {
-  description = "List of roles used to set authoritative bindings."
-  type        = list(string)
-  default     = []
+variable "iam_additive" {
+  description = "Non authoritative IAM bindings, in {ROLE => [MEMBERS]} format."
+  type        = map(list(string))
+  default     = {}
 }
 
-variable "iam_additive_bindings" {
-  description = "Map of roles lists used to set non authoritative bindings, keyed by members."
+variable "iam_additive_members" {
+  description = "IAM additive bindings in {MEMBERS => [ROLE]} format. This might break if members are dynamic values."
   type        = map(list(string))
   default     = {}
 }
@@ -49,9 +49,30 @@ variable "iam_audit_config" {
   # }
 }
 
-variable "org_id" {
-  description = "Organization id in nnnnnn format."
-  type        = number
+variable "iam_bindings_authoritative" {
+  description = "IAM authoritative bindings, in {ROLE => [MEMBERS]} format. Roles and members not explicitly listed will be cleared. Bindings should also be authoritative when using authoritative audit config. Use with caution."
+  type        = map(list(string))
+  default     = null
+}
+
+variable "iam_audit_config_authoritative" {
+  description = "IAM Authoritative service audit logging configuration. Service as key, map of log permission (eg DATA_READ) and excluded members as value for each service. Audit config should also be authoritative when using authoritative bindings. Use with caution."
+  type        = map(map(list(string)))
+  default     = null
+  # default = {
+  #   allServices = {
+  #     DATA_READ = ["user:me@example.org"]
+  #   }
+  # }
+}
+
+variable "organization_id" {
+  description = "Organization id in organizations/nnnnnn format."
+  type        = string
+  validation {
+    condition     = can(regex("^organizations/[0-9]+", var.organization_id))
+    error_message = "The organization_id must in the form organizations/nnn."
+  }
 }
 
 variable "policy_boolean" {
@@ -69,4 +90,54 @@ variable "policy_list" {
     values              = list(string)
   }))
   default = {}
+}
+
+variable "firewall_policies" {
+  description = "Hierarchical firewall policies to *create* in the organization."
+  type = map(map(object({
+    description             = string
+    direction               = string
+    action                  = string
+    priority                = number
+    ranges                  = list(string)
+    ports                   = map(list(string))
+    target_service_accounts = list(string)
+    target_resources        = list(string)
+    logging                 = bool
+    #preview                 = bool
+  })))
+  default = {}
+}
+
+variable "firewall_policy_attachments" {
+  description = "List of hierarchical firewall policy IDs to *attach* to the organization"
+  # set to avoid manual casting with toset()
+  type    = map(string)
+  default = {}
+}
+
+variable "logging_sinks" {
+  description = "Logging sinks to create for this organization."
+  type = map(object({
+    destination      = string
+    type             = string
+    filter           = string
+    iam              = bool
+    include_children = bool
+    # TODO exclusions also support description and disabled
+    exclusions = map(string)
+  }))
+  default = {}
+}
+
+variable "logging_exclusions" {
+  description = "Logging exclusions for this organization in the form {NAME -> FILTER}."
+  type        = map(string)
+  default     = {}
+}
+
+variable "contacts" {
+  description = "List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES"
+  type        = map(list(string))
+  default     = {}
 }

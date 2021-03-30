@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ resource "google_compute_address" "external" {
 }
 
 resource "google_compute_address" "internal" {
+  provider     = google-beta
   for_each     = var.internal_addresses
   project      = var.project_id
   name         = each.key
@@ -38,7 +39,8 @@ resource "google_compute_address" "internal" {
   address_type = "INTERNAL"
   region       = each.value.region
   subnetwork   = each.value.subnetwork
-  address      = lookup(var.internal_address_addresses, each.key, null)
-  network_tier = lookup(var.internal_address_tiers, each.key, null)
+  address      = try(var.internal_addresses_config[each.key].address, null)
+  network_tier = try(var.internal_addresses_config[each.key].tier, null)
+  purpose      = try(var.internal_addresses_config[each.key].purpose, null)
   # labels       = lookup(var.internal_address_labels, each.key, {})
 }

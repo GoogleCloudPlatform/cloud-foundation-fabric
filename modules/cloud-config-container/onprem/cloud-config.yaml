@@ -1,6 +1,6 @@
 #cloud-config
 
-# Copyright 2020 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -172,7 +172,8 @@ write_files:
   owner: root:root
   permissions: '0600'
   content: |
-    : PSK "${vpn_config.shared_secret}"
+    ${vpn_config.peer_ip} : PSK "${vpn_config.shared_secret}"
+    ${vpn_config.peer_ip2} : PSK "${vpn_config.shared_secret2}"
 
 # IPSEC tunnel configuration
 - path: /var/lib/docker-compose/onprem/ipsec/ipsec.conf
@@ -216,7 +217,38 @@ write_files:
       closeaction=restart
       %{~ if vpn_config.type == "dynamic" ~}
       mark=%unique
+      %{~ endif ~}
+      
+    conn gcp2
+      %{~ if vpn_config.type == "dynamic" ~}
+      leftupdown="/var/lib/strongswan/ipsec-vti.sh 1 ${vpn_dynamic_config.peer_bgp_address2}/30 ${vpn_dynamic_config.local_bgp_address2}/30"
+      %{~ endif ~}
+      left=%any
+      leftid=%any
+      %{~ if vpn_config.type == "dynamic" ~}
+      leftsubnet=0.0.0.0/0
+      %{~ else ~}
+      leftsubnet=${ip_cidr_ranges.local}
+      %{~ endif ~}
+      leftauth=psk
+      right=${vpn_config.peer_ip_wildcard2}
+      rightid=${vpn_config.peer_ip2}
+      %{~ if vpn_config.type == "dynamic" ~}
+      rightsubnet=0.0.0.0/0
+      %{~ else ~}
+      rightsubnet=${ip_cidr_ranges.remote}
+      %{~ endif ~}
+      rightauth=psk
+      type=tunnel
+      auto=start
+      dpdaction=restart
+      closeaction=restart
+      %{~ if vpn_config.type == "dynamic" ~}
+      mark=%unique
+      %{~ endif ~}
 
+ %{~ if vpn_config.type == "dynamic" ~}
+    
 # Charon configuration
 - path: /var/lib/docker-compose/onprem/ipsec/vti.conf
   owner: root:root
@@ -291,6 +323,10 @@ write_files:
     protocol bgp gcp_vpc_a_tun1 from gcp_vpc_a {
       local ${vpn_dynamic_config.local_bgp_address} as ${vpn_dynamic_config.local_bgp_asn};
       neighbor ${vpn_dynamic_config.peer_bgp_address} as ${vpn_dynamic_config.peer_bgp_asn};
+    }
+     protocol bgp gcp_vpc_a_tun2 from gcp_vpc_a {
+      local ${vpn_dynamic_config.local_bgp_address2} as ${vpn_dynamic_config.local_bgp_asn2};
+      neighbor ${vpn_dynamic_config.peer_bgp_address2} as ${vpn_dynamic_config.peer_bgp_asn2};
     }
 
   %{~ endif ~}

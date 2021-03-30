@@ -1,5 +1,5 @@
 /**
- * Copyright 2018 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,14 @@ locals {
     for record in var.recordsets :
     join("/", [record.name, record.type]) => record
   }
-  zone = try(
-    google_dns_managed_zone.non-public.0, try(
-      google_dns_managed_zone.public.0, null
+  zone = (
+    var.zone_create
+    ? try(
+      google_dns_managed_zone.non-public.0, try(
+        google_dns_managed_zone.public.0, null
+      )
     )
+    : try(data.google_dns_managed_zone.public.0, null)
   )
   dns_keys = try(
     data.google_dns_keys.dns_keys.0, null
@@ -30,30 +34,35 @@ locals {
 }
 
 resource "google_dns_managed_zone" "non-public" {
-  count       = var.type != "public" ? 1 : 0
+  count       = (var.zone_create && var.type != "public") ? 1 : 0
   provider    = google-beta
   project     = var.project_id
   name        = var.name
   dns_name    = var.domain
-  description = "Terraform-managed zone."
+  description = var.description
   visibility  = "private"
 
-  dynamic forwarding_config {
+  dynamic "forwarding_config" {
     for_each = (
-      var.type == "forwarding" && var.forwarders != null ? [""] : []
+      var.type == "forwarding" &&
+      var.forwarders != null &&
+      length(var.forwarders) > 0
+      ? [""]
+      : []
     )
     content {
       dynamic "target_name_servers" {
         for_each = var.forwarders
-        iterator = address
+        iterator = forwarder
         content {
-          ipv4_address = address.value
+          ipv4_address    = forwarder.key
+          forwarding_path = forwarder.value
         }
       }
     }
   }
 
-  dynamic peering_config {
+  dynamic "peering_config" {
     for_each = (
       var.type == "peering" && var.peer_network != null ? [""] : []
     )
@@ -64,17 +73,20 @@ resource "google_dns_managed_zone" "non-public" {
     }
   }
 
-  private_visibility_config {
-    dynamic "networks" {
-      for_each = var.client_networks
-      iterator = network
-      content {
-        network_url = network.value
+  dynamic "private_visibility_config" {
+    for_each = length(var.client_networks) > 0 ? [""] : []
+    content {
+      dynamic "networks" {
+        for_each = var.client_networks
+        iterator = network
+        content {
+          network_url = network.value
+        }
       }
     }
   }
 
-  dynamic service_directory_config {
+  dynamic "service_directory_config" {
     for_each = (
       var.type == "service-directory" && var.service_directory_namespace != null
       ? [""]
@@ -89,8 +101,13 @@ resource "google_dns_managed_zone" "non-public" {
 
 }
 
+data "google_dns_managed_zone" "public" {
+  count = var.zone_create ? 0 : 1
+  name  = var.name
+}
+
 resource "google_dns_managed_zone" "public" {
-  count       = var.type == "public" ? 1 : 0
+  count       = (var.zone_create && var.type == "public") ? 1 : 0
   project     = var.project_id
   name        = var.name
   dns_name    = var.domain
@@ -123,8 +140,8 @@ resource "google_dns_managed_zone" "public" {
 }
 
 data "google_dns_keys" "dns_keys" {
-  count        = var.dnssec_config == {} || var.type != "public" ? 0 : 1
-  managed_zone = google_dns_managed_zone.public.0.id
+  count        = var.zone_create && (var.dnssec_config == {} || var.type != "public") ? 0 : 1
+  managed_zone = local.zone.id
 }
 
 resource "google_dns_record_set" "cloud-static-records" {

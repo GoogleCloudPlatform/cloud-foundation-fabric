@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,85 +66,105 @@ variable "name" {
   default     = null
 }
 
-variable "node_config_disk_size" {
+variable "node_boot_disk_kms_key" {
+  description = "Customer Managed Encryption Key used to encrypt the boot disk attached to each node"
+  type        = string
+  default     = null
+}
+
+variable "node_disk_size" {
   description = "Node disk size, defaults to 100GB."
   type        = number
   default     = 100
 }
 
-variable "node_config_disk_type" {
+variable "node_disk_type" {
   description = "Node disk type, defaults to pd-standard."
   type        = string
   default     = "pd-standard"
 }
 
-variable "node_config_guest_accelerator" {
+variable "node_guest_accelerator" {
   description = "Map of type and count of attached accelerator cards."
   type        = map(number)
   default     = {}
 }
 
-variable "node_config_image_type" {
+variable "node_image_type" {
   description = "Nodes image type."
   type        = string
   default     = null
 }
 
-variable "node_config_labels" {
+variable "node_labels" {
   description = "Kubernetes labels attached to nodes."
   type        = map(string)
   default     = {}
 }
 
-variable "node_config_local_ssd_count" {
+variable "node_taints" {
+  description = "Kubernetes taints applied to nodes. E.g. type=blue:NoSchedule"
+  type        = list(string)
+  default     = []
+}
+
+variable "node_local_ssd_count" {
   description = "Number of local SSDs attached to nodes."
   type        = number
   default     = 0
 }
 
-variable "node_config_machine_type" {
+variable "node_machine_type" {
   description = "Nodes machine type."
   type        = string
   default     = "n1-standard-1"
 }
 
-variable "node_config_metadata" {
+variable "node_metadata" {
   description = "Metadata key/value pairs assigned to nodes. Set disable-legacy-endpoints to true when using this variable."
   type        = map(string)
   default     = null
 }
 
-variable "node_config_min_cpu_platform" {
+variable "node_min_cpu_platform" {
   description = "Minimum CPU platform for nodes."
   type        = string
   default     = null
 }
 
-variable "node_config_oauth_scopes" {
-  description = "Set of Google API scopes for the nodes service account. Include logging-write, monitoring, and storage-ro when using this variable."
-  type        = list(string)
-  default     = ["logging-write", "monitoring", "monitoring-write", "storage-ro"]
-}
-
-variable "node_config_preemptible" {
+variable "node_preemptible" {
   description = "Use preemptible VMs for nodes."
   type        = bool
   default     = null
 }
 
-variable "node_config_sandbox_config" {
+variable "node_sandbox_config" {
   description = "GKE Sandbox configuration. Needs image_type set to COS_CONTAINERD and node_version set to 1.12.7-gke.17 when using this variable."
   type        = string
   default     = null
 }
 
-variable "node_config_service_account" {
-  description = "Service account used for nodes."
+variable "node_service_account" {
+  description = "Service account email. Unused if service account is auto-created."
   type        = string
   default     = null
 }
 
-variable "node_config_shielded_instance_config" {
+variable "node_service_account_create" {
+  description = "Auto-create service account."
+  type        = bool
+  default     = false
+}
+
+# scopes and scope aliases list
+# https://cloud.google.com/sdk/gcloud/reference/compute/instances/create#--scopes
+variable "node_service_account_scopes" {
+  description = "Scopes applied to service account. Default to: 'cloud-platform' when creating a service account; 'devstorage.read_only', 'logging.write', 'monitoring.write' otherwise."
+  type        = list(string)
+  default     = []
+}
+
+variable "node_shielded_instance_config" {
   description = "Shielded instance options."
   type = object({
     enable_secure_boot          = bool
@@ -153,17 +173,11 @@ variable "node_config_shielded_instance_config" {
   default = null
 }
 
-variable "node_config_tags" {
+variable "node_tags" {
   description = "Network tags applied to nodes."
   type        = list(string)
   default     = null
 }
-
-# variable "node_config_taint" {
-#   description = "Kubernetes taints applied to nodes."
-#   type        = string
-#   default     = null
-# }
 
 variable "node_count" {
   description = "Number of nodes per instance group, can be updated after creation. Ignored when autoscaling is set."

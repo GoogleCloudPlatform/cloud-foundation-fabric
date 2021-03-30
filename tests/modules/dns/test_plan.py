@@ -1,4 +1,4 @@
-# Copyright 2020 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -34,6 +34,20 @@ def test_private(plan_runner):
     assert len(r['values']['private_visibility_config']) == 1
 
 
+def test_private_no_networks(plan_runner):
+  "Test private zone not exposed to any network."
+  _, resources = plan_runner(FIXTURES_DIR, client_networks='[]')
+  assert len(resources) == 3
+  assert set(r['type'] for r in resources) == set([
+      'google_dns_record_set', 'google_dns_managed_zone'
+  ])
+  for r in resources:
+    if r['type'] != 'google_dns_managed_zone':
+      continue
+    assert r['values']['visibility'] == 'private'
+    assert len(r['values']['private_visibility_config']) == 0
+
+
 def test_forwarding_recordsets_null_forwarders(plan_runner):
   "Test forwarding zone with wrong set of attributes does not break."
   _, resources = plan_runner(FIXTURES_DIR, type='forwarding')
@@ -47,12 +61,12 @@ def test_forwarding(plan_runner):
   "Test forwarding zone with single forwarder."
   _, resources = plan_runner(
       FIXTURES_DIR, type='forwarding', recordsets='null',
-      forwarders='["dummy-vpc-self-link"]')
+      forwarders='{ "1.2.3.4" = null }')
   assert len(resources) == 1
   resource = resources[0]
   assert resource['type'] == 'google_dns_managed_zone'
   assert resource['values']['forwarding_config'] == [{'target_name_servers': [
-      {'forwarding_path': '', 'ipv4_address': 'dummy-vpc-self-link'}]}]
+      {'forwarding_path': '', 'ipv4_address': '1.2.3.4'}]}]
 
 
 def test_peering(plan_runner):

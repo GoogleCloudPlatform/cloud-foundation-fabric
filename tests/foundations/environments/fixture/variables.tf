@@ -1,4 +1,4 @@
-# Copyright 2019 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,22 +22,12 @@ variable "environments" {
   default = ["test", "prod"]
 }
 
-variable "iam_assets_editors" {
-  type    = list(string)
-  default = ["user:assets-ed-1@example.org", "user:assets-ed-2@example.org"]
-}
-
-variable "iam_assets_owners" {
-  type    = list(string)
-  default = ["user:assets-own-1@example.org", "user:assets-own-2@example.org"]
-}
-
 variable "iam_audit_viewers" {
   type    = list(string)
   default = ["user:audit-1@example.org", "user:audit2@example.org"]
 }
 
-variable "iam_sharedsvc_owners" {
+variable "iam_shared_owners" {
   type    = list(string)
   default = ["user:shared-1@example.org", "user:shared-2@example.org"]
 }

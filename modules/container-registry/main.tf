@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ resource "google_container_registry" "registry" {
 }
 
 resource "google_storage_bucket_iam_binding" "bindings" {
-  for_each = toset(var.iam_roles)
+  for_each = var.iam
   bucket   = google_container_registry.registry.id
-  role     = each.value
-  members  = lookup(var.iam_members, each.value, [])
+  role     = each.key
+  members  = each.value
 }

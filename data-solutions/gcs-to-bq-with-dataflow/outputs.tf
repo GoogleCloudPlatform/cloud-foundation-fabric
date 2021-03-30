@@ -1,4 +1,4 @@
-# Copyright 2020 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,13 +14,13 @@
 
 output "bq_tables" {
   description = "Bigquery Tables."
-  value = module.bigquery-dataset.table_ids
+  value       = module.bigquery-dataset.table_ids
 }
 
 output "buckets" {
   description = "GCS Bucket Cloud KMS crypto keys."
   value = {
-    for bucket in module.kms-gcs.buckets :
+    for name, bucket in module.kms-gcs :
     bucket.name => bucket.url
   }
 }

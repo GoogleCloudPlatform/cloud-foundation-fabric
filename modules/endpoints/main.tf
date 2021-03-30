@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-locals {
-  iam_roles_bindings = {
-    for k in var.iam_roles : k => lookup(var.iam_members, k, [])
-  }
-}
-
 resource "google_endpoints_service" "default" {
   project              = var.project_id
   service_name         = var.service_name
@@ -29,8 +23,8 @@ resource "google_endpoints_service" "default" {
 }
 
 resource "google_endpoints_service_iam_binding" "default" {
-  for_each     = local.iam_roles_bindings
+  for_each     = var.iam
   service_name = google_endpoints_service.default.service_name
-  role         = "roles/${each.key}"
+  role         = each.key
   members      = each.value
 }

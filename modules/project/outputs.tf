@@ -1,5 +1,5 @@
 /**
- * Copyright 2018 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,14 @@
 
 output "project_id" {
   description = "Project id."
-  value       = try(local.project.project_id, null)
+  value       = "${local.prefix}${var.name}"
   depends_on = [
+    google_project.project,
+    data.google_project.project,
     google_project_organization_policy.boolean,
     google_project_organization_policy.list,
     google_project_service.project_services,
-    google_compute_shared_vpc_service_project
+    google_compute_shared_vpc_service_project.service_projects
   ]
 }
 
@@ -32,7 +34,7 @@ output "name" {
     google_project_organization_policy.boolean,
     google_project_organization_policy.list,
     google_project_service.project_services,
-    google_compute_shared_vpc_service_project
+    google_compute_shared_vpc_service_project.service_projects
   ]
 }
 
@@ -43,7 +45,7 @@ output "number" {
     google_project_organization_policy.boolean,
     google_project_organization_policy.list,
     google_project_service.project_services,
-    google_compute_shared_vpc_service_project
+    google_compute_shared_vpc_service_project.service_projects
   ]
 }
 
@@ -62,5 +64,12 @@ output "custom_roles" {
   value = {
     for name, role in google_project_iam_custom_role.roles :
     name => role.id
+  }
+}
+
+output "sink_writer_identities" {
+  description = ""
+  value = {
+    for name, sink in google_logging_project_sink.sink : name => sink.writer_identity
   }
 }

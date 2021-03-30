@@ -15,22 +15,126 @@ module "cos-nginx" {
 
 module "nginx-template" {
   source     = "./modules/compute-vm"
-  project_id = "my-project"
+  project_id = var.project_id
+  name       = "nginx-template"
   region     = "europe-west1"
-  zone       = "europe-west1-b"
-  name       = "ilb-test"
+  zones      = ["europe-west1-b", "europe-west1-d"]
+  tags       = ["http-server", "ssh"]
   network_interfaces = [{
-    network    = local.network_self_link,
-    subnetwork = local.subnetwork_self_link,
-    nat        = false,
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+    nat        = false
     addresses  = null
+    alias_ips  = null
   }]
   boot_disk = {
     image = "projects/cos-cloud/global/images/family/cos-stable"
     type  = "pd-ssd"
     size  = 10
   }
-  tags                   = ["http-server", "ssh"]
+  use_instance_template = true
+  metadata = {
+    user-data = module.cos-nginx.cloud_config
+  }
+}
+
+module "nginx-mig" {
+  source      = "./modules/compute-mig"
+  project_id  = "my-project"
+  location    = "europe-west1-b"
+  name        = "mig-test"
+  target_size = 2
+  default_version = {
+    instance_template = module.nginx-template.template.self_link
+    name              = "default"
+  }
+}
+# tftest:modules=2:resources=2
+```
+
+### Multiple versions
+
+If multiple versions are desired, use more `compute-vm` instances for the additional templates used in each version (not shown here), and reference them like this:
+
+```hcl
+module "cos-nginx" {
+  source = "./modules/cloud-config-container/nginx"
+}
+
+module "nginx-template" {
+  source     = "./modules/compute-vm"
+  project_id = var.project_id
+  name       = "nginx-template"
+  region     = "europe-west1"
+  zones      = ["europe-west1-b", "europe-west1-d"]
+  tags       = ["http-server", "ssh"]
+  network_interfaces = [{
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+    nat        = false
+    addresses  = null
+    alias_ips  = null
+  }]
+  boot_disk = {
+    image = "projects/cos-cloud/global/images/family/cos-stable"
+    type  = "pd-ssd"
+    size  = 10
+  }
+  use_instance_template  = true
+  metadata = {
+    user-data = module.cos-nginx.cloud_config
+  }
+}
+
+module "nginx-mig" {
+  source      = "./modules/compute-mig"
+  project_id  = "my-project"
+  location    = "europe-west1-b"
+  name        = "mig-test"
+  target_size = 3
+  default_version = {
+    instance_template = module.nginx-template.template.self_link
+    name = "default"
+  }
+  versions = {
+    canary = {
+      instance_template = module.nginx-template.template.self_link
+      target_type = "fixed"
+      target_size = 1
+    }
+  }
+}
+# tftest:modules=2:resources=2
+```
+
+### Health check and autohealing policies
+
+Autohealing policies can use an externally defined health check, or have this module auto-create one:
+
+```hcl
+module "cos-nginx" {
+  source = "./modules/cloud-config-container/nginx"
+}
+
+module "nginx-template" {
+  source     = "./modules/compute-vm"
+  project_id = var.project_id
+  name       = "nginx-template"
+  region     = "europe-west1"
+  zones      = ["europe-west1-b", "europe-west1-d"]
+  tags       = ["http-server", "ssh"]
+  network_interfaces = [{
+    network    = var.vpc.self_link,
+    subnetwork = var.subnet.self_link,
+    nat        = false,
+    addresses  = null
+    alias_ips  = null
+  }]
+  boot_disk = {
+    image = "projects/cos-cloud/global/images/family/cos-stable"
+    type  = "pd-ssd"
+    size  = 10
+  }
   use_instance_template  = true
   metadata = {
     user-data = module.cos-nginx.cloud_config
@@ -42,52 +146,9 @@ module "nginx-mig" {
   project_id = "my-project"
   location     = "europe-west1-b"
   name       = "mig-test"
-  target_size   = 2
+  target_size   = 3
   default_version = {
     instance_template = module.nginx-template.template.self_link
-    name = "default"
-  }
-}
-```
-
-### Multiple versions
-
-If multiple versions are desired, use more `compute-vm` instances for the additional templates used in each version (not shown here), and reference them like this:
-
-```hcl
-module "nginx-mig" {
-  source = "./modules/compute-mig"
-  project_id = "my-project"
-  location     = "europe-west1-b"
-  name       = "mig-test"
-  target_size   = 3
-  default_version = {
-    instance_template = module.nginx-template-default.template.self_link
-    name = "default"
-  }
-  versions = {
-    canary = {
-      instance_template = module.nginx-template-default.template.self_link
-      target_type = "fixed"
-      target_size = 1
-    }
-  }
-}
-```
-
-### Health check and autohealing policies
-
-Autohealing policies can use an externally defined health check, or have this module auto-create one:
-
-```hcl
-module "nginx-mig" {
-  source = "./modules/compute-mig"
-  project_id = "my-project"
-  location     = "europe-west1-b"
-  name       = "mig-test"
-  target_size   = 3
-  default_version = {
-    instance_template = module.nginx-template-default.template.self_link
     name = "default"
   }
   auto_healing_policies = {
@@ -101,6 +162,7 @@ module "nginx-mig" {
     logging = true
   }
 }
+# tftest:modules=2:resources=3
 ```
 
 ### Autoscaling
@@ -108,6 +170,35 @@ module "nginx-mig" {
 The module can create and manage an autoscaler associated with the MIG. When using autoscaling do not set the `target_size` variable or set it to `null`. Here we show a CPU utilization autoscaler, the other available modes are load balancing utilization and custom metric, like the underlying autoscaler resource.
 
 ```hcl
+module "cos-nginx" {
+  source = "./modules/cloud-config-container/nginx"
+}
+
+module "nginx-template" {
+  source     = "./modules/compute-vm"
+  project_id = var.project_id
+  name       = "nginx-template"
+  region     = "europe-west1"
+  zones      = ["europe-west1-b", "europe-west1-d"]
+  tags       = ["http-server", "ssh"]
+  network_interfaces = [{
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+    nat        = false
+    addresses  = null
+    alias_ips  = null
+  }]
+  boot_disk = {
+    image = "projects/cos-cloud/global/images/family/cos-stable"
+    type  = "pd-ssd"
+    size  = 10
+  }
+  use_instance_template  = true
+  metadata = {
+    user-data = module.cos-nginx.cloud_config
+  }
+}
+
 module "nginx-mig" {
   source = "./modules/compute-mig"
   project_id = "my-project"
@@ -115,7 +206,7 @@ module "nginx-mig" {
   name       = "mig-test"
   target_size   = 3
   default_version = {
-    instance_template = module.nginx-template-default.template.self_link
+    instance_template = module.nginx-template.template.self_link
     name = "default"
   }
   autoscaler_config = {
@@ -127,11 +218,41 @@ module "nginx-mig" {
     metric                            = null
   }
 }
+# tftest:modules=2:resources=3
 ```
 
 ### Update policy
 
 ```hcl
+module "cos-nginx" {
+  source = "./modules/cloud-config-container/nginx"
+}
+
+module "nginx-template" {
+  source     = "./modules/compute-vm"
+  project_id = var.project_id
+  name       = "nginx-template"
+  region     = "europe-west1"
+  zones      = ["europe-west1-b", "europe-west1-d"]
+  tags       = ["http-server", "ssh"]
+  network_interfaces = [{
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+    nat        = false
+    addresses  = null
+    alias_ips  = null
+  }]
+  boot_disk = {
+    image = "projects/cos-cloud/global/images/family/cos-stable"
+    type  = "pd-ssd"
+    size  = 10
+  }
+  use_instance_template  = true
+  metadata = {
+    user-data = module.cos-nginx.cloud_config
+  }
+}
+
 module "nginx-mig" {
   source = "./modules/compute-mig"
   project_id = "my-project"
@@ -139,7 +260,7 @@ module "nginx-mig" {
   name       = "mig-test"
   target_size   = 3
   default_version = {
-    instance_template = module.nginx-template-default.template.self_link
+    instance_template = module.nginx-template.template.self_link
     name = "default"
   }
   update_policy = {
@@ -152,6 +273,7 @@ module "nginx-mig" {
     max_unavailable      = null
   }
 }
+# tftest:modules=2:resources=2
 ```
 
 <!-- BEGIN TFDOC -->

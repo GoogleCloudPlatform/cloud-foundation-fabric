@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,18 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-variable "iam_roles" {
-  description = "Authoritative for a given role. Updates the IAM policy to grant a role to a list of members."
-  type        = list(string)
-  default     = []
-}
-
-variable "iam_members" {
-  description = "Authoritative for a given role. Updates the IAM policy to grant a role to a list of members. Other roles within the IAM policy for the instance are preserved."
-  type        = map(list(string))
-  default     = {}
-}
 
 variable "cluster_id" {
   description = "The ID of the Cloud Bigtable cluster."
@@ -42,10 +30,16 @@ variable "display_name" {
   default     = null
 }
 
+variable "iam" {
+  description = "IAM bindings for topic in {ROLE => [MEMBERS]} format."
+  type        = map(list(string))
+  default     = {}
+}
+
 variable "instance_type" {
-  description = "The instance type to create. One of \"DEVELOPMENT\" or \"PRODUCTION\". Defaults to \"DEVELOPMENT\""
+  description = "(deprecated) The instance type to create. One of 'DEVELOPMENT' or 'PRODUCTION'."
   type        = string
-  default     = "DEVELOPMENT"
+  default     = null
 }
 
 variable "name" {
@@ -71,12 +65,10 @@ variable "storage_type" {
 }
 
 variable "tables" {
-  description = "Tables to be created in the BigTable instance."
+  description = "Tables to be created in the BigTable instance, options can be null."
   type = map(object({
-    table_options = object({
-      split_keys    = list(string)
-      column_family = string
-    })
+    split_keys    = list(string)
+    column_family = string
   }))
   default = {}
 }

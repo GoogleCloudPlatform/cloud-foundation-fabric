@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ locals {
       dns   = cidrhost(var.local_ip_cidr_range, 3)
       www   = cidrhost(var.local_ip_cidr_range, 4)
       shell = cidrhost(var.local_ip_cidr_range, 5)
+      vpn2  = cidrhost(var.local_ip_cidr_range, 6)
     }
     netblocks          = local.netblocks
     vpn_config         = local.vpn_config
@@ -49,7 +50,8 @@ locals {
     data.google_netblock_ip_ranges.restricted-googleapis.cidr_blocks_ipv4
   )
   vpn_config = merge(var.vpn_config, {
-    peer_ip_wildcard = "%${var.vpn_config.peer_ip}"
+    peer_ip_wildcard  = "%${var.vpn_config.peer_ip}"
+    peer_ip_wildcard2 = "%${var.vpn_config.peer_ip2}"
   })
 }
 

@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,21 +15,22 @@
  */
 
 locals {
-  role_id   = "projects/${module.project.project_id}/roles/${local.role_name}"
+  role_id   = "projects/${var.project_id}/roles/${local.role_name}"
   role_name = "feeds_cf"
 }
 
 module "project" {
-  source         = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/project?ref=v2.3.0"
+  source         = "../../modules/project"
   name           = var.project_id
-  project_create = false
+  project_create = var.project_create
   services = [
     "cloudasset.googleapis.com",
     "compute.googleapis.com",
     "cloudfunctions.googleapis.com"
   ]
   service_config = {
-    disable_on_destroy = false, disable_dependent_services = false
+    disable_on_destroy         = false,
+    disable_dependent_services = false
   }
   custom_roles = {
     (local.role_name) = [
@@ -40,10 +41,13 @@ module "project" {
       "compute.zoneOperations.list"
     ]
   }
+  iam = {
+    (local.role_id) = [module.service-account.iam_email]
+  }
 }
 
 module "vpc" {
-  source     = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/net-vpc?ref=v2.3.0"
+  source     = "../../modules/net-vpc"
   project_id = module.project.project_id
   name       = var.name
   subnets = [{
@@ -55,21 +59,26 @@ module "vpc" {
 }
 
 module "pubsub" {
-  source        = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/pubsub?ref=v2.3.0"
+  source        = "../../modules/pubsub"
   project_id    = module.project.project_id
   name          = var.name
   subscriptions = { "${var.name}-default" = null }
+  iam = {
+    "roles/pubsub.publisher" = [
+      "serviceAccount:${module.project.service_accounts.robots.cloudasset}"
+    ]
+  }
 }
 
 module "service-account" {
-  source            = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/iam-service-accounts?ref=v2.3.0"
-  project_id        = module.project.project_id
-  names             = ["${var.name}-cf"]
-  iam_project_roles = { (module.project.project_id) = [local.role_id] }
+  source     = "../../modules/iam-service-account"
+  project_id = module.project.project_id
+  name       = "${var.name}-cf"
+  # iam_project_roles = { (module.project.project_id) = [local.role_id] }
 }
 
 module "cf" {
-  source      = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/cloud-function?ref=v2.3.0"
+  source      = "../../modules/cloud-function"
   project_id  = module.project.project_id
   name        = var.name
   bucket_name = "${var.name}-${random_pet.random.id}"
@@ -95,10 +104,11 @@ module "simple-vm-example" {
   region     = var.region
   name       = var.name
   network_interfaces = [{
-    network    = module.vpc.self_link,
-    subnetwork = module.vpc.subnet_self_links["${var.region}/${var.name}-default"],
-    nat        = false,
+    network    = module.vpc.self_link
+    subnetwork = try(module.vpc.subnet_self_links["${var.region}/${var.name}-default"], "")
+    nat        = false
     addresses  = null
+    alias_ips  = null
   }]
   tags           = ["${var.project_id}-test-feed", "shared-test-feed"]
   instance_count = 1

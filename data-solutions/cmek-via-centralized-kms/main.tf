@@ -1,4 +1,4 @@
-# Copyright 2020 Google LLC
+# Copyright 2021 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -79,10 +79,7 @@ module "kms" {
     location = var.location
   }
   keys = { key-gce = null, key-gcs = null }
-  key_iam_roles = {
-    key-gce = ["roles/cloudkms.cryptoKeyEncrypterDecrypter"]
-  }
-  key_iam_members = {
+  key_iam = {
     key-gce = {
       "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
         "serviceAccount:${module.project-service.service_accounts.robots.compute}",
@@ -104,25 +101,21 @@ module "kms_vm_example" {
   source     = "../../modules/compute-vm"
   project_id = module.project-service.project_id
   region     = var.region
-  zone       = var.zone
   name       = "kms-vm"
   network_interfaces = [{
     network    = module.vpc.self_link,
     subnetwork = module.vpc.subnet_self_links["${var.region}/subnet"],
     nat        = false,
     addresses  = null
+    alias_ips  = null
   }]
   attached_disks = [
     {
-      name  = "attacheddisk"
-      size  = 10
-      image = null
-      options = {
-        auto_delete = true
-        mode        = null
-        source      = null
-        type        = null
-      }
+      name        = "attacheddisk"
+      size        = 10
+      source      = null
+      source_type = null
+      options     = null
     }
   ]
   instance_count = 1
@@ -145,11 +138,9 @@ module "kms_vm_example" {
 ###############################################################################
 
 module "kms-gcs" {
-  source     = "../../modules/gcs"
-  project_id = module.project-service.project_id
-  prefix     = "my-bucket-001"
-  names      = ["kms-gcs"]
-  encryption_keys = {
-    kms-gcs = module.kms.keys.key-gce.self_link,
-  }
+  source         = "../../modules/gcs"
+  project_id     = module.project-service.project_id
+  prefix         = "my-bucket-001"
+  name           = "kms-gcs"
+  encryption_key = module.kms.keys.key-gcs.self_link
 }

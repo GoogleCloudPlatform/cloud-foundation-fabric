@@ -15,15 +15,13 @@ module "service-directory" {
   project_id  = "my-project"
   location    = "europe-west1"
   name        = "sd-1"
-  iam_members = {
+  iam = {
     "roles/servicedirectory.editor" = [
       "serviceAccount:namespace-editor@example.com"
     ]
   }
-  iam_roles = [
-    "roles/servicedirectory.editor"
-  ]
 }
+# tftest:modules=1:resources=2
 ```
 
 ### Services with IAM and endpoints
@@ -40,21 +38,19 @@ module "service-directory" {
       metadata  = null
     }
   }
-  service_iam_members = {
+  service_iam = {
     one = {
       "roles/servicedirectory.editor" = [
         "serviceAccount:service-editor.example.com"
       ]
     }
   }
-  service_iam_roles = {
-    one = ["roles/servicedirectory.editor"]
-  }
   endpoint_config = {
     "one/first"  = { address = "127.0.0.1", port = 80, metadata = {} }
     "one/second" = { address = "127.0.0.2", port = 80, metadata = {} }
   }
 }
+# tftest:modules=1:resources=5
 ```
 
 ### DNS based zone
@@ -67,14 +63,11 @@ module "service-directory" {
   project_id  = "my-project"
   location    = "europe-west1"
   name       = "apps"
-  iam_members = {
+  iam = {
     "roles/servicedirectory.editor" = [
       "serviceAccount:namespace-editor@example.com"
     ]
   }
-  iam_roles = [
-    "roles/servicedirectory.editor"
-  ]
   services = {
     app1 = { endpoints = ["one"], metadata = null }
   }
@@ -89,10 +82,10 @@ module "dns-sd" {
   type                        = "service-directory"
   name                        = "apps"
   domain                      = "apps.example.org."
-  client_networks             = [local.vpc_self_link]
+  client_networks             = [var.vpc.self_link]
   service_directory_namespace = module.service-directory.id
 }
-
+# tftest:modules=2:resources=5
 ```
 
 <!-- BEGIN TFDOC -->
@@ -104,11 +97,9 @@ module "dns-sd" {
 | name | Namespace name. | <code title="">string</code> | ✓ |  |
 | project_id | Project used for resources. | <code title="">string</code> | ✓ |  |
 | *endpoint_config* | Map of endpoint attributes, keys are in service/endpoint format. | <code title="map&#40;object&#40;&#123;&#10;address  &#61; string&#10;port     &#61; number&#10;metadata &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
-| *iam_members* | IAM members for each namespace role. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
-| *iam_roles* | IAM roles for the namespace. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
+| *iam* | IAM bindings for namespace, in {ROLE => [MEMBERS]} format. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
 | *labels* | Labels. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
-| *service_iam_members* | IAM members for each service and role. | <code title="map&#40;map&#40;list&#40;string&#41;&#41;&#41;">map(map(list(string)))</code> |  | <code title="">{}</code> |
-| *service_iam_roles* | IAM roles for each service. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
+| *service_iam* | IAM bindings for services, in {SERVICE => {ROLE => [MEMBERS]}} format. | <code title="map&#40;map&#40;list&#40;string&#41;&#41;&#41;">map(map(list(string)))</code> |  | <code title="">{}</code> |
 | *services* | Service configuration, using service names as keys. | <code title="map&#40;object&#40;&#123;&#10;endpoints &#61; list&#40;string&#41;&#10;metadata  &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
 
 ## Outputs

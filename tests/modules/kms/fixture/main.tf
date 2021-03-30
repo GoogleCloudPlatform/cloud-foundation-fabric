@@ -1,5 +1,5 @@
 /**
- * Copyright 2020 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,8 @@
 
 module "test" {
   source               = "../../../../modules/kms"
-  iam_members          = var.iam_members
-  iam_roles            = var.iam_roles
-  key_iam_members      = var.key_iam_members
-  key_iam_roles        = var.key_iam_roles
+  iam                  = var.iam
+  key_iam              = var.key_iam
   key_purpose          = var.key_purpose
   key_purpose_defaults = var.key_purpose_defaults
   keyring              = var.keyring

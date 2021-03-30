@@ -1,5 +1,5 @@
 /**
- * Copyright 2019 Google LLC
+ * Copyright 2021 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -103,7 +103,15 @@ resource "google_compute_firewall" "custom_allow" {
   target_service_accounts = each.value.use_service_accounts ? each.value.targets : null
   disabled                = lookup(each.value.extra_attributes, "disabled", false)
   priority                = lookup(each.value.extra_attributes, "priority", 1000)
-  # enable_logging          = lookup(each.value.extra_attributes, "enable_logging", false)
+
+  dynamic "log_config" {
+    for_each = lookup(each.value.extra_attributes, "logging", null) != null ? [each.value.extra_attributes.logging] : []
+    iterator = logging_config
+    content {
+      metadata = logging_config.value
+    }
+  }
+
   dynamic "allow" {
     for_each = each.value.rules
     iterator = rule
@@ -130,7 +138,14 @@ resource "google_compute_firewall" "custom_deny" {
   target_service_accounts = each.value.use_service_accounts ? each.value.targets : null
   disabled                = lookup(each.value.extra_attributes, "disabled", false)
   priority                = lookup(each.value.extra_attributes, "priority", 1000)
-  # enable_logging          = lookup(each.value.extra_attributes, "enable_logging", false)
+
+  dynamic "log_config" {
+    for_each = lookup(each.value.extra_attributes, "logging", null) != null ? [each.value.extra_attributes.logging] : []
+    iterator = logging_config
+    content {
+      metadata = logging_config.value
+    }
+  }
 
   dynamic "deny" {
     for_each = each.value.rules
