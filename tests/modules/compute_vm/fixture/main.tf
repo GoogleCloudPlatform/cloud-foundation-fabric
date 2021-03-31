@@ -29,4 +29,5 @@ module "test" {
   iam                    = var.iam
   metadata               = var.metadata
   metadata_list          = var.metadata_list
+  single_name            = var.single_name
 }

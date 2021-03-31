@@ -43,9 +43,13 @@ locals {
     "${pair.0}/${pair.1}" => { role = pair.0, name = pair.1, members = var.iam[pair.0] }
   }
   names = (
-    var.use_instance_template ? { (var.name) = 0 } : {
-      for i in range(0, var.instance_count) : "${var.name}-${i + 1}" => i
-    }
+    var.use_instance_template
+    ? { (var.name) = 0 }
+    : (
+      var.single_name && var.instance_count == 1
+      ? { (var.name) = 0 }
+      : { for i in range(0, var.instance_count) : "${var.name}-${i + 1}" => i }
+    )
   )
   service_account_email = (
     var.service_account_create
@@ -64,7 +68,7 @@ locals {
       ? [
         "https://www.googleapis.com/auth/cloud-platform",
         "https://www.googleapis.com/auth/userinfo.email"
-        ]
+      ]
       : [
         "https://www.googleapis.com/auth/devstorage.read_only",
         "https://www.googleapis.com/auth/logging.write",
