@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- **incompatible change** logging sinks now create non-authoritative bindings when iam=true
+- fixed IAM bindings for module `bigquery` not specifying project_id
+
 ## [4.5.1] - 2021-03-27
 
 - allow creating private DNS zones with no visible VPCs in `dns` module
