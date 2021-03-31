@@ -15,3 +15,4 @@ credentials.json
 key.json
 terraform-ls.tf
 bundle.zip
+.DS_Store

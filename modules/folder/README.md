@@ -186,5 +186,5 @@ module "folder2" {
 | folder | Folder resource. |  |
 | id | Folder id. |  |
 | name | Folder name. |  |
-| sink_writer_identities | None |  |
+| sink_writer_identities | Writer identities created for each sink |  |
 <!-- END TFDOC -->

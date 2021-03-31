@@ -191,6 +191,6 @@ module "project-host" {
 | number | Project number. |  |
 | project_id | Project id. |  |
 | service_accounts | Product robot service accounts in project. |  |
-| sink_writer_identities | None |  |
+| sink_writer_identities | Writer identities created for each sink |  |
 <!-- END TFDOC -->
 
