@@ -114,7 +114,7 @@ module "folder-sink" {
     no-gce-instances = "resource.type=gce_instance"
   }
 }
-# tftest:modules=5:resources=11
+# tftest:modules=5:resources=12
 ```
 
 ### Hierarchical firewall policies
@@ -186,5 +186,5 @@ module "folder2" {
 | folder | Folder resource. |  |
 | id | Folder id. |  |
 | name | Folder name. |  |
-| sink_writer_identities | None |  |
+| sink_writer_identities | Writer identities created for each sink. |  |
 <!-- END TFDOC -->

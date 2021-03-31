@@ -62,15 +62,16 @@ def test_sinks(plan_runner):
   }
   """
     _, resources = plan_runner(FIXTURES_DIR, logging_sinks=logging_sinks)
-    assert len(resources) == 8
+    assert len(resources) == 9
 
     resource_types = Counter([r["type"] for r in resources])
     assert resource_types == {
-        "google_bigquery_dataset_iam_binding": 1,
         "google_logging_project_sink": 4,
+        "google_bigquery_dataset_iam_member": 1,
         "google_project": 1,
-        "google_pubsub_topic_iam_binding": 1,
-        "google_storage_bucket_iam_binding": 1,
+        "google_project_iam_member": 1,
+        "google_pubsub_topic_iam_member": 1,
+        "google_storage_bucket_iam_member": 1,
     }
 
     sinks = [r for r in resources if r["type"] == "google_logging_project_sink"]
@@ -111,12 +112,13 @@ def test_sinks(plan_runner):
         ("warning", "severity=WARNING", "storage.googleapis.com/mybucket", False),
     ]
 
-    bindings = [r for r in resources if "binding" in r["type"]]
+    bindings = [r for r in resources if "member" in r["type"]]
     values = [(r["index"], r["type"], r["values"]["role"]) for r in bindings]
     assert sorted(values) == [
-        ("info", "google_bigquery_dataset_iam_binding", "roles/bigquery.dataEditor"),
-        ("notice", "google_pubsub_topic_iam_binding", "roles/pubsub.publisher"),
-        ("warning", "google_storage_bucket_iam_binding", "roles/storage.objectCreator"),
+        ("debug", "google_project_iam_member", "roles/logging.bucketWriter"),
+        ("info", "google_bigquery_dataset_iam_member", "roles/bigquery.dataEditor"),
+        ("notice", "google_pubsub_topic_iam_member", "roles/pubsub.publisher"),
+        ("warning", "google_storage_bucket_iam_member", "roles/storage.objectCreator"),
     ]
 
     exclusions = [(r["index"], r["values"]["exclusions"]) for r in sinks]

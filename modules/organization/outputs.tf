@@ -45,7 +45,7 @@ output "firewall_policy_id" {
 }
 
 output "sink_writer_identities" {
-  description = ""
+  description = "Writer identities created for each sink."
   value = {
     for name, sink in google_logging_organization_sink.sink : name => sink.writer_identity
   }
