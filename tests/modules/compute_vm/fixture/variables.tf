@@ -64,12 +64,17 @@ variable "network_interfaces" {
   }]
 }
 
-variable "use_instance_template" {
+variable "service_account_create" {
   type    = bool
   default = false
 }
 
-variable "service_account_create" {
+variable "single_name" {
+  type    = bool
+  default = false
+}
+
+variable "use_instance_template" {
   type    = bool
   default = false
 }
