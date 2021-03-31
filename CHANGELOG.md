@@ -4,8 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [4.6.0] - 2021-03-31
+
 - **incompatible change** logging sinks now create non-authoritative bindings when iam=true
 - fixed IAM bindings for module `bigquery` not specifying project_id
+- remove device_policy from `vpc_sc` module as it requires BeyondCorp Enterprise Premium
+- allow using unsuffixed name in `compute_vm` module
 
 ## [4.5.1] - 2021-03-27
 
@@ -284,7 +288,8 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.5.1...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.6.0...HEAD
+[4.6.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.5.1...v4.6.0
 [4.5.1]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.5.0...v4.5.1
 [4.5.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.4.2...v4.5.0
 [4.4.2]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.4.1...v4.4.2
