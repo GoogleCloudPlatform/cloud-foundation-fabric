@@ -62,6 +62,16 @@ def test_group(plan_runner):
   ])
 
 
+def test_group_zones(plan_runner):
+  _, resources = plan_runner(FIXTURES_DIR, instance_count=2,
+                             group='{named_ports={}}',
+                             zones='["europe-west1-b", "europe-west1-c"]')
+  assert len(resources) == 4
+  assert set(r['type'] for r in resources) == set([
+      'google_compute_instance_group', 'google_compute_instance'
+  ])
+
+
 def test_iam(plan_runner):
   iam = (
       '{"roles/compute.instanceAdmin" = ["user:a@a.com", "user:b@a.com"],'

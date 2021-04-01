@@ -368,8 +368,10 @@ resource "google_compute_instance_template" "default" {
 }
 
 resource "google_compute_instance_group" "unmanaged" {
-  count = (
-    var.group != null && !var.use_instance_template ? 1 : 0
+  for_each = toset(
+    var.group != null && !var.use_instance_template
+    ? local.zones_list
+    : []
   )
   project = var.project_id
   network = (
@@ -377,11 +379,12 @@ resource "google_compute_instance_group" "unmanaged" {
     ? var.network_interfaces.0.network
     : ""
   )
-  zone        = local.zones_list[0]
-  name        = var.name
+  zone        = each.key
+  name        = "${var.name}-${each.key}"
   description = "Terraform-managed."
   instances = [
-    for name, instance in google_compute_instance.default : instance.self_link
+    for name, instance in google_compute_instance.default :
+    instance.self_link if instance.zone == each.key
   ]
   dynamic "named_port" {
     for_each = var.group.named_ports != null ? var.group.named_ports : {}

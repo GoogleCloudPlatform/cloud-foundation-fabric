@@ -293,7 +293,7 @@ module "instance-group" {
 | name | description | sensitive |
 |---|---|:---:|
 | external_ips | Instance main interface external IP addresses. |  |
-| group | Instance group resource. |  |
+| groups | Instance group resources. |  |
 | instances | Instance resources. |  |
 | internal_ips | Instance main interface internal IP addresses. |  |
 | names | Instance names. |  |
