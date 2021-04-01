@@ -99,16 +99,18 @@ module "ilb" {
   network       = var.vpc.self_link
   subnetwork    = var.subnet.self_link
   ports         = [80]
-  backends = [{
-    failover       = false
-    group          = module.instance-group.group.self_link
-    balancing_mode = "CONNECTION"
-  }]
+  backends = [
+    for name, group in module.instance-group.groups : {
+      failover       = false
+      group          = group.self_link
+      balancing_mode = "CONNECTION"
+    }
+  ]
   health_check_config = {
     type = "http", check = { port = 80 }, config = {}, logging = true
   }
 }
-# tftest:modules=2:resources=5
+# tftest:modules=2:resources=6
 ```
 
 <!-- BEGIN TFDOC -->
