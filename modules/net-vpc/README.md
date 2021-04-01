@@ -163,4 +163,4 @@ module "vpc-host" {
 | subnets | Subnet resources. |  |
 <!-- END TFDOC -->
 
-The key format is *subnet_region/subnet_name*. For example *europe-west1/my_subnet*.
+The key format is `subnet_region/subnet_name`. For example `europe-west1/my_subnet`.
