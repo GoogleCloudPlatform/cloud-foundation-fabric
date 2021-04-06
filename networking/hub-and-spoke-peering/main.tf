@@ -266,6 +266,7 @@ module "cluster-1" {
     enable_private_nodes    = true
     enable_private_endpoint = true
     master_ipv4_cidr_block  = var.private_service_ranges.spoke-2-cluster-1
+    master_global_access    = true
   }
   peering_config = {
     export_routes = true
