@@ -131,6 +131,9 @@ resource "google_container_cluster" "cluster" {
       enable_private_nodes    = config.value.enable_private_nodes
       enable_private_endpoint = config.value.enable_private_endpoint
       master_ipv4_cidr_block  = config.value.master_ipv4_cidr_block
+      master_global_access_config {
+        enabled = config.value.master_global_access
+      }
     }
   }
 

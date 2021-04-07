@@ -195,6 +195,7 @@ variable "private_cluster_config" {
     enable_private_nodes    = bool
     enable_private_endpoint = bool
     master_ipv4_cidr_block  = string
+    master_global_access    = bool
   })
   default = null
 }
