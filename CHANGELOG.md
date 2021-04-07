@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-- add support for `master_global_access_config` block in gke-cluster module
+- **incompatible change** add support for `master_global_access_config` block in gke-cluster module
 
 ## [4.6.1] - 2021-04-01
 
