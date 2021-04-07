@@ -51,13 +51,8 @@ module "project-svc-gce" {
     attach       = true
     host_project = module.project-host.project_id
   }
-  # https://cloud.google.com/stackdriver/docs/solutions/gke/troubleshooting#write_permissions
   iam = {
-    "roles/owner"                               = var.owners_gke
-    "roles/container.developer"                 = [module.vm-bastion.service_account_iam_email],
-    "roles/logging.logWriter"                   = [module.cluster-1-nodepool-1.service_account_iam_email],
-    "roles/monitoring.metricWriter"             = [module.cluster-1-nodepool-1.service_account_iam_email],
-    "roles/stackdriver.resourceMetadata.writer" = [module.cluster-1-nodepool-1.service_account_iam_email]
+    "roles/owner" = var.owners_gce
   }
 }
 
