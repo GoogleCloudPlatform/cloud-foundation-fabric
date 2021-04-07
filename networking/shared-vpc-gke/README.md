@@ -12,6 +12,31 @@ The bastion VM has no public address so access is mediated via [IAP](https://clo
 
 Cluster access from the bastion can leverage the instance service account's `container.developer` role: the only configuration needed is to fetch cluster credentials via `gcloud container clusters get-credentials` passing the correct cluster name, location and project via command options.
 
+For convenience, [Tinyproxy](http://tinyproxy.github.io/) has also been installed on the bastion host, and configured to listen for incoming connections on the localhost. This allows developers to transparently use *kubectl* from their machine, passing through the bastion host and leveraging [IAP](https://cloud.google.com/iap/docs).
+
+To use *kubectl* from the developer machine:
+
+```bash
+gcloud container clusters get-credentials "${CLUSTER_NAME}" \
+  --zone "${CLUSTER_ZONE}" \
+  --project "${CLUSTER_PROJECT_NAME}"
+
+# Open a tunnel to through the bastion host, which runs tinyproxy
+gcloud compute ssh "${BASTION_INSTANCE_NAME}" \
+  --project "${CLUSTER_PROJECT_NAME}" \
+  --zone "${CLUSTER_ZONE}" \
+  --  -L 8888:localhost:8888 -N -q -f
+
+# Run kubectl through the proxy
+HTTPS_PROXY=localhost:8888 kubectl get pods
+```
+
+An alias can also be created. For example:
+
+```bash
+alias k='HTTPS_PROXY=localhost:8888 kubectl $@'
+```
+
 ## Destroying
 
 There's a minor glitch that can surface running `terraform destroy`, where the service project attachments to the Shared VPC will not get destroyed even with the relevant API call succeeding. We are investigating the issue, in the meantime just manually remove the attachment in the Cloud console or via the `gcloud beta compute shared-vpc associated-projects remove` command when `terraform destroy` fails, and then relaunch the command.
