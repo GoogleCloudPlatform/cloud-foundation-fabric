@@ -75,7 +75,7 @@ module "ilb-left" {
   }
   backends = [{
     failover       = false
-    group          = module.gw.group.self_link
+    group          = values(module.gw.groups)[0].self_link
     balancing_mode = "CONNECTION"
   }]
   health_check_config = {
@@ -99,7 +99,7 @@ module "ilb-right" {
   }
   backends = [{
     failover       = false
-    group          = module.gw.group.self_link
+    group          = values(module.gw.groups)[0].self_link
     balancing_mode = "CONNECTION"
   }]
   health_check_config = {

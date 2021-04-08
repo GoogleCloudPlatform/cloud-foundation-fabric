@@ -230,6 +230,12 @@ variable "service_account_scopes" {
   default     = []
 }
 
+variable "single_name" {
+  description = "Do not append progressive count to instance name."
+  type        = bool
+  default     = false
+}
+
 variable "tags" {
   description = "Instance tags."
   type        = list(string)

@@ -26,6 +26,13 @@ def test_single_instance(plan_runner):
   assert resources[0]['type'] == 'google_compute_instance'
 
 
+def test_single_instance_single_name(plan_runner):
+  _, resources = plan_runner(FIXTURES_DIR, single_name=1)
+  assert len(resources) == 1
+  assert resources[0]['type'] == 'google_compute_instance'
+  assert resources[0]['values']['name'] == 'test'
+
+
 def test_multiple_instances(plan_runner):
   _, resources = plan_runner(FIXTURES_DIR, instance_count=2)
   assert len(resources) == 2
@@ -50,6 +57,16 @@ def test_group(plan_runner):
   _, resources = plan_runner(FIXTURES_DIR, instance_count=2,
                              group='{named_ports={}}')
   assert len(resources) == 3
+  assert set(r['type'] for r in resources) == set([
+      'google_compute_instance_group', 'google_compute_instance'
+  ])
+
+
+def test_group_zones(plan_runner):
+  _, resources = plan_runner(FIXTURES_DIR, instance_count=2,
+                             group='{named_ports={}}',
+                             zones='["europe-west1-b", "europe-west1-c"]')
+  assert len(resources) == 4
   assert set(r['type'] for r in resources) == set([
       'google_compute_instance_group', 'google_compute_instance'
   ])

@@ -43,9 +43,13 @@ locals {
     "${pair.0}/${pair.1}" => { role = pair.0, name = pair.1, members = var.iam[pair.0] }
   }
   names = (
-    var.use_instance_template ? { (var.name) = 0 } : {
-      for i in range(0, var.instance_count) : "${var.name}-${i + 1}" => i
-    }
+    var.use_instance_template
+    ? { (var.name) = 0 }
+    : (
+      var.single_name && var.instance_count == 1
+      ? { (var.name) = 0 }
+      : { for i in range(0, var.instance_count) : "${var.name}-${i + 1}" => i }
+    )
   )
   service_account_email = (
     var.service_account_create
@@ -64,7 +68,7 @@ locals {
       ? [
         "https://www.googleapis.com/auth/cloud-platform",
         "https://www.googleapis.com/auth/userinfo.email"
-        ]
+      ]
       : [
         "https://www.googleapis.com/auth/devstorage.read_only",
         "https://www.googleapis.com/auth/logging.write",
@@ -364,8 +368,10 @@ resource "google_compute_instance_template" "default" {
 }
 
 resource "google_compute_instance_group" "unmanaged" {
-  count = (
-    var.group != null && !var.use_instance_template ? 1 : 0
+  for_each = toset(
+    var.group != null && !var.use_instance_template
+    ? local.zones_list
+    : []
   )
   project = var.project_id
   network = (
@@ -373,11 +379,12 @@ resource "google_compute_instance_group" "unmanaged" {
     ? var.network_interfaces.0.network
     : ""
   )
-  zone        = local.zones_list[0]
-  name        = var.name
+  zone        = each.key
+  name        = "${var.name}-${each.key}"
   description = "Terraform-managed."
   instances = [
-    for name, instance in google_compute_instance.default : instance.self_link
+    for name, instance in google_compute_instance.default :
+    instance.self_link if instance.zone == each.key
   ]
   dynamic "named_port" {
     for_each = var.group.named_ports != null ? var.group.named_ports : {}

@@ -277,27 +277,36 @@ resource "google_logging_project_sink" "sink" {
   }
 }
 
-resource "google_storage_bucket_iam_binding" "gcs-sinks-binding" {
+resource "google_storage_bucket_iam_member" "gcs-sinks-binding" {
   for_each = local.sink_bindings["gcs"]
   bucket   = each.value.destination
   role     = "roles/storage.objectCreator"
-  members  = [google_logging_project_sink.sink[each.key].writer_identity]
+  member   = google_logging_project_sink.sink[each.key].writer_identity
 }
 
-resource "google_bigquery_dataset_iam_binding" "bq-sinks-binding" {
+resource "google_bigquery_dataset_iam_member" "bq-sinks-binding" {
   for_each   = local.sink_bindings["bigquery"]
   project    = split("/", each.value.destination)[1]
   dataset_id = split("/", each.value.destination)[3]
   role       = "roles/bigquery.dataEditor"
-  members    = [google_logging_project_sink.sink[each.key].writer_identity]
+  member     = google_logging_project_sink.sink[each.key].writer_identity
 }
 
-resource "google_pubsub_topic_iam_binding" "pubsub-sinks-binding" {
+resource "google_pubsub_topic_iam_member" "pubsub-sinks-binding" {
   for_each = local.sink_bindings["pubsub"]
   project  = split("/", each.value.destination)[1]
   topic    = split("/", each.value.destination)[3]
   role     = "roles/pubsub.publisher"
-  members  = [google_logging_project_sink.sink[each.key].writer_identity]
+  member   = google_logging_project_sink.sink[each.key].writer_identity
+}
+
+resource "google_project_iam_member" "bucket-sinks-binding" {
+  for_each = local.sink_bindings["logging"]
+  project  = split("/", each.value.destination)[1]
+  role     = "roles/logging.bucketWriter"
+  member   = google_logging_project_sink.sink[each.key].writer_identity
+  # TODO(jccb): use a condition to limit writer-identity only to this
+  # bucket
 }
 
 resource "google_logging_project_exclusion" "logging-exclusion" {
@@ -318,7 +327,7 @@ resource "google_essential_contacts_contact" "contact" {
 }
 
 resource "google_access_context_manager_service_perimeter_resource" "service-perimeter-resource-standard" {
-  count          = var.service_perimeter_standard != null ? 1 : 0
+  count = var.service_perimeter_standard != null ? 1 : 0
 
   # If used, remember to uncomment 'lifecycle' block in the 
   # modules/vpc-sc/google_access_context_manager_service_perimeter resource.
@@ -327,7 +336,7 @@ resource "google_access_context_manager_service_perimeter_resource" "service-per
 }
 
 resource "google_access_context_manager_service_perimeter_resource" "service-perimeter-resource-bridges" {
-  for_each       = toset(var.service_perimeter_bridges != null ? var.service_perimeter_bridges : [])
+  for_each = toset(var.service_perimeter_bridges != null ? var.service_perimeter_bridges : [])
 
   # If used, remember to uncomment 'lifecycle' block in the 
   # modules/vpc-sc/google_access_context_manager_service_perimeter resource.

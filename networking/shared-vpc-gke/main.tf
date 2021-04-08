@@ -184,7 +184,9 @@ module "vm-bastion" {
     startup-script = join("\n", [
       "#! /bin/bash",
       "apt-get update",
-      "apt-get install -y bash-completion kubectl dnsutils"
+      "apt-get install -y bash-completion kubectl dnsutils tinyproxy",
+      "grep -qxF 'Allow localhost' /etc/tinyproxy/tinyproxy.conf || echo 'Allow localhost' >> /etc/tinyproxy/tinyproxy.conf",
+      "service tinyproxy restart"
     ])
   }
   service_account_create = true
@@ -214,6 +216,7 @@ module "cluster-1" {
     enable_private_nodes    = true
     enable_private_endpoint = true
     master_ipv4_cidr_block  = var.private_service_ranges.cluster-1
+    master_global_access    = true
   }
 }
 

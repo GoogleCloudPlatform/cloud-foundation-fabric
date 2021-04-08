@@ -131,7 +131,7 @@ module "org" {
     no-gce-instances = "resource.type=gce_instance"
   }
 }
-# tftest:modules=5:resources=10
+# tftest:modules=5:resources=11
 ```
 
 
@@ -163,5 +163,5 @@ module "org" {
 | firewall_policies | Map of firewall policy resources created in the organization. |  |
 | firewall_policy_id | Map of firewall policy ids created in the organization. |  |
 | organization_id | Organization id dependent on module resources. |  |
-| sink_writer_identities | None |  |
+| sink_writer_identities | Writer identities created for each sink. |  |
 <!-- END TFDOC -->

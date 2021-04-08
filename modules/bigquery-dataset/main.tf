@@ -43,7 +43,7 @@ resource "google_bigquery_dataset" "default" {
   default_table_expiration_ms     = var.options.default_table_expiration_ms
   default_partition_expiration_ms = var.options.default_partition_expiration_ms
 
-  dynamic access {
+  dynamic "access" {
     for_each = var.dataset_access ? local.access_domain : {}
     content {
       role   = access.value.role
@@ -51,7 +51,7 @@ resource "google_bigquery_dataset" "default" {
     }
   }
 
-  dynamic access {
+  dynamic "access" {
     for_each = var.dataset_access ? local.access_group : {}
     content {
       role           = access.value.role
@@ -59,7 +59,7 @@ resource "google_bigquery_dataset" "default" {
     }
   }
 
-  dynamic access {
+  dynamic "access" {
     for_each = var.dataset_access ? local.access_special : {}
     content {
       role          = access.value.role
@@ -67,7 +67,7 @@ resource "google_bigquery_dataset" "default" {
     }
   }
 
-  dynamic access {
+  dynamic "access" {
     for_each = var.dataset_access ? local.access_user : {}
     content {
       role          = access.value.role
@@ -75,7 +75,7 @@ resource "google_bigquery_dataset" "default" {
     }
   }
 
-  dynamic access {
+  dynamic "access" {
     for_each = var.dataset_access ? local.access_view : {}
     content {
       view {
@@ -86,7 +86,7 @@ resource "google_bigquery_dataset" "default" {
     }
   }
 
-  dynamic default_encryption_configuration {
+  dynamic "default_encryption_configuration" {
     for_each = var.encryption_key == null ? [] : [""]
     content {
       kms_key_name = var.encryption_key
@@ -144,6 +144,7 @@ resource "google_bigquery_dataset_access" "views" {
 
 resource "google_bigquery_dataset_iam_binding" "bindings" {
   for_each   = var.iam
+  project    = var.project_id
   dataset_id = google_bigquery_dataset.default.dataset_id
   role       = each.key
   members    = each.value
@@ -162,14 +163,14 @@ resource "google_bigquery_table" "default" {
   labels          = each.value.labels
   schema          = each.value.schema
 
-  dynamic encryption_configuration {
+  dynamic "encryption_configuration" {
     for_each = try(each.value.options.encryption_key, null) != null ? [""] : []
     content {
       kms_key_name = each.value.options.encryption_key
     }
   }
 
-  dynamic range_partitioning {
+  dynamic "range_partitioning" {
     for_each = try(each.value.partitioning.range, null) != null ? [""] : []
     content {
       field = each.value.partitioning.field
@@ -181,7 +182,7 @@ resource "google_bigquery_table" "default" {
     }
   }
 
-  dynamic time_partitioning {
+  dynamic "time_partitioning" {
     for_each = try(each.value.partitioning.time, null) != null ? [""] : []
     content {
       expiration_ms = each.value.partitioning.time.expiration_ms
