@@ -14,11 +14,20 @@
  * limitations under the License.
  */
 
+module "utils" {
+  source  = "github.com/terraform-google-modules/terraform-google-utils"
+}
+
 locals {
+  location_prefix = (
+    length(split("-", var.location)) == 1
+    ? lower(var.location)
+    : module.utils.region_short_name_map[var.location]
+  )
   prefix = (
     var.prefix == null || var.prefix == "" # keep "" for backward compatibility
     ? ""
-    : join("-", [var.prefix, lower(var.location), ""])
+    : join("-", [var.prefix, local.location_prefix, ""])
   )
 }
 
