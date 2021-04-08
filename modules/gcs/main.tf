@@ -15,7 +15,7 @@
  */
 
 module "utils" {
-  source  = "github.com/terraform-google-modules/terraform-google-utils"
+  source = "github.com/terraform-google-modules/terraform-google-utils"
 }
 
 locals {
