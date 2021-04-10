@@ -49,7 +49,7 @@ variable "folder_create" {
 }
 
 variable "group_iam" {
-  description = "Atuthoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable."
+  description = "Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable."
   type        = map(list(string))
   default     = {}
 }
