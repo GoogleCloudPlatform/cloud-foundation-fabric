@@ -19,6 +19,11 @@ variable "custom_roles" {
   default = {}
 }
 
+variable "group_iam" {
+  type    = map(list(string))
+  default = {}
+}
+
 variable "iam" {
   type    = map(list(string))
   default = {}
