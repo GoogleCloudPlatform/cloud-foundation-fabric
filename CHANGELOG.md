@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 - **incompatible change** add support for `master_global_access_config` block in gke-cluster module
+- add support for group-based IAM to resource management modules
 
 ## [4.6.1] - 2021-04-01
 
