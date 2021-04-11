@@ -14,9 +14,75 @@
  * limitations under the License.
  */
 
+variable "contacts" {
+  description = "List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES"
+  type        = map(list(string))
+  default     = {}
+}
+
+variable "firewall_policies" {
+  description = "Hierarchical firewall policies to *create* in this folder."
+  type = map(map(object({
+    description             = string
+    direction               = string
+    action                  = string
+    priority                = number
+    ranges                  = list(string)
+    ports                   = map(list(string))
+    target_service_accounts = list(string)
+    target_resources        = list(string)
+    logging                 = bool
+  })))
+  default = {}
+}
+
+variable "firewall_policy_attachments" {
+  description = "List of hierarchical firewall policy IDs to *attach* to this folder."
+  type        = map(string)
+  default     = {}
+}
+
+variable "folder_create" {
+  description = "Create folder. When set to false, uses id to reference an existing folder."
+  type        = bool
+  default     = true
+}
+
+variable "group_iam" {
+  description = "Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable."
+  type        = map(list(string))
+  default     = {}
+}
+
 variable "iam" {
   description = "IAM bindings in {ROLE => [MEMBERS]} format."
-  type        = map(set(string))
+  type        = map(list(string))
+  default     = {}
+}
+
+variable "id" {
+  description = "Folder ID in case you use folder_create=false"
+  type        = string
+  default     = null
+}
+
+variable "logging_sinks" {
+  description = "Logging sinks to create for this folder."
+  type = map(object({
+    destination      = string
+    type             = string
+    filter           = string
+    iam              = bool
+    include_children = bool
+    # TODO exclusions also support description and disabled
+    exclusions = map(string)
+  }))
+  default = {}
+}
+
+variable "logging_exclusions" {
+  description = "Logging exclusions for this folder in the form {NAME -> FILTER}."
+  type        = map(string)
   default     = {}
 }
 
@@ -51,64 +117,4 @@ variable "policy_list" {
     values              = list(string)
   }))
   default = {}
-}
-
-variable "firewall_policies" {
-  description = "Hierarchical firewall policies to *create* in this folder."
-  type = map(map(object({
-    description             = string
-    direction               = string
-    action                  = string
-    priority                = number
-    ranges                  = list(string)
-    ports                   = map(list(string))
-    target_service_accounts = list(string)
-    target_resources        = list(string)
-    logging                 = bool
-  })))
-  default = {}
-}
-
-variable "firewall_policy_attachments" {
-  description = "List of hierarchical firewall policy IDs to *attach* to this folder."
-  type        = map(string)
-  default     = {}
-}
-
-variable "logging_sinks" {
-  description = "Logging sinks to create for this folder."
-  type = map(object({
-    destination      = string
-    type             = string
-    filter           = string
-    iam              = bool
-    include_children = bool
-    # TODO exclusions also support description and disabled
-    exclusions = map(string)
-  }))
-  default = {}
-}
-
-variable "logging_exclusions" {
-  description = "Logging exclusions for this folder in the form {NAME -> FILTER}."
-  type        = map(string)
-  default     = {}
-}
-
-variable "folder_create" {
-  description = "Create folder. When set to false, uses id to reference an existing folder."
-  type        = bool
-  default     = true
-}
-
-variable "id" {
-  description = "Folder ID in case you use folder_create=false"
-  type        = string
-  default     = null
-}
-
-variable "contacts" {
-  description = "List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES"
-  type        = map(list(string))
-  default     = {}
 }

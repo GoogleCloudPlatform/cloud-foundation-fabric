@@ -16,6 +16,19 @@
 
 locals {
   organization_id_numeric = split("/", var.organization_id)[1]
+  group_iam_roles         = distinct(flatten(values(var.group_iam)))
+  group_iam = {
+    for r in local.group_iam_roles : r => [
+      for k, v in var.group_iam : "group:${k}" if try(index(v, r), null) != null
+    ]
+  }
+  iam = {
+    for role in distinct(concat(keys(var.iam), keys(local.group_iam))) :
+    role => concat(
+      try(var.iam[role], []),
+      try(local.group_iam[role], [])
+    )
+  }
   iam_additive_pairs = flatten([
     for role, members in var.iam_additive : [
       for member in members : { role = role, member = member }
@@ -67,7 +80,7 @@ resource "google_organization_iam_custom_role" "roles" {
 }
 
 resource "google_organization_iam_binding" "authoritative" {
-  for_each = var.iam
+  for_each = local.iam
   org_id   = local.organization_id_numeric
   role     = each.key
   members  = each.value

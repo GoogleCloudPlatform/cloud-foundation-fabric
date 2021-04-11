@@ -18,6 +18,7 @@ module "test" {
   source                      = "../../../../modules/organization"
   organization_id             = "organizations/1234567890"
   custom_roles                = var.custom_roles
+  group_iam                   = var.group_iam
   iam                         = var.iam
   iam_additive                = var.iam_additive
   iam_additive_members        = var.iam_additive_members

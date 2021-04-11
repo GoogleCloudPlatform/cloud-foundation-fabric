@@ -30,6 +30,32 @@ def test_audit_config(plan_runner):
   assert log_types == set(['DATA_READ', 'DATA_WRITE'])
 
 
+def test_iam(plan_runner):
+  "Test IAM."
+  group_iam = (
+      '{'
+      '"owners@example.org" = ["roles/owner", "roles/resourcemanager.folderAdmin"],'
+      '"viewers@example.org" = ["roles/viewer"]'
+      '}'
+  )
+  iam = (
+      '{'
+      '"roles/owner" = ["user:one@example.org", "user:two@example.org"],'
+      '"roles/browser" = ["domain:example.org"]'
+      '}'
+  )
+  _, resources = plan_runner(FIXTURES_DIR, group_iam=group_iam, iam=iam)
+  roles = sorted([(r['values']['role'], sorted(r['values']['members']))
+                  for r in resources if r['type'] == 'google_organization_iam_binding'])
+  assert roles == [
+      ('roles/browser', ['domain:example.org']),
+      ('roles/owner', ['group:owners@example.org', 'user:one@example.org',
+       'user:two@example.org']),
+      ('roles/resourcemanager.folderAdmin', ['group:owners@example.org']),
+      ('roles/viewer', ['group:viewers@example.org']),
+  ]
+
+
 def test_iam_additive_members(plan_runner):
   "Test IAM additive members."
   iam = (
@@ -126,7 +152,7 @@ def test_firweall_policy(plan_runner):
   assert len(resources) == 4
 
   policies = [r for r in resources
-           if r['type'] == 'google_compute_organization_security_policy']
+              if r['type'] == 'google_compute_organization_security_policy']
   assert len(policies) == 1
 
   rules = [r for r in resources
@@ -146,16 +172,16 @@ def test_firweall_policy(plan_runner):
     rule_values.append((name, index, action, direction, priority, config))
 
   assert sorted(rule_values) == sorted([
-    ('rule', 'policy1-allow-ingress', 'allow', 'INGRESS', 100,[
-      {
-        'dest_ip_ranges': None,
-        'layer4_config': [{'ip_protocol': 'tcp', 'ports': ['22']}],
-        'src_ip_ranges': ['10.0.0.0/8']
-      }]),
-    ('rule', 'policy1-deny-egress', 'deny', 'EGRESS', 200, [
-      {
-        'dest_ip_ranges': ['192.168.0.0/24'],
-        'layer4_config': [{'ip_protocol': 'tcp', 'ports': ['443']}],
-        'src_ip_ranges': None
-      }])
+      ('rule', 'policy1-allow-ingress', 'allow', 'INGRESS', 100, [
+          {
+              'dest_ip_ranges': None,
+              'layer4_config': [{'ip_protocol': 'tcp', 'ports': ['22']}],
+              'src_ip_ranges': ['10.0.0.0/8']
+          }]),
+      ('rule', 'policy1-deny-egress', 'deny', 'EGRESS', 200, [
+          {
+              'dest_ip_ranges': ['192.168.0.0/24'],
+              'layer4_config': [{'ip_protocol': 'tcp', 'ports': ['443']}],
+              'src_ip_ranges': None
+          }])
   ])

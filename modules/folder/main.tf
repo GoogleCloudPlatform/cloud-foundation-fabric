@@ -21,6 +21,19 @@ locals {
       merge(rule, { policy = policy, name = rule_name })
     ]
   ])
+  group_iam_roles = distinct(flatten(values(var.group_iam)))
+  group_iam = {
+    for r in local.group_iam_roles : r => [
+      for k, v in var.group_iam : "group:${k}" if try(index(v, r), null) != null
+    ]
+  }
+  iam = {
+    for role in distinct(concat(keys(var.iam), keys(local.group_iam))) :
+    role => concat(
+      try(var.iam[role], []),
+      try(local.group_iam[role], [])
+    )
+  }
   rules_map = {
     for rule in local.extended_rules :
     "${rule.policy}-${rule.name}" => rule
@@ -59,7 +72,7 @@ resource "google_folder" "folder" {
 }
 
 resource "google_folder_iam_binding" "authoritative" {
-  for_each = var.iam
+  for_each = local.iam
   folder   = local.folder.name
   role     = each.key
   members  = each.value

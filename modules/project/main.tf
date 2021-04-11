@@ -15,6 +15,19 @@
  */
 
 locals {
+  group_iam_roles = distinct(flatten(values(var.group_iam)))
+  group_iam = {
+    for r in local.group_iam_roles : r => [
+      for k, v in var.group_iam : "group:${k}" if try(index(v, r), null) != null
+    ]
+  }
+  iam = {
+    for role in distinct(concat(keys(var.iam), keys(local.group_iam))) :
+    role => concat(
+      try(var.iam[role], []),
+      try(local.group_iam[role], [])
+    )
+  }
   iam_additive_pairs = flatten([
     for role, members in var.iam_additive : [
       for member in members : { role = role, member = member }
@@ -110,7 +123,7 @@ resource "google_project_service" "project_services" {
 # - additive (non-authoritative) roles might fail due to dynamic values
 
 resource "google_project_iam_binding" "authoritative" {
-  for_each = var.iam
+  for_each = local.iam
   project  = local.project.project_id
   role     = each.key
   members  = each.value
@@ -329,7 +342,7 @@ resource "google_essential_contacts_contact" "contact" {
 resource "google_access_context_manager_service_perimeter_resource" "service-perimeter-resource-standard" {
   count = var.service_perimeter_standard != null ? 1 : 0
 
-  # If used, remember to uncomment 'lifecycle' block in the 
+  # If used, remember to uncomment 'lifecycle' block in the
   # modules/vpc-sc/google_access_context_manager_service_perimeter resource.
   perimeter_name = var.service_perimeter_standard
   resource       = "projects/${local.project.number}"
@@ -338,7 +351,7 @@ resource "google_access_context_manager_service_perimeter_resource" "service-per
 resource "google_access_context_manager_service_perimeter_resource" "service-perimeter-resource-bridges" {
   for_each = toset(var.service_perimeter_bridges != null ? var.service_perimeter_bridges : [])
 
-  # If used, remember to uncomment 'lifecycle' block in the 
+  # If used, remember to uncomment 'lifecycle' block in the
   # modules/vpc-sc/google_access_context_manager_service_perimeter resource.
   perimeter_name = each.value
   resource       = "projects/${local.project.number}"

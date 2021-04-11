@@ -1,6 +1,6 @@
 # Google Cloud Folder Module
 
-This module allows the creation and management of folders together with their individual IAM bindings and organization policies.
+This module allows the creation and management of folders, including support for IAM bindings, organization policies, and hierarchical firewall rules.
 
 ## Examples
 
@@ -11,11 +11,14 @@ module "folder" {
   source = "./modules/folder"
   parent = "organizations/1234567890"
   name  = "Folder name"
+  group_iam       = {
+    "cloud-owners@example.org" = ["roles/owner", "roles/projectCreator"]
+  }
   iam = {
-    "roles/owner" = ["group:users@example.com"]
+    "roles/owner" = ["user:one@example.com"]
   }
 }
-# tftest:modules=1:resources=2
+# tftest:modules=1:resources=3
 ```
 
 ### Organization policies
@@ -158,7 +161,6 @@ module "folder2" {
 # tftest:modules=2:resources=6
 ```
 
-
 <!-- BEGIN TFDOC -->
 ## Variables
 
@@ -168,7 +170,8 @@ module "folder2" {
 | *firewall_policies* | Hierarchical firewall policies to *create* in this folder. | <code title="map&#40;map&#40;object&#40;&#123;&#10;description             &#61; string&#10;direction               &#61; string&#10;action                  &#61; string&#10;priority                &#61; number&#10;ranges                  &#61; list&#40;string&#41;&#10;ports                   &#61; map&#40;list&#40;string&#41;&#41;&#10;target_service_accounts &#61; list&#40;string&#41;&#10;target_resources        &#61; list&#40;string&#41;&#10;logging                 &#61; bool&#10;&#125;&#41;&#41;&#41;">map(map(object({...})))</code> |  | <code title="">{}</code> |
 | *firewall_policy_attachments* | List of hierarchical firewall policy IDs to *attach* to this folder. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
 | *folder_create* | Create folder. When set to false, uses id to reference an existing folder. | <code title="">bool</code> |  | <code title="">true</code> |
-| *iam* | IAM bindings in {ROLE => [MEMBERS]} format. | <code title="map&#40;set&#40;string&#41;&#41;">map(set(string))</code> |  | <code title="">{}</code> |
+| *group_iam* | Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
+| *iam* | IAM bindings in {ROLE => [MEMBERS]} format. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
 | *id* | Folder ID in case you use folder_create=false | <code title="">string</code> |  | <code title="">null</code> |
 | *logging_exclusions* | Logging exclusions for this folder in the form {NAME -> FILTER}. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
 | *logging_sinks* | Logging sinks to create for this folder. | <code title="map&#40;object&#40;&#123;&#10;destination      &#61; string&#10;type &#61; string&#10;filter           &#61; string&#10;iam              &#61; bool&#10;include_children &#61; bool&#10;exclusions &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
