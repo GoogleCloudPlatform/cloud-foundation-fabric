@@ -231,7 +231,7 @@ resource "google_compute_route" "vpn_tunnel" {
 resource "google_compute_global_address" "psn_range" {
   count         = var.private_service_networking_range == null ? 0 : 1
   project       = var.project_id
-  name          = "google-private-service-networking"
+  name          = "${var.name}-google-psn"
   purpose       = "VPC_PEERING"
   address_type  = "INTERNAL"
   address       = split("/", var.private_service_networking_range)[0]
