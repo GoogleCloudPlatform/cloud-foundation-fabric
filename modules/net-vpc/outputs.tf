@@ -17,16 +17,25 @@
 output "network" {
   description = "Network resource."
   value       = local.network
+  depends_on = [
+    google_service_networking_connection.psn_connection
+  ]
 }
 
 output "name" {
   description = "The name of the VPC being created."
   value       = local.network.name
+  depends_on = [
+    google_service_networking_connection.psn_connection
+  ]
 }
 
 output "self_link" {
   description = "The URI of the VPC being created."
   value       = local.network.self_link
+  depends_on = [
+    google_service_networking_connection.psn_connection
+  ]
 }
 
 output "project_id" {
@@ -38,7 +47,8 @@ output "project_id" {
   )
   depends_on = [
     google_compute_shared_vpc_host_project.shared_vpc_host,
-    google_compute_shared_vpc_service_project.service_projects
+    google_compute_shared_vpc_service_project.service_projects,
+    google_service_networking_connection.psn_connection
   ]
 }
 
