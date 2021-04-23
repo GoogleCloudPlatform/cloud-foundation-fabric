@@ -99,3 +99,14 @@ variable "versioning" {
   type        = bool
   default     = false
 }
+
+variable "cors" {
+  description = "CORS configuration for the bucket. Defaults to null."
+  type = object({
+    origin          = list(string)
+    method          = list(string)
+    response_header = list(string)
+    max_age_seconds = number
+  })
+  default = null
+}
