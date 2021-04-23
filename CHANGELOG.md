@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- added support for `CORS` to the `gcs` module
+
 ## [4.7.0] - 2021-04-21
 
 - **incompatible change** add support for `master_global_access_config` block in gke-cluster module
