@@ -104,4 +104,4 @@ def test_vpc_psn(plan_runner):
 
   connection = [r["values"] for r in resources if r["type"] == "google_service_networking_connection"][0]
   assert connection["service"] == "servicenetworking.googleapis.com"
-  assert connection["reserved_peering_ranges"] == ["google-private-service-networking"]
+  assert connection["reserved_peering_ranges"] == ["my-vpc-google-psn"]
