@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 - added support for `CORS` to the `gcs` module
+- make cluster creation optional in the Shared VPC example
 
 ## [4.7.0] - 2021-04-21
 
