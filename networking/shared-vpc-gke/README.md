@@ -1,4 +1,4 @@
-# Shared VPC with GKE example
+# Shared VPC with optional GKE cluster
 
 This sample creates a basic [Shared VPC](https://cloud.google.com/vpc/docs/shared-vpc) setup using one host project and two service projects, each with a specific subnet in the shared VPC.
 
