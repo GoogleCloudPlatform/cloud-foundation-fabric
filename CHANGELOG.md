@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 - added support for `CORS` to the `gcs` module
 - make cluster creation optional in the Shared VPC example
+- make service account creation optional in `iam-service-account` module
 
 ## [4.7.0] - 2021-04-21
 
