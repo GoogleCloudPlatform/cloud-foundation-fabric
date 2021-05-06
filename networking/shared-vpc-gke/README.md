@@ -1,6 +1,10 @@
 # Shared VPC with GKE example
 
-This sample creates a basic [Shared VPC](https://cloud.google.com/vpc/docs/shared-vpc) setup using one host project and two service projects, each with a specific subnet in the shared VPC. The setup also includes the specific IAM-level configurations needed for [GKE on Shared VPC](https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-shared-vpc) to enable cluster creation in one of the two service projects.
+This sample creates a basic [Shared VPC](https://cloud.google.com/vpc/docs/shared-vpc) setup using one host project and two service projects, each with a specific subnet in the shared VPC.
+
+The setup also includes the specific IAM-level configurations needed for [GKE on Shared VPC](https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-shared-vpc) in one of the two service projects, and optionally creates a cluster with a single nodepool.
+
+If you only need a basic Shared VPC, or prefer creating a cluster manually, set the `cluster_create` variable to `False`.
 
 The sample has been purposefully kept simple so that it can be used as a basis for different Shared VPC configurations. This is the high level diagram:
 
@@ -46,6 +50,7 @@ There's a minor glitch that can surface running `terraform destroy`, where the s
 | billing_account_id | Billing account id used as default for new projects. | <code title="">string</code> | ✓ |  |
 | prefix | Prefix used for resources that need unique names. | <code title="">string</code> | ✓ |  |
 | root_node | Hierarchy node where projects will be created, 'organizations/org_id' or 'folders/folder_id'. | <code title="">string</code> | ✓ |  |
+| *cluster_create* | Create GKE cluster and nodepool. | <code title="">bool</code> |  | <code title="">true</code> |
 | *ip_ranges* | Subnet IP CIDR ranges. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="&#123;&#10;gce &#61; &#34;10.0.16.0&#47;24&#34;&#10;gke &#61; &#34;10.0.32.0&#47;24&#34;&#10;&#125;">...</code> |
 | *ip_secondary_ranges* | Secondary IP CIDR ranges. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="&#123;&#10;gke-pods     &#61; &#34;10.128.0.0&#47;18&#34;&#10;gke-services &#61; &#34;172.16.0.0&#47;24&#34;&#10;&#125;">...</code> |
 | *owners_gce* | GCE project owners, in IAM format. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
