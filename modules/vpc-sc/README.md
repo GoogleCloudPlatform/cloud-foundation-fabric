@@ -28,10 +28,35 @@ module "vpc-sc" {
     }
   }
   access_level_perimeters = {
-    my_trusted_proxy = {
+    enforced = {
       my_trusted_proxy = ["perimeter"]
     }
   }
+  egress_policies = {
+    egress_1 = {
+      egress_from = {
+        identity_type = "ANY_IDENTITY"
+      }
+      egress_to = {
+        resources = ["*"]
+        operations = [
+          {
+            service_name = "storage.googleapis.com"
+            method_selectors = { method = "google.storage.objects.create" }
+          },           
+          {
+            service_name = "bigquery.googleapis.com"
+            method_selectors = { method = "BigQueryStorage.ReadRows" }
+          }        
+        ]
+      }
+    }
+  }  
+  egress_policies_perimeters = {
+    enforced = {
+      egress_1 = ["perimeter"]
+    }  
+  }  
   perimeters = {
     perimeter = {
       type           = "PERIMETER_TYPE_REGULAR"
@@ -106,6 +131,10 @@ module "vpc-sc" {
 | organization_id | Organization id in organizations/nnnnnn format. | <code title="">string</code> | ✓ |  |
 | *access_level_perimeters* | Enforced mode -> Access Level -> Perimeters mapping. Enforced mode can be 'enforced' or 'dry_run' | <code title="map&#40;map&#40;list&#40;string&#41;&#41;&#41;">map(map(list(string)))</code> |  | <code title="">{}</code> |
 | *access_levels* | Map of Access Levels to be created. For each Access Level you can specify 'ip_subnetworks, required_access_levels, members, negate or regions'. | <code title="map&#40;object&#40;&#123;&#10;combining_function &#61; string&#10;conditions &#61; list&#40;object&#40;&#123;&#10;ip_subnetworks         &#61; list&#40;string&#41;&#10;required_access_levels &#61; list&#40;string&#41;&#10;members                &#61; list&#40;string&#41;&#10;negate                 &#61; string&#10;regions                &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
+| *egress_policies* | List of EgressPolicies in the form described in the [documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/access_context_manager_service_perimeter#ingress_policies) | <code title=""></code> |  | <code title="">null</code> |
+| *egress_policies_perimeters* | Enforced mode -> Egress Policy -> Perimeters mapping. Enforced mode can be 'enforced' or 'dry_run' | <code title="map&#40;map&#40;list&#40;string&#41;&#41;&#41;">map(map(list(string)))</code> |  | <code title="">{}</code> |
+| *ingress_policies* | List of IngressPolicies in the form described in the [documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/access_context_manager_service_perimeter#ingress_policies) | <code title=""></code> |  | <code title="">null</code> |
+| *ingress_policies_perimeters* | Enforced mode -> Ingress Policy -> Perimeters mapping. Enforced mode can be 'enforced' or 'dry_run' | <code title="map&#40;map&#40;list&#40;string&#41;&#41;&#41;">map(map(list(string)))</code> |  | <code title="">{}</code> |
 | *perimeter_projects* | Perimeter -> Enforced Mode -> Projects Number mapping. Enforced mode can be 'enforced' or 'dry_run'. | <code title="map&#40;map&#40;list&#40;number&#41;&#41;&#41;">map(map(list(number)))</code> |  | <code title="">{}</code> |
 | *perimeters* | Set of Perimeters. | <code title="map&#40;object&#40;&#123;&#10;type &#61; string&#10;dry_run_config &#61; object&#40;&#123;&#10;restricted_services     &#61; list&#40;string&#41;&#10;vpc_accessible_services &#61; list&#40;string&#41;&#10;&#125;&#41;&#10;enforced_config &#61; object&#40;&#123;&#10;restricted_services     &#61; list&#40;string&#41;&#10;vpc_accessible_services &#61; list&#40;string&#41;&#10;&#125;&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
 
