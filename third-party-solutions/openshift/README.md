@@ -96,8 +96,44 @@ If you need more fine-grained control on the service account's permissions inste
 
 ## Installation
 
+As mentioned above, the installation flow is split in two parts:
+
+- generating the configuration files used to bootstrap the cluster, via the include Python script driving the `openshift-installer` cli
+- creating the bootstrap and control place resources on GCP
+
+Both steps use a common set of variables defined in Terraform, that set the basic attributes of your GCP infrastructure (projects, VPC), configure paths for prerequisite commands and resources (`openshift-install`, pull secret, etc.), define basic cluster attributes (name, domain), and allow enabling optional features (KMS encryption, proxy).
+
 ### Configuring variables
 
+Variable configuration is best done in a `.tfvars` file, but can also be done directly in the `terraform.tfvars` file if needed. Variables names and descriptions should be self-explanatory, here are a few extra things you might want to be aware of.
+
+<dl>
+<dt><code>domain</code></dt>
+<dd>Domain name for the parent zone, under which a zone matching the <code>cluster_name</code> variable will be created.</dd>
+<dt><code>disk_encryption_key</code></dt>
+<dd>Set to <code>null</code> if you are not using CMEK keys for disk encryption. If you are using it, ensure the GCE robot account has permissions on the key.</dd>
+<dt><code>fs_paths</code></dt>
+<dd>Filesystem paths for the external dependencies. Home path expansion is supported. The <code>config_dir</code> path is where generated ignition files will be created. Ensure it's empty (incuding hidden files) before starting the installation process.</dd>
+<dt><code>host_project</code></dt>
+<dd>If you don't need installing in different subnets, pass the same subnet names for the default, masters, and workers subnets.</dd>
+<dt><code>install_config_params</code></dt>
+<dd>The `machine` range should match addresses used for nodes.</dd>
+<dt><code>post_bootstrap_config</code></dt>
+<dd>Set to `null` until bootstrap completion, then refer to the post-bootstrap instructions below.</dd>
+<dt><code>service_project</code></dt>
+<dd>The <code>vpc_name</code> value is used for the placeholder VPC needed for the service project Cloud DNS zone used by the cluster. Set it to `null` to use an auto-generated name.</dd>
+</dl>
+
 ### Generating ignition files
+
+Once all variables match your setup, you can generate the ignition config files that will be used to bootstrap the control plane.
+
+```bash
+./prepare.py --tfvars my-vars.tfvars
+
+[output]
+```
+
+The folder specified in the `fs_paths.config_dir` variable should now contain a set of ignition files, and the credentials you will use to access the cluster.
 
 ### Bringing up the cluster
