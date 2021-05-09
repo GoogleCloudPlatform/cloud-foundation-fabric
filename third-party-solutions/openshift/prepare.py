@@ -1,5 +1,19 @@
 #!/usr/bin/env python3
 
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 import glob
 import logging
 import os
@@ -12,6 +26,10 @@ import click
 import hcl
 
 from ruamel import yaml
+
+
+__author__ = 'ludomagno@google.com'
+__version__ = '1.0'
 
 
 class Error(Exception):
@@ -69,7 +87,8 @@ def _run_installer(cmdline, env=None):
     raise Error(f'Return error from command ({retcode}): {out} {err}')
 
 
-@click.group(invoke_without_command=True, help='Run all commands except precheck.')
+@click.group(invoke_without_command=True,
+             help='Run all commands except precheck.')
 @click.option('--tfdir', type=click.Path(exists=True), default='./tf',
               help='Terraform folder.')
 @click.option('--tfvars',
