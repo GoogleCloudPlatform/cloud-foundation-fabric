@@ -38,6 +38,7 @@ variable "disk_encryption_key" {
     name       = string
     project_id = string
   })
+  default = null
 }
 
 variable "host_project" {
