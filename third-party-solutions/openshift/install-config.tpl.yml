@@ -1,3 +1,4 @@
+# skip boilerplate check
 apiVersion: v1
 baseDomain: ""
 compute:
