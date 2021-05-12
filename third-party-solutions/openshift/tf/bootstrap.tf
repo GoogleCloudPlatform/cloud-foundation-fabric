@@ -79,7 +79,7 @@ resource "google_compute_instance" "bootstrap" {
 resource "google_compute_instance_group" "bootstrap" {
   project     = var.service_project.project_id
   network     = data.google_compute_network.default.self_link
-  zone        = "${var.region}-${element(var.zones, 0)}"
+  zone        = "${var.region}-${var.zones[0]}"
   name        = "${local.infra_id}-bootstrap"
   description = "Openshift bootstrap group for ${local.infra_id}."
   instances   = [for i in google_compute_instance.bootstrap : i.self_link]
