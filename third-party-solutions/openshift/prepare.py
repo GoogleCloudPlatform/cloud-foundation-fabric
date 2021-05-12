@@ -74,7 +74,7 @@ def _check_convert_paths(**paths):
   result = {}
   for k, v in paths.items():
     p = pathlib.Path(v).expanduser()
-    if not p.exists:
+    if not p.exists():
       raise Error(f'Missing file/dir \'{p}\'.')
     result[k] = p
   return result
