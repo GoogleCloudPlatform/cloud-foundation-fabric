@@ -22,16 +22,16 @@ resource "google_storage_bucket" "bootstrap-ignition" {
 }
 
 resource "google_storage_bucket_object" "bootstrap-ignition" {
-  for_each = toset(local.bootstrapping ? [""] : [])
-  bucket   = google_storage_bucket.bootstrap-ignition.name
-  name     = "bootstrap.ign"
-  source   = "${local.fs_paths.config_dir}/bootstrap.ign"
+  count  = local.bootstrapping ? 1 : 0
+  bucket = google_storage_bucket.bootstrap-ignition.name
+  name   = "bootstrap.ign"
+  source = "${local.fs_paths.config_dir}/bootstrap.ign"
 }
 
 data "google_storage_object_signed_url" "bootstrap-ignition" {
-  for_each    = toset(local.bootstrapping ? [""] : [])
+  count       = local.bootstrapping ? 1 : 0
   bucket      = google_storage_bucket.bootstrap-ignition.name
-  path        = google_storage_bucket_object.bootstrap-ignition[""].name
+  path        = google_storage_bucket_object.bootstrap-ignition.0.name
   credentials = file(local.fs_paths.credentials)
 }
 
@@ -66,7 +66,7 @@ resource "google_compute_instance" "bootstrap" {
       ignition = {
         config = {
           replace = !local.bootstrapping ? {} : {
-            source = data.google_storage_object_signed_url.bootstrap-ignition[""].signed_url
+            source = data.google_storage_object_signed_url.bootstrap-ignition.0.signed_url
           }
         }
         version = "3.1.0"
