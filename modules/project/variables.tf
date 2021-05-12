@@ -32,9 +32,15 @@ variable "custom_roles" {
   default     = {}
 }
 
+variable "group_iam" {
+  description = "Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable."
+  type        = map(list(string))
+  default     = {}
+}
+
 variable "iam" {
   description = "IAM bindings in {ROLE => [MEMBERS]} format."
-  type        = map(set(string))
+  type        = map(list(string))
   default     = {}
 }
 
@@ -196,7 +202,7 @@ variable "contacts" {
 variable "service_perimeter_standard" {
   description = "Name of VPC-SC Standard perimeter to add project into. Specify the name in the form of 'accessPolicies/ACCESS_POLICY_NAME/servicePerimeters/PERIMETER_NAME'."
   type        = string
-  default     = null    
+  default     = null
 }
 
 

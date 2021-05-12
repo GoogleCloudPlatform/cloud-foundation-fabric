@@ -227,3 +227,21 @@ resource "google_compute_route" "vpn_tunnel" {
   tags                = each.value.tags
   next_hop_vpn_tunnel = each.value.next_hop
 }
+
+resource "google_compute_global_address" "psn_range" {
+  count         = var.private_service_networking_range == null ? 0 : 1
+  project       = var.project_id
+  name          = "${var.name}-google-psn"
+  purpose       = "VPC_PEERING"
+  address_type  = "INTERNAL"
+  address       = split("/", var.private_service_networking_range)[0]
+  prefix_length = split("/", var.private_service_networking_range)[1]
+  network       = local.network.id
+}
+
+resource "google_service_networking_connection" "psn_connection" {
+  count                   = var.private_service_networking_range == null ? 0 : 1
+  network                 = local.network.id
+  service                 = "servicenetworking.googleapis.com"
+  reserved_peering_ranges = [google_compute_global_address.psn_range.0.name]
+}

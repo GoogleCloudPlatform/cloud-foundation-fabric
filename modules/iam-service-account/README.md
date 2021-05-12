@@ -41,6 +41,7 @@ module "myproject-default-service-accounts" {
 | *iam_project_roles* | Project roles granted to the service account, by project id. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
 | *iam_storage_roles* | Storage roles granted to the service account, by bucket name. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
 | *prefix* | Prefix applied to service account names. | <code title="">string</code> |  | <code title="">null</code> |
+| *service_account_create* | Create service account. When set to false, uses a data source to reference an existing service account. | <code title="">bool</code> |  | <code title="">true</code> |
 
 ## Outputs
 

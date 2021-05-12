@@ -20,6 +20,12 @@ variable "custom_roles" {
   default     = {}
 }
 
+variable "group_iam" {
+  description = "Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable."
+  type        = map(list(string))
+  default     = {}
+}
+
 variable "iam" {
   description = "IAM bindings, in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
@@ -49,12 +55,6 @@ variable "iam_audit_config" {
   # }
 }
 
-variable "iam_bindings_authoritative" {
-  description = "IAM authoritative bindings, in {ROLE => [MEMBERS]} format. Roles and members not explicitly listed will be cleared. Bindings should also be authoritative when using authoritative audit config. Use with caution."
-  type        = map(list(string))
-  default     = null
-}
-
 variable "iam_audit_config_authoritative" {
   description = "IAM Authoritative service audit logging configuration. Service as key, map of log permission (eg DATA_READ) and excluded members as value for each service. Audit config should also be authoritative when using authoritative bindings. Use with caution."
   type        = map(map(list(string)))
@@ -64,6 +64,12 @@ variable "iam_audit_config_authoritative" {
   #     DATA_READ = ["user:me@example.org"]
   #   }
   # }
+}
+
+variable "iam_bindings_authoritative" {
+  description = "IAM authoritative bindings, in {ROLE => [MEMBERS]} format. Roles and members not explicitly listed will be cleared. Bindings should also be authoritative when using authoritative audit config. Use with caution."
+  type        = map(list(string))
+  default     = null
 }
 
 variable "organization_id" {

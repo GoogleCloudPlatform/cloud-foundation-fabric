@@ -61,6 +61,16 @@ resource "google_storage_bucket" "bucket" {
       log_object_prefix = var.logging_config.log_object_prefix
     }
   }
+
+  dynamic cors {
+    for_each = var.cors == null ? [] : [""]
+    content {
+      origin          = var.cors.origin
+      method          = var.cors.method
+      response_header = var.cors.response_header
+      max_age_seconds = max(3600, var.cors.max_age_seconds)
+    }
+  }
 }
 
 resource "google_storage_bucket_iam_binding" "bindings" {

@@ -57,10 +57,23 @@ locals {
     : map("", null)
   , {})
   prefix             = var.prefix != null ? "${var.prefix}-" : ""
-  resource_iam_email = "serviceAccount:${google_service_account.service_account.email}"
+  resource_iam_email = "serviceAccount:${local.service_account.email}"
+  service_account = (
+    var.service_account_create
+    ? try(google_service_account.service_account.0, null)
+    : try(data.google_service_account.service_account.0, null)
+  )
+}
+
+
+data "google_service_account" "service_account" {
+  count      = var.service_account_create ? 0 : 1
+  project    = var.project_id
+  account_id = "${local.prefix}${var.name}"
 }
 
 resource "google_service_account" "service_account" {
+  count        = var.service_account_create ? 1 : 0
   project      = var.project_id
   account_id   = "${local.prefix}${var.name}"
   display_name = var.display_name
@@ -68,12 +81,12 @@ resource "google_service_account" "service_account" {
 
 resource "google_service_account_key" "key" {
   for_each           = var.generate_key ? { 1 = 1 } : {}
-  service_account_id = google_service_account.service_account.email
+  service_account_id = local.service_account.email
 }
 
 resource "google_service_account_iam_binding" "roles" {
   for_each           = var.iam
-  service_account_id = google_service_account.service_account.name
+  service_account_id = local.service_account.name
   role               = each.key
   members            = each.value
 }

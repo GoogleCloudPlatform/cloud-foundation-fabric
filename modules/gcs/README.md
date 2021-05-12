@@ -67,6 +67,7 @@ module "bucket" {
 |---|---|:---: |:---:|:---:|
 | name | Bucket name suffix. | <code title="">string</code> | ✓ |  |
 | project_id | Bucket project id. | <code title="">string</code> | ✓ |  |
+| *cors* | CORS configuration for the bucket. Defaults to null. | <code title="object&#40;&#123;&#10;origin          &#61; list&#40;string&#41;&#10;method          &#61; list&#40;string&#41;&#10;response_header &#61; list&#40;string&#41;&#10;max_age_seconds &#61; number&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 | *encryption_key* | KMS key that will be used for encryption. | <code title="">string</code> |  | <code title="">null</code> |
 | *force_destroy* | Optional map to set force destroy keyed by name, defaults to false. | <code title="">bool</code> |  | <code title="">false</code> |
 | *iam* | IAM bindings in {ROLE => [MEMBERS]} format. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |

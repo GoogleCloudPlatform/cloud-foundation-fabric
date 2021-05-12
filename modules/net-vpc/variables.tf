@@ -159,3 +159,16 @@ variable "vpc_create" {
   type        = bool
   default     = true
 }
+
+variable "private_service_networking_range" {
+  description = "RFC1919 CIDR range used for Google services that support private service networking."
+  type        = string
+  default     = null
+  validation {
+    condition = (
+      var.private_service_networking_range == null ||
+      can(cidrnetmask(var.private_service_networking_range))
+    )
+    error_message = "Specify a valid RFC1918 CIDR range for private service networking."
+  }
+}

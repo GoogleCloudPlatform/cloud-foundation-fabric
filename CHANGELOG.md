@@ -4,7 +4,16 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- added support for `CORS` to the `gcs` module
+- make cluster creation optional in the Shared VPC example
+- make service account creation optional in `iam-service-account` module
+- new `third-party-solutions` top-level folder with initial `openshift` example
+
+## [4.7.0] - 2021-04-21
+
 - **incompatible change** add support for `master_global_access_config` block in gke-cluster module
+- add support for group-based IAM to resource management modules
+- add support for private service connect
 
 ## [4.6.1] - 2021-04-01
 
@@ -295,7 +304,8 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.6.1...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.7.0...HEAD
+[4.7.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.6.1...v4.7.0
 [4.6.1]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.6.0...v4.6.1
 [4.6.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.5.1...v4.6.0
 [4.5.1]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.5.0...v4.5.1

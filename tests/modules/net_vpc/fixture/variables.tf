@@ -119,3 +119,9 @@ variable "subnet_private_access" {
   type        = map(bool)
   default     = {}
 }
+
+variable "private_service_networking_range" {
+  description = "RFC1919 CIDR range used for Google services that support private service networking."
+  type        = string
+  default     = null
+}
