@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 - make cluster creation optional in the Shared VPC example
 - make service account creation optional in `iam-service-account` module
 - new `third-party-solutions` top-level folder with initial `openshift` example
+- added support for DNS Policies to the `net-vpc` module
 
 ## [4.7.0] - 2021-04-21
 
