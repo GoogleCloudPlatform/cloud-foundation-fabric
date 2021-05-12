@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- **incompatible change** updated resource name for `google_dns_policy` on the `net-vpc` module
+
 ## [4.8.0] - 2021-05-12
 
 - added support for `CORS` to the `gcs` module
