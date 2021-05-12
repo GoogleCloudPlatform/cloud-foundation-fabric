@@ -239,11 +239,11 @@ resource "google_compute_global_address" "psn_range" {
   network       = local.network.id
 }
 
-resource "google_dns_policy" "dns_policy" {
+resource "google_dns_policy" "default" {
   count                     = var.dns_policy == null ? 0 : 1
   enable_inbound_forwarding = var.dns_policy.inbound
   enable_logging            = var.dns_policy.logging
-  name                      = "${var.name}-inbound-policy"
+  name                      = var.name
   project                   = var.project_id
   networks {
     network_url = local.network.id
