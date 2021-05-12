@@ -14,6 +14,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+'''Prepare OCP installation files for UPI installation on GCP.
+
+This module helps generating installation files for OpenShift on GCP with User
+Provided Infrastructure, leveraging variables set in the accompanying Terraform
+files, that create the infrastructure for a cluster.
+
+It helps supporting features like Shared VPC, CMEK encryption for disks, etc.
+'''
+
 import glob
 import logging
 import os
@@ -88,7 +97,7 @@ def _run_installer(cmdline, env=None):
 
 
 @click.group(invoke_without_command=True,
-             help='Run all commands except precheck.')
+             help=f'{__doc__}\nWith no command, run through all stages.')
 @click.option('--tfdir', type=click.Path(exists=True), default='./tf',
               help='Terraform folder.')
 @click.option('--tfvars',
@@ -174,7 +183,6 @@ def install_config(ctx=None):
   data['networking']['machineNetwork'][0]['cidr'] = vars_net['machine']
   data['networking']['serviceNetwork'][0] = vars_net['service']
   if vars_proxy and vars_proxy != 'null':
-    # TODO(ludo): add domain and default source range to noproxy
     noproxy = [t.strip()
                for t in vars_proxy['noproxy'].split(',') if t.strip()]
     noproxy += [f'.{vars["domain"]}', vars_net['machine']]
