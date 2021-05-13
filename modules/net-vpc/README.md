@@ -141,6 +141,33 @@ module "vpc" {
 # tftest:modules=1:resources=4
 ```
 
+### DNS Policies
+
+```hcl
+module "vpc" {
+  source     = "./modules/net-vpc"
+  project_id = "my-project"
+  name       = "my-network"
+  dns_policy = {
+    inbound  = true
+    logging  = false
+    outbound = {
+      private_ns = ["10.0.0.1"]
+      public_ns  = ["8.8.8.8"]
+    }
+  }
+  subnets = [
+    {
+      ip_cidr_range      = "10.0.0.0/24"
+      name               = "production"
+      region             = "europe-west1"
+      secondary_ip_range = {}
+    }
+  ]
+}
+# tftest:modules=1:resources=3
+```
+
 <!-- BEGIN TFDOC -->
 ## Variables
 
@@ -151,6 +178,7 @@ module "vpc" {
 | *auto_create_subnetworks* | Set to true to create an auto mode subnet, defaults to custom mode. | <code title="">bool</code> |  | <code title="">false</code> |
 | *delete_default_routes_on_create* | Set to true to delete the default routes at creation time. | <code title="">bool</code> |  | <code title="">false</code> |
 | *description* | An optional description of this resource (triggers recreation on change). | <code title="">string</code> |  | <code title="">Terraform-managed.</code> |
+| *dns_policy* | None | <code title="object&#40;&#123;&#10;inbound &#61; bool&#10;logging &#61; bool&#10;outbound &#61; object&#40;&#123;&#10;private_ns &#61; list&#40;string&#41;&#10;public_ns  &#61; list&#40;string&#41;&#10;&#125;&#41;&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 | *iam* | Subnet IAM bindings in {REGION/NAME => {ROLE => [MEMBERS]} format. | <code title="map&#40;map&#40;list&#40;string&#41;&#41;&#41;">map(map(list(string)))</code> |  | <code title="">{}</code> |
 | *log_config_defaults* | Default configuration for flow logs when enabled. | <code title="object&#40;&#123;&#10;aggregation_interval &#61; string&#10;flow_sampling        &#61; number&#10;metadata             &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;aggregation_interval &#61; &#34;INTERVAL_5_SEC&#34;&#10;flow_sampling        &#61; 0.5&#10;metadata             &#61; &#34;INCLUDE_ALL_METADATA&#34;&#10;&#125;">...</code> |
 | *log_configs* | Map keyed by subnet 'region/name' of optional configurations for flow logs when enabled. | <code title="map&#40;map&#40;string&#41;&#41;">map(map(string))</code> |  | <code title="">{}</code> |

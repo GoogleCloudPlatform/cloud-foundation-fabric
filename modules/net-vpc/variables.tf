@@ -32,6 +32,18 @@ variable "description" {
   default     = "Terraform-managed."
 }
 
+variable "dns_policy" {
+  type = object({
+    inbound = bool
+    logging = bool
+    outbound = object({
+      private_ns = list(string)
+      public_ns  = list(string)
+    })
+  })
+  default = null
+}
+
 variable "iam" {
   description = "Subnet IAM bindings in {REGION/NAME => {ROLE => [MEMBERS]} format."
   type        = map(map(list(string)))
@@ -82,6 +94,19 @@ variable "peering_create_remote_end" {
   description = "Skip creation of peering on the remote end when using peering_config"
   type        = bool
   default     = true
+}
+
+variable "private_service_networking_range" {
+  description = "RFC1919 CIDR range used for Google services that support private service networking."
+  type        = string
+  default     = null
+  validation {
+    condition = (
+      var.private_service_networking_range == null ||
+      can(cidrnetmask(var.private_service_networking_range))
+    )
+    error_message = "Specify a valid RFC1918 CIDR range for private service networking."
+  }
 }
 
 variable "project_id" {
@@ -158,17 +183,4 @@ variable "vpc_create" {
   description = "Create VPC. When set to false, uses a data source to reference existing VPC."
   type        = bool
   default     = true
-}
-
-variable "private_service_networking_range" {
-  description = "RFC1919 CIDR range used for Google services that support private service networking."
-  type        = string
-  default     = null
-  validation {
-    condition = (
-      var.private_service_networking_range == null ||
-      can(cidrnetmask(var.private_service_networking_range))
-    )
-    error_message = "Specify a valid RFC1918 CIDR range for private service networking."
-  }
 }
