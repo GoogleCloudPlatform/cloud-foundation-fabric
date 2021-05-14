@@ -43,7 +43,7 @@ kubectl get all
 
 The example configures the peering with the GKE master VPC to export routes for you, so that VPN routes are passed through the peering. You can diable by hand in the console or by editing the `peering_config' variable in the cluster module, to test non-working configurations or switch to using the [GKE proxy](https://cloud.google.com/solutions/creating-kubernetes-engine-private-clusters-with-net-proxies).
 
-### Export routes via Terraform
+### Export routes via Terraform (recommended)
 
 Change the GKE cluster module and add a new variable after `private_cluster_config`:
 
@@ -56,9 +56,9 @@ Change the GKE cluster module and add a new variable after `private_cluster_conf
 
 If you added the variable after applying, simply apply Terraform again.
 
-### Export routes via gcloud
+### Export routes via gcloud (alternative)
 
-The peering has a name like `gke-xxxxxxxxxxxxxxxxxxxx-xxxx-xxxx-peer`, you can edit it in the Cloud Console from the *VPC network peering* page or using `gcloud`:
+If you prefer to use `gcloud` to export routes on the peering, firs identify the peering (it has a name like `gke-xxxxxxxxxxxxxxxxxxxx-xxxx-xxxx-peer`) in the Cloud Console from the *VPC network peering* page, or using `gcloud`, then configure it to export routes:
 
 ```
 gcloud compute networks peerings list
@@ -66,6 +66,8 @@ gcloud compute networks peerings list
 gcloud compute networks peerings update [peering name from above] \
   --network spoke-2 --export-custom-routes
 ```
+
+### Test routes
 
 Then connect via SSH to the spoke 1 instance and run the same commands you ran on the spoke 2 instance above, you should be able to run `kubectl` commands against the cluster. To test the default situation with no supporting VPN, just comment out the two VPN modules in `main.tf` and run `terraform apply` to bring down the VPN gateways and tunnels. GKE should only become accessible from spoke 2.
 
