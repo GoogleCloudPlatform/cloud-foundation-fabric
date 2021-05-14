@@ -58,7 +58,7 @@ If you added the variable after applying, simply apply Terraform again.
 
 ### Export routes via gcloud (alternative)
 
-If you prefer to use `gcloud` to export routes on the peering, firs identify the peering (it has a name like `gke-xxxxxxxxxxxxxxxxxxxx-xxxx-xxxx-peer`) in the Cloud Console from the *VPC network peering* page, or using `gcloud`, then configure it to export routes:
+If you prefer to use `gcloud` to export routes on the peering, first identify the peering (it has a name like `gke-xxxxxxxxxxxxxxxxxxxx-xxxx-xxxx-peer`) in the Cloud Console from the *VPC network peering* page, or using `gcloud`, then configure it to export routes:
 
 ```
 gcloud compute networks peerings list
