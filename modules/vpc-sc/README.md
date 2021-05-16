@@ -32,23 +32,41 @@ module "vpc-sc" {
       my_trusted_proxy = ["perimeter"]
     }
   }
+ ingress_policies = {
+   ingress_1 = {
+     ingress_from = {
+       identity_type = "ANY_IDENTITY"
+     }
+     ingress_to = {
+       resources = ["*"]
+       operations = [
+         {
+           "storage.googleapis.com" = [{ method = "google.storage.objects.create" }]
+           "bigquery.googleapis.com" = [{ method = "BigQueryStorage.ReadRows" }]
+         }
+       ]
+     }
+   }
+ }
+ ingress_policies_perimeters = {
+   enforced = {
+     ingress_1 = ["default"]
+   }
+ }
+
   egress_policies = {
     egress_1 = {
       egress_from = {
-        identity_type = "ANY_IDENTITY"
+        identity_type = "ANY_USER_ACCOUNT"
       }
       egress_to = {
-        resources = ["*"]
-        operations = [
-          {
-            service_name = "storage.googleapis.com"
-            method_selectors = { method = "google.storage.objects.create" }
-          },           
-          {
-            service_name = "bigquery.googleapis.com"
-            method_selectors = { method = "BigQueryStorage.ReadRows" }
-          }        
-        ]
+       resources = ["*"]
+       operations = [
+         {
+           "storage.googleapis.com"  = [{ method = "google.storage.objects.create" }],
+           "bigquery.googleapis.com" = [{ method = "BigQueryStorage.ReadRows" },{ method = "TableService.ListTables" }, { permission = "bigquery.jobs.get" }]
+         }      
+       ]
       }
     }
   }  

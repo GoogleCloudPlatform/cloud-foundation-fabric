@@ -113,13 +113,13 @@ resource "google_access_context_manager_service_perimeter" "standard" {
               resources = try(var.egress_policies[egress_policies.value].egress_to.resources, null)
 
               dynamic "operations" {
-                for_each = try(var.egress_policies[egress_policies.value].egress_to.operations, [])
+                for_each = try(var.egress_policies[egress_policies.value].egress_to.operations[0], [])
 
                 content {
-                  service_name = try(operations.value.service_name, null)
+                  service_name = try(operations.key, null)
 
                   dynamic "method_selectors" {
-                    for_each = try([operations.value.method_selectors], [])
+                    for_each = try(operations.value, [])
 
                     content {
                       method     = try(method_selectors.value.method, null)
@@ -161,13 +161,13 @@ resource "google_access_context_manager_service_perimeter" "standard" {
               resources = try(var.ingress_policies[ingress_policies.value].ingress_to.resources, null)
 
               dynamic "operations" {
-                for_each = try(var.ingress_policies[ingress_policies.value].ingress_to.operations, [])
+                for_each = try(var.ingress_policies[ingress_policies.value].ingress_to.operations[0], [])
 
                 content {
-                  service_name = try(operations.value.service_name, null)
+                  service_name = try(operations.key, null)
 
                   dynamic "method_selectors" {
-                    for_each = try([operations.value.method_selectors], [])
+                    for_each = try(operations.value, [])
 
                     content {
                       method     = try(method_selectors.value.method, null)
@@ -226,13 +226,13 @@ resource "google_access_context_manager_service_perimeter" "standard" {
               resources = try(var.egress_policies[egress_policies.value].egress_to.resources, null)
 
               dynamic "operations" {
-                for_each = try(var.egress_policies[egress_policies.value].egress_to.operations, [])
+                for_each = try(var.egress_policies[egress_policies.value].egress_to.operations[0], [])
 
                 content {
-                  service_name = try(operations.value.service_name, null)
+                  service_name = try(operations.key, null)
 
                   dynamic "method_selectors" {
-                    for_each = try([operations.value.method_selectors], [])
+                    for_each = try(operations.value, [])
 
                     content {
                       method     = try(method_selectors.value.method, null)
@@ -274,13 +274,13 @@ resource "google_access_context_manager_service_perimeter" "standard" {
               resources = try(var.ingress_policies[ingress_policies.value].ingress_to.resources, null)
 
               dynamic "operations" {
-                for_each = try(var.ingress_policies[ingress_policies.value].ingress_to.operations, [])
+                for_each = try(var.ingress_policies[ingress_policies.value].ingress_to.operations[0], [])
 
                 content {
-                  service_name = try(operations.value.service_name, null)
+                  service_name = try(operations.key, null)
 
                   dynamic "method_selectors" {
-                    for_each = try([operations.value.method_selectors], [])
+                    for_each = try(operations.value, [])
 
                     content {
                       method     = try(method_selectors.value.method, null)
