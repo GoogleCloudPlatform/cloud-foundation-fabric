@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
+locals {
+  minimal_sa_roles = [
+    "roles/logging.logWriter",
+    "roles/monitoring.metricWriter"
+  ]
+}
+
 resource "google_service_account" "default" {
   for_each     = { m = "master", w = "worker" }
   project      = var.service_project.project_id
@@ -46,23 +53,23 @@ resource "google_project_iam_member" "host-worker" {
 # https://docs.openshift.com/container-platform/4.7/installing/installing_gcp/installing-restricted-networks-gcp.html#installation-creating-gcp-iam-shared-vpc_installing-restricted-networks-gcp
 
 resource "google_project_iam_member" "service-master" {
-  for_each = toset([
+  for_each = toset(concat(local.minimal_sa_roles, [
     "roles/compute.instanceAdmin",
     "roles/compute.networkAdmin",
     "roles/compute.securityAdmin",
     "roles/iam.serviceAccountUser",
     "roles/storage.admin"
-  ])
+  ]))
   project = var.service_project.project_id
   role    = each.key
   member  = "serviceAccount:${google_service_account.default["m"].email}"
 }
 
 resource "google_project_iam_member" "service-worker" {
-  for_each = toset([
+  for_each = toset(concat(local.minimal_sa_roles, [
     "roles/compute.viewer",
     "roles/storage.admin"
-  ])
+  ]))
   project = var.service_project.project_id
   role    = each.key
   member  = "serviceAccount:${google_service_account.default["w"].email}"
