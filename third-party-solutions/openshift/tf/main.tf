@@ -22,11 +22,6 @@ locals {
     ? null
     : data.google_kms_crypto_key.default.0.id
   )
-  dummy_network = (
-    var.service_project.vpc_name != null
-    ? data.google_compute_network.dummy.0.id
-    : google_compute_network.dummy.0.id
-  )
   fs_paths = { for k, v in var.fs_paths : k => pathexpand(v) }
   infra_id = local.install_metadata["infraID"]
   install_metadata = jsondecode(file(
@@ -50,19 +45,6 @@ data "google_compute_subnetwork" "default" {
   project  = var.host_project.project_id
   region   = var.region
   name     = var.host_project["${each.key}_subnet_name"]
-}
-
-resource "google_compute_network" "dummy" {
-  count                   = var.service_project.vpc_name == null ? 1 : 0
-  project                 = var.service_project.project_id
-  name                    = "${local.infra_id}-dns"
-  auto_create_subnetworks = false
-}
-
-data "google_compute_network" "dummy" {
-  count   = var.service_project.vpc_name == null ? 0 : 1
-  project = var.service_project.project_id
-  name    = var.service_project.vpc_name
 }
 
 data "google_kms_key_ring" "default" {

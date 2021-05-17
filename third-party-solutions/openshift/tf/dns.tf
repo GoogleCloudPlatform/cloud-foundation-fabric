@@ -14,24 +14,6 @@
  * limitations under the License.
  */
 
-resource "google_dns_managed_zone" "peering" {
-  project     = var.host_project.project_id
-  name        = "${local.infra_id}-peering-zone"
-  description = "Openshift peering zone for ${local.infra_id}."
-  dns_name    = "${local.subdomain}."
-  visibility  = "private"
-  private_visibility_config {
-    networks {
-      network_url = data.google_compute_network.default.id
-    }
-  }
-  peering_config {
-    target_network {
-      network_url = local.dummy_network
-    }
-  }
-}
-
 resource "google_dns_managed_zone" "internal" {
   project     = var.service_project.project_id
   name        = "${local.infra_id}-private-zone"
@@ -40,7 +22,7 @@ resource "google_dns_managed_zone" "internal" {
   visibility  = "private"
   private_visibility_config {
     networks {
-      network_url = local.dummy_network
+      network_url = data.google_compute_network.default.id
     }
   }
 }
@@ -54,15 +36,3 @@ resource "google_dns_record_set" "dns" {
   ttl          = 60
   rrdatas      = [google_compute_address.api.address]
 }
-
-/*
-resource "google_dns_record_set" "apps" {
-  count        = local.router_address == null ? 0 : 1
-  project      = var.service_project.project_id
-  name         = "*.apps.${var.cluster_name}.${var.domain}."
-  managed_zone = google_dns_managed_zone.internal.name
-  type         = "A"
-  ttl          = 60
-  rrdatas      = [local.router_address]
-}
-*/
