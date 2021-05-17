@@ -121,7 +121,6 @@ variable "service_project" {
   description = "Service project configuration."
   type = object({
     project_id = string
-    vpc_name   = string
   })
 }
 

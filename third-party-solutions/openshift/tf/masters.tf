@@ -17,7 +17,8 @@
 resource "google_compute_instance" "master" {
   for_each     = toset(var.zones)
   project      = var.service_project.project_id
-  name         = "${local.infra_id}-m-${each.key}"
+  name         = "${local.infra_id}-master-${each.key}"
+  hostname     = "${local.infra_id}-master-${each.key}.${local.subdomain}"
   machine_type = "n1-standard-4"
   zone         = "${var.region}-${each.key}"
   network_interface {

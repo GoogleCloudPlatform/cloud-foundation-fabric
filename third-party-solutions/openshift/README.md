@@ -135,8 +135,6 @@ Variable configuration is best done in a `.tfvars` file, but can also be done di
 <dd>The `machine` range should match addresses used for nodes.</dd>
 <dt><code>post_bootstrap_config</code></dt>
 <dd>Set to `null` until bootstrap completion, then refer to the post-bootstrap instructions below.</dd>
-<dt><code>service_project</code></dt>
-<dd>The <code>vpc_name</code> value is used for the placeholder VPC needed for the service project Cloud DNS zone used by the cluster. Set it to `null` to use an auto-generated name.</dd>
 </dl>
 
 ### Generating ignition files

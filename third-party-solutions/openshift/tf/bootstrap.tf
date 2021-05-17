@@ -39,6 +39,7 @@ resource "google_compute_instance" "bootstrap" {
   count        = local.bootstrapping ? 1 : 0
   project      = var.service_project.project_id
   name         = "${local.infra_id}-b"
+  hostname     = "${local.infra_id}-bootstrap.${local.subdomain}"
   machine_type = "n1-standard-4"
   zone         = "${var.region}-${element(var.zones, 0)}"
   network_interface {
