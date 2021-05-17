@@ -41,7 +41,7 @@ variable "access_policy_title" {
 }
 
 variable "egress_policies" {
-  description = "List of EgressPolicies in the form described in the [documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/access_context_manager_service_perimeter#ingress_policies)"
+  description = "List of EgressPolicies in the form described in the [documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/access_context_manager_service_perimeter#egress_policies)"
   default     = null
 }
 
