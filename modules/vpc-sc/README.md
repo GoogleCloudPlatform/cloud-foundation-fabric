@@ -39,12 +39,10 @@ module "vpc-sc" {
      }
      ingress_to = {
        resources = ["*"]
-       operations = [
-         {
-           "storage.googleapis.com" = [{ method = "google.storage.objects.create" }]
-           "bigquery.googleapis.com" = [{ method = "BigQueryStorage.ReadRows" }]
-         }
-       ]
+       operations = {
+         "storage.googleapis.com" = [{ method = "google.storage.objects.create" }]
+         "bigquery.googleapis.com" = [{ method = "BigQueryStorage.ReadRows" }]
+       }
      }
    }
  }
@@ -61,12 +59,10 @@ module "vpc-sc" {
       }
       egress_to = {
        resources = ["*"]
-       operations = [
-         {
-           "storage.googleapis.com"  = [{ method = "google.storage.objects.create" }],
-           "bigquery.googleapis.com" = [{ method = "BigQueryStorage.ReadRows" },{ method = "TableService.ListTables" }, { permission = "bigquery.jobs.get" }]
-         }      
-       ]
+       operations = {
+         "storage.googleapis.com"  = [{ method = "google.storage.objects.create" }],
+         "bigquery.googleapis.com" = [{ method = "BigQueryStorage.ReadRows" },{ method = "TableService.ListTables" }, { permission = "bigquery.jobs.get" }]
+       }
       }
     }
   }  

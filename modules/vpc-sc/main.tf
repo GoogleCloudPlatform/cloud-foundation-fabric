@@ -113,7 +113,7 @@ resource "google_access_context_manager_service_perimeter" "standard" {
               resources = try(var.egress_policies[egress_policies.value].egress_to.resources, null)
 
               dynamic "operations" {
-                for_each = try(var.egress_policies[egress_policies.value].egress_to.operations[0], [])
+                for_each = try(var.egress_policies[egress_policies.value].egress_to.operations, [])
 
                 content {
                   service_name = try(operations.key, null)
@@ -161,7 +161,7 @@ resource "google_access_context_manager_service_perimeter" "standard" {
               resources = try(var.ingress_policies[ingress_policies.value].ingress_to.resources, null)
 
               dynamic "operations" {
-                for_each = try(var.ingress_policies[ingress_policies.value].ingress_to.operations[0], [])
+                for_each = try(var.ingress_policies[ingress_policies.value].ingress_to.operations, [])
 
                 content {
                   service_name = try(operations.key, null)
@@ -226,7 +226,7 @@ resource "google_access_context_manager_service_perimeter" "standard" {
               resources = try(var.egress_policies[egress_policies.value].egress_to.resources, null)
 
               dynamic "operations" {
-                for_each = try(var.egress_policies[egress_policies.value].egress_to.operations[0], [])
+                for_each = try(var.egress_policies[egress_policies.value].egress_to.operations, [])
 
                 content {
                   service_name = try(operations.key, null)
@@ -274,7 +274,7 @@ resource "google_access_context_manager_service_perimeter" "standard" {
               resources = try(var.ingress_policies[ingress_policies.value].ingress_to.resources, null)
 
               dynamic "operations" {
-                for_each = try(var.ingress_policies[ingress_policies.value].ingress_to.operations[0], [])
+                for_each = try(var.ingress_policies[ingress_policies.value].ingress_to.operations, [])
 
                 content {
                   service_name = try(operations.key, null)
