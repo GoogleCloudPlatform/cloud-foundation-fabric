@@ -70,12 +70,18 @@ module "project-svc-gke" {
     attach       = true
     host_project = module.project-host.project_id
   }
-  iam = {
-    "roles/container.developer"     = [module.vm-bastion.service_account_iam_email],
-    "roles/logging.logWriter"       = [module.cluster-1-nodepool-1.service_account_iam_email],
-    "roles/monitoring.metricWriter" = [module.cluster-1-nodepool-1.service_account_iam_email],
-    "roles/owner"                   = var.owners_gke
-  }
+  iam = merge(
+    {
+      "roles/container.developer" = [module.vm-bastion.service_account_iam_email]
+      "roles/owner"               = var.owners_gke
+    },
+    var.cluster_create
+    ? {
+      "roles/logging.logWriter"       = [module.cluster-1-nodepool-1.0.service_account_iam_email]
+      "roles/monitoring.metricWriter" = [module.cluster-1-nodepool-1.0.service_account_iam_email]
+    }
+    : {}
+  )
 }
 
 ################################################################################
@@ -193,6 +199,7 @@ module "vm-bastion" {
 
 module "cluster-1" {
   source                    = "../../modules/gke-cluster"
+  count                     = var.cluster_create ? 1 : 0
   name                      = "cluster-1"
   project_id                = module.project-svc-gke.project_id
   location                  = "${var.region}-b"
@@ -217,9 +224,10 @@ module "cluster-1" {
 
 module "cluster-1-nodepool-1" {
   source                      = "../../modules/gke-nodepool"
+  count                       = var.cluster_create ? 1 : 0
   name                        = "nodepool-1"
   project_id                  = module.project-svc-gke.project_id
-  location                    = module.cluster-1.location
-  cluster_name                = module.cluster-1.name
+  location                    = module.cluster-1.0.location
+  cluster_name                = module.cluster-1.0.name
   node_service_account_create = true
 }

@@ -14,23 +14,13 @@
  * limitations under the License.
  */
 
-output "service_account" {
-  description = "Service account resource."
-  value       = local.service_account
-}
-
-output "email" {
-  description = "Service account email."
-  value       = local.service_account.email
-}
-
-output "iam_email" {
-  description = "IAM-format service account email."
-  value       = local.resource_iam_email
-}
-
-output "key" {
-  description = "Service account key."
-  sensitive   = true
-  value       = local.key
+# pinning to avoid some weird issues we had with the following version
+     
+terraform {
+  required_providers {
+    google = {
+      source  = "hashicorp/google"
+      version = "3.65.0"
+    }
+  }
 }

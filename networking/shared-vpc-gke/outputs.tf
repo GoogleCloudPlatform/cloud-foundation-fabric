@@ -14,9 +14,11 @@
 
 output "gke_clusters" {
   description = "GKE clusters information."
-  value = {
-    cluster-1 = module.cluster-1.endpoint
-  }
+  value = (
+    var.cluster_create
+    ? { cluster-1 = module.cluster-1.0.endpoint }
+    : {}
+  )
 }
 
 output "projects" {

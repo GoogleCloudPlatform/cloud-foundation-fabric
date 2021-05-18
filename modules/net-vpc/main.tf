@@ -239,6 +239,38 @@ resource "google_compute_global_address" "psn_range" {
   network       = local.network.id
 }
 
+resource "google_dns_policy" "default" {
+  count                     = var.dns_policy == null ? 0 : 1
+  enable_inbound_forwarding = var.dns_policy.inbound
+  enable_logging            = var.dns_policy.logging
+  name                      = var.name
+  project                   = var.project_id
+  networks {
+    network_url = local.network.id
+  }
+
+  dynamic "alternative_name_server_config" {
+    for_each = var.dns_policy.outbound == null ? [] : [1]
+    content {
+      dynamic "target_name_servers" {
+        for_each = toset(var.dns_policy.outbound.private_ns)
+        iterator = ns
+        content {
+          ipv4_address    = ns.key
+          forwarding_path = "private"
+        }
+      }
+      dynamic "target_name_servers" {
+        for_each = toset(var.dns_policy.outbound.public_ns)
+        iterator = ns
+        content {
+          ipv4_address = ns.key
+        }
+      }
+    }
+  }
+}
+
 resource "google_service_networking_connection" "psn_connection" {
   count                   = var.private_service_networking_range == null ? 0 : 1
   network                 = local.network.id

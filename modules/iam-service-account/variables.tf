@@ -77,3 +77,9 @@ variable "project_id" {
   description = "Project id where service account will be created."
   type        = string
 }
+
+variable "service_account_create" {
+  description = "Create service account. When set to false, uses a data source to reference an existing service account."
+  type        = bool
+  default     = true
+}

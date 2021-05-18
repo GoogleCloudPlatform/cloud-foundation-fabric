@@ -4,8 +4,16 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- **incompatible change** updated resource name for `google_dns_policy` on the `net-vpc` module
+- added support for VPC-SC Ingress Egress policies on the `vpc-sc` module
+
+## [4.8.0] - 2021-05-12
+
 - added support for `CORS` to the `gcs` module
-- added support for VPC-SC Ingress Egress policies
+- make cluster creation optional in the Shared VPC example
+- make service account creation optional in `iam-service-account` module
+- new `third-party-solutions` top-level folder with initial `openshift` example
+- added support for DNS Policies to the `net-vpc` module
 
 ## [4.7.0] - 2021-04-21
 
@@ -302,7 +310,8 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.7.0...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.8.0...HEAD
+[4.8.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.7.0...v4.8.0
 [4.7.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.6.1...v4.7.0
 [4.6.1]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.6.0...v4.6.1
 [4.6.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.5.1...v4.6.0

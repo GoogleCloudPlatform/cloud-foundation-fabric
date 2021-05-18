@@ -17,6 +17,30 @@ variable "billing_account_id" {
   type        = string
 }
 
+variable "cluster_create" {
+  description = "Create GKE cluster and nodepool."
+  type        = bool
+  default     = true
+}
+
+variable "ip_ranges" {
+  description = "Subnet IP CIDR ranges."
+  type        = map(string)
+  default = {
+    gce = "10.0.16.0/24"
+    gke = "10.0.32.0/24"
+  }
+}
+
+variable "ip_secondary_ranges" {
+  description = "Secondary IP CIDR ranges."
+  type        = map(string)
+  default = {
+    gke-pods     = "10.128.0.0/18"
+    gke-services = "172.16.0.0/24"
+  }
+}
+
 variable "owners_gce" {
   description = "GCE project owners, in IAM format."
   type        = list(string)
@@ -40,35 +64,6 @@ variable "prefix" {
   type        = string
 }
 
-variable "region" {
-  description = "Region used."
-  type        = string
-  default     = "europe-west1"
-}
-
-variable "root_node" {
-  description = "Hierarchy node where projects will be created, 'organizations/org_id' or 'folders/folder_id'."
-  type        = string
-}
-
-variable "ip_ranges" {
-  description = "Subnet IP CIDR ranges."
-  type        = map(string)
-  default = {
-    gce = "10.0.16.0/24"
-    gke = "10.0.32.0/24"
-  }
-}
-
-variable "ip_secondary_ranges" {
-  description = "Secondary IP CIDR ranges."
-  type        = map(string)
-  default = {
-    gke-pods     = "10.128.0.0/18"
-    gke-services = "172.16.0.0/24"
-  }
-}
-
 variable "private_service_ranges" {
   description = "Private service IP CIDR ranges."
   type        = map(string)
@@ -84,4 +79,15 @@ variable "project_services" {
     "container.googleapis.com",
     "stackdriver.googleapis.com",
   ]
+}
+
+variable "region" {
+  description = "Region used."
+  type        = string
+  default     = "europe-west1"
+}
+
+variable "root_node" {
+  description = "Hierarchy node where projects will be created, 'organizations/org_id' or 'folders/folder_id'."
+  type        = string
 }
