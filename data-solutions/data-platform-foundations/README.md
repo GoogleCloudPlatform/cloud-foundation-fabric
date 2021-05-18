@@ -27,7 +27,7 @@ This example assume the next items were already created and provided:
 
 Building the platform is composed of 4 steps:
 
-1) [(Optional) Managed resources and services](./manageing_multiple_environments.md)
+1) [(Optional) Manageing Multiple Environments](./manageing_multiple_environments.md)
 1) [Data Platform Foundations - Phase 1: Building the projects](./infra/tf-phase1/README.md)
 1) [Data Platform Foundations - Phase 2: Deploy assets](./infra/tf-phase2/README.md)
 1) [(Optional) Manual pipeline Example](./data-pipeline/README.md)
