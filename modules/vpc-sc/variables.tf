@@ -40,6 +40,28 @@ variable "access_policy_title" {
   type        = string
 }
 
+variable "egress_policies" {
+  description = "List of EgressPolicies in the form described in the [documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/access_context_manager_service_perimeter#egress_policies)"
+  default     = null
+}
+
+variable "egress_policies_perimeters" {
+  description = "Enforced mode -> Egress Policy -> Perimeters mapping. Enforced mode can be 'enforced' or 'dry_run'"
+  type        = map(map(list(string)))
+  default     = {}
+}
+
+variable "ingress_policies" {
+  description = "List of IngressPolicies in the form described in the [documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/access_context_manager_service_perimeter#ingress_policies)"
+  default     = null
+}
+
+variable "ingress_policies_perimeters" {
+  description = "Enforced mode -> Ingress Policy -> Perimeters mapping. Enforced mode can be 'enforced' or 'dry_run'"
+  type        = map(map(list(string)))
+  default     = {}
+}
+
 variable "organization_id" {
   description = "Organization id in organizations/nnnnnn format."
   type        = string

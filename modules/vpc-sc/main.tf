@@ -27,8 +27,12 @@ locals {
     key => value if value.type == "PERIMETER_TYPE_BRIDGE"
   }
 
-  perimeter_access_levels_enforced = try(transpose(var.access_level_perimeters.enforced), null)
-  perimeter_access_levels_dry_run  = try(transpose(var.access_level_perimeters.dry_run), null)
+  perimeter_access_levels_enforced    = try(transpose(var.access_level_perimeters.enforced), null)
+  perimeter_access_levels_dry_run     = try(transpose(var.access_level_perimeters.dry_run), null)
+  perimeter_ingress_policies_enforced = try(transpose(var.ingress_policies_perimeters.enforced), null)
+  perimeter_ingress_policies_dry_run  = try(transpose(var.ingress_policies_perimeters.dry_run), null)
+  perimeter_egress_policies_enforced  = try(transpose(var.egress_policies_perimeters.enforced), null)
+  perimeter_egress_policies_dry_run   = try(transpose(var.egress_policies_perimeters.dry_run), null)
 }
 
 resource "google_access_context_manager_access_policy" "default" {
@@ -89,6 +93,93 @@ resource "google_access_context_manager_service_perimeter" "standard" {
           allowed_services   = each.value.enforced_config.vpc_accessible_services
         }
       }
+
+      dynamic "egress_policies" {
+        for_each = try(local.perimeter_egress_policies_enforced[each.key] != null ? local.perimeter_egress_policies_enforced[each.key] : [], [])
+
+        content {
+          dynamic "egress_from" {
+            for_each = try(var.egress_policies[egress_policies.value].egress_from != null ? [""] : [], [])
+
+            content {
+              identity_type = try(var.egress_policies[egress_policies.value].egress_from.identity_type, null)
+              identities    = try(var.egress_policies[egress_policies.value].egress_from.identities, null)
+            }
+          }
+          dynamic "egress_to" {
+            for_each = try(var.egress_policies[egress_policies.value].egress_to != null ? [""] : [], [])
+
+            content {
+              resources = try(var.egress_policies[egress_policies.value].egress_to.resources, null)
+
+              dynamic "operations" {
+                for_each = try(var.egress_policies[egress_policies.value].egress_to.operations, [])
+
+                content {
+                  service_name = try(operations.key, null)
+
+                  dynamic "method_selectors" {
+                    for_each = try(operations.value, [])
+
+                    content {
+                      method     = try(method_selectors.value.method, null)
+                      permission = try(method_selectors.value.permission, null)
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      dynamic "ingress_policies" {
+        for_each = try(local.perimeter_ingress_policies_enforced[each.key] != null ? local.perimeter_ingress_policies_enforced[each.key] : [], [])
+
+        content {
+          dynamic "ingress_from" {
+            for_each = try(var.ingress_policies[ingress_policies.value].ingress_from != null ? [""] : [], [])
+
+            content {
+              identity_type = try(var.ingress_policies[ingress_policies.value].ingress_from.identity_type, null)
+              identities    = try(var.ingress_policies[ingress_policies.value].ingress_from.identities, null)
+
+              dynamic "sources" {
+                for_each = toset(try([var.ingress_policies[ingress_policies.value].ingress_from.sources], []))
+
+                content {
+                  access_level = try(sources.value.access_level, null)
+                  resource     = try(sources.value.resource, null)
+                }
+              }
+            }
+          }
+          dynamic "ingress_to" {
+            for_each = try(var.ingress_policies[ingress_policies.value].ingress_to != null ? [""] : [], [])
+
+            content {
+              resources = try(var.ingress_policies[ingress_policies.value].ingress_to.resources, null)
+
+              dynamic "operations" {
+                for_each = try(var.ingress_policies[ingress_policies.value].ingress_to.operations, [])
+
+                content {
+                  service_name = try(operations.key, null)
+
+                  dynamic "method_selectors" {
+                    for_each = try(operations.value, [])
+
+                    content {
+                      method     = try(method_selectors.value.method, null)
+                      permission = try(method_selectors.value.permission, null)
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 
@@ -113,6 +204,93 @@ resource "google_access_context_manager_service_perimeter" "standard" {
         content {
           enable_restriction = true
           allowed_services   = try(each.value.dry_run_config.vpc_accessible_services, null)
+        }
+      }
+
+      dynamic "egress_policies" {
+        for_each = try(local.perimeter_egress_policies_dry_run[each.key] != null ? local.perimeter_egress_policies_dry_run[each.key] : [], [])
+
+        content {
+          dynamic "egress_from" {
+            for_each = try(var.egress_policies[egress_policies.value].egress_from != null ? [""] : [], [])
+
+            content {
+              identity_type = try(var.egress_policies[egress_policies.value].egress_from.identity_type, null)
+              identities    = try(var.egress_policies[egress_policies.value].egress_from.identities, null)
+            }
+          }
+          dynamic "egress_to" {
+            for_each = try(var.egress_policies[egress_policies.value].egress_to != null ? [""] : [], [])
+
+            content {
+              resources = try(var.egress_policies[egress_policies.value].egress_to.resources, null)
+
+              dynamic "operations" {
+                for_each = try(var.egress_policies[egress_policies.value].egress_to.operations, [])
+
+                content {
+                  service_name = try(operations.key, null)
+
+                  dynamic "method_selectors" {
+                    for_each = try(operations.value, [])
+
+                    content {
+                      method     = try(method_selectors.value.method, null)
+                      permission = try(method_selectors.value.permission, null)
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      dynamic "ingress_policies" {
+        for_each = try(local.perimeter_ingress_policies_dry_run[each.key] != null ? local.perimeter_ingress_policies_dry_run[each.key] : [], [])
+
+        content {
+          dynamic "ingress_from" {
+            for_each = try(var.ingress_policies[ingress_policies.value].ingress_from != null ? [""] : [], [])
+
+            content {
+              identity_type = try(var.ingress_policies[ingress_policies.value].ingress_from.identity_type, null)
+              identities    = try(var.ingress_policies[ingress_policies.value].ingress_from.identities, null)
+
+              dynamic "sources" {
+                for_each = toset(try([var.ingress_policies[ingress_policies.value].ingress_from.sources], []))
+
+                content {
+                  access_level = try(sources.value.access_level, null)
+                  resource     = try(sources.value.resource, null)
+                }
+              }
+            }
+          }
+          dynamic "ingress_to" {
+            for_each = try(var.ingress_policies[ingress_policies.value].ingress_to != null ? [""] : [], [])
+
+            content {
+              resources = try(var.ingress_policies[ingress_policies.value].ingress_to.resources, null)
+
+              dynamic "operations" {
+                for_each = try(var.ingress_policies[ingress_policies.value].ingress_to.operations, [])
+
+                content {
+                  service_name = try(operations.key, null)
+
+                  dynamic "method_selectors" {
+                    for_each = try(operations.value, [])
+
+                    content {
+                      method     = try(method_selectors.value.method, null)
+                      permission = try(method_selectors.value.permission, null)
+                    }
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }
