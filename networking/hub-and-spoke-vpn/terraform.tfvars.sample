@@ -1,0 +1,51 @@
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# BGP custom advertisement IP CIDR ranges.
+bgp_custom_advertisements = {
+  hub-to-spoke-1 = "10.0.32.0/20"
+  hub-to-spoke-2 = "10.0.16.0/20"
+}
+
+# BGP ASNs.
+bgp_asn = {
+  hub     = 64513
+  spoke-1 = 64514
+  spoke-2 = 64515
+}
+
+# BGP interface IP CIDR ranges.
+bgp_interface_ranges = {
+  spoke-1 = "169.254.1.0/30"
+  spoke-2 = "169.254.1.4/30"
+}
+
+# Subnet IP CIDR ranges.
+ip_ranges = {
+  hub-a     = "10.0.0.0/24"
+  hub-b     = "10.0.8.0/24"
+  spoke-1-a = "10.0.16.0/24"
+  spoke-1-b = "10.0.24.0/24"
+  spoke-2-a = "10.0.32.0/24"
+  spoke-2-b = "10.0.40.0/24"
+}
+
+# Project ID for all resources.
+project_id = "my-project"
+
+# Regions where the subnets and other resources should be created.
+regions = {
+  a = "us-central1"
+  b = "us-west1"
+}
