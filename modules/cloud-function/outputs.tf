@@ -38,9 +38,7 @@ output "function_name" {
 
 output "service_account" {
   description = "Service account resource."
-  value = (
-    var.service_account_create ? google_service_account.service_account[0] : null
-  )
+  value = try(google_service_account.service_account[0], null)
 }
 
 output "service_account_email" {
