@@ -41,7 +41,7 @@ gcloud container clusters get-credentials cluster-1 --zone europe-west1-b
 kubectl get all
 ```
 
-The example configures the peering with the GKE master VPC to export routes for you, so that VPN routes are passed through the peering. You can diable by hand in the console or by editing the `peering_config' variable in the cluster module, to test non-working configurations or switch to using the [GKE proxy](https://cloud.google.com/solutions/creating-kubernetes-engine-private-clusters-with-net-proxies).
+The example configures the peering with the GKE master VPC to export routes for you, so that VPN routes are passed through the peering. You can disable by hand in the console or by editing the `peering_config` variable in the `gke-cluster` module, to test non-working configurations or switch to using the [GKE proxy](https://cloud.google.com/solutions/creating-kubernetes-engine-private-clusters-with-net-proxies).
 
 ### Export routes via Terraform (recommended)
 
