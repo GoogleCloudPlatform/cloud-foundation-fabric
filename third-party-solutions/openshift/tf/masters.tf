@@ -45,6 +45,7 @@ resource "google_compute_instance" "master" {
     user-data    = file("${local.fs_paths.config_dir}/master.ign"),
     VmDnsSetting = "GlobalDefault"
   }
+  labels = var.install_config_params.labels
 }
 
 resource "google_compute_instance_group" "master" {

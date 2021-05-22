@@ -244,6 +244,10 @@ def manifests_edit(ctx=None):
       data_v['projectID'] = tfvars['service_project']['project_id']
       if not 'ocp-worker' in data_v['tags']:
         data_v['tags'].append('ocp-worker')
+      if tfvars['install_config_params']['labels']:
+        data_v['labels'] = tfvars['install_config_params']['labels'].copy()
+        for i, d in enumerate(data_v['disks']):
+          d['labels'] = tfvars['install_config_params']['labels'].copy()
       data_n = data_v['networkInterfaces'][0]
       data_n['network'] = tfvars['host_project']['vpc_name']
       data_n['subnetwork'] = tfvars['host_project']['workers_subnet_name']

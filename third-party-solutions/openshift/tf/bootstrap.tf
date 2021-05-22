@@ -75,6 +75,7 @@ resource "google_compute_instance" "bootstrap" {
     })
     VmDnsSetting = "GlobalDefault"
   }
+  labels = var.install_config_params.labels
 }
 
 resource "google_compute_instance_group" "bootstrap" {
