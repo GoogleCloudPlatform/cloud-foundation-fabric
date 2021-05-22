@@ -58,6 +58,7 @@ variable "install_config_params" {
   description = "OpenShift cluster configuration."
   type = object({
     disk_size = number
+    labels    = map(string)
     network = object({
       cluster     = string
       host_prefix = number
@@ -72,6 +73,7 @@ variable "install_config_params" {
   })
   default = {
     disk_size = 16
+    labels    = {}
     network = {
       cluster     = "10.128.0.0/14"
       host_prefix = 23
