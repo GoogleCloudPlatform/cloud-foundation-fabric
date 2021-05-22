@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 - **incompatible change** updated resource name for `google_dns_policy` on the `net-vpc` module
 - added support for VPC-SC Ingress Egress policies on the `vpc-sc` module
+- update CI to Terraform 0.15 and fix minor incompatibilities
 
 ## [4.8.0] - 2021-05-12
 
