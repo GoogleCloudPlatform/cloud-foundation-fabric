@@ -60,19 +60,19 @@ resource "google_container_cluster" "cluster" {
       enabled = var.addons.dns_cache_config
     }
     http_load_balancing {
-      disabled = ! var.addons.http_load_balancing
+      disabled = !var.addons.http_load_balancing
     }
     horizontal_pod_autoscaling {
-      disabled = ! var.addons.horizontal_pod_autoscaling
+      disabled = !var.addons.horizontal_pod_autoscaling
     }
     network_policy_config {
-      disabled = ! var.addons.network_policy_config
+      disabled = !var.addons.network_policy_config
     }
     cloudrun_config {
-      disabled = ! var.addons.cloudrun_config
+      disabled = !var.addons.cloudrun_config
     }
     istio_config {
-      disabled = ! var.addons.istio_config.enabled
+      disabled = !var.addons.istio_config.enabled
       auth     = var.addons.istio_config.tls ? "AUTH_MUTUAL_TLS" : "AUTH_NONE"
     }
     gce_persistent_disk_csi_driver_config {
@@ -101,11 +101,15 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
-  dynamic master_authorized_networks_config {
-    for_each = length(var.master_authorized_ranges) == 0 ? [] : list(var.master_authorized_ranges)
+  dynamic "master_authorized_networks_config" {
+    for_each = (
+      length(var.master_authorized_ranges) == 0
+      ? []
+      : [var.master_authorized_ranges]
+    )
     iterator = ranges
     content {
-      dynamic cidr_blocks {
+      dynamic "cidr_blocks" {
         for_each = ranges.value
         iterator = range
         content {
@@ -116,7 +120,7 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
-  dynamic network_policy {
+  dynamic "network_policy" {
     for_each = var.addons.network_policy_config ? [""] : []
     content {
       enabled  = true
@@ -124,7 +128,7 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
-  dynamic private_cluster_config {
+  dynamic "private_cluster_config" {
     for_each = local.is_private ? [var.private_cluster_config] : []
     iterator = config
     content {
@@ -139,14 +143,14 @@ resource "google_container_cluster" "cluster" {
 
   # beta features
 
-  dynamic authenticator_groups_config {
+  dynamic "authenticator_groups_config" {
     for_each = var.authenticator_security_group == null ? [] : [""]
     content {
       security_group = var.authenticator_security_group
     }
   }
 
-  dynamic cluster_autoscaling {
+  dynamic "cluster_autoscaling" {
     for_each = var.cluster_autoscaling.enabled ? [var.cluster_autoscaling] : []
     iterator = config
     content {
@@ -165,7 +169,7 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
-  dynamic database_encryption {
+  dynamic "database_encryption" {
     for_each = var.database_encryption.enabled ? [var.database_encryption] : []
     iterator = config
     content {
@@ -174,21 +178,21 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
-  dynamic pod_security_policy_config {
+  dynamic "pod_security_policy_config" {
     for_each = var.pod_security_policy != null ? [""] : []
     content {
       enabled = var.pod_security_policy
     }
   }
 
-  dynamic release_channel {
+  dynamic "release_channel" {
     for_each = var.release_channel != null ? [""] : []
     content {
       channel = var.release_channel
     }
   }
 
-  dynamic resource_usage_export_config {
+  dynamic "resource_usage_export_config" {
     for_each = (
       var.resource_usage_export_config.enabled != null
       &&
@@ -203,14 +207,14 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
-  dynamic vertical_pod_autoscaling {
+  dynamic "vertical_pod_autoscaling" {
     for_each = var.vertical_pod_autoscaling == null ? [] : [""]
     content {
       enabled = var.vertical_pod_autoscaling
     }
   }
 
-  dynamic workload_identity_config {
+  dynamic "workload_identity_config" {
     for_each = var.workload_identity ? [""] : []
     content {
       identity_namespace = "${var.project_id}.svc.id.goog"
