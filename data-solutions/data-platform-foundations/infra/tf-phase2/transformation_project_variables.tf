@@ -17,6 +17,21 @@
 ###############################################################################
 #                    Orchestration and Transformation                         #
 ###############################################################################
+variable "transformation_buckets" {
+  description = "List of transformation buckets to create"
+  type        = map(any)
+  default = {
+    temp = {
+      name     = "temp"
+      location = "EU"
+    },
+    templates = {
+      name     = "templates"
+      location = "EU"
+    },
+  }
+}
+
 variable "transformation_project_id" {
   description = "Orchestration and Transformation project ID."
   type        = string
@@ -26,12 +41,6 @@ variable "transformation_service_account" {
   description = "transformation service accounts list."
   type        = string
   default     = "sa-transformation"
-}
-
-variable "transformation_vpc_name" {
-  description = "Name of the VPC created in the transformation Project."
-  type        = string
-  default     = "transformation-vpc"
 }
 
 variable "transformation_subnets" {
@@ -47,17 +56,8 @@ variable "transformation_subnets" {
   ]
 }
 
-variable "transformation_buckets" {
-  description = "List of transformation buckets to create"
-  type        = map(any)
-  default = {
-    temp = {
-      name     = "temp"
-      location = "EU"
-    },
-    templates = {
-      name     = "templates"
-      location = "EU"
-    },
-  }
+variable "transformation_vpc_name" {
+  description = "Name of the VPC created in the transformation Project."
+  type        = string
+  default     = "transformation-vpc"
 }

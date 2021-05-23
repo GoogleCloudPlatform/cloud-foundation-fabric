@@ -13,3 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+output "datamart-project" {
+  description = "Datamart project created."
+  value       = module.datamart-project-creation
+}

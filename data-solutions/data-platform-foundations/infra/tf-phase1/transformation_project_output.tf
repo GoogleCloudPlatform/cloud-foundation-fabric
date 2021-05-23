@@ -12,14 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-variable "services_project_name" {
-  description = "Project name"
-  type        = string
-  default     = "services"
-}
-
-variable "data_service_account_name" {
-  description = "Name for the projects editor service account."
-  type        = string
-  default     = "projects-editor-sa"
+output "transformation-project" {
+  description = "Transformation project created."
+  value       = module.transformation-project-creation
 }

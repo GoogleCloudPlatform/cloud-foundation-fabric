@@ -13,3 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+output "landing-project" {
+  description = "Landing project created."
+  value       = module.landing-project-creation
+}

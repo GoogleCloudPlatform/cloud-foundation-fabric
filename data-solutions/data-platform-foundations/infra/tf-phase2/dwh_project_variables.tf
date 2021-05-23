@@ -17,17 +17,6 @@
 ###############################################################################
 #                                   DWH                                       #
 ###############################################################################
-variable "dwh_project_id" {
-  description = "dwh project ID."
-  type        = string
-}
-
-variable "dwh_service_account" {
-  description = "dwh service accounts list."
-  type        = string
-  default     = "sa-dwh"
-}
-
 variable "dwh_bq_datasets" {
   description = "DWH Bigquery datasets"
   type        = map(any)
@@ -37,4 +26,15 @@ variable "dwh_bq_datasets" {
       location = "EU",
     }
   }
+}
+
+variable "dwh_project_id" {
+  description = "dwh project ID."
+  type        = string
+}
+
+variable "dwh_service_account" {
+  description = "dwh service accounts list."
+  type        = string
+  default     = "sa-dwh"
 }

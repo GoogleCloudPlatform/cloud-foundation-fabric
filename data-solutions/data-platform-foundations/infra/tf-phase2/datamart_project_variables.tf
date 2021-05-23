@@ -17,17 +17,6 @@
 ###############################################################################
 #                                Datamart                                     #
 ###############################################################################
-variable "datamart_project_id" {
-  description = "datamart project ID."
-  type        = string
-}
-
-variable "datamart_service_account" {
-  description = "datamart service accounts list."
-  type        = string
-  default     = "sa-datamart"
-}
-
 variable "datamart_bq_datasets" {
   description = "Datamart Bigquery datasets"
   type        = map(any)
@@ -37,4 +26,15 @@ variable "datamart_bq_datasets" {
       location = "EU",
     }
   }
+}
+
+variable "datamart_project_id" {
+  description = "datamart project ID."
+  type        = string
+}
+
+variable "datamart_service_account" {
+  description = "datamart service accounts list."
+  type        = string
+  default     = "sa-datamart"
 }

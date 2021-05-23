@@ -17,17 +17,6 @@
 ###############################################################################
 #                                 landing                                     #
 ###############################################################################
-variable "landing_project_id" {
-  description = "landing project ID."
-  type        = string
-}
-
-variable "landing_service_account" {
-  description = "landing service accounts list."
-  type        = string
-  default     = "sa-landing"
-}
-
 variable "landing_buckets" {
   description = "List of landing buckets to create"
   type        = map(any)
@@ -41,6 +30,11 @@ variable "landing_buckets" {
       location = "EU"
     },
   }
+}
+
+variable "landing_project_id" {
+  description = "landing project ID."
+  type        = string
 }
 
 variable "landing_pubsub" {
@@ -79,4 +73,10 @@ variable "landing_pubsub" {
       }
     }
   }
+}
+
+variable "landing_service_account" {
+  description = "landing service accounts list."
+  type        = string
+  default     = "sa-landing"
 }

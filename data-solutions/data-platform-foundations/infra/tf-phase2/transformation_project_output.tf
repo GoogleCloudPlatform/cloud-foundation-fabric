@@ -13,3 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+output "vpc-transformation-output" {
+  description = "Transformation VPC details"
+  value       = module.vpc-transformation
+}

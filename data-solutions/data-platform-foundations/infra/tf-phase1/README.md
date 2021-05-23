@@ -63,25 +63,74 @@ terraform destroy
 
 ## Inputs
 
+### General inputs
+
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | billing\_account | Billing account id. | `string` | n/a | ✓ |
-| data\_service\_account\_name | Name for the projects editor service account. | `string` | `"projects-editor-sa"` |  |
-| datamart\_project\_name | Project name | `string` | `"datamart"` |  |
-| dwh\_project\_name | Project name | `string` | `"dwh"` |  |
-| landing\_project\_name | Project name | `string` | `"landing"` |  |
 | parent | Parent folder or organization in 'folders/folder\_id' or 'organizations/org\_id' format. | `string` | n/a | ✓ |
 | projects\_suffix | Project suffix to make resources unique. If no suffix is provided a random suffix will be created | `string` | `null` |  |
+
+### Datamart project inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| datamart\_project\_name | Project name | `string` | `"datamart"` |  |
+
+### DWH project inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| dwh\_project\_name | Project name | `string` | `"dwh"` |  |
+
+### Landing project inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| landing\_project\_name | Project name | `string` | `"landing"` |  |
+
+### Services project inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| data\_service\_account\_name | Name for the projects editor service account. | `string` | `"projects-editor-sa"` |  |
 | services\_project\_name | Project name | `string` | `"services"` |  |
+
+### Transformation project inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
 | transformation\_project\_name | Project name | `string` | `"transformation"` |  |
 
 ## Outputs
 
+### Datamart project outputs
+
 | Name | Description |
 |------|-------------|
 | datamart-project | Datamart project created. |
+
+### DWH project outputs
+
+| Name | Description |
+|------|-------------|
 | dwh-project | DWH project created. |
+
+### Landing project outputs
+
+| Name | Description |
+|------|-------------|
 | landing-project | Landing project created. |
+
+### Services project outputs
+
+| Name | Description |
+|------|-------------|
 | services-project | Services project created. |
+
+### Transformation project outputs
+
+| Name | Description |
+|------|-------------|
 | transformation-project | Transformation project created. |
 <!-- END TFDOC -->

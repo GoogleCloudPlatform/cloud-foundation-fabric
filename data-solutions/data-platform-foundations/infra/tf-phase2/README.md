@@ -65,20 +65,42 @@ terraform destroy
 
 ## Inputs
 
+### Services project inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| services\_project\_id | services project ID. | `string` | n/a | ✓ |
+| services\_service\_account | services service accounts list. | `string` | `"sa-services"` |  |
+
+### Datamart project inputs
+
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | datamart\_bq\_datasets | Datamart Bigquery datasets | `map(any)` | <pre>{<br>  "bq_datamart_dataset": {<br>    "id": "bq_datamart_dataset",<br>    "location": "EU"<br>  }<br>}</pre> |  |
 | datamart\_project\_id | datamart project ID. | `string` | n/a | ✓ |
 | datamart\_service\_account | datamart service accounts list. | `string` | `"sa-datamart"` |  |
+
+### DWH project inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
 | dwh\_bq\_datasets | DWH Bigquery datasets | `map(any)` | <pre>{<br>  "bq_raw_dataset": {<br>    "id": "bq_raw_dataset",<br>    "location": "EU"<br>  }<br>}</pre> |  |
 | dwh\_project\_id | dwh project ID. | `string` | n/a | ✓ |
 | dwh\_service\_account | dwh service accounts list. | `string` | `"sa-dwh"` |  |
+
+### Landing project inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
 | landing\_buckets | List of landing buckets to create | `map(any)` | <pre>{<br>  "data-schema": {<br>    "location": "EU",<br>    "name": "data-schema"<br>  },<br>  "raw-data": {<br>    "location": "EU",<br>    "name": "raw-data"<br>  }<br>}</pre> |  |
 | landing\_project\_id | landing project ID. | `string` | n/a | ✓ |
 | landing\_pubsub | List of landing buckets to create | `map(any)` | <pre>{<br>  "landing_1": {<br>    "name": "landing-1",<br>    "subscription_iam": {<br>      "sub1": {<br>        "roles/pubsub.subscriber": []<br>      },<br>      "sub2": {<br>        "roles/pubsub.subscriber": []<br>      }<br>    },<br>    "subscriptions": {<br>      "sub1": {<br>        "labels": {},<br>        "options": {<br>          "ack_deadline_seconds": null,<br>          "expiration_policy_ttl": null,<br>          "message_retention_duration": null,<br>          "retain_acked_messages": true<br>        }<br>      },<br>      "sub2": {<br>        "labels": {},<br>        "options": {<br>          "ack_deadline_seconds": null,<br>          "expiration_policy_ttl": null,<br>          "message_retention_duration": null,<br>          "retain_acked_messages": true<br>        }<br>      }<br>    }<br>  }<br>}</pre> |  |
 | landing\_service\_account | landing service accounts list. | `string` | `"sa-landing"` |  |
-| services\_project\_id | services project ID. | `string` | n/a | ✓ |
-| services\_service\_account | services service accounts list. | `string` | `"sa-services"` |  |
+
+### Transformation project inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
 | transformation\_buckets | List of transformation buckets to create | `map(any)` | <pre>{<br>  "temp": {<br>    "location": "EU",<br>    "name": "temp"<br>  },<br>  "templates": {<br>    "location": "EU",<br>    "name": "templates"<br>  }<br>}</pre> |  |
 | transformation\_project\_id | Orchestration and Transformation project ID. | `string` | n/a | ✓ |
 | transformation\_service\_account | transformation service accounts list. | `string` | `"sa-transformation"` |  |
@@ -86,6 +108,8 @@ terraform destroy
 | transformation\_vpc\_name | Name of the VPC created in the transformation Project. | `string` | `"transformation-vpc"` |  |
 
 ## Outputs
+
+### Transformation project outputs
 
 | Name | Description |
 |------|-------------|

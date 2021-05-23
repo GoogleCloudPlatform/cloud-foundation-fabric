@@ -13,3 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+output "dwh-project" {
+  description = "DWH project created."
+  value       = module.dwh-project-creation
+}
