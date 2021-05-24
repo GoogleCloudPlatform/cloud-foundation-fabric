@@ -22,9 +22,14 @@ variable "parent" {
   type        = string
 }
 
+variable "projects_prefix" {
+  description = "Prefix used to generate project id and name"
+  type        = string
+  default     = null
+}
+
 variable "projects_suffix" {
   description = "Project suffix to make resources unique. If no suffix is provided a random suffix will be created"
   type        = string
   default     = null
 }
-

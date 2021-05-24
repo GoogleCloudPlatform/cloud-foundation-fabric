@@ -20,6 +20,7 @@ module "datamart-project-creation" {
   source          = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/project?ref=v4.2.0"
   billing_account = var.billing_account
   parent          = var.parent
+  prefix          = var.projects_prefix
 
   name = join(
     "-",
