@@ -116,7 +116,9 @@ variable "region" {
 variable "rhcos_gcp_image" {
   description = "RHCOS image used."
   type        = string
-  default     = "projects/rhcos-cloud/global/images/rhcos-47-83-202102090044-0-gcp-x86-64"
+  # okd
+  # default = "projects/fedora-coreos-cloud/global/images/fedora-coreos-33-20210217-3-0-gcp-x86-64"
+  default = "projects/rhcos-cloud/global/images/rhcos-47-83-202102090044-0-gcp-x86-64"
 }
 
 variable "service_project" {

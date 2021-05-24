@@ -92,8 +92,8 @@ def _run_installer(cmdline, env=None):
   out = out.decode('utf-8', errors='ignore')
   err = err.decode('utf-8', errors='ignore')
   retcode = p.returncode
-  if retcode == 1:
-    raise Error(f'Return error from command ({retcode}): {out} {err}')
+  if retcode > 0:
+    raise Error(f'Error in openshift-installer ({retcode}): {err}')
 
 
 @click.group(invoke_without_command=True,
