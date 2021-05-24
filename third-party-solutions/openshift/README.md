@@ -33,6 +33,10 @@ From the [OpenShift GCP UPI documentation](https://cloud.redhat.com/openshift/in
 
 *Optional:* if you want to use a specific GCP RHCOS image, download it from the [RedHat library](https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.7/4.7.7/), then import it as a GCE image and configure the relevant Terraform variable before bootstrap. An alternative is to run through the install steps manually via the `prepare.py` script, and use the GCP image shared by the ``rhcos-cloud` project set in the Machine manifests.
 
+### OKD
+
+For OKD, use the [OKD installer](https://github.com/openshift/okd/releases), and prepare an FCOS machine image on GCP after [downloading the raw file](https://getfedora.org/en/coreos/download?tab=cloud_operators&stream=stable). If the `prepare.py` command fails, run the installer by hand and check for missing system packages (eg on Debian you might need to install `libvirt0`).
+
 ### GCP projects and VPC
 
 This example is designed to fit into enterprise GCP foundations, and assumes a Shared VPC and its associated host and service projects are already available.
