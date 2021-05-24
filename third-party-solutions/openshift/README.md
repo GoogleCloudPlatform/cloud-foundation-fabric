@@ -31,7 +31,7 @@ From the [OpenShift GCP UPI documentation](https://cloud.redhat.com/openshift/in
 - the Command Line CLI
 - your pull secret
 
-*Optional:* if you want to use a specific GCP RHCOS image, download it from the [RedHat library](https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.7/4.7.7/), then import it as a GCE image and configure the relevant Terraform variable before bootstrap.
+*Optional:* if you want to use a specific GCP RHCOS image, download it from the [RedHat library](https://mirror.openshift.com/pub/openshift-v4/dependencies/rhcos/4.7/4.7.7/), then import it as a GCE image and configure the relevant Terraform variable before bootstrap. An alternative is to run through the install steps manually via the `prepare.py` script, and use the GCP image shared by the ``rhcos-cloud` project set in the Machine manifests.
 
 ### GCP projects and VPC
 
