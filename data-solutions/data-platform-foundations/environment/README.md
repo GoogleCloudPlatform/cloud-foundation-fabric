@@ -21,7 +21,7 @@ This example will create the next projects:
 
 A master service account named projects-editor-sa will be created under common services project and will be granted editor permissions on all the projects in scope.
 
-![Data Foundation -  Phase 1](../../img/Data_Foundation-phase1.png)
+![Data Foundation -  Phase 1](./diagram.png)
 
 ## Running the example
 

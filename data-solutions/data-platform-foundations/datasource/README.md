@@ -4,7 +4,7 @@
 
 Now that we have all the needed project, we will create all the needed assets to store and process the data.
 
-![Data Foundation -  Phase 2](../../img/Data_Foundation-phase2.png)
+![Data Foundation -  Phase 2](./diagram.png)
 
 This example will create the next resources per project:
 
