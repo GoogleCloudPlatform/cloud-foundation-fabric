@@ -22,7 +22,7 @@ The example is composed of three separate provisioning workflows, which are deis
   - Composer DAG
 
 The resulting GCP architecture is outlined in this diagram
-![Target architecture](./resources/diagram.png)
+![Target architecture](./datasource/diagram.png)
 
 A demo pipeline is also part of this example: it can be built and run on top of the foundational infrastructure to quickly verify or test the setup.
 
