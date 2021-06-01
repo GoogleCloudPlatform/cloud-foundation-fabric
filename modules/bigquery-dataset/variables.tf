@@ -125,7 +125,8 @@ variable "tables" {
         type          = string
       })
     })
-    schema = string
+    schema              = string
+    deletion_protection = bool
   }))
   default = {}
 }
@@ -133,10 +134,11 @@ variable "tables" {
 variable "views" {
   description = "View definitions."
   type = map(object({
-    friendly_name  = string
-    labels         = map(string)
-    query          = string
-    use_legacy_sql = bool
+    friendly_name       = string
+    labels              = map(string)
+    query               = string
+    use_legacy_sql      = bool
+    deletion_protection = bool
   }))
   default = {}
 }

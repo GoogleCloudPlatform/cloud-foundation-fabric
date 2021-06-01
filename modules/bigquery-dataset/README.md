@@ -79,26 +79,41 @@ module "bigquery-dataset" {
 Tables are created via the `tables` variable, or the `view` variable for views. Support for external tables will be added in a future release.
 
 ```hcl
+locals {
+  countries_schema = jsonencode([
+    { name = "country", type = "STRING" },
+    { name = "population", type = "INT64" },
+  ])
+}
+
 module "bigquery-dataset" {
   source     = "./modules/bigquery-dataset"
   project_id = "my-project"
-  id         = "my-dataset"
+  id         = "my_dataset"
   tables = {
-    table_a = {
-      friendly_name = "Table a"
-      labels        = {}
-      options       = null
-      partitioning  = null
-      schema = file("table-a.json")
+    countries = {
+      friendly_name       = "Countries"
+      labels              = {}
+      options             = null
+      partitioning        = null
+      schema              = local.countries_schema
+      deletion_protection = true
     }
   }
 }
-# tftest:skip
+# tftest:modules=1:resources=2
 ```
 
 If partitioning is needed, populate the `partitioning` variable using either the `time` or `range` attribute.
 
 ```hcl
+locals {
+  countries_schema = jsonencode([
+    { name = "country", type = "STRING" },
+    { name = "population", type = "INT64" },
+  ])
+}
+
 module "bigquery-dataset" {
   source     = "./modules/bigquery-dataset"
   project_id = "my-project"
@@ -113,43 +128,50 @@ module "bigquery-dataset" {
         range = null # use start/end/interval for range
         time  = { type = "DAY", expiration_ms = null }
       }
-      schema = file("table-a.json")
+      schema              = local.countries_schema
+      deletion_protection = true
     }
   }
 }
-# tftest:skip
+# tftest:modules=1:resources=2
 ```
 
 To create views use the `view` variable. If you're querying a table created by the same module `terraform apply` will initially fail and eventually succeed once the underlying table has been created. You can probably also use the module's output in the view's query to create a dependency on the table.
 
 ```hcl
+locals {
+  countries_schema = jsonencode([
+    { name = "country", type = "STRING" },
+    { name = "population", type = "INT64" },
+  ])
+}
+
 module "bigquery-dataset" {
   source     = "./modules/bigquery-dataset"
   project_id = "my-project"
-  id         = "my-dataset"
+  id         = "my_dataset"
   tables = {
-    table_a = {
-      friendly_name = "Table a"
-      labels        = {}
-      options       = null
-      partitioning = {
-        field = null
-        range = null # use start/end/interval for range
-        time  = { type = "DAY", expiration_ms = null }
-      }
-      schema = file("table-a.json")
+    countries = {
+      friendly_name       = "Countries"
+      labels              = {}
+      options             = null
+      partitioning        = null
+      schema              = local.countries_schema
+      deletion_protection = true
     }
   }
   views = {
-    view_a = {
-      friendly_name  = "View a"
-      labels         = {}
-      query          = "SELECT * from `my-project.my-dataset.table_a`"
-      use_legacy_sql = false
+    population = {
+      friendly_name       = "Population"
+      labels              = {}
+      query               = "SELECT SUM(population) FROM my_dataset.countries"
+      use_legacy_sql      = false
+      deletion_protection = true
     }
   }
 }
-# tftest:skip
+
+# tftest:modules=1:resources=3
 ```
 
 <!-- BEGIN TFDOC -->
@@ -168,8 +190,8 @@ module "bigquery-dataset" {
 | *labels* | Dataset labels. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
 | *location* | Dataset location. | <code title="">string</code> |  | <code title="">EU</code> |
 | *options* | Dataset options. | <code title="object&#40;&#123;&#10;default_table_expiration_ms     &#61; number&#10;default_partition_expiration_ms &#61; number&#10;delete_contents_on_destroy      &#61; bool&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;default_table_expiration_ms     &#61; null&#10;default_partition_expiration_ms &#61; null&#10;delete_contents_on_destroy      &#61; false&#10;&#125;">...</code> |
-| *tables* | Table definitions. Options and partitioning default to null. Partitioning can only use `range` or `time`, set the unused one to null. | <code title="map&#40;object&#40;&#123;&#10;friendly_name &#61; string&#10;labels        &#61; map&#40;string&#41;&#10;options &#61; object&#40;&#123;&#10;clustering      &#61; list&#40;string&#41;&#10;encryption_key  &#61; string&#10;expiration_time &#61; number&#10;&#125;&#41;&#10;partitioning &#61; object&#40;&#123;&#10;field &#61; string&#10;range &#61; object&#40;&#123;&#10;end      &#61; number&#10;interval &#61; number&#10;start    &#61; number&#10;&#125;&#41;&#10;time &#61; object&#40;&#123;&#10;expiration_ms &#61; number&#10;type &#61; string&#10;&#125;&#41;&#10;&#125;&#41;&#10;schema &#61; string&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
-| *views* | View definitions. | <code title="map&#40;object&#40;&#123;&#10;friendly_name  &#61; string&#10;labels         &#61; map&#40;string&#41;&#10;query          &#61; string&#10;use_legacy_sql &#61; bool&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
+| *tables* | Table definitions. Options and partitioning default to null. Partitioning can only use `range` or `time`, set the unused one to null. | <code title="map&#40;object&#40;&#123;&#10;friendly_name &#61; string&#10;labels        &#61; map&#40;string&#41;&#10;options &#61; object&#40;&#123;&#10;clustering      &#61; list&#40;string&#41;&#10;encryption_key  &#61; string&#10;expiration_time &#61; number&#10;&#125;&#41;&#10;partitioning &#61; object&#40;&#123;&#10;field &#61; string&#10;range &#61; object&#40;&#123;&#10;end      &#61; number&#10;interval &#61; number&#10;start    &#61; number&#10;&#125;&#41;&#10;time &#61; object&#40;&#123;&#10;expiration_ms &#61; number&#10;type &#61; string&#10;&#125;&#41;&#10;&#125;&#41;&#10;schema              &#61; string&#10;deletion_protection &#61; bool&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
+| *views* | View definitions. | <code title="map&#40;object&#40;&#123;&#10;friendly_name       &#61; string&#10;labels              &#61; map&#40;string&#41;&#10;query               &#61; string&#10;use_legacy_sql      &#61; bool&#10;deletion_protection &#61; bool&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
 
 ## Outputs
 

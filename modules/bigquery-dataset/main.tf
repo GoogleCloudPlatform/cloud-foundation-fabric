@@ -151,17 +151,18 @@ resource "google_bigquery_dataset_iam_binding" "bindings" {
 }
 
 resource "google_bigquery_table" "default" {
-  provider        = google-beta
-  for_each        = var.tables
-  project         = var.project_id
-  dataset_id      = google_bigquery_dataset.default.dataset_id
-  table_id        = each.key
-  friendly_name   = each.value.friendly_name
-  description     = "Terraform managed."
-  clustering      = try(each.value.options.clustering, null)
-  expiration_time = try(each.value.options.expiration_time, null)
-  labels          = each.value.labels
-  schema          = each.value.schema
+  provider            = google-beta
+  for_each            = var.tables
+  project             = var.project_id
+  dataset_id          = google_bigquery_dataset.default.dataset_id
+  table_id            = each.key
+  friendly_name       = each.value.friendly_name
+  description         = "Terraform managed."
+  clustering          = try(each.value.options.clustering, null)
+  expiration_time     = try(each.value.options.expiration_time, null)
+  labels              = each.value.labels
+  schema              = each.value.schema
+  deletion_protection = each.value.deletion_protection
 
   dynamic "encryption_configuration" {
     for_each = try(each.value.options.encryption_key, null) != null ? [""] : []
@@ -194,14 +195,15 @@ resource "google_bigquery_table" "default" {
 }
 
 resource "google_bigquery_table" "views" {
-  depends_on    = [google_bigquery_table.default]
-  for_each      = var.views
-  project       = var.project_id
-  dataset_id    = google_bigquery_dataset.default.dataset_id
-  table_id      = each.key
-  friendly_name = each.value.friendly_name
-  description   = "Terraform managed."
-  labels        = each.value.labels
+  depends_on          = [google_bigquery_table.default]
+  for_each            = var.views
+  project             = var.project_id
+  dataset_id          = google_bigquery_dataset.default.dataset_id
+  table_id            = each.key
+  friendly_name       = each.value.friendly_name
+  description         = "Terraform managed."
+  labels              = each.value.labels
+  deletion_protection = each.value.deletion_protection
 
   view {
     query          = each.value.query
