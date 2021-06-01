@@ -303,6 +303,7 @@ module "bigquery-dataset" {
         expiration_time = null
         encryption_key  = module.kms.keys.key-bq.self_link
       }
+      deletion_protection = true
     },
     df_import = {
       friendly_name = "Dataflow import"
@@ -319,6 +320,7 @@ module "bigquery-dataset" {
         expiration_time = null
         encryption_key  = module.kms.keys.key-bq.self_link
       }
+      deletion_protection = true
     }
   }
 }
