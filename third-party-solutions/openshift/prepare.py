@@ -56,6 +56,8 @@ def _parse_tfvars(tfvars=None, tfdir=None):
     if tfvars:
       with open(os.path.join(tfdir, tfvars)) as f:
         result.update(hcl.load(f))
+    else:
+      logging.info('no tfvars file used')
   except (KeyError, ValueError) as e:
     raise Error(f'Wrong variable files syntax: {e}')
   except (IOError, OSError) as e:
