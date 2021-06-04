@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-output "gateway" {
-  description = "VPN gateway resource (only if auto-created)."
-  value = (
-    var.vpn_gateway_create
-    ? google_compute_ha_vpn_gateway.ha_gateway[0]
-    : null
-  )
+
+output "bgp_peers" {
+  description = "BGP peer resources."
+  value = {
+    for k, v in google_compute_router_peer.bgp_peer : k => v
+  }
 }
 
 output "external_gateway" {
@@ -32,6 +31,15 @@ output "external_gateway" {
   )
 }
 
+output "gateway" {
+  description = "VPN gateway resource (only if auto-created)."
+  value = (
+    var.vpn_gateway_create
+    ? google_compute_ha_vpn_gateway.ha_gateway[0]
+    : null
+  )
+}
+
 output "name" {
   description = "VPN gateway name (only if auto-created). "
   value = (
@@ -39,6 +47,11 @@ output "name" {
     ? google_compute_ha_vpn_gateway.ha_gateway[0].name
     : null
   )
+}
+
+output "random_secret" {
+  description = "Generated secret."
+  value       = local.secret
 }
 
 output "router" {
@@ -82,9 +95,4 @@ output "tunnel_self_links" {
     for name in keys(var.tunnels) :
     name => try(google_compute_vpn_tunnel.tunnels[name].self_link, null)
   }
-}
-
-output "random_secret" {
-  description = "Generated secret."
-  value       = local.secret
 }
