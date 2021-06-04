@@ -25,7 +25,10 @@ variable "addons" {
       enabled = bool
       tls     = bool
     })
+    
+    network_dataplane_v2 = bool
     network_policy_config = bool
+
     gce_persistent_disk_csi_driver_config = bool
   })
   default = {
@@ -38,6 +41,7 @@ variable "addons" {
       tls     = false
     }
     network_policy_config = false
+    network_dataplane_v2 = false
     gce_persistent_disk_csi_driver_config = false
   }
 }

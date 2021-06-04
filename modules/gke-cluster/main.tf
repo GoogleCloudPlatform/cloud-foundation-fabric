@@ -120,13 +120,16 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
+  #the network_policy block is enabled if network_policy_config and network_dataplane_v2 is set to false. Dataplane V2 has built-in network policies.
   dynamic "network_policy" {
     for_each = var.addons.network_policy_config ? [""] : []
     content {
-      enabled  = true
-      provider = "CALICO"
+      enabled  = var.addons.network_dataplane_v2 ? false : true                       
+      provider = var.addons.network_dataplane_v2 ? "PROVIDER_UNSPECIFIED" : "CALICO"
     }
   }
+
+  datapath_provider = var.addons.network_dataplane_v2 ? "ADVANCED_DATAPATH" : "DATAPATH_PROVIDER_UNSPECIFIED"
 
   dynamic "private_cluster_config" {
     for_each = local.is_private ? [var.private_cluster_config] : []
