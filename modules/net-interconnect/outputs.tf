@@ -18,13 +18,8 @@ output "router" {
   value       = google_compute_router.router
 }
 
-output "router_name" {
-  description = "Router name."
-  value       = var.router_name
-}
-
-output "interconnect_attachement" {
-  description = "interconnect attachement"
+output "interconnect_attachment" {
+  description = "interconnect attachment"
   value       = google_compute_interconnect_attachment.interconnect_vlan_attachment
 }
 
