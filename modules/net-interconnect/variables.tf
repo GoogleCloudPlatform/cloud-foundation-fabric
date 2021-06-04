@@ -15,14 +15,14 @@
  */
 
 variable "router" {
-  description="Router name and description. "
+  description = "Router name and description. "
   type = object({
-    name = string
+    name        = string
     description = string
   })
   default = {
-     name =""
-     description=""
+    name        = ""
+    description = ""
   }
 }
 
@@ -84,10 +84,10 @@ variable "vlan_attachment" {
     interconnect  = string
   })
   default = {
-     vlan_id = null
-     bandwidth="BPS_10G"
-     admin_enabled = true
-     interconnect = null
+    vlan_id       = null
+    bandwidth     = "BPS_10G"
+    admin_enabled = true
+    interconnect  = null
   }
 }
 
