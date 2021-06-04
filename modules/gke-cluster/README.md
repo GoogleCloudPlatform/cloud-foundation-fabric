@@ -4,6 +4,37 @@ This module allows simplified creation and management of GKE clusters and should
 
 ## Example
 
+### GKE Cluster
+
+```hcl
+module "cluster-1" {
+  source                    = "./modules/gke-cluster"
+  project_id                = "myproject"
+  name                      = "cluster-1"
+  location                  = "europe-west1-b"
+  network                   = var.vpc.self_link
+  subnetwork                = var.subnet.self_link
+  secondary_range_pods      = "pods"
+  secondary_range_services  = "services"
+  default_max_pods_per_node = 32
+  master_authorized_ranges = {
+    internal-vms = "10.0.0.0/8"
+  }
+  private_cluster_config = {
+    enable_private_nodes    = true
+    enable_private_endpoint = true
+    master_ipv4_cidr_block  = "192.168.0.0/28"
+    master_global_access    = false
+  }
+  labels = {
+    environment = "dev"
+  }
+}
+# tftest:modules=1:resources=1
+```
+
+### GKE Cluster with Dataplane V2 enabled
+
 ```hcl
 module "cluster-1" {
   source                    = "./modules/gke-cluster"
