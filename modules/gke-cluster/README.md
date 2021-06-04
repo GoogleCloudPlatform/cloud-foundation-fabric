@@ -4,6 +4,8 @@ This module allows simplified creation and management of GKE clusters and should
 
 ## Example
 
+### GKE Cluster
+
 ```hcl
 module "cluster-1" {
   source                    = "./modules/gke-cluster"
@@ -15,6 +17,36 @@ module "cluster-1" {
   secondary_range_pods      = "pods"
   secondary_range_services  = "services"
   default_max_pods_per_node = 32
+  master_authorized_ranges = {
+    internal-vms = "10.0.0.0/8"
+  }
+  private_cluster_config = {
+    enable_private_nodes    = true
+    enable_private_endpoint = true
+    master_ipv4_cidr_block  = "192.168.0.0/28"
+    master_global_access    = false
+  }
+  labels = {
+    environment = "dev"
+  }
+}
+# tftest:modules=1:resources=1
+```
+
+### GKE Cluster with Dataplane V2 enabled
+
+```hcl
+module "cluster-1" {
+  source                    = "./modules/gke-cluster"
+  project_id                = "myproject"
+  name                      = "cluster-1"
+  location                  = "europe-west1-b"
+  network                   = var.vpc.self_link
+  subnetwork                = var.subnet.self_link
+  secondary_range_pods      = "pods"
+  secondary_range_services  = "services"
+  default_max_pods_per_node = 32
+  enable_dataplane_v2       = true
   master_authorized_ranges = {
     internal-vms = "10.0.0.0/8"
   }
@@ -50,6 +82,7 @@ module "cluster-1" {
 | *default_max_pods_per_node* | Maximum number of pods per node in this cluster. | <code title="">number</code> |  | <code title="">110</code> |
 | *description* | Cluster description. | <code title="">string</code> |  | <code title="">null</code> |
 | *enable_binary_authorization* | Enable Google Binary Authorization. | <code title="">bool</code> |  | <code title="">null</code> |
+| *enable_dataplane_v2* | Enable Dataplane V2 on the cluster, will disable network_policy addons config | <code title="">bool</code> |  | <code title="">false</code> |
 | *enable_intranode_visibility* | Enable intra-node visibility to make same node pod to pod traffic visible. | <code title="">bool</code> |  | <code title="">null</code> |
 | *enable_shielded_nodes* | Enable Shielded Nodes features on all nodes in this cluster. | <code title="">bool</code> |  | <code title="">null</code> |
 | *enable_tpu* | Enable Cloud TPU resources in this cluster. | <code title="">bool</code> |  | <code title="">null</code> |

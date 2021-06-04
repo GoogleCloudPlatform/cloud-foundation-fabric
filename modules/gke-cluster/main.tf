@@ -49,7 +49,8 @@ resource "google_container_cluster" "cluster" {
   enable_tpu                  = var.enable_tpu
   initial_node_count          = 1
   remove_default_node_pool    = true
-
+  datapath_provider           = var.enable_dataplane_v2 ? "ADVANCED_DATAPATH" : "DATAPATH_PROVIDER_UNSPECIFIED"
+  
   # node_config {}
   # NOTE: Default node_pool is deleted, so node_config (here) is extranneous.
   # Specify that node_config as an parameter to gke-nodepool module instead.
@@ -120,11 +121,12 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
+  #the network_policy block is enabled if network_policy_config and network_dataplane_v2 is set to false. Dataplane V2 has built-in network policies.
   dynamic "network_policy" {
     for_each = var.addons.network_policy_config ? [""] : []
     content {
-      enabled  = true
-      provider = "CALICO"
+      enabled  = var.enable_dataplane_v2 ? false : true                       
+      provider = var.enable_dataplane_v2 ? "PROVIDER_UNSPECIFIED" : "CALICO"
     }
   }
 

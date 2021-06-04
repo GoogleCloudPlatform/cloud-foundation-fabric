@@ -25,7 +25,9 @@ variable "addons" {
       enabled = bool
       tls     = bool
     })
+   
     network_policy_config = bool
+
     gce_persistent_disk_csi_driver_config = bool
   })
   default = {
@@ -40,6 +42,12 @@ variable "addons" {
     network_policy_config = false
     gce_persistent_disk_csi_driver_config = false
   }
+}
+
+variable "enable_dataplane_v2" {
+  description = "Enable Dataplane V2 on the cluster, will disable network_policy addons config"
+  type = bool
+  default = false
 }
 
 variable "authenticator_security_group" {
