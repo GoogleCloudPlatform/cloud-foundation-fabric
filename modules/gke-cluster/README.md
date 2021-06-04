@@ -51,7 +51,7 @@ module "cluster-1" {
 | *default_max_pods_per_node* | Maximum number of pods per node in this cluster. | <code title="">number</code> |  | <code title="">110</code> |
 | *description* | Cluster description. | <code title="">string</code> |  | <code title="">null</code> |
 | *enable_binary_authorization* | Enable Google Binary Authorization. | <code title="">bool</code> |  | <code title="">null</code> |
-| *enable_dataplane_v2* | Enable Dataplane V2 on the cluster, will disable network_policy addons config | <code title="">bool</code> |  | <code title="">null</code> |
+| *enable_dataplane_v2* | Enable Dataplane V2 on the cluster, will disable network_policy addons config | <code title="">bool</code> |  | <code title="">false</code> |
 | *enable_intranode_visibility* | Enable intra-node visibility to make same node pod to pod traffic visible. | <code title="">bool</code> |  | <code title="">null</code> |
 | *enable_shielded_nodes* | Enable Shielded Nodes features on all nodes in this cluster. | <code title="">bool</code> |  | <code title="">null</code> |
 | *enable_tpu* | Enable Cloud TPU resources in this cluster. | <code title="">bool</code> |  | <code title="">null</code> |
