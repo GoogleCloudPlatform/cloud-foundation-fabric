@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 - added support for VPC-SC Ingress Egress policies on the `vpc-sc` module
 - update CI to Terraform 0.15 and fix minor incompatibilities
 - add `deletion_protection` to the `bigquery-datasset` module
+- add support for dataplane v2 to GKE cluster module
 
 ## [4.8.0] - 2021-05-12
 
