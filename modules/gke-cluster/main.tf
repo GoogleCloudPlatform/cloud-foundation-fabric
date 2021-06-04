@@ -124,12 +124,12 @@ resource "google_container_cluster" "cluster" {
   dynamic "network_policy" {
     for_each = var.addons.network_policy_config ? [""] : []
     content {
-      enabled  = var.addons.network_dataplane_v2 ? false : true                       
-      provider = var.addons.network_dataplane_v2 ? "PROVIDER_UNSPECIFIED" : "CALICO"
+      enabled  = var.enable_dataplane_v2 ? false : true                       
+      provider = var.enable_dataplane_v2 ? "PROVIDER_UNSPECIFIED" : "CALICO"
     }
   }
 
-  datapath_provider = var.addons.network_dataplane_v2 ? "ADVANCED_DATAPATH" : "DATAPATH_PROVIDER_UNSPECIFIED"
+  datapath_provider = var.enable_dataplane_v2 ? "ADVANCED_DATAPATH" : "DATAPATH_PROVIDER_UNSPECIFIED"
 
   dynamic "private_cluster_config" {
     for_each = local.is_private ? [var.private_cluster_config] : []

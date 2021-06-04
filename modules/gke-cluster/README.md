@@ -15,6 +15,7 @@ module "cluster-1" {
   secondary_range_pods      = "pods"
   secondary_range_services  = "services"
   default_max_pods_per_node = 32
+  enable_dataplane_v2       = true
   master_authorized_ranges = {
     internal-vms = "10.0.0.0/8"
   }
@@ -43,13 +44,14 @@ module "cluster-1" {
 | secondary_range_pods | Subnet secondary range name used for pods. | <code title="">string</code> | ✓ |  |
 | secondary_range_services | Subnet secondary range name used for services. | <code title="">string</code> | ✓ |  |
 | subnetwork | VPC subnetwork name or self link. | <code title="">string</code> | ✓ |  |
-| *addons* | Addons enabled in the cluster (true means enabled). | <code title="object&#40;&#123;&#10;cloudrun_config            &#61; bool&#10;dns_cache_config           &#61; bool&#10;horizontal_pod_autoscaling &#61; bool&#10;http_load_balancing        &#61; bool&#10;istio_config &#61; object&#40;&#123;&#10;enabled &#61; bool&#10;tls     &#61; bool&#10;&#125;&#41;&#10;network_policy_config &#61; bool&#10;gce_persistent_disk_csi_driver_config &#61; bool&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;cloudrun_config            &#61; false&#10;dns_cache_config           &#61; false&#10;horizontal_pod_autoscaling &#61; true&#10;http_load_balancing        &#61; true&#10;istio_config &#61; &#123;&#10;enabled &#61; false&#10;tls     &#61; false&#10;&#125;&#10;network_policy_config &#61; false&#10;network_dataplane_v2 &#61; false&#10;gce_persistent_disk_csi_driver_config &#61; false&#10;&#125;">...</code> |
+| *addons* | Addons enabled in the cluster (true means enabled). | <code title="object&#40;&#123;&#10;cloudrun_config            &#61; bool&#10;dns_cache_config           &#61; bool&#10;horizontal_pod_autoscaling &#61; bool&#10;http_load_balancing        &#61; bool&#10;istio_config &#61; object&#40;&#123;&#10;enabled &#61; bool&#10;tls     &#61; bool&#10;&#125;&#41;&#10;network_dataplane_v2 &#61; bool&#10;network_policy_config &#61; bool&#10;gce_persistent_disk_csi_driver_config &#61; bool&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;cloudrun_config            &#61; false&#10;dns_cache_config           &#61; false&#10;horizontal_pod_autoscaling &#61; true&#10;http_load_balancing        &#61; true&#10;istio_config &#61; &#123;&#10;enabled &#61; false&#10;tls     &#61; false&#10;&#125;&#10;network_policy_config &#61; false&#10;gce_persistent_disk_csi_driver_config &#61; false&#10;&#125;">...</code> |
 | *authenticator_security_group* | RBAC security group for Google Groups for GKE, format is gke-security-groups@yourdomain.com. | <code title="">string</code> |  | <code title="">null</code> |
 | *cluster_autoscaling* | Enable and configure limits for Node Auto-Provisioning with Cluster Autoscaler. | <code title="object&#40;&#123;&#10;enabled    &#61; bool&#10;cpu_min    &#61; number&#10;cpu_max    &#61; number&#10;memory_min &#61; number&#10;memory_max &#61; number&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;enabled    &#61; false&#10;cpu_min    &#61; 0&#10;cpu_max    &#61; 0&#10;memory_min &#61; 0&#10;memory_max &#61; 0&#10;&#125;">...</code> |
 | *database_encryption* | Enable and configure GKE application-layer secrets encryption. | <code title="object&#40;&#123;&#10;enabled  &#61; bool&#10;state    &#61; string&#10;key_name &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;enabled  &#61; false&#10;state    &#61; &#34;DECRYPTED&#34;&#10;key_name &#61; null&#10;&#125;">...</code> |
 | *default_max_pods_per_node* | Maximum number of pods per node in this cluster. | <code title="">number</code> |  | <code title="">110</code> |
 | *description* | Cluster description. | <code title="">string</code> |  | <code title="">null</code> |
 | *enable_binary_authorization* | Enable Google Binary Authorization. | <code title="">bool</code> |  | <code title="">null</code> |
+| *enable_dataplane_v2* | Enable Dataplane V2 on the cluster, will disable network_policy addons config | <code title="">bool</code> |  | <code title="">null</code> |
 | *enable_intranode_visibility* | Enable intra-node visibility to make same node pod to pod traffic visible. | <code title="">bool</code> |  | <code title="">null</code> |
 | *enable_shielded_nodes* | Enable Shielded Nodes features on all nodes in this cluster. | <code title="">bool</code> |  | <code title="">null</code> |
 | *enable_tpu* | Enable Cloud TPU resources in this cluster. | <code title="">bool</code> |  | <code title="">null</code> |

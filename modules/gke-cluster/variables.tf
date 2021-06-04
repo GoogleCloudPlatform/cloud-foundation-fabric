@@ -41,9 +41,14 @@ variable "addons" {
       tls     = false
     }
     network_policy_config = false
-    network_dataplane_v2 = false
     gce_persistent_disk_csi_driver_config = false
   }
+}
+
+variable "enable_dataplane_v2" {
+  description = "Enable Dataplane V2 on the cluster, will disable network_policy addons config"
+  type = bool
+  default = null
 }
 
 variable "authenticator_security_group" {
