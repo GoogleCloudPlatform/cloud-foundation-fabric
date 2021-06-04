@@ -49,7 +49,8 @@ resource "google_container_cluster" "cluster" {
   enable_tpu                  = var.enable_tpu
   initial_node_count          = 1
   remove_default_node_pool    = true
-
+  datapath_provider           = var.enable_dataplane_v2 ? "ADVANCED_DATAPATH" : "DATAPATH_PROVIDER_UNSPECIFIED"
+  
   # node_config {}
   # NOTE: Default node_pool is deleted, so node_config (here) is extranneous.
   # Specify that node_config as an parameter to gke-nodepool module instead.
@@ -128,8 +129,6 @@ resource "google_container_cluster" "cluster" {
       provider = var.enable_dataplane_v2 ? "PROVIDER_UNSPECIFIED" : "CALICO"
     }
   }
-
-  datapath_provider = var.enable_dataplane_v2 ? "ADVANCED_DATAPATH" : "DATAPATH_PROVIDER_UNSPECIFIED"
 
   dynamic "private_cluster_config" {
     for_each = local.is_private ? [var.private_cluster_config] : []

@@ -48,7 +48,7 @@ variable "addons" {
 variable "enable_dataplane_v2" {
   description = "Enable Dataplane V2 on the cluster, will disable network_policy addons config"
   type = bool
-  default = null
+  default = false
 }
 
 variable "authenticator_security_group" {
