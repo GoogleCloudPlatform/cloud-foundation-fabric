@@ -13,3 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+output "project_ids" {
+  description = "Project ids for created projects."
+  value = {
+    datamart       = module.project-datamart.project_id
+    dwh            = module.project-dwh.project_id
+    landing        = module.project-landing.project_id
+    services       = module.project-services.project_id
+    transformation = module.project-transformation.project_id
+  }
+}
