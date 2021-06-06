@@ -12,24 +12,46 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-variable "billing_account" {
+variable "billing_account_id" {
   description = "Billing account id."
   type        = string
 }
 
-variable "parent" {
+variable "prefix" {
+  description = "Prefix used to generate project id and name."
+  type        = string
+  default     = null
+}
+
+variable "project_names" {
+  description = "Override this variable if you need non-standard names."
+  type = object({
+    datamart       = string
+    dwh            = string
+    landing        = string
+    services       = string
+    transformation = string
+  })
+  default = {
+    datamart       = "datamart"
+    dwh            = "datawh"
+    landing        = "landing"
+    services       = "services"
+    transformation = "transformation"
+  }
+}
+
+variable "root_node" {
   description = "Parent folder or organization in 'folders/folder_id' or 'organizations/org_id' format."
   type        = string
 }
 
-variable "projects_prefix" {
-  description = "Prefix used to generate project id and name"
-  type        = string
-  default     = null
-}
-
-variable "projects_suffix" {
-  description = "Project suffix to make resources unique. If no suffix is provided a random suffix will be created"
-  type        = string
-  default     = null
+variable "service_account_names" {
+  description = "Override this variable if you need non-standard names."
+  type = object({
+    main = string
+  })
+  default = {
+    main = "data-platform-main"
+  }
 }

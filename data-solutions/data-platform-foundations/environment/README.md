@@ -1,17 +1,8 @@
-# Data Platform Foundations - Phase 1
+# Data Platform Foundations - Environment (Step 1)
 
-## General
+This is the first step needed to deploy Data Platform Foundations, which creates projects and service accounts. Please refer to the [top-level Data Platform README](../README.md) for prerequisites.
 
-This is the first part deploying the Data Platform foundations. In this part we will create the infrastructure needed for the foundational build. This includes projects and service accounts.
-
-Since this example is intended for the data infra engineers we do expect that an initial organization / folder and service account with owner privileges will be pre-created and provided as variables.
-
-This example assume the next items were already created and provided:
-
-- Organization / folder
-- Terraform runner Service account with owner permissions on the above organization / folder
-
-This example will create the next projects:
+The projects that will be created are:
 
 - Common services
 - Landing
@@ -19,118 +10,38 @@ This example will create the next projects:
 - DWH
 - Datamart
 
-A master service account named projects-editor-sa will be created under common services project and will be granted editor permissions on all the projects in scope.
-
-![Data Foundation -  Phase 1](./diagram.png)
+A master service account named `projects-editor-sa` will be created under the common services project, and it will be granted editor permissions on all the projects in scope.
 
 ## Running the example
 
 To create the infrastructure:
 
-- Specify your variables in a `terraform.tvars`
+- specify your variables in a `terraform.tvars`
 
 ```tfm
-billing_account = "BILLING ACCOUNT ID."
-parent          = "Parent folder or organization in 'folders/folder_id' or 'organizations/org_id' format."
+billing_account = "1234-1234-1234"
+parent          = "folders/12345678"
 ```
 
-- Place the service account key in the terraform folder
-- Go through the following steps to create resources:
+- make sure you have the right authentication setup (application default credentials, or a service account key)
+- run `terraform init` and `terraform apply`
 
-```bash
-terraform init
-terraform apply
-```
-
-Once done testing, you can clean up resources by running:
-
-```bash
-terraform destroy
-```
+Once done testing, you can clean up resources by running `terraform destroy`
 
 <!-- BEGIN TFDOC -->
-## Requirements
+## Variables
 
-| Name | Version |
-|------|---------|
-| terraform | >= 0.13 |
-
-## Providers
-
-| Name | Version |
-|------|---------|
-| random | n/a |
-
-## Inputs
-
-### General inputs
-
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| billing\_account | Billing account id. | `string` | n/a | ✓ |
-| parent | Parent folder or organization in 'folders/folder\_id' or 'organizations/org\_id' format. | `string` | n/a | ✓ |
-| projects\_suffix | Project suffix to make resources unique. If no suffix is provided a random suffix will be created | `string` | `null` |  |
-
-### Datamart project inputs
-
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| datamart\_project\_name | Project name | `string` | `"datamart"` |  |
-
-### DWH project inputs
-
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| dwh\_project\_name | Project name | `string` | `"dwh"` |  |
-
-### Landing project inputs
-
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| landing\_project\_name | Project name | `string` | `"landing"` |  |
-
-### Services project inputs
-
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| data\_service\_account\_name | Name for the projects editor service account. | `string` | `"projects-editor-sa"` |  |
-| services\_project\_name | Project name | `string` | `"services"` |  |
-
-### Transformation project inputs
-
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| transformation\_project\_name | Project name | `string` | `"transformation"` |  |
+| name | description | type | required | default |
+|---|---|:---: |:---:|:---:|
+| billing_account_id | Billing account id. | <code title="">string</code> | ✓ |  |
+| root_node | Parent folder or organization in 'folders/folder_id' or 'organizations/org_id' format. | <code title="">string</code> | ✓ |  |
+| *prefix* | Prefix used to generate project id and name. | <code title="">string</code> |  | <code title="">null</code> |
+| *project_names* | Override this variable if you need non-standard names. | <code title="object&#40;&#123;&#10;datamart       &#61; string&#10;dwh            &#61; string&#10;landing        &#61; string&#10;services       &#61; string&#10;transformation &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;datamart       &#61; &#34;datamart&#34;&#10;dwh            &#61; &#34;datawh&#34;&#10;landing        &#61; &#34;landing&#34;&#10;services       &#61; &#34;services&#34;&#10;transformation &#61; &#34;transformation&#34;&#10;&#125;">...</code> |
+| *service_account_names* | Override this variable if you need non-standard names. | <code title="object&#40;&#123;&#10;main &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;main &#61; &#34;data-platform-main&#34;&#10;&#125;">...</code> |
 
 ## Outputs
 
-### Datamart project outputs
-
-| Name | Description |
-|------|-------------|
-| datamart-project | Datamart project created. |
-
-### DWH project outputs
-
-| Name | Description |
-|------|-------------|
-| dwh-project | DWH project created. |
-
-### Landing project outputs
-
-| Name | Description |
-|------|-------------|
-| landing-project | Landing project created. |
-
-### Services project outputs
-
-| Name | Description |
-|------|-------------|
-| services-project | Services project created. |
-
-### Transformation project outputs
-
-| Name | Description |
-|------|-------------|
-| transformation-project | Transformation project created. |
+| name | description | sensitive |
+|---|---|:---:|
+| project_ids | Project ids for created projects. |  |
 <!-- END TFDOC -->
