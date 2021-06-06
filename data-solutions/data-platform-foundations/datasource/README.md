@@ -29,11 +29,13 @@ To create the infrastructure:
 - Specify your variables in a `terraform.tvars`
 
 ```tfm
-services_project_id       = "SERVICES-PROJECT_ID"
-landing_project_id        = "LANDING-PROJECT_ID"
-transformation_project_id = "TRANSFORMATION-PROJECT_ID"
-dwh_project_id            = "DWH-PROJECT_ID"
-datamart_project_id       = "DATAMART-PROJECT_ID"
+project_ids = {
+  datamart       = "DATAMART-PROJECT_ID"
+  dwh            = "DWH-PROJECT_ID"
+  landing        = "LANDING-PROJECT_ID"
+  services       = "SERVICES-PROJECT_ID"
+  transformation = "TRANSFORMATION-PROJECT_ID"
+}
 ```
 
 - Place the data_service_account_name service account (the service account was created in phase 1) key in the terraform folder
@@ -51,67 +53,24 @@ terraform destroy
 ```
 
 <!-- BEGIN TFDOC -->
-## Requirements
+## Variables
 
-| Name | Version |
-|------|---------|
-| terraform | >= 0.13 |
-
-## Providers
-
-| Name | Version |
-|------|---------|
-| google | n/a |
-
-## Inputs
-
-### Services project inputs
-
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| services\_project\_id | services project ID. | `string` | n/a | ✓ |
-| services\_service\_account | services service accounts list. | `string` | `"sa-services"` |  |
-
-### Datamart project inputs
-
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| datamart\_bq\_datasets | Datamart Bigquery datasets | `map(any)` | <pre>{<br>  "bq_datamart_dataset": {<br>    "id": "bq_datamart_dataset",<br>    "location": "EU"<br>  }<br>}</pre> |  |
-| datamart\_project\_id | datamart project ID. | `string` | n/a | ✓ |
-| datamart\_service\_account | datamart service accounts list. | `string` | `"sa-datamart"` |  |
-
-### DWH project inputs
-
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| dwh\_bq\_datasets | DWH Bigquery datasets | `map(any)` | <pre>{<br>  "bq_raw_dataset": {<br>    "id": "bq_raw_dataset",<br>    "location": "EU"<br>  }<br>}</pre> |  |
-| dwh\_project\_id | dwh project ID. | `string` | n/a | ✓ |
-| dwh\_service\_account | dwh service accounts list. | `string` | `"sa-dwh"` |  |
-
-### Landing project inputs
-
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| landing\_buckets | List of landing buckets to create | `map(any)` | <pre>{<br>  "data-schema": {<br>    "location": "EU",<br>    "name": "data-schema"<br>  },<br>  "raw-data": {<br>    "location": "EU",<br>    "name": "raw-data"<br>  }<br>}</pre> |  |
-| landing\_project\_id | landing project ID. | `string` | n/a | ✓ |
-| landing\_pubsub | List of landing buckets to create | `map(any)` | <pre>{<br>  "landing_1": {<br>    "name": "landing-1",<br>    "subscription_iam": {<br>      "sub1": {<br>        "roles/pubsub.subscriber": []<br>      },<br>      "sub2": {<br>        "roles/pubsub.subscriber": []<br>      }<br>    },<br>    "subscriptions": {<br>      "sub1": {<br>        "labels": {},<br>        "options": {<br>          "ack_deadline_seconds": null,<br>          "expiration_policy_ttl": null,<br>          "message_retention_duration": null,<br>          "retain_acked_messages": true<br>        }<br>      },<br>      "sub2": {<br>        "labels": {},<br>        "options": {<br>          "ack_deadline_seconds": null,<br>          "expiration_policy_ttl": null,<br>          "message_retention_duration": null,<br>          "retain_acked_messages": true<br>        }<br>      }<br>    }<br>  }<br>}</pre> |  |
-| landing\_service\_account | landing service accounts list. | `string` | `"sa-landing"` |  |
-
-### Transformation project inputs
-
-| Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
-| transformation\_buckets | List of transformation buckets to create | `map(any)` | <pre>{<br>  "temp": {<br>    "location": "EU",<br>    "name": "temp"<br>  },<br>  "templates": {<br>    "location": "EU",<br>    "name": "templates"<br>  }<br>}</pre> |  |
-| transformation\_project\_id | Orchestration and Transformation project ID. | `string` | n/a | ✓ |
-| transformation\_service\_account | transformation service accounts list. | `string` | `"sa-transformation"` |  |
-| transformation\_subnets | List of subnets to create in the transformation Project. | `list(any)` | <pre>[<br>  {<br>    "ip_cidr_range": "10.1.0.0/20",<br>    "name": "transformation-subnet",<br>    "region": "europe-west3",<br>    "secondary_ip_range": {}<br>  }<br>]</pre> |  |
-| transformation\_vpc\_name | Name of the VPC created in the transformation Project. | `string` | `"transformation-vpc"` |  |
+| Name | Description | Type | Required | Default|
+|------|-------------|------|:--------:|:--------:|
+| <a name="input_datamart_bq_datasets"></a> [datamart\_bq\_datasets](#Variables\_datamart\_bq\_datasets) | Datamart Bigquery datasets | `object({...})` | | `...` |
+| <a name="input_dwh_bq_datasets"></a> [dwh\_bq\_datasets](#Variables\_dwh\_bq\_datasets) | DWH Bigquery datasets | `object({...})` | | `...` |
+| <a name="input_landing_buckets"></a> [landing\_buckets](#Variables\_landing\_buckets) | List of landing buckets to create | `object({...})` | | `...` |
+| <a name="input_landing_pubsub"></a> [landing\_pubsub](#Variables\_landing\_pubsub) | List of landing pubsub topics and subscriptions to create | `object({...})` | | `...` |
+| <a name="input_landing_service_account"></a> [landing\_service\_account](#Variables\_landing\_service\_account) | landing service accounts list. | `string` | | `sa-landing` |
+| <a name="input_project_ids"></a> [project\_ids](#Variables\_project\_ids) | Project IDs. | `object({...})` | ✓ | n/a |
+| <a name="input_project_service_account"></a> [project\_service\_account](#Variables\_project\_service\_account) | Project service accounts list. | `object({...})` |  | `...` |
+| <a name="input_transformation_buckets"></a> [transformation\_buckets](#Variables\_transformation\_buckets) | List of transformation buckets to create | `object({...})` |  | `...` |
+| <a name="input_transformation_subnets"></a> [transformation\_subnets](#Variables\_transformation\_subnets) | List of subnets to create in the transformation Project. | `object({...})` | | `...` |
+| <a name="input_transformation_vpc_name"></a> [transformation\_vpc\_name](#Variables\_transformation\_vpc\_name) | Name of the VPC created in the transformation Project. | `string` | | `transformation-vpc` |
 
 ## Outputs
 
-### Transformation project outputs
-
 | Name | Description |
 |------|-------------|
-| vpc-transformation-output | Transformation VPC details |
+| <a name="output_vpc-transformation-output"></a> [vpc-transformation-output](#output\_vpc-transformation-output) | Transformation VPC details |
 <!-- END TFDOC -->

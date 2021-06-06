@@ -16,4 +16,208 @@
 
 locals {
   module_version = "4.2.0"
+
+  landing_pubsub = merge({
+    for k, v in var.landing_pubsub :
+    k => {
+      name          = v.name
+      subscriptions = v.subscriptions
+      subscription_iam = merge({
+        for s_k, s_v in v.subscription_iam :
+        s_k => merge(s_v, { "roles/pubsub.subscriber" : ["serviceAccount:${module.transformation-default-service-accounts.email}"] })
+      })
+    }
+  })
+}
+
+###############################################################################
+#                                 Projects                                    #
+###############################################################################
+module "project-datamart" {
+  source         = "../../../modules/project"
+  name           = var.project_ids.datamart
+  project_create = false
+}
+
+module "project-dwh" {
+  source         = "../../../modules/project"
+  name           = var.project_ids.dwh
+  project_create = false
+}
+
+module "project-landing" {
+  source         = "../../../modules/project"
+  name           = var.project_ids.landing
+  project_create = false
+}
+
+module "project-services" {
+  source         = "../../../modules/project"
+  name           = var.project_ids.services
+  project_create = false
+}
+
+module "project-transformation" {
+  source         = "../../../modules/project"
+  name           = var.project_ids.transformation
+  project_create = false
+}
+
+###############################################################################
+#                                   IAM                                       #
+###############################################################################
+
+module "datamart-default-service-accounts" {
+  source     = "../../../modules/iam-service-account"
+  project_id = var.project_ids.datamart
+  name       = var.project_service_account.datamart
+
+  iam_project_roles = {
+    "${var.project_ids.datamart}" = [
+      "roles/editor",
+    ]
+  }
+}
+
+module "dwh-default-service-accounts" {
+  source     = "../../../modules/iam-service-account"
+  project_id = var.project_ids.dwh
+  name       = var.project_service_account.dwh
+}
+
+module "landing-default-service-accounts" {
+  source     = "../../../modules/iam-service-account"
+  project_id = var.project_ids.landing
+  name       = var.project_service_account.landing
+
+  iam_project_roles = {
+    "${var.project_ids.landing}" = [
+      "roles/pubsub.publisher",
+    ]
+  }
+}
+
+module "services-default-service-accounts" {
+  source     = "../../../modules/iam-service-account"
+  project_id = var.project_ids.services
+  name       = var.project_service_account.services
+
+  iam_project_roles = {
+    "${var.project_ids.services}" = [
+      "roles/editor",
+    ]
+  }
+}
+
+module "transformation-default-service-accounts" {
+  source     = "../../../modules/iam-service-account"
+  project_id = var.project_ids.transformation
+  name       = var.project_service_account.transformation
+
+  iam_project_roles = {
+    "${var.project_ids.transformation}" = [
+      "roles/logging.logWriter",
+      "roles/monitoring.metricWriter",
+      "roles/dataflow.admin",
+      "roles/iam.serviceAccountUser",
+      "roles/bigquery.dataOwner",
+      "roles/bigquery.jobUser",
+      "roles/dataflow.worker",
+      "roles/bigquery.metadataViewer",
+      "roles/storage.objectViewer",
+    ]
+  }
+}
+
+###############################################################################
+#                                   GCS                                       #
+###############################################################################
+
+module "bucket-landing" {
+  source     = "../../../modules/gcs"
+  project_id = var.project_ids.landing
+  prefix     = var.project_ids.landing
+  iam = {
+    "roles/storage.objectCreator" = ["serviceAccount:${module.landing-default-service-accounts.email}"],
+    "roles/storage.admin"         = ["serviceAccount:${module.transformation-default-service-accounts.email}"],
+  }
+
+  for_each = var.landing_buckets
+  name     = each.value.name
+  location = each.value.location
+}
+
+module "bucket-transformation" {
+  source     = "../../../modules/gcs"
+  project_id = var.project_ids.transformation
+  prefix     = var.project_ids.transformation
+
+  for_each = var.transformation_buckets
+  name     = each.value.name
+  location = each.value.location
+  iam = {
+    "roles/storage.admin" = ["serviceAccount:${module.transformation-default-service-accounts.email}"],
+  }
+}
+
+###############################################################################
+#                                 Bigquery                                    #
+###############################################################################
+module "bigquery-datasets-dwh" {
+  source     = "../../../modules/bigquery-dataset"
+  project_id = var.project_ids.dwh
+
+  for_each = var.dwh_bq_datasets
+
+  id       = each.value.id
+  location = each.value.location
+
+  access = {
+    owner  = { role = "OWNER", type = "user" }
+    reader = { role = "READER", type = "user" }
+  }
+
+  access_identities = {
+    owner  = module.transformation-default-service-accounts.email
+    reader = module.dwh-default-service-accounts.email
+  }
+}
+
+module "bigquery-datasets-datamart" {
+  source     = "../../../modules/bigquery-dataset"
+  project_id = var.project_ids.datamart
+
+  for_each = var.datamart_bq_datasets
+  id       = each.value.id
+  location = each.value.location
+
+  access = {
+    owner = { role = "OWNER", type = "user" }
+  }
+  access_identities = {
+    owner = module.datamart-default-service-accounts.email
+  }
+}
+
+###############################################################################
+#                                  Network                                    #
+###############################################################################
+module "vpc-transformation" {
+  source     = "../../../modules/net-vpc"
+  project_id = var.project_ids.transformation
+  name       = var.transformation_vpc_name
+  subnets    = var.transformation_subnets
+}
+
+###############################################################################
+#                                Pub/Sub                                      #
+###############################################################################
+module "pubsub-landing" {
+  source     = "../../../modules/pubsub"
+  project_id = var.project_ids.landing
+
+  for_each         = local.landing_pubsub
+  name             = each.value.name
+  subscriptions    = each.value.subscriptions
+  subscription_iam = each.value.subscription_iam
 }
