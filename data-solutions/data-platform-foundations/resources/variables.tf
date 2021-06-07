@@ -18,7 +18,14 @@ variable "datamart_bq_datasets" {
   default = {
     bq_datamart_dataset = {
       id       = "bq_datamart_dataset"
-      location = "EU",
+      location = "EU"
+      access = {
+        owner = { role = "OWNER", type = "user" }
+      }
+      access_identities = {
+        owner  = []
+        reader = []
+      }
     }
   }
 }
@@ -29,7 +36,15 @@ variable "dwh_bq_datasets" {
   default = {
     bq_raw_dataset = {
       id       = "bq_raw_dataset"
-      location = "EU",
+      location = "EU"
+      access = {
+        owner  = { role = "OWNER", type = "user" }
+        reader = { role = "READER", type = "user" }
+      }
+      access_identities = {
+        owner  = []
+        reader = []
+      }
     }
   }
 }

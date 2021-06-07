@@ -163,24 +163,6 @@ module "bucket-transformation" {
 ###############################################################################
 #                                 Bigquery                                    #
 ###############################################################################
-module "bigquery-datasets-dwh" {
-  source     = "../../../modules/bigquery-dataset"
-  project_id = module.project-dwh.project_id
-
-  for_each = var.dwh_bq_datasets
-  id       = each.value.id
-  location = each.value.location
-
-  access = {
-    owner  = { role = "OWNER", type = "user" }
-    reader = { role = "READER", type = "user" }
-  }
-
-  access_identities = {
-    owner  = module.transformation-default-service-accounts.email
-    reader = module.dwh-default-service-accounts.email
-  }
-}
 
 module "bigquery-datasets-datamart" {
   source     = "../../../modules/bigquery-dataset"
@@ -189,13 +171,26 @@ module "bigquery-datasets-datamart" {
   for_each = var.datamart_bq_datasets
   id       = each.value.id
   location = each.value.location
-
-  access = {
-    owner = { role = "OWNER", type = "user" }
-  }
+  access   = each.value.access
   access_identities = {
     owner = module.datamart-default-service-accounts.email
   }
+  #   access_identities = each.value.access_identities
+}
+
+module "bigquery-datasets-dwh" {
+  source     = "../../../modules/bigquery-dataset"
+  project_id = module.project-dwh.project_id
+
+  for_each = var.dwh_bq_datasets
+  id       = each.value.id
+  location = each.value.location
+  access   = each.value.access
+  access_identities = {
+    owner  = module.transformation-default-service-accounts.email
+    reader = module.dwh-default-service-accounts.email
+  }
+  #   access_identities = each.value.access_identities
 }
 
 ###############################################################################
