@@ -69,11 +69,11 @@ module "project-transformation" {
 
 module "datamart-default-service-accounts" {
   source     = "../../../modules/iam-service-account"
-  project_id = var.project_ids.datamart
+  project_id = module.project-datamart.project_id
   name       = var.project_service_account.datamart
 
   iam_project_roles = {
-    "${var.project_ids.datamart}" = [
+    "${module.project-datamart.project_id}" = [
       "roles/editor",
     ]
   }
@@ -81,17 +81,17 @@ module "datamart-default-service-accounts" {
 
 module "dwh-default-service-accounts" {
   source     = "../../../modules/iam-service-account"
-  project_id = var.project_ids.dwh
+  project_id = module.project-dwh.project_id
   name       = var.project_service_account.dwh
 }
 
 module "landing-default-service-accounts" {
   source     = "../../../modules/iam-service-account"
-  project_id = var.project_ids.landing
+  project_id = module.project-landing.project_id
   name       = var.project_service_account.landing
 
   iam_project_roles = {
-    "${var.project_ids.landing}" = [
+    "${module.project-landing.project_id}" = [
       "roles/pubsub.publisher",
     ]
   }
@@ -99,11 +99,11 @@ module "landing-default-service-accounts" {
 
 module "services-default-service-accounts" {
   source     = "../../../modules/iam-service-account"
-  project_id = var.project_ids.services
+  project_id = module.project-services.project_id
   name       = var.project_service_account.services
 
   iam_project_roles = {
-    "${var.project_ids.services}" = [
+    "${module.project-services.project_id}" = [
       "roles/editor",
     ]
   }
@@ -111,11 +111,11 @@ module "services-default-service-accounts" {
 
 module "transformation-default-service-accounts" {
   source     = "../../../modules/iam-service-account"
-  project_id = var.project_ids.transformation
+  project_id = module.project-transformation.project_id
   name       = var.project_service_account.transformation
 
   iam_project_roles = {
-    "${var.project_ids.transformation}" = [
+    "${module.project-transformation.project_id}" = [
       "roles/logging.logWriter",
       "roles/monitoring.metricWriter",
       "roles/dataflow.admin",
@@ -135,7 +135,7 @@ module "transformation-default-service-accounts" {
 
 module "bucket-landing" {
   source     = "../../../modules/gcs"
-  project_id = var.project_ids.landing
+  project_id = module.project-landing.project_id
   prefix     = var.project_ids.landing
   iam = {
     "roles/storage.objectCreator" = ["serviceAccount:${module.landing-default-service-accounts.email}"],
@@ -149,7 +149,7 @@ module "bucket-landing" {
 
 module "bucket-transformation" {
   source     = "../../../modules/gcs"
-  project_id = var.project_ids.transformation
+  project_id = module.project-transformation.project_id
   prefix     = var.project_ids.transformation
 
   for_each = var.transformation_buckets
@@ -165,10 +165,9 @@ module "bucket-transformation" {
 ###############################################################################
 module "bigquery-datasets-dwh" {
   source     = "../../../modules/bigquery-dataset"
-  project_id = var.project_ids.dwh
+  project_id = module.project-dwh.project_id
 
   for_each = var.dwh_bq_datasets
-
   id       = each.value.id
   location = each.value.location
 
@@ -185,7 +184,7 @@ module "bigquery-datasets-dwh" {
 
 module "bigquery-datasets-datamart" {
   source     = "../../../modules/bigquery-dataset"
-  project_id = var.project_ids.datamart
+  project_id = module.project-datamart.project_id
 
   for_each = var.datamart_bq_datasets
   id       = each.value.id
@@ -204,7 +203,7 @@ module "bigquery-datasets-datamart" {
 ###############################################################################
 module "vpc-transformation" {
   source     = "../../../modules/net-vpc"
-  project_id = var.project_ids.transformation
+  project_id = module.project-transformation.project_id
   name       = var.transformation_vpc_name
   subnets    = var.transformation_subnets
 }
@@ -214,7 +213,7 @@ module "vpc-transformation" {
 ###############################################################################
 module "pubsub-landing" {
   source     = "../../../modules/pubsub"
-  project_id = var.project_ids.landing
+  project_id = module.project-landing.project_id
 
   for_each         = local.landing_pubsub
   name             = each.value.name
