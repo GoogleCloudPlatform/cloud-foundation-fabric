@@ -19,10 +19,12 @@ variable "router" {
   type = object({
     name        = string
     description = string
+    asn         = number
   })
   default = {
     name        = ""
     description = ""
+    asn         =null
   }
 }
 
@@ -54,18 +56,8 @@ variable "router_create" {
   default     = true
 }
 
-variable "asn" {
-  description = "Local BGP Autonomous System Number (ASN)"
-  type        = number
-}
-
 variable "network_name" {
   description = "A reference to the network to which this router belongs"
-  type        = string
-}
-
-variable "vlan_attachment_name" {
-  description = "Vlan attachment name"
   type        = string
 }
 
@@ -78,12 +70,14 @@ variable "description" {
 variable "vlan_attachment" {
   description = "VLAN attachment parameters"
   type = object({
+    name          = string
     vlan_id       = number
     bandwidth     = string
     admin_enabled = bool
     interconnect  = string
   })
   default = {
+    name          = ""
     vlan_id       = null
     bandwidth     = "BPS_10G"
     admin_enabled = true
@@ -91,26 +85,16 @@ variable "vlan_attachment" {
   }
 }
 
-variable "candidate_ip_ranges" {
-  description = "User-specified list of individual IP ranges to advertise in custom mode. "
-  type        = list(string)
-}
-
 variable "bgp" {
   description = "Bgp session parameters"
   type = object({
     peer_ip_address           = string
     peer_asn                  = number
+    bgp_session_range         = string
+    candidate_ip_ranges       = list(string)
     advertised_route_priority = number
   })
 }
-
-variable "bgp_session_range" {
-  description = "IP address and range of the interface. "
-  type        = string
-}
-
-
 
 
 

@@ -29,10 +29,10 @@ locals {
 
 resource "google_compute_router" "router" {
   count       = var.router_create ? 1 : 0
-  name        = var.router.name == "" ? "router-${var.vlan_attachment_name}" : var.router.name
-  description = var.router.description
   project     = var.project_id
   region      = var.region
+  name        = var.router.name == "" ? "router-${var.vlan_attachment.name}" : var.router.name
+  description = var.router.description
   network     = var.network_name
   bgp {
     advertise_mode = (
@@ -61,38 +61,38 @@ resource "google_compute_router" "router" {
         description = range.value
       }
     }
-    asn = var.asn
+    asn = var.router.asn
   }
 }
 
 resource "google_compute_interconnect_attachment" "interconnect_vlan_attachment" {
-  name              = var.vlan_attachment_name
+  project           = var.project_id
+  region            = var.region
+  name              = var.vlan_attachment.name
   description       = var.description
   router            = local.router
   interconnect      = var.vlan_attachment.interconnect
-  project           = var.project_id
-  region            = var.region
   bandwidth         = var.vlan_attachment.bandwidth
   vlan_tag8021q     = var.vlan_attachment.vlan_id
-  candidate_subnets = var.candidate_ip_ranges
+  candidate_subnets = var.bgp.candidate_ip_ranges
   admin_enabled     = var.vlan_attachment.admin_enabled
   provider          = google-beta
 }
 
 resource "google_compute_router_interface" "interface" {
-  name                    = "${local.interface}-${var.vlan_attachment_name}"
   project                 = var.project_id
-  router                  = local.router
   region                  = var.region
-  ip_range                = var.bgp_session_range
+  name                    = "${local.interface}-${var.vlan_attachment.name}"
+  router                  = local.router
+  ip_range                = var.bgp.bgp_session_range
   interconnect_attachment = local.vlan_interconnect
 }
 
 resource "google_compute_router_peer" "peer" {
-  name                      = "${local.bgp_session}-${var.vlan_attachment_name}"
   project                   = var.project_id
-  router                    = local.router
   region                    = var.region
+  name                      = "${local.bgp_session}-${var.vlan_attachment.name}"
+  router                    = local.router
   peer_ip_address           = var.bgp.peer_ip_address
   peer_asn                  = var.bgp.peer_asn
   advertised_route_priority = var.bgp.advertised_route_priority
