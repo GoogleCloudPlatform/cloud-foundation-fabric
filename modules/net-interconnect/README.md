@@ -8,7 +8,7 @@ This module allows creation of a VLAN attachment and router.
 ### Interconnect attachments to achieve 99.9% SLA setup
 
 ```hcl
-module "vlan-attachement-1" {
+module "vlan-attachment-1" {
   source       = "./modules/net-interconnect"
   project_id   = "dedicated-ic-3-8386"
   region       = "us-west2"
@@ -42,7 +42,7 @@ module "vlan-attachement-1" {
   }
 }
 
-module "vlan-attachement-2" {
+module "vlan-attachment-2" {
   source       = "./modules/net-interconnect"
   project_id   = "dedicated-ic-3-8386"
   region       = "us-west2"
