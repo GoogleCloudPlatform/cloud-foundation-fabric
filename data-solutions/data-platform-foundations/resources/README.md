@@ -72,5 +72,9 @@ terraform destroy
 
 | Name | Description |
 |------|-------------|
-| <a name="output_vpc-transformation-output"></a> [vpc-transformation-output](#output\_vpc-transformation-output) | Transformation VPC details |
-<!-- END TFDOC -->
+| <a name="output_datamart-bigquery-datasets-list"></a> [datamart-bigquery-datasets-list](#output\_datamart-bigquery-datasets-list) | List of bigquery datasets created for the datamart project |
+| <a name="output_dwh-bigquery-datasets-list"></a> [dwh-bigquery-datasets-list](#output\_dwh-bigquery-datasets-list) | List of bigquery datasets created for the dwh project |
+| <a name="output_landing-bucket-names"></a> [landing-bucket-names](#output\_landing-bucket-names) | List of buckets created for the landing project |
+| <a name="output_landing-pubsub-list"></a> [landing-pubsub-list](#output\_landing-pubsub-list) | List of pubsub topics and subscriptions created for the landing project |
+| <a name="output_transformation-bucket-names"></a> [transformation-bucket-names](#output\_transformation-bucket-names) | List of buckets created for the transformation project |
+| <a name="output_transformation-vpc-info"></a> [transformation-vpc-info](#output\_transformation-vpc-info) | Transformation VPC details |<!-- END TFDOC -->
