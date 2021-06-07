@@ -36,23 +36,23 @@ resource "google_compute_router" "router" {
   network     = var.network_name
   bgp {
     advertise_mode = (
-      var.router_advertise_config == null
+      var.router.advertise_config == null
       ? null
-      : var.router_advertise_config.mode
+      : var.router.advertise_config.mode
     )
     advertised_groups = (
-      var.router_advertise_config == null ? null : (
-        var.router_advertise_config.mode != "CUSTOM"
+      var.router.advertise_config == null ? null : (
+        var.router.advertise_config.mode != "CUSTOM"
         ? null
-        : var.router_advertise_config.groups
+        : var.router.advertise_config.groups
       )
     )
     dynamic "advertised_ip_ranges" {
       for_each = (
-        var.router_advertise_config == null ? {} : (
-          var.router_advertise_config.mode != "CUSTOM"
+        var.router.advertise_config == null ? {} : (
+          var.router.advertise_config.mode != "CUSTOM"
           ? null
-          : var.router_advertise_config.ip_ranges
+          : var.router.advertise_config.ip_ranges
         )
       )
       iterator = range
@@ -68,9 +68,9 @@ resource "google_compute_router" "router" {
 resource "google_compute_interconnect_attachment" "interconnect_vlan_attachment" {
   project           = var.project_id
   region            = var.region
-  name              = var.vlan_attachment.name
-  description       = var.description
   router            = local.router
+  name              = var.vlan_attachment.name
+  description       = var.vlan_attachment.description
   interconnect      = var.vlan_attachment.interconnect
   bandwidth         = var.vlan_attachment.bandwidth
   vlan_tag8021q     = var.vlan_attachment.vlan_id

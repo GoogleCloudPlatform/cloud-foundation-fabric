@@ -20,12 +20,12 @@ variable "router" {
     name        = string
     description = string
     asn         = number
+    advertise_config =  object({
+       groups    = list(string)
+       ip_ranges = map(string)
+       mode      = string
+    })
   })
-  default = {
-    name        = ""
-    description = ""
-    asn         =null
-  }
 }
 
 variable "region" {
@@ -39,17 +39,6 @@ variable "project_id" {
   type        = string
 }
 
-variable "router_advertise_config" {
-  description = "Router custom advertisement configuration, ip_ranges is a map of address ranges and descriptions."
-  type = object({
-    groups    = list(string)
-    ip_ranges = map(string)
-    mode      = string
-
-  })
-  default = null
-}
-
 variable "router_create" {
   description = "Create router."
   type        = bool
@@ -61,28 +50,16 @@ variable "network_name" {
   type        = string
 }
 
-variable "description" {
-  description = "Vlan attachement description"
-  type        = string
-  default     = ""
-}
-
 variable "vlan_attachment" {
   description = "VLAN attachment parameters"
   type = object({
     name          = string
+    description   = string
     vlan_id       = number
     bandwidth     = string
     admin_enabled = bool
     interconnect  = string
   })
-  default = {
-    name          = ""
-    vlan_id       = null
-    bandwidth     = "BPS_10G"
-    admin_enabled = true
-    interconnect  = null
-  }
 }
 
 variable "bgp" {

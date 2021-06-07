@@ -16,18 +16,19 @@ module "vlan-attachment-1" {
     name  = "router-1"
     description =""
     asn = 65003
-  }
-  network_name = "myvpc"
-  router_advertise_config = {
+    advertise_config = {
     groups = ["ALL_SUBNETS"]
     ip_ranges = {
       "199.36.153.8/30" = "custom"
     }
     mode = "CUSTOM"
-
   }
+  }
+  network_name = "myvpc"
+  
   vlan_attachment = {
     name = "vlan-603-1"
+    description = ""
     vlan_id      = 603
     interconnect = "https://www.googleapis.com/compute/v1/projects/cso-lab-management/global/interconnects/cso-lab-interconnect-1"
     bandwidth     = "BPS_10G"
@@ -50,18 +51,20 @@ module "vlan-attachment-2" {
       name  = "router-2"
       description=""
        asn = 65003
+       advertise_config = {
+         groups = ["ALL_SUBNETS"]
+         ip_ranges = {
+         "199.36.153.8/30" = "custom"
+        }
+        mode = "CUSTOM"
+      }
+ 
   }
   network_name = "myvpc"
-  router_advertise_config = {
-    groups = ["ALL_SUBNETS"]
-    ip_ranges = {
-      "199.36.153.8/30" = "custom"
-    }
-    mode = "CUSTOM"
-  }
- 
+  
   vlan_attachment = {
     name = "vlan-603-2"
+    description =""
     vlan_id       = 603
     interconnect  = "https://www.googleapis.com/compute/v1/projects/cso-lab-management/global/interconnects/cso-lab-interconnect-2"
     bandwidth     = "BPS_10G"
@@ -86,12 +89,10 @@ module "vlan-attachment-2" {
 | bgp | Bgp session parameters | <code title="object&#40;&#123;&#10;peer_ip_address           &#61; string&#10;peer_asn                  &#61; number&#10;bgp_session_range         &#61; string&#10;candidate_ip_ranges       &#61; list&#40;string&#41;&#10;advertised_route_priority &#61; number&#10;&#125;&#41;">object({...})</code> | ✓ |  |
 | network_name | A reference to the network to which this router belongs | <code title="">string</code> | ✓ |  |
 | project_id | The project containing the resources | <code title="">string</code> | ✓ |  |
-| *description* | Vlan attachement description | <code title="">string</code> |  | <code title=""></code> |
+| router | Router name and description.  | <code title="object&#40;&#123;&#10;name        &#61; string&#10;description &#61; string&#10;asn         &#61; number&#10;advertise_config &#61;  object&#40;&#123;&#10;groups    &#61; list&#40;string&#41;&#10;ip_ranges &#61; map&#40;string&#41;&#10;mode      &#61; string&#10;&#125;&#41;&#10;&#125;&#41;">object({...})</code> | ✓ |  |
+| vlan_attachment | VLAN attachment parameters | <code title="object&#40;&#123;&#10;name          &#61; string&#10;description   &#61; string&#10;vlan_id       &#61; number&#10;bandwidth     &#61; string&#10;admin_enabled &#61; bool&#10;interconnect  &#61; string&#10;&#125;&#41;">object({...})</code> | ✓ |  |
 | *region* | Region where the router resides | <code title="">string</code> |  | <code title="">europe-west1-b</code> |
-| *router* | Router name and description.  | <code title="object&#40;&#123;&#10;name        &#61; string&#10;description &#61; string&#10;asn         &#61; number&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;name        &#61; &#34;&#34;&#10;description &#61; &#34;&#34;&#10;asn         &#61;null&#10;&#125;">...</code> |
-| *router_advertise_config* | Router custom advertisement configuration, ip_ranges is a map of address ranges and descriptions. | <code title="object&#40;&#123;&#10;groups    &#61; list&#40;string&#41;&#10;ip_ranges &#61; map&#40;string&#41;&#10;mode      &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 | *router_create* | Create router. | <code title="">bool</code> |  | <code title="">true</code> |
-| *vlan_attachment* | VLAN attachment parameters | <code title="object&#40;&#123;&#10;name          &#61; string&#10;vlan_id       &#61; number&#10;bandwidth     &#61; string&#10;admin_enabled &#61; bool&#10;interconnect  &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;name          &#61; &#34;&#34;&#10;vlan_id       &#61; null&#10;bandwidth     &#61; &#34;BPS_10G&#34;&#10;admin_enabled &#61; true&#10;interconnect  &#61; null&#10;&#125;">...</code> |
 
 ## Outputs
 
