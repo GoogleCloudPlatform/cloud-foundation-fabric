@@ -26,6 +26,30 @@ locals {
       })
     }
   })
+
+  datamart_bq_datasets = merge({
+    for k, v in var.datamart_bq_datasets :
+    k => {
+      id       = v.id
+      location = v.location
+      iam = merge({
+        for s_k, s_v in v.iam :
+        s_k => s_k == "roles/bigquery.dataOwner" ? concat(s_v, ["serviceAccount:${module.datamart-default-service-accounts.email}"]) : s_v
+      })
+    }
+  })
+
+  dwh_bq_datasets = merge({
+    for k, v in var.dwh_bq_datasets :
+    k => {
+      id       = v.id
+      location = v.location
+      iam = merge({
+        for s_k, s_v in v.iam :
+        s_k => s_k == "roles/bigquery.dataOwner" ? concat(s_v, ["serviceAccount:${module.dwh-default-service-accounts.email}", "serviceAccount:${module.transformation-default-service-accounts.email}"]) : s_v
+      })
+    }
+  })
 }
 
 ###############################################################################
@@ -166,29 +190,20 @@ module "bigquery-datasets-datamart" {
   source     = "../../../modules/bigquery-dataset"
   project_id = module.project-datamart.project_id
 
-  for_each = var.datamart_bq_datasets
+  for_each = local.datamart_bq_datasets
   id       = each.value.id
   location = each.value.location
-  access   = each.value.access
-  access_identities = {
-    owner = module.datamart-default-service-accounts.email
-  }
-  #   access_identities = each.value.access_identities
+  iam      = each.value.iam
 }
 
 module "bigquery-datasets-dwh" {
   source     = "../../../modules/bigquery-dataset"
   project_id = module.project-dwh.project_id
 
-  for_each = var.dwh_bq_datasets
+  for_each = local.dwh_bq_datasets
   id       = each.value.id
   location = each.value.location
-  access   = each.value.access
-  access_identities = {
-    owner  = module.transformation-default-service-accounts.email
-    reader = module.dwh-default-service-accounts.email
-  }
-  #   access_identities = each.value.access_identities
+  iam      = each.value.iam
 }
 
 ###############################################################################
