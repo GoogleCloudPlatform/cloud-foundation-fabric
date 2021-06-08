@@ -15,8 +15,6 @@
  */
 
 locals {
-  module_version = "4.2.0"
-
   landing_pubsub = merge({
     for k, v in var.landing_pubsub :
     k => {
