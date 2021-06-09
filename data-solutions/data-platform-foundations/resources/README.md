@@ -2,7 +2,7 @@
 
 ## General
 
-Now that we have all the needed project, we will create all the needed assets to store and process the data.
+This is the second step needed to deploy Data Platform Foundations, which creates resources needed to store and process the data in projects created in the [environment step](./../environment/). Please refer to [top-level Data Platform README](../README.md) for prerequisites and how to run the first step.
 
 ![Data Foundation -  Phase 2](./diagram.png)
 
@@ -23,6 +23,8 @@ This example will create the next resources per project:
   - [ ] BigTable
 
 ## Running the example
+
+You can run Teraform script with the Service Account created in the first step. 
 
 To create the infrastructure:
 
