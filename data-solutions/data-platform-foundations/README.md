@@ -10,7 +10,7 @@ The example is composed of three separate provisioning workflows, which are deis
   - VPC configuration
   - Composer environment and identity
   - shared buckets and datasets
-- **[Data Source Setup](./datasource)**
+- **[Data Source Setup](./resources)**
   *(once per data source)*
   - landing and archive bucket
   - internal and external identities
@@ -22,7 +22,7 @@ The example is composed of three separate provisioning workflows, which are deis
   - Composer DAG
 
 The resulting GCP architecture is outlined in this diagram
-![Target architecture](./datasource/diagram.png)
+![Target architecture](./resources/diagram.png)
 
 A demo pipeline is also part of this example: it can be built and run on top of the foundational infrastructure to quickly verify or test the setup.
 
@@ -39,7 +39,7 @@ In order to bring up this example, you will need
 The end-to-end example is composed of 2 foundational, and 1-n optional steps:
 
 - [environment setup](./environment/)
-- [data source setup](./datasource/)
+- [data source setup](./resources/)
 - (Optional) [pipeline setup](./pipeline/)
 
 The environment setup is designed to manage a single environment. Various strategies like workspaces, branching, or even separate clones can be used to support multiple environments.
