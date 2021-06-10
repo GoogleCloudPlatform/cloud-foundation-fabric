@@ -10,7 +10,11 @@ The projects that will be created are:
 - DWH
 - Datamart
 
-A master service account named `projects-editor-sa` will be created under the common services project, and it will be granted editor permissions on all the projects in scope.
+A main service account named `projects-editor-sa` will be created under the common services project, and it will be granted editor permissions on all the projects in scope.
+
+This is a high level diagram of the created resources:
+
+![Environment -  Phase 1](./diagram.png)
 
 ## Running the example
 
@@ -26,7 +30,7 @@ parent          = "folders/12345678"
 - make sure you have the right authentication setup (application default credentials, or a service account key)
 - run `terraform init` and `terraform apply`
 
-Once done testing, you can clean up resources by running `terraform destroy`
+Once done testing, you can clean up resources by running `terraform destroy`.
 
 <!-- BEGIN TFDOC -->
 ## Variables
@@ -44,4 +48,5 @@ Once done testing, you can clean up resources by running `terraform destroy`
 | name | description | sensitive |
 |---|---|:---:|
 | project_ids | Project ids for created projects. |  |
+| service_account | Main service account. |  |
 <!-- END TFDOC -->

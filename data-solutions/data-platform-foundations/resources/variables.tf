@@ -14,15 +14,17 @@
 
 variable "datamart_bq_datasets" {
   description = "Datamart Bigquery datasets"
-  type        = map(any)
+  type = map(object({
+    iam      = map(list(string))
+    location = string
+  }))
   default = {
     bq_datamart_dataset = {
-      id       = "bq_datamart_dataset"
       location = "EU"
       iam = {
-        "roles/bigquery.dataOwner"  = []
-        "roles/bigquery.dataEditor" = []
-        "roles/bigquery.dataViewer" = []
+        # "roles/bigquery.dataOwner"  = []
+        # "roles/bigquery.dataEditor" = []
+        # "roles/bigquery.dataViewer" = []
       }
     }
   }
@@ -30,69 +32,62 @@ variable "datamart_bq_datasets" {
 
 variable "dwh_bq_datasets" {
   description = "DWH Bigquery datasets"
-  type        = map(any)
+  type = map(object({
+    location = string
+    iam      = map(list(string))
+  }))
   default = {
     bq_raw_dataset = {
-      id       = "bq_raw_dataset"
+      iam      = {}
       location = "EU"
-      iam = {
-        "roles/bigquery.dataOwner"  = []
-        "roles/bigquery.dataEditor" = []
-        "roles/bigquery.dataViewer" = []
-      }
     }
   }
 }
 
 variable "landing_buckets" {
   description = "List of landing buckets to create"
-  type        = map(any)
+  type = map(object({
+    location = string
+    name     = string
+  }))
   default = {
     raw-data = {
+      location = "EU"
       name     = "raw-data"
-      location = "EU"
-    },
+    }
     data-schema = {
-      name     = "data-schema"
       location = "EU"
-    },
+      name     = "data-schema"
+    }
   }
 }
 
 variable "landing_pubsub" {
   description = "List of landing pubsub topics and subscriptions to create"
-  type        = map(any)
+  type = map(map(object({
+    iam    = map(list(string))
+    labels = map(string)
+    options = object({
+      ack_deadline_seconds       = number
+      message_retention_duration = number
+      retain_acked_messages      = bool
+      expiration_policy_ttl      = number
+    })
+  })))
   default = {
-    landing_1 = {
-      name = "landing-1"
-      subscriptions = {
-        sub1 = {
-          labels = {},
-          options = {
-            ack_deadline_seconds       = null
-            message_retention_duration = null
-            retain_acked_messages      = false
-            expiration_policy_ttl      = null
-          }
-        },
-        sub2 = {
-          labels = {},
-          options = {
-            ack_deadline_seconds       = null
-            message_retention_duration = null
-            retain_acked_messages      = false
-            expiration_policy_ttl      = null
-          }
-        },
-      }
-      subscription_iam = {
-        sub1 = {
-          "roles/pubsub.subscriber" = []
+    landing-1 = {
+      sub1 = {
+        iam = {
+          # "roles/pubsub.subscriber" = []
         }
-        sub2 = {
-          "roles/pubsub.subscriber" = []
-        }
+        labels  = {}
+        options = null
       }
+      sub2 = {
+        iam     = {}
+        labels  = {},
+        options = null
+      },
     }
   }
 }
@@ -115,7 +110,7 @@ variable "project_ids" {
 }
 
 
-variable "project_service_account" {
+variable "service_account_names" {
   description = "Project service accounts list."
   type = object({
     datamart       = string
@@ -135,28 +130,36 @@ variable "project_service_account" {
 
 variable "transformation_buckets" {
   description = "List of transformation buckets to create"
-  type        = map(any)
+  type = map(object({
+    location = string
+    name     = string
+  }))
   default = {
     temp = {
-      name     = "temp"
       location = "EU"
+      name     = "temp"
     },
     templates = {
-      name     = "templates"
       location = "EU"
+      name     = "templates"
     },
   }
 }
 
 variable "transformation_subnets" {
   description = "List of subnets to create in the transformation Project."
-  type        = list(any)
+  type = list(object({
+    ip_cidr_range      = string
+    name               = string
+    region             = string
+    secondary_ip_range = map(string)
+  }))
   default = [
     {
-      name               = "transformation-subnet",
-      ip_cidr_range      = "10.1.0.0/20",
-      secondary_ip_range = {},
+      ip_cidr_range      = "10.1.0.0/20"
+      name               = "transformation-subnet"
       region             = "europe-west3"
+      secondary_ip_range = {}
     },
   ]
 }
