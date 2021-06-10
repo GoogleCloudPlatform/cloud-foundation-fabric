@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
- - Fix `message_retention_duration` variable type in `pubSub` module 
+ - Fix `message_retention_duration` variable type in `pubsub` module 
 
 ## [4.9.0] - 2021-06-04
 
