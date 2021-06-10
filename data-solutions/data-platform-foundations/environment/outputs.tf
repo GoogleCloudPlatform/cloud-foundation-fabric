@@ -24,3 +24,8 @@ output "project_ids" {
     transformation = module.project-transformation.project_id
   }
 }
+
+output "service_account" {
+  description = "Main service account."
+  value       = module.sa-services-main.email
+}
