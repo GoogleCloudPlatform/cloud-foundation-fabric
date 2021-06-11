@@ -3,7 +3,8 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
- - Fix `message_retention_duration` variable type in `pubsub` module 
+ - Fix `message_retention_duration` variable type in `pubsub` module
+ - Move `bq` robot service account into the robot service account project output 
 
 ## [4.9.0] - 2021-06-04
 
