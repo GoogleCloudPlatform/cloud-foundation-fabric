@@ -20,7 +20,7 @@ locals {
   router = (
     var.router_create
     ? try(google_compute_router.router[0].name, null)
-    : var.router.name
+    : var.router_name
   )
   bgp_session       = "bgp-session"
   interface         = "interface"
@@ -31,7 +31,7 @@ resource "google_compute_router" "router" {
   count       = var.router_create ? 1 : 0
   project     = var.project_id
   region      = var.region
-  name        = var.router.name == "" ? "router-${var.vlan_attachment.name}" : var.router.name
+  name        = var.router_name == "" ? "router-${var.vlan_attachment_name}" : var.router_name
   description = var.router.description
   network     = var.network_name
   bgp {
@@ -69,12 +69,13 @@ resource "google_compute_interconnect_attachment" "interconnect_vlan_attachment"
   project           = var.project_id
   region            = var.region
   router            = local.router
-  name              = var.vlan_attachment.name
+  name              = var.vlan_attachment_name
   description       = var.vlan_attachment.description
-  interconnect      = var.vlan_attachment.interconnect
+  interconnect      = var.interconnect
   bandwidth         = var.vlan_attachment.bandwidth
+  mtu               = var.vlan_attachment.mtu
   vlan_tag8021q     = var.vlan_attachment.vlan_id
-  candidate_subnets = var.bgp.candidate_ip_ranges
+  candidate_subnets = var.bgp == null ? null : var.bgp.candidate_ip_ranges
   admin_enabled     = var.vlan_attachment.admin_enabled
   provider          = google-beta
 }
@@ -82,19 +83,19 @@ resource "google_compute_interconnect_attachment" "interconnect_vlan_attachment"
 resource "google_compute_router_interface" "interface" {
   project                 = var.project_id
   region                  = var.region
-  name                    = "${local.interface}-${var.vlan_attachment.name}"
+  name                    = "${local.interface}-${var.vlan_attachment_name}"
   router                  = local.router
-  ip_range                = var.bgp.bgp_session_range
+  ip_range                = var.bgp == null ? null : var.bgp.session_range
   interconnect_attachment = local.vlan_interconnect
 }
 
 resource "google_compute_router_peer" "peer" {
   project                   = var.project_id
   region                    = var.region
-  name                      = "${local.bgp_session}-${var.vlan_attachment.name}"
+  name                      = "${local.bgp_session}-${var.vlan_attachment_name}"
   router                    = local.router
-  peer_ip_address           = var.bgp.peer_ip_address
-  peer_asn                  = var.bgp.peer_asn
-  advertised_route_priority = var.bgp.advertised_route_priority
+  peer_ip_address           = var.peer.ip_address
+  peer_asn                  = var.peer.asn
+  advertised_route_priority = var.bgp == null ? null : var.bgp.advertised_route_priority
   interface                 = local.vlan_interconnect
-} 
+}
