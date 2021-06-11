@@ -17,12 +17,11 @@
 locals {
   service_account_cloud_services = "${local.project.number}@cloudservices.gserviceaccount.com"
   service_accounts_default = {
-    # TODO: Find a better place to store BQ service account
-    bq      = "bq-${local.project.number}@bigquery-encryption.iam.gserviceaccount.com"
     compute = "${local.project.number}-compute@developer.gserviceaccount.com"
     gae     = "${local.project.project_id}@appspot.gserviceaccount.com"
   }
   service_accounts_robot_services = {
+    bq                = "bigquery-encryption"
     cloudasset        = "gcp-sa-cloudasset"
     cloudbuild        = "gcp-sa-cloudbuild"
     compute           = "compute-system"
@@ -37,6 +36,6 @@ locals {
   }
   service_accounts_robots = {
     for service, name in local.service_accounts_robot_services :
-    service => "service-${local.project.number}@${name}.iam.gserviceaccount.com"
+    service => "${service == "bq" ? "bq" : "service"}-${local.project.number}@${name}.iam.gserviceaccount.com"
   }
 }
