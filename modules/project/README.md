@@ -149,6 +149,29 @@ module "project-host" {
 # tftest:modules=5:resources=12
 ```
 
+## Cloud KMS ncryption keys
+```hcl
+module "project" {
+  source          = "./modules/project"
+  name            = "my-project"
+  billing_account = "123456-123456-123456"
+  prefix          = "foo"
+  services = [
+    "compute.googleapis.com",
+    "storage.googleapis.com"
+  ]
+  service_encryption_key_ids = {
+    compute = [
+      "projects/kms-central-prj/locations/europe-west3/keyRings/my-keyring/cryptoKeys/europe3-gce",
+      "projects/kms-central-prj/locations/europe-west4/keyRings/my-keyring/cryptoKeys/europe4-gce"
+    ]
+    storage = [
+      "projects/kms-central-prj/locations/europe/keyRings/my-keyring/cryptoKeys/europe-gcs"
+    ]
+  }
+}
+# tftest:modules=1:resources=6
+```
 
 <!-- BEGIN TFDOC -->
 ## Variables
