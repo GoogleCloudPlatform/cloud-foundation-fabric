@@ -14,7 +14,7 @@ A main service account named `projects-editor-sa` will be created under the comm
 
 This is a high level diagram of the created resources:
 
-![Environment -  Phase 1](./diagram.png)
+![Environment -  Phase 1](./diagram.png "High-level Environment diagram")
 
 ## Running the example
 
