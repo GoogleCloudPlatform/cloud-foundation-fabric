@@ -65,6 +65,14 @@ locals {
       if sink.iam && sink.type == type
     }
   }
+  service_encryption_key_ids = flatten([
+    for service in keys(var.service_encryption_key_ids) : [
+      for key in var.service_encryption_key_ids[service] : {
+        service = service
+        key     = key
+      }
+    ]
+  ])
 }
 
 data "google_project" "project" {
@@ -355,4 +363,13 @@ resource "google_access_context_manager_service_perimeter_resource" "service-per
   # modules/vpc-sc/google_access_context_manager_service_perimeter resource.
   perimeter_name = each.value
   resource       = "projects/${local.project.number}"
+}
+
+resource "google_kms_crypto_key_iam_member" "crypto_key" {
+  for_each = {
+    for service_key in local.service_encryption_key_ids : "${service_key.service}.${service_key.key}" => service_key
+  }
+  crypto_key_id = each.value.key
+  role          = "roles/cloudkms.cryptoKeyEncrypter"
+  member        = "serviceAccount:${local.service_accounts_robots[each.value.service]}"
 }
