@@ -65,7 +65,7 @@ locals {
       if sink.iam && sink.type == type
     }
   }
-  service_encryption_key_ids_flatten = flatten([
+  service_encryption_key_ids = flatten([
     for service in keys(var.service_encryption_key_ids) : [
       for key in var.service_encryption_key_ids[service] : {
         service = service
@@ -367,7 +367,7 @@ resource "google_access_context_manager_service_perimeter_resource" "service-per
 
 resource "google_kms_crypto_key_iam_member" "crypto_key" {
   for_each = {
-    for service_key in local.service_encryption_key_ids_flatten : "${service_key.service}.${service_key.key}" => service_key
+    for service_key in local.service_encryption_key_ids : "${service_key.service}.${service_key.key}" => service_key
   }
   crypto_key_id = each.value.key
   role          = "roles/cloudkms.cryptoKeyEncrypter"

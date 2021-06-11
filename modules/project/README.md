@@ -177,6 +177,7 @@ module "project-host" {
 | *prefix* | Prefix used to generate project id and name. | <code title="">string</code> |  | <code title="">null</code> |
 | *project_create* | Create project. When set to false, uses a data source to reference existing project. | <code title="">bool</code> |  | <code title="">true</code> |
 | *service_config* | Configure service API activation. | <code title="object&#40;&#123;&#10;disable_on_destroy         &#61; bool&#10;disable_dependent_services &#61; bool&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;disable_on_destroy         &#61; true&#10;disable_dependent_services &#61; true&#10;&#125;">...</code> |
+| *service_encryption_key_ids* | Cloud KMS encryption key in {SERVICE => [KEY_URL]} format. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
 | *service_perimeter_bridges* | Name of VPC-SC Bridge perimeters to add project into. Specify the name in the form of 'accessPolicies/ACCESS_POLICY_NAME/servicePerimeters/PERIMETER_NAME'. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">null</code> |
 | *service_perimeter_standard* | Name of VPC-SC Standard perimeter to add project into. Specify the name in the form of 'accessPolicies/ACCESS_POLICY_NAME/servicePerimeters/PERIMETER_NAME'. | <code title="">string</code> |  | <code title="">null</code> |
 | *services* | Service APIs to enable. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
