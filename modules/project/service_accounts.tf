@@ -47,7 +47,6 @@ data "google_storage_project_service_account" "gcs_account" {
 }
 
 data "google_bigquery_default_service_account" "bq_sa" {
-  count = try(var.services["bigquery.googleapis.com"], false) ? 1 : 0
-
+  count   = try(var.services["bigquery.googleapis.com"], false) ? 1 : 0
   project = local.project.project_id
 }

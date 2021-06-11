@@ -198,7 +198,6 @@ variable "logging_exclusions" {
   default     = {}
 }
 
-
 variable "contacts" {
   description = "List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES"
   type        = map(list(string))
@@ -210,7 +209,6 @@ variable "service_perimeter_standard" {
   type        = string
   default     = null
 }
-
 
 variable "service_perimeter_bridges" {
   description = "Name of VPC-SC Bridge perimeters to add project into. Specify the name in the form of 'accessPolicies/ACCESS_POLICY_NAME/servicePerimeters/PERIMETER_NAME'."
