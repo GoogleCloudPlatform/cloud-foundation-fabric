@@ -170,7 +170,7 @@ module "project" {
     ]
   }
 }
-# tftest:modules=1:resources=6
+# tftest:modules=1:resources=7
 ```
 
 <!-- BEGIN TFDOC -->
