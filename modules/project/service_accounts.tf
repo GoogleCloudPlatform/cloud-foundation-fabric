@@ -32,6 +32,7 @@ locals {
     gae-flex          = "gae-api-prod"
     gcf               = "gcf-admin-robot"
     pubsub            = "gcp-sa-pubsub"
+    secretmanager     = "gcp-sa-secretmanager"
     storage           = "gs-project-accounts"
   }
   service_accounts_robots = {
@@ -41,11 +42,18 @@ locals {
 }
 
 data "google_storage_project_service_account" "gcs_account" {
-  count   = try(var.services["storage.googleapis.com"], false) ? 1 : 0
+  count   = contains(var.services, "storage.googleapis.com") ? 1 : 0
   project = local.project.project_id
 }
 
 data "google_bigquery_default_service_account" "bq_sa" {
-  count   = try(var.services["bigquery.googleapis.com"], false) ? 1 : 0
+  count   = contains(var.services, "bigquery.googleapis.com") ? 1 : 0
   project = local.project.project_id
+}
+
+resource "google_project_service_identity" "sm_sa" {
+  provider = google-beta
+  count    = contains(var.services, "secretmanager.googleapis.com") ? 1 : 0
+  project  = local.project.project_id
+  service  = "secretmanager.googleapis.com"
 }
