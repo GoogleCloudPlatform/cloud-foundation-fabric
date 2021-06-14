@@ -370,6 +370,13 @@ resource "google_kms_crypto_key_iam_member" "crypto_key" {
     for service_key in local.service_encryption_key_ids : "${service_key.service}.${service_key.key}" => service_key
   }
   crypto_key_id = each.value.key
-  role          = "roles/cloudkms.cryptoKeyEncrypter"
+  role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
   member        = "serviceAccount:${local.service_accounts_robots[each.value.service]}"
+  depends_on = [
+    google_project.project,
+    google_project_service.project_services,
+    data.google_bigquery_default_service_account.bq_sa,
+    data.google_project.project,
+    data.google_storage_project_service_account.gcs_sa,
+  ]
 }

@@ -41,19 +41,22 @@ locals {
   }
 }
 
-data "google_storage_project_service_account" "gcs_account" {
-  count   = contains(var.services, "storage.googleapis.com") ? 1 : 0
-  project = local.project.project_id
+data "google_storage_project_service_account" "gcs_sa" {
+  count      = contains(var.services, "storage.googleapis.com") ? 1 : 0
+  project    = local.project.project_id
+  depends_on = [google_project_service.project_services]
 }
 
 data "google_bigquery_default_service_account" "bq_sa" {
-  count   = contains(var.services, "bigquery.googleapis.com") ? 1 : 0
-  project = local.project.project_id
+  count      = contains(var.services, "bigquery.googleapis.com") ? 1 : 0
+  project    = local.project.project_id
+  depends_on = [google_project_service.project_services]
 }
 
 resource "google_project_service_identity" "sm_sa" {
-  provider = google-beta
-  count    = contains(var.services, "secretmanager.googleapis.com") ? 1 : 0
-  project  = local.project.project_id
-  service  = "secretmanager.googleapis.com"
+  provider   = google-beta
+  count      = contains(var.services, "secretmanager.googleapis.com") ? 1 : 0
+  project    = local.project.project_id
+  service    = "secretmanager.googleapis.com"
+  depends_on = [google_project_service.project_services]
 }
