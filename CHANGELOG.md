@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
  - Fix `message_retention_duration` variable type in `pubsub` module
  - Move `bq` robot service account into the robot service account project output
  - Add IAM cryptDecrypt role to robot service account on specified keys
+ - Add Service Identity creation on `project' module if secretmanager enabled
 
 ## [4.9.0] - 2021-06-04
 
