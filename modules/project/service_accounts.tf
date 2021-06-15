@@ -53,6 +53,7 @@ data "google_bigquery_default_service_account" "bq_sa" {
   depends_on = [google_project_service.project_services]
 }
 
+# Secret Manager SA created just in time, we need to trigger the creation.
 resource "google_project_service_identity" "sm_sa" {
   provider   = google-beta
   count      = contains(var.services, "secretmanager.googleapis.com") ? 1 : 0
