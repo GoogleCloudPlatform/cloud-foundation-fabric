@@ -38,13 +38,13 @@ project_ids = {
 }
 ```
 
-- Get a key for the newly created service account:
+- Get a key for the service account created in the environment stage:
   - Go into services project
   - Go into IAM page
   - Go into the service account section
   - Creaet a new key for the service account created in previeous step (**service_account**)
   - Download the json key into the current folder
-- make sure you have the right authentication setup (application default credentials, or a service account key)
+- make sure you have the right authentication setup: `export GOOGLE_APPLICATION_CREDENTIALS=PATH_TO_SERVICE_ACCOUT_KEY.json`
 - run `terraform init` and `terraform apply`
 
 Once done testing, you can clean up resources by running `terraform destroy`.
