@@ -15,12 +15,12 @@
  */
 
 module "test-environment" {
-  source             = "../../../../data-solutions/data-platform-foundations/environment"
+  source             = "../../../../data-solutions/data-platform-foundations/01-environment"
   billing_account_id = var.billing_account
   root_node          = var.root_node
 }
 
 module "test-resources" {
-  source      = "../../../../data-solutions/data-platform-foundations/resources"
+  source      = "../../../../data-solutions/data-platform-foundations/02-resources"
   project_ids = module.test-environment.project_ids
 }
