@@ -1,0 +1,26 @@
+{
+  "schema": {
+    "fields": [
+      {
+        "mode": "NULLABLE",
+        "name": "name",
+        "type": "STRING"
+      },
+      {
+        "mode": "NULLABLE",
+        "name": "surname",
+        "type": "STRING"
+      },
+      {
+        "mode": "NULLABLE",
+        "name": "age",
+        "type": "INTEGER"
+      },
+      {
+        "mode": "NULLABLE",
+        "name": "boolean_val",
+        "type": "BOOLEAN"
+      }
+    ]
+  }
+}
