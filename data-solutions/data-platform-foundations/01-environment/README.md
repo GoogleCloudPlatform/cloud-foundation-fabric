@@ -28,7 +28,7 @@ parent          = "folders/12345678"
 ```
 
 - make sure you have the right authentication setup (application default credentials, or a service account key)
-- **The output of this stage contains the values for the resources phase**
+- **The output of this stage contains the values for the resources stage**
 - run `terraform init` and `terraform apply`
 
 Once done testing, you can clean up resources by running `terraform destroy`.
