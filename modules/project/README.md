@@ -149,7 +149,7 @@ module "project-host" {
 # tftest:modules=5:resources=12
 ```
 
-## Cloud KMS ncryption keys
+## Cloud KMS encryption keys
 ```hcl
 module "project" {
   source          = "./modules/project"
@@ -170,7 +170,7 @@ module "project" {
     ]
   }
 }
-# tftest:modules=1:resources=6
+# tftest:modules=1:resources=7
 ```
 
 <!-- BEGIN TFDOC -->
