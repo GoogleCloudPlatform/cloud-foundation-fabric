@@ -22,7 +22,9 @@ The resources that will be create in each project are:
 
 ## Running the example
 
-To create the resources, you can leverage the service account created in the previous step:
+In the previous step, we created the environment (projects and service account) which we are going to use in this step.
+
+To create the resources, copy the output of the environment step (**project_ids**) and paste it into the `terraform.tvars`:
 
 - Specify your variables in a `terraform.tvars`
 
@@ -36,6 +38,12 @@ project_ids = {
 }
 ```
 
+- Get a key for the newly created service account:
+  - Go into services project
+  - Go into IAM page
+  - Go into the service account section
+  - Creaet a new key for the service account created in previeous step (**service_account**)
+  - Download the json key into the current folder
 - make sure you have the right authentication setup (application default credentials, or a service account key)
 - run `terraform init` and `terraform apply`
 
