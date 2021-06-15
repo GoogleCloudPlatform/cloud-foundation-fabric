@@ -31,28 +31,28 @@ resource "google_compute_router" "router" {
   count       = var.router_create ? 1 : 0
   project     = var.project_id
   region      = var.region
-  name        = var.router_name == "" ? "router-${var.vlan_attachment_name}" : var.router_name
-  description = var.router.description
+  name        = var.router_name == "" ? "router-${var.name}" : var.router_name
+  description = var.router_config.description
   network     = var.network_name
   bgp {
     advertise_mode = (
-      var.router.advertise_config == null
+      var.router_config.advertise_config == null
       ? null
-      : var.router.advertise_config.mode
+      : var.router_config.advertise_config.mode
     )
     advertised_groups = (
-      var.router.advertise_config == null ? null : (
-        var.router.advertise_config.mode != "CUSTOM"
+      var.router_config.advertise_config == null ? null : (
+        var.router_config.advertise_config.mode != "CUSTOM"
         ? null
-        : var.router.advertise_config.groups
+        : var.router_config.advertise_config.groups
       )
     )
     dynamic "advertised_ip_ranges" {
       for_each = (
-        var.router.advertise_config == null ? {} : (
-          var.router.advertise_config.mode != "CUSTOM"
+        var.router_config.advertise_config == null ? {} : (
+          var.router_config.advertise_config.mode != "CUSTOM"
           ? null
-          : var.router.advertise_config.ip_ranges
+          : var.router_config.advertise_config.ip_ranges
         )
       )
       iterator = range
@@ -61,7 +61,7 @@ resource "google_compute_router" "router" {
         description = range.value
       }
     }
-    asn = var.router.asn
+    asn = var.router_config.asn
   }
 }
 
@@ -69,21 +69,21 @@ resource "google_compute_interconnect_attachment" "interconnect_vlan_attachment"
   project           = var.project_id
   region            = var.region
   router            = local.router
-  name              = var.vlan_attachment_name
-  description       = var.vlan_attachment.description
+  name              = var.name
+  description       = var.config.description
   interconnect      = var.interconnect
-  bandwidth         = var.vlan_attachment.bandwidth
-  mtu               = var.vlan_attachment.mtu
-  vlan_tag8021q     = var.vlan_attachment.vlan_id
+  bandwidth         = var.config.bandwidth
+  mtu               = var.config.mtu
+  vlan_tag8021q     = var.config.vlan_id
   candidate_subnets = var.bgp == null ? null : var.bgp.candidate_ip_ranges
-  admin_enabled     = var.vlan_attachment.admin_enabled
+  admin_enabled     = var.config.admin_enabled
   provider          = google-beta
 }
 
 resource "google_compute_router_interface" "interface" {
   project                 = var.project_id
   region                  = var.region
-  name                    = "${local.interface}-${var.vlan_attachment_name}"
+  name                    = "${local.interface}-${var.name}"
   router                  = local.router
   ip_range                = var.bgp == null ? null : var.bgp.session_range
   interconnect_attachment = local.vlan_interconnect
@@ -92,7 +92,7 @@ resource "google_compute_router_interface" "interface" {
 resource "google_compute_router_peer" "peer" {
   project                   = var.project_id
   region                    = var.region
-  name                      = "${local.bgp_session}-${var.vlan_attachment_name}"
+  name                      = "${local.bgp_session}-${var.name}"
   router                    = local.router
   peer_ip_address           = var.peer.ip_address
   peer_asn                  = var.peer.asn

@@ -31,7 +31,7 @@ variable "router_name" {
   default     = "router-vlan-attachment"
 }
 
-variable "router" {
+variable "router_config" {
   description = "Router asn and custom advertisement configuration, ip_ranges is a map of address ranges and descriptions.. "
   type = object({
     description = string
@@ -62,7 +62,7 @@ variable "network_name" {
   type        = string
 }
 
-variable "vlan_attachment_name" {
+variable "name" {
   description = "The name of the vlan attachment"
   type        = string
   default     = "vlan-attachment"
@@ -73,7 +73,7 @@ variable "interconnect" {
   type        = string
 }
 
-variable "vlan_attachment" {
+variable "config" {
   description = "VLAN attachment parameters: description, vlan_id, bandwidth, admin_enabled, interconnect"
   type = object({
     description   = string
