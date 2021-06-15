@@ -18,7 +18,7 @@ All resources use CMEK hosted in Cloud KMS running in a centralized project. The
 
 ### Data Platform Foundations
 
-<a href="./data-platform-foundations/" title="Data Platform Foundations"><img src="./data-platform-foundations/resources/diagram.png" align="left" width="280px"></a>
+<a href="./data-platform-foundations/" title="Data Platform Foundations"><img src="./data-platform-foundations/02-resources/diagram.png" align="left" width="280px"></a>
 This [example](./data-platform-foundations/) implements a robust and flexible Data Foundation on GCP that provides opinionated defaults, allowing customers to build and scale out additional data pipelines quickly and reliably.
 <br clear="left">
 

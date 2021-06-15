@@ -4,25 +4,25 @@ The goal of this example is to Build a robust and flexible Data Foundation on GC
 
 The example is composed of three separate provisioning workflows, which are deisgned to be plugged together and create end to end Data Foundations, that support multiple data pipelines on top.
 
-- **[Environment Setup](./environment/)**
+1. **[Environment Setup](./01-environment/)**
   *(once per environment)*
-  - projects
-  - VPC configuration
-  - Composer environment and identity
-  - shared buckets and datasets
-- **[Data Source Setup](./resources)**
+    * projects
+    * VPC configuration
+    * Composer environment and identity
+    * shared buckets and datasets
+1. **[Data Source Setup](./02-resources)**
   *(once per data source)*
-  - landing and archive bucket
-  - internal and external identities
-  - domain specific datasets
-- **[Pipeline Setup](./pipeline)**
+    * landing and archive bucket
+    * internal and external identities
+    * domain specific datasets
+1. **[Pipeline Setup](./03-pipeline)**
   *(once per pipeline)*
-  - pipeline-specific tables and views
-  - pipeline code
-  - Composer DAG
+    * pipeline-specific tables and views
+    * pipeline code
+    * Composer DAG
 
 The resulting GCP architecture is outlined in this diagram
-![Target architecture](./resources/diagram.png)
+![Target architecture](./02-resources/diagram.png)
 
 A demo pipeline is also part of this example: it can be built and run on top of the foundational infrastructure to quickly verify or test the setup.
 
@@ -36,11 +36,11 @@ In order to bring up this example, you will need
 
 ## Bringing up the platform
 
-The end-to-end example is composed of 2 foundational, and 1-n optional steps:
+The end-to-end example is composed of 2 foundational, and 1 optional steps:
 
-- [environment setup](./environment/)
-- [data source setup](./resources/)
-- (Optional) [pipeline setup](./pipeline/)
+1. [Environment setup](./01-environment/)
+1. [Data source setup](./02-resources/)
+1. (Optional) [Pipeline setup](./03-pipeline/)
 
 The environment setup is designed to manage a single environment. Various strategies like workspaces, branching, or even separate clones can be used to support multiple environments.
 
