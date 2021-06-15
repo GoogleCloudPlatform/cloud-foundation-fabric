@@ -26,7 +26,7 @@ In the previous step, we created the environment (projects and service account) 
 
 To create the resources, copy the output of the environment step (**project_ids**) and paste it into the `terraform.tvars`:
 
-- Specify your variables in a `terraform.tvars`
+- Specify your variables in a `terraform.tvars`, you can use the ouptu from the environment stage
 
 ```tfm
 project_ids = {
