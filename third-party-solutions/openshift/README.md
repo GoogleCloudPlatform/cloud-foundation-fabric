@@ -116,7 +116,7 @@ gcloud iam service-accounts keys create $OCP_DIR/credentials.json \
   --iam-account $OCP_SA
 ```
 
-If you need more fine-grained control on the service account's permissions instead, refer to the Mint Mode documentation linked above for the individual roles needed.
+If you need more fine-grained control on the service account's permissions instead, refer to the [OpenShift documentation](https://docs.openshift.com/container-platform/4.7/installing/installing_gcp/installing-restricted-networks-gcp.html#installation-gcp-permissions_installing-restricted-networks-gcp) for the individual roles needed.
 
 ## Installation
 
