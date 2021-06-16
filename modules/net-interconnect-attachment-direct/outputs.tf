@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-output "router" {
-  description = "Router resource (only if auto-created)."
-  value       = google_compute_router.router
+output "bgpsession" {
+  description = "bgp session"
+  value       = google_compute_router_peer.peer
 }
 
 output "interconnect_attachment" {
@@ -23,9 +23,9 @@ output "interconnect_attachment" {
   value       = google_compute_interconnect_attachment.interconnect_vlan_attachment
 }
 
-
-output "bgpsession" {
-  description = "bgp session"
-  value       = google_compute_router_peer.peer
+output "router" {
+  description = "Router resource (only if auto-created)."
+  value       = google_compute_router.router
 }
+
 

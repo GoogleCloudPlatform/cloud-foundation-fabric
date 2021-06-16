@@ -1,6 +1,5 @@
 ﻿# Direct Interconnect VLAN Attachment and router
 
-
 This module allows creation of a VLAN attachment for Direct Interconnect and router (router creation is optional).
 
 ## Examples
@@ -9,21 +8,19 @@ This module allows creation of a VLAN attachment for Direct Interconnect and rou
 
 ```hcl
 module "vlan-attachment-1" {
-  source       = "./modules/net-interconnect-attachment-direct"
-  project_id   = "dedicated-ic-5-8492"
-  region       = "us-west2"
-  network_name = "myvpc"
-  name         = "vlan-604-x"
-  interconnect = "https://www.googleapis.com/compute/v1/projects/mylab/global/interconnects/mylab-interconnect-1"
+  source         = "./modules/net-interconnect-attachment-direct"
+  project_id     = "dedicated-ic-5-8492"
+  region         = "us-west2"
+  router_network = "myvpc"
+  name           = "vlan-604-x"
+  interconnect   = "https://www.googleapis.com/compute/v1/projects/mylab/global/interconnects/mylab-interconnect-1"
   peer = {
     ip_address = "169.254.63.2"
     asn        = 65418
   }
 }
-
 # tftest:modules=1:resources=4
 ```
-
 #### Direct Interconnect VLAN attachments to achieve 99.9% SLA setup
 
 ```hcl
@@ -43,9 +40,9 @@ module "vlan-attachment-1" {
       mode = "CUSTOM"
     }
   }
-  network_name = "myvpc"
-  name         = "vlan-603-1"
-  interconnect = "https://www.googleapis.com/compute/v1/projects/mylab/global/interconnects/mylab-interconnect-1"
+  router_network = "myvpc"
+  name           = "vlan-603-1"
+  interconnect   = "https://www.googleapis.com/compute/v1/projects/mylab/global/interconnects/mylab-interconnect-1"
 
   config = {
     description   = ""
@@ -82,8 +79,8 @@ module "vlan-attachment-2" {
     }
 
   }
-  network_name = "myvpc"
-  name         = "vlan-603-2"
+  router_network = "myvpc"
+  name           = "vlan-603-2"
 
   interconnect = "https://www.googleapis.com/compute/v1/projects/mylab/global/interconnects/mylab-interconnect-2"
 
@@ -113,7 +110,6 @@ module "vlan-attachment-2" {
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
 | interconnect | URL of the underlying Interconnect object that this attachment's traffic will traverse through. | <code title="">string</code> | ✓ |  |
-| network_name | A reference to the network to which this router belongs | <code title="">string</code> | ✓ |  |
 | peer | Peer Ip address and asn. Only IPv4 supported | <code title="object&#40;&#123;&#10;ip_address &#61; string&#10;asn        &#61; number&#10;&#125;&#41;">object({...})</code> | ✓ |  |
 | project_id | The project containing the resources | <code title="">string</code> | ✓ |  |
 | *bgp* | Bgp session parameters | <code title="object&#40;&#123;&#10;session_range             &#61; string&#10;candidate_ip_ranges       &#61; list&#40;string&#41;&#10;advertised_route_priority &#61; number&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
@@ -123,6 +119,7 @@ module "vlan-attachment-2" {
 | *router_config* | Router asn and custom advertisement configuration, ip_ranges is a map of address ranges and descriptions..  | <code title="object&#40;&#123;&#10;description &#61; string&#10;asn         &#61; number&#10;advertise_config &#61; object&#40;&#123;&#10;groups    &#61; list&#40;string&#41;&#10;ip_ranges &#61; map&#40;string&#41;&#10;mode      &#61; string&#10;&#125;&#41;&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;description      &#61; null&#10;asn              &#61; 64514&#10;advertise_config &#61; null&#10;&#125;">...</code> |
 | *router_create* | Create router. | <code title="">bool</code> |  | <code title="">true</code> |
 | *router_name* | Router name used for auto created router, or to specify an existing router to use if `router_create` is set to `true`. Leave blank to use vlan attachment name for auto created router. | <code title="">string</code> |  | <code title="">router-vlan-attachment</code> |
+| *router_network* | A reference to the network to which this router belongs | <code title="">string</code> |  | <code title="">null</code> |
 
 ## Outputs
 

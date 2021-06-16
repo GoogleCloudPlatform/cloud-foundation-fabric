@@ -15,15 +15,12 @@
  * limitations under the License.
  */
 
-
 locals {
   router = (
     var.router_create
     ? try(google_compute_router.router[0].name, null)
     : var.router_name
   )
-  bgp_session       = "bgp-session"
-  interface         = "interface"
   vlan_interconnect = try(google_compute_interconnect_attachment.interconnect_vlan_attachment.name)
 }
 
@@ -33,7 +30,7 @@ resource "google_compute_router" "router" {
   region      = var.region
   name        = var.router_name == "" ? "router-${var.name}" : var.router_name
   description = var.router_config.description
-  network     = var.network_name
+  network     = var.router_network
   bgp {
     advertise_mode = (
       var.router_config.advertise_config == null
@@ -83,7 +80,7 @@ resource "google_compute_interconnect_attachment" "interconnect_vlan_attachment"
 resource "google_compute_router_interface" "interface" {
   project                 = var.project_id
   region                  = var.region
-  name                    = "${local.interface}-${var.name}"
+  name                    = "interface-${var.name}"
   router                  = local.router
   ip_range                = var.bgp == null ? null : var.bgp.session_range
   interconnect_attachment = local.vlan_interconnect
@@ -92,7 +89,7 @@ resource "google_compute_router_interface" "interface" {
 resource "google_compute_router_peer" "peer" {
   project                   = var.project_id
   region                    = var.region
-  name                      = "${local.bgp_session}-${var.name}"
+  name                      = "bgp-session-${var.name}"
   router                    = local.router
   peer_ip_address           = var.peer.ip_address
   peer_asn                  = var.peer.asn

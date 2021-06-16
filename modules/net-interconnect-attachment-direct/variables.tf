@@ -14,63 +14,15 @@
  * limitations under the License.
  */
 
-variable "region" {
-  description = "Region where the router resides"
-  type        = string
-  default     = "europe-west1-b"
-}
-
-variable "project_id" {
-  description = "The project containing the resources"
-  type        = string
-}
-
-variable "router_name" {
-  description = "Router name used for auto created router, or to specify an existing router to use if `router_create` is set to `true`. Leave blank to use vlan attachment name for auto created router."
-  type        = string
-  default     = "router-vlan-attachment"
-}
-
-variable "router_config" {
-  description = "Router asn and custom advertisement configuration, ip_ranges is a map of address ranges and descriptions.. "
+variable "bgp" {
+  description = "Bgp session parameters"
   type = object({
-    description = string
-    asn         = number
-    advertise_config = object({
-      groups    = list(string)
-      ip_ranges = map(string)
-      mode      = string
-    })
+    session_range             = string
+    candidate_ip_ranges       = list(string)
+    advertised_route_priority = number
+
   })
-
-  default = {
-    description      = null
-    asn              = 64514
-    advertise_config = null
-  }
-
-}
-
-variable "router_create" {
-  description = "Create router."
-  type        = bool
-  default     = true
-}
-
-variable "network_name" {
-  description = "A reference to the network to which this router belongs"
-  type        = string
-}
-
-variable "name" {
-  description = "The name of the vlan attachment"
-  type        = string
-  default     = "vlan-attachment"
-}
-
-variable "interconnect" {
-  description = "URL of the underlying Interconnect object that this attachment's traffic will traverse through."
-  type        = string
+  default = null
 }
 
 variable "config" {
@@ -91,6 +43,17 @@ variable "config" {
   }
 }
 
+variable "interconnect" {
+  description = "URL of the underlying Interconnect object that this attachment's traffic will traverse through."
+  type        = string
+}
+
+variable "name" {
+  description = "The name of the vlan attachment"
+  type        = string
+  default     = "vlan-attachment"
+}
+
 variable "peer" {
   description = "Peer Ip address and asn. Only IPv4 supported"
   type = object({
@@ -99,16 +62,52 @@ variable "peer" {
   })
 }
 
-variable "bgp" {
-  description = "Bgp session parameters"
+variable "project_id" {
+  description = "The project containing the resources"
+  type        = string
+}
+
+variable "region" {
+  description = "Region where the router resides"
+  type        = string
+  default     = "europe-west1-b"
+}
+
+variable "router_config" {
+  description = "Router asn and custom advertisement configuration, ip_ranges is a map of address ranges and descriptions.. "
   type = object({
-    session_range             = string
-    candidate_ip_ranges       = list(string)
-    advertised_route_priority = number
-
+    description = string
+    asn         = number
+    advertise_config = object({
+      groups    = list(string)
+      ip_ranges = map(string)
+      mode      = string
+    })
   })
-  default = null
 
+  default = {
+    description      = null
+    asn              = 64514
+    advertise_config = null
+  }
+}
+
+variable "router_create" {
+  description = "Create router."
+  type        = bool
+  default     = true
+}
+
+variable "router_name" {
+  description = "Router name used for auto created router, or to specify an existing router to use if `router_create` is set to `true`. Leave blank to use vlan attachment name for auto created router."
+  type        = string
+  default     = "router-vlan-attachment"
+}
+
+variable "router_network" {
+  description = "A reference to the network to which this router belongs"
+  type        = string
+  default     = null
 }
 
 
