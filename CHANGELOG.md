@@ -3,7 +3,10 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
- - Fix `message_retention_duration` variable type in `pubsub` module
+
+## [5.0.0] - 2021-06-17
+
+- Fix `message_retention_duration` variable type in `pubsub` module
  - Move `bq` robot service account into the robot service account project output
  - Add IAM cryptDecrypt role to robot service account on specified keys
  - Add Service Identity creation on `project` module if secretmanager enabled
@@ -321,8 +324,9 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.9.0...HEAD
-[4.9.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.8.0...v4..0
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v5.0.0...HEAD
+[5.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.9.0...v5.0.0
+[4.9.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.8.0...v4.9.0
 [4.8.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.7.0...v4.8.0
 [4.7.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.6.1...v4.7.0
 [4.6.1]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.6.0...v4.6.1
