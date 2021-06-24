@@ -59,7 +59,7 @@ data "google_bigquery_default_service_account" "bq_sa" {
 
 # Secret Manager SA created just in time, we need to trigger the creation.
 resource "google_project_service_identity" "jit_si" {
-  for_each   = { for service in var.services : service => service if contains(local.jit_services, service) }
+  for_each   = setintersection(var.services, local.jit_services)
   provider   = google-beta
   project    = local.project.project_id
   service    = each.value
