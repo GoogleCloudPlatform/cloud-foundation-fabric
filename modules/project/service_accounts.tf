@@ -39,6 +39,10 @@ locals {
     for service, name in local.service_accounts_robot_services :
     service => "${service == "bq" ? "bq" : "service"}-${local.project.number}@${name}.iam.gserviceaccount.com"
   }
+  jit_services = [
+    "secretmanager.googleapis.com",
+    "pubsub.googleapis.com"
+  ]
 }
 
 data "google_storage_project_service_account" "gcs_sa" {
@@ -54,10 +58,10 @@ data "google_bigquery_default_service_account" "bq_sa" {
 }
 
 # Secret Manager SA created just in time, we need to trigger the creation.
-resource "google_project_service_identity" "sm_sa" {
+resource "google_project_service_identity" "jit_si" {
+  for_each   = { for service in var.services : service => service if contains(local.jit_services, service) }
   provider   = google-beta
-  count      = contains(var.services, "secretmanager.googleapis.com") ? 1 : 0
   project    = local.project.project_id
-  service    = "secretmanager.googleapis.com"
+  service    = each.value
   depends_on = [google_project_service.project_services]
 }
