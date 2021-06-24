@@ -363,7 +363,6 @@ resource "google_access_context_manager_service_perimeter_resource" "service-per
   # modules/vpc-sc/google_access_context_manager_service_perimeter resource.
   perimeter_name = each.value
   resource       = "projects/${local.project.number}"
-  dry_run_mode   = true
 }
 
 resource "google_kms_crypto_key_iam_member" "crypto_key" {
