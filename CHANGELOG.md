@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+- Create `pubsub` service identity if service is enabled 
 
 ## [5.0.0] - 2021-06-17
 

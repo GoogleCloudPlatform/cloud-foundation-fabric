@@ -70,7 +70,7 @@ locals {
       for key in var.service_encryption_key_ids[service] : {
         service = service
         key     = key
-      }
+      } if key != null
     ]
   ])
 }
@@ -367,7 +367,7 @@ resource "google_access_context_manager_service_perimeter_resource" "service-per
 
 resource "google_kms_crypto_key_iam_member" "crypto_key" {
   for_each = {
-    for service_key in local.service_encryption_key_ids : "${service_key.service}.${service_key.key}" => service_key
+    for service_key in local.service_encryption_key_ids : "${service_key.service}.${service_key.key}" => service_key if service_key != service_key.key
   }
   crypto_key_id = each.value.key
   role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
@@ -375,6 +375,7 @@ resource "google_kms_crypto_key_iam_member" "crypto_key" {
   depends_on = [
     google_project.project,
     google_project_service.project_services,
+    google_project_service_identity.jit_si,
     data.google_bigquery_default_service_account.bq_sa,
     data.google_project.project,
     data.google_storage_project_service_account.gcs_sa,
