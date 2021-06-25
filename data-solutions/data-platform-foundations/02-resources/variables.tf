@@ -169,3 +169,17 @@ variable "transformation_vpc_name" {
   type        = string
   default     = "transformation-vpc"
 }
+
+variable "service_encryption_key_ids" {
+  description = "Cloud KMS encryption key in {SERVICE => [KEY_URL]} format."
+  type = object({
+    regional      = string
+    multiregional = string
+    global        = string
+  })
+  default = {
+    regional      = null
+    multiregional = null
+    global        = null
+  }
+}

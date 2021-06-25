@@ -55,3 +55,23 @@ variable "service_account_names" {
     main = "data-platform-main"
   }
 }
+
+variable "create_encryption_keys" {
+  description = "Cloud KMS encryption key will be created in the Service Project."
+  type        = bool
+  default     = false
+}
+
+variable "service_encryption_key_ids" {
+  description = "Cloud KMS encryption key in {SERVICE => [KEY_URL]} format. Keys belong to existing project."
+  type = object({
+    regional      = string
+    multiregional = string
+    global        = string
+  })
+  default = {
+    regional      = null
+    multiregional = null
+    global        = null
+  }
+}

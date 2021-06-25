@@ -25,6 +25,15 @@ output "project_ids" {
   }
 }
 
+output "service_encryption_key_ids" {
+  description = "Project ids for created projects."
+  value = {
+    regional      = var.service_encryption_key_ids.regional
+    multiregional = var.service_encryption_key_ids.multiregional
+    global        = var.service_encryption_key_ids.global
+  }
+}
+
 output "service_account" {
   description = "Main service account."
   value       = module.sa-services-main.email

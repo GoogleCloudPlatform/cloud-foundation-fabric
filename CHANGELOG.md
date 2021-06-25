@@ -3,7 +3,8 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
-- Create `pubsub` service identity if service is enabled 
+- Create `pubsub` service identity if service is enabled
+- Add support for CMEK keys in Data Foundation end to end example
 
 ## [5.0.0] - 2021-06-17
 
