@@ -25,9 +25,7 @@ variable "addons" {
       enabled = bool
       tls     = bool
     })
-   
-    network_policy_config = bool
-
+    network_policy_config                 = bool
     gce_persistent_disk_csi_driver_config = bool
   })
   default = {
@@ -39,15 +37,15 @@ variable "addons" {
       enabled = false
       tls     = false
     }
-    network_policy_config = false
+    network_policy_config                 = false
     gce_persistent_disk_csi_driver_config = false
   }
 }
 
 variable "enable_dataplane_v2" {
   description = "Enable Dataplane V2 on the cluster, will disable network_policy addons config"
-  type = bool
-  default = false
+  type        = bool
+  default     = false
 }
 
 variable "authenticator_security_group" {
@@ -257,3 +255,10 @@ variable "workload_identity" {
   type        = bool
   default     = true
 }
+
+variable "enable_autopilot" {
+  description = "Create cluster in autopilot mode. With autopilot there's no need to create node-pools and some features are not supported (e.g. setting default_max_pods_per_node)"
+  type        = bool
+  default     = false
+}
+
