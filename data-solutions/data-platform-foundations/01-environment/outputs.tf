@@ -26,12 +26,8 @@ output "project_ids" {
 }
 
 output "service_encryption_key_ids" {
-  description = "Project ids for created projects."
-  value = {
-    regional      = var.service_encryption_key_ids.regional
-    multiregional = var.service_encryption_key_ids.multiregional
-    global        = var.service_encryption_key_ids.global
-  }
+  description = "Cloud KMS encryption keys in {LOCATION => [KEY_URL]} format."
+  value       = var.service_encryption_key_ids
 }
 
 output "service_account" {

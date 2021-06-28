@@ -30,6 +30,7 @@ module "project-datamart" {
     "bigquery.googleapis.com",
     "bigquerystorage.googleapis.com",
     "bigqueryreservation.googleapis.com",
+    "storage.googleapis.com",
     "storage-component.googleapis.com",
   ]
   iam = {

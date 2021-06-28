@@ -171,7 +171,7 @@ variable "transformation_vpc_name" {
 }
 
 variable "service_encryption_key_ids" {
-  description = "Cloud KMS encryption key in {SERVICE => [KEY_URL]} format."
+  description = "Cloud KMS encryption key in {LOCATION => [KEY_URL]} format. Keys belong to existing project."
   type = object({
     regional      = string
     multiregional = string
