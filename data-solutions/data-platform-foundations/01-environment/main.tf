@@ -25,8 +25,6 @@ module "project-datamart" {
   prefix          = var.prefix
   name            = var.project_names.datamart
   services = [
-    "bigtable.googleapis.com",
-    "bigtableadmin.googleapis.com",
     "bigquery.googleapis.com",
     "bigquerystorage.googleapis.com",
     "bigqueryreservation.googleapis.com",
@@ -54,7 +52,6 @@ module "project-dwh" {
     "bigqueryreservation.googleapis.com",
     "storage.googleapis.com",
     "storage-component.googleapis.com",
-    "secretmanager.googleapis.com"
   ]
   iam = {
     "roles/editor" = [module.sa-services-main.iam_email]
