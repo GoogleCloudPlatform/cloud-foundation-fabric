@@ -26,17 +26,6 @@ gcloud logging read '
   END
 }
 
-output "feed_create" {
-  description = "Feed gcloud command."
-  value       = <<END
-gcloud asset feeds create ${var.name} \
-  --pubsub-topic ${module.pubsub.topic.id} \
-  --asset-types compute.googleapis.com/Instance \
-  --content-type resource \
-  --project ${module.project.project_id}
-  END
-}
-
 output "subscription_pull" {
   description = "Subscription pull command."
   value       = <<END
