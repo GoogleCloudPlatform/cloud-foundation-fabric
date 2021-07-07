@@ -41,7 +41,8 @@ locals {
   }
   jit_services = [
     "secretmanager.googleapis.com",
-    "pubsub.googleapis.com"
+    "pubsub.googleapis.com",
+    "cloudasset.googleapis.com"
   ]
 }
 
