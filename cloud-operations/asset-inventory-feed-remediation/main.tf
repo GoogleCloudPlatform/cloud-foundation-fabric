@@ -25,9 +25,9 @@ module "project" {
   project_create = var.project_create
   services = [
     "cloudasset.googleapis.com",
-    "compute.googleapis.com",
+    "cloudbuild.googleapis.com",
     "cloudfunctions.googleapis.com",
-    "cloudbuild.googleapis.com"
+    "compute.googleapis.com"
   ]
   service_config = {
     disable_on_destroy         = false,
