@@ -85,6 +85,7 @@ module "landing-buckets" {
     "roles/storage.objectCreator" = [module.landing-sa.iam_email]
     "roles/storage.admin"         = [module.transformation-sa.iam_email]
   }
+  encryption_key = var.service_encryption_key_ids.multiregional
 }
 
 module "transformation-buckets" {
@@ -97,6 +98,7 @@ module "transformation-buckets" {
   iam = {
     "roles/storage.admin" = [module.transformation-sa.iam_email]
   }
+  encryption_key = var.service_encryption_key_ids.multiregional
 }
 
 ###############################################################################
@@ -116,6 +118,7 @@ module "datamart-bq" {
       : v
     )
   }
+  encryption_key = var.service_encryption_key_ids.multiregional
 }
 
 module "dwh-bq" {
@@ -131,6 +134,7 @@ module "dwh-bq" {
       : v
     )
   }
+  encryption_key = var.service_encryption_key_ids.multiregional
 }
 
 ###############################################################################
@@ -160,4 +164,5 @@ module "landing-pubsub" {
       "roles/pubsub.subscriber" = [module.transformation-sa.iam_email]
     })
   }
+  kms_key = var.service_encryption_key_ids.global
 }

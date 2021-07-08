@@ -25,15 +25,18 @@ module "project-datamart" {
   prefix          = var.prefix
   name            = var.project_names.datamart
   services = [
-    "bigtable.googleapis.com",
-    "bigtableadmin.googleapis.com",
     "bigquery.googleapis.com",
     "bigquerystorage.googleapis.com",
     "bigqueryreservation.googleapis.com",
+    "storage.googleapis.com",
     "storage-component.googleapis.com",
   ]
   iam = {
     "roles/editor" = [module.sa-services-main.iam_email]
+  }
+  service_encryption_key_ids = {
+    bq      = [var.service_encryption_key_ids.multiregional]
+    storage = [var.service_encryption_key_ids.multiregional]
   }
 }
 
@@ -47,10 +50,15 @@ module "project-dwh" {
     "bigquery.googleapis.com",
     "bigquerystorage.googleapis.com",
     "bigqueryreservation.googleapis.com",
+    "storage.googleapis.com",
     "storage-component.googleapis.com",
   ]
   iam = {
     "roles/editor" = [module.sa-services-main.iam_email]
+  }
+  service_encryption_key_ids = {
+    bq      = [var.service_encryption_key_ids.multiregional]
+    storage = [var.service_encryption_key_ids.multiregional]
   }
 }
 
@@ -62,10 +70,15 @@ module "project-landing" {
   name            = var.project_names.landing
   services = [
     "pubsub.googleapis.com",
+    "storage.googleapis.com",
     "storage-component.googleapis.com",
   ]
   iam = {
     "roles/editor" = [module.sa-services-main.iam_email]
+  }
+  service_encryption_key_ids = {
+    pubsub  = [var.service_encryption_key_ids.global]
+    storage = [var.service_encryption_key_ids.multiregional]
   }
 }
 
@@ -76,13 +89,18 @@ module "project-services" {
   prefix          = var.prefix
   name            = var.project_names.services
   services = [
+    "storage.googleapis.com",
     "storage-component.googleapis.com",
     "sourcerepo.googleapis.com",
     "stackdriver.googleapis.com",
     "cloudasset.googleapis.com",
+    "cloudkms.googleapis.com"
   ]
   iam = {
     "roles/editor" = [module.sa-services-main.iam_email]
+  }
+  service_encryption_key_ids = {
+    storage = [var.service_encryption_key_ids.multiregional]
   }
 }
 
@@ -97,10 +115,16 @@ module "project-transformation" {
     "compute.googleapis.com",
     "dataflow.googleapis.com",
     "servicenetworking.googleapis.com",
+    "storage.googleapis.com",
     "storage-component.googleapis.com",
   ]
   iam = {
     "roles/editor" = [module.sa-services-main.iam_email]
+  }
+  service_encryption_key_ids = {
+    compute  = [var.service_encryption_key_ids.global]
+    storage  = [var.service_encryption_key_ids.multiregional]
+    dataflow = [var.service_encryption_key_ids.global]
   }
 }
 

@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 - create `pubsub` service identity if service is enabled
 - support for creation of GKE Autopilot clusters
+- Add support for CMEK keys in Data Foundation end to end example
 
 ## [5.0.0] - 2021-06-17
 
