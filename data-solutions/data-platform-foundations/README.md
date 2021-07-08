@@ -51,8 +51,6 @@ The environment setup is designed to manage a single environment. Various strate
 | Description | Priority (1:High - 5:Low ) | Status | Remarks |
 |-------------|----------|:------:|---------|
 | DLP best practices in the pipeline | 2 | Not Started |   |
-| KMS support (CMEK) | 2 | Not Started |   |
-| VPC-SC | 3 | Not Started |   |
 | Add Composer with a static DAG running the example | 3 | Not Started |   |
 | Integrate [CI/CD composer data processing workflow framework](https://github.com/jaketf/ci-cd-for-data-processing-workflow) | 3 | Not Started |   |
 | Schema changes, how to handle | 4 | Not Started |   |
