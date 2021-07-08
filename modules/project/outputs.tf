@@ -61,7 +61,8 @@ output "service_accounts" {
   }
   depends_on = [
     google_project_service.project_services,
-    google_kms_crypto_key_iam_member.crypto_key
+    google_kms_crypto_key_iam_member.crypto_key,
+    google_project_service_identity.jit_si
   ]
 }
 

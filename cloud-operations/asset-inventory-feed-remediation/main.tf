@@ -25,8 +25,9 @@ module "project" {
   project_create = var.project_create
   services = [
     "cloudasset.googleapis.com",
-    "compute.googleapis.com",
-    "cloudfunctions.googleapis.com"
+    "cloudbuild.googleapis.com",
+    "cloudfunctions.googleapis.com",
+    "compute.googleapis.com"
   ]
   service_config = {
     disable_on_destroy         = false,
@@ -116,4 +117,18 @@ module "simple-vm-example" {
 
 resource "random_pet" "random" {
   length = 1
+}
+
+# Create a feed that sends notifications about instance  updates.
+resource "google_cloud_asset_project_feed" "project_feed" {
+  project      = module.project.project_id
+  feed_id      = var.name
+  content_type = "RESOURCE"
+  asset_types  = ["compute.googleapis.com/Instance"]
+
+  feed_output_config {
+    pubsub_destination {
+      topic = module.pubsub.topic.id
+    }
+  }
 }
