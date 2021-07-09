@@ -38,6 +38,9 @@ module "project-datamart" {
     bq      = [var.service_encryption_key_ids.multiregional]
     storage = [var.service_encryption_key_ids.multiregional]
   }
+  # If used, remember to uncomment 'lifecycle' block in the
+  # modules/vpc-sc/google_access_context_manager_service_perimeter resource.  
+  service_perimeter_standard = var.service_perimeter_standard
 }
 
 module "project-dwh" {
@@ -60,6 +63,9 @@ module "project-dwh" {
     bq      = [var.service_encryption_key_ids.multiregional]
     storage = [var.service_encryption_key_ids.multiregional]
   }
+  # If used, remember to uncomment 'lifecycle' block in the
+  # modules/vpc-sc/google_access_context_manager_service_perimeter resource.  
+  service_perimeter_standard = var.service_perimeter_standard
 }
 
 module "project-landing" {
@@ -80,6 +86,9 @@ module "project-landing" {
     pubsub  = [var.service_encryption_key_ids.global]
     storage = [var.service_encryption_key_ids.multiregional]
   }
+  # If used, remember to uncomment 'lifecycle' block in the
+  # modules/vpc-sc/google_access_context_manager_service_perimeter resource.  
+  service_perimeter_standard = var.service_perimeter_standard
 }
 
 module "project-services" {
@@ -102,6 +111,9 @@ module "project-services" {
   service_encryption_key_ids = {
     storage = [var.service_encryption_key_ids.multiregional]
   }
+  # If used, remember to uncomment 'lifecycle' block in the
+  # modules/vpc-sc/google_access_context_manager_service_perimeter resource.  
+  service_perimeter_standard = var.service_perimeter_standard
 }
 
 module "project-transformation" {
@@ -126,6 +138,9 @@ module "project-transformation" {
     storage  = [var.service_encryption_key_ids.multiregional]
     dataflow = [var.service_encryption_key_ids.global]
   }
+  # If used, remember to uncomment 'lifecycle' block in the
+  # modules/vpc-sc/google_access_context_manager_service_perimeter resource.  
+  service_perimeter_standard = var.service_perimeter_standard
 }
 
 ###############################################################################

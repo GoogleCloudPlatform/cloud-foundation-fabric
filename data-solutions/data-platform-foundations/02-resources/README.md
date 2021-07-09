@@ -49,6 +49,9 @@ project_ids = {
 
 Once done testing, you can clean up resources by running `terraform destroy`.
 
+### CMEK configuration
+You can configure GCP resources to use existing CMEK keys configuring the 'service_encryption_key_ids' variable. You need to specify a 'global' and a 'multiregional' key.
+
 <!-- BEGIN TFDOC -->
 ## Variables
 
