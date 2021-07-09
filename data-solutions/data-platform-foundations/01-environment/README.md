@@ -33,6 +33,18 @@ parent          = "folders/12345678"
 
 Once done testing, you can clean up resources by running `terraform destroy`.
 
+### CMEK configuration
+You can configure GCP resources to use existing CMEK keys configuring the 'service_encryption_key_ids' variable. You need to specify a 'global' and a 'multiregional' key.
+
+### VPC-SC configuration
+You can assign projects to an existing VPC-SC standard perimeter configuring the 'service_perimeter_standard' variable. You can retrieve the list of existing perimeters from the GCP console or using the following command:
+
+'''
+gcloud access-context-manager perimeters list --format="json" | grep name
+'''
+
+The script use 'google_access_context_manager_service_perimeter_resource' terraform resource. If this resource is used alongside the 'vpc-sc' module, remember to uncomment the lifecycle block in the 'vpc-sc' module so they don't fight over which resources should be in the perimeter. 
+
 <!-- BEGIN TFDOC -->
 ## Variables
 
