@@ -72,7 +72,16 @@ A sample testing session using `tmux`:
 | *prefix* | Prefix used for resource names. | <code title="">string</code> |  | <code title="">ilb-test</code> |
 | *project_create* | Create project instead of using an existing one. | <code title="">bool</code> |  | <code title="">false</code> |
 | *region* | Region used for resources. | <code title="">string</code> |  | <code title="">europe-west1</code> |
+| *zones* | Zone suffixes used for instances. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">["b", "c"]</code> |
 
 ## Outputs
 
+| name | description | sensitive |
+|---|---|:---:|
+| addresses | IP addresses. |  |
+| backend_health_left | Command-line health status for left ILB backends. |  |
+| backend_health_right | Command-line health status for right ILB backends. |  |
+| ssh_gw | Command-line login to gateway VMs. |  |
+| ssh_vm_left | Command-line login to left VMs. |  |
+| ssh_vm_right | Command-line login to right VMs. |  |
 <!-- END TFDOC -->
