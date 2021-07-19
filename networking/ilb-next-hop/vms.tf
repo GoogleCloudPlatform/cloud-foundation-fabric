@@ -26,6 +26,7 @@ module "vm-left" {
   source        = "../../modules/compute-vm"
   project_id    = module.project.project_id
   region        = var.region
+  zones         = local.zones
   name          = "${local.prefix}vm-left"
   instance_type = "f1-micro"
   network_interfaces = [
@@ -53,6 +54,7 @@ module "vm-right" {
   project_id    = module.project.project_id
   region        = var.region
   name          = "${local.prefix}vm-right"
+  zones         = local.zones
   instance_type = "f1-micro"
   network_interfaces = [
     {

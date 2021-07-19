@@ -10,9 +10,9 @@ Two ILBs are configured on the primary and secondary interfaces of gateway VMs w
 
 ## Testing
 
-Since ILBs as next hops only forward TCP and UDP traffic, simple tests use `curl` on clients to send HTTP requests. To make this practical, test VMs on both VPCs have `nginx` pre-installed and active on port 80.
+This setup can be used to test and verify new ILB features like [forwards all protocols on ILB as next hops](https://cloud.google.com/load-balancing/docs/internal/ilb-next-hop-overview#all-traffic) and [symmetric hashing](https://cloud.google.com/load-balancing/docs/internal/ilb-next-hop-overview#symmetric-hashing), using simple `curl` and `ping` tests on clients. To make this practical, test VMs on both VPCs have `nginx` pre-installed and active on port 80.
 
-On the gateways, `iftop` is installed by default to quickly monitor traffic passing forwarded across VPCs.
+On the gateways, `iftop` and `tcpdump` are installed by default to quickly monitor traffic passing forwarded across VPCs.
 
 Session affinity on the ILB backend services can be changed using `gcloud compute backend-services update` on each of the ILBs, or by setting the `ilb_session_affinity` variable to update both ILBs.
 
@@ -23,7 +23,9 @@ Some scenarios to test:
 - short-lived connections with session affinity set to the default of `NONE`, then to `CLIENT_IP`
 - long-lived connections, failing health checks on the active gateway while the connection is active
 
-### Useful commands (adjust names and addresses to match)
+### Useful commands
+
+Basic commands to SSH to VMs and monitor backend health are provided in the Terraform outputs, and they already match input variables so that names, zones, etc. are correct. Other testing commands are provided below, adjust names to match your setup.
 
 Create a large file on a destination VM (eg `ilb-test-vm-right-1`) to test long-running connections.
 
@@ -33,7 +35,7 @@ dd if=/dev/zero of=/var/www/html/test.txt bs=10M count=100 status=progress
 
 Run curl from a source VM (eg `ilb-test-vm-left-1`) to send requests to a destination VM artifically slowing traffic.
 
-```
+```bash
 curl -0 --output /dev/null --limit-rate 10k 10.0.1.3/test.txt
 ```
 
@@ -70,7 +72,16 @@ A sample testing session using `tmux`:
 | *prefix* | Prefix used for resource names. | <code title="">string</code> |  | <code title="">ilb-test</code> |
 | *project_create* | Create project instead of using an existing one. | <code title="">bool</code> |  | <code title="">false</code> |
 | *region* | Region used for resources. | <code title="">string</code> |  | <code title="">europe-west1</code> |
+| *zones* | Zone suffixes used for instances. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">["b", "c"]</code> |
 
 ## Outputs
 
+| name | description | sensitive |
+|---|---|:---:|
+| addresses | IP addresses. |  |
+| backend_health_left | Command-line health status for left ILB backends. |  |
+| backend_health_right | Command-line health status for right ILB backends. |  |
+| ssh_gw | Command-line login to gateway VMs. |  |
+| ssh_vm_left | Command-line login to left VMs. |  |
+| ssh_vm_right | Command-line login to right VMs. |  |
 <!-- END TFDOC -->
