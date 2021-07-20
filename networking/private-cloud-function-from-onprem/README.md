@@ -25,7 +25,7 @@ curl https://YOUR_REGION-YOUR_PROJECT_ID.cloudfunctions.net/YOUR_FUNCTION_NAME
 | root_node | Root folder or organization under which the projects will be created. | <code title="">string</code> | ✓ |  |
 | *create_projects* | Whether need to create the projects. | <code title="">bool</code> |  | <code title="">true</code> |
 | *ip_ranges* | IP ranges used for the VPCs. | <code title="object&#40;&#123;&#10;onprem &#61; string&#10;hub    &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;onprem &#61; &#34;10.0.1.0&#47;24&#34;,&#10;hub    &#61; &#34;10.0.2.0&#47;24&#34;&#10;&#125;">...</code> |
-| *prefix* | Prefix used for resources that need unique names. | <code title="">string</code> |  | <code title=""></code> |
+| *prefix* | Prefix used for resources that need unique names. | <code title="">string</code> |  | <code title="">null</code> |
 | *psc_endpoint* | IP used for the Private Service Connect endpoint, it must not overlap with the hub_ip_range. | <code title="">string</code> |  | <code title="">10.100.100.100</code> |
 | *region* | Region where the resources will be created. | <code title="">string</code> |  | <code title="">europe-west1</code> |
 | *zone* | Zone where the test VM will be created. | <code title="">string</code> |  | <code title="">europe-west1-b</code> |
