@@ -18,6 +18,7 @@ module "gw" {
   source        = "../../modules/compute-vm"
   project_id    = module.project.project_id
   region        = var.region
+  zones         = local.zones
   name          = "${local.prefix}gw"
   instance_type = "f1-micro"
 
@@ -73,9 +74,9 @@ module "ilb-left" {
     timeout_sec                     = null
     connection_draining_timeout_sec = null
   }
-  backends = [{
+  backends = [for zone, group in module.gw.groups : {
     failover       = false
-    group          = values(module.gw.groups)[0].self_link
+    group          = group.self_link
     balancing_mode = "CONNECTION"
   }]
   health_check_config = {
@@ -97,9 +98,9 @@ module "ilb-right" {
     timeout_sec                     = null
     connection_draining_timeout_sec = null
   }
-  backends = [{
+  backends = [for zone, group in module.gw.groups : {
     failover       = false
-    group          = values(module.gw.groups)[0].self_link
+    group          = group.self_link
     balancing_mode = "CONNECTION"
   }]
   health_check_config = {
