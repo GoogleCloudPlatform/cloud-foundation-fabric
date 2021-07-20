@@ -14,53 +14,6 @@
  * limitations under the License.
  */
 
-variable "region" {
-  description = "Region where the resources will be created."
-  type        = string
-  default     = "europe-west1"
-}
-
-variable "zone" {
-  description = "Zone where the test VM will be created."
-  type        = string
-  default     = "europe-west1-b"
-}
-
-variable "prefix" {
-  description = "Prefix used for resources that need unique names."
-  type        = string
-  default     = null
-}
-
-variable "billing_account_id" {
-  description = "Billing account id used as default for new projects."
-  type        = string
-}
-
-variable "projects_id" {
-  description = "ID of the projects used in this solution."
-  type   = object({
-    onprem   = string
-    function = string
-  })
-}
-
-variable "create_projects" {
-  description = "Whether need to create the projects."
-  type        = bool
-  default     = true
-}
-
-variable "root_node" {
-  description = "Root folder or organization under which the projects will be created."
-  type        = string
-}
-
-variable "cloud_function_gcs_bucket" {
-  description = "Google Storage Bucket used as staging location for the Cloud Function source code."
-  type        = string
-}
-
 variable "ip_ranges" {
   description = "IP ranges used for the VPCs."
   type = object({
@@ -73,8 +26,34 @@ variable "ip_ranges" {
   }
 }
 
+variable "name" {
+  description = "Name used for new resources."
+  type        = string
+  default     = "psc-onprem"
+}
+
+variable "project_create" {
+  description = "If non null, creates project instead of using an existing one."
+  type = object({
+    billing_account_id = string
+    parent             = string
+  })
+  default = null
+}
+
+variable "project_id" {
+  description = "Project id."
+  type        = string
+}
+
 variable "psc_endpoint" {
   description = "IP used for the Private Service Connect endpoint, it must not overlap with the hub_ip_range."
-  type    = string
-  default = "10.100.100.100"
+  type        = string
+  default     = "172.16.32.1"
+}
+
+variable "region" {
+  description = "Region where the resources will be created."
+  type        = string
+  default     = "europe-west1"
 }
