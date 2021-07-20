@@ -61,3 +61,12 @@ variable "project_id" {
   description = "Project where the addresses will be created."
   type        = string
 }
+
+variable "psc_addresses" {
+  description = "Map of internal addresses used for Private Service Connect."
+  type = map(object({
+    address = string
+    network = string
+  }))
+  default = {}
+}

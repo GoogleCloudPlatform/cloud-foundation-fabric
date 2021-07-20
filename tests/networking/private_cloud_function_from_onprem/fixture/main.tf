@@ -15,9 +15,10 @@
  */
 
 module "test" {
-  source                    = "../../../../networking/private-cloud-function-from-onprem"
-  billing_account_id        = var.billing_account_id
-  projects_id               = var.projects_id
-  root_node                 = var.root_node
-  cloud_function_gcs_bucket = var.cloud_function_gcs_bucket
+  source = "../../../../networking/private-cloud-function-from-onprem"
+  project_create = {
+    billing_account_id = "123456-ABCDEF-123456"
+    parent             = "folders/1234567890"
+  }
+  project_id = "test-project"
 }

@@ -19,16 +19,12 @@ curl https://YOUR_REGION-YOUR_PROJECT_ID.cloudfunctions.net/YOUR_FUNCTION_NAME
 
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
-| billing_account_id | Billing account id used as default for new projects. | <code title="">string</code> | ✓ |  |
-| cloud_function_gcs_bucket | Google Storage Bucket used as staging location for the Cloud Function source code. | <code title="">string</code> | ✓ |  |
-| projects_id | ID of the projects used in this solution. | <code title="object&#40;&#123;&#10;onprem   &#61; string&#10;function &#61; string&#10;&#125;&#41;">object({...})</code> | ✓ |  |
-| root_node | Root folder or organization under which the projects will be created. | <code title="">string</code> | ✓ |  |
-| *create_projects* | Whether need to create the projects. | <code title="">bool</code> |  | <code title="">true</code> |
+| project_id | Project id. | <code title="">string</code> | ✓ |  |
 | *ip_ranges* | IP ranges used for the VPCs. | <code title="object&#40;&#123;&#10;onprem &#61; string&#10;hub    &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;onprem &#61; &#34;10.0.1.0&#47;24&#34;,&#10;hub    &#61; &#34;10.0.2.0&#47;24&#34;&#10;&#125;">...</code> |
-| *prefix* | Prefix used for resources that need unique names. | <code title="">string</code> |  | <code title="">null</code> |
-| *psc_endpoint* | IP used for the Private Service Connect endpoint, it must not overlap with the hub_ip_range. | <code title="">string</code> |  | <code title="">10.100.100.100</code> |
+| *name* | Name used for new resources. | <code title="">string</code> |  | <code title="">psc-onprem</code> |
+| *project_create* | If non null, creates project instead of using an existing one. | <code title="object&#40;&#123;&#10;billing_account_id &#61; string&#10;parent             &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
+| *psc_endpoint* | IP used for the Private Service Connect endpoint, it must not overlap with the hub_ip_range. | <code title="">string</code> |  | <code title="">172.16.32.1</code> |
 | *region* | Region where the resources will be created. | <code title="">string</code> |  | <code title="">europe-west1</code> |
-| *zone* | Zone where the test VM will be created. | <code title="">string</code> |  | <code title="">europe-west1-b</code> |
 
 ## Outputs
 

@@ -20,7 +20,6 @@ output "external_addresses" {
     address.name => {
       address   = address.address
       self_link = address.self_link
-      users     = address.users
     }
   }
 }
@@ -41,7 +40,16 @@ output "internal_addresses" {
     address.name => {
       address   = address.address
       self_link = address.self_link
-      users     = address.users
+    }
+  }
+}
+
+output "psc_addresses" {
+  value = {
+    for address in google_compute_global_address.psc :
+    address.name => {
+      address   = address.address
+      self_link = address.self_link
     }
   }
 }
