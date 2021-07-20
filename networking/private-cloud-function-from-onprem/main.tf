@@ -235,7 +235,7 @@ module "function-hello" {
   bucket_name      = var.cloud_function_gcs_bucket
   ingress_settings = "ALLOW_INTERNAL_ONLY"
   bundle_config = {
-    source_dir  = "assets"
+    source_dir  = "${path.module}/assets"
     output_path = "bundle.zip"
   }
   bucket_config = {

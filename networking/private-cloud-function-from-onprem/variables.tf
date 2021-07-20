@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-###############################################################################
-#                                  variables                                  #
-###############################################################################
-
 variable "region" {
   description = "Region where the resources will be created."
   type        = string

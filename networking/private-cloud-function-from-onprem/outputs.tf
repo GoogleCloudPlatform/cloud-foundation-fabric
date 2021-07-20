@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-###############################################################################
-#                                OUTPUTS                                      #
-###############################################################################
-
 output "function_url" {
   description = "URL of the Cloud Function."
   value = module.function-hello.function.https_trigger_url
