@@ -52,6 +52,9 @@ module "vpc-onprem" {
       secondary_ip_range = {}
     }
   ]
+  subnet_private_access = {
+    "${var.region}/${var.name}-onprem" = false
+  }
 }
 
 module "firewall-onprem" {

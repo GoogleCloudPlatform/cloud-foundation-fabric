@@ -21,7 +21,7 @@ curl https://YOUR_REGION-YOUR_PROJECT_ID.cloudfunctions.net/YOUR_FUNCTION_NAME
 |---|---|:---: |:---:|:---:|
 | project_id | Project id. | <code title="">string</code> | ✓ |  |
 | *ip_ranges* | IP ranges used for the VPCs. | <code title="object&#40;&#123;&#10;onprem &#61; string&#10;hub    &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;onprem &#61; &#34;10.0.1.0&#47;24&#34;,&#10;hub    &#61; &#34;10.0.2.0&#47;24&#34;&#10;&#125;">...</code> |
-| *name* | Name used for new resources. | <code title="">string</code> |  | <code title="">psc-onprem</code> |
+| *name* | Name used for new resources. | <code title="">string</code> |  | <code title="">cf-via-psc</code> |
 | *project_create* | If non null, creates project instead of using an existing one. | <code title="object&#40;&#123;&#10;billing_account_id &#61; string&#10;parent             &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 | *psc_endpoint* | IP used for the Private Service Connect endpoint, it must not overlap with the hub_ip_range. | <code title="">string</code> |  | <code title="">172.16.32.1</code> |
 | *region* | Region where the resources will be created. | <code title="">string</code> |  | <code title="">europe-west1</code> |
