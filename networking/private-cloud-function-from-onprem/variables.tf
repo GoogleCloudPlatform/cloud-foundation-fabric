@@ -29,7 +29,7 @@ variable "ip_ranges" {
 variable "name" {
   description = "Name used for new resources."
   type        = string
-  default     = "psc-onprem"
+  default     = "cf-via-psc"
 }
 
 variable "project_create" {
