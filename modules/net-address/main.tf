@@ -44,3 +44,15 @@ resource "google_compute_address" "internal" {
   purpose      = try(var.internal_addresses_config[each.key].purpose, null)
   # labels       = lookup(var.internal_address_labels, each.key, {})
 }
+
+resource "google_compute_global_address" "psc" {
+  for_each     = var.psc_addresses
+  project      = var.project_id
+  name         = each.key
+  description  = "Terraform managed."
+  address_type = "INTERNAL"
+  network      = each.value.network
+  address      = try(each.value.address, null)
+  purpose      = "PRIVATE_SERVICE_CONNECT"
+  # labels       = lookup(var.internal_address_labels, each.key, {})
+}
