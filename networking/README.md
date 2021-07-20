@@ -37,3 +37,7 @@ It is meant to be used as a starting point for most Shared VPC configurations, a
 ### ILB as next hop
 
 <a href="./ilb-next-hop/" title="ILB as next hop"><img src="./ilb-next-hop/diagram.png" align="left" width="280px"></a> This [example](./ilb-next-hop/) allows testing [ILB as next hop](https://cloud.google.com/load-balancing/docs/internal/ilb-next-hop-overview) using simple Linux gateway VMS between two VPCs, to emulate virtual appliances. An optional additional ILB can be enabled to test multiple load balancer configurations and hashing.
+
+### Calling a private Cloud Function from On-premises
+
+<a href="./private-cloud-function-from-onprem/" title="Private Cloud Function from On-premises"><img src="./private-cloud-function-from-onprem/diagram.png" align="left" width="280px"></a> This [example](./private-cloud-function-from-onprem/) shows how to invoke a [private Google Cloud Function](https://cloud.google.com/functions/docs/networking/network-settings) from the on-prem environment via a [Private Service Connect endpoint](https://cloud.google.com/vpc/docs/private-service-connect#benefits-apis).
