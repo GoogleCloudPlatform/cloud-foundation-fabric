@@ -19,62 +19,59 @@
 ###############################################################################
 
 variable "region" {
-  type    = string
-  default = "europe-west1"
-  # Region where the resources will be created
+  description = "Region where the resources will be created."
+  type        = string
+  default     = "europe-west1"
 }
 
 variable "zone" {
-  type    = string
-  default = "europe-west1-b"
-  # Zone where the test VM will be created
+  description = "Zone where the test VM will be created."
+  type        = string
+  default     = "europe-west1-b"
 }
 
 variable "billing_account_id" {
-  type    = string
-  # Your billing account ID, in the format "XXXXXX-XXXXXX-XXXXXX"
+  description = "Billing account id used as default for new projects."
+  type        = string
 }
 
 variable "onprem_project_id" {
-  type    = string
-  # Project ID used as "on-prem" environment
+  description = "ID of the project used for the \"onprem\" environment."
+  type        = string
 }
 
-variable "gcp_project_id" {
-  type    = string
-  # Project ID used as "GCP" environment
+variable "function_project_id" {
+  description = "ID of the project that will contain the Cloud Function."
+  type        = string
 }
 
 variable "create_projects" {
-  type    = bool
-  default = true
-  # Whether terraform will create the projects (false if the projects already exist)
+  description = "Whether need to create the projects."
+  type        = bool
+  default     = true
 }
 
 variable "root_id" {
-  type    = string
-  # Root folder or organization under which the projects will be created, in the format "folders/XXXXXXXXXXXX" or "organizations/XXXXXXXXXXXX"
+  description = "Root folder or organization under which the projects will be created."
+  type        = string
 }
 
 variable "cloud_function_gcs_bucket" {
-  type    = string
-  # Google Storage Bucket used as staging location for the Cloud Function source code
+  description = "Google Storage Bucket used as staging location for the Cloud Function source code."
+  type        = string
 }
 
-variable "onprem_ip_range" {
-  type    = string
-  default = "10.0.1.0/24"
-  # IP ranged used for the "on-prem" VPC
-}
-
-variable "gcp_ip_range" {
-  type    = string
-  default = "10.0.2.0/24"
-  # IP ranged used for the "GCP" VPC
+variable "ip_ranges" {
+  description = "IP ranges used for the VPCs."
+  type = map(string)
+  default = {
+    onprem = "10.0.1.0/24",
+    hub    = "10.0.2.0/24"
+  }
 }
 
 variable "psc_endpoint" {
+  description = "IP used for the Private Service Connect endpoint, it must not overlap with the hub_ip_range."
   type    = string
   default = "10.100.100.100"
-  # IP used for the Private Service Connect endpoint, it must not overlap with the gcp_ip_range
 }

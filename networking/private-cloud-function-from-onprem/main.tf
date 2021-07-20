@@ -19,7 +19,7 @@
 ###############################################################################
 
 module "project-onprem" {
-  source          = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/project?ref=v5.0.0"
+  source          = "../../modules/project"
   billing_account = var.billing_account_id
   name            = var.onprem_project_id
   parent          = var.root_id
@@ -31,10 +31,10 @@ module "project-onprem" {
 }
 
 
-module "project-gcp" {
-  source          = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/project?ref=v5.0.0"
+module "project-hub" {
+  source          = "../../modules/project"
   billing_account = var.billing_account_id
-  name            = var.gcp_project_id
+  name            = var.function_project_id
   parent          = var.root_id
   project_create  = var.create_projects
   services = [
@@ -49,13 +49,13 @@ module "project-gcp" {
 ###############################################################################
 
 module "vpc-onprem" {
-  source     = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/net-vpc?ref=v5.0.0"
+  source     = "../../modules/net-vpc"
   project_id = module.project-onprem.project_id
-  name       = "onprem-net"
+  name       = "onprem"
   subnets = [
     {
-      ip_cidr_range      = var.onprem_ip_range
-      name               = "onprem-sub"
+      ip_cidr_range      = var.ip_ranges.onprem
+      name               = "onprem-subnet"
       region             = var.region
       secondary_ip_range = {}
     }
@@ -63,35 +63,26 @@ module "vpc-onprem" {
 }
 
 module "firewall-onprem" {
-  source               = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/net-vpc-firewall?ref=v5.0.0"
+  source               = "../../modules/net-vpc-firewall"
   project_id           = module.project-onprem.project_id
   network              = module.vpc-onprem.name
   admin_ranges_enabled = true
-  admin_ranges         = ["0.0.0.0/0"]
+  admin_ranges         = []
   custom_rules         = {}
 }
 
-module "vpc-gcp" {
-  source     = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/net-vpc?ref=v5.0.0"
-  project_id = module.project-gcp.project_id
-  name       = "gcp-net"
+module "vpc-hub" {
+  source     = "../../modules/net-vpc"
+  project_id = module.project-hub.project_id
+  name       = "hub"
   subnets = [
     {
-      ip_cidr_range      = var.gcp_ip_range
-      name               = "gcp-sub"
+      ip_cidr_range      = var.ip_ranges.hub
+      name               = "hub-subnet"
       region             = var.region
       secondary_ip_range = {}
     }
   ]
-}
-
-module "firewall-gcp" {
-  source               = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/net-vpc-firewall?ref=v5.0.0"
-  project_id           = module.project-gcp.project_id
-  network              = module.vpc-gcp.name
-  admin_ranges_enabled = true
-  admin_ranges         = ["0.0.0.0/0"]
-  custom_rules         = {}
 }
 
 ###############################################################################
@@ -99,11 +90,11 @@ module "firewall-gcp" {
 ###############################################################################
 
 module "vpn-onprem" {
-  source     = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/net-vpn-ha?ref=v5.0.0"
+  source     = "../../modules/net-vpn-ha"
   project_id = module.project-onprem.project_id
   region     = var.region
   network    = module.vpc-onprem.self_link
-  name       = "onprem-to-gcp"
+  name       = "onprem-to-hub"
   router_asn = 65001
   router_advertise_config = {
     groups = ["ALL_SUBNETS"]
@@ -111,7 +102,7 @@ module "vpn-onprem" {
     }
     mode = "CUSTOM"
   }
-  peer_gcp_gateway = module.vpn-gcp.self_link
+  peer_gcp_gateway = module.vpn-hub.self_link
   tunnels = {
     tunnel-0 = {
       bgp_peer = {
@@ -142,12 +133,12 @@ module "vpn-onprem" {
   }
 }
 
-module "vpn-gcp" {
-  source           = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/net-vpn-ha?ref=v5.0.0"
-  project_id       = module.project-gcp.project_id
+module "vpn-hub" {
+  source           = "../../modules/net-vpn-ha"
+  project_id       = module.project-hub.project_id
   region           = var.region
-  network          = module.vpc-gcp.name
-  name             = "gcp-to-onprem"
+  network          = module.vpc-hub.name
+  name             = "hub-to-onprem"
   router_asn       = 65002
   peer_gcp_gateway = module.vpn-onprem.self_link
   router_advertise_config = {
@@ -192,7 +183,7 @@ module "vpn-gcp" {
 ###############################################################################
 
 module "test-vm" {
-  source         = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/compute-vm?ref=v5.0.0"
+  source         = "../../modules/compute-vm"
   project_id     = module.project-onprem.project_id
   region         = var.region
   zones          = ["${var.zone}"]
@@ -204,10 +195,10 @@ module "test-vm" {
   network_interfaces = [
     {
       network    = module.vpc-onprem.self_link,
-      subnetwork = module.vpc-onprem.subnet_self_links["${var.region}/onprem-sub"],
+      subnetwork = module.vpc-onprem.subnet_self_links["${var.region}/onprem-subnet"],
       nat        = false,
-      addresses = {
-        internal = [cidrhost(var.onprem_ip_range, 2)]
+      addresses  = {
+        internal = [cidrhost(var.ip_ranges.onprem, 2)]
         external = []
       },
       alias_ips  = null
@@ -221,7 +212,7 @@ module "test-vm" {
   metadata = {}
   service_account        = null
   service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
-  tags                   = []
+  tags                   = ["ssh"]
 }
 
 ###############################################################################
@@ -229,16 +220,13 @@ module "test-vm" {
 ###############################################################################
 
 module "function-hello" {
-  source           = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/cloud-function?ref=v5.0.0"
-  project_id       = module.project-gcp.project_id
+  source           = "../../modules/cloud-function"
+  project_id       = module.project-hub.project_id
   name             = "my-hello-function"
-  bucket_name      = var.cloud_function_gcs_bucket
+  bucket_name      = module.bucket-functions.bucket.name
   ingress_settings = "ALLOW_INTERNAL_ONLY"
-  depends_on = [
-    module.bucket-functions
-  ]
   bundle_config = {
-    source_dir  = "function_src"
+    source_dir  = "assets"
     output_path = "bundle.zip"
   }
   iam   = {
@@ -251,10 +239,9 @@ module "function-hello" {
 ###############################################################################
 
 module "bucket-functions" {
-  source     = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/gcs?ref=v5.0.0"
-  project_id = module.project-gcp.project_id
+  source     = "../../modules/gcs"
+  project_id = module.project-hub.project_id
   name       = var.cloud_function_gcs_bucket
-  iam        = {}
 }
 
 ###############################################################################
@@ -262,11 +249,11 @@ module "bucket-functions" {
 ###############################################################################
 
 module "private-dns-onprem" {
-  source          = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/dns?ref=v5.0.0"
+  source          = "../../modules/dns"
   project_id      = module.project-onprem.project_id
   type            = "private"
   name            = "private-cloud-function"
-  domain          = "${var.region}-${var.gcp_project_id}.cloudfunctions.net."
+  domain          = "${var.region}-${var.function_project_id}.cloudfunctions.net."
   client_networks = [module.vpc-onprem.self_link]
   recordsets = [{
     name = "",
@@ -282,19 +269,19 @@ module "private-dns-onprem" {
 
 resource "google_compute_global_address" "psc-address" {
   provider     = google
-  project      = module.project-gcp.project_id
+  project      = module.project-hub.project_id
   name         = "pscaddress"
   purpose      = "PRIVATE_SERVICE_CONNECT"
   address_type = "INTERNAL"
   address      = var.psc_endpoint
-  network      = module.vpc-gcp.self_link
+  network      = module.vpc-hub.self_link
 }
 
 resource "google_compute_global_forwarding_rule" "psc-endpoint" {
   provider              = google-beta
-  project               = module.project-gcp.project_id
+  project               = module.project-hub.project_id
   name                  = "pscendpoint"
-  network               = module.vpc-gcp.self_link
+  network               = module.vpc-hub.self_link
   ip_address            = google_compute_global_address.psc-address.id
   target                = "vpc-sc"
   load_balancing_scheme = ""

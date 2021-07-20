@@ -20,16 +20,15 @@ curl https://YOUR_REGION-YOUR_PROJECT_ID.cloudfunctions.net/my-hello-function
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
 | billing_account_id | Billing account id used as default for new projects. | <code title="">string</code> | ✓ |  |
-| onprem_project_id | ID of the project used for the "onprem" environment. | <code title="">string</code> | ✓ |  |
-| gcp_project_id | ID of the project that will contain the Cloud Function. | <code title="">string</code> | ✓ |  |
-| root_id | Root folder or organization under which the projects will be created. | <code title="">string</code> | ✓ |  |
 | cloud_function_gcs_bucket | Google Storage Bucket used as staging location for the Cloud Function source code. | <code title="">string</code> | ✓ |  |
+| function_project_id | ID of the project that will contain the Cloud Function. | <code title="">string</code> | ✓ |  |
+| onprem_project_id | None | <code title="">string</code> | ✓ |  |
+| root_id | Root folder or organization under which the projects will be created. | <code title="">string</code> | ✓ |  |
 | *create_projects* | Whether need to create the projects. | <code title="">bool</code> |  | <code title="">true</code> |
-| *onprem_ip_range* | IP ranged used for the "on-prem" VPC. | <code title="">string</code> |  | <code title="">10.0.1.0/24</code> |
-| *gcp_ip_range* | IP ranged used for the "GCP" VPC. | <code title="">string</code> |  | <code title="">10.0.2.0/24</code> |
-| *psc_endpoint* | IP used for the Private Service Connect endpoint, it must not overlap with the gcp_ip_range. | <code title="">string</code> |  | <code title="">10.100.100.100</code> |
-| *region* | Region used. | <code title="">string</code> |  | <code title="">europe-west1</code> |
-| *zone* | Zone used for the VM. | <code title="">string</code> |  | <code title="">europe-west1-b</code> |
+| *ip_ranges* | IP ranges used for the VPCs. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="&#123;&#10;onprem &#61; &#34;10.0.1.0&#47;24&#34;,&#10;hub &#61; &#34;10.0.2.0&#47;24&#34;&#10;&#125;">...</code> |
+| *psc_endpoint* | IP used for the Private Service Connect endpoint, it must not overlap with the hub_ip_range. | <code title="">string</code> |  | <code title="">10.100.100.100</code> |
+| *region* | Region where the resources will be created. | <code title="">string</code> |  | <code title="">europe-west1</code> |
+| *zone* | Zone where the test VM will be created. | <code title="">string</code> |  | <code title="">europe-west1-b</code> |
 
 ## Outputs
 
