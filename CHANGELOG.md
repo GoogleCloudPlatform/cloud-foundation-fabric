@@ -5,9 +5,10 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 - create `pubsub` service identity if service is enabled
 - support for creation of GKE Autopilot clusters
-- Add support for CMEK keys in Data Foundation end to end example
-- Add support for VPC-SC perimeters in Data Foundation end to end example
-- Fix `vpc-sc` module
+- add support for CMEK keys in Data Foundation end to end example
+- add support for VPC-SC perimeters in Data Foundation end to end example
+- fix `vpc-sc` module
+- new networking example showing how to use [Private Service Connect to call a Cloud Function from on-premises](networking/private-cloud-function-from-onprem/)
 
 ## [5.0.0] - 2021-06-17
 
