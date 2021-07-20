@@ -15,15 +15,23 @@
  */
 
 ###############################################################################
+#                                   locals                                    #
+###############################################################################
+locals {
+  prefix = var.prefix != null ? "${var.prefix}-" : ""
+}
+
+###############################################################################
 #                                  projects                                   #
 ###############################################################################
 
 module "project-onprem" {
   source          = "../../modules/project"
   billing_account = var.billing_account_id
-  name            = var.onprem_project_id
-  parent          = var.root_id
+  name            = var.projects_id.onprem
+  parent          = var.root_node
   project_create  = var.create_projects
+  prefix          = var.prefix
   services = [
     "compute.googleapis.com",
     "dns.googleapis.com"
@@ -34,9 +42,10 @@ module "project-onprem" {
 module "project-hub" {
   source          = "../../modules/project"
   billing_account = var.billing_account_id
-  name            = var.function_project_id
-  parent          = var.root_id
+  name            = var.projects_id.function
+  parent          = var.root_node
   project_create  = var.create_projects
+  prefix          = var.prefix
   services = [
     "compute.googleapis.com",
     "cloudfunctions.googleapis.com",
@@ -51,11 +60,11 @@ module "project-hub" {
 module "vpc-onprem" {
   source     = "../../modules/net-vpc"
   project_id = module.project-onprem.project_id
-  name       = "onprem"
+  name       = "${local.prefix}onprem"
   subnets = [
     {
       ip_cidr_range      = var.ip_ranges.onprem
-      name               = "onprem-subnet"
+      name               = "${local.prefix}onprem"
       region             = var.region
       secondary_ip_range = {}
     }
@@ -74,11 +83,11 @@ module "firewall-onprem" {
 module "vpc-hub" {
   source     = "../../modules/net-vpc"
   project_id = module.project-hub.project_id
-  name       = "hub"
+  name       = "${local.prefix}hub"
   subnets = [
     {
       ip_cidr_range      = var.ip_ranges.hub
-      name               = "hub-subnet"
+      name               = "${local.prefix}hub"
       region             = var.region
       secondary_ip_range = {}
     }
@@ -94,7 +103,7 @@ module "vpn-onprem" {
   project_id = module.project-onprem.project_id
   region     = var.region
   network    = module.vpc-onprem.self_link
-  name       = "onprem-to-hub"
+  name       = "${local.prefix}onprem-to-hub"
   router_asn = 65001
   router_advertise_config = {
     groups = ["ALL_SUBNETS"]
@@ -138,7 +147,7 @@ module "vpn-hub" {
   project_id       = module.project-hub.project_id
   region           = var.region
   network          = module.vpc-hub.name
-  name             = "hub-to-onprem"
+  name             = "${local.prefix}hub-to-onprem"
   router_asn       = 65002
   peer_gcp_gateway = module.vpn-onprem.self_link
   router_advertise_config = {
@@ -187,7 +196,7 @@ module "test-vm" {
   project_id     = module.project-onprem.project_id
   region         = var.region
   zones          = ["${var.zone}"]
-  name           = "test-vm"
+  name           = "${local.prefix}test-vm"
   instance_type  = "e2-micro"
   instance_count = 1
   boot_disk      = { image = "projects/ubuntu-os-cloud/global/images/family/ubuntu-2104", type = "pd-standard", size = 10 }
@@ -195,10 +204,10 @@ module "test-vm" {
   network_interfaces = [
     {
       network    = module.vpc-onprem.self_link,
-      subnetwork = module.vpc-onprem.subnet_self_links["${var.region}/onprem-subnet"],
+      subnetwork = module.vpc-onprem.subnet_self_links["${var.region}/${local.prefix}onprem"],
       nat        = false,
       addresses  = {
-        internal = [cidrhost(var.ip_ranges.onprem, 2)]
+        internal = []
         external = []
       },
       alias_ips  = null
@@ -222,26 +231,20 @@ module "test-vm" {
 module "function-hello" {
   source           = "../../modules/cloud-function"
   project_id       = module.project-hub.project_id
-  name             = "my-hello-function"
-  bucket_name      = module.bucket-functions.bucket.name
+  name             = "${local.prefix}my-hello-function"
+  bucket_name      = var.cloud_function_gcs_bucket
   ingress_settings = "ALLOW_INTERNAL_ONLY"
   bundle_config = {
     source_dir  = "assets"
     output_path = "bundle.zip"
   }
+  bucket_config = {
+    location = var.region
+    lifecycle_delete_age = null
+  }
   iam   = {
     "roles/cloudfunctions.invoker" = ["allUsers"]
   }
-}
-
-###############################################################################
-#                                    GCS                                      #
-###############################################################################
-
-module "bucket-functions" {
-  source     = "../../modules/gcs"
-  project_id = module.project-hub.project_id
-  name       = var.cloud_function_gcs_bucket
 }
 
 ###############################################################################
@@ -252,8 +255,8 @@ module "private-dns-onprem" {
   source          = "../../modules/dns"
   project_id      = module.project-onprem.project_id
   type            = "private"
-  name            = "private-cloud-function"
-  domain          = "${var.region}-${var.function_project_id}.cloudfunctions.net."
+  name            = "${local.prefix}private-cloud-function"
+  domain          = "${var.region}-${local.prefix}${var.projects_id.function}.cloudfunctions.net."
   client_networks = [module.vpc-onprem.self_link]
   recordsets = [{
     name = "",

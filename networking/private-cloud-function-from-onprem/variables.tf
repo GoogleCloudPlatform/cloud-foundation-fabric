@@ -30,19 +30,23 @@ variable "zone" {
   default     = "europe-west1-b"
 }
 
+variable "prefix" {
+  description = "Prefix used for resources that need unique names."
+  type        = string
+  default     = null
+}
+
 variable "billing_account_id" {
   description = "Billing account id used as default for new projects."
   type        = string
 }
 
-variable "onprem_project_id" {
-  description = "ID of the project used for the \"onprem\" environment."
-  type        = string
-}
-
-variable "function_project_id" {
-  description = "ID of the project that will contain the Cloud Function."
-  type        = string
+variable "projects_id" {
+  description = "ID of the projects used in this solution."
+  type   = object({
+    onprem   = string
+    function = string
+  })
 }
 
 variable "create_projects" {
@@ -51,7 +55,7 @@ variable "create_projects" {
   default     = true
 }
 
-variable "root_id" {
+variable "root_node" {
   description = "Root folder or organization under which the projects will be created."
   type        = string
 }
@@ -63,7 +67,10 @@ variable "cloud_function_gcs_bucket" {
 
 variable "ip_ranges" {
   description = "IP ranges used for the VPCs."
-  type = map(string)
+  type = object({
+    onprem = string
+    hub    = string
+  })
   default = {
     onprem = "10.0.1.0/24",
     hub    = "10.0.2.0/24"
