@@ -6,7 +6,7 @@ This repository provides **end-to-end examples** and a **suite of Terraform modu
 - composable modules that support quick prototyping and testing
 - a comprehensive source of lean modules that lend themselves well to changes
 
-The whole repository is meant to be cloned as a single unit, and then forked into separate owned repositories to seed production usage, or used as-is and periodically updated as a complete toolkit for prototyping.
+The whole repository is meant to be cloned as a single unit, and then forked into separate owned repositories to seed production usage, or used as-is and periodically updated as a complete toolkit for prototyping. You can read more on this approach in our [manifesto](./MANIFESTO.md).
 
 Both the examples and modules require some measure of Terraform skills to be used effectively. If you are looking for a feature-rich black box to manage project or product creation with minimal specific skills, you might be better served by the [Cloud Foundation Toolkit](https://registry.terraform.io/modules/terraform-google-modules) suite of modules.
 
