@@ -222,7 +222,7 @@ module "vpc-sc-second" {
     }
   }
 }
-# tftest:modules=1:resources=3
+# tftest:modules=2:resources=5
 ```
 
 <!-- BEGIN TFDOC -->
