@@ -136,6 +136,95 @@ module "vpc-sc" {
 # tftest:modules=1:resources=3
 ```
 
+## Example VCP-SC standard perimeter with one service and one project in dry run mode in a Organization with an already existent access policy
+```hcl
+module "vpc-sc-first" {
+  source              = "./modules/vpc-sc"
+  organization_id     = "organizations/112233"
+  access_policy_title = "My Org Access Policy"
+  access_levels = {
+    my_trusted_proxy = {
+      combining_function = "AND"
+      conditions = [{
+        ip_subnetworks = ["85.85.85.52/32"]
+        required_access_levels = null
+        members        = []
+        negate         = false
+        regions        = null
+      }]
+    }
+  }
+  access_level_perimeters = {
+    enforced = {
+      my_trusted_proxy = ["perimeter"]
+    }
+  }
+  perimeters = {
+    perimeter = {
+      type = "PERIMETER_TYPE_REGULAR"
+      dry_run_config = {
+        restricted_services     = ["storage.googleapis.com", "bigquery.googleapis.com"]
+        vpc_accessible_services = ["storage.googleapis.com", "bigquery.googleapis.com"]
+      }
+      enforced_config = {
+        restricted_services     = ["storage.googleapis.com"]
+        vpc_accessible_services = ["storage.googleapis.com"]
+      }
+    }
+  }
+  perimeter_projects = {
+    perimeter = {
+      enforced = [111111111, 222222222]
+      dry_run  = [333333333]
+    }
+  }
+}
+
+module "vpc-sc-second" {
+  source              = "./modules/vpc-sc"
+  organization_id     = "organizations/112233"
+  access_policy_create = false
+  access_policy_name = module.vpc-sc-first.access_policy_name
+  access_levels = {
+    my_trusted_proxy = {
+      combining_function = "AND"
+      conditions = [{
+        ip_subnetworks = ["85.85.85.52/32"]
+        required_access_levels = null
+        members        = []
+        negate         = false
+        regions        = null
+      }]
+    }
+  }
+  access_level_perimeters = {
+    enforced = {
+      my_trusted_proxy = ["secperimeter"]
+    }
+  }
+  perimeters = {
+    secperimeter = {
+      type = "PERIMETER_TYPE_REGULAR"
+      dry_run_config = {
+        restricted_services     = ["storage.googleapis.com", "bigquery.googleapis.com"]
+        vpc_accessible_services = ["storage.googleapis.com", "bigquery.googleapis.com"]
+      }
+      enforced_config = {
+        restricted_services     = ["storage.googleapis.com"]
+        vpc_accessible_services = ["storage.googleapis.com"]
+      }
+    }
+  }
+  perimeter_projects = {
+    secperimeter = {
+      enforced = [444444444, 666666666]
+      dry_run  = [555555555]
+    }
+  }
+}
+# tftest:modules=1:resources=3
+```
+
 <!-- BEGIN TFDOC -->
 ## Variables
 

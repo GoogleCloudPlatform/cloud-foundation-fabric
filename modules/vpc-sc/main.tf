@@ -15,7 +15,11 @@
  */
 
 locals {
-  access_policy_name = google_access_context_manager_access_policy.default.name
+  access_policy_name = (
+    var.access_policy_create
+    ? try(google_access_context_manager_access_policy.default[0].name, null)
+    : var.access_policy_name
+  )
 
   standard_perimeters = {
     for key, value in var.perimeters :
@@ -36,8 +40,9 @@ locals {
 }
 
 resource "google_access_context_manager_access_policy" "default" {
+  count  = var.access_policy_create ? 1 : 0
   parent = var.organization_id
-  title  = var.access_policy_title
+  title  = var.access_policy_title == null ? "${var.organization_id}-title" : var.access_policy_title
 }
 
 resource "google_access_context_manager_access_level" "default" {
