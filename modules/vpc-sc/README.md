@@ -230,11 +230,11 @@ module "vpc-sc-second" {
 
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
-| access_policy_name | Referenced Access Policy name | <code title="">string</code> | ✓ |  |
 | organization_id | Organization id in organizations/nnnnnn format. | <code title="">string</code> | ✓ |  |
 | *access_level_perimeters* | Enforced mode -> Access Level -> Perimeters mapping. Enforced mode can be 'enforced' or 'dry_run' | <code title="map&#40;map&#40;list&#40;string&#41;&#41;&#41;">map(map(list(string)))</code> |  | <code title="">{}</code> |
 | *access_levels* | Map of Access Levels to be created. For each Access Level you can specify 'ip_subnetworks, required_access_levels, members, negate or regions'. | <code title="map&#40;object&#40;&#123;&#10;combining_function &#61; string&#10;conditions &#61; list&#40;object&#40;&#123;&#10;ip_subnetworks         &#61; list&#40;string&#41;&#10;required_access_levels &#61; list&#40;string&#41;&#10;members                &#61; list&#40;string&#41;&#10;negate                 &#61; string&#10;regions                &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
 | *access_policy_create* | enable autocreation of the Access Policy | <code title="">bool</code> |  | <code title="">true</code> |
+| *access_policy_name* | Referenced Access Policy name | <code title="">string</code> |  | <code title="">null</code> |
 | *access_policy_title* | Access Policy title to be created. | <code title="">string</code> |  | <code title="">null</code> |
 | *egress_policies* | List of EgressPolicies in the form described in the [documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/access_context_manager_service_perimeter#egress_policies) | <code title=""></code> |  | <code title="">null</code> |
 | *egress_policies_perimeters* | Enforced mode -> Egress Policy -> Perimeters mapping. Enforced mode can be 'enforced' or 'dry_run' | <code title="map&#40;map&#40;list&#40;string&#41;&#41;&#41;">map(map(list(string)))</code> |  | <code title="">{}</code> |
