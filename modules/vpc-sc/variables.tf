@@ -38,6 +38,7 @@ variable "access_policy_create" {
 variable "access_policy_name" {
   description = "Referenced Access Policy name"
   type        = string
+  default     = null
 }
 
 variable "access_level_perimeters" {
