@@ -239,7 +239,6 @@ module "vm-test1" {
     subnetwork = module.vpc.subnet_self_links["${var.region.gcp1}/subnet1"]
     nat        = false
     addresses  = null
-    alias_ips  = null
   }]
   metadata               = { startup-script = local.vm-startup-script }
   service_account        = module.service-account-gce.email
@@ -257,7 +256,6 @@ module "vm-test2" {
     subnetwork = module.vpc.subnet_self_links["${var.region.gcp2}/subnet2"]
     nat        = false
     addresses  = null
-    alias_ips  = null
   }]
   metadata               = { startup-script = local.vm-startup-script }
   service_account        = module.service-account-gce.email
@@ -325,7 +323,6 @@ module "vm-onprem" {
     subnetwork = module.vpc.subnet_self_links["${var.region.gcp1}/subnet1"]
     nat        = true
     addresses  = null
-    alias_ips  = null
   }]
   service_account        = module.service-account-onprem.email
   service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]

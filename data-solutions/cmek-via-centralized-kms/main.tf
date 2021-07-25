@@ -106,7 +106,6 @@ module "vm_example" {
     subnetwork = module.vpc.subnet_self_links["${var.region}/subnet"],
     nat        = false,
     addresses  = null
-    alias_ips  = null
   }]
   attached_disks = [
     {
