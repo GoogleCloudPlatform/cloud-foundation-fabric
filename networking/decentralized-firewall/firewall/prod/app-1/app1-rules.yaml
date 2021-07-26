@@ -29,4 +29,3 @@ app1-db:
   direction: INGRESS
   source_tags: ['app1-backend']
   target_tags: ['mysql-server']
-
