@@ -15,9 +15,11 @@
  */
 
 module "firewall" {
-  source      = "../../../../modules/net-vpc-firewall-yaml"
-  project_id  = "my-project"
-  network     = "my-network"
-  config_path = "./rules"
-  log_config  = var.log_config
+  source     = "../../../../modules/net-vpc-firewall-yaml"
+  project_id = "my-project"
+  network    = "my-network"
+  config_directories = [
+    "./rules"
+  ]
+  log_config = var.log_config
 }
