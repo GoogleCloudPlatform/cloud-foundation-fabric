@@ -1,8 +1,8 @@
 # Decentralized firewall management
 
-This sample shows how a decentralized firewall management can be organized using [firewall-yaml](../../modules/net-vpc-firewall-yaml) module.
+This sample shows how a decentralized firewall management can be organized using the [firewall-yaml](../../modules/net-vpc-firewall-yaml) module.
 
-This approach is a good fit when Shared VPCs are used across multiple application/infrastructure teams. A centrall repository keeps environment/team specific folders with firewall definitions in `yaml` format. This is the high level diagram:
+This approach is a good fit when Shared VPCs are used across multiple application/infrastructure teams. A central repository keeps environment/team specific folders with firewall definitions in `yaml` format. This is the high level diagram:
 
 ![High-level diagram](diagram.png "High-level diagram")
 
