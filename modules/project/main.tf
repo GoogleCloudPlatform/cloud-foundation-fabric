@@ -73,6 +73,16 @@ locals {
       } if key != null
     ]
   ])
+
+  temp_project_id = var.random_project_id ? format(
+    "%s-%s",
+    var.name,
+    random_id.random_project_id_suffix.hex
+  ) : var.name
+}
+
+resource "random_id" "random_project_id_suffix" {
+  byte_length = 2
 }
 
 data "google_project" "project" {
@@ -84,7 +94,7 @@ resource "google_project" "project" {
   count               = var.project_create ? 1 : 0
   org_id              = local.parent_type == "organizations" ? local.parent_id : null
   folder_id           = local.parent_type == "folders" ? local.parent_id : null
-  project_id          = "${local.prefix}${var.name}"
+  project_id          = "${local.prefix}${local.temp_project_id}"
   name                = "${local.prefix}${var.name}"
   billing_account     = var.billing_account
   auto_create_network = var.auto_create_network

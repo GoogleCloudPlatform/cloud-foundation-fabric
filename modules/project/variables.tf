@@ -215,3 +215,9 @@ variable "service_perimeter_bridges" {
   type        = list(string)
   default     = null
 }
+
+variable "random_project_id" {
+  description = "Adds a suffix of byte_lenght/2 random characters to the `project_id`"
+  type        = bool
+  default     = false
+}
