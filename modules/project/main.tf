@@ -74,16 +74,9 @@ locals {
     ]
   ])
 
-  temp_project_id = var.random_project_id ? format(
-    "%s-%s",
-    var.name,
-    random_id.random_project_id_suffix.hex
-  ) : var.name
+  temp_project_id = var.project_id != null ? var.project_id : var.name
 }
 
-resource "random_id" "random_project_id_suffix" {
-  byte_length = 2
-}
 
 data "google_project" "project" {
   count      = var.project_create ? 0 : 1
