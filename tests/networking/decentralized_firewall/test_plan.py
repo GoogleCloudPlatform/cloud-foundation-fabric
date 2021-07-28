@@ -25,4 +25,3 @@ def test_resources(e2e_plan_runner):
     modules, resources = e2e_plan_runner(FIXTURES_DIR)
     assert len(modules) == 8
     assert len(resources) == 50
-    assert modules == "something"
