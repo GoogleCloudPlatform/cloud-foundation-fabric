@@ -74,7 +74,7 @@ locals {
     ]
   ])
 
-  name = var.descriptive_name != null ? var.descriptive_name : var.name
+  descriptive_name = var.descriptive_name != null ? var.descriptive_name : "${local.prefix}${var.name}"
 }
 
 
@@ -88,7 +88,7 @@ resource "google_project" "project" {
   org_id              = local.parent_type == "organizations" ? local.parent_id : null
   folder_id           = local.parent_type == "folders" ? local.parent_id : null
   project_id          = "${local.prefix}${var.name}"
-  name                = "${local.prefix}${local.name}"
+  name                = "${local.descriptive_name}"
   billing_account     = var.billing_account
   auto_create_network = var.auto_create_network
   labels              = var.labels
