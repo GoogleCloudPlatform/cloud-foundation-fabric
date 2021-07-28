@@ -74,7 +74,7 @@ locals {
     ]
   ])
 
-  temp_project_id = var.project_id != null ? var.project_id : var.name
+  name = var.descriptive_name != null ? var.descriptive_name : var.name
 }
 
 
@@ -87,8 +87,8 @@ resource "google_project" "project" {
   count               = var.project_create ? 1 : 0
   org_id              = local.parent_type == "organizations" ? local.parent_id : null
   folder_id           = local.parent_type == "folders" ? local.parent_id : null
-  project_id          = "${local.prefix}${local.temp_project_id}"
-  name                = "${local.prefix}${var.name}"
+  project_id          = "${local.prefix}${var.name}"
+  name                = "${local.prefix}${local.name}"
   billing_account     = var.billing_account
   auto_create_network = var.auto_create_network
   labels              = var.labels

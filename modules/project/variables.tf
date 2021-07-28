@@ -216,8 +216,8 @@ variable "service_perimeter_bridges" {
   default     = null
 }
 
-variable "project_id" {
-  description = "Define`project_id`"
+variable "descriptive_name" {
+  description = "Name of the project name. Used for project name instead of `name` variable"
   type        = string
   default     = null
 }
