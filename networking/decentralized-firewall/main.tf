@@ -114,8 +114,8 @@ module "vpc-firewall-prod" {
   project_id = module.project-host-prod.project_id
   network    = module.vpc-prod.name
   config_directories = [
-    "./firewall/common",
-    "./firewall/prod"
+    "${path.module}/firewall/common",
+    "${path.module}/firewall/prod"
   ]
 
   # Enable Firewall Logging for the production fwl rules
@@ -130,7 +130,7 @@ module "vpc-firewall-dev" {
   project_id = module.project-host-dev.project_id
   network    = module.vpc-dev.name
   config_directories = [
-    "./firewall/common",
-    "./firewall/dev"
+    "${path.module}/firewall/common",
+    "${path.module}/firewall/dev"
   ]
 }
