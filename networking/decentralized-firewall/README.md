@@ -2,7 +2,12 @@
 
 This sample shows how a decentralized firewall management can be organized using the [firewall-yaml](../../modules/net-vpc-firewall-yaml) module.
 
-This approach is a good fit when Shared VPCs are used across multiple application/infrastructure teams. A central repository keeps environment/team specific folders with firewall definitions in `yaml` format. This is the high level diagram:
+This approach is a good fit when Shared VPCs are used across multiple application/infrastructure teams. A central repository keeps environment/team specific folders with firewall definitions in `yaml` format. 
+
+In the current example multiple teams can define their [VPC Firewall Rules](https://cloud.google.com/vpc/docs/firewalls) for [dev](./firewall/dev) and [prod](./firewall/prod) environments using team specific subfolders. Rules defined in the [common](./firewall/common) folder are applied to both dev and prod environments.
+> **_NOTE:_**  Common rules are meant to be used for situations where [hierarchical rules](https://cloud.google.com/vpc/docs/firewall-policies) do not map precisely to requirements (e.g. SA, etc.) 
+
+This is the high level diagram:
 
 ![High-level diagram](diagram.png "High-level diagram")
 
