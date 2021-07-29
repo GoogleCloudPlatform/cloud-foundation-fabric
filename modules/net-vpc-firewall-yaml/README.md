@@ -4,7 +4,7 @@ This module allows creation and management of different types of firewall rules 
 
 Yaml abstraction for FW rules can simplify users onboarding and also makes rules definition simpler and clearer comparing to HCL.
 
-Nested folder structure for yaml configurations is supported, which allows better and structured code management for multiple teams and environments. 
+Nested folder structure for yaml configurations is supported, which allows better and structured code management for multiple teams and environments.
 
 ## Example
 
@@ -32,7 +32,7 @@ module "dev-firewall" {
   project_id         = "my-dev-project"
   network            = "my-dev-network"
   config_directories = [
-    "./prod",
+    "./dev",
     "./common"
   ]
 }
