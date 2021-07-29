@@ -24,9 +24,9 @@ variable "project_id" {
   type        = string
 }
 
-variable "config_path" {
-  description = "Path to a folder where firewall configs are stored in yaml format. Folder may include subfolders with configuration files. Files suffix must be `.yaml`"
-  type        = string
+variable "config_directories" {
+  description = "List of paths to folders where firewall configs are stored in yaml format. Folder may include subfolders with configuration files. Files suffix must be `.yaml`"
+  type        = list(string)
 }
 
 variable "log_config" {
