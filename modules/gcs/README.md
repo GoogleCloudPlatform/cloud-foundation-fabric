@@ -67,7 +67,7 @@ module "bucket" {
   source     = "./modules/gcs"
   project_id = "myproject"
   prefix     = "test"
-  names      = "my-bucket"
+  name      = "my-bucket"
 
   iam = {
     "roles/storage.admin" = ["group:storage@example.com"]
