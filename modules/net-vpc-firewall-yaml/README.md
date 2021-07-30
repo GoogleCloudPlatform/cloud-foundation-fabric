@@ -4,7 +4,7 @@ This module allows creation and management of different types of firewall rules 
 
 Yaml abstraction for FW rules can simplify users onboarding and also makes rules definition simpler and clearer comparing to HCL.
 
-Nested folder structure for yaml configurations is supported, which allows better and structured code management. 
+Nested folder structure for yaml configurations is supported, which allows better and structured code management for multiple teams and environments.
 
 ## Example
 
@@ -12,20 +12,29 @@ Nested folder structure for yaml configurations is supported, which allows bette
 
 ```hcl
 module "prod-firewall" {
-  source      = "./modules/net-vpc-firewall-yaml"
-  project_id  = "my-prod-project"
-  network     = "my-prod-network"
-  config_path = "./prod"
+  source = "./modules/net-vpc-firewall-yaml"
+  
+  project_id         = "my-prod-project"
+  network            = "my-prod-network"
+  config_directories = [
+    "./prod",
+    "./common"
+  ]
+
   log_config  = {
     metadata = "INCLUDE_ALL_METADATA"
   }
 }
 
 module "dev-firewall" {
-  source      = "./modules/net-vpc-firewall-yaml"
-  project_id  = "my-dev-project"
-  network     = "my-dev-network"
-  config_path = "./dev"
+  source = "./modules/net-vpc-firewall-yaml"
+  
+  project_id         = "my-dev-project"
+  network            = "my-dev-network"
+  config_directories = [
+    "./dev",
+    "./common"
+  ]
 }
 # tftest:skip
 ```
@@ -33,9 +42,11 @@ module "dev-firewall" {
 ### Configuration Structure
 
 ```bash
+├── common
+│   ├── default-egress.yaml
+│   ├── lb-rules.yaml
+│   └── iap-ingress.yaml
 ├── dev
-│   ├── core
-│   │   └── common-rules.yaml
 │   ├── team-a
 │   │   ├── databases.yaml
 │   │   └── webb-app-a.yaml
@@ -43,8 +54,6 @@ module "dev-firewall" {
 │       ├── backend.yaml
 │       └── frontend.yaml
 └── prod
-    ├── core
-    │   └── common-rules.yaml
     ├── team-a
     │   ├── databases.yaml
     │   └── webb-app-a.yaml
@@ -63,7 +72,7 @@ rule-name: # descriptive name, naming convention is adjusted by the module
   - ports: ['443', '80'] # ports for a specific protocol, keep empty list `[]` for all ports
     protocol: tcp # protocol, put `all` for any protocol
   direction: EGRESS # EGRESS or INGRESS
-  disabled: false # `false` or `true`, FW rule is disabled when `true`, default value is `true`
+  disabled: false # `false` or `true`, FW rule is disabled when `true`, default value is `false`
   priority: 1000 # rule priority value, default value is 1000
   source_ranges: # list of source ranges, should be specified only for `INGRESS` rule
   - 0.0.0.0/0
@@ -131,7 +140,7 @@ web-app-a-ingress:
 
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
-| config_path | Path to a folder where firewall configs are stored in yaml format. Folder may include subfolders with configuration files. Files suffix must be `.yaml` | <code title="">string</code> | ✓ |  |
+| config_directories | List of paths to folders where firewall configs are stored in yaml format. Folder may include subfolders with configuration files. Files suffix must be `.yaml` | <code title="list&#40;string&#41;">list(string)</code> | ✓ |  |
 | network | Name of the network this set of firewall rules applies to. | <code title="">string</code> | ✓ |  |
 | project_id | Project Id. | <code title="">string</code> | ✓ |  |
 | *log_config* | Log configuration. Possible values for `metadata` are `EXCLUDE_ALL_METADATA` and `INCLUDE_ALL_METADATA`. Set to `null` for disabling firewall logging. | <code title="object&#40;&#123;&#10;metadata &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |

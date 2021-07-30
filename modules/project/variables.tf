@@ -215,3 +215,9 @@ variable "service_perimeter_bridges" {
   type        = list(string)
   default     = null
 }
+
+variable "descriptive_name" {
+  description = "Name of the project name. Used for project name instead of `name` variable"
+  type        = string
+  default     = null
+}
