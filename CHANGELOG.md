@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+- add support for `lifecycle_rule` in gcs module
 - create `pubsub` service identity if service is enabled
 - support for creation of GKE Autopilot clusters
 - add support for CMEK keys in Data Foundation end to end example
