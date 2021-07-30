@@ -3,6 +3,9 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+
+## [5.1.0] - 2021-08-30
+
 - add support for `lifecycle_rule` in gcs module
 - create `pubsub` service identity if service is enabled
 - support for creation of GKE Autopilot clusters
@@ -332,7 +335,8 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v5.0.0...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v5.1.0...HEAD
+[5.1.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v5.0.0...v5.1.0
 [5.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.9.0...v5.0.0
 [4.9.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.8.0...v4.9.0
 [4.8.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.7.0...v4.8.0
