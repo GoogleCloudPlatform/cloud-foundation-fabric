@@ -1,0 +1,16 @@
+archives:
+  - name_template: "{{ .ProjectName }}_{{ .Version }}"
+    wrap_in_directory: true
+builds:
+  - ignore:
+      - goos: darwin
+      - goos: linux
+checksum:
+  name_template: 'checksums.txt'
+snapshot:
+  name_template: "{{ incpatch .Tag }}-next"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
