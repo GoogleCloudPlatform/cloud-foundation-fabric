@@ -1,0 +1,10 @@
+steps:
+# Create github release.
+- name: goreleaser/goreleaser
+  entrypoint: /bin/sh
+  args: ['-c', 'git tag $TAG_NAME && pwd && /usr/local/bin/goreleaser release --config .ci/.goreleaser.yml --rm-dist']
+  secretEnv: ['GITHUB_TOKEN']
+availableSecrets:
+  secretManager:
+  - versionName: projects/#######/secrets/github_token/versions/latest
+    env: 'GITHUB_TOKEN'
