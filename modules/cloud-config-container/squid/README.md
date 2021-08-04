@@ -24,7 +24,7 @@ This example will create a `cloud-config` that allows any client in the 10.0.0.0
 
 ```hcl
 module "cos-squid" {
-  source           = "./modules/cos-container/squid"
+  source           = "./modules/cloud-config-container/squid"
   whitelist = [".github.com"]
   clients   = ["10.0.0.0/8"]
 }
@@ -42,7 +42,7 @@ This example shows how to create the single instance optionally managed by the m
 
 ```hcl
 module "cos-squid" {
-  source           = "./modules/cos-container/squid"
+  source           = "./modules/cloud-config-container/squid"
   whitelist = ["github.com"]
   clients   = ["10.0.0.0/8"]
   test_instance = {

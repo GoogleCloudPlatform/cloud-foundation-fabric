@@ -27,7 +27,7 @@ variable "defaults" {
   description = "Subscription defaults for options."
   type = object({
     ack_deadline_seconds       = number
-    message_retention_duration = number
+    message_retention_duration = string
     retain_acked_messages      = bool
     expiration_policy_ttl      = string
   })
@@ -93,7 +93,7 @@ variable "subscriptions" {
     labels = map(string)
     options = object({
       ack_deadline_seconds       = number
-      message_retention_duration = number
+      message_retention_duration = string
       retain_acked_messages      = bool
       expiration_policy_ttl      = string
     })

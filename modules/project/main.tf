@@ -15,6 +15,7 @@
  */
 
 locals {
+  descriptive_name = var.descriptive_name != null ? var.descriptive_name : "${local.prefix}${var.name}"
   group_iam_roles = distinct(flatten(values(var.group_iam)))
   group_iam = {
     for r in local.group_iam_roles : r => [
@@ -65,7 +66,16 @@ locals {
       if sink.iam && sink.type == type
     }
   }
+  service_encryption_key_ids = flatten([
+    for service in keys(var.service_encryption_key_ids) : [
+      for key in var.service_encryption_key_ids[service] : {
+        service = service
+        key     = key
+      } if key != null
+    ]
+  ])
 }
+
 
 data "google_project" "project" {
   count      = var.project_create ? 0 : 1
@@ -77,7 +87,7 @@ resource "google_project" "project" {
   org_id              = local.parent_type == "organizations" ? local.parent_id : null
   folder_id           = local.parent_type == "folders" ? local.parent_id : null
   project_id          = "${local.prefix}${var.name}"
-  name                = "${local.prefix}${var.name}"
+  name                = local.descriptive_name
   billing_account     = var.billing_account
   auto_create_network = var.auto_create_network
   labels              = var.labels
@@ -355,4 +365,21 @@ resource "google_access_context_manager_service_perimeter_resource" "service-per
   # modules/vpc-sc/google_access_context_manager_service_perimeter resource.
   perimeter_name = each.value
   resource       = "projects/${local.project.number}"
+}
+
+resource "google_kms_crypto_key_iam_member" "crypto_key" {
+  for_each = {
+    for service_key in local.service_encryption_key_ids : "${service_key.service}.${service_key.key}" => service_key if service_key != service_key.key
+  }
+  crypto_key_id = each.value.key
+  role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+  member        = "serviceAccount:${local.service_accounts_robots[each.value.service]}"
+  depends_on = [
+    google_project.project,
+    google_project_service.project_services,
+    google_project_service_identity.jit_si,
+    data.google_bigquery_default_service_account.bq_sa,
+    data.google_project.project,
+    data.google_storage_project_service_account.gcs_sa,
+  ]
 }

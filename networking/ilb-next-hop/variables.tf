@@ -57,3 +57,9 @@ variable "region" {
   type        = string
   default     = "europe-west1"
 }
+
+variable "zones" {
+  description = "Zone suffixes used for instances."
+  type        = list(string)
+  default     = ["b", "c"]
+}

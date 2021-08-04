@@ -42,13 +42,15 @@ resource "google_container_cluster" "cluster" {
   logging_service             = var.logging_service
   monitoring_service          = var.monitoring_service
   resource_labels             = var.labels
-  default_max_pods_per_node   = var.default_max_pods_per_node
+  default_max_pods_per_node   = var.enable_autopilot ? null : var.default_max_pods_per_node
   enable_binary_authorization = var.enable_binary_authorization
   enable_intranode_visibility = var.enable_intranode_visibility
   enable_shielded_nodes       = var.enable_shielded_nodes
   enable_tpu                  = var.enable_tpu
   initial_node_count          = 1
-  remove_default_node_pool    = true
+  remove_default_node_pool    = var.enable_autopilot ? null : true
+  datapath_provider           = var.enable_dataplane_v2 ? "ADVANCED_DATAPATH" : "DATAPATH_PROVIDER_UNSPECIFIED"
+  enable_autopilot            = var.enable_autopilot == true ? true : null
 
   # node_config {}
   # NOTE: Default node_pool is deleted, so node_config (here) is extranneous.
@@ -65,8 +67,11 @@ resource "google_container_cluster" "cluster" {
     horizontal_pod_autoscaling {
       disabled = !var.addons.horizontal_pod_autoscaling
     }
-    network_policy_config {
-      disabled = !var.addons.network_policy_config
+    dynamic "network_policy_config" {
+      for_each = !var.enable_autopilot ? [""] : []
+      content {
+        disabled = !var.addons.network_policy_config
+      }
     }
     cloudrun_config {
       disabled = !var.addons.cloudrun_config
@@ -120,11 +125,12 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
+  #the network_policy block is enabled if network_policy_config and network_dataplane_v2 is set to false. Dataplane V2 has built-in network policies.
   dynamic "network_policy" {
     for_each = var.addons.network_policy_config ? [""] : []
     content {
-      enabled  = true
-      provider = "CALICO"
+      enabled  = var.enable_dataplane_v2 ? false : true
+      provider = var.enable_dataplane_v2 ? "PROVIDER_UNSPECIFIED" : "CALICO"
     }
   }
 
@@ -215,7 +221,7 @@ resource "google_container_cluster" "cluster" {
   }
 
   dynamic "workload_identity_config" {
-    for_each = var.workload_identity ? [""] : []
+    for_each = var.workload_identity && !var.enable_autopilot ? [""] : []
     content {
       identity_namespace = "${var.project_id}.svc.id.goog"
     }

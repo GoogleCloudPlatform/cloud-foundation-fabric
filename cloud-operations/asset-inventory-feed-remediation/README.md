@@ -33,7 +33,6 @@ Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/c
 
 - `terraform init`
 - `terraform apply -var project_id=my-project-id`
-- copy and paste the `feed_create` output in the console then run it to create the feed
 
 Once done testing, you can clean up resources by running `terraform destroy`. To persist state, check out the `backend.tf.sample` file.
 
@@ -41,7 +40,6 @@ Once done testing, you can clean up resources by running `terraform destroy`. To
 
 The terraform outputs generate preset `gcloud` commands that you can copy and run in the console, to complete configuration and test the example:
 
-- `feed_create` is run once to create the feed, as there's currently no Terraform resource available for Cloud Asset feeds
 - `subscription_pull` shows messages in the PubSub queue, to check feed message format if the Cloud Function is disabled
 - `cf_logs` shows Cloud Function logs to check that remediation works
 - `tag_add` adds a non-compliant tag to the test instance, and triggers the Cloud Function remediation process
@@ -70,7 +68,6 @@ Run the `subscription_pull` command until it returns nothing, then run the follo
 | name | description | sensitive |
 |---|---|:---:|
 | cf_logs | Cloud Function logs read command. |  |
-| feed_create | Feed gcloud command. |  |
 | subscription_pull | Subscription pull command. |  |
 | tag_add | Instance add tag command. |  |
 | tag_show | Instance add tag command. |  |

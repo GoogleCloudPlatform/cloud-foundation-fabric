@@ -17,12 +17,11 @@
 locals {
   service_account_cloud_services = "${local.project.number}@cloudservices.gserviceaccount.com"
   service_accounts_default = {
-    # TODO: Find a better place to store BQ service account
-    bq      = "bq-${local.project.number}@bigquery-encryption.iam.gserviceaccount.com"
     compute = "${local.project.number}-compute@developer.gserviceaccount.com"
     gae     = "${local.project.project_id}@appspot.gserviceaccount.com"
   }
   service_accounts_robot_services = {
+    bq                = "bigquery-encryption"
     cloudasset        = "gcp-sa-cloudasset"
     cloudbuild        = "gcp-sa-cloudbuild"
     compute           = "compute-system"
@@ -33,10 +32,37 @@ locals {
     gae-flex          = "gae-api-prod"
     gcf               = "gcf-admin-robot"
     pubsub            = "gcp-sa-pubsub"
+    secretmanager     = "gcp-sa-secretmanager"
     storage           = "gs-project-accounts"
   }
   service_accounts_robots = {
     for service, name in local.service_accounts_robot_services :
-    service => "service-${local.project.number}@${name}.iam.gserviceaccount.com"
+    service => "${service == "bq" ? "bq" : "service"}-${local.project.number}@${name}.iam.gserviceaccount.com"
   }
+  jit_services = [
+    "secretmanager.googleapis.com",
+    "pubsub.googleapis.com",
+    "cloudasset.googleapis.com"
+  ]
+}
+
+data "google_storage_project_service_account" "gcs_sa" {
+  count      = contains(var.services, "storage.googleapis.com") ? 1 : 0
+  project    = local.project.project_id
+  depends_on = [google_project_service.project_services]
+}
+
+data "google_bigquery_default_service_account" "bq_sa" {
+  count      = contains(var.services, "bigquery.googleapis.com") ? 1 : 0
+  project    = local.project.project_id
+  depends_on = [google_project_service.project_services]
+}
+
+# Secret Manager SA created just in time, we need to trigger the creation.
+resource "google_project_service_identity" "jit_si" {
+  for_each   = setintersection(var.services, local.jit_services)
+  provider   = google-beta
+  project    = local.project.project_id
+  service    = each.value
+  depends_on = [google_project_service.project_services]
 }

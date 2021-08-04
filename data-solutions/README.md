@@ -14,3 +14,11 @@ They are meant to be used as minimal but complete starting points to create actu
 ### Cloud Storage to Bigquery with Cloud Dataflow
 <a href="./gcs-to-bq-with-dataflow/" title="Cloud Storage to Bigquery with Cloud Dataflow"><img src="./gcs-to-bq-with-dataflow/diagram.png" align="left" width="280px"></a> This [example](./gcs-to-bq-with-dataflow/) implements [Cloud Storage](https://cloud.google.com/kms/docs/cmek) to Bigquery data import using Cloud Dataflow.
 All resources use CMEK hosted in Cloud KMS running in a centralized project. The example shows the basic resources and permissions for the typical use case to read, transform and import data from Cloud Storage to Bigquery.
+<br clear="left">
+
+### Data Platform Foundations
+
+<a href="./data-platform-foundations/" title="Data Platform Foundations"><img src="./data-platform-foundations/02-resources/diagram.png" align="left" width="280px"></a>
+This [example](./data-platform-foundations/) implements a robust and flexible Data Foundation on GCP that provides opinionated defaults, allowing customers to build and scale out additional data pipelines quickly and reliably.
+<br clear="left">
+

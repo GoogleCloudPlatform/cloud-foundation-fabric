@@ -86,7 +86,7 @@ resource "google_access_context_manager_service_perimeter" "standard" {
       )
 
       dynamic "vpc_accessible_services" {
-        for_each = each.value.enforced_config.vpc_accessible_services != [] ? [""] : []
+        for_each = try(length(each.value.enforced_config.vpc_accessible_services) != 0 ? [""] : [], [])
 
         content {
           enable_restriction = true
@@ -199,7 +199,7 @@ resource "google_access_context_manager_service_perimeter" "standard" {
       )
 
       dynamic "vpc_accessible_services" {
-        for_each = try(each.value.dry_run_config.vpc_accessible_services != [] ? [""] : [], [])
+        for_each = try(length(each.value.dry_run_config.vpc_accessible_services) != 0 ? [""] : [], [])
 
         content {
           enable_restriction = true

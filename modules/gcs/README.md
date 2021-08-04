@@ -60,6 +60,40 @@ module "bucket" {
 # tftest:modules=1:resources=2
 ```
 
+### Example with lifecycle rule
+
+```hcl
+module "bucket" {
+  source     = "./modules/gcs"
+  project_id = "myproject"
+  prefix     = "test"
+  name      = "my-bucket"
+
+  iam = {
+    "roles/storage.admin" = ["group:storage@example.com"]
+  }
+
+  lifecycle_rule = {
+    action = {
+      type          = "SetStorageClass"
+      storage_class = "STANDARD"
+    }
+    condition = {
+      age                        = 30
+      created_before             = null
+      with_state                 = null
+      matches_storage_class      = null
+      num_newer_versions         = null
+      custom_time_before         = null
+      days_since_custom_time     = null
+      days_since_noncurrent_time = null
+      noncurrent_time_before     = null
+    }
+  }
+}
+# tftest:modules=1:resources=2
+```
+
 <!-- BEGIN TFDOC -->
 ## Variables
 
@@ -72,6 +106,7 @@ module "bucket" {
 | *force_destroy* | Optional map to set force destroy keyed by name, defaults to false. | <code title="">bool</code> |  | <code title="">false</code> |
 | *iam* | IAM bindings in {ROLE => [MEMBERS]} format. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
 | *labels* | Labels to be attached to all buckets. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
+| *lifecycle_rule* | Bucket lifecycle rule | <code title="object&#40;&#123;&#10;action &#61; object&#40;&#123;&#10;type &#61; string&#10;storage_class &#61; string&#10;&#125;&#41;&#10;condition &#61; object&#40;&#123;&#10;age                        &#61; number&#10;created_before             &#61; string&#10;with_state                 &#61; string&#10;matches_storage_class      &#61; list&#40;string&#41;&#10;num_newer_versions         &#61; string&#10;custom_time_before         &#61; string&#10;days_since_custom_time     &#61; string&#10;days_since_noncurrent_time &#61; string&#10;noncurrent_time_before     &#61; string&#10;&#125;&#41;&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 | *location* | Bucket location. | <code title="">string</code> |  | <code title="">EU</code> |
 | *logging_config* | Bucket logging configuration. | <code title="object&#40;&#123;&#10;log_bucket        &#61; string&#10;log_object_prefix &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 | *prefix* | Prefix used to generate the bucket name. | <code title="">string</code> |  | <code title="">null</code> |

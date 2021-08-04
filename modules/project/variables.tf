@@ -148,6 +148,12 @@ variable "service_config" {
   }
 }
 
+variable "service_encryption_key_ids" {
+  description = "Cloud KMS encryption key in {SERVICE => [KEY_URL]} format."
+  type        = map(list(string))
+  default     = {}
+}
+
 variable "shared_vpc_host_config" {
   description = "Configures this project as a Shared VPC host project (mutually exclusive with shared_vpc_service_project)."
   type = object({
@@ -192,7 +198,6 @@ variable "logging_exclusions" {
   default     = {}
 }
 
-
 variable "contacts" {
   description = "List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES"
   type        = map(list(string))
@@ -205,9 +210,14 @@ variable "service_perimeter_standard" {
   default     = null
 }
 
-
 variable "service_perimeter_bridges" {
   description = "Name of VPC-SC Bridge perimeters to add project into. Specify the name in the form of 'accessPolicies/ACCESS_POLICY_NAME/servicePerimeters/PERIMETER_NAME'."
   type        = list(string)
+  default     = null
+}
+
+variable "descriptive_name" {
+  description = "Name of the project name. Used for project name instead of `name` variable"
+  type        = string
   default     = null
 }

@@ -23,7 +23,8 @@ output "project_id" {
     google_project_organization_policy.boolean,
     google_project_organization_policy.list,
     google_project_service.project_services,
-    google_compute_shared_vpc_service_project.service_projects
+    google_compute_shared_vpc_service_project.service_projects,
+    google_kms_crypto_key_iam_member.crypto_key
   ]
 }
 
@@ -34,7 +35,8 @@ output "name" {
     google_project_organization_policy.boolean,
     google_project_organization_policy.list,
     google_project_service.project_services,
-    google_compute_shared_vpc_service_project.service_projects
+    google_compute_shared_vpc_service_project.service_projects,
+    google_kms_crypto_key_iam_member.crypto_key
   ]
 }
 
@@ -45,7 +47,8 @@ output "number" {
     google_project_organization_policy.boolean,
     google_project_organization_policy.list,
     google_project_service.project_services,
-    google_compute_shared_vpc_service_project.service_projects
+    google_compute_shared_vpc_service_project.service_projects,
+    google_kms_crypto_key_iam_member.crypto_key
   ]
 }
 
@@ -56,7 +59,11 @@ output "service_accounts" {
     default        = local.service_accounts_default
     robots         = local.service_accounts_robots
   }
-  depends_on = [google_project_service.project_services]
+  depends_on = [
+    google_project_service.project_services,
+    google_kms_crypto_key_iam_member.crypto_key,
+    google_project_service_identity.jit_si
+  ]
 }
 
 output "custom_roles" {

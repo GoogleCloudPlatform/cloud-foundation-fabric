@@ -134,7 +134,7 @@ module "kms" {
     },
     key-bq = {
       "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
-        "serviceAccount:${module.project-service.service_accounts.default.bq}",
+        "serviceAccount:${module.project-service.service_accounts.robots.bq}",
         #"serviceAccount:${data.google_bigquery_default_service_account.bq_sa.email}",
       ]
     },

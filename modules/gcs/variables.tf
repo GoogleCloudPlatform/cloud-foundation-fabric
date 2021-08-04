@@ -110,3 +110,25 @@ variable "cors" {
   })
   default = null
 }
+
+variable "lifecycle_rule" {
+  description = "Bucket lifecycle rule"
+  type = object({
+    action = object({
+      type          = string
+      storage_class = string
+    })
+    condition = object({
+      age                        = number
+      created_before             = string
+      with_state                 = string
+      matches_storage_class      = list(string)
+      num_newer_versions         = string
+      custom_time_before         = string
+      days_since_custom_time     = string
+      days_since_noncurrent_time = string
+      noncurrent_time_before     = string
+    })
+  })
+  default = null
+}

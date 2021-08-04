@@ -163,6 +163,7 @@ module "vpn_ha" {
 
 | name | description | sensitive |
 |---|---|:---:|
+| bgp_peers | BGP peer resources. |  |
 | external_gateway | External VPN gateway resource. |  |
 | gateway | VPN gateway resource (only if auto-created). |  |
 | name | VPN gateway name (only if auto-created).  |  |

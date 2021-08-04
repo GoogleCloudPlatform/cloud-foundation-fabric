@@ -15,10 +15,23 @@
  */
 
 locals {
+  firewall_rule_files = flatten(
+    [
+      for config_path in var.config_directories :
+      concat(
+        [
+          for config_file in fileset("${path.root}/${config_path}", "**/*.yaml") :
+          "${path.root}/${config_path}/${config_file}"
+        ]
+      )
+
+    ]
+  )
+
   firewall_rules = merge(
     [
-      for config_file in fileset("${path.root}/${var.config_path}", "**/*.yaml") :
-      try(yamldecode(file("${path.root}/${var.config_path}/${config_file}")), {})
+      for config_file in local.firewall_rule_files :
+      try(yamldecode(file(config_file)), {})
     ]...
   )
 }

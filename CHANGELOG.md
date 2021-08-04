@@ -4,9 +4,33 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [5.1.0] - 2021-08-30
+
+- add support for `lifecycle_rule` in gcs module
+- create `pubsub` service identity if service is enabled
+- support for creation of GKE Autopilot clusters
+- add support for CMEK keys in Data Foundation end to end example
+- add support for VPC-SC perimeters in Data Foundation end to end example
+- fix `vpc-sc` module
+- new networking example showing how to use [Private Service Connect to call a Cloud Function from on-premises](./networking/private-cloud-function-from-onprem/)
+- new networking example showing how to organize [decentralized firewall](./networking/decentralized-firewall/) management on GCP
+
+## [5.0.0] - 2021-06-17
+
+- fix `message_retention_duration` variable type in `pubsub` module
+- move `bq` robot service account into the robot service account project output
+- add IAM cryptDecrypt role to robot service account on specified keys
+- add Service Identity creation on `project` module if secretmanager enabled
+- add Data Foundation end to end example
+
+## [4.9.0] - 2021-06-04
+
 - **incompatible change** updated resource name for `google_dns_policy` on the `net-vpc` module
 - added support for VPC-SC Ingress Egress policies on the `vpc-sc` module
 - update CI to Terraform 0.15 and fix minor incompatibilities
+- add `deletion_protection` to the `bigquery-dataset` module
+- add support for dataplane v2 to GKE cluster module
+- add BGP peer outputs to HA VPN module
 
 ## [4.8.0] - 2021-05-12
 
@@ -311,7 +335,10 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.8.0...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v5.1.0...HEAD
+[5.1.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v5.0.0...v5.1.0
+[5.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.9.0...v5.0.0
+[4.9.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.8.0...v4.9.0
 [4.8.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.7.0...v4.8.0
 [4.7.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.6.1...v4.7.0
 [4.6.1]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.6.0...v4.6.1

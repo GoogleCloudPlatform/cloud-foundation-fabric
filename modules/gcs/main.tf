@@ -71,6 +71,27 @@ resource "google_storage_bucket" "bucket" {
       max_age_seconds = max(3600, var.cors.max_age_seconds)
     }
   }
+
+  dynamic lifecycle_rule {
+    for_each = var.lifecycle_rule == null ? [] : [""]
+    content {
+      action {
+        type          = var.lifecycle_rule.action["type"]
+        storage_class = var.lifecycle_rule.action["storage_class"]
+      }
+      condition {
+        age                        = var.lifecycle_rule.condition["age"]
+        created_before             = var.lifecycle_rule.condition["created_before"]
+        with_state                 = var.lifecycle_rule.condition["with_state"]
+        matches_storage_class      = var.lifecycle_rule.condition["matches_storage_class"]
+        num_newer_versions         = var.lifecycle_rule.condition["num_newer_versions"]
+        custom_time_before         = var.lifecycle_rule.condition["custom_time_before"]
+        days_since_custom_time     = var.lifecycle_rule.condition["days_since_custom_time"]
+        days_since_noncurrent_time = var.lifecycle_rule.condition["days_since_noncurrent_time"]
+        noncurrent_time_before     = var.lifecycle_rule.condition["noncurrent_time_before"]
+      }
+    }
+  }
 }
 
 resource "google_storage_bucket_iam_binding" "bindings" {
