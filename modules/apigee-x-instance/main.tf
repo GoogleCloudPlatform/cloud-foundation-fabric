@@ -1,3 +1,19 @@
+/**
+ * Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 resource "google_apigee_instance" "apigee_instance" {
   org_id             = var.apigee_org_id
   name               = var.name
@@ -5,7 +21,6 @@ resource "google_apigee_instance" "apigee_instance" {
   peering_cidr_range = "SLASH_${var.cidr_mask}"
   #disk_encryption_key_name = google_kms_crypto_key.apigee_key.id
 }
-
 
 resource "google_apigee_instance_attachment" "apigee_instance_attchment" {
   for_each     = toset(var.apigee_environments)

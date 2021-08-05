@@ -1,6 +1,6 @@
-# Apigee Module
+# Google Apigee Organization Module
 
-This module allows managing a single Apigee organization and its environments and environmentgrous.
+This module allows managing a single Apigee organization and its environments and environmentgroups.
 
 ## TODO
 
@@ -16,7 +16,7 @@ module "apigee" {
   project_id = "my-project"
   analytics_region = "us-central1"
   runtime_type = "CLOUD"
-  peering_network = "my-vpc"
+  authorized_network = "my-vpc"
   peering_range = "10.0.0.0/16"
   apigee_environments = [
     "eval1",
@@ -34,7 +34,7 @@ module "apigee" {
     }
   }
 }
-# tftest:modules=1:resources=10
+# tftest:modules=1:resources=6
 ```
 
 ### Apigee hybrid Evaluation Organization

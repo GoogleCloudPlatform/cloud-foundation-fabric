@@ -14,15 +14,36 @@
  * limitations under the License.
  */
 
-variable "project_id" {
-  description = "Project ID to host this Apigee organization (will also become the Apigee Org name)."
-  type        = string
+variable "authorized_network" {
+  description = "VPC network id (requires service network peering enabled (Used in Apigee X only)."
+  type = string
+  default = null
 }
 
 variable "analytics_region" {
   description = "Analytics Region for the Apgiee Organization (immutable). See https://cloud.google.com/apigee/docs/api-platform/get-started/install-cli."
   type = string
-  default = "us-central1"
+}
+
+variable "apigee_envgroups" {
+  description = "Apigee Environment Groups."
+  type = map(object({
+    environments      = list(string)
+    hostnames         = list(string)
+  }))
+  default = {}
+}
+
+variable "apigee_environments" {
+  description = "Apigee Environment Names."
+  type = list(string)
+  default = []
+}
+
+variable "description" {
+  description = "Description of the Apigee Organization."
+  type = string
+  default = "Apigee Organization created by tf module"
 }
 
 variable "display_name" {
@@ -31,10 +52,9 @@ variable "display_name" {
   default = null
 }
 
-variable "description" {
-  description = "Description of the Apigee Organization."
-  type = string
-  default = "Apigee Organization created by tf module"
+variable "project_id" {
+  description = "Project ID to host this Apigee organization (will also become the Apigee Org name)."
+  type        = string
 }
 
 variable "runtime_type" {
@@ -46,34 +66,4 @@ variable "runtime_type" {
   }
 }
 
-variable "peering_network" {
-  description = "VPC Network used for peering Apigee (Used in Apigee X only)."
-  type = string
-  default = null
 
-  # validation {
-  #   condition = var.runtime_type == "CLOUD" ? var.peering_vpc != null : true
-  #   error_message = "A peering_vpc must be provided for Apigee Organizations of runtime_type \"CLOUD\"."
-  # }
-}
-
-variable "peering_range" {
-  description = "RFC1919 CIDR range used for peering the Apigee tennant project. Min size for trial is /22 min size for PAID is /20"
-  type = string
-  default = null
-}
-
-variable "apigee_environments" {
-  description = "Apigee Environment Names."
-  type = list(string)
-  default = []
-}
-
-variable "apigee_envgroups" {
-  description = "Apigee Environment Groups."
-  type = map(object({
-    environments      = list(string)
-    hostnames         = list(string)
-  }))
-  default = {}
-}

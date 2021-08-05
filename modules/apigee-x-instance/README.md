@@ -1,4 +1,4 @@
-# Apigee Module
+# Google Apigee X Instance Module
 
 This module allows managing a single Apigee X instance and its environment attachments.
 

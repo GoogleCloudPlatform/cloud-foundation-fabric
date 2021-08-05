@@ -16,10 +16,10 @@
 
 locals {
   env_envgroup_pairs = flatten([
-    for eg_name, eg in var.apigee_envgroups: [
+    for eg_name, eg in var.apigee_envgroups : [
       for e in eg.environments : {
-        envgroup   = eg_name
-        env = e
+        envgroup = eg_name
+        env      = e
       }
     ]
   ])
@@ -31,7 +31,7 @@ resource "google_apigee_organization" "apigee_org" {
   display_name       = var.display_name
   description        = var.description
   runtime_type       = var.runtime_type
-  authorized_network = var.peering_network
+  authorized_network = var.authorized_network
 }
 
 resource "google_apigee_environment" "apigee_env" {
@@ -51,22 +51,4 @@ resource "google_apigee_envgroup_attachment" "env_to_envgroup_attachment" {
   for_each    = { for pair in local.env_envgroup_pairs : "${pair.envgroup}-${pair.env}" => pair }
   envgroup_id = google_apigee_envgroup.apigee_envgroup[each.value.envgroup].id
   environment = google_apigee_environment.apigee_env[each.value.env].name
-}
-
-resource "google_compute_global_address" "apigee_peering_range" {
-  count         = var.peering_range == null ? 0 : 1
-  project       = var.project_id
-  name          = "${var.project_id}-apigee-peering"
-  purpose       = "VPC_PEERING"
-  address_type  = "INTERNAL"
-  address       = split("/", var.peering_range)[0]
-  prefix_length = split("/", var.peering_range)[1]
-  network       = var.peering_network
-}
-
-resource "google_service_networking_connection" "apigee_vpc_connection" {
-  count                   = var.peering_network == null ? 0 : 1
-  network                 = "projects/${var.project_id}/global/networks/${var.peering_network}"
-  service                 = "servicenetworking.googleapis.com"
-  reserved_peering_ranges = [google_compute_global_address.apigee_peering_range.0.name]
 }
