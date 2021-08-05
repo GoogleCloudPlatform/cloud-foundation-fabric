@@ -115,7 +115,7 @@ resource "google_dns_managed_zone" "public" {
   visibility  = "public"
 
   dynamic "dnssec_config" {
-    for_each = var.dnssec_config == {} ? [] : list(var.dnssec_config)
+    for_each = var.dnssec_config == {} ? [] : tolist([var.dnssec_config])
     iterator = config
     content {
       kind          = lookup(config.value, "kind", "dns#managedZoneDnsSecConfig")
