@@ -44,7 +44,7 @@ variable "cidr_mask" {
 }
 
 variable "disk_encryption_key" {
-  description = "Customer Managed Encryption Key (CMEK) used for disk and volume encryption (required for PAID Apigee Orgs only)."
+  description = "Customer Managed Encryption Key (CMEK) self link (e.g. `projects/foo/locations/us/keyRings/bar/cryptoKeys/baz`) used for disk and volume encryption (required for PAID Apigee Orgs only)."
   type        = string
   default     = null
 }

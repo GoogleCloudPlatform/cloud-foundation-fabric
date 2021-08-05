@@ -15,13 +15,13 @@
  */
 
 variable "authorized_network" {
-  description = "VPC network id (requires service network peering enabled (Used in Apigee X only)."
+  description = "VPC network self link (requires service network peering enabled (Used in Apigee X only)."
   type = string
   default = null
 }
 
 variable "analytics_region" {
-  description = "Analytics Region for the Apgiee Organization (immutable). See https://cloud.google.com/apigee/docs/api-platform/get-started/install-cli."
+  description = "Analytics Region for the Apigee Organization (immutable). See https://cloud.google.com/apigee/docs/api-platform/get-started/install-cli."
   type = string
 }
 
@@ -41,7 +41,7 @@ variable "apigee_environments" {
 }
 
 variable "database_encryption_key" {
-  description = "Cloud KMS key name used for encrypting the data that is stored and replicated across runtime instances (immutable, used in Apigee X only)."
+  description = "Cloud KMS key self link (e.g. `projects/foo/locations/us/keyRings/bar/cryptoKeys/baz`) used for encrypting the data that is stored and replicated across runtime instances (immutable, used in Apigee X only)."
   type = string
   default = null
 }
