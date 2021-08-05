@@ -54,7 +54,7 @@ module "apigee-x-instance" {
 | region | Compute region. | <code title="">string</code> | ✓ |  |
 | *apigee_envgroups* | Apigee Environment Groups. | <code title="map&#40;object&#40;&#123;&#10;environments &#61; list&#40;string&#41;&#10;hostnames    &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
 | *apigee_environments* | Apigee Environment Names. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
-| *disk_encryption_key* | Customer Managed Encryption Key (CMEK) used for disk and volume encryption (required for PAID Apigee Orgs only). | <code title="">string</code> |  | <code title="">null</code> |
+| *disk_encryption_key* | Customer Managed Encryption Key (CMEK) self link (e.g. `projects/foo/locations/us/keyRings/bar/cryptoKeys/baz`) used for disk and volume encryption (required for PAID Apigee Orgs only). | <code title="">string</code> |  | <code title="">null</code> |
 
 ## Outputs
 
