@@ -14,12 +14,22 @@
  * See the License for the specific language governing permissions and
  */
 
+output "endpoint" {
+  description = "Internal endpoint of the Apigee instance."
+  value       = google_apigee_instance.apigee_instance.host
+}
+
+output "id" {
+  description = "Apigee instance ID."
+  value       = google_apigee_instance.apigee_instance.id
+}
+
 output "instance" {
   description = "Apigee instance."
   value       = google_apigee_instance.apigee_instance
 }
 
-output "endpoint" {
-  description = "Internal endpoint of the Apigee instance."
-  value       = google_apigee_instance.apigee_instance.host
+output "port" {
+  description = "Port number of the internal endpoint of the Apigee instance."
+  value       = google_apigee_instance.apigee_instance.port
 }

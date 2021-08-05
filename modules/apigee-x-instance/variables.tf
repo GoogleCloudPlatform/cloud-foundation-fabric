@@ -43,6 +43,12 @@ variable "cidr_mask" {
   }
 }
 
+variable "disk_encryption_key" {
+  description = "Customer Managed Encryption Key (CMEK) used for disk and volume encryption (required for PAID Apigee Orgs only)."
+  type        = string
+  default     = null
+}
+
 variable "name" {
   description = "Apigee instance name."
   type        = string

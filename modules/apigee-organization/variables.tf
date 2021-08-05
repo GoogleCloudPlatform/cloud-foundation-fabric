@@ -40,6 +40,12 @@ variable "apigee_environments" {
   default = []
 }
 
+variable "database_encryption_key" {
+  description = "Cloud KMS key name used for encrypting the data that is stored and replicated across runtime instances (immutable, used in Apigee X only)."
+  type = string
+  default = null
+}
+
 variable "description" {
   description = "Description of the Apigee Organization."
   type = string

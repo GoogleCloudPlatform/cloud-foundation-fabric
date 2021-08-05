@@ -26,12 +26,13 @@ locals {
 }
 
 resource "google_apigee_organization" "apigee_org" {
-  project_id         = var.project_id
-  analytics_region   = var.analytics_region
-  display_name       = var.display_name
-  description        = var.description
-  runtime_type       = var.runtime_type
-  authorized_network = var.authorized_network
+  project_id                           = var.project_id
+  analytics_region                     = var.analytics_region
+  display_name                         = var.display_name
+  description                          = var.description
+  runtime_type                         = var.runtime_type
+  authorized_network                   = var.authorized_network
+  runtime_database_encryption_key_name = var.database_encryption_key
 }
 
 resource "google_apigee_environment" "apigee_env" {

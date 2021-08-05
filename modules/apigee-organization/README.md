@@ -2,22 +2,17 @@
 
 This module allows managing a single Apigee organization and its environments and environmentgroups.
 
-## TODO
-
-- [ ] N/A
-
 ## Examples
 
 ### Apigee X Evaluation Organization
 
 ```hcl
-module "apigee" {
-  source     = "./modules/apigee"
+module "apigee-organization" {
+  source     = "./modules/apigee-organization"
   project_id = "my-project"
   analytics_region = "us-central1"
   runtime_type = "CLOUD"
   authorized_network = "my-vpc"
-  peering_range = "10.0.0.0/16"
   apigee_environments = [
     "eval1",
     "eval2"
@@ -37,11 +32,51 @@ module "apigee" {
 # tftest:modules=1:resources=6
 ```
 
-### Apigee hybrid Evaluation Organization
+### Apigee X Paid Organization
 
 ```hcl
-module "apigee" {
-  source     = "./modules/apigee"
+module "apigee-organization" {
+  source     = "./modules/apigee-organization"
+  project_id = "my-project"
+  analytics_region = "us-central1"
+  runtime_type = "CLOUD"
+  authorized_network = "my-vpc"
+  database_encryption_key = "my-data-key"
+  apigee_environments = [
+    "dev1",
+    "dev2",
+    "test1",
+    "test2"
+  ]
+  apigee_envgroups = {
+    dev = {
+      environments = [
+        "dev1",
+        "dev2"
+      ]
+      hostnames    = [
+        "dev.api.example.com"
+      ]
+    }
+    test = {
+      environments = [
+        "test1",
+        "test2"
+      ]
+      hostnames    = [
+        "test.api.example.com"
+      ]
+    }
+  }
+}
+# tftest:modules=1:resources=11
+```
+
+### Apigee hybrid Organization
+
+```hcl
+module "apigee-organization" {
+  source     = "./modules/apigee-organization"
   project_id = "my-project"
   analytics_region = "us-central1"
   runtime_type = "HYBRID"
