@@ -21,12 +21,18 @@ output "service_account" {
 
 output "email" {
   description = "Service account email."
-  value       = local.service_account.email
+  value       = local.resource_email_static
+  depends_on = [
+    local.service_account
+  ]
 }
 
 output "iam_email" {
   description = "IAM-format service account email."
-  value       = local.resource_iam_email
+  value       = local.resource_iam_email_static
+  depends_on = [
+    local.service_account
+  ]
 }
 
 output "key" {
