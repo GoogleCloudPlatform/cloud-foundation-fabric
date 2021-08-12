@@ -15,7 +15,7 @@
  */
 
 module "test" {
-  source     = "../../../../networking/hub-and-spoke-peering"
+  source = "../../../../networking/hub-and-spoke-peering"
   project_create = {
     billing_account = "123456-123456-123456"
     oslogin         = true

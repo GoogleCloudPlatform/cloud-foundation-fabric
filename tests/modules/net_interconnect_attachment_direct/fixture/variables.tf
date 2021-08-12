@@ -81,9 +81,9 @@ variable "router_config" {
   })
 
   default = {
-     description      = null
-     asn              = 64514
-     advertise_config = null
+    description      = null
+    asn              = 64514
+    advertise_config = null
   }
 }
 

@@ -71,6 +71,6 @@ variable "service_encryption_key_ids" {
 
 variable "service_perimeter_standard" {
   description = "VPC Service control standard perimeter name in the form of 'accessPolicies/ACCESS_POLICY_NAME/servicePerimeters/PERIMETER_NAME'. All projects will be added to the perimeter in enforced mode."
-  type = string
-  default = null
+  type        = string
+  default     = null
 }

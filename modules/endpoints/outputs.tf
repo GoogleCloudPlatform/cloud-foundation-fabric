@@ -26,5 +26,5 @@ output "endpoints_service" {
 
 output "endpoints" {
   description = "A list of Endpoint objects."
-  value       =  google_endpoints_service.default.endpoints
+  value       = google_endpoints_service.default.endpoints
 }
