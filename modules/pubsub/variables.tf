@@ -17,8 +17,8 @@
 variable "dead_letter_configs" {
   description = "Per-subscription dead letter policy configuration."
   type = map(object({
-    topic                = string
-    max_delivery_attemps = number
+    topic                 = string
+    max_delivery_attempts = number
   }))
   default = {}
 }
