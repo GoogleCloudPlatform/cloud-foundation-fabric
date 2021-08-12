@@ -67,7 +67,7 @@ resource "google_compute_region_backend_service" "default" {
   timeout_sec                     = try(var.backend_config.timeout_sec, null)
   connection_draining_timeout_sec = try(var.backend_config.connection_draining_timeout_sec, null)
 
-  dynamic backend {
+  dynamic "backend" {
     for_each = { for b in var.backends : b.group => b }
     iterator = backend
     content {
@@ -78,7 +78,7 @@ resource "google_compute_region_backend_service" "default" {
     }
   }
 
-  dynamic failover_policy {
+  dynamic "failover_policy" {
     for_each = var.failover_config == null ? [] : [var.failover_config]
     iterator = config
     content {
@@ -97,7 +97,7 @@ resource "google_compute_instance_group" "unmanaged" {
   name        = each.key
   description = "Terraform-managed."
   instances   = each.value.instances
-  dynamic named_port {
+  dynamic "named_port" {
     for_each = each.value.named_ports != null ? each.value.named_ports : {}
     iterator = config
     content {
@@ -131,7 +131,7 @@ resource "google_compute_health_check" "http" {
     response           = try(var.health_check_config.check.response, null)
   }
 
-  dynamic log_config {
+  dynamic "log_config" {
     for_each = try(var.health_check_config.logging, false) ? [""] : []
     content {
       enable = true
@@ -163,7 +163,7 @@ resource "google_compute_health_check" "https" {
     response           = try(var.health_check_config.check.response, null)
   }
 
-  dynamic log_config {
+  dynamic "log_config" {
     for_each = try(var.health_check_config.logging, false) ? [""] : []
     content {
       enable = true
@@ -194,7 +194,7 @@ resource "google_compute_health_check" "tcp" {
     response           = try(var.health_check_config.check.response, null)
   }
 
-  dynamic log_config {
+  dynamic "log_config" {
     for_each = try(var.health_check_config.logging, false) ? [""] : []
     content {
       enable = true
@@ -225,7 +225,7 @@ resource "google_compute_health_check" "ssl" {
     response           = try(var.health_check_config.check.response, null)
   }
 
-  dynamic log_config {
+  dynamic "log_config" {
     for_each = try(var.health_check_config.logging, false) ? [""] : []
     content {
       enable = true
@@ -257,7 +257,7 @@ resource "google_compute_health_check" "http2" {
     response           = try(var.health_check_config.check.response, null)
   }
 
-  dynamic log_config {
+  dynamic "log_config" {
     for_each = try(var.health_check_config.logging, false) ? [""] : []
     content {
       enable = true

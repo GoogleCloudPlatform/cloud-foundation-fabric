@@ -16,7 +16,7 @@
 
 output "bucket" {
   description = "Bucket resource (only if auto-created)."
-  value       = try(
+  value = try(
     var.bucket_config == null ? null : google_storage_bucket.bucket.0, null
   )
 }
@@ -38,7 +38,7 @@ output "function_name" {
 
 output "service_account" {
   description = "Service account resource."
-  value = try(google_service_account.service_account[0], null)
+  value       = try(google_service_account.service_account[0], null)
 }
 
 output "service_account_email" {

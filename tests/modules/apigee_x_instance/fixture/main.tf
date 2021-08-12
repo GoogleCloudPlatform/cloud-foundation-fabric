@@ -15,12 +15,12 @@
  */
 
 module "apigee-x-instance" {
-  source             = "../../../../modules/apigee-x-instance"
-  name               = var.name
-  region             = var.region
-  cidr_mask          = 22
+  source    = "../../../../modules/apigee-x-instance"
+  name      = var.name
+  region    = var.region
+  cidr_mask = 22
 
-  apigee_org_id      = "my-project"
+  apigee_org_id = "my-project"
   apigee_environments = [
     "eval1",
     "eval2"

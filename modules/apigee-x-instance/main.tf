@@ -23,7 +23,7 @@ resource "google_apigee_instance" "apigee_instance" {
 }
 
 resource "google_apigee_instance_attachment" "apigee_instance_attchment" {
-  for_each     = toset(var.apigee_environments)
-  instance_id  = google_apigee_instance.apigee_instance.id
-  environment  = each.key
+  for_each    = toset(var.apigee_environments)
+  instance_id = google_apigee_instance.apigee_instance.id
+  environment = each.key
 }

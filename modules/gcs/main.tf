@@ -38,7 +38,7 @@ resource "google_storage_bucket" "bucket" {
     storage_class = lower(var.storage_class)
   })
 
-  dynamic encryption {
+  dynamic "encryption" {
     for_each = var.encryption_key == null ? [] : [""]
 
     content {
@@ -46,7 +46,7 @@ resource "google_storage_bucket" "bucket" {
     }
   }
 
-  dynamic retention_policy {
+  dynamic "retention_policy" {
     for_each = var.retention_policy == null ? [] : [""]
     content {
       retention_period = var.retention_policy.retention_period
@@ -54,7 +54,7 @@ resource "google_storage_bucket" "bucket" {
     }
   }
 
-  dynamic logging {
+  dynamic "logging" {
     for_each = var.logging_config == null ? [] : [""]
     content {
       log_bucket        = var.logging_config.log_bucket
@@ -62,7 +62,7 @@ resource "google_storage_bucket" "bucket" {
     }
   }
 
-  dynamic cors {
+  dynamic "cors" {
     for_each = var.cors == null ? [] : [""]
     content {
       origin          = var.cors.origin
@@ -72,7 +72,7 @@ resource "google_storage_bucket" "bucket" {
     }
   }
 
-  dynamic lifecycle_rule {
+  dynamic "lifecycle_rule" {
     for_each = var.lifecycle_rule == null ? [] : [""]
     content {
       action {

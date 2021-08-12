@@ -31,7 +31,7 @@ class DocState(enum.Enum):
   UNKNOWN = 4
 
   def __str__(self):
-    return {1: '✗', 2: '✓', 3: '✗', 4: '?'}[self.value]
+    return {1: '✗', 2: '✓', 3: '!', 4: '?'}[self.value]
 
 
 def check_path(pathname):

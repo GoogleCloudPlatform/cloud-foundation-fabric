@@ -64,7 +64,7 @@ resource "google_kms_crypto_key" "default" {
   rotation_period = try(each.value.rotation_period, null)
   labels          = try(each.value.labels, null)
   purpose         = try(local.key_purpose[each.key].purpose, null)
-  dynamic version_template {
+  dynamic "version_template" {
     for_each = local.key_purpose[each.key].version_template == null ? [] : [""]
     content {
       algorithm        = local.key_purpose[each.key].version_template.algorithm

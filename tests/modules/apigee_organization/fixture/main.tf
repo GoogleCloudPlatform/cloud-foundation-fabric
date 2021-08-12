@@ -15,10 +15,10 @@
  */
 
 module "test" {
-  source     = "../../../../modules/apigee-organization"
-  project_id = "my-project"
-  analytics_region = var.analytics_region
-  runtime_type = "CLOUD"
+  source             = "../../../../modules/apigee-organization"
+  project_id         = "my-project"
+  analytics_region   = var.analytics_region
+  runtime_type       = "CLOUD"
   authorized_network = var.network
   apigee_environments = [
     "eval1",
@@ -30,7 +30,7 @@ module "test" {
         "eval1",
         "eval2"
       ]
-      hostnames    = [
+      hostnames = [
         "eval.api.example.com"
       ]
     }

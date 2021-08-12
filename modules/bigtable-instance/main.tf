@@ -49,7 +49,7 @@ resource "google_bigtable_table" "default" {
   name          = each.key
   split_keys    = each.value.split_keys
 
-  dynamic column_family {
+  dynamic "column_family" {
     for_each = each.value.column_family != null ? [""] : []
 
     content {

@@ -16,7 +16,7 @@
 
 locals {
   descriptive_name = var.descriptive_name != null ? var.descriptive_name : "${local.prefix}${var.name}"
-  group_iam_roles = distinct(flatten(values(var.group_iam)))
+  group_iam_roles  = distinct(flatten(values(var.group_iam)))
   group_iam = {
     for r in local.group_iam_roles : r => [
       for k, v in var.group_iam : "group:${k}" if try(index(v, r), null) != null

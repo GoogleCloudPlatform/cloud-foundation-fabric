@@ -19,13 +19,25 @@ steps:
     args:
       - -c
       - |
-        python -m pip install --user --no-warn-script-location -r /workspace/tools/REQUIREMENTS.txt
+        python -m pip install --user --no-warn-script-location -r /workspace/tools/REQUIREMENTS.txt &&
+        wget https://releases.hashicorp.com/terraform/${_TERRAFORM_VERSION}/terraform_${_TERRAFORM_VERSION}_linux_amd64.zip &&
+        unzip terraform_${_TERRAFORM_VERSION}_linux_amd64.zip -d /builder/home/.local/bin &&
+        rm terraform_${_TERRAFORM_VERSION}_linux_amd64.zip &&
+        chmod 755 /builder/home/.local/bin/terraform &&
+        mkdir -p /workspace/.terraform.d/plugin-cache
   - name: python:3-alpine
     id: boilerplate
     args: ["/workspace/tools/check_boilerplate.py", "/workspace"]
-  - name: wata727/tflint
-    id: lint
-    args: ["/workspace"]
+  - name: python:3-alpine
+    id: terraform-fmt-check
+    entrypoint: sh
+    args:
+      - -c
+      - |
+        terraform fmt -recursive -check /workspace/
+    env:
+      - PATH=/usr/local/bin:/usr/bin:/bin:/builder/home/.local/bin
+      - TF_CLI_CONFIG_FILE=/workspace/.ci/.terraformrc
   - name: python:3-alpine
     id: documentation
     args:
@@ -37,6 +49,10 @@ steps:
         "foundations",
         "networking",
       ]
+
+substitutions:
+  _TERRAFORM_VERSION: 1.0.4
+
 tags:
   - ci
   - lint

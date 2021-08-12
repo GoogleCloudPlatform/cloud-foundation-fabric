@@ -42,19 +42,19 @@ resource "google_secret_manager_secret" "default" {
   secret_id = each.key
   labels    = lookup(var.labels, each.key, null)
 
-  dynamic replication {
+  dynamic "replication" {
     for_each = each.value == null ? [""] : []
     content {
       automatic = true
     }
   }
 
-  dynamic replication {
+  dynamic "replication" {
     for_each = each.value == null ? [] : [each.value]
     iterator = locations
     content {
       user_managed {
-        dynamic replicas {
+        dynamic "replicas" {
           for_each = locations.value
           iterator = location
           content {

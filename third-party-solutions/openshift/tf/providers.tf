@@ -15,7 +15,7 @@
  */
 
 # pinning to avoid some weird issues we had with the following version
-     
+
 terraform {
   required_providers {
     google = {

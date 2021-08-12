@@ -78,12 +78,12 @@ resource "google_cloudfunctions_function" "function" {
     var.vpc_connector_config.egress_settings, null
   )
 
-  dynamic event_trigger {
+  dynamic "event_trigger" {
     for_each = var.trigger_config == null ? [] : [""]
     content {
       event_type = var.trigger_config.event
       resource   = var.trigger_config.resource
-      dynamic failure_policy {
+      dynamic "failure_policy" {
         for_each = var.trigger_config.retry == null ? [] : [""]
         content {
           retry = var.trigger_config.retry
@@ -114,7 +114,7 @@ resource "google_storage_bucket" "bucket" {
   )
   labels = var.labels
 
-  dynamic lifecycle_rule {
+  dynamic "lifecycle_rule" {
     for_each = var.bucket_config.lifecycle_delete_age == null ? [] : [""]
     content {
       action { type = "Delete" }
