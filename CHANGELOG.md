@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 - new `apigee-organization` and `apigee-x-instance`
 - generate `email` and `iam_email` statically in the `iam-service-account` module 
+- new `billing-budget` module
 
 ## [5.1.0] - 2021-08-30
 

@@ -14,6 +14,7 @@ Specific modules also offer support for non-authoritative bindings (e.g. `google
 - [organization](./organization)
 - [project](./project)
 - [service account](./iam-service-account)
+- [logging bucket](./logging-bucket)
 
 ## Networking modules
 
@@ -52,6 +53,8 @@ Specific modules also offer support for non-authoritative bindings (e.g. `google
 - [Artifact Registry](./artifact-registry)
 - [Container Registry](./container-registry)
 - [Source Repository](./source-repository)
+- [Apigee Organization](./apigee-organization)
+- [Apigee X Insntace](./apigee-x-instance)
 
 ## Security
 
