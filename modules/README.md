@@ -54,7 +54,7 @@ Specific modules also offer support for non-authoritative bindings (e.g. `google
 - [Container Registry](./container-registry)
 - [Source Repository](./source-repository)
 - [Apigee Organization](./apigee-organization)
-- [Apigee X Insntace](./apigee-x-instance)
+- [Apigee X Instance](./apigee-x-instance)
 
 ## Security
 
