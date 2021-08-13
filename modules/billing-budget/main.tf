@@ -27,7 +27,24 @@ locals {
       }
     ]
   ])
+
+  notification_channels = concat(
+    [for channel in google_monitoring_notification_channel.email_channels : channel.id],
+    coalesce(var.notification_channels, [])
+  )
 }
+
+resource "google_monitoring_notification_channel" "email_channels" {
+  for_each     = toset(try(var.email_recipients.emails, []))
+  display_name = "${var.name} budget email notification (${each.value})"
+  type         = "email"
+  project      = var.email_recipients.project_id
+  labels = {
+    email_address = each.value
+  }
+  user_labels = {}
+}
+
 
 resource "google_billing_budget" "budget" {
   billing_account = var.billing_account
@@ -68,7 +85,7 @@ resource "google_billing_budget" "budget" {
   }
 
   all_updates_rule {
-    monitoring_notification_channels = var.notification_channels
+    monitoring_notification_channels = local.notification_channels
     pubsub_topic                     = var.pubsub_topic
     # disable_default_iam_recipients can only be set if
     # monitoring_notification_channels is nonempty

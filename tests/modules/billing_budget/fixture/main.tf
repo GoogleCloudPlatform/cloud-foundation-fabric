@@ -26,4 +26,5 @@ module "budget" {
   pubsub_topic              = var.pubsub_topic
   notification_channels     = var.notification_channels
   thresholds                = var.thresholds
+  email_recipients          = var.email_recipients
 }

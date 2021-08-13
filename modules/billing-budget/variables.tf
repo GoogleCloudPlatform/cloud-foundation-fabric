@@ -38,13 +38,22 @@ variable "credit_treatment" {
   }
 }
 
+variable "email_recipients" {
+  description = "Emails where budget notifications will be sent. Setting this will create a notification channel for each email in the specified project."
+  type = object({
+    project_id = string
+    emails     = list(string)
+  })
+  default = null
+}
+
 variable "name" {
   description = "Budget name."
   type        = string
 }
 
 variable "notification_channels" {
-  description = "Monitoring notification channels (up to 5) where to send updates."
+  description = "Monitoring notification channels where to send updates."
   type        = list(string)
   default     = null
 }

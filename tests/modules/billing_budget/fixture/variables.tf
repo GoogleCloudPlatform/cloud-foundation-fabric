@@ -24,6 +24,14 @@ variable "credit_treatment" {
   default = "INCLUDE_ALL_CREDITS"
 }
 
+variable "email_recipients" {
+  type = object({
+    project_id = string
+    emails     = list(string)
+  })
+  default = null
+}
+
 variable "notification_channels" {
   type    = list(string)
   default = null

@@ -20,18 +20,19 @@ import pytest
 FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
 
 
-def test_resource_count(plan_runner):
+def test_pubsub(plan_runner):
   "Test number of resources created."
   _, resources = plan_runner(FIXTURES_DIR, pubsub_topic='topic')
   assert len(resources) == 1
   resource = resources[0]
   assert resource['values']['all_updates_rule'] == [
     {'disable_default_iam_recipients': False,
-     'monitoring_notification_channels': None,
+     'monitoring_notification_channels': [],
      'pubsub_topic': 'topic',
      'schema_version': '1.0'}
   ]
 
+def test_channel(plan_runner):
   _, resources = plan_runner(FIXTURES_DIR, notification_channels='["channel"]')
   assert len(resources) == 1
   resource = resources[0]
@@ -41,6 +42,11 @@ def test_resource_count(plan_runner):
      'pubsub_topic': None,
      'schema_version': '1.0'}
   ]
+
+def test_emails(plan_runner):
+  email_recipients = '{project_id = "project", emails = ["a@b.com", "c@d.com"]}'
+  _, resources = plan_runner(FIXTURES_DIR, email_recipients=email_recipients)
+  assert len(resources) == 3
 
 
 def test_absolute_amount(plan_runner):
