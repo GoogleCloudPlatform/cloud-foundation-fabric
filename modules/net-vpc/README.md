@@ -74,6 +74,8 @@ module "vpc-spoke-1" {
 
 ### Shared VPC
 
+[Shared VPC](https://cloud.google.com/vpc/docs/shared-vpc) is a project-level functionality which enables a project to share its VPCs with other projects. The `shared_vpc_host` is here to help with rapid prototyping - however we recommend leveraging the project module for production usage.
+
 ```hcl
 locals {
   service_project_1 = {
