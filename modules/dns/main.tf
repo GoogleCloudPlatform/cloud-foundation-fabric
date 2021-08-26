@@ -16,8 +16,8 @@
 
 locals {
   recordsets = var.recordsets == null ? {} : {
-    for record in var.recordsets :
-    join("/", [record.name, record.type]) => record
+    for idx, record in var.recordsets :
+    join("/", [idx, record.name, record.type]) => record
   }
   zone = (
     var.zone_create
