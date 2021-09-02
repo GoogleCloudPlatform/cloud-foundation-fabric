@@ -34,9 +34,9 @@ module "project" {
     "pubsub.googleapis.com"
   ]
   iam = {
-    "roles/resourcemanager.projectIamAdmin" = [ "serviceAccount:${module.project.service_accounts.robots.cloudasset}" ]
-    "roles/bigquery.dataEditor" = [ "serviceAccount:${module.project.service_accounts.robots.cloudasset}" ]
-    "roles/bigquery.user" = [ "serviceAccount:${module.project.service_accounts.robots.cloudasset}" ]
+    "roles/resourcemanager.projectIamAdmin" = ["serviceAccount:${module.project.service_accounts.robots.cloudasset}"]
+    "roles/bigquery.dataEditor"             = ["serviceAccount:${module.project.service_accounts.robots.cloudasset}"]
+    "roles/bigquery.user"                   = ["serviceAccount:${module.project.service_accounts.robots.cloudasset}"]
   }
 }
 
