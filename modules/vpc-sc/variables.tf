@@ -30,7 +30,7 @@ variable "access_levels" {
 }
 
 variable "access_policy_create" {
-  description = "enable autocreation of the Access Policy"
+  description = "Enable autocreation of the Access Policy"
   type        = bool
   default     = true
 }
