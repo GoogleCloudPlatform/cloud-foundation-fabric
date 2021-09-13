@@ -50,3 +50,21 @@ output "sink_writer_identities" {
     for name, sink in google_logging_organization_sink.sink : name => sink.writer_identity
   }
 }
+
+output "custom_roles" {
+  description = "Map of custom roles resources created in the organization."
+  value       = google_organization_iam_custom_role.roles
+}
+
+output "custom_role_id" {
+  description = "Map of custom role IDs created in the organization."
+  value = {
+    for role_id, role in google_organization_iam_custom_role.roles :
+    # build the string manually so that role IDs can be used as map
+    # keys (useful for folder/organization/project-level iam bindings)
+    (role_id) => "${var.organization_id}/roles/${role_id}"
+  }
+  depends_on = [
+    google_organization_iam_custom_role.roles
+  ]
+}

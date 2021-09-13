@@ -151,6 +151,23 @@ module "org" {
 # tftest:modules=5:resources=11
 ```
 
+## Custom Roles
+```hcl
+module "org" {
+  source          = "./modules/organization"
+  organization_id = var.organization_id
+  custom_roles = {
+    "myRole" = [
+      "compute.instances.list",
+    ]
+  }
+  iam = {
+    (module.org.custom_role_id.myRole) = ["user:me@example.com"]
+  }
+}
+# tftest:modules=1:resources=2
+```
+
 <!-- BEGIN TFDOC -->
 ## Variables
 
@@ -177,6 +194,8 @@ module "org" {
 
 | name | description | sensitive |
 |---|---|:---:|
+| custom_role_id | Map of custom role IDs created in the organization. |  |
+| custom_roles | Map of custom roles resources created in the organization. |  |
 | firewall_policies | Map of firewall policy resources created in the organization. |  |
 | firewall_policy_id | Map of firewall policy ids created in the organization. |  |
 | organization_id | Organization id dependent on module resources. |  |
