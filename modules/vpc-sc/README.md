@@ -181,7 +181,7 @@ module "vpc-sc-first" {
   }
 }
 
-# tftest:modules=2:resources=5
+# tftest:modules=1:resources=3
 ```
 
 <!-- BEGIN TFDOC -->
