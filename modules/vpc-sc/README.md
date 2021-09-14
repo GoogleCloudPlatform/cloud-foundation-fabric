@@ -141,7 +141,8 @@ module "vpc-sc" {
 module "vpc-sc-first" {
   source              = "./modules/vpc-sc"
   organization_id     = "organizations/112233"
-  access_policy_title = "My Org Access Policy"
+  access_policy_create = false
+  access_policy_name = "My Access Policy"
   access_levels = {
     my_trusted_proxy = {
       combining_function = "AND"
@@ -180,48 +181,6 @@ module "vpc-sc-first" {
   }
 }
 
-module "vpc-sc-second" {
-  source              = "./modules/vpc-sc"
-  organization_id     = "organizations/112233"
-  access_policy_create = false
-  access_policy_name = module.vpc-sc-first.access_policy_name
-  access_levels = {
-    my_trusted_proxy = {
-      combining_function = "AND"
-      conditions = [{
-        ip_subnetworks = ["85.85.85.52/32"]
-        required_access_levels = null
-        members        = []
-        negate         = false
-        regions        = null
-      }]
-    }
-  }
-  access_level_perimeters = {
-    enforced = {
-      my_trusted_proxy = ["secperimeter"]
-    }
-  }
-  perimeters = {
-    secperimeter = {
-      type = "PERIMETER_TYPE_REGULAR"
-      dry_run_config = {
-        restricted_services     = ["storage.googleapis.com", "bigquery.googleapis.com"]
-        vpc_accessible_services = ["storage.googleapis.com", "bigquery.googleapis.com"]
-      }
-      enforced_config = {
-        restricted_services     = ["storage.googleapis.com"]
-        vpc_accessible_services = ["storage.googleapis.com"]
-      }
-    }
-  }
-  perimeter_projects = {
-    secperimeter = {
-      enforced = [444444444, 666666666]
-      dry_run  = [555555555]
-    }
-  }
-}
 # tftest:modules=2:resources=5
 ```
 
