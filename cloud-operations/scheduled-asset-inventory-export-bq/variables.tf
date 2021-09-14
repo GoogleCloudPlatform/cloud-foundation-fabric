@@ -17,6 +17,7 @@
 variable "billing_account" {
   description = "Billing account id used as default for new projects."
   type        = string
+  default     = null
 }
 
 variable "bundle_path" {

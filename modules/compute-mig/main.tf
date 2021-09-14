@@ -28,7 +28,7 @@ resource "google_compute_autoscaler" "default" {
     min_replicas    = var.autoscaler_config.min_replicas
     cooldown_period = var.autoscaler_config.cooldown_period
 
-    dynamic cpu_utilization {
+    dynamic "cpu_utilization" {
       for_each = (
         var.autoscaler_config.cpu_utilization_target == null ? [] : [""]
       )
@@ -37,7 +37,7 @@ resource "google_compute_autoscaler" "default" {
       }
     }
 
-    dynamic load_balancing_utilization {
+    dynamic "load_balancing_utilization" {
       for_each = (
         var.autoscaler_config.load_balancing_utilization_target == null ? [] : [""]
       )
@@ -46,7 +46,7 @@ resource "google_compute_autoscaler" "default" {
       }
     }
 
-    dynamic metric {
+    dynamic "metric" {
       for_each = (
         var.autoscaler_config.metric == null
         ? []
@@ -76,7 +76,7 @@ resource "google_compute_instance_group_manager" "default" {
   target_size        = var.target_size
   target_pools       = var.target_pools
   wait_for_instances = var.wait_for_instances
-  dynamic auto_healing_policies {
+  dynamic "auto_healing_policies" {
     for_each = var.auto_healing_policies == null ? [] : [var.auto_healing_policies]
     iterator = config
     content {
@@ -84,7 +84,7 @@ resource "google_compute_instance_group_manager" "default" {
       initial_delay_sec = config.value.initial_delay_sec
     }
   }
-  dynamic update_policy {
+  dynamic "update_policy" {
     for_each = var.update_policy == null ? [] : [var.update_policy]
     iterator = config
     content {
@@ -105,7 +105,7 @@ resource "google_compute_instance_group_manager" "default" {
       )
     }
   }
-  dynamic named_port {
+  dynamic "named_port" {
     for_each = var.named_ports == null ? {} : var.named_ports
     iterator = config
     content {
@@ -117,7 +117,7 @@ resource "google_compute_instance_group_manager" "default" {
     instance_template = var.default_version.instance_template
     name              = var.default_version.name
   }
-  dynamic version {
+  dynamic "version" {
     for_each = var.versions == null ? {} : var.versions
     iterator = version
     content {
@@ -150,7 +150,7 @@ resource "google_compute_region_autoscaler" "default" {
     min_replicas    = var.autoscaler_config.min_replicas
     cooldown_period = var.autoscaler_config.cooldown_period
 
-    dynamic cpu_utilization {
+    dynamic "cpu_utilization" {
       for_each = (
         var.autoscaler_config.cpu_utilization_target == null ? [] : [""]
       )
@@ -159,7 +159,7 @@ resource "google_compute_region_autoscaler" "default" {
       }
     }
 
-    dynamic load_balancing_utilization {
+    dynamic "load_balancing_utilization" {
       for_each = (
         var.autoscaler_config.load_balancing_utilization_target == null ? [] : [""]
       )
@@ -168,7 +168,7 @@ resource "google_compute_region_autoscaler" "default" {
       }
     }
 
-    dynamic metric {
+    dynamic "metric" {
       for_each = (
         var.autoscaler_config.metric == null
         ? []
@@ -198,7 +198,7 @@ resource "google_compute_region_instance_group_manager" "default" {
   target_size        = var.target_size
   target_pools       = var.target_pools
   wait_for_instances = var.wait_for_instances
-  dynamic auto_healing_policies {
+  dynamic "auto_healing_policies" {
     for_each = var.auto_healing_policies == null ? [] : [var.auto_healing_policies]
     iterator = config
     content {
@@ -206,7 +206,7 @@ resource "google_compute_region_instance_group_manager" "default" {
       initial_delay_sec = config.value.initial_delay_sec
     }
   }
-  dynamic update_policy {
+  dynamic "update_policy" {
     for_each = var.update_policy == null ? [] : [var.update_policy]
     iterator = config
     content {
@@ -227,7 +227,7 @@ resource "google_compute_region_instance_group_manager" "default" {
       )
     }
   }
-  dynamic named_port {
+  dynamic "named_port" {
     for_each = var.named_ports == null ? {} : var.named_ports
     iterator = config
     content {
@@ -239,7 +239,7 @@ resource "google_compute_region_instance_group_manager" "default" {
     instance_template = var.default_version.instance_template
     name              = var.default_version.name
   }
-  dynamic version {
+  dynamic "version" {
     for_each = var.versions == null ? {} : var.versions
     iterator = version
     content {
@@ -279,7 +279,7 @@ resource "google_compute_health_check" "http" {
     response           = try(var.health_check_config.check.response, null)
   }
 
-  dynamic log_config {
+  dynamic "log_config" {
     for_each = try(var.health_check_config.logging, false) ? [""] : []
     content {
       enable = true
@@ -309,7 +309,7 @@ resource "google_compute_health_check" "https" {
     response           = try(var.health_check_config.check.response, null)
   }
 
-  dynamic log_config {
+  dynamic "log_config" {
     for_each = try(var.health_check_config.logging, false) ? [""] : []
     content {
       enable = true
@@ -338,7 +338,7 @@ resource "google_compute_health_check" "tcp" {
     response           = try(var.health_check_config.check.response, null)
   }
 
-  dynamic log_config {
+  dynamic "log_config" {
     for_each = try(var.health_check_config.logging, false) ? [""] : []
     content {
       enable = true
@@ -367,7 +367,7 @@ resource "google_compute_health_check" "ssl" {
     response           = try(var.health_check_config.check.response, null)
   }
 
-  dynamic log_config {
+  dynamic "log_config" {
     for_each = try(var.health_check_config.logging, false) ? [""] : []
     content {
       enable = true
@@ -397,7 +397,7 @@ resource "google_compute_health_check" "http2" {
     response           = try(var.health_check_config.check.response, null)
   }
 
-  dynamic log_config {
+  dynamic "log_config" {
     for_each = try(var.health_check_config.logging, false) ? [""] : []
     content {
       enable = true

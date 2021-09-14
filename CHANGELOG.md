@@ -3,12 +3,23 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+
+- new `apigee-organization` and `apigee-x-instance`
+- generate `email` and `iam_email` statically in the `iam-service-account` module 
+- new `billing-budget` module
+- fix `scheduled-asset-inventory-export-bq` module
+- output custom role information from the `organization` module
+
+## [5.1.0] - 2021-08-30
+
+- add support for `lifecycle_rule` in gcs module
 - create `pubsub` service identity if service is enabled
 - support for creation of GKE Autopilot clusters
 - add support for CMEK keys in Data Foundation end to end example
 - add support for VPC-SC perimeters in Data Foundation end to end example
 - fix `vpc-sc` module
-- new networking example showing how to use [Private Service Connect to call a Cloud Function from on-premises](networking/private-cloud-function-from-onprem/)
+- new networking example showing how to use [Private Service Connect to call a Cloud Function from on-premises](./networking/private-cloud-function-from-onprem/)
+- new networking example showing how to organize [decentralized firewall](./networking/decentralized-firewall/) management on GCP
 
 ## [5.0.0] - 2021-06-17
 
@@ -330,7 +341,8 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v5.0.0...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v5.1.0...HEAD
+[5.1.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v5.0.0...v5.1.0
 [5.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.9.0...v5.0.0
 [4.9.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.8.0...v4.9.0
 [4.8.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.7.0...v4.8.0

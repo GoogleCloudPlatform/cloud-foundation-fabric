@@ -95,7 +95,7 @@ module "pubsub" {
 |---|---|:---: |:---:|:---:|
 | name | PubSub topic name. | <code title="">string</code> | ✓ |  |
 | project_id | Project used for resources. | <code title="">string</code> | ✓ |  |
-| *dead_letter_configs* | Per-subscription dead letter policy configuration. | <code title="map&#40;object&#40;&#123;&#10;topic                &#61; string&#10;max_delivery_attemps &#61; number&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
+| *dead_letter_configs* | Per-subscription dead letter policy configuration. | <code title="map&#40;object&#40;&#123;&#10;topic                 &#61; string&#10;max_delivery_attempts &#61; number&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
 | *defaults* | Subscription defaults for options. | <code title="object&#40;&#123;&#10;ack_deadline_seconds       &#61; number&#10;message_retention_duration &#61; string&#10;retain_acked_messages      &#61; bool&#10;expiration_policy_ttl      &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;ack_deadline_seconds       &#61; null&#10;message_retention_duration &#61; null&#10;retain_acked_messages      &#61; null&#10;expiration_policy_ttl      &#61; null&#10;&#125;">...</code> |
 | *iam* | IAM bindings for topic in {ROLE => [MEMBERS]} format. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
 | *kms_key* | KMS customer managed encryption key. | <code title="">string</code> |  | <code title="">null</code> |

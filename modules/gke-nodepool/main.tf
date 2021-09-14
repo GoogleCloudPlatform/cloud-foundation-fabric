@@ -91,7 +91,7 @@ resource "google_container_node_pool" "nodepool" {
     tags              = var.node_tags
     boot_disk_kms_key = var.node_boot_disk_kms_key
 
-    dynamic guest_accelerator {
+    dynamic "guest_accelerator" {
       for_each = var.node_guest_accelerator
       iterator = config
       content {
@@ -100,7 +100,7 @@ resource "google_container_node_pool" "nodepool" {
       }
     }
 
-    dynamic sandbox_config {
+    dynamic "sandbox_config" {
       for_each = (
         var.node_sandbox_config != null
         ? [var.node_sandbox_config]
@@ -112,7 +112,7 @@ resource "google_container_node_pool" "nodepool" {
       }
     }
 
-    dynamic shielded_instance_config {
+    dynamic "shielded_instance_config" {
       for_each = (
         var.node_shielded_instance_config != null
         ? [var.node_shielded_instance_config]
@@ -131,7 +131,7 @@ resource "google_container_node_pool" "nodepool" {
 
   }
 
-  dynamic autoscaling {
+  dynamic "autoscaling" {
     for_each = var.autoscaling_config != null ? [var.autoscaling_config] : []
     iterator = config
     content {
@@ -140,7 +140,7 @@ resource "google_container_node_pool" "nodepool" {
     }
   }
 
-  dynamic management {
+  dynamic "management" {
     for_each = var.management_config != null ? [var.management_config] : []
     iterator = config
     content {
@@ -149,7 +149,7 @@ resource "google_container_node_pool" "nodepool" {
     }
   }
 
-  dynamic upgrade_settings {
+  dynamic "upgrade_settings" {
     for_each = var.upgrade_config != null ? [var.upgrade_config] : []
     iterator = config
     content {

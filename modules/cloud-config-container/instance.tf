@@ -59,7 +59,7 @@ resource "google_compute_instance" "default" {
     user-data = local.cloud_config
   })
 
-  dynamic attached_disk {
+  dynamic "attached_disk" {
     for_each = var.test_instance_defaults.disks
     iterator = disk
     content {
@@ -84,7 +84,7 @@ resource "google_compute_instance" "default" {
   network_interface {
     network    = var.test_instance.network
     subnetwork = var.test_instance.subnetwork
-    dynamic access_config {
+    dynamic "access_config" {
       for_each = var.test_instance_defaults.nat ? [""] : []
       iterator = config
       content {

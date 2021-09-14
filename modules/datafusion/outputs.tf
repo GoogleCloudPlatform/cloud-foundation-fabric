@@ -21,7 +21,7 @@ output "id" {
 
 output "ip_allocation" {
   description = "IP range reserved for Data Fusion instance in case of a private instance."
-  value       = "${local.ip_allocation}"
+  value       = local.ip_allocation
 }
 
 output "resource" {

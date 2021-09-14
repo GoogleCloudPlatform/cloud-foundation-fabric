@@ -41,7 +41,7 @@ resource "google_pubsub_topic" "default" {
   kms_key_name = var.kms_key
   labels       = var.labels
 
-  dynamic message_storage_policy {
+  dynamic "message_storage_policy" {
     for_each = length(var.regions) > 0 ? [var.regions] : []
     content {
       allowed_persistence_regions = var.regions
@@ -67,14 +67,14 @@ resource "google_pubsub_subscription" "default" {
   message_retention_duration = each.value.options.message_retention_duration
   retain_acked_messages      = each.value.options.retain_acked_messages
 
-  dynamic expiration_policy {
+  dynamic "expiration_policy" {
     for_each = each.value.options.expiration_policy_ttl == null ? [] : [""]
     content {
       ttl = each.value.options.expiration_policy_ttl
     }
   }
 
-  dynamic dead_letter_policy {
+  dynamic "dead_letter_policy" {
     for_each = try(var.dead_letter_configs[each.key], null) == null ? [] : [""]
     content {
       dead_letter_topic     = var.dead_letter_configs[each.key].topic
@@ -82,12 +82,12 @@ resource "google_pubsub_subscription" "default" {
     }
   }
 
-  dynamic push_config {
+  dynamic "push_config" {
     for_each = try(var.push_configs[each.key], null) == null ? [] : [""]
     content {
       push_endpoint = var.push_configs[each.key].endpoint
       attributes    = var.push_configs[each.key].attributes
-      dynamic oidc_token {
+      dynamic "oidc_token" {
         for_each = (
           local.oidc_config[each.key] == null ? [] : [""]
         )

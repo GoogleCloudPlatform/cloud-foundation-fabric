@@ -33,7 +33,7 @@ The Cloud DNS inbound policy reserves an IP address in the VPC, which is used by
 Run this gcloud command to (find out the address assigned to the inbound forwarder)[https://cloud.google.com/dns/docs/policies#list-in-entrypoints]:
 
 ```bash
-gcloud compute addresses list -project [your project id]
+gcloud compute addresses list --project [your project id]
 ```
 
 In the list of addresses, look for the address with purpose `DNS_RESOLVER` in the subnet `to-onprem-default`. If its IP address is `10.0.0.2` it matches the default value in the Terraform `forwarder_address` variable, which means you're all set. If it's different, proceed to the next step.

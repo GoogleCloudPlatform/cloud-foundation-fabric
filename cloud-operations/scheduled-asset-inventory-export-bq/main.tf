@@ -22,7 +22,7 @@ module "project" {
   source          = "../../modules/project"
   name            = var.project_id
   parent          = var.root_node
-  billing_account = var.billing_account
+  billing_account = try(var.billing_account, null)
   project_create  = var.project_create
   services = [
     "bigquery.googleapis.com",
@@ -33,6 +33,11 @@ module "project" {
     "cloudscheduler.googleapis.com",
     "pubsub.googleapis.com"
   ]
+  iam = {
+    "roles/resourcemanager.projectIamAdmin" = ["serviceAccount:${module.project.service_accounts.robots.cloudasset}"]
+    "roles/bigquery.dataEditor"             = ["serviceAccount:${module.project.service_accounts.robots.cloudasset}"]
+    "roles/bigquery.user"                   = ["serviceAccount:${module.project.service_accounts.robots.cloudasset}"]
+  }
 }
 
 module "service-account" {
@@ -40,7 +45,9 @@ module "service-account" {
   project_id = module.project.project_id
   name       = "${var.name}-cf"
   iam_project_roles = {
-    (var.project_id) = ["roles/cloudasset.viewer"]
+    (var.project_id) = [
+      "roles/cloudasset.owner",
+    ]
   }
 }
 

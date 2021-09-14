@@ -21,7 +21,7 @@ locals {
     var.iam_billing_config.target_org ? [] : ["roles/billing.user"]
   )
   sa_billing_org_role = (
-    ! var.iam_billing_config.target_org ? [] : ["roles/billing.user"]
+    !var.iam_billing_config.target_org ? [] : ["roles/billing.user"]
   )
   sa_xpn_folder_role = (
     local.sa_xpn_target_org ? [] : ["roles/compute.xpnAdmin"]

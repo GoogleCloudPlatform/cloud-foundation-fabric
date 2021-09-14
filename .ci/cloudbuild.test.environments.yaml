@@ -39,7 +39,7 @@ steps:
       - TF_CLI_CONFIG_FILE=/workspace/.ci/.terraformrc
 
 substitutions:
-  _TERRAFORM_VERSION: 0.15.4
+  _TERRAFORM_VERSION: 1.0.4
 
 tags:
   - "ci"
