@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 - new `billing-budget` module
 - fix `scheduled-asset-inventory-export-bq` module
 - output custom role information from the `organization` module
+- enable multiple `vpc-sc` perimeters over multiple modules
 
 ## [5.1.0] - 2021-08-30
 

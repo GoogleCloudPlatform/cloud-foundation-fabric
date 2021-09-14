@@ -29,6 +29,18 @@ variable "access_levels" {
   default = {}
 }
 
+variable "access_policy_create" {
+  description = "Enable autocreation of the Access Policy"
+  type        = bool
+  default     = true
+}
+
+variable "access_policy_name" {
+  description = "Referenced Access Policy name"
+  type        = string
+  default     = null
+}
+
 variable "access_level_perimeters" {
   description = "Enforced mode -> Access Level -> Perimeters mapping. Enforced mode can be 'enforced' or 'dry_run'"
   type        = map(map(list(string)))
@@ -38,6 +50,7 @@ variable "access_level_perimeters" {
 variable "access_policy_title" {
   description = "Access Policy title to be created."
   type        = string
+  default     = null
 }
 
 variable "egress_policies" {
