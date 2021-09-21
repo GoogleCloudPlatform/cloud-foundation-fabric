@@ -1,6 +1,11 @@
 # Delegated Role Grants
 
-This example shows how to implement [delegated role grants](https://cloud.google.com/iam/docs/setting-limits-on-granting-roles) in GCP.
+This example shows how to restrict service usage in GCP. Two sets of permissions will be provisioned by this example:
+
+- The roles listed in `direct_role_grants` will be granted unconditionally to the users listed in `project_administrators`.
+- Additionally, the users in `project_administrators` will be allowed to grant the roles listed in `delegated_role_grants` using [delegated role grants](https://cloud.google.com/iam/docs/setting-limits-on-granting-roles).
+
+By carefully choosing `direct_role_grants` and `delegated_role_grants`, you can restrict which services can be used within the project while still giving enough freedom to project administrators to still grant permissions to other principals within their projects.
 
 ## Running the example
 
@@ -13,7 +18,7 @@ Once done testing, you can clean up resources by running `terraform destroy`.
 
 ## Auditing Roles
 
-This example include a python script that ensure audits a list of roles to ensure you're not granting the setIamPolicy permissions at the project, folder or organization level. To audit all the predefined compute roles, run it like this:
+This example includes a python script that audits a list of roles to ensure you're not granting the setIamPolicy permissions at the project, folder or organization level. To audit all the predefined compute roles, run it like this:
 
 ```bash
 pip3 install -r requirements.txt
