@@ -54,7 +54,8 @@ def plan_runner(_plan_runner):
 def e2e_plan_runner(_plan_runner):
   "Returns a function to run Terraform plan on an end-to-end fixture."
 
-  def run_plan(fixture_path, targets=None, refresh=True, **tf_vars):
+  def run_plan(fixture_path, targets=None, refresh=True,
+               include_bare_resources=False, **tf_vars):
     "Runs Terraform plan on an end-to-end module using defaults, returns data."
     plan = _plan_runner(fixture_path, targets=targets, refresh=refresh, **tf_vars)
     # skip the fixture
@@ -62,6 +63,9 @@ def e2e_plan_runner(_plan_runner):
     modules = dict((mod['address'], mod['resources'])
                    for mod in root_module['child_modules'])
     resources = [r for m in modules.values() for r in m]
+    if include_bare_resources:
+      bare_resources = root_module['resources']
+      resources.extend(bare_resources)
     return modules, resources
 
   return run_plan
