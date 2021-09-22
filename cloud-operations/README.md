@@ -33,3 +33,9 @@ The example's feed tracks changes to Google Compute instances, and the Cloud Fun
 <a href="./quota-monitoring" title="Compute Engine quota monitoring"><img src="./quota-monitoring/diagram.png" align="left" width="280px"></a> This [example](./quota-monitoring) shows a practical way of collecting and monitoring [Compute Engine resource quotas](https://cloud.google.com/compute/quotas) via Cloud Monitoring metrics as an alternative to the recently released [built-in quota metrics](https://cloud.google.com/monitoring/alerts/using-quota-metrics). A simple alert on quota thresholds is also part of the example.
 
 <br clear="left">
+
+## Delegated Role Grants
+
+<a href="./iam-delegated-role-grants" title="Delegated Role Grants"><img src="./iam-delegated-role-grants/diagram.png" align="left" width="280px"></a> This [example](./iam-delegated-role-grants) shows how to use delegated role grants to restrict service usage.
+
+<br clear="left">
