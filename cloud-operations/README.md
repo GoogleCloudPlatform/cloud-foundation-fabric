@@ -36,6 +36,6 @@ The example's feed tracks changes to Google Compute instances, and the Cloud Fun
 
 ## Delegated Role Grants
 
-<a href="./iam-delegated-role-grants" title="Delegated Role Grants"><img src="./iam-delegated-role-grants/diagram.png" align="left" width="280px"></a> This [example](./iam-delegated-role-grants) shows how to restrict service usage to restrict service usage through delegated role grants.
+<a href="./iam-delegated-role-grants" title="Delegated Role Grants"><img src="./iam-delegated-role-grants/diagram.png" align="left" width="280px"></a> This [example](./iam-delegated-role-grants) shows how to use delegated role grants to restrict service usage.
 
 <br clear="left">
