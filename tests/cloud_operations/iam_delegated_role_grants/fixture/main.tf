@@ -15,7 +15,7 @@
  */
 
 module "test" {
-  source                 = "../../../../cloud-operations/delegated-role-grants"
+  source                 = "../../../../cloud-operations/iam-delegated-role-grants"
   project_create         = true
   project_id             = var.project_id
   project_administrators = ["user:user@example.com"]
