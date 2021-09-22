@@ -18,7 +18,7 @@ Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/c
 
 At this point the project should have a set of role that allow the project administrators to do the following:
 
-<img src="diagram.png" width="640px">
+<img src="diagram.png" width="572px">
 
 Once done testing, you can clean up resources by running `terraform destroy`.
 
