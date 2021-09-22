@@ -10,6 +10,7 @@ All notable changes to this project will be documented in this file.
 - fix `scheduled-asset-inventory-export-bq` module
 - output custom role information from the `organization` module
 - enable multiple `vpc-sc` perimeters over multiple modules
+- new cloud operations example showing how to [restrict service usage using delegated role grants](./cloud-operations/iam-delegated-role-grants)
 
 ## [5.1.0] - 2021-08-30
 
