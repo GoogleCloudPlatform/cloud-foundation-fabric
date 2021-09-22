@@ -3,7 +3,7 @@
 This example shows two applications of [delegated role grants](https://cloud.google.com/iam/docs/setting-limits-on-granting-roles):
 
 - how to use them to restrict service usage in a GCP project
-- how to use them to allow administrative access to a service via a predefined role, while restricting adminstrators from minting other admins.
+- how to use them to allow administrative access to a service via a predefined role, while restricting administrators from minting other admins.
 
 ## Restricting service usage
 
@@ -13,6 +13,11 @@ In its default configuration, the example provisions wo sets of permissions:
 - additionally, `project_administrators` will be granted the role `roles/resourcemanager.projectIamAdmin` in a restricted fashion, allowing them to only grant the roles listed in `delegated_role_grants` to other users.
 
 By carefully choosing `direct_role_grants` and `delegated_role_grants`, you can restrict which services can be used within the project while still giving enough freedom to project administrators to still grant permissions to other principals within their projects.
+
+This diagram shows the resources and expected behaviour:
+
+<img src="diagram.png" width="572px">
+
 
 A [Medium article](https://medium.com/@jccb/managing-gcp-service-usage-through-delegated-role-grants-a843610f2226) has been published for this example, refer to it for more details on the context and the specifics of running the example.
 
@@ -30,16 +35,16 @@ direct_role_grants = []
 restricted_role_grant = "roles/compute.networkAdmin"
 ```
 
+This diagram shows the resources and expected behaviour:
+
+<img src="diagram-2.png" width="572px">
+
 ## Running the example
 
 Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fcloud-foundation-fabric&cloudshell_print=cloud-shell-readme.txt&cloudshell_working_dir=cloud-operations%2Fiam-delegated-role-grants), then go through the following steps to create resources:
 
 - `terraform init`
 - `terraform apply -var project_id=my-project-id 'project_administrators=["user:project-admin@example.com"]'`
-
-At this point the project should have a set of role that allow the project administrators to do the following:
-
-<img src="diagram.png" width="572px">
 
 Once done testing, you can clean up resources by running `terraform destroy`.
 
