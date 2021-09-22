@@ -46,7 +46,7 @@ def get_role_permissions(role):
 @click.argument("file", type=click.File("r"))
 def main(file):
     """Verify that the set of GCP roles in FILE does not include the
-    permission SetIamPolicy at project, folder or organization level
+    permission setIamPolicy at project, folder or organization level
 
     This program authenticates against GCP using default application
     credentials to query project and organization level roles.
