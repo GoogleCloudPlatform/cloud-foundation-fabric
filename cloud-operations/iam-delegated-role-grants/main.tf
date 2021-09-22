@@ -65,7 +65,7 @@ resource "google_project_iam_member" "direct" {
 resource "google_project_iam_binding" "iam_bindings" {
   for_each = local.delegated_binding_pairs
   project  = var.project_id
-  role     = "roles/resourcemanager.projectIamAdmin"
+  role     = var.restricted_role_grant
   members  = var.project_administrators
   condition {
     title       = "delegated_role_grant_${each.value.index}"

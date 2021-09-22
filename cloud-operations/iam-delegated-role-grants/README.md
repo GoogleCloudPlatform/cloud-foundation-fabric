@@ -1,13 +1,34 @@
 # Delegated Role Grants
 
-This example shows how to restrict service usage in GCP. Two sets of permissions will be provisioned by this example:
+This example shows two applications of [delegated role grants](https://cloud.google.com/iam/docs/setting-limits-on-granting-roles):
 
-- The roles listed in `direct_role_grants` will be granted unconditionally to the users listed in `project_administrators`.
-- Additionally, the users in `project_administrators` will be allowed to grant the roles listed in `delegated_role_grants` using [delegated role grants](https://cloud.google.com/iam/docs/setting-limits-on-granting-roles).
+- how to use them to restrict service usage in a GCP project
+- how to use them to allow administrative access to a service via a predefined role, while restricting adminstrators from minting other admins.
+
+## Restricting service usage
+
+In its default configuration, the example provisions wo sets of permissions:
+
+- the roles listed in `direct_role_grants` will be granted unconditionally to the users listed in `project_administrators`.
+- additionally, `project_administrators` will be granted the role `roles/resourcemanager.projectIamAdmin` in a restricted fashion, allowing them to only grant the roles listed in `delegated_role_grants` to other users.
 
 By carefully choosing `direct_role_grants` and `delegated_role_grants`, you can restrict which services can be used within the project while still giving enough freedom to project administrators to still grant permissions to other principals within their projects.
 
 A [Medium article](https://medium.com/@jccb/managing-gcp-service-usage-through-delegated-role-grants-a843610f2226) has been published for this example, refer to it for more details on the context and the specifics of running the example.
+
+## Restricting a predefined role
+
+By changing the `restricted_role_grant`, the example can be used to grant administrators a predefined role like `roles/compute.networkAdmin`, which allows setting IAM policies on service resources like subnetworks, but restrict the roles that those administrators are able to confer to other users.
+
+You can easily configure the example for this use case:
+
+```hcl
+# terraform.tfvars
+
+delegated_role_grants = ["roles/compute.networkUser"]
+direct_role_grants = []
+restricted_role_grant = "roles/compute.networkAdmin"
+```
 
 ## Running the example
 
