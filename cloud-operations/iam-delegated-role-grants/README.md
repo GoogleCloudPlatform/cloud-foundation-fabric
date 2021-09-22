@@ -16,6 +16,10 @@ Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/c
 - `terraform init`
 - `terraform apply -var project_id=my-project-id 'project_administrators=["user:project-admin@example.com"]'`
 
+At this point the project should have a set of role that allow the project administrators to do the following:
+
+<img src="diagram.png" width="640px">
+
 Once done testing, you can clean up resources by running `terraform destroy`.
 
 ## Auditing Roles
