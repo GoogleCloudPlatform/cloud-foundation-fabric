@@ -7,7 +7,7 @@ This example shows two applications of [delegated role grants](https://cloud.goo
 
 ## Restricting service usage
 
-In its default configuration, the example provisions wo sets of permissions:
+In its default configuration, the example provisions two sets of permissions:
 
 - the roles listed in `direct_role_grants` will be granted unconditionally to the users listed in `project_administrators`.
 - additionally, `project_administrators` will be granted the role `roles/resourcemanager.projectIamAdmin` in a restricted fashion, allowing them to only grant the roles listed in `delegated_role_grants` to other users.
