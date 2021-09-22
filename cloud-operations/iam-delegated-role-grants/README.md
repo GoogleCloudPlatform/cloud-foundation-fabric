@@ -1,13 +1,43 @@
 # Delegated Role Grants
 
-This example shows how to restrict service usage in GCP. Two sets of permissions will be provisioned by this example:
+This example shows two applications of [delegated role grants](https://cloud.google.com/iam/docs/setting-limits-on-granting-roles):
 
-- The roles listed in `direct_role_grants` will be granted unconditionally to the users listed in `project_administrators`.
-- Additionally, the users in `project_administrators` will be allowed to grant the roles listed in `delegated_role_grants` using [delegated role grants](https://cloud.google.com/iam/docs/setting-limits-on-granting-roles).
+- how to use them to restrict service usage in a GCP project
+- how to use them to allow administrative access to a service via a predefined role, while restricting administrators from minting other admins.
+
+## Restricting service usage
+
+In its default configuration, the example provisions wo sets of permissions:
+
+- the roles listed in `direct_role_grants` will be granted unconditionally to the users listed in `project_administrators`.
+- additionally, `project_administrators` will be granted the role `roles/resourcemanager.projectIamAdmin` in a restricted fashion, allowing them to only grant the roles listed in `delegated_role_grants` to other users.
 
 By carefully choosing `direct_role_grants` and `delegated_role_grants`, you can restrict which services can be used within the project while still giving enough freedom to project administrators to still grant permissions to other principals within their projects.
 
+This diagram shows the resources and expected behaviour:
+
+<img src="diagram.png" width="572px">
+
+
 A [Medium article](https://medium.com/@jccb/managing-gcp-service-usage-through-delegated-role-grants-a843610f2226) has been published for this example, refer to it for more details on the context and the specifics of running the example.
+
+## Restricting a predefined role
+
+By changing the `restricted_role_grant`, the example can be used to grant administrators a predefined role like `roles/compute.networkAdmin`, which allows setting IAM policies on service resources like subnetworks, but restrict the roles that those administrators are able to confer to other users.
+
+You can easily configure the example for this use case:
+
+```hcl
+# terraform.tfvars
+
+delegated_role_grants = ["roles/compute.networkUser"]
+direct_role_grants = []
+restricted_role_grant = "roles/compute.networkAdmin"
+```
+
+This diagram shows the resources and expected behaviour:
+
+<img src="diagram-2.png" width="572px">
 
 ## Running the example
 
@@ -15,10 +45,6 @@ Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/c
 
 - `terraform init`
 - `terraform apply -var project_id=my-project-id 'project_administrators=["user:project-admin@example.com"]'`
-
-At this point the project should have a set of role that allow the project administrators to do the following:
-
-<img src="diagram.png" width="572px">
 
 Once done testing, you can clean up resources by running `terraform destroy`.
 
@@ -48,6 +74,7 @@ If you get any warnings, check the roles and remove any of them granting any of 
 | *delegated_role_grants* | List of roles that project administrators will be allowed to grant/revoke. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="&#91;&#10;&#34;roles&#47;storage.admin&#34;,&#10;&#34;roles&#47;storage.hmacKeyAdmin&#34;,&#10;&#34;roles&#47;storage.legacyBucketOwner&#34;,&#10;&#34;roles&#47;storage.objectAdmin&#34;,&#10;&#34;roles&#47;storage.objectCreator&#34;,&#10;&#34;roles&#47;storage.objectViewer&#34;,&#10;&#34;roles&#47;compute.admin&#34;,&#10;&#34;roles&#47;compute.imageUser&#34;,&#10;&#34;roles&#47;compute.instanceAdmin&#34;,&#10;&#34;roles&#47;compute.instanceAdmin.v1&#34;,&#10;&#34;roles&#47;compute.networkAdmin&#34;,&#10;&#34;roles&#47;compute.networkUser&#34;,&#10;&#34;roles&#47;compute.networkViewer&#34;,&#10;&#34;roles&#47;compute.orgFirewallPolicyAdmin&#34;,&#10;&#34;roles&#47;compute.orgFirewallPolicyUser&#34;,&#10;&#34;roles&#47;compute.orgSecurityPolicyAdmin&#34;,&#10;&#34;roles&#47;compute.orgSecurityPolicyUser&#34;,&#10;&#34;roles&#47;compute.orgSecurityResourceAdmin&#34;,&#10;&#34;roles&#47;compute.osAdminLogin&#34;,&#10;&#34;roles&#47;compute.osLogin&#34;,&#10;&#34;roles&#47;compute.osLoginExternalUser&#34;,&#10;&#34;roles&#47;compute.packetMirroringAdmin&#34;,&#10;&#34;roles&#47;compute.packetMirroringUser&#34;,&#10;&#34;roles&#47;compute.publicIpAdmin&#34;,&#10;&#34;roles&#47;compute.securityAdmin&#34;,&#10;&#34;roles&#47;compute.serviceAgent&#34;,&#10;&#34;roles&#47;compute.storageAdmin&#34;,&#10;&#34;roles&#47;compute.viewer&#34;,&#10;&#34;roles&#47;viewer&#34;&#10;&#93;">...</code> |
 | *direct_role_grants* | List of roles granted directly to project administrators. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="&#91;&#10;&#34;roles&#47;compute.admin&#34;,&#10;&#34;roles&#47;storage.admin&#34;,&#10;&#93;">...</code> |
 | *project_create* | Create project instead of using an existing one. | <code title="">bool</code> |  | <code title="">false</code> |
+| *restricted_role_grant* | Role grant to which the restrictions will apply. | <code title="">string</code> |  | <code title="">roles/resourcemanager.projectIamAdmin</code> |
 
 ## Outputs
 

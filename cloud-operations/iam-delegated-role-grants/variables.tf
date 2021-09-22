@@ -74,3 +74,9 @@ variable "project_id" {
   description = "GCP project id where to grant direct and delegated roles to the users listed in project_administrators."
   type        = string
 }
+
+variable "restricted_role_grant" {
+  description = "Role grant to which the restrictions will apply."
+  type        = string
+  default     = "roles/resourcemanager.projectIamAdmin"
+}
