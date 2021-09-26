@@ -74,3 +74,8 @@ variable "service_perimeter_standard" {
   type        = string
   default     = null
 }
+
+variable "admins" {
+  description = "List of users allowed to impersonate the service account"
+  type        = list(string)
+}

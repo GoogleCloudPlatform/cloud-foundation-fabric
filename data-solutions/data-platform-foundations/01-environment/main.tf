@@ -31,8 +31,9 @@ module "project-datamart" {
     "storage.googleapis.com",
     "storage-component.googleapis.com",
   ]
-  iam = {
-    "roles/editor" = [module.sa-services-main.iam_email]
+
+  iam_additive = {
+    "roles/owner" = [module.sa-services-main.iam_email]
   }
   service_encryption_key_ids = {
     bq      = [var.service_encryption_key_ids.multiregional]
@@ -56,8 +57,8 @@ module "project-dwh" {
     "storage.googleapis.com",
     "storage-component.googleapis.com",
   ]
-  iam = {
-    "roles/editor" = [module.sa-services-main.iam_email]
+  iam_additive = {
+    "roles/owner" = [module.sa-services-main.iam_email]
   }
   service_encryption_key_ids = {
     bq      = [var.service_encryption_key_ids.multiregional]
@@ -79,8 +80,8 @@ module "project-landing" {
     "storage.googleapis.com",
     "storage-component.googleapis.com",
   ]
-  iam = {
-    "roles/editor" = [module.sa-services-main.iam_email]
+  iam_additive = {
+    "roles/owner" = [module.sa-services-main.iam_email]
   }
   service_encryption_key_ids = {
     pubsub  = [var.service_encryption_key_ids.global]
@@ -105,8 +106,8 @@ module "project-services" {
     "cloudasset.googleapis.com",
     "cloudkms.googleapis.com"
   ]
-  iam = {
-    "roles/editor" = [module.sa-services-main.iam_email]
+  iam_additive = {
+    "roles/owner" = [module.sa-services-main.iam_email]
   }
   service_encryption_key_ids = {
     storage = [var.service_encryption_key_ids.multiregional]
@@ -123,6 +124,7 @@ module "project-transformation" {
   prefix          = var.prefix
   name            = var.project_names.transformation
   services = [
+    "bigquery.googleapis.com",
     "cloudbuild.googleapis.com",
     "compute.googleapis.com",
     "dataflow.googleapis.com",
@@ -130,8 +132,8 @@ module "project-transformation" {
     "storage.googleapis.com",
     "storage-component.googleapis.com",
   ]
-  iam = {
-    "roles/editor" = [module.sa-services-main.iam_email]
+  iam_additive = {
+    "roles/owner" = [module.sa-services-main.iam_email]
   }
   service_encryption_key_ids = {
     compute  = [var.service_encryption_key_ids.global]
@@ -151,4 +153,6 @@ module "sa-services-main" {
   source     = "../../../modules/iam-service-account"
   project_id = module.project-services.project_id
   name       = var.service_account_names.main
+  iam        = var.admins != null ?  { "roles/iam.serviceAccountTokenCreator" =  concat(var.admins) } : {}
+
 }
