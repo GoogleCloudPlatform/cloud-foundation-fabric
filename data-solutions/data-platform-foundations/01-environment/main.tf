@@ -99,6 +99,10 @@ module "project-services" {
   prefix          = var.prefix
   name            = var.project_names.services
   services = [
+    "bigquery.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
+    "iam.googleapis.com",
+    "pubsub.googleapis.com",
     "storage.googleapis.com",
     "storage-component.googleapis.com",
     "sourcerepo.googleapis.com",
@@ -153,6 +157,6 @@ module "sa-services-main" {
   source     = "../../../modules/iam-service-account"
   project_id = module.project-services.project_id
   name       = var.service_account_names.main
-  iam        = var.admins != null ?  { "roles/iam.serviceAccountTokenCreator" =  concat(var.admins) } : {}
+  iam        = var.admins != null ? { "roles/iam.serviceAccountTokenCreator" = concat(var.admins) } : {}
 
 }

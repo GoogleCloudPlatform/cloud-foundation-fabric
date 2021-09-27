@@ -12,6 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+variable "admins" {
+  description = "List of users allowed to impersonate the service account"
+  type        = list(string)
+}
+
 variable "billing_account_id" {
   description = "Billing account id."
   type        = string
@@ -73,9 +78,4 @@ variable "service_perimeter_standard" {
   description = "VPC Service control standard perimeter name in the form of 'accessPolicies/ACCESS_POLICY_NAME/servicePerimeters/PERIMETER_NAME'. All projects will be added to the perimeter in enforced mode."
   type        = string
   default     = null
-}
-
-variable "admins" {
-  description = "List of users allowed to impersonate the service account"
-  type        = list(string)
 }

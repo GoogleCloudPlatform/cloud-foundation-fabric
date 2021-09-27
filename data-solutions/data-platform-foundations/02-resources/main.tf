@@ -25,18 +25,18 @@ module "datamart-sa" {
   iam_project_roles = {
     "${var.project_ids.datamart}" = ["roles/editor"]
   }
-  iam = var.admins != null ?  { "roles/iam.serviceAccountTokenCreator" =  concat(var.admins) } : {}
+  iam = var.admins != null ? { "roles/iam.serviceAccountTokenCreator" = concat(var.admins) } : {}
 }
 
 module "dwh-sa" {
   source     = "../../../modules/iam-service-account"
   project_id = var.project_ids.dwh
   name       = var.service_account_names.dwh
-  
-   iam_project_roles = {
+
+  iam_project_roles = {
     "${var.project_ids.dwh}" = ["roles/bigquery.admin"]
   }
-  iam = var.admins != null ?  { "roles/iam.serviceAccountTokenCreator" =  concat(var.admins) } : {}
+  iam = var.admins != null ? { "roles/iam.serviceAccountTokenCreator" = concat(var.admins) } : {}
 }
 
 module "landing-sa" {
@@ -46,9 +46,9 @@ module "landing-sa" {
   iam_project_roles = {
     "${var.project_ids.landing}" = [
       "roles/pubsub.publisher",
-      "roles/storage.objectCreator"]
+    "roles/storage.objectCreator"]
   }
-  iam = var.admins != null ?  { "roles/iam.serviceAccountTokenCreator" =  concat(var.admins) } : {}
+  iam = var.admins != null ? { "roles/iam.serviceAccountTokenCreator" = concat(var.admins) } : {}
 }
 
 module "services-sa" {
@@ -58,7 +58,7 @@ module "services-sa" {
   iam_project_roles = {
     "${var.project_ids.services}" = ["roles/editor"]
   }
-  iam = var.admins != null ?  { "roles/iam.serviceAccountTokenCreator" =  concat(var.admins) } : {}
+  iam = var.admins != null ? { "roles/iam.serviceAccountTokenCreator" = concat(var.admins) } : {}
 }
 
 module "transformation-sa" {
@@ -76,8 +76,8 @@ module "transformation-sa" {
       "roles/dataflow.worker",
       "roles/bigquery.metadataViewer",
       "roles/storage.objectViewer",
-    ] ,
-   "${var.project_ids.landing}" = [
+    ],
+    "${var.project_ids.landing}" = [
       "roles/storage.objectViewer",
     ],
     "${var.project_ids.dwh}" = [
@@ -86,7 +86,7 @@ module "transformation-sa" {
       "roles/bigquery.metadataViewer",
     ]
   }
-  iam = var.admins != null ?  { "roles/iam.serviceAccountTokenCreator" =  concat(var.admins) } : {}
+  iam = var.admins != null ? { "roles/iam.serviceAccountTokenCreator" = concat(var.admins) } : {}
 }
 
 ###############################################################################
@@ -172,9 +172,9 @@ module "firewall" {
   network              = module.vpc-transformation.name
   admin_ranges_enabled = false
   admin_ranges         = [""]
-  http_source_ranges    = []
-  https_source_ranges   = []
-  ssh_source_ranges     = []
+  http_source_ranges   = []
+  https_source_ranges  = []
+  ssh_source_ranges    = []
 
   custom_rules = {
     iap-svc = {

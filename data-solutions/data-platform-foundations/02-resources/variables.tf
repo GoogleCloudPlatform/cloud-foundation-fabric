@@ -12,6 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
+variable "admins" {
+  description = "List of users allowed to impersonate the service account"
+  type        = list(string)
+}
+
 variable "datamart_bq_datasets" {
   description = "Datamart Bigquery datasets"
   type = map(object({
@@ -180,9 +186,4 @@ variable "service_encryption_key_ids" {
     multiregional = null
     global        = null
   }
-}
-
-variable "admins" {
-  description = "List of users allowed to impersonate the service account"
-  type        = list(string)
 }

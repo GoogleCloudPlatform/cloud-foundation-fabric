@@ -39,11 +39,10 @@ project_ids = {
 ```
 
 
-- Set up the gcloud environment to impersonate the **service_account**: `gcloud config set auth/impersonate_service_account **service_account**`
+- The providers.tf file has been configured to impersonate the **main** service account
 
-- Generate an access token and launch terraform:
+- To launch terraform:
 ```bash
-export GOOGLE_OAUTH_ACCESS_TOKEN=$(gcloud auth print-access-token)
 terraform plan
 terraform apply
 ```
