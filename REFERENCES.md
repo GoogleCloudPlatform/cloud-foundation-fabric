@@ -12,6 +12,10 @@ This is a non-exhaustive list of Fabric usage in the wild. Send us a PR if you s
 - [Using Cloud Asset Inventory feeds for dynamic configuration and policy enforcement](https://medium.com/google-cloud/using-cloud-asset-inventory-feeds-for-dynamic-configuration-and-policy-enforcement-c37b6a590c49)<br>*Medium / Ludovico Magnocavallo*
 - [Using GCP Cloud Asset Inventory Export to keep track of your GCP resources over time](https://medium.com/google-cloud/using-gcp-cloud-asset-inventory-export-to-keep-track-of-your-gcp-resources-over-time-20fb6fa63c68)<br>*Medium / Lorenzo Caggioni*
 
+## Books
+
+- [Building Serverless Applications with Google Cloud Run](https://www.google.it/books/edition/Building_Serverless_Applications_with_Go/PV4MEAAAQBAJ?hl=en&gbpv=1&dq=a+valuable+resource+on+github+fabric&pg=PT143&printsec=frontcover)<br>*Wietse Venema*
+
 ## GCP Reference Architectures
 
 - [Hub-and-spoke network architecture](https://cloud.google.com/architecture/deploy-hub-spoke-vpc-network-topology)
