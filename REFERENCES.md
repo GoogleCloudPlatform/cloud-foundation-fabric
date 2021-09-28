@@ -5,6 +5,7 @@ This is a non-exhaustive list of Fabric usage in the wild. Send us a PR if you s
 ## Blog Posts
 
 - [Apigee X Organization Provisioning with Google Terraform Modules](https://www.googlecloudcommunity.com/gc/Apigee/Apigee-X-Organization-Provisioning-with-Google-Terraform-Modules/m-p/166411)<br>*Google Cloud Community / Daniel Strebel*
+- [Calling a private Google Cloud Function from on-prem](https://medium.com/google-cloud/calling-a-private-google-cloud-function-from-on-prem-91eb628c85ac)<br>*Medium / Andrea Gandolfi*
 - [Fine-grained Cloud DNS IAM via Service Directory](https://medium.com/google-cloud/fine-grained-cloud-dns-iam-via-service-directory-446058b4362e)<br>*Medium / Ludovico Magnocavallo*
 - [Give app teams autonomy over their DNS records with Cloud DNS peering](https://cloud.google.com/blog/products/networking/how-to-use-cloud-dns-peering-in-a-shared-vpc-environment)<br>*Google Cloud Blog / Aurelien Legrand, Karthik Balakrishnan*
 - [Managing GCP service usage through delegated role grants](https://medium.com/google-cloud/managing-gcp-service-usage-through-delegated-role-grants-a843610f2226)<br>*Medium / Julio Castillo*
