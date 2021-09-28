@@ -16,6 +16,7 @@
 variable "admins" {
   description = "List of users allowed to impersonate the service account"
   type        = list(string)
+  default     = null
 }
 
 variable "datamart_bq_datasets" {

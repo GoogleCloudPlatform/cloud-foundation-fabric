@@ -15,6 +15,7 @@
 variable "admins" {
   description = "List of users allowed to impersonate the service account"
   type        = list(string)
+  default     = null
 }
 
 variable "billing_account_id" {

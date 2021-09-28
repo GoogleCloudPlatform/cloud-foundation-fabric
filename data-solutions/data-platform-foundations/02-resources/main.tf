@@ -25,7 +25,7 @@ module "datamart-sa" {
   iam_project_roles = {
     "${var.project_ids.datamart}" = ["roles/editor"]
   }
-  iam = var.admins != null ? { "roles/iam.serviceAccountTokenCreator" = concat(var.admins) } : {}
+  iam = var.admins != null ? { "roles/iam.serviceAccountTokenCreator" = var.admins } : {}
 }
 
 module "dwh-sa" {
@@ -36,7 +36,7 @@ module "dwh-sa" {
   iam_project_roles = {
     "${var.project_ids.dwh}" = ["roles/bigquery.admin"]
   }
-  iam = var.admins != null ? { "roles/iam.serviceAccountTokenCreator" = concat(var.admins) } : {}
+  iam = var.admins != null ? { "roles/iam.serviceAccountTokenCreator" = var.admins } : {}
 }
 
 module "landing-sa" {
@@ -48,7 +48,7 @@ module "landing-sa" {
       "roles/pubsub.publisher",
     "roles/storage.objectCreator"]
   }
-  iam = var.admins != null ? { "roles/iam.serviceAccountTokenCreator" = concat(var.admins) } : {}
+  iam = var.admins != null ? { "roles/iam.serviceAccountTokenCreator" = var.admins } : {}
 }
 
 module "services-sa" {
@@ -58,7 +58,7 @@ module "services-sa" {
   iam_project_roles = {
     "${var.project_ids.services}" = ["roles/editor"]
   }
-  iam = var.admins != null ? { "roles/iam.serviceAccountTokenCreator" = concat(var.admins) } : {}
+  iam = var.admins != null ? { "roles/iam.serviceAccountTokenCreator" = var.admins } : {}
 }
 
 module "transformation-sa" {
@@ -86,7 +86,7 @@ module "transformation-sa" {
       "roles/bigquery.metadataViewer",
     ]
   }
-  iam = var.admins != null ? { "roles/iam.serviceAccountTokenCreator" = concat(var.admins) } : {}
+  iam = var.admins != null ? { "roles/iam.serviceAccountTokenCreator" = var.admins } : {}
 }
 
 ###############################################################################

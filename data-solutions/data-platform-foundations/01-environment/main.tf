@@ -157,6 +157,6 @@ module "sa-services-main" {
   source     = "../../../modules/iam-service-account"
   project_id = module.project-services.project_id
   name       = var.service_account_names.main
-  iam        = var.admins != null ? { "roles/iam.serviceAccountTokenCreator" = concat(var.admins) } : {}
+  iam        = var.admins != null ? { "roles/iam.serviceAccountTokenCreator" = var.admins } : {}
 
 }
