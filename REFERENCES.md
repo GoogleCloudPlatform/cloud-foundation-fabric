@@ -5,10 +5,8 @@ This is a non-exhaustive list of Fabric usage in the wild. Send us a PR if you s
 ## Blog Posts
 
 - [Using Cloud Asset Inventory feeds for dynamic configuration and policy enforcement](https://medium.com/google-cloud/using-cloud-asset-inventory-feeds-for-dynamic-configuration-and-policy-enforcement-c37b6a590c49)<br>*Medium / Ludovico Magnocavallo*
-- [Managing GCP service usage through delegated role grants](https://medium.com/google-cloud/managing-gcp-service-usage-through-delegated-role-grants-a843610f2226)
-  *Medium / Julio Castillo*
-- [Apigee X Organization Provisioning with Google Terraform Modules](https://www.googlecloudcommunity.com/gc/Apigee/Apigee-X-Organization-Provisioning-with-Google-Terraform-Modules/m-p/166411)
-*Google Cloud Community / Daniel Strebel*
+- [Managing GCP service usage through delegated role grants](https://medium.com/google-cloud/managing-gcp-service-usage-through-delegated-role-grants-a843610f2226)<br>*Medium / Julio Castillo*
+- [Apigee X Organization Provisioning with Google Terraform Modules](https://www.googlecloudcommunity.com/gc/Apigee/Apigee-X-Organization-Provisioning-with-Google-Terraform-Modules/m-p/166411)<br>*Google Cloud Community / Daniel Strebel*
 
 ## GCP Reference Architectures
 
