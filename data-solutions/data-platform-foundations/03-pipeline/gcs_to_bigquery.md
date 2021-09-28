@@ -3,42 +3,37 @@
 In this example we will publish person message in the following format:
 
 ```bash
-Lorenzo,Caggioni,1617898199
+name,surname,1617898199
 ```
 
-a Dataflow pipeline will read those messages and import them into a Bigquery table in the DWH project.
+A Dataflow pipeline will read those messages and import them into a Bigquery table in the DWH project.
 
 [TODO] An autorized view will be created in the datamart project to expose the table.
-[TODO] Remove hardcoded 'lcaggio' variables and made ENV variable for it.
 [TODO] Further automation is expected in future.
 
-Create and download keys for Service accounts you created.
-
-## Create BQ table
-
-Those steps should be done as Transformation Service Account:
-
+## Set up the env vars
 ```bash
-gcloud auth activate-service-account sa-dwh@dwh-lc01.iam.gserviceaccount.com --key-file=sa-dwh.json --project=dwh-lc01
+export DWH_PROJECT_ID=**dwh_project_id** 
+export LANDING_PROJECT_ID=**landing_project_id** 
+export TRANSFORMATION_PROJECT_ID=*transformation_project_id*
 ```
 
-and you can run the command to create a table:
+## Create BQ table
+Those steps should be done as DWH Service Account.
+
+You can run the command to create a table:
 
 ```bash
-bq mk \
--t \
+gcloud --impersonate-service-account=sa-datawh@$DWH_PROJECT_ID.iam.gserviceaccount.com \
+alpha bq tables create person \
+--project=$DWH_PROJECT_ID --dataset=bq_raw_dataset \
 --description "This is a Test Person table" \
-dwh-lc01:bq_raw_dataset.person \
-name:STRING,surname:STRING,timestamp:TIMESTAMP
+--schema name=STRING,surname=STRING,timestamp=TIMESTAMP
 ```
 
 ## Produce CSV data file, JSON schema file and UDF JS file
 
 Those steps should be done as landing Service Account:
-
-```bash
-gcloud auth activate-service-account sa-landing@landing-lc01.iam.gserviceaccount.com --key-file=sa-landing.json --project=landing-lc01
-```
 
 Let's now create a series of messages we can use to import:
 
@@ -52,7 +47,7 @@ done
 and copy files to the GCS bucket:
 
 ```bash
-gsutil cp person.csv gs://landing-lc01-eu-raw-data
+gsutil -i sa-landing@$LANDING_PROJECT_ID.iam.gserviceaccount.com cp person.csv gs://$LANDING_PROJECT_ID-eu-raw-data
 ```
 
 Let's create the data JSON schema:
@@ -81,7 +76,8 @@ EOF
 and copy files to the GCS bucket:
 
 ```bash
-gsutil cp person_schema.json gs://landing-lc01-eu-data-schema
+gsutil -i sa-landing@$LANDING_PROJECT_ID.iam.gserviceaccount.com cp person_schema.json gs://$LANDING_PROJECT_ID-eu-data-schema
+
 ```
 
 Let's create the data UDF function to transform message data:
@@ -105,47 +101,40 @@ EOF
 and copy files to the GCS bucket:
 
 ```bash
-gsutil cp person_udf.js gs://landing-lc01-eu-data-schema
+gsutil -i sa-landing@$LANDING_PROJECT_ID.iam.gserviceaccount.com cp person_udf.js gs://$LANDING_PROJECT_ID-eu-data-schema
 ```
 
 if you want to check files copied to GCS, you can use the Transformation service account:
 
 ```bash
-gcloud auth activate-service-account sa-transformation@transformation-lc01.iam.gserviceaccount.com --key-file=sa-transformation.json --project=transformation-lc01
-```
+gsutil -i sa-transformation@$TRANSFORMATION_PROJECT_ID.iam.gserviceaccount.com ls gs://$LANDING_PROJECT_ID-eu-raw-data
+gsutil -i sa-transformation@$TRANSFORMATION_PROJECT_ID.iam.gserviceaccount.com ls gs://$LANDING_PROJECT_ID-eu-data-schema
 
-and read a message (message won't be acked and will stay in the subscription):
-
-```bash
-gsutil ls gs://landing-lc01-eu-raw-data
-gsutil ls gs://landing-lc01-eu-data-schema
 ```
 
 ## Dataflow
 
-Those steps should be done as transformation Service Account:
+Those steps should be done as transformation Service Account.
+
+
+Let's than start a Dataflow batch pipeline using a Google provided template using internal only IPs, the created network and subnetwork, the appropriate service account and requested parameters:
 
 ```bash
-gcloud auth activate-service-account sa-transformation@transformation-lc01.iam.gserviceaccount.com --key-file=sa-transformation.json --project=transformation-lc01
-```
-
-Let's than start a Dataflwo batch pipeline using a Google provided template using internal only IPs, the created network and subnetwork, the appropriate service account and requested parameters:
-
-```bash
-gcloud dataflow jobs run test_batch_lcaggio01 \
+gcloud --impersonate-service-account=sa-transformation@$TRANSFORMATION_PROJECT_ID.iam.gserviceaccount.com dataflow jobs run test_batch_01 \
     --gcs-location gs://dataflow-templates/latest/GCS_Text_to_BigQuery \
-    --project transformation-lc01 \
+    --project $TRANSFORMATION_PROJECT_ID \
     --region europe-west3 \
     --disable-public-ips \
     --network transformation-vpc \
     --subnetwork regions/europe-west3/subnetworks/transformation-subnet \
-    --staging-location gs://transformation-lc01-eu-temp \
-    --service-account-email sa-transformation@transformation-lc01.iam.gserviceaccount.com \
+    --staging-location gs://$TRANSFORMATION_PROJECT_ID-eu-temp \
+    --service-account-email sa-transformation@$TRANSFORMATION_PROJECT_ID.iam.gserviceaccount.com \
     --parameters \
 javascriptTextTransformFunctionName=transform,\
-JSONPath=gs://landing-lc01-eu-data-schema/person_schema.json,\
-javascriptTextTransformGcsPath=gs://landing-lc01-eu-data-schema/person_udf.js,\
-inputFilePattern=gs://landing-lc01-eu-raw-data/person.csv,\
-outputTable=dwh-lc01:bq_raw_dataset.person,\
-bigQueryLoadingTemporaryDirectory=gs://transformation-lc01-eu-temp
+JSONPath=gs://$LANDING_PROJECT_ID-eu-data-schema/person_schema.json,\
+javascriptTextTransformGcsPath=gs://$LANDING_PROJECT_ID-eu-data-schema/person_udf.js,\
+inputFilePattern=gs://$LANDING_PROJECT_ID-eu-raw-data/person.csv,\
+outputTable=$DWH_PROJECT_ID:bq_raw_dataset.person,\
+bigQueryLoadingTemporaryDirectory=gs://$TRANSFORMATION_PROJECT_ID-eu-temp
+
 ```

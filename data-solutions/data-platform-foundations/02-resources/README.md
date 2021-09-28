@@ -26,7 +26,7 @@ In the previous step, we created the environment (projects and service account) 
 
 To create the resources, copy the output of the environment step (**project_ids**) and paste it into the `terraform.tvars`:
 
-- Specify your variables in a `terraform.tvars`, you can use the ouptu from the environment stage
+- Specify your variables in a `terraform.tvars`, you can use the output from the environment stage
 
 ```tfm
 project_ids = {
@@ -38,15 +38,14 @@ project_ids = {
 }
 ```
 
-- Get a key for the service account created in the environment stage:
-  - Go into services project
-  - Go into IAM page
-  - Go into the service account section
-  - Creaet a new key for the service account created in previeous step (**service_account**)
-  - Download the json key into the current folder
-- make sure you have the right authentication setup: `export GOOGLE_APPLICATION_CREDENTIALS=PATH_TO_SERVICE_ACCOUT_KEY.json`
-- run `terraform init` and `terraform apply`
 
+- The providers.tf file has been configured to impersonate the **main** service account
+
+- To launch terraform:
+```bash
+terraform plan
+terraform apply
+```
 Once done testing, you can clean up resources by running `terraform destroy`.
 
 ### CMEK configuration
@@ -68,6 +67,8 @@ You can configure GCP resources to use existing CMEK keys configuring the 'servi
 | *transformation_buckets* | List of transformation buckets to create | <code title="map&#40;object&#40;&#123;&#10;location &#61; string&#10;name     &#61; string&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="&#123;&#10;temp &#61; &#123;&#10;location &#61; &#34;EU&#34;&#10;name     &#61; &#34;temp&#34;&#10;&#125;,&#10;templates &#61; &#123;&#10;location &#61; &#34;EU&#34;&#10;name     &#61; &#34;templates&#34;&#10;&#125;,&#10;&#125;">...</code> |
 | *transformation_subnets* | List of subnets to create in the transformation Project. | <code title="list&#40;object&#40;&#123;&#10;ip_cidr_range      &#61; string&#10;name               &#61; string&#10;region             &#61; string&#10;secondary_ip_range &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">list(object({...}))</code> |  | <code title="&#91;&#10;&#123;&#10;ip_cidr_range      &#61; &#34;10.1.0.0&#47;20&#34;&#10;name               &#61; &#34;transformation-subnet&#34;&#10;region             &#61; &#34;europe-west3&#34;&#10;secondary_ip_range &#61; &#123;&#125;&#10;&#125;,&#10;&#93;">...</code> |
 | *transformation_vpc_name* | Name of the VPC created in the transformation Project. | <code title="">string</code> |  | <code title="">transformation-vpc</code> |
+| *admins* | List of users allowed to impersonate the service account | <code title="">list</code> |  | <code title="">null</code> |
+
 
 ## Outputs
 
