@@ -1,11 +1,15 @@
 # Contributing
 
-We welcome any contributions or feature requests you would like to submit!
+We welcome any contributions on bugs, or feature requests you would like to submit!
 
-Fork the Project
-* Create your Feature Branch (git checkout -b feature/AmazingFeature)
-* Commit your Changes (git commit -m 'Add some AmazingFeature')
-* Push to the Branch (git push origin feature/AmazingFeature)
+The basic process is pretty simple:
+
+* Fork the Project
+* Create your Feature Branch<br>`git checkout -b feature/AmazingFeature`
+* Commit your Changes<br>`git commit -m 'Add some AmazingFeature`
+* Push to the Branch<br>`git push origin feature/AmazingFeature`
+* Make sure tests pass!<br>pytest # in the root folder
+* Make sure any changes to variables and outputs are reflected in READMEs<br>`./tools/tfdoc.py [changed folder]`
 * Open a Pull Request
 
-When implementing your new feature, please follow Fabric [core design principles](./MANIFESTO.md#core-design-principles).
+When implementing your new feature, please follow our [core design principles](./MANIFESTO.md#core-design-principles).
