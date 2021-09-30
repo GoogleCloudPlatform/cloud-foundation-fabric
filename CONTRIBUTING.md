@@ -8,7 +8,7 @@ The basic process is pretty simple:
 * Create your Feature Branch<br>`git checkout -b feature/AmazingFeature`
 * Commit your Changes<br>`git commit -m 'Add some AmazingFeature`
 * Push to the Branch<br>`git push origin feature/AmazingFeature`
-* Make sure tests pass!<br>pytest # in the root folder
+* Make sure tests pass!<br>`pytest # in the root folder`
 * Make sure any changes to variables and outputs are reflected in READMEs<br>`./tools/tfdoc.py [changed folder]`
 * Open a Pull Request
 
