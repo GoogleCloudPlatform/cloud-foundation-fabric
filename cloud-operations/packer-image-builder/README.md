@@ -25,7 +25,7 @@ Building Compute Engine image (Packer part):
 ## Using Packer's service account
 
 The following example leverages [service account impersonation](https://cloud.google.com/iam/docs/impersonating-service-accounts)
-to execute any operations on a GCP as a dedicated Packer service account. Depending on how you execute
+to execute any operations on GCP as a dedicated Packer service account. Depending on how you execute
 the Packer tool, you need to grant your principal rights to impersonate Packer's service account.
 
 Set `packer_account_users` variable in Terraform configuration to grant roles required to impersonate
@@ -50,17 +50,17 @@ from [Packer's documentation](https://www.packer.io/docs) for more details on se
 
 ## Accessing temporary VM
 
-Packer creates temporary Compute Engine VM instance for provisioning. As we recommend using internal
+Packer creates a temporary Compute Engine VM instance for provisioning. As we recommend using internal
 IP addresses only, communication with this VM has to either:
 
 * originate from the network routable on Packer's VPC *(i.e. peered VPC, over VPN or interconnect)*
 * use [Identity-Aware Proxy](https://cloud.google.com/iap/docs/using-tcp-forwarding) tunnel
 
-By default, this example assumes that IAP tunnel is needed to communicate with temporary VM.
+By default, this example assumes that IAP tunnel is needed to communicate with the temporary VM.
 This might be changed by setting `use_iap` variable to `false` in Terraform and Packer
 configurations respectively.
 
-**NOTE:** using IAP tunnel with Packer requires gcloud SDK installed on a system running Packer.
+**NOTE:** using IAP tunnel with Packer requires gcloud SDK installed on the system running Packer.
 
 ## Accessing resources over the Internet
 
