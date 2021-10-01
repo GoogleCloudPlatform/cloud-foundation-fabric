@@ -12,6 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+variable "admins" {
+  description = "List of users allowed to impersonate the service account"
+  type        = list(string)
+  default     = null
+}
+
 variable "billing_account_id" {
   description = "Billing account id."
   type        = string

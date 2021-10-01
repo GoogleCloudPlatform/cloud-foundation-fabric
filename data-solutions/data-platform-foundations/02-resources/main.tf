@@ -25,12 +25,18 @@ module "datamart-sa" {
   iam_project_roles = {
     "${var.project_ids.datamart}" = ["roles/editor"]
   }
+  iam = var.admins != null ? { "roles/iam.serviceAccountTokenCreator" = var.admins } : {}
 }
 
 module "dwh-sa" {
   source     = "../../../modules/iam-service-account"
   project_id = var.project_ids.dwh
   name       = var.service_account_names.dwh
+
+  iam_project_roles = {
+    "${var.project_ids.dwh}" = ["roles/bigquery.admin"]
+  }
+  iam = var.admins != null ? { "roles/iam.serviceAccountTokenCreator" = var.admins } : {}
 }
 
 module "landing-sa" {
@@ -38,8 +44,11 @@ module "landing-sa" {
   project_id = var.project_ids.landing
   name       = var.service_account_names.landing
   iam_project_roles = {
-    "${var.project_ids.landing}" = ["roles/pubsub.publisher"]
+    "${var.project_ids.landing}" = [
+      "roles/pubsub.publisher",
+    "roles/storage.objectCreator"]
   }
+  iam = var.admins != null ? { "roles/iam.serviceAccountTokenCreator" = var.admins } : {}
 }
 
 module "services-sa" {
@@ -49,6 +58,7 @@ module "services-sa" {
   iam_project_roles = {
     "${var.project_ids.services}" = ["roles/editor"]
   }
+  iam = var.admins != null ? { "roles/iam.serviceAccountTokenCreator" = var.admins } : {}
 }
 
 module "transformation-sa" {
@@ -66,8 +76,17 @@ module "transformation-sa" {
       "roles/dataflow.worker",
       "roles/bigquery.metadataViewer",
       "roles/storage.objectViewer",
+    ],
+    "${var.project_ids.landing}" = [
+      "roles/storage.objectViewer",
+    ],
+    "${var.project_ids.dwh}" = [
+      "roles/bigquery.dataOwner",
+      "roles/bigquery.jobUser",
+      "roles/bigquery.metadataViewer",
     ]
   }
+  iam = var.admins != null ? { "roles/iam.serviceAccountTokenCreator" = var.admins } : {}
 }
 
 ###############################################################################
@@ -145,6 +164,31 @@ module "vpc-transformation" {
   project_id = var.project_ids.transformation
   name       = var.transformation_vpc_name
   subnets    = var.transformation_subnets
+}
+
+module "firewall" {
+  source               = "../../../modules/net-vpc-firewall"
+  project_id           = var.project_ids.transformation
+  network              = module.vpc-transformation.name
+  admin_ranges_enabled = false
+  admin_ranges         = [""]
+  http_source_ranges   = []
+  https_source_ranges  = []
+  ssh_source_ranges    = []
+
+  custom_rules = {
+    iap-svc = {
+      description          = "Dataflow service."
+      direction            = "INGRESS"
+      action               = "allow"
+      sources              = ["dataflow"]
+      targets              = ["dataflow"]
+      ranges               = []
+      use_service_accounts = false
+      rules                = [{ protocol = "tcp", ports = ["12345-12346"] }]
+      extra_attributes     = {}
+    }
+  }
 }
 
 ###############################################################################
