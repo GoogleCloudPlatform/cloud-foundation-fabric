@@ -39,3 +39,9 @@ The example's feed tracks changes to Google Compute instances, and the Cloud Fun
 <a href="./iam-delegated-role-grants" title="Delegated Role Grants"><img src="./iam-delegated-role-grants/diagram.png" align="left" width="280px"></a> This [example](./iam-delegated-role-grants) shows how to use delegated role grants to restrict service usage.
 
 <br clear="left">
+
+## Packer image builder
+
+<a href="./packer-image-builder" title="Packer image builder"><img src="./packer-image-builder/diagram.png" align="left" width="280px"></a> This [example](./packer-image-builder) shows how to deploy infrastructure for a Compute Engine image builder based on [Hashicorp's Packer tool](https://www.packer.io).
+
+<br clear="left">

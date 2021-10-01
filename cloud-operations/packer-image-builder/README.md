@@ -1,0 +1,97 @@
+# Compute Image builder with Hashicorp Packer
+
+This example shows how to deploy infrastructure for a Compute Engine image builder based on
+[Hashicorp's Packer tool](https://www.packer.io).
+
+![High-level diagram](diagram.png "High-level diagram")
+
+## Running the example
+
+Prerequisite: [Packer](https://www.packer.io/downloads) version >= v1.7.0
+
+Infrastructure setup (Terraform part):
+
+1. Set Terraform configuration variables
+2. Run `terraform init`
+3. Run `terraform apply`
+
+Building Compute Engine image (Packer part):
+
+1. Enter `packer` directory
+2. Set Packer configuration variables (see [Configuring Packer](#configuring-packer) below)
+3. Run `packer init .`
+4. Run `packer build .`
+
+## Using Packer's service account
+
+The following example leverages [service account impersonation](https://cloud.google.com/iam/docs/impersonating-service-accounts)
+to execute any operations on a GCP as a dedicated Packer service account. Depending on how you execute
+the Packer tool, you need to grant your principal rights to impersonate Packer's service account.
+
+Set `packer_account_users` variable in Terraform configuration to grant roles required to impersonate
+Packer's service account to selected IAM principals.
+Example: allow default [Cloud Build](https://cloud.google.com/build) service account to impersonate
+Packer SA: `packer_account_users=["serviceAccount:myProjectNumber@cloudbuild.gserviceaccount.com"]`.
+
+## Configuring Packer
+
+Provided Packer build example uses [HCL2 configuration files](https://www.packer.io/guides/hcl) and
+requires configuration of some input variables *(i.e. service accounts emails)*.
+Values of those variables can be taken from Terraform outputs. For your convenience,
+Terraform can populate Packer's variable file.
+You can control this behavior with the following Terraform configuration variables:
+
+* `create_packer_vars` (bool) indicates if Terraform should generate Packer's variables file
+* `packer_variables_template` (string) path to Packer's variable file template
+* `packer_variables_file` (string) path to resulting Packer's variable file
+
+Read [Assigning Variables](https://www.packer.io/guides/hcl/variables#assigning-variables) chapter
+from [Packer's documentation](https://www.packer.io/docs) for more details on setting up Packer variables.
+
+## Accessing temporary VM
+
+Packer creates temporary Compute Engine VM instance for provisioning. As we recommend using internal
+IP addresses only, communication with this VM has to either:
+
+* originate from the network routable on Packer's VPC *(i.e. peered VPC, over VPN or interconnect)*
+* use [Identity-Aware Proxy](https://cloud.google.com/iap/docs/using-tcp-forwarding) tunnel
+
+By default, this example assumes that IAP tunnel is needed to communicate with temporary VM.
+This might be changed by setting `use_iap` variable to `false` in Terraform and Packer
+configurations respectively.
+
+**NOTE:** using IAP tunnel with Packer requires gcloud SDK installed on a system running Packer.
+
+## Accessing resources over the Internet
+
+The following example assumes that provisioning of a Compute Engine VM requires access to
+the resources over the Internet (i.e. to install OS packages). Since Compute VM has no public IP
+address for security reasons, Internet connectivity is done with [Cloud NAT](https://cloud.google.com/nat/docs/overview).
+
+<!-- BEGIN TFDOC -->
+## Variables
+
+| name | description | type | required | default |
+|---|---|:---: |:---:|:---:|
+| project_id | Project id that references existing project. | <code title="">string</code> | ✓ |  |
+| *billing_account* | Billing account id used as default for new projects. | <code title="">string</code> |  | <code title="">null</code> |
+| *cidrs* | CIDR ranges for subnets | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="&#123;&#10;image-builder &#61; &#34;10.0.0.0&#47;24&#34;&#10;&#125;">...</code> |
+| *create_packer_vars* | Create packer variables file using template file and terraform output. | <code title="">bool</code> |  | <code title="">false</code> |
+| *packer_account_users* | List of members that will be allowed to impersonate Packer image builder service account in IAM format, i.e. 'user:{emailid}'. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
+| *packer_source_cidrs* | List of CIDR ranges allowed to connect to the temporary VM for provisioning. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">["0.0.0.0/0"]</code> |
+| *packer_variables_file* | Packer variables file that is created from the template and terrafrom output. | <code title="">string</code> |  | <code title="">packer/build.auto.pkrvars.hcl</code> |
+| *packer_variables_template* | Packer variables template file used to create Packer variables file. | <code title="">string</code> |  | <code title="">packer/build.pkrvars.tpl</code> |
+| *project_create* | Create project instead ofusing an existing one. | <code title="">bool</code> |  | <code title="">true</code> |
+| *region* | Default region for resources | <code title="">string</code> |  | <code title="">europe-west1</code> |
+| *root_node* | The resource name of the parent folder or organization for project creation, in 'folders/folder_id' or 'organizations/org_id' format. | <code title="">string</code> |  | <code title="">null</code> |
+| *use_iap* | Use IAP tunnel to connect to Compute Engine instance for provisioning. | <code title="">bool</code> |  | <code title="">true</code> |
+
+## Outputs
+
+| name | description | sensitive |
+|---|---|:---:|
+| builder_sa | Packer's service account email. |  |
+| compute_sa | Packer's temporary VM service account email. |  |
+| compute_subnetwork | Name of a subnetwork for Packer's temporary VM. |  |
+| compute_zone | Name of a compute engine zone for Packer's temporary VM. |  |
+<!-- END TFDOC -->
