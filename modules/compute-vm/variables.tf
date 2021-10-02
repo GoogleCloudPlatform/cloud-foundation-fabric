@@ -22,10 +22,9 @@ variable "attached_disks" {
     source      = string
     source_type = string
     options = object({
-      auto_delete   = bool
-      mode          = string
-      replica_zones = list(string)
-      type          = string
+      mode         = string
+      replica_zone = string
+      type         = string
     })
   }))
   default = []
@@ -44,30 +43,31 @@ variable "attached_disks" {
 variable "attached_disk_defaults" {
   description = "Defaults for attached disks options."
   type = object({
-    auto_delete   = bool
-    mode          = string
-    replica_zones = list(string)
-    type          = string
+    mode         = string
+    replica_zone = string
+    type         = string
   })
   default = {
-    auto_delete   = true
-    mode          = "READ_WRITE"
-    replica_zones = []
-    type          = "pd-balanced"
+    auto_delete  = true
+    mode         = "READ_WRITE"
+    replica_zone = null
+    type         = "pd-balanced"
   }
 }
 
 variable "boot_disk" {
   description = "Boot disk properties."
   type = object({
-    image = string
-    size  = number
-    type  = string
+    auto_delete = bool
+    image       = string
+    size        = number
+    type        = string
   })
   default = {
-    image = "projects/debian-cloud/global/images/family/debian-10"
-    type  = "pd-ssd"
-    size  = 10
+    auto_delete = true
+    image       = "projects/debian-cloud/global/images/family/debian-10"
+    type        = "pd-balanced"
+    size        = 10
   }
 }
 
@@ -79,6 +79,12 @@ variable "can_ip_forward" {
 
 variable "confidential_compute" {
   description = "Enable Confidential Compute for these instances."
+  type        = bool
+  default     = false
+}
+
+variable "create_template" {
+  description = "Create instance template instead of instances."
   type        = bool
   default     = false
 }
@@ -213,23 +219,6 @@ variable "service_account_scopes" {
   default     = []
 }
 
-variable "tags" {
-  description = "Instance tags."
-  type        = list(string)
-  default     = []
-}
-
-variable "use_instance_template" {
-  description = "Create instance template instead of instances."
-  type        = bool
-  default     = false
-}
-
-variable "zone" {
-  description = "Compute zone."
-  type        = string
-}
-
 variable "shielded_config" {
   description = "Shielded VM configuration of the instances."
   type = object({
@@ -238,4 +227,15 @@ variable "shielded_config" {
     enable_integrity_monitoring = bool
   })
   default = null
+}
+
+variable "tags" {
+  description = "Instance tags."
+  type        = list(string)
+  default     = []
+}
+
+variable "zone" {
+  description = "Compute zone."
+  type        = string
 }

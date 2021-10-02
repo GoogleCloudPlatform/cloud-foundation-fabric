@@ -21,11 +21,11 @@ module "test" {
   name                   = "test"
   attached_disks         = var.attached_disks
   attached_disk_defaults = var.attached_disk_defaults
-  network_interfaces     = var.network_interfaces
-  service_account_create = var.service_account_create
-  use_instance_template  = var.use_instance_template
+  create_template        = var.create_template
   confidential_compute   = var.confidential_compute
   group                  = var.group
   iam                    = var.iam
   metadata               = var.metadata
+  network_interfaces     = var.network_interfaces
+  service_account_create = var.service_account_create
 }

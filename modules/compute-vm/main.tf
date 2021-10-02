@@ -23,11 +23,11 @@ locals {
   }
   attached_disks_regional = {
     for k, v in local.attached_disks :
-    k => v if try(length(v.options.replica_zones) == 2, false)
+    k => v if try(v.options.replica_zone, null) != null
   }
   attached_disks_zonal = {
     for k, v in local.attached_disks :
-    k => v if !try(length(v.options.replica_zones) == 2, false)
+    k => v if try(v.options.replica_zone, null) == null
   }
   on_host_maintenance = (
     var.options.preemptible || var.confidential_compute
@@ -63,7 +63,10 @@ locals {
 }
 
 resource "google_compute_disk" "disks" {
-  for_each = local.attached_disks_zonal
+  for_each = {
+    for k, v in local.attached_disks_zonal :
+    k => v if v.source_type != "attach"
+  }
   project  = var.project_id
   zone     = var.zone
   name     = "${var.name}-${each.key}"
@@ -85,11 +88,14 @@ resource "google_compute_disk" "disks" {
 }
 
 resource "google_compute_region_disk" "disks" {
-  provider      = google-beta
-  for_each      = local.attached_disks_regional
+  provider = google-beta
+  for_each = {
+    for k, v in local.attached_disks_regional :
+    k => v if v.source_type != "attach"
+  }
   project       = var.project_id
   region        = local.region
-  replica_zones = each.value.options.replica_zones
+  replica_zones = [var.zone, each.value.options.replica_zone]
   name          = "${var.name}-${each.key}"
   type          = each.value.options.type
   size          = each.value.size
@@ -111,7 +117,7 @@ resource "google_compute_region_disk" "disks" {
 
 resource "google_compute_instance" "default" {
   provider                  = google-beta
-  count                     = var.use_instance_template ? 0 : 1
+  count                     = var.create_template ? 0 : 1
   project                   = var.project_id
   zone                      = var.zone
   name                      = var.name
@@ -156,6 +162,7 @@ resource "google_compute_instance" "default" {
   }
 
   boot_disk {
+    auto_delete = var.boot_disk.auto_delete
     initialize_params {
       type  = var.boot_disk.type
       image = var.boot_disk.image
@@ -242,7 +249,7 @@ resource "google_compute_instance_iam_binding" "default" {
 
 resource "google_compute_instance_template" "default" {
   provider         = google-beta
-  count            = var.use_instance_template ? 1 : 0
+  count            = var.create_template ? 1 : 0
   project          = var.project_id
   region           = local.region
   name_prefix      = "${var.name}-"
@@ -255,10 +262,11 @@ resource "google_compute_instance_template" "default" {
   labels           = var.labels
 
   disk {
-    source_image = var.boot_disk.image
-    disk_type    = var.boot_disk.type
-    disk_size_gb = var.boot_disk.size
+    auto_delete  = var.boot_disk.auto_delete
     boot         = true
+    disk_size_gb = var.boot_disk.size
+    disk_type    = var.boot_disk.type
+    source_image = var.boot_disk.image
   }
 
   dynamic "confidential_instance_config" {
@@ -272,7 +280,7 @@ resource "google_compute_instance_template" "default" {
     for_each = local.attached_disks
     iterator = config
     content {
-      auto_delete = config.value.options.auto_delete
+      # auto_delete = config.value.options.auto_delete
       device_name = config.value.name
       # Cannot use `source` with any of the fields in
       # [disk_size_gb disk_name disk_type source_image labels]
@@ -337,7 +345,7 @@ resource "google_compute_instance_template" "default" {
 }
 
 resource "google_compute_instance_group" "unmanaged" {
-  count   = var.group != null && !var.use_instance_template ? 1 : 0
+  count   = var.group != null && !var.create_template ? 1 : 0
   project = var.project_id
   network = (
     length(var.network_interfaces) > 0

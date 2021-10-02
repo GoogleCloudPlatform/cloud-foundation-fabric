@@ -22,10 +22,9 @@ variable "attached_disks" {
     source      = string
     source_type = string
     options = object({
-      auto_delete   = bool
-      mode          = string
-      replica_zones = list(string)
-      type          = string
+      mode         = string
+      replica_zone = string
+      type         = string
     })
   }))
   default = []
@@ -34,20 +33,23 @@ variable "attached_disks" {
 variable "attached_disk_defaults" {
   description = "Defaults for attached disks options."
   type = object({
-    auto_delete   = bool
-    mode          = string
-    replica_zones = list(string)
-    type          = string
+    mode         = string
+    replica_zone = string
+    type         = string
   })
   default = {
-    auto_delete   = true
-    mode          = "READ_WRITE"
-    replica_zones = []
-    type          = "pd-balanced"
+    mode         = "READ_WRITE"
+    replica_zone = null
+    type         = "pd-balanced"
   }
 }
 
 variable "confidential_compute" {
+  type    = bool
+  default = false
+}
+
+variable "create_template" {
   type    = bool
   default = false
 }
@@ -88,11 +90,6 @@ variable "network_interfaces" {
 }
 
 variable "service_account_create" {
-  type    = bool
-  default = false
-}
-
-variable "use_instance_template" {
   type    = bool
   default = false
 }
