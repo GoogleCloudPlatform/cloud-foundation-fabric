@@ -34,7 +34,7 @@ output "projects" {
 }
 
 output "vm" {
-  description = "GCE VMs."
+  description = "GCE VM."
   value = {
     name    = module.vm_example.instance.name
     address = module.vm_example.internal_ip

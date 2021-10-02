@@ -52,6 +52,6 @@ This sample creates several distinct groups of resources:
 | bucket | GCS Bucket URL. |  |
 | bucket_keys | GCS Bucket Cloud KMS crypto keys. |  |
 | projects | Project ids. |  |
-| vm | GCE VMs. |  |
+| vm | GCE VM. |  |
 | vm_keys | GCE VM Cloud KMS crypto keys. |  |
 <!-- END TFDOC -->

@@ -133,5 +133,5 @@ You can check data imported into Google BigQuery from the Google Cloud Console U
 | bq_tables | Bigquery Tables. |  |
 | buckets | GCS Bucket Cloud KMS crypto keys. |  |
 | projects | Project ids. |  |
-| vm | GCE VMs. |  |
+| vm | GCE VM. |  |
 <!-- END TFDOC -->
