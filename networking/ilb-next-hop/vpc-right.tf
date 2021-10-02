@@ -39,14 +39,14 @@ module "vpc-right" {
       priority      = null
       tags          = null
       next_hop_type = "instance"
-      next_hop      = module.gw.instances.0.self_link
+      next_hop      = module.gw[var.zones[0]].self_link
     }
     to-left-gw-2 = {
       dest_range    = var.ip_ranges.left
       priority      = null
       tags          = null
       next_hop_type = "instance"
-      next_hop      = module.gw.instances.1.self_link
+      next_hop      = module.gw[var.zones[1]].self_link
     }
   }
 }

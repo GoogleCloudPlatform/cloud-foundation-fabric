@@ -13,10 +13,10 @@
 # limitations under the License.
 
 locals {
-  vm-instances = concat(
-    module.vm-spoke-1.instances,
-    module.vm-spoke-2.instances
-  )
+  vm-instances = [
+    module.vm-spoke-1.instance,
+    module.vm-spoke-2.instance
+  ]
   vm-startup-script = join("\n", [
     "#! /bin/bash",
     "apt-get update && apt-get install -y dnsutils"
@@ -250,7 +250,7 @@ module "nat-spoke-2" {
 module "vm-spoke-1" {
   source     = "../../modules/compute-vm"
   project_id = var.project_id
-  region     = var.regions.b
+  zone       = "${var.regions.b}-b"
   name       = "spoke-1-test"
   network_interfaces = [{
     network    = module.vpc-spoke-1.self_link
@@ -266,7 +266,7 @@ module "vm-spoke-1" {
 module "vm-spoke-2" {
   source     = "../../modules/compute-vm"
   project_id = var.project_id
-  region     = var.regions.b
+  zone       = "${var.regions.b}-b"
   name       = "spoke-2-test"
   network_interfaces = [{
     network    = module.vpc-spoke-2.self_link
@@ -290,11 +290,13 @@ module "dns-host" {
   name            = "example"
   domain          = "example.com."
   client_networks = [module.vpc-hub.self_link]
+  # setting instance IPs at first apply fails due to dynamic values
   recordsets = [
-    for instance in local.vm-instances : {
-      name    = instance.name, type = "A", ttl = 300,
-      records = [instance.network_interface.0.network_ip]
-    }
+    { name = "localhost", type = "A", ttl = 300, records = ["127.0.0.1"] }
+    # for instance in local.vm-instances : {
+    #   name    = instance.name, type = "A", ttl = 300,
+    #   records = [instance.network_interface.0.network_ip]
+    # }
   ]
 }
 

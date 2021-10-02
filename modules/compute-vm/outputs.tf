@@ -16,15 +16,16 @@
 
 output "external_ip" {
   description = "Instance main interface external IP addresses."
-  value = try(
-    google_compute_instance.default.0.network_interface.0.access_config.0.nat_ip,
-    null
+  value = (
+    var.network_interfaces[0].nat
+    ? try(google_compute_instance.default.0.network_interface.0.access_config.0.nat_ip, null)
+    : null
   )
 }
 
 output "group" {
   description = "Instance group resource."
-  value       = google_compute_instance_group.unmanaged
+  value       = try(google_compute_instance_group.unmanaged.0, null)
 }
 
 output "instance" {
