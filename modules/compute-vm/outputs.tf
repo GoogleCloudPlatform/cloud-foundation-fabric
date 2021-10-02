@@ -17,7 +17,7 @@
 output "external_ip" {
   description = "Instance main interface external IP addresses."
   value = try(
-    google_compute_instance.default.network_interface.0.access_config.0.nat_ip,
+    google_compute_instance.default.0.network_interface.0.access_config.0.nat_ip,
     null
   )
 }
@@ -29,26 +29,26 @@ output "group" {
 
 output "instance" {
   description = "Instance resource."
-  value       = google_compute_instance.default
+  value       = try(google_compute_instance.default.0, null)
 }
 
 output "internal_ip" {
   description = "Instance main interface internal IP address."
   value = try(
-    google_compute_instance.default.network_interface.0.network_ip,
+    google_compute_instance.default.0.network_interface.0.network_ip,
     null
   )
 }
 
 output "self_link" {
   description = "Instance self links."
-  value       = google_compute_instance.default.self_link
+  value       = try(google_compute_instance.default.0.self_link, null)
 }
 
 output "service_account" {
   description = "Service account resource."
   value = (
-    var.service_account_create ? google_service_account.service_account[0] : null
+    var.service_account_create ? google_service_account.service_account.0 : null
   )
 }
 
@@ -67,10 +67,10 @@ output "service_account_iam_email" {
 
 output "template" {
   description = "Template resource."
-  value       = try(google_compute_instance_template.default[0], null)
+  value       = try(google_compute_instance_template.default.0, null)
 }
 
 output "template_name" {
   description = "Template name."
-  value       = try(google_compute_instance_template.default[0].name, null)
+  value       = try(google_compute_instance_template.default.0.name, null)
 }

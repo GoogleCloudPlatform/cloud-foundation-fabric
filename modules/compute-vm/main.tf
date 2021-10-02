@@ -17,7 +17,7 @@
 locals {
   attached_disks = {
     for disk in var.attached_disks :
-    "${var.name}-${disk.name}" => merge(disk, {
+    disk.name => merge(disk, {
       options = disk.options == null ? var.attached_disk_defaults : disk.options
     })
   }
@@ -66,7 +66,7 @@ resource "google_compute_disk" "disks" {
   for_each = local.attached_disks_zonal
   project  = var.project_id
   zone     = var.zone
-  name     = each.key
+  name     = "${var.name}-${each.key}"
   type     = each.value.options.type
   size     = each.value.size
   image    = each.value.source_type == "image" ? each.value.source : null
@@ -90,7 +90,7 @@ resource "google_compute_region_disk" "disks" {
   project       = var.project_id
   region        = local.region
   replica_zones = each.value.options.replica_zones
-  name          = each.key
+  name          = "${var.name}-${each.key}"
   type          = each.value.options.type
   size          = each.value.size
   # image         = each.value.source_type == "image" ? each.value.source : null
@@ -111,6 +111,7 @@ resource "google_compute_region_disk" "disks" {
 
 resource "google_compute_instance" "default" {
   provider                  = google-beta
+  count                     = var.use_instance_template ? 0 : 1
   project                   = var.project_id
   zone                      = var.zone
   name                      = var.name
@@ -346,7 +347,7 @@ resource "google_compute_instance_group" "unmanaged" {
   zone        = var.zone
   name        = var.name
   description = "Terraform-managed."
-  instances   = [google_compute_instance.default.self_link]
+  instances   = [google_compute_instance.default.0.self_link]
   dynamic "named_port" {
     for_each = var.group.named_ports != null ? var.group.named_ports : {}
     iterator = config
