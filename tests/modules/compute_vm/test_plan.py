@@ -35,7 +35,7 @@ def test_service_account(plan_runner):
 
 
 def test_template(plan_runner):
-  _, resources = plan_runner(FIXTURES_DIR, use_instance_template='true')
+  _, resources = plan_runner(FIXTURES_DIR, create_template='true')
   assert len(resources) == 1
   assert resources[0]['type'] == 'google_compute_instance_template'
   assert resources[0]['values']['name_prefix'] == 'test-'
@@ -78,7 +78,7 @@ def test_confidential_compute(plan_runner):
 
 def test_confidential_compute_template(plan_runner):
   _, resources = plan_runner(FIXTURES_DIR, confidential_compute='true',
-                             use_instance_template='true')
+                             create_template='true')
   assert len(resources) == 1
   assert resources[0]['values']['confidential_instance_config'] == [
       {'enable_confidential_compute': True}]

@@ -162,7 +162,7 @@ resource "google_compute_instance" "default" {
   }
 
   boot_disk {
-    auto_delete = var.boot_disk.auto_delete
+    auto_delete = var.boot_disk_delete
     initialize_params {
       type  = var.boot_disk.type
       image = var.boot_disk.image
@@ -262,7 +262,7 @@ resource "google_compute_instance_template" "default" {
   labels           = var.labels
 
   disk {
-    auto_delete  = var.boot_disk.auto_delete
+    auto_delete  = var.boot_disk_delete
     boot         = true
     disk_size_gb = var.boot_disk.size
     disk_type    = var.boot_disk.type

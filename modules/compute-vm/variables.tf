@@ -58,17 +58,21 @@ variable "attached_disk_defaults" {
 variable "boot_disk" {
   description = "Boot disk properties."
   type = object({
-    auto_delete = bool
-    image       = string
-    size        = number
-    type        = string
+    image = string
+    size  = number
+    type  = string
   })
   default = {
-    auto_delete = true
-    image       = "projects/debian-cloud/global/images/family/debian-10"
-    type        = "pd-balanced"
-    size        = 10
+    image = "projects/debian-cloud/global/images/family/debian-10"
+    type  = "pd-balanced"
+    size  = 10
   }
+}
+
+variable "boot_disk_delete" {
+  description = "Auto delete boot disk."
+  type        = bool
+  default     = true
 }
 
 variable "can_ip_forward" {
