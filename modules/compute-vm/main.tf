@@ -63,7 +63,7 @@ locals {
 }
 
 resource "google_compute_disk" "disks" {
-  for_each = {
+  for_each = var.create_template ? {} : {
     for k, v in local.attached_disks_zonal :
     k => v if v.source_type != "attach"
   }
@@ -89,7 +89,7 @@ resource "google_compute_disk" "disks" {
 
 resource "google_compute_region_disk" "disks" {
   provider = google-beta
-  for_each = {
+  for_each = var.create_template ? {} : {
     for k, v in local.attached_disks_regional :
     k => v if v.source_type != "attach"
   }

@@ -17,7 +17,7 @@ The simplest example leverages defaults for the boot disk image and size, and us
 module "simple-vm-example" {
   source     = "./modules/compute-vm"
   project_id = var.project_id
-  region     = var.region
+  zone     = "europe-west1-b"
   name       = "test"
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -27,7 +27,6 @@ module "simple-vm-example" {
     alias_ips  = null
   }]
   service_account_create = true
-  instance_count = 1
 }
 # tftest:modules=1:resources=2
 
@@ -48,7 +47,7 @@ This is an example of attaching a pre-existing regional PD to a new instance:
 module "simple-vm-example" {
   source     = "./modules/compute-vm"
   project_id = var.project_id
-  region     = var.region
+  zone     = "${var.region}-b"
   name       = "test"
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -63,10 +62,9 @@ module "simple-vm-example" {
     source_type = "attach"
     source      = "regions/${var.region}/disks/repd-test-1"
     options = {
-      auto_delete = false
-      mode        = null
-      regional    = true
-      type        = null
+      mode         = null
+      replica_zone = "${var.region}-c"
+      type         = null
     }
   }]
   service_account_create = true
@@ -80,7 +78,7 @@ And the same example for an instance template (where not using the full self lin
 module "simple-vm-example" {
   source     = "./modules/compute-vm"
   project_id = var.project_id
-  region     = var.region
+  zone     = "${var.region}-b"
   name       = "test"
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -95,14 +93,13 @@ module "simple-vm-example" {
     source_type = "attach"
     source      = "https://www.googleapis.com/compute/v1/projects/${var.project_id}/regions/${var.region}/disks/repd-test-1"
     options = {
-      auto_delete = false
       mode        = null
-      regional    = true
+      replica_zone = "${var.region}-c"
       type        = null
     }
   }]
   service_account_create = true
-  use_instance_template  = true
+  create_template  = true
 }
 # tftest:modules=1:resources=2
 ```
@@ -115,7 +112,7 @@ This example shows how to control disk encryption via the the `encryption` varia
 module "kms-vm-example" {
   source     = "./modules/compute-vm"
   project_id = var.project_id
-  region     = var.region
+  zone       = "europe-west1-b"
   name       = "kms-test"
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -134,7 +131,6 @@ module "kms-vm-example" {
     }
   ]
   service_account_create = true
-  instance_count         = 1
   boot_disk = {
     image        = "projects/debian-cloud/global/images/family/debian-10"
     type         = "pd-ssd"
@@ -157,7 +153,7 @@ This example shows how add additional [Alias IPs](https://cloud.google.com/vpc/d
 module "vm-with-alias-ips" {
   source     = "./modules/compute-vm"
   project_id = "my-project"
-  region     = "europe-west1"
+  zone     = "europe-west1-b"
   name       = "test"
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -165,17 +161,12 @@ module "vm-with-alias-ips" {
     nat        = false
     addresses  = null
     alias_ips = {
-      alias1 = [
-        "10.16.0.10/32", # alias1 IP for first instance
-        "10.16.0.11/32", # alias1 IP for second instance
-        "10.16.0.12/32", # alias1 IP for third instance
-      ]
+      alias1 = "10.16.0.10/32"
     }
   }]
   service_account_create = true
-  instance_count         = 3
 }
-# tftest:modules=1:resources=4
+# tftest:modules=1:resources=2
 ```
 
 ### Instance template
@@ -186,7 +177,7 @@ This example shows how to use the module to manage an instance template that def
 module "cos-test" {
   source     = "./modules/compute-vm"
   project_id = "my-project"
-  region     = "europe-west1"
+  zone     = "europe-west1-b"
   name       = "test"
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -195,7 +186,6 @@ module "cos-test" {
     addresses  = null
     alias_ips  = null
   }]
-  instance_count = 1
   boot_disk      = {
     image = "projects/cos-cloud/global/images/family/cos-stable"
     type  = "pd-ssd"
@@ -211,7 +201,7 @@ module "cos-test" {
     }
   ]
   service_account        = "vm-default@my-project.iam.gserviceaccount.com"
-  use_instance_template  = true
+  create_template  = true
 }
 # tftest:modules=1:resources=1
 ```
@@ -228,7 +218,7 @@ locals {
 module "instance-group" {
   source     = "./modules/compute-vm"
   project_id = "my-project"
-  region     = "europe-west1"
+  zone     = "europe-west1-b"
   name       = "ilb-test"
   network_interfaces = [{
     network    = var.vpc.self_link

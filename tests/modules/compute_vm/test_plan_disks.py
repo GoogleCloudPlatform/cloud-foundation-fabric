@@ -112,12 +112,7 @@ def test_template(plan_runner):
   '''
   _, resources = plan_runner(
       FIXTURES_DIR, attached_disks=_disks, create_template="true")
-  assert len(resources) == 3
-  disks_z = [r['values']
-             for r in resources if r['type'] == 'google_compute_disk']
-  disks_r = [r['values']
-             for r in resources if r['type'] == 'google_compute_region_disk']
-  assert len(disks_z) == len(disks_r) == 1
+  assert len(resources) == 1
   template = [r['values'] for r in resources if r['type']
               == 'google_compute_instance_template'][0]
   assert len(template['disk']) == 3
