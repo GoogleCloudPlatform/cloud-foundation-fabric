@@ -22,10 +22,10 @@ variable "attached_disks" {
     source      = string
     source_type = string
     options = object({
-      auto_delete = bool
-      mode        = string
-      regional    = bool
-      type        = string
+      auto_delete   = bool
+      mode          = string
+      replica_zones = list(string)
+      type          = string
     })
   }))
   default = []
@@ -44,16 +44,16 @@ variable "attached_disks" {
 variable "attached_disk_defaults" {
   description = "Defaults for attached disks options."
   type = object({
-    auto_delete = bool
-    mode        = string
-    regional    = bool
-    type        = string
+    auto_delete   = bool
+    mode          = string
+    replica_zones = list(string)
+    type          = string
   })
   default = {
-    auto_delete = true
-    mode        = "READ_WRITE"
-    regional    = false
-    type        = "pd-ssd"
+    auto_delete   = true
+    mode          = "READ_WRITE"
+    replica_zones = []
+    type          = "pd-balanced"
   }
 }
 
@@ -119,12 +119,6 @@ variable "iam" {
   default     = {}
 }
 
-variable "instance_count" {
-  description = "Number of instances to create (only for non-template usage)."
-  type        = number
-  default     = 1
-}
-
 variable "instance_type" {
   description = "Instance type."
   type        = string
@@ -143,12 +137,6 @@ variable "metadata" {
   default     = {}
 }
 
-variable "metadata_list" {
-  description = "List of instance metadata that will be cycled through. Ignored for template use."
-  type        = list(map(string))
-  default     = []
-}
-
 variable "min_cpu_platform" {
   description = "Minimum CPU platform."
   type        = string
@@ -156,7 +144,7 @@ variable "min_cpu_platform" {
 }
 
 variable "name" {
-  description = "Instances base name."
+  description = "Instance name."
   type        = string
 }
 
@@ -167,10 +155,10 @@ variable "network_interfaces" {
     network    = string
     subnetwork = string
     addresses = object({
-      internal = list(string)
-      external = list(string)
+      internal = string
+      external = string
     })
-    alias_ips = map(list(string))
+    alias_ips = map(string)
   }))
 }
 
@@ -190,11 +178,6 @@ variable "options" {
 
 variable "project_id" {
   description = "Project id."
-  type        = string
-}
-
-variable "region" {
-  description = "Compute region."
   type        = string
 }
 
@@ -230,12 +213,6 @@ variable "service_account_scopes" {
   default     = []
 }
 
-variable "single_name" {
-  description = "Do not append progressive count to instance name."
-  type        = bool
-  default     = false
-}
-
 variable "tags" {
   description = "Instance tags."
   type        = list(string)
@@ -248,10 +225,9 @@ variable "use_instance_template" {
   default     = false
 }
 
-variable "zones" {
-  description = "Compute zone, instance will cycle through the list, defaults to the 'b' zone in the region."
-  type        = list(string)
-  default     = []
+variable "zone" {
+  description = "Compute zone."
+  type        = string
 }
 
 variable "shielded_config" {

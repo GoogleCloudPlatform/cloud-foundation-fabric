@@ -14,6 +14,39 @@
  * limitations under the License.
  */
 
+variable "attached_disks" {
+  description = "Additional disks, if options is null defaults will be used in its place. Source type is one of 'image' (zonal disks in vms and template), 'snapshot' (vm), 'existing', and null."
+  type = list(object({
+    name        = string
+    size        = string
+    source      = string
+    source_type = string
+    options = object({
+      auto_delete   = bool
+      mode          = string
+      replica_zones = list(string)
+      type          = string
+    })
+  }))
+  default = []
+}
+
+variable "attached_disk_defaults" {
+  description = "Defaults for attached disks options."
+  type = object({
+    auto_delete   = bool
+    mode          = string
+    replica_zones = list(string)
+    type          = string
+  })
+  default = {
+    auto_delete   = true
+    mode          = "READ_WRITE"
+    replica_zones = []
+    type          = "pd-balanced"
+  }
+}
+
 variable "confidential_compute" {
   type    = bool
   default = false
@@ -29,19 +62,9 @@ variable "iam" {
   default = {}
 }
 
-variable "instance_count" {
-  type    = number
-  default = 1
-}
-
 variable "metadata" {
   type    = map(string)
   default = {}
-}
-
-variable "metadata_list" {
-  type    = list(map(string))
-  default = []
 }
 
 variable "network_interfaces" {
@@ -50,10 +73,10 @@ variable "network_interfaces" {
     network    = string
     subnetwork = string
     addresses = object({
-      internal = list(string)
-      external = list(string)
+      internal = string
+      external = string
     })
-    alias_ips = map(list(string))
+    alias_ips = map(string)
   }))
   default = [{
     network    = "https://www.googleapis.com/compute/v1/projects/my-project/global/networks/default",
@@ -69,17 +92,7 @@ variable "service_account_create" {
   default = false
 }
 
-variable "single_name" {
-  type    = bool
-  default = false
-}
-
 variable "use_instance_template" {
   type    = bool
   default = false
-}
-
-variable "zones" {
-  type    = list(string)
-  default = []
 }
