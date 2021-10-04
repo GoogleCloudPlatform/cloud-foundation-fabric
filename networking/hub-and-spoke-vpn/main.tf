@@ -13,10 +13,6 @@
 # limitations under the License.
 
 locals {
-  vm-instances = [
-    module.vm-spoke-1.instance,
-    module.vm-spoke-2.instance
-  ]
   vm-startup-script = join("\n", [
     "#! /bin/bash",
     "apt-get update && apt-get install -y dnsutils"
@@ -287,14 +283,11 @@ module "dns-host" {
   name            = "example"
   domain          = "example.com."
   client_networks = [module.vpc-hub.self_link]
-  # setting instance IPs at first apply fails due to dynamic values
-  recordsets = [
-    { name = "localhost", type = "A", ttl = 300, records = ["127.0.0.1"] }
-    # for instance in local.vm-instances : {
-    #   name    = instance.name, type = "A", ttl = 300,
-    #   records = [instance.network_interface.0.network_ip]
-    # }
-  ]
+  recordsets = {
+    "A localhost"    = { ttl = 300, records = ["127.0.0.1"] }
+    "A spoke-1-test" = { ttl = 300, records = [module.vm-spoke-1.internal_ip] }
+    "A spoke-2-test" = { ttl = 300, records = [module.vm-spoke-2.internal_ip] }
+  }
 }
 
 module "dns-spoke-1" {

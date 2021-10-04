@@ -87,9 +87,9 @@ module "dns-api-prod" {
   name            = "googleapis"
   domain          = "googleapis.com."
   client_networks = [module.vpc-prod.self_link]
-  recordsets = [
-    { name = "*", type = "CNAME", ttl = 300, records = ["private.googleapis.com."] },
-  ]
+  recordsets = {
+    "CNAME *" = { ttl = 300, records = ["private.googleapis.com."] }
+  }
 }
 
 module "dns-api-dev" {
@@ -99,9 +99,9 @@ module "dns-api-dev" {
   name            = "googleapis"
   domain          = "googleapis.com."
   client_networks = [module.vpc-dev.self_link]
-  recordsets = [
-    { name = "*", type = "CNAME", ttl = 300, records = ["private.googleapis.com."] },
-  ]
+  recordsets = {
+    "CNAME *" = { ttl = 300, records = ["private.googleapis.com."] }
+  }
 }
 
 ###############################################################################

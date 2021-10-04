@@ -229,12 +229,9 @@ module "private-dns-onprem" {
   name            = var.name
   domain          = "${var.region}-${module.project.project_id}.cloudfunctions.net."
   client_networks = [module.vpc-onprem.self_link]
-  recordsets = [{
-    name    = "",
-    type    = "A",
-    ttl     = 300,
-    records = [module.addresses.psc_addresses[local.psc_name].address]
-  }]
+  recordsets = {
+    "A " = { ttl = 300, records = [module.addresses.psc_addresses[local.psc_name].address] }
+  }
 }
 
 ###############################################################################

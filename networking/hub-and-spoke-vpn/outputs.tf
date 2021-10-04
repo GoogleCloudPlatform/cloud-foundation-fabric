@@ -15,7 +15,7 @@
 output "vms" {
   description = "GCE VMs."
   value = {
-    for instance in local.vm-instances :
+    for instance in [module.vm-spoke-1.instance, module.vm-spoke-2.instance] :
     instance.name => instance.network_interface.0.network_ip
   }
 }
