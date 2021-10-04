@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-output "compute_zone" {
-  description = "Name of a compute engine zone for Packer's temporary VM."
-  value       = local.compute_zone
-}
-
 output "builder_sa" {
   description = "Packer's service account email."
   value       = module.service-account-image-builder.email
@@ -33,3 +28,9 @@ output "compute_subnetwork" {
   description = "Name of a subnetwork for Packer's temporary VM."
   value       = local.compute_subnet_name
 }
+
+output "compute_zone" {
+  description = "Name of a compute engine zone for Packer's temporary VM."
+  value       = local.compute_zone
+}
+

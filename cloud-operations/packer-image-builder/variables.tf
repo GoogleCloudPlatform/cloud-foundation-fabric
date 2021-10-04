@@ -14,33 +14,10 @@
  * limitations under the License.
  */
 
-variable "project_id" {
-  description = "Project id that references existing project."
-  type        = string
-}
-
 variable "billing_account" {
   description = "Billing account id used as default for new projects."
   type        = string
   default     = null
-}
-
-variable "project_create" {
-  description = "Create project instead of using an existing one."
-  type        = bool
-  default     = true
-}
-
-variable "root_node" {
-  description = "The resource name of the parent folder or organization for project creation, in 'folders/folder_id' or 'organizations/org_id' format."
-  type        = string
-  default     = null
-}
-
-variable "region" {
-  description = "Default region for resources"
-  type        = string
-  default     = "europe-west1"
 }
 
 variable "cidrs" {
@@ -51,10 +28,10 @@ variable "cidrs" {
   }
 }
 
-variable "packer_source_cidrs" {
-  description = "List of CIDR ranges allowed to connect to the temporary VM for provisioning."
-  type        = list(string)
-  default     = ["0.0.0.0/0"]
+variable "create_packer_vars" {
+  description = "Create packer variables file using template file and terraform output."
+  type        = bool
+  default     = false
 }
 
 variable "packer_account_users" {
@@ -63,26 +40,37 @@ variable "packer_account_users" {
   default     = []
 }
 
-variable "use_iap" {
-  description = "Use IAP tunnel to connect to Compute Engine instance for provisioning."
+variable "packer_source_cidrs" {
+  description = "List of CIDR ranges allowed to connect to the temporary VM for provisioning."
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
+}
+
+variable "project_create" {
+  description = "Create project instead of using an existing one."
   type        = bool
   default     = true
 }
 
-variable "create_packer_vars" {
-  description = "Create packer variables file using template file and terraform output."
+variable "project_id" {
+  description = "Project id that references existing project."
+  type        = string
+}
+
+variable "region" {
+  description = "Default region for resources"
+  type        = string
+  default     = "europe-west1"
+}
+
+variable "root_node" {
+  description = "The resource name of the parent folder or organization for project creation, in 'folders/folder_id' or 'organizations/org_id' format."
+  type        = string
+  default     = null
+}
+
+variable "use_iap" {
+  description = "Use IAP tunnel to connect to Compute Engine instance for provisioning."
   type        = bool
-  default     = false
-}
-
-variable "packer_variables_template" {
-  description = "Packer variables template file used to create Packer variables file."
-  type        = string
-  default     = "packer/build.pkrvars.tpl"
-}
-
-variable "packer_variables_file" {
-  description = "Packer variables file that is created from the template and terrafrom output."
-  type        = string
-  default     = "packer/build.auto.pkrvars.hcl"
+  default     = true
 }
