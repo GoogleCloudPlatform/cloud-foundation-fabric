@@ -21,36 +21,20 @@ locals {
       options = disk.options == null ? var.attached_disk_defaults : disk.options
     })
   }
-  attached_disks_pairs = {
-    for pair in setproduct(keys(local.names), keys(local.attached_disks)) :
-    "${pair[0]}-${pair[1]}" => { disk_name = pair[1], name = pair[0] }
+  attached_disks_regional = {
+    for k, v in local.attached_disks :
+    k => v if try(v.options.replica_zone, null) != null
   }
-  attached_region_disks_pairs = {
-    for k, v in local.attached_disks_pairs :
-    k => v if local.attached_disks[v.disk_name].options.regional
-  }
-  attached_zone_disks_pairs = {
-    for k, v in local.attached_disks_pairs :
-    k => v if !local.attached_disks[v.disk_name].options.regional
+  attached_disks_zonal = {
+    for k, v in local.attached_disks :
+    k => v if try(v.options.replica_zone, null) == null
   }
   on_host_maintenance = (
     var.options.preemptible || var.confidential_compute
     ? "TERMINATE"
     : "MIGRATE"
   )
-  iam_members = var.use_instance_template ? {} : {
-    for pair in setproduct(keys(var.iam), keys(local.names)) :
-    "${pair.0}/${pair.1}" => { role = pair.0, name = pair.1, members = var.iam[pair.0] }
-  }
-  names = (
-    var.use_instance_template
-    ? { (var.name) = 0 }
-    : (
-      var.single_name && var.instance_count == 1
-      ? { (var.name) = 0 }
-      : { for i in range(0, var.instance_count) : "${var.name}-${i + 1}" => i }
-    )
-  )
+  region = join("-", slice(split("-", var.zone), 0, 2))
   service_account_email = (
     var.service_account_create
     ? (
@@ -76,38 +60,23 @@ locals {
       ]
     )
   )
-  zones_list = length(var.zones) == 0 ? ["${var.region}-b"] : var.zones
-  zones = {
-    for name, i in local.names : name => element(local.zones_list, i)
-  }
 }
 
 resource "google_compute_disk" "disks" {
-  for_each = var.use_instance_template ? {} : {
-    for k, v in local.attached_zone_disks_pairs :
-    k => v if local.attached_disks[v.disk_name].source_type != "attach"
+  for_each = var.create_template ? {} : {
+    for k, v in local.attached_disks_zonal :
+    k => v if v.source_type != "attach"
   }
-  project = var.project_id
-  zone    = local.zones[each.value.name]
-  name    = each.key
-  type    = local.attached_disks[each.value.disk_name].options.type
-  size    = local.attached_disks[each.value.disk_name].size
-  image = (
-    local.attached_disks[each.value.disk_name].source_type == "image"
-    ? local.attached_disks[each.value.disk_name].source
-    : null
-  )
-  snapshot = (
-    local.attached_disks[each.value.disk_name].source_type == "snapshot"
-    ? local.attached_disks[each.value.disk_name].source
-    : null
-  )
+  project  = var.project_id
+  zone     = var.zone
+  name     = "${var.name}-${each.key}"
+  type     = each.value.options.type
+  size     = each.value.size
+  image    = each.value.source_type == "image" ? each.value.source : null
+  snapshot = each.value.source_type == "snapshot" ? each.value.source : null
   labels = merge(var.labels, {
-    disk_name = local.attached_disks[each.value.disk_name].name
-    disk_type = local.attached_disks[each.value.disk_name].options.type
-    # Disk images usually have slashes, which is against label
-    # restrictions
-    # image     = local.attached_disks[each.value.disk_name].image
+    disk_name = each.value.name
+    disk_type = each.value.options.type
   })
   dynamic "disk_encryption_key" {
     for_each = var.encryption != null ? [""] : []
@@ -120,29 +89,27 @@ resource "google_compute_disk" "disks" {
 
 resource "google_compute_region_disk" "disks" {
   provider = google-beta
-  for_each = var.use_instance_template ? {} : {
-    for k, v in local.attached_region_disks_pairs :
-    k => v if local.attached_disks[v.disk_name].source_type != "attach"
+  for_each = var.create_template ? {} : {
+    for k, v in local.attached_disks_regional :
+    k => v if v.source_type != "attach"
   }
   project       = var.project_id
-  region        = var.region
-  replica_zones = var.zones
-  name          = each.key
-  type          = local.attached_disks[each.value.disk_name].options.type
-  size          = local.attached_disks[each.value.disk_name].size
-  snapshot = (
-    local.attached_disks[each.value.disk_name].source_type == "snapshot"
-    ? local.attached_disks[each.value.disk_name].source
-    : null
-  )
+  region        = local.region
+  replica_zones = [var.zone, each.value.options.replica_zone]
+  name          = "${var.name}-${each.key}"
+  type          = each.value.options.type
+  size          = each.value.size
+  # image         = each.value.source_type == "image" ? each.value.source : null
+  snapshot = each.value.source_type == "snapshot" ? each.value.source : null
   labels = merge(var.labels, {
-    disk_name = local.attached_disks[each.value.disk_name].name
-    disk_type = local.attached_disks[each.value.disk_name].options.type
+    disk_name = each.value.name
+    disk_type = each.value.options.type
   })
   dynamic "disk_encryption_key" {
     for_each = var.encryption != null ? [""] : []
     content {
-      raw_key      = var.encryption.disk_encryption_key_raw
+      raw_key = var.encryption.disk_encryption_key_raw
+      # TODO: check if self link works here
       kms_key_name = var.encryption.kms_key_self_link
     }
   }
@@ -150,10 +117,10 @@ resource "google_compute_region_disk" "disks" {
 
 resource "google_compute_instance" "default" {
   provider                  = google-beta
-  for_each                  = var.use_instance_template ? {} : local.names
+  count                     = var.create_template ? 0 : 1
   project                   = var.project_id
-  zone                      = local.zones[each.key]
-  name                      = each.key
+  zone                      = var.zone
+  name                      = var.name
   hostname                  = var.hostname
   description               = "Managed by the compute-vm Terraform module."
   tags                      = var.tags
@@ -164,16 +131,10 @@ resource "google_compute_instance" "default" {
   deletion_protection       = var.options.deletion_protection
   enable_display            = var.enable_display
   labels                    = var.labels
-  metadata = merge(
-    var.metadata, try(element(var.metadata_list, each.value), {})
-  )
+  metadata                  = var.metadata
 
   dynamic "attached_disk" {
-    for_each = {
-      for resource_name, pair in local.attached_disks_pairs :
-      resource_name => local.attached_disks[pair.disk_name]
-      if pair.name == each.key
-    }
+    for_each = local.attached_disks_zonal
     iterator = config
     content {
       device_name = config.value.name
@@ -181,16 +142,27 @@ resource "google_compute_instance" "default" {
       source = (
         config.value.source_type == "attach"
         ? config.value.source
-        : (
-          config.value.options.regional
-          ? google_compute_region_disk.disks[config.key].id
-          : google_compute_disk.disks[config.key].name
-        )
+        : google_compute_disk.disks[config.key].name
+      )
+    }
+  }
+
+  dynamic "attached_disk" {
+    for_each = local.attached_disks_regional
+    iterator = config
+    content {
+      device_name = config.value.name
+      mode        = config.value.options.mode
+      source = (
+        config.value.source_type == "attach"
+        ? config.value.source
+        : google_compute_region_disk.disks[config.key].name
       )
     }
   }
 
   boot_disk {
+    auto_delete = var.boot_disk_delete
     initialize_params {
       type  = var.boot_disk.type
       image = var.boot_disk.image
@@ -213,26 +185,19 @@ resource "google_compute_instance" "default" {
     content {
       network    = config.value.network
       subnetwork = config.value.subnetwork
-      network_ip = config.value.addresses == null ? null : (
-        length(config.value.addresses.internal) == 0
-        ? null
-        : config.value.addresses.internal[each.value]
-      )
+      network_ip = try(config.value.addresses.internal, null)
       dynamic "access_config" {
-        for_each = config.value.nat ? [config.value.addresses] : []
-        iterator = addresses
+        for_each = config.value.nat ? [""] : []
         content {
-          nat_ip = addresses.value == null ? null : (
-            length(addresses.value.external) == 0 ? null : addresses.value.external[each.value]
-          )
+          nat_ip = try(config.value.addresses.external, null)
         }
       }
       dynamic "alias_ip_range" {
         for_each = config.value.alias_ips != null ? config.value.alias_ips : {}
-        iterator = alias_ips
+        iterator = config_alias
         content {
-          subnetwork_range_name = alias_ips.key
-          ip_cidr_range         = alias_ips.value[each.value]
+          subnetwork_range_name = config_alias.key
+          ip_cidr_range         = config_alias.value
         }
       }
     }
@@ -273,20 +238,20 @@ resource "google_compute_instance" "default" {
 }
 
 resource "google_compute_instance_iam_binding" "default" {
-  for_each      = local.iam_members
   project       = var.project_id
-  zone          = local.zones[each.value.name]
-  instance_name = each.value.name
-  role          = each.value.role
-  members       = each.value.members
+  for_each      = var.iam
+  zone          = var.zone
+  instance_name = var.name
+  role          = each.key
+  members       = each.value
   depends_on    = [google_compute_instance.default]
 }
 
 resource "google_compute_instance_template" "default" {
   provider         = google-beta
-  count            = var.use_instance_template ? 1 : 0
+  count            = var.create_template ? 1 : 0
   project          = var.project_id
-  region           = var.region
+  region           = local.region
   name_prefix      = "${var.name}-"
   description      = "Managed by the compute-vm Terraform module."
   tags             = var.tags
@@ -297,10 +262,11 @@ resource "google_compute_instance_template" "default" {
   labels           = var.labels
 
   disk {
-    source_image = var.boot_disk.image
-    disk_type    = var.boot_disk.type
-    disk_size_gb = var.boot_disk.size
+    auto_delete  = var.boot_disk_delete
     boot         = true
+    disk_size_gb = var.boot_disk.size
+    disk_type    = var.boot_disk.type
+    source_image = var.boot_disk.image
   }
 
   dynamic "confidential_instance_config" {
@@ -314,7 +280,7 @@ resource "google_compute_instance_template" "default" {
     for_each = local.attached_disks
     iterator = config
     content {
-      auto_delete = config.value.options.auto_delete
+      # auto_delete = config.value.options.auto_delete
       device_name = config.value.name
       # Cannot use `source` with any of the fields in
       # [disk_size_gb disk_name disk_type source_image labels]
@@ -344,9 +310,20 @@ resource "google_compute_instance_template" "default" {
     content {
       network    = config.value.network
       subnetwork = config.value.subnetwork
+      network_ip = try(config.value.addresses.internal, null)
       dynamic "access_config" {
         for_each = config.value.nat ? [""] : []
-        content {}
+        content {
+          nat_ip = try(config.value.addresses.external, null)
+        }
+      }
+      dynamic "alias_ip_range" {
+        for_each = config.value.alias_ips != null ? config.value.alias_ips : {}
+        iterator = config_alias
+        content {
+          subnetwork_range_name = config_alias.key
+          ip_cidr_range         = config_alias.value
+        }
       }
     }
   }
@@ -368,24 +345,17 @@ resource "google_compute_instance_template" "default" {
 }
 
 resource "google_compute_instance_group" "unmanaged" {
-  for_each = toset(
-    var.group != null && !var.use_instance_template
-    ? local.zones_list
-    : []
-  )
+  count   = var.group != null && !var.create_template ? 1 : 0
   project = var.project_id
   network = (
     length(var.network_interfaces) > 0
     ? var.network_interfaces.0.network
     : ""
   )
-  zone        = each.key
-  name        = "${var.name}-${each.key}"
+  zone        = var.zone
+  name        = var.name
   description = "Terraform-managed."
-  instances = [
-    for name, instance in google_compute_instance.default :
-    instance.self_link if instance.zone == each.key
-  ]
+  instances   = [google_compute_instance.default.0.self_link]
   dynamic "named_port" {
     for_each = var.group.named_ports != null ? var.group.named_ports : {}
     iterator = config

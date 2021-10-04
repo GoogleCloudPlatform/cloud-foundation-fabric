@@ -16,10 +16,10 @@
 
 module "gw" {
   source        = "../../modules/compute-vm"
+  for_each      = local.zones
   project_id    = module.project.project_id
-  region        = var.region
-  zones         = local.zones
-  name          = "${local.prefix}gw"
+  zone          = each.value
+  name          = "${local.prefix}gw-${each.key}"
   instance_type = "f1-micro"
 
   boot_disk = {
@@ -56,7 +56,6 @@ module "gw" {
     module.service-accounts.emails["${local.prefix}gce-vm"], null
   )
   service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
-  instance_count         = 2
   group                  = { named_ports = null }
 }
 
@@ -74,9 +73,9 @@ module "ilb-left" {
     timeout_sec                     = null
     connection_draining_timeout_sec = null
   }
-  backends = [for zone, group in module.gw.groups : {
+  backends = [for z, mod in module.gw : {
     failover       = false
-    group          = group.self_link
+    group          = mod.group.self_link
     balancing_mode = "CONNECTION"
   }]
   health_check_config = {
@@ -98,9 +97,9 @@ module "ilb-right" {
     timeout_sec                     = null
     connection_draining_timeout_sec = null
   }
-  backends = [for zone, group in module.gw.groups : {
+  backends = [for z, mod in module.gw : {
     failover       = false
-    group          = group.self_link
+    group          = mod.group.self_link
     balancing_mode = "CONNECTION"
   }]
   health_check_config = {

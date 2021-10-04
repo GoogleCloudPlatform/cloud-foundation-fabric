@@ -14,11 +14,11 @@
 
 locals {
   prefix = var.prefix != null && var.prefix != "" ? "${var.prefix}-" : ""
-  vm-instances = concat(
-    module.vm-hub.instances,
-    module.vm-spoke-1.instances,
-    module.vm-spoke-2.instances
-  )
+  vm-instances = [
+    module.vm-hub.instance,
+    module.vm-spoke-1.instance,
+    module.vm-spoke-2.instance
+  ]
   vm-startup-script = join("\n", [
     "#! /bin/bash",
     "apt-get update && apt-get install -y bash-completion dnsutils kubectl"
@@ -178,7 +178,7 @@ module "hub-to-spoke-2-peering" {
 module "vm-hub" {
   source     = "../../modules/compute-vm"
   project_id = module.project.project_id
-  region     = var.region
+  zone       = "${var.region}-b"
   name       = "${local.prefix}hub"
   network_interfaces = [{
     network    = module.vpc-hub.self_link
@@ -196,7 +196,7 @@ module "vm-hub" {
 module "vm-spoke-1" {
   source     = "../../modules/compute-vm"
   project_id = module.project.project_id
-  region     = var.region
+  zone       = "${var.region}-b"
   name       = "${local.prefix}spoke-1"
   network_interfaces = [{
     network    = module.vpc-spoke-1.self_link
@@ -214,7 +214,7 @@ module "vm-spoke-1" {
 module "vm-spoke-2" {
   source     = "../../modules/compute-vm"
   project_id = module.project.project_id
-  region     = var.region
+  zone       = "${var.region}-b"
   name       = "${local.prefix}spoke-2"
   network_interfaces = [{
     network    = module.vpc-spoke-2.self_link

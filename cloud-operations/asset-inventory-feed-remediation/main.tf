@@ -102,7 +102,7 @@ module "cf" {
 module "simple-vm-example" {
   source     = "../../modules/compute-vm"
   project_id = module.project.project_id
-  region     = var.region
+  zone       = "${var.region}-b"
   name       = var.name
   network_interfaces = [{
     network    = module.vpc.self_link
@@ -111,8 +111,7 @@ module "simple-vm-example" {
     addresses  = null
     alias_ips  = null
   }]
-  tags           = ["${var.project_id}-test-feed", "shared-test-feed"]
-  instance_count = 1
+  tags = ["${var.project_id}-test-feed", "shared-test-feed"]
 }
 
 resource "random_pet" "random" {

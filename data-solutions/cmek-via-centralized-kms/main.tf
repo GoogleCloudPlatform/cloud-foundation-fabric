@@ -97,10 +97,10 @@ module "kms" {
 #                                   GCE                                       #
 ###############################################################################
 
-module "kms_vm_example" {
+module "vm_example" {
   source     = "../../modules/compute-vm"
   project_id = module.project-service.project_id
-  region     = var.region
+  zone       = "${var.region}-b"
   name       = "kms-vm"
   network_interfaces = [{
     network    = module.vpc.self_link,
@@ -111,14 +111,13 @@ module "kms_vm_example" {
   }]
   attached_disks = [
     {
-      name        = "attacheddisk"
+      name        = "data"
       size        = 10
       source      = null
       source_type = null
       options     = null
     }
   ]
-  instance_count = 1
   boot_disk = {
     image        = "projects/debian-cloud/global/images/family/debian-10"
     type         = "pd-ssd"

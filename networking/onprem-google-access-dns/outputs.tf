@@ -17,23 +17,23 @@
 output "onprem-instance" {
   description = "Onprem instance details."
   value = {
-    external_ip = module.vm-onprem.external_ips.0
-    internal_ip = module.vm-onprem.internal_ips.0
-    name        = module.vm-onprem.names.0
+    external_ip = module.vm-onprem.external_ip
+    internal_ip = module.vm-onprem.internal_ip
+    name        = module.vm-onprem.instance.name
   }
 }
 
 output "test-instance1" {
   description = "Test instance details."
   value = join(" ", [
-    module.vm-test1.names[0],
-    module.vm-test1.internal_ips[0]
+    module.vm-test1.instance.name,
+    module.vm-test1.internal_ip
   ])
 }
 output "test-instance2" {
   description = "Test instance details."
   value = join(" ", [
-    module.vm-test2.names[0],
-    module.vm-test2.internal_ips[0]
+    module.vm-test2.instance.name,
+    module.vm-test2.internal_ip
   ])
 }

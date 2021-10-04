@@ -17,11 +17,11 @@
 output "addresses" {
   description = "IP addresses."
   value = {
-    gw        = module.gw.internal_ips
+    gw        = [for z, mod in module.gw : mod.internal_ip]
     ilb-left  = module.ilb-left.forwarding_rule_address
     ilb-right = module.ilb-right.forwarding_rule_address
-    vm-left   = module.vm-left.internal_ips
-    vm-right  = module.vm-right.internal_ips
+    vm-left   = [for z, mod in module.vm-left : mod.internal_ip]
+    vm-right  = [for z, mod in module.vm-right : mod.internal_ip]
   }
 }
 
@@ -48,23 +48,23 @@ output "backend_health_right" {
 output "ssh_gw" {
   description = "Command-line login to gateway VMs."
   value = [
-    for name, instance in module.gw.instances :
-    "gcloud compute ssh ${instance.name} --project ${var.project_id} --zone ${instance.zone}"
+    for z, mod in module.gw :
+    "gcloud compute ssh ${mod.instance.name} --project ${var.project_id} --zone ${mod.instance.zone}"
   ]
 }
 
 output "ssh_vm_left" {
   description = "Command-line login to left VMs."
   value = [
-    for name, instance in module.vm-left.instances :
-    "gcloud compute ssh ${instance.name} --project ${var.project_id} --zone ${instance.zone}"
+    for z, mod in module.vm-left :
+    "gcloud compute ssh ${mod.instance.name} --project ${var.project_id} --zone ${mod.instance.zone}"
   ]
 }
 
 output "ssh_vm_right" {
   description = "Command-line login to right VMs."
   value = [
-    for name, instance in module.vm-right.instances :
-    "gcloud compute ssh ${instance.name} --project ${var.project_id} --zone ${instance.zone}"
+    for z, mod in module.vm-right :
+    "gcloud compute ssh ${mod.instance.name} --project ${var.project_id} --zone ${mod.instance.zone}"
   ]
 }

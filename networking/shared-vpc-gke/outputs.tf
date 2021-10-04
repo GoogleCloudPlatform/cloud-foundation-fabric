@@ -41,8 +41,7 @@ output "vpc" {
 output "vms" {
   description = "GCE VMs."
   value = {
-    for instance in concat(module.vm-bastion.instances) :
-    instance.name => instance.network_interface.0.network_ip
+    (module.vm-bastion.instance.name) = module.vm-bastion.internal_ip
   }
 }
 

@@ -159,7 +159,7 @@ module "host-dns" {
   client_networks = [module.vpc-shared.self_link]
   recordsets = [
     { name = "localhost", type = "A", ttl = 300, records = ["127.0.0.1"] },
-    { name = "bastion", type = "A", ttl = 300, records = module.vm-bastion.internal_ips },
+    # { name = "bastion", type = "A", ttl = 300, records = [module.vm-bastion.internal_ip] },
   ]
 }
 
@@ -170,7 +170,7 @@ module "host-dns" {
 module "vm-bastion" {
   source     = "../../modules/compute-vm"
   project_id = module.project-svc-gce.project_id
-  region     = var.region
+  zone       = "${var.region}-b"
   name       = "bastion"
   network_interfaces = [{
     network    = module.vpc-shared.self_link
@@ -179,8 +179,7 @@ module "vm-bastion" {
     addresses  = null
     alias_ips  = null
   }]
-  instance_count = 1
-  tags           = ["ssh"]
+  tags = ["ssh"]
   metadata = {
     startup-script = join("\n", [
       "#! /bin/bash",

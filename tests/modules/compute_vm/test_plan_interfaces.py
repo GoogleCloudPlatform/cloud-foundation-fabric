@@ -20,60 +20,33 @@ import pytest
 FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
 
 
-def test_no_addresses(plan_runner):
-  network_interfaces = '''[{
+def test_address(plan_runner):
+  nics = '''[{
     network    = "https://www.googleapis.com/compute/v1/projects/my-project/global/networks/default",
     subnetwork = "https://www.googleapis.com/compute/v1/projects/my-project/regions/europe-west1/subnetworks/default-default",
     nat        = false,
-    addresses  = {external=[], internal=[]}
+    addresses  = {external=null, internal="10.0.0.2"}
     alias_ips  = null
   }]
   '''
-  _, resources = plan_runner(
-      FIXTURES_DIR, instance_count=2, network_interfaces=network_interfaces)
-  assert len(resources) == 2
+  _, resources = plan_runner(FIXTURES_DIR, network_interfaces=nics)
+  assert len(resources) == 1
+  n = resources[0]['values']['network_interface'][0]
+  assert n['network_ip'] == "10.0.0.2"
+  assert n['access_config'] == []
 
 
-def test_internal_addresses(plan_runner):
-  network_interfaces = '''[{
-    network    = "https://www.googleapis.com/compute/v1/projects/my-project/global/networks/default",
-    subnetwork = "https://www.googleapis.com/compute/v1/projects/my-project/regions/europe-west1/subnetworks/default-default",
-    nat        = false,
-    addresses  = {external=[], internal=["1.1.1.2", "1.1.1.3"]}
-    alias_ips  = null
-  }]
-  '''
-  _, resources = plan_runner(
-      FIXTURES_DIR, instance_count=2, network_interfaces=network_interfaces)
-  assert [r['values']['network_interface'][0]['network_ip']
-          for r in resources] == ["1.1.1.2", "1.1.1.3"]
-
-
-def test_internal_addresses_nat(plan_runner):
-  network_interfaces = '''[{
+def test_nat_address(plan_runner):
+  nics = '''[{
     network    = "https://www.googleapis.com/compute/v1/projects/my-project/global/networks/default",
     subnetwork = "https://www.googleapis.com/compute/v1/projects/my-project/regions/europe-west1/subnetworks/default-default",
     nat        = true,
-    addresses  = {external=[], internal=["1.1.1.2", "1.1.1.3"]}
+    addresses  = {external="8.8.8.8", internal=null}
     alias_ips  = null
   }]
   '''
-  _, resources = plan_runner(
-      FIXTURES_DIR, instance_count=2, network_interfaces=network_interfaces)
-  assert [r['values']['network_interface'][0]['network_ip']
-          for r in resources] == ["1.1.1.2", "1.1.1.3"]
-
-
-def test_all_addresses(plan_runner):
-  network_interfaces = '''[{
-    network    = "https://www.googleapis.com/compute/v1/projects/my-project/global/networks/default",
-    subnetwork = "https://www.googleapis.com/compute/v1/projects/my-project/regions/europe-west1/subnetworks/default-default",
-    nat        = true,
-    addresses  = {external=["2.2.2.2", "2.2.2.3"], internal=["1.1.1.2", "1.1.1.3"]}
-    alias_ips  = null
-  }]
-  '''
-  _, resources = plan_runner(
-      FIXTURES_DIR, instance_count=2, network_interfaces=network_interfaces)
-  assert [r['values']['network_interface'][0]['access_config'][0]['nat_ip']
-          for r in resources] == ["2.2.2.2", "2.2.2.3"]
+  _, resources = plan_runner(FIXTURES_DIR, network_interfaces=nics)
+  assert len(resources) == 1
+  n = resources[0]['values']['network_interface'][0]
+  assert 'network_ip' not in n
+  assert n['access_config'][0]['nat_ip'] == '8.8.8.8'
