@@ -155,7 +155,7 @@ resource "google_dns_record_set" "cloud-static-records" {
   project      = var.project_id
   managed_zone = var.name
   name = (
-    substr(each.value.name, length(each.value.name) * -1 - 1, -1) == "."
+    each.value.name == "*" || substr(strrev(each.value.name), 0, 1) == "."
     ? each.value.name
     : "${each.value.name}.${var.domain}"
   )
