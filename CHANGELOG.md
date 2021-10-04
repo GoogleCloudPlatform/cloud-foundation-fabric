@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [6.0.0] - 2021-10-04
+
 - new `apigee-organization` and `apigee-x-instance`
 - generate `email` and `iam_email` statically in the `iam-service-account` module 
 - new `billing-budget` module
@@ -11,6 +13,9 @@ All notable changes to this project will be documented in this file.
 - output custom role information from the `organization` module
 - enable multiple `vpc-sc` perimeters over multiple modules
 - new cloud operations example showing how to [restrict service usage using delegated role grants](./cloud-operations/iam-delegated-role-grants)
+- **incompatible change** multiple instance support has been removed from the `compute-vm` module, to bring its interface in line with other modules and enable simple use of `for_each` at the module level; its variables have also slightly changed (`attached_disks`, `boot_disk_delete`, `crate_template`, `zone`)
+- **incompatible change** dropped the `admin_ranges_enabled` variable in `net-vpc-firewall`. Set `admin_ranges = []` to get the same effect
+- added the `named_ranges` variable to `net-vpc-firewall`
 
 ## [5.1.0] - 2021-08-30
 
@@ -343,7 +348,8 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v5.1.0...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v6.0.0...HEAD
+[6.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v5.1.0...v6.0.0
 [5.1.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v5.0.0...v5.1.0
 [5.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.9.0...v5.0.0
 [4.9.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.8.0...v4.9.0

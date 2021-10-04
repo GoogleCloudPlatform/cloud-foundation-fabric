@@ -178,11 +178,10 @@ module "vpc" {
 }
 
 module "vpc-firewall" {
-  source               = "../../modules/net-vpc-firewall"
-  project_id           = module.project-service.project_id
-  network              = module.vpc.name
-  admin_ranges_enabled = true
-  admin_ranges         = [var.vpc_ip_cidr_range]
+  source       = "../../modules/net-vpc-firewall"
+  project_id   = module.project-service.project_id
+  network      = module.vpc.name
+  admin_ranges = [var.vpc_ip_cidr_range]
 }
 
 module "nat" {
@@ -200,7 +199,7 @@ module "nat" {
 module "vm_example" {
   source     = "../../modules/compute-vm"
   project_id = module.project-service.project_id
-  region     = var.region
+  zone       = "${var.region}-b"
   name       = "vm-example"
   network_interfaces = [{
     network    = module.vpc.self_link,
@@ -211,14 +210,13 @@ module "vm_example" {
   }]
   attached_disks = [
     {
-      name        = "attacheddisk"
+      name        = "data"
       size        = 10
       source      = null
       source_type = null
       options     = null
     }
   ]
-  instance_count = 2
   boot_disk = {
     image        = "projects/debian-cloud/global/images/family/debian-10"
     type         = "pd-ssd"
@@ -230,7 +228,9 @@ module "vm_example" {
     disk_encryption_key_raw = null
     kms_key_self_link       = module.kms.key_self_links.key-gce
   }
-  metadata               = { startup-script = local.vm-startup-script }
+  metadata = {
+    startup-script = local.vm-startup-script
+  }
   service_account        = module.service-account-gce.email
   service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
   tags                   = ["ssh"]

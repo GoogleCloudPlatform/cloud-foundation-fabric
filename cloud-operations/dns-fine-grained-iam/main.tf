@@ -104,7 +104,7 @@ module "service-directory" {
 module "vm-ns-editor" {
   source     = "../../modules/compute-vm"
   project_id = module.project.project_id
-  region     = var.region
+  zone       = "${var.region}-b"
   name       = "${var.name}-ns"
   network_interfaces = [{
     network    = module.vpc.self_link
@@ -116,13 +116,12 @@ module "vm-ns-editor" {
   metadata               = { startup-script = local.startup-script }
   service_account_create = true
   tags                   = ["ssh"]
-  instance_count         = 1
 }
 
 module "vm-svc-editor" {
   source     = "../../modules/compute-vm"
   project_id = module.project.project_id
-  region     = var.region
+  zone       = "${var.region}-b"
   name       = "${var.name}-svc"
   network_interfaces = [{
     network    = module.vpc.self_link
@@ -134,5 +133,4 @@ module "vm-svc-editor" {
   metadata               = { startup-script = local.startup-script }
   service_account_create = true
   tags                   = ["ssh"]
-  instance_count         = 1
 }

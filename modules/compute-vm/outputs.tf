@@ -14,50 +14,42 @@
  * limitations under the License.
  */
 
-output "external_ips" {
+output "external_ip" {
   description = "Instance main interface external IP addresses."
   value = (
     var.network_interfaces[0].nat
-    ? [
-      for name, instance in google_compute_instance.default :
-      try(instance.network_interface.0.access_config.0.nat_ip, null)
-    ]
-    : []
+    ? try(google_compute_instance.default.0.network_interface.0.access_config.0.nat_ip, null)
+    : null
   )
 }
 
-output "groups" {
-  description = "Instance group resources."
-  value       = google_compute_instance_group.unmanaged
+output "group" {
+  description = "Instance group resource."
+  value       = try(google_compute_instance_group.unmanaged.0, null)
 }
 
-output "instances" {
-  description = "Instance resources."
-  value       = [for name, instance in google_compute_instance.default : instance]
+output "instance" {
+  description = "Instance resource."
+  value       = try(google_compute_instance.default.0, null)
 }
 
-output "internal_ips" {
-  description = "Instance main interface internal IP addresses."
-  value = [
-    for name, instance in google_compute_instance.default :
-    instance.network_interface.0.network_ip
-  ]
+output "internal_ip" {
+  description = "Instance main interface internal IP address."
+  value = try(
+    google_compute_instance.default.0.network_interface.0.network_ip,
+    null
+  )
 }
 
-output "names" {
-  description = "Instance names."
-  value       = [for name, instance in google_compute_instance.default : instance.name]
-}
-
-output "self_links" {
+output "self_link" {
   description = "Instance self links."
-  value       = [for name, instance in google_compute_instance.default : instance.self_link]
+  value       = try(google_compute_instance.default.0.self_link, null)
 }
 
 output "service_account" {
   description = "Service account resource."
   value = (
-    var.service_account_create ? google_service_account.service_account[0] : null
+    var.service_account_create ? google_service_account.service_account.0 : null
   )
 }
 
@@ -76,18 +68,10 @@ output "service_account_iam_email" {
 
 output "template" {
   description = "Template resource."
-  value = (
-    length(google_compute_instance_template.default) > 0
-    ? google_compute_instance_template.default[0]
-    : null
-  )
+  value       = try(google_compute_instance_template.default.0, null)
 }
 
 output "template_name" {
   description = "Template name."
-  value = (
-    length(google_compute_instance_template.default) > 0
-    ? google_compute_instance_template.default[0].name
-    : null
-  )
+  value       = try(google_compute_instance_template.default.0.name, null)
 }

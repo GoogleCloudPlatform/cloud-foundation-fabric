@@ -17,17 +17,15 @@
 module "test" {
   source                 = "../../../../modules/compute-vm"
   project_id             = "my-project"
-  region                 = "europe-west1"
-  zones                  = var.zones
+  zone                   = "europe-west1-b"
   name                   = "test"
-  network_interfaces     = var.network_interfaces
-  service_account_create = var.service_account_create
-  instance_count         = var.instance_count
-  use_instance_template  = var.use_instance_template
+  attached_disks         = var.attached_disks
+  attached_disk_defaults = var.attached_disk_defaults
+  create_template        = var.create_template
   confidential_compute   = var.confidential_compute
   group                  = var.group
   iam                    = var.iam
   metadata               = var.metadata
-  metadata_list          = var.metadata_list
-  single_name            = var.single_name
+  network_interfaces     = var.network_interfaces
+  service_account_create = var.service_account_create
 }

@@ -31,17 +31,17 @@ output "projects" {
 }
 
 output "vm" {
-  description = "GCE VMs."
+  description = "GCE VM."
   value = {
-    for instance in module.kms_vm_example.instances :
-    instance.name => instance.network_interface.0.network_ip
+    name    = module.vm_example.instance.name
+    address = module.vm_example.internal_ip
   }
 }
 
 output "vm_keys" {
   description = "GCE VM Cloud KMS crypto keys."
   value = {
-    for instance in module.kms_vm_example.instances :
-    instance.name => instance.boot_disk.0.kms_key_self_link
+    name = module.vm_example.instance.name
+    key  = module.vm_example.instance.boot_disk.0.kms_key_self_link
   }
 }
