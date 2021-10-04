@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [6.0.0] - 2021-10-04
+
 - new `apigee-organization` and `apigee-x-instance`
 - generate `email` and `iam_email` statically in the `iam-service-account` module 
 - new `billing-budget` module
@@ -346,7 +348,8 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v5.1.0...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v6.0.0...HEAD
+[6.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v5.1.0...v6.0.0
 [5.1.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v5.0.0...v5.1.0
 [5.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.9.0...v5.0.0
 [4.9.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.8.0...v4.9.0
