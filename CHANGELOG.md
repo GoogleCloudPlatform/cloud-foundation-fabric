@@ -11,7 +11,7 @@ All notable changes to this project will be documented in this file.
 - output custom role information from the `organization` module
 - enable multiple `vpc-sc` perimeters over multiple modules
 - new cloud operations example showing how to [restrict service usage using delegated role grants](./cloud-operations/iam-delegated-role-grants)
-- **incompatible change** multiple instances support has been remove fro the `compute-vm` module, to bring its interface in line with other modules and enable simple use of `for_each` at the module level; its variables have also slightly changed (`attached_disks`, `boot_disk_delete`, `crate_template`, `zone`)
+- **incompatible change** multiple instances support has been remove from the `compute-vm` module, to bring its interface in line with other modules and enable simple use of `for_each` at the module level; its variables have also slightly changed (`attached_disks`, `boot_disk_delete`, `crate_template`, `zone`)
 
 ## [5.1.0] - 2021-08-30
 
