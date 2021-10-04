@@ -32,16 +32,14 @@ variable "peer_network" {
 }
 
 variable "recordsets" {
-  type = list(object({
-    name    = string
-    type    = string
+  type = map(object({
     ttl     = number
     records = list(string)
   }))
-  default = [
-    { name = "localhost", type = "A", ttl = 300, records = ["127.0.0.1"] },
-    { name = "local-host", type = "A", ttl = 300, records = ["127.0.0.2"] }
-  ]
+  default = {
+    "A localhost"  = { ttl = 300, records = ["127.0.0.1"] },
+    "A local-host" = { ttl = 300, records = ["127.0.0.2"] }
+  }
 }
 
 variable "type" {

@@ -15,9 +15,11 @@
  */
 
 locals {
-  recordsets = var.recordsets == null ? {} : {
-    for record in var.recordsets :
-    join("/", [record.name, record.type]) => record
+  _recordsets = var.recordsets == null ? {} : var.recordsets
+  recordsets = {
+    for key, attrs in local._recordsets : key => merge(attrs, regex(
+      "^(?P<type>[A-Z]+)\\s+(?P<name>\\S+)$", key
+    ))
   }
   zone = (
     var.zone_create
@@ -152,10 +154,14 @@ resource "google_dns_record_set" "cloud-static-records" {
   )
   project      = var.project_id
   managed_zone = var.name
-  name         = each.value.name != "" ? "${each.value.name}.${var.domain}" : var.domain
-  type         = each.value.type
-  ttl          = each.value.ttl
-  rrdatas      = each.value.records
+  name = (
+    substr(each.value.name, length(each.value.name) * -1 - 1, -1) == "."
+    ? each.value.name
+    : "${each.value.name}.${var.domain}"
+  )
+  type    = each.value.type
+  ttl     = each.value.ttl
+  rrdatas = each.value.records
   depends_on = [
     google_dns_managed_zone.non-public, google_dns_managed_zone.public
   ]

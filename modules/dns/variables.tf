@@ -76,14 +76,19 @@ variable "project_id" {
 }
 
 variable "recordsets" {
-  type = list(object({
-    name    = string
-    type    = string
+  description = "Map of DNS recordsets in \"type name\" => {ttl, [records]} format."
+  type = map(object({
     ttl     = number
     records = list(string)
   }))
-  description = "List of DNS record objects to manage."
-  default     = []
+  default = {}
+  validation {
+    condition = alltrue([
+      for k, v in var.recordsets == null ? {} : var.recordsets :
+      length(split(" ", k)) == 2
+    ])
+    error_message = "Recordsets must have keys in the format \"type name\"."
+  }
 }
 
 variable "service_directory_namespace" {
