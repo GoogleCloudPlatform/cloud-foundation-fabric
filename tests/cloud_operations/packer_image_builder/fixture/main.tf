@@ -15,8 +15,8 @@
  */
 
 module "test" {
-  source                    = "../../../../cloud-operations/packer-image-builder"
-  project_id                = "test-project"
-  packer_account_users      = ["user:john@testdomain.com"]
-  create_packer_vars        = var.create_packer_vars
+  source               = "../../../../cloud-operations/packer-image-builder"
+  project_id           = "test-project"
+  packer_account_users = ["user:john@testdomain.com"]
+  create_packer_vars   = var.create_packer_vars
 }
