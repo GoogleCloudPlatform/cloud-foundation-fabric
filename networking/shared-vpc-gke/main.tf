@@ -130,11 +130,10 @@ module "vpc-shared" {
 }
 
 module "vpc-shared-firewall" {
-  source               = "../../modules/net-vpc-firewall"
-  project_id           = module.project-host.project_id
-  network              = module.vpc-shared.name
-  admin_ranges_enabled = true
-  admin_ranges         = values(var.ip_ranges)
+  source       = "../../modules/net-vpc-firewall"
+  project_id   = module.project-host.project_id
+  network      = module.vpc-shared.name
+  admin_ranges = values(var.ip_ranges)
 }
 
 module "nat" {

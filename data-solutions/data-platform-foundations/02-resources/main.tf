@@ -167,14 +167,13 @@ module "vpc-transformation" {
 }
 
 module "firewall" {
-  source               = "../../../modules/net-vpc-firewall"
-  project_id           = var.project_ids.transformation
-  network              = module.vpc-transformation.name
-  admin_ranges_enabled = false
-  admin_ranges         = [""]
-  http_source_ranges   = []
-  https_source_ranges  = []
-  ssh_source_ranges    = []
+  source              = "../../../modules/net-vpc-firewall"
+  project_id          = var.project_ids.transformation
+  network             = module.vpc-transformation.name
+  admin_ranges        = []
+  http_source_ranges  = []
+  https_source_ranges = []
+  ssh_source_ranges   = []
 
   custom_rules = {
     iap-svc = {

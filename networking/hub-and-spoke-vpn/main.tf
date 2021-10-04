@@ -48,11 +48,10 @@ module "vpc-hub" {
 }
 
 module "vpc-hub-firewall" {
-  source               = "../../modules/net-vpc-firewall"
-  project_id           = var.project_id
-  network              = module.vpc-hub.name
-  admin_ranges_enabled = true
-  admin_ranges         = values(var.ip_ranges)
+  source       = "../../modules/net-vpc-firewall"
+  project_id   = var.project_id
+  network      = module.vpc-hub.name
+  admin_ranges = values(var.ip_ranges)
 }
 
 module "vpn-hub-a" {
@@ -140,11 +139,10 @@ module "vpc-spoke-1" {
 }
 
 module "vpc-spoke-1-firewall" {
-  source               = "../../modules/net-vpc-firewall"
-  project_id           = var.project_id
-  network              = module.vpc-spoke-1.name
-  admin_ranges_enabled = true
-  admin_ranges         = values(var.ip_ranges)
+  source       = "../../modules/net-vpc-firewall"
+  project_id   = var.project_id
+  network      = module.vpc-spoke-1.name
+  admin_ranges = values(var.ip_ranges)
 }
 
 module "vpn-spoke-1" {
@@ -204,11 +202,10 @@ module "vpc-spoke-2" {
 }
 
 module "vpc-spoke-2-firewall" {
-  source               = "../../modules/net-vpc-firewall"
-  project_id           = var.project_id
-  network              = module.vpc-spoke-2.name
-  admin_ranges_enabled = true
-  admin_ranges         = values(var.ip_ranges)
+  source       = "../../modules/net-vpc-firewall"
+  project_id   = var.project_id
+  network      = module.vpc-spoke-2.name
+  admin_ranges = values(var.ip_ranges)
 }
 
 module "vpn-spoke-2" {
