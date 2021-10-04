@@ -157,7 +157,7 @@ resource "google_dns_record_set" "cloud-static-records" {
     each.value.name == ""
     ? var.domain
     : (
-      substr(each.value, -1, 1) == "."
+      substr(each.value.name, -1, 1) == "."
       ? each.value.name
       : "${each.value.name}.${var.domain}"
     )
