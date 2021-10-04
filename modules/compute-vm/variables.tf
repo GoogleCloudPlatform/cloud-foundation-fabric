@@ -63,7 +63,7 @@ variable "boot_disk" {
     type  = string
   })
   default = {
-    image = "projects/debian-cloud/global/images/family/debian-10"
+    image = "projects/debian-cloud/global/images/family/debian-11"
     type  = "pd-balanced"
     size  = 10
   }
