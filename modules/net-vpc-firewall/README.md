@@ -55,7 +55,7 @@ module "firewall" {
 
 ### No predefined rules
 
-If you don't want any predefined rules, `admin_ranges_enabled` to `false` and `http_source_ranges`, `https_source_ranges`, `ssh_source_ranges` to an empty list.
+If you don't want any predefined rules, set `admin_ranges_enabled` to `false` and `http_source_ranges`, `https_source_ranges`, `ssh_source_ranges` to an empty list.
 
 ```hcl
 module "firewall" {
