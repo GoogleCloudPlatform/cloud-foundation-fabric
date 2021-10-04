@@ -155,12 +155,12 @@ resource "google_dns_record_set" "cloud-static-records" {
   managed_zone = var.name
   name = (
     each.value.name == ""
-    ||
-    each.value.name == "*"
-    ||
-    substr(strrev(each.value.name), 0, 1) == "."
-    ? each.value.name
-    : "${each.value.name}.${var.domain}"
+    ? var.domain
+    : (
+      substr(strrev(each.value.name), 0, 1) == "."
+      ? each.value.name
+      : "${each.value.name}.${var.domain}"
+    )
   )
   type    = each.value.type
   ttl     = each.value.ttl

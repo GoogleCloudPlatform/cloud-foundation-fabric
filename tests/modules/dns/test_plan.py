@@ -42,8 +42,8 @@ def test_private_recordsets(plan_runner):
   assert set(r['name'] for r in recordsets) == set([
       'localhost.test.example.',
       'local-host.test.example.',
-      '*',
-      ""
+      '*.test.example.',
+      "test.example."
   ])
 
 
