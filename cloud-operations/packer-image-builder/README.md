@@ -37,13 +37,12 @@ Packer SA: `packer_account_users=["serviceAccount:myProjectNumber@cloudbuild.gse
 
 Provided Packer build example uses [HCL2 configuration files](https://www.packer.io/guides/hcl) and
 requires configuration of some input variables *(i.e. service accounts emails)*.
-Values of those variables can be taken from Terraform outputs. For your convenience,
-Terraform can populate Packer's variable file.
-You can control this behavior with the following Terraform configuration variables:
+Values of those variables can be taken from the Terraform outputs.
 
-* `create_packer_vars` (bool) indicates if Terraform should generate Packer's variables file
-* `packer_variables_template` (string) path to Packer's variable file template
-* `packer_variables_file` (string) path to resulting Packer's variable file
+For your convenience, Terraform can populate Packer's variable file.
+You can enable this behavior by setting `create_packer_vars` configuration variable to `true`.
+Terraform will use template from `packer/build.pkrvars.tpl` file and generate `packer/build.auto.pkrvars.hcl`
+variable file for Packer.
 
 Read [Assigning Variables](https://www.packer.io/guides/hcl/variables#assigning-variables) chapter
 from [Packer's documentation](https://www.packer.io/docs) for more details on setting up Packer variables.

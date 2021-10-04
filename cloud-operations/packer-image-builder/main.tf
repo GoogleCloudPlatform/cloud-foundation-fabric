@@ -15,15 +15,17 @@
  */
 
 locals {
-  compute_subnet_name = "image-builder"
-  compute_zone        = "${var.region}-a"
+  compute_subnet_name       = "image-builder"
+  compute_zone              = "${var.region}-a"
+  packer_variables_template = "packer/build.pkrvars.tpl"
+  packer_variables_file     = "packer/build.auto.pkrvars.hcl"
 }
 
 module "project" {
   source          = "../../modules/project"
   name            = var.project_id
-  parent          = try(var.root_node, null)
-  billing_account = try(var.billing_account, null)
+  parent          = var.root_node
+  billing_account = var.billing_account
   project_create  = var.project_create
   services = [
     "compute.googleapis.com"
@@ -117,13 +119,13 @@ resource "google_project_iam_member" "project-iap-sa-image-builder" {
 
 resource "local_file" "packer-vars" {
   count = var.create_packer_vars ? 1 : 0
-  content = templatefile(var.packer_variables_template, {
-    PROJECT_ID         = "\"${var.project_id}\""
-    COMPUTE_ZONE       = "\"${local.compute_zone}\""
-    BUILDER_SA         = "\"${module.service-account-image-builder.email}\""
-    COMPUTE_SA         = "\"${module.service-account-image-builder-vm.email}\""
-    COMPUTE_SUBNETWORK = "\"${local.compute_subnet_name}\""
+  content = templatefile(local.packer_variables_template, {
+    PROJECT_ID         = "${var.project_id}"
+    COMPUTE_ZONE       = "${local.compute_zone}"
+    BUILDER_SA         = "${module.service-account-image-builder.email}"
+    COMPUTE_SA         = "${module.service-account-image-builder-vm.email}"
+    COMPUTE_SUBNETWORK = "${local.compute_subnet_name}"
     USE_IAP            = "${var.use_iap}"
   })
-  filename = var.packer_variables_file
+  filename = local.packer_variables_file
 }
