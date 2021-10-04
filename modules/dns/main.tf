@@ -17,9 +17,8 @@
 locals {
   _recordsets = var.recordsets == null ? {} : var.recordsets
   recordsets = {
-    for key, attrs in local._recordsets : key => merge(attrs, regex(
-      "^(?P<type>[A-Z]+)\\s+(?P<name>\\S+)$", key
-    ))
+    for key, attrs in local._recordsets :
+    key => merge(attrs, zipmap(["type", "name"], split(" ", key)))
   }
   zone = (
     var.zone_create
@@ -155,7 +154,11 @@ resource "google_dns_record_set" "cloud-static-records" {
   project      = var.project_id
   managed_zone = var.name
   name = (
-    each.value.name == "*" || substr(strrev(each.value.name), 0, 1) == "."
+    each.value.name == ""
+    ||
+    each.value.name == "*"
+    ||
+    substr(strrev(each.value.name), 0, 1) == "."
     ? each.value.name
     : "${each.value.name}.${var.domain}"
   )
