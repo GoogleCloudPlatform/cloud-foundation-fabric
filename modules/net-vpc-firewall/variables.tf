@@ -20,12 +20,6 @@ variable "admin_ranges" {
   default     = []
 }
 
-variable "admin_ranges_enabled" {
-  description = "Enable admin ranges-based rules."
-  type        = bool
-  default     = false
-}
-
 variable "custom_rules" {
   description = "List of custom rule definitions (refer to variables file for syntax)."
   type = map(object({

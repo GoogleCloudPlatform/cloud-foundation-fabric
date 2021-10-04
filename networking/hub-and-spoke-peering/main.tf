@@ -74,11 +74,10 @@ module "nat-hub" {
 }
 
 module "vpc-hub-firewall" {
-  source               = "../../modules/net-vpc-firewall"
-  project_id           = var.project_id
-  network              = module.vpc-hub.name
-  admin_ranges_enabled = true
-  admin_ranges         = values(var.ip_ranges)
+  source       = "../../modules/net-vpc-firewall"
+  project_id   = var.project_id
+  network      = module.vpc-hub.name
+  admin_ranges = values(var.ip_ranges)
 }
 
 ################################################################################
@@ -100,11 +99,10 @@ module "vpc-spoke-1" {
 }
 
 module "vpc-spoke-1-firewall" {
-  source               = "../../modules/net-vpc-firewall"
-  project_id           = module.project.project_id
-  network              = module.vpc-spoke-1.name
-  admin_ranges_enabled = true
-  admin_ranges         = values(var.ip_ranges)
+  source       = "../../modules/net-vpc-firewall"
+  project_id   = module.project.project_id
+  network      = module.vpc-spoke-1.name
+  admin_ranges = values(var.ip_ranges)
 }
 
 module "nat-spoke-1" {
@@ -146,11 +144,10 @@ module "vpc-spoke-2" {
 }
 
 module "vpc-spoke-2-firewall" {
-  source               = "../../modules/net-vpc-firewall"
-  project_id           = module.project.project_id
-  network              = module.vpc-spoke-2.name
-  admin_ranges_enabled = true
-  admin_ranges         = values(var.ip_ranges)
+  source       = "../../modules/net-vpc-firewall"
+  project_id   = module.project.project_id
+  network      = module.vpc-spoke-2.name
+  admin_ranges = values(var.ip_ranges)
 }
 
 module "nat-spoke-2" {

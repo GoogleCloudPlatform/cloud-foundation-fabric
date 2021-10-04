@@ -18,8 +18,8 @@ output "admin_ranges" {
   description = "Admin ranges data."
 
   value = {
-    enabled = var.admin_ranges_enabled
-    ranges  = var.admin_ranges_enabled ? join(",", var.admin_ranges) : ""
+    enabled = length(var.admin_ranges) > 0
+    ranges  = join(",", var.admin_ranges)
   }
 }
 

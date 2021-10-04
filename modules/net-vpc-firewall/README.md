@@ -19,7 +19,6 @@ module "firewall" {
   source               = "./modules/net-vpc-firewall"
   project_id           = "my-project"
   network              = "my-network"
-  admin_ranges_enabled = true
   admin_ranges         = ["10.0.0.0/8"]
 }
 # tftest:modules=1:resources=4
@@ -31,11 +30,10 @@ This is an example of how to define custom rules, with a sample rule allowing op
 
 ```hcl
 module "firewall" {
-  source               = "./modules/net-vpc-firewall"
-  project_id           = "my-project"
-  network              = "my-network"
-  admin_ranges_enabled = true
-  admin_ranges         = ["10.0.0.0/8"]
+  source       = "./modules/net-vpc-firewall"
+  project_id   = "my-project"
+  network      = "my-network"
+  admin_ranges = ["10.0.0.0/8"]
   custom_rules = {
     ntp-svc = {
       description          = "NTP service."
@@ -55,17 +53,17 @@ module "firewall" {
 
 ### No predefined rules
 
-If you don't want any predefined rules, set `admin_ranges_enabled` to `false` and `http_source_ranges`, `https_source_ranges`, `ssh_source_ranges` to an empty list.
+If you don't want any predefined rules set `admin_ranges`, `http_source_ranges`, `https_source_ranges` and `ssh_source_ranges` to an empty list.
 
 ```hcl
 module "firewall" {
-  source               = "./modules/net-vpc-firewall"
-  project_id           = "my-project"
-  network              = "my-network"
-  admin_ranges_enabled = false
-  http_source_ranges   = []
-  https_source_ranges  = []
-  ssh_source_ranges    = []
+  source              = "./modules/net-vpc-firewall"
+  project_id          = "my-project"
+  network             = "my-network"
+  admin_ranges        = []
+  http_source_ranges  = []
+  https_source_ranges = []
+  ssh_source_ranges   = []
   custom_rules = {
     allow-https = {
       description          = "Allow HTTPS from internal networks."
@@ -91,7 +89,6 @@ module "firewall" {
 | network | Name of the network this set of firewall rules applies to. | <code title="">string</code> | ✓ |  |
 | project_id | Project id of the project that holds the network. | <code title="">string</code> | ✓ |  |
 | *admin_ranges* | IP CIDR ranges that have complete access to all subnets. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
-| *admin_ranges_enabled* | Enable admin ranges-based rules. | <code title="">bool</code> |  | <code title="">false</code> |
 | *custom_rules* | List of custom rule definitions (refer to variables file for syntax). | <code title="map&#40;object&#40;&#123;&#10;description          &#61; string&#10;direction            &#61; string&#10;action               &#61; string &#35; &#40;allow&#124;deny&#41;&#10;ranges               &#61; list&#40;string&#41;&#10;sources              &#61; list&#40;string&#41;&#10;targets              &#61; list&#40;string&#41;&#10;use_service_accounts &#61; bool&#10;rules &#61; list&#40;object&#40;&#123;&#10;protocol &#61; string&#10;ports    &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;&#10;extra_attributes &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
 | *http_source_ranges* | List of IP CIDR ranges for tag-based HTTP rule, defaults to the health checkers ranges. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">["35.191.0.0/16", "130.211.0.0/22", "209.85.152.0/22", "209.85.204.0/22"]</code> |
 | *https_source_ranges* | List of IP CIDR ranges for tag-based HTTPS rule, defaults to the health checkers ranges. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">["35.191.0.0/16", "130.211.0.0/22", "209.85.152.0/22", "209.85.204.0/22"]</code> |

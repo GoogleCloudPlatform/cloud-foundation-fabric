@@ -34,7 +34,7 @@ locals {
 ###############################################################################
 
 resource "google_compute_firewall" "allow-admins" {
-  count         = var.admin_ranges_enabled == true ? 1 : 0
+  count         = length(var.admin_ranges) > 0 ? 1 : 0
   name          = "${var.network}-ingress-admins"
   description   = "Access from the admin subnet to all subnets"
   network       = var.network
