@@ -76,4 +76,5 @@ module "firewall" {
 | custom_egress_deny_rules | Custom egress rules with allow blocks. |  |
 | custom_ingress_allow_rules | Custom ingress rules with allow blocks. |  |
 | custom_ingress_deny_rules | Custom ingress rules with deny blocks. |  |
+| rules | All google_compute_firewall resources created |  |
 <!-- END TFDOC -->

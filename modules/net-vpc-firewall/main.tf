@@ -14,15 +14,6 @@
  * limitations under the License.
  */
 
-locals {
-  rules-allow = {
-    for name, attrs in var.custom_rules : name => attrs if attrs.action == "allow"
-  }
-  rules-deny = {
-    for name, attrs in var.custom_rules : name => attrs if attrs.action == "deny"
-  }
-}
-
 ###############################################################################
 #                            rules based on IP ranges
 ###############################################################################
@@ -87,44 +78,9 @@ resource "google_compute_firewall" "allow-tag-https" {
 #                                dynamic rules                                 #
 ################################################################################
 
-resource "google_compute_firewall" "custom_allow" {
+resource "google_compute_firewall" "custom-rules" {
   # provider                = "google-beta"
-  for_each                = local.rules-allow
-  name                    = each.key
-  description             = each.value.description
-  direction               = each.value.direction
-  network                 = var.network
-  project                 = var.project_id
-  source_ranges           = each.value.direction == "INGRESS" ? each.value.ranges : null
-  destination_ranges      = each.value.direction == "EGRESS" ? each.value.ranges : null
-  source_tags             = each.value.use_service_accounts || each.value.direction == "EGRESS" ? null : each.value.sources
-  source_service_accounts = each.value.use_service_accounts && each.value.direction == "INGRESS" ? each.value.sources : null
-  target_tags             = each.value.use_service_accounts ? null : each.value.targets
-  target_service_accounts = each.value.use_service_accounts ? each.value.targets : null
-  disabled                = lookup(each.value.extra_attributes, "disabled", false)
-  priority                = lookup(each.value.extra_attributes, "priority", 1000)
-
-  dynamic "log_config" {
-    for_each = lookup(each.value.extra_attributes, "logging", null) != null ? [each.value.extra_attributes.logging] : []
-    iterator = logging_config
-    content {
-      metadata = logging_config.value
-    }
-  }
-
-  dynamic "allow" {
-    for_each = each.value.rules
-    iterator = rule
-    content {
-      protocol = rule.value.protocol
-      ports    = rule.value.ports
-    }
-  }
-}
-
-resource "google_compute_firewall" "custom_deny" {
-  # provider                = "google-beta"
-  for_each                = local.rules-deny
+  for_each                = var.custom_rules
   name                    = each.key
   description             = each.value.description
   direction               = each.value.direction
@@ -148,7 +104,24 @@ resource "google_compute_firewall" "custom_deny" {
   }
 
   dynamic "deny" {
-    for_each = each.value.rules
+    for_each = (
+      each.value.action == "deny"
+      ? { for index, rule in each.value.rules : index => rule }
+      : {}
+    )
+    iterator = rule
+    content {
+      protocol = rule.value.protocol
+      ports    = rule.value.ports
+    }
+  }
+
+  dynamic "allow" {
+    for_each = (
+      each.value.action == "allow"
+      ? { for index, rule in each.value.rules : index => rule }
+      : {}
+    )
     iterator = rule
     content {
       protocol = rule.value.protocol

@@ -26,31 +26,42 @@ output "admin_ranges" {
 output "custom_ingress_allow_rules" {
   description = "Custom ingress rules with allow blocks."
   value = [
-    for rule in google_compute_firewall.custom_allow :
-    rule.name if rule.direction == "INGRESS"
+    for rule in google_compute_firewall.custom-rules :
+    rule.name if rule.direction == "INGRESS" && try(length(rule.allow), 0) > 0
   ]
 }
 
 output "custom_ingress_deny_rules" {
   description = "Custom ingress rules with deny blocks."
   value = [
-    for rule in google_compute_firewall.custom_deny :
-    rule.name if rule.direction == "INGRESS"
+    for rule in google_compute_firewall.custom-rules :
+    rule.name if rule.direction == "INGRESS" && try(length(rule.deny), 0) > 0
   ]
 }
 
 output "custom_egress_allow_rules" {
   description = "Custom egress rules with allow blocks."
   value = [
-    for rule in google_compute_firewall.custom_allow :
-    rule.name if rule.direction == "EGRESS"
+    for rule in google_compute_firewall.custom-rules :
+    rule.name if rule.direction == "EGRESS" && try(length(rule.allow), 0) > 0
   ]
 }
 
 output "custom_egress_deny_rules" {
   description = "Custom egress rules with allow blocks."
   value = [
-    for rule in google_compute_firewall.custom_deny :
-    rule.name if rule.direction == "EGRESS"
+    for rule in google_compute_firewall.custom-rules :
+    rule.name if rule.direction == "EGRESS" && try(length(rule.deny), 0) > 0
   ]
+}
+
+output "rules" {
+  description = "All google_compute_firewall resources created."
+  value = merge(
+    google_compute_firewall.custom-rules,
+    try({ (google_compute_firewall.allow-admins.0.name) = google_compute_firewall.allow-admins.0 }, {}),
+    try({ (google_compute_firewall.allow-tag-ssh.0.name) = google_compute_firewall.allow-tag-ssh.0 }, {}),
+    try({ (google_compute_firewall.allow-tag-http.0.name) = google_compute_firewall.allow-tag-http.0 }, {}),
+    try({ (google_compute_firewall.allow-tag-https.0.name) = google_compute_firewall.allow-tag-https.0 }, {})
+  )
 }
