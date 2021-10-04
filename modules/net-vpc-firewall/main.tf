@@ -14,6 +14,21 @@
  * limitations under the License.
  */
 
+locals {
+  custom_rules = {
+    for id, rule in var.custom_rules :
+    id => merge(rule, {
+      # make rules a map so we use it in a for_each
+      rules = { for index, ports in rule.rules : index => ports }
+      # lookup any named ranges references
+      ranges = flatten([
+        for range in rule.ranges :
+        try(var.named_ranges[range], range)
+      ])
+    })
+  }
+}
+
 ###############################################################################
 #                            rules based on IP ranges
 ###############################################################################
@@ -80,7 +95,7 @@ resource "google_compute_firewall" "allow-tag-https" {
 
 resource "google_compute_firewall" "custom-rules" {
   # provider                = "google-beta"
-  for_each                = var.custom_rules
+  for_each                = local.custom_rules
   name                    = each.key
   description             = each.value.description
   direction               = each.value.direction
@@ -104,11 +119,8 @@ resource "google_compute_firewall" "custom-rules" {
   }
 
   dynamic "deny" {
-    for_each = (
-      each.value.action == "deny"
-      ? { for index, rule in each.value.rules : index => rule }
-      : {}
-    )
+    for_each = each.value.action == "deny" ? each.value.rules : {}
+
     iterator = rule
     content {
       protocol = rule.value.protocol
@@ -117,11 +129,8 @@ resource "google_compute_firewall" "custom-rules" {
   }
 
   dynamic "allow" {
-    for_each = (
-      each.value.action == "allow"
-      ? { for index, rule in each.value.rules : index => rule }
-      : {}
-    )
+    for_each = each.value.action == "allow" ? each.value.rules : {}
+
     iterator = rule
     content {
       protocol = rule.value.protocol
