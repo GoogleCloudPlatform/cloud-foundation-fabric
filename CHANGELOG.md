@@ -12,6 +12,8 @@ All notable changes to this project will be documented in this file.
 - enable multiple `vpc-sc` perimeters over multiple modules
 - new cloud operations example showing how to [restrict service usage using delegated role grants](./cloud-operations/iam-delegated-role-grants)
 - **incompatible change** multiple instance support has been removed from the `compute-vm` module, to bring its interface in line with other modules and enable simple use of `for_each` at the module level; its variables have also slightly changed (`attached_disks`, `boot_disk_delete`, `crate_template`, `zone`)
+- **incompatible change** dropped the `admin_ranges_enabled` variable in `net-vpc-firewall`. Set `admin_ranges = []` to get the same effect
+- added the `named_ranges` variable to `net-vpc-firewall`
 
 ## [5.1.0] - 2021-08-30
 
