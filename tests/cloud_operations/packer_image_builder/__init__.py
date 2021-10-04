@@ -11,21 +11,3 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-
-import os
-import pytest
-
-
-FIXTURES_DIR = os.path.join(os.path.dirname(__file__), "fixture")
-
-
-def test_resources(e2e_plan_runner):
-  "Test that plan works and the numbers of resources is as expected."
-  modules, resources = e2e_plan_runner(FIXTURES_DIR)
-  assert len(modules) == 11
-  assert len(resources) == 29
-
-  modules, resources = e2e_plan_runner(FIXTURES_DIR, mig="true")
-  assert len(modules) == 13
-  assert len(resources) == 35
