@@ -10,11 +10,12 @@ Specific modules also offer support for non-authoritative bindings (e.g. `google
 
 ## Foundational modules
 
+- [billing budget](./billing-budget)
 - [folder](./folder)
+- [logging bucket](./logging-bucket)
 - [organization](./organization)
 - [project](./project)
 - [service account](./iam-service-account)
-- [logging bucket](./logging-bucket)
 
 ## Networking modules
 
