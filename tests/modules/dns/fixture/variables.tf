@@ -37,8 +37,10 @@ variable "recordsets" {
     records = list(string)
   }))
   default = {
-    "A localhost"  = { ttl = 300, records = ["127.0.0.1"] },
-    "A local-host" = { ttl = 300, records = ["127.0.0.2"] }
+    "A localhost"                = { ttl = 300, records = ["127.0.0.1"] }
+    "A local-host.test.example." = { ttl = 300, records = ["127.0.0.2"] }
+    "CNAME *"                    = { ttl = 300, records = ["localhost.example.org."] }
+    "A "                         = { ttl = 300, records = ["127.0.0.3"] }
   }
 }
 
