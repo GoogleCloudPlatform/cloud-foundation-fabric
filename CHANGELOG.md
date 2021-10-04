@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 
 - new cloud operations example showing how to deploy infrastructure for [Compute Engine image builder based on Hashicorp Packer](./cloud-operations/packer-image-builder)
+- **incompatible change** the format of the `records` variable in the `dns` module has changed, to better support dynamic values
 
 ## [6.0.0] - 2021-10-04
 
