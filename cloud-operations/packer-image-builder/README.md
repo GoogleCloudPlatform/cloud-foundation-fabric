@@ -78,8 +78,6 @@ address for security reasons, Internet connectivity is done with [Cloud NAT](htt
 | *create_packer_vars* | Create packer variables file using template file and terraform output. | <code title="">bool</code> |  | <code title="">false</code> |
 | *packer_account_users* | List of members that will be allowed to impersonate Packer image builder service account in IAM format, i.e. 'user:{emailid}'. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 | *packer_source_cidrs* | List of CIDR ranges allowed to connect to the temporary VM for provisioning. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">["0.0.0.0/0"]</code> |
-| *packer_variables_file* | Packer variables file that is created from the template and terrafrom output. | <code title="">string</code> |  | <code title="">packer/build.auto.pkrvars.hcl</code> |
-| *packer_variables_template* | Packer variables template file used to create Packer variables file. | <code title="">string</code> |  | <code title="">packer/build.pkrvars.tpl</code> |
 | *project_create* | Create project instead of using an existing one. | <code title="">bool</code> |  | <code title="">true</code> |
 | *region* | Default region for resources | <code title="">string</code> |  | <code title="">europe-west1</code> |
 | *root_node* | The resource name of the parent folder or organization for project creation, in 'folders/folder_id' or 'organizations/org_id' format. | <code title="">string</code> |  | <code title="">null</code> |
