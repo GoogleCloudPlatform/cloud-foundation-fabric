@@ -19,6 +19,4 @@ module "test" {
   project_id                = "test-project"
   packer_account_users      = ["user:john@testdomain.com"]
   create_packer_vars        = var.create_packer_vars
-  packer_variables_template = "test.pkrvars.tpl"
-  packer_variables_file     = "test.pkrvars.hcl"
 }
