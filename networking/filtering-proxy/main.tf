@@ -118,10 +118,10 @@ module "private-dns" {
   name            = "internal"
   domain          = "internal."
   client_networks = [module.vpc.self_link]
-  recordsets = [
-    { name = "squid", type = "A", ttl = 60, records = [local.squid_address] },
-    { name = "proxy", type = "CNAME", ttl = 3600, records = ["squid.internal."] }
-  ]
+  recordsets = {
+    "A squid"     = { ttl = 60, records = [local.squid_address] }
+    "CNAME proxy" = { ttl = 3600, records = ["squid.internal."] }
+  }
 }
 
 ###############################################################################

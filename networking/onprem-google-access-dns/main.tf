@@ -170,20 +170,11 @@ module "dns-gcp" {
   name            = "gcp-example"
   domain          = "gcp.example.org."
   client_networks = [module.vpc.self_link]
-  recordsets = concat(
-    [{ name = "localhost", type = "A", ttl = 300, records = ["127.0.0.1"] }],
-    # setting addresses during first apply triggers a dynamic value error
-    # [
-    #   {
-    #     name    = module.vm-test1.instance.name, type = "A", ttl = 300,
-    #     records = [module.vm-test1.internal_ip]
-    #   },
-    #   {
-    #     name    = module.vm-test2.instance.name, type = "A", ttl = 300,
-    #     records = [module.vm-test2.internal_ip]
-    #   }
-    # ]
-  )
+  recordsets = {
+    "A localhost" = { ttl = 300, records = ["127.0.0.1"] }
+    "A test-1"    = { ttl = 300, records = [module.vm-test1.internal_ip] }
+    "A test-2"    = { ttl = 300, records = [module.vm-test2.internal_ip] }
+  }
 }
 
 module "dns-api" {
@@ -193,11 +184,11 @@ module "dns-api" {
   name            = "googleapis"
   domain          = "googleapis.com."
   client_networks = [module.vpc.self_link]
-  recordsets = [
-    { name = "*", type = "CNAME", ttl = 300, records = ["private.googleapis.com."] },
-    { name = "private", type = "A", ttl = 300, records = local.vips.private },
-    { name = "restricted", type = "A", ttl = 300, records = local.vips.restricted },
-  ]
+  recordsets = {
+    "CNAME *"      = { ttl = 300, records = ["private.googleapis.com."] }
+    "A private"    = { ttl = 300, records = local.vips.private }
+    "A restricted" = { ttl = 300, records = local.vips.restricted }
+  }
 }
 
 module "dns-onprem" {
