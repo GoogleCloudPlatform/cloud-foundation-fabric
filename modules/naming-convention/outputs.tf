@@ -15,9 +15,11 @@
  */
 
 output "labels" {
-  value = local.labels
+  description = "Per resource labels."
+  value       = local.labels
 }
 
 output "names" {
-  value = local.names
+  description = "Per resource names."
+  value       = local.names
 }

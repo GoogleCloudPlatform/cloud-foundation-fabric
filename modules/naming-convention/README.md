@@ -93,6 +93,6 @@ module "project-tf" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| labels | None |  |
-| names | None |  |
+| labels | Per resource labels. |  |
+| names | Per resource names. |  |
 <!-- END TFDOC -->
