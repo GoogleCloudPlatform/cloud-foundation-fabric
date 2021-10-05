@@ -76,4 +76,22 @@ module "project-tf" {
 ```
 
 <!-- BEGIN TFDOC -->
+## Variables
+
+| name | description | type | required | default |
+|---|---|:---: |:---:|:---:|
+| environment | None | <code title="">string</code> | ✓ |  |
+| resources | None | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> | ✓ |  |
+| team | None | <code title="">string</code> | ✓ |  |
+| *labels* | None | <code title="map&#40;map&#40;map&#40;string&#41;&#41;&#41;">map(map(map(string)))</code> |  | <code title="">{}</code> |
+| *prefix* | None | <code title="">string</code> |  | <code title="">null</code> |
+| *suffix* | None | <code title="">string</code> |  | <code title="">null</code> |
+| *use_resource_prefixes* | None | <code title="">bool</code> |  | <code title="">false</code> |
+
+## Outputs
+
+| name | description | sensitive |
+|---|---|:---:|
+| labels | None |  |
+| names | None |  |
 <!-- END TFDOC -->
