@@ -28,22 +28,17 @@ module "names-org" {
     }
   }
 }
-# tftest:modules=0:resources=0
-```
 
-This will allow you to reference names and labels when creating resources:
-
-```hcl
 module "project-tf" {
   source = "./modules/project"
   # myco-cloud-dev-tf
-  name   = module.names-org.names.project.tf-org
+  name   = module.names-org.names.project.tf
   # { environment = "dev", scope = "global", team = "cloud" }
   labels = module.names-org.labels.project.tf
 }
 ```
 
-You can also enable resource type naming, useful with some legacy CMDB setups:
+You can also enable resource type naming, useful with some legacy CMDB setups. When doing this, resource type names become part of the final resource names and are usually shorted (e.g. `prj` instead of `project`):
 
 ```hcl
 module "names-org" {
@@ -62,16 +57,11 @@ module "names-org" {
   }
   use_resource_prefixes = true
 }
-# tftest:modules=0:resources=0
-```
 
-Which will result in names prefixed by their respective resource types:
-
-```hcl
 module "project-tf" {
   source = "./modules/project"
   # prj-myco-cloud-dev-tf
-  name   = module.names-org.names.prj.tf-org
+  name   = module.names-org.names.prj.tf
 }
 ```
 
