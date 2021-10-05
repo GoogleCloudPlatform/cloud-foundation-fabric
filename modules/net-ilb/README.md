@@ -2,10 +2,6 @@
 
 This module allows managing a GCE Internal Load Balancer and integrates the forwarding rule, regional backend, and optional health check resources. It's designed to be a simple match for the [`compute-vm`](../compute-vm) module, which can be used to manage instance templates and instance groups.
 
-## TODO
-
-- [ ] add a variable for setting address purpose to `SHARED_LOADBALANCER_VIP` and an output for the address once the [provider support has been implemented](https://github.com/terraform-providers/terraform-provider-google/issues/6499)
-
 ## Issues
 
 TODO(ludoo): check if this is still the case after splitting out MIG from compute-vm
