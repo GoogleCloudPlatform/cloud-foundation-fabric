@@ -47,3 +47,10 @@ def test_resource_prefix(apply_runner):
                            use_resource_prefixes='true')
   assert output['names']['project']['tf'] == 'project-myco-cloud-dev-tf'
   assert output['names']['bucket']['tf-org'] == 'bucket-myco-cloud-dev-tf-org'
+
+
+def test_separator(apply_runner):
+  _, output = apply_runner(
+      FIXTURES_DIR, separator_override='{ dataset = "_" }')
+  assert output['names']['dataset'] == {
+      'foobar': 'cloud_dev_foobar', 'frobniz': 'cloud_dev_frobniz'}

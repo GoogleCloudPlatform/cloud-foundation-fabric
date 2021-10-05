@@ -80,13 +80,14 @@ module "project-tf" {
 
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
-| environment | None | <code title="">string</code> | ✓ |  |
-| resources | None | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> | ✓ |  |
-| team | None | <code title="">string</code> | ✓ |  |
-| *labels* | None | <code title="map&#40;map&#40;map&#40;string&#41;&#41;&#41;">map(map(map(string)))</code> |  | <code title="">{}</code> |
-| *prefix* | None | <code title="">string</code> |  | <code title="">null</code> |
+| environment | Environment abbreviation used in names and labels. | <code title="">string</code> | ✓ |  |
+| resources | Short resource names by type. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> | ✓ |  |
+| team | Optional name suffix. | <code title="">string</code> | ✓ |  |
+| *labels* | Per-resource labels. | <code title="map&#40;map&#40;map&#40;string&#41;&#41;&#41;">map(map(map(string)))</code> |  | <code title="">{}</code> |
+| *prefix* | Optional name prefix. | <code title="">string</code> |  | <code title="">null</code> |
+| *separator_override* | Optional separator override for specific resource types. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
 | *suffix* | None | <code title="">string</code> |  | <code title="">null</code> |
-| *use_resource_prefixes* | None | <code title="">bool</code> |  | <code title="">false</code> |
+| *use_resource_prefixes* | Prefix names with the resource type. | <code title="">bool</code> |  | <code title="">false</code> |
 
 ## Outputs
 

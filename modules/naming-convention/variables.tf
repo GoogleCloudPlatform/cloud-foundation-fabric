@@ -15,21 +15,31 @@
  */
 
 variable "environment" {
-  type = string
+  description = "Environment abbreviation used in names and labels."
+  type        = string
 }
 
 variable "prefix" {
-  type    = string
-  default = null
+  description = "Optional name prefix."
+  type        = string
+  default     = null
 }
 
 variable "labels" {
-  type    = map(map(map(string)))
-  default = {}
+  description = "Per-resource labels."
+  type        = map(map(map(string)))
+  default     = {}
 }
 
 variable "resources" {
-  type = map(list(string))
+  description = "Short resource names by type."
+  type        = map(list(string))
+}
+
+variable "separator_override" {
+  description = "Optional separator override for specific resource types."
+  type        = map(string)
+  default     = {}
 }
 
 variable "suffix" {
@@ -38,10 +48,12 @@ variable "suffix" {
 }
 
 variable "team" {
-  type = string
+  description = "Optional name suffix."
+  type        = string
 }
 
 variable "use_resource_prefixes" {
-  type    = bool
-  default = false
+  description = "Prefix names with the resource type."
+  type        = bool
+  default     = false
 }

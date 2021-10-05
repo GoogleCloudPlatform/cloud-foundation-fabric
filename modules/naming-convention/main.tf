@@ -30,14 +30,16 @@ locals {
   // create per-resource names by assembling tokens
   names = {
     for resource_type, resources in var.resources : resource_type => {
-      for name in resources : name => join("-", compact([
-        var.use_resource_prefixes ? resource_type : "",
-        var.prefix,
-        // change these lines if you need different tokens
-        var.team,
-        var.environment,
-        name,
-        var.suffix
+      for name in resources : name => join(
+        try(var.separator_override[resource_type], "-"),
+        compact([
+          var.use_resource_prefixes ? resource_type : "",
+          var.prefix,
+          // change these lines if you need different tokens
+          var.team,
+          var.environment,
+          name,
+          var.suffix
       ]))
     }
   }

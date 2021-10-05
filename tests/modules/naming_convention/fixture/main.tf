@@ -23,12 +23,16 @@ module "test" {
   team                  = "cloud"
   resources = {
     bucket  = ["tf-org", "tf-sec", "tf-log"]
+    dataset = ["foobar", "frobniz"]
     project = ["tf", "sec", "log"]
   }
   labels = {
     project = {
       tf = { scope = "global" }
     }
+  }
+  separator_override = {
+    dataset = "_"
   }
 }
 
@@ -43,6 +47,11 @@ output "names" {
 variable "prefix" {
   type    = string
   default = null
+}
+
+variable "separator_override" {
+  type    = map(string)
+  default = {}
 }
 
 variable "suffix" {
