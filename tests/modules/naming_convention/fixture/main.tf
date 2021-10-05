@@ -15,19 +15,19 @@
  */
 
 module "test" {
-  source                    = "../../../../modules/naming-convention"
-  prefix = var.prefix
-  suffix = var.suffix
+  source                = "../../../../modules/naming-convention"
+  prefix                = var.prefix
+  suffix                = var.suffix
   use_resource_prefixes = var.use_resource_prefixes
-  environment = "dev"
-  team = "cloud"
+  environment           = "dev"
+  team                  = "cloud"
   resources = {
-    bucket = ["tf-org", "tf-sec", "tf-log"]
+    bucket  = ["tf-org", "tf-sec", "tf-log"]
     project = ["tf", "sec", "log"]
   }
   labels = {
     project = {
-      tf = {scope = "global"}
+      tf = { scope = "global" }
     }
   }
 }
