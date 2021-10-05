@@ -13,6 +13,7 @@ Specific modules also offer support for non-authoritative bindings (e.g. `google
 - [billing budget](./billing-budget)
 - [folder](./folder)
 - [logging bucket](./logging-bucket)
+- [naming convention](./naming-convention)
 - [organization](./organization)
 - [project](./project)
 - [service account](./iam-service-account)
