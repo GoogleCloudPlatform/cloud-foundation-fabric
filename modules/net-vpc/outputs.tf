@@ -39,13 +39,12 @@ output "self_link" {
 }
 
 output "project_id" {
-  description = "Shared VPC host project id."
-  value = (
-    var.shared_vpc_host
-    ? google_compute_shared_vpc_host_project.shared_vpc_host[*].project
-    : null
-  )
+  description = "Project ID containing the network. Use this when you need to create resources *after* the VPC is fully set up (e.g. subnets created, shared VPC service projects attached, Private Service Networking configured)."
+  value       = var.project_id
   depends_on = [
+    google_compute_subnetwork.subnetwork,
+    google_compute_network_peering.local,
+    google_compute_network_peering.remote,
     google_compute_shared_vpc_host_project.shared_vpc_host,
     google_compute_shared_vpc_service_project.service_projects,
     google_service_networking_connection.psn_connection

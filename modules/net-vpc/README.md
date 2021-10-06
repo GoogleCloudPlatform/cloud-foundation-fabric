@@ -205,7 +205,7 @@ module "vpc" {
 | bindings | Subnet IAM bindings. |  |
 | name | The name of the VPC being created. |  |
 | network | Network resource. |  |
-| project_id | Shared VPC host project id. |  |
+| project_id | Project ID containing the network. Use this when you need to create resources *after* the VPC is fully set up (e.g. subnets created, shared VPC service projects attached, Private Service Networking configured). |  |
 | self_link | The URI of the VPC being created. |  |
 | subnet_ips | Map of subnet address ranges keyed by name. |  |
 | subnet_regions | Map of subnet regions keyed by name. |  |
