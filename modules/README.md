@@ -49,6 +49,7 @@ Specific modules also offer support for non-authoritative bindings (e.g. `google
 - [GCS](./gcs)
 - [Pub/Sub](./pubsub)
 - [Bigtable instance](./bigtable-instance)
+- [Cloud SQL instance](./modules/cloudsql-instance)
 
 ## Development
 
