@@ -23,7 +23,6 @@ module "vpc" {
   source     = "./modules/net-vpc"
   project_id = module.project.project_id
   name       = "my-network"
-
   private_service_networking_range = "10.60.0.0/16"
 }
 
