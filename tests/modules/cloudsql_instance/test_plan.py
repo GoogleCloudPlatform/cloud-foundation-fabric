@@ -19,14 +19,11 @@ from collections import Counter
 
 FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
 
-from pprint import pprint
-
 
 def test_simple_instance(plan_runner):
   "Test standalone instance."
-  _, resources = plan_runner(FIXTURES_DIR)
 
-  pprint(resources)
+  _, resources = plan_runner(FIXTURES_DIR)
   assert len(resources) == 1
   r = resources[0]
   assert r['values']['project'] == 'my-project'
@@ -36,8 +33,8 @@ def test_simple_instance(plan_runner):
 
 def test_prefix(plan_runner):
   "Test instance prefix."
-  _, resources = plan_runner(FIXTURES_DIR, prefix="prefix")
 
+  _, resources = plan_runner(FIXTURES_DIR, prefix="prefix")
   assert len(resources) == 1
   r = resources[0]
   assert r['values']['name'] == 'prefix-db'
@@ -60,6 +57,7 @@ def test_replicas(plan_runner):
     replica1 = "europe-west3"
     replica2 = "us-central1"
   }"""
+
   _, resources = plan_runner(FIXTURES_DIR, replicas=replicas, prefix="prefix")
   assert len(resources) == 3
 
@@ -84,6 +82,8 @@ def test_replicas(plan_runner):
 
 
 def test_mysql_replicas_enables_backup(plan_runner):
+  "Test MySQL backup setup with replicas."
+
   replicas = """{
     replica1 = "europe-west3"
   }"""
@@ -104,6 +104,7 @@ def test_users(plan_runner):
     user1 = "123"
     user2 = null
   }"""
+
   _, resources = plan_runner(FIXTURES_DIR, users=users)
   types = Counter(r['type'] for r in resources)
   assert types == {

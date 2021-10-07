@@ -4,6 +4,8 @@ This module manages the creation of Cloud SQL instances with potential read repl
 
 Note that this module assumes that some options are the same for both the primary instance and all the replicas (e.g. tier, disks, labels, flags, etc).
 
+*Warning:* if you use the `users` field, you terraform state will contain each user's password in plain text.
+
 ## Simple example
 
 This example shows how to setup a project, VPC and a standalone Cloud SQL instance.
