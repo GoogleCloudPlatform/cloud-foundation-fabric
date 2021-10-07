@@ -49,6 +49,11 @@ variable "databases" {
   default     = null
 }
 
+variable "deletion_protection" {
+  type    = bool
+  default = false
+}
+
 variable "disk_size" {
   description = "Disk size in GB. Set to null to enable autoresize."
   type        = number
@@ -114,9 +119,4 @@ variable "users" {
 variable "tier" {
   description = "The machine type to use for the instances."
   type        = string
-}
-
-variable "deletion_protection" {
-  type    = bool
-  default = false
 }
