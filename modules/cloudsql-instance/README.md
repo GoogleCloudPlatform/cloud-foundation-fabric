@@ -1,6 +1,6 @@
 # Cloud SQL instance with read replicas
 
-This module manages the creation of Cloud SQL a instances with potential read replicas in other regions. This module can also create an initial set of users and databases though the `users` and `databases` parameters.
+This module manages the creation of Cloud SQL instances with potential read replicas in other regions. It can also create an initial set of users and databases via the `users` and `databases` parameters.
 
 Note that this module assumes that some options are the same for both the primary instance and all the replicas (e.g. tier, disks, labels, flags, etc).
 
