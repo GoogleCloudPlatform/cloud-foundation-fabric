@@ -1,0 +1,159 @@
+/**
+ * Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+locals {
+  prefix       = var.prefix == null ? "" : "${var.prefix}-"
+  is_mysql     = can(regex("^MYSQL", var.database_version))
+  has_replicas = try(length(var.replicas) > 0, false)
+
+  users = {
+    for user, password in coalesce(var.users, {}) :
+    (user) => (
+      local.is_mysql
+      ? {
+        name     = split("@", user)[0]
+        host     = try(split("@", user)[1], null)
+        password = try(random_password.passwords[user].result, password)
+      }
+      : {
+        name     = user
+        host     = null
+        password = try(random_password.passwords[user].result, password)
+      }
+    )
+  }
+
+}
+
+resource "google_sql_database_instance" "primary" {
+  project          = var.project_id
+  name             = "${local.prefix}${var.name}"
+  region           = var.region
+  database_version = var.database_version
+
+  settings {
+    tier              = var.tier
+    disk_autoresize   = var.disk_size == null
+    disk_size         = var.disk_size
+    disk_type         = var.disk_type
+    availability_type = var.availability_type
+    user_labels       = var.labels
+
+    ip_configuration {
+      ipv4_enabled    = false
+      private_network = var.network
+      dynamic "authorized_networks" {
+        for_each = var.authorized_networks != null ? var.authorized_networks : {}
+        iterator = network
+        content {
+          name  = network.key
+          value = network.value
+        }
+      }
+    }
+
+    backup_configuration {
+      // Enable backup if the user asks for it or if the user is
+      // deploying MySQL with replicas
+      enabled = var.backup_configuration.enabled || (local.is_mysql && local.has_replicas)
+
+      // enable binary log if the user asks for it or we have replicas,
+      // but only form MySQL
+      binary_log_enabled = (
+        local.is_mysql
+        ? var.backup_configuration.binary_log_enabled || local.has_replicas
+        : null
+      )
+    }
+
+    dynamic "database_flags" {
+      for_each = var.flags != null ? var.flags : {}
+      iterator = flag
+      content {
+        name  = flag.key
+        value = flag.value
+      }
+    }
+  }
+  deletion_protection = var.deletion_protection
+}
+
+resource "google_sql_database_instance" "replicas" {
+  for_each             = local.has_replicas ? var.replicas : {}
+  project              = var.project_id
+  name                 = "${local.prefix}${each.key}"
+  region               = each.value
+  database_version     = var.database_version
+  master_instance_name = google_sql_database_instance.primary.name
+
+  settings {
+    tier            = var.tier
+    disk_autoresize = var.disk_size == null
+    disk_size       = var.disk_size
+    disk_type       = var.disk_type
+    # availability_type = var.availability_type
+    user_labels = var.labels
+
+    ip_configuration {
+      ipv4_enabled    = false
+      private_network = var.network
+      dynamic "authorized_networks" {
+        for_each = var.authorized_networks != null ? var.authorized_networks : {}
+        iterator = network
+        content {
+          name  = network.key
+          value = network.value
+        }
+      }
+    }
+
+    dynamic "database_flags" {
+      for_each = var.flags != null ? var.flags : {}
+      iterator = flag
+      content {
+        name  = flag.key
+        value = flag.value
+      }
+    }
+  }
+  deletion_protection = var.deletion_protection
+}
+
+resource "google_sql_database" "databases" {
+  for_each = var.databases != null ? toset(var.databases) : toset([])
+  project  = var.project_id
+  instance = google_sql_database_instance.primary.name
+  name     = each.key
+}
+
+resource "random_password" "passwords" {
+  for_each = toset([
+    for user, password in coalesce(var.users, {}) :
+    user
+    if password == null
+  ])
+  length  = 16
+  special = true
+}
+
+resource "google_sql_user" "users" {
+  for_each = local.users
+  project  = var.project_id
+  instance = google_sql_database_instance.primary.name
+  name     = each.value.name
+  host     = each.value.host
+  password = each.value.password
+}
