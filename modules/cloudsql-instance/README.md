@@ -1,4 +1,4 @@
-# Minimalistic VPC module
+# Cloud SQL instance with read replicas
 
 This module manages the creation of Cloud SQL a instances with potential read replicas in other regions. This module can also create an initial set of users and databases though the `users` and `databases` parameters.
 
