@@ -28,7 +28,7 @@ MARK_BEGIN = '<!-- BEGIN TFDOC -->'
 MARK_END = '<!-- END TFDOC -->'
 RE_OUTPUTS = re.compile(r'''(?smx)
     (?:^\s*output\s*"([^"]+)"\s*\{$) |
-    (?:^\s*description\s*=\s*"([^"]+)"\s*$) |
+    (?:^\s*description\s*=\s*"((?:[^"\\]|\\")+)"\s*$) |
     (?:^\s*sensitive\s*=\s*(\S+)\s*$)
 ''')
 RE_TYPE = re.compile(r'([\(\{\}\)])')
@@ -42,7 +42,7 @@ RE_VARIABLES = re.compile(r'''(?smx)
     # variable declaration start
     (?:^\s*variable\s*"([^"]+)"\s*\{$) |
     # variable description start
-    (?:^\s*description\s*=\s*"([^"]+)"\s*$) |
+    (?:^\s*description\s*=\s*"((?:[^"\\]|\\")+)"\s*$) |
     # variable type start
     (?:^\s*type\s*=\s*(.*?)$) |
     # variable default start
