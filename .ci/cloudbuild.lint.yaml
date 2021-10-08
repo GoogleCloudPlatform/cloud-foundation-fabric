@@ -46,6 +46,7 @@ steps:
         "modules",
         "cloud-operations",
         "data-solutions",
+        "data-solutions/data-platform-foundations",
         "foundations",
         "networking",
       ]

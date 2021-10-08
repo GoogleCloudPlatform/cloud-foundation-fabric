@@ -106,7 +106,7 @@ module "db" {
 | *availability_type* | Availability type for the primary replica. Either `ZONAL` or `REGIONAL` | <code title="">string</code> |  | <code title="">ZONAL</code> |
 | *backup_configuration* | Backup settings for primary instance. Will be automatically enabled if using MySQL with one or more replicas | <code title="object&#40;&#123;&#10;enabled            &#61; bool&#10;binary_log_enabled &#61; bool&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;enabled            &#61; false&#10;binary_log_enabled &#61; false&#10;&#125;">...</code> |
 | *databases* | Databases to create once the primary instance is created. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">null</code> |
-| *deletion_protection* | None | <code title="">bool</code> |  | <code title="">false</code> |
+| *deletion_protection* | Allow terraform to delete instances. | <code title="">bool</code> |  | <code title="">false</code> |
 | *disk_size* | Disk size in GB. Set to null to enable autoresize. | <code title="">number</code> |  | <code title="">null</code> |
 | *disk_type* | The type of data disk: `PD_SSD` or `PD_HDD`. | <code title="">string</code> |  | <code title="">PD_SSD</code> |
 | *flags* | Map FLAG_NAME=>VALUE for database-specific tuning. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">null</code> |

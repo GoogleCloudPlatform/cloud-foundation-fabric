@@ -14,6 +14,26 @@
  * limitations under the License.
  */
 
+output "dns_keys" {
+  description = "DNSKEY and DS records of DNSSEC-signed managed zones."
+  value       = local.dns_keys
+}
+
+output "domain" {
+  description = "The DNS zone domain."
+  value       = try(local.zone.dns_name, null)
+}
+
+output "name" {
+  description = "The DNS zone name."
+  value       = try(local.zone.name, null)
+}
+
+output "name_servers" {
+  description = "The DNS zone name servers."
+  value       = try(local.zone.name_servers, null)
+}
+
 output "type" {
   description = "The DNS zone type."
   value       = var.type
@@ -22,24 +42,4 @@ output "type" {
 output "zone" {
   description = "DNS zone resource."
   value       = local.zone
-}
-
-output "name" {
-  description = "The DNS zone name."
-  value       = try(local.zone.name, null)
-}
-
-output "domain" {
-  description = "The DNS zone domain."
-  value       = try(local.zone.dns_name, null)
-}
-
-output "name_servers" {
-  description = "The DNS zone name servers."
-  value       = try(local.zone.name_servers, null)
-}
-
-output "dns_keys" {
-  description = "DNSKEY and DS records of DNSSEC-signed managed zones."
-  value       = local.dns_keys
 }

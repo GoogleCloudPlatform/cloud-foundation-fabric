@@ -14,16 +14,6 @@
  * limitations under the License.
  */
 
-variable "network" {
-  description = "Name of the network this set of firewall rules applies to."
-  type        = string
-}
-
-variable "project_id" {
-  description = "Project Id."
-  type        = string
-}
-
 variable "config_directories" {
   description = "List of paths to folders where firewall configs are stored in yaml format. Folder may include subfolders with configuration files. Files suffix must be `.yaml`"
   type        = list(string)
@@ -35,4 +25,14 @@ variable "log_config" {
     metadata = string
   })
   default = null
+}
+
+variable "network" {
+  description = "Name of the network this set of firewall rules applies to."
+  type        = string
+}
+
+variable "project_id" {
+  description = "Project Id."
+  type        = string
 }

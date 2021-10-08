@@ -17,9 +17,28 @@ variable "billing_account_id" {
   type        = string
 }
 
+variable "ip_ranges" {
+  description = "Subnet IP CIDR ranges."
+  type        = map(string)
+  default = {
+    prod = "10.0.16.0/24"
+    dev  = "10.0.32.0/24"
+  }
+}
+
 variable "prefix" {
   description = "Prefix used for resources that need unique names."
   type        = string
+}
+
+variable "project_services" {
+  description = "Service APIs enabled by default in new projects."
+  type        = list(string)
+  default = [
+    "container.googleapis.com",
+    "dns.googleapis.com",
+    "stackdriver.googleapis.com",
+  ]
 }
 
 variable "region" {
@@ -31,23 +50,4 @@ variable "region" {
 variable "root_node" {
   description = "Hierarchy node where projects will be created, 'organizations/org_id' or 'folders/folder_id'."
   type        = string
-}
-
-variable "ip_ranges" {
-  description = "Subnet IP CIDR ranges."
-  type        = map(string)
-  default = {
-    prod = "10.0.16.0/24"
-    dev  = "10.0.32.0/24"
-  }
-}
-
-variable "project_services" {
-  description = "Service APIs enabled by default in new projects."
-  type        = list(string)
-  default = [
-    "container.googleapis.com",
-    "dns.googleapis.com",
-    "stackdriver.googleapis.com",
-  ]
 }

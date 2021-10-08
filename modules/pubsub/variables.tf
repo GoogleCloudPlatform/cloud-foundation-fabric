@@ -62,17 +62,10 @@ variable "name" {
   type        = string
 }
 
-variable "regions" {
-  description = "List of regions used to set persistence policy."
-  type        = list(string)
-  default     = []
-}
-
 variable "project_id" {
   description = "Project used for resources."
   type        = string
 }
-
 
 variable "push_configs" {
   description = "Push subscription configurations."
@@ -87,6 +80,18 @@ variable "push_configs" {
   default = {}
 }
 
+variable "regions" {
+  description = "List of regions used to set persistence policy."
+  type        = list(string)
+  default     = []
+}
+
+variable "subscription_iam" {
+  description = "IAM bindings for subscriptions in {SUBSCRIPTION => {ROLE => [MEMBERS]}} format."
+  type        = map(map(list(string)))
+  default     = {}
+}
+
 variable "subscriptions" {
   description = "Topic subscriptions. Also define push configs for push subscriptions. If options is set to null subscription defaults will be used. Labels default to topic labels if set to null."
   type = map(object({
@@ -99,10 +104,4 @@ variable "subscriptions" {
     })
   }))
   default = {}
-}
-
-variable "subscription_iam" {
-  description = "IAM bindings for subscriptions in {SUBSCRIPTION => {ROLE => [MEMBERS]}} format."
-  type        = map(map(list(string)))
-  default     = {}
 }

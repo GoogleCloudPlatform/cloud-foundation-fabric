@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-variable "display_name" {
-  description = "Group display name."
+variable "customer_id" {
+  description = "Directory customer ID in the form customers/C0xxxxxxx."
   type        = string
-}
-
-variable "name" {
-  description = "Group ID (usually an email)."
-  type        = string
+  validation {
+    condition     = can(regex("^customers/C0[a-z0-9]{7}$", var.customer_id))
+    error_message = "Customer ID must be in the form customers/C0xxxxxxx."
+  }
 }
 
 variable "description" {
@@ -30,13 +29,20 @@ variable "description" {
   default     = null
 }
 
-variable "customer_id" {
-  description = "Directory customer ID in the form customers/C0xxxxxxx."
+variable "display_name" {
+  description = "Group display name."
   type        = string
-  validation {
-    condition     = can(regex("^customers/C0[a-z0-9]{7}$", var.customer_id))
-    error_message = "Customer ID must be in the form customers/C0xxxxxxx."
-  }
+}
+
+variable "members" {
+  description = "List of group members."
+  type        = list(string)
+  default     = []
+}
+
+variable "name" {
+  description = "Group ID (usually an email)."
+  type        = string
 }
 
 # variable "owners" {
@@ -50,9 +56,3 @@ variable "customer_id" {
 #   type        = list(string)
 #   default     = []
 # }
-
-variable "members" {
-  description = "List of group members."
-  type        = list(string)
-  default     = []
-}

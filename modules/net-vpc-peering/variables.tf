@@ -14,20 +14,11 @@
  * limitations under the License.
  */
 
-variable "prefix" {
-  description = "Name prefix for the network peerings."
-  type        = string
-  default     = "network-peering"
-}
 
-variable "local_network" {
-  description = "Resource link of the network to add a peering to."
-  type        = string
-}
-
-variable "peer_network" {
-  description = "Resource link of the peer network."
-  type        = string
+variable "export_local_custom_routes" {
+  description = "Export custom routes to peer network from local network."
+  type        = bool
+  default     = false
 }
 
 variable "export_peer_custom_routes" {
@@ -36,14 +27,24 @@ variable "export_peer_custom_routes" {
   default     = false
 }
 
-variable "export_local_custom_routes" {
-  description = "Export custom routes to peer network from local network."
-  type        = bool
-  default     = false
+variable "local_network" {
+  description = "Resource link of the network to add a peering to."
+  type        = string
 }
 
 variable "peer_create_peering" {
   description = "Create the peering on the remote side. If false, only the peering from this network to the remote network is created."
   type        = bool
   default     = true
+}
+
+variable "peer_network" {
+  description = "Resource link of the peer network."
+  type        = string
+}
+
+variable "prefix" {
+  description = "Name prefix for the network peerings."
+  type        = string
+  default     = "network-peering"
 }

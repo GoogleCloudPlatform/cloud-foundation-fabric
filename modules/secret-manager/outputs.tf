@@ -26,14 +26,14 @@ output "secrets" {
   value       = google_secret_manager_secret.default
 }
 
-output "versions" {
-  description = "Secret versions."
-  value       = google_secret_manager_secret_version.default
-}
-
 output "version_ids" {
   description = "Version ids keyed by secret name : version name."
   value = {
     for k, v in google_secret_manager_secret_version.default : k => v.id
   }
+}
+
+output "versions" {
+  description = "Secret versions."
+  value       = google_secret_manager_secret_version.default
 }

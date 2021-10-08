@@ -15,6 +15,7 @@
  */
 
 output "external_addresses" {
+  description = "Allocated external addresses."
   value = {
     for address in google_compute_address.external :
     address.name => {
@@ -25,6 +26,7 @@ output "external_addresses" {
 }
 
 output "global_addresses" {
+  description = "Allocated global external addresses."
   value = {
     for address in google_compute_global_address.global :
     address.name => {
@@ -35,6 +37,7 @@ output "global_addresses" {
 }
 
 output "internal_addresses" {
+  description = "Allocated internal addresses."
   value = {
     for address in google_compute_address.internal :
     address.name => {
@@ -45,6 +48,7 @@ output "internal_addresses" {
 }
 
 output "psc_addresses" {
+  description = "Allocated internal addresses for PSC endpoints."
   value = {
     for address in google_compute_global_address.psc :
     address.name => {

@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-output "access_policy_name" {
-  description = "Access Policy resource"
-  value       = local.access_policy_name
-}
-
 output "access_levels" {
   description = "Access Levels."
   value = {
     for key, value in google_access_context_manager_access_level.default :
     key => value
   }
+}
+
+output "access_policy_name" {
+  description = "Access Policy resource"
+  value       = local.access_policy_name
 }
 
 output "organization_id" {
@@ -35,18 +35,18 @@ output "organization_id" {
   ]
 }
 
-output "perimeters_standard" {
-  description = "VPC-SC standard perimeter resources."
-  value = {
-    for key, value in google_access_context_manager_service_perimeter.standard :
-    key => value
-  }
-}
-
 output "perimeters_bridge" {
   description = "VPC-SC bridge perimeter resources."
   value = {
     for key, value in google_access_context_manager_service_perimeter.bridge :
+    key => value
+  }
+}
+
+output "perimeters_standard" {
+  description = "VPC-SC standard perimeter resources."
+  value = {
+    for key, value in google_access_context_manager_service_perimeter.standard :
     key => value
   }
 }

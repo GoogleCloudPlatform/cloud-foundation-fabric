@@ -42,12 +42,6 @@ variable "addons" {
   }
 }
 
-variable "enable_dataplane_v2" {
-  description = "Enable Dataplane V2 on the cluster, will disable network_policy addons config"
-  type        = bool
-  default     = false
-}
-
 variable "authenticator_security_group" {
   description = "RBAC security group for Google Groups for GKE, format is gke-security-groups@yourdomain.com."
   type        = string
@@ -98,10 +92,22 @@ variable "description" {
   default     = null
 }
 
+variable "enable_autopilot" {
+  description = "Create cluster in autopilot mode. With autopilot there's no need to create node-pools and some features are not supported (e.g. setting default_max_pods_per_node)"
+  type        = bool
+  default     = false
+}
+
 variable "enable_binary_authorization" {
   description = "Enable Google Binary Authorization."
   type        = bool
   default     = null
+}
+
+variable "enable_dataplane_v2" {
+  description = "Enable Dataplane V2 on the cluster, will disable network_policy addons config"
+  type        = bool
+  default     = false
 }
 
 variable "enable_intranode_visibility" {
@@ -254,11 +260,5 @@ variable "workload_identity" {
   description = "Enable the Workload Identity feature."
   type        = bool
   default     = true
-}
-
-variable "enable_autopilot" {
-  description = "Create cluster in autopilot mode. With autopilot there's no need to create node-pools and some features are not supported (e.g. setting default_max_pods_per_node)"
-  type        = bool
-  default     = false
 }
 

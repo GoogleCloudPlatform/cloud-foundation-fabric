@@ -25,34 +25,60 @@ BASEDIR = pathlib.Path(__file__).resolve().parents[1]
 
 
 class DocState(enum.Enum):
-  MISSING = 1
-  OK = 2
-  STALE = 3
-  UNKNOWN = 4
+  OK = 1
+  FAIL = 2
+  UNKNOWN = 3
 
   def __str__(self):
-    return {1: '✗', 2: '✓', 3: '!', 4: '?'}[self.value]
+    return {
+        self.FAIL.value: '✗',
+        self.OK.value: '✓',
+        self.UNKNOWN.value: '?'
+    }[self.value]
 
 
 def check_path(pathname):
   path = BASEDIR / pathname
   subpaths = sorted(list(path.iterdir()))
   for subpath in subpaths:
+    errors = []
     if not subpath.is_dir():
       continue
     if subpath.stem.startswith('_'):
       continue
+
     doc = subpath / 'README.md'
     if not doc.exists():
-      yield DocState.MISSING, subpath.stem
-      continue
+      errors.append(f'{doc} does not exist')
+
+    variables = tfdoc.get_variables(subpath)
+    variable_names = [v.name for v in variables]
+    for variable in variables:
+      if not variable.description:
+        errors.append(f'variable {variable.name} has no description')
+    if sorted(variable_names) != variable_names:
+      message = f'variable order should be: {sorted(variable_names)}'
+      errors.append(message)
+
+    outputs = tfdoc.get_outputs(subpath)
+    output_names = [v.name for v in outputs]
+    for output in outputs:
+      if not output.description:
+        errors.append(f'output {output.name} has no description')
+    if sorted(output_names) != output_names:
+      message = f'output order should be: {sorted(output_names)}'
+      errors.append(message)
+
     state = tfdoc.check_state(subpath)
     if state is False:
-      yield DocState.STALE, subpath.stem
+      errors.append("documentation is out of date")
     elif state:
-      yield DocState.OK, subpath.stem
+      pass
     else:
-      yield DocState.UNKNOWN, subpath.stem
+      yield DocState.UNKNOWN, subpath.stem, errors
+      continue
+
+    yield DocState.FAIL if errors else DocState.OK, subpath.stem, errors
 
 
 @click.command()
@@ -62,10 +88,12 @@ def main(paths):
   error = False
   for path in paths:
     print(f'checking {path}')
-    for state, name in check_path(path):
-      if state in (DocState.MISSING, DocState.STALE):
+    for state, name, errors in check_path(path):
+      if state == DocState.FAIL:
         error = True
       print(f'  [{state}] {name}')
+      for error in errors:
+        print(f'      {error}')
   if error:
     print('errors were present')
     sys.exit(1)

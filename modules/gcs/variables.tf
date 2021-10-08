@@ -14,10 +14,21 @@
  * limitations under the License.
  */
 
-variable "uniform_bucket_level_access" {
-  description = "Allow using object ACLs (false) or not (true, this is the recommended behavior) , defaults to true (which is the recommended practice, but not the behavior of storage API)."
-  type        = bool
-  default     = true
+variable "cors" {
+  description = "CORS configuration for the bucket. Defaults to null."
+  type = object({
+    origin          = list(string)
+    method          = list(string)
+    response_header = list(string)
+    max_age_seconds = number
+  })
+  default = null
+}
+
+variable "encryption_key" {
+  description = "KMS key that will be used for encryption."
+  type        = string
+  default     = null
 }
 
 variable "force_destroy" {
@@ -32,16 +43,32 @@ variable "iam" {
   default     = {}
 }
 
-variable "encryption_key" {
-  description = "KMS key that will be used for encryption."
-  type        = string
-  default     = null
-}
-
 variable "labels" {
   description = "Labels to be attached to all buckets."
   type        = map(string)
   default     = {}
+}
+
+variable "lifecycle_rule" {
+  description = "Bucket lifecycle rule"
+  type = object({
+    action = object({
+      type          = string
+      storage_class = string
+    })
+    condition = object({
+      age                        = number
+      created_before             = string
+      with_state                 = string
+      matches_storage_class      = list(string)
+      num_newer_versions         = string
+      custom_time_before         = string
+      days_since_custom_time     = string
+      days_since_noncurrent_time = string
+      noncurrent_time_before     = string
+    })
+  })
+  default = null
 }
 
 variable "location" {
@@ -94,41 +121,14 @@ variable "storage_class" {
   }
 }
 
+variable "uniform_bucket_level_access" {
+  description = "Allow using object ACLs (false) or not (true, this is the recommended behavior) , defaults to true (which is the recommended practice, but not the behavior of storage API)."
+  type        = bool
+  default     = true
+}
+
 variable "versioning" {
   description = "Enable versioning, defaults to false."
   type        = bool
   default     = false
-}
-
-variable "cors" {
-  description = "CORS configuration for the bucket. Defaults to null."
-  type = object({
-    origin          = list(string)
-    method          = list(string)
-    response_header = list(string)
-    max_age_seconds = number
-  })
-  default = null
-}
-
-variable "lifecycle_rule" {
-  description = "Bucket lifecycle rule"
-  type = object({
-    action = object({
-      type          = string
-      storage_class = string
-    })
-    condition = object({
-      age                        = number
-      created_before             = string
-      with_state                 = string
-      matches_storage_class      = list(string)
-      num_newer_versions         = string
-      custom_time_before         = string
-      days_since_custom_time     = string
-      days_since_noncurrent_time = string
-      noncurrent_time_before     = string
-    })
-  })
-  default = null
 }

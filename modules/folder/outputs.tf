@@ -13,6 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+output "firewall_policies" {
+  description = "Map of firewall policy resources created in this folder."
+  value = {
+    for name, _ in var.firewall_policies :
+    name => google_compute_organization_security_policy.policy[name]
+  }
+}
+
+output "firewall_policy_id" {
+  description = "Map of firewall policy ids created in this folder."
+  value = {
+    for name, _ in var.firewall_policies :
+    name => google_compute_organization_security_policy.policy[name].id
+  }
+}
 
 output "folder" {
   description = "Folder resource."
@@ -32,22 +47,6 @@ output "id" {
 output "name" {
   description = "Folder name."
   value       = local.folder.display_name
-}
-
-output "firewall_policies" {
-  description = "Map of firewall policy resources created in this folder."
-  value = {
-    for name, _ in var.firewall_policies :
-    name => google_compute_organization_security_policy.policy[name]
-  }
-}
-
-output "firewall_policy_id" {
-  description = "Map of firewall policy ids created in this folder."
-  value = {
-    for name, _ in var.firewall_policies :
-    name => google_compute_organization_security_policy.policy[name].id
-  }
 }
 
 output "sink_writer_identities" {

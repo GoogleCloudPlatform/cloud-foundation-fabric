@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 
+variable "auto_healing_policies" {
+  description = "Auto-healing policies for this group."
+  type = object({
+    health_check      = string
+    initial_delay_sec = number
+  })
+  default = null
+}
+
 variable "autoscaler_config" {
   description = "Optional autoscaler configuration. Only one of 'cpu_utilization_target' 'load_balancing_utilization_target' or 'metric' can be not null."
   type = object({
@@ -29,15 +38,6 @@ variable "autoscaler_config" {
       type                       = string # GAUGE, DELTA_PER_SECOND, DELTA_PER_MINUTE
       filter                     = string
     })
-  })
-  default = null
-}
-
-variable "auto_healing_policies" {
-  description = "Auto-healing policies for this group."
-  type = object({
-    health_check      = string
-    initial_delay_sec = number
   })
   default = null
 }

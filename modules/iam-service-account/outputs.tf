@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-output "service_account" {
-  description = "Service account resource."
-  value       = local.service_account
-}
-
 output "email" {
   description = "Service account email."
   value       = local.resource_email_static
@@ -39,4 +34,9 @@ output "key" {
   description = "Service account key."
   sensitive   = true
   value       = local.key
+}
+
+output "service_account" {
+  description = "Service account resource."
+  value       = local.service_account
 }

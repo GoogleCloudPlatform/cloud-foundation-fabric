@@ -57,6 +57,7 @@ You can configure GCP resources to use existing CMEK keys configuring the 'servi
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
 | project_ids | Project IDs. | <code title="object&#40;&#123;&#10;datamart       &#61; string&#10;dwh            &#61; string&#10;landing        &#61; string&#10;services       &#61; string&#10;transformation &#61; string&#10;&#125;&#41;">object({...})</code> | ✓ |  |
+| *admins* | List of users allowed to impersonate the service account | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">null</code> |
 | *datamart_bq_datasets* | Datamart Bigquery datasets | <code title="map&#40;object&#40;&#123;&#10;iam      &#61; map&#40;list&#40;string&#41;&#41;&#10;location &#61; string&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="&#123;&#10;bq_datamart_dataset &#61; &#123;&#10;location &#61; &#34;EU&#34;&#10;iam &#61; &#123;&#10;&#125;&#10;&#125;&#10;&#125;">...</code> |
 | *dwh_bq_datasets* | DWH Bigquery datasets | <code title="map&#40;object&#40;&#123;&#10;location &#61; string&#10;iam      &#61; map&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="&#123;&#10;bq_raw_dataset &#61; &#123;&#10;iam      &#61; &#123;&#125;&#10;location &#61; &#34;EU&#34;&#10;&#125;&#10;&#125;">...</code> |
 | *landing_buckets* | List of landing buckets to create | <code title="map&#40;object&#40;&#123;&#10;location &#61; string&#10;name     &#61; string&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="&#123;&#10;raw-data &#61; &#123;&#10;location &#61; &#34;EU&#34;&#10;name     &#61; &#34;raw-data&#34;&#10;&#125;&#10;data-schema &#61; &#123;&#10;location &#61; &#34;EU&#34;&#10;name     &#61; &#34;data-schema&#34;&#10;&#125;&#10;&#125;">...</code> |
@@ -67,8 +68,6 @@ You can configure GCP resources to use existing CMEK keys configuring the 'servi
 | *transformation_buckets* | List of transformation buckets to create | <code title="map&#40;object&#40;&#123;&#10;location &#61; string&#10;name     &#61; string&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="&#123;&#10;temp &#61; &#123;&#10;location &#61; &#34;EU&#34;&#10;name     &#61; &#34;temp&#34;&#10;&#125;,&#10;templates &#61; &#123;&#10;location &#61; &#34;EU&#34;&#10;name     &#61; &#34;templates&#34;&#10;&#125;,&#10;&#125;">...</code> |
 | *transformation_subnets* | List of subnets to create in the transformation Project. | <code title="list&#40;object&#40;&#123;&#10;ip_cidr_range      &#61; string&#10;name               &#61; string&#10;region             &#61; string&#10;secondary_ip_range &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">list(object({...}))</code> |  | <code title="&#91;&#10;&#123;&#10;ip_cidr_range      &#61; &#34;10.1.0.0&#47;20&#34;&#10;name               &#61; &#34;transformation-subnet&#34;&#10;region             &#61; &#34;europe-west3&#34;&#10;secondary_ip_range &#61; &#123;&#125;&#10;&#125;,&#10;&#93;">...</code> |
 | *transformation_vpc_name* | Name of the VPC created in the transformation Project. | <code title="">string</code> |  | <code title="">transformation-vpc</code> |
-| *admins* | List of users allowed to impersonate the service account | <code title="">list</code> |  | <code title="">null</code> |
-
 
 ## Outputs
 

@@ -14,22 +14,6 @@
  * limitations under the License.
  */
 
-output "unit_folder" {
-  description = "Unit top level folder."
-  value = {
-    id   = google_folder.unit.name,
-    name = google_folder.unit.display_name
-  }
-}
-
-output "env_gcs_buckets" {
-  description = "Unit environments tfstate gcs buckets."
-  value = {
-    for key, bucket in google_storage_bucket.tfstate
-    : key => bucket.name
-  }
-}
-
 output "env_folders" {
   description = "Unit environments folders."
   value = {
@@ -41,11 +25,11 @@ output "env_folders" {
   }
 }
 
-output "env_service_accounts" {
-  description = "Unit environments service accounts."
+output "env_gcs_buckets" {
+  description = "Unit environments tfstate gcs buckets."
   value = {
-    for key, sa in google_service_account.environment
-    : key => sa.email
+    for key, bucket in google_storage_bucket.tfstate
+    : key => bucket.name
   }
 }
 
@@ -55,5 +39,21 @@ output "env_sa_keys" {
   value = {
     for key, sa_key in google_service_account_key.keys :
     key => sa_key.private_key
+  }
+}
+
+output "env_service_accounts" {
+  description = "Unit environments service accounts."
+  value = {
+    for key, sa in google_service_account.environment
+    : key => sa.email
+  }
+}
+
+output "unit_folder" {
+  description = "Unit top level folder."
+  value = {
+    id   = google_folder.unit.name,
+    name = google_folder.unit.display_name
   }
 }

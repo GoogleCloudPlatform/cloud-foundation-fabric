@@ -116,7 +116,6 @@ variable "project_ids" {
   })
 }
 
-
 variable "service_account_names" {
   description = "Project service accounts list."
   type = object({
@@ -132,6 +131,18 @@ variable "service_account_names" {
     landing        = "sa-landing"
     services       = "sa-services"
     transformation = "sa-transformation"
+  }
+}
+
+variable "service_encryption_key_ids" {
+  description = "Cloud KMS encryption key in {LOCATION => [KEY_URL]} format. Keys belong to existing project."
+  type = object({
+    multiregional = string
+    global        = string
+  })
+  default = {
+    multiregional = null
+    global        = null
   }
 }
 
@@ -175,16 +186,4 @@ variable "transformation_vpc_name" {
   description = "Name of the VPC created in the transformation Project."
   type        = string
   default     = "transformation-vpc"
-}
-
-variable "service_encryption_key_ids" {
-  description = "Cloud KMS encryption key in {LOCATION => [KEY_URL]} format. Keys belong to existing project."
-  type = object({
-    multiregional = string
-    global        = string
-  })
-  default = {
-    multiregional = null
-    global        = null
-  }
 }

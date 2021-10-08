@@ -64,15 +64,6 @@ variable "storage_type" {
   default     = "SSD"
 }
 
-variable "tables" {
-  description = "Tables to be created in the BigTable instance, options can be null."
-  type = map(object({
-    split_keys    = list(string)
-    column_family = string
-  }))
-  default = {}
-}
-
 variable "table_options_defaults" {
   description = "Default option of tables created in the BigTable instance."
   type = object({
@@ -83,6 +74,15 @@ variable "table_options_defaults" {
     split_keys    = []
     column_family = null
   }
+}
+
+variable "tables" {
+  description = "Tables to be created in the BigTable instance, options can be null."
+  type = map(object({
+    split_keys    = list(string)
+    column_family = string
+  }))
+  default = {}
 }
 
 variable "zone" {
