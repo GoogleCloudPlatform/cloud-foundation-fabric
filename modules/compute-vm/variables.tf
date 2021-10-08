@@ -14,6 +14,21 @@
  * limitations under the License.
  */
 
+variable "attached_disk_defaults" {
+  description = "Defaults for attached disks options."
+  type = object({
+    mode         = string
+    replica_zone = string
+    type         = string
+  })
+  default = {
+    auto_delete  = true
+    mode         = "READ_WRITE"
+    replica_zone = null
+    type         = "pd-balanced"
+  }
+}
+
 variable "attached_disks" {
   description = "Additional disks, if options is null defaults will be used in its place. Source type is one of 'image' (zonal disks in vms and template), 'snapshot' (vm), 'existing', and null."
   type = list(object({
@@ -37,21 +52,6 @@ variable "attached_disks" {
       )
     ]) == length(var.attached_disks)
     error_message = "Source type must be one of 'image', 'snapshot', 'attach', null."
-  }
-}
-
-variable "attached_disk_defaults" {
-  description = "Defaults for attached disks options."
-  type = object({
-    mode         = string
-    replica_zone = string
-    type         = string
-  })
-  default = {
-    auto_delete  = true
-    mode         = "READ_WRITE"
-    replica_zone = null
-    type         = "pd-balanced"
   }
 }
 

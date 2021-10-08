@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+variable "access_level_perimeters" {
+  description = "Enforced mode -> Access Level -> Perimeters mapping. Enforced mode can be 'enforced' or 'dry_run'"
+  type        = map(map(list(string)))
+  default     = {}
+}
+
 variable "access_levels" {
   description = "Map of Access Levels to be created. For each Access Level you can specify 'ip_subnetworks, required_access_levels, members, negate or regions'."
   type = map(object({
@@ -39,12 +45,6 @@ variable "access_policy_name" {
   description = "Referenced Access Policy name"
   type        = string
   default     = null
-}
-
-variable "access_level_perimeters" {
-  description = "Enforced mode -> Access Level -> Perimeters mapping. Enforced mode can be 'enforced' or 'dry_run'"
-  type        = map(map(list(string)))
-  default     = {}
 }
 
 variable "access_policy_title" {
@@ -80,6 +80,12 @@ variable "organization_id" {
   type        = string
 }
 
+variable "perimeter_projects" {
+  description = "Perimeter -> Enforced Mode -> Projects Number mapping. Enforced mode can be 'enforced' or 'dry_run'."
+  type        = map(map(list(number)))
+  default     = {}
+}
+
 variable "perimeters" {
   description = "Set of Perimeters."
   type = map(object({
@@ -94,10 +100,4 @@ variable "perimeters" {
     })
   }))
   default = {}
-}
-
-variable "perimeter_projects" {
-  description = "Perimeter -> Enforced Mode -> Projects Number mapping. Enforced mode can be 'enforced' or 'dry_run'."
-  type        = map(map(list(number)))
-  default     = {}
 }

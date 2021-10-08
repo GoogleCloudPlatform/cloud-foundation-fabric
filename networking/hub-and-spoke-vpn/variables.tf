@@ -12,15 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-variable "bgp_custom_advertisements" {
-  description = "BGP custom advertisement IP CIDR ranges."
-  type        = map(string)
-  default = {
-    hub-to-spoke-1 = "10.0.32.0/20"
-    hub-to-spoke-2 = "10.0.16.0/20"
-  }
-}
-
 variable "bgp_asn" {
   description = "BGP ASNs."
   type        = map(number)
@@ -28,6 +19,15 @@ variable "bgp_asn" {
     hub     = 64513
     spoke-1 = 64514
     spoke-2 = 64515
+  }
+}
+
+variable "bgp_custom_advertisements" {
+  description = "BGP custom advertisement IP CIDR ranges."
+  type        = map(string)
+  default = {
+    hub-to-spoke-1 = "10.0.32.0/20"
+    hub-to-spoke-2 = "10.0.16.0/20"
   }
 }
 

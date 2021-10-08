@@ -40,6 +40,12 @@ variable "dns_forwarder_address" {
   default     = "10.0.0.2"
 }
 
+variable "forwarder_address" {
+  description = "GCP DNS inbound policy forwarder address."
+  type        = string
+  default     = "10.0.0.2"
+}
+
 variable "ip_ranges" {
   description = "IP CIDR ranges."
   type        = map(string)
@@ -62,12 +68,6 @@ variable "region" {
     gcp1 = "europe-west1"
     gcp2 = "europe-west2"
   }
-}
-
-variable "forwarder_address" {
-  description = "GCP DNS inbound policy forwarder address."
-  type        = string
-  default     = "10.0.0.2"
 }
 
 variable "ssh_source_ranges" {

@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-variable "parent_type" {
-  description = "Parent object type for the bucket (project, folder, organization, billing_account)."
+variable "description" {
+  description = "Human-readable description for the logging bucket."
   type        = string
+  default     = null
 }
 
-variable "parent" {
-  description = "ID of the parentresource containing the bucket in the format 'project_id' 'folders/folder_id', 'organizations/organization_id' or 'billing_account_id'."
+variable "id" {
+  description = "Name of the logging bucket."
   type        = string
 }
 
@@ -30,15 +31,14 @@ variable "location" {
   default     = "global"
 }
 
-variable "id" {
-  description = "Name of the logging bucket."
+variable "parent" {
+  description = "ID of the parentresource containing the bucket in the format 'project_id' 'folders/folder_id', 'organizations/organization_id' or 'billing_account_id'."
   type        = string
 }
 
-variable "description" {
-  description = "Human-readable description for the logging bucket."
+variable "parent_type" {
+  description = "Parent object type for the bucket (project, folder, organization, billing_account)."
   type        = string
-  default     = null
 }
 
 variable "retention" {

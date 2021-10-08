@@ -24,16 +24,16 @@ variable "location" {
   default     = "europe"
 }
 
-variable "project_service_name" {
-  description = "Name for the new Service Project."
-  type        = string
-  default     = "my-project-service-001"
-}
-
 variable "project_kms_name" {
   description = "Name for the new KMS Project."
   type        = string
   default     = "my-project-kms-001"
+}
+
+variable "project_service_name" {
+  description = "Name for the new Service Project."
+  type        = string
+  default     = "my-project-service-001"
 }
 
 variable "region" {
@@ -47,6 +47,12 @@ variable "root_node" {
   type        = string
 }
 
+variable "vpc_ip_cidr_range" {
+  description = "Ip range used in the subnet deployef in the Service Project."
+  type        = string
+  default     = "10.0.0.0/20"
+}
+
 variable "vpc_name" {
   description = "Name of the VPC created in the Service Project."
   type        = string
@@ -57,10 +63,4 @@ variable "vpc_subnet_name" {
   description = "Name of the subnet created in the Service Project."
   type        = string
   default     = "subnet"
-}
-
-variable "vpc_ip_cidr_range" {
-  description = "Ip range used in the subnet deployef in the Service Project."
-  type        = string
-  default     = "10.0.0.0/20"
 }

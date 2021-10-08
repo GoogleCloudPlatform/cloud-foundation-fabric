@@ -84,6 +84,7 @@ variable "project_services" {
     "stackdriver.googleapis.com",
   ]
 }
+
 variable "root_node" {
   description = "Root node for the new hierarchy, either 'organizations/org_id' or 'folders/folder_id'."
   type        = string

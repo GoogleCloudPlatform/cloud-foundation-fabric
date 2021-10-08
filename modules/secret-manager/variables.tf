@@ -26,15 +26,15 @@ variable "labels" {
   default     = {}
 }
 
+variable "project_id" {
+  description = "Project id where the keyring will be created."
+  type        = string
+}
+
 variable "secrets" {
   description = "Map of secrets to manage and their locations. If locations is null, automatic management will be set."
   type        = map(list(string))
   default     = {}
-}
-
-variable "project_id" {
-  description = "Project id where the keyring will be created."
-  type        = string
 }
 
 variable "versions" {

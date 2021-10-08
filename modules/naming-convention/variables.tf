@@ -19,16 +19,16 @@ variable "environment" {
   type        = string
 }
 
-variable "prefix" {
-  description = "Optional name prefix."
-  type        = string
-  default     = null
-}
-
 variable "labels" {
   description = "Per-resource labels."
   type        = map(map(map(string)))
   default     = {}
+}
+
+variable "prefix" {
+  description = "Optional name prefix."
+  type        = string
+  default     = null
 }
 
 variable "resources" {
@@ -43,12 +43,13 @@ variable "separator_override" {
 }
 
 variable "suffix" {
-  type    = string
-  default = null
+  description = "Optional name suffix."
+  type        = string
+  default     = null
 }
 
 variable "team" {
-  description = "Optional name suffix."
+  description = "Team name."
   type        = string
 }
 

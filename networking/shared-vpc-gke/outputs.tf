@@ -30,18 +30,18 @@ output "projects" {
   }
 }
 
+output "vms" {
+  description = "GCE VMs."
+  value = {
+    (module.vm-bastion.instance.name) = module.vm-bastion.internal_ip
+  }
+}
+
 output "vpc" {
   description = "Shared VPC."
   value = {
     name    = module.vpc-shared.name
     subnets = module.vpc-shared.subnet_ips
-  }
-}
-
-output "vms" {
-  description = "GCE VMs."
-  value = {
-    (module.vm-bastion.instance.name) = module.vm-bastion.internal_ip
   }
 }
 

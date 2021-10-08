@@ -23,22 +23,6 @@ output "admin_ranges" {
   }
 }
 
-output "custom_ingress_allow_rules" {
-  description = "Custom ingress rules with allow blocks."
-  value = [
-    for rule in google_compute_firewall.custom-rules :
-    rule.name if rule.direction == "INGRESS" && try(length(rule.allow), 0) > 0
-  ]
-}
-
-output "custom_ingress_deny_rules" {
-  description = "Custom ingress rules with deny blocks."
-  value = [
-    for rule in google_compute_firewall.custom-rules :
-    rule.name if rule.direction == "INGRESS" && try(length(rule.deny), 0) > 0
-  ]
-}
-
 output "custom_egress_allow_rules" {
   description = "Custom egress rules with allow blocks."
   value = [
@@ -52,6 +36,22 @@ output "custom_egress_deny_rules" {
   value = [
     for rule in google_compute_firewall.custom-rules :
     rule.name if rule.direction == "EGRESS" && try(length(rule.deny), 0) > 0
+  ]
+}
+
+output "custom_ingress_allow_rules" {
+  description = "Custom ingress rules with allow blocks."
+  value = [
+    for rule in google_compute_firewall.custom-rules :
+    rule.name if rule.direction == "INGRESS" && try(length(rule.allow), 0) > 0
+  ]
+}
+
+output "custom_ingress_deny_rules" {
+  description = "Custom ingress rules with deny blocks."
+  value = [
+    for rule in google_compute_firewall.custom-rules :
+    rule.name if rule.direction == "INGRESS" && try(length(rule.deny), 0) > 0
   ]
 }
 

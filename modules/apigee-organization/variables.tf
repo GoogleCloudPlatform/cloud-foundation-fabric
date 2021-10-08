@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-variable "authorized_network" {
-  description = "VPC network self link (requires service network peering enabled (Used in Apigee X only)."
-  type        = string
-  default     = null
-}
-
 variable "analytics_region" {
   description = "Analytics Region for the Apigee Organization (immutable). See https://cloud.google.com/apigee/docs/api-platform/get-started/install-cli."
   type        = string
@@ -38,6 +32,12 @@ variable "apigee_environments" {
   description = "Apigee Environment Names."
   type        = list(string)
   default     = []
+}
+
+variable "authorized_network" {
+  description = "VPC network self link (requires service network peering enabled (Used in Apigee X only)."
+  type        = string
+  default     = null
 }
 
 variable "database_encryption_key" {
@@ -64,8 +64,8 @@ variable "project_id" {
 }
 
 variable "runtime_type" {
-  type = string
-
+  description = "Apigee runtime type. Must be `CLOUD` or `HYBRID`."
+  type        = string
   validation {
     condition     = contains(["CLOUD", "HYBRID"], var.runtime_type)
     error_message = "Allowed values for runtime_type \"CLOUD\" or \"HYBRID\"."

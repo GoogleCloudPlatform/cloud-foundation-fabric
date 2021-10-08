@@ -36,6 +36,24 @@ variable "enable_stackdriver_monitoring" {
   default     = false
 }
 
+variable "firewall_create" {
+  description = "Create Network firewall rules to enable SSH."
+  type        = bool
+  default     = true
+}
+
+variable "ip_allocation" {
+  description = "Ip allocated for datafusion instance when not using the auto created one and created outside of the module."
+  type        = string
+  default     = null
+}
+
+variable "ip_allocation_create" {
+  description = "Create Ip range for datafusion instance."
+  type        = bool
+  default     = true
+}
+
 variable "labels" {
   description = "The resource labels for instance to use to annotate any related underlying resources, such as Compute Engine VMs."
   type        = map(string)
@@ -50,12 +68,6 @@ variable "name" {
 variable "network" {
   description = "Name of the network in the project with which the tenant project will be peered for executing pipelines in the form of projects/{project-id}/global/networks/{network}"
   type        = string
-}
-
-variable "firewall_create" {
-  description = "Create Network firewall rules to enable SSH."
-  type        = bool
-  default     = true
 }
 
 variable "network_peering" {
@@ -78,18 +90,6 @@ variable "project_id" {
 variable "region" {
   description = "DataFusion region."
   type        = string
-}
-
-variable "ip_allocation_create" {
-  description = "Create Ip range for datafusion instance."
-  type        = bool
-  default     = true
-}
-
-variable "ip_allocation" {
-  description = "Ip allocated for datafusion instance when not using the auto created one and created outside of the module."
-  type        = string
-  default     = null
 }
 
 variable "type" {

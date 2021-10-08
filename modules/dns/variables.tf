@@ -24,12 +24,6 @@ variable "client_networks" {
   default     = []
 }
 
-variable "description" {
-  description = "Domain description."
-  type        = string
-  default     = "Terraform managed."
-}
-
 variable "default_key_specs_key" {
   description = "DNSSEC default key signing specifications: algorithm, key_length, key_type, kind."
   type        = any
@@ -40,6 +34,12 @@ variable "default_key_specs_zone" {
   description = "DNSSEC default zone signing specifications: algorithm, key_length, key_type, kind."
   type        = any
   default     = {}
+}
+
+variable "description" {
+  description = "Domain description."
+  type        = string
+  default     = "Terraform managed."
 }
 
 variable "dnssec_config" {

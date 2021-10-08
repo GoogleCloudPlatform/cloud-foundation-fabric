@@ -32,14 +32,14 @@ output "instance" {
   ]
 }
 
-output "tables" {
-  description = "Table resources."
-  value       = google_bigtable_table.default
-}
-
 output "table_ids" {
   description = "Map of fully qualified table ids keyed by table name."
   value       = { for k, v in google_bigtable_table.default : v.name => v.id }
+}
+
+output "tables" {
+  description = "Table resources."
+  value       = google_bigtable_table.default
 }
 
 

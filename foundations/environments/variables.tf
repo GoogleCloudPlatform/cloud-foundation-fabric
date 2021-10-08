@@ -101,11 +101,6 @@ variable "prefix" {
   type        = string
 }
 
-variable "root_node" {
-  description = "Root node for the new hierarchy, either 'organizations/org_id' or 'folders/folder_id'."
-  type        = string
-}
-
 variable "project_services" {
   description = "Service APIs enabled by default in new projects."
   type        = list(string)
@@ -113,6 +108,11 @@ variable "project_services" {
     "container.googleapis.com",
     "stackdriver.googleapis.com",
   ]
+}
+
+variable "root_node" {
+  description = "Root node for the new hierarchy, either 'organizations/org_id' or 'folders/folder_id'."
+  type        = string
 }
 
 variable "service_account_keys" {

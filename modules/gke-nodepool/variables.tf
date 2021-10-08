@@ -72,6 +72,12 @@ variable "node_boot_disk_kms_key" {
   default     = null
 }
 
+variable "node_count" {
+  description = "Number of nodes per instance group, can be updated after creation. Ignored when autoscaling is set."
+  type        = number
+  default     = null
+}
+
 variable "node_disk_size" {
   description = "Node disk size, defaults to 100GB."
   type        = number
@@ -102,16 +108,15 @@ variable "node_labels" {
   default     = {}
 }
 
-variable "node_taints" {
-  description = "Kubernetes taints applied to nodes. E.g. type=blue:NoSchedule"
-  type        = list(string)
-  default     = []
-}
-
 variable "node_local_ssd_count" {
   description = "Number of local SSDs attached to nodes."
   type        = number
   default     = 0
+}
+variable "node_locations" {
+  description = "Optional list of zones in which nodes should be located. Uses cluster locations if unset."
+  type        = list(string)
+  default     = null
 }
 
 variable "node_machine_type" {
@@ -179,17 +184,12 @@ variable "node_tags" {
   default     = null
 }
 
-variable "node_count" {
-  description = "Number of nodes per instance group, can be updated after creation. Ignored when autoscaling is set."
-  type        = number
-  default     = null
+variable "node_taints" {
+  description = "Kubernetes taints applied to nodes. E.g. type=blue:NoSchedule"
+  type        = list(string)
+  default     = []
 }
 
-variable "node_locations" {
-  description = "Optional list of zones in which nodes should be located. Uses cluster locations if unset."
-  type        = list(string)
-  default     = null
-}
 
 variable "project_id" {
   description = "Cluster project id."

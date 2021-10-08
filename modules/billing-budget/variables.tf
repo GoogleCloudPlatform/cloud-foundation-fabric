@@ -83,6 +83,7 @@ variable "services" {
 }
 
 variable "thresholds" {
+  description = "Thresholds percentages at which alerts are sent. Must be a value between 0 and 1."
   type = object({
     current    = list(number)
     forecasted = list(number)

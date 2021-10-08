@@ -26,10 +26,22 @@ variable "billing_account" {
   default     = null
 }
 
+variable "contacts" {
+  description = "List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES"
+  type        = map(list(string))
+  default     = {}
+}
+
 variable "custom_roles" {
   description = "Map of role name => list of permissions to create in this project."
   type        = map(list(string))
   default     = {}
+}
+
+variable "descriptive_name" {
+  description = "Name of the project name. Used for project name instead of `name` variable"
+  type        = string
+  default     = null
 }
 
 variable "group_iam" {
@@ -66,6 +78,26 @@ variable "lien_reason" {
   description = "If non-empty, creates a project lien with this description."
   type        = string
   default     = ""
+}
+
+variable "logging_exclusions" {
+  description = "Logging exclusions for this project in the form {NAME -> FILTER}."
+  type        = map(string)
+  default     = {}
+}
+
+variable "logging_sinks" {
+  description = "Logging sinks to create for this project."
+  type = map(object({
+    destination   = string
+    type          = string
+    filter        = string
+    iam           = bool
+    unique_writer = bool
+    # TODO exclusions also support description and disabled
+    exclusions = map(string)
+  }))
+  default = {}
 }
 
 variable "name" {
@@ -130,12 +162,6 @@ variable "project_create" {
   default     = true
 }
 
-variable "services" {
-  description = "Service APIs to enable."
-  type        = list(string)
-  default     = []
-}
-
 variable "service_config" {
   description = "Configure service API activation."
   type = object({
@@ -152,6 +178,24 @@ variable "service_encryption_key_ids" {
   description = "Cloud KMS encryption key in {SERVICE => [KEY_URL]} format."
   type        = map(list(string))
   default     = {}
+}
+
+variable "service_perimeter_bridges" {
+  description = "Name of VPC-SC Bridge perimeters to add project into. Specify the name in the form of 'accessPolicies/ACCESS_POLICY_NAME/servicePerimeters/PERIMETER_NAME'."
+  type        = list(string)
+  default     = null
+}
+
+variable "service_perimeter_standard" {
+  description = "Name of VPC-SC Standard perimeter to add project into. Specify the name in the form of 'accessPolicies/ACCESS_POLICY_NAME/servicePerimeters/PERIMETER_NAME'."
+  type        = string
+  default     = null
+}
+
+variable "services" {
+  description = "Service APIs to enable."
+  type        = list(string)
+  default     = []
 }
 
 variable "shared_vpc_host_config" {
@@ -176,48 +220,4 @@ variable "shared_vpc_service_config" {
     attach       = false
     host_project = ""
   }
-}
-
-variable "logging_sinks" {
-  description = "Logging sinks to create for this project."
-  type = map(object({
-    destination   = string
-    type          = string
-    filter        = string
-    iam           = bool
-    unique_writer = bool
-    # TODO exclusions also support description and disabled
-    exclusions = map(string)
-  }))
-  default = {}
-}
-
-variable "logging_exclusions" {
-  description = "Logging exclusions for this project in the form {NAME -> FILTER}."
-  type        = map(string)
-  default     = {}
-}
-
-variable "contacts" {
-  description = "List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES"
-  type        = map(list(string))
-  default     = {}
-}
-
-variable "service_perimeter_standard" {
-  description = "Name of VPC-SC Standard perimeter to add project into. Specify the name in the form of 'accessPolicies/ACCESS_POLICY_NAME/servicePerimeters/PERIMETER_NAME'."
-  type        = string
-  default     = null
-}
-
-variable "service_perimeter_bridges" {
-  description = "Name of VPC-SC Bridge perimeters to add project into. Specify the name in the form of 'accessPolicies/ACCESS_POLICY_NAME/servicePerimeters/PERIMETER_NAME'."
-  type        = list(string)
-  default     = null
-}
-
-variable "descriptive_name" {
-  description = "Name of the project name. Used for project name instead of `name` variable"
-  type        = string
-  default     = null
 }

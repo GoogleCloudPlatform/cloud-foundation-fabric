@@ -37,14 +37,6 @@ output "namespace" {
   ]
 }
 
-output "services" {
-  description = "Service resources."
-  value       = google_service_directory_service.default
-  depends_on = [
-    google_service_directory_service_iam_binding.default
-  ]
-}
-
 output "service_id" {
   description = "Service ids (short names)."
   value = {
@@ -60,6 +52,14 @@ output "service_names" {
   value = {
     for k, v in google_service_directory_service.default : k => v.name
   }
+  depends_on = [
+    google_service_directory_service_iam_binding.default
+  ]
+}
+
+output "services" {
+  description = "Service resources."
+  value       = google_service_directory_service.default
   depends_on = [
     google_service_directory_service_iam_binding.default
   ]

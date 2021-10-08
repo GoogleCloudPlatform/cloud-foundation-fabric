@@ -57,5 +57,5 @@ module "bucket-default" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| id | None |  |
+| id | ID of the created bucket. |  |
 <!-- END TFDOC -->

@@ -14,18 +14,23 @@
  * limitations under the License.
  */
 
-output "organization_id" {
-  description = "Organization id dependent on module resources."
-  value       = var.organization_id
+
+output "custom_role_id" {
+  description = "Map of custom role IDs created in the organization."
+  value = {
+    for role_id, role in google_organization_iam_custom_role.roles :
+    # build the string manually so that role IDs can be used as map
+    # keys (useful for folder/organization/project-level iam bindings)
+    (role_id) => "${var.organization_id}/roles/${role_id}"
+  }
   depends_on = [
-    google_organization_iam_audit_config.config,
-    google_organization_iam_binding.authoritative,
-    google_organization_iam_custom_role.roles,
-    google_organization_iam_member.additive,
-    google_organization_iam_policy.authoritative,
-    google_organization_policy.boolean,
-    google_organization_policy.list
+    google_organization_iam_custom_role.roles
   ]
+}
+
+output "custom_roles" {
+  description = "Map of custom roles resources created in the organization."
+  value       = google_organization_iam_custom_role.roles
 }
 
 output "firewall_policies" {
@@ -44,27 +49,23 @@ output "firewall_policy_id" {
   }
 }
 
+output "organization_id" {
+  description = "Organization id dependent on module resources."
+  value       = var.organization_id
+  depends_on = [
+    google_organization_iam_audit_config.config,
+    google_organization_iam_binding.authoritative,
+    google_organization_iam_custom_role.roles,
+    google_organization_iam_member.additive,
+    google_organization_iam_policy.authoritative,
+    google_organization_policy.boolean,
+    google_organization_policy.list
+  ]
+}
+
 output "sink_writer_identities" {
   description = "Writer identities created for each sink."
   value = {
     for name, sink in google_logging_organization_sink.sink : name => sink.writer_identity
   }
-}
-
-output "custom_roles" {
-  description = "Map of custom roles resources created in the organization."
-  value       = google_organization_iam_custom_role.roles
-}
-
-output "custom_role_id" {
-  description = "Map of custom role IDs created in the organization."
-  value = {
-    for role_id, role in google_organization_iam_custom_role.roles :
-    # build the string manually so that role IDs can be used as map
-    # keys (useful for folder/organization/project-level iam bindings)
-    (role_id) => "${var.organization_id}/roles/${role_id}"
-  }
-  depends_on = [
-    google_organization_iam_custom_role.roles
-  ]
 }

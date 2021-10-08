@@ -55,22 +55,22 @@ output "self_link" {
   ]
 }
 
-output "tables" {
-  description = "Table resources."
-  value       = google_bigquery_table.default
-}
-
 output "table_ids" {
   description = "Map of fully qualified table ids keyed by table ids."
   value       = { for k, v in google_bigquery_table.default : v.table_id => v.id }
 }
 
-output "views" {
-  description = "View resources."
-  value       = google_bigquery_table.views
+output "tables" {
+  description = "Table resources."
+  value       = google_bigquery_table.default
 }
 
 output "view_ids" {
   description = "Map of fully qualified view ids keyed by view ids."
   value       = { for k, v in google_bigquery_table.views : v.table_id => v.id }
+}
+
+output "views" {
+  description = "View resources."
+  value       = google_bigquery_table.views
 }
