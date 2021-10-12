@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-
-terraform {
-  required_version = ">= 0.13.3"
+output "hierarchical-firewall-rules" {
+  description = "Generated Hierarchical Firewall Rules"
+  value = {
+    for k, v in google_compute_organization_security_policy_rule.default :
+    k => {
+      parent_id   = split("-", k)[0]
+      id          = v.id
+      description = v.match[0].description
+    }
+  }
 }
