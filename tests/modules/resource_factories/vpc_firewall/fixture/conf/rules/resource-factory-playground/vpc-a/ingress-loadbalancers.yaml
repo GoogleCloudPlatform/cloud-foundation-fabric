@@ -1,0 +1,23 @@
+allow-healthchecks:
+  description: "Allow traffic from healthcheck"
+  direction: INGRESS
+  action: allow
+  priority: 1000
+  source_ranges:
+    - $healthcheck
+  ports:
+    tcp: ["80"]
+  enable_logging: false
+
+allow-http:
+  description: "Allow traffic to LB backend"
+  direction: INGRESS
+  action: allow
+  priority: 1000
+  source_ranges:
+    - 0.0.0.0/0
+  target_service_accounts:
+    - example-service-account@resource-factory-playground.iam.gserviceaccount.com
+  ports:
+    tcp: ["80", "443"]
+  enable_logging: true
