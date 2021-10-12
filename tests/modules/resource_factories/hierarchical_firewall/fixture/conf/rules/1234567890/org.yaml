@@ -1,0 +1,11 @@
+allow-icmp:
+  description: Enable ICMP for all hosts
+  direction: INGRESS
+  action: allow
+  priority: 1000
+  source_ranges:
+    - 0.0.0.0/0
+  ports:
+    icmp: []
+  target_resources: null
+  enable_logging: false
