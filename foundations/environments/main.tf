@@ -134,6 +134,7 @@ module "audit-dataset" {
 #   source          = "../../modules/organization"
 #   organization_id = var.root_node
 #   logging_sinks   = local.logging_sinks
+#   exclusions       = {}
 # }
 
 # module "root_folder" {
@@ -142,6 +143,7 @@ module "audit-dataset" {
 #   id            = var.root_node
 #   folder_create = false
 #   logging_sinks = local.logging_sinks
+#   exclusions       = {}
 # }
 
 
