@@ -43,11 +43,12 @@ steps:
     args:
       [
         "/workspace/tools/check_documentation.py",
-        "modules",
         "cloud-operations",
         "data-solutions",
         "data-solutions/data-platform-foundations",
         "foundations",
+        "modules",
+        "modules/resource-factories",
         "networking",
       ]
 
