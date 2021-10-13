@@ -13,7 +13,6 @@ Such resource factories are designed to:
 ## Available modules
 
 - [Hierarchical Firewall rules](./hierarchical-firewall)
-- [Monitoring rules](./monitoring)
 - [Subnets](./subnet)
 - [VPC Firewall rules](./vpc-firewall)
 
