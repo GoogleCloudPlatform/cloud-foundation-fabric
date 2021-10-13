@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-module "subnets" {
-  source        = "../../../../../modules/resource-factories/subnet"
-  config_folder = "conf"
+ module "vpc-firewall-rules" {
+  source           = "../../../../../factories/vpc-firewall"
+  config_folder    = "conf/rules"
+  templates_folder = "conf/templates"
 }

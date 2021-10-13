@@ -48,7 +48,7 @@ steps:
         "data-solutions/data-platform-foundations",
         "foundations",
         "modules",
-        "modules/resource-factories",
+        "factories",
         "networking",
       ]
 

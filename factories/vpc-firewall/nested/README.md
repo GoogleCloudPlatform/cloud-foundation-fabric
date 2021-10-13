@@ -1,4 +1,4 @@
-# Google Cloud VPC Firewall - Yaml
+# Google Cloud VPC Firewall Factory - Nested hierarchy
 
 This module implements a resource factory which allows the creation and management of [VPC firewall rules](https://cloud.google.com/vpc/docs/firewalls) through properly formatted `yaml` files.
 

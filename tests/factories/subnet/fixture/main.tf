@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
- module "hierarchical-firewall-rules" {
-  source           = "../../../../../modules/resource-factories/hierarchical-firewall"
-  config_folder    = "conf/rules"
-  templates_folder = "conf/templates"
+module "subnets" {
+  source        = "../../../../factories/subnet"
+  config_folder = "conf"
 }

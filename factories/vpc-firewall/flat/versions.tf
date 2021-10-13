@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
- module "vpc-firewall-rules" {
-  source           = "../../../../../modules/resource-factories/vpc-firewall"
-  config_folder    = "conf/rules"
-  templates_folder = "conf/templates"
+
+terraform {
+  required_version = ">= 0.13.3"
 }
