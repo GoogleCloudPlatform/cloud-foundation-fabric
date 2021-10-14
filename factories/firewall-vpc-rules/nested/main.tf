@@ -101,10 +101,6 @@ resource "google_compute_firewall" "rules-allow" {
       metadata = "INCLUDE_ALL_METADATA"
     }
   }
-
-  lifecycle {
-    create_before_destroy = true
-  }
 }
 
 
@@ -143,9 +139,5 @@ resource "google_compute_firewall" "rules-deny" {
     content {
       metadata = "INCLUDE_ALL_METADATA"
     }
-  }
-
-  lifecycle {
-    create_before_destroy = true
   }
 }
