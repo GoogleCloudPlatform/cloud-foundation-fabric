@@ -32,7 +32,7 @@ module "org" {
     }
   }
 }
-# tftest:modules=1:resources=5
+# tftest:modules=1:resources=6
 ```
 
 ## IAM
