@@ -24,14 +24,14 @@ module "hierarchical" {
 The naming convention for the `config_folder` variable requires
 
 - the first directory layer to be named after the organization ID we're creating the policies for
-- each file to be either named either `$folder_id-$description.yaml` (e.g. `1234567890-sharedinfra.yaml`) for policies applying to regular folders or `org.yaml` for the root folder.
+- each file to be named either `$folder_id-$description.yaml` (e.g. `1234567890-sharedinfra.yaml`) for policies applying to regular folders or `org.yaml` for the root folder.
 
 Organizations and folders should exist prior to running this module, or set as an explicit dependency to this module, leveraging `depends_on`.
 
-The optional `templates_folder` folder can have two files. 
+The optional `templates_folder` variable can have two files. 
 
 - `cidrs.yaml` - a YAML map defining lists of CIDRs
-- `service_accounts.yaml` - a YAML map definint lists of Service Accounts
+- `service_accounts.yaml` - a YAML map defining lists of Service Accounts
 
 Examples for both files are shown in the following section.
 
@@ -50,7 +50,7 @@ Examples for both files are shown in the following section.
 
 ### Hierarchical firewall policies format and structure
 
-The following syntax applies both for `$folder_id-$description.yaml` and for `org.yaml` files, with the former applying at the `$folder_id` level and the latter at the Organization level.
+The following syntax applies for both `$folder_id-$description.yaml` and for `org.yaml` files, with the former applying at the `$folder_id` level and the latter at the Organization level.
 
 Each file can contain an arbitrary number of policies.
 
