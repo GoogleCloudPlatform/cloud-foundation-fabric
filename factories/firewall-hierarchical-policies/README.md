@@ -4,7 +4,7 @@ This module implements a resource factory which allows the creation and manageme
 
 `yaml` configurations are stored on a well-defined folder structure, whose entry point can be customized, and which allows for simple grouping of policies by Organization ID.
 
-This module also allows for a definition of variable templates, allowing for the definition and centralization of common CIDRs or Service Account lists, which enables re-using them across different policies.
+This module also allows defining custom template variables, to centralize common CIDRs or Service Account lists, which enables re-using them across different policies.
 
 ## Example
 
