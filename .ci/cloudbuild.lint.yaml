@@ -47,10 +47,10 @@ steps:
         "data-solutions",
         "data-solutions/data-platform-foundations",
         "factories",
-        "factories/firewall-vpc-rules"
+        "factories/firewall-vpc-rules",
         "foundations",
         "modules",
-        "networking",
+        "networking"
       ]
 
 substitutions:
