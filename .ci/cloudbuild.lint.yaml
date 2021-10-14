@@ -46,9 +46,10 @@ steps:
         "cloud-operations",
         "data-solutions",
         "data-solutions/data-platform-foundations",
+        "factories",
+        "factories/firewall-vpc-rules"
         "foundations",
         "modules",
-        "factories",
         "networking",
       ]
 

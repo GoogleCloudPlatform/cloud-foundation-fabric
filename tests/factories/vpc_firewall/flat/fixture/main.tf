@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-module "subnets" {
-  source        = "../../../../factories/subnet"
-  config_folder = "conf"
+module "firewall" {
+  source     = "../../../../../factories/firewall-vpc-rules/flat"
+  project_id = "my-project"
+  network    = "my-network"
+  config_directories = [
+    "./rules"
+  ]
+  log_config = var.log_config
 }

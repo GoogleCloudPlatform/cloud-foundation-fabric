@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
- module "hierarchical-firewall-rules" {
-  source           = "../../../../factories/hierarchical-firewall"
+ module "vpc-firewall-rules" {
+  source           = "../../../../../factories/firewall-vpc-rules/nested"
   config_folder    = "conf/rules"
   templates_folder = "conf/templates"
 }

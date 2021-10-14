@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-module "firewall" {
-  source     = "../../../../modules/net-vpc-firewall-yaml"
-  project_id = "my-project"
-  network    = "my-network"
-  config_directories = [
-    "./rules"
-  ]
-  log_config = var.log_config
+ module "hierarchical-firewall-rules" {
+  source           = "../../../../factories/firewall-hierarchical-policies/"
+  config_folder    = "conf/rules"
+  templates_folder = "conf/templates"
 }

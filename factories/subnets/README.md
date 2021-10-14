@@ -56,13 +56,13 @@ secondary_ip_ranges:              # Opt- List of secondary IP ranges
 <!-- BEGIN TFDOC -->
 ## Variables
 
-| name          | description                                                     |             type             | required | default |
-| ------------- | --------------------------------------------------------------- | :--------------------------: | :------: | :-----: |
-| config_folder | Relative path of the folder containing the subnet configuration | <code title="">string</code> |    ✓     |         |
+| name | description | type | required | default |
+|---|---|:---: |:---:|:---:|
+| config_folder | Relative path of the folder containing the subnet configuration | <code title="">string</code> | ✓ |  |
 
 ## Outputs
 
-| name   | description       | sensitive |
-| ------ | ----------------- | :-------: |
-| subnet | Generated subnets |           |
+| name | description | sensitive |
+|---|---|:---:|
+| subnet | Generated subnets |  |
 <!-- END TFDOC -->

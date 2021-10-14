@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
- module "vpc-firewall-rules" {
-  source           = "../../../../factories/vpc-firewall/nested"
-  config_folder    = "conf/rules"
-  templates_folder = "conf/templates"
+module "subnets" {
+  source        = "../../../../factories/subnets"
+  config_folder = "conf"
 }
