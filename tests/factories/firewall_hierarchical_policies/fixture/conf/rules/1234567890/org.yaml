@@ -1,3 +1,5 @@
+# skip boilerplate check
+
 allow-icmp:
   description: Enable ICMP for all hosts
   direction: INGRESS

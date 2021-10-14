@@ -1,3 +1,5 @@
+# skip boilerplate check
+
 region: europe-west3
 ip_cidr_range: 10.0.1.0/24
 description: Sample Subnet in project project-dev-a, vpc-alpha

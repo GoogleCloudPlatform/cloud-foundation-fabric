@@ -1,3 +1,5 @@
+# skip boilerplate check
+
 example:
   - 10.0.0.0/24
   - 10.0.10.0/24

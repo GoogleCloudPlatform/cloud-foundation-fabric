@@ -1,3 +1,5 @@
+# skip boilerplate check
+
 allow-ssh-from-onprem:
   description: Enable SSH for onprem ranges
   direction: INGRESS
