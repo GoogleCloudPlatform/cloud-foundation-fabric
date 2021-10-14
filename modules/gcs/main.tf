@@ -43,7 +43,7 @@ resource "google_storage_bucket" "bucket" {
 
     content {
       main_page_suffix = var.website.main_page_suffix
-      not_found_page = var.website.not_found_page
+      not_found_page   = var.website.not_found_page
     }
   }
 
