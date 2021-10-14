@@ -1,10 +1,8 @@
 # Resource Factories
 
-The example in this folder are derived from actual production use cases, and show how to use a factory module and how you could structure your codebase for multiple environments.
-
+The examples in this folder are derived from actual production use cases, and show how to use a factory module, and how to structure a codebase for multiple environments.
 
 ## Resource Factories usage - Managing subnets
-
 
 At the top level of this directory, besides the `README.md` your're reading now, you'll find
 
@@ -13,7 +11,7 @@ At the top level of this directory, besides the `README.md` your're reading now,
 - `main.tf`, a simple terraform file which consumes the [`subnets`](../subnets/) module
 
 
-Each environment directory structure is meant to mimic your GCP resources structure 
+Each environment directory structure is meant to mimic your GCP resource structure 
 
 ```
 .
@@ -38,5 +36,5 @@ Each environment directory structure is meant to mimic your GCP resources struct
 
 Since this resource factory only creates subnets, projects and VPCs are expected to exist.
 
-In this example, a single `main.tf` file (hence a single state) drives the creation of both the `dev` and the `prod` environment. Another option you might want to consider, in line with the CI/CD pipeline or processes you have in place, might be to move the `main.tf` to the each environment directory, so that states (and pipelines) can be separated.
+In this example, a single `main.tf` file (hence a single state) drives the creation of both the `dev` and the `prod` environment. Another option you might want to consider, in line with the CI/CD pipeline or processes you have in place, might be to move `main.tf` to each environment's directory and hardwire the data path, so that states (and pipelines) can be separated.
 
