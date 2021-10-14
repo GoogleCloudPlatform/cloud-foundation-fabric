@@ -23,45 +23,45 @@ def test_firewall(plan_runner):
   _, resources = plan_runner(FIXTURES_DIR)
   assert len(resources) == 6
   assert set(r["type"] for r in resources) == set(
-    ["google_compute_subnetwork", "google_compute_subnetwork_iam_binding"])
+      ["google_compute_subnetwork", "google_compute_subnetwork_iam_binding"])
   subnets = [
-    r["values"] for r in resources
-    if r["type"] == "google_compute_subnetwork"
+      r["values"] for r in resources
+      if r["type"] == "google_compute_subnetwork"
   ]
   iam_bindings = [
-    r["values"] for r in resources
-    if r["type"] == "google_compute_subnetwork_iam_binding"
+      r["values"] for r in resources
+      if r["type"] == "google_compute_subnetwork_iam_binding"
   ]
 
   subnet_a_a = [
-    s for s in subnets if s["project"] == "project-a"
-    and s["network"] == "vpc-a" and s["name"] == "subnet-a"
+      s for s in subnets if s["project"] == "project-a"
+      and s["network"] == "vpc-a" and s["name"] == "subnet-a"
   ][0]
   assert subnet_a_a["ip_cidr_range"] == "10.0.0.0/24"
   assert subnet_a_a["private_ip_google_access"] == True
   assert subnet_a_a["region"] == "europe-west1"
   assert subnet_a_a["secondary_ip_range"] == [{
-    "ip_cidr_range":
-    "192.168.0.0/24",
-    "range_name":
-    "secondary-range-a"
+      "ip_cidr_range":
+      "192.168.0.0/24",
+      "range_name":
+      "secondary-range-a"
   }, {
-    "ip_cidr_range":
-    "192.168.1.0/24",
-    "range_name":
-    "secondary-range-b"
+      "ip_cidr_range":
+      "192.168.1.0/24",
+      "range_name":
+      "secondary-range-b"
   }]
 
   subnet_a_b = [
-    s for s in subnets if s["project"] == "project-a"
-    and s["network"] == "vpc-a" and s["name"] == "subnet-b"
+      s for s in subnets if s["project"] == "project-a"
+      and s["network"] == "vpc-a" and s["name"] == "subnet-b"
   ][0]
   assert subnet_a_b["private_ip_google_access"] == False
 
   iam_binding_b_alpha = [
-    b for b in iam_bindings if b["project"] == "project-b"
+      b for b in iam_bindings if b["project"] == "project-b"
   ][0]
   assert set(iam_binding_b_alpha["members"]) == set(
-    ["user:sruffilli@google.com"])
+      ["user:sruffilli@google.com"])
   assert iam_binding_b_alpha["role"] == "roles/compute.networkUser"
   assert iam_binding_b_alpha["subnetwork"] == "subnet-alpha"

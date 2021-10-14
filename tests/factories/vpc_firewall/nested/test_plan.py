@@ -19,27 +19,27 @@ FIXTURES_DIR = os.path.join(os.path.dirname(__file__), "fixture")
 
 
 def test_firewall(plan_runner):
-    "Test hierarchical firewall rules from conf/rules"
-    _, resources = plan_runner(FIXTURES_DIR)
-    assert len(resources) == 2
+  "Test hierarchical firewall rules from conf/rules"
+  _, resources = plan_runner(FIXTURES_DIR)
+  assert len(resources) == 2
 
-    assert set(r["type"]
-               for r in resources) == set(["google_compute_firewall"])
+  assert set(r["type"]
+             for r in resources) == set(["google_compute_firewall"])
 
-    rule_hc = [
-        r["values"] for r in resources
-        if r["values"]["name"] == "allow-healthchecks-vpc-a"
-    ][0]
-    rule_be = [
-        r["values"] for r in resources
-        if r["values"]["description"] == "Allow traffic to LB backend"
-    ][0]
+  rule_hc = [
+      r["values"] for r in resources
+      if r["values"]["name"] == "allow-healthchecks-vpc-a"
+  ][0]
+  rule_be = [
+      r["values"] for r in resources
+      if r["values"]["description"] == "Allow traffic to LB backend"
+  ][0]
 
-    assert set(rule_hc["source_ranges"]) == set(
-        ["130.211.0.0/22", "35.191.0.0/16"])
-    assert rule_hc["direction"] == "INGRESS"
-    assert rule_hc["network"] == "vpc-a"
-    assert rule_hc["priority"] == 1000
-    assert rule_hc["project"] == "resource-factory-playground"
-    assert rule_hc["allow"][0] == {'ports': ['80'], 'protocol': 'tcp'}
-    assert rule_be["log_config"][0] == {'metadata': 'INCLUDE_ALL_METADATA'}
+  assert set(rule_hc["source_ranges"]) == set(
+      ["130.211.0.0/22", "35.191.0.0/16"])
+  assert rule_hc["direction"] == "INGRESS"
+  assert rule_hc["network"] == "vpc-a"
+  assert rule_hc["priority"] == 1000
+  assert rule_hc["project"] == "resource-factory-playground"
+  assert rule_hc["allow"][0] == {'ports': ['80'], 'protocol': 'tcp'}
+  assert rule_be["log_config"][0] == {'metadata': 'INCLUDE_ALL_METADATA'}
