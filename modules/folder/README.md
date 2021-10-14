@@ -12,7 +12,10 @@ module "folder" {
   parent = "organizations/1234567890"
   name  = "Folder name"
   group_iam       = {
-    "cloud-owners@example.org" = ["roles/owner", "roles/projectCreator"]
+    "cloud-owners@example.org" = [
+        "roles/owner",
+        "roles/resourcemanager.projectCreator"
+    ]
   }
   iam = {
     "roles/owner" = ["user:one@example.com"]
