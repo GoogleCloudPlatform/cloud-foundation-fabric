@@ -1,10 +1,10 @@
 # Google Cloud VPC Firewall Factory - Nested hierarchy
 
-This module implements a resource factory which allows the creation and management of [VPC firewall rules](https://cloud.google.com/vpc/docs/firewalls) through properly formatted `yaml` files.
+This module implements a resource factory which allows the creation and management of [VPC firewall rules](https://cloud.google.com/vpc/docs/firewalls) via properly formatted `yaml` files.
 
-`yaml` configurations are stored on a well-defined folder structure, whose entry point can be customized, and which represents and forces the resource hierarchy a firewall rule belongs to (Project > VPC > Firewall Rule).
+`yaml` configurations are stored in a well-defined folder structure, whose entry point can be customized, and which represents and forces the resource hierarchy a firewall rule belongs to (Project > VPC > Firewall Rule).
 
-This module also allows for a definition of variable templates, allowing for the definition and centralization of common CIDRs or Service Account lists, which enables re-using them across different policies.
+This module also allows for the definition of template variables, allowing to centralize common CIDRs or Service Account lists, which enables re-using them across different policies.
 
 ## Example
 
