@@ -132,3 +132,12 @@ variable "versioning" {
   type        = bool
   default     = false
 }
+
+variable "website" {
+  description = "Bucket website."
+  type = object({
+    main_page_suffix = string
+    not_found_page   = string
+  })
+  default = null
+}
