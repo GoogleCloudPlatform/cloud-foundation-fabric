@@ -38,6 +38,15 @@ resource "google_storage_bucket" "bucket" {
     storage_class = lower(var.storage_class)
   })
 
+  dynamic "website" {
+    for_each = var.website == null ? [] : [""]
+
+    content {
+      main_page_suffix = var.website.main_page_suffix
+      not_found_page   = var.website.not_found_page
+    }
+  }
+
   dynamic "encryption" {
     for_each = var.encryption_key == null ? [] : [""]
 
