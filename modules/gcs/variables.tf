@@ -101,14 +101,7 @@ variable "project_id" {
   description = "Bucket project id."
   type        = string
 }
-variable "website" {
-  description = "Bucket website."
-  type = object({
-    main_page_suffix = string
-    not_found_page   = string
-  })
-  default = null
-}
+
 variable "retention_policy" {
   description = "Bucket retention policy."
   type = object({
@@ -138,4 +131,13 @@ variable "versioning" {
   description = "Enable versioning, defaults to false."
   type        = bool
   default     = false
+}
+
+variable "website" {
+  description = "Bucket website."
+  type = object({
+    main_page_suffix = string
+    not_found_page   = string
+  })
+  default = null
 }
