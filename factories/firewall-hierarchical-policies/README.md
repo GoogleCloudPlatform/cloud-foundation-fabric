@@ -21,7 +21,7 @@ module "hierarchical" {
 
 ### Configuration Structure
 
-The naming convention for the `config_folder` folder requires
+The naming convention for the `config_folder` variable requires
 
 - the first directory layer to be named after the organization ID we're creating the policies for
 - each file to be either named either `$folder_id-$description.yaml` (e.g. `1234567890-sharedinfra.yaml`) for policies applying to regular folders or `org.yaml` for the root folder.
