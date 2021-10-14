@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-module "firewall" {
-  source     = "../../../../modules/net-vpc-firewall-yaml"
-  project_id = "my-project"
-  network    = "my-network"
-  config_directories = [
-    "./rules"
-  ]
-  log_config = var.log_config
+
+module "subnets-dev" {
+  source        = "../subnets"
+  config_folder = "dev"
+}
+
+module "subnets-prod" {
+  source        = "../subnets"
+  config_folder = "prod"
 }

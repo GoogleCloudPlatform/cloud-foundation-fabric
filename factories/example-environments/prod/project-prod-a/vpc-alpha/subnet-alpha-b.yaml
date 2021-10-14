@@ -1,0 +1,4 @@
+region: europe-west3
+ip_cidr_range: 10.0.1.0/24
+description: Sample Subnet in project project-prod-a, vpc-alpha
+private_ip_google_access: false

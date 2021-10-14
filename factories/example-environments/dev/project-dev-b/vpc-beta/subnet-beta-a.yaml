@@ -1,0 +1,5 @@
+region: europe-west4
+ip_cidr_range: 10.0.2.0/24
+description: Sample Subnet in project project-dev-b, vpc-beta
+iam_users: ["sruffilli@google.com"]
+iam_groups: []
