@@ -32,11 +32,8 @@ resource "google_storage_bucket" "bucket" {
   versioning {
     enabled = var.versioning
   }
-  labels = merge(var.labels, {
-    location      = lower(var.location)
-    storage_class = lower(var.storage_class)
-  })
-
+  
+  labels = var.labels
   dynamic "website" {
     for_each = var.website == null ? [] : [""]
 
