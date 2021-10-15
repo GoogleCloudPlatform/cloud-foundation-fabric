@@ -15,7 +15,7 @@
  */
 
 module "firewall" {
-  source     = "../../../../modules/net-vpc-firewall-yaml"
+  source     = "../../../../../factories/firewall-vpc-rules/flat"
   project_id = "my-project"
   network    = "my-network"
   config_directories = [

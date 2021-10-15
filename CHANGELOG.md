@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- new `factories` top-level folder with initial `subnets`, `firewall-hierarchical-policies`, `firewall-vpc-rules` and `example-environments` examples
 - new cloud operations example showing how to deploy infrastructure for [Compute Engine image builder based on Hashicorp Packer](./cloud-operations/packer-image-builder)
 - **incompatible change** the format of the `records` variable in the `dns` module has changed, to better support dynamic values
 - new `naming-convention` module

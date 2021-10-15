@@ -12,7 +12,7 @@ Both the examples and modules require some measure of Terraform skills to be use
 
 ## End-to-end examples
 
-The examples in this repository are split in several main sections: **foundational examples** that bootstrap the organizational hierarchy and automation prerequisites, **networking examples** that implement core patterns or features, **data solutions examples** that demonstrate how to integrate data services in complete scenarios, and **cloud operations examples** that leverage specific products to meet specific operational needs.
+The examples in this repository are split in several main sections: **foundational examples** that bootstrap the organizational hierarchy and automation prerequisites, **networking examples** that implement core patterns or features, **data solutions examples** that demonstrate how to integrate data services in complete scenarios, **cloud operations examples** that leverage specific products to meet specific operational needs and **factories** that implement resource factories for the repetitive creation of specific resources.
 
 Currently available examples:
 
@@ -21,8 +21,9 @@ Currently available examples:
 - **data solutions** - [GCE/GCS CMEK via centralized Cloud KMS](./data-solutions/cmek-via-centralized-kms/), [Cloud Storage to Bigquery with Cloud Dataflow](./data-solutions/gcs-to-bq-with-dataflow/)
 - **cloud operations** - [Resource tracking and remediation via Cloud Asset feeds](.//cloud-operations/asset-inventory-feed-remediation), [Granular Cloud DNS IAM via Service Directory](./cloud-operations/dns-fine-grained-iam), [Granular Cloud DNS IAM for Shared VPC](./cloud-operations/dns-shared-vpc), [Compute Engine quota monitoring](./cloud-operations/quota-monitoring), [Scheduled Cloud Asset Inventory Export to Bigquery](./cloud-operations/scheduled-asset-inventory-export-bq), [Packer image builder](./cloud-operations/packer-image-builder)
 - **third party solutions** - [OpenShift cluster on Shared VPC](./third-party-solutions/openshift)
+- **factories** - [Example environments](./factories/example-environments), [Hierarchical Firewall Policies](./factories/firewall-hierarchical-policies), [VPC Firewall Rules](./factories/firewall-vpc-rules), [Subnets](./factories/subnets)
 
-For more information see the README files in the [foundations](./foundations/), [networking](./networking/), [data solutions](./data-solutions/) and [cloud operations](./cloud-operations/) folders.
+For more information see the README files in the [foundations](./foundations/), [networking](./networking/), [data solutions](./data-solutions/), [cloud operations](./cloud-operations/) and [factories](./factories/) folders.
 
 ## Modules
 

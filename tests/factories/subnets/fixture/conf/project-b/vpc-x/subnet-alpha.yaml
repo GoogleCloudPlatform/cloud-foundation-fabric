@@ -1,0 +1,7 @@
+# skip boilerplate check
+
+region: europe-west4
+ip_cidr_range: 172.16.0.0/24
+description: Sample Subnet in project project-b, vpc-x
+iam_users: ["sruffilli@google.com"]
+iam_groups: []

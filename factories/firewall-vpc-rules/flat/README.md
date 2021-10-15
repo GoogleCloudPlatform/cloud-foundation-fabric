@@ -1,10 +1,10 @@
-# Google Cloud VPC Firewall - Yaml
+# Google Cloud VPC Firewall Factory - Flat hierarchy
 
 This module allows creation and management of different types of firewall rules by defining them in well formatted `yaml` files. 
 
 Yaml abstraction for FW rules can simplify users onboarding and also makes rules definition simpler and clearer comparing to HCL.
 
-Nested folder structure for yaml configurations is supported, which allows better and structured code management for multiple teams and environments.
+Nested folder structure for yaml configurations is optionally supported, which allows better and structured code management for multiple teams and environments.
 
 ## Example
 
