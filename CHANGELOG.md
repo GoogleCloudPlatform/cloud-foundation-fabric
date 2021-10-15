@@ -9,7 +9,7 @@ All notable changes to this project will be documented in this file.
 - **incompatible change** the format of the `records` variable in the `dns` module has changed, to better support dynamic values
 - new `naming-convention` module
 - new `cloudsql-instance` module
-- added support for website to `gcs` module
+- added support for website to `gcs` module, and removed auto-set labels
 
 ## [6.0.0] - 2021-10-04
 
