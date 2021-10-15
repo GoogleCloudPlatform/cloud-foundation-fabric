@@ -16,6 +16,6 @@
 
 
 module "subnets" {
-  source        = "../subnets"
+  source        = "../../subnets"
   config_folder = "conf"
 }
