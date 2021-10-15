@@ -11,13 +11,24 @@ This set of modules creates specialized resource factories, made of two distinct
 - [VPC Firewall rules](./firewall-vpc-rules)
 - [Subnets](./subnets)
 
-## Example implementation
-
-See [Example environments](./example-environments)
-
 ## Using the modules
 
-Each module is specialised for the type of resources it manages, and comes with a `README.md` file which describes the module interface, and the directory/file structure each module requires.
+Each module specialises on a single resource type, and comes with a `README.md` file which describes the module interface, and the directory/file structure each module requires.
+
+All modules consume specialized `yaml` configurations - located on a well-defined directory structure that carries metadata. Let's observe an example from the [Example environments](example-environments/) directory:
+
+```yaml
+# ../example-environments/prod/conf/project-prod-a/vpc-alpha/subnet-alpha-a.yaml
+
+region: europe-west3
+ip_cidr_range: 10.0.0.0/24
+description: Sample Subnet in project project-prod-a, vpc-alpha
+secondary_ip_ranges:
+  secondary-range-a: 192.168.0.0/24
+  secondary-range-b: 192.168.1.0/24
+```
+
+This configuration creates the `subnet-alpha-a` subnet, located in VPC `vpc-alpha`, inside project `project-prod-a`.
 
 ## Rationale
 
