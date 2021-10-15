@@ -34,7 +34,6 @@ resource "google_storage_bucket" "bucket" {
   }
   labels = merge(var.labels, {
     location      = lower(var.location)
-    name          = lower(var.name)
     storage_class = lower(var.storage_class)
   })
 
