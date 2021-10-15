@@ -65,9 +65,12 @@ allow-icmp:
   action: allow                         
   # Priority (must be unique on a node)
   priority: 1000                        
-  # List of CIDRs this rule applies to
+  # List of CIDRs this rule applies to (for INGRESS rules)
   source_ranges:                        
     - 0.0.0.0/0
+  # List of CIDRs this rule applies to (for EGRESS rules)
+  destination_ranges:                        
+    - 0.0.0.0/0    
   # List of ports this rule applies to (empty array means all ports)
   ports:                                  
     tcp: []
@@ -148,14 +151,14 @@ web_frontends:
 <!-- BEGIN TFDOC -->
 ## Variables
 
-| name | description | type | required | default |
-|---|---|:---: |:---:|:---:|
-| config_folder | Relative path of the folder containing the hierarchical firewall configuration | <code title="">string</code> | ✓ |  |
-| templates_folder | Relative path of the folder containing the cidr/service account templates | <code title="">string</code> | ✓ |  |
+| name             | description                                                                    |             type             | required | default |
+| ---------------- | ------------------------------------------------------------------------------ | :--------------------------: | :------: | :-----: |
+| config_folder    | Relative path of the folder containing the hierarchical firewall configuration | <code title="">string</code> |    ✓     |         |
+| templates_folder | Relative path of the folder containing the cidr/service account templates      | <code title="">string</code> |    ✓     |         |
 
 ## Outputs
 
-| name | description | sensitive |
-|---|---|:---:|
-| hierarchical-firewall-rules | Generated Hierarchical Firewall Rules |  |
+| name                        | description                           | sensitive |
+| --------------------------- | ------------------------------------- | :-------: |
+| hierarchical-firewall-rules | Generated Hierarchical Firewall Rules |           |
 <!-- END TFDOC -->

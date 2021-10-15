@@ -59,17 +59,16 @@ locals {
   ])
 }
 
-resource "google_compute_organization_security_policy" "default" {
-  provider     = google-beta
-  for_each     = { for rule in local.rules : rule.parent_id => rule.name... }
-  display_name = replace("hierarchical-fw-policy-${each.key}", "/", "-")
-  parent       = each.key
+resource "google_compute_firewall_policy" "default" {
+  for_each    = { for rule in local.rules : rule.parent_id => rule.name... }
+  short_name  = replace("hierarchical-fw-policy-${each.key}", "/", "-")
+  description = replace("hierarchical-fw-policy-${each.key}", "/", "-")
+  parent      = each.key
 }
 
-resource "google_compute_organization_security_policy_rule" "default" {
-  provider                = google-beta
+resource "google_compute_firewall_policy_rule" "default" {
   for_each                = { for rule in local.rules : "${rule.parent_id}-${rule.name}" => rule }
-  policy_id               = google_compute_organization_security_policy.default[each.value.parent_id].id
+  firewall_policy         = google_compute_firewall_policy.default[each.value.parent_id].id
   action                  = each.value.action
   direction               = each.value.direction
   priority                = each.value.priority
@@ -78,24 +77,22 @@ resource "google_compute_organization_security_policy_rule" "default" {
   enable_logging          = try(each.value.enable_logging, false)
   # preview                 = each.value.preview
   match {
-    config {
-      src_ip_ranges = each.value.source_ranges
-      dynamic "layer4_config" {
-        for_each = each.value.ports
-        iterator = port
-        content {
-          ip_protocol = port.key
-          ports       = port.value
-        }
+    src_ip_ranges  = each.value.direction == "INGRESS" ? each.value.source_ranges : null
+    dest_ip_ranges = each.value.direction == "EGRESS" ? each.value.destination_ranges : null
+    dynamic "layer4_configs" {
+      for_each = each.value.ports
+      iterator = port
+      content {
+        ip_protocol = port.key
+        ports       = port.value
       }
     }
   }
 }
 
-resource "google_compute_organization_security_policy_association" "default" {
-  provider      = google-beta
-  for_each      = { for rule in local.rules : rule.parent_id => rule.name... }
-  name          = replace("hierarchical-fw-policy-${each.key}", "/", "-")
-  attachment_id = google_compute_organization_security_policy.default[each.key].parent
-  policy_id     = google_compute_organization_security_policy.default[each.key].id
+resource "google_compute_firewall_policy_association" "default" {
+  for_each          = { for rule in local.rules : rule.parent_id => rule.name... }
+  name              = replace("hierarchical-fw-policy-${each.key}", "/", "-")
+  attachment_target = google_compute_firewall_policy.default[each.key].parent
+  firewall_policy   = google_compute_firewall_policy.default[each.key].id
 }
