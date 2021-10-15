@@ -15,12 +15,7 @@
  */
 
 
-module "subnets-dev" {
+module "subnets" {
   source        = "../subnets"
-  config_folder = "dev"
-}
-
-module "subnets-prod" {
-  source        = "../subnets"
-  config_folder = "prod"
+  config_folder = "conf"
 }
