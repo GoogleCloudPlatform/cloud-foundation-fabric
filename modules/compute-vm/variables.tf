@@ -243,3 +243,10 @@ variable "zone" {
   description = "Compute zone."
   type        = string
 }
+
+variable "description" {
+  description = "Description of a Compute Instance."
+  type        = string
+  default     = "Managed by the compute-vm Terraform module."
+}
+

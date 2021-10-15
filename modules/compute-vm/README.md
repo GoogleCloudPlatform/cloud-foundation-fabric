@@ -258,6 +258,7 @@ module "instance-group" {
 | *can_ip_forward* | Enable IP forwarding. | <code title="">bool</code> |  | <code title="">false</code> |
 | *confidential_compute* | Enable Confidential Compute for these instances. | <code title="">bool</code> |  | <code title="">false</code> |
 | *create_template* | Create instance template instead of instances. | <code title="">bool</code> |  | <code title="">false</code> |
+| *description* | Description of a Compute Instance. | <code title="">string</code> |  | <code title="">Managed by the compute-vm Terraform module.</code> |
 | *enable_display* | Enable virtual display on the instances | <code title="">bool</code> |  | <code title="">false</code> |
 | *encryption* | Encryption options. Only one of kms_key_self_link and disk_encryption_key_raw may be set. If needed, you can specify to encrypt or not the boot disk. | <code title="object&#40;&#123;&#10;encrypt_boot            &#61; bool&#10;disk_encryption_key_raw &#61; string&#10;kms_key_self_link       &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 | *group* | Define this variable to create an instance group for instances. Disabled for template use. | <code title="object&#40;&#123;&#10;named_ports &#61; map&#40;number&#41;&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
