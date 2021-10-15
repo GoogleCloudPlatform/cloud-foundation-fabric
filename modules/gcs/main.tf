@@ -29,11 +29,11 @@ resource "google_storage_bucket" "bucket" {
   storage_class               = var.storage_class
   force_destroy               = var.force_destroy
   uniform_bucket_level_access = var.uniform_bucket_level_access
+  labels                      = var.labels
   versioning {
     enabled = var.versioning
   }
-  
-  labels = var.labels
+
   dynamic "website" {
     for_each = var.website == null ? [] : [""]
 
