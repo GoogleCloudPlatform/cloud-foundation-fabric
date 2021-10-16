@@ -15,22 +15,7 @@ This set of modules creates specialized resource factories, made of two distinct
 
 Each module specialises on a single resource type, and comes with a `README.md` file which describes the module interface, and the directory/file structure each module requires.
 
-All modules consume specialized `yaml` configurations - located on a well-defined directory structure that carries metadata. Let's observe an example from the [Example environments](example-environments/) directory:
-
-```yaml
-# ../example-environments/prod/conf/project-prod-a/vpc-alpha/subnet-alpha-a.yaml
-
-region: europe-west3
-ip_cidr_range: 10.0.0.0/24
-description: Sample Subnet in project project-prod-a, vpc-alpha
-secondary_ip_ranges:
-  secondary-range-a: 192.168.0.0/24
-  secondary-range-b: 192.168.1.0/24
-```
-
-This configuration creates the `subnet-alpha-a` subnet, located in VPC `vpc-alpha`, inside project `project-prod-a`.
-
-All modules consume specialized `yaml` configurations - located on a well-defined directory structure that carries metadata. Let's observe an example from the [Example environments](example-environments/) directory:
+All modules consume specialized `yaml` configurations - located on a well-defined directory structure that carries metadata. Let's observe an example which leverages the `subnet` module, taken from the [Example environments](example-environments/) directory:
 
 ```yaml
 # ../example-environments/prod/conf/project-prod-a/vpc-alpha/subnet-alpha-a.yaml
