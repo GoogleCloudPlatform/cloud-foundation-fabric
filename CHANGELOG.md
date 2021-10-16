@@ -4,12 +4,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-- new `factories` top-level folder with initial `subnets`, `firewall-hierarchical-policies`, `firewall-vpc-rules` and `example-environments` examples
 - new cloud operations example showing how to deploy infrastructure for [Compute Engine image builder based on Hashicorp Packer](./cloud-operations/packer-image-builder)
 - **incompatible change** the format of the `records` variable in the `dns` module has changed, to better support dynamic values
 - new `naming-convention` module
 - new `cloudsql-instance` module
 - added support for website to `gcs` module, and removed auto-set labels
+- new `factories` top-level folder with initial `subnets`, `firewall-hierarchical-policies`, `firewall-vpc-rules` and `example-environments` examples
+- added new `description` variable to `compute-vm` module
 
 ## [6.0.0] - 2021-10-04
 
