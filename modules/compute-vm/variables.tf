@@ -92,7 +92,11 @@ variable "create_template" {
   type        = bool
   default     = false
 }
-
+variable "description" {
+  description = "Description of a Compute Instance."
+  type        = string
+  default     = "Managed by the compute-vm Terraform module."
+}
 variable "enable_display" {
   description = "Enable virtual display on the instances"
   type        = bool
@@ -244,9 +248,4 @@ variable "zone" {
   type        = string
 }
 
-variable "description" {
-  description = "Description of a Compute Instance."
-  type        = string
-  default     = "Managed by the compute-vm Terraform module."
-}
 
