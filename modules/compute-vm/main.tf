@@ -122,7 +122,7 @@ resource "google_compute_instance" "default" {
   zone                      = var.zone
   name                      = var.name
   hostname                  = var.hostname
-  description               = "Managed by the compute-vm Terraform module."
+  description               = var.description
   tags                      = var.tags
   machine_type              = var.instance_type
   min_cpu_platform          = var.min_cpu_platform
@@ -253,7 +253,7 @@ resource "google_compute_instance_template" "default" {
   project          = var.project_id
   region           = local.region
   name_prefix      = "${var.name}-"
-  description      = "Managed by the compute-vm Terraform module."
+  description      = var.description
   tags             = var.tags
   machine_type     = var.instance_type
   min_cpu_platform = var.min_cpu_platform
@@ -354,7 +354,7 @@ resource "google_compute_instance_group" "unmanaged" {
   )
   zone        = var.zone
   name        = var.name
-  description = "Terraform-managed."
+  description = var.description
   instances   = [google_compute_instance.default.0.self_link]
   dynamic "named_port" {
     for_each = var.group.named_ports != null ? var.group.named_ports : {}
