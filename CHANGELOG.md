@@ -12,6 +12,8 @@ All notable changes to this project will be documented in this file.
 - new `factories` top-level folder with initial `subnets`, `firewall-hierarchical-policies`, `firewall-vpc-rules` and `example-environments` examples
 - added new `description` variable to `compute-vm` module
 - added support for L7 ILB subnets to `net-vpc` module
+- added support to override default description in `compute-vm`
+- added support for backup retention count in `cloudsql-instance`
 
 ## [6.0.0] - 2021-10-04
 
