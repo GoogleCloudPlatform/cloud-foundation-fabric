@@ -81,8 +81,8 @@ resource "google_sql_database_instance" "primary" {
       location                       = var.backup_configuration.location
       transaction_log_retention_days = var.backup_configuration.log_retention_days
       backup_retention_settings {
-        retained_backups = var.backup_retention_settings.retained_backups
-        retention_unit   = var.backup_retention_settings.retention_unit
+        retained_backups = var.backup_configuration.retention_count
+        retention_unit   = "COUNT"
       }
     }
 

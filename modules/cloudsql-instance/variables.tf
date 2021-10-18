@@ -34,6 +34,7 @@ variable "backup_configuration" {
     start_time         = string
     location           = string
     log_retention_days = number
+    retained_count     = number
   })
   default = {
     enabled            = false
@@ -41,20 +42,10 @@ variable "backup_configuration" {
     start_time         = "23:00"
     location           = "EU"
     log_retention_days = 7
+    retention_count    = 7
   }
 }
 
-variable "backup_retention_settings" {
-  description = "Backup retention subblock settings."
-  type = object({
-    retained_backups = number
-    retention_unit   = string
-  })
-  default = {
-    retained_backups = 7
-    retention_unit   = "COUNT"
-  }
-}
 
 variable "database_version" {
   description = "Database type and version to create."
