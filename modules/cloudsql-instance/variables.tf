@@ -31,12 +31,21 @@ variable "backup_configuration" {
   type = object({
     enabled            = bool
     binary_log_enabled = bool
+    start_time         = string
+    location           = string
+    log_retention_days = number
+    retention_count    = number
   })
   default = {
     enabled            = false
     binary_log_enabled = false
+    start_time         = "23:00"
+    location           = "EU"
+    log_retention_days = 7
+    retention_count    = 7
   }
 }
+
 
 variable "database_version" {
   description = "Database type and version to create."
