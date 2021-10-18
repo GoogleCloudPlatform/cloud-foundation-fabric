@@ -195,7 +195,8 @@ module "vpc" {
 | *subnet_descriptions* | Optional map of subnet descriptions, keyed by subnet 'region/name'. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
 | *subnet_flow_logs* | Optional map of boolean to control flow logs (default is disabled), keyed by subnet 'region/name'. | <code title="map&#40;bool&#41;">map(bool)</code> |  | <code title="">{}</code> |
 | *subnet_private_access* | Optional map of boolean to control private Google access (default is enabled), keyed by subnet 'region/name'. | <code title="map&#40;bool&#41;">map(bool)</code> |  | <code title="">{}</code> |
-| *subnets* | The list of subnets being created | <code title="list&#40;object&#40;&#123;&#10;name               &#61; string&#10;ip_cidr_range      &#61; string&#10;name               &#61; string&#10;region             &#61; string&#10;secondary_ip_range &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">list(object({...}))</code> |  | <code title="">[]</code> |
+| *subnets* | List of subnets being created. | <code title="list&#40;object&#40;&#123;&#10;name               &#61; string&#10;ip_cidr_range      &#61; string&#10;region             &#61; string&#10;secondary_ip_range &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">list(object({...}))</code> |  | <code title="">[]</code> |
+| *subnets_l7ilb* | List of subnets for private HTTPS load balancer. | <code title="list&#40;object&#40;&#123;&#10;active        &#61; bool&#10;name          &#61; string&#10;ip_cidr_range &#61; string&#10;region        &#61; string&#10;&#125;&#41;&#41;">list(object({...}))</code> |  | <code title="">[]</code> |
 | *vpc_create* | Create VPC. When set to false, uses a data source to reference existing VPC. | <code title="">bool</code> |  | <code title="">true</code> |
 
 ## Outputs
@@ -212,6 +213,7 @@ module "vpc" {
 | subnet_secondary_ranges | Map of subnet secondary ranges keyed by name. |  |
 | subnet_self_links | Map of subnet self links keyed by name. |  |
 | subnets | Subnet resources. |  |
+| subnets_l7ilb | L7 ILB subnet resources. |  |
 <!-- END TFDOC -->
 
 The key format is `subnet_region/subnet_name`. For example `europe-west1/my_subnet`.

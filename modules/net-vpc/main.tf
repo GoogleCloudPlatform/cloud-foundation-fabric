@@ -68,6 +68,10 @@ locals {
     for subnet in var.subnets :
     "${subnet.region}/${subnet.name}" => subnet
   }
+  subnets_l7ilb = {
+    for subnet in var.subnets_l7ilb :
+    "${subnet.region}/${subnet.name}" => subnet
+  }
   network = (
     var.vpc_create
     ? try(google_compute_network.network.0, null)
@@ -141,8 +145,14 @@ resource "google_compute_subnetwork" "subnetwork" {
     for name, range in each.value.secondary_ip_range :
     { range_name = name, ip_cidr_range = range }
   ]
-  description              = lookup(var.subnet_descriptions, "${each.value.region}/${each.value.name}", "Terraform-managed.")
-  private_ip_google_access = lookup(var.subnet_private_access, "${each.value.region}/${each.value.name}", true)
+  description = lookup(
+    var.subnet_descriptions,
+    "${each.value.region}/${each.value.name}",
+    "Terraform-managed."
+  )
+  private_ip_google_access = lookup(
+    var.subnet_private_access, "${each.value.region}/${each.value.name}", true
+  )
   dynamic "log_config" {
     for_each = local.subnet_log_configs["${each.value.region}/${each.value.name}"]
     iterator = config
@@ -152,6 +162,25 @@ resource "google_compute_subnetwork" "subnetwork" {
       metadata             = config.value.metadata
     }
   }
+}
+
+resource "google_compute_subnetwork" "l7ilb" {
+  provider      = google-beta
+  for_each      = local.subnets_l7ilb
+  project       = var.project_id
+  network       = local.network.name
+  region        = each.value.region
+  name          = each.value.name
+  ip_cidr_range = each.value.ip_cidr_range
+  purpose       = "INTERNAL_HTTPS_LOAD_BALANCER"
+  role = (
+    each.value.active || each.value.active == null ? "ACTIVE" : "BACKUP"
+  )
+  description = lookup(
+    var.subnet_descriptions,
+    "${each.value.region}/${each.value.name}",
+    "Terraform-managed."
+  )
 }
 
 resource "google_compute_subnetwork_iam_binding" "binding" {

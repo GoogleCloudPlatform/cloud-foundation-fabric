@@ -168,13 +168,23 @@ variable "subnet_private_access" {
 }
 
 variable "subnets" {
-  description = "The list of subnets being created"
+  description = "List of subnets being created."
   type = list(object({
     name               = string
     ip_cidr_range      = string
-    name               = string
     region             = string
     secondary_ip_range = map(string)
+  }))
+  default = []
+}
+
+variable "subnets_l7ilb" {
+  description = "List of subnets for private HTTPS load balancer."
+  type = list(object({
+    active        = bool
+    name          = string
+    ip_cidr_range = string
+    region        = string
   }))
   default = []
 }
