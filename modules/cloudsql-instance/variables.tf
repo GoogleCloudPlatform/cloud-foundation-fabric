@@ -34,7 +34,7 @@ variable "backup_configuration" {
     start_time         = string
     location           = string
     log_retention_days = number
-    retained_count     = number
+    retention_count    = number
   })
   default = {
     enabled            = false
