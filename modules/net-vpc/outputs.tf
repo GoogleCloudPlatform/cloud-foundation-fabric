@@ -70,12 +70,16 @@ output "self_link" {
 
 output "subnet_ips" {
   description = "Map of subnet address ranges keyed by name."
-  value       = { for k, v in google_compute_subnetwork.subnetwork : k => v.ip_cidr_range }
+  value = {
+    for k, v in google_compute_subnetwork.subnetwork : k => v.ip_cidr_range
+  }
 }
 
 output "subnet_regions" {
   description = "Map of subnet regions keyed by name."
-  value       = { for k, v in google_compute_subnetwork.subnetwork : k => v.region }
+  value = {
+    for k, v in google_compute_subnetwork.subnetwork : k => v.region
+  }
 }
 
 output "subnet_secondary_ranges" {
@@ -98,4 +102,9 @@ output "subnet_self_links" {
 output "subnets" {
   description = "Subnet resources."
   value       = { for k, v in google_compute_subnetwork.subnetwork : k => v }
+}
+
+output "subnets_l7ilb" {
+  description = "L7 ILB subnet resources."
+  value       = { for k, v in google_compute_subnetwork.l7ilb : k => v }
 }

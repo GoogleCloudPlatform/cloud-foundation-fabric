@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 - added support for website to `gcs` module, and removed auto-set labels
 - new `factories` top-level folder with initial `subnets`, `firewall-hierarchical-policies`, `firewall-vpc-rules` and `example-environments` examples
 - added new `description` variable to `compute-vm` module
+- added support for L7 ILB subnets to `net-vpc` module
 
 ## [6.0.0] - 2021-10-04
 
