@@ -77,6 +77,13 @@ resource "google_sql_database_instance" "primary" {
         ? var.backup_configuration.binary_log_enabled || local.has_replicas
         : null
       )
+      start_time                     = var.backup_configuration.start_time
+      location                       = var.backup_configuration.location
+      transaction_log_retention_days = var.backup_configuration.log_retention_days
+      backup_retention_settings {
+        retained_backups = var.backup_retention_settings.retained_backups
+        retention_unit   = var.backup_retention_settings.retention_unit
+      }
     }
 
     dynamic "database_flags" {

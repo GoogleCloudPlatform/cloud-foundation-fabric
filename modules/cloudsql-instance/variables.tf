@@ -31,10 +31,28 @@ variable "backup_configuration" {
   type = object({
     enabled            = bool
     binary_log_enabled = bool
+    start_time         = string
+    location           = string
+    log_retention_days = number
   })
   default = {
     enabled            = false
     binary_log_enabled = false
+    start_time         = "23:00"
+    location           = "EU"
+    log_retention_days = 7
+  }
+}
+
+variable "backup_retention_settings" {
+  description = "Backup retention subblock settings."
+  type = object({
+    retained_backups = number
+    retention_unit   = string
+  })
+  default = {
+    retained_backups = 7
+    retention_unit   = "COUNT"
   }
 }
 
