@@ -14,6 +14,9 @@ All notable changes to this project will be documented in this file.
 - added support for L7 ILB subnets to `net-vpc` module
 - added support to override default description in `compute-vm`
 - added support for backup retention count in `cloudsql-instance`
+- added new `description` variable to `cloud-function` module
+- added new `description` variable to `bigquery-dataset` module
+- added new `description` variable to `iam-service-account` module
 
 ## [6.0.0] - 2021-10-04
 
