@@ -79,6 +79,7 @@ resource "google_service_account" "service_account" {
   project      = var.project_id
   account_id   = "${local.prefix}${var.name}"
   display_name = var.display_name
+  description  = var.description
 }
 
 resource "google_service_account_key" "key" {

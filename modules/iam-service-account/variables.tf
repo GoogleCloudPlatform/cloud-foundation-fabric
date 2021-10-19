@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+variable "description" {
+  description = "Optional description."
+  type        = string
+  default     = null
+}
+
 variable "display_name" {
   description = "Display name of the service account to create."
   type        = string
