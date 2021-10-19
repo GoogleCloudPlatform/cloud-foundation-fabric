@@ -35,7 +35,7 @@ resource "google_bigquery_dataset" "default" {
   project       = var.project_id
   dataset_id    = var.id
   friendly_name = var.friendly_name
-  description   = "Terraform managed."
+  description   = var.description
   labels        = var.labels
   location      = var.location
 
