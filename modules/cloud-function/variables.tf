@@ -36,6 +36,12 @@ variable "bundle_config" {
   })
 }
 
+variable "description" {
+  description = "Optional description."
+  type        = string
+  default     = "Terraform managed."
+}
+
 variable "environment_variables" {
   description = "Cloud function environment variables."
   type        = map(string)

@@ -49,6 +49,12 @@ variable "dataset_access" {
   default     = false
 }
 
+variable "description" {
+  description = "Optional description."
+  type        = string
+  default     = "Terraform managed."
+}
+
 variable "encryption_key" {
   description = "Self link of the KMS key that will be used to protect destination table."
   type        = string
