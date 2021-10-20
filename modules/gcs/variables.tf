@@ -94,25 +94,14 @@ variable "name" {
 variable "notification_config" {
   description = "GCS Notification configuration."
   type = object({
+    enabled           = bool
     payload_format    = string
     topic_name        = string
     event_types       = list(string)
     custom_attributes = map(string)
   })
-  default = {
-    payload_format    = "JSON_API_V1"
-    topic_name        = "gcs-notification-topic"
-    event_types       = ["OBJECT_FINALIZE"]
-    custom_attributes = {}
-  }
+  default = null
 }
-
-variable "notification_enabled" {
-  description = "Enable/Disable GCS notification"
-  type        = bool
-  default     = false
-}
-
 variable "prefix" {
   description = "Prefix used to generate the bucket name."
   type        = string

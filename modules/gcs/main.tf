@@ -20,6 +20,15 @@ locals {
     ? ""
     : join("-", [var.prefix, lower(var.location), ""])
   )
+  notification = (
+    var.notification_config == null
+    ? false
+    : (
+      var.notification_config.enabled == true
+      ? true
+      : false
+    )
+  )
 }
 
 resource "google_storage_bucket" "bucket" {
@@ -107,7 +116,7 @@ resource "google_storage_bucket_iam_binding" "bindings" {
 }
 
 resource "google_storage_notification" "notification" {
-  count             = var.notification_enabled == true ? 1 : 0
+  count             = local.notification == true ? 1 : 0
   bucket            = google_storage_bucket.bucket.name
   payload_format    = var.notification_config.payload_format
   topic             = google_pubsub_topic.topic[0].id
@@ -121,14 +130,14 @@ data "google_storage_project_service_account" "gcs_account" {
 }
 
 resource "google_pubsub_topic_iam_binding" "binding" {
-  count   = var.notification_enabled == true ? 1 : 0
+  count   = local.notification == true ? 1 : 0
   topic   = google_pubsub_topic.topic[0].id
   role    = "roles/pubsub.publisher"
   members = ["serviceAccount:${data.google_storage_project_service_account.gcs_account.email_address}"]
 }
 
 resource "google_pubsub_topic" "topic" {
-  count   = var.notification_enabled == true ? 1 : 0
+  count   = local.notification == true ? 1 : 0
   project = var.project_id
   name    = var.notification_config.topic_name
 }
