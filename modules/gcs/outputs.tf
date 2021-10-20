@@ -24,6 +24,11 @@ output "name" {
   value       = google_storage_bucket.bucket.name
 }
 
+output "notification" {
+  description = "GCS Notification self link."
+  value       = google_storage_notification.notification.self_link
+}
+
 output "url" {
   description = "Bucket URL."
   value       = google_storage_bucket.bucket.url

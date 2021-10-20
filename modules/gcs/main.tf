@@ -105,3 +105,30 @@ resource "google_storage_bucket_iam_binding" "bindings" {
   role     = each.key
   members  = each.value
 }
+
+resource "google_storage_notification" "notification" {
+  count             = var.notification_enabled == true ? 1 : 0
+  bucket            = google_storage_bucket.bucket.name
+  payload_format    = var.notification_config.payload_format
+  topic             = google_pubsub_topic.topic[0].id
+  event_types       = var.notification_config.event_types
+  custom_attributes = var.notification_config.custom_attributes
+
+  depends_on = [google_pubsub_topic_iam_binding.binding, google_pubsub_topic.topic[0]]
+}
+data "google_storage_project_service_account" "gcs_account" {
+  project = var.project_id
+}
+
+resource "google_pubsub_topic_iam_binding" "binding" {
+  count   = var.notification_enabled == true ? 1 : 0
+  topic   = google_pubsub_topic.topic[0].id
+  role    = "roles/pubsub.publisher"
+  members = ["serviceAccount:${data.google_storage_project_service_account.gcs_account.email_address}"]
+}
+
+resource "google_pubsub_topic" "topic" {
+  count   = var.notification_enabled == true ? 1 : 0
+  project = var.project_id
+  name    = var.notification_config.topic_name
+}
