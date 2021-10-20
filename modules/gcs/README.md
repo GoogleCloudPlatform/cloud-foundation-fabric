@@ -96,8 +96,8 @@ module "bucket-gcs-notification" {
   prefix     = "test"
   name       = "mybucket"
   notification_config = {
-    enabled = false
-    payload_format = "JSON_API_V1"
+    enabled           = true
+    payload_format    = "JSON_API_V1"
     topic_name        = "gcs-notification-topic"
     event_types       = ["OBJECT_FINALIZE"]
     custom_attributes = {}
