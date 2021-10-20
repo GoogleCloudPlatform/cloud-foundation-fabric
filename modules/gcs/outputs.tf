@@ -26,7 +26,7 @@ output "name" {
 
 output "notification" {
   description = "GCS Notification self link."
-  value       = google_storage_notification.notification.self_link
+  value       = google_storage_notification.notification[0].self_link
 }
 
 output "url" {
