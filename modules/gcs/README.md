@@ -1,9 +1,4 @@
 # Google Cloud Storage Module
-
-## TODO
-
-- [ ] add support for defining [notifications](https://www.terraform.io/docs/providers/google/r/storage_notification.html)
-
 ## Example
 
 ```hcl
@@ -93,6 +88,24 @@ module "bucket" {
 }
 # tftest:modules=1:resources=2
 ```
+### Minimal example with GCS notifications
+```hcl
+module "bucket-gcs-notification" {
+  source     = "./modules/gcs"
+  project_id = "myproject"
+  prefix     = "test"
+  name       = "my-bucket"
+  notification_config = {
+    enabled           = true
+    payload_format    = "JSON_API_V1"
+    sa_email          = "service-<project-number>@gs-project-accounts.iam.gserviceaccount.com" # GCS SA email must be passed or fetched from projects module.
+    topic_name        = "gcs-notification-topic"
+    event_types       = ["OBJECT_FINALIZE"]
+    custom_attributes = {}
+  }
+}
+# tftest:modules=1:resources=4
+```
 
 <!-- BEGIN TFDOC -->
 ## Variables
@@ -109,6 +122,7 @@ module "bucket" {
 | *lifecycle_rule* | Bucket lifecycle rule | <code title="object&#40;&#123;&#10;action &#61; object&#40;&#123;&#10;type &#61; string&#10;storage_class &#61; string&#10;&#125;&#41;&#10;condition &#61; object&#40;&#123;&#10;age                        &#61; number&#10;created_before             &#61; string&#10;with_state                 &#61; string&#10;matches_storage_class      &#61; list&#40;string&#41;&#10;num_newer_versions         &#61; string&#10;custom_time_before         &#61; string&#10;days_since_custom_time     &#61; string&#10;days_since_noncurrent_time &#61; string&#10;noncurrent_time_before     &#61; string&#10;&#125;&#41;&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 | *location* | Bucket location. | <code title="">string</code> |  | <code title="">EU</code> |
 | *logging_config* | Bucket logging configuration. | <code title="object&#40;&#123;&#10;log_bucket        &#61; string&#10;log_object_prefix &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
+| *notification_config* | GCS Notification configuration. | <code title="object&#40;&#123;&#10;enabled           &#61; bool&#10;payload_format    &#61; string&#10;topic_name        &#61; string&#10;sa_email          &#61; string&#10;event_types       &#61; list&#40;string&#41;&#10;custom_attributes &#61; map&#40;string&#41;&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 | *prefix* | Prefix used to generate the bucket name. | <code title="">string</code> |  | <code title="">null</code> |
 | *retention_policy* | Bucket retention policy. | <code title="object&#40;&#123;&#10;retention_period &#61; number&#10;is_locked        &#61; bool&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 | *storage_class* | Bucket storage class. | <code title="">string</code> |  | <code title="MULTI_REGIONAL&#10;validation &#123;&#10;condition     &#61; contains&#40;&#91;&#34;STANDARD&#34;, &#34;MULTI_REGIONAL&#34;, &#34;REGIONAL&#34;, &#34;NEARLINE&#34;, &#34;COLDLINE&#34;, &#34;ARCHIVE&#34;&#93;, var.storage_class&#41;&#10;error_message &#61; &#34;Storage class must be one of STANDARD, MULTI_REGIONAL, REGIONAL, NEARLINE, COLDLINE, ARCHIVE.&#34;&#10;&#125;">...</code> |
@@ -122,5 +136,7 @@ module "bucket" {
 |---|---|:---:|
 | bucket | Bucket resource. |  |
 | name | Bucket name. |  |
+| notification | GCS Notification self link. |  |
+| topic | Topic ID used by GCS. |  |
 | url | Bucket URL. |  |
 <!-- END TFDOC -->
