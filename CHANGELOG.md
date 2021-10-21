@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [7.0.0] - 2021-10-21
+
 - new cloud operations example showing how to deploy infrastructure for [Compute Engine image builder based on Hashicorp Packer](./cloud-operations/packer-image-builder)
 - **incompatible change** the format of the `records` variable in the `dns` module has changed, to better support dynamic values
 - new `naming-convention` module
@@ -20,6 +22,7 @@ All notable changes to this project will be documented in this file.
 - **incompatible change** fix deprecated message from `gke-nodepool`, change your `workload_metadata_config` to correct values (`GCE_METADATA` or `GKE_METADATA`)
 - **incompatible change** changed maintenance window definition from `maintenance_start_time` to `maintenance_config` in `gke-cluster`
 - added `monitoring_config`,`logging_config`, `dns_config` and `enable_l4_ilb_subsetting` to `gke-cluster`
+
 
 ## [6.0.0] - 2021-10-04
 
