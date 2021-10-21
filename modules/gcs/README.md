@@ -104,7 +104,7 @@ module "bucket-gcs-notification" {
     custom_attributes = {}
   }
 }
-# tftest:modules=1:resources=2
+# tftest:modules=1:resources=4
 ```
 
 <!-- BEGIN TFDOC -->
