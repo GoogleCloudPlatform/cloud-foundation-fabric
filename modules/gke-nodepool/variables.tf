@@ -208,5 +208,5 @@ variable "upgrade_config" {
 variable "workload_metadata_config" {
   description = "Metadata configuration to expose to workloads on the node pool."
   type        = string
-  default     = "GKE_METADATA_SERVER"
+  default     = "GKE_METADATA"
 }

@@ -126,7 +126,7 @@ resource "google_container_node_pool" "nodepool" {
     }
 
     workload_metadata_config {
-      node_metadata = var.workload_metadata_config
+      mode = var.workload_metadata_config
     }
 
   }
