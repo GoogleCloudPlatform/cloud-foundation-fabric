@@ -97,6 +97,7 @@ variable "notification_config" {
     enabled           = bool
     payload_format    = string
     topic_name        = string
+    sa_email          = string
     event_types       = list(string)
     custom_attributes = map(string)
   })

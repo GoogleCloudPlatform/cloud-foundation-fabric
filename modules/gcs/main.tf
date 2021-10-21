@@ -122,20 +122,13 @@ resource "google_storage_notification" "notification" {
   topic             = google_pubsub_topic.topic[0].id
   event_types       = var.notification_config.event_types
   custom_attributes = var.notification_config.custom_attributes
-
-  depends_on = [google_pubsub_topic_iam_binding.binding, google_pubsub_topic.topic[0]]
 }
-data "google_storage_project_service_account" "gcs_account" {
-  project = var.project_id
-}
-
 resource "google_pubsub_topic_iam_binding" "binding" {
   count   = local.notification == true ? 1 : 0
   topic   = google_pubsub_topic.topic[0].id
   role    = "roles/pubsub.publisher"
-  members = ["serviceAccount:${data.google_storage_project_service_account.gcs_account.email_address}"]
+  members = ["serviceAccount:${var.notification_config.sa_email}"]
 }
-
 resource "google_pubsub_topic" "topic" {
   count   = local.notification == true ? 1 : 0
   project = var.project_id
