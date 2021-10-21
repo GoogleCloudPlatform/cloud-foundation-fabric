@@ -20,15 +20,7 @@ locals {
     ? ""
     : join("-", [var.prefix, lower(var.location), ""])
   )
-  notification = (
-    var.notification_config == null
-    ? false
-    : (
-      var.notification_config.enabled == true
-      ? true
-      : false
-    )
-  )
+  notification = try(var.notification_config.enabled, false)
 }
 
 resource "google_storage_bucket" "bucket" {
@@ -116,7 +108,7 @@ resource "google_storage_bucket_iam_binding" "bindings" {
 }
 
 resource "google_storage_notification" "notification" {
-  count             = local.notification == true ? 1 : 0
+  count             = local.notification ? 1 : 0
   bucket            = google_storage_bucket.bucket.name
   payload_format    = var.notification_config.payload_format
   topic             = google_pubsub_topic.topic[0].id
@@ -124,13 +116,13 @@ resource "google_storage_notification" "notification" {
   custom_attributes = var.notification_config.custom_attributes
 }
 resource "google_pubsub_topic_iam_binding" "binding" {
-  count   = local.notification == true ? 1 : 0
+  count   = local.notification ? 1 : 0
   topic   = google_pubsub_topic.topic[0].id
   role    = "roles/pubsub.publisher"
   members = ["serviceAccount:${var.notification_config.sa_email}"]
 }
 resource "google_pubsub_topic" "topic" {
-  count   = local.notification == true ? 1 : 0
+  count   = local.notification ? 1 : 0
   project = var.project_id
   name    = var.notification_config.topic_name
 }
