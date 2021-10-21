@@ -69,7 +69,7 @@ module "cluster-1-nodepool-1" {
 | *node_tags* | Network tags applied to nodes. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">null</code> |
 | *node_taints* | Kubernetes taints applied to nodes. E.g. type=blue:NoSchedule | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 | *upgrade_config* | Optional node upgrade configuration. | <code title="object&#40;&#123;&#10;max_surge       &#61; number&#10;max_unavailable &#61; number&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
-| *workload_metadata_config* | Metadata configuration to expose to workloads on the node pool. | <code title="">string</code> |  | <code title="">GKE_METADATA_SERVER</code> |
+| *workload_metadata_config* | Metadata configuration to expose to workloads on the node pool. | <code title="">string</code> |  | <code title="">GKE_METADATA</code> |
 
 ## Outputs
 
