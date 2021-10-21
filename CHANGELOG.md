@@ -17,6 +17,9 @@ All notable changes to this project will be documented in this file.
 - added new `description` variable to `cloud-function` module
 - added new `description` variable to `bigquery-dataset` module
 - added new `description` variable to `iam-service-account` module
+- **incompatible change** fix deprecated message from `gke-nodepool`, change your `workload_metadata_config` to correct values (`GCE_METADATA` or `GKE_METADATA`)
+- **incompatible change** changed maintenance window definition from `maintenance_start_time` to `maintenance_config` in `gke-cluster`
+- added `monitoring_config`,`logging_config`, `dns_config` and `enable_l4_ilb_subsetting` to `gke-cluster`
 
 ## [6.0.0] - 2021-10-04
 
