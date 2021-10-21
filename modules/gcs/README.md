@@ -91,10 +91,10 @@ module "bucket" {
 ### Minimal example with GCS notifications
 ```hcl
 module "bucket-gcs-notification" {
-  source     = "./gcs"
+  source     = "./modules/gcs"
   project_id = "myproject"
   prefix     = "test"
-  name       = "mybucket"
+  name       = "my-bucket"
   notification_config = {
     enabled           = true
     payload_format    = "JSON_API_V1"
