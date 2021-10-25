@@ -221,3 +221,9 @@ variable "shared_vpc_service_config" {
     host_project = ""
   }
 }
+
+variable "random_project_id" {
+  description = "Adds a suffix of 4 random characters to the `project_id`"
+  type        = bool
+  default     = false
+}

@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+resource "random_id" "random_project_id_suffix" {
+  byte_length = 2
+}
+
 locals {
   descriptive_name = var.descriptive_name != null ? var.descriptive_name : "${local.prefix}${var.name}"
   group_iam_roles  = distinct(flatten(values(var.group_iam)))
@@ -51,6 +55,12 @@ locals {
     ? try(google_project.project.0, null)
     : try(data.google_project.project.0, null)
   )
+  input_project_id = var.random_project_id ? format(
+    "%s%s-%s",
+    local.prefix,
+    var.name,
+    random_id.random_project_id_suffix.hex,
+  ) : "${local.prefix}${var.name}"
   logging_sinks = coalesce(var.logging_sinks, {})
   sink_type_destination = {
     gcs      = "storage.googleapis.com"
@@ -86,7 +96,7 @@ resource "google_project" "project" {
   count               = var.project_create ? 1 : 0
   org_id              = local.parent_type == "organizations" ? local.parent_id : null
   folder_id           = local.parent_type == "folders" ? local.parent_id : null
-  project_id          = "${local.prefix}${var.name}"
+  project_id          = local.input_project_id
   name                = local.descriptive_name
   billing_account     = var.billing_account
   auto_create_network = var.auto_create_network
