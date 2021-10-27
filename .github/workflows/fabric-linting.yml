@@ -28,12 +28,12 @@ jobs:
       - name: Boilterplate
         id: boilerplate
         run: |
-          python3 tools/check_boilerplate.py .
+          python3 tools/check_boilerplate.py $GITHUB_WORKSPACE
 
       - name: Terraform Linting Check
         id: fmt
         run: |
-          terraform fmt -recursive -check .
+          terraform fmt -recursive -check $GITHUB_WORKSPACE
 
       - name: Check documentation
         id: documentation
