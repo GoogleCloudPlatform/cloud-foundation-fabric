@@ -12,19 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: 'Linting'
+name: 'Tests Modules'
 on: 
   pull_request:
     branches:
       - master
     tags:
       - ci
-      - lint
+      - test
 env:
     _TERRAFORM_VERSION: 1.0.4
     TF_CLI_CONFIG_FILE: $GITHUB_WORKSPACE/.github/.terraformrc
 jobs:
-  linting:
+  tests-modules:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -36,7 +36,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip install --user --no-warn-script-location -r tools/REQUIREMENTS.txt &&
+          python -m pip install --user --no-warn-script-location -r tests/requirements.txt &&
           wget https://releases.hashicorp.com/terraform/${_TERRAFORM_VERSION}/terraform_${_TERRAFORM_VERSION}_linux_amd64.zip &&
           unzip terraform_${_TERRAFORM_VERSION}_linux_amd64.zip -d $HOME/.local/bin &&
           rm terraform_${_TERRAFORM_VERSION}_linux_amd64.zip &&
@@ -44,16 +44,6 @@ jobs:
           mkdir -p $HOME/.terraform.d/plugin-cache
 
       - name: Boilerplate
-        id: boilerplate
+        id: test-modules
         run: |
-          python3 tools/check_boilerplate.py $GITHUB_WORKSPACE
-
-      - name: Terraform Linting Check
-        id: fmt
-        run: |
-          terraform fmt -recursive -check $GITHUB_WORKSPACE
-
-      - name: Check documentation
-        id: documentation
-        run: |
-          python3 tools/check_documentation.py cloud-operations/ data-solutions/ data-solutions/data-platform-foundations/ factories/ factories/firewall-vpc-rules/ foundations/ modules/ networking/
+          pytest -vv tests/modules
