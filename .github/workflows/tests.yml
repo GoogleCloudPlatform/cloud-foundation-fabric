@@ -46,7 +46,7 @@ jobs:
         run: |
           pip install -r tests/requirements.txt
 
-      - name: Boilerplate
+      - name: Run tests environments
         id: test-environments
         run: |
           pytest -vv tests/cloud_operations tests/data_solutions tests/factories tests/foundations tests/networking
@@ -75,8 +75,8 @@ jobs:
         run: |
           pip install -r tests/requirements.txt
 
-      - name: Boilerplate
-        id: test-environments
+      - name: Run tests examples
+        id: test-examples
         run: |
           pytest -vv tests/examples
 
@@ -104,7 +104,7 @@ jobs:
         run: |
           pip install -r tests/requirements.txt
 
-      - name: Boilerplate
-        id: test-environments
+      - name: Run tests modules
+        id: test-modules
         run: |
           pytest -vv tests/modules          
