@@ -28,7 +28,7 @@ jobs:
       - name: Boilterplate
         id: boilerplate
         run: |
-          python3 tools/check_boilerplate.py $HOME/
+          python3 tools/check_boilerplate.py .
 
       - name: Terraform Linting Check
         id: fmt
