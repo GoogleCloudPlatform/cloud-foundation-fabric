@@ -17,9 +17,9 @@ on:
   pull_request:
     branches:
       - master
-  tags:
-    - ci
-    - test
+    tags:
+      - ci
+      - test
 env:
     _TERRAFORM_VERSION: 1.0.4
     TF_CLI_CONFIG_FILE: $GITHUB_WORKSPACE/.github/.terraformrc
