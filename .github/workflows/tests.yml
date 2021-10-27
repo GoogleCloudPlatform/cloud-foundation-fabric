@@ -13,13 +13,16 @@
 # limitations under the License.
 
 name: 'Tests'
-on: 
+on:
   pull_request:
     branches:
       - master
     tags:
       - ci
       - test
+
+env:
+  PYTEST_ADDOPTS: "--color=yes"
 
 jobs:
   tests-environment:
@@ -40,7 +43,7 @@ jobs:
 
       - name: Set environment
         run: |
-          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.github/workflows/fake-key.json" >> $GITHUB_ENV          
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.github/workflows/fake-key.json" >> $GITHUB_ENV
 
       - name: Install dependencies
         run: |
@@ -69,8 +72,8 @@ jobs:
 
       - name: Set environment
         run: |
-          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.github/workflows/fake-key.json" >> $GITHUB_ENV          
-          
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.github/workflows/fake-key.json" >> $GITHUB_ENV
+
       - name: Install dependencies
         run: |
           pip install -r tests/requirements.txt
@@ -98,8 +101,8 @@ jobs:
 
       - name: Set environment
         run: |
-          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.github/workflows/fake-key.json" >> $GITHUB_ENV          
-          
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.github/workflows/fake-key.json" >> $GITHUB_ENV
+
       - name: Install dependencies
         run: |
           pip install -r tests/requirements.txt
@@ -107,4 +110,4 @@ jobs:
       - name: Run tests modules
         id: test-modules
         run: |
-          pytest -vv tests/modules          
+          pytest -vv tests/modules

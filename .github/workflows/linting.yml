@@ -38,7 +38,7 @@ jobs:
           terraform_version: 1.0.9
 
       - name: Install dependencies
-        run: |        
+        run: |
           pip install -r tools/REQUIREMENTS.txt
 
       - name: Boilerplate
@@ -49,7 +49,7 @@ jobs:
       - name: Terraform Linting Check
         id: fmt
         run: |
-          terraform fmt -recursive -check $GITHUB_WORKSPACE
+          terraform fmt -recursive -check -diff $GITHUB_WORKSPACE
 
       - name: Check documentation
         id: documentation
