@@ -28,6 +28,9 @@ jobs:
       - name: Boilterplate
         id: boilerplate
         run: |
+          echo "GitHub Workspace: $GITHUB_WORKSPACE"
+          echo "HOME: $HOME"
+          pwd
           python3 tools/check_boilerplate.py $GITHUB_WORKSPACE
 
       - name: Terraform Linting Check
