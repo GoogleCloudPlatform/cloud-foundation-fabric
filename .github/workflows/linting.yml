@@ -20,9 +20,7 @@ on:
     tags:
       - ci
       - lint
-env:
-    _TERRAFORM_VERSION: 1.0.4
-    TF_CLI_CONFIG_FILE: $GITHUB_WORKSPACE/.github/.terraformrc
+
 jobs:
   linting:
     runs-on: ubuntu-latest
