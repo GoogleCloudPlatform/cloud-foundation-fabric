@@ -14,10 +14,40 @@
  * limitations under the License.
  */
 
+variable "contacts" {
+  description = "List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES"
+  type        = map(list(string))
+  default     = {}
+}
+
 variable "custom_roles" {
   description = "Map of role name => list of permissions to create in this project."
   type        = map(list(string))
   default     = {}
+}
+
+variable "firewall_policies" {
+  description = "Hierarchical firewall policies to *create* in the organization."
+  type = map(map(object({
+    description             = string
+    direction               = string
+    action                  = string
+    priority                = number
+    ranges                  = list(string)
+    ports                   = map(list(string))
+    target_service_accounts = list(string)
+    target_resources        = list(string)
+    logging                 = bool
+    #preview                 = bool
+  })))
+  default = {}
+}
+
+variable "firewall_policy_attachments" {
+  description = "List of hierarchical firewall policy IDs to *attach* to the organization"
+  # set to avoid manual casting with toset()
+  type    = map(string)
+  default = {}
 }
 
 variable "group_iam" {
@@ -72,6 +102,26 @@ variable "iam_bindings_authoritative" {
   default     = null
 }
 
+variable "logging_exclusions" {
+  description = "Logging exclusions for this organization in the form {NAME -> FILTER}."
+  type        = map(string)
+  default     = {}
+}
+
+variable "logging_sinks" {
+  description = "Logging sinks to create for this organization."
+  type = map(object({
+    destination      = string
+    type             = string
+    filter           = string
+    iam              = bool
+    include_children = bool
+    # TODO exclusions also support description and disabled
+    exclusions = map(string)
+  }))
+  default = {}
+}
+
 variable "organization_id" {
   description = "Organization id in organizations/nnnnnn format."
   type        = string
@@ -96,54 +146,4 @@ variable "policy_list" {
     values              = list(string)
   }))
   default = {}
-}
-
-variable "firewall_policies" {
-  description = "Hierarchical firewall policies to *create* in the organization."
-  type = map(map(object({
-    description             = string
-    direction               = string
-    action                  = string
-    priority                = number
-    ranges                  = list(string)
-    ports                   = map(list(string))
-    target_service_accounts = list(string)
-    target_resources        = list(string)
-    logging                 = bool
-    #preview                 = bool
-  })))
-  default = {}
-}
-
-variable "firewall_policy_attachments" {
-  description = "List of hierarchical firewall policy IDs to *attach* to the organization"
-  # set to avoid manual casting with toset()
-  type    = map(string)
-  default = {}
-}
-
-variable "logging_sinks" {
-  description = "Logging sinks to create for this organization."
-  type = map(object({
-    destination      = string
-    type             = string
-    filter           = string
-    iam              = bool
-    include_children = bool
-    # TODO exclusions also support description and disabled
-    exclusions = map(string)
-  }))
-  default = {}
-}
-
-variable "logging_exclusions" {
-  description = "Logging exclusions for this organization in the form {NAME -> FILTER}."
-  type        = map(string)
-  default     = {}
-}
-
-variable "contacts" {
-  description = "List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES"
-  type        = map(list(string))
-  default     = {}
 }

@@ -39,25 +39,24 @@ module "vpc-right" {
       priority      = null
       tags          = null
       next_hop_type = "instance"
-      next_hop      = module.gw.instances.0.self_link
+      next_hop      = module.gw[var.zones[0]].self_link
     }
     to-left-gw-2 = {
       dest_range    = var.ip_ranges.left
       priority      = null
       tags          = null
       next_hop_type = "instance"
-      next_hop      = module.gw.instances.1.self_link
+      next_hop      = module.gw[var.zones[1]].self_link
     }
   }
 }
 
 module "firewall-right" {
-  source               = "../../modules/net-vpc-firewall"
-  project_id           = module.project.project_id
-  network              = module.vpc-right.name
-  admin_ranges_enabled = true
-  admin_ranges         = values(var.ip_ranges)
-  ssh_source_ranges    = ["35.235.240.0/20", "35.191.0.0/16", "130.211.0.0/22"]
+  source            = "../../modules/net-vpc-firewall"
+  project_id        = module.project.project_id
+  network           = module.vpc-right.name
+  admin_ranges      = values(var.ip_ranges)
+  ssh_source_ranges = ["35.235.240.0/20", "35.191.0.0/16", "130.211.0.0/22"]
 }
 
 module "nat-right" {

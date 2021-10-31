@@ -130,11 +130,10 @@ module "vpc-shared" {
 }
 
 module "vpc-shared-firewall" {
-  source               = "../../modules/net-vpc-firewall"
-  project_id           = module.project-host.project_id
-  network              = module.vpc-shared.name
-  admin_ranges_enabled = true
-  admin_ranges         = values(var.ip_ranges)
+  source       = "../../modules/net-vpc-firewall"
+  project_id   = module.project-host.project_id
+  network      = module.vpc-shared.name
+  admin_ranges = values(var.ip_ranges)
 }
 
 module "nat" {
@@ -157,10 +156,10 @@ module "host-dns" {
   name            = "example"
   domain          = "example.com."
   client_networks = [module.vpc-shared.self_link]
-  recordsets = [
-    { name = "localhost", type = "A", ttl = 300, records = ["127.0.0.1"] },
-    { name = "bastion", type = "A", ttl = 300, records = module.vm-bastion.internal_ips },
-  ]
+  recordsets = {
+    "A localhost" = { ttl = 300, records = ["127.0.0.1"] }
+    "A bastion"   = { ttl = 300, records = [module.vm-bastion.internal_ip] }
+  }
 }
 
 ################################################################################
@@ -170,7 +169,7 @@ module "host-dns" {
 module "vm-bastion" {
   source     = "../../modules/compute-vm"
   project_id = module.project-svc-gce.project_id
-  region     = var.region
+  zone       = "${var.region}-b"
   name       = "bastion"
   network_interfaces = [{
     network    = module.vpc-shared.self_link
@@ -179,8 +178,7 @@ module "vm-bastion" {
     addresses  = null
     alias_ips  = null
   }]
-  instance_count = 1
-  tags           = ["ssh"]
+  tags = ["ssh"]
   metadata = {
     startup-script = join("\n", [
       "#! /bin/bash",

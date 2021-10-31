@@ -46,7 +46,7 @@ This sample creates several distinct groups of resources:
 You can now connect to the GCE instance with the following command:
 
 ```hcl
- gcloud compute ssh vm-example-1
+ gcloud compute ssh vm-example
 ```
 
 You can run now the simple pipeline you can find [here](./script/data_ingestion/). Once you have installed required packages and copied a file into the GCS bucket, you can trigger the pipeline using internal ips with a command simila to:
@@ -95,7 +95,7 @@ You can check data imported into Google BigQuery from the Google Cloud Console U
 You can now connect to the GCE instance with the following command:
 
 ```hcl
- gcloud compute ssh vm-example-1
+ gcloud compute ssh vm-example
 ```
 
 You can run now a simple 'bq load' command to import data into Bigquery. Below an example command:
@@ -133,5 +133,5 @@ You can check data imported into Google BigQuery from the Google Cloud Console U
 | bq_tables | Bigquery Tables. |  |
 | buckets | GCS Bucket Cloud KMS crypto keys. |  |
 | projects | Project ids. |  |
-| vm | GCE VMs. |  |
+| vm | GCE VM. |  |
 <!-- END TFDOC -->

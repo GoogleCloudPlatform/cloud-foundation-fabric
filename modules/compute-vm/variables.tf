@@ -14,6 +14,21 @@
  * limitations under the License.
  */
 
+variable "attached_disk_defaults" {
+  description = "Defaults for attached disks options."
+  type = object({
+    mode         = string
+    replica_zone = string
+    type         = string
+  })
+  default = {
+    auto_delete  = true
+    mode         = "READ_WRITE"
+    replica_zone = null
+    type         = "pd-balanced"
+  }
+}
+
 variable "attached_disks" {
   description = "Additional disks, if options is null defaults will be used in its place. Source type is one of 'image' (zonal disks in vms and template), 'snapshot' (vm), 'existing', and null."
   type = list(object({
@@ -22,10 +37,9 @@ variable "attached_disks" {
     source      = string
     source_type = string
     options = object({
-      auto_delete = bool
-      mode        = string
-      regional    = bool
-      type        = string
+      mode         = string
+      replica_zone = string
+      type         = string
     })
   }))
   default = []
@@ -41,22 +55,6 @@ variable "attached_disks" {
   }
 }
 
-variable "attached_disk_defaults" {
-  description = "Defaults for attached disks options."
-  type = object({
-    auto_delete = bool
-    mode        = string
-    regional    = bool
-    type        = string
-  })
-  default = {
-    auto_delete = true
-    mode        = "READ_WRITE"
-    regional    = false
-    type        = "pd-ssd"
-  }
-}
-
 variable "boot_disk" {
   description = "Boot disk properties."
   type = object({
@@ -65,10 +63,16 @@ variable "boot_disk" {
     type  = string
   })
   default = {
-    image = "projects/debian-cloud/global/images/family/debian-10"
-    type  = "pd-ssd"
+    image = "projects/debian-cloud/global/images/family/debian-11"
+    type  = "pd-balanced"
     size  = 10
   }
+}
+
+variable "boot_disk_delete" {
+  description = "Auto delete boot disk."
+  type        = bool
+  default     = true
 }
 
 variable "can_ip_forward" {
@@ -83,6 +87,16 @@ variable "confidential_compute" {
   default     = false
 }
 
+variable "create_template" {
+  description = "Create instance template instead of instances."
+  type        = bool
+  default     = false
+}
+variable "description" {
+  description = "Description of a Compute Instance."
+  type        = string
+  default     = "Managed by the compute-vm Terraform module."
+}
 variable "enable_display" {
   description = "Enable virtual display on the instances"
   type        = bool
@@ -119,12 +133,6 @@ variable "iam" {
   default     = {}
 }
 
-variable "instance_count" {
-  description = "Number of instances to create (only for non-template usage)."
-  type        = number
-  default     = 1
-}
-
 variable "instance_type" {
   description = "Instance type."
   type        = string
@@ -143,12 +151,6 @@ variable "metadata" {
   default     = {}
 }
 
-variable "metadata_list" {
-  description = "List of instance metadata that will be cycled through. Ignored for template use."
-  type        = list(map(string))
-  default     = []
-}
-
 variable "min_cpu_platform" {
   description = "Minimum CPU platform."
   type        = string
@@ -156,7 +158,7 @@ variable "min_cpu_platform" {
 }
 
 variable "name" {
-  description = "Instances base name."
+  description = "Instance name."
   type        = string
 }
 
@@ -167,10 +169,10 @@ variable "network_interfaces" {
     network    = string
     subnetwork = string
     addresses = object({
-      internal = list(string)
-      external = list(string)
+      internal = string
+      external = string
     })
-    alias_ips = map(list(string))
+    alias_ips = map(string)
   }))
 }
 
@@ -190,11 +192,6 @@ variable "options" {
 
 variable "project_id" {
   description = "Project id."
-  type        = string
-}
-
-variable "region" {
-  description = "Compute region."
   type        = string
 }
 
@@ -230,30 +227,6 @@ variable "service_account_scopes" {
   default     = []
 }
 
-variable "single_name" {
-  description = "Do not append progressive count to instance name."
-  type        = bool
-  default     = false
-}
-
-variable "tags" {
-  description = "Instance tags."
-  type        = list(string)
-  default     = []
-}
-
-variable "use_instance_template" {
-  description = "Create instance template instead of instances."
-  type        = bool
-  default     = false
-}
-
-variable "zones" {
-  description = "Compute zone, instance will cycle through the list, defaults to the 'b' zone in the region."
-  type        = list(string)
-  default     = []
-}
-
 variable "shielded_config" {
   description = "Shielded VM configuration of the instances."
   type = object({
@@ -263,3 +236,16 @@ variable "shielded_config" {
   })
   default = null
 }
+
+variable "tags" {
+  description = "Instance tags."
+  type        = list(string)
+  default     = []
+}
+
+variable "zone" {
+  description = "Compute zone."
+  type        = string
+}
+
+

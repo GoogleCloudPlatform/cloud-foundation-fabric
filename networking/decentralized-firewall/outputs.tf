@@ -12,6 +12,24 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+output "fw_rules" {
+  description = "Firewall rules."
+  value = {
+    prod = {
+      ingress_allow_rules = module.vpc-firewall-prod.ingress_allow_rules
+      ingress_deny_rules  = module.vpc-firewall-prod.ingress_deny_rules
+      egress_allow_rules  = module.vpc-firewall-prod.egress_allow_rules
+      egress_deny_rules   = module.vpc-firewall-prod.egress_deny_rules
+    }
+    dev = {
+      ingress_allow_rules = module.vpc-firewall-dev.ingress_allow_rules
+      ingress_deny_rules  = module.vpc-firewall-dev.ingress_deny_rules
+      egress_allow_rules  = module.vpc-firewall-dev.egress_allow_rules
+      egress_deny_rules   = module.vpc-firewall-dev.egress_deny_rules
+    }
+  }
+}
+
 output "projects" {
   description = "Project ids."
   value = {
@@ -30,24 +48,6 @@ output "vpc" {
     dev = {
       name    = module.vpc-dev.name
       subnets = module.vpc-dev.subnet_ips
-    }
-  }
-}
-
-output "fw_rules" {
-  description = "Firewall rules."
-  value = {
-    prod = {
-      ingress_allow_rules = module.vpc-firewall-prod.ingress_allow_rules
-      ingress_deny_rules  = module.vpc-firewall-prod.ingress_deny_rules
-      egress_allow_rules  = module.vpc-firewall-prod.egress_allow_rules
-      egress_deny_rules   = module.vpc-firewall-prod.egress_deny_rules
-    }
-    dev = {
-      ingress_allow_rules = module.vpc-firewall-dev.ingress_allow_rules
-      ingress_deny_rules  = module.vpc-firewall-dev.ingress_deny_rules
-      egress_allow_rules  = module.vpc-firewall-dev.egress_allow_rules
-      egress_deny_rules   = module.vpc-firewall-dev.egress_deny_rules
     }
   }
 }

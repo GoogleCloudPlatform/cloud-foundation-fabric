@@ -17,7 +17,7 @@ module "org" {
     "cloud-owners@example.org" = ["roles/owner", "roles/projectCreator"]
   }
   iam             = {
-    "roles/projectCreator" = ["group:cloud-admins@example.org"]
+    "roles/resourcemanager.projectCreator" = ["group:cloud-admins@example.org"]
   }
   policy_boolean = {
     "constraints/compute.disableGuestAttributesAccess" = true
@@ -32,7 +32,7 @@ module "org" {
     }
   }
 }
-# tftest:modules=1:resources=5
+# tftest:modules=1:resources=6
 ```
 
 ## IAM

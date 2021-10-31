@@ -2,10 +2,6 @@
 
 This module allows managing a GCE Internal Load Balancer and integrates the forwarding rule, regional backend, and optional health check resources. It's designed to be a simple match for the [`compute-vm`](../compute-vm) module, which can be used to manage instance templates and instance groups.
 
-## TODO
-
-- [ ] add a variable for setting address purpose to `SHARED_LOADBALANCER_VIP` and an output for the address once the [provider support has been implemented](https://github.com/terraform-providers/terraform-provider-google/issues/6499)
-
 ## Issues
 
 TODO(ludoo): check if this is still the case after splitting out MIG from compute-vm
@@ -67,10 +63,10 @@ module "cos-nginx" {
 
 module "instance-group" {
   source     = "./modules/compute-vm"
+  for_each = toset(["b", "c"])
   project_id = var.project_id
-  region     = "europe-west1"
-  zones      = ["europe-west1-b", "europe-west1-c"]
-  name       = "ilb-test"
+  zone     = "europe-west1-${each.key}"
+  name       = "ilb-test-${each.key}"
   network_interfaces = [{
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
@@ -100,9 +96,9 @@ module "ilb" {
   subnetwork    = var.subnet.self_link
   ports         = [80]
   backends = [
-    for name, group in module.instance-group.groups : {
+    for z, mod in module.instance-group : {
       failover       = false
-      group          = group.self_link
+      group          = mod.group.self_link
       balancing_mode = "CONNECTION"
     }
   ]
@@ -110,7 +106,7 @@ module "ilb" {
     type = "http", check = { port = 80 }, config = {}, logging = true
   }
 }
-# tftest:modules=2:resources=6
+# tftest:modules=3:resources=7
 ```
 
 <!-- BEGIN TFDOC -->

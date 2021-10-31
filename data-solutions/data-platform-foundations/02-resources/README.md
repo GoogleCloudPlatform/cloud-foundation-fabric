@@ -26,7 +26,7 @@ In the previous step, we created the environment (projects and service account) 
 
 To create the resources, copy the output of the environment step (**project_ids**) and paste it into the `terraform.tvars`:
 
-- Specify your variables in a `terraform.tvars`, you can use the ouptu from the environment stage
+- Specify your variables in a `terraform.tvars`, you can use the output from the environment stage
 
 ```tfm
 project_ids = {
@@ -38,15 +38,14 @@ project_ids = {
 }
 ```
 
-- Get a key for the service account created in the environment stage:
-  - Go into services project
-  - Go into IAM page
-  - Go into the service account section
-  - Creaet a new key for the service account created in previeous step (**service_account**)
-  - Download the json key into the current folder
-- make sure you have the right authentication setup: `export GOOGLE_APPLICATION_CREDENTIALS=PATH_TO_SERVICE_ACCOUT_KEY.json`
-- run `terraform init` and `terraform apply`
 
+- The providers.tf file has been configured to impersonate the **main** service account
+
+- To launch terraform:
+```bash
+terraform plan
+terraform apply
+```
 Once done testing, you can clean up resources by running `terraform destroy`.
 
 ### CMEK configuration
@@ -58,6 +57,7 @@ You can configure GCP resources to use existing CMEK keys configuring the 'servi
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
 | project_ids | Project IDs. | <code title="object&#40;&#123;&#10;datamart       &#61; string&#10;dwh            &#61; string&#10;landing        &#61; string&#10;services       &#61; string&#10;transformation &#61; string&#10;&#125;&#41;">object({...})</code> | ✓ |  |
+| *admins* | List of users allowed to impersonate the service account | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">null</code> |
 | *datamart_bq_datasets* | Datamart Bigquery datasets | <code title="map&#40;object&#40;&#123;&#10;iam      &#61; map&#40;list&#40;string&#41;&#41;&#10;location &#61; string&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="&#123;&#10;bq_datamart_dataset &#61; &#123;&#10;location &#61; &#34;EU&#34;&#10;iam &#61; &#123;&#10;&#125;&#10;&#125;&#10;&#125;">...</code> |
 | *dwh_bq_datasets* | DWH Bigquery datasets | <code title="map&#40;object&#40;&#123;&#10;location &#61; string&#10;iam      &#61; map&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="&#123;&#10;bq_raw_dataset &#61; &#123;&#10;iam      &#61; &#123;&#125;&#10;location &#61; &#34;EU&#34;&#10;&#125;&#10;&#125;">...</code> |
 | *landing_buckets* | List of landing buckets to create | <code title="map&#40;object&#40;&#123;&#10;location &#61; string&#10;name     &#61; string&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="&#123;&#10;raw-data &#61; &#123;&#10;location &#61; &#34;EU&#34;&#10;name     &#61; &#34;raw-data&#34;&#10;&#125;&#10;data-schema &#61; &#123;&#10;location &#61; &#34;EU&#34;&#10;name     &#61; &#34;data-schema&#34;&#10;&#125;&#10;&#125;">...</code> |

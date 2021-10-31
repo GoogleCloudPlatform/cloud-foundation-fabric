@@ -33,5 +33,5 @@ You can optionally deploy the Squid server as [Managed Instance Group](https://c
 
 | name | description | sensitive |
 |---|---|:---:|
-| squid-address | None |  |
+| squid-address | IP address of the Squid proxy. |  |
 <!-- END TFDOC -->

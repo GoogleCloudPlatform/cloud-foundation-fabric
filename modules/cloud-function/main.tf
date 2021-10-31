@@ -59,7 +59,7 @@ resource "google_cloudfunctions_function" "function" {
   project               = var.project_id
   region                = var.region
   name                  = "${local.prefix}${var.name}"
-  description           = "Terraform managed."
+  description           = var.description
   runtime               = var.function_config.runtime
   available_memory_mb   = var.function_config.memory
   max_instances         = var.function_config.instances

@@ -33,6 +33,7 @@ variable "description" {
 }
 
 variable "dns_policy" {
+  description = "DNS policy setup for the VPC."
   type = object({
     inbound = bool
     logging = bool
@@ -50,12 +51,6 @@ variable "iam" {
   default     = {}
 }
 
-variable "log_configs" {
-  description = "Map keyed by subnet 'region/name' of optional configurations for flow logs when enabled."
-  type        = map(map(string))
-  default     = {}
-}
-
 variable "log_config_defaults" {
   description = "Default configuration for flow logs when enabled."
   type = object({
@@ -68,6 +63,12 @@ variable "log_config_defaults" {
     flow_sampling        = 0.5
     metadata             = "INCLUDE_ALL_METADATA"
   }
+}
+
+variable "log_configs" {
+  description = "Map keyed by subnet 'region/name' of optional configurations for flow logs when enabled."
+  type        = map(map(string))
+  default     = {}
 }
 
 variable "mtu" {
@@ -134,7 +135,6 @@ variable "routing_mode" {
     condition     = var.routing_mode == "GLOBAL" || var.routing_mode == "REGIONAL"
     error_message = "Routing type must be GLOBAL or REGIONAL."
   }
-
 }
 
 variable "shared_vpc_host" {
@@ -147,18 +147,6 @@ variable "shared_vpc_service_projects" {
   description = "Shared VPC service projects to register with this host"
   type        = list(string)
   default     = []
-}
-
-variable "subnets" {
-  description = "The list of subnets being created"
-  type = list(object({
-    name               = string
-    ip_cidr_range      = string
-    name               = string
-    region             = string
-    secondary_ip_range = map(string)
-  }))
-  default = []
 }
 
 variable "subnet_descriptions" {
@@ -177,6 +165,28 @@ variable "subnet_private_access" {
   description = "Optional map of boolean to control private Google access (default is enabled), keyed by subnet 'region/name'."
   type        = map(bool)
   default     = {}
+}
+
+variable "subnets" {
+  description = "List of subnets being created."
+  type = list(object({
+    name               = string
+    ip_cidr_range      = string
+    region             = string
+    secondary_ip_range = map(string)
+  }))
+  default = []
+}
+
+variable "subnets_l7ilb" {
+  description = "List of subnets for private HTTPS load balancer."
+  type = list(object({
+    active        = bool
+    name          = string
+    ip_cidr_range = string
+    region        = string
+  }))
+  default = []
 }
 
 variable "vpc_create" {

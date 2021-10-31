@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-output "project_id" {
-  description = "Project id."
-  value       = "${local.prefix}${var.name}"
-  depends_on = [
-    google_project.project,
-    data.google_project.project,
-    google_project_organization_policy.boolean,
-    google_project_organization_policy.list,
-    google_project_service.project_services,
-    google_compute_shared_vpc_service_project.service_projects,
-    google_kms_crypto_key_iam_member.crypto_key
-  ]
+output "custom_roles" {
+  description = "Ids of the created custom roles."
+  value = {
+    for name, role in google_project_iam_custom_role.roles :
+    name => role.id
+  }
 }
 
 output "name" {
@@ -52,6 +46,20 @@ output "number" {
   ]
 }
 
+output "project_id" {
+  description = "Project id."
+  value       = "${local.prefix}${var.name}"
+  depends_on = [
+    google_project.project,
+    data.google_project.project,
+    google_project_organization_policy.boolean,
+    google_project_organization_policy.list,
+    google_project_service.project_services,
+    google_compute_shared_vpc_service_project.service_projects,
+    google_kms_crypto_key_iam_member.crypto_key
+  ]
+}
+
 output "service_accounts" {
   description = "Product robot service accounts in project."
   value = {
@@ -64,14 +72,6 @@ output "service_accounts" {
     google_kms_crypto_key_iam_member.crypto_key,
     google_project_service_identity.jit_si
   ]
-}
-
-output "custom_roles" {
-  description = "Ids of the created custom roles."
-  value = {
-    for name, role in google_project_iam_custom_role.roles :
-    name => role.id
-  }
 }
 
 output "sink_writer_identities" {

@@ -13,10 +13,6 @@
 # limitations under the License.
 
 locals {
-  vm-instances = concat(
-    module.vm-spoke-1.instances,
-    module.vm-spoke-2.instances
-  )
   vm-startup-script = join("\n", [
     "#! /bin/bash",
     "apt-get update && apt-get install -y dnsutils"
@@ -48,11 +44,10 @@ module "vpc-hub" {
 }
 
 module "vpc-hub-firewall" {
-  source               = "../../modules/net-vpc-firewall"
-  project_id           = var.project_id
-  network              = module.vpc-hub.name
-  admin_ranges_enabled = true
-  admin_ranges         = values(var.ip_ranges)
+  source       = "../../modules/net-vpc-firewall"
+  project_id   = var.project_id
+  network      = module.vpc-hub.name
+  admin_ranges = values(var.ip_ranges)
 }
 
 module "vpn-hub-a" {
@@ -140,11 +135,10 @@ module "vpc-spoke-1" {
 }
 
 module "vpc-spoke-1-firewall" {
-  source               = "../../modules/net-vpc-firewall"
-  project_id           = var.project_id
-  network              = module.vpc-spoke-1.name
-  admin_ranges_enabled = true
-  admin_ranges         = values(var.ip_ranges)
+  source       = "../../modules/net-vpc-firewall"
+  project_id   = var.project_id
+  network      = module.vpc-spoke-1.name
+  admin_ranges = values(var.ip_ranges)
 }
 
 module "vpn-spoke-1" {
@@ -204,11 +198,10 @@ module "vpc-spoke-2" {
 }
 
 module "vpc-spoke-2-firewall" {
-  source               = "../../modules/net-vpc-firewall"
-  project_id           = var.project_id
-  network              = module.vpc-spoke-2.name
-  admin_ranges_enabled = true
-  admin_ranges         = values(var.ip_ranges)
+  source       = "../../modules/net-vpc-firewall"
+  project_id   = var.project_id
+  network      = module.vpc-spoke-2.name
+  admin_ranges = values(var.ip_ranges)
 }
 
 module "vpn-spoke-2" {
@@ -250,7 +243,7 @@ module "nat-spoke-2" {
 module "vm-spoke-1" {
   source     = "../../modules/compute-vm"
   project_id = var.project_id
-  region     = var.regions.b
+  zone       = "${var.regions.b}-b"
   name       = "spoke-1-test"
   network_interfaces = [{
     network    = module.vpc-spoke-1.self_link
@@ -266,7 +259,7 @@ module "vm-spoke-1" {
 module "vm-spoke-2" {
   source     = "../../modules/compute-vm"
   project_id = var.project_id
-  region     = var.regions.b
+  zone       = "${var.regions.b}-b"
   name       = "spoke-2-test"
   network_interfaces = [{
     network    = module.vpc-spoke-2.self_link
@@ -290,12 +283,11 @@ module "dns-host" {
   name            = "example"
   domain          = "example.com."
   client_networks = [module.vpc-hub.self_link]
-  recordsets = [
-    for instance in local.vm-instances : {
-      name    = instance.name, type = "A", ttl = 300,
-      records = [instance.network_interface.0.network_ip]
-    }
-  ]
+  recordsets = {
+    "A localhost"    = { ttl = 300, records = ["127.0.0.1"] }
+    "A spoke-1-test" = { ttl = 300, records = [module.vm-spoke-1.internal_ip] }
+    "A spoke-2-test" = { ttl = 300, records = [module.vm-spoke-2.internal_ip] }
+  }
 }
 
 module "dns-spoke-1" {

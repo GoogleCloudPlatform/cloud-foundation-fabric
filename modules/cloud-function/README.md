@@ -140,6 +140,7 @@ module "cf-http" {
 | name | Name used for cloud function and associated resources. | <code title="">string</code> | ✓ |  |
 | project_id | Project id used for all resources. | <code title="">string</code> | ✓ |  |
 | *bucket_config* | Enable and configure auto-created bucket. Set fields to null to use defaults. | <code title="object&#40;&#123;&#10;location             &#61; string&#10;lifecycle_delete_age &#61; number&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
+| *description* | Optional description. | <code title="">string</code> |  | <code title="">Terraform managed.</code> |
 | *environment_variables* | Cloud function environment variables. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
 | *function_config* | Cloud function configuration. | <code title="object&#40;&#123;&#10;entry_point      &#61; string&#10;ingress_settings &#61; string&#10;instances        &#61; number&#10;memory           &#61; number&#10;runtime          &#61; string&#10;timeout          &#61; number&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;entry_point      &#61; &#34;main&#34;&#10;ingress_settings &#61; null&#10;instances        &#61; 1&#10;memory           &#61; 256&#10;runtime          &#61; &#34;python37&#34;&#10;timeout          &#61; 180&#10;&#125;">...</code> |
 | *iam* | IAM bindings for topic in {ROLE => [MEMBERS]} format. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |

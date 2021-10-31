@@ -42,12 +42,6 @@ variable "addons" {
   }
 }
 
-variable "enable_dataplane_v2" {
-  description = "Enable Dataplane V2 on the cluster, will disable network_policy addons config"
-  type        = bool
-  default     = false
-}
-
 variable "authenticator_security_group" {
   description = "RBAC security group for Google Groups for GKE, format is gke-security-groups@yourdomain.com."
   type        = string
@@ -98,14 +92,46 @@ variable "description" {
   default     = null
 }
 
+variable "dns_config" {
+  description = "Configuration for Using Cloud DNS for GKE."
+  type = object({
+    cluster_dns        = string
+    cluster_dns_scope  = string
+    cluster_dns_domain = string
+  })
+  default = {
+    cluster_dns        = "PROVIDER_UNSPECIFIED"
+    cluster_dns_scope  = "DNS_SCOPE_UNSPECIFIED"
+    cluster_dns_domain = ""
+  }
+}
+
+variable "enable_autopilot" {
+  description = "Create cluster in autopilot mode. With autopilot there's no need to create node-pools and some features are not supported (e.g. setting default_max_pods_per_node)"
+  type        = bool
+  default     = false
+}
+
 variable "enable_binary_authorization" {
   description = "Enable Google Binary Authorization."
   type        = bool
   default     = null
 }
 
+variable "enable_dataplane_v2" {
+  description = "Enable Dataplane V2 on the cluster, will disable network_policy addons config"
+  type        = bool
+  default     = false
+}
+
 variable "enable_intranode_visibility" {
   description = "Enable intra-node visibility to make same node pod to pod traffic visible."
+  type        = bool
+  default     = null
+}
+
+variable "enable_l4_ilb_subsetting" {
+  description = "Enable L4ILB Subsetting."
   type        = bool
   default     = null
 }
@@ -133,16 +159,42 @@ variable "location" {
   type        = string
 }
 
+variable "logging_config" {
+  description = "Logging configuration (enabled components)."
+  type        = list(string)
+  default     = null
+}
+
 variable "logging_service" {
   description = "Logging service (disable with an empty string)."
   type        = string
   default     = "logging.googleapis.com/kubernetes"
 }
 
-variable "maintenance_start_time" {
-  description = "Maintenance start time in RFC3339 format 'HH:MM', where HH is [00-23] and MM is [00-59] GMT."
-  type        = string
-  default     = "03:00"
+variable "maintenance_config" {
+  description = "Maintenance window configuration"
+  type = object({
+    daily_maintenance_window = object({
+      start_time = string
+    })
+    recurring_window = object({
+      start_time = string
+      end_time   = string
+      recurrence = string
+    })
+    maintenance_exclusion = list(object({
+      exclusion_name = string
+      start_time     = string
+      end_time       = string
+    }))
+  })
+  default = {
+    daily_maintenance_window = {
+      start_time = "03:00"
+    }
+    recurring_window      = null
+    maintenance_exclusion = []
+  }
 }
 
 variable "master_authorized_ranges" {
@@ -154,6 +206,12 @@ variable "master_authorized_ranges" {
 variable "min_master_version" {
   description = "Minimum version of the master, defaults to the version of the most recent official release."
   type        = string
+  default     = null
+}
+
+variable "monitoring_config" {
+  description = "Monitoring configuration (enabled components)."
+  type        = list(string)
   default     = null
 }
 
@@ -255,10 +313,3 @@ variable "workload_identity" {
   type        = bool
   default     = true
 }
-
-variable "enable_autopilot" {
-  description = "Create cluster in autopilot mode. With autopilot there's no need to create node-pools and some features are not supported (e.g. setting default_max_pods_per_node)"
-  type        = bool
-  default     = false
-}
-

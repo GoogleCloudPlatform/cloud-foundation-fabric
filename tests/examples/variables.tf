@@ -60,7 +60,7 @@ variable "subnet" {
 variable "vpc" {
   default = {
     name      = "vpc_name"
-    self_link = "vpc_self_link"
+    self_link = "projects/xxx/global/networks/yyy"
   }
 }
 

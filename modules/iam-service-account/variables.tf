@@ -14,6 +14,18 @@
  * limitations under the License.
  */
 
+variable "description" {
+  description = "Optional description."
+  type        = string
+  default     = null
+}
+
+variable "display_name" {
+  description = "Display name of the service account to create."
+  type        = string
+  default     = "Terraform-managed."
+}
+
 variable "generate_key" {
   description = "Generate a key for service account."
   type        = bool
@@ -59,12 +71,6 @@ variable "iam_storage_roles" {
 variable "name" {
   description = "Name of the service account to create."
   type        = string
-}
-
-variable "display_name" {
-  description = "Display name of the service account to create."
-  type        = string
-  default     = "Terraform-managed."
 }
 
 variable "prefix" {

@@ -73,14 +73,6 @@ output "self_link" {
   value       = local.vpn_gateway
 }
 
-output "tunnels" {
-  description = "VPN tunnel resources."
-  value = {
-    for name in keys(var.tunnels) :
-    name => try(google_compute_vpn_tunnel.tunnels[name], null)
-  }
-}
-
 output "tunnel_names" {
   description = "VPN tunnel names."
   value = {
@@ -94,5 +86,13 @@ output "tunnel_self_links" {
   value = {
     for name in keys(var.tunnels) :
     name => try(google_compute_vpn_tunnel.tunnels[name].self_link, null)
+  }
+}
+
+output "tunnels" {
+  description = "VPN tunnel resources."
+  value = {
+    for name in keys(var.tunnels) :
+    name => try(google_compute_vpn_tunnel.tunnels[name], null)
   }
 }

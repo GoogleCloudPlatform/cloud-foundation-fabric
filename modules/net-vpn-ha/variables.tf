@@ -19,18 +19,6 @@ variable "name" {
   type        = string
 }
 
-variable "vpn_gateway_create" {
-  description = "Create HA VPN Gateway."
-  type        = bool
-  default     = true
-}
-
-variable "vpn_gateway" {
-  description = "HA VPN Gateway Self Link for using an existing HA VPN Gateway, leave empty if `vpn_gateway_create` is set to `true`."
-  type        = string
-  default     = null
-}
-
 variable "network" {
   description = "VPC used for the gateway and routes."
   type        = string
@@ -121,4 +109,16 @@ variable "tunnels" {
     vpn_gateway_interface           = number
   }))
   default = {}
+}
+
+variable "vpn_gateway" {
+  description = "HA VPN Gateway Self Link for using an existing HA VPN Gateway, leave empty if `vpn_gateway_create` is set to `true`."
+  type        = string
+  default     = null
+}
+
+variable "vpn_gateway_create" {
+  description = "Create HA VPN Gateway."
+  type        = bool
+  default     = true
 }

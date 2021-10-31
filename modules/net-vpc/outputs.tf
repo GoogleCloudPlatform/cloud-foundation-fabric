@@ -14,18 +14,44 @@
  * limitations under the License.
  */
 
-output "network" {
-  description = "Network resource."
-  value       = local.network
-  depends_on = [
-    google_service_networking_connection.psn_connection
-  ]
+output "bindings" {
+  description = "Subnet IAM bindings."
+  value       = { for k, v in google_compute_subnetwork_iam_binding.binding : k => v }
 }
 
 output "name" {
   description = "The name of the VPC being created."
   value       = local.network.name
   depends_on = [
+    google_compute_network_peering.local,
+    google_compute_network_peering.remote,
+    google_compute_shared_vpc_host_project.shared_vpc_host,
+    google_compute_shared_vpc_service_project.service_projects,
+    google_service_networking_connection.psn_connection
+  ]
+}
+
+output "network" {
+  description = "Network resource."
+  value       = local.network
+  depends_on = [
+    google_compute_network_peering.local,
+    google_compute_network_peering.remote,
+    google_compute_shared_vpc_host_project.shared_vpc_host,
+    google_compute_shared_vpc_service_project.service_projects,
+    google_service_networking_connection.psn_connection
+  ]
+}
+
+output "project_id" {
+  description = "Project ID containing the network. Use this when you need to create resources *after* the VPC is fully set up (e.g. subnets created, shared VPC service projects attached, Private Service Networking configured)."
+  value       = var.project_id
+  depends_on = [
+    google_compute_subnetwork.subnetwork,
+    google_compute_network_peering.local,
+    google_compute_network_peering.remote,
+    google_compute_shared_vpc_host_project.shared_vpc_host,
+    google_compute_shared_vpc_service_project.service_projects,
     google_service_networking_connection.psn_connection
   ]
 }
@@ -34,43 +60,26 @@ output "self_link" {
   description = "The URI of the VPC being created."
   value       = local.network.self_link
   depends_on = [
-    google_service_networking_connection.psn_connection
-  ]
-}
-
-output "project_id" {
-  description = "Shared VPC host project id."
-  value = (
-    var.shared_vpc_host
-    ? google_compute_shared_vpc_host_project.shared_vpc_host[*].project
-    : null
-  )
-  depends_on = [
+    google_compute_network_peering.local,
+    google_compute_network_peering.remote,
     google_compute_shared_vpc_host_project.shared_vpc_host,
     google_compute_shared_vpc_service_project.service_projects,
     google_service_networking_connection.psn_connection
   ]
 }
 
-# TODO(ludoo): use input names as keys
-output "subnets" {
-  description = "Subnet resources."
-  value       = { for k, v in google_compute_subnetwork.subnetwork : k => v }
-}
-
 output "subnet_ips" {
   description = "Map of subnet address ranges keyed by name."
-  value       = { for k, v in google_compute_subnetwork.subnetwork : k => v.ip_cidr_range }
-}
-
-output "subnet_self_links" {
-  description = "Map of subnet self links keyed by name."
-  value       = { for k, v in google_compute_subnetwork.subnetwork : k => v.self_link }
+  value = {
+    for k, v in google_compute_subnetwork.subnetwork : k => v.ip_cidr_range
+  }
 }
 
 output "subnet_regions" {
   description = "Map of subnet regions keyed by name."
-  value       = { for k, v in google_compute_subnetwork.subnetwork : k => v.region }
+  value = {
+    for k, v in google_compute_subnetwork.subnetwork : k => v.region
+  }
 }
 
 output "subnet_secondary_ranges" {
@@ -84,7 +93,18 @@ output "subnet_secondary_ranges" {
   }
 }
 
-output "bindings" {
-  description = "Subnet IAM bindings."
-  value       = { for k, v in google_compute_subnetwork_iam_binding.binding : k => v }
+output "subnet_self_links" {
+  description = "Map of subnet self links keyed by name."
+  value       = { for k, v in google_compute_subnetwork.subnetwork : k => v.self_link }
+}
+
+# TODO(ludoo): use input names as keys
+output "subnets" {
+  description = "Subnet resources."
+  value       = { for k, v in google_compute_subnetwork.subnetwork : k => v }
+}
+
+output "subnets_l7ilb" {
+  description = "L7 ILB subnet resources."
+  value       = { for k, v in google_compute_subnetwork.l7ilb : k => v }
 }

@@ -29,6 +29,12 @@ output "name" {
   value       = google_compute_vpn_gateway.gateway.name
 }
 
+output "random_secret" {
+  description = "Generated secret."
+  value       = local.secret
+}
+
+
 output "router" {
   description = "Router resource (only if auto-created)."
   value       = var.router_create ? google_compute_router.router[0] : null
@@ -42,14 +48,6 @@ output "router_name" {
 output "self_link" {
   description = "VPN gateway self link."
   value       = google_compute_vpn_gateway.gateway.self_link
-}
-
-output "tunnels" {
-  description = "VPN tunnel resources."
-  value = {
-    for name in keys(var.tunnels) :
-    name => google_compute_vpn_tunnel.tunnels[name]
-  }
 }
 
 output "tunnel_names" {
@@ -68,7 +66,10 @@ output "tunnel_self_links" {
   }
 }
 
-output "random_secret" {
-  description = "Generated secret."
-  value       = local.secret
+output "tunnels" {
+  description = "VPN tunnel resources."
+  value = {
+    for name in keys(var.tunnels) :
+    name => google_compute_vpn_tunnel.tunnels[name]
+  }
 }

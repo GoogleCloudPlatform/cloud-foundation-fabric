@@ -87,9 +87,9 @@ module "dns-api-prod" {
   name            = "googleapis"
   domain          = "googleapis.com."
   client_networks = [module.vpc-prod.self_link]
-  recordsets = [
-    { name = "*", type = "CNAME", ttl = 300, records = ["private.googleapis.com."] },
-  ]
+  recordsets = {
+    "CNAME *" = { ttl = 300, records = ["private.googleapis.com."] }
+  }
 }
 
 module "dns-api-dev" {
@@ -99,9 +99,9 @@ module "dns-api-dev" {
   name            = "googleapis"
   domain          = "googleapis.com."
   client_networks = [module.vpc-dev.self_link]
-  recordsets = [
-    { name = "*", type = "CNAME", ttl = 300, records = ["private.googleapis.com."] },
-  ]
+  recordsets = {
+    "CNAME *" = { ttl = 300, records = ["private.googleapis.com."] }
+  }
 }
 
 ###############################################################################
@@ -109,7 +109,7 @@ module "dns-api-dev" {
 ###############################################################################
 
 module "vpc-firewall-prod" {
-  source = "../../modules/net-vpc-firewall-yaml"
+  source = "../../factories/firewall-vpc-rules/flat"
 
   project_id = module.project-host-prod.project_id
   network    = module.vpc-prod.name
@@ -125,7 +125,7 @@ module "vpc-firewall-prod" {
 }
 
 module "vpc-firewall-dev" {
-  source = "../../modules/net-vpc-firewall-yaml"
+  source = "../../factories/firewall-vpc-rules/flat"
 
   project_id = module.project-host-dev.project_id
   network    = module.vpc-dev.name

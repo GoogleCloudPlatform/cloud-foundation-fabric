@@ -39,12 +39,13 @@ resource "google_container_cluster" "cluster" {
   min_master_version          = var.min_master_version
   network                     = var.network
   subnetwork                  = var.subnetwork
-  logging_service             = var.logging_service
-  monitoring_service          = var.monitoring_service
+  logging_service             = var.logging_config == null ? var.logging_service : null
+  monitoring_service          = var.monitoring_config == null ? var.monitoring_service : null
   resource_labels             = var.labels
   default_max_pods_per_node   = var.enable_autopilot ? null : var.default_max_pods_per_node
   enable_binary_authorization = var.enable_binary_authorization
   enable_intranode_visibility = var.enable_intranode_visibility
+  enable_l4_ilb_subsetting    = var.enable_l4_ilb_subsetting
   enable_shielded_nodes       = var.enable_shielded_nodes
   enable_tpu                  = var.enable_tpu
   initial_node_count          = 1
@@ -92,11 +93,34 @@ resource "google_container_cluster" "cluster" {
     services_secondary_range_name = var.secondary_range_services
   }
 
-  # TODO(ludomagno): make optional, and support beta feature
   # https://www.terraform.io/docs/providers/google/r/container_cluster.html#daily_maintenance_window
   maintenance_policy {
-    daily_maintenance_window {
-      start_time = var.maintenance_start_time
+    dynamic "daily_maintenance_window" {
+      for_each = var.maintenance_config != null && lookup(var.maintenance_config, "daily_maintenance_window", null) != null ? [var.maintenance_config.daily_maintenance_window] : []
+      iterator = config
+      content {
+        start_time = config.value.start_time
+      }
+    }
+
+    dynamic "recurring_window" {
+      for_each = var.maintenance_config != null && lookup(var.maintenance_config, "recurring_window", null) != null ? [var.maintenance_config.recurring_window] : []
+      iterator = config
+      content {
+        start_time = config.value.start_time
+        end_time   = config.value.end_time
+        recurrence = config.value.recurrence
+      }
+    }
+
+    dynamic "maintenance_exclusion" {
+      for_each = var.maintenance_config != null && lookup(var.maintenance_config, "maintenance_exclusion", null) != null ? var.maintenance_config.maintenance_exclusion : []
+      iterator = config
+      content {
+        exclusion_name = config.value.exclusion_name
+        start_time     = config.value.start_time
+        end_time       = config.value.end_time
+      }
     }
   }
 
@@ -227,6 +251,29 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
+  dynamic "monitoring_config" {
+    for_each = var.monitoring_config != null ? [""] : []
+    content {
+      enable_components = var.monitoring_config
+    }
+  }
+
+  dynamic "logging_config" {
+    for_each = var.logging_config != null ? [""] : []
+    content {
+      enable_components = var.logging_config
+    }
+  }
+
+  dynamic "dns_config" {
+    for_each = var.dns_config != null ? [var.dns_config] : []
+    iterator = config
+    content {
+      cluster_dns        = config.value.cluster_dns
+      cluster_dns_scope  = config.value.cluster_dns_scope
+      cluster_dns_domain = config.value.cluster_dns_domain
+    }
+  }
 }
 
 resource "google_compute_network_peering_routes_config" "gke_master" {

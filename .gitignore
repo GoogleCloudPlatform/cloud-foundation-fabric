@@ -16,3 +16,5 @@ key.json
 terraform-ls.tf
 bundle.zip
 .DS_Store
+**/packer_cache
+**/*.pkrvars.hcl

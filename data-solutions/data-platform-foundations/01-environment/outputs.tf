@@ -25,12 +25,12 @@ output "project_ids" {
   }
 }
 
-output "service_encryption_key_ids" {
-  description = "Cloud KMS encryption keys in {LOCATION => [KEY_URL]} format."
-  value       = var.service_encryption_key_ids
-}
-
 output "service_account" {
   description = "Main service account."
   value       = module.sa-services-main.email
+}
+
+output "service_encryption_key_ids" {
+  description = "Cloud KMS encryption keys in {LOCATION => [KEY_URL]} format."
+  value       = var.service_encryption_key_ids
 }

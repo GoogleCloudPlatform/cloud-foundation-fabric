@@ -18,7 +18,7 @@ locals {
   squid_address = (
     var.mig
     ? module.squid-ilb.0.forwarding_rule_address
-    : module.squid-vm.internal_ips.0
+    : module.squid-vm.internal_ip
   )
 }
 
@@ -118,10 +118,10 @@ module "private-dns" {
   name            = "internal"
   domain          = "internal."
   client_networks = [module.vpc.self_link]
-  recordsets = [
-    { name = "squid", type = "A", ttl = 60, records = [local.squid_address] },
-    { name = "proxy", type = "CNAME", ttl = 3600, records = ["squid.internal."] }
-  ]
+  recordsets = {
+    "A squid"     = { ttl = 60, records = [local.squid_address] }
+    "CNAME proxy" = { ttl = 3600, records = ["squid.internal."] }
+  }
 }
 
 ###############################################################################
@@ -147,11 +147,12 @@ module "cos-squid" {
 }
 
 module "squid-vm" {
-  source        = "../../modules/compute-vm"
-  project_id    = module.project-host.project_id
-  region        = var.region
-  name          = "squid-vm"
-  instance_type = "e2-medium"
+  source          = "../../modules/compute-vm"
+  project_id      = module.project-host.project_id
+  zone            = "${var.region}-b"
+  name            = "squid-vm"
+  instance_type   = "e2-medium"
+  create_template = var.mig
   network_interfaces = [{
     network    = module.vpc.self_link
     subnetwork = module.vpc.subnet_self_links["${var.region}/proxy"]
@@ -166,7 +167,6 @@ module "squid-vm" {
   }
   service_account        = module.service-account-squid.email
   service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
-  use_instance_template  = var.mig
   metadata = {
     user-data = module.cos-squid.cloud_config
   }
@@ -261,7 +261,7 @@ module "project-app" {
 module "test-vm" {
   source        = "../../modules/compute-vm"
   project_id    = module.project-app.project_id
-  region        = var.region
+  zone          = "${var.region}-b"
   name          = "test-vm"
   instance_type = "e2-micro"
   tags          = ["ssh"]

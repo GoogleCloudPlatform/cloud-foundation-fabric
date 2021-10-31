@@ -30,19 +30,18 @@ output "projects" {
   }
 }
 
+output "vms" {
+  description = "GCE VMs."
+  value = {
+    (module.vm-bastion.instance.name) = module.vm-bastion.internal_ip
+  }
+}
+
 output "vpc" {
   description = "Shared VPC."
   value = {
     name    = module.vpc-shared.name
     subnets = module.vpc-shared.subnet_ips
-  }
-}
-
-output "vms" {
-  description = "GCE VMs."
-  value = {
-    for instance in concat(module.vm-bastion.instances) :
-    instance.name => instance.network_interface.0.network_ip
   }
 }
 

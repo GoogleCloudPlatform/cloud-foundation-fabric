@@ -32,6 +32,7 @@ steps:
       - -vv
       - tests/cloud_operations
       - tests/data_solutions
+      - tests/factories
       - tests/foundations
       - tests/networking
     env:

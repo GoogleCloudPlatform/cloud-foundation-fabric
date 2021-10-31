@@ -71,12 +71,11 @@ module "vpc" {
 }
 
 module "vpc-firewall" {
-  source               = "../../modules/net-vpc-firewall"
-  project_id           = var.project_id
-  network              = module.vpc.name
-  admin_ranges_enabled = true
-  admin_ranges         = values(var.ip_ranges)
-  ssh_source_ranges    = var.ssh_source_ranges
+  source            = "../../modules/net-vpc-firewall"
+  project_id        = var.project_id
+  network           = module.vpc.name
+  admin_ranges      = values(var.ip_ranges)
+  ssh_source_ranges = var.ssh_source_ranges
 }
 
 module "vpn1" {
@@ -104,7 +103,7 @@ module "vpn1" {
       }
       bgp_session_range = "${local.bgp_interface_gcp1}/30"
       ike_version       = 2
-      peer_ip           = module.vm-onprem.external_ips.0
+      peer_ip           = module.vm-onprem.external_ip
       router            = null
       shared_secret     = ""
     }
@@ -136,7 +135,7 @@ module "vpn2" {
       }
       bgp_session_range = "${local.bgp_interface_gcp2}/30"
       ike_version       = 2
-      peer_ip           = module.vm-onprem.external_ips.0
+      peer_ip           = module.vm-onprem.external_ip
       router            = null
       shared_secret     = ""
     }
@@ -171,17 +170,11 @@ module "dns-gcp" {
   name            = "gcp-example"
   domain          = "gcp.example.org."
   client_networks = [module.vpc.self_link]
-  recordsets = concat(
-    [{ name = "localhost", type = "A", ttl = 300, records = ["127.0.0.1"] }],
-    [
-      for name, ip in zipmap(module.vm-test1.names, module.vm-test1.internal_ips) :
-      { name = name, type = "A", ttl = 300, records = [ip] }
-    ],
-    [
-      for name, ip in zipmap(module.vm-test2.names, module.vm-test2.internal_ips) :
-      { name = name, type = "A", ttl = 300, records = [ip] }
-    ]
-  )
+  recordsets = {
+    "A localhost" = { ttl = 300, records = ["127.0.0.1"] }
+    "A test-1"    = { ttl = 300, records = [module.vm-test1.internal_ip] }
+    "A test-2"    = { ttl = 300, records = [module.vm-test2.internal_ip] }
+  }
 }
 
 module "dns-api" {
@@ -191,11 +184,11 @@ module "dns-api" {
   name            = "googleapis"
   domain          = "googleapis.com."
   client_networks = [module.vpc.self_link]
-  recordsets = [
-    { name = "*", type = "CNAME", ttl = 300, records = ["private.googleapis.com."] },
-    { name = "private", type = "A", ttl = 300, records = local.vips.private },
-    { name = "restricted", type = "A", ttl = 300, records = local.vips.restricted },
-  ]
+  recordsets = {
+    "CNAME *"      = { ttl = 300, records = ["private.googleapis.com."] }
+    "A private"    = { ttl = 300, records = local.vips.private }
+    "A restricted" = { ttl = 300, records = local.vips.restricted }
+  }
 }
 
 module "dns-onprem" {
@@ -239,7 +232,7 @@ module "service-account-gce" {
 module "vm-test1" {
   source     = "../../modules/compute-vm"
   project_id = var.project_id
-  region     = var.region.gcp1
+  zone       = "${var.region.gcp1}-b"
   name       = "test-1"
   network_interfaces = [{
     network    = module.vpc.self_link
@@ -257,7 +250,7 @@ module "vm-test1" {
 module "vm-test2" {
   source     = "../../modules/compute-vm"
   project_id = var.project_id
-  region     = var.region.gcp2
+  zone       = "${var.region.gcp2}-b"
   name       = "test-2"
   network_interfaces = [{
     network    = module.vpc.self_link
@@ -316,7 +309,7 @@ module "service-account-onprem" {
 module "vm-onprem" {
   source        = "../../modules/compute-vm"
   project_id    = var.project_id
-  region        = var.region.gcp1
+  zone          = "${var.region.gcp1}-b"
   instance_type = "f1-micro"
   name          = "onprem"
   boot_disk = {

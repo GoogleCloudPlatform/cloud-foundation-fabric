@@ -32,6 +32,7 @@ module "myproject-default-service-accounts" {
 |---|---|:---: |:---:|:---:|
 | name | Name of the service account to create. | <code title="">string</code> | ✓ |  |
 | project_id | Project id where service account will be created. | <code title="">string</code> | ✓ |  |
+| *description* | Optional description. | <code title="">string</code> |  | <code title="">null</code> |
 | *display_name* | Display name of the service account to create. | <code title="">string</code> |  | <code title="">Terraform-managed.</code> |
 | *generate_key* | Generate a key for service account. | <code title="">bool</code> |  | <code title="">false</code> |
 | *iam* | IAM bindings on the service account in {ROLE => [MEMBERS]} format. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |

@@ -180,7 +180,7 @@ module "vpc" {
 | *auto_create_subnetworks* | Set to true to create an auto mode subnet, defaults to custom mode. | <code title="">bool</code> |  | <code title="">false</code> |
 | *delete_default_routes_on_create* | Set to true to delete the default routes at creation time. | <code title="">bool</code> |  | <code title="">false</code> |
 | *description* | An optional description of this resource (triggers recreation on change). | <code title="">string</code> |  | <code title="">Terraform-managed.</code> |
-| *dns_policy* | None | <code title="object&#40;&#123;&#10;inbound &#61; bool&#10;logging &#61; bool&#10;outbound &#61; object&#40;&#123;&#10;private_ns &#61; list&#40;string&#41;&#10;public_ns  &#61; list&#40;string&#41;&#10;&#125;&#41;&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
+| *dns_policy* | DNS policy setup for the VPC. | <code title="object&#40;&#123;&#10;inbound &#61; bool&#10;logging &#61; bool&#10;outbound &#61; object&#40;&#123;&#10;private_ns &#61; list&#40;string&#41;&#10;public_ns  &#61; list&#40;string&#41;&#10;&#125;&#41;&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 | *iam* | Subnet IAM bindings in {REGION/NAME => {ROLE => [MEMBERS]} format. | <code title="map&#40;map&#40;list&#40;string&#41;&#41;&#41;">map(map(list(string)))</code> |  | <code title="">{}</code> |
 | *log_config_defaults* | Default configuration for flow logs when enabled. | <code title="object&#40;&#123;&#10;aggregation_interval &#61; string&#10;flow_sampling        &#61; number&#10;metadata             &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;aggregation_interval &#61; &#34;INTERVAL_5_SEC&#34;&#10;flow_sampling        &#61; 0.5&#10;metadata             &#61; &#34;INCLUDE_ALL_METADATA&#34;&#10;&#125;">...</code> |
 | *log_configs* | Map keyed by subnet 'region/name' of optional configurations for flow logs when enabled. | <code title="map&#40;map&#40;string&#41;&#41;">map(map(string))</code> |  | <code title="">{}</code> |
@@ -195,7 +195,8 @@ module "vpc" {
 | *subnet_descriptions* | Optional map of subnet descriptions, keyed by subnet 'region/name'. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
 | *subnet_flow_logs* | Optional map of boolean to control flow logs (default is disabled), keyed by subnet 'region/name'. | <code title="map&#40;bool&#41;">map(bool)</code> |  | <code title="">{}</code> |
 | *subnet_private_access* | Optional map of boolean to control private Google access (default is enabled), keyed by subnet 'region/name'. | <code title="map&#40;bool&#41;">map(bool)</code> |  | <code title="">{}</code> |
-| *subnets* | The list of subnets being created | <code title="list&#40;object&#40;&#123;&#10;name               &#61; string&#10;ip_cidr_range      &#61; string&#10;name               &#61; string&#10;region             &#61; string&#10;secondary_ip_range &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">list(object({...}))</code> |  | <code title="">[]</code> |
+| *subnets* | List of subnets being created. | <code title="list&#40;object&#40;&#123;&#10;name               &#61; string&#10;ip_cidr_range      &#61; string&#10;region             &#61; string&#10;secondary_ip_range &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">list(object({...}))</code> |  | <code title="">[]</code> |
+| *subnets_l7ilb* | List of subnets for private HTTPS load balancer. | <code title="list&#40;object&#40;&#123;&#10;active        &#61; bool&#10;name          &#61; string&#10;ip_cidr_range &#61; string&#10;region        &#61; string&#10;&#125;&#41;&#41;">list(object({...}))</code> |  | <code title="">[]</code> |
 | *vpc_create* | Create VPC. When set to false, uses a data source to reference existing VPC. | <code title="">bool</code> |  | <code title="">true</code> |
 
 ## Outputs
@@ -205,13 +206,14 @@ module "vpc" {
 | bindings | Subnet IAM bindings. |  |
 | name | The name of the VPC being created. |  |
 | network | Network resource. |  |
-| project_id | Shared VPC host project id. |  |
+| project_id | Project ID containing the network. Use this when you need to create resources *after* the VPC is fully set up (e.g. subnets created, shared VPC service projects attached, Private Service Networking configured). |  |
 | self_link | The URI of the VPC being created. |  |
 | subnet_ips | Map of subnet address ranges keyed by name. |  |
 | subnet_regions | Map of subnet regions keyed by name. |  |
 | subnet_secondary_ranges | Map of subnet secondary ranges keyed by name. |  |
 | subnet_self_links | Map of subnet self links keyed by name. |  |
 | subnets | Subnet resources. |  |
+| subnets_l7ilb | L7 ILB subnet resources. |  |
 <!-- END TFDOC -->
 
 The key format is `subnet_region/subnet_name`. For example `europe-west1/my_subnet`.

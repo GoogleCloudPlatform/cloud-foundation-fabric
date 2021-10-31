@@ -20,7 +20,7 @@ locals {
     trimprefix(k, local.prefix) => v.address
   }
   prefix = var.prefix == null || var.prefix == "" ? "" : "${var.prefix}-"
-  zones  = [for z in var.zones : "${var.region}-${z}"]
+  zones  = { for z in var.zones : z => "${var.region}-${z}" }
 }
 
 module "project" {

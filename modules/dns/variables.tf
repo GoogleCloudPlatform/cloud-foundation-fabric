@@ -24,12 +24,6 @@ variable "client_networks" {
   default     = []
 }
 
-variable "description" {
-  description = "Domain description."
-  type        = string
-  default     = "Terraform managed."
-}
-
 variable "default_key_specs_key" {
   description = "DNSSEC default key signing specifications: algorithm, key_length, key_type, kind."
   type        = any
@@ -40,6 +34,12 @@ variable "default_key_specs_zone" {
   description = "DNSSEC default zone signing specifications: algorithm, key_length, key_type, kind."
   type        = any
   default     = {}
+}
+
+variable "description" {
+  description = "Domain description."
+  type        = string
+  default     = "Terraform managed."
 }
 
 variable "dnssec_config" {
@@ -76,14 +76,19 @@ variable "project_id" {
 }
 
 variable "recordsets" {
-  type = list(object({
-    name    = string
-    type    = string
+  description = "Map of DNS recordsets in \"type name\" => {ttl, [records]} format."
+  type = map(object({
     ttl     = number
     records = list(string)
   }))
-  description = "List of DNS record objects to manage."
-  default     = []
+  default = {}
+  validation {
+    condition = alltrue([
+      for k, v in var.recordsets == null ? {} : var.recordsets :
+      length(split(" ", k)) == 2
+    ])
+    error_message = "Recordsets must have keys in the format \"type name\"."
+  }
 }
 
 variable "service_directory_namespace" {

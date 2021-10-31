@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-output "service_name" {
-  description = "The name of the service.."
-  value       = google_endpoints_service.default.service_name
+output "endpoints" {
+  description = "A list of Endpoint objects."
+  value       = google_endpoints_service.default.endpoints
 }
 
 output "endpoints_service" {
@@ -24,7 +24,7 @@ output "endpoints_service" {
   value       = google_endpoints_service.default
 }
 
-output "endpoints" {
-  description = "A list of Endpoint objects."
-  value       = google_endpoints_service.default.endpoints
+output "service_name" {
+  description = "The name of the service.."
+  value       = google_endpoints_service.default.service_name
 }

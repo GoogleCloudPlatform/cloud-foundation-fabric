@@ -83,8 +83,8 @@ module "addresses" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| external_addresses | None |  |
-| global_addresses | None |  |
-| internal_addresses | None |  |
-| psc_addresses | None |  |
+| external_addresses | Allocated external addresses. |  |
+| global_addresses | Allocated global external addresses. |  |
+| internal_addresses | Allocated internal addresses. |  |
+| psc_addresses | Allocated internal addresses for PSC endpoints. |  |
 <!-- END TFDOC -->

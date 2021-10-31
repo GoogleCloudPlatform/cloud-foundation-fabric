@@ -43,11 +43,14 @@ steps:
     args:
       [
         "/workspace/tools/check_documentation.py",
-        "modules",
         "cloud-operations",
         "data-solutions",
+        "data-solutions/data-platform-foundations",
+        "factories",
+        "factories/firewall-vpc-rules",
         "foundations",
-        "networking",
+        "modules",
+        "networking"
       ]
 
 substitutions:

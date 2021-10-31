@@ -25,10 +25,12 @@ To create the infrastructure:
 ```tfm
 billing_account = "1234-1234-1234"
 parent          = "folders/12345678"
+admins          = ["user:xxxxx@yyyyy.com"]
 ```
 
-- make sure you have the right authentication setup (application default credentials, or a service account key)
+- make sure you have the right authentication setup (application default credentials, or a service account key) with the right permissions
 - **The output of this stage contains the values for the resources stage**
+- the `admins` variable contain a list of principals allowed to impersonate the service accounts. These principals will be given the `iam.serviceAccountTokenCreator` role
 - run `terraform init` and `terraform apply`
 
 Once done testing, you can clean up resources by running `terraform destroy`.
@@ -52,6 +54,7 @@ The script use 'google_access_context_manager_service_perimeter_resource' terraf
 |---|---|:---: |:---:|:---:|
 | billing_account_id | Billing account id. | <code title="">string</code> | ✓ |  |
 | root_node | Parent folder or organization in 'folders/folder_id' or 'organizations/org_id' format. | <code title="">string</code> | ✓ |  |
+| *admins* | List of users allowed to impersonate the service account | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">null</code> |
 | *prefix* | Prefix used to generate project id and name. | <code title="">string</code> |  | <code title="">null</code> |
 | *project_names* | Override this variable if you need non-standard names. | <code title="object&#40;&#123;&#10;datamart       &#61; string&#10;dwh            &#61; string&#10;landing        &#61; string&#10;services       &#61; string&#10;transformation &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;datamart       &#61; &#34;datamart&#34;&#10;dwh            &#61; &#34;datawh&#34;&#10;landing        &#61; &#34;landing&#34;&#10;services       &#61; &#34;services&#34;&#10;transformation &#61; &#34;transformation&#34;&#10;&#125;">...</code> |
 | *service_account_names* | Override this variable if you need non-standard names. | <code title="object&#40;&#123;&#10;main &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;main &#61; &#34;data-platform-main&#34;&#10;&#125;">...</code> |

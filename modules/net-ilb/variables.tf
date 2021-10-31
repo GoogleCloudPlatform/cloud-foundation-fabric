@@ -20,15 +20,6 @@ variable "address" {
   default     = null
 }
 
-variable "backends" {
-  description = "Load balancer backends, balancing mode is one of 'CONNECTION' or 'UTILIZATION'."
-  type = list(object({
-    failover       = bool
-    group          = string
-    balancing_mode = string
-  }))
-}
-
 variable "backend_config" {
   description = "Optional backend configuration."
   type = object({
@@ -37,6 +28,15 @@ variable "backend_config" {
     connection_draining_timeout_sec = number
   })
   default = null
+}
+
+variable "backends" {
+  description = "Load balancer backends, balancing mode is one of 'CONNECTION' or 'UTILIZATION'."
+  type = list(object({
+    failover       = bool
+    group          = string
+    balancing_mode = string
+  }))
 }
 
 variable "failover_config" {
@@ -105,15 +105,15 @@ variable "network" {
   type        = string
 }
 
-variable "project_id" {
-  description = "Project id where resources will be created."
-  type        = string
-}
-
 variable "ports" {
   description = "Comma-separated ports, leave null to use all ports."
   type        = list(string)
   default     = null
+}
+
+variable "project_id" {
+  description = "Project id where resources will be created."
+  type        = string
 }
 
 variable "protocol" {

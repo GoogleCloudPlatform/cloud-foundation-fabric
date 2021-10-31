@@ -177,7 +177,7 @@ module "vpn-hub" {
 module "test-vm" {
   source        = "../../modules/compute-vm"
   project_id    = module.project.project_id
-  region        = var.region
+  zone          = "${var.region}-b"
   name          = "${var.name}-test"
   instance_type = "e2-micro"
   boot_disk = {
@@ -192,8 +192,7 @@ module "test-vm" {
     network    = module.vpc-onprem.self_link
     subnetwork = module.vpc-onprem.subnet_self_links["${var.region}/${var.name}-onprem"]
   }]
-  single_name = true
-  tags        = ["ssh"]
+  tags = ["ssh"]
 }
 
 ###############################################################################
@@ -230,12 +229,9 @@ module "private-dns-onprem" {
   name            = var.name
   domain          = "${var.region}-${module.project.project_id}.cloudfunctions.net."
   client_networks = [module.vpc-onprem.self_link]
-  recordsets = [{
-    name    = "",
-    type    = "A",
-    ttl     = 300,
-    records = [module.addresses.psc_addresses[local.psc_name].address]
-  }]
+  recordsets = {
+    "A " = { ttl = 300, records = [module.addresses.psc_addresses[local.psc_name].address] }
+  }
 }
 
 ###############################################################################

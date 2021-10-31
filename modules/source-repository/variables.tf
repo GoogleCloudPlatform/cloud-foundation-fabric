@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-variable "project_id" {
-  description = "Project used for resources."
-  type        = string
-}
-
 variable "iam" {
   description = "IAM bindings in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
@@ -27,5 +22,10 @@ variable "iam" {
 
 variable "name" {
   description = "Repository name."
+  type        = string
+}
+
+variable "project_id" {
+  description = "Project used for resources."
   type        = string
 }

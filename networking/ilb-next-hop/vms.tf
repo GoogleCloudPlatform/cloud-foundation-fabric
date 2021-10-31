@@ -24,10 +24,10 @@ END
 
 module "vm-left" {
   source        = "../../modules/compute-vm"
+  for_each      = local.zones
   project_id    = module.project.project_id
-  region        = var.region
-  zones         = local.zones
-  name          = "${local.prefix}vm-left"
+  zone          = each.value
+  name          = "${local.prefix}vm-left-${each.key}"
   instance_type = "f1-micro"
   network_interfaces = [
     {
@@ -46,15 +46,14 @@ module "vm-left" {
     module.service-accounts.email, null
   )
   service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
-  instance_count         = 2
 }
 
 module "vm-right" {
   source        = "../../modules/compute-vm"
+  for_each      = local.zones
   project_id    = module.project.project_id
-  region        = var.region
-  name          = "${local.prefix}vm-right"
-  zones         = local.zones
+  zone          = each.value
+  name          = "${local.prefix}vm-right-${each.key}"
   instance_type = "f1-micro"
   network_interfaces = [
     {
@@ -73,5 +72,4 @@ module "vm-right" {
     module.service-accounts.email, null
   )
   service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
-  instance_count         = 2
 }

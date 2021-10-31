@@ -49,8 +49,20 @@ variable "dataset_access" {
   default     = false
 }
 
+variable "description" {
+  description = "Optional description."
+  type        = string
+  default     = "Terraform managed."
+}
+
 variable "encryption_key" {
   description = "Self link of the KMS key that will be used to protect destination table."
+  type        = string
+  default     = null
+}
+
+variable "friendly_name" {
+  description = "Dataset friendly name."
   type        = string
   default     = null
 }
@@ -59,6 +71,11 @@ variable "iam" {
   description = "IAM bindings in {ROLE => [MEMBERS]} format. Mutually exclusive with the access_* variables used for basic roles."
   type        = map(list(string))
   default     = {}
+}
+
+variable "id" {
+  description = "Dataset id."
+  type        = string
 }
 
 variable "labels" {
@@ -71,17 +88,6 @@ variable "location" {
   description = "Dataset location."
   type        = string
   default     = "EU"
-}
-
-variable "friendly_name" {
-  description = "Dataset friendly name."
-  type        = string
-  default     = null
-}
-
-variable "id" {
-  description = "Dataset id."
-  type        = string
 }
 
 variable "options" {

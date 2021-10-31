@@ -17,8 +17,7 @@ module "nginx-template" {
   source     = "./modules/compute-vm"
   project_id = var.project_id
   name       = "nginx-template"
-  region     = "europe-west1"
-  zones      = ["europe-west1-b", "europe-west1-d"]
+  zone     = "europe-west1-b"
   tags       = ["http-server", "ssh"]
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -32,7 +31,7 @@ module "nginx-template" {
     type  = "pd-ssd"
     size  = 10
   }
-  use_instance_template = true
+  create_template = true
   metadata = {
     user-data = module.cos-nginx.cloud_config
   }
@@ -65,8 +64,7 @@ module "nginx-template" {
   source     = "./modules/compute-vm"
   project_id = var.project_id
   name       = "nginx-template"
-  region     = "europe-west1"
-  zones      = ["europe-west1-b", "europe-west1-d"]
+  zone     = "europe-west1-b"
   tags       = ["http-server", "ssh"]
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -80,7 +78,7 @@ module "nginx-template" {
     type  = "pd-ssd"
     size  = 10
   }
-  use_instance_template  = true
+  create_template  = true
   metadata = {
     user-data = module.cos-nginx.cloud_config
   }
@@ -120,8 +118,7 @@ module "nginx-template" {
   source     = "./modules/compute-vm"
   project_id = var.project_id
   name       = "nginx-template"
-  region     = "europe-west1"
-  zones      = ["europe-west1-b", "europe-west1-d"]
+  zone     = "europe-west1-b"
   tags       = ["http-server", "ssh"]
   network_interfaces = [{
     network    = var.vpc.self_link,
@@ -135,7 +132,7 @@ module "nginx-template" {
     type  = "pd-ssd"
     size  = 10
   }
-  use_instance_template  = true
+  create_template  = true
   metadata = {
     user-data = module.cos-nginx.cloud_config
   }
@@ -178,8 +175,7 @@ module "nginx-template" {
   source     = "./modules/compute-vm"
   project_id = var.project_id
   name       = "nginx-template"
-  region     = "europe-west1"
-  zones      = ["europe-west1-b", "europe-west1-d"]
+  zone     = "europe-west1-b"
   tags       = ["http-server", "ssh"]
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -193,7 +189,7 @@ module "nginx-template" {
     type  = "pd-ssd"
     size  = 10
   }
-  use_instance_template  = true
+  create_template  = true
   metadata = {
     user-data = module.cos-nginx.cloud_config
   }
@@ -232,8 +228,7 @@ module "nginx-template" {
   source     = "./modules/compute-vm"
   project_id = var.project_id
   name       = "nginx-template"
-  region     = "europe-west1"
-  zones      = ["europe-west1-b", "europe-west1-d"]
+  zone     = "europe-west1-b"
   tags       = ["http-server", "ssh"]
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -247,7 +242,7 @@ module "nginx-template" {
     type  = "pd-ssd"
     size  = 10
   }
-  use_instance_template  = true
+  create_template  = true
   metadata = {
     user-data = module.cos-nginx.cloud_config
   }

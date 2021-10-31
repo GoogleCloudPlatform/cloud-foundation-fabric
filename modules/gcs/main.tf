@@ -20,6 +20,7 @@ locals {
     ? ""
     : join("-", [var.prefix, lower(var.location), ""])
   )
+  notification = try(var.notification_config.enabled, false)
 }
 
 resource "google_storage_bucket" "bucket" {
@@ -29,14 +30,19 @@ resource "google_storage_bucket" "bucket" {
   storage_class               = var.storage_class
   force_destroy               = var.force_destroy
   uniform_bucket_level_access = var.uniform_bucket_level_access
+  labels                      = var.labels
   versioning {
     enabled = var.versioning
   }
-  labels = merge(var.labels, {
-    location      = lower(var.location)
-    name          = lower(var.name)
-    storage_class = lower(var.storage_class)
-  })
+
+  dynamic "website" {
+    for_each = var.website == null ? [] : [""]
+
+    content {
+      main_page_suffix = var.website.main_page_suffix
+      not_found_page   = var.website.not_found_page
+    }
+  }
 
   dynamic "encryption" {
     for_each = var.encryption_key == null ? [] : [""]
@@ -99,4 +105,24 @@ resource "google_storage_bucket_iam_binding" "bindings" {
   bucket   = google_storage_bucket.bucket.name
   role     = each.key
   members  = each.value
+}
+
+resource "google_storage_notification" "notification" {
+  count             = local.notification ? 1 : 0
+  bucket            = google_storage_bucket.bucket.name
+  payload_format    = var.notification_config.payload_format
+  topic             = google_pubsub_topic.topic[0].id
+  event_types       = var.notification_config.event_types
+  custom_attributes = var.notification_config.custom_attributes
+}
+resource "google_pubsub_topic_iam_binding" "binding" {
+  count   = local.notification ? 1 : 0
+  topic   = google_pubsub_topic.topic[0].id
+  role    = "roles/pubsub.publisher"
+  members = ["serviceAccount:${var.notification_config.sa_email}"]
+}
+resource "google_pubsub_topic" "topic" {
+  count   = local.notification ? 1 : 0
+  project = var.project_id
+  name    = var.notification_config.topic_name
 }

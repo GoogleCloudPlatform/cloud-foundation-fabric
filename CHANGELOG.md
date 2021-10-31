@@ -4,6 +4,30 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- added support for GCS notifications in `gcs` module
+
+## [7.0.0] - 2021-10-21
+
+- new cloud operations example showing how to deploy infrastructure for [Compute Engine image builder based on Hashicorp Packer](./cloud-operations/packer-image-builder)
+- **incompatible change** the format of the `records` variable in the `dns` module has changed, to better support dynamic values
+- new `naming-convention` module
+- new `cloudsql-instance` module
+- added support for website to `gcs` module, and removed auto-set labels
+- new `factories` top-level folder with initial `subnets`, `firewall-hierarchical-policies`, `firewall-vpc-rules` and `example-environments` examples
+- added new `description` variable to `compute-vm` module
+- added support for L7 ILB subnets to `net-vpc` module
+- added support to override default description in `compute-vm`
+- added support for backup retention count in `cloudsql-instance`
+- added new `description` variable to `cloud-function` module
+- added new `description` variable to `bigquery-dataset` module
+- added new `description` variable to `iam-service-account` module
+- **incompatible change** fix deprecated message from `gke-nodepool`, change your `workload_metadata_config` to correct values (`GCE_METADATA` or `GKE_METADATA`)
+- **incompatible change** changed maintenance window definition from `maintenance_start_time` to `maintenance_config` in `gke-cluster`
+- added `monitoring_config`,`logging_config`, `dns_config` and `enable_l4_ilb_subsetting` to `gke-cluster`
+
+
+## [6.0.0] - 2021-10-04
+
 - new `apigee-organization` and `apigee-x-instance`
 - generate `email` and `iam_email` statically in the `iam-service-account` module 
 - new `billing-budget` module
@@ -11,6 +35,9 @@ All notable changes to this project will be documented in this file.
 - output custom role information from the `organization` module
 - enable multiple `vpc-sc` perimeters over multiple modules
 - new cloud operations example showing how to [restrict service usage using delegated role grants](./cloud-operations/iam-delegated-role-grants)
+- **incompatible change** multiple instance support has been removed from the `compute-vm` module, to bring its interface in line with other modules and enable simple use of `for_each` at the module level; its variables have also slightly changed (`attached_disks`, `boot_disk_delete`, `crate_template`, `zone`)
+- **incompatible change** dropped the `admin_ranges_enabled` variable in `net-vpc-firewall`. Set `admin_ranges = []` to get the same effect
+- added the `named_ranges` variable to `net-vpc-firewall`
 
 ## [5.1.0] - 2021-08-30
 
@@ -343,7 +370,8 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v5.1.0...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v6.0.0...HEAD
+[6.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v5.1.0...v6.0.0
 [5.1.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v5.0.0...v5.1.0
 [5.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.9.0...v5.0.0
 [4.9.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v4.8.0...v4.9.0

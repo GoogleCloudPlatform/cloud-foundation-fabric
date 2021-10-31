@@ -15,5 +15,6 @@
  */
 
 output "squid-address" {
-  value = local.squid_address
+  description = "IP address of the Squid proxy."
+  value       = local.squid_address
 }

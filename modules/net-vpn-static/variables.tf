@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-variable "gateway_address_create" {
-  description = "Create external address assigned to the VPN gateway. Needs to be explicitly set to false to use address in gateway_address variable."
-  type        = bool
-  default     = true
-}
-
 variable "gateway_address" {
   description = "Optional address assigned to the VPN gateway. Ignored unless gateway_address_create is set to false."
   type        = string
   default     = ""
+}
+
+variable "gateway_address_create" {
+  description = "Create external address assigned to the VPN gateway. Needs to be explicitly set to false to use address in gateway_address variable."
+  type        = bool
+  default     = true
 }
 
 variable "name" {
