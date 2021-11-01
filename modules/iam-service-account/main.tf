@@ -59,7 +59,7 @@ locals {
   prefix                    = var.prefix != null ? "${var.prefix}-" : ""
   resource_email_static     = "${local.prefix}${var.name}@${var.project_id}.iam.gserviceaccount.com"
   resource_iam_email_static = "serviceAccount:${local.resource_email_static}"
-  resource_iam_email        = "serviceAccount:${local.service_account.email}"
+  resource_iam_email        = local.service_account != null ? "serviceAccount:${local.service_account.email}" : local.resource_iam_email_static
   service_account = (
     var.service_account_create
     ? try(google_service_account.service_account.0, null)
