@@ -50,10 +50,7 @@ variable "containers" {
       protocol       = string
       container_port = string
     }))
-    volume_mounts = list(object({
-      name       = string
-      mount_path = string
-    }))
+    volume_mounts = map(string)
   }))
 }
 
