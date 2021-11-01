@@ -58,7 +58,7 @@ variable "containers" {
 }
 
 variable "iam" {
-  description = "IAM bindings for topic in {ROLE => [MEMBERS]} format."
+  description = "IAM bindings for Cloud Run service in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
   default     = {}
 }
