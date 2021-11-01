@@ -164,8 +164,8 @@ variable "project_create" {
 
 variable "project_skip_delete" {
   description = "Allows the underlying resources to be destroyed without destroying the project itself."
-  type = bool
-  default = false
+  type        = bool
+  default     = false
 }
 
 variable "service_config" {
