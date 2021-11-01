@@ -4,6 +4,93 @@ Cloud Run management, with support for IAM roles and optional Eventarc trigger c
 
 ## Examples
 
+### Environment variables
+
+This deploys a Cloud Run service and sets some environment variables.
+
+```hcl
+module "cloud_run" {
+  source     = "./modules/cloud-run"
+  project_id = "my-project"
+  name       = "hello"
+  containers = [{
+    image   = "us-docker.pkg.dev/cloudrun/container/hello"
+    command = null
+    args    = null
+    env     = {
+      "VAR1": "VALUE1",
+      "VAR2": "VALUE2",
+    }
+    env_from = null
+    ports = null
+    resources = null
+    volume_mounts = null
+  }]
+}
+# tftest:modules=1:resources=1
+```
+
+### Environment variables (value read from secret)
+
+```hcl
+module "cloud_run" {
+  source     = "./modules/cloud-run"
+  project_id = "my-project"
+  name       = "hello"
+  containers = [{
+    image   = "us-docker.pkg.dev/cloudrun/container/hello"
+    command = null
+    args    = null
+    env     = null
+    env_from = {
+      "CREDENTIALS": {
+        name = "credentials"
+        key = "1"
+      }
+    }
+    ports = null
+    resources = null
+    volume_mounts = null
+  }]
+}
+# tftest:modules=1:resources=1
+```
+
+### Secret mounted as volume
+
+```hcl
+module "cloud_run" {
+  source     = "./modules/cloud-run"
+  project_id = var.project_id
+  name       = "hello"
+  region     = var.region
+  revision_name = "green"
+  containers = [{
+    image     = "us-docker.pkg.dev/cloudrun/container/hello"
+    command   = null
+    args      = null
+    env       = null
+    env_from  = null
+    ports = null
+    resources = null
+    volume_mounts = {
+      "credentials": "/credentials"
+    }
+  }]
+  volumes = [
+    {
+      name = "credentials"
+      secret_name = "credentials"
+      items = [{
+        key = "1"
+        path = "v1.txt"
+      }]
+    }
+  ]
+}
+# tftest:modules=1:resources=1
+```
+
 ### Traffic split
 
 This deploys a Cloud Run service with traffic split between two revisions.
