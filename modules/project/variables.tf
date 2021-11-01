@@ -162,6 +162,12 @@ variable "project_create" {
   default     = true
 }
 
+variable "project_skip_delete" {
+  description = "Allows the underlying resources to be destroyed without destroying the project itself."
+  type = bool
+  default = false
+}
+
 variable "service_config" {
   description = "Configure service API activation."
   type = object({
