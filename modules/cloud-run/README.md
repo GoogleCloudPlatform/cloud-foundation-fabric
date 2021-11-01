@@ -10,7 +10,7 @@ This deploys a Cloud Run service with traffic split between two revisions.
 
 ```hcl
 module "cloud_run" {
-  source     = "../../modules/cloud-run"
+  source     = "./modules/cloud-run"
   project_id = "my-project"
   name       = "hello"
   revision_name = "green"
@@ -29,7 +29,7 @@ module "cloud_run" {
     "green" = 75
   }
 }
-# tftest:skip
+# tftest:modules=1:resources=1
 ```
 
 ### Eventarc trigger (Pub/Sub)
@@ -38,7 +38,7 @@ This deploys a Cloud Run service that will be triggered when messages are publis
 
 ```hcl
 module "cloud_run" {
-  source     = "../../modules/cloud-run"
+  source     = "./modules/cloud-run"
   project_id = "my-project"
   name       = "hello"
   containers = [{
@@ -51,20 +51,21 @@ module "cloud_run" {
     resources = null
     volume_mounts = null
   }]
-  pub_sub_triggers = [
+  pubsub_triggers = [
     "topic1",
     "topic2"
   ]
 }
-# tftest:skip
+# tftest:modules=1:resources=3
 ```
 
 ### Eventarc trigger (Audit logs)
 
 This deploys a Cloud Run service that will be triggered when specific log events are written to Google Cloud audit logs.
 
+```hcl
 module "cloud_run" {
-  source     = "../../modules/cloud-run"
+  source     = "./modules/cloud-run"
   project_id = "my-project"
   name       = "hello"
   containers = [{
@@ -84,6 +85,8 @@ module "cloud_run" {
     }
   ]
 }
+# tftest:modules=1:resources=2
+```
 
 ### Service account management
 
@@ -91,7 +94,7 @@ To use a custom service account managed by the module, set `service_account_crea
 
 ```hcl
 module "cloud_run" {
-  source     = "../../modules/cloud-run"
+  source     = "./modules/cloud-run"
   project_id = "my-project"
   name       = "hello"
   containers = [{
@@ -106,14 +109,14 @@ module "cloud_run" {
   }]
   service_account_create = true
 }
-# tftest:skip
+# tftest:modules=1:resources=2
 ```
 
 To use an externally managed service account, pass its email in `service_account` and leave `service_account_create` to `false` (the default).
 
 ```hcl
 module "cloud_run" {
-  source     = "../../modules/cloud-run"
+  source     = "./modules/cloud-run"
   project_id = "my-project"
   name       = "hello"
   containers = [{
@@ -126,9 +129,9 @@ module "cloud_run" {
     resources = null
     volume_mounts = null
   }]
-  service_account = local.service_account_email
+  service_account = "cloud-run@my-project.iam.gserviceaccount.com"
 }
-# tftest:skip
+# tftest:modules=1:resources=1
 ```
 
 <!-- BEGIN TFDOC -->
