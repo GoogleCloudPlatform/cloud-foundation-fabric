@@ -56,7 +56,7 @@ resource "google_cloud_run_service" "service" {
   template {
     spec {
       dynamic "containers" {
-        for_each = var.containers == null ? [] : var.containers
+        for_each = var.containers == null ? {} : {for i, container in var.containers: i => container}
         content {
           image   = containers.value["image"]
           command = containers.value["command"]
