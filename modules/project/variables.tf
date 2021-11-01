@@ -221,3 +221,9 @@ variable "shared_vpc_service_config" {
     host_project = ""
   }
 }
+
+variable "skip_delete" {
+  description = "Allows the underlying resources to be destroyed without destroying the project itself."
+  type        = bool
+  default     = false
+}
