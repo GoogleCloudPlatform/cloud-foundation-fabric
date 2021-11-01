@@ -96,10 +96,10 @@ resource "google_cloud_run_service" "service" {
             }
           }
           dynamic "volume_mounts" {
-            for_each = containers.value["volume_mounts"] == null ? [] : containers.value["volume_mounts"]
+            for_each = containers.value["volume_mounts"] == null ? {} : containers.value["volume_mounts"]
             content {
-              name       = volume_mounts.value["name"]
-              mount_path = volume_mounts.value["mount_path"]
+              name       = volume_mounts.key
+              mount_path = volume_mounts.value
             }
           }
         }
