@@ -207,6 +207,7 @@ module "project" {
 | *services* | Service APIs to enable. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 | *shared_vpc_host_config* | Configures this project as a Shared VPC host project (mutually exclusive with shared_vpc_service_project). | <code title="object&#40;&#123;&#10;enabled          &#61; bool&#10;service_projects &#61; list&#40;string&#41;&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;enabled          &#61; false&#10;service_projects &#61; &#91;&#93;&#10;&#125;">...</code> |
 | *shared_vpc_service_config* | Configures this project as a Shared VPC service project (mutually exclusive with shared_vpc_host_config). | <code title="object&#40;&#123;&#10;attach       &#61; bool&#10;host_project &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;attach       &#61; false&#10;host_project &#61; &#34;&#34;&#10;&#125;">...</code> |
+| *skip_delete* | Allows the underlying resources to be destroyed without destroying the project itself. | <code title="">bool</code> |  | <code title="">false</code> |
 
 ## Outputs
 
