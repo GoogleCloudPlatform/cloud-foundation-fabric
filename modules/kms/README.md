@@ -86,10 +86,10 @@ module "kms" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| key_self_links | Key self links. |  |
+| id | Keyring self link. |  |
+| key_ids | Key self links. |  |
 | keyring | Keyring resource. |  |
 | keys | Key resources. |  |
 | location | Keyring location. |  |
 | name | Keyring name. |  |
-| self_link | Keyring self link. |  |
 <!-- END TFDOC -->
