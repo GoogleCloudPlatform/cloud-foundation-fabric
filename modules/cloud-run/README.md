@@ -15,13 +15,15 @@ module "cloud_run" {
   name       = "hello"
   containers = [{
     image   = "us-docker.pkg.dev/cloudrun/container/hello"
-    command = null
-    args    = null
-    env     = {
-      "VAR1": "VALUE1",
-      "VAR2": "VALUE2",
+    options = {
+      command = null
+      args    = null
+      env     = {
+        "VAR1": "VALUE1",
+        "VAR2": "VALUE2",
+      }
+      env_from = null
     }
-    env_from = null
     ports = null
     resources = null
     volume_mounts = null
@@ -38,14 +40,16 @@ module "cloud_run" {
   project_id = "my-project"
   name       = "hello"
   containers = [{
-    image   = "us-docker.pkg.dev/cloudrun/container/hello"
-    command = null
-    args    = null
-    env     = null
-    env_from = {
-      "CREDENTIALS": {
-        name = "credentials"
-        key = "1"
+    image = "us-docker.pkg.dev/cloudrun/container/hello"
+    options = {
+      command   = null
+      args      = null
+      env       = null
+      env_from  = {
+        "CREDENTIALS": {
+          name = "credentials"
+          key = "1"
+        }
       }
     }
     ports = null
@@ -66,13 +70,10 @@ module "cloud_run" {
   region     = var.region
   revision_name = "green"
   containers = [{
-    image     = "us-docker.pkg.dev/cloudrun/container/hello"
-    command   = null
-    args      = null
-    env       = null
-    env_from  = null
-    ports = null
-    resources = null
+    image         = "us-docker.pkg.dev/cloudrun/container/hello"
+    options       = null
+    ports         = null
+    resources     = null
     volume_mounts = {
       "credentials": "/credentials"
     }
@@ -102,13 +103,10 @@ module "cloud_run" {
   name       = "hello"
   revision_name = "green"
   containers = [{
-    image   = "us-docker.pkg.dev/cloudrun/container/hello"
-    command = null
-    args    = null
-    env     = null
-    env_from = null
-    ports = null
-    resources = null
+    image         = "us-docker.pkg.dev/cloudrun/container/hello"
+    options       = null
+    ports         = null
+    resources     = null
     volume_mounts = null
   }]
   traffic = {
@@ -129,13 +127,10 @@ module "cloud_run" {
   project_id = "my-project"
   name       = "hello"
   containers = [{
-    image   = "us-docker.pkg.dev/cloudrun/container/hello"
-    command = null
-    args    = null
-    env     = null
-    env_from = null
-    ports = null
-    resources = null
+    image         = "us-docker.pkg.dev/cloudrun/container/hello"
+    options       = null
+    ports         = null
+    resources     = null
     volume_mounts = null
   }]
   pubsub_triggers = [
@@ -156,19 +151,16 @@ module "cloud_run" {
   project_id = "my-project"
   name       = "hello"
   containers = [{
-    image   = "us-docker.pkg.dev/cloudrun/container/hello"
-    command = null
-    args    = null
-    env     = null
-    env_from = null
-    ports = null
-    resources = null
+    image         = "us-docker.pkg.dev/cloudrun/container/hello"
+    options       = null
+    ports         = null
+    resources     = null
     volume_mounts = null
   }]
   audit_log_triggers = [
     {
-      service_name = "cloudresourcemanager.googleapis.com"
-      method_name = "SetIamPolicy"
+      service_name  = "cloudresourcemanager.googleapis.com"
+      method_name   = "SetIamPolicy"
     }
   ]
 }
@@ -185,13 +177,10 @@ module "cloud_run" {
   project_id = "my-project"
   name       = "hello"
   containers = [{
-    image   = "us-docker.pkg.dev/cloudrun/container/hello"
-    command = null
-    args    = null
-    env     = null
-    env_from = null
-    ports = null
-    resources = null
+    image         = "us-docker.pkg.dev/cloudrun/container/hello"
+    options       = null
+    ports         = null
+    resources     = null
     volume_mounts = null
   }]
   service_account_create = true
@@ -207,13 +196,10 @@ module "cloud_run" {
   project_id = "my-project"
   name       = "hello"
   containers = [{
-    image   = "us-docker.pkg.dev/cloudrun/container/hello"
-    command = null
-    args    = null
-    env     = null
-    env_from = null
-    ports = null
-    resources = null
+    image         = "us-docker.pkg.dev/cloudrun/container/hello"
+    options       = null
+    ports         = null
+    resources     = null
     volume_mounts = null
   }]
   service_account = "cloud-run@my-project.iam.gserviceaccount.com"
@@ -226,7 +212,7 @@ module "cloud_run" {
 
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
-| containers | Containers | <code title="list&#40;object&#40;&#123;&#10;image   &#61; string&#10;command &#61; list&#40;string&#41;&#10;args    &#61; list&#40;string&#41;&#10;env     &#61; map&#40;string&#41;&#10;env_from &#61; map&#40;object&#40;&#123;&#10;key  &#61; string&#10;name &#61; string&#10;&#125;&#41;&#41;&#10;resources &#61; object&#40;&#123;&#10;limits &#61; object&#40;&#123;&#10;cpu    &#61; string&#10;memory &#61; string&#10;&#125;&#41;&#10;requests &#61; object&#40;&#123;&#10;cpu    &#61; string&#10;memory &#61; string&#10;&#125;&#41;&#10;&#125;&#41;&#10;ports &#61; list&#40;object&#40;&#123;&#10;name           &#61; string&#10;protocol       &#61; string&#10;container_port &#61; string&#10;&#125;&#41;&#41;&#10;volume_mounts &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">list(object({...}))</code> | ✓ |  |
+| containers | Containers | <code title="list&#40;object&#40;&#123;&#10;image &#61; string&#10;options &#61; object&#40;&#123;&#10;command &#61; list&#40;string&#41;&#10;args    &#61; list&#40;string&#41;&#10;env     &#61; map&#40;string&#41;&#10;env_from &#61; map&#40;object&#40;&#123;&#10;key  &#61; string&#10;name &#61; string&#10;&#125;&#41;&#41;&#10;&#125;&#41;&#10;resources &#61; object&#40;&#123;&#10;limits &#61; object&#40;&#123;&#10;cpu    &#61; string&#10;memory &#61; string&#10;&#125;&#41;&#10;requests &#61; object&#40;&#123;&#10;cpu    &#61; string&#10;memory &#61; string&#10;&#125;&#41;&#10;&#125;&#41;&#10;ports &#61; list&#40;object&#40;&#123;&#10;name           &#61; string&#10;protocol       &#61; string&#10;container_port &#61; string&#10;&#125;&#41;&#41;&#10;volume_mounts &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">list(object({...}))</code> | ✓ |  |
 | name | Name used for cloud run service | <code title="">string</code> | ✓ |  |
 | project_id | Project id used for all resources. | <code title="">string</code> | ✓ |  |
 | *audit_log_triggers* | Event arc triggers (Audit log) | <code title="list&#40;object&#40;&#123;&#10;service_name &#61; string&#10;method_name  &#61; string&#10;&#125;&#41;&#41;">list(object({...}))</code> |  | <code title="">null</code> |
@@ -241,7 +227,8 @@ module "cloud_run" {
 | *service_account_create* | Auto-create service account. | <code title="">bool</code> |  | <code title="">false</code> |
 | *traffic* | Traffic | <code title="map&#40;number&#41;">map(number)</code> |  | <code title="">null</code> |
 | *volumes* | Volumes | <code title="list&#40;object&#40;&#123;&#10;name        &#61; string&#10;secret_name &#61; string&#10;items &#61; list&#40;object&#40;&#123;&#10;key  &#61; string&#10;path &#61; string&#10;&#125;&#41;&#41;&#10;&#125;&#41;&#41;">list(object({...}))</code> |  | <code title="">null</code> |
-| *vpc_connector_config* | VPC connector configuration. Set `create_config` attributes to trigger creation. | <code title="object&#40;&#123;&#10;egress_settings &#61; string&#10;name            &#61; string&#10;ip_cidr_range   &#61; string&#10;network         &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
+| *vpc_connector* | None | <code title="object&#40;&#123;&#10;create          &#61; bool&#10;name            &#61; string&#10;egress_settings &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
+| *vpc_connector_config* | VPC connector network configuration. Must be provided if new VPC connector is being created | <code title="object&#40;&#123;&#10;ip_cidr_range &#61; string&#10;network       &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 
 ## Outputs
 

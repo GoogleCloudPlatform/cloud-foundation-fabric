@@ -27,21 +27,21 @@ locals {
   )
 
   annotations = merge(var.ingress_settings == null ? {} : { "run.googleapis.com/ingress" = var.ingress_settings },
-    var.vpc_connector_config == null
+    var.vpc_connector == null
     ? {}
-    : try(var.vpc_connector_config.ip_cidr_range, null) == null
-    ? { "run.googleapis.com/vpc-access-connector" = var.vpc_connector_config.name }
+    : try(var.vpc_connector.create, false)
+    ? { "run.googleapis.com/vpc-access-connector" = var.vpc_connector.name }
     : { "run.googleapis.com/vpc-access-connector" = google_vpc_access_connector.connector.0.id }
     ,
-    try(var.vpc_connector_config.egress_settings, null) == null
+    try(var.vpc_connector.egress_settings, null) == null
     ? {}
-  : { "run.googleapis.com/vpc-access-egress" = var.vpc_connector_config.egress_settings })
+  : { "run.googleapis.com/vpc-access-egress" = var.vpc_connector.egress_settings })
 }
 
 resource "google_vpc_access_connector" "connector" {
-  count         = try(var.vpc_connector_config.ip_cidr_range, null) == null ? 0 : 1
+  count         = try(var.vpc_connector.create, false) == false ? 0 : 1
   project       = var.project_id
-  name          = var.vpc_connector_config.name
+  name          = var.vpc_connector.name
   region        = var.region
   ip_cidr_range = var.vpc_connector_config.ip_cidr_range
   network       = var.vpc_connector_config.network
@@ -59,17 +59,17 @@ resource "google_cloud_run_service" "service" {
         for_each = var.containers == null ? {} : { for i, container in var.containers : i => container }
         content {
           image   = containers.value["image"]
-          command = containers.value["command"]
-          args    = containers.value["args"]
+          command = try(containers.value["options"]["command"], null)
+          args    = try(containers.value["options"]["args"], null)
           dynamic "env" {
-            for_each = containers.value["env"] == null ? {} : containers.value["env"]
+            for_each = try(containers.value["options"]["env"], null) == null ? {} : containers.value["options"]["env"]
             content {
               name  = env.key
               value = env.value
             }
           }
           dynamic "env" {
-            for_each = containers.value["env_from"] == null ? {} : containers.value["env_from"]
+            for_each = try(containers.value["options"]["env_from"], null) == null ? {} : containers.value["options"]["env_from"]
             content {
               name = env.key
               value_from {
@@ -81,7 +81,7 @@ resource "google_cloud_run_service" "service" {
             }
           }
           dynamic "ports" {
-            for_each = containers.value["ports"] == null ? {} : { for port in containers.value["ports"] : "${port.name}-${port.protocol}-${port.container_port}" => port }
+            for_each = containers.value["ports"] == null ? {} : { for port in containers.value["ports"] : "${port.name}-${port.container_port}" => port }
             content {
               name           = ports.value["name"]
               protocol       = ports.value["protocol"]

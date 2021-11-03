@@ -27,14 +27,16 @@ variable "audit_log_triggers" {
 variable "containers" {
   description = "Containers"
   type = list(object({
-    image   = string
-    command = list(string)
-    args    = list(string)
-    env     = map(string)
-    env_from = map(object({
-      key  = string
-      name = string
-    }))
+    image = string
+    options = object({
+      command = list(string)
+      args    = list(string)
+      env     = map(string)
+      env_from = map(object({
+        key  = string
+        name = string
+      }))
+    })
     resources = object({
       limits = object({
         cpu    = string
@@ -137,13 +139,21 @@ variable "volumes" {
   default = null
 }
 
-variable "vpc_connector_config" {
-  description = "VPC connector configuration. Set `create_config` attributes to trigger creation."
+variable "vpc_connector" {
+  description = ""
   type = object({
-    egress_settings = string
+    create          = bool
     name            = string
-    ip_cidr_range   = string
-    network         = string
+    egress_settings = string
+  })
+  default = null
+}
+
+variable "vpc_connector_config" {
+  description = "VPC connector network configuration. Must be provided if new VPC connector is being created"
+  type = object({
+    ip_cidr_range = string
+    network       = string
   })
   default = null
 }

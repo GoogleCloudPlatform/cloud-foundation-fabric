@@ -19,10 +19,7 @@ module "cloud_run" {
   revision_name = "blue"
   containers = [{
     image         = "us-docker.pkg.dev/cloudrun/container/hello"
-    command       = null
-    args          = null
-    env           = null
-    env_from      = null
+    options       = null
     ports         = null
     resources     = null
     volume_mounts = null
