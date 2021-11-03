@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 - added support for GCS notifications in `gcs` module
 - added new `skip_delete` variable to `compute-vm` module
+- **incompatible change** all modules and examples now require Terraform >= 1.0.0 and Google provider >= 4.0.0
 
 ## [7.0.0] - 2021-10-21
 
