@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
+output "id" {
+  description = "Keyring self link."
+  value       = local.keyring.id
+  depends_on = [
+    google_kms_key_ring_iam_binding.default
+  ]
+}
 
 output "key_ids" {
   description = "Key self links."
@@ -53,14 +60,6 @@ output "location" {
 output "name" {
   description = "Keyring name."
   value       = local.keyring.name
-  depends_on = [
-    google_kms_key_ring_iam_binding.default
-  ]
-}
-
-output "id" {
-  description = "Keyring self link."
-  value       = local.keyring.id
   depends_on = [
     google_kms_key_ring_iam_binding.default
   ]
