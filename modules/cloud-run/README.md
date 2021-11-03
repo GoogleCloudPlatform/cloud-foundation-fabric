@@ -227,7 +227,7 @@ module "cloud_run" {
 | *service_account_create* | Auto-create service account. | <code title="">bool</code> |  | <code title="">false</code> |
 | *traffic* | Traffic | <code title="map&#40;number&#41;">map(number)</code> |  | <code title="">null</code> |
 | *volumes* | Volumes | <code title="list&#40;object&#40;&#123;&#10;name        &#61; string&#10;secret_name &#61; string&#10;items &#61; list&#40;object&#40;&#123;&#10;key  &#61; string&#10;path &#61; string&#10;&#125;&#41;&#41;&#10;&#125;&#41;&#41;">list(object({...}))</code> |  | <code title="">null</code> |
-| *vpc_connector* | None | <code title="object&#40;&#123;&#10;create          &#61; bool&#10;name            &#61; string&#10;egress_settings &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
+| *vpc_connector* | VPC connector configuration. Set create to 'true' if a new connecto needs to be created | <code title="object&#40;&#123;&#10;create          &#61; bool&#10;name            &#61; string&#10;egress_settings &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 | *vpc_connector_config* | VPC connector network configuration. Must be provided if new VPC connector is being created | <code title="object&#40;&#123;&#10;ip_cidr_range &#61; string&#10;network       &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 
 ## Outputs
