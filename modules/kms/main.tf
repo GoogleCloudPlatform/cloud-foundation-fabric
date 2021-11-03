@@ -52,14 +52,14 @@ resource "google_kms_key_ring" "default" {
 
 resource "google_kms_key_ring_iam_binding" "default" {
   for_each    = var.iam
-  key_ring_id = local.keyring.self_link
+  key_ring_id = local.keyring.id
   role        = each.key
   members     = each.value
 }
 
 resource "google_kms_crypto_key" "default" {
   for_each        = var.keys
-  key_ring        = local.keyring.self_link
+  key_ring        = local.keyring.id
   name            = each.key
   rotation_period = try(each.value.rotation_period, null)
   labels          = try(each.value.labels, null)
@@ -79,6 +79,6 @@ resource "google_kms_crypto_key_iam_binding" "default" {
     "${binding.key}.${binding.role}" => binding
   }
   role          = each.value.role
-  crypto_key_id = google_kms_crypto_key.default[each.value.key].self_link
+  crypto_key_id = google_kms_crypto_key.default[each.value.key].id
   members       = each.value.members
 }

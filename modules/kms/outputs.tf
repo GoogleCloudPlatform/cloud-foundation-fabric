@@ -14,12 +14,19 @@
  * limitations under the License.
  */
 
+output "id" {
+  description = "Keyring self link."
+  value       = local.keyring.id
+  depends_on = [
+    google_kms_key_ring_iam_binding.default
+  ]
+}
 
-output "key_self_links" {
+output "key_ids" {
   description = "Key self links."
   value = {
     for name, resource in google_kms_crypto_key.default :
-    name => resource.self_link
+    name => resource.id
   }
   depends_on = [
     google_kms_crypto_key_iam_binding.default
@@ -53,14 +60,6 @@ output "location" {
 output "name" {
   description = "Keyring name."
   value       = local.keyring.name
-  depends_on = [
-    google_kms_key_ring_iam_binding.default
-  ]
-}
-
-output "self_link" {
-  description = "Keyring self link."
-  value       = local.keyring.self_link
   depends_on = [
     google_kms_key_ring_iam_binding.default
   ]

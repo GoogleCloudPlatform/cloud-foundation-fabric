@@ -1,6 +1,6 @@
 # Google Cloud Data Fusion Module
 
-This module allows simple management of ['Google Data Fusion'](https://cloud.google.com/data-fusion) instances. It supports creating Basic or Enterprise, public or private instances. 
+This module allows simple management of ['Google Data Fusion'](https://cloud.google.com/data-fusion) instances. It supports creating Basic or Enterprise, public or private instances.
 
 ## Examples
 
@@ -8,13 +8,15 @@ This module allows simple management of ['Google Data Fusion'](https://cloud.goo
 
 ```hcl
 module "datafusion" {
-  source     = "./modules/datafusion"
-  name       = "my-datafusion"
-  region     = "europe-west1"
-  project_id = "my-project"
-  network    = "my-network-name"
+  source          = "./modules/datafusion"
+  name            = "my-datafusion"
+  region          = "europe-west1"
+  project_id      = "my-project"
+  network         = "my-network-name"
+  # TODO: remove the following line
+  firewall_create = false
 }
-# tftest:modules=1:resources=4
+# tftest:modules=1:resources=3
 ```
 
 ### Externally managed IP allocation

@@ -226,7 +226,7 @@ module "vm_example" {
   encryption = {
     encrypt_boot            = true
     disk_encryption_key_raw = null
-    kms_key_self_link       = module.kms.key_self_links.key-gce
+    kms_key_self_link       = module.kms.key_ids.key-gce
   }
   metadata = {
     startup-script = local.vm-startup-script
@@ -266,7 +266,7 @@ module "kms-gcs" {
   prefix         = module.project-service.project_id
   name           = each.key
   iam            = each.value.members
-  encryption_key = module.kms.keys.key-gcs.self_link
+  encryption_key = module.kms.keys.key-gcs.id
   force_destroy  = true
 }
 
@@ -286,7 +286,7 @@ module "bigquery-dataset" {
     reader-group = module.service-account-bq.email
     owner        = module.service-account-bq.email
   }
-  encryption_key = module.kms.keys.key-bq.self_link
+  encryption_key = module.kms.keys.key-bq.id
   tables = {
     bq_import = {
       friendly_name = "BQ import"
@@ -301,7 +301,7 @@ module "bigquery-dataset" {
       options = {
         clustering      = null
         expiration_time = null
-        encryption_key  = module.kms.keys.key-bq.self_link
+        encryption_key  = module.kms.keys.key-bq.id
       }
       deletion_protection = true
     },
@@ -318,7 +318,7 @@ module "bigquery-dataset" {
       options = {
         clustering      = null
         expiration_time = null
-        encryption_key  = module.kms.keys.key-bq.self_link
+        encryption_key  = module.kms.keys.key-bq.id
       }
       deletion_protection = true
     }
