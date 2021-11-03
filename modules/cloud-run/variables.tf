@@ -140,7 +140,7 @@ variable "volumes" {
 }
 
 variable "vpc_connector" {
-  description = ""
+  description = "VPC connector configuration. Set create to 'true' if a new connecto needs to be created"
   type = object({
     create          = bool
     name            = string
