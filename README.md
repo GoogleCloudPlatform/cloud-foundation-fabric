@@ -41,6 +41,6 @@ Currently available modules:
 - **data** - [GCS](./modules/gcs), [BigQuery dataset](./modules/bigquery-dataset), [Pub/Sub](./modules/pubsub), [Datafusion](./modules/datafusion), [Bigtable instance](./modules/bigtable-instance), [Cloud SQL instance](./modules/cloudsql-instance)
 - **development** - [Cloud Source Repository](./modules/source-repository), [Container Registry](./modules/container-registry), [Artifact Registry](./modules/artifact-registry), [Apigee Organization](./modules/apigee-organization), [Apigee X Instance](./modules/apigee-x-instance)
 - **security** - [KMS](./modules/kms), [SecretManager](./modules/secret-manager), [VPC Service Control](./modules/vpc-sc)
-- **serverless** - [Cloud Function](./modules/cloud-function)
+- **serverless** - [Cloud Function](./modules/cloud-function), [Cloud Run](./modules/cloud-run)
 
 For more information and usage examples see each module's README file.
