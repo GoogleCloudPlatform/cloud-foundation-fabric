@@ -137,6 +137,8 @@ data "archive_file" "bundle" {
     ? "/tmp/bundle.zip"
     : var.bundle_config.output_path
   )
+  output_file_mode = var.bundle_config.output_file_mode
+  excludes         = var.bundle_config.excludes
 }
 
 resource "google_service_account" "service_account" {

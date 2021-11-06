@@ -20,8 +20,10 @@ module "test" {
   name        = "test"
   bucket_name = var.bucket_name
   bundle_config = {
-    source_dir  = "bundle"
-    output_path = "bundle.zip"
+    source_dir       = "bundle"
+    output_path      = "bundle.zip"
+    output_file_mode = null
+    excludes         = null
   }
   iam = {
     "roles/cloudfunctions.invoker" = ["allUsers"]
