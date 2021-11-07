@@ -33,6 +33,7 @@ variable "bundle_config" {
   type = object({
     source_dir  = string
     output_path = string
+    excludes    = list(string)
   })
 }
 

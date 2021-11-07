@@ -21,8 +21,9 @@ module "cf-http" {
   name          = "test-cf-http"
   bucket_name   = "test-cf-bundles"
   bundle_config = {
-    source_dir = "my-cf-source-folder"
+    source_dir  = "my-cf-source-folder"
     output_path = "bundle.zip"
+    excludes    = null
   }
 }
 # tftest:skip
@@ -39,8 +40,9 @@ module "cf-http" {
   name          = "test-cf-http"
   bucket_name   = "test-cf-bundles"
   bundle_config = {
-    source_dir = "my-cf-source-folder"
+    source_dir  = "my-cf-source-folder"
     output_path = "bundle.zip"
+    excludes    = null
   }
   trigger_config = {
     event = "google.pubsub.topic.publish"
@@ -62,8 +64,9 @@ module "cf-http" {
   name          = "test-cf-http"
   bucket_name   = "test-cf-bundles"
   bundle_config = {
-    source_dir = "my-cf-source-folder"
+    source_dir  = "my-cf-source-folder"
     output_path = "bundle.zip"
+    excludes    = null
   }
   iam   = {
     "roles/cloudfunctions.invoker" = ["allUsers"]
@@ -87,8 +90,9 @@ module "cf-http" {
     lifecycle_delete_age = 1
   }
   bundle_config = {
-    source_dir = "my-cf-source-folder"
+    source_dir  = "my-cf-source-folder"
     output_path = "bundle.zip"
+    excludes    = null
   }
 }
 # tftest:skip
@@ -105,8 +109,9 @@ module "cf-http" {
   name          = "test-cf-http"
   bucket_name   = "test-cf-bundles"
   bundle_config = {
-    source_dir = "my-cf-source-folder"
+    source_dir  = "my-cf-source-folder"
     output_path = "bundle.zip"
+    excludes    = null
   }
   service_account_create = true
 }
@@ -122,10 +127,30 @@ module "cf-http" {
   name          = "test-cf-http"
   bucket_name   = "test-cf-bundles"
   bundle_config = {
-    source_dir = "my-cf-source-folder"
+    source_dir  = "my-cf-source-folder"
     output_path = "bundle.zip"
+    excludes    = null
   }
   service_account = local.service_account_email
+}
+# tftest:skip
+```
+
+### Custom bundle config
+
+In order to help prevent `archive_zip.output_md5` from changing cross platform (e.g. Cloud Build vs your local development environment), you'll have to make sure that the files included in the zip are always the same.
+
+```hcl
+module "cf-http" {
+  source        = "./modules/cloud-function"
+  project_id    = "my-project"
+  name          = "test-cf-http"
+  bucket_name   = "test-cf-bundles"
+  bundle_config = {
+    source_dir  = "my-cf-source-folder"
+    output_path = "bundle.zip"
+    excludes    = ["__pycache__"]
+  }
 }
 # tftest:skip
 ```
@@ -136,7 +161,7 @@ module "cf-http" {
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
 | bucket_name | Name of the bucket that will be used for the function code. It will be created with prefix prepended if bucket_config is not null. | <code title="">string</code> | ✓ |  |
-| bundle_config | Cloud function source folder and generated zip bundle paths. Output path defaults to '/tmp/bundle.zip' if null. | <code title="object&#40;&#123;&#10;source_dir  &#61; string&#10;output_path &#61; string&#10;&#125;&#41;">object({...})</code> | ✓ |  |
+| bundle_config | Cloud function source folder and generated zip bundle paths. Output path defaults to '/tmp/bundle.zip' if null. | <code title="object&#40;&#123;&#10;source_dir  &#61; string&#10;output_path &#61; string&#10;excludes    &#61; list&#40;string&#41;&#10;&#125;&#41;">object({...})</code> | ✓ |  |
 | name | Name used for cloud function and associated resources. | <code title="">string</code> | ✓ |  |
 | project_id | Project id used for all resources. | <code title="">string</code> | ✓ |  |
 | *bucket_config* | Enable and configure auto-created bucket. Set fields to null to use defaults. | <code title="object&#40;&#123;&#10;location             &#61; string&#10;lifecycle_delete_age &#61; number&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |

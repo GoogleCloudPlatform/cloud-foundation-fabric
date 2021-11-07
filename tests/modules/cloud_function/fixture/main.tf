@@ -22,6 +22,7 @@ module "test" {
   bundle_config = {
     source_dir  = "bundle"
     output_path = "bundle.zip"
+    excludes    = null
   }
   iam = {
     "roles/cloudfunctions.invoker" = ["allUsers"]
