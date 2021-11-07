@@ -60,10 +60,9 @@ module "cf" {
     lifecycle_delete_age = null
   }
   bundle_config = {
-    source_dir       = "cf"
-    output_path      = var.bundle_path
-    output_file_mode = null
-    excludes         = null
+    source_dir  = "cf"
+    output_path = var.bundle_path
+    excludes    = null
   }
   # https://github.com/hashicorp/terraform-provider-archive/issues/40
   # https://issuetracker.google.com/issues/155215191

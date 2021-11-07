@@ -137,7 +137,7 @@ data "archive_file" "bundle" {
     ? "/tmp/bundle.zip"
     : var.bundle_config.output_path
   )
-  output_file_mode = var.bundle_config.output_file_mode
+  output_file_mode = "0666"
   excludes         = var.bundle_config.excludes
 }
 
