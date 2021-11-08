@@ -145,7 +145,7 @@ def ignition_configs(ctx=None):
       'create', 'ignition-configs',
       '--dir', str(ctx.obj['paths']['config_dir'])
   ]
-  env = {'GOOGLE_CREDENTIALS': ctx.obj['paths']['credentials']}
+  env = {'GOOGLE_APPLICATION_CREDENTIALS': ctx.obj['paths']['credentials']}
   _run_installer(cmdline, env)
 
 
@@ -221,7 +221,7 @@ def manifests(ctx=None):
       'create', 'manifests',
       '--dir', str(ctx.obj['paths']['config_dir'])
   ]
-  env = {'GOOGLE_CREDENTIALS': ctx.obj['paths']['credentials']}
+  env = {'GOOGLE_APPLICATION_CREDENTIALS': ctx.obj['paths']['credentials']}
   _run_installer(cmdline, env)
 
 

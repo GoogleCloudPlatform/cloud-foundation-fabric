@@ -176,7 +176,6 @@ module "vm-bastion" {
     subnetwork = lookup(module.vpc-shared.subnet_self_links, "${var.region}/gce", null)
     nat        = false
     addresses  = null
-    alias_ips  = null
   }]
   tags = ["ssh"]
   metadata = {

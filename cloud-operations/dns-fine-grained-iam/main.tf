@@ -111,7 +111,6 @@ module "vm-ns-editor" {
     subnetwork = module.vpc.subnet_self_links["${var.region}/${var.name}-default"]
     nat        = false
     addresses  = null
-    alias_ips  = null
   }]
   metadata               = { startup-script = local.startup-script }
   service_account_create = true
@@ -128,7 +127,6 @@ module "vm-svc-editor" {
     subnetwork = module.vpc.subnet_self_links["${var.region}/${var.name}-default"]
     nat        = false
     addresses  = null
-    alias_ips  = null
   }]
   metadata               = { startup-script = local.startup-script }
   service_account_create = true

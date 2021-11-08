@@ -110,7 +110,6 @@ module "simple-vm-example" {
     subnetwork = try(module.vpc.subnet_self_links["${var.region}/${var.name}-default"], "")
     nat        = false
     addresses  = null
-    alias_ips  = null
   }]
   tags = ["${var.project_id}-test-feed", "shared-test-feed"]
 }

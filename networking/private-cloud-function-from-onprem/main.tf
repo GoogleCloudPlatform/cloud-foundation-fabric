@@ -187,7 +187,6 @@ module "test-vm" {
   }
   network_interfaces = [{
     addresses  = null
-    alias_ips  = null
     nat        = false
     network    = module.vpc-onprem.self_link
     subnetwork = module.vpc-onprem.subnet_self_links["${var.region}/${var.name}-onprem"]
