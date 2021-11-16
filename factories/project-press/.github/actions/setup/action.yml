@@ -1,0 +1,43 @@
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+name: 'Setup Project Factory'
+description: 'Setup up Project Factory dependencies'
+inputs:
+  credentials:  # id of input
+    description: 'Google Cloud service account key'
+    required: false
+    default: ''
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+    - uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: ${{ hashFiles('scripts/requirements.txt') }}
+    - run: |
+        python -m pip install --upgrade pip
+        pip install -r scripts/requirements.txt
+      shell: bash
+    - uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: 1.0.5
+        terraform_wrapper: false
+    - uses: google-github-actions/setup-gcloud@master
+      with:
+        service_account_key: ${{ inputs.credentials }}
+        export_default_credentials: true

@@ -1,0 +1,54 @@
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+project:
+    status: enum('active', required=True) # Hold for approval if project is deactivated
+    displayName: any(required=False)
+    projectId: any(required=False)
+    customProjectId: null(required=True)
+    description: any(required=False)
+    gitlabProject: any(required=False)
+    githubProject: any(required=False)
+    gitlab: any(required=False)
+    chargingCode: any(required=False)
+    folder: any(required=False)
+    owners: any(required=False)
+    iap: any(required=False)
+    team: any(required=False)
+    roles: include('roleList', approval_type='approved', required=False)
+    additionalIamRoles: include('iamRoleList', approval_type='approved', required=False)
+    environments: list(enum('nonprod'), required=True) # Require hold for approval for production projects
+    additionalApis: apis(type='approved', required=False)
+    allowPublicServices: false(required=False) # Require hold for approval for public services
+    budget: any(required=False)
+    serviceAccounts: include('serviceAccounts', required=False)
+    recommendationsReports: any(required=False)
+    recommendationsReportsIncludeOwners: any(required=False)
+    import: enum(False, required=False)
+---
+serviceAccounts: list(include('serviceAccount'))
+---
+serviceAccount:
+    name: regex('^[a-z]([-a-z0-9]*[a-z0-9]){6,30}$', required=True)
+    displayName: str(min=0, max=255, required=False)
+    description: bytes(min=0, max=255, required=False)
+    roles: list(include('serviceAccountRole'), type='approved', required=True)
+    additionalIamRoles: list(include('serviceAccountIamRole'), type='approved', required=False)
+---
+serviceAccountRole: sarole(required=True)
+---
+serviceAccountIamRole: saiamrole(required=True)
+---
+roleList: projectroles(type='approved', required=True)
+---
+iamRoleList: projectiamroles(type='approved', required=True)

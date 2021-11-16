@@ -1,0 +1,95 @@
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+name: 'Validate project changes'
+description: 'Validate project changes using Project Factory'
+inputs:
+  added_files:
+    description: 'Added files'
+    required: false
+    default: ''
+  modified_files:
+    description: 'Modified files'
+    required: false
+    default: ''
+  deleted_files:
+    description: 'Deleted files'
+    required: false
+    default: ''
+  renamed_files:
+    description: 'Renamed files'
+    required: false
+    default: ''
+  copied_files:
+    description: 'Copied files'
+    required: false
+    default: ''
+outputs:
+  errors:
+    description: "Validation errors (text)"
+    value: ${{ env.VALIDATE_CHANGES_ERROR }}
+  ok:
+    description: "Validation success message"
+    value: ${{ env.VALIDATE_CHANGES_OK }}
+runs:
+  using: "composite"
+  steps:
+  - run: |
+      auto_approve=1
+      for file in $(echo "${{ inputs.added_files }} ${{ inputs.copied_files }}" | xargs)
+      do
+          if [[ "${file}" == projects/*.yaml ]] ; then
+              >&2 echo "Validating project: ${file}"
+              python scripts/validate-project.py --schema config/projectSchema.yaml --schema-help config/projectSchemaHelp.yaml ${file} || exit 1
+    
+              >&2 echo "Validating project for auto-approval: ${file}"
+              python scripts/validate-project.py --schema config/projectSchemaAutoApprove.yaml --mode approve --schema-help config/projectSchemaHelp.yaml ${file} 2>> validation.txt || auto_approve=0
+          fi
+      done
+      for file in $(echo "${{ inputs.modified_files }}" | xargs)
+      do
+          if [[ "${file}" == projects/*.yaml ]] ; then
+            >&2 echo "Validating project: ${file}"
+            python scripts/validate-project.py --schema config/projectSchema.yaml --schema-help config/projectSchemaHelp.yaml ${file} || exit 1
+    
+            >&2 echo "Validating project for auto-approval: ${file}"
+            python scripts/validate-project.py --schema config/projectSchemaAutoApprove.yaml --mode approve --schema-help config/projectSchemaHelp.yaml ${file} 2>> validation.txt || auto_approve=0
+
+            >&2 echo "Validating project changes for auto-approval: ${file}"
+            python scripts/validate-changes.py --schema config/projectSchemaHoldApproval.yaml "master/${file}" "${file}" 2>> validation.txt || auto_approve=0                
+          else
+            echo "This pull request changes other files than projects: ${file}" >> validation.txt
+            auto_approve=0
+          fi
+      done
+      if [ ! -z "${{ inputs.deleted_files }}" ] || [ ! -z "${{ inputs.renamed_files }}" ]; then
+            echo "This pull request deletes files: ${{ inputs.deleted_files }} ${{ inputs.outputs.renamed_files }}" >> validation.txt
+            auto_approve=0
+      fi
+
+      if [ "$auto_approve" -eq "1" ] ; then
+          >&2 echo "Approving Merge Request automatically since all conditions were satisfied."
+          echo 'VALIDATE_CHANGES_OK<<EOF' >> $GITHUB_ENV
+          echo ":white_check_mark: **Merge Request automatically approved!** :clap:" >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+      else
+          >&2 echo "Holding Merge Request for manual approval."
+          echo 'VALIDATE_CHANGES_ERROR<<EOF' >> $GITHUB_ENV
+          echo -e ":warning: **Merge request held for manual approval.** Results:\n\`\`\`" >> $GITHUB_ENV
+          cat validation.txt >> $GITHUB_ENV
+          echo -e "\`\`\`" >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+      fi
+
+    shell: bash

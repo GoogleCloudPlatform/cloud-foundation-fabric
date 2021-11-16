@@ -1,0 +1,44 @@
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+name: 'Validate projects'
+description: 'Validate projects using Project Factory'
+inputs:
+  projects:  # id of input
+    description: 'Project wildcard'
+    required: false
+    default: ''
+outputs:
+  results:
+    description: "Validation results (json)"
+    value: ${{ env.VALIDATION_ERROR }}
+  comment:
+    description: "Validation results (text)"
+    value: ${{ env.VALIDATION_ERROR_TEXT }}
+runs:
+  using: "composite"
+  steps:
+  - run: |
+      if ! python scripts/validate-project.py --schema config/projectSchema.yaml --schema-help config/projectSchemaHelp.yaml --json '${{ inputs.projects }}' > validation.json 2> validation.txt ; then
+          echo 'VALIDATE_ERROR<<EOF' >> $GITHUB_ENV
+          cat validation.json >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+
+          echo 'VALIDATE_ERROR_TEXT<<EOF' >> $GITHUB_ENV
+          echo -e ":x: **Project validation failed.** Results:\n\`\`\`" >> $GITHUB_ENV
+          cat validation.txt >> $GITHUB_ENV
+          echo -e "\`\`\`" >> $GITHUB_ENV
+          echo 'EOF' >> $GITHUB_ENV
+      fi
+    shell: bash

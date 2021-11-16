@@ -1,0 +1,140 @@
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+help:
+  project.status: |
+    Project status can be either "active" or "archived". If you set your already
+    provisioned project's status to "archived", it will be deleted!
+  project.displayName: |
+    A human friendly display name for the project. It can be up to 20 characters long
+    and contain lowercase and uppercase letters, numbers, hyphen, single-quote, double-quote, 
+    space, and exclamation point.
+  project.projectId: |
+    A project ID for the project. It needs to be unique among all other projects and
+    can be up to 18 characters (lowercase letters, digits, or hyphens). The Project
+    Factory will add a "turbo-" prefix and an environment suffix (like "-nonprod").
+  project.gitlab.group: |
+    A Gitlab group name.
+  project.gitlab.project: |
+    A Gitlab project name.
+  project.githubProject: |
+    A Github repository name.
+  project.projectTemplate: |
+    Project/repository template to be used when initializing the source code
+    project/repository.
+  project.chargingCode: |
+    A chargeback code. It will be added as a label to the project to facilitate
+    cost tracking purposes. It can contain only lowercase letters, digits, underscores
+    and dashes.
+  project.labels: |
+    Additional labels for the project as key value pairs. Both keys and values can 
+    contain only lowercase letters, digits, underscores and dashes.
+  project.folder: |
+    Folder where the project will be provisioned.
+  project.owner: |
+    Project owner's username without the domain.
+  project.owners: |
+    List of project owners (username without the domain).
+  project.gkeNamespace: |
+    A Kubernetes namespace that will be provisioned for the project in the
+    shared GKE cluster.
+  project.dnsDomain: |
+    A private DNS domain for the project.
+  project.team: |
+    A list of project groups and users that belong to them. Available project
+    groups are "developer" and "data-analyst". Under the group, the usernames
+    of the members of the group should be listed without the domain.
+  project.environments: |
+    Environments where the project will be provisioned. Available environments 
+    are "nonprod" (non-production) and "prod" (production).
+  project.additionalApis: |
+    List of additional APIs to be enabled in the format of "api.googleapis.com".
+    For full list of APIs, see: https://cloud.google.com/apis/docs/overview
+  project.allowPublicServices: |
+    If set to "true", will enable exposing services to the public internet
+    through external IP addresses or internet-facing load balancers.
+  project.budget: |
+    Specify a custom budget for the project in USD per environment.
+  project.iap.title: |
+    A human-friendly title for the Identity-Aware Proxy consent screen.
+  project.serviceAccounts.name: |
+    Service account name, it should start with a letter and be between
+    6-20 characters long.
+  project.serviceAccounts.displayName: |
+    Service account human-friendly display name.
+  project.serviceAccounts.description: |
+    Service account description.
+  project.serviceAccounts.roles: |
+    Predefined service account roles to assign to the service account.
+  project.serviceAccounts.additionalIamRoles: |
+    Additional IAM roles to grant to the service account (eg. roles/storage.admin).
+  project.recommendationsReports: |
+    Specifies in which recommendations reports the project is featured in.
+approvalHelp:
+  project.status: |
+    Projects should be "active". If you want to delete your project, set it to "archive".
+    This will require approval.
+  project.displayName: |
+    Help for display name approval.
+  project.projectId: |
+    Project ID should not be changed. This will result in deletion and recreation of
+    your project. 
+  project.gitlab.group: |
+    Changing the Gitlab group will result in a new Gitlab project being created.
+  project.gitlab.project: |
+    Changing the Gitlab project will result in a new Gitlab project being created.
+  project.githubProject: |
+    Changing the Github project will result in a new Github project being created.
+  project.projectTemplate: |
+    Help for project template approval.
+  project.chargingCode: |
+    Charging code is used to attribute project's cost and changes require manual
+    approval.
+  project.labels: |
+    Help for project label approval.
+  project.folder: |
+    Changing the project's folder will only work if the project is empty (because
+    new Shared VPC will be attached) and requires manual approval. 
+  project.owner: |
+    Help for project owner approval.
+  project.gkeNamespace: |
+    Changing the GKE namespace will result in a new namespace being created and
+    old one removed, and requires manual approval.
+  project.dnsDomain: |
+    Changing the DNS domain might have side effects for availability and requires
+    manual approval.
+  project.team: |
+    Help for project team approval.
+  project.environments: |
+    Projects that are created in sandbox and non-production are automatically
+    approved and provisioned, but production projects require manual approval.
+  project.additionalApis: |
+    A list of pre-approved APIs will be automatically approved and some require
+    manual approval. 
+  project.allowPublicServices: |
+    Exposing services to the public Internet requires manual approval.
+  project.budget: |
+    Specify a custom budget for the project in USD per environment.
+  project.iap.title: |
+    A human-friendly title for the Identity-Aware Proxy consent screen.
+  project.serviceAccounts.name: |
+    Service account name, it should start with a letter and be between
+    6-20 characters long.
+  project.serviceAccounts.displayName: |
+    Service account human-friendly display name.
+  project.serviceAccounts.description: |
+    Service account description.
+  project.serviceAccounts.roles: |
+    The service account role you specified requires manual approval.
+  project.serviceAccounts.additionalIamRoles: |
+    An additional IAM role you specified requires manual approval.

@@ -1,0 +1,62 @@
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+project:
+    status: enum('active', 'archived', 'deleted', required=True)
+    displayName: regex('^[a-zA-Z0-9\- !]{1,20}$', required=True)
+    projectId: str(min=2, max=13, required=True)
+    customProjectId: str(min=6, max=30, required=False)
+    description: str(min=2, max=1024, required=False)
+    gitlab: include('gitlab', required=False)
+    githubProject: str(min=2, max=64, required=False)
+    chargingCode: str(min=2, max=63, required=True)
+    labels: labels(required=False)
+    folder: folder(required=True)
+    owners: list(user(), min=1, required=True)
+    team: teams(required=True)
+    roles: include('roleList', required=False)
+    additionalIamRoles: include('iamRoleList', required=False)
+    iap: include('iap', required=False)
+    environments: environments(required=True)
+    additionalApis: apis(type='all', required=False)
+    allowPublicServices: bool(required=False)
+    budget: map(int(min=1), key=environment(), required=False)
+    serviceAccounts: include('serviceAccounts', required=False)
+    recommendationsReports: list(str(), required=False)
+    recommendationsReportsIncludeOwners: bool(required=False)
+    import: bool(required=False)
+---
+iap:
+    title: str(min=3, max=253, required=True)
+---
+serviceAccounts: list(include('serviceAccount'))
+---
+serviceAccount:
+    name: regex('^[a-z]([-a-z0-9]*[a-z0-9]){6,30}$', required=True)
+    displayName: str(min=0, max=255, required=False)
+    description: bytes(min=0, max=255, required=False)
+    roles: list(include('serviceAccountRole'), required=True)
+    additionalIamRoles: list(include('serviceAccountIamRole'), required=False)
+---
+serviceAccountRole: sarole(required=True)
+---
+serviceAccountIamRole: saiamrole(required=True)
+---
+gitlab:
+    group: str(min=3, max=253, required=True)
+    project: str(min=3, max=253, required=True)
+    runner: bool(required=False)
+---
+roleList: projectroles(required=True)
+---
+iamRoleList: projectiamroles(required=True)

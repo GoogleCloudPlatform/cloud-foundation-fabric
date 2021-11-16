@@ -1,0 +1,1118 @@
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+approved:
+  accesscontextmanager.googleapis.com:
+    description: An API for setting attribute based access control to requests to
+      GCP services.
+    title: Access Context Manager API
+  anthos.googleapis.com:
+    description: Anthos is a managed hybrid cloud solution
+    title: Anthos API
+  anthosaudit.googleapis.com:
+    description: Anthos is a managed hybrid cloud solution
+    title: Anthos Audit API
+  anthosconfigmanagement.googleapis.com:
+    description: Anthos Config Management
+    title: Anthos Config Management API
+  anthosgke.googleapis.com:
+    description: Anthos is a managed hybrid cloud solution
+    title: Anthos GKE API
+  apigateway.googleapis.com:
+    description: ''
+    title: API Gateway API
+  appengine.googleapis.com:
+    description: Provisions and manages developers' App Engine applications.
+    title: App Engine Admin API
+  appengineflex.googleapis.com:
+    description: This service enables App Engine's Flexible Environment, which gives
+      you the benefits of App Engine's managed services and the flexibility to run
+      any software you need.
+    title: Google App Engine Flexible Environment
+  artifactregistry.googleapis.com:
+    description: Store and manage build artifacts in a scalable and integrated service
+      built on Google infrastructure.
+    title: Artifact Registry API
+  assuredworkloads.googleapis.com:
+    description: ''
+    title: Assured Workloads API
+  automl.googleapis.com:
+    description: Train high-quality custom machine learning models with minimum effort
+      and machine learning expertise.
+    title: Cloud AutoML API
+  bigquery.googleapis.com:
+    description: A data platform for customers to create, manage, share and query
+      data.
+    title: BigQuery API
+  bigqueryconnection.googleapis.com:
+    description: Allows users to manage BigQuery connections to external data sources.
+    title: BigQuery Connection API
+  bigquerydatatransfer.googleapis.com:
+    description: Schedule queries or transfer external data from SaaS applications
+      to Google BigQuery on a regular basis.
+    title: BigQuery Data Transfer API
+  bigqueryreservation.googleapis.com:
+    description: A service to modify your BigQuery flat-rate reservations.
+    title: BigQuery Reservation API
+  bigquerystorage.googleapis.com:
+    description: ''
+    title: BigQuery Storage API
+  bigtable.googleapis.com:
+    description: API for reading and writing the contents of Bigtables associated
+      with a cloud project.
+    title: Cloud Bigtable API
+  bigtableadmin.googleapis.com:
+    description: Administer your Cloud Bigtable tables and instances.
+    title: Cloud Bigtable Admin API
+  bigtabletableadmin.googleapis.com:
+    description: ''
+    title: Cloud Bigtable Table Admin API
+  binaryauthorization.googleapis.com:
+    description: 'The management interface for Binary Authorization, a system providing
+      policy control for images deployed to Kubernetes Engine clusters.
+
+      '
+    title: Binary Authorization API
+  cloudasset.googleapis.com:
+    description: The cloud asset API manages the history and inventory of cloud resources.
+    title: Cloud Asset API
+  cloudbuild.googleapis.com:
+    description: Creates and manages builds on Google Cloud Platform.
+    title: Cloud Build API
+  clouddataprep.trifacta.com:
+    description: ''
+    title: Clouddataprep by Trifacta
+  clouddebugger.googleapis.com:
+    description: 'Examines the call stack and variables of a running application without
+      stopping or slowing it down.
+
+      '
+    title: Cloud Debugger API
+  clouderrorreporting.googleapis.com:
+    description: 'Groups and counts similar errors from cloud services and applications,
+      reports new errors, and provides access to error groups and their associated
+      errors.
+
+      '
+    title: Error Reporting API
+  cloudidentity.googleapis.com:
+    description: API for provisioning and managing identity resources.
+    title: Cloud Identity API
+  cloudiot.googleapis.com:
+    description: 'Registers and manages IoT (Internet of Things) devices that connect
+      to the Google Cloud Platform.
+
+      '
+    title: Cloud IoT API
+  cloudkms.googleapis.com:
+    description: 'Manages keys and performs cryptographic operations in a central
+      cloud service, for direct use by other cloud resources and applications.
+
+      '
+    title: Cloud Key Management Service (KMS) API
+  cloudlatencytest.googleapis.com:
+    description: A Test API to report latency data.
+    title: Cloud Network Performance Monitoring API
+  cloudprivatecatalog.googleapis.com:
+    description: Enable cloud users to discover private catalogs and products in their
+      organizations.
+    title: Cloud Private Catalog API
+  cloudprofiler.googleapis.com:
+    description: Manages continuous profiling information.
+    title: Stackdriver Profiler API
+  cloudscheduler.googleapis.com:
+    description: Creates and manages jobs run on a regular recurring schedule.
+    title: Cloud Scheduler API
+  cloudsearch.googleapis.com:
+    description: Cloud Search provides cloud-based search capabilities over G Suite
+      data.  The Cloud Search API allows indexing of non-G Suite data into Cloud Search.
+    title: Cloud Search API
+  cloudtasks.googleapis.com:
+    description: Manages the execution of large numbers of distributed requests.
+    title: Cloud Tasks API
+  cloudtrace.googleapis.com:
+    description: 'Sends application trace data to Cloud Trace for viewing. Trace data
+      is collected for all App Engine applications by default. Trace data from other
+      applications can be provided using this API. This library is used to interact
+      with the Cloud Trace API directly. If you are looking to instrument your application
+      for Cloud Trace, we recommend using OpenCensus.
+
+      '
+    title: Cloud Trace API
+  composer.googleapis.com:
+    description: Manages Apache Airflow environments on Google Cloud Platform.
+    title: Cloud Composer API
+  computescanning.googleapis.com:
+    description: A service to scan compute resources.
+    title: Compute Scanning API
+  container.googleapis.com:
+    description: Builds and manages container-based applications, powered by the open
+      source Kubernetes technology.
+    title: Kubernetes Engine API
+  containeranalysis.googleapis.com:
+    description: An implementation of the Grafeas API, which stores, and enables querying
+      and retrieval of critical metadata about all of your software artifacts.
+    title: Container Analysis API
+  containerregistry.googleapis.com:
+    description: Google Container Registry provides secure, private Docker image storage
+      on Google Cloud Platform.  Our API follows the Docker Registry API specification,
+      so we are fully compatible with the Docker CLI client, as well as standard tooling
+      using the Docker Registry API.
+    title: Container Registry API
+  containerscanning.googleapis.com:
+    description: A service to scan containers for vulnerabilities.
+    title: Container Scanning API
+  containerthreatdetection.googleapis.com:
+    description: ''
+    title: Container Threat Detection API
+  datacatalog.googleapis.com:
+    description: 'A fully managed and highly scalable data discovery and metadata
+      management service.
+
+      '
+    title: Google Cloud Data Catalog API
+  dataflow.googleapis.com:
+    description: Manages Google Cloud Dataflow projects on Google Cloud Platform.
+    title: Dataflow API
+  datafusion.googleapis.com:
+    description: "Cloud Data Fusion is a fully-managed, cloud native, enterprise data\
+      \ integration service for\n    quickly building and managing data pipelines.\
+      \ It provides a graphical interface to increase\n    time efficiency and reduce\
+      \ complexity, and allows business users, developers, and data\n    scientists\
+      \ to easily and reliably build scalable data integration solutions to cleanse,\n\
+      \    prepare, blend, transfer and transform data without having to wrestle with\
+      \ infrastructure."
+    title: Cloud Data Fusion API
+  datalabeling.googleapis.com:
+    description: Public API for Google Cloud AI Data Labeling Service.
+    title: Data Labeling API
+  dataproc.googleapis.com:
+    description: Manages Hadoop-based clusters and jobs on Google Cloud Platform.
+    title: Cloud Dataproc API
+  datastore.googleapis.com:
+    description: 'Accesses the schemaless NoSQL database to provide fully managed,
+      robust, scalable storage for your application.
+
+      '
+    title: Cloud Datastore API
+  datastudio.googleapis.com:
+    description: Allows programmatic viewing and editing of Data Studio assets.
+    title: Data Studio API
+  deploymentmanager.googleapis.com:
+    description: 'The Google Cloud Deployment Manager v2 API provides services for
+      configuring, deploying, and
+
+      viewing Google Cloud services and APIs via templates which specify deployments
+      of Cloud
+
+      resources.'
+    title: Cloud Deployment Manager V2 API
+  dialogflow.googleapis.com:
+    description: Builds conversational interfaces (for example, chatbots, and voice-powered
+      apps and devices).
+    title: Dialogflow API
+  discovery.googleapis.com:
+    description: Google API Discovery Service allows service consumers to list the
+      discovery metadata of all public APIs managed by the API Platform.
+    title: API Discovery Service
+  dlp.googleapis.com:
+    description: Provides methods for detection, risk analysis, and de-identification
+      of privacy-sensitive fragments in text, images, and Google Cloud Platform storage
+      repositories.
+    title: Cloud Data Loss Prevention (DLP) API
+  dns.googleapis.com:
+    description: ''
+    title: Cloud DNS API
+  docs.googleapis.com:
+    description: Reads and writes Google Docs documents.
+    title: Google Docs API
+  documentai.googleapis.com:
+    description: Service to parse structured information from unstructured or semi-structured
+      documents using state-of-the-art Google AI such as natural language, computer
+      vision, translation, and AutoML.
+    title: Cloud Document AI API
+  endpoints.googleapis.com:
+    description: "The Google Cloud Endpoints service enables creation of managed proxies\
+      \ for Endpoints configured services. Enabling this service also enables all\
+      \ of the dependency services needed for using Endpoints on a project. It is\
+      \ enabled automatically when Google Cloud SDK is used to create an Endpoints\
+      \ service. Note: disabling this service does not automatically disable the dependency\n\
+      \  services.\n"
+    title: Google Cloud Endpoints
+  endpointsportal.googleapis.com:
+    description: Provides a consumer-facing developer portal for your Endpoints APIs.
+    title: Cloud Endpoints Portal
+  essentialcontacts.googleapis.com:
+    description: ''
+    title: Essential Contacts API
+  fcm.googleapis.com:
+    description: FCM send API that provides a cross-platform messaging solution to
+      reliably deliver messages at no cost.
+    title: Firebase Cloud Messaging API
+  fcmregistrations.googleapis.com:
+    description: ''
+    title: FCM Registration API
+  file.googleapis.com:
+    description: The Cloud Filestore API is used for creating and managing cloud file
+      servers.
+    title: Cloud Filestore API
+  firebase.googleapis.com:
+    description: The Firebase Management API enables programmatic setup and management
+      of Firebase projects, including a project's Firebase resources and Firebase
+      apps.
+    title: Firebase Management API
+  firebaseappdistribution.googleapis.com:
+    description: ''
+    title: Firebase App Distribution API
+  firebaseapptesters.googleapis.com:
+    description: ''
+    title: Firebase App Testers API
+  firebasedynamiclinks.googleapis.com:
+    description: Programmatically creates and manages Firebase Dynamic Links.
+    title: Firebase Dynamic Links API
+  firebaseextensions.googleapis.com:
+    description: ''
+    title: Firebase Extensions API
+  firebasehosting.googleapis.com:
+    description: The Firebase Hosting REST API enables programmatic and customizable
+      deployments to your Firebase-hosted sites. Use this REST API to deploy new or
+      updated hosting configurations and content files.
+    title: Firebase Hosting API
+  firebaseinappmessaging.googleapis.com:
+    description: 'Publicly accessible APIs that allows firebase in-app messaging SDKs/Clients
+      to communicate with
+
+      servers for fetching message definitions.
+
+      '
+    title: Firebase In-App Messaging API
+  firebaseinstallations.googleapis.com:
+    description: ''
+    title: Firebase Installations API
+  firebaseml.googleapis.com:
+    description: Access custom machine learning models hosted via Firebase ML.
+    title: Firebase ML API
+  firebasemods.googleapis.com:
+    description: ''
+    title: Firebase Mods API
+  firebasepredictions.googleapis.com:
+    description: ''
+    title: Firebase Predictions API
+  firebaseremoteconfig.googleapis.com:
+    description: The Firebase Remote Config API lets developers change the behavior
+      and appearance of their apps without requiring users to download an app update.
+      It is an alternative to, but can be used in tandem with, the Firebase console
+      at https://console.firebase.google.com.
+    title: Firebase Remote Config API
+  firebaserules.googleapis.com:
+    description: 'Creates and manages rules that determine when a Firebase Rules-enabled
+      service should permit a request.
+
+      '
+    title: Firebase Rules API
+  firebasestorage.googleapis.com:
+    description: Firebase Storage provides data storage services backing Firebase
+      APIs.
+    title: Cloud Storage for Firebase API
+  firestore.googleapis.com:
+    description: 'Accesses the NoSQL document database built for automatic scaling,
+      high performance, and ease of application development.
+
+      '
+    title: Cloud Firestore API
+  firewallinsights.googleapis.com:
+    description: A service to provide insights to user firewall configurations.
+    title: Firewall Insights API
+  gameservices.googleapis.com:
+    description: Deploy and manage infrastructure for global multiplayer gaming experiences.
+    title: Game Services API
+  genomics.googleapis.com:
+    description: Uploads, processes, queries, and searches Genomics data in the cloud.
+    title: Genomics API
+  gkeconnect.googleapis.com:
+    description: The GKE Connect service allows connectivity between Google and managed
+      K8s clusters.
+    title: GKE Connect API
+  gkehub.googleapis.com:
+    description: ''
+    title: GKE Hub
+  googlecloudmessaging.googleapis.com:
+    description: Firebase Cloud Messaging (FCM) (https://firebase.google.com/docs/cloud-messaging/)
+      is the new version of GCM. FCM currently offers 3 server APIs to send messages,
+      Legacy HTTP, Legacy XMPP, and HTTP v1 (https://firebase.google.com/docs/reference).
+      The API described on this page is the Firebase Cloud Messaging Legacy API, which
+      comprises of Legacy HTTP and Legacy XMPP. If you are integrating messaging in
+      a new app, start with the latest HTTP v1 API instead (https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages).
+      If you are an existing user of the FCM Legacy API (HTTP or XMPP), consider migrating
+      to the HTTP v1 API (https://firebase.google.com/docs/cloud-messaging/migrate-v1).
+      GCM has been deprecated. If your app is using the GCM SDK, upgrade to the FCM
+      SDK immediately as there are no guarantees that clients using the former will
+      continue to work.
+    title: Cloud Messaging
+  groupssettings.googleapis.com:
+    description: "The Groups Settings API allows domain administrators to view and\
+      \ manage\n    access levels and advanced settings for a group."
+    title: Groups Settings API
+  identitytoolkit.googleapis.com:
+    description: "The Google Identity Toolkit API lets you use open standards to verify\
+      \ a\n    user's identity."
+    title: Identity Toolkit API
+  invoice.googleapis.com:
+    description: 'API to fetch Billing invoices for products like Google Adwords,
+      Enterprise etc.
+
+      '
+    title: Invoice
+  licensing.googleapis.com:
+    description: The Google Enterprise License Manager API's allows you to license
+      apps for all the users of a domain managed by you.
+    title: Enterprise License Manager API
+  lifesciences.googleapis.com:
+    description: Cloud Life Sciences is a suite of services and tools for managing,
+      processing, and transforming life sciences data.
+    title: Cloud Life Sciences API
+  managedidentities.googleapis.com:
+    description: The Managed Service for Microsoft Active Directory API is used for
+      managing a highly available, hardened service running Microsoft Active Directory
+      (AD).
+    title: Managed Service for Microsoft Active Directory API
+  memcache.googleapis.com:
+    description: Google Cloud Memorystore for Memcached API is used for creating and
+      managing Memcached instances in GCP.
+    title: Cloud Memorystore for Memcached API
+  meshca.googleapis.com:
+    description: Anthos Service Mesh Certificate Authority API
+    title: Anthos Service Mesh Certificate Authority API
+  meshconfig.googleapis.com:
+    description: Anthos Service Mesh uses the Mesh Configuration API to relay configuration
+      data from your mesh to Google Cloud. Additionally, enabling the Mesh Configuration
+      API allows you to access the Anthos Service Mesh pages in the Cloud Console
+      and to use the Anthos Service Mesh certificate authority (Mesh CA).
+    title: Mesh Configuration API
+  meshtelemetry.googleapis.com:
+    description: ''
+    title: Mesh Telemetry API
+  migrate.googleapis.com:
+    description: ''
+    title: G Suite Migrate API
+  ml.googleapis.com:
+    description: An API to enable creating and using machine learning models.
+    title: AI Platform Training & Prediction API
+  mlkit.googleapis.com:
+    description: Access custom machine learning models hosted via ML Kit.
+    title: ML Kit API
+  multiclusteringress.googleapis.com:
+    description: Multi Cluster Ingress
+    title: Multi Cluster Ingress API
+  multiclustermetering.googleapis.com:
+    description: The Multi cluster metering API is the API associated with the hub
+      "metering" controller.
+    title: Multi cluster metering API
+  networkmanagement.googleapis.com:
+    description: The Network Management API provides a collection of network performance
+      monitoring and diagnostic capabilities.
+    title: Network Management API
+  networkservices.googleapis.com:
+    description: ''
+    title: Network Services API
+  networktopology.googleapis.com:
+    description: Network Topology Service
+    title: Network Topology API
+  notebooks.googleapis.com:
+    description: AI Platform Notebooks API is used to manage notebook resources in
+      Google Cloud.
+    title: Notebooks API
+  osconfig.googleapis.com:
+    description: OS management tools that can be used for patch management, patch
+      compliance, and configuration management on VM instances.
+    title: OS Config API
+  policytroubleshooter.googleapis.com:
+    description: ''
+    title: Policy Troubleshooter API
+  privateca.googleapis.com:
+    description: ''
+    title: Certificate Authority API
+  pubsub.googleapis.com:
+    description: 'Provides reliable, many-to-many, asynchronous messaging between
+      applications.
+
+      '
+    title: Cloud Pub/Sub API
+  pubsublite.googleapis.com:
+    description: ''
+    title: Pub/Sub Lite API
+  recommendationengine.googleapis.com:
+    description: Recommendations AI service enables customers to build end-to-end
+      personalized recommendation systems without requiring a high level of expertise
+      in machine learning, recommendation system, or Google Cloud.
+    title: Recommendations AI
+  recommender.googleapis.com:
+    description: ''
+    title: Recommender API
+  redis.googleapis.com:
+    description: Creates and manages Redis instances on the Google Cloud Platform.
+    title: Google Cloud Memorystore for Redis API
+  remotebuildexecution.googleapis.com:
+    description: Supplies a Remote Execution API service for tools such as bazel.
+    title: Remote Build Execution API
+  replicapool.googleapis.com:
+    description: The Google Compute Engine Instance Group Manager API provides services
+      for creating and managing groups of Compute Engine Instances.
+    title: Compute Engine Instance Group Manager API
+  replicapoolupdater.googleapis.com:
+    description: The Google Compute Engine Instance Group Updater API provides services
+      for updating groups of Compute Engine Instances.
+    title: Compute Engine Instance Group Updater API
+  resourceviews.googleapis.com:
+    description: Google Compute Engine Instance Groups API provides services for grouping
+      together cloud instances for other cloud APIs.
+    title: Compute Engine Instance Groups API
+  run.googleapis.com:
+    description: Deploy and manage user provided container images that scale automatically
+      based on HTTP traffic.
+    title: Cloud Run Admin API
+  runtimeconfig.googleapis.com:
+    description: The Runtime Configurator allows you to dynamically configure and
+      expose variables through Google Cloud Platform. In addition, you can also set
+      Watchers and Waiters that will watch for changes to your data and return based
+      on certain conditions.
+    title: Cloud Runtime Configuration API
+  secretmanager.googleapis.com:
+    description: 'Stores sensitive data such as API keys, passwords, and certificates.
+      Provides convenience while improving security.
+
+      '
+    title: Secret Manager API
+  securetoken.googleapis.com:
+    description: 'The Token Service API lets you exchange an ID token or a refresh
+      token for
+
+      an access token and a refresh token, which you can use to securely call your
+
+      own APIs.'
+    title: Token Service API
+  securitycenter.googleapis.com:
+    description: Security Command Center API provides access to temporal views of
+      assets and findings within an organization.
+    title: Security Command Center API
+  serviceconsumermanagement.googleapis.com:
+    description: Manages the service consumers of a Service Infrastructure service.
+    title: Service Consumer Management API
+  servicecontrol.googleapis.com:
+    description: Provides control plane functionality to managed services, such as
+      logging, monitoring, and status checks.
+    title: Service Control API
+  servicedirectory.googleapis.com:
+    description: 'Service Directory is a platform for discovering, publishing, and
+      connecting services.
+
+      '
+    title: Service Directory API
+  servicemanagement.googleapis.com:
+    description: Google Service Management allows service producers to publish their
+      services on Google Cloud Platform so that they can be discovered and used by
+      service consumers.
+    title: Service Management API
+  serviceusage.googleapis.com:
+    description: Enables services that service consumers want to use on Google Cloud
+      Platform, lists the available or enabled services, or disables services that
+      service consumers no longer use.
+    title: Service Usage API
+  sheets.googleapis.com:
+    description: Reads and writes Google Sheets.
+    title: Google Sheets API
+  slides.googleapis.com:
+    description: Reads and writes Google Slides presentations.
+    title: Google Slides API
+  smartdevicemanagement.googleapis.com:
+    description: Allow select enterprise partners to access, control, and manage Google
+      and Nest devices programmatically.
+    title: Smart Device Management API
+  sourcerepo.googleapis.com:
+    description: Accesses source code repositories hosted by Google.
+    title: Cloud Source Repositories API
+  spanner.googleapis.com:
+    description: Cloud Spanner is a managed, mission-critical, globally consistent
+      and scalable relational database service.
+    title: Cloud Spanner API
+  speech.googleapis.com:
+    description: Converts audio to text by applying powerful neural network models.
+    title: Cloud Speech-to-Text API
+  sql-component.googleapis.com:
+    description: "Google Cloud SQL is a hosted and fully managed relational database\
+      \ service\n    on Google's infrastructure."
+    title: Cloud SQL
+  sqladmin.googleapis.com:
+    description: API for Cloud SQL database instance management
+    title: Cloud SQL Admin API
+  storage-api.googleapis.com:
+    description: Lets you store and retrieve potentially-large, immutable data objects.
+    title: Google Cloud Storage JSON API
+  storage-component.googleapis.com:
+    description: "Google Cloud Storage is a RESTful service for storing and accessing\
+      \ your data on Google's\n    infrastructure."
+    title: Cloud Storage
+  storage.googleapis.com:
+    description: Lets you store and retrieve potentially-large, immutable data objects.
+    title: Cloud Storage API
+  storagetransfer.googleapis.com:
+    description: Transfers data from external data sources to a Google Cloud Storage
+      bucket or between Google Cloud Storage buckets.
+    title: Storage Transfer API
+  sts.googleapis.com:
+    description: The Security Token Service exchanges Google or third-party credentials
+      for a short-lived access token to Google Cloud resources.
+    title: Security Token Service API
+  tasks.googleapis.com:
+    description: The Google Tasks API lets you manage your tasks and task lists.
+    title: Tasks API
+  testing.googleapis.com:
+    description: Allows developers to run automated tests for their mobile applications
+      on Google infrastructure.
+    title: Cloud Testing API
+  texttospeech.googleapis.com:
+    description: Synthesizes natural-sounding speech by applying powerful neural network
+      models.
+    title: Cloud Text-to-Speech API
+  threatdetection.googleapis.com:
+    description: ''
+    title: Threat Detection API
+  tpu.googleapis.com:
+    description: TPU API provides customers with access to Google TPU technology.
+    title: Cloud TPU API
+  trafficdirector.googleapis.com:
+    description: ''
+    title: Traffic Director API
+  translate.googleapis.com:
+    description: Integrates text translation into your website or application.
+    title: Cloud Translation API
+  usercontext.googleapis.com:
+    description: Awareness Api is a unified context platform that enables apps to
+      become contextual.
+    title: Awareness API
+  verifiedaccess.googleapis.com:
+    description: API for Verified Access chrome extension to provide credential verification
+      for chrome devices connecting to an enterprise network
+    title: Chrome Verified Access API
+  videointelligence.googleapis.com:
+    description: Detects objects, explicit content, and scene changes in videos. It
+      also specifies the region for annotation and transcribes speech to text. Supports
+      both asynchronous API and streaming API.
+    title: Cloud Video Intelligence API
+  vision.googleapis.com:
+    description: Integrates Google Vision features, including image labeling, face,
+      logo, and landmark detection, optical character recognition (OCR), and detection
+      of explicit content, into applications.
+    title: Cloud Vision API
+  vmmigration.googleapis.com:
+    description: Google VM Migration Service
+    title: VM Migration API
+  vmwareengine.googleapis.com:
+    description: Migrate and run your VMware workloads natively on Google Cloud.
+    title: VMware Engine API
+  vpcaccess.googleapis.com:
+    description: API for managing VPC access connectors.
+    title: Serverless VPC Access API
+  websecurityscanner.googleapis.com:
+    description: Scans your Compute and App Engine apps for common web vulnerabilities.
+    title: Web Security Scanner API
+  workflowexecutions.googleapis.com:
+    description: Execute workflows created with Workflows API.
+    title: Workflow Executions API
+  workflows.googleapis.com:
+    description: Orchestrate Workflows consisting of Google Cloud APIs, SaaS APIs
+      or private API endpoints.
+    title: Workflows API
+holdForApproval:
+  abusiveexperiencereport.googleapis.com:
+    description: Views Abusive Experience Report data, and gets a list of sites that
+      have a significant number of abusive experiences.
+    title: Abusive Experience Report API
+  acceleratedmobilepageurl.googleapis.com:
+    description: 'Retrieves the list of AMP URLs (and equivalent AMP Cache URLs) for
+      a given list of public URL(s).
+
+      '
+    title: Accelerated Mobile Pages (AMP) URL API
+  adexchangebuyer-json.googleapis.com:
+    description: The Ad Exchange Buyer API enables developers to manage their Ad Exchange
+      accounts.
+    title: Ad Exchange Buyer API
+  adexchangebuyer.googleapis.com:
+    description: Accesses the latest features for managing Authorized Buyers accounts,
+      Real-Time Bidding configurations and auction metrics, and Marketplace programmatic
+      deals.
+    title: Ad Exchange Buyer API II
+  adexchangeseller.googleapis.com:
+    description: "The Ad Exchange Seller API enables developers to manage their Ad\
+      \ Exchange\n    accounts."
+    title: Ad Exchange Seller API
+  adexperiencereport.googleapis.com:
+    description: Views Ad Experience Report data, and gets a list of sites that have
+      a significant number of annoying ads.
+    title: Ad Experience Report API
+  admob.googleapis.com:
+    description: 'The AdMob API allows publishers to programmatically get information
+      about their AdMob account.
+
+      '
+    title: AdMob API
+  adsense.googleapis.com:
+    description: "The AdSense Management API allows publishers to access their inventory\
+      \ and\n    run earnings and performance reports."
+    title: AdSense Management API
+  adsensehost.googleapis.com:
+    description: "The AdSense Host API gives AdSense Hosts access to report generation,\n\
+      \    ad code generation, and publisher management capabilities."
+    title: AdSense Host API
+  analytics.googleapis.com:
+    description: "The Analytics API provides access to Analytics configuration and\
+      \ report\n    data."
+    title: Google Analytics API
+  analyticsadmin.googleapis.com:
+    description: ''
+    title: Google Analytics Admin API
+  analyticsdata.googleapis.com:
+    description: Accesses report data in Google Analytics.
+    title: Google Analytics Data API
+  analyticsreporting.googleapis.com:
+    description: Accesses Analytics report data.
+    title: Analytics Reporting API
+  androidcheck.googleapis.com:
+    description: Android Device Verification (public)
+    title: Android Device Verification
+  androiddeviceprovisioning.googleapis.com:
+    description: Automates Android zero-touch enrollment for device resellers, customers,
+      and EMMs.
+    title: Android Device Provisioning Partner API
+  androidenterprise.googleapis.com:
+    description: Manages the deployment of apps to Android Enterprise devices.
+    title: Google Play EMM API
+  androidmanagement.googleapis.com:
+    description: The Android Management API provides remote enterprise management
+      of Android devices and apps.
+    title: Android Management API
+  androidovertheair.googleapis.com:
+    description: Android Over The Air (OTA) updates provide the infrastructure used
+      by the Android partner portal for managing device system updates.
+    title: Android Over the Air API
+  androidpublisher.googleapis.com:
+    description: Lets Android application developers access their Google Play accounts.
+    title: Google Play Android Developer API
+  appsactivity.googleapis.com:
+    description: The Apps Activity API provides a view of a user's historical actions
+      within the Google Apps ecosystem.
+    title: Apps Activity API
+  appsmarket-component.googleapis.com:
+    description: A toolkit for integrating web applications with Google Workspace.
+    title: Google Workspace Marketplace SDK
+  appsmarket.googleapis.com:
+    description: Lets your G Suite Marketplace applications integrate with Google's
+      licensing and billing services.
+    title: G Suite Marketplace API
+  arcorecloudanchor.googleapis.com:
+    description: A cloud anchor allows you to position 3D objects in a consistent
+      physical location for multiple people and over time. This service backs the
+      cloud anchor functionality in ARCore SDK for Android and iOS.
+    title: ARCore Cloud Anchor API
+  area120tables.googleapis.com:
+    description: ''
+    title: Area120 Tables API
+  billingbudgets.googleapis.com:
+    description: The Cloud Billing Budget API stores Cloud Billing budgets, which
+      define a budget plan and the rules to execute as spend is tracked against that
+      plan.
+    title: Cloud Billing Budget API
+  blogger.googleapis.com:
+    description: "The Blogger API provides access to posts, comments and pages of\
+      \ a\n    Blogger blog."
+    title: Blogger API v3
+  books.googleapis.com:
+    description: The Google Books API allows clients to access the Google Books repository.
+    title: Books API
+  caldav.googleapis.com:
+    description: The CalDAV API lets you manage your Google calendars and events.
+    title: CalDAV API
+  calendar-json.googleapis.com:
+    description: The Google Calendar API lets you manage your calendars and events.
+    title: Google Calendar API
+  carddav.googleapis.com:
+    description: An API to synchronize contacts.
+    title: Google Contacts CardDAV API
+  chat.googleapis.com:
+    description: Enables bots to fetch information and perform actions in Hangouts
+      Chat.
+    title: Hangouts Chat API
+  chromeuxreport.googleapis.com:
+    description: 'The Chrome UX Report API lets you view real user experience data
+      for millions of websites.
+
+      '
+    title: Chrome UX Report API
+  chromewebstore.googleapis.com:
+    description: The Chrome Web Store API provides access to data about apps and extensions,
+      as well as developer tools for managing them.
+    title: Chrome Web Store API
+  civicinfo.googleapis.com:
+    description: Provides polling places, early vote locations, contest data, election
+      officials, and government representatives for U.S. residential addresses.
+    title: Google Civic Information API
+  classroom.googleapis.com:
+    description: Manages classes, rosters, and invitations in Google Classroom.
+    title: Google Classroom API
+  connectgateway.googleapis.com:
+    description: The Connect Gateway service allows connectivity from external parties
+      to connected Kubernetes clusters.
+    title: Connect Gateway API
+  contacts.googleapis.com:
+    description: The Google Contacts API lets you manage your contacts.
+    title: Contacts API
+  copresence.googleapis.com:
+    description: Api for exchanging messages with nearby devices.
+    title: Nearby Messages API
+  customsearch.googleapis.com:
+    description: Searches over a website or collection of websites
+    title: Custom Search API
+  dfareporting.googleapis.com:
+    description: Manage your DoubleClick Campaign Manager ad campaigns and reports.
+    title: DCM/DFA Reporting And Trafficking API
+  digitalassetlinks.googleapis.com:
+    description: Discovers relationships between online assets such as websites or
+      mobile apps.
+    title: Digital Asset Links API
+  directions-backend.googleapis.com:
+    description: "Access driving, cycling, walking and public transportation routing\
+      \ with the\n    Directions API using an HTTP request. Waypoints offer the\n\
+      \    ability to alter a route through a specific location. Specify origins,\n\
+      \    destinations and waypoints either as text strings (e.g. \"Chicago, IL\"\
+      \ or\n    \"Darwin, NT, Australia\") or as latitude/longitude coordinates."
+    title: Directions API
+  displayvideo.googleapis.com:
+    description: Display & Video 360 API allows users to manage and create campaigns
+      and reports.
+    title: Display & Video 360 API
+  distance-matrix-backend.googleapis.com:
+    description: "Access travel distance and time for a matrix of origins and destinations\n\
+      \    with the Distance Matrix API. The information returned is based\n    on\
+      \ the recommended route between start and end points and consists of rows\n\
+      \    containing duration and distance values for each pair."
+    title: Distance Matrix API
+  domainsrdap.googleapis.com:
+    description: Read-only public API that lets users search for information about
+      domain names.
+    title: Domains RDAP API
+  doubleclickbidmanager.googleapis.com:
+    description: DoubleClick Bid Manager API allows users to manage and create campaigns
+      and reports.
+    title: DoubleClick Bid Manager API
+  doubleclicksearch.googleapis.com:
+    description: The Search Ads 360 API allows developers to automate uploading conversions
+      and downloading reports from Search Ads 360.
+    title: Search Ads 360 API
+  drive.googleapis.com:
+    description: The Google Drive API allows clients to access resources from Google
+      Drive.
+    title: Google Drive API
+  driveactivity.googleapis.com:
+    description: Provides a historical view of activity in Google Drive.
+    title: Drive Activity API
+  elevation-backend.googleapis.com:
+    description: "Query all locations on the surface of earth, including depth locations\
+      \ on\n    the ocean floor (which return negative values), for elevation data\
+      \ with the\n    Maps Elevation API. Sampled requests are available for elevation\
+      \ data\n    along paths, allowing elevation change calculation along routes."
+    title: Maps Elevation API
+  embeddedassistant.googleapis.com:
+    description: Google Assistant API
+    title: Google Assistant API
+  fitness.googleapis.com:
+    description: The Fitness API for managing users' fitness tracking data.
+    title: Fitness API
+  geocoding-backend.googleapis.com:
+    description: "Convert addresses into geographic coordinates (geocoding), which\
+      \ you can use\n    to place markers or position the map. This API also allows\
+      \ you to convert\n    geographic coordinates into an address (reverse geocoding)."
+    title: Geocoding API
+  geolocation.googleapis.com:
+    description: "Find a location and accuracy radius based on information from things\
+      \ like\n    cell towers and WiFi access points that a mobile client can detect\
+      \ with the\n    Geolocation API. This is primarily used where GPS is not\n \
+      \   possible or appropriate."
+    title: Geolocation API
+  gmail.googleapis.com:
+    description: "The Gmail API lets you view and manage Gmail mailbox data like\n\
+      \    threads, messages, and labels."
+    title: Gmail API
+  gmailpostmastertools.googleapis.com:
+    description: The Postmaster Tools API is a RESTful API that provides programmatic
+      access to email traffic metrics (like spam reports, delivery errors etc) otherwise
+      available through the Gmail Postmaster Tools UI currently.
+    title: Gmail Postmaster Tools API
+  googleads.googleapis.com:
+    description: Manage your AdWords accounts, campaigns, and reports with this REST-based
+      API.
+    title: Google Ads API
+  healthcare.googleapis.com:
+    description: Manage, store, and access healthcare data in Google Cloud Platform.
+    title: Cloud Healthcare API
+  homegraph.googleapis.com:
+    description: ''
+    title: HomeGraph API
+  indexing.googleapis.com:
+    description: Notifies Google when your web pages change.
+    title: Indexing API
+  jobs.googleapis.com:
+    description: 'Cloud Talent Solution provides the capability to create, read, update,
+      and delete job postings, as well as search jobs based on keywords and filters.
+
+      '
+    title: Cloud Talent Solution API
+  kgsearch.googleapis.com:
+    description: Searches the Google Knowledge Graph for entities.
+    title: Knowledge Graph Search API
+  language.googleapis.com:
+    description: Provides natural language understanding technologies, such as sentiment
+      analysis, entity recognition, entity sentiment analysis, and other text annotations,
+      to developers.
+    title: Cloud Natural Language API
+  libraryagent.googleapis.com:
+    description: A simple Google Example Library API.
+    title: Library Agent API
+  manufacturers.googleapis.com:
+    description: Public API for managing Manufacturer Center related data.
+    title: Manufacturer Center API
+  maps-android-backend.googleapis.com:
+    description: "Add maps based on Google Maps data to your Android application with\
+      \ the\n    Maps SDK for Android. The SDK automatically handles access to Google\
+      \ Maps\n    servers, map display and response to user gestures such as clicks\
+      \ and drags."
+    title: Maps SDK for Android
+  maps-backend.googleapis.com:
+    description: "Accessing local data and maps built from the same data sources as\
+      \ Google\n    Maps, build and style a map onto your website using the Maps\n\
+      \    JavaScript API.  Multiple libraries are available and services such as\n\
+      \    geocoding, directions, Street View and more to customize your maps to fit\n\
+      \    your needs."
+    title: Maps JavaScript API
+  maps-embed-backend.googleapis.com:
+    description: "Place an interactive map or Street View panorama on your site with\
+      \ a simple\n    HTTP request using the Maps Embed API. Set the Embed API URL\
+      \ as the\n    src attribute of an iframe to easily embed the map in your webpage\
+      \ or blog."
+    title: Maps Embed API
+  maps-ios-backend.googleapis.com:
+    description: "Add maps based on Google Maps data to your iOS application with\
+      \ the\n    Maps SDK for iOS. The SDK automatically handles access to the Google\
+      \ Maps\n    servers, map display and response to user gestures such as clicks\
+      \ and drags."
+    title: Maps SDK for iOS
+  mediatranslation.googleapis.com:
+    description: ''
+    title: Media Translation API
+  mobilecrashreporting.googleapis.com:
+    description: Mobile Crash Reporting API.
+    title: Mobile Crash Reporting API
+  moviesanywhere.googleapis.com:
+    description: Movies Anywhere API
+    title: Play Movies Anywhere API
+  orgpolicy.googleapis.com:
+    description: The Org Policy API allows users to configure governance ruleson their
+      GCP resources across the Cloud Resource Hierarchy.
+    title: Organization Policy API
+  pagespeedonline.googleapis.com:
+    description: 'The PageSpeed Insights API lets you analyze the performance of your
+      website with a simple API.  It offers tailored suggestions for how you can optimize
+      your site, and lets you easily integrate PageSpeed Insights analysis into your
+      development tools and workflow.
+
+      '
+    title: PageSpeed Insights API
+  people.googleapis.com:
+    description: Provides access to information about profiles and contacts.
+    title: People API
+  performanceparameters.googleapis.com:
+    description: ''
+    title: Android Performance Parameters API
+  photoslibrary.googleapis.com:
+    description: 'Manage photos, videos, and albums in Google Photos
+
+      '
+    title: Photos Library API
+  picker.googleapis.com:
+    description: Google Picker API enables users to select photos, videos, maps and
+      documents stored in Google servers.
+    title: Google Picker API
+  places-backend.googleapis.com:
+    description: "Find detailed information about places across a wide range of categories.\n\
+      \    Backed by the same database used by Google Maps and Google+, the\n    Places\
+      \ API features about 100 million businesses and points of\n    interest that\
+      \ are updated frequently through owner-verified listings and\n    user-moderated\
+      \ contributions. Key features include autocomplete, search,\n    place picker,\
+      \ photos and add place."
+    title: Places API
+  playablelocations.googleapis.com:
+    description: ''
+    title: Playable Locations API
+  playcustomapp.googleapis.com:
+    description: API to create and publish custom Android apps
+    title: Google Play Custom App Publishing API
+  plus.googleapis.com:
+    description: The Google+ API enables developers to build on top of the Google+
+      platform.
+    title: Google+ API
+  plusdomains.googleapis.com:
+    description: The Google+ Domains API enables developers to build on top of the
+      Google+ platform for Google Apps domains.
+    title: Google+ Domains API
+  plushangouts.googleapis.com:
+    description: 'Important: The Google+ API for Hangouts is no longer supported.
+      Apps will continue to function until April 25, 2017.'
+    title: Google+ Hangouts API
+  poly.googleapis.com:
+    description: 'The Poly API provides read access to assets hosted on <a href="https://poly.google.com">poly.google.com</a>
+      to all, and upload access to <a href="https://poly.google.com">poly.google.com</a>
+      for whitelisted accounts.
+
+      '
+    title: Poly API
+  programmablesearchelement.googleapis.com:
+    description: Used for quota management and billing of Programmable Search Element
+      queries
+    title: Programmable Search Element Paid API
+  realtime.googleapis.com:
+    description: The Google Realtime API makes it easy to build realtime collaboration
+      into your application. Note that use of the Realtime API is subject to per-document
+      quotas and rate limits not reflected in the API Manager.
+    title: Realtime API
+  realtimebidding.googleapis.com:
+    description: Allows external bidders to manage their RTB integration with Google.
+      This includes managing bidder endpoints, QPS quotas, configuring what ad inventory
+      to receive via pretargeting, submitting creatives for verification, and accessing
+      creative metadata such as approval status.
+    title: Real-time Bidding API
+  reseller.googleapis.com:
+    description: Perform common functions that are available on the Google Apps Reseller
+      Console at scale like placing orders and viewing customer information
+    title: Google Apps Reseller API
+  risc.googleapis.com:
+    description: ''
+    title: RISC API
+  roads.googleapis.com:
+    description: "Snap GPS points to roads to identify the roads a vehicle was traveling\n\
+      \    along, making up for GPS error. Also lets developers access speed limits\n\
+      \    along those roads (enterprise-only feature)."
+    title: Roads API
+  safebrowsing-json.googleapis.com:
+    description: The Safe Browsing API (v3 and earlier) is an experimental API that
+      allows client applications to check URLs against Google's constantly-updated
+      blacklists of suspected phishing and malware pages. Your client application
+      can use the API to download an encrypted table for local, client-side lookups
+      of URLs.
+    title: Safe Browsing API (Legacy)
+  safebrowsing.googleapis.com:
+    description: "Enables client applications to check web resources (most commonly\
+      \ URLs) against Google-generated lists of unsafe web resources. The Safe Browsing\
+      \ APIs are for non-commercial use only. If you need to use APIs to detect malicious\
+      \ URLs for commercial purposes \u2013 meaning \u201Cfor sale or revenue-generating\
+      \ purposes\u201D \u2013 please refer to the Web Risk API."
+    title: Safe Browsing API
+  sasportal.googleapis.com:
+    description: ''
+    title: SAS Portal API
+  script.googleapis.com:
+    description: 'Manages and executes Google Apps Script projects.
+
+      '
+    title: Apps Script API
+  searchconsole.googleapis.com:
+    description: The Search Console API provides access to both Search Console data
+      (verified users only) and to public information on an URL basis (anyone)
+    title: Google Search Console API
+  shoppingcontent.googleapis.com:
+    description: Manage your product listings and accounts for Google Shopping
+    title: Content API for Shopping
+  siteverification.googleapis.com:
+    description: The Google Site Verification API lets applications automate the process
+      of managing ownership records for websites and domains.
+    title: Site Verification API
+  static-maps-backend.googleapis.com:
+    description: "Place a Google Maps image on your webpage without requiring JavaScript\
+      \ or\n    any dynamic page loading with the Maps Static API. This service\n\
+      \    creates your map based on URL parameters sent through a standard HTTP\n\
+      \    request and returns the map as an image."
+    title: Maps Static API
+  subscribewithgoogle.googleapis.com:
+    description: The Subscribe with Google Publication APIs enable a publisher to
+      fetch information related to their SwG subscriptions, including the entitlement
+      status of users who are requesting publisher content.
+    title: Subscribe with Google Publication API
+  subscribewithgoogledeveloper.googleapis.com:
+    description: This API controls access to Subscribe with Google (SwG) developer
+      tools. These tools are part of the the Subscribe with Google product, and allow
+      publishers to debug their integration with SwG client and APIs.
+    title: Subscribe with Google Developer API
+  surveys.googleapis.com:
+    description: The Google Surveys REST API provides an interface for developers
+      to create surveys that are delivered to web and mobile users.
+    title: Google Surveys API
+  tagmanager.googleapis.com:
+    description: "This API allows clients to access and modify container and tag\n\
+      \     configuration."
+    title: Tag Manager API
+  timezone-backend.googleapis.com:
+    description: "The Time Zone API provides the time zone for a location on the earth,\n\
+      \    as well as that location's time offset from UTC."
+    title: Time Zone API
+  toolresults.googleapis.com:
+    description: API to publish and access results from developer tools.
+    title: Cloud Tool Results API
+  travelpartner.googleapis.com:
+    description: The Travel Partner API provides you with a RESTful interface to the
+      Google Hotel Center platform. It enables an app to efficiently retrieve and
+      change Hotel Center data, and is thus suitable for managing large or complex
+      accounts.
+    title: Travel Partner API
+  vault.googleapis.com:
+    description: Archiving and eDiscovery for G Suite.
+    title: G Suite Vault API
+  vectortile.googleapis.com:
+    description: 'Serves vector tiles containing geospatial data.
+
+      '
+    title: Semantic Tile API
+  walletobjects.googleapis.com:
+    description: API for issuers to save and manage Google Wallet Objects.
+    title: Google Pay Passes API
+  webfonts.googleapis.com:
+    description: "The Google Web Fonts Developer API lets you retrieve information\
+      \ about web fonts served\n    by Google."
+    title: Web Fonts Developer API
+  webmasters.googleapis.com:
+    description: The Search Console API provides access to Search Console data for
+      your verified websites.
+    title: Google Search Console API (Legacy)
+  youtube.googleapis.com:
+    description: The YouTube Data API v3 is an API that provides access to YouTube
+      data, such as videos, playlists, and channels.
+    title: YouTube Data API v3
+  youtubeanalytics.googleapis.com:
+    description: Retrieves your YouTube Analytics data.
+    title: YouTube Analytics API
+  youtubereporting.googleapis.com:
+    description: Schedules reporting jobs containing your YouTube Analytics data and
+      downloads the resulting bulk data reports in the form of CSV files.
+    title: YouTube Reporting API
+  zync.googleapis.com:
+    description: Google Cloud visual effects and animation rendering service.
+    title: Zync Render API
+

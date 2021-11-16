@@ -1,0 +1,59 @@
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+project:
+  status: active # Not supported yet: active|archived|deleted
+  displayName: Example project # Display name for the project
+  projectId: example-project # Project ID: once this is set, cannot be changed
+  # gitlab: # If using Gitlab components
+  #   group: gitlab-group
+  #   project: example-project
+  #   runner: yes
+  #   template: gcp-terraform # Not supported yet: reserved for Gitlab project template
+  chargingCode: "123456" # A chargeback code used for the project
+  folder: infra # Folder where to place the folder 
+  owners: # Project owners, gets budget notifications and are members of the owners group
+    - userNameHere 
+  # gkeNamespace: example # Not supported yet: reserved for future automatic K8s namespace provisioning
+  # dnsDomain: custom-domain.customer.com # Not supported yet: reserved for managing a project specific Cloud DNS domain
+  team: # List of roles and team members
+    developer:
+      - admin
+      - dan
+    data-analyst:
+      - devin
+  roles: # Custom roles (see projectGroupsRoles)
+    developer:
+      - gke
+  additionalIamRoles: # Additional IAM permissions (see projectGroupsPermissions.yaml)
+    developer:
+      - roles/storage.objectAdmin
+  environments: # Environment where to provision the projects in
+    - nonprod
+    - prod
+  additionalApis: # Additional APIs to activate
+    - cloudscheduler.googleapis.com
+  serviceAccounts:
+    - name: appengine-deployer
+      displayName: "App Engine deployer"
+      description: "Used to deploy App Engine application"
+      roles: 
+        - appengine
+      additionalIamRoles:
+        - roles/iam.serviceAccountUser
+  # allowPublicServices: true # If public services are allowed, activate org policy overrides for project
+  # budget: # Project specific budget
+  #   nonprod: 100000
+  #   prod: 1000000
+  # recommendationsReports:
+  #   - sample-report

@@ -1,0 +1,13 @@
+yamale~=3.0.0
+PyYAML~=5.3.0
+python-gitlab~=2.3.0
+PyGithub~=1.52
+google-api-python-client~=1.10.0
+oauth2client~=4.1.0
+deepdiff~=5.0.0
+google-cloud-bigquery~=1.28.0
+grpcio~=1.33.1
+google-cloud-storage~=1.31.0
+google-cloud-iam~=2.0.0
+google-auth~=1.22.0
+

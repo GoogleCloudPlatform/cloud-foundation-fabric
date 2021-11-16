@@ -1,0 +1,68 @@
+[
+   {
+    "description": "Project ID",
+    "mode": "REQUIRED",
+    "name": "projectId",
+    "type": "STRING"
+  },
+  {
+    "description": "Full project ID",
+    "mode": "REQUIRED",
+    "name": "fullProjectId",
+    "type": "STRING"
+  },
+  {
+    "description": "Human readable name",
+    "mode": "NULLABLE",
+    "name": "displayName",
+    "type": "STRING"
+  },
+  {
+    "description": "Folder where project resides in",
+    "mode": "REQUIRED",
+    "name": "folder",
+    "type": "STRING"
+  },
+  {
+    "description": "Project owners",
+    "mode": "REQUIRED",
+    "name": "owners",
+    "type": "ARRAY<STRING>"
+  },
+  {
+    "description": "Owner reporting chain",
+    "mode": "REQUIRED",
+    "name": "reportingChain",
+    "type": "ARRAY<STRING>"
+  },
+  {
+    "description": "Project team",
+    "mode": "REPEATED",
+    "name": "team",
+    "type": "STRUCT<group STRING, members ARRAY<STRING>>"
+  },
+  {
+    "description": "Chargeback code",
+    "mode": "REQUIRED",
+    "name": "chargingCode",
+    "type": "STRING"
+  },
+  {
+    "description": "Project budget",
+    "mode": "NULLABLE",
+    "name": "budget",
+    "type": "INT64"
+  },
+  {
+    "description": "Environment",
+    "mode": "REQUIRED",
+    "name": "environment",
+    "type": "STRING"
+  },
+  {
+    "description": "Project status",
+    "mode": "REQUIRED",
+    "name": "status",
+    "type": "STRING"
+  }
+]

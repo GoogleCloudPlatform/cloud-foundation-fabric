@@ -1,0 +1,238 @@
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+default:
+  image:
+    name: $BUILD_CONTAINER
+    entrypoint:
+      - "/usr/bin/env"
+      - "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+  before_script:
+    - bash scripts/generate-gitlab-configuration.sh
+    - shopt -s expand_aliases
+    - alias convert_report="jq -r '([.resource_changes[]?.change.actions?]|flatten)|{\"create\":(map(select(.==\"create\"))|length),\"update\":(map(select(.==\"update\"))|length),\"delete\":(map(select(.==\"delete\"))|length)}'"
+
+variables:
+  TF_IN_AUTOMATION: "yes"
+  GCLOUD_TF_DOWNLOAD: "never"
+
+stages:
+  - build-container
+  - validate
+  - plan
+  - gitlab
+  - apply
+
+build-container:
+  stage: build-container
+  image:
+    name: gcr.io/kaniko-project/executor:debug-v1.0.0
+    entrypoint: [""]
+  before_script: []
+  script:
+    - /kaniko/executor --context scripts/ --dockerfile Dockerfile --destination $BUILD_CONTAINER
+  only:
+    refs:
+      - master
+    changes:
+      - scripts/Dockerfile
+      - scripts/requirements.txt
+  tags:
+    - cloud
+  
+validate-tf:
+  stage: validate
+  script:
+    - terraform validate
+  only:
+    - master
+  tags:
+    - cloud
+
+validate-project:mr:
+  stage: validate
+  script:
+    - |
+        ret=0
+        for project in projects/*.yaml
+        do
+            >&2 echo "Validating project: $project"
+            python3 scripts/validate-project.py --schema config/projectSchema.yaml --schema-help config/projectSchemaHelp.yaml $project 2>> validation.txt || ret=1
+        done
+        if [ "$ret" -eq 1 ] ; then
+            echo -e ":x: **Project validation failed.** Results:\n\`\`\`" >> body.txt
+            cat validation.txt >> body.txt
+            gitlab project-merge-request-discussion create --project-id $CI_MERGE_REQUEST_PROJECT_ID --mr-iid $CI_MERGE_REQUEST_IID --body @body.txt
+        fi
+  only:
+    - merge_requests
+  tags:
+    - cloud
+
+validate-project:master:
+  stage: validate
+  script:
+    - |
+        ret=0
+        for project in projects/*.yaml
+        do
+            >&2 echo "Validating project: $project"
+            python3 scripts/validate-project.py --schema config/projectSchema.yaml --schema-help config/projectSchemaHelp.yaml $project 2>> validation.txt || ret=1
+        done
+        cat validation.txt
+        exit $ret
+  only:
+    - master
+  tags:
+    - cloud
+
+validate-changes:
+  stage: validate
+  script:
+    - git fetch origin $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME
+    - git fetch origin $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
+    - |
+        auto_approve=1
+        while read -r -a change
+        do
+            if [[ "${change[0]}" == projects/*.yaml ]] ; then
+              >&2 echo "Validating project: ${change[0]}"
+              if [ -e "${change[0]}" ] ; then
+                python3 scripts/validate-project.py --schema config/projectSchema.yaml --schema-help config/projectSchemaHelp.yaml ${change[0]} || exit 1
+      
+                >&2 echo "Validating project for auto-approval: ${change[0]}"
+                python3 scripts/validate-project.py --schema config/projectSchemaAutoApprove.yaml --mode approve --schema-help config/projectSchemaHelp.yaml ${change[0]} 2>> validation.txt || auto_approve=0
+
+                if [ "x${change[1]}" != "x" ] ; then
+                    >&2 echo "Validating project changes for auto-approval: ${change[0]}"
+                    python3 scripts/validate-changes.py --schema config/projectSchemaHoldApproval.yaml "${change[1]}" "${change[0]}" 2>> validation.txt || auto_approve=0
+                fi
+              else
+                echo "Project has been removed from repository: ${change[0]}" >> validation.txt
+                auto_approve=0
+              fi
+            else
+              echo "This merge request changes other files than projects: ${change[0]}" >> validation.txt
+              auto_approve=0
+            fi
+
+        done < <(bash scripts/git-original-files.sh origin/$CI_MERGE_REQUEST_SOURCE_BRANCH_NAME origin/$CI_MERGE_REQUEST_TARGET_BRANCH_NAME)
+        
+        if [ "$auto_approve" -eq "1" ] ; then
+            >&2 echo "Approving Merge Request automatically since all conditions were satisfied."
+            gitlab project-merge-request-note create --project-id $CI_MERGE_REQUEST_PROJECT_ID --mr-iid $CI_MERGE_REQUEST_IID --body ":white_check_mark: **Merge Request automatically approved!** :clap:"
+            gitlab project-merge-request approve --project-id $CI_MERGE_REQUEST_PROJECT_ID --iid $CI_MERGE_REQUEST_IID
+            gitlab project-merge-request merge --project-id $CI_MERGE_REQUEST_PROJECT_ID --iid $CI_MERGE_REQUEST_IID --merge-when-pipeline-succeeds 1
+        else
+            >&2 echo "Holding Merge Request for manual approval."
+            echo -e ":warning: **Merge request held for manual approval.** Results:\n\`\`\`" >> body.txt
+            cat validation.txt >> body.txt
+            gitlab project-merge-request-discussion create --project-id $CI_MERGE_REQUEST_PROJECT_ID --mr-iid $CI_MERGE_REQUEST_IID --body @body.txt
+        fi
+        
+  only:
+    - merge_requests
+  tags:
+    - cloud
+
+plan:mr:
+  stage: plan
+  script:
+    - terraform init
+    - terraform plan -parallelism=50 -out=$CI_COMMIT_REF_SLUG.tfplan
+    - terraform show $CI_COMMIT_REF_SLUG.tfplan > $CI_COMMIT_REF_SLUG.txt
+    - terraform show -json $CI_COMMIT_REF_SLUG.tfplan > $CI_COMMIT_REF_SLUG.json
+    - cat $CI_COMMIT_REF_SLUG.json | convert_report  > $CI_COMMIT_REF_SLUG.gitlab.json
+  dependencies:
+    - validate-project:mr
+    - validate-changes
+  only:
+    - merge_requests
+  tags:
+    - cloud
+  artifacts:
+    when: always
+    paths:
+      - $CI_COMMIT_REF_SLUG.tfplan
+      - $CI_COMMIT_REF_SLUG.txt
+      - $CI_COMMIT_REF_SLUG.json
+    reports:
+      terraform:
+        - $CI_COMMIT_REF_SLUG.gitlab.json
+
+gitlab:mr:
+  stage: gitlab
+  script:
+    - |
+        ret=0
+        python3 scripts/validate-plan.py $CI_COMMIT_REF_SLUG.json || ret=1
+        if [ "$ret" -eq "1" ] ; then
+          echo -e ":no_entry: **Plan contains resource deletions, failing!**\n" > plan.txt
+          echo "Unapproving the Merge Request..."
+          gitlab project-merge-request unapprove --project-id $CI_MERGE_REQUEST_PROJECT_ID --iid $CI_MERGE_REQUEST_IID || echo "Merge Request was probably not approved yet anyway."
+          echo "Creating discussion entry in Merge Request..."
+          gitlab project-merge-request-discussion create --project-id $CI_MERGE_REQUEST_PROJECT_ID --mr-iid $CI_MERGE_REQUEST_IID --body @plan.txt
+          echo "Canceling merge when pipeline succeeds..."
+          gitlab project-merge-request cancel-merge-when-pipeline-succeeds --project-id $CI_MERGE_REQUEST_PROJECT_ID --iid $CI_MERGE_REQUEST_IID || echo "Failed to cancel merge when succeeds."
+        fi
+  dependencies:
+    - plan:mr
+  only:
+    - merge_requests
+  tags:
+    - cloud
+
+plan:master:
+  stage: plan
+  resource_group: master
+  script:
+    - terraform init
+    - terraform plan -parallelism=50 -out=$CI_COMMIT_REF_SLUG.tfplan 
+    - terraform show $CI_COMMIT_REF_SLUG.tfplan > $CI_COMMIT_REF_SLUG.txt
+    - terraform show -json $CI_COMMIT_REF_SLUG.tfplan > $CI_COMMIT_REF_SLUG.json
+    - cat $CI_COMMIT_REF_SLUG.json | convert_report > $CI_COMMIT_REF_SLUG.gitlab.json
+  dependencies:
+    - validate-project:master
+  only:
+    refs:
+      - master
+  tags:
+    - cloud
+  artifacts:
+    when: always
+    paths:
+      - $CI_COMMIT_REF_SLUG.tfplan
+      - $CI_COMMIT_REF_SLUG.txt
+      - $CI_COMMIT_REF_SLUG.json
+    reports:
+      terraform:
+        - $CI_COMMIT_REF_SLUG.gitlab.json
+
+apply:
+  stage: apply
+  resource_group: master
+  script:
+    - terraform init
+    - terraform apply -input=false $CI_COMMIT_REF_SLUG.tfplan
+    - python3 scripts/projects-to-bigquery.py --config config/config.yaml projects/
+    - python3 scripts/charging-codes-to-gcs.py --config config/config.yaml projects/
+  dependencies:
+    - plan:master
+  only:
+    refs:
+      - master
+  tags:
+    - cloud
+  when: manual
