@@ -24,13 +24,6 @@ variable "access" {
   validation {
     condition = can([
       for k, v in var.access :
-      index(["OWNER", "READER", "WRITER"], v.role)
-    ])
-    error_message = "Access role must be one of 'OWNER', 'READER', 'WRITER'."
-  }
-  validation {
-    condition = can([
-      for k, v in var.access :
       index(["domain", "group", "special_group", "user", "view"], v.type)
     ])
     error_message = "Access type must be one of 'domain', 'group', 'special_group', 'user', 'view'."

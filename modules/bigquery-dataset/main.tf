@@ -209,5 +209,4 @@ resource "google_bigquery_table" "views" {
     query          = each.value.query
     use_legacy_sql = each.value.use_legacy_sql
   }
-
 }
