@@ -250,7 +250,6 @@ module "vm-spoke-1" {
     subnetwork = module.vpc-spoke-1.subnet_self_links["${var.regions.b}/spoke-1-b"]
     nat        = false
     addresses  = null
-    alias_ips  = null
   }]
   tags     = ["ssh"]
   metadata = { startup-script = local.vm-startup-script }
@@ -266,7 +265,6 @@ module "vm-spoke-2" {
     subnetwork = module.vpc-spoke-2.subnet_self_links["${var.regions.b}/spoke-2-b"]
     nat        = false
     addresses  = null
-    alias_ips  = null
   }]
   tags     = ["ssh"]
   metadata = { startup-script = local.vm-startup-script }

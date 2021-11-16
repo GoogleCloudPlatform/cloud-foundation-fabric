@@ -24,7 +24,6 @@ module "simple-vm-example" {
     subnetwork = var.subnet.self_link
     nat        = false
     addresses  = null
-    alias_ips  = null
   }]
   service_account_create = true
 }
@@ -54,7 +53,6 @@ module "simple-vm-example" {
     subnetwork = var.subnet.self_link
     nat        = false
     addresses  = null
-    alias_ips  = null
   }]
   attached_disks = [{
     name        = "repd-1"
@@ -85,7 +83,6 @@ module "simple-vm-example" {
     subnetwork = var.subnet.self_link
     nat        = false
     addresses  = null
-    alias_ips  = null
   }]
   attached_disks = [{
     name        = "repd"
@@ -119,7 +116,6 @@ module "kms-vm-example" {
     subnetwork = var.subnet.self_link
     nat        = false
     addresses  = null
-    alias_ips  = null
   }]
   attached_disks = [
     {
@@ -147,23 +143,80 @@ module "kms-vm-example" {
 
 ### Using Alias IPs
 
-This example shows how add additional [Alias IPs](https://cloud.google.com/vpc/docs/alias-ip) to your VM.
+This example shows how to add additional [Alias IPs](https://cloud.google.com/vpc/docs/alias-ip) to your VM.
 
 ```hcl
 module "vm-with-alias-ips" {
   source     = "./modules/compute-vm"
   project_id = "my-project"
-  zone     = "europe-west1-b"
+  zone       = "europe-west1-b"
   name       = "test"
   network_interfaces = [{
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
     nat        = false
     addresses  = null
-    alias_ips = {
-      alias1 = "10.16.0.10/32"
-    }
   }]
+  network_interface_options = {
+    0 = {
+      alias_ips = {
+        alias1 = "10.16.0.10/32"
+      }
+      nic_type   = null
+    }
+  }
+  service_account_create = true
+}
+# tftest:modules=1:resources=2
+```
+
+### Using gVNIC
+
+This example shows how to enable [gVNIC](https://cloud.google.com/compute/docs/networking/using-gvnic) on your VM by customizing a `cos` image. Given that gVNIC needs to be enabled as an instance configuration and as a guest os configuration, you'll need to supply a bootable disk with `guest_os_features=GVNIC`. `SEV_CAPABLE`, `UEFI_COMPATIBLE` and `VIRTIO_SCSI_MULTIQUEUE` are enabled implicitly in the `cos`, `rhel`, `centos` and other images.
+
+```hcl
+
+resource "google_compute_image" "cos-gvnic" {
+  project       = "my-project"
+  name          = "my-image"
+  source_image  = "https://www.googleapis.com/compute/v1/projects/cos-cloud/global/images/cos-89-16108-534-18"
+
+  guest_os_features {
+    type = "GVNIC"
+  }
+  guest_os_features {
+    type = "SEV_CAPABLE"
+  }
+  guest_os_features {
+    type = "UEFI_COMPATIBLE"
+  }
+  guest_os_features {
+    type = "VIRTIO_SCSI_MULTIQUEUE"
+  }
+}
+
+module "vm-with-gvnic" {
+  source     = "./modules/compute-vm"
+  project_id = "my-project"
+  zone       = "europe-west1-b"
+  name       = "test"
+  boot_disk      = {
+      image = google_compute_image.cos-gvnic.self_link
+      type  = "pd-ssd"
+      size  = 10
+  }
+  network_interfaces = [{
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+    nat        = false
+    addresses  = null
+  }]
+  network_interface_options = {
+    0 = {
+      alias_ips  = null
+      nic_type   = "GVNIC"
+    }
+  }
   service_account_create = true
 }
 # tftest:modules=1:resources=2
@@ -184,7 +237,6 @@ module "cos-test" {
     subnetwork = var.subnet.self_link
     nat        = false
     addresses  = null
-    alias_ips  = null
   }]
   boot_disk      = {
     image = "projects/cos-cloud/global/images/family/cos-stable"
@@ -225,7 +277,6 @@ module "instance-group" {
     subnetwork = var.subnet.self_link
     nat        = false
     addresses  = null
-    alias_ips  = null
   }]
   boot_disk = {
     image = "projects/cos-cloud/global/images/family/cos-stable"
@@ -248,7 +299,7 @@ module "instance-group" {
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
 | name | Instance name. | <code title="">string</code> | ✓ |  |
-| network_interfaces | Network interfaces configuration. Use self links for Shared VPC, set addresses and alias_ips to null if not needed. | <code title="list&#40;object&#40;&#123;&#10;nat        &#61; bool&#10;network    &#61; string&#10;subnetwork &#61; string&#10;addresses &#61; object&#40;&#123;&#10;internal &#61; string&#10;external &#61; string&#10;&#125;&#41;&#10;alias_ips &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">list(object({...}))</code> | ✓ |  |
+| network_interfaces | Network interfaces configuration. Use self links for Shared VPC, set addresses to null if not needed. | <code title="list&#40;object&#40;&#123;&#10;nat        &#61; bool&#10;network    &#61; string&#10;subnetwork &#61; string&#10;addresses &#61; object&#40;&#123;&#10;internal &#61; string&#10;external &#61; string&#10;&#125;&#41;&#10;&#125;&#41;&#41;">list(object({...}))</code> | ✓ |  |
 | project_id | Project id. | <code title="">string</code> | ✓ |  |
 | zone | Compute zone. | <code title="">string</code> | ✓ |  |
 | *attached_disk_defaults* | Defaults for attached disks options. | <code title="object&#40;&#123;&#10;mode         &#61; string&#10;replica_zone &#61; string&#10;type &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;auto_delete  &#61; true&#10;mode         &#61; &#34;READ_WRITE&#34;&#10;replica_zone &#61; null&#10;type &#61; &#34;pd-balanced&#34;&#10;&#125;">...</code> |
@@ -268,6 +319,7 @@ module "instance-group" {
 | *labels* | Instance labels. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
 | *metadata* | Instance metadata. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
 | *min_cpu_platform* | Minimum CPU platform. | <code title="">string</code> |  | <code title="">null</code> |
+| *network_interface_options* | Network interfaces extended options. The key is the index of the inteface to configure. The value is an object with alias_ips and nic_type. Set alias_ips or nic_type to null if you need only one of them. | <code title="map&#40;object&#40;&#123;&#10;alias_ips &#61; map&#40;string&#41;&#10;nic_type  &#61; string&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
 | *options* | Instance options. | <code title="object&#40;&#123;&#10;allow_stopping_for_update &#61; bool&#10;deletion_protection       &#61; bool&#10;preemptible               &#61; bool&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;allow_stopping_for_update &#61; true&#10;deletion_protection       &#61; false&#10;preemptible               &#61; false&#10;&#125;">...</code> |
 | *scratch_disks* | Scratch disks configuration. | <code title="object&#40;&#123;&#10;count     &#61; number&#10;interface &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;count     &#61; 0&#10;interface &#61; &#34;NVME&#34;&#10;&#125;">...</code> |
 | *service_account* | Service account email. Unused if service account is auto-created. | <code title="">string</code> |  | <code title="">null</code> |

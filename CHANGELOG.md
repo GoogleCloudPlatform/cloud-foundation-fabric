@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 - new `cloud-run` module
+- added gVNIC support to `compute-vm` module
 
 ## [8.0.0] - 2021-10-21
 
