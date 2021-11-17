@@ -14,6 +14,15 @@
  * limitations under the License.
  */
 
+# Used in stateful disk test
+resource "google_compute_disk" "default" {
+  name                      = "test-disk"
+  type                      = "pd-ssd"
+  zone                      = "europe-west1-c"
+  image                     = "debian-9-stretch-v20200805"
+  physical_block_size_bytes = 4096
+}
+
 module "test" {
   source      = "../../../../modules/compute-mig"
   project_id  = "my-project"
@@ -24,10 +33,14 @@ module "test" {
     instance_template = "foo-template"
     name              = "foo"
   }
-  autoscaler_config   = var.autoscaler_config
-  health_check_config = var.health_check_config
-  named_ports         = var.named_ports
-  regional            = var.regional
-  update_policy       = var.update_policy
-  versions            = var.versions
+  autoscaler_config          = var.autoscaler_config
+  health_check_config        = var.health_check_config
+  named_ports                = var.named_ports
+  regional                   = var.regional
+  stateful_disk_mig          = var.stateful_disk_mig
+  stateful_disk_instance     = var.stateful_disk_instance
+  stateful_metadata_instance = var.stateful_metadata_instance
+
+  update_policy = var.update_policy
+  versions      = var.versions
 }

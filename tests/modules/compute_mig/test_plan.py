@@ -24,17 +24,30 @@ def test_defaults(plan_runner):
   "Test variable defaults."
   _, resources = plan_runner(FIXTURES_DIR)
   assert len(resources) == 1
+  print(resources[0]['type'])
+  #print(resources[1]['type'])
+  #print(resources[2]['type'])
+  #print(resources[3]['type'])
   mig = resources[0]
   assert mig['type'] == 'google_compute_instance_group_manager'
   assert mig['values']['target_size'] == 2
   assert mig['values']['zone']
+  #mig = resources[1]
+  #assert mig['type'] == 'google_compute_per_instance_config'
+  #assert mig['values']['zone']
   _, resources = plan_runner(FIXTURES_DIR, regional='true')
   assert len(resources) == 1
+  #print(resources[0]['type'])
+ # print(resources[1]['type'])
   mig = resources[0]
+  #assert mig['type'] == 'google_compute_region_instance_group_manager'
+  # TODO - why?
+  #assert mig['type'] == 'google_compute_per_instance_config'
+  #assert mig['values']['zone']
+  #mig = resources[1]
   assert mig['type'] == 'google_compute_region_instance_group_manager'
   assert mig['values']['target_size'] == 2
   assert mig['values']['region']
-
 
 def test_health_check(plan_runner):
   "Test health check resource."
@@ -75,3 +88,46 @@ def test_autoscaler(plan_runner):
   assert len(resources) == 2
   autoscaler = resources[0]
   assert autoscaler['type'] == 'google_compute_region_autoscaler'
+
+def test_stateful_mig(plan_runner):
+  "Test stateful instances - mig."
+  stateful_disk_mig = (
+      '{ StatefulDisk1 = {delete_rule="NEVER"}}'
+  )
+  _, resources = plan_runner(
+      FIXTURES_DIR, stateful_disk_mig=stateful_disk_mig)
+  assert len(resources) == 1
+  statefuldisk = resources[0]
+  assert statefuldisk['type'] == 'google_compute_instance_group_manager'
+  assert statefuldisk['values']['stateful_disk'] == [{
+      'device_name': 'StatefulDisk1',
+      'delete_rule': 'NEVER',
+  }]
+  
+def test_stateful_instance(plan_runner):
+  "Test stateful instances - instance."
+  metadata = (
+      '{foo = "bar"}'
+  )
+
+  stateful_disk_instance = (
+      '{ StatefulDisk1 = {source = google_compute_disk.default.id}}'
+  )
+  _, resources = plan_runner(
+      FIXTURES_DIR, stateful_disk_instance=stateful_disk_instance, stateful_metadata_instance=metadata)
+  assert len(resources) == 2
+  instanceconfig = resources[0]
+  assert instanceconfig['type'] == 'google_compute_per_instance_config'
+  assert instanceconfig['values']['preserved_state']['metadata'] == [{
+      'foo': 'bar',
+  }]
+  assert instanceconfig['values']['preserved_state']['disk'] == [{
+      'device_name': 'StatefulDisk1',
+      'source': 'google_compute_disk.default.id',
+      'mode': 'READ_WRITE',
+      'delete_rule': 'NEVER',
+  }]
+  assert instanceconfig['values']['minimal_action_instance'] == 'NONE'
+  assert instanceconfig['values']['most_disruptive_allowed_action'] == 'REPLACE'
+  assert instanceconfig['values']['remove_instance_state_on_destroy'] == 'null'
+  

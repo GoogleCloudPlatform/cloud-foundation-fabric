@@ -66,9 +66,27 @@ variable "location" {
   type        = string
 }
 
+variable "minimal_action_instance" {
+  description = "Minimal action to perform on instance during update. Can be 'NONE' (default), 'REPLACE', 'RESTART' and 'REFRESH'."
+  type        = string # NONE | REPLACE | RESTART | REFRESH
+  default = "NONE"
+}
+
+variable "most_disruptive_allowed_action" {
+  description = "Most disruptive action to perform on instance during update. Can be 'REPLACE (default), 'RESTART', 'REFRESH' or 'NONE'."
+  type        = string # REPLACE | RESTART | REFRESH | NONE
+  default = "REPLACE"
+}
+
 variable "name" {
   description = "Managed group name."
   type        = string
+}
+
+variable "name_instance_config" {
+  description = "Instance config name."
+  type        = string
+  default = ""
 }
 
 variable "named_ports" {
@@ -87,6 +105,38 @@ variable "regional" {
   type        = bool
   default     = false
 }
+
+variable "remove_instance_state_on_destroy" {
+  description = "When true will remove state immediately when config deleted. When false, state removed next time instance recreated or updated."
+  type        = bool
+  default     = null
+}
+
+
+variable "stateful_disk_mig" {
+  description = "Stateful disk(s) config defined at the MIG level. Map key becomes the 'name' field of the resource. Delete rule can be 'NEVER' or 'ON_PERMANENT_INSTANCE_DELETION'."
+  type = map(object({
+    delete_rule = string # NEVER (default) | ON_PERMANENT_INSTANCE_DELETION
+  }))
+  default = null
+}
+
+variable "stateful_disk_instance" {
+  description = "Stateful disk(s) config defined at the instance config level. Map key becomes the 'name' field of the resource. Mode can be 'READ_WRITE' (default) or 'READ_ONLY', delete rule can be 'NEVER' or 'ON_PERMANENT_INSTANCE_DELETION'."
+  type = map(object({
+    source      = string
+    mode        = string # READ_WRITE (default) | READ_ONLY 
+    delete_rule = string # NEVER (default) | ON_PERMANENT_INSTANCE_DELETION
+  }))
+  default = null
+}
+
+variable "stateful_metadata_instance" {
+  description = "Stateful metadata defined at the instance config level. A value associated with a key 'instance_template' will tie this resource to the instance template lifecycle. "
+  type        = map(string)
+  default     = {}
+}
+
 
 variable "target_pools" {
   description = "Optional list of URLs for target pools to which new instances in the group are added."

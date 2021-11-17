@@ -84,6 +84,14 @@ resource "google_compute_instance_group_manager" "default" {
       initial_delay_sec = config.value.initial_delay_sec
     }
   }
+  dynamic "stateful_disk" {
+    for_each = var.stateful_disk_mig == null ? {} : var.stateful_disk_mig
+    iterator = config
+    content {
+      device_name = config.key
+      delete_rule = config.value.delete_rule
+    }
+  }
   dynamic "update_policy" {
     for_each = var.update_policy == null ? [] : [var.update_policy]
     iterator = config
@@ -135,6 +143,40 @@ resource "google_compute_instance_group_manager" "default" {
   }
 }
 
+locals {
+  instance_group_manager = (
+    var.regional ?
+    google_compute_region_instance_group_manager.default :
+    google_compute_instance_group_manager.default
+  )
+}
+
+resource "google_compute_per_instance_config" "default" {
+  count       = var.stateful_disk_instance == null ? 0 : 1
+  zone                             = var.location
+  #instance_group_manager           = var.regional ? google_compute_region_instance_group_manager.default : google_compute_instance_group_manager.default
+  instance_group_manager = local.instance_group_manager[0].id
+  name                             = var.name_instance_config
+  project                          = var.project_id
+  minimal_action                   = var.minimal_action_instance
+  most_disruptive_allowed_action   = var.most_disruptive_allowed_action
+  remove_instance_state_on_destroy = var.remove_instance_state_on_destroy
+  preserved_state {
+
+    metadata = var.stateful_metadata_instance
+
+    dynamic "disk" {
+      for_each = var.stateful_disk_instance == null ? {} : var.stateful_disk_instance
+      iterator = config
+      content {
+        device_name = config.key
+        source      = config.value.source
+        mode        = config.value.mode
+        delete_rule = config.value.delete_rule
+      }
+    }
+  }
+}
 
 resource "google_compute_region_autoscaler" "default" {
   provider    = google-beta
@@ -206,6 +248,15 @@ resource "google_compute_region_instance_group_manager" "default" {
       initial_delay_sec = config.value.initial_delay_sec
     }
   }
+  dynamic "stateful_disk" {
+    for_each = var.stateful_disk_mig == null ? {} : var.stateful_disk_mig
+    iterator = config
+    content {
+      device_name = config.key
+      delete_rule = config.value.delete_rule
+    }
+  }
+
   dynamic "update_policy" {
     for_each = var.update_policy == null ? [] : [var.update_policy]
     iterator = config

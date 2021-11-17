@@ -1,8 +1,10 @@
 # GCE Managed Instance Group module
 
-This module allows creating a managed instance group supporting one or more application versions via instance templates. A health check and an autoscaler can also be optionally created.
+This module allows creating a managed instance group supporting one or more application versions via instance templates. Optionally, a health check and an autoscaler can be created, and the managed instance group can be configured to be stateful.
 
-This module can be coupled with the [`compute-vm`](../compute-vm) module which can manage instance templates, and the [`net-ilb`](../net-ilb) module to assign the MIG to a backend wired to an Internal Load Balancer. The first use case is shown in the examples below.
+This module can be coupled with the [`compute-vm`](../compute-vm) module which can manage instance templates, and the [`net-ilb`](../net-ilb) module to assign the MIG to a backend wired to an Internal Load Balancer. The first use case is shown in the examples below. 
+
+Stateful disks can be created directly, as shown in the last example below.
 
 ## Examples
 
@@ -264,6 +266,63 @@ module "nginx-mig" {
   }
 }
 # tftest:modules=2:resources=2
+```
+
+### Stateful MIGs
+
+Stateful MIGs have some limitations documented [here](https://cloud.google.com/compute/docs/instance-groups/configuring-stateful-migs#limitations). Enforcement of these requirements is the responsibility of users of this module. 
+
+Stateful persistent disks can be configured in the MIG's stateful policy, using the `stateful_disk_mig` variable, or at the per-instance configurations using the `stateful_disk_instance` variable. A discussion on these scenarios can be found in the [docs](https://cloud.google.com/compute/docs/instance-groups/configuring-stateful-disks-in-migs).
+
+
+```hcl
+module "cos-nginx" {
+  source = "./modules/cloud-config-container/nginx"
+}
+
+module "nginx-template" {
+  source     = "./modules/compute-vm"
+  project_id = var.project_id
+  name       = "nginx-template"
+  zone     = "europe-west1-b"
+  tags       = ["http-server", "ssh"]
+  network_interfaces = [{
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+    nat        = false
+    addresses  = null
+  }]
+  boot_disk = {
+    image = "projects/cos-cloud/global/images/family/cos-stable"
+    type  = "pd-ssd"
+    size  = 10
+  }
+  create_template  = true
+  metadata = {
+    user-data = module.cos-nginx.cloud_config
+  }
+}
+
+module "nginx-mig" {
+  source = "./modules/compute-mig"
+  project_id = "my-project"
+  location     = "europe-west1-b"
+  name       = "mig-test"
+  target_size   = 3
+  default_version = {
+    instance_template = module.nginx-template.template.self_link
+    name = "default"
+  }
+  autoscaler_config = {
+    max_replicas                      = 3
+    min_replicas                      = 1
+    cooldown_period                   = 30
+    cpu_utilization_target            = 0.65
+    load_balancing_utilization_target = null
+    metric                            = null
+  }
+}
+# tftest:modules=2:resources=3
 ```
 
 <!-- BEGIN TFDOC -->
