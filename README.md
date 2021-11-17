@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/logos/fabric-logo-colors-800.png?raw=true" alt="Cloud Foundation Fabric">
+</p>
+
 # Terraform Examples and Modules for Google Cloud
 
 This repository provides **end-to-end examples** and a **suite of Terraform modules** for Google Cloud, which support different use cases:
