@@ -60,7 +60,7 @@ resource "google_container_cluster" "cluster" {
   # TODO(ludomagno): compute addons map in locals and use a single dynamic block
   addons_config {
     dynamic "dns_cache_config" {
-      for_each = var.enable_autopilot == true ? [] : [""]
+      for_each = var.enable_autopilot ? [] : [""]
       content {
         enabled = var.addons.dns_cache_config
       }
