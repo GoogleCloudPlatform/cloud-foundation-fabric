@@ -66,7 +66,7 @@ variable "location" {
   type        = string
 }
 
-variable "minimal_action_instance" {
+variable "minimal_action" {
   description = "Minimal action to perform on instance during update. Can be 'NONE' (default), 'REPLACE', 'RESTART' and 'REFRESH'."
   type        = string # NONE | REPLACE | RESTART | REFRESH
   default = "NONE"
@@ -109,7 +109,7 @@ variable "regional" {
 variable "remove_instance_state_on_destroy" {
   description = "When true will remove state immediately when config deleted. When false, state removed next time instance recreated or updated."
   type        = bool
-  default     = null
+  default     = false
 }
 
 

@@ -50,6 +50,18 @@ variable "health_check_config" {
   default = null
 }
 
+variable "minimal_action" {
+  description = "Minimal action to perform on instance during update. Can be 'NONE' (default), 'REPLACE', 'RESTART' and 'REFRESH'."
+  type        = string # NONE | REPLACE | RESTART | REFRESH
+  default = "NONE"
+}
+
+variable "most_disruptive_allowed_action" {
+  description = "Most disruptive action to perform on instance during update. Can be 'REPLACE (default), 'RESTART', 'REFRESH' or 'NONE'."
+  type        = string # REPLACE | RESTART | REFRESH | NONE
+  default = "REPLACE"
+}
+
 variable "named_ports" {
   type    = map(number)
   default = null
