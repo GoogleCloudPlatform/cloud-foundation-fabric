@@ -67,15 +67,15 @@ variable "location" {
 }
 
 variable "minimal_action" {
-  description = "Minimal action to perform on instance during update. Can be 'NONE' (default), 'REPLACE', 'RESTART' and 'REFRESH'."
+  description = "Minimal action to perform on instance during update. Can be 'NONE', 'REPLACE', 'RESTART' and 'REFRESH'."
   type        = string # NONE | REPLACE | RESTART | REFRESH
-  default = "NONE"
+  default     = "NONE"
 }
 
 variable "most_disruptive_allowed_action" {
-  description = "Most disruptive action to perform on instance during update. Can be 'REPLACE (default), 'RESTART', 'REFRESH' or 'NONE'."
+  description = "Most disruptive action to perform on instance during update. Can be 'REPLACE, 'RESTART', 'REFRESH' or 'NONE'."
   type        = string # REPLACE | RESTART | REFRESH | NONE
-  default = "REPLACE"
+  default     = "REPLACE"
 }
 
 variable "name" {
@@ -86,7 +86,7 @@ variable "name" {
 variable "name_instance_config" {
   description = "Instance config name."
   type        = string
-  default = ""
+  default     = ""
 }
 
 variable "named_ports" {
@@ -114,19 +114,19 @@ variable "remove_instance_state_on_destroy" {
 
 
 variable "stateful_disk_mig" {
-  description = "Stateful disk(s) config defined at the MIG level. Map key becomes the 'name' field of the resource. Delete rule can be 'NEVER' or 'ON_PERMANENT_INSTANCE_DELETION'."
+  description = "Stateful disk(s) config defined at the MIG level. Map key becomes the 'device_name' field of the resource. Delete rule can be 'NEVER' or 'ON_PERMANENT_INSTANCE_DELETION'."
   type = map(object({
-    delete_rule = string # NEVER (default) | ON_PERMANENT_INSTANCE_DELETION
+    delete_rule = string # NEVER | ON_PERMANENT_INSTANCE_DELETION
   }))
   default = null
 }
 
 variable "stateful_disk_instance" {
-  description = "Stateful disk(s) config defined at the instance config level. Map key becomes the 'name' field of the resource. Mode can be 'READ_WRITE' (default) or 'READ_ONLY', delete rule can be 'NEVER' or 'ON_PERMANENT_INSTANCE_DELETION'."
+  description = "Stateful disk(s) config defined at the instance config level. Map key becomes the 'device_name' field of the resource. Mode can be 'READ_WRITE' or 'READ_ONLY', delete rule can be 'NEVER' or 'ON_PERMANENT_INSTANCE_DELETION'."
   type = map(object({
     source      = string
-    mode        = string # READ_WRITE (default) | READ_ONLY 
-    delete_rule = string # NEVER (default) | ON_PERMANENT_INSTANCE_DELETION
+    mode        = string # READ_WRITE | READ_ONLY 
+    delete_rule = string # NEVER | ON_PERMANENT_INSTANCE_DELETION
   }))
   default = null
 }

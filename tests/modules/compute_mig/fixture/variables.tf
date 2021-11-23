@@ -51,15 +51,15 @@ variable "health_check_config" {
 }
 
 variable "minimal_action" {
-  description = "Minimal action to perform on instance during update. Can be 'NONE' (default), 'REPLACE', 'RESTART' and 'REFRESH'."
+  description = "Minimal action to perform on instance during update. Can be 'NONE', 'REPLACE', 'RESTART' and 'REFRESH'."
   type        = string # NONE | REPLACE | RESTART | REFRESH
-  default = "NONE"
+  default     = "NONE"
 }
 
 variable "most_disruptive_allowed_action" {
-  description = "Most disruptive action to perform on instance during update. Can be 'REPLACE (default), 'RESTART', 'REFRESH' or 'NONE'."
+  description = "Most disruptive action to perform on instance during update. Can be 'REPLACE, 'RESTART', 'REFRESH' or 'NONE'."
   type        = string # REPLACE | RESTART | REFRESH | NONE
-  default = "REPLACE"
+  default     = "REPLACE"
 }
 
 variable "named_ports" {
@@ -75,19 +75,17 @@ variable "regional" {
 variable "stateful_disk_mig" {
   description = "Stateful disk(s) config defined at the MIG level. Delete rule can be 'NEVER' or 'ON_PERMANENT_INSTANCE_DELETION'."
   type = map(object({
-    # device_name = string
-    delete_rule = string # NEVER (default) | ON_PERMANENT_INSTANCE_DELETION
+    delete_rule = string # NEVER | ON_PERMANENT_INSTANCE_DELETION
   }))
   default = null
 }
 
 variable "stateful_disk_instance" {
-  description = "Stateful disk(s) config defined at the instance config level. Mode can be 'READ_WRITE' (default) or 'READ_ONLY', delete rule can be 'NEVER' or 'ON_PERMANENT_INSTANCE_DELETION'."
+  description = "Stateful disk(s) config defined at the instance config level. Mode can be 'READ_WRITE' or 'READ_ONLY', delete rule can be 'NEVER' or 'ON_PERMANENT_INSTANCE_DELETION'."
   type = map(object({
-    #device_name = string
     source      = string
-    mode        = string # READ_WRITE (default) | READ_ONLY 
-    delete_rule = string # NEVER (default) | ON_PERMANENT_INSTANCE_DELETION
+    mode        = string # READ_WRITE | READ_ONLY 
+    delete_rule = string # NEVER | ON_PERMANENT_INSTANCE_DELETION
   }))
   default = null
 }

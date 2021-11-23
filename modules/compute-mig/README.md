@@ -274,6 +274,8 @@ Stateful MIGs have some limitations documented [here](https://cloud.google.com/c
 
 You can configure a disk defined in the instance template to be stateful  for all instances in the MIG by configuring in the MIG's stateful policy, using the `stateful_disk_mig` variable. Alternatively, you can also configure stateful persistent disks individually per instance of the MIG by setting the `stateful_disk_instance` variable. A discussion on these scenarios can be found in the [docs](https://cloud.google.com/compute/docs/instance-groups/configuring-stateful-disks-in-migs).
 
+Note that when referencing the stateful disk, you use `device_name` and not `disk_name`.
+
 
 ```hcl
 module "cos-nginx" {
@@ -297,10 +299,33 @@ module "nginx-template" {
     type  = "pd-ssd"
     size  = 10
   }
+  attached_disks = [{
+    name        = "repd-1"
+    size        = null
+    source_type = "attach"
+    source      = "regions/${var.region}/disks/repd-test-1"
+    options = {
+      mode         = "READ_ONLY"
+      replica_zone = "${var.region}-c"
+      type         = "PERSISTENT"
+    }
+  }]
   create_template  = true
   metadata = {
     user-data = module.cos-nginx.cloud_config
   }
+}
+
+resource "google_compute_disk" "default" {
+  name  = "existing-disk"
+  image = data.google_compute_image.default.self_link
+  size  = 10
+  type  = "pd-ssd"
+  zone  = "europe-west1-b"
+}
+data "google_compute_image" "default" {
+  family  = "debian-9"
+  project = "debian-cloud"
 }
 
 module "nginx-mig" {
@@ -321,8 +346,13 @@ module "nginx-mig" {
     load_balancing_utilization_target = null
     metric                            = null
   }
+  stateful_disk_mig = {
+  "persistent-disk-1" = {
+          delete_rule = "NEVER"
+      }
+  }
 }
-# tftest:modules=2:resources=3
+
 ```
 
 <!-- BEGIN TFDOC -->
@@ -337,8 +367,14 @@ module "nginx-mig" {
 | *auto_healing_policies* | Auto-healing policies for this group. | <code title="object&#40;&#123;&#10;health_check      &#61; string&#10;initial_delay_sec &#61; number&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 | *autoscaler_config* | Optional autoscaler configuration. Only one of 'cpu_utilization_target' 'load_balancing_utilization_target' or 'metric' can be not null. | <code title="object&#40;&#123;&#10;max_replicas                      &#61; number&#10;min_replicas                      &#61; number&#10;cooldown_period                   &#61; number&#10;cpu_utilization_target            &#61; number&#10;load_balancing_utilization_target &#61; number&#10;metric &#61; object&#40;&#123;&#10;name                       &#61; string&#10;single_instance_assignment &#61; number&#10;target                     &#61; number&#10;type &#61; string &#35; GAUGE, DELTA_PER_SECOND, DELTA_PER_MINUTE&#10;filter                     &#61; string&#10;&#125;&#41;&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 | *health_check_config* | Optional auto-created health check configuration, use the output self-link to set it in the auto healing policy. Refer to examples for usage. | <code title="object&#40;&#123;&#10;type &#61; string      &#35; http https tcp ssl http2&#10;check   &#61; map&#40;any&#41;    &#35; actual health check block attributes&#10;config  &#61; map&#40;number&#41; &#35; interval, thresholds, timeout&#10;logging &#61; bool&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
+| *minimal_action* | Minimal action to perform on instance during update. Can be 'NONE', 'REPLACE', 'RESTART' and 'REFRESH'. | <code title="">string</code> | | <code title="">null</code>|
+| *most_disruptive_allowed_action* | Most disruptive action to perform on instance during update. Can be 'REPLACE, 'RESTART', 'REFRESH' or 'NONE'. | <code title="">string</code> | | <code title="">null</code>|
 | *named_ports* | Named ports. | <code title="map&#40;number&#41;">map(number)</code> |  | <code title="">null</code> |
 | *regional* | Use regional instance group. When set, `location` should be set to the region. | <code title="">bool</code> |  | <code title="">false</code> |
+| *remove_instance_state_on_destroy* | When true will remove state immediately when config deleted. When false, state removed next time instance recreated or updated. | <code title="">bool</code> | | <code title="">false</code>|
+| *stateful_disk_mig* | Stateful disk(s) config defined at the MIG level. Map key becomes the 'name' field of the resource. Delete rule can be 'NEVER' or 'ON_PERMANENT_INSTANCE_DELETION'. | <code title="map&#40;object({...})&#41;">map(object({...}))</code> | | <code title="">null</code>|
+| *stateful_disk_instance* | Stateful disk(s) config defined at the instance config level. Map key becomes the 'name' field of the resource. Mode can be 'READ_WRITE' or 'READ_ONLY', delete rule can be 'NEVER' or 'ON_PERMANENT_INSTANCE_DELETION'. | <code title="map&#40;object({...})&#41;">map(object({...}))</code>  | | <code title="">null</code>|
+| *stateful_metadata_instance* | Stateful metadata defined at the instance config level. A value associated with a key 'instance_template' will tie this resource to the instance template lifecycle. |  <code title="map&#40;string&#41;">map(string)</code> | | <code title="">null</code>|
 | *target_pools* | Optional list of URLs for target pools to which new instances in the group are added. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 | *target_size* | Group target size, leave null when using an autoscaler. | <code title="">number</code> |  | <code title="">null</code> |
 | *update_policy* | Update policy. Type can be 'OPPORTUNISTIC' or 'PROACTIVE', action 'REPLACE' or 'restart', surge type 'fixed' or 'percent'. | <code title="object&#40;&#123;&#10;type &#61; string &#35; OPPORTUNISTIC &#124; PROACTIVE&#10;minimal_action       &#61; string &#35; REPLACE &#124; RESTART&#10;min_ready_sec        &#61; number&#10;max_surge_type       &#61; string &#35; fixed &#124; percent&#10;max_surge            &#61; number&#10;max_unavailable_type &#61; string&#10;max_unavailable      &#61; number&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
@@ -356,4 +392,4 @@ module "nginx-mig" {
 
 ## TODO
 
-- [ ] add support for instance groups
+- [✓] add support for instance groups
