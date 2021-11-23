@@ -1,3 +1,4 @@
+
 /**
  * Copyright 2021 Google LLC
  *
@@ -14,13 +15,6 @@
  * limitations under the License.
  */
 
-# pinning to avoid some weird issues we had with the following version
-
 terraform {
-  required_providers {
-    google = {
-      source  = "hashicorp/google"
-      version = "3.65.0"
-    }
-  }
+  required_version = ">= 0.12.6"
 }

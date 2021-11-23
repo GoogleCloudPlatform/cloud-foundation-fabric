@@ -106,7 +106,6 @@ module "vm_example" {
     subnetwork = module.vpc.subnet_self_links["${var.region}/subnet"],
     nat        = false,
     addresses  = null
-    alias_ips  = null
   }]
   attached_disks = [
     {
@@ -127,7 +126,7 @@ module "vm_example" {
   encryption = {
     encrypt_boot            = true
     disk_encryption_key_raw = null
-    kms_key_self_link       = module.kms.key_self_links.key-gce
+    kms_key_self_link       = module.kms.key_ids.key-gce
   }
 }
 
@@ -140,5 +139,5 @@ module "kms-gcs" {
   project_id     = module.project-service.project_id
   prefix         = "my-bucket-001"
   name           = "kms-gcs"
-  encryption_key = module.kms.keys.key-gcs.self_link
+  encryption_key = module.kms.keys.key-gcs.id
 }

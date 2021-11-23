@@ -162,8 +162,17 @@ variable "name" {
   type        = string
 }
 
+variable "network_interface_options" {
+  description = "Network interfaces extended options. The key is the index of the inteface to configure. The value is an object with alias_ips and nic_type. Set alias_ips or nic_type to null if you need only one of them."
+  type = map(object({
+    alias_ips = map(string)
+    nic_type  = string
+  }))
+  default = {}
+}
+
 variable "network_interfaces" {
-  description = "Network interfaces configuration. Use self links for Shared VPC, set addresses and alias_ips to null if not needed."
+  description = "Network interfaces configuration. Use self links for Shared VPC, set addresses to null if not needed."
   type = list(object({
     nat        = bool
     network    = string
@@ -172,7 +181,6 @@ variable "network_interfaces" {
       internal = string
       external = string
     })
-    alias_ips = map(string)
   }))
 }
 

@@ -72,7 +72,6 @@ module "instance-group" {
     subnetwork = var.subnet.self_link
     nat        = false
     addresses  = null
-    alias_ips  = null
   }]
   boot_disk = {
     image = "projects/cos-cloud/global/images/family/cos-stable"

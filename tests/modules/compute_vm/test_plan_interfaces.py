@@ -26,7 +26,6 @@ def test_address(plan_runner):
     subnetwork = "https://www.googleapis.com/compute/v1/projects/my-project/regions/europe-west1/subnetworks/default-default",
     nat        = false,
     addresses  = {external=null, internal="10.0.0.2"}
-    alias_ips  = null
   }]
   '''
   _, resources = plan_runner(FIXTURES_DIR, network_interfaces=nics)
@@ -42,7 +41,6 @@ def test_nat_address(plan_runner):
     subnetwork = "https://www.googleapis.com/compute/v1/projects/my-project/regions/europe-west1/subnetworks/default-default",
     nat        = true,
     addresses  = {external="8.8.8.8", internal=null}
-    alias_ips  = null
   }]
   '''
   _, resources = plan_runner(FIXTURES_DIR, network_interfaces=nics)

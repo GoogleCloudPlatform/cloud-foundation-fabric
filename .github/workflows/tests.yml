@@ -1,0 +1,115 @@
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: 'Tests'
+on:
+  schedule:
+    - cron:  '45 2 * * *'
+  pull_request:
+    branches:
+      - master
+    tags:
+      - ci
+      - test
+
+env:
+  PYTEST_ADDOPTS: "--color=yes"
+
+jobs:
+  tests-environment:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.0.9
+          terraform_wrapper: false
+
+      - name: Set environment
+        run: |
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.github/workflows/fake-key.json" >> $GITHUB_ENV
+
+      - name: Install dependencies
+        run: |
+          pip install -r tests/requirements.txt
+
+      - name: Run tests environments
+        id: test-environments
+        run: |
+          pytest -vv tests/cloud_operations tests/data_solutions tests/factories tests/foundations tests/networking
+
+  tests-examples:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.0.9
+          terraform_wrapper: false
+
+      - name: Set environment
+        run: |
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.github/workflows/fake-key.json" >> $GITHUB_ENV
+
+      - name: Install dependencies
+        run: |
+          pip install -r tests/requirements.txt
+
+      - name: Run tests examples
+        id: test-examples
+        run: |
+          pytest -vv tests/examples
+
+  tests-modules:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.0.9
+          terraform_wrapper: false
+
+      - name: Set environment
+        run: |
+          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.github/workflows/fake-key.json" >> $GITHUB_ENV
+
+      - name: Install dependencies
+        run: |
+          pip install -r tests/requirements.txt
+
+      - name: Run tests modules
+        id: test-modules
+        run: |
+          pytest -vv tests/modules

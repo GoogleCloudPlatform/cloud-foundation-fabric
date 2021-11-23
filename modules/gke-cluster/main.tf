@@ -59,8 +59,11 @@ resource "google_container_cluster" "cluster" {
 
   # TODO(ludomagno): compute addons map in locals and use a single dynamic block
   addons_config {
-    dns_cache_config {
-      enabled = var.addons.dns_cache_config
+    dynamic "dns_cache_config" {
+      for_each = var.enable_autopilot ? [] : [""]
+      content {
+        enabled = var.addons.dns_cache_config
+      }
     }
     http_load_balancing {
       disabled = !var.addons.http_load_balancing
@@ -247,7 +250,7 @@ resource "google_container_cluster" "cluster" {
   dynamic "workload_identity_config" {
     for_each = var.workload_identity && !var.enable_autopilot ? [""] : []
     content {
-      identity_namespace = "${var.project_id}.svc.id.goog"
+      workload_pool = "${var.project_id}.svc.id.goog"
     }
   }
 

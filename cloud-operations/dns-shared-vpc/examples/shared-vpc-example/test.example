@@ -27,7 +27,6 @@ module "vm1" {
     subnetwork = module.shared-vpc.subnet_self_links["${var.region}/subnet-01"]
     nat        = false
     addresses  = null
-    alias_ips  = null
   }]
   tags = ["test-dns"]
 }
@@ -42,7 +41,6 @@ module "vm2" {
     subnetwork = module.shared-vpc.subnet_self_links["${var.region}/subnet-01"]
     nat        = false
     addresses  = null
-    alias_ips  = null
   }]
   tags = ["test-dns"]
 }

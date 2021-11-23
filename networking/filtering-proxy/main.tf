@@ -158,7 +158,6 @@ module "squid-vm" {
     subnetwork = module.vpc.subnet_self_links["${var.region}/proxy"]
     nat        = false
     addresses  = null
-    alias_ips  = null
   }]
   boot_disk = {
     image = "cos-cloud/cos-stable"
@@ -270,7 +269,6 @@ module "test-vm" {
     subnetwork = module.vpc.subnet_self_links["${var.region}/apps"]
     nat        = false
     addresses  = null
-    alias_ips  = null
   }]
   boot_disk = {
     image = "debian-cloud/debian-10"
