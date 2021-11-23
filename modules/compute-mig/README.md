@@ -370,6 +370,7 @@ module "nginx-mig" {
 | *minimal_action* | Minimal action to perform on instance during update. Can be 'NONE', 'REPLACE', 'RESTART' and 'REFRESH'. | <code title="">string</code> | | <code title="">null</code>|
 | *most_disruptive_allowed_action* | Most disruptive action to perform on instance during update. Can be 'REPLACE, 'RESTART', 'REFRESH' or 'NONE'. | <code title="">string</code> | | <code title="">null</code>|
 | *named_ports* | Named ports. | <code title="map&#40;number&#41;">map(number)</code> |  | <code title="">null</code> |
+| *name_instance_config* | Instance config name. | <code title="">string</code> |  | <code title="">" "</code> |
 | *regional* | Use regional instance group. When set, `location` should be set to the region. | <code title="">bool</code> |  | <code title="">false</code> |
 | *remove_instance_state_on_destroy* | When true will remove state immediately when config deleted. When false, state removed next time instance recreated or updated. | <code title="">bool</code> | | <code title="">false</code>|
 | *stateful_disk_mig* | Stateful disk(s) config defined at the MIG level. Map key becomes the 'name' field of the resource. Delete rule can be 'NEVER' or 'ON_PERMANENT_INSTANCE_DELETION'. | <code title="map&#40;object({...})&#41;">map(object({...}))</code> | | <code title="">null</code>|

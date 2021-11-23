@@ -154,6 +154,7 @@ locals {
 resource "google_compute_per_instance_config" "default" {
   count = var.stateful_disk_instance == null ? 0 : 1
   zone  = var.location
+  # terraform error, solved with locals
   #instance_group_manager           = var.regional ? google_compute_region_instance_group_manager.default : google_compute_instance_group_manager.default
   instance_group_manager           = local.instance_group_manager[0].id
   name                             = var.name_instance_config
