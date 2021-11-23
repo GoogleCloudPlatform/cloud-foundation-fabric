@@ -316,18 +316,6 @@ module "nginx-template" {
   }
 }
 
-resource "google_compute_disk" "default" {
-  name  = "existing-disk"
-  image = data.google_compute_image.default.self_link
-  size  = 10
-  type  = "pd-ssd"
-  zone  = "europe-west1-b"
-}
-data "google_compute_image" "default" {
-  family  = "debian-9"
-  project = "debian-cloud"
-}
-
 module "nginx-mig" {
   source = "./modules/compute-mig"
   project_id = "my-project"

@@ -124,4 +124,3 @@ def test_stateful_instance(plan_runner):
   assert instanceconfig['values']['minimal_action'] == 'NONE'
   assert instanceconfig['values']['most_disruptive_allowed_action'] == 'REPLACE'
   assert instanceconfig['values']['remove_instance_state_on_destroy'] == False
-  
