@@ -43,7 +43,7 @@ locals {
       filter           = var.audit_filter
       iam              = true
       include_children = true
-      exclusions = {}
+      exclusions       = {}
     }
   }
   root_node_type = split("/", var.root_node)[0]
