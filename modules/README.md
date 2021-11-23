@@ -68,3 +68,4 @@ Specific modules also offer support for non-authoritative bindings (e.g. `google
 ## Serverless
 
 - [Cloud Functions](./cloud-function)
+- [Cloud Run](./cloud-run)

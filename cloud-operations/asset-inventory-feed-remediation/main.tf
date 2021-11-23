@@ -90,6 +90,7 @@ module "cf" {
   bundle_config = {
     source_dir  = "cf"
     output_path = var.bundle_path
+    excludes    = null
   }
   service_account = module.service-account.email
   trigger_config = {
@@ -109,7 +110,6 @@ module "simple-vm-example" {
     subnetwork = try(module.vpc.subnet_self_links["${var.region}/${var.name}-default"], "")
     nat        = false
     addresses  = null
-    alias_ips  = null
   }]
   tags = ["${var.project_id}-test-feed", "shared-test-feed"]
 }

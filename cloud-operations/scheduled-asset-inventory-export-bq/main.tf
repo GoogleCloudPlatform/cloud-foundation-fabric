@@ -82,6 +82,7 @@ module "cf" {
   bundle_config = {
     source_dir  = "cf"
     output_path = var.bundle_path
+    excludes    = null
   }
   service_account = module.service-account.email
   trigger_config = {

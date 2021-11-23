@@ -114,6 +114,9 @@ resource "google_storage_notification" "notification" {
   topic             = google_pubsub_topic.topic[0].id
   event_types       = var.notification_config.event_types
   custom_attributes = var.notification_config.custom_attributes
+
+  depends_on = [google_pubsub_topic_iam_binding.binding]
+
 }
 resource "google_pubsub_topic_iam_binding" "binding" {
   count   = local.notification ? 1 : 0

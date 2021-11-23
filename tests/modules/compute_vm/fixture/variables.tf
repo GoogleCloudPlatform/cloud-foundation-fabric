@@ -78,15 +78,21 @@ variable "network_interfaces" {
       internal = string
       external = string
     })
-    alias_ips = map(string)
   }))
   default = [{
     network    = "https://www.googleapis.com/compute/v1/projects/my-project/global/networks/default",
     subnetwork = "https://www.googleapis.com/compute/v1/projects/my-project/regions/europe-west1/subnetworks/default-default",
     nat        = false,
     addresses  = null
-    alias_ips  = null
   }]
+}
+
+variable "network_interface_options" {
+  type = map(object({
+    alias_ips = map(string)
+    nic_type  = string
+  }))
+  default = {}
 }
 
 variable "service_account_create" {

@@ -182,7 +182,6 @@ module "vm-hub" {
     subnetwork = module.vpc-hub.subnet_self_links["${var.region}/${local.prefix}hub-1"]
     nat        = false
     addresses  = null
-    alias_ips  = null
   }]
   metadata               = { startup-script = local.vm-startup-script }
   service_account        = module.service-account-gce.email
@@ -200,7 +199,6 @@ module "vm-spoke-1" {
     subnetwork = module.vpc-spoke-1.subnet_self_links["${var.region}/${local.prefix}spoke-1-1"]
     nat        = false
     addresses  = null
-    alias_ips  = null
   }]
   metadata               = { startup-script = local.vm-startup-script }
   service_account        = module.service-account-gce.email
@@ -218,7 +216,6 @@ module "vm-spoke-2" {
     subnetwork = module.vpc-spoke-2.subnet_self_links["${var.region}/${local.prefix}spoke-2-1"]
     nat        = false
     addresses  = null
-    alias_ips  = null
   }]
   metadata               = { startup-script = local.vm-startup-script }
   service_account        = module.service-account-gce.email
