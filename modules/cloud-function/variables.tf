@@ -131,15 +131,22 @@ variable "trigger_config" {
   default = null
 }
 
-variable "vpc_connector_config" {
-  description = "VPC connector configuration. Set `create_config` attributes to trigger creation."
+variable "vpc_connector" {
+  description = "VPC connector configuration. Set create to 'true' if a new connector needs to be created"
   type = object({
-    egress_settings = string
+    create          = bool
     name            = string
-    create_config = object({
-      ip_cidr_range = string
-      network       = string
-    })
+    egress_settings = string
   })
   default = null
 }
+
+variable "vpc_connector_config" {
+  description = "VPC connector network configuration. Must be provided if new VPC connector is being created"
+  type = object({
+    ip_cidr_range = string
+    network       = string
+  })
+  default = null
+}
+

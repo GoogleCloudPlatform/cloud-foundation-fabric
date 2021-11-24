@@ -35,25 +35,24 @@ locals {
     : var.service_account
   )
   vpc_connector = (
-    var.vpc_connector_config == null
+    var.vpc_connector == null
     ? null
     : (
-      var.vpc_connector_config.create_config == null
-      ? var.vpc_connector_config.name
+      try(var.vpc_connector.create, false) == false
+      ? var.vpc_connector.name
       : google_vpc_access_connector.connector.0.id
     )
   )
 }
 
 resource "google_vpc_access_connector" "connector" {
-  count         = try(var.vpc_connector_config.create_config, null) != null ? 1 : 0
+  count         = try(var.vpc_connector.create, false) == false ? 0 : 1
   project       = var.project_id
-  name          = var.vpc_connector_config.name
+  name          = var.vpc_connector.name
   region        = var.region
-  ip_cidr_range = var.vpc_connector_config.create_config.ip_cidr_range
-  network       = var.vpc_connector_config.create_config.network
+  ip_cidr_range = var.vpc_connector_config.ip_cidr_range
+  network       = var.vpc_connector_config.network
 }
-
 
 resource "google_cloudfunctions_function" "function" {
   project               = var.project_id
@@ -75,7 +74,7 @@ resource "google_cloudfunctions_function" "function" {
 
   vpc_connector = local.vpc_connector
   vpc_connector_egress_settings = try(
-    var.vpc_connector_config.egress_settings, null
+    var.vpc_connector.egress_settings, null
   )
 
   dynamic "event_trigger" {
