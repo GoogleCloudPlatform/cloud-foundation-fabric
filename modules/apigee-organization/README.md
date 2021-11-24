@@ -118,6 +118,7 @@ module "apigee-organization" {
 
 | name | description | sensitive |
 |---|---|:---:|
+| envs | Apigee Environments. |  |
 | org | Apigee Organization. |  |
 | org_ca_certificate | Apigee organization CA certificate. |  |
 | org_id | Apigee Organization ID. |  |
