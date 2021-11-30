@@ -279,7 +279,7 @@ resource "google_container_cluster" "cluster" {
   }
 
   dynamic "notification_config" {
-    for_each = var.notification_config != null ? [""] : []
+    for_each = var.notification_config ? [""] : []
     content {
       pubsub {
         enabled = var.notification_config

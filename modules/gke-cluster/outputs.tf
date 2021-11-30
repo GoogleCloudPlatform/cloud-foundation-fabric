@@ -48,5 +48,5 @@ output "name" {
 
 output "notifications" {
   description = "GKE PubSub notifications topic."
-  value       = google_pubsub_topic.notifications.id
+  value       = var.notification_config ? google_pubsub_topic.notifications[0].id : null
 }
