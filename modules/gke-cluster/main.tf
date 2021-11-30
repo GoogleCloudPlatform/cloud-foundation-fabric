@@ -279,7 +279,6 @@ resource "google_container_cluster" "cluster" {
   }
 
   dynamic "notification_config" {
-
     for_each = var.notification_config != null ? [""] : []
     content {
       pubsub {
@@ -288,7 +287,6 @@ resource "google_container_cluster" "cluster" {
       }
     }
   }
-
 }
 
 resource "google_compute_network_peering_routes_config" "gke_master" {
