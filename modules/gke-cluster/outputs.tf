@@ -45,3 +45,8 @@ output "name" {
   description = "Cluster name."
   value       = google_container_cluster.cluster.name
 }
+
+output "notifications" {
+  description = "GKE PubSub notifications topic."
+  value       = google_pubsub_topic.notifications.id
+}

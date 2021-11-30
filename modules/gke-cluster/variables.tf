@@ -236,7 +236,10 @@ variable "node_locations" {
   type        = list(string)
   default     = []
 }
-
+variable "notification_config" {
+  description = "GKE Cluster upgrade notifications via PubSub."
+  type        = bool
+}
 variable "peering_config" {
   description = "Configure peering with the master VPC for private clusters."
   type = object({
