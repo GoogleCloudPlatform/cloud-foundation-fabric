@@ -71,6 +71,7 @@ module "cluster-1" {
 | location | Cluster zone or region. | <code title="">string</code> | ✓ |  |
 | name | Cluster name. | <code title="">string</code> | ✓ |  |
 | network | Name or self link of the VPC used for the cluster. Use the self link for Shared VPC. | <code title="">string</code> | ✓ |  |
+| notification_config | GKE Cluster upgrade notifications via PubSub. | <code title="">bool</code> | ✓ |  |
 | project_id | Cluster project id. | <code title="">string</code> | ✓ |  |
 | secondary_range_pods | Subnet secondary range name used for pods. | <code title="">string</code> | ✓ |  |
 | secondary_range_services | Subnet secondary range name used for services. | <code title="">string</code> | ✓ |  |
@@ -116,4 +117,5 @@ module "cluster-1" {
 | location | Cluster location. |  |
 | master_version | Master version. |  |
 | name | Cluster name. |  |
+| notifications | GKE PubSub notifications topic. |  |
 <!-- END TFDOC -->
