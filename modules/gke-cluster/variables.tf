@@ -239,6 +239,7 @@ variable "node_locations" {
 variable "notification_config" {
   description = "GKE Cluster upgrade notifications via PubSub."
   type        = bool
+  default     = false
 }
 variable "peering_config" {
   description = "Configure peering with the master VPC for private clusters."
