@@ -297,6 +297,11 @@ resource "google_logging_organization_sink" "sink" {
       filter = exclusion.value
     }
   }
+  depends_on = [
+    google_organization_iam_binding.authoritative,
+    google_organization_iam_member.additive,
+    google_organization_iam_policy.authoritative,
+  ]
 }
 
 resource "google_storage_bucket_iam_member" "gcs-sinks-binding" {
