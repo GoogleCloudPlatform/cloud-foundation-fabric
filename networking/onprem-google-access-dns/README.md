@@ -1,6 +1,6 @@
 # On-prem DNS and Google Private Access
 
-This example leverages the [on prem in a box](../../modules/on-prem-in-a-box) module to bootstrap an emulated on-premises environment on GCP, then connects it via VPN and sets up BGP and DNS so that several specific features can be tested:
+This example leverages the [on prem in a box](../../modules/cloud-config-container/onprem) module to bootstrap an emulated on-premises environment on GCP, then connects it via VPN and sets up BGP and DNS so that several specific features can be tested:
 
 - [Cloud DNS forwarding zone](https://cloud.google.com/dns/docs/overview#fz-targets) to on-prem
 - DNS forwarding from on-prem via a [Cloud DNS inbound policy](https://cloud.google.com/dns/docs/policies#create-in)
