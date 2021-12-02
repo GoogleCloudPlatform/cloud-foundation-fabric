@@ -176,7 +176,8 @@ module "cf-http" {
 | *service_account* | Service account email. Unused if service account is auto-created. | <code title="">string</code> |  | <code title="">null</code> |
 | *service_account_create* | Auto-create service account. | <code title="">bool</code> |  | <code title="">false</code> |
 | *trigger_config* | Function trigger configuration. Leave null for HTTP trigger. | <code title="object&#40;&#123;&#10;event    &#61; string&#10;resource &#61; string&#10;retry    &#61; bool&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
-| *vpc_connector_config* | VPC connector configuration. Set `create_config` attributes to trigger creation. | <code title="object&#40;&#123;&#10;egress_settings &#61; string&#10;name            &#61; string&#10;create_config &#61; object&#40;&#123;&#10;ip_cidr_range &#61; string&#10;network       &#61; string&#10;&#125;&#41;&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
+| *vpc_connector* | VPC connector configuration. Set create to 'true' if a new connector needs to be created | <code title="object&#40;&#123;&#10;create          &#61; bool&#10;name            &#61; string&#10;egress_settings &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
+| *vpc_connector_config* | VPC connector network configuration. Must be provided if new VPC connector is being created | <code title="object&#40;&#123;&#10;ip_cidr_range &#61; string&#10;network       &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 
 ## Outputs
 

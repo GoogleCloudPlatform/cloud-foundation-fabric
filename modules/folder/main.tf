@@ -213,6 +213,10 @@ resource "google_logging_folder_sink" "sink" {
       filter = exclusion.value
     }
   }
+
+  depends_on = [
+    google_folder_iam_binding.authoritative
+  ]
 }
 
 resource "google_storage_bucket_iam_member" "gcs-sinks-binding" {

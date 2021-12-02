@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+output "envs" {
+  description = "Apigee Environments."
+  value       = google_apigee_environment.apigee_env
+}
+
 output "org" {
   description = "Apigee Organization."
   value       = google_apigee_organization.apigee_org
