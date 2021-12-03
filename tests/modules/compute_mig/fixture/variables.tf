@@ -50,18 +50,6 @@ variable "health_check_config" {
   default = null
 }
 
-variable "minimal_action" {
-  description = "Minimal action to perform on instance during update. Can be 'NONE', 'REPLACE', 'RESTART' and 'REFRESH'."
-  type        = string # NONE | REPLACE | RESTART | REFRESH
-  default     = "NONE"
-}
-
-variable "most_disruptive_allowed_action" {
-  description = "Most disruptive action to perform on instance during update. Can be 'REPLACE, 'RESTART', 'REFRESH' or 'NONE'."
-  type        = string # REPLACE | RESTART | REFRESH | NONE
-  default     = "REPLACE"
-}
-
 variable "named_ports" {
   type    = map(number)
   default = null
@@ -72,28 +60,35 @@ variable "regional" {
   default = false
 }
 
-variable "stateful_disk_mig" {
-  description = "Stateful disk(s) config defined at the MIG level. Delete rule can be 'NEVER' or 'ON_PERMANENT_INSTANCE_DELETION'."
-  type = map(object({
-    delete_rule = string # NEVER | ON_PERMANENT_INSTANCE_DELETION
-  }))
-  default = null
-}
+variable "stateful_config" {
+  description = "Stateful configuration can be done by individual instances or for all instances in the MIG. They key in per_instance_config is the name of the specific instance. The key of the stateful_disks is the 'device_name' field of the resource. Please note that device_name is defined at the OS mount level, unlike the disk name."
+  type = object({
+    per_instance_config = map(object({
+      #name is the key
+      #name = string
+      stateful_disks = map(object({
+        #device_name is the key
+        source      = string
+        mode        = string # READ_WRITE | READ_ONLY 
+        delete_rule = string # NEVER | ON_PERMANENT_INSTANCE_DELETION
+      }))
+      metadata = map(string)
+      update_config = object({
+        minimal_action                   = string # NONE | REPLACE | RESTART | REFRESH
+        most_disruptive_allowed_action   = string # REPLACE | RESTART | REFRESH | NONE
+        remove_instance_state_on_destroy = bool
+      })
+    }))
 
-variable "stateful_disk_instance" {
-  description = "Stateful disk(s) config defined at the instance config level. Mode can be 'READ_WRITE' or 'READ_ONLY', delete rule can be 'NEVER' or 'ON_PERMANENT_INSTANCE_DELETION'."
-  type = map(object({
-    source      = string
-    mode        = string # READ_WRITE | READ_ONLY 
-    delete_rule = string # NEVER | ON_PERMANENT_INSTANCE_DELETION
-  }))
-  default = null
-}
+    mig_config = object({
+      stateful_disks = map(object({
+        #device_name is the key
+        delete_rule = string # NEVER | ON_PERMANENT_INSTANCE_DELETION
+      }))
+    })
 
-variable "stateful_metadata_instance" {
-  description = "Stateful metadata defined at the instance config level. A value associated with a key 'instance_template' will tie this resource to the instance template lifecycle. "
-  type        = map(string)
-  default     = {}
+  })
+  default = null
 }
 
 variable "update_policy" {

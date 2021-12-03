@@ -33,13 +33,11 @@ module "test" {
     instance_template = "foo-template"
     name              = "foo"
   }
-  autoscaler_config          = var.autoscaler_config
-  health_check_config        = var.health_check_config
-  named_ports                = var.named_ports
-  regional                   = var.regional
-  stateful_disk_mig          = var.stateful_disk_mig
-  stateful_disk_instance     = var.stateful_disk_instance
-  stateful_metadata_instance = var.stateful_metadata_instance
+  autoscaler_config   = var.autoscaler_config
+  health_check_config = var.health_check_config
+  named_ports         = var.named_ports
+  regional            = var.regional
+  stateful_config     = var.stateful_config
 
   update_policy = var.update_policy
   versions      = var.versions

@@ -79,11 +79,18 @@ def test_autoscaler(plan_runner):
 def test_stateful_mig(plan_runner):
   "Test stateful instances - mig."
 
-  stateful_disk_mig = (
-      '{ persistent-disk-1 = {delete_rule="NEVER"}}'
+  stateful_config = (
+    '{'
+      'per_instance_config = {},'
+      'mig_config = {'
+        'stateful_disks = {'
+          'persistent-disk-1 = {delete_rule="NEVER"}'
+        '}' 
+      '}'
+    '}'
   )
   _, resources = plan_runner(
-      FIXTURES_DIR, stateful_disk_mig=stateful_disk_mig)
+      FIXTURES_DIR, stateful_config=stateful_config)
   assert len(resources) == 1
   statefuldisk = resources[0]
   assert statefuldisk['type'] == 'google_compute_instance_group_manager'
@@ -94,15 +101,37 @@ def test_stateful_mig(plan_runner):
   
 def test_stateful_instance(plan_runner):
   "Test stateful instances - instance."
-  metadata = (
-      '{foo = "bar"}'
-  )
-
-  stateful_disk_instance = (
-      '{ persistent-disk-1 = {source = "test-disk", mode = "READ_ONLY", delete_rule = "NEVER"}}'
+  stateful_config = (
+    '{'
+      'per_instance_config = {'
+        'instance-1 = {'
+          'stateful_disks = {'
+            'persistent-disk-1 = {'
+              'source = "test-disk",' 
+              'mode = "READ_ONLY",'
+              'delete_rule= "NEVER",'
+            '},'
+          '},'
+          'metadata = {'
+            'foo = "bar"'
+          '},'
+          'update_config = {'
+            'minimal_action                   = "NONE",'
+            'most_disruptive_allowed_action   = "REPLACE",'
+            'remove_instance_state_on_destroy = false,'
+            
+          '},'
+        '},'
+      '},'
+      'mig_config = {'
+        'stateful_disks = {'
+          'persistent-disk-1 = {delete_rule="NEVER"}'
+        '}' 
+      '}'
+    '}'
   )
   _, resources = plan_runner(
-      FIXTURES_DIR, stateful_disk_instance=stateful_disk_instance, stateful_metadata_instance=metadata)
+      FIXTURES_DIR, stateful_config=stateful_config)
   assert len(resources) == 2
   instanceconfig = resources[0]
   assert instanceconfig['type'] == 'google_compute_instance_group_manager'
