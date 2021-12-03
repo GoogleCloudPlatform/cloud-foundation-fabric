@@ -84,6 +84,14 @@ resource "google_compute_instance_group_manager" "default" {
       initial_delay_sec = config.value.initial_delay_sec
     }
   }
+  dynamic "stateful_disk" {
+    for_each = try(var.stateful_config.mig_config.stateful_disks, tomap({}))
+    iterator = config
+    content {
+      device_name = config.key
+      delete_rule = config.value.delete_rule
+    }
+  }
   dynamic "update_policy" {
     for_each = var.update_policy == null ? [] : [var.update_policy]
     iterator = config
@@ -135,6 +143,43 @@ resource "google_compute_instance_group_manager" "default" {
   }
 }
 
+locals {
+  instance_group_manager = (
+    var.regional ?
+    google_compute_region_instance_group_manager.default :
+    google_compute_instance_group_manager.default
+  )
+}
+
+resource "google_compute_per_instance_config" "default" {
+  for_each = try(var.stateful_config.per_instance_config, tomap({}))
+  #for_each = var.stateful_config && var.stateful_config.per_instance_config == null ? {} : length(var.stateful_config.per_instance_config)
+  zone = var.location
+  # terraform error, solved with locals
+  #instance_group_manager           = var.regional ? google_compute_region_instance_group_manager.default : google_compute_instance_group_manager.default
+  instance_group_manager           = local.instance_group_manager[0].id
+  name                             = each.key
+  project                          = var.project_id
+  minimal_action                   = each.value.update_config.minimal_action
+  most_disruptive_allowed_action   = each.value.update_config.most_disruptive_allowed_action
+  remove_instance_state_on_destroy = each.value.update_config.remove_instance_state_on_destroy
+  preserved_state {
+
+    metadata = each.value.metadata
+
+    dynamic "disk" {
+      for_each = try(each.value.stateful_disks, tomap({}))
+      #for_each = var.stateful_config.mig_config.stateful_disks == null ? {} : var.stateful_config.mig_config.stateful_disks
+      iterator = config
+      content {
+        device_name = config.key
+        source      = config.value.source
+        mode        = config.value.mode
+        delete_rule = config.value.delete_rule
+      }
+    }
+  }
+}
 
 resource "google_compute_region_autoscaler" "default" {
   provider    = google-beta
@@ -206,6 +251,15 @@ resource "google_compute_region_instance_group_manager" "default" {
       initial_delay_sec = config.value.initial_delay_sec
     }
   }
+  dynamic "stateful_disk" {
+    for_each = try(var.stateful_config.mig_config.stateful_disks, tomap({}))
+    iterator = config
+    content {
+      device_name = config.key
+      delete_rule = config.value.delete_rule
+    }
+  }
+
   dynamic "update_policy" {
     for_each = var.update_policy == null ? [] : [var.update_policy]
     iterator = config
