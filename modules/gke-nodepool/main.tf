@@ -54,15 +54,17 @@ locals {
   # The taint is added to match the one that
   # GKE implicitly adds when Windows node pools are created.
   win_node_pools_taint = (
-    length(regexall("WINDOWS", var.node_image_type)) > 0
-    ? [
-      {
-        "key"    = "node.kubernetes.io/os"
-        "value"  = "windows"
-        "effect" = local.node_taint_effect.NoSchedule
-      }
-    ]
-    : []
+    var.node_image_type == null
+    ? []
+    : length(regexall("WINDOWS", var.node_image_type)) > 0
+      ? [
+        {
+          "key"    = "node.kubernetes.io/os"
+          "value"  = "windows"
+          "effect" = local.node_taint_effect.NoSchedule
+        }
+      ]
+      : []
   )
   node_taints = concat(local.temp_node_pools_taints, local.win_node_pools_taint)
 }
