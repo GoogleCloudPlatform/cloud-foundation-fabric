@@ -19,10 +19,12 @@ output "subnet" {
   value = {
     for k, v in google_compute_subnetwork.default :
     k => {
-      network = v.network
-      project = v.project
-      range   = v.ip_cidr_range
-      region  = v.region
+      id        = v.id
+      network   = v.network
+      project   = v.project
+      range     = v.ip_cidr_range
+      region    = v.region
+      self_link = v.self_link
     }
   }
 }
