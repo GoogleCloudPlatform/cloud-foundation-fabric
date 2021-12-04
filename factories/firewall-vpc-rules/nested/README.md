@@ -12,7 +12,7 @@ This module also allows for the definition of template variables, allowing to ce
 
 ```hcl
 module "vpc-firewall" {
-  source           = "../../cloud-foundation-fabric/modules/resource-factories/vpc-firewall"
+  source           = "./factories/firewall-vpc-rules/nested"
   config_folder    = "firewall/vpc"
   templates_folder = "firewall/templates"
 }
