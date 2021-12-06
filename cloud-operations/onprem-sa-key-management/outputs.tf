@@ -16,10 +16,10 @@
 
 output "data-uploader-credentials" {
   description = "Data Uploader SA json key templates."
-  value = module.onprem-data-uploader.service_account_credentials
+  value       = module.onprem-data-uploader.service_account_credentials
 }
 
 output "prisma-security-credentials" {
   description = "Prisma Security SA json key templates."
-  value = module.onprem-prisma-security.service_account_credentials
+  value       = module.onprem-prisma-security.service_account_credentials
 }
