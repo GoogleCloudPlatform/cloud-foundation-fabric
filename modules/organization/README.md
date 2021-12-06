@@ -115,6 +115,7 @@ module "org" {
       filter           = "severity=WARNING"
       iam              = false
       include_children = true
+      bigquery_options = null
       exclusions       = {}
     }
     info = {
@@ -123,6 +124,9 @@ module "org" {
       filter           = "severity=INFO"
       iam              = false
       include_children = true
+      bigquery_options = {
+        use_partitioned_tables = true
+      }
       exclusions       = {}
     }
     notice = {
@@ -131,6 +135,7 @@ module "org" {
       filter           = "severity=NOTICE"
       iam              = true
       include_children = true
+      bigquery_options = null
       exclusions       = {}
     }
     debug = {
@@ -139,6 +144,7 @@ module "org" {
       filter           = "severity=DEBUG"
       iam              = true
       include_children = false
+      bigquery_options = null
       exclusions = {
         no-compute = "logName:compute"
       }

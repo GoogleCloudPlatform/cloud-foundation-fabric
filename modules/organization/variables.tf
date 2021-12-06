@@ -116,6 +116,9 @@ variable "logging_sinks" {
     filter           = string
     iam              = bool
     include_children = bool
+    bigquery_options = object({
+      use_partitioned_tables = bool
+    })    
     # TODO exclusions also support description and disabled
     exclusions = map(string)
   }))

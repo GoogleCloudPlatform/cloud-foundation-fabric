@@ -30,6 +30,7 @@ def test_sinks(plan_runner):
       filter           = "severity=WARNING"
       iam              = true
       include_children = true
+      bigquery_options = null
       exclusions       = {}
     }
     info = {
@@ -38,6 +39,9 @@ def test_sinks(plan_runner):
       filter           = "severity=INFO"
       iam              = true
       include_children = true
+      bigquery_options = {
+        use_partitioned_tables = true
+      }
       exclusions       = {}
    }
     notice = {
@@ -46,6 +50,7 @@ def test_sinks(plan_runner):
       filter           = "severity=NOTICE"
       iam              = true
       include_children = false
+      bigquery_options = null
       exclusions       = {}
     }
     debug = {
@@ -54,6 +59,7 @@ def test_sinks(plan_runner):
       filter           = "severity=DEBUG"
       iam              = true
       include_children = false
+      bigquery_options = null
       exclusions    = {
         no-compute   = "logName:compute"
         no-container = "logName:container"

@@ -289,6 +289,13 @@ resource "google_logging_organization_sink" "sink" {
   filter           = each.value.filter
   include_children = each.value.include_children
 
+  dynamic "bigquery_options" {
+    for_each = each.value.bigquery_options != null ? [""] : []
+    content {
+      use_partitioned_tables = each.value.bigquery_options.use_partitioned_tables
+    }
+  }
+
   dynamic "exclusions" {
     for_each = each.value.exclusions
     iterator = exclusion
