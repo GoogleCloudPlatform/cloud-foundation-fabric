@@ -84,6 +84,12 @@ variable "project_id" {
   type        = string
 }
 
+variable "public_keys_directory" {
+  description = "Path to public keys data files to upload to the service account (should have `.pem` extension)."
+  type        = string
+  default     = ""
+}
+
 variable "service_account_create" {
   description = "Create service account. When set to false, uses a data source to reference an existing service account."
   type        = bool
