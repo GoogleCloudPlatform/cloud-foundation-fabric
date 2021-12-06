@@ -64,10 +64,11 @@ locals {
       : []
     )
   }
-  subnets = {
+  subnets = merge({
     for subnet in var.subnets :
     "${subnet.region}/${subnet.name}" => subnet
-  }
+  }, local.subnet_data)
+
   subnets_l7ilb = {
     for subnet in var.subnets_l7ilb :
     "${subnet.region}/${subnet.name}" => subnet
@@ -77,6 +78,52 @@ locals {
     ? try(google_compute_network.network.0, null)
     : try(data.google_compute_network.network.0, null)
   )
+
+  # subnet_data = var.data_folder == null ? {} : {
+  #   for k, v in local._subnet_data : k => merge(v,
+  #     {
+  #       network_users : concat(
+  #         formatlist("group:%s", try(v.iam_groups, [])),
+  #         formatlist("user:%s", try(v.iam_users, [])),
+  #         formatlist("serviceAccount:%s", try(v.iam_service_accounts, []))
+  #       )
+  #     }
+  #   )
+  # }
+
+  _subnet_data = var.data_folder == null ? {} : {
+    for f in fileset(var.data_folder, "**/*.yaml") :
+    trimsuffix(basename(f), ".yaml") => merge(
+      yamldecode(file("${var.data_folder}/${f}")),
+      {
+        project_id = var.project_id
+        network    = local.network.name
+      }
+    )
+  }
+
+
+  subnet_data = var.data_folder == null ? {} : {
+    for k, v in local._subnet_data : "${v.region}/${k}" => {
+      ip_cidr_range      = v.ip_cidr_range
+      name               = k
+      region             = v.region
+      secondary_ip_range = v.secondary_ip_range
+    }
+  }
+
+  subnet_data_descriptions = {
+    for k, v in local._subnet_data : "${v.region}/${k}" => try(v.description, null)
+  }
+
+  subnet_descriptions = merge(var.subnet_descriptions, local.subnet_data_descriptions)
+
+  subnet_data_private_access = {
+    for k, v in local._subnet_data : "${v.region}/${k}" => try(v.private_ip_google_access, true)
+  }
+
+  subnet_private_access = merge(var.subnet_private_access, local.subnet_data_private_access)
+
 }
 
 data "google_compute_network" "network" {
@@ -146,12 +193,12 @@ resource "google_compute_subnetwork" "subnetwork" {
     { range_name = name, ip_cidr_range = range }
   ]
   description = lookup(
-    var.subnet_descriptions,
+    local.subnet_descriptions,
     "${each.value.region}/${each.value.name}",
     "Terraform-managed."
   )
   private_ip_google_access = lookup(
-    var.subnet_private_access, "${each.value.region}/${each.value.name}", true
+    local.subnet_private_access, "${each.value.region}/${each.value.name}", true
   )
   dynamic "log_config" {
     for_each = local.subnet_log_configs["${each.value.region}/${each.value.name}"]
@@ -177,7 +224,7 @@ resource "google_compute_subnetwork" "l7ilb" {
     each.value.active || each.value.active == null ? "ACTIVE" : "BACKUP"
   )
   description = lookup(
-    var.subnet_descriptions,
+    local.subnet_descriptions,
     "${each.value.region}/${each.value.name}",
     "Terraform-managed."
   )
