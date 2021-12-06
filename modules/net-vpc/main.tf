@@ -15,17 +15,6 @@
  */
 
 locals {
-  iam_members = var.iam == null ? {} : var.iam
-  subnet_iam_members = flatten([
-    for subnet, roles in local.iam_members : [
-      for role, members in roles : {
-        subnet  = subnet
-        role    = role
-        members = members
-      }
-    ]
-  ])
-
   log_configs = var.log_configs == null ? {} : var.log_configs
   peer_network = (
     var.peering_config == null
@@ -98,18 +87,40 @@ locals {
       secondary_ip_range = v.secondary_ip_range
     }
   }
-
   subnet_data_descriptions = {
     for k, v in local._subnet_data : "${v.region}/${k}" => try(v.description, null)
   }
-
   subnet_descriptions = merge(var.subnet_descriptions, local.subnet_data_descriptions)
 
   subnet_data_private_access = {
     for k, v in local._subnet_data : "${v.region}/${k}" => try(v.private_ip_google_access, true)
   }
-
   subnet_private_access = merge(var.subnet_private_access, local.subnet_data_private_access)
+
+  iam_members = var.iam == null ? {} : var.iam
+  subnet_data_iam_members = [
+    for k, v in local._subnet_data : {
+      subnet = "${v.region}/${k}"
+      role   = "roles/compute.networkUser"
+      members = concat(
+        formatlist("group:%s", try(v.iam_groups, [])),
+        formatlist("user:%s", try(v.iam_users, [])),
+        formatlist("serviceAccount:%s", try(v.iam_service_accounts, []))
+      )
+    }
+  ]
+  subnet_iam_members = concat(local.subnet_data_iam_members, flatten([
+    for subnet, roles in local.iam_members : [
+      for role, members in roles : {
+        subnet  = subnet
+        role    = role
+        members = members
+      }
+    ]
+  ]))
+
+
+
 
 }
 
