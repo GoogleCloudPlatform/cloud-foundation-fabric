@@ -120,7 +120,7 @@ variable "logging_sinks" {
       use_partitioned_tables = bool
     })    
     # TODO exclusions also support description and disabled
-    exclusions = map(string)
+    exclusions       = map(string)
   }))
   default = {}
 }
