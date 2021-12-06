@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+- **incompatible change** Add support for partitioned tables on Organization sinks 
 - new `cloud-run` module
 - added gVNIC support to `compute-vm` module
 
