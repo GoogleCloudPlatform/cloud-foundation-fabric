@@ -79,18 +79,6 @@ locals {
     : try(data.google_compute_network.network.0, null)
   )
 
-  # subnet_data = var.data_folder == null ? {} : {
-  #   for k, v in local._subnet_data : k => merge(v,
-  #     {
-  #       network_users : concat(
-  #         formatlist("group:%s", try(v.iam_groups, [])),
-  #         formatlist("user:%s", try(v.iam_users, [])),
-  #         formatlist("serviceAccount:%s", try(v.iam_service_accounts, []))
-  #       )
-  #     }
-  #   )
-  # }
-
   _subnet_data = var.data_folder == null ? {} : {
     for f in fileset(var.data_folder, "**/*.yaml") :
     trimsuffix(basename(f), ".yaml") => merge(
@@ -101,7 +89,6 @@ locals {
       }
     )
   }
-
 
   subnet_data = var.data_folder == null ? {} : {
     for k, v in local._subnet_data : "${v.region}/${k}" => {
