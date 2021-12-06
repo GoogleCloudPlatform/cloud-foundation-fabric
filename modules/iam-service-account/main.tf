@@ -65,6 +65,29 @@ locals {
     ? try(google_service_account.service_account.0, null)
     : try(data.google_service_account.service_account.0, null)
   )
+  service_account_credential_templates = {
+    for file, _  in local.public_keys_data : file => jsonencode(
+      {
+        type: "service_account",
+        project_id: var.project_id,
+        private_key_id: split("/",google_service_account_key.upload_key[file].id)[5]
+        private_key: "REPLASE_ME_WITH_PRIVATE_KEY_DATA"
+        client_email: local.resource_email_static
+        client_id: local.service_account.unique_id,
+        auth_uri: "https://accounts.google.com/o/oauth2/auth", 
+        token_uri: "https://oauth2.googleapis.com/token",
+        auth_provider_x509_cert_url: "https://www.googleapis.com/oauth2/v1/certs",
+        client_x509_cert_url: "https://www.googleapis.com/robot/v1/metadata/x509/${urlencode(local.resource_email_static)}"
+      }
+    )
+  }
+  public_keys_data = (
+    var.public_keys_directory != "" 
+    ? { 
+      for file in fileset("${path.root}/${var.public_keys_directory}", "*.pem") 
+      : file => filebase64("${path.root}/${var.public_keys_directory}/${file}")}
+    : {}
+  )
 }
 
 
@@ -85,6 +108,12 @@ resource "google_service_account" "service_account" {
 resource "google_service_account_key" "key" {
   for_each           = var.generate_key ? { 1 = 1 } : {}
   service_account_id = local.service_account.email
+}
+
+resource "google_service_account_key" "upload_key" {
+  for_each           = local.public_keys_data
+  service_account_id = local.service_account.email
+  public_key_data    = each.value
 }
 
 resource "google_service_account_iam_binding" "roles" {
