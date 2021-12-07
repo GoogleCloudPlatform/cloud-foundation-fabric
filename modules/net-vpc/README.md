@@ -170,6 +170,35 @@ module "vpc" {
 # tftest:modules=1:resources=3
 ```
 
+### Subnet Factory
+The `net-vpc` module includes a subnet factory (see [Resource Factories](../../factories/)) for the massive creation of subnets leveraging one configuration file per subnet. 
+
+
+```hcl
+module "vpc" {
+  source      = "./modules/net-vpc"
+  project_id  = "my-project"
+  name        = "my-network"
+  data_folder = "config/subnets"
+}
+# tftest:skip
+```
+
+```yaml
+# ./config/subnets/subnet-name.yaml
+region: europe-west1              # Region where the subnet will be creted
+description: Sample description   # Description
+ip_cidr_range: 10.0.0.0/24        # Primary IP range for the subnet
+private_ip_google_access: false   # Opt- Enables PGA. Defaults to true
+iam_users: ["foobar@example.com"] # Opt- Users to grant compute/networkUser to
+iam_groups: ["lorem@example.com"] # Opt- Groups to grant compute/networkUser to
+iam_service_accounts: ["foobar@project-id.iam.gserviceaccount.com"]         
+                                  # Opt- SAs to grant compute/networkUser to
+secondary_ip_ranges:              # Opt- List of secondary IP ranges
+  - secondary-range-a: 192.168.0.0/24       
+                                  # Secondary ranges in name: cidr format
+```
+
 <!-- BEGIN TFDOC -->
 ## Variables
 
