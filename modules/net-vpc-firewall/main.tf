@@ -50,7 +50,7 @@ locals {
   ])
 
   _factory_rules = {
-    for d in local._custom_rules_raw : d["name"] => d
+    for d in local._factory_rules_raw : d["name"] => d
   }
 
   custom_rules = merge(local._custom_rules, local._factory_rules)
