@@ -125,3 +125,9 @@ variable "private_service_networking_range" {
   type        = string
   default     = null
 }
+
+variable "data_folder" {
+  description = "An optional folder containing the subnet configurations in YaML format."
+  type        = string
+  default     = null
+}

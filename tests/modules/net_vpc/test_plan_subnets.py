@@ -29,6 +29,19 @@ _VAR_SUBNETS = (
     ']'
 )
 
+_VAR_DATA_FOLDER = "data"
+
+
+def test_subnet_factory(plan_runner):
+  "Test subnet factory."
+  _, resources = plan_runner(FIXTURES_DIR, data_folder=_VAR_DATA_FOLDER)
+  assert len(resources) == 3
+  subnets = [r['values']
+             for r in resources if r['type'] == 'google_compute_subnetwork']
+  assert set(s['name'] for s in subnets) == set(
+      ['factory-subnet'])
+  assert set(len(s['secondary_ip_range']) for s in subnets) == set([1])
+
 
 def test_subnets_simple(plan_runner):
   "Test subnets variable."
@@ -58,9 +71,9 @@ def test_subnet_log_configs(plan_runner):
   for r in resources:
     if r['type'] != 'google_compute_subnetwork':
       continue
-    flow_logs[r['values']['name']] = [{key: config[key] for key in config.keys() 
-                               & {'aggregation_interval', 'flow_sampling', 'metadata'}} 
-                               for config in r['values']['log_config']]
+    flow_logs[r['values']['name']] = [{key: config[key] for key in config.keys()
+                                       & {'aggregation_interval', 'flow_sampling', 'metadata'}}
+                                      for config in r['values']['log_config']]
   assert flow_logs == {
       # enable, override one default option
       'a': [{
