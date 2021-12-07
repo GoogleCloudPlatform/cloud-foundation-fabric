@@ -20,6 +20,12 @@ variable "admin_ranges" {
   default     = []
 }
 
+variable "cidr_template_file" {
+  description = "Path for optional file containing name->cidr_list map to be used by the rules factory."
+  type        = string
+  default     = null
+}
+
 variable "custom_rules" {
   description = "List of custom rule definitions (refer to variables file for syntax)."
   type = map(object({
@@ -37,12 +43,6 @@ variable "custom_rules" {
     extra_attributes = map(string)
   }))
   default = {}
-}
-
-variable "cidr_template_file" {
-  description = "Path for optional file containing name->cidr_list map to be used by the rules factory."
-  type        = string
-  default     = null
 }
 
 variable "data_folder" {
