@@ -5,6 +5,8 @@ All notable changes to this project will be documented in this file.
 ## [Unreleased]
 - new `cloud-run` module
 - added gVNIC support to `compute-vm` module
+- added a rule factory to `net-vpc-firewall` module
+- added a subnet factory to `net-vpc` module
 
 ## [8.0.0] - 2021-10-21
 
