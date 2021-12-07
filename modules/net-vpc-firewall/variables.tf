@@ -39,6 +39,18 @@ variable "custom_rules" {
   default = {}
 }
 
+variable "cidr_template_file" {
+  description = "Path for optional file containing name->cidr_list map to be used by the rules factory."
+  type        = string
+  default     = null
+}
+
+variable "data_folder" {
+  description = "Path for optional folder containing firewall rules defined as YaML objects used by the rules factory."
+  type        = string
+  default     = null
+}
+
 variable "http_source_ranges" {
   description = "List of IP CIDR ranges for tag-based HTTP rule, defaults to the health checkers ranges."
   type        = list(string)
@@ -80,3 +92,4 @@ variable "ssh_source_ranges" {
   type        = list(string)
   default     = ["35.235.240.0/20"]
 }
+
