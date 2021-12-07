@@ -70,16 +70,10 @@ locals {
 
   _subnet_data = var.data_folder == null ? {} : {
     for f in fileset(var.data_folder, "**/*.yaml") :
-    trimsuffix(basename(f), ".yaml") => merge(
-      yamldecode(file("${var.data_folder}/${f}")),
-      {
-        project_id = var.project_id
-        network    = local.network.name
-      }
-    )
+    trimsuffix(basename(f), ".yaml") => yamldecode(file("${var.data_folder}/${f}"))
   }
 
-  subnet_data = var.data_folder == null ? {} : {
+  subnet_data = {
     for k, v in local._subnet_data : "${v.region}/${k}" => {
       ip_cidr_range      = v.ip_cidr_range
       name               = k
