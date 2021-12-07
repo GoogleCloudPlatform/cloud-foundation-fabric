@@ -171,7 +171,7 @@ module "vpc" {
 ```
 
 ### Subnet Factory
-The `net-vpc` module includes a subnet factory (see [Resource Factories](../../factories/)) for the massive creation of subnets leveraging one configuration file per subnet. 
+The `net-vpc` module includes a subnet factory (see [Resource Factories](../../factories/)) for the massive creation of subnets leveraging one configuration file per subnet.
 
 
 ```hcl
@@ -186,17 +186,20 @@ module "vpc" {
 
 ```yaml
 # ./config/subnets/subnet-name.yaml
-region: europe-west1              # Region where the subnet will be creted
-description: Sample description   # Description
-ip_cidr_range: 10.0.0.0/24        # Primary IP range for the subnet
-private_ip_google_access: false   # Opt- Enables PGA. Defaults to true
-iam_users: ["foobar@example.com"] # Opt- Users to grant compute/networkUser to
-iam_groups: ["lorem@example.com"] # Opt- Groups to grant compute/networkUser to
-iam_service_accounts: ["foobar@project-id.iam.gserviceaccount.com"]         
-                                  # Opt- SAs to grant compute/networkUser to
-secondary_ip_ranges:              # Opt- List of secondary IP ranges
-  - secondary-range-a: 192.168.0.0/24       
-                                  # Secondary ranges in name: cidr format
+region: europe-west1
+description: Sample description
+ip_cidr_range: 10.0.0.0/24
+# optional attributes
+private_ip_google_access: false   # defaults to true
+iam_users: ["foobar@example.com"] # grant compute/networkUser to users
+iam_groups: ["lorem@example.com"] # grant compute/networkUser to groups
+iam_service_accounts: ["fbz@prj.iam.gserviceaccount.com"]
+secondary_ip_ranges:              # map of secondary ip ranges
+  - secondary-range-a: 192.168.0.0/24
+flow_logs:                        # enable, set to empty map to use defaults
+  - aggregation_interval: "INTERVAL_5_SEC"
+  - flow_sampling: 0.5
+  - metadata: "INCLUDE_ALL_METADATA"
 ```
 
 <!-- BEGIN TFDOC -->
