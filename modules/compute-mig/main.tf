@@ -85,7 +85,7 @@ resource "google_compute_instance_group_manager" "default" {
     }
   }
   dynamic "stateful_disk" {
-    for_each = try(var.stateful_config.mig_config.stateful_disks, tomap({}))
+    for_each = try(var.stateful_config.mig_config.stateful_disks, {})
     iterator = config
     content {
       device_name = config.key
@@ -152,7 +152,7 @@ locals {
 }
 
 resource "google_compute_per_instance_config" "default" {
-  for_each = try(var.stateful_config.per_instance_config, tomap({}))
+  for_each = try(var.stateful_config.per_instance_config, {})
   #for_each = var.stateful_config && var.stateful_config.per_instance_config == null ? {} : length(var.stateful_config.per_instance_config)
   zone = var.location
   # terraform error, solved with locals
@@ -160,15 +160,15 @@ resource "google_compute_per_instance_config" "default" {
   instance_group_manager           = local.instance_group_manager[0].id
   name                             = each.key
   project                          = var.project_id
-  minimal_action                   = each.value.update_config.minimal_action
-  most_disruptive_allowed_action   = each.value.update_config.most_disruptive_allowed_action
-  remove_instance_state_on_destroy = each.value.update_config.remove_instance_state_on_destroy
+  minimal_action                   = try(each.value.update_config.minimal_action)
+  most_disruptive_allowed_action   = try(each.value.update_config.most_disruptive_allowed_action)
+  remove_instance_state_on_destroy = try(each.value.update_config.remove_instance_state_on_destroy)
   preserved_state {
 
     metadata = each.value.metadata
 
     dynamic "disk" {
-      for_each = try(each.value.stateful_disks, tomap({}))
+      for_each = try(each.value.stateful_disks, {})
       #for_each = var.stateful_config.mig_config.stateful_disks == null ? {} : var.stateful_config.mig_config.stateful_disks
       iterator = config
       content {
@@ -252,7 +252,7 @@ resource "google_compute_region_instance_group_manager" "default" {
     }
   }
   dynamic "stateful_disk" {
-    for_each = try(var.stateful_config.mig_config.stateful_disks, tomap({}))
+    for_each = try(var.stateful_config.mig_config.stateful_disks, {})
     iterator = config
     content {
       device_name = config.key

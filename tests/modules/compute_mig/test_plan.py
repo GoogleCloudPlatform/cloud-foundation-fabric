@@ -75,7 +75,7 @@ def test_autoscaler(plan_runner):
   assert len(resources) == 2
   autoscaler = resources[0]
   assert autoscaler['type'] == 'google_compute_region_autoscaler'
-
+  
 def test_stateful_mig(plan_runner):
   "Test stateful instances - mig."
 
