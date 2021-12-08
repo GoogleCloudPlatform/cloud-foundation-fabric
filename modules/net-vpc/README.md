@@ -170,6 +170,38 @@ module "vpc" {
 # tftest:modules=1:resources=3
 ```
 
+### Subnet Factory
+The `net-vpc` module includes a subnet factory (see [Resource Factories](../../factories/)) for the massive creation of subnets leveraging one configuration file per subnet.
+
+
+```hcl
+module "vpc" {
+  source      = "./modules/net-vpc"
+  project_id  = "my-project"
+  name        = "my-network"
+  data_folder = "config/subnets"
+}
+# tftest:skip
+```
+
+```yaml
+# ./config/subnets/subnet-name.yaml
+region: europe-west1
+description: Sample description
+ip_cidr_range: 10.0.0.0/24
+# optional attributes
+private_ip_google_access: false   # defaults to true
+iam_users: ["foobar@example.com"] # grant compute/networkUser to users
+iam_groups: ["lorem@example.com"] # grant compute/networkUser to groups
+iam_service_accounts: ["fbz@prj.iam.gserviceaccount.com"]
+secondary_ip_ranges:              # map of secondary ip ranges
+  - secondary-range-a: 192.168.0.0/24
+flow_logs:                        # enable, set to empty map to use defaults
+  - aggregation_interval: "INTERVAL_5_SEC"
+  - flow_sampling: 0.5
+  - metadata: "INCLUDE_ALL_METADATA"
+```
+
 <!-- BEGIN TFDOC -->
 ## Variables
 
@@ -178,6 +210,7 @@ module "vpc" {
 | name | The name of the network being created | <code title="">string</code> | ✓ |  |
 | project_id | The ID of the project where this VPC will be created | <code title="">string</code> | ✓ |  |
 | *auto_create_subnetworks* | Set to true to create an auto mode subnet, defaults to custom mode. | <code title="">bool</code> |  | <code title="">false</code> |
+| *data_folder* | An optional folder containing the subnet configurations in YaML format. | <code title="">string</code> |  | <code title="">null</code> |
 | *delete_default_routes_on_create* | Set to true to delete the default routes at creation time. | <code title="">bool</code> |  | <code title="">false</code> |
 | *description* | An optional description of this resource (triggers recreation on change). | <code title="">string</code> |  | <code title="">Terraform-managed.</code> |
 | *dns_policy* | DNS policy setup for the VPC. | <code title="object&#40;&#123;&#10;inbound &#61; bool&#10;logging &#61; bool&#10;outbound &#61; object&#40;&#123;&#10;private_ns &#61; list&#40;string&#41;&#10;public_ns  &#61; list&#40;string&#41;&#10;&#125;&#41;&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |

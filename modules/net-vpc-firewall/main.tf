@@ -15,7 +15,7 @@
  */
 
 locals {
-  custom_rules = {
+  _custom_rules = {
     for id, rule in var.custom_rules :
     id => merge(rule, {
       # make rules a map so we use it in a for_each
@@ -27,7 +27,35 @@ locals {
       ])
     })
   }
+
+  cidrs = try({ for name, cidrs in yamldecode(file("${var.cidr_template_file}")) :
+    name => cidrs
+  }, {})
+
+  _factory_rules_raw = flatten([
+    for file in try(fileset(var.data_folder, "**/*.yaml"), []) : [
+      for key, ruleset in yamldecode(file("${var.data_folder}/${file}")) :
+      merge(ruleset, {
+        name  = "${key}"
+        rules = { for index, ports in ruleset.rules : index => ports }
+        ranges = try(ruleset.ranges, null) == null ? null : flatten(
+          [for cidr in ruleset.ranges :
+            can(regex("^\\$", cidr))
+            ? local.cidrs[trimprefix(cidr, "$")]
+            : [cidr]
+        ])
+        extra_attributes = try(ruleset.extra_attributes, {})
+      })
+    ]
+  ])
+
+  _factory_rules = {
+    for d in local._factory_rules_raw : d["name"] => d
+  }
+
+  custom_rules = merge(local._custom_rules, local._factory_rules)
 }
+
 
 ###############################################################################
 #                            rules based on IP ranges
