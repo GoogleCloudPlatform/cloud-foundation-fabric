@@ -81,15 +81,13 @@ variable "firewall_policy_attachments" {
 
 variable "logging_sinks" {
   type = map(object({
-    destination      = string
-    type             = string
-    filter           = string
-    iam              = bool
-    include_children = bool
-    bigquery_options = object({
-      use_partitioned_tables = bool
-    })        
-    exclusions       = map(string)
+    destination                     = string
+    type                            = string
+    filter                          = string
+    iam                             = bool
+    include_children                = bool
+    bigquery_use_partitioned_tables = bool
+    exclusions                      = map(string)
   }))
   default = {}
 }
