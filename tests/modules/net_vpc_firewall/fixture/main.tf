@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-output "subnet" {
-  description = "Generated subnets"
-  value = {
-    for k, v in google_compute_subnetwork.default :
-    k => {
-      id        = v.id
-      network   = v.network
-      project   = v.project
-      range     = v.ip_cidr_range
-      region    = v.region
-      self_link = v.self_link
-    }
-  }
+module "firewall" {
+  source              = "../../../../modules/net-vpc-firewall"
+  project_id          = var.project_id
+  network             = var.network
+  admin_ranges        = var.admin_ranges
+  http_source_ranges  = var.http_source_ranges
+  https_source_ranges = var.https_source_ranges
+  ssh_source_ranges   = var.ssh_source_ranges
+  custom_rules        = var.custom_rules
+  data_folder         = var.data_folder
+  cidr_template_file  = var.cidr_template_file
 }
