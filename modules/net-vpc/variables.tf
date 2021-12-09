@@ -103,6 +103,11 @@ variable "peering_create_remote_end" {
   default     = true
 }
 
+variable "project_id" {
+  description = "The ID of the project where this VPC will be created"
+  type        = string
+}
+
 variable "psn_ranges" {
   description = "CIDR ranges used for Google services that support Private Service Networking."
   type        = list(string)
@@ -114,11 +119,6 @@ variable "psn_ranges" {
     ])
     error_message = "Specify a valid RFC1918 CIDR range for Private Service Networking."
   }
-}
-
-variable "project_id" {
-  description = "The ID of the project where this VPC will be created"
-  type        = string
 }
 
 variable "routes" {
