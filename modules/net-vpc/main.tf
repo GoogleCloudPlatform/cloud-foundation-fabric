@@ -78,6 +78,13 @@ locals {
     ? null
     : element(reverse(split("/", var.peering_config.peer_vpc_self_link)), 0)
   )
+  psn_ranges = {
+    for r in(var.psn_ranges == null ? [] : var.psn_ranges) : r => {
+      address       = split("/", r)[0]
+      name          = replace(split("/", r)[0], ".", "-")
+      prefix_length = split("/", r)[1]
+    }
+  }
   routes = {
     gateway    = { for k, v in local._routes : k => v if v.next_hop_type == "gateway" }
     ilb        = { for k, v in local._routes : k => v if v.next_hop_type == "ilb" }
@@ -287,17 +294,6 @@ resource "google_compute_route" "vpn_tunnel" {
   next_hop_vpn_tunnel = each.value.next_hop
 }
 
-resource "google_compute_global_address" "psn_range" {
-  count         = var.private_service_networking_range == null ? 0 : 1
-  project       = var.project_id
-  name          = "${var.name}-google-psn"
-  purpose       = "VPC_PEERING"
-  address_type  = "INTERNAL"
-  address       = split("/", var.private_service_networking_range)[0]
-  prefix_length = split("/", var.private_service_networking_range)[1]
-  network       = local.network.id
-}
-
 resource "google_dns_policy" "default" {
   count                     = var.dns_policy == null ? 0 : 1
   enable_inbound_forwarding = var.dns_policy.inbound
@@ -309,7 +305,7 @@ resource "google_dns_policy" "default" {
   }
 
   dynamic "alternative_name_server_config" {
-    for_each = var.dns_policy.outbound == null ? [] : [1]
+    for_each = toset(var.dns_policy.outbound == null ? [] : [""])
     content {
       dynamic "target_name_servers" {
         for_each = toset(var.dns_policy.outbound.private_ns)
@@ -330,9 +326,22 @@ resource "google_dns_policy" "default" {
   }
 }
 
+resource "google_compute_global_address" "psn_ranges" {
+  for_each      = local.psn_ranges
+  project       = var.project_id
+  name          = "${var.name}-psn-${each.value.name}"
+  purpose       = "VPC_PEERING"
+  address_type  = "INTERNAL"
+  address       = each.value.address
+  prefix_length = each.value.prefix_length
+  network       = local.network.id
+}
+
 resource "google_service_networking_connection" "psn_connection" {
-  count                   = var.private_service_networking_range == null ? 0 : 1
-  network                 = local.network.id
-  service                 = "servicenetworking.googleapis.com"
-  reserved_peering_ranges = [google_compute_global_address.psn_range.0.name]
+  for_each = toset(local.psn_ranges == {} ? [] : [""])
+  network  = local.network.id
+  service  = "servicenetworking.googleapis.com"
+  reserved_peering_ranges = [
+    for k, v in google_compute_global_address.psn_ranges : v.name
+  ]
 }
