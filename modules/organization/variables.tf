@@ -111,11 +111,12 @@ variable "logging_exclusions" {
 variable "logging_sinks" {
   description = "Logging sinks to create for this organization."
   type = map(object({
-    destination      = string
-    type             = string
-    filter           = string
-    iam              = bool
-    include_children = bool
+    destination          = string
+    type                 = string
+    filter               = string
+    iam                  = bool
+    include_children     = bool
+    bq_partitioned_table = bool
     # TODO exclusions also support description and disabled
     exclusions = map(string)
   }))
