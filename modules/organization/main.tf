@@ -290,9 +290,9 @@ resource "google_logging_organization_sink" "sink" {
   include_children = each.value.include_children
 
   dynamic "bigquery_options" {
-    for_each = each.value.bigquery_use_partitioned_tables == true ? [""] : []
+    for_each = each.value.bq_partitioned_table == true ? [""] : []
     content {
-      use_partitioned_tables = each.value.bigquery_use_partitioned_tables
+      use_partitioned_tables = each.value.bq_partitioned_table
     }
   }
 

@@ -25,40 +25,40 @@ def test_sinks(plan_runner):
   "Test folder-level sinks."
   logging_sinks = """ {
     warning = {
-      type                            = "gcs"
-      destination                     = "mybucket"
-      filter                          = "severity=WARNING"
-      iam                             = true
-      include_children                = true
-      bigquery_use_partitioned_tables = null
-      exclusions                      = {}
+      type                 = "gcs"
+      destination          = "mybucket"
+      filter               = "severity=WARNING"
+      iam                  = true
+      include_children     = true
+      bq_partitioned_table = null
+      exclusions           = {}
     }
     info = {
-      type                            = "bigquery"
-      destination                     = "projects/myproject/datasets/mydataset"
-      filter                          = "severity=INFO"
-      iam                             = true
-      include_children                = true
-      bigquery_use_partitioned_tables = false
-      exclusions                      = {}
+      type                 = "bigquery"
+      destination          = "projects/myproject/datasets/mydataset"
+      filter               = "severity=INFO"
+      iam                  = true
+      include_children     = true
+      bq_partitioned_table = false
+      exclusions           = {}
    }
     notice = {
-      type                            = "pubsub"
-      destination                     = "projects/myproject/topics/mytopic"
-      filter                          = "severity=NOTICE"
-      iam                             = true
-      include_children                = false
-      bigquery_use_partitioned_tables = null
-      exclusions                      = {}
+      type                 = "pubsub"
+      destination          = "projects/myproject/topics/mytopic"
+      filter               = "severity=NOTICE"
+      iam                  = true
+      include_children     = false
+      bq_partitioned_table = null
+      exclusions           = {}
     }
     debug = {
-      type                            = "logging"
-      destination                     = "projects/myproject/locations/global/buckets/mybucket"
-      filter                          = "severity=DEBUG"
-      iam                             = true
-      include_children                = false
-      bigquery_use_partitioned_tables = null
-      exclusions                      = {
+      type                 = "logging"
+      destination          = "projects/myproject/locations/global/buckets/mybucket"
+      filter               = "severity=DEBUG"
+      iam                  = true
+      include_children     = false
+      bq_partitioned_table = null
+      exclusions           = {
         no-compute   = "logName:compute"
         no-container = "logName:container"
       }
