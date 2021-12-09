@@ -31,4 +31,5 @@ module "test" {
   subnet_private_access            = var.subnet_private_access
   auto_create_subnetworks          = var.auto_create_subnetworks
   private_service_networking_range = var.private_service_networking_range
+  data_folder                      = var.data_folder
 }
