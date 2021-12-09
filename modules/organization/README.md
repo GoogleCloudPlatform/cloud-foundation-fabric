@@ -110,42 +110,40 @@ module "org" {
 
   logging_sinks = {
     warnings = {
-      type             = "gcs"
-      destination      = module.gcs.name
-      filter           = "severity=WARNING"
-      iam              = false
-      include_children = true
-      bigquery_options = null
-      exclusions       = {}
+      type                            = "gcs"
+      destination                     = module.gcs.name
+      filter                          = "severity=WARNING"
+      iam                             = false
+      include_children                = true
+      bigquery_use_partitioned_tables = null
+      exclusions                      = {}
     }
     info = {
-      type             = "bigquery"
-      destination      = module.dataset.id
-      filter           = "severity=INFO"
-      iam              = false
-      include_children = true
-      bigquery_options = {
-        use_partitioned_tables = true
-      }
-      exclusions       = {}
+      type                            = "bigquery"
+      destination                     = module.dataset.id
+      filter                          = "severity=INFO"
+      iam                             = false
+      include_children                = true
+      bigquery_use_partitioned_tables = true
+      exclusions                      = {}
     }
     notice = {
-      type             = "pubsub"
-      destination      = module.pubsub.id
-      filter           = "severity=NOTICE"
-      iam              = true
-      include_children = true
-      bigquery_options = null
-      exclusions       = {}
+      type                            = "pubsub"
+      destination                     = module.pubsub.id
+      filter                          = "severity=NOTICE"
+      iam                             = true
+      include_children                = true
+      bigquery_use_partitioned_tables = null
+      exclusions                      = {}
     }
     debug = {
-      type             = "logging"
-      destination      = module.bucket.id
-      filter           = "severity=DEBUG"
-      iam              = true
-      include_children = false
-      bigquery_options = null
-      exclusions = {
+      type                            = "logging"
+      destination                     = module.bucket.id
+      filter                          = "severity=DEBUG"
+      iam                             = true
+      include_children                = false
+      bigquery_use_partitioned_tables = null
+      exclusions                      = {
         no-compute = "logName:compute"
       }
     }
