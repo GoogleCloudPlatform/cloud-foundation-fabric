@@ -3,11 +3,12 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
-- **incompatible change** Add support for partitioned tables on Organization sinks 
+- **incompatible change** add support for partitioned tables on Organization sinks 
 - new `cloud-run` module
 - added gVNIC support to `compute-vm` module
 - added a rule factory to `net-vpc-firewall` module
 - added a subnet factory to `net-vpc` module
+- **incompatible change** renamed `private_service_networking_range` variable to `psc_ranges` in `net-vpc`module, and changed its type to `list(string)`
 
 ## [8.0.0] - 2021-10-21
 
