@@ -138,7 +138,7 @@ module "vpc" {
       secondary_ip_range = null
     }
   ]
-  private_service_networking_range = "10.10.0.0/16"
+  psn_ranges = ["10.10.0.0/16"]
 }
 # tftest:modules=1:resources=4
 ```
