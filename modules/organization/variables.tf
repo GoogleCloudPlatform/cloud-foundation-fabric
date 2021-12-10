@@ -120,6 +120,13 @@ variable "logging_sinks" {
     # TODO exclusions also support description and disabled
     exclusions = map(string)
   }))
+  validation {
+    condition = alltrue([
+      for k, v in(var.logging_sinks == null ? {} : var.logging_sinks) :
+      contains(["bigquery", "logging", "pubsub", "storage"], v.type)
+    ])
+    error_message = "Type must be one of 'bigquery', 'logging', 'pubsub', 'storage'."
+  }
   default = {}
 }
 

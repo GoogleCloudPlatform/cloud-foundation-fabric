@@ -16,33 +16,6 @@
 
 locals {
   organization_id_numeric = split("/", var.organization_id)[1]
-  group_iam_roles         = distinct(flatten(values(var.group_iam)))
-  group_iam = {
-    for r in local.group_iam_roles : r => [
-      for k, v in var.group_iam : "group:${k}" if try(index(v, r), null) != null
-    ]
-  }
-  iam = {
-    for role in distinct(concat(keys(var.iam), keys(local.group_iam))) :
-    role => concat(
-      try(var.iam[role], []),
-      try(local.group_iam[role], [])
-    )
-  }
-  iam_additive_pairs = flatten([
-    for role, members in var.iam_additive : [
-      for member in members : { role = role, member = member }
-    ]
-  ])
-  iam_additive_member_pairs = flatten([
-    for member, roles in var.iam_additive_members : [
-      for role in roles : { role = role, member = member }
-    ]
-  ])
-  iam_additive = {
-    for pair in concat(local.iam_additive_pairs, local.iam_additive_member_pairs) :
-    "${pair.role}-${pair.member}" => pair
-  }
   extended_rules = flatten([
     for policy, rules in var.firewall_policies : [
       for rule_name, rule in rules :
@@ -52,93 +25,6 @@ locals {
   rules_map = {
     for rule in local.extended_rules :
     "${rule.policy}-${rule.name}" => rule
-  }
-  logging_sinks = coalesce(var.logging_sinks, {})
-  sink_type_destination = {
-    gcs      = "storage.googleapis.com"
-    bigquery = "bigquery.googleapis.com"
-    pubsub   = "pubsub.googleapis.com"
-    logging  = "logging.googleapis.com"
-  }
-  sink_bindings = {
-    for type in ["gcs", "bigquery", "pubsub", "logging"] :
-    type => {
-      for name, sink in local.logging_sinks :
-      name => sink
-      if sink.iam && sink.type == type
-    }
-  }
-}
-
-resource "google_organization_iam_custom_role" "roles" {
-  for_each    = var.custom_roles
-  org_id      = local.organization_id_numeric
-  role_id     = each.key
-  title       = "Custom role ${each.key}"
-  description = "Terraform-managed"
-  permissions = each.value
-}
-
-resource "google_organization_iam_binding" "authoritative" {
-  for_each = local.iam
-  org_id   = local.organization_id_numeric
-  role     = each.key
-  members  = each.value
-}
-
-resource "google_organization_iam_member" "additive" {
-  for_each = (
-    length(var.iam_additive) + length(var.iam_additive_members) > 0
-    ? local.iam_additive
-    : {}
-  )
-  org_id = local.organization_id_numeric
-  role   = each.value.role
-  member = each.value.member
-}
-
-resource "google_organization_iam_policy" "authoritative" {
-  count       = var.iam_bindings_authoritative != null || var.iam_audit_config_authoritative != null ? 1 : 0
-  org_id      = local.organization_id_numeric
-  policy_data = data.google_iam_policy.authoritative.policy_data
-}
-
-data "google_iam_policy" "authoritative" {
-  dynamic "binding" {
-    for_each = var.iam_bindings_authoritative != null ? var.iam_bindings_authoritative : {}
-    content {
-      role    = binding.key
-      members = binding.value
-    }
-  }
-
-  dynamic "audit_config" {
-    for_each = var.iam_audit_config_authoritative != null ? var.iam_audit_config_authoritative : {}
-    content {
-      service = audit_config.key
-      dynamic "audit_log_configs" {
-        for_each = audit_config.value
-        iterator = config
-        content {
-          log_type         = config.key
-          exempted_members = config.value
-        }
-      }
-    }
-  }
-}
-
-resource "google_organization_iam_audit_config" "config" {
-  for_each = var.iam_audit_config
-  org_id   = local.organization_id_numeric
-  service  = each.key
-  dynamic "audit_log_config" {
-    for_each = each.value
-    iterator = config
-    content {
-      log_type         = config.key
-      exempted_members = config.value
-    }
   }
 }
 
@@ -279,76 +165,6 @@ resource "google_compute_organization_security_policy_association" "attachment" 
   name          = "${var.organization_id}-${each.key}"
   attachment_id = var.organization_id
   policy_id     = each.value
-}
-
-resource "google_logging_organization_sink" "sink" {
-  for_each         = local.logging_sinks
-  name             = each.key
-  org_id           = local.organization_id_numeric
-  destination      = "${local.sink_type_destination[each.value.type]}/${each.value.destination}"
-  filter           = each.value.filter
-  include_children = each.value.include_children
-
-  dynamic "bigquery_options" {
-    for_each = each.value.bq_partitioned_table == true ? [""] : []
-    content {
-      use_partitioned_tables = each.value.bq_partitioned_table
-    }
-  }
-
-  dynamic "exclusions" {
-    for_each = each.value.exclusions
-    iterator = exclusion
-    content {
-      name   = exclusion.key
-      filter = exclusion.value
-    }
-  }
-  depends_on = [
-    google_organization_iam_binding.authoritative,
-    google_organization_iam_member.additive,
-    google_organization_iam_policy.authoritative,
-  ]
-}
-
-resource "google_storage_bucket_iam_member" "gcs-sinks-binding" {
-  for_each = local.sink_bindings["gcs"]
-  bucket   = each.value.destination
-  role     = "roles/storage.objectCreator"
-  member   = google_logging_organization_sink.sink[each.key].writer_identity
-}
-
-resource "google_bigquery_dataset_iam_member" "bq-sinks-binding" {
-  for_each   = local.sink_bindings["bigquery"]
-  project    = split("/", each.value.destination)[1]
-  dataset_id = split("/", each.value.destination)[3]
-  role       = "roles/bigquery.dataEditor"
-  member     = google_logging_organization_sink.sink[each.key].writer_identity
-}
-
-resource "google_pubsub_topic_iam_member" "pubsub-sinks-binding" {
-  for_each = local.sink_bindings["pubsub"]
-  project  = split("/", each.value.destination)[1]
-  topic    = split("/", each.value.destination)[3]
-  role     = "roles/pubsub.publisher"
-  member   = google_logging_organization_sink.sink[each.key].writer_identity
-}
-
-resource "google_project_iam_member" "bucket-sinks-binding" {
-  for_each = local.sink_bindings["logging"]
-  project  = split("/", each.value.destination)[1]
-  role     = "roles/logging.bucketWriter"
-  member   = google_logging_organization_sink.sink[each.key].writer_identity
-  # TODO(jccb): use a condition to limit writer-identity only to this
-  # bucket
-}
-
-resource "google_logging_organization_exclusion" "logging-exclusion" {
-  for_each    = coalesce(var.logging_exclusions, {})
-  name        = each.key
-  org_id      = local.organization_id_numeric
-  description = "${each.key} (Terraform-managed)"
-  filter      = each.value
 }
 
 resource "google_essential_contacts_contact" "contact" {
