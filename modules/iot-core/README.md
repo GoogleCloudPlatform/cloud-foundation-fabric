@@ -14,7 +14,7 @@ module "iot-platform" {
       device_2 = "device_certs/rsa_cert2.pem"
   }
 }
-``
+```
 
 
 <!-- BEGIN TFDOC -->
