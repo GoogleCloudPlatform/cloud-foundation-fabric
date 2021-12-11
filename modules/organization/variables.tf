@@ -26,28 +26,43 @@ variable "custom_roles" {
   default     = {}
 }
 
+variable "data_folder" {
+  description = "Path for optional folder containing firewall policy rules defined as YaML objects used by the rules factory."
+  type        = string
+  default     = null
+}
+
 variable "firewall_policies" {
-  description = "Hierarchical firewall policies to *create* in the organization."
+  description = "Hierarchical firewall policy rules created in the organization."
   type = map(map(object({
+    action                  = string
     description             = string
     direction               = string
-    action                  = string
+    logging                 = bool
+    ports                   = map(list(string))
     priority                = number
     ranges                  = list(string)
-    ports                   = map(list(string))
-    target_service_accounts = list(string)
     target_resources        = list(string)
-    logging                 = bool
-    #preview                 = bool
+    target_service_accounts = list(string)
+    # preview                 = bool
   })))
   default = {}
 }
 
 variable "firewall_policy_attachments" {
-  description = "List of hierarchical firewall policy IDs to *attach* to the organization"
-  # set to avoid manual casting with toset()
-  type    = map(string)
-  default = {}
+  description = "List of hierarchical firewall policy IDs attached to the organization."
+  type        = map(string)
+  default     = {}
+}
+
+variable "firewall_policy_factory" {
+  description = "Configuration for the firewall policy factory."
+  type = object({
+    cidr_file   = string
+    policy_name = string
+    rules_file  = string
+  })
+  default = null
 }
 
 variable "group_iam" {
