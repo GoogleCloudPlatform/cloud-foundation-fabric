@@ -26,12 +26,6 @@ variable "custom_roles" {
   default     = {}
 }
 
-variable "data_folder" {
-  description = "Path for optional folder containing firewall policy rules defined as YaML objects used by the rules factory."
-  type        = string
-  default     = null
-}
-
 variable "firewall_policies" {
   description = "Hierarchical firewall policy rules created in the organization."
   type = map(map(object({
