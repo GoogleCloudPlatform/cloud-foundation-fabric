@@ -110,7 +110,7 @@ module "org" {
 
   logging_sinks = {
     warnings = {
-      type                 = "gcs"
+      type                 = "storage"
       destination          = module.gcs.name
       filter               = "severity=WARNING"
       iam                  = false
