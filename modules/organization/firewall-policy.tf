@@ -18,7 +18,11 @@ locals {
   _factory_cidrs = try(
     yamldecode(file(var.firewall_policy_factory.cidr_file)), {}
   )
-  _factory_name = try(var.firewall_policy_factory.policy_name, "factory")
+  _factory_name = (
+    try(var.firewall_policy_factory.policy_name, null) == null
+    ? "factory"
+    : var.firewall_policy_factory.policy_name
+  )
   _factory_rules = try(
     yamldecode(file(var.firewall_policy_factory.rules_file)), {}
   )

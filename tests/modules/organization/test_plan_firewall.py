@@ -107,6 +107,18 @@ def test_factory(plan_runner):
   ])
 
 
+def test_factory_name(plan_runner):
+  'Test firewall policy factory default name.'
+  factory = _FACTORY.replace('"factory-1"', 'null')
+  _, resources = plan_runner(FIXTURES_DIR, firewall_policy_factory=factory)
+  assert len(resources) == 3
+  policies = [r for r in resources
+              if r['type'] == 'google_compute_organization_security_policy']
+  assert set(r['index'] for r in policies) == set([
+      'factory'
+  ])
+
+
 def test_combined(plan_runner):
   'Test combined rules.'
   _, resources = plan_runner(FIXTURES_DIR, firewall_policies=_POLICIES,
