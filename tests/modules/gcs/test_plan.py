@@ -31,7 +31,7 @@ def test_buckets(plan_runner):
 def test_prefix(plan_runner):
   "Test bucket name when prefix is set."
   _, resources = plan_runner(FIXTURES_DIR, prefix='foo')
-  assert resources[0]['values']['name'] == 'foo-eu-bucket-a'
+  assert resources[0]['values']['name'] == 'foo-bucket-a'
 
 
 def test_config_values(plan_runner):
