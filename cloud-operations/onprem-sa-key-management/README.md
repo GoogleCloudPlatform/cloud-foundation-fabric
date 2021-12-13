@@ -1,41 +1,65 @@
-# Generationg and uploading public keys for a service accounts
+# Managing on-prem service account keys by uploading public keys
 
-This example shows how to manage IAM Service Account Keys by generating a key pair and uploading public keys to GCP. 
+When managing GCP Service Accounts with terraform, it's often a question on **how to avoid Service Account Key in the terraform state?**
 
-By generating a key inside a `box` where the key is intended to be used we AVOID:
- - [passing keys between users](https://cloud.google.com/iam/docs/best-practices-for-managing-service-account-keys#pass-between-users) or systems
- - having SA key stored in the terraform state (only public part in the state)
- - having SA key with no expiration period
+This example shows how to manage IAM Service Account Keys by generating a key pair and uploading the public part of the key to GCP, it has the following benefits:
 
-TODO (averbukh)
+ - no [passing keys between users](https://cloud.google.com/iam/docs/best-practices-for-managing-service-account-keys#pass-between-users) or systems
+ - no SA key stored in the terraform state (only public part of the key in the state)
+ - let keys [expire automatically](https://cloud.google.com/iam/docs/best-practices-for-managing-service-account-keys#key-expiryhaving)
+
+
 ## Running the example 
-# cleaning up example keys
-- rm -f /public-keys/data-uploader/
-- rm -f /public-keys/prisma-security/
 
-# generate your keys
-- mkdir keys && cd keys
-- openssl req -x509 -nodes -newkey rsa:2048 -days 3650 \
+Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fcloud-foundation-fabric&cloudshell_print=cloud-shell-readme.txt&cloudshell_working_dir=cloud-operations%2Fonprem-sa-key-management&cloudshell_open_in_editor=cloudshell_open%2Fcloud-foundation-fabric%2Fcloud-operations%2Fonprem-sa-key-management%2Fvariables.tf), then go through the following steps to create resources:
+
+Cleaning up example keys
+```bash
+rm -f /public-keys/data-uploader/
+rm -f /public-keys/prisma-security/
+```
+
+Generate keys for service accounts
+```bash
+mkdir keys && cd keys
+openssl req -x509 -nodes -newkey rsa:2048 -days 30 \
     -keyout data_uploader_private_key.pem \
     -out ../public-keys/data-uploader/public_key.pem \
     -subj "/CN=unused"
-- openssl req -x509 -nodes -newkey rsa:2048 -days 3650 \
+openssl req -x509 -nodes -newkey rsa:2048 -days 30 \
     -keyout prisma_security_private_key.pem \
     -out ../public-keys/prisma-security/public_key.pem \
     -subj "/CN=unused"
+```
 
-- cd ..
-- terraform init
-- terraform apply -var project_id=$GOOGLE_CLOUD_PROJECT
+Deploy service accounts and keys
+```bash
+cd ..
+terraform init
+terraform apply -var project_id=$GOOGLE_CLOUD_PROJECT
 
-- terraform show -json | jq '.values.outputs."data-uploader-credentials".value."public_key.pem" | fromjson' > data-uploader.json
-- terraform show -json | jq '.values.outputs."prisma-security-credentials".value."public_key.pem" | fromjson' > prisma-security.json
+```
 
-- contents=$(jq --arg key "$(cat keys/data_uploader_private_key.pem)" '.private_key=$key' data-uploader.json) && echo "$contents" > data-uploader.json
-- contents=$(jq --arg key "$(cat keys/prisma_security_private_key.pem)" '.private_key=$key' prisma-security.json) && echo "$contents" > prisma-security.json
+Extract JSON credentials templates from terraform output and put the private part of the keys into templates
+```bash
+terraform show -json | jq '.values.outputs."data-uploader-credentials".value."public_key.pem" | fromjson' > data-uploader.json
+terraform show -json | jq '.values.outputs."prisma-security-credentials".value."public_key.pem" | fromjson' > prisma-security.json
 
-- gcloud auth activate-service-account --key-file prisma-security.json
-- gcloud auth activate-service-account --key-file data-uploader.json
+contents=$(jq --arg key "$(cat keys/data_uploader_private_key.pem)" '.private_key=$key' data-uploader.json) && echo "$contents" > data-uploader.json
+contents=$(jq --arg key "$(cat keys/prisma_security_private_key.pem)" '.private_key=$key' prisma-security.json) && echo "$contents" > prisma-security.json
+```
+
+## Testing the example 
+Validate that service accounts json credentials are valid
+```bash
+gcloud auth activate-service-account --key-file prisma-security.json
+gcloud auth activate-service-account --key-file data-uploader.json
+```
+
+## Cleaning up
+```bash
+terraform destroy -var project_id=$GOOGLE_CLOUD_PROJECT
+```
 
 <!-- BEGIN TFDOC -->
 ## Variables
@@ -43,7 +67,7 @@ TODO (averbukh)
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
 | project_id | Project id. | <code title="">string</code> | ✓ |  |
-| *project_create* | Create project instead ofusing an existing one. | <code title="">bool</code> |  | <code title="">false</code> |
+| *project_create* | Create project instead of using an existing one. | <code title="">bool</code> |  | <code title="">false</code> |
 
 ## Outputs
 
