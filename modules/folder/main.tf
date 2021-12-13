@@ -15,12 +15,6 @@
  */
 
 locals {
-  extended_rules = flatten([
-    for policy, rules in var.firewall_policies : [
-      for rule_name, rule in rules :
-      merge(rule, { policy = policy, name = rule_name })
-    ]
-  ])
   group_iam_roles = distinct(flatten(values(var.group_iam)))
   group_iam = {
     for r in local.group_iam_roles : r => [
@@ -33,10 +27,6 @@ locals {
       try(var.iam[role], []),
       try(local.group_iam[role], [])
     )
-  }
-  rules_map = {
-    for rule in local.extended_rules :
-    "${rule.policy}-${rule.name}" => rule
   }
   logging_sinks = coalesce(var.logging_sinks, {})
   sink_type_destination = {
@@ -149,51 +139,6 @@ resource "google_folder_organization_policy" "list" {
       default = true
     }
   }
-}
-
-resource "google_compute_organization_security_policy" "policy" {
-  provider = google-beta
-  for_each = var.firewall_policies
-
-  display_name = each.key
-  parent       = local.folder.id
-}
-
-resource "google_compute_organization_security_policy_rule" "rule" {
-  provider = google-beta
-  for_each = local.rules_map
-
-  policy_id               = google_compute_organization_security_policy.policy[each.value.policy].id
-  action                  = each.value.action
-  direction               = each.value.direction
-  priority                = each.value.priority
-  target_resources        = each.value.target_resources
-  target_service_accounts = each.value.target_service_accounts
-  enable_logging          = each.value.logging
-  # preview                 = each.value.preview
-  match {
-    description = each.value.description
-    config {
-      src_ip_ranges  = each.value.direction == "INGRESS" ? each.value.ranges : null
-      dest_ip_ranges = each.value.direction == "EGRESS" ? each.value.ranges : null
-      dynamic "layer4_config" {
-        for_each = each.value.ports
-        iterator = port
-        content {
-          ip_protocol = port.key
-          ports       = port.value
-        }
-      }
-    }
-  }
-}
-
-resource "google_compute_organization_security_policy_association" "attachment" {
-  provider      = google-beta
-  for_each      = var.firewall_policy_attachments
-  name          = "${local.folder.id}-${each.key}"
-  attachment_id = local.folder.id
-  policy_id     = each.value
 }
 
 resource "google_logging_folder_sink" "sink" {

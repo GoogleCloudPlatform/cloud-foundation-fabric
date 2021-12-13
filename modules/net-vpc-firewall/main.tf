@@ -28,7 +28,8 @@ locals {
     })
   }
 
-  cidrs = try({ for name, cidrs in yamldecode(file("${var.cidr_template_file}")) :
+  cidrs = try({
+    for name, cidrs in yamldecode(file(var.cidr_template_file)) :
     name => cidrs
   }, {})
 
