@@ -25,7 +25,7 @@ def test_sinks(plan_runner):
   "Test folder-level sinks."
   logging_sinks = """ {
     warning = {
-      type                 = "gcs"
+      type                 = "storage"
       destination          = "mybucket"
       filter               = "severity=WARNING"
       iam                  = true
