@@ -347,7 +347,7 @@ module "nginx-mig" {
     }
   }
 }
-# tftest:modules=2:resources=2
+# tftest:modules=2:resources=3
 
 ```
 
@@ -440,7 +440,7 @@ module "nginx-mig" {
     }
   }
 }
-# tftest:modules=2:resources=2
+# tftest:modules=2:resources=4
 
 ```
 
@@ -458,7 +458,7 @@ module "nginx-mig" {
 | *health_check_config* | Optional auto-created health check configuration, use the output self-link to set it in the auto healing policy. Refer to examples for usage. | <code title="object&#40;&#123;&#10;type &#61; string      &#35; http https tcp ssl http2&#10;check   &#61; map&#40;any&#41;    &#35; actual health check block attributes&#10;config  &#61; map&#40;number&#41; &#35; interval, thresholds, timeout&#10;logging &#61; bool&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 | *named_ports* | Named ports. | <code title="map&#40;number&#41;">map(number)</code> |  | <code title="">null</code> |
 | *regional* | Use regional instance group. When set, `location` should be set to the region. | <code title="">bool</code> |  | <code title="">false</code> |
-| *stateful_config* | Stateful configuration can be done by individual instances or for all instances in the MIG. They key in per_instance_config is the 'name' of the specific instance. The key of the stateful_disks is the 'device_name' field of the resource. Please note that device_name is defined at the OS mount level, unlike the disk name. | <code title="map&#40;object({...})&#41;">map(object({...}))</code>  | | <code title="">null</code>|
+| *stateful_config* | Stateful configuration can be done by individual instances or for all instances in the MIG. They key in per_instance_config is the name of the specific instance. The key of the stateful_disks is the 'device_name' field of the resource. Please note that device_name is defined at the OS mount level, unlike the disk name. | <code title="object&#40;&#123;&#10;per_instance_config &#61; map&#40;object&#40;&#123;&#10;stateful_disks &#61; map&#40;object&#40;&#123;&#10;source      &#61; string&#10;mode        &#61; string &#35; READ_WRITE &#124; READ_ONLY &#10;delete_rule &#61; string &#35; NEVER &#124; ON_PERMANENT_INSTANCE_DELETION&#10;&#125;&#41;&#41;&#10;metadata &#61; map&#40;string&#41;&#10;update_config &#61; object&#40;&#123;&#10;minimal_action                   &#61; string &#35; NONE &#124; REPLACE &#124; RESTART &#124; REFRESH&#10;most_disruptive_allowed_action   &#61; string &#35; REPLACE &#124; RESTART &#124; REFRESH &#124; NONE&#10;remove_instance_state_on_destroy &#61; bool&#10;&#125;&#41;&#10;&#125;&#41;&#41;&#10;mig_config &#61; object&#40;&#123;&#10;stateful_disks &#61; map&#40;object&#40;&#123;&#10;delete_rule &#61; string &#35; NEVER &#124; ON_PERMANENT_INSTANCE_DELETION&#10;&#125;&#41;&#41;&#10;&#125;&#41;&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 | *target_pools* | Optional list of URLs for target pools to which new instances in the group are added. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 | *target_size* | Group target size, leave null when using an autoscaler. | <code title="">number</code> |  | <code title="">null</code> |
 | *update_policy* | Update policy. Type can be 'OPPORTUNISTIC' or 'PROACTIVE', action 'REPLACE' or 'restart', surge type 'fixed' or 'percent'. | <code title="object&#40;&#123;&#10;type &#61; string &#35; OPPORTUNISTIC &#124; PROACTIVE&#10;minimal_action       &#61; string &#35; REPLACE &#124; RESTART&#10;min_ready_sec        &#61; number&#10;max_surge_type       &#61; string &#35; fixed &#124; percent&#10;max_surge            &#61; number&#10;max_unavailable_type &#61; string&#10;max_unavailable      &#61; number&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |

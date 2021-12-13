@@ -160,9 +160,9 @@ resource "google_compute_per_instance_config" "default" {
   instance_group_manager           = local.instance_group_manager[0].id
   name                             = each.key
   project                          = var.project_id
-  minimal_action                   = try(each.value.update_config.minimal_action)
-  most_disruptive_allowed_action   = try(each.value.update_config.most_disruptive_allowed_action)
-  remove_instance_state_on_destroy = try(each.value.update_config.remove_instance_state_on_destroy)
+  minimal_action                   = try(each.value.update_config.minimal_action, null)
+  most_disruptive_allowed_action   = try(each.value.update_config.most_disruptive_allowed_action, null)
+  remove_instance_state_on_destroy = try(each.value.update_config.remove_instance_state_on_destroy, null)
   preserved_state {
 
     metadata = each.value.metadata
