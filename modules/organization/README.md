@@ -45,7 +45,16 @@ There are several mutually exclusive ways of managing IAM in this module
 
 Some care must be takend with the `groups_iam` variable (and in some situations with the additive variables) to ensure that variable keys are static values, so that Terraform is able to compute the dependency graph.
 
-## Hierarchical firewall rules
+## Hierarchical firewall policies
+
+Hirerarchical firewall policies can be managed in two ways:
+
+- via the `firewall_policies` variable, to directly define policies and rules in Terraform
+- via the `firewall_policy_factory` variable, to leverage external YaML files via a simple "factory" embedded in the module ([see here](../../factories) for more context on factories)
+
+Once you have policies (either created via the module or externally), you can attach them using the `firewall_policy_attachments` variable.
+
+### Directly defined firewall policies
 
 ```hcl
 module "org" {
@@ -73,6 +82,60 @@ module "org" {
   }
 }
 # tftest:modules=1:resources=3
+```
+
+### Firewall policy factory
+
+The in-built factory allows you to define a single policy, using one file for rules, and an optional file for CIDR range substitution variables. Remember that non-absolute paths are relative to the root module (the folder where you run `terraform`).
+
+```hcl
+module "org" {
+  source          = "./modules/organization"
+  organization_id = var.organization_id
+  firewall_policy_factory = {
+    cidr_file   = "data/cidrs.yaml
+    policy_name = null
+    rules_file  = "data/rules.yaml"
+  }
+}
+# tftest:skip
+```
+
+```yaml
+# cidrs.yaml
+
+rfc1918:
+  - 10.0.0.0/8
+  - 172.168.0.0/12
+  - 192.168.0.0/16
+```
+
+```yaml
+# rules.yaml
+
+allow-admins:
+  description: Access from the admin subnet to all subnets
+  direction: INGRESS
+  action: allow
+  priority: 1000
+  ranges:
+    - $rfc1918
+  ports:
+    all: []
+  target_resources: null
+  enable_logging: false
+
+allow-ssh-from-iap:
+  description: Enable SSH from IAP
+  direction: INGRESS
+  action: allow
+  priority: 1002
+  ranges:
+    - 35.235.240.0/20
+  ports:
+    tcp: ["22"]
+  target_resources: null
+  enable_logging: false
 ```
 
 ## Logging Sinks
