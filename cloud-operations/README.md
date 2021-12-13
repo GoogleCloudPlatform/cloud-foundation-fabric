@@ -45,3 +45,10 @@ The example's feed tracks changes to Google Compute instances, and the Cloud Fun
 <a href="./packer-image-builder" title="Packer image builder"><img src="./packer-image-builder/diagram.png" align="left" width="280px"></a> This [example](./packer-image-builder) shows how to deploy infrastructure for a Compute Engine image builder based on [Hashicorp's Packer tool](https://www.packer.io).
 
 <br clear="left">
+
+## On-prem Service Account key management
+
+
+This [example](./onprem-sa-key-management) shows how to manage IAM Service Account Keys by generating a key pair and uploading the public part of the key to GCP.
+
+<br clear="left">
