@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 - added a subnet factory to `net-vpc` module
 - **incompatible change** added support for partitioned tables to `organization` module sinks 
 - **incompatible change** renamed `private_service_networking_range` variable to `psc_ranges` in `net-vpc`module, and changed its type to `list(string)`
+- added a firewall policy factory to `organization` module
 
 ## [8.0.0] - 2021-10-21
 
