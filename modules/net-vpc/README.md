@@ -138,7 +138,7 @@ module "vpc" {
       secondary_ip_range = null
     }
   ]
-  private_service_networking_range = "10.10.0.0/16"
+  psn_ranges = ["10.10.0.0/16"]
 }
 # tftest:modules=1:resources=4
 ```
@@ -220,7 +220,7 @@ flow_logs:                        # enable, set to empty map to use defaults
 | *mtu* | Maximum Transmission Unit in bytes. The minimum value for this field is 1460 and the maximum value is 1500 bytes. | <code title=""></code> |  | <code title="">null</code> |
 | *peering_config* | VPC peering configuration. | <code title="object&#40;&#123;&#10;peer_vpc_self_link &#61; string&#10;export_routes      &#61; bool&#10;import_routes      &#61; bool&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 | *peering_create_remote_end* | Skip creation of peering on the remote end when using peering_config | <code title="">bool</code> |  | <code title="">true</code> |
-| *private_service_networking_range* | RFC1919 CIDR range used for Google services that support private service networking. | <code title="">string</code> |  | <code title="null&#10;validation &#123;&#10;condition &#61; &#40;&#10;var.private_service_networking_range &#61;&#61; null &#124;&#124;&#10;can&#40;cidrnetmask&#40;var.private_service_networking_range&#41;&#41;&#10;&#41;&#10;error_message &#61; &#34;Specify a valid RFC1918 CIDR range for private service networking.&#34;&#10;&#125;">...</code> |
+| *psn_ranges* | CIDR ranges used for Google services that support Private Service Networking. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="null&#10;validation &#123;&#10;condition &#61; alltrue&#40;&#91;&#10;for r in&#40;var.psn_ranges &#61;&#61; null &#63; &#91;&#93; : var.psn_ranges&#41; :&#10;can&#40;cidrnetmask&#40;r&#41;&#41;&#10;&#93;&#41;&#10;error_message &#61; &#34;Specify a valid RFC1918 CIDR range for Private Service Networking.&#34;&#10;&#125;">...</code> |
 | *routes* | Network routes, keyed by name. | <code title="map&#40;object&#40;&#123;&#10;dest_range    &#61; string&#10;priority      &#61; number&#10;tags          &#61; list&#40;string&#41;&#10;next_hop_type &#61; string &#35; gateway, instance, ip, vpn_tunnel, ilb&#10;next_hop      &#61; string&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
 | *routing_mode* | The network routing mode (default 'GLOBAL') | <code title="">string</code> |  | <code title="GLOBAL&#10;validation &#123;&#10;condition     &#61; var.routing_mode &#61;&#61; &#34;GLOBAL&#34; &#124;&#124; var.routing_mode &#61;&#61; &#34;REGIONAL&#34;&#10;error_message &#61; &#34;Routing type must be GLOBAL or REGIONAL.&#34;&#10;&#125;">...</code> |
 | *shared_vpc_host* | Enable shared VPC for this project. | <code title="">bool</code> |  | <code title="">false</code> |

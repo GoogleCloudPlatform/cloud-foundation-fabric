@@ -61,6 +61,11 @@ variable "peering_config" {
   default = null
 }
 
+variable "psn_ranges" {
+  type    = list(string)
+  default = null
+}
+
 variable "routes" {
   type = map(object({
     dest_range    = string

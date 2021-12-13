@@ -88,20 +88,3 @@ def test_vpc_routes(plan_runner):
     resource = [r for r in resources if r['values']
                 ['name'] == 'my-vpc-next-hop-test'][0]
     assert resource['values']['next_hop_%s' % next_hop_type]
-
-
-def test_vpc_psn(plan_runner):
-  _, resources = plan_runner(
-    FIXTURES_DIR, private_service_networking_range="10.10.0.0/16"
-  )
-  assert len(resources) == 3
-
-  address = [r["values"] for r in resources if r["type"] == "google_compute_global_address"][0]
-  assert address["address"] == "10.10.0.0"
-  assert address["address_type"] == "INTERNAL"
-  assert address["prefix_length"] == 16
-  assert address["purpose"] == "VPC_PEERING"
-
-  connection = [r["values"] for r in resources if r["type"] == "google_service_networking_connection"][0]
-  assert connection["service"] == "servicenetworking.googleapis.com"
-  assert connection["reserved_peering_ranges"] == ["my-vpc-google-psn"]
