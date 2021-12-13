@@ -10,7 +10,7 @@ This module implements a resource factory which allows the creation and manageme
 
 ```hcl
 module "subnets" {
-  source        = "./modules/resource-factories/subnets"
+  source        = "./factories/subnets"
   config_folder = "subnets"
 }
 # tftest:skip
@@ -48,9 +48,8 @@ iam_groups: ["lorem@example.com"] # Opt- Groups to grant compute/networkUser to
 iam_service_accounts: ["foobar@project-id.iam.gserviceaccount.com"]         
                                   # Opt- SAs to grant compute/networkUser to
 secondary_ip_ranges:              # Opt- List of secondary IP ranges
-  - name: secondary-range-a       # Name for the secondary range 
-    ip_cidr_range: 192.168.0.0/24 # IP range for the secondary range
-
+  - secondary-range-a: 192.168.0.0/24       
+                                  # Secondary ranges in name: cidr format
 ```
 
 <!-- BEGIN TFDOC -->

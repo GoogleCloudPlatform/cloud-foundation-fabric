@@ -330,11 +330,14 @@ resource "google_access_context_manager_service_perimeter" "bridge" {
   }
 
   # Dry run mode configuration
+  use_explicit_dry_run_spec = try(lookup(var.perimeter_projects, each.key, null).dry_run, null) != null ? true : null
   dynamic "spec" {
-    for_each = try(lookup(var.perimeter_projects, each.key, {}).dry_run, []) != null ? [""] : []
+    for_each = try(lookup(var.perimeter_projects, each.key, null).dry_run, null) != null ? [""] : []
 
     content {
-      resources = formatlist("projects/%s", try(lookup(var.perimeter_projects, each.key, {}).dry_run, []))
+      resources           = try(formatlist("projects/%s", lookup(var.perimeter_projects, each.key, {}).dry_run), null)
+      restricted_services = []
+      access_levels       = []
     }
   }
 

@@ -79,14 +79,24 @@ variable "firewall_policy_attachments" {
   default = {}
 }
 
+variable "firewall_policy_factory" {
+  type = object({
+    cidr_file   = string
+    policy_name = string
+    rules_file  = string
+  })
+  default = null
+}
+
 variable "logging_sinks" {
   type = map(object({
-    destination      = string
-    type             = string
-    filter           = string
-    iam              = bool
-    include_children = bool
-    exclusions       = map(string)
+    destination          = string
+    type                 = string
+    filter               = string
+    iam                  = bool
+    include_children     = bool
+    bq_partitioned_table = bool
+    exclusions           = map(string)
   }))
   default = {}
 }

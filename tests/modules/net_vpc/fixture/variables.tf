@@ -61,6 +61,11 @@ variable "peering_config" {
   default = null
 }
 
+variable "psn_ranges" {
+  type    = list(string)
+  default = null
+}
+
 variable "routes" {
   type = map(object({
     dest_range    = string
@@ -122,6 +127,12 @@ variable "subnet_private_access" {
 
 variable "private_service_networking_range" {
   description = "RFC1919 CIDR range used for Google services that support private service networking."
+  type        = string
+  default     = null
+}
+
+variable "data_folder" {
+  description = "An optional folder containing the subnet configurations in YaML format."
   type        = string
   default     = null
 }

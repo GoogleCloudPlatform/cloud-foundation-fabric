@@ -80,11 +80,13 @@ variable "named_ranges" {
 variable "network" {
   description = "Name of the network this set of firewall rules applies to."
   type        = string
+  default     = "vpc"
 }
 
 variable "project_id" {
   description = "Project id of the project that holds the network."
   type        = string
+  default     = "project"
 }
 
 variable "ssh_source_ranges" {
