@@ -73,6 +73,7 @@ module "pubsub" {
 module "cf" {
   source      = "../../modules/cloud-function"
   project_id  = module.project.project_id
+  region = var.region
   name        = var.name
   bucket_name = "${var.name}-${random_pet.random.id}"
   bucket_config = {
