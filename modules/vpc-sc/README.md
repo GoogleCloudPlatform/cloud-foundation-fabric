@@ -136,6 +136,53 @@ module "vpc-sc" {
 # tftest:modules=1:resources=3
 ```
 
+## Example VCP-SC: 2 standard perimeters with one bridge  between the two (dry run mode).
+```hcl
+module "vpc-sc" {
+  source              = "./modules/vpc-sc"
+  organization_id     = "organizations/112233"
+  access_policy_title = "My Access Policy"
+  perimeters = {
+    perimeter_1 = {
+      type = "PERIMETER_TYPE_REGULAR"
+      dry_run_config = {
+        restricted_services     = ["storage.googleapis.com", "bigquery.googleapis.com"]
+        vpc_accessible_services = ["storage.googleapis.com", "bigquery.googleapis.com"]
+      }
+      enforced_config = null
+    }
+    perimeter_2 = {
+      type = "PERIMETER_TYPE_REGULAR"
+      dry_run_config = {
+        restricted_services     = ["storage.googleapis.com", "bigquery.googleapis.com"]
+        vpc_accessible_services = ["storage.googleapis.com", "bigquery.googleapis.com"]
+      }
+      enforced_config = null
+    }
+    perimeter_bridge = {
+      type = "PERIMETER_TYPE_BRIDGE"
+      dry_run_config = null
+      enforced_config = null
+    }
+  }
+  perimeter_projects = {
+    perimeter_1 = {
+      enforced = []
+      dry_run  = [111111111]
+    }
+    perimeter_2 = {
+      enforced = []
+      dry_run  = [222222222]
+    }
+    perimeter_bridge = {
+      enforced = []
+      dry_run  = [111111111, 222222222]
+    }
+  }
+}
+# tftest:modules=1:resources=4
+```
+
 ## Example VCP-SC standard perimeter with one service and one project in dry run mode in a Organization with an already existent access policy
 ```hcl
 module "vpc-sc-first" {
