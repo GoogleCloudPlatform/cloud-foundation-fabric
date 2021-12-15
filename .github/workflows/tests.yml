@@ -17,6 +17,8 @@ on:
   schedule:
     - cron:  '45 2 * * *'
   pull_request:
+    paths:
+      - '**.tf'  
     branches:
       - master
     tags:
