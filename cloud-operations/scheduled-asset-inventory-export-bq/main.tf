@@ -133,6 +133,7 @@ module "bq" {
   source     = "../../modules/bigquery-dataset"
   project_id = module.project.project_id
   id         = var.cai_config.bq_dataset
+  location = var.region
   access = {
     owner = { role = "OWNER", type = "user" }
   }
