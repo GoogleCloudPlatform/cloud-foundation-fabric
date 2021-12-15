@@ -109,8 +109,8 @@ resource "google_app_engine_application" "app" {
 resource "google_cloud_scheduler_job" "job" {
   project     = google_app_engine_application.app.project
   region      = var.region
-  name        = "test-job"
-  description = "test http job"
+  name        = "cai-export-job"
+  description = "CAI Export Job"
   schedule    = "* 9 * * 1"
   time_zone   = "Etc/UTC"
 
