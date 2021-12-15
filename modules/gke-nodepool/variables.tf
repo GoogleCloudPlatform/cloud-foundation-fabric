@@ -40,6 +40,18 @@ variable "initial_node_count" {
   default     = 1
 }
 
+variable "kubelet_config" {
+  description = "Kubelet configuration."
+  type        = map(string)
+  default     = null
+}
+
+variable "linux_node_config_sysctls" {
+  description = "Linux node configuration."
+  type        = map(string)
+  default     = null
+}
+
 variable "location" {
   description = "Cluster location."
   type        = string
@@ -209,16 +221,4 @@ variable "workload_metadata_config" {
   description = "Metadata configuration to expose to workloads on the node pool."
   type        = string
   default     = "GKE_METADATA"
-}
-
-variable "kubelet_config" {
-  description = "Kubelet configuration."
-  type = map(string)
-  default = null
-}
-
-variable "linux_node_config_sysctls" {
-  description = "Linux node configuration."
-  type = map(string)
-  default = null
 }
