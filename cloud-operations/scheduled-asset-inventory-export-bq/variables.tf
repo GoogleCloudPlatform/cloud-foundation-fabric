@@ -29,8 +29,9 @@ variable "bundle_path" {
 variable "cai_config" {
   description = "Cloud Asset inventory export config."
   type = object({
-    bq_dataset = string
-    bq_table   = string
+    bq_dataset  = string
+    bq_table    = string
+    target_node = string
   })
 }
 
