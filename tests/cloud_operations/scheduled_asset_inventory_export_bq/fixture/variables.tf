@@ -26,7 +26,7 @@ variable "cai_config" {
   default = {
     bq_dataset  = "my-dataset"
     bq_table    = "my_table"
-    target_node = "ogranization/1234567890"
+    target_node = "organization/1234567890"
   }
 }
 
