@@ -71,7 +71,7 @@ locals {
         type : "service_account",
         project_id : var.project_id,
         private_key_id : split("/", google_service_account_key.upload_key[file].id)[5]
-        private_key : "REPLASE_ME_WITH_PRIVATE_KEY_DATA"
+        private_key : "REPLACE_ME_WITH_PRIVATE_KEY_DATA"
         client_email : local.resource_email_static
         client_id : local.service_account.unique_id,
         auth_uri : "https://accounts.google.com/o/oauth2/auth",

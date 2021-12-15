@@ -2,10 +2,10 @@
 
 When managing GCP Service Accounts with terraform, it's often a question on **how to avoid Service Account Key in the terraform state?**
 
-This example shows how to manage IAM Service Account Keys by generating a key pair and uploading the public part of the key to GCP, it has the following benefits:
+This example shows how to manage IAM Service Account Keys by manually generating a key pair and uploading the public part of the key to GCP. It has the following benefits:
 
  - no [passing keys between users](https://cloud.google.com/iam/docs/best-practices-for-managing-service-account-keys#pass-between-users) or systems
- - no SA key stored in the terraform state (only public part of the key in the state)
+ - no private keys stored in the terraform state (only public part of the key is in the state)
  - let keys [expire automatically](https://cloud.google.com/iam/docs/best-practices-for-managing-service-account-keys#key-expiryhaving)
 
 
