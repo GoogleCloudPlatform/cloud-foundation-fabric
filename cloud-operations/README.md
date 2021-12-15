@@ -49,6 +49,6 @@ The example's feed tracks changes to Google Compute instances, and the Cloud Fun
 ## On-prem Service Account key management
 
 
-This [example](./onprem-sa-key-management) shows how to manage IAM Service Account Keys by generating a key pair and uploading the public part of the key to GCP.
-
+This [example](./onprem-sa-key-management) shows how to manage IAM Service Account Keys by manually generating a key pair and uploading the public part of the key to GCP.
+s
 <br clear="left">
