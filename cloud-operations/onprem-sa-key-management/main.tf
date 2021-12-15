@@ -14,34 +14,24 @@
  * limitations under the License.
  */
 
+locals {
+  service_accounts = { for sa in var.service_accounts : sa.name => sa }
+}
+
 module "project" {
   source         = "../../modules/project"
   name           = var.project_id
   project_create = var.project_create
+  services       = var.services
 }
 
-module "onprem-data-uploader" {
+module "integration-sa" {
   source     = "../../modules/iam-service-account"
+  for_each   = local.service_accounts
   project_id = module.project.project_id
-  name       = "onprem-data-uploader"
+  name       = each.value.name
   iam_project_roles = {
-    (module.project.project_id) = [
-      "roles/bigquery.dataOwner",
-      "roles/bigquery.jobUser",
-      "roles/storage.objectAdmin"
-    ]
+    (module.project.project_id) = each.value.iam_project_roles
   }
-  public_keys_directory = "public-keys/data-uploader/"
-}
-
-module "onprem-prisma-security" {
-  source     = "../../modules/iam-service-account"
-  project_id = module.project.project_id
-  name       = "onprem-prisma-security"
-  iam_project_roles = {
-    (module.project.project_id) = [
-      "roles/iam.securityReviewer"
-    ]
-  }
-  public_keys_directory = "public-keys/prisma-security/"
+  public_keys_directory = each.value.public_keys_path
 }
