@@ -25,12 +25,6 @@ variable "project_id" {
   type        = string
 }
 
-variable "services" {
-  description = "Service APIs to enable."
-  type        = list(string)
-  default     = []
-}
-
 variable "service_accounts" {
   description = "List of service accounts."
   type = list(object({
@@ -57,4 +51,10 @@ variable "service_accounts" {
     },
   ]
 
+}
+
+variable "services" {
+  description = "Service APIs to enable."
+  type        = list(string)
+  default     = []
 }
