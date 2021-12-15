@@ -210,3 +210,15 @@ variable "workload_metadata_config" {
   type        = string
   default     = "GKE_METADATA"
 }
+
+variable "kubelet_config" {
+  description = "Kubelet configuration."
+  type = map(string)
+  default = null
+}
+
+variable "linux_node_config_sysctls" {
+  description = "Linux node configuration."
+  type = map(string)
+  default = null
+}
