@@ -122,6 +122,7 @@ resource "google_cloud_scheduler_job" "job" {
       bq_project = module.project.project_id
       bq_dataset = var.cai_config.bq_dataset
       bq_table   = var.cai_config.bq_table
+      target_node = var.cai_config.target_node
     }))
   }
 }

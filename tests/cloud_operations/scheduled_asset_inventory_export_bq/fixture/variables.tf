@@ -21,10 +21,12 @@ variable "cai_config" {
   type = object({
     bq_dataset = string
     bq_table   = string
+    target_node = string
   })
   default = {
     bq_dataset = "my-dataset"
     bq_table   = "my_table"
+    target_node = "ogranization/1234567890"
   }
 }
 

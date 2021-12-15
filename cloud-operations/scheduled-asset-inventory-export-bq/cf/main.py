@@ -50,17 +50,18 @@ def _configure_logging(verbose=True):
 @click.option('--bq-project', required=True, help='Bigquery project to use.')
 @click.option('--bq-dataset', required=True, help='Bigquery dataset to use.')
 @click.option('--bq-table', required=True, help='Bigquery table name to use.')
+@click.option('--target-node', required=True, help='Node in Google Cloud resource hierarchy.')
 @click.option('--read-time', required=False, help=(
     'Day to take an asset snapshot in \'YYYYMMDD\' format, uses current day '
     ' as default. Export will run at midnight of the specified day.'))
 @click.option('--verbose', is_flag=True, help='Verbose output')
-def main_cli(project=None, bq_project=None, bq_dataset=None, bq_table=None,
+def main_cli(project=None, bq_project=None, bq_dataset=None, bq_table=None, target_node=None,
              read_time=None, verbose=False):
   '''Trigger Cloud Asset inventory export to Bigquery. Data will be stored in
   the dataset specified on a dated table with the name specified.
   '''
   try:
-    _main(project, bq_project, bq_dataset, bq_table, read_time, verbose)
+    _main(project, bq_project, bq_dataset, bq_table, target_node, read_time, verbose)
   except RuntimeError:
     logging.exception('exception raised')
 
@@ -78,14 +79,13 @@ def main(event, context):
     logging.exception('exception in cloud function entry point')
 
 
-def _main(project=None, bq_project=None, bq_dataset=None, bq_table=None, read_time=None, verbose=False):
+def _main(project=None, bq_project=None, bq_dataset=None, bq_table=None, target_node=None, read_time=None, verbose=False):
   'Module entry point used by cli and cloud function wrappers.'
 
   _configure_logging(verbose)
   if not read_time:
     read_time = datetime.datetime.now()
   client = asset_v1.AssetServiceClient()
-  parent = 'projects/%s' % project
   content_type = asset_v1.ContentType.RESOURCE
   output_config = asset_v1.OutputConfig()
   output_config.bigquery_destination.dataset = 'projects/%s/datasets/%s' % (
@@ -97,7 +97,7 @@ def _main(project=None, bq_project=None, bq_dataset=None, bq_table=None, read_ti
   try:
     response = client.export_assets(
         request={
-            'parent': parent,
+            'parent': target_node,
             'read_time': read_time,
             'content_type': content_type,
             'output_config': output_config
@@ -106,7 +106,7 @@ def _main(project=None, bq_project=None, bq_dataset=None, bq_table=None, read_ti
   except (GoogleAPIError, googleapiclient.errors.HttpError) as e:
     logging.debug('API Error: %s', e, exc_info=True)
     raise RuntimeError(
-        'Error fetching Asset Inventory entries (project: %s)' % parent, e)
+        'Error fetching Asset Inventory entries (resource manager node: %s)' % target_node, e)
 
 
 if __name__ == '__main__':
