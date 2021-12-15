@@ -15,20 +15,21 @@
  */
 
 module "test" {
-  source                           = "../../../../modules/net-vpc"
-  project_id                       = var.project_id
-  name                             = var.name
-  iam                              = var.iam
-  log_configs                      = var.log_configs
-  log_config_defaults              = var.log_config_defaults
-  peering_config                   = var.peering_config
-  routes                           = var.routes
-  shared_vpc_host                  = var.shared_vpc_host
-  shared_vpc_service_projects      = var.shared_vpc_service_projects
-  subnets                          = var.subnets
-  subnet_descriptions              = var.subnet_descriptions
-  subnet_flow_logs                 = var.subnet_flow_logs
-  subnet_private_access            = var.subnet_private_access
-  auto_create_subnetworks          = var.auto_create_subnetworks
-  private_service_networking_range = var.private_service_networking_range
+  source                      = "../../../../modules/net-vpc"
+  project_id                  = var.project_id
+  name                        = var.name
+  iam                         = var.iam
+  log_configs                 = var.log_configs
+  log_config_defaults         = var.log_config_defaults
+  peering_config              = var.peering_config
+  routes                      = var.routes
+  shared_vpc_host             = var.shared_vpc_host
+  shared_vpc_service_projects = var.shared_vpc_service_projects
+  subnets                     = var.subnets
+  subnet_descriptions         = var.subnet_descriptions
+  subnet_flow_logs            = var.subnet_flow_logs
+  subnet_private_access       = var.subnet_private_access
+  auto_create_subnetworks     = var.auto_create_subnetworks
+  psn_ranges                  = var.psn_ranges
+  data_folder                 = var.data_folder
 }

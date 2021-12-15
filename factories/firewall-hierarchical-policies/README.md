@@ -12,7 +12,7 @@ This module also allows defining custom template variables, to centralize common
 
 ```hcl
 module "hierarchical" {
-  source           = "./modules/resource-factories/hierarchical-firewall"
+  source           = "./factories/hierarchical-firewall-policies"
   config_folder    = "firewall/hierarchical"
   templates_folder = "firewall/templates"
 }
