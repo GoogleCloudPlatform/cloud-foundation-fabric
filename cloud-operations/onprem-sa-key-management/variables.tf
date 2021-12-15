@@ -24,3 +24,37 @@ variable "project_id" {
   description = "Project id."
   type        = string
 }
+
+variable "services" {
+  description = "Service APIs to enable."
+  type        = list(string)
+  default     = []
+}
+
+variable "service_accounts" {
+  description = "List of service accounts."
+  type = list(object({
+    name              = string
+    iam_project_roles = list(string)
+    public_keys_path  = string
+  }))
+  default = [
+    {
+      name = "data-uploader"
+      iam_project_roles = [
+        "roles/bigquery.dataOwner",
+        "roles/bigquery.jobUser",
+        "roles/storage.objectAdmin"
+      ]
+      public_keys_path = "public-keys/data-uploader/"
+    },
+    {
+      name = "prisma-security"
+      iam_project_roles = [
+        "roles/iam.securityReviewer"
+      ]
+      public_keys_path = "public-keys/prisma-security/"
+    },
+  ]
+
+}

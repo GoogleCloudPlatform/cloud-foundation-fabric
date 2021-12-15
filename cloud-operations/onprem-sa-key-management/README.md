@@ -42,8 +42,8 @@ terraform apply -var project_id=$GOOGLE_CLOUD_PROJECT
 
 Extract JSON credentials templates from terraform output and put the private part of the keys into templates
 ```bash
-terraform show -json | jq '.values.outputs."data-uploader-credentials".value."public_key.pem" | fromjson' > data-uploader.json
-terraform show -json | jq '.values.outputs."prisma-security-credentials".value."public_key.pem" | fromjson' > prisma-security.json
+terraform show -json | jq '.values.outputs."sa-credentials".value."data-uploader"."public_key.pem" | fromjson' > data-uploader.json
+terraform show -json | jq '.values.outputs."sa-credentials".value."prisma-security"."public_key.pem" | fromjson' > prisma-security.json
 
 contents=$(jq --arg key "$(cat keys/data_uploader_private_key.pem)" '.private_key=$key' data-uploader.json) && echo "$contents" > data-uploader.json
 contents=$(jq --arg key "$(cat keys/prisma_security_private_key.pem)" '.private_key=$key' prisma-security.json) && echo "$contents" > prisma-security.json
@@ -68,11 +68,12 @@ terraform destroy -var project_id=$GOOGLE_CLOUD_PROJECT
 |---|---|:---: |:---:|:---:|
 | project_id | Project id. | <code title="">string</code> | ✓ |  |
 | *project_create* | Create project instead of using an existing one. | <code title="">bool</code> |  | <code title="">false</code> |
+| *service_accounts* | List of service accounts. | <code title="list&#40;object&#40;&#123;&#10;name              &#61; string&#10;iam_project_roles &#61; list&#40;string&#41;&#10;public_keys_path  &#61; string&#10;&#125;&#41;&#41;">list(object({...}))</code> |  | <code title="&#91;&#10;&#123;&#10;name &#61; &#34;data-uploader&#34;&#10;iam_project_roles &#61; &#91;&#10;&#34;roles&#47;bigquery.dataOwner&#34;,&#10;&#34;roles&#47;bigquery.jobUser&#34;,&#10;&#34;roles&#47;storage.objectAdmin&#34;&#10;&#93;&#10;public_keys_path &#61; &#34;public-keys&#47;data-uploader&#47;&#34;&#10;&#125;,&#10;&#123;&#10;name &#61; &#34;prisma-security&#34;&#10;iam_project_roles &#61; &#91;&#10;&#34;roles&#47;iam.securityReviewer&#34;&#10;&#93;&#10;public_keys_path &#61; &#34;public-keys&#47;prisma-security&#47;&#34;&#10;&#125;,&#10;&#93;">...</code> |
+| *services* | Service APIs to enable. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| data-uploader-credentials | Data Uploader SA json key templates. |  |
-| prisma-security-credentials | Prisma Security SA json key templates. |  |
+| sa-credentials | SA json key templates. |  |
 <!-- END TFDOC -->

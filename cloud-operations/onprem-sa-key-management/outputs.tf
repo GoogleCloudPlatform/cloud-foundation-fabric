@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-output "data-uploader-credentials" {
-  description = "Data Uploader SA json key templates."
-  value       = module.onprem-data-uploader.service_account_credentials
-}
-
-output "prisma-security-credentials" {
-  description = "Prisma Security SA json key templates."
-  value       = module.onprem-prisma-security.service_account_credentials
+output "sa-credentials" {
+  description = "SA json key templates."
+  value       = { for key, value in module.integration-sa : key => value.service_account_credentials }
 }

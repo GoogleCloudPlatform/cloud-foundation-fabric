@@ -28,8 +28,8 @@
 
 # extract JSON credentials templates from terraform output and put the private part of the keys into templates
 
-- terraform show -json | jq '.values.outputs."data-uploader-credentials".value."public_key.pem" | fromjson' > data-uploader.json
-- terraform show -json | jq '.values.outputs."prisma-security-credentials".value."public_key.pem" | fromjson' > prisma-security.json
+- terraform show -json | jq '.values.outputs."sa-credentials".value."data-uploader"."public_key.pem" | fromjson' > data-uploader.json
+- terraform show -json | jq '.values.outputs."sa-credentials".value."prisma-security"."public_key.pem" | fromjson' > prisma-security.json
 
 - contents=$(jq --arg key "$(cat keys/data_uploader_private_key.pem)" '.private_key=$key' data-uploader.json) && echo "$contents" > data-uploader.json
 - contents=$(jq --arg key "$(cat keys/prisma_security_private_key.pem)" '.private_key=$key' prisma-security.json) && echo "$contents" > prisma-security.json
