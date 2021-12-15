@@ -60,6 +60,37 @@ variable "regional" {
   default = false
 }
 
+variable "stateful_config" {
+  description = "Stateful configuration can be done by individual instances or for all instances in the MIG. They key in per_instance_config is the name of the specific instance. The key of the stateful_disks is the 'device_name' field of the resource. Please note that device_name is defined at the OS mount level, unlike the disk name."
+  type = object({
+    per_instance_config = map(object({
+      #name is the key
+      #name = string
+      stateful_disks = map(object({
+        #device_name is the key
+        source      = string
+        mode        = string # READ_WRITE | READ_ONLY 
+        delete_rule = string # NEVER | ON_PERMANENT_INSTANCE_DELETION
+      }))
+      metadata = map(string)
+      update_config = object({
+        minimal_action                   = string # NONE | REPLACE | RESTART | REFRESH
+        most_disruptive_allowed_action   = string # REPLACE | RESTART | REFRESH | NONE
+        remove_instance_state_on_destroy = bool
+      })
+    }))
+
+    mig_config = object({
+      stateful_disks = map(object({
+        #device_name is the key
+        delete_rule = string # NEVER | ON_PERMANENT_INSTANCE_DELETION
+      }))
+    })
+
+  })
+  default = null
+}
+
 variable "update_policy" {
   type = object({
     type                 = string # OPPORTUNISTIC | PROACTIVE
