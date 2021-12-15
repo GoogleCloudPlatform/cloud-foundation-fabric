@@ -30,7 +30,7 @@ def _plan_runner():
     "Runs Terraform plan and returns parsed output."
     tf = tftest.TerraformTest(fixture_path, BASEDIR,
                               os.environ.get('TERRAFORM', 'terraform'))
-    tf.setup()
+    tf.setup(upgrade=True)
     return tf.plan(output=True, refresh=refresh, tf_vars=tf_vars, targets=targets)
 
   return run_plan
@@ -94,7 +94,7 @@ def apply_runner():
     "Runs Terraform apply and returns parsed output"
     tf = tftest.TerraformTest(fixture_path, BASEDIR,
                               os.environ.get('TERRAFORM', 'terraform'))
-    tf.setup()
+    tf.setup(upgrade=True)
     apply = tf.apply(tf_vars=tf_vars)
     output = tf.output(json_format=True)
     return apply, output
