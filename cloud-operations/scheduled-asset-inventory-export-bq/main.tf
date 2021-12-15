@@ -73,7 +73,7 @@ module "pubsub" {
 module "cf" {
   source      = "../../modules/cloud-function"
   project_id  = module.project.project_id
-  region = var.region
+  region      = var.region
   name        = var.name
   bucket_name = "${var.name}-${random_pet.random.id}"
   bucket_config = {
@@ -118,10 +118,10 @@ resource "google_cloud_scheduler_job" "job" {
     attributes = {}
     topic_name = module.pubsub.topic.id
     data = base64encode(jsonencode({
-      project    = module.project.project_id
-      bq_project = module.project.project_id
-      bq_dataset = var.cai_config.bq_dataset
-      bq_table   = var.cai_config.bq_table
+      project     = module.project.project_id
+      bq_project  = module.project.project_id
+      bq_dataset  = var.cai_config.bq_dataset
+      bq_table    = var.cai_config.bq_table
       target_node = var.cai_config.target_node
     }))
   }
@@ -135,7 +135,7 @@ module "bq" {
   source     = "../../modules/bigquery-dataset"
   project_id = module.project.project_id
   id         = var.cai_config.bq_dataset
-  location = var.region
+  location   = var.region
   access = {
     owner = { role = "OWNER", type = "user" }
   }
