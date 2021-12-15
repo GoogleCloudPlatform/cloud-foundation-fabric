@@ -36,11 +36,10 @@ variable "cai_config" {
 }
 
 variable "location" {
-  description = "Appe Engine location used in the example."
+  description = "App Engine location used in the example."
   type        = string
   default     = "europe-west"
 }
-
 
 variable "name" {
   description = "Arbitrary string used to name created resources."
@@ -69,4 +68,16 @@ variable "root_node" {
   description = "The resource name of the parent folder or organization for project creation, in 'folders/folder_id' or 'organizations/org_id' format."
   type        = string
   default     = null
+}
+
+variable "schedule" {
+  description = "Describes the schedule on which the Cloud Scheduler job will be executed."
+  type        = string
+  default     = "* 9 * * 1"
+}
+
+variable "time_zone" {
+  description = "Specifies the time zone to be used in interpreting Cloud Scheduler schedule. The value of this field must be a time zone name from the tz database."
+  type        = string
+  default     = "Etc/UTC"
 }

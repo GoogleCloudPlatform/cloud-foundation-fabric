@@ -111,8 +111,8 @@ resource "google_cloud_scheduler_job" "job" {
   region      = var.region
   name        = "cai-export-job"
   description = "CAI Export Job"
-  schedule    = "* 9 * * 1"
-  time_zone   = "Etc/UTC"
+  schedule    = var.schedule
+  time_zone   = var.time_zone
 
   pubsub_target {
     attributes = {}
