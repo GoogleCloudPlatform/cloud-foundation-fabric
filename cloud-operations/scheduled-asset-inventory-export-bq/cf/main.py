@@ -92,6 +92,7 @@ def _main(project=None, bq_project=None, bq_dataset=None, bq_table=None, read_ti
       bq_project, bq_dataset)
   output_config.bigquery_destination.table = '%s_%s' % (
       bq_table, read_time.strftime('%Y%m%d'))
+  output_config.bigquery_destination.separate_tables_per_asset_type = True
   output_config.bigquery_destination.force = True
   try:
     response = client.export_assets(
