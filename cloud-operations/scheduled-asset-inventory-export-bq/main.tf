@@ -66,6 +66,17 @@ module "pubsub" {
   # at the project level via roles/cloudscheduler.serviceAgent
 }
 
+module "pubsub_file" {
+  source     = "../../modules/pubsub"
+  project_id = module.project.project_id
+  name       = var.name_cffile
+  subscriptions = {
+    "${var.name_cffile}-default" = null
+  }
+  # the Cloud Scheduler robot service account already has pubsub.topics.publish
+  # at the project level via roles/cloudscheduler.serviceAgent
+}
+
 ###############################################################################
 #                             Cloud Function                                  #
 ###############################################################################
@@ -89,6 +100,29 @@ module "cf" {
   trigger_config = {
     event    = "google.pubsub.topic.publish"
     resource = module.pubsub.topic.id
+    retry    = null
+  }
+}
+
+module "cffile" {
+  source      = "../../modules/cloud-function"
+  project_id  = module.project.project_id
+  region      = var.region
+  name        = var.name_cffile
+  bucket_name = "${var.name_cffile}-${random_pet.random.id}"
+  bucket_config = {
+    location             = var.region
+    lifecycle_delete_age = null
+  }
+  bundle_config = {
+    source_dir  = "cffile"
+    output_path = var.bundle_path_cffile
+    excludes    = null
+  }
+  service_account = module.service-account.email
+  trigger_config = {
+    event    = "google.pubsub.topic.publish"
+    resource = module.pubsub_file.topic.id
     retry    = null
   }
 }
@@ -124,6 +158,27 @@ resource "google_cloud_scheduler_job" "job" {
       bq_table           = var.cai_config.bq_table
       bq_table_overwrite = var.cai_config.bq_table_overwrite
       target_node        = var.cai_config.target_node
+    }))
+  }
+}
+
+resource "google_cloud_scheduler_job" "job_file" {
+  project     = google_app_engine_application.app.project
+  region      = var.region
+  name        = "file-export-job"
+  description = "File export from BQ Job"
+  schedule    = "* 9 * * 1"
+  time_zone   = "Etc/UTC"
+
+  pubsub_target {
+    attributes = {}
+    topic_name = module.pubsub_file.topic.id
+    data = base64encode(jsonencode({
+      bucket     = var.file_config.bucket
+      filename   = var.file_config.filename
+      format     = var.file_config.format
+      bq_dataset = var.file_config.bq_dataset
+      bq_table   = var.file_config.bq_table
     }))
   }
 }
