@@ -29,6 +29,8 @@ import warnings
 from google.api_core.exceptions import GoogleAPIError
 from google.cloud import bigquery
 
+import click
+
 import googleapiclient.discovery
 import googleapiclient.errors
 
@@ -42,15 +44,12 @@ def _configure_logging(verbose=True):
   logging.basicConfig(level=level)
   warnings.filterwarnings('ignore', r'.*end user credentials.*', UserWarning)
 
-
-
 @click.command()
 @click.option('--bucket', required=True, help='GCS bucket for export')
 @click.option('--filename', required=True, help='Path and filename with extension to export e.g. folder/export.json .')
 @click.option('--format', required=True, help='The exported file format, e.g. NEWLINE_DELIMITED_JSON or CSV.')
 @click.option('--bq-dataset', required=True, help='Bigquery dataset where table for export is located.')
 @click.option('--bq-table', required=True, help='Bigquery table to export.')
-@click.option('--bq-table-overwrite', required=True, help='Overwrite existing BQ table or create new datetime() one.')
 @click.option('--verbose', is_flag=True, help='Verbose output')
 def main_cli(bucket=None, filename=None, format=None, bq_dataset=None, bq_table=None, verbose=False):
   '''Trigger Cloud Asset inventory export from Bigquery to file. Data will be stored in
@@ -84,7 +83,7 @@ def _main(bucket=None, filename=None, format=None, bq_dataset=None, bq_table=Non
   table_ref = dataset_ref.table(bq_table)
   job_config = bigquery.job.ExtractJobConfig()
   job_config.destination_format = (
-    "bigquery.DestinationFormat." + format)
+    getattr(bigquery.DestinationFormat, format) )
   extract_job = client.extract_table(
     table_ref, destination_uri, job_config=job_config
     )
@@ -94,3 +93,7 @@ def _main(bucket=None, filename=None, format=None, bq_dataset=None, bq_table=Non
     logging.debug('API Error: %s', e, exc_info=True)
     raise RuntimeError(
         'Error exporting BQ table %s as a file' % bq_table, e)
+
+
+if __name__ == '__main__':
+  main_cli()
