@@ -42,8 +42,12 @@ variable "initial_node_count" {
 
 variable "kubelet_config" {
   description = "Kubelet configuration."
-  type        = map(string)
-  default     = null
+  type = object({
+    cpu_cfs_quota        = string
+    cpu_cfs_quota_period = string
+    cpu_manager_policy   = string
+  })
+  default = null
 }
 
 variable "linux_node_config_sysctls" {
