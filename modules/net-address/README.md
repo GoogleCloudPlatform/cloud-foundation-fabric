@@ -104,6 +104,6 @@ module "addresses" {
 | external_addresses | Allocated external addresses. |  |
 | global_addresses | Allocated global external addresses. |  |
 | internal_addresses | Allocated internal addresses. |  |
-| psa_addresses | Allocated internal addresses for PSC endpoints. |  |
+| psa_addresses | Allocated internal addresses for PSA endpoints. |  |
 | psc_addresses | Allocated internal addresses for PSC endpoints. |  |
 <!-- END TFDOC -->
