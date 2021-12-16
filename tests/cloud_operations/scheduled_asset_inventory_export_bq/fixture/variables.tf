@@ -19,16 +19,19 @@ variable "billing_account" {
 
 variable "cai_config" {
   type = object({
-    bq_dataset  = string
-    bq_table    = string
-    target_node = string
+    bq_dataset         = string
+    bq_table           = string
+    bq_table_overwrite = bool
+    target_node        = string
   })
   default = {
-    bq_dataset  = "my-dataset"
-    bq_table    = "my_table"
-    target_node = "organization/1234567890"
+    bq_dataset         = "my-dataset"
+    bq_table           = "my_table"
+    bq_table_overwrite = "true"
+    target_node        = "organization/1234567890"
   }
 }
+
 
 variable "project_create" {
   type    = bool
