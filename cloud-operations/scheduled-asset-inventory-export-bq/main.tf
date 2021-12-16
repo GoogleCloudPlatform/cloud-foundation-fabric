@@ -118,11 +118,12 @@ resource "google_cloud_scheduler_job" "job" {
     attributes = {}
     topic_name = module.pubsub.topic.id
     data = base64encode(jsonencode({
-      project     = module.project.project_id
-      bq_project  = module.project.project_id
-      bq_dataset  = var.cai_config.bq_dataset
-      bq_table    = var.cai_config.bq_table
-      target_node = var.cai_config.target_node
+      project            = module.project.project_id
+      bq_project         = module.project.project_id
+      bq_dataset         = var.cai_config.bq_dataset
+      bq_table           = var.cai_config.bq_table
+      bq_table_overwrite = var.cai_config.bq_table_overwrite
+      target_node        = var.cai_config.target_node
     }))
   }
 }
