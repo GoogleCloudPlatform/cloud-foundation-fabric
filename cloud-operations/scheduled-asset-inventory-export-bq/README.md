@@ -38,17 +38,29 @@ Once resources are created, you can run queries on the data you exported on Bigq
 
 You can also create a dashboard connecting [Datalab](https://datastudio.google.com/) or any other BI tools of your choice to your Bigquery datase.
 
+## File exporter for JSON, CSV. 
+
+Regular file-based exports of Cloud Asset Inventory may be useful for scale-out network dependency discovery like [Planet Exporter](https://github.com/williamchanrico/planet-exporter) or to update asset tracking or configuration management workflows. Bigquery supports multiple [export formats](https://cloud.google.com/bigquery/docs/exporting-data#export_formats_and_compression_types) and one may upload objects to Storage Bucket using provided Cloud Function. Specify `job.DestinationFormat` as defined in [documentation](https://googleapis.dev/python/bigquery/latest/generated/google.cloud.bigquery.job.DestinationFormat.html), e.g. `NEWLINE_DELIMITED_JSON`.
+
+It helps to create custom [scheduled query](https://cloud.google.com/bigquery/docs/scheduling-queries#console) for to comply with downstream systems' fields, and to time it with CAI export into BQ for freshness. See [sample queries](https://cloud.google.com/asset-inventory/docs/exporting-to-bigquery-sample-queries).
+
+Note: Cloud Function's Service Account needs write-capable IAM role on `bucket`.
+
+
 <!-- BEGIN TFDOC -->
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
-| cai_config | Cloud Asset inventory export config. | <code title="object&#40;&#123;&#10;bq_dataset  &#61; string&#10;bq_table    &#61; string&#10;target_node &#61; string&#10;&#125;&#41;">object({...})</code> | ✓ |  |
+| cai_config | Cloud Asset Inventory export config. | <code title="object&#40;&#123;&#10;bq_dataset         &#61; string&#10;bq_table           &#61; string&#10;bq_table_overwrite &#61; bool&#10;target_node        &#61; string&#10;&#125;&#41;">object({...})</code> | ✓ |  |
 | project_id | Project id that references existing project. | <code title="">string</code> | ✓ |  |
 | *billing_account* | Billing account id used as default for new projects. | <code title="">string</code> |  | <code title="">null</code> |
 | *bundle_path* | Path used to write the intermediate Cloud Function code bundle. | <code title="">string</code> |  | <code title="">./bundle.zip</code> |
+| *bundle_path_cffile* | Path used to write the intermediate Cloud Function code bundle. | <code title="">string</code> |  | <code title="">./bundle_cffile.zip</code> |
+| *file_config* | Optional BQ table as a file export function config. | <code title="object&#40;&#123;&#10;bucket     &#61; string&#10;filename   &#61; string&#10;format     &#61; string&#10;bq_dataset &#61; string&#10;bq_table   &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;bucket     &#61; null&#10;filename   &#61; null&#10;format     &#61; null&#10;bq_dataset &#61; null&#10;bq_table   &#61; null&#10;&#125;">...</code> |
 | *location* | Appe Engine location used in the example. | <code title="">string</code> |  | <code title="">europe-west</code> |
 | *name* | Arbitrary string used to name created resources. | <code title="">string</code> |  | <code title="">asset-inventory</code> |
+| *name_cffile* | Arbitrary string used to name created resources. | <code title="">string</code> |  | <code title="">cffile-exporter</code> |
 | *project_create* | Create project instead ofusing an existing one. | <code title="">bool</code> |  | <code title="">true</code> |
 | *region* | Compute region used in the example. | <code title="">string</code> |  | <code title="">europe-west1</code> |
 | *root_node* | The resource name of the parent folder or organization for project creation, in 'folders/folder_id' or 'organizations/org_id' format. | <code title="">string</code> |  | <code title="">null</code> |

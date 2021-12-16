@@ -51,6 +51,13 @@ variable "file_config" {
     bq_dataset = string
     bq_table   = string
   })
+  default = {
+    bucket     = null
+    filename   = null
+    format     = null
+    bq_dataset = null
+    bq_table   = null
+  }
 }
 
 variable "location" {
