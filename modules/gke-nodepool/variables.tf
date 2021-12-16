@@ -40,6 +40,22 @@ variable "initial_node_count" {
   default     = 1
 }
 
+variable "kubelet_config" {
+  description = "Kubelet configuration."
+  type = object({
+    cpu_cfs_quota        = string
+    cpu_cfs_quota_period = string
+    cpu_manager_policy   = string
+  })
+  default = null
+}
+
+variable "linux_node_config_sysctls" {
+  description = "Linux node configuration."
+  type        = map(string)
+  default     = null
+}
+
 variable "location" {
   description = "Cluster location."
   type        = string

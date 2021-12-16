@@ -45,6 +45,8 @@ module "cluster-1-nodepool-1" {
 | *autoscaling_config* | Optional autoscaling configuration. | <code title="object&#40;&#123;&#10;min_node_count &#61; number&#10;max_node_count &#61; number&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 | *gke_version* | Kubernetes nodes version. Ignored if auto_upgrade is set in management_config. | <code title="">string</code> |  | <code title="">null</code> |
 | *initial_node_count* | Initial number of nodes for the pool. | <code title="">number</code> |  | <code title="">1</code> |
+| *kubelet_config* | Kubelet configuration. | <code title="object&#40;&#123;&#10;cpu_cfs_quota        &#61; string&#10;cpu_cfs_quota_period &#61; string&#10;cpu_manager_policy   &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
+| *linux_node_config_sysctls* | Linux node configuration. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">null</code> |
 | *management_config* | Optional node management configuration. | <code title="object&#40;&#123;&#10;auto_repair  &#61; bool&#10;auto_upgrade &#61; bool&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
 | *max_pods_per_node* | Maximum number of pods per node. | <code title="">number</code> |  | <code title="">null</code> |
 | *name* | Optional nodepool name. | <code title="">string</code> |  | <code title="">null</code> |
