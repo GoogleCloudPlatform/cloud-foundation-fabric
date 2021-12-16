@@ -47,6 +47,7 @@ module "service-account" {
   iam_project_roles = {
     (var.project_id) = [
       "roles/cloudasset.owner",
+      "roles/bigquery.jobUser"
     ]
   }
 }
