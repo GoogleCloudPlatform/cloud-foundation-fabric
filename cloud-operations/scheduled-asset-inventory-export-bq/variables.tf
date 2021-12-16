@@ -26,13 +26,30 @@ variable "bundle_path" {
   default     = "./bundle.zip"
 }
 
+variable "bundle_path_cffile" {
+  description = "Path used to write the intermediate Cloud Function code bundle."
+  type        = string
+  default     = "./bundle_cffile.zip"
+}
+
 variable "cai_config" {
-  description = "Cloud Asset inventory export config."
+  description = "Cloud Asset Inventory export config."
   type = object({
     bq_dataset         = string
     bq_table           = string
     bq_table_overwrite = bool
     target_node        = string
+  })
+}
+
+variable "file_config" {
+  description = "Optional BQ table as a file export function config."
+  type = object({
+    bucket     = string
+    filename   = string
+    format     = string
+    bq_dataset = string
+    bq_table   = string
   })
 }
 
@@ -47,6 +64,13 @@ variable "name" {
   description = "Arbitrary string used to name created resources."
   type        = string
   default     = "asset-inventory"
+}
+
+
+variable "name_cffile" {
+  description = "Arbitrary string used to name created resources."
+  type        = string
+  default     = "cffile-exporter"
 }
 
 variable "project_create" {

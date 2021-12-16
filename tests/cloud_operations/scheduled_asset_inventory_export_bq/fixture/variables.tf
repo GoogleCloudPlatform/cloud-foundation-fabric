@@ -32,6 +32,23 @@ variable "cai_config" {
   }
 }
 
+variable "file_config" {
+  type = object({
+    bucket     = string
+    filename   = string
+    format     = string
+    bq_dataset = string
+    bq_table   = string
+  })
+  default = {
+    bucket     = "my-bucket"
+    filename   = "my-folder/myfile.json"
+    format     = "NEWLINE_DELIMITED_JSON"
+    bq_dataset = "my-dataset"
+    bq_table   = "my_table"
+  }
+}
+
 
 variable "project_create" {
   type    = bool
