@@ -48,7 +48,7 @@ output "internal_addresses" {
 }
 
 output "psa_addresses" {
-  description = "Allocated internal addresses for PSC endpoints."
+  description = "Allocated internal addresses for PSA endpoints."
   value = {
     for address in google_compute_global_address.psa :
     address.name => {
