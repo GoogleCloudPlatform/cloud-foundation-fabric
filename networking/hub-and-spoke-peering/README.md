@@ -80,17 +80,18 @@ A few APIs need to be enabled in the project, if `apply` fails due to a service 
 The VPN used to connect the GKE masters VPC does not account for HA, upgrading to use HA VPN is reasonably simple by using the relevant [module](../../modules/net-vpn-ha).
 
 <!-- BEGIN TFDOC -->
+
 ## Variables
 
 | name | description | type | required | default |
-|---|---|:---: |:---:|:---:|
-| project_id | Project id used for all resources. | <code title="">string</code> | ✓ |  |
-| *ip_ranges* | IP CIDR ranges. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="&#123;&#10;hub     &#61; &#34;10.0.0.0&#47;24&#34;&#10;spoke-1 &#61; &#34;10.0.16.0&#47;24&#34;&#10;spoke-2 &#61; &#34;10.0.32.0&#47;24&#34;&#10;&#125;">...</code> |
-| *ip_secondary_ranges* | Secondary IP CIDR ranges. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="&#123;&#10;spoke-2-pods     &#61; &#34;10.128.0.0&#47;18&#34;&#10;spoke-2-services &#61; &#34;172.16.0.0&#47;24&#34;&#10;&#125;">...</code> |
-| *prefix* | Arbitrary string used to prefix resource names. | <code title="">string</code> |  | <code title="">null</code> |
-| *private_service_ranges* | Private service IP CIDR ranges. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="&#123;&#10;spoke-2-cluster-1 &#61; &#34;192.168.0.0&#47;28&#34;&#10;&#125;">...</code> |
-| *project_create* | Set to non null if project needs to be created. | <code title="object&#40;&#123;&#10;billing_account &#61; string&#10;oslogin         &#61; bool&#10;parent          &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="null&#10;validation &#123;&#10;condition &#61; &#40;&#10;var.project_create &#61;&#61; null&#10;&#63; true&#10;: can&#40;regex&#40;&#34;&#40;organizations&#124;folders&#41;&#47;&#91;0-9&#93;&#43;&#34;, var.project_create.parent&#41;&#41;&#10;&#41;&#10;error_message &#61; &#34;Project parent must be of the form folders&#47;folder_id or organizations&#47;organization_id.&#34;&#10;&#125;">...</code> |
-| *region* | VPC region. | <code title="">string</code> |  | <code title="">europe-west1</code> |
+|---|---|:---:|:---:|:---:|
+| project_id | Project id used for all resources. | <code>string</code> | ✓ |  |
+| ip_ranges | IP CIDR ranges. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  hub     &#61; &#34;10.0.0.0&#47;24&#34;&#10;  spoke-1 &#61; &#34;10.0.16.0&#47;24&#34;&#10;  spoke-2 &#61; &#34;10.0.32.0&#47;24&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| ip_secondary_ranges | Secondary IP CIDR ranges. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  spoke-2-pods     &#61; &#34;10.128.0.0&#47;18&#34;&#10;  spoke-2-services &#61; &#34;172.16.0.0&#47;24&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| prefix | Arbitrary string used to prefix resource names. | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| private_service_ranges | Private service IP CIDR ranges. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  spoke-2-cluster-1 &#61; &#34;192.168.0.0&#47;28&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| project_create | Set to non null if project needs to be created. | <code title="object&#40;&#123;&#10;  billing_account &#61; string&#10;  oslogin         &#61; bool&#10;  parent          &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| region | VPC region. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
 
 ## Outputs
 
@@ -98,4 +99,6 @@ The VPN used to connect the GKE masters VPC does not account for HA, upgrading t
 |---|---|:---:|
 | project | Project id. |  |
 | vms | GCE VMs. |  |
+
+
 <!-- END TFDOC -->

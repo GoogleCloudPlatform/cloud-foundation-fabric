@@ -66,18 +66,19 @@ module "project-tf" {
 ```
 
 <!-- BEGIN TFDOC -->
+
 ## Variables
 
 | name | description | type | required | default |
-|---|---|:---: |:---:|:---:|
-| environment | Environment abbreviation used in names and labels. | <code title="">string</code> | ✓ |  |
-| resources | Short resource names by type. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> | ✓ |  |
-| team | Team name. | <code title="">string</code> | ✓ |  |
-| *labels* | Per-resource labels. | <code title="map&#40;map&#40;map&#40;string&#41;&#41;&#41;">map(map(map(string)))</code> |  | <code title="">{}</code> |
-| *prefix* | Optional name prefix. | <code title="">string</code> |  | <code title="">null</code> |
-| *separator_override* | Optional separator override for specific resource types. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
-| *suffix* | Optional name suffix. | <code title="">string</code> |  | <code title="">null</code> |
-| *use_resource_prefixes* | Prefix names with the resource type. | <code title="">bool</code> |  | <code title="">false</code> |
+|---|---|:---:|:---:|:---:|
+| environment | Environment abbreviation used in names and labels. | <code>string</code> | ✓ |  |
+| resources | Short resource names by type. | <code>map&#40;list&#40;string&#41;&#41;</code> | ✓ |  |
+| team | Team name. | <code>string</code> | ✓ |  |
+| labels | Per-resource labels. | <code>map&#40;map&#40;map&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| prefix | Optional name prefix. | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| separator_override | Optional separator override for specific resource types. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| suffix | Optional name suffix. | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| use_resource_prefixes | Prefix names with the resource type. | <code>bool</code> |  | <code>false</code> |
 
 ## Outputs
 
@@ -85,4 +86,6 @@ module "project-tf" {
 |---|---|:---:|
 | labels | Per resource labels. |  |
 | names | Per resource names. |  |
+
+
 <!-- END TFDOC -->

@@ -109,27 +109,28 @@ module "ilb" {
 ```
 
 <!-- BEGIN TFDOC -->
+
 ## Variables
 
 | name | description | type | required | default |
-|---|---|:---: |:---:|:---:|
-| backends | Load balancer backends, balancing mode is one of 'CONNECTION' or 'UTILIZATION'. | <code title="list&#40;object&#40;&#123;&#10;failover       &#61; bool&#10;group          &#61; string&#10;balancing_mode &#61; string&#10;&#125;&#41;&#41;">list(object({...}))</code> | ✓ |  |
-| name | Name used for all resources. | <code title="">string</code> | ✓ |  |
-| network | Network used for resources. | <code title="">string</code> | ✓ |  |
-| project_id | Project id where resources will be created. | <code title="">string</code> | ✓ |  |
-| region | GCP region. | <code title="">string</code> | ✓ |  |
-| subnetwork | Subnetwork used for the forwarding rule. | <code title="">string</code> | ✓ |  |
-| *address* | Optional IP address used for the forwarding rule. | <code title="">string</code> |  | <code title="">null</code> |
-| *backend_config* | Optional backend configuration. | <code title="object&#40;&#123;&#10;session_affinity                &#61; string&#10;timeout_sec                     &#61; number&#10;connection_draining_timeout_sec &#61; number&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
-| *failover_config* | Optional failover configuration. | <code title="object&#40;&#123;&#10;disable_connection_drain  &#61; bool&#10;drop_traffic_if_unhealthy &#61; bool&#10;ratio                     &#61; number&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
-| *global_access* | Global access, defaults to false if not set. | <code title="">bool</code> |  | <code title="">null</code> |
-| *group_configs* | Optional unmanaged groups to create. Can be referenced in backends via outputs. | <code title="map&#40;object&#40;&#123;&#10;instances   &#61; list&#40;string&#41;&#10;named_ports &#61; map&#40;number&#41;&#10;zone        &#61; string&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
-| *health_check* | Name of existing health check to use, disables auto-created health check. | <code title="">string</code> |  | <code title="">null</code> |
-| *health_check_config* | Configuration of the auto-created helth check. | <code title="object&#40;&#123;&#10;type &#61; string      &#35; http https tcp ssl http2&#10;check   &#61; map&#40;any&#41;    &#35; actual health check block attributes&#10;config  &#61; map&#40;number&#41; &#35; interval, thresholds, timeout&#10;logging &#61; bool&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;type &#61; &#34;http&#34;&#10;check &#61; &#123;&#10;port_specification &#61; &#34;USE_SERVING_PORT&#34;&#10;&#125;&#10;config  &#61; &#123;&#125;&#10;logging &#61; false&#10;&#125;">...</code> |
-| *labels* | Labels set on resources. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
-| *ports* | Comma-separated ports, leave null to use all ports. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">null</code> |
-| *protocol* | IP protocol used, defaults to TCP. | <code title="">string</code> |  | <code title="">TCP</code> |
-| *service_label* | Optional prefix of the fully qualified forwarding rule name. | <code title="">string</code> |  | <code title="">null</code> |
+|---|---|:---:|:---:|:---:|
+| backends | Load balancer backends, balancing mode is one of 'CONNECTION' or 'UTILIZATION'. | <code title="list&#40;object&#40;&#123;&#10;  failover       &#61; bool&#10;  group          &#61; string&#10;  balancing_mode &#61; string&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
+| name | Name used for all resources. | <code>string</code> | ✓ |  |
+| network | Network used for resources. | <code>string</code> | ✓ |  |
+| project_id | Project id where resources will be created. | <code>string</code> | ✓ |  |
+| region | GCP region. | <code>string</code> | ✓ |  |
+| subnetwork | Subnetwork used for the forwarding rule. | <code>string</code> | ✓ |  |
+| address | Optional IP address used for the forwarding rule. | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| backend_config | Optional backend configuration. | <code title="object&#40;&#123;&#10;  session_affinity                &#61; string&#10;  timeout_sec                     &#61; number&#10;  connection_draining_timeout_sec &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| failover_config | Optional failover configuration. | <code title="object&#40;&#123;&#10;  disable_connection_drain  &#61; bool&#10;  drop_traffic_if_unhealthy &#61; bool&#10;  ratio                     &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| global_access | Global access, defaults to false if not set. | <code>bool</code> |  | <code>null</code> |
+| group_configs | Optional unmanaged groups to create. Can be referenced in backends via outputs. | <code title="map&#40;object&#40;&#123;&#10;  instances   &#61; list&#40;string&#41;&#10;  named_ports &#61; map&#40;number&#41;&#10;  zone        &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| health_check | Name of existing health check to use, disables auto-created health check. | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| health_check_config | Configuration of the auto-created helth check. | <code title="object&#40;&#123;&#10;  type    &#61; string      &#35; http https tcp ssl http2&#10;  check   &#61; map&#40;any&#41;    &#35; actual health check block attributes&#10;  config  &#61; map&#40;number&#41; &#35; interval, thresholds, timeout&#10;  logging &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  type &#61; &#34;http&#34;&#10;  check &#61; &#123;&#10;    port_specification &#61; &#34;USE_SERVING_PORT&#34;&#10;  &#125;&#10;  config  &#61; &#123;&#125;&#10;  logging &#61; false&#10;&#125;">&#123;&#8230;&#125;</code> |
+| labels | Labels set on resources. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| ports | Comma-separated ports, leave null to use all ports. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
+| protocol | IP protocol used, defaults to TCP. | <code>string</code> |  | <code>&#34;TCP&#34;</code> |
+| service_label | Optional prefix of the fully qualified forwarding rule name. | <code>string</code> |  | <code>&#34;null&#34;</code> |
 
 ## Outputs
 
@@ -147,4 +148,6 @@ module "ilb" {
 | health_check | Auto-created health-check resource. |  |
 | health_check_self_id | Auto-created health-check self id. |  |
 | health_check_self_link | Auto-created health-check self link. |  |
+
+
 <!-- END TFDOC -->

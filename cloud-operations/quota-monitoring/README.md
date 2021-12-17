@@ -24,19 +24,19 @@ Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/c
 - `terraform apply -var project_id=my-project-id`
 
 <!-- BEGIN TFDOC -->
+
 ## Variables
 
 | name | description | type | required | default |
-|---|---|:---: |:---:|:---:|
-| project_id | Project id that references existing project. | <code title="">string</code> | ✓ |  |
-| *bundle_path* | Path used to write the intermediate Cloud Function code bundle. | <code title="">string</code> |  | <code title="">./bundle.zip</code> |
-| *name* | Arbitrary string used to name created resources. | <code title="">string</code> |  | <code title="">quota-monitor</code> |
-| *project_create* | Create project instead ofusing an existing one. | <code title="">bool</code> |  | <code title="">false</code> |
-| *quota_config* | Cloud function configuration. | <code title="object&#40;&#123;&#10;filters  &#61; list&#40;string&#41;&#10;projects &#61; list&#40;string&#41;&#10;regions  &#61; list&#40;string&#41;&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;filters  &#61; null&#10;projects &#61; null&#10;regions  &#61; null&#10;&#125;">...</code> |
-| *region* | Compute region used in the example. | <code title="">string</code> |  | <code title="">europe-west1</code> |
-| *schedule_config* | Schedule timer configuration in crontab format | <code title="">string</code> |  | <code title="">0 * * * *</code> |
+|---|---|:---:|:---:|:---:|
+| project_id | Project id that references existing project. | <code>string</code> | ✓ |  |
+| bundle_path | Path used to write the intermediate Cloud Function code bundle. | <code>string</code> |  | <code>&#34;.&#47;bundle.zip&#34;</code> |
+| name | Arbitrary string used to name created resources. | <code>string</code> |  | <code>&#34;quota-monitor&#34;</code> |
+| project_create | Create project instead ofusing an existing one. | <code>bool</code> |  | <code>false</code> |
+| quota_config | Cloud function configuration. | <code title="object&#40;&#123;&#10;  filters  &#61; list&#40;string&#41;&#10;  projects &#61; list&#40;string&#41;&#10;  regions  &#61; list&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  filters  &#61; null&#10;  projects &#61; null&#10;  regions  &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
+| region | Compute region used in the example. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| schedule_config | Schedule timer configuration in crontab format | <code>string</code> |  | <code>&#34;0 &#42; &#42; &#42; &#42;&#34;</code> |
 
-## Outputs
 
 <!-- END TFDOC -->
 

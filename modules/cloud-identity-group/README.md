@@ -33,15 +33,16 @@ module "group" {
 ```
 
 <!-- BEGIN TFDOC -->
+
 ## Variables
 
 | name | description | type | required | default |
-|---|---|:---: |:---:|:---:|
-| customer_id | Directory customer ID in the form customers/C0xxxxxxx. | <code title="string&#10;validation &#123;&#10;condition     &#61; can&#40;regex&#40;&#34;&#94;customers&#47;C0&#91;a-z0-9&#93;&#123;7&#125;&#36;&#34;, var.customer_id&#41;&#41;&#10;error_message &#61; &#34;Customer ID must be in the form customers&#47;C0xxxxxxx.&#34;&#10;&#125;">string</code> | ✓ |  |
-| display_name | Group display name. | <code title="">string</code> | ✓ |  |
-| name | Group ID (usually an email). | <code title="">string</code> | ✓ |  |
-| *description* | Group description | <code title="">string</code> |  | <code title="">null</code> |
-| *members* | List of group members. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
+|---|---|:---:|:---:|:---:|
+| customer_id | Directory customer ID in the form customers/C0xxxxxxx. | <code>string</code> | ✓ |  |
+| display_name | Group display name. | <code>string</code> | ✓ |  |
+| name | Group ID (usually an email). | <code>string</code> | ✓ |  |
+| description | Group description | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| members | List of group members. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 
 ## Outputs
 
@@ -49,4 +50,6 @@ module "group" {
 |---|---|:---:|
 | id | Group ID. |  |
 | name | Group name. |  |
+
+
 <!-- END TFDOC -->

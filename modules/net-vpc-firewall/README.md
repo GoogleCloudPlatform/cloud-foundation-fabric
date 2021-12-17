@@ -125,29 +125,33 @@ healthchecks:
 ```
 
 <!-- BEGIN TFDOC -->
+
 ## Variables
 
 | name | description | type | required | default |
-|---|---|:---: |:---:|:---:|
-| network | Name of the network this set of firewall rules applies to. | <code title="">string</code> | ✓ |  |
-| project_id | Project id of the project that holds the network. | <code title="">string</code> | ✓ |  |
-| *admin_ranges* | IP CIDR ranges that have complete access to all subnets. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
-| *cidr_template_file* | Path for optional file containing name->cidr_list map to be used by the rules factory. | <code title="">string</code> |  | <code title="">null</code> |
-| *custom_rules* | List of custom rule definitions (refer to variables file for syntax). | <code title="map&#40;object&#40;&#123;&#10;description          &#61; string&#10;direction            &#61; string&#10;action               &#61; string &#35; &#40;allow&#124;deny&#41;&#10;ranges               &#61; list&#40;string&#41;&#10;sources              &#61; list&#40;string&#41;&#10;targets              &#61; list&#40;string&#41;&#10;use_service_accounts &#61; bool&#10;rules &#61; list&#40;object&#40;&#123;&#10;protocol &#61; string&#10;ports    &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;&#10;extra_attributes &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
-| *data_folder* | Path for optional folder containing firewall rules defined as YaML objects used by the rules factory. | <code title="">string</code> |  | <code title="">null</code> |
-| *http_source_ranges* | List of IP CIDR ranges for tag-based HTTP rule, defaults to the health checkers ranges. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">["35.191.0.0/16", "130.211.0.0/22", "209.85.152.0/22", "209.85.204.0/22"]</code> |
-| *https_source_ranges* | List of IP CIDR ranges for tag-based HTTPS rule, defaults to the health checkers ranges. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">["35.191.0.0/16", "130.211.0.0/22", "209.85.152.0/22", "209.85.204.0/22"]</code> |
-| *named_ranges* | Names that can be used of valid values for the `ranges` field of `custom_rules` | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="&#123;&#10;any                   &#61; &#91;&#34;0.0.0.0&#47;0&#34;&#93;&#10;dns-forwarders        &#61; &#91;&#34;35.199.192.0&#47;19&#34;&#93;&#10;health-checkers       &#61; &#91;&#34;35.191.0.0&#47;16&#34;, &#34;130.211.0.0&#47;22&#34;, &#34;209.85.152.0&#47;22&#34;, &#34;209.85.204.0&#47;22&#34;&#93;&#10;iap-forwarders        &#61; &#91;&#34;35.235.240.0&#47;20&#34;&#93;&#10;private-googleapis    &#61; &#91;&#34;199.36.153.8&#47;30&#34;&#93;&#10;restricted-googleapis &#61; &#91;&#34;199.36.153.4&#47;30&#34;&#93;&#10;rfc1918               &#61; &#91;&#34;10.0.0.0&#47;8&#34;, &#34;172.16.0.0&#47;12&#34;, &#34;192.168.0.0&#47;16&#34;&#93;&#10;&#125;">...</code> |
-| *ssh_source_ranges* | List of IP CIDR ranges for tag-based SSH rule, defaults to the IAP forwarders range. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">["35.235.240.0/20"]</code> |
+|---|---|:---:|:---:|:---:|
+| network | Name of the network this set of firewall rules applies to. | <code>string</code> | ✓ |  |
+| project_id | Project id of the project that holds the network. | <code>string</code> | ✓ |  |
+| admin_ranges | IP CIDR ranges that have complete access to all subnets. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| cidr_template_file | Path for optional file containing name->cidr_list map to be used by the rules factory. | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| custom_rules | List of custom rule definitions (refer to variables file for syntax). | <code title="map&#40;object&#40;&#123;&#10;  description          &#61; string&#10;  direction            &#61; string&#10;  action               &#61; string &#35; &#40;allow&#124;deny&#41;&#10;  ranges               &#61; list&#40;string&#41;&#10;  sources              &#61; list&#40;string&#41;&#10;  targets              &#61; list&#40;string&#41;&#10;  use_service_accounts &#61; bool&#10;  rules &#61; list&#40;object&#40;&#123;&#10;    protocol &#61; string&#10;    ports    &#61; list&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  extra_attributes &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| data_folder | Path for optional folder containing firewall rules defined as YaML objects used by the rules factory. | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| http_source_ranges | List of IP CIDR ranges for tag-based HTTP rule, defaults to the health checkers ranges. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;35.191.0.0&#47;16&#34;, &#34;130.211.0.0&#47;22&#34;, &#34;209.85.152.0&#47;22&#34;, &#34;209.85.204.0&#47;22&#34;&#93;</code> |
+| https_source_ranges | List of IP CIDR ranges for tag-based HTTPS rule, defaults to the health checkers ranges. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;35.191.0.0&#47;16&#34;, &#34;130.211.0.0&#47;22&#34;, &#34;209.85.152.0&#47;22&#34;, &#34;209.85.204.0&#47;22&#34;&#93;</code> |
+| named_ranges | Names that can be used of valid values for the `ranges` field of `custom_rules` | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code title="&#123;&#10;  any                   &#61; &#91;&#34;0.0.0.0&#47;0&#34;&#93;&#10;  dns-forwarders        &#61; &#91;&#34;35.199.192.0&#47;19&#34;&#93;&#10;  health-checkers       &#61; &#91;&#34;35.191.0.0&#47;16&#34;, &#34;130.211.0.0&#47;22&#34;, &#34;209.85.152.0&#47;22&#34;, &#34;209.85.204.0&#47;22&#34;&#93;&#10;  iap-forwarders        &#61; &#91;&#34;35.235.240.0&#47;20&#34;&#93;&#10;  private-googleapis    &#61; &#91;&#34;199.36.153.8&#47;30&#34;&#93;&#10;  restricted-googleapis &#61; &#91;&#34;199.36.153.4&#47;30&#34;&#93;&#10;  rfc1918               &#61; &#91;&#34;10.0.0.0&#47;8&#34;, &#34;172.16.0.0&#47;12&#34;, &#34;192.168.0.0&#47;16&#34;&#93;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| ssh_source_ranges | List of IP CIDR ranges for tag-based SSH rule, defaults to the IAP forwarders range. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;35.235.240.0&#47;20&#34;&#93;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| admin_ranges | Admin ranges data. |  |
+| admin_ranges | Admin ranges data.
+  value = {    enabled = length(var.admin_ranges) > 0    ranges  = join(",", var.admin_ranges)  } |  |
 | custom_egress_allow_rules | Custom egress rules with allow blocks. |  |
 | custom_egress_deny_rules | Custom egress rules with allow blocks. |  |
 | custom_ingress_allow_rules | Custom ingress rules with allow blocks. |  |
 | custom_ingress_deny_rules | Custom ingress rules with deny blocks. |  |
 | rules | All google_compute_firewall resources created. |  |
+
+
 <!-- END TFDOC -->

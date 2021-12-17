@@ -149,16 +149,19 @@ web_frontends:
 ```
 
 <!-- BEGIN TFDOC -->
+
 ## Variables
 
 | name | description | type | required | default |
-|---|---|:---: |:---:|:---:|
-| config_folder | Relative path of the folder containing the hierarchical firewall configuration | <code title="">string</code> | ✓ |  |
-| templates_folder | Relative path of the folder containing the cidr/service account templates | <code title="">string</code> | ✓ |  |
+|---|---|:---:|:---:|:---:|
+| config_folder | Relative path of the folder containing the hierarchical firewall configuration | <code>string</code> | ✓ |  |
+| templates_folder | Relative path of the folder containing the cidr/service account templates | <code>string</code> | ✓ |  |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
 | hierarchical-firewall-rules | Generated Hierarchical Firewall Rules |  |
+
+
 <!-- END TFDOC -->
