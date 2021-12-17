@@ -26,6 +26,7 @@ variable "extra_telemetry_pub_sub_topic_ids" {
     mqtt_topic = string
     pub_sub_topic = string
   }))
+  default = [{}]
 }
 
 variable "status_pub_sub_topic_id" {
