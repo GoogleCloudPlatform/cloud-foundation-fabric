@@ -175,8 +175,11 @@ def parse_files(basepath):
 
 def parse_outputs(basepath):
   'Return a list of Output named tuples for root module outputs.tf.'
-  with open(os.path.join(basepath, 'outputs.tf')) as file:
-    body = file.read()
+  try:
+    with open(os.path.join(basepath, 'outputs.tf')) as file:
+      body = file.read()
+  except (IOError, OSError) as e:
+    raise SystemExit(f'No outputs file in {basepath}.')
   for item in _parse(body, enum=OUT_ENUM, re=OUT_RE, template=OUT_TEMPLATE):
     yield Output(name=item['name'], description=''.join(item['description']),
                  sensitive=item['sensitive'] != [],
@@ -185,8 +188,11 @@ def parse_outputs(basepath):
 
 def parse_variables(basepath):
   'Return a list of Output named tuples for root module variables.tf.'
-  with open(os.path.join(basepath, 'variables.tf')) as file:
-    body = file.read()
+  try:
+    with open(os.path.join(basepath, 'variables.tf')) as file:
+      body = file.read()
+  except (IOError, OSError) as e:
+    raise SystemExit(f'No variables file in {basepath}.')
   for item in _parse(body):
     # print(item)
     default = HEREDOC_RE.sub(r'\1', '\n'.join(item['default']))

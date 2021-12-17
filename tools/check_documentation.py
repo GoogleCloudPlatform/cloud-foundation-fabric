@@ -36,8 +36,12 @@ def _check_dir(dir_name):
     if not result:
       state = State.SKIP
     else:
-      new_doc = tfdoc.create_doc(readme_path.parent)
-      state = State.OK if new_doc == result['doc'] else State.FAIL
+      try:
+        new_doc = tfdoc.create_doc(readme_path.parent)
+      except SystemExit:
+        state = state.SKIP
+      else:
+        state = State.OK if new_doc == result['doc'] else State.FAIL
     yield mod_name, state
 
 
