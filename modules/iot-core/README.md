@@ -43,10 +43,7 @@ module "iot-platform" {
       "mqtt_topic" = "temperature"
       "pub_sub_topic" =  google_pubsub_topic.temp-telemetry.id
   }]
-  devices = {
-      device_1 = "device_certs/rsa_cert1.pem"
-      device_2 = "device_certs/rsa_cert2.pem"
-  }
+  devices_yaml_file = "devices.yaml"
 }
 ```
 
@@ -101,7 +98,7 @@ module "iot-platform" {
 |---|---|:---: |:---:|:---:|
 | status_pub_sub_topic_id | pub sub topic for status messages (GCP-->Device) | <code title="">string</code> | ✓ |  |
 | telemetry_pub_sub_topic_id | pub sub topic for telemetry messages (Device-->GCP) | <code title="">string</code> | ✓ |  |
-| *devices* | Devices map to be registered in the IoT Registry in the form DEVICE_ID: DEVICE_CERTIFICATE | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
+| *devices_yaml_file* | yaml file name including Devices map to be registered in the IoT Registry in the form DEVICE_ID: DEVICE_CERTIFICATE | <code title="">string</code> |  | <code title=""></code> |
 | *extra_telemetry_pub_sub_topic_ids* | additional pub sub topics for telemetry messages in adhoc MQTT topics (Device-->GCP) in the format MQTT_TOPIC:PUB_SUB_TOPIC_ID | <code title="list&#40;object&#40;&#123;&#10;mqtt_topic &#61; string&#10;pub_sub_topic &#61; string&#10;&#125;&#41;&#41;">list(object({...}))</code> |  | <code title="">[{}]</code> |
 
 ## Outputs
