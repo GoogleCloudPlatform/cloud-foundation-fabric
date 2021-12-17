@@ -8,6 +8,17 @@ Requires enabling the following APIs:
 
 ## Simple Example
 
+Simple example showing how to create an IoT Platform (IoT Core), connect to give pub-sub topics and provision devices.
+
+Before executing, device certificates shall be created using:
+
+```
+openssl req -x509 -newkey rsa:2048 -keyout rsa_private.pem -nodes -out rsa_cert.pem -subj "/CN=unused"
+```
+
+And then provision its path in the devices yaml file following the convention device_id: device_cert
+
+
 ```
 
 provider "google" {
