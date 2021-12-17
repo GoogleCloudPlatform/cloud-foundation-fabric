@@ -6,7 +6,7 @@ Requires enabling the following APIs:
  "pubsub.googleapis.com",
  "cloudiot.googleapis.com"
 
-## Example
+## Simple Example
 
 ```
 
@@ -49,6 +49,49 @@ module "iot-platform" {
   }
 }
 ```
+
+## Example integrated with Data Foundation Platform
+In this example, we will show how to extend Data Foundation Platform, including IoT as a new source of data. 
+
+INCLUDE HERE DIAGRAM
+
+
+1. First, we will setup Environment following instructions in **[Environment Setup](../../data-solutions/data-platform-foundations/01-environment/)** to setup projects and SAs required. Get variable project_ids.landing as will be used later
+
+1. Second, execute instructions in **[Environment Setup](../../data-solutions/data-platform-foundations/02-resources/)** to provision PubSub, DataFlow, BQ,... Get variable landing-pubsub as will be used later to create IoT Registry
+
+1. Now it is time to provision IoT Platform. Modify landing-project-id and landing_pubsub_topic_id with output variables obtained before
+```
+
+
+provider "google" {
+  project = "landing-project-id"
+  region = "my-region"
+}
+
+resource "google_pubsub_topic" "default-devicestatus" {
+  name = "default-devicestatus"
+}
+
+module "iot-platform" {
+  source     = "./iot-core"
+  telemetry_pub_sub_topic_id = "landing_pubsub_topic_id"
+  status_pub_sub_topic_id = google_pubsub_topic.default-devicestatus.id
+  extra_telemetry_pub_sub_topic_ids = [{
+      "mqtt_topic" = "humidity"
+      "pub_sub_topic" =  google_pubsub_topic.hum-telemetry.id
+  },
+  {
+      "mqtt_topic" = "temperature"
+      "pub_sub_topic" =  google_pubsub_topic.temp-telemetry.id
+  }]
+  devices = {
+      device_1 = "device_certs/rsa_cert1.pem"
+      device_2 = "device_certs/rsa_cert2.pem"
+  }
+}
+```
+1. Finally, lets create some dummy IoT devices and create a pipeline to test the Platform
 
 
 <!-- BEGIN TFDOC -->
