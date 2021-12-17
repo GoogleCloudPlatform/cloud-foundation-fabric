@@ -26,11 +26,6 @@ BASEDIR = pathlib.Path(__file__).resolve().parents[1]
 
 State = enum.Enum('State', 'OK FAIL SKIP')
 
-# def __str__(self):
-#   return {
-#       self.FAIL.value: '✗', self.OK.value: '✓', self.UNKNOWN.value: '?'
-#   }[self.value]
-
 
 def _check_dir(dir_name):
   dir_path = BASEDIR / dir_name
