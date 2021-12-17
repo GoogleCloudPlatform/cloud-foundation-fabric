@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-variable "devices" {
-  description = "Devices map to be registered in the IoT Registry in the form DEVICE_ID: DEVICE_CERTIFICATE"
-  type        = map(string)
-  default     = {}
+variable "devices_yaml_file" {
+  description = "yaml file name including Devices map to be registered in the IoT Registry in the form DEVICE_ID: DEVICE_CERTIFICATE"
+  type        = string
+  default     = ""
 }
 
 variable "extra_telemetry_pub_sub_topic_ids" {

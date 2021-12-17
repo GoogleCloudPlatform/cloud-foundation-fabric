@@ -1,0 +1,3 @@
+device_1: "device_certs/rsa_cert1.pem"
+device_3: "device_certs/rsa_cert2.pem"
+device_4: "device_certs/rsa_cert2.pem"

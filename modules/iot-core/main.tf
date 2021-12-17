@@ -57,7 +57,7 @@ resource "google_cloudiot_registry" "test-registry" {
 #---------------------------------------------------------
 
 resource "google_cloudiot_device" "device" {
-  for_each = coalesce(var.devices, {})
+  for_each = coalesce(yamldecode(file(var.devices_yaml_file)), {})
   name     = each.key
   registry = google_cloudiot_registry.test-registry.id
 
