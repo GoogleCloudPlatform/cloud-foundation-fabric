@@ -1,27 +1,3 @@
-provider "google" {
-  project = var.project_id
-  region = var.region
-}
-
-#-------------------------------------------------------
-# Enable APIs
-#    - Pub/Sub
-#    - Cloud IoT
-#-------------------------------------------------------
-
-module "project_services" {
-  source  = "terraform-google-modules/project-factory/google//modules/project_services"
-  version = "3.3.0"
-
-  project_id    = var.project_id
-  activate_apis =  [
-    "pubsub.googleapis.com",
-    "cloudiot.googleapis.com"
-  ]
-
-  disable_services_on_destroy = false
-  disable_dependent_services  = false
-}
 
 #---------------------------------------------------------
 # Create Pub/Sub Topics

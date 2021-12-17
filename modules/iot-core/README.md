@@ -1,6 +1,10 @@
 # Google Cloud IoT Core Module
 
-This module allows setting up Cloud IoT Core Registry, register devices and configure Pub/Sub topics
+This module allows setting up Cloud IoT Core Registry, register devices and configure Pub/Sub topics.
+
+Requires enabling the following APIs:
+ "pubsub.googleapis.com",
+ "cloudiot.googleapis.com"
 
 ## Example
 
