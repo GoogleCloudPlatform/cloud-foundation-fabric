@@ -110,10 +110,10 @@ module "apigee-organization" {
 | runtime_type | Apigee runtime type. Must be `CLOUD` or `HYBRID`. | <code>string</code> | ✓ |  |
 | apigee_envgroups | Apigee Environment Groups. | <code title="map&#40;object&#40;&#123;&#10;  environments &#61; list&#40;string&#41;&#10;  hostnames    &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | apigee_environments | Apigee Environment Names. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| authorized_network | VPC network self link (requires service network peering enabled (Used in Apigee X only). | <code>string</code> |  | <code>&#34;null&#34;</code> |
-| database_encryption_key | Cloud KMS key self link (e.g. `projects/foo/locations/us/keyRings/bar/cryptoKeys/baz`) used for encrypting the data that is stored and replicated across runtime instances (immutable, used in Apigee X only). | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| authorized_network | VPC network self link (requires service network peering enabled (Used in Apigee X only). | <code>string</code> |  | <code>null</code> |
+| database_encryption_key | Cloud KMS key self link (e.g. `projects/foo/locations/us/keyRings/bar/cryptoKeys/baz`) used for encrypting the data that is stored and replicated across runtime instances (immutable, used in Apigee X only). | <code>string</code> |  | <code>null</code> |
 | description | Description of the Apigee Organization. | <code>string</code> |  | <code>&#34;Apigee Organization created by tf module&#34;</code> |
-| display_name | Display Name of the Apigee Organization. | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| display_name | Display Name of the Apigee Organization. | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 

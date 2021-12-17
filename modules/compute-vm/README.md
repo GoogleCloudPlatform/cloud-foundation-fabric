@@ -314,16 +314,16 @@ module "instance-group" {
 | enable_display | Enable virtual display on the instances | <code>bool</code> |  | <code>false</code> |
 | encryption | Encryption options. Only one of kms_key_self_link and disk_encryption_key_raw may be set. If needed, you can specify to encrypt or not the boot disk. | <code title="object&#40;&#123;&#10;  encrypt_boot            &#61; bool&#10;  disk_encryption_key_raw &#61; string&#10;  kms_key_self_link       &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | group | Define this variable to create an instance group for instances. Disabled for template use. | <code title="object&#40;&#123;&#10;  named_ports &#61; map&#40;number&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| hostname | Instance FQDN name. | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| hostname | Instance FQDN name. | <code>string</code> |  | <code>null</code> |
 | iam | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | instance_type | Instance type. | <code>string</code> |  | <code>&#34;f1-micro&#34;</code> |
 | labels | Instance labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | metadata | Instance metadata. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| min_cpu_platform | Minimum CPU platform. | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| min_cpu_platform | Minimum CPU platform. | <code>string</code> |  | <code>null</code> |
 | network_interface_options | Network interfaces extended options. The key is the index of the inteface to configure. The value is an object with alias_ips and nic_type. Set alias_ips or nic_type to null if you need only one of them. | <code title="map&#40;object&#40;&#123;&#10;  alias_ips &#61; map&#40;string&#41;&#10;  nic_type  &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | options | Instance options. | <code title="object&#40;&#123;&#10;  allow_stopping_for_update &#61; bool&#10;  deletion_protection       &#61; bool&#10;  preemptible               &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  allow_stopping_for_update &#61; true&#10;  deletion_protection       &#61; false&#10;  preemptible               &#61; false&#10;&#125;">&#123;&#8230;&#125;</code> |
 | scratch_disks | Scratch disks configuration. | <code title="object&#40;&#123;&#10;  count     &#61; number&#10;  interface &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  count     &#61; 0&#10;  interface &#61; &#34;NVME&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| service_account | Service account email. Unused if service account is auto-created. | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| service_account | Service account email. Unused if service account is auto-created. | <code>string</code> |  | <code>null</code> |
 | service_account_create | Auto-create service account. | <code>bool</code> |  | <code>false</code> |
 | service_account_scopes | Scopes applied to service account. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 | shielded_config | Shielded VM configuration of the instances. | <code title="object&#40;&#123;&#10;  enable_secure_boot          &#61; bool&#10;  enable_vtpm                 &#61; bool&#10;  enable_integrity_monitoring &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |

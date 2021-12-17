@@ -41,7 +41,7 @@ module "group" {
 | customer_id | Directory customer ID in the form customers/C0xxxxxxx. | <code>string</code> | ✓ |  |
 | display_name | Group display name. | <code>string</code> | ✓ |  |
 | name | Group ID (usually an email). | <code>string</code> | ✓ |  |
-| description | Group description | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| description | Group description | <code>string</code> |  | <code>null</code> |
 | members | List of group members. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 
 ## Outputs

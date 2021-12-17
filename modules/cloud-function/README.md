@@ -170,11 +170,11 @@ module "cf-http" {
 | environment_variables | Cloud function environment variables. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | function_config | Cloud function configuration. | <code title="object&#40;&#123;&#10;  entry_point      &#61; string&#10;  ingress_settings &#61; string&#10;  instances        &#61; number&#10;  memory           &#61; number&#10;  runtime          &#61; string&#10;  timeout          &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  entry_point      &#61; &#34;main&#34;&#10;  ingress_settings &#61; null&#10;  instances        &#61; 1&#10;  memory           &#61; 256&#10;  runtime          &#61; &#34;python37&#34;&#10;  timeout          &#61; 180&#10;&#125;">&#123;&#8230;&#125;</code> |
 | iam | IAM bindings for topic in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| ingress_settings | Control traffic that reaches the cloud function. Allowed values are ALLOW_ALL and ALLOW_INTERNAL_ONLY. | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| ingress_settings | Control traffic that reaches the cloud function. Allowed values are ALLOW_ALL and ALLOW_INTERNAL_ONLY. | <code>string</code> |  | <code>null</code> |
 | labels | Resource labels | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| prefix | Optional prefix used for resource names. | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| prefix | Optional prefix used for resource names. | <code>string</code> |  | <code>null</code> |
 | region | Region used for all resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| service_account | Service account email. Unused if service account is auto-created. | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| service_account | Service account email. Unused if service account is auto-created. | <code>string</code> |  | <code>null</code> |
 | service_account_create | Auto-create service account. | <code>bool</code> |  | <code>false</code> |
 | trigger_config | Function trigger configuration. Leave null for HTTP trigger. | <code title="object&#40;&#123;&#10;  event    &#61; string&#10;  resource &#61; string&#10;  retry    &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | vpc_connector | VPC connector configuration. Set create to 'true' if a new connector needs to be created | <code title="object&#40;&#123;&#10;  create          &#61; bool&#10;  name            &#61; string&#10;  egress_settings &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |

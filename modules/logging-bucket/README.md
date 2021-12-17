@@ -50,7 +50,7 @@ module "bucket-default" {
 | id | Name of the logging bucket. | <code>string</code> | ✓ |  |
 | parent | ID of the parentresource containing the bucket in the format 'project_id' 'folders/folder_id', 'organizations/organization_id' or 'billing_account_id'. | <code>string</code> | ✓ |  |
 | parent_type | Parent object type for the bucket (project, folder, organization, billing_account). | <code>string</code> | ✓ |  |
-| description | Human-readable description for the logging bucket. | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| description | Human-readable description for the logging bucket. | <code>string</code> |  | <code>null</code> |
 | location | Location of the bucket. | <code>string</code> |  | <code>&#34;global&#34;</code> |
 | retention | Retention time in days for the logging bucket. | <code>number</code> |  | <code>30</code> |
 

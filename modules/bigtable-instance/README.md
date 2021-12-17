@@ -46,7 +46,7 @@ module "bigtable-instance" {
 | deletion_protection | Whether or not to allow Terraform to destroy the instance. Unless this field is set to false in Terraform state, a terraform destroy or terraform apply that would delete the instance will fail. | <code></code> |  | <code>true</code> |
 | display_name | The human-readable display name of the Bigtable instance. | <code></code> |  | <code>null</code> |
 | iam | IAM bindings for topic in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| instance_type | (deprecated) The instance type to create. One of 'DEVELOPMENT' or 'PRODUCTION'. | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| instance_type | (deprecated) The instance type to create. One of 'DEVELOPMENT' or 'PRODUCTION'. | <code>string</code> |  | <code>null</code> |
 | num_nodes | The number of nodes in your Cloud Bigtable cluster. | <code>number</code> |  | <code>1</code> |
 | storage_type | The storage type to use. | <code>string</code> |  | <code>&#34;SSD&#34;</code> |
 | table_options_defaults | Default option of tables created in the BigTable instance. | <code title="object&#40;&#123;&#10;  split_keys    &#61; list&#40;string&#41;&#10;  column_family &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  split_keys    &#61; &#91;&#93;&#10;  column_family &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |

@@ -77,7 +77,7 @@ module "pubsub" {
 | notification_channels | Monitoring notification channels where to send updates. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
 | notify_default_recipients | Notify Billing Account Administrators and Billing Account Users IAM roles for the target account. | <code>bool</code> |  | <code>false</code> |
 | projects | List of projects of the form projects/{project_number}, specifying that usage from only this set of projects should be included in the budget. Set to null to include all projects linked to the billing account. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
-| pubsub_topic | The ID of the Cloud Pub/Sub topic where budget related messages will be published. | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| pubsub_topic | The ID of the Cloud Pub/Sub topic where budget related messages will be published. | <code>string</code> |  | <code>null</code> |
 | services | List of services of the form services/{service_id}, specifying that usage from only this set of services should be included in the budget. Set to null to include usage for all services. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
 
 ## Outputs

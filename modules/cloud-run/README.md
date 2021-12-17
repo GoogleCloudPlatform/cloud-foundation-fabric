@@ -218,13 +218,13 @@ module "cloud_run" {
 | project_id | Project id used for all resources. | <code>string</code> | ✓ |  |
 | audit_log_triggers | Event arc triggers (Audit log) | <code title="list&#40;object&#40;&#123;&#10;  service_name &#61; string&#10;  method_name  &#61; string&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
 | iam | IAM bindings for Cloud Run service in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| ingress_settings | Ingress settings | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| ingress_settings | Ingress settings | <code>string</code> |  | <code>null</code> |
 | labels | Resource labels | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| prefix | Optional prefix used for resource names. | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| prefix | Optional prefix used for resource names. | <code>string</code> |  | <code>null</code> |
 | pubsub_triggers | Eventarc triggers (Pub/Sub) | <code>list&#40;string&#41;</code> |  | <code>null</code> |
 | region | Region used for all resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| revision_name | Revision name | <code>string</code> |  | <code>&#34;null&#34;</code> |
-| service_account | Service account email. Unused if service account is auto-created. | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| revision_name | Revision name | <code>string</code> |  | <code>null</code> |
+| service_account | Service account email. Unused if service account is auto-created. | <code>string</code> |  | <code>null</code> |
 | service_account_create | Auto-create service account. | <code>bool</code> |  | <code>false</code> |
 | traffic | Traffic | <code>map&#40;number&#41;</code> |  | <code>null</code> |
 | volumes | Volumes | <code title="list&#40;object&#40;&#123;&#10;  name        &#61; string&#10;  secret_name &#61; string&#10;  items &#61; list&#40;object&#40;&#123;&#10;    key  &#61; string&#10;    path &#61; string&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |

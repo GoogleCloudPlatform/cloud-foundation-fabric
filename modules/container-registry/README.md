@@ -22,9 +22,9 @@ module "container_registry" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| location | Registry location. Can be US, EU, ASIA or empty | <code>string</code> | ✓ |  |
 | project_id | Registry project id. | <code>string</code> | ✓ |  |
 | iam | IAM bindings for topic in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| location | Registry location. Can be US, EU, ASIA or empty | <code>string</code> |  | <code>&#34;&#34;</code> |
 
 ## Outputs
 

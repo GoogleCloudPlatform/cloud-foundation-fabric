@@ -211,7 +211,7 @@ flow_logs:                        # enable, set to empty map to use defaults
 | name | The name of the network being created | <code>string</code> | ✓ |  |
 | project_id | The ID of the project where this VPC will be created | <code>string</code> | ✓ |  |
 | auto_create_subnetworks | Set to true to create an auto mode subnet, defaults to custom mode. | <code>bool</code> |  | <code>false</code> |
-| data_folder | An optional folder containing the subnet configurations in YaML format. | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| data_folder | An optional folder containing the subnet configurations in YaML format. | <code>string</code> |  | <code>null</code> |
 | delete_default_routes_on_create | Set to true to delete the default routes at creation time. | <code>bool</code> |  | <code>false</code> |
 | description | An optional description of this resource (triggers recreation on change). | <code>string</code> |  | <code>&#34;Terraform-managed.&#34;</code> |
 | dns_policy | DNS policy setup for the VPC. | <code title="object&#40;&#123;&#10;  inbound &#61; bool&#10;  logging &#61; bool&#10;  outbound &#61; object&#40;&#123;&#10;    private_ns &#61; list&#40;string&#41;&#10;    public_ns  &#61; list&#40;string&#41;&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |

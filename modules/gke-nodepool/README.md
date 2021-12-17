@@ -44,28 +44,28 @@ module "cluster-1-nodepool-1" {
 | location | Cluster location. | <code>string</code> | ✓ |  |
 | project_id | Cluster project id. | <code>string</code> | ✓ |  |
 | autoscaling_config | Optional autoscaling configuration. | <code title="object&#40;&#123;&#10;  min_node_count &#61; number&#10;  max_node_count &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| gke_version | Kubernetes nodes version. Ignored if auto_upgrade is set in management_config. | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| gke_version | Kubernetes nodes version. Ignored if auto_upgrade is set in management_config. | <code>string</code> |  | <code>null</code> |
 | initial_node_count | Initial number of nodes for the pool. | <code>number</code> |  | <code>1</code> |
 | kubelet_config | Kubelet configuration. | <code title="object&#40;&#123;&#10;  cpu_cfs_quota        &#61; string&#10;  cpu_cfs_quota_period &#61; string&#10;  cpu_manager_policy   &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | linux_node_config_sysctls | Linux node configuration. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 | management_config | Optional node management configuration. | <code title="object&#40;&#123;&#10;  auto_repair  &#61; bool&#10;  auto_upgrade &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | max_pods_per_node | Maximum number of pods per node. | <code>number</code> |  | <code>null</code> |
-| name | Optional nodepool name. | <code>string</code> |  | <code>&#34;null&#34;</code> |
-| node_boot_disk_kms_key | Customer Managed Encryption Key used to encrypt the boot disk attached to each node | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| name | Optional nodepool name. | <code>string</code> |  | <code>null</code> |
+| node_boot_disk_kms_key | Customer Managed Encryption Key used to encrypt the boot disk attached to each node | <code>string</code> |  | <code>null</code> |
 | node_count | Number of nodes per instance group, can be updated after creation. Ignored when autoscaling is set. | <code>number</code> |  | <code>null</code> |
 | node_disk_size | Node disk size, defaults to 100GB. | <code>number</code> |  | <code>100</code> |
 | node_disk_type | Node disk type, defaults to pd-standard. | <code>string</code> |  | <code>&#34;pd-standard&#34;</code> |
 | node_guest_accelerator | Map of type and count of attached accelerator cards. | <code>map&#40;number&#41;</code> |  | <code>&#123;&#125;</code> |
-| node_image_type | Nodes image type. | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| node_image_type | Nodes image type. | <code>string</code> |  | <code>null</code> |
 | node_labels | Kubernetes labels attached to nodes. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | node_local_ssd_count | Number of local SSDs attached to nodes. | <code>number</code> |  | <code>0</code> |
 | node_locations | Optional list of zones in which nodes should be located. Uses cluster locations if unset. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
 | node_machine_type | Nodes machine type. | <code>string</code> |  | <code>&#34;n1-standard-1&#34;</code> |
 | node_metadata | Metadata key/value pairs assigned to nodes. Set disable-legacy-endpoints to true when using this variable. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
-| node_min_cpu_platform | Minimum CPU platform for nodes. | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| node_min_cpu_platform | Minimum CPU platform for nodes. | <code>string</code> |  | <code>null</code> |
 | node_preemptible | Use preemptible VMs for nodes. | <code>bool</code> |  | <code>null</code> |
-| node_sandbox_config | GKE Sandbox configuration. Needs image_type set to COS_CONTAINERD and node_version set to 1.12.7-gke.17 when using this variable. | <code>string</code> |  | <code>&#34;null&#34;</code> |
-| node_service_account | Service account email. Unused if service account is auto-created. | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| node_sandbox_config | GKE Sandbox configuration. Needs image_type set to COS_CONTAINERD and node_version set to 1.12.7-gke.17 when using this variable. | <code>string</code> |  | <code>null</code> |
+| node_service_account | Service account email. Unused if service account is auto-created. | <code>string</code> |  | <code>null</code> |
 | node_service_account_create | Auto-create service account. | <code>bool</code> |  | <code>false</code> |
 | node_service_account_scopes | Scopes applied to service account. Default to: 'cloud-platform' when creating a service account; 'devstorage.read_only', 'logging.write', 'monitoring.write' otherwise. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 | node_shielded_instance_config | Shielded instance options. | <code title="object&#40;&#123;&#10;  enable_secure_boot          &#61; bool&#10;  enable_integrity_monitoring &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |

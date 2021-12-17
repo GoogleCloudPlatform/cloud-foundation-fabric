@@ -120,7 +120,7 @@ module "vlan-attachment-2" {
 | region | Region where the router resides | <code>string</code> |  | <code>&#34;europe-west1-b&#34;</code> |
 | router_create | Create router. | <code>bool</code> |  | <code>true</code> |
 | router_name | Router name used for auto created router, or to specify an existing router to use if `router_create` is set to `true`. Leave blank to use vlan attachment name for auto created router. | <code>string</code> |  | <code>&#34;router-vlan-attachment&#34;</code> |
-| router_network | A reference to the network to which this router belongs | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| router_network | A reference to the network to which this router belongs | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 

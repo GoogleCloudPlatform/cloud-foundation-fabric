@@ -38,11 +38,11 @@ module "vpn" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| gateway_address | Optional address assigned to the VPN gateway. Ignored unless gateway_address_create is set to false. | <code>string</code> | ✓ |  |
 | name | VPN gateway name, and prefix used for dependent resources. | <code>string</code> | ✓ |  |
 | network | VPC used for the gateway and routes. | <code>string</code> | ✓ |  |
 | project_id | Project where resources will be created. | <code>string</code> | ✓ |  |
 | region | Region used for resources. | <code>string</code> | ✓ |  |
+| gateway_address | Optional address assigned to the VPN gateway. Ignored unless gateway_address_create is set to false. | <code>string</code> |  | <code>&#34;&#34;</code> |
 | gateway_address_create | Create external address assigned to the VPN gateway. Needs to be explicitly set to false to use address in gateway_address variable. | <code>bool</code> |  | <code>true</code> |
 | remote_ranges | Remote IP CIDR ranges. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 | route_priority | Route priority, defaults to 1000. | <code>number</code> |  | <code>1000</code> |

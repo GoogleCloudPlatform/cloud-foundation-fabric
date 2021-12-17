@@ -186,8 +186,8 @@ module "bigquery-dataset" {
 | access_identities | Map of access identities used for basic access roles. View identities have the format 'project_id|dataset_id|table_id'. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | dataset_access | Set access in the dataset resource instead of using separate resources. | <code>bool</code> |  | <code>false</code> |
 | description | Optional description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
-| encryption_key | Self link of the KMS key that will be used to protect destination table. | <code>string</code> |  | <code>&#34;null&#34;</code> |
-| friendly_name | Dataset friendly name. | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| encryption_key | Self link of the KMS key that will be used to protect destination table. | <code>string</code> |  | <code>null</code> |
+| friendly_name | Dataset friendly name. | <code>string</code> |  | <code>null</code> |
 | iam | IAM bindings in {ROLE => [MEMBERS]} format. Mutually exclusive with the access_* variables used for basic roles. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | labels | Dataset labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | location | Dataset location. | <code>string</code> |  | <code>&#34;EU&#34;</code> |

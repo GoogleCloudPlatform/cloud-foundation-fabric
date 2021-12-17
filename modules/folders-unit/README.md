@@ -42,7 +42,7 @@ module "folders-unit" {
 | iam_billing_config | Grant billing user role to service accounts, defaults to granting on the billing account. | <code title="object&#40;&#123;&#10;  grant      &#61; bool&#10;  target_org &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  grant      &#61; true&#10;  target_org &#61; false&#10;&#125;">&#123;&#8230;&#125;</code> |
 | iam_enviroment_roles | IAM roles granted to the environment service account on the environment sub-folder. | <code>list&#40;string&#41;</code> |  | <code title="&#91;&#10;  &#34;roles&#47;compute.networkAdmin&#34;,&#10;  &#34;roles&#47;owner&#34;,&#10;  &#34;roles&#47;resourcemanager.folderAdmin&#34;,&#10;  &#34;roles&#47;resourcemanager.projectCreator&#34;,&#10;&#93;">&#91;&#8230;&#93;</code> |
 | iam_xpn_config | Grant Shared VPC creation roles to service accounts, defaults to granting at folder level. | <code title="object&#40;&#123;&#10;  grant      &#61; bool&#10;  target_org &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  grant      &#61; true&#10;  target_org &#61; false&#10;&#125;">&#123;&#8230;&#125;</code> |
-| prefix | Optional prefix used for GCS bucket names to ensure uniqueness. | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| prefix | Optional prefix used for GCS bucket names to ensure uniqueness. | <code>string</code> |  | <code>null</code> |
 | service_account_keys | Generate and store service account keys in the state file. | <code>bool</code> |  | <code>false</code> |
 
 ## Outputs

@@ -68,9 +68,9 @@ module "private-dns" {
 | description | Domain description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
 | dnssec_config | DNSSEC configuration: kind, non_existence, state. | <code>any</code> |  | <code>&#123;&#125;</code> |
 | forwarders | Map of {IPV4_ADDRESS => FORWARDING_PATH} for 'forwarding' zone types. Path can be 'default', 'private', or null for provider default. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| peer_network | Peering network self link, only valid for 'peering' zone types. | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| peer_network | Peering network self link, only valid for 'peering' zone types. | <code>string</code> |  | <code>null</code> |
 | recordsets | Map of DNS recordsets in \"type name\" => {ttl, [records]} format. | <code title="map&#40;object&#40;&#123;&#10;  ttl     &#61; number&#10;  records &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| service_directory_namespace | Service directory namespace id (URL), only valid for 'service-directory' zone types. | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| service_directory_namespace | Service directory namespace id (URL), only valid for 'service-directory' zone types. | <code>string</code> |  | <code>null</code> |
 | type | Type of zone to create, valid values are 'public', 'private', 'forwarding', 'peering', 'service-directory'. | <code>string</code> |  | <code>&#34;private&#34;</code> |
 | zone_create | Create zone. When set to false, uses a data source to reference existing zone. | <code>bool</code> |  | <code>true</code> |
 

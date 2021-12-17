@@ -33,8 +33,7 @@ module "myproject-default-service-accounts" {
 |---|---|:---:|:---:|:---:|
 | name | Name of the service account to create. | <code>string</code> | ✓ |  |
 | project_id | Project id where service account will be created. | <code>string</code> | ✓ |  |
-| public_keys_directory | Path to public keys data files to upload to the service account (should have `.pem` extension). | <code>string</code> | ✓ |  |
-| description | Optional description. | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| description | Optional description. | <code>string</code> |  | <code>null</code> |
 | display_name | Display name of the service account to create. | <code>string</code> |  | <code>&#34;Terraform-managed.&#34;</code> |
 | generate_key | Generate a key for service account. | <code>bool</code> |  | <code>false</code> |
 | iam | IAM bindings on the service account in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -43,7 +42,8 @@ module "myproject-default-service-accounts" {
 | iam_organization_roles | Project roles granted to the service account, by organization id. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | iam_project_roles | Project roles granted to the service account, by project id. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | iam_storage_roles | Storage roles granted to the service account, by bucket name. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| prefix | Prefix applied to service account names. | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| prefix | Prefix applied to service account names. | <code>string</code> |  | <code>null</code> |
+| public_keys_directory | Path to public keys data files to upload to the service account (should have `.pem` extension). | <code>string</code> |  | <code>&#34;&#34;</code> |
 | service_account_create | Create service account. When set to false, uses a data source to reference an existing service account. | <code>bool</code> |  | <code>true</code> |
 
 ## Outputs

@@ -46,13 +46,13 @@ You can also create a dashboard connecting [Datalab](https://datastudio.google.c
 |---|---|:---:|:---:|:---:|
 | cai_config | Cloud Asset inventory export config. | <code title="object&#40;&#123;&#10;  bq_dataset  &#61; string&#10;  bq_table    &#61; string&#10;  target_node &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | project_id | Project id that references existing project. | <code>string</code> | ✓ |  |
-| billing_account | Billing account id used as default for new projects. | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| billing_account | Billing account id used as default for new projects. | <code>string</code> |  | <code>null</code> |
 | bundle_path | Path used to write the intermediate Cloud Function code bundle. | <code>string</code> |  | <code>&#34;.&#47;bundle.zip&#34;</code> |
 | location | Appe Engine location used in the example. | <code>string</code> |  | <code>&#34;europe-west&#34;</code> |
 | name | Arbitrary string used to name created resources. | <code>string</code> |  | <code>&#34;asset-inventory&#34;</code> |
 | project_create | Create project instead ofusing an existing one. | <code>bool</code> |  | <code>true</code> |
 | region | Compute region used in the example. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| root_node | The resource name of the parent folder or organization for project creation, in 'folders/folder_id' or 'organizations/org_id' format. | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| root_node | The resource name of the parent folder or organization for project creation, in 'folders/folder_id' or 'organizations/org_id' format. | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 

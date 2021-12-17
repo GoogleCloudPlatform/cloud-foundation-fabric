@@ -75,9 +75,9 @@ module "project-tf" {
 | resources | Short resource names by type. | <code>map&#40;list&#40;string&#41;&#41;</code> | ✓ |  |
 | team | Team name. | <code>string</code> | ✓ |  |
 | labels | Per-resource labels. | <code>map&#40;map&#40;map&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| prefix | Optional name prefix. | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| prefix | Optional name prefix. | <code>string</code> |  | <code>null</code> |
 | separator_override | Optional separator override for specific resource types. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| suffix | Optional name suffix. | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| suffix | Optional name suffix. | <code>string</code> |  | <code>null</code> |
 | use_resource_prefixes | Prefix names with the resource type. | <code>bool</code> |  | <code>false</code> |
 
 ## Outputs

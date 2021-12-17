@@ -64,15 +64,15 @@ module "cos-envoy" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| container_args | Arguments for container | <code>string</code> | ✓ |  |
 | container_image | Container image. | <code>string</code> | ✓ |  |
 | authenticate_gcr | Setup docker to pull images from private GCR. Requires at least one user since the token is stored in the home of the first user defined. | <code>bool</code> |  | <code>false</code> |
 | boot_commands | List of cloud-init `bootcmd`s | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| cloud_config | Cloud config template path. If provided, takes precedence over all other arguments. | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| cloud_config | Cloud config template path. If provided, takes precedence over all other arguments. | <code>string</code> |  | <code>null</code> |
 | config_variables | Additional variables used to render the template passed via `cloud_config` | <code>map&#40;any&#41;</code> |  | <code>&#123;&#125;</code> |
+| container_args | Arguments for container | <code>string</code> |  | <code>&#34;&#34;</code> |
 | container_name | Name of the container to be run | <code>string</code> |  | <code>&#34;container&#34;</code> |
 | container_volumes | List of volumes | <code title="list&#40;object&#40;&#123;&#10;  host      &#61; string,&#10;  container &#61; string&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
-| docker_args | Extra arguments to be passed for docker | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| docker_args | Extra arguments to be passed for docker | <code>string</code> |  | <code>null</code> |
 | file_defaults | Default owner and permissions for files. | <code title="object&#40;&#123;&#10;  owner       &#61; string&#10;  permissions &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  owner       &#61; &#34;root&#34;&#10;  permissions &#61; &#34;0644&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
 | files | Map of extra files to create on the instance, path as key. Owner and permissions will use defaults if null. | <code title="map&#40;object&#40;&#123;&#10;  content     &#61; string&#10;  owner       &#61; string&#10;  permissions &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | gcp_logging | Should container logs be sent to Google Cloud Logging | <code>bool</code> |  | <code>true</code> |

@@ -75,9 +75,9 @@ module "cos-coredns" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| cloud_config | Cloud config template path. If null default will be used. | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| cloud_config | Cloud config template path. If null default will be used. | <code>string</code> |  | <code>null</code> |
 | config_variables | Additional variables used to render the cloud-config and CoreDNS templates. | <code>map&#40;any&#41;</code> |  | <code>&#123;&#125;</code> |
-| coredns_config | CoreDNS configuration path, if null default will be used. | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| coredns_config | CoreDNS configuration path, if null default will be used. | <code>string</code> |  | <code>null</code> |
 | file_defaults | Default owner and permissions for files. | <code title="object&#40;&#123;&#10;  owner       &#61; string&#10;  permissions &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  owner       &#61; &#34;root&#34;&#10;  permissions &#61; &#34;0644&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
 | files | Map of extra files to create on the instance, path as key. Owner and permissions will use defaults if null. | <code title="map&#40;object&#40;&#123;&#10;  content     &#61; string&#10;  owner       &#61; string&#10;  permissions &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 

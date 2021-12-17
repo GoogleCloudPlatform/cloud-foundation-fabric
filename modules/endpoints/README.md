@@ -33,7 +33,7 @@ module "endpoint" {
 | service_name | The name of the service. Usually of the form '$apiname.endpoints.$projectid.cloud.goog'. | <code>string</code> | ✓ |  |
 | grpc_config | The configuration for a gRPC enpoint. Either this or openapi_config must be specified. | <code title="object&#40;&#123;&#10;  yaml_path          &#61; string&#10;  protoc_output_path &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | iam | IAM bindings for topic in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| project_id | The project ID that the service belongs to. | <code>string</code> |  | <code>&#34;null&#34;</code> |
+| project_id | The project ID that the service belongs to. | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 
