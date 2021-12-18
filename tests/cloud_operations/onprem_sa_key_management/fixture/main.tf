@@ -15,11 +15,7 @@
  */
 
 module "test" {
-  source                    = "../../../../modules/net-address"
-  external_addresses        = var.external_addresses
-  global_addresses          = var.global_addresses
-  internal_addresses        = var.internal_addresses
-  internal_addresses_config = var.internal_addresses_config
-  psa_addresses             = var.psa_addresses
-  project_id                = var.project_id
+  source         = "../../../../cloud-operations/onprem-sa-key-management"
+  project_create = var.project_create
+  project_id     = var.project_id
 }

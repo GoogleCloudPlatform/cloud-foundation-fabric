@@ -14,12 +14,24 @@
  * limitations under the License.
  */
 
-module "test" {
-  source                    = "../../../../modules/net-address"
-  external_addresses        = var.external_addresses
-  global_addresses          = var.global_addresses
-  internal_addresses        = var.internal_addresses
-  internal_addresses_config = var.internal_addresses_config
-  psa_addresses             = var.psa_addresses
-  project_id                = var.project_id
+locals {
+  service_accounts = { for sa in var.service_accounts : sa.name => sa }
+}
+
+module "project" {
+  source         = "../../modules/project"
+  name           = var.project_id
+  project_create = var.project_create
+  services       = var.services
+}
+
+module "integration-sa" {
+  source     = "../../modules/iam-service-account"
+  for_each   = local.service_accounts
+  project_id = module.project.project_id
+  name       = each.value.name
+  iam_project_roles = {
+    (module.project.project_id) = each.value.iam_project_roles
+  }
+  public_keys_directory = each.value.public_keys_path
 }

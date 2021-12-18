@@ -47,6 +47,23 @@ module "addresses" {
 # tftest:modules=1:resources=2
 ```
 
+### PSA addresses
+
+```hcl
+module "addresses" {
+  source     = "./modules/net-address"
+  project_id = var.project_id
+  psa_addresses = {
+    cloudsql-mysql = {
+      address       = "10.10.10.0"
+      network       = var.vpc.self_link
+      prefix_length = 24
+    }
+  }
+}
+# tftest:modules=1:resources=1
+```
+
 ### PSC addresses
 
 ```hcl
@@ -77,6 +94,7 @@ module "addresses" {
 | *global_addresses* | List of global addresses to create. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
 | *internal_addresses* | Map of internal addresses to create, keyed by name. | <code title="map&#40;object&#40;&#123;&#10;region     &#61; string&#10;subnetwork &#61; string&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
 | *internal_addresses_config* | Optional configuration for internal addresses, keyed by name. Unused options can be set to null. | <code title="map&#40;object&#40;&#123;&#10;address &#61; string&#10;purpose &#61; string&#10;tier    &#61; string&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
+| *psa_addresses* | Map of internal addresses used for Private Service Access. | <code title="map&#40;object&#40;&#123;&#10;address       &#61; string&#10;network       &#61; string&#10;prefix_length &#61; number&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
 | *psc_addresses* | Map of internal addresses used for Private Service Connect. | <code title="map&#40;object&#40;&#123;&#10;address &#61; string&#10;network &#61; string&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
 
 ## Outputs
@@ -86,5 +104,6 @@ module "addresses" {
 | external_addresses | Allocated external addresses. |  |
 | global_addresses | Allocated global external addresses. |  |
 | internal_addresses | Allocated internal addresses. |  |
+| psa_addresses | Allocated internal addresses for PSA endpoints. |  |
 | psc_addresses | Allocated internal addresses for PSC endpoints. |  |
 <!-- END TFDOC -->

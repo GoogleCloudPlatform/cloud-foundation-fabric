@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-module "test" {
-  source                    = "../../../../modules/net-address"
-  external_addresses        = var.external_addresses
-  global_addresses          = var.global_addresses
-  internal_addresses        = var.internal_addresses
-  internal_addresses_config = var.internal_addresses_config
-  psa_addresses             = var.psa_addresses
-  project_id                = var.project_id
+output "sa-credentials" {
+  description = "SA json key templates."
+  value       = { for key, value in module.integration-sa : key => value.service_account_credentials }
 }
