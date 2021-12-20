@@ -100,6 +100,12 @@ variable "logging_sinks" {
   default = {}
 }
 
+variable "metric_scopes" {
+  description = "List of projects that will act as metric scopes for this projec."
+  type        = list(string)
+  default     = null
+}
+
 variable "name" {
   description = "Project name and id suffix."
   type        = string
