@@ -193,6 +193,7 @@ module "project" {
 | lien_reason | If non-empty, creates a project lien with this description. | <code>string</code> |  | <code>&#34;&#34;</code> |
 | logging_exclusions | Logging exclusions for this project in the form {NAME -> FILTER}. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | logging_sinks | Logging sinks to create for this project. | <code title="map&#40;object&#40;&#123;&#10;  destination   &#61; string&#10;  type          &#61; string&#10;  filter        &#61; string&#10;  iam           &#61; bool&#10;  unique_writer &#61; bool&#10;  exclusions &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| metric_scopes | List of projects that will act as metric scopes for this project. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
 | oslogin | Enable OS Login. | <code>bool</code> |  | <code>false</code> |
 | oslogin_admins | List of IAM-style identities that will be granted roles necessary for OS Login administrators. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 | oslogin_users | List of IAM-style identities that will be granted roles necessary for OS Login users. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
