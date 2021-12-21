@@ -389,3 +389,10 @@ resource "google_kms_crypto_key_iam_member" "crypto_key" {
     data.google_storage_project_service_account.gcs_sa,
   ]
 }
+
+resource "google_monitoring_monitored_project" "primary" {
+  provider      = google-beta
+  for_each      = toset(coalesce(var.metric_scopes, []))
+  metrics_scope = each.value
+  name          = local.project.project_id
+}
