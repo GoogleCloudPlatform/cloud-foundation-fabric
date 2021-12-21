@@ -49,7 +49,7 @@ import urllib.parse
 import click
 
 
-__version__ = '2.0'
+__version__ = '2.0.1'
 
 
 # TODO(ludomagno): decide if we want to support variables*.tf and outputs*.tf
@@ -344,7 +344,13 @@ def replace_doc(module_path, doc):
   if doc == result['doc']:
     return
   try:
-    open(readme_path, 'w').write(readme.replace(result['doc'], doc))
+    open(readme_path, 'w').write('\n'.join([
+        readme[:result['start']],
+        MARK_BEGIN,
+        doc,
+        MARK_END,
+        readme[result['end']:]
+    ]))
   except (IOError, OSError) as e:
     raise SystemExit(f'Error replacing README {readme_path}: {e}')
 
