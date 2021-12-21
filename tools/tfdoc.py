@@ -31,7 +31,7 @@ supported annotations are:
 
 - `tfdoc:file:description`
 - `tfdoc:output:consumers`
-- `tfdoc:variable:sorce`
+- `tfdoc:variable:source`
 
 Tables can optionally be directly injected/replaced in README files by using
 the tags in the `MARK_BEGIN` and `MARK_END` constants, and setting the
@@ -165,10 +165,10 @@ def parse_files(basepath):
     tags = _extract_tags(body)
     description = tags.get(
         'file:description', FILE_DESC_DEFAULTS.get(shortname))
-    modules = set([
+    modules = set(
         os.path.basename(urllib.parse.urlparse(m).path)
         for m in FILE_RE_MODULES.findall(body)
-    ])
+    )
     resources = set(FILE_RE_RESOURCES.findall(body))
     yield File(shortname, description, modules, resources)
 
