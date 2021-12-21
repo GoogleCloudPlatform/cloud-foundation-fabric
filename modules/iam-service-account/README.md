@@ -26,24 +26,25 @@ module "myproject-default-service-accounts" {
 ```
 
 <!-- BEGIN TFDOC -->
+
 ## Variables
 
 | name | description | type | required | default |
-|---|---|:---: |:---:|:---:|
-| name | Name of the service account to create. | <code title="">string</code> | ✓ |  |
-| project_id | Project id where service account will be created. | <code title="">string</code> | ✓ |  |
-| *description* | Optional description. | <code title="">string</code> |  | <code title="">null</code> |
-| *display_name* | Display name of the service account to create. | <code title="">string</code> |  | <code title="">Terraform-managed.</code> |
-| *generate_key* | Generate a key for service account. | <code title="">bool</code> |  | <code title="">false</code> |
-| *iam* | IAM bindings on the service account in {ROLE => [MEMBERS]} format. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
-| *iam_billing_roles* | Project roles granted to the service account, by billing account id. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
-| *iam_folder_roles* | Project roles granted to the service account, by folder id. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
-| *iam_organization_roles* | Project roles granted to the service account, by organization id. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
-| *iam_project_roles* | Project roles granted to the service account, by project id. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
-| *iam_storage_roles* | Storage roles granted to the service account, by bucket name. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
-| *prefix* | Prefix applied to service account names. | <code title="">string</code> |  | <code title="">null</code> |
-| *public_keys_directory* | Path to public keys data files to upload to the service account (should have `.pem` extension). | <code title="">string</code> |  | <code title=""></code> |
-| *service_account_create* | Create service account. When set to false, uses a data source to reference an existing service account. | <code title="">bool</code> |  | <code title="">true</code> |
+|---|---|:---:|:---:|:---:|
+| name | Name of the service account to create. | <code>string</code> | ✓ |  |
+| project_id | Project id where service account will be created. | <code>string</code> | ✓ |  |
+| description | Optional description. | <code>string</code> |  | <code>null</code> |
+| display_name | Display name of the service account to create. | <code>string</code> |  | <code>&#34;Terraform-managed.&#34;</code> |
+| generate_key | Generate a key for service account. | <code>bool</code> |  | <code>false</code> |
+| iam | IAM bindings on the service account in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| iam_billing_roles | Project roles granted to the service account, by billing account id. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| iam_folder_roles | Project roles granted to the service account, by folder id. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| iam_organization_roles | Project roles granted to the service account, by organization id. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| iam_project_roles | Project roles granted to the service account, by project id. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| iam_storage_roles | Storage roles granted to the service account, by bucket name. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| prefix | Prefix applied to service account names. | <code>string</code> |  | <code>null</code> |
+| public_keys_directory | Path to public keys data files to upload to the service account (should have `.pem` extension). | <code>string</code> |  | <code>&#34;&#34;</code> |
+| service_account_create | Create service account. When set to false, uses a data source to reference an existing service account. | <code>bool</code> |  | <code>true</code> |
 
 ## Outputs
 
@@ -54,4 +55,6 @@ module "myproject-default-service-accounts" {
 | key | Service account key. | ✓ |
 | service_account | Service account resource. |  |
 | service_account_credentials | Service account json credential templates for uploaded public keys data. |  |
+
+
 <!-- END TFDOC -->

@@ -174,6 +174,7 @@ module "project" {
 ```
 
 <!-- BEGIN TFDOC -->
+
 ## Variables
 
 | name | description | type | required | default |
@@ -220,5 +221,7 @@ module "project" {
 | project_id | Project id. |  |
 | service_accounts | Product robot service accounts in project. |  |
 | sink_writer_identities | Writer identities created for each sink. |  |
+
+
 <!-- END TFDOC -->
 
