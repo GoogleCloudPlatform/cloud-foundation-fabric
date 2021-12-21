@@ -165,24 +165,25 @@ module "folder2" {
 ```
 
 <!-- BEGIN TFDOC -->
+
 ## Variables
 
 | name | description | type | required | default |
-|---|---|:---: |:---:|:---:|
-| *contacts* | List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
-| *firewall_policies* | Hierarchical firewall policies created in this folder. | <code title="map&#40;map&#40;object&#40;&#123;&#10;action                  &#61; string&#10;description             &#61; string&#10;direction               &#61; string&#10;logging                 &#61; bool&#10;ports                   &#61; map&#40;list&#40;string&#41;&#41;&#10;priority                &#61; number&#10;ranges                  &#61; list&#40;string&#41;&#10;target_resources        &#61; list&#40;string&#41;&#10;target_service_accounts &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;&#41;">map(map(object({...})))</code> |  | <code title="">{}</code> |
-| *firewall_policy_attachments* | List of hierarchical firewall policy IDs to attached to this folder. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
-| *firewall_policy_factory* | Configuration for the firewall policy factory. | <code title="object&#40;&#123;&#10;cidr_file   &#61; string&#10;policy_name &#61; string&#10;rules_file  &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
-| *folder_create* | Create folder. When set to false, uses id to reference an existing folder. | <code title="">bool</code> |  | <code title="">true</code> |
-| *group_iam* | Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
-| *iam* | IAM bindings in {ROLE => [MEMBERS]} format. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
-| *id* | Folder ID in case you use folder_create=false | <code title="">string</code> |  | <code title="">null</code> |
-| *logging_exclusions* | Logging exclusions for this folder in the form {NAME -> FILTER}. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
-| *logging_sinks* | Logging sinks to create for this folder. | <code title="map&#40;object&#40;&#123;&#10;destination      &#61; string&#10;type &#61; string&#10;filter           &#61; string&#10;iam              &#61; bool&#10;include_children &#61; bool&#10;exclusions &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
-| *name* | Folder name. | <code title="">string</code> |  | <code title="">null</code> |
-| *parent* | Parent in folders/folder_id or organizations/org_id format. | <code title="">string</code> |  | <code title="null&#10;validation &#123;&#10;condition     &#61; var.parent &#61;&#61; null &#124;&#124; can&#40;regex&#40;&#34;&#40;organizations&#124;folders&#41;&#47;&#91;0-9&#93;&#43;&#34;, var.parent&#41;&#41;&#10;error_message &#61; &#34;Parent must be of the form folders&#47;folder_id or organizations&#47;organization_id.&#34;&#10;&#125;">...</code> |
-| *policy_boolean* | Map of boolean org policies and enforcement value, set value to null for policy restore. | <code title="map&#40;bool&#41;">map(bool)</code> |  | <code title="">{}</code> |
-| *policy_list* | Map of list org policies, status is true for allow, false for deny, null for restore. Values can only be used for allow or deny. | <code title="map&#40;object&#40;&#123;&#10;inherit_from_parent &#61; bool&#10;suggested_value     &#61; string&#10;status              &#61; bool&#10;values              &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
+|---|---|:---:|:---:|:---:|
+| contacts | List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| firewall_policies | Hierarchical firewall policies created in this folder. | <code title="map&#40;map&#40;object&#40;&#123;&#10;  action                  &#61; string&#10;  description             &#61; string&#10;  direction               &#61; string&#10;  logging                 &#61; bool&#10;  ports                   &#61; map&#40;list&#40;string&#41;&#41;&#10;  priority                &#61; number&#10;  ranges                  &#61; list&#40;string&#41;&#10;  target_resources        &#61; list&#40;string&#41;&#10;  target_service_accounts &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;&#41;">map&#40;map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| firewall_policy_attachments | List of hierarchical firewall policy IDs to attached to this folder. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| firewall_policy_factory | Configuration for the firewall policy factory. | <code title="object&#40;&#123;&#10;  cidr_file   &#61; string&#10;  policy_name &#61; string&#10;  rules_file  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| folder_create | Create folder. When set to false, uses id to reference an existing folder. | <code>bool</code> |  | <code>true</code> |
+| group_iam | Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| iam | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| id | Folder ID in case you use folder_create=false | <code>string</code> |  | <code>null</code> |
+| logging_exclusions | Logging exclusions for this folder in the form {NAME -> FILTER}. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| logging_sinks | Logging sinks to create for this folder. | <code title="map&#40;object&#40;&#123;&#10;  destination      &#61; string&#10;  type             &#61; string&#10;  filter           &#61; string&#10;  iam              &#61; bool&#10;  include_children &#61; bool&#10;  exclusions &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| name | Folder name. | <code>string</code> |  | <code>null</code> |
+| parent | Parent in folders/folder_id or organizations/org_id format. | <code>string</code> |  | <code>null</code> |
+| policy_boolean | Map of boolean org policies and enforcement value, set value to null for policy restore. | <code>map&#40;bool&#41;</code> |  | <code>&#123;&#125;</code> |
+| policy_list | Map of list org policies, status is true for allow, false for deny, null for restore. Values can only be used for allow or deny. | <code title="map&#40;object&#40;&#123;&#10;  inherit_from_parent &#61; bool&#10;  suggested_value     &#61; string&#10;  status              &#61; bool&#10;  values              &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
@@ -194,4 +195,6 @@ module "folder2" {
 | id | Folder id. |  |
 | name | Folder name. |  |
 | sink_writer_identities | Writer identities created for each sink. |  |
+
+
 <!-- END TFDOC -->

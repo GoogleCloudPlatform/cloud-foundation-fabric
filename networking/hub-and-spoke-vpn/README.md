@@ -35,20 +35,23 @@ The example does not account for HA, but the VPN gateways can be easily upgraded
 If a single router and VPN gateway are used in the hub to manage all tunnels, particular care must be taken in announcing ranges from hub to spokes, as Cloud Router does not explicitly support transitivity and overlapping routes received from both sides create unintended side effects. The simple workaround is to announce a single aggregated route from hub to spokes so that it does not overlap with any of the ranges advertised by each spoke to the hub.
 
 <!-- BEGIN TFDOC -->
+
 ## Variables
 
 | name | description | type | required | default |
-|---|---|:---: |:---:|:---:|
-| project_id | Project id for all resources. | <code title="">string</code> | ✓ |  |
-| *bgp_asn* | BGP ASNs. | <code title="map&#40;number&#41;">map(number)</code> |  | <code title="&#123;&#10;hub     &#61; 64513&#10;spoke-1 &#61; 64514&#10;spoke-2 &#61; 64515&#10;&#125;">...</code> |
-| *bgp_custom_advertisements* | BGP custom advertisement IP CIDR ranges. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="&#123;&#10;hub-to-spoke-1 &#61; &#34;10.0.32.0&#47;20&#34;&#10;hub-to-spoke-2 &#61; &#34;10.0.16.0&#47;20&#34;&#10;&#125;">...</code> |
-| *bgp_interface_ranges* | BGP interface IP CIDR ranges. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="&#123;&#10;spoke-1 &#61; &#34;169.254.1.0&#47;30&#34;&#10;spoke-2 &#61; &#34;169.254.1.4&#47;30&#34;&#10;&#125;">...</code> |
-| *ip_ranges* | IP CIDR ranges. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="&#123;&#10;hub-a     &#61; &#34;10.0.0.0&#47;24&#34;&#10;hub-b     &#61; &#34;10.0.8.0&#47;24&#34;&#10;spoke-1-a &#61; &#34;10.0.16.0&#47;24&#34;&#10;spoke-1-b &#61; &#34;10.0.24.0&#47;24&#34;&#10;spoke-2-a &#61; &#34;10.0.32.0&#47;24&#34;&#10;spoke-2-b &#61; &#34;10.0.40.0&#47;24&#34;&#10;&#125;">...</code> |
-| *regions* | VPC regions. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="&#123;&#10;a &#61; &#34;europe-west1&#34;&#10;b &#61; &#34;europe-west2&#34;&#10;&#125;">...</code> |
+|---|---|:---:|:---:|:---:|
+| project_id | Project id for all resources. | <code>string</code> | ✓ |  |
+| bgp_asn | BGP ASNs. | <code>map&#40;number&#41;</code> |  | <code title="&#123;&#10;  hub     &#61; 64513&#10;  spoke-1 &#61; 64514&#10;  spoke-2 &#61; 64515&#10;&#125;">&#123;&#8230;&#125;</code> |
+| bgp_custom_advertisements | BGP custom advertisement IP CIDR ranges. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  hub-to-spoke-1 &#61; &#34;10.0.32.0&#47;20&#34;&#10;  hub-to-spoke-2 &#61; &#34;10.0.16.0&#47;20&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| bgp_interface_ranges | BGP interface IP CIDR ranges. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  spoke-1 &#61; &#34;169.254.1.0&#47;30&#34;&#10;  spoke-2 &#61; &#34;169.254.1.4&#47;30&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| ip_ranges | IP CIDR ranges. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  hub-a     &#61; &#34;10.0.0.0&#47;24&#34;&#10;  hub-b     &#61; &#34;10.0.8.0&#47;24&#34;&#10;  spoke-1-a &#61; &#34;10.0.16.0&#47;24&#34;&#10;  spoke-1-b &#61; &#34;10.0.24.0&#47;24&#34;&#10;  spoke-2-a &#61; &#34;10.0.32.0&#47;24&#34;&#10;  spoke-2-b &#61; &#34;10.0.40.0&#47;24&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| regions | VPC regions. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  a &#61; &#34;europe-west1&#34;&#10;  b &#61; &#34;europe-west2&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
 | vms | GCE VMs. |  |
+
+
 <!-- END TFDOC -->

@@ -46,7 +46,7 @@ variable "labels" {
 variable "location" {
   description = "Registry location. Use `gcloud beta artifacts locations list' to get valid values"
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "project_id" {

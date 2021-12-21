@@ -16,22 +16,25 @@ You can optionally deploy the Squid server as [Managed Instance Group](https://c
 ![High-level diagram](squid.png "High-level diagram")
 
 <!-- BEGIN TFDOC -->
+
 ## Variables
 
 | name | description | type | required | default |
-|---|---|:---: |:---:|:---:|
-| billing_account | Billing account id used as default for new projects. | <code title="">string</code> | ✓ |  |
-| prefix | Prefix used for resources that need unique names. | <code title="">string</code> | ✓ |  |
-| root_node | Root node for the new hierarchy, either 'organizations/org_id' or 'folders/folder_id'. | <code title="">string</code> | ✓ |  |
-| *allowed_domains* | List of domains allowed by the squid proxy. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="&#91;&#10;&#34;.google.com&#34;,&#10;&#34;.github.com&#34;&#10;&#93;">...</code> |
-| *cidrs* | CIDR ranges for subnets | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="&#123;&#10;apps  &#61; &#34;10.0.0.0&#47;24&#34;&#10;proxy &#61; &#34;10.0.1.0&#47;28&#34;&#10;&#125;">...</code> |
-| *mig* | Enables the creation of an autoscaling managed instance group of squid instances. | <code title="">bool</code> |  | <code title="">false</code> |
-| *nat_logging* | Enables Cloud NAT logging if not null, value is one of 'ERRORS_ONLY', 'TRANSLATIONS_ONLY', 'ALL'. | <code title="">string</code> |  | <code title="">ERRORS_ONLY</code> |
-| *region* | Default region for resources | <code title="">string</code> |  | <code title="">europe-west1</code> |
+|---|---|:---:|:---:|:---:|
+| billing_account | Billing account id used as default for new projects. | <code>string</code> | ✓ |  |
+| prefix | Prefix used for resources that need unique names. | <code>string</code> | ✓ |  |
+| root_node | Root node for the new hierarchy, either 'organizations/org_id' or 'folders/folder_id'. | <code>string</code> | ✓ |  |
+| allowed_domains | List of domains allowed by the squid proxy. | <code>list&#40;string&#41;</code> |  | <code title="&#91;&#10;  &#34;.google.com&#34;,&#10;  &#34;.github.com&#34;&#10;&#93;">&#91;&#8230;&#93;</code> |
+| cidrs | CIDR ranges for subnets | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  apps  &#61; &#34;10.0.0.0&#47;24&#34;&#10;  proxy &#61; &#34;10.0.1.0&#47;28&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| mig | Enables the creation of an autoscaling managed instance group of squid instances. | <code>bool</code> |  | <code>false</code> |
+| nat_logging | Enables Cloud NAT logging if not null, value is one of 'ERRORS_ONLY', 'TRANSLATIONS_ONLY', 'ALL'. | <code>string</code> |  | <code>&#34;ERRORS_ONLY&#34;</code> |
+| region | Default region for resources | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
 | squid-address | IP address of the Squid proxy. |  |
+
+
 <!-- END TFDOC -->
