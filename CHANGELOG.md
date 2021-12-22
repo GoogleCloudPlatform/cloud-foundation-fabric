@@ -3,6 +3,9 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+
+## [9.0.0] - 2021-12-22
+
 - new `cloud-run` module
 - added gVNIC support to `compute-vm` module
 - added a rule factory to `net-vpc-firewall` module
@@ -383,7 +386,8 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v8.0.0...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v9.0.0...HEAD
+[9.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v8.0.0...v9.0.0
 [8.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v7.0.0...v8.0.0
 [7.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v6.0.0...v7.0.0
 [6.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v5.1.0...v6.0.0
