@@ -20,8 +20,11 @@
 #---------------------------------------------------------
 
 resource "google_cloudiot_registry" "test-registry" {
+  
   name     = "cloudiot-registry"
-
+  project  = var.project_id
+  region   = var.region
+  
   dynamic "event_notification_configs" {
     for_each = var.extra_telemetry_pub_sub_topic_ids
     content {
