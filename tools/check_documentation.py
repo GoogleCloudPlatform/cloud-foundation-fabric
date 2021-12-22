@@ -27,9 +27,11 @@ BASEDIR = pathlib.Path(__file__).resolve().parents[1]
 State = enum.Enum('State', 'OK FAIL SKIP')
 
 
-def _check_dir(dir_name):
+def _check_dir(dir_name, files=False, show_extra=False):
   dir_path = BASEDIR / dir_name
   for readme_path in dir_path.glob('**/README.md'):
+    if '.terraform' in str(readme_path):
+      continue
     readme = readme_path.read_text()
     mod_name = str(readme_path.relative_to(dir_path).parent)
     result = tfdoc.get_doc(readme)
@@ -37,7 +39,8 @@ def _check_dir(dir_name):
       state = State.SKIP
     else:
       try:
-        new_doc = tfdoc.create_doc(readme_path.parent)
+        new_doc = tfdoc.create_doc(
+            readme_path.parent, files=files, show_extra=show_extra)
       except SystemExit:
         state = state.SKIP
       else:
@@ -47,13 +50,19 @@ def _check_dir(dir_name):
 
 @click.command()
 @click.argument('dirs', type=str, nargs=-1)
-def main(dirs):
+@ click.option('--show-extra/--no-show-extra', default=False)
+@ click.option('--files/--no-files', default=False)
+def main(dirs, files=False, show_extra=False):
   'Cycle through modules and ensure READMEs are up-to-date.'
+  errors = 0
   state_labels = {State.FAIL: '✗', State.OK: '✓', State.SKIP: '?'}
   for dir_name in dirs:
     print(f'----- {dir_name} -----')
     for mod_name, state in _check_dir(dir_name):
+      errors += 1 if state == State.FAIL else 0
       print(f'[{state_labels[state]}] {mod_name}')
+  if errors:
+    raise SystemExit('Errors found.')
 
 
 if __name__ == '__main__':
