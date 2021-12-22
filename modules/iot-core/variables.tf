@@ -29,6 +29,16 @@ variable "extra_telemetry_pub_sub_topic_ids" {
   default = [{}]
 }
 
+variable "project_id" {
+   description = "Project were resources will be deployed"
+  type = string
+}
+
+variable "region" {
+   description = "Region were resources will be deployed"
+  type = string
+}
+
 variable "status_pub_sub_topic_id" {
    description = "pub sub topic for status messages (GCP-->Device)"
   type = string

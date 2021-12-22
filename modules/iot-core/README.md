@@ -19,43 +19,25 @@ openssl req -x509 -newkey rsa:2048 -keyout rsa_private.pem -nodes -out rsa_cert.
 And then provision its path in the devices yaml file following the convention device_id: device_cert
 
 
-```
-
-provider "google" {
-  project = "my-project"
-  region = "my-region"
-}
-
-resource "google_pubsub_topic" "default-devicestatus" {
-  name = "default-devicestatus"
-}
-
-resource "google_pubsub_topic" "default-telemetry" {
-  name = "default-telemetry"
-}
-
-resource "google_pubsub_topic" "temp-telemetry" {
-  name = "temp-telemetry"
-}
-
-resource "google_pubsub_topic" "hum-telemetry" {
-  name = "hum-telemetry"
-}
-
+```hcl
 module "iot-platform" {
   source     = "./iot-core"
-  telemetry_pub_sub_topic_id = google_pubsub_topic.default-telemetry.id
-  status_pub_sub_topic_id = google_pubsub_topic.default-devicestatus.id
+  project_id = "my_project_id"
+  region = "europe-west1"
+  telemetry_pub_sub_topic_id = "telemetry_topic_id"
+  status_pub_sub_topic_id = "statu_topic_id"
   extra_telemetry_pub_sub_topic_ids = [{
       "mqtt_topic" = "humidity"
-      "pub_sub_topic" =  google_pubsub_topic.hum-telemetry.id
+      "pub_sub_topic" =  "hum_topic_id"
   },
   {
       "mqtt_topic" = "temperature"
-      "pub_sub_topic" =  google_pubsub_topic.temp-telemetry.id
+      "pub_sub_topic" =  "temp_topic_id"
   }]
   devices_yaml_file = "devices.yaml"
 }
+# tftest:modules=1:resources=2
+
 ```
 
 ## Example integrated with Data Foundation Platform
@@ -107,6 +89,8 @@ module "iot-platform" {
 
 | name | description | type | required | default |
 |---|---|:---: |:---:|:---:|
+| project_id | Project were resources will be deployed | <code title="">string</code> | ✓ |  |
+| region | Region were resources will be deployed | <code title="">string</code> | ✓ |  |
 | status_pub_sub_topic_id | pub sub topic for status messages (GCP-->Device) | <code title="">string</code> | ✓ |  |
 | telemetry_pub_sub_topic_id | pub sub topic for telemetry messages (Device-->GCP) | <code title="">string</code> | ✓ |  |
 | *devices_yaml_file* | yaml file name including Devices map to be registered in the IoT Registry in the form DEVICE_ID: DEVICE_CERTIFICATE | <code title="">string</code> |  | <code title=""></code> |
