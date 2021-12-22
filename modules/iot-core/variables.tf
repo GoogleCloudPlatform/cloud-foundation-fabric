@@ -26,7 +26,7 @@ variable "extra_telemetry_pub_sub_topic_ids" {
     mqtt_topic = string
     pub_sub_topic = string
   }))
-  default = [{}]
+  default = []
 }
 
 variable "project_id" {
