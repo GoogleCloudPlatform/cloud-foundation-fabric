@@ -58,7 +58,7 @@ def main(dirs, files=False, show_extra=False):
   state_labels = {State.FAIL: '✗', State.OK: '✓', State.SKIP: '?'}
   for dir_name in dirs:
     print(f'----- {dir_name} -----')
-    for mod_name, state in _check_dir(dir_name):
+    for mod_name, state in _check_dir(dir_name, files, show_extra):
       errors += 1 if state == State.FAIL else 0
       print(f'[{state_labels[state]}] {mod_name}')
   if errors:

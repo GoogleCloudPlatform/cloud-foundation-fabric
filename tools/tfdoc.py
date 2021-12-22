@@ -214,7 +214,7 @@ def _escape(s):
   return ''.join(c if c in UNESCAPED else ('&#%s;' % ord(c)) for c in s)
 
 
-def format_doc(outputs, variables, files, show_extra=True):
+def format_doc(outputs, variables, files, show_extra=False):
   'Return formatted document.'
   buffer = []
   if files:
@@ -323,7 +323,7 @@ def get_doc(readme):
 
 def create_doc(module_path, files=False, show_extra=False):
   try:
-    mod_files = list(parse_files(module_path)) if files else None
+    mod_files = list(parse_files(module_path)) if files else []
     mod_variables = list(parse_variables(module_path))
     mod_outputs = list(parse_outputs(module_path))
   except (IOError, OSError) as e:
