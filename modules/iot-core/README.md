@@ -8,15 +8,15 @@ Requires enabling the following APIs:
 
 ## Simple Example
 
-Simple example showing how to create an IoT Platform (IoT Core), connect to give pub-sub topics and provision devices.
+Simple example showing how to create an IoT Platform (IoT Core), connected to a set of given Pub-Sub topics and provision devices.
 
-Before executing, device certificates shall be created using:
+Before executing, device certificates shall be created, for example using:
 
 ```
 openssl req -x509 -newkey rsa:2048 -keyout rsa_private.pem -nodes -out rsa_cert.pem -subj "/CN=unused"
 ```
 
-And then provision its path in the devices yaml file following the convention device_id: device_cert
+And then provision public certificate path in the devices yaml file following the convention device_id: device_cert
 
 
 ```hcl
@@ -31,6 +31,9 @@ module "iot-platform" {
 # tftest:modules=1:resources=2
 
 ```
+
+Now, we can test sending telemetry messages from devices to our IoT Platform, for example using the MQTT demo client at https://github.com/googleapis/nodejs-iot/tree/main/samples/mqtt_example
+
 ## Example with specific PubSub topics for custom MQTT topics
 
 If you need to match specific MQTT topics (eg, /temperature) into specific PubSub topics, you can use extra_telemetry_pub_sub_topic_ids for that, as in the following example:
