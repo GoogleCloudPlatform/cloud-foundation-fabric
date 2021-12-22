@@ -25,6 +25,22 @@ module "iot-platform" {
   project_id = "my_project_id"
   region = "europe-west1"
   telemetry_pub_sub_topic_id = "telemetry_topic_id"
+  status_pub_sub_topic_id = "status_topic_id"
+  devices_yaml_file = "devices.yaml"
+}
+# tftest:modules=1:resources=2
+
+```
+## Example with specific PubSub topics for custom MQTT topics
+
+If you need to match specific MQTT topics (eg, /temperature) into specific PubSub topics, you can use extra_telemetry_pub_sub_topic_ids for that, as in the following example:
+
+```hcl
+module "iot-platform" {
+  source     = "./iot-core"
+  project_id = "my_project_id"
+  region = "europe-west1"
+  telemetry_pub_sub_topic_id = "telemetry_topic_id"
   status_pub_sub_topic_id = "statu_topic_id"
   extra_telemetry_pub_sub_topic_ids = [{
       "mqtt_topic" = "humidity"
@@ -51,35 +67,21 @@ INCLUDE HERE DIAGRAM
 1. Second, execute instructions in **[Environment Setup](../../data-solutions/data-platform-foundations/02-resources/)** to provision PubSub, DataFlow, BQ,... Get variable landing-pubsub as will be used later to create IoT Registry
 
 1. Now it is time to provision IoT Platform. Modify landing-project-id and landing_pubsub_topic_id with output variables obtained before
-```
 
-
-provider "google" {
-  project = "landing-project-id"
-  region = "my-region"
-}
-
+```hcl
 resource "google_pubsub_topic" "default-devicestatus" {
   name = "default-devicestatus"
 }
 
 module "iot-platform" {
   source     = "./iot-core"
+  project_id = "my_project_id"
+  region = "europe-west1"
   telemetry_pub_sub_topic_id = "landing_pubsub_topic_id"
   status_pub_sub_topic_id = google_pubsub_topic.default-devicestatus.id
-  extra_telemetry_pub_sub_topic_ids = [{
-      "mqtt_topic" = "humidity"
-      "pub_sub_topic" =  google_pubsub_topic.hum-telemetry.id
-  },
-  {
-      "mqtt_topic" = "temperature"
-      "pub_sub_topic" =  google_pubsub_topic.temp-telemetry.id
-  }]
-  devices = {
-      device_1 = "device_certs/rsa_cert1.pem"
-      device_2 = "device_certs/rsa_cert2.pem"
-  }
+  devices_yaml_file = "devices.yaml"
 }
+# tftest:modules=1:resources=3
 ```
 1. Finally, lets create some dummy IoT devices and create a pipeline to test the Platform
 
