@@ -92,6 +92,11 @@ resource "google_compute_organization_security_policy_rule" "rule" {
       }
     }
   }
+  # TODO: remove once provider issues is fixed
+  # https://github.com/hashicorp/terraform-provider-google/issues/7790
+  lifecycle {
+    ignore_changes = [description]
+  }
 }
 
 resource "google_compute_organization_security_policy_association" "attachment" {
