@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-## [9.0.1] - 2021-12-22
+## [9.0.2] - 2021-12-22
 
 - ignore description changes in firewall policy rule to avoid permadiff, add factory example to `folder` module documentation
 
@@ -390,8 +390,8 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v9.0.1...HEAD
-[9.0.1]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v9.0.0...v9.0.1
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v9.0.2...HEAD
+[9.0.2]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v9.0.0...v9.0.2
 [9.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v8.0.0...v9.0.0
 [8.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v7.0.0...v8.0.0
 [7.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v6.0.0...v7.0.0
