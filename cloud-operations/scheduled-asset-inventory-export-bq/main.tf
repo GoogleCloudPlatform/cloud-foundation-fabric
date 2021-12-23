@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+
+
 ###############################################################################
 #                                Projects                                     #
 ###############################################################################
@@ -106,6 +108,7 @@ module "cf" {
 }
 
 module "cffile" {
+  count       = var.cai_gcs_export ? 1 : 0
   source      = "../../modules/cloud-function"
   project_id  = module.project.project_id
   region      = var.region
@@ -164,6 +167,7 @@ resource "google_cloud_scheduler_job" "job" {
 }
 
 resource "google_cloud_scheduler_job" "job_file" {
+  count       = var.cai_gcs_export ? 1 : 0
   project     = google_app_engine_application.app.project
   region      = var.region
   name        = "file-export-job"

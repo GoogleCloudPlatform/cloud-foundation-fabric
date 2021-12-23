@@ -32,6 +32,11 @@ variable "cai_config" {
   }
 }
 
+variable "cai_gcs_export" {
+  type    = bool
+  default = true
+}
+
 variable "file_config" {
   type = object({
     bucket     = string

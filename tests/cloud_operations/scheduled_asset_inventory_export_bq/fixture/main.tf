@@ -18,6 +18,7 @@ module "test" {
   source          = "../../../../cloud-operations/scheduled-asset-inventory-export-bq"
   billing_account = var.billing_account
   cai_config      = var.cai_config
+  cai_gcs_export  = var.cai_gcs_export
   file_config     = var.file_config
   project_create  = var.project_create
   project_id      = var.project_id

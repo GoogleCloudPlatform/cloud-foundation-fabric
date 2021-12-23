@@ -59,6 +59,7 @@ This is an optional part, and if it is expressed with correct variables, the hig
 | *billing_account* | Billing account id used as default for new projects. | <code title="">string</code> |  | <code title="">null</code> |
 | *bundle_path* | Path used to write the intermediate Cloud Function code bundle. | <code title="">string</code> |  | <code title="">./bundle.zip</code> |
 | *bundle_path_cffile* | Path used to write the intermediate Cloud Function code bundle. | <code title="">string</code> |  | <code title="">./bundle_cffile.zip</code> |
+| *cai_gcs_export* | Enable optional part to export tables to GCS | <code title="">bool</code> |  | <code title="">false</code> |
 | *file_config* | Optional BQ table as a file export function config. | <code title="object&#40;&#123;&#10;bucket     &#61; string&#10;filename   &#61; string&#10;format     &#61; string&#10;bq_dataset &#61; string&#10;bq_table   &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;bucket     &#61; null&#10;filename   &#61; null&#10;format     &#61; null&#10;bq_dataset &#61; null&#10;bq_table   &#61; null&#10;&#125;">...</code> |
 | *location* | Appe Engine location used in the example. | <code title="">string</code> |  | <code title="">europe-west</code> |
 | *name* | Arbitrary string used to name created resources. | <code title="">string</code> |  | <code title="">asset-inventory</code> |
