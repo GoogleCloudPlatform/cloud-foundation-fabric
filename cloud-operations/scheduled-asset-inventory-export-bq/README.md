@@ -36,7 +36,7 @@ Once done testing, you can clean up resources by running `terraform destroy`. To
 
 Once resources are created, you can run queries on the data you exported on Bigquery. [Here](https://cloud.google.com/asset-inventory/docs/exporting-to-bigquery#querying_an_asset_snapshot) you can find some example of queries you can run.
 
-You can also create a dashboard connecting [Datalab](https://datastudio.google.com/) or any other BI tools of your choice to your Bigquery datase.
+You can also create a dashboard connecting [Datalab](https://datastudio.google.com/) or any other BI tools of your choice to your Bigquery dataset.
 
 ## File exporter for JSON, CSV (optional). 
 
@@ -46,7 +46,7 @@ Regular file-based exports of data from Cloud Asset Inventory may be useful for 
 
 It helps to create custom [scheduled query](https://cloud.google.com/bigquery/docs/scheduling-queries#console) from CAI export tables, and to write out results in to dedicated table (with overwrites). Define such query's output columns to comply with downstream systems' fields requirements, and time query execution after CAI export into BQ for freshness. See [sample queries](https://cloud.google.com/asset-inventory/docs/exporting-to-bigquery-sample-queries).
 
-If this part is expressed with correct variable `cai_gcs_export`, the high level diagram extends to the following:
+This is an optional part, created if `cai_gcs_export` is set to `true`. The high level diagram extends to the following:
 
 <img src="diagram_optional.png" width="640px">
 
