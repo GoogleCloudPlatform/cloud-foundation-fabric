@@ -1,14 +1,14 @@
 # Google Cloud IoT Core Module
 
-This module allows setting up Cloud IoT Core Registry, register devices and configure Pub/Sub topics.
+This module setup Cloud IoT Core Registry, register IoT Devices and configure Pub/Sub topics required in Cloud IoT Core.
 
 Requires enabling the following APIs:
- "pubsub.googleapis.com",
- "cloudiot.googleapis.com"
+* pubsub.googleapis.com
+* cloudiot.googleapis.com
 
 ## Simple Example
 
-Simple example showing how to create an IoT Platform (IoT Core), connected to a set of given Pub-Sub topics and provision devices.
+Basic example showing how to create an IoT Platform (IoT Core), connected to a set of given Pub-Sub topics and provision IoT devices.
 
 Before executing, device certificates shall be created, for example using:
 
@@ -62,8 +62,7 @@ module "iot-platform" {
 ## Example integrated with Data Foundation Platform
 In this example, we will show how to extend **[Data Foundations Platform](../../data-solutions/data-platform-foundations/)** including IoT Platform as a new source of data. 
 
-INCLUDE HERE DIAGRAM
-
+![Target architecture](./diagram_iot.png)
 
 1. First, we will setup Environment following instructions in **[Environment Setup](../../data-solutions/data-platform-foundations/01-environment/)** to setup projects and SAs required. Get output variable project_ids.landing as will be used later
 
@@ -80,11 +79,11 @@ module "iot-platform" {
   status_pub_sub_topic_id = "status_pubsub_topic_id"
   devices_yaml_file = "devices.yaml"
 }
-# tftest:modules=1:resources=3
+# tftest:modules=1:resources=2
 ```
-1. After that, we can setup the pipeline PubSub to BigQuery show at **[Pipeline Setup](../../data-solutions/data-platform-foundations/03-pipeline/pubsub_to_bigquery.md)**
+1. After that, we can setup the pipeline "PubSub to BigQuery" showm at **[Pipeline Setup](../../data-solutions/data-platform-foundations/03-pipeline/pubsub_to_bigquery.md)**
 
-1. Finally, instead of testing the pipeline by sending messages to PubSub, we can now test sending telemetry messages from simulated IoT devices to our IoT Platform, for example using the MQTT demo client at https://github.com/googleapis/nodejs-iot/tree/main/samples/mqtt_example . We shall edit the client script cloudiot_mqtt_example_nodejs.js to send messages following the pipeline message format
+1. Finally, instead of testing the pipeline by sending messages to PubSub, we can now test sending telemetry messages from simulated IoT devices to our IoT Platform, for example using the MQTT demo client at https://github.com/googleapis/nodejs-iot/tree/main/samples/mqtt_example . We shall edit the client script cloudiot_mqtt_example_nodejs.js to send messages following the pipeline message format, so they are processed by DataFlow job and inserted in the BigQuery table.
 ```
 const payload = '{"name": "device4", "surname": "NA", "timestamp":"'+Math.floor(Date.now()/1000)+'"}';
 ```
