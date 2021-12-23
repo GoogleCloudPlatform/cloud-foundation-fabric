@@ -38,11 +38,15 @@ Once resources are created, you can run queries on the data you exported on Bigq
 
 You can also create a dashboard connecting [Datalab](https://datastudio.google.com/) or any other BI tools of your choice to your Bigquery datase.
 
-## File exporter for JSON, CSV. 
+## File exporter for JSON, CSV (optional). 
 
-Regular file-based exports of Cloud Asset Inventory may be useful for scale-out network dependency discovery like [Planet Exporter](https://github.com/williamchanrico/planet-exporter) or to update asset tracking or configuration management workflows. Bigquery supports multiple [export formats](https://cloud.google.com/bigquery/docs/exporting-data#export_formats_and_compression_types) and one may upload objects to Storage Bucket using provided Cloud Function. Specify `job.DestinationFormat` as defined in [documentation](https://googleapis.dev/python/bigquery/latest/generated/google.cloud.bigquery.job.DestinationFormat.html), e.g. `NEWLINE_DELIMITED_JSON`.
+Regular file-based exports of data from Cloud Asset Inventory may be useful for e.g. scale-out network dependencies discovery tools like [Planet Exporter](https://github.com/williamchanrico/planet-exporter), or to update legacy workloads tracking or configuration management systems. Bigquery supports multiple [export formats](https://cloud.google.com/bigquery/docs/exporting-data#export_formats_and_compression_types) and one may upload objects to Storage Bucket using provided Cloud Function. Specify `job.DestinationFormat` as defined in [documentation](https://googleapis.dev/python/bigquery/latest/generated/google.cloud.bigquery.job.DestinationFormat.html), e.g. `NEWLINE_DELIMITED_JSON`.
 
 It helps to create custom [scheduled query](https://cloud.google.com/bigquery/docs/scheduling-queries#console) from CAI export tables, and to write out results in to dedicated table (with overwrites). Define such query's output columns to comply with downstream systems' fields requirements, and time query execution after CAI export into BQ for freshness. See [sample queries](https://cloud.google.com/asset-inventory/docs/exporting-to-bigquery-sample-queries).
+
+This is an optional part, and if it is expressed with correct variables, the high level diagram extends to the following:
+
+<img src="diagram_optional.png" width="640px">
 
 
 <!-- BEGIN TFDOC -->
