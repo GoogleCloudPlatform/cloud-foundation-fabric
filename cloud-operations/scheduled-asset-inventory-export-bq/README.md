@@ -51,24 +51,26 @@ This is an optional part, created if `cai_gcs_export` is set to `true`. The high
 <img src="diagram_optional.png" width="640px">
 
 
+
 <!-- BEGIN TFDOC -->
+
 ## Variables
 
 | name | description | type | required | default |
-|---|---|:---: |:---:|:---:|
-| cai_config | Cloud Asset Inventory export config. | <code title="object&#40;&#123;&#10;bq_dataset         &#61; string&#10;bq_table           &#61; string&#10;bq_table_overwrite &#61; bool&#10;target_node        &#61; string&#10;&#125;&#41;">object({...})</code> | ✓ |  |
-| project_id | Project id that references existing project. | <code title="">string</code> | ✓ |  |
-| *billing_account* | Billing account id used as default for new projects. | <code title="">string</code> |  | <code title="">null</code> |
-| *bundle_path* | Path used to write the intermediate Cloud Function code bundle. | <code title="">string</code> |  | <code title="">./bundle.zip</code> |
-| *bundle_path_cffile* | Path used to write the intermediate Cloud Function code bundle. | <code title="">string</code> |  | <code title="">./bundle_cffile.zip</code> |
-| *cai_gcs_export* | Enable optional part to export tables to GCS | <code title="">bool</code> |  | <code title="">false</code> |
-| *file_config* | Optional BQ table as a file export function config. | <code title="object&#40;&#123;&#10;bucket     &#61; string&#10;filename   &#61; string&#10;format     &#61; string&#10;bq_dataset &#61; string&#10;bq_table   &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;bucket     &#61; null&#10;filename   &#61; null&#10;format     &#61; null&#10;bq_dataset &#61; null&#10;bq_table   &#61; null&#10;&#125;">...</code> |
-| *location* | Appe Engine location used in the example. | <code title="">string</code> |  | <code title="">europe-west</code> |
-| *name* | Arbitrary string used to name created resources. | <code title="">string</code> |  | <code title="">asset-inventory</code> |
-| *name_cffile* | Arbitrary string used to name created resources. | <code title="">string</code> |  | <code title="">cffile-exporter</code> |
-| *project_create* | Create project instead ofusing an existing one. | <code title="">bool</code> |  | <code title="">true</code> |
-| *region* | Compute region used in the example. | <code title="">string</code> |  | <code title="">europe-west1</code> |
-| *root_node* | The resource name of the parent folder or organization for project creation, in 'folders/folder_id' or 'organizations/org_id' format. | <code title="">string</code> |  | <code title="">null</code> |
+|---|---|:---:|:---:|:---:|
+| cai_config | Cloud Asset Inventory export config. | <code title="object&#40;&#123;&#10;  bq_dataset         &#61; string&#10;  bq_table           &#61; string&#10;  bq_table_overwrite &#61; bool&#10;  target_node        &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| project_id | Project id that references existing project. | <code>string</code> | ✓ |  |
+| billing_account | Billing account id used as default for new projects. | <code>string</code> |  | <code>null</code> |
+| bundle_path | Path used to write the intermediate Cloud Function code bundle. | <code>string</code> |  | <code>&#34;.&#47;bundle.zip&#34;</code> |
+| bundle_path_cffile | Path used to write the intermediate Cloud Function code bundle. | <code>string</code> |  | <code>&#34;.&#47;bundle_cffile.zip&#34;</code> |
+| cai_gcs_export | Enable optional part to export tables to GCS | <code>bool</code> |  | <code>false</code> |
+| file_config | Optional BQ table as a file export function config. | <code title="object&#40;&#123;&#10;  bucket     &#61; string&#10;  filename   &#61; string&#10;  format     &#61; string&#10;  bq_dataset &#61; string&#10;  bq_table   &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  bucket     &#61; null&#10;  filename   &#61; null&#10;  format     &#61; null&#10;  bq_dataset &#61; null&#10;  bq_table   &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
+| location | Appe Engine location used in the example. | <code>string</code> |  | <code>&#34;europe-west&#34;</code> |
+| name | Arbitrary string used to name created resources. | <code>string</code> |  | <code>&#34;asset-inventory&#34;</code> |
+| name_cffile | Arbitrary string used to name created resources. | <code>string</code> |  | <code>&#34;cffile-exporter&#34;</code> |
+| project_create | Create project instead ofusing an existing one. | <code>bool</code> |  | <code>true</code> |
+| region | Compute region used in the example. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| root_node | The resource name of the parent folder or organization for project creation, in 'folders/folder_id' or 'organizations/org_id' format. | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 
@@ -76,4 +78,7 @@ This is an optional part, created if `cai_gcs_export` is set to `true`. The high
 |---|---|:---:|
 | bq-dataset | Bigquery instance details. |  |
 | cloud-function | Cloud Function instance details. |  |
+
+
 <!-- END TFDOC -->
+
