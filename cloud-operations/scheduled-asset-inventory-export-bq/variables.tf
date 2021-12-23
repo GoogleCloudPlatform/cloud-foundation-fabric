@@ -26,12 +26,6 @@ variable "bundle_path" {
   default     = "./bundle.zip"
 }
 
-variable "bundle_path_cffile" {
-  description = "Path used to write the intermediate Cloud Function code bundle."
-  type        = string
-  default     = "./bundle_cffile.zip"
-}
-
 variable "cai_config" {
   description = "Cloud Asset Inventory export config."
   type = object({
@@ -40,24 +34,6 @@ variable "cai_config" {
     bq_table_overwrite = bool
     target_node        = string
   })
-}
-
-variable "file_config" {
-  description = "Optional BQ table as a file export function config."
-  type = object({
-    bucket     = string
-    filename   = string
-    format     = string
-    bq_dataset = string
-    bq_table   = string
-  })
-  default = {
-    bucket     = null
-    filename   = null
-    format     = null
-    bq_dataset = null
-    bq_table   = null
-  }
 }
 
 variable "location" {
@@ -71,13 +47,6 @@ variable "name" {
   description = "Arbitrary string used to name created resources."
   type        = string
   default     = "asset-inventory"
-}
-
-
-variable "name_cffile" {
-  description = "Arbitrary string used to name created resources."
-  type        = string
-  default     = "cffile-exporter"
 }
 
 variable "project_create" {
@@ -101,4 +70,41 @@ variable "root_node" {
   description = "The resource name of the parent folder or organization for project creation, in 'folders/folder_id' or 'organizations/org_id' format."
   type        = string
   default     = null
+}
+
+variable "cai_gcs_export" {
+  description = "Enable optional part to export tables to GCS"
+  type        = bool
+  default     = false
+}
+
+
+variable "name_cffile" {
+  description = "Arbitrary string used to name created resources."
+  type        = string
+  default     = "cffile-exporter"
+}
+
+variable "file_config" {
+  description = "Optional BQ table as a file export function config."
+  type = object({
+    bucket     = string
+    filename   = string
+    format     = string
+    bq_dataset = string
+    bq_table   = string
+  })
+  default = {
+    bucket     = null
+    filename   = null
+    format     = null
+    bq_dataset = null
+    bq_table   = null
+  }
+}
+
+variable "bundle_path_cffile" {
+  description = "Path used to write the intermediate Cloud Function code bundle."
+  type        = string
+  default     = "./bundle_cffile.zip"
 }
