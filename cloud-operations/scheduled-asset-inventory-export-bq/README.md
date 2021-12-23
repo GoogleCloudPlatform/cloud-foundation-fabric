@@ -42,9 +42,7 @@ You can also create a dashboard connecting [Datalab](https://datastudio.google.c
 
 Regular file-based exports of Cloud Asset Inventory may be useful for scale-out network dependency discovery like [Planet Exporter](https://github.com/williamchanrico/planet-exporter) or to update asset tracking or configuration management workflows. Bigquery supports multiple [export formats](https://cloud.google.com/bigquery/docs/exporting-data#export_formats_and_compression_types) and one may upload objects to Storage Bucket using provided Cloud Function. Specify `job.DestinationFormat` as defined in [documentation](https://googleapis.dev/python/bigquery/latest/generated/google.cloud.bigquery.job.DestinationFormat.html), e.g. `NEWLINE_DELIMITED_JSON`.
 
-It helps to create custom [scheduled query](https://cloud.google.com/bigquery/docs/scheduling-queries#console) for to comply with downstream systems' fields, and to time it with CAI export into BQ for freshness. See [sample queries](https://cloud.google.com/asset-inventory/docs/exporting-to-bigquery-sample-queries).
-
-Note: Cloud Function's Service Account needs write-capable IAM role on `bucket`.
+It helps to create custom [scheduled query](https://cloud.google.com/bigquery/docs/scheduling-queries#console) from CAI export tables, and to write out results in to dedicated table (with overwrites). Define such query's output columns to comply with downstream systems' fields requirements, and time query execution after CAI export into BQ for freshness. See [sample queries](https://cloud.google.com/asset-inventory/docs/exporting-to-bigquery-sample-queries).
 
 
 <!-- BEGIN TFDOC -->
