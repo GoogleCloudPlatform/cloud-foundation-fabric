@@ -175,24 +175,25 @@ module "bigquery-dataset" {
 ```
 
 <!-- BEGIN TFDOC -->
+
 ## Variables
 
 | name | description | type | required | default |
-|---|---|:---: |:---:|:---:|
-| id | Dataset id. | <code title="">string</code> | ✓ |  |
-| project_id | Id of the project where datasets will be created. | <code title="">string</code> | ✓ |  |
-| *access* | Map of access rules with role and identity type. Keys are arbitrary and must match those in the `access_identities` variable, types are `domain`, `group`, `special_group`, `user`, `view`. | <code title="map&#40;object&#40;&#123;&#10;role &#61; string&#10;type &#61; string&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="&#123;&#125;&#10;validation &#123;&#10;condition &#61; can&#40;&#91;&#10;for k, v in var.access :&#10;index&#40;&#91;&#34;domain&#34;, &#34;group&#34;, &#34;special_group&#34;, &#34;user&#34;, &#34;view&#34;&#93;, v.type&#41;&#10;&#93;&#41;&#10;error_message &#61; &#34;Access type must be one of &#39;domain&#39;, &#39;group&#39;, &#39;special_group&#39;, &#39;user&#39;, &#39;view&#39;.&#34;&#10;&#125;">...</code> |
-| *access_identities* | Map of access identities used for basic access roles. View identities have the format 'project_id|dataset_id|table_id'. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
-| *dataset_access* | Set access in the dataset resource instead of using separate resources. | <code title="">bool</code> |  | <code title="">false</code> |
-| *description* | Optional description. | <code title="">string</code> |  | <code title="">Terraform managed.</code> |
-| *encryption_key* | Self link of the KMS key that will be used to protect destination table. | <code title="">string</code> |  | <code title="">null</code> |
-| *friendly_name* | Dataset friendly name. | <code title="">string</code> |  | <code title="">null</code> |
-| *iam* | IAM bindings in {ROLE => [MEMBERS]} format. Mutually exclusive with the access_* variables used for basic roles. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
-| *labels* | Dataset labels. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
-| *location* | Dataset location. | <code title="">string</code> |  | <code title="">EU</code> |
-| *options* | Dataset options. | <code title="object&#40;&#123;&#10;default_table_expiration_ms     &#61; number&#10;default_partition_expiration_ms &#61; number&#10;delete_contents_on_destroy      &#61; bool&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;default_table_expiration_ms     &#61; null&#10;default_partition_expiration_ms &#61; null&#10;delete_contents_on_destroy      &#61; false&#10;&#125;">...</code> |
-| *tables* | Table definitions. Options and partitioning default to null. Partitioning can only use `range` or `time`, set the unused one to null. | <code title="map&#40;object&#40;&#123;&#10;friendly_name &#61; string&#10;labels        &#61; map&#40;string&#41;&#10;options &#61; object&#40;&#123;&#10;clustering      &#61; list&#40;string&#41;&#10;encryption_key  &#61; string&#10;expiration_time &#61; number&#10;&#125;&#41;&#10;partitioning &#61; object&#40;&#123;&#10;field &#61; string&#10;range &#61; object&#40;&#123;&#10;end      &#61; number&#10;interval &#61; number&#10;start    &#61; number&#10;&#125;&#41;&#10;time &#61; object&#40;&#123;&#10;expiration_ms &#61; number&#10;type &#61; string&#10;&#125;&#41;&#10;&#125;&#41;&#10;schema              &#61; string&#10;deletion_protection &#61; bool&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
-| *views* | View definitions. | <code title="map&#40;object&#40;&#123;&#10;friendly_name       &#61; string&#10;labels              &#61; map&#40;string&#41;&#10;query               &#61; string&#10;use_legacy_sql      &#61; bool&#10;deletion_protection &#61; bool&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
+|---|---|:---:|:---:|:---:|
+| id | Dataset id. | <code>string</code> | ✓ |  |
+| project_id | Id of the project where datasets will be created. | <code>string</code> | ✓ |  |
+| access | Map of access rules with role and identity type. Keys are arbitrary and must match those in the `access_identities` variable, types are `domain`, `group`, `special_group`, `user`, `view`. | <code title="map&#40;object&#40;&#123;&#10;  role &#61; string&#10;  type &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| access_identities | Map of access identities used for basic access roles. View identities have the format 'project_id|dataset_id|table_id'. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| dataset_access | Set access in the dataset resource instead of using separate resources. | <code>bool</code> |  | <code>false</code> |
+| description | Optional description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
+| encryption_key | Self link of the KMS key that will be used to protect destination table. | <code>string</code> |  | <code>null</code> |
+| friendly_name | Dataset friendly name. | <code>string</code> |  | <code>null</code> |
+| iam | IAM bindings in {ROLE => [MEMBERS]} format. Mutually exclusive with the access_* variables used for basic roles. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| labels | Dataset labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| location | Dataset location. | <code>string</code> |  | <code>&#34;EU&#34;</code> |
+| options | Dataset options. | <code title="object&#40;&#123;&#10;  default_table_expiration_ms     &#61; number&#10;  default_partition_expiration_ms &#61; number&#10;  delete_contents_on_destroy      &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  default_table_expiration_ms     &#61; null&#10;  default_partition_expiration_ms &#61; null&#10;  delete_contents_on_destroy      &#61; false&#10;&#125;">&#123;&#8230;&#125;</code> |
+| tables | Table definitions. Options and partitioning default to null. Partitioning can only use `range` or `time`, set the unused one to null. | <code title="map&#40;object&#40;&#123;&#10;  friendly_name &#61; string&#10;  labels        &#61; map&#40;string&#41;&#10;  options &#61; object&#40;&#123;&#10;    clustering      &#61; list&#40;string&#41;&#10;    encryption_key  &#61; string&#10;    expiration_time &#61; number&#10;  &#125;&#41;&#10;  partitioning &#61; object&#40;&#123;&#10;    field &#61; string&#10;    range &#61; object&#40;&#123;&#10;      end      &#61; number&#10;      interval &#61; number&#10;      start    &#61; number&#10;    &#125;&#41;&#10;    time &#61; object&#40;&#123;&#10;      expiration_ms &#61; number&#10;      type          &#61; string&#10;    &#125;&#41;&#10;  &#125;&#41;&#10;  schema              &#61; string&#10;  deletion_protection &#61; bool&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| views | View definitions. | <code title="map&#40;object&#40;&#123;&#10;  friendly_name       &#61; string&#10;  labels              &#61; map&#40;string&#41;&#10;  query               &#61; string&#10;  use_legacy_sql      &#61; bool&#10;  deletion_protection &#61; bool&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
@@ -206,5 +207,7 @@ module "bigquery-dataset" {
 | tables | Table resources. |  |
 | view_ids | Map of fully qualified view ids keyed by view ids. |  |
 | views | View resources. |  |
+
+
 <!-- END TFDOC -->
 

@@ -45,3 +45,12 @@ variable "project_id" {
   type    = string
   default = "my-project"
 }
+
+variable "psa_addresses" {
+  type = map(object({
+    address       = string
+    network       = string
+    prefix_length = number
+  }))
+  default = {}
+}

@@ -20,5 +20,6 @@ module "test" {
   global_addresses          = var.global_addresses
   internal_addresses        = var.internal_addresses
   internal_addresses_config = var.internal_addresses_config
+  psa_addresses             = var.psa_addresses
   project_id                = var.project_id
 }

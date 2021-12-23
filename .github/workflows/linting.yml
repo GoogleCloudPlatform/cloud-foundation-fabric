@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: 'Linting'
-on: 
+name: "Linting"
+on:
   pull_request:
     branches:
       - master
@@ -30,7 +30,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.9'
+          python-version: "3.9"
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v1
@@ -54,4 +54,10 @@ jobs:
       - name: Check documentation
         id: documentation
         run: |
-          python3 tools/check_documentation.py cloud-operations/ data-solutions/ data-solutions/data-platform-foundations/ factories/ factories/firewall-vpc-rules/ foundations/ modules/ networking/
+          python3 tools/check_documentation.py \
+            cloud-operations \
+            data-solutions \
+            factories \
+            foundations \
+            modules \
+            networking
