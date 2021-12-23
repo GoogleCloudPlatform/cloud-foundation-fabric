@@ -25,16 +25,17 @@ module "neg" {
 ```
 
 <!-- BEGIN TFDOC -->
+
 ## Variables
 
 | name | description | type | required | default |
-|---|---|:---: |:---:|:---:|
-| endpoints | List of (instance, port, address) of the NEG | <code title="list&#40;object&#40;&#123;&#10;instance   &#61; string&#10;port       &#61; number&#10;ip_address &#61; string&#10;&#125;&#41;&#41;">list(object({...}))</code> | ✓ |  |
-| name | NEG name | <code title="">string</code> | ✓ |  |
-| network | Name or self link of the VPC used for the NEG. Use the self link for Shared VPC. | <code title="">string</code> | ✓ |  |
-| project_id | NEG project id. | <code title="">string</code> | ✓ |  |
-| subnetwork | VPC subnetwork name or self link. | <code title="">string</code> | ✓ |  |
-| zone | NEG zone | <code title="">string</code> | ✓ |  |
+|---|---|:---:|:---:|:---:|
+| endpoints | List of (instance, port, address) of the NEG | <code title="list&#40;object&#40;&#123;&#10;  instance   &#61; string&#10;  port       &#61; number&#10;  ip_address &#61; string&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
+| name | NEG name | <code>string</code> | ✓ |  |
+| network | Name or self link of the VPC used for the NEG. Use the self link for Shared VPC. | <code>string</code> | ✓ |  |
+| project_id | NEG project id. | <code>string</code> | ✓ |  |
+| subnetwork | VPC subnetwork name or self link. | <code>string</code> | ✓ |  |
+| zone | NEG zone | <code>string</code> | ✓ |  |
 
 ## Outputs
 
@@ -43,4 +44,6 @@ module "neg" {
 | id | Network endpoint group ID |  |
 | self_lnk | Network endpoint group self link |  |
 | size | Size of the network endpoint group |  |
+
+
 <!-- END TFDOC -->

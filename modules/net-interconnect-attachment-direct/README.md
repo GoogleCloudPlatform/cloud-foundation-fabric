@@ -105,21 +105,22 @@ module "vlan-attachment-2" {
 ```
 
 <!-- BEGIN TFDOC -->
+
 ## Variables
 
 | name | description | type | required | default |
-|---|---|:---: |:---:|:---:|
-| interconnect | URL of the underlying Interconnect object that this attachment's traffic will traverse through. | <code title="">string</code> | ✓ |  |
-| peer | Peer Ip address and asn. Only IPv4 supported | <code title="object&#40;&#123;&#10;ip_address &#61; string&#10;asn        &#61; number&#10;&#125;&#41;">object({...})</code> | ✓ |  |
-| project_id | The project containing the resources | <code title="">string</code> | ✓ |  |
-| *bgp* | Bgp session parameters | <code title="object&#40;&#123;&#10;session_range             &#61; string&#10;candidate_ip_ranges       &#61; list&#40;string&#41;&#10;advertised_route_priority &#61; number&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
-| *config* | VLAN attachment parameters: description, vlan_id, bandwidth, admin_enabled, interconnect | <code title="object&#40;&#123;&#10;description   &#61; string&#10;vlan_id       &#61; number&#10;bandwidth     &#61; string&#10;admin_enabled &#61; bool&#10;mtu           &#61; number&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;description   &#61; null&#10;vlan_id       &#61; null&#10;bandwidth     &#61; &#34;BPS_10G&#34;&#10;admin_enabled &#61; true&#10;mtu           &#61; 1440&#10;&#125;">...</code> |
-| *name* | The name of the vlan attachment | <code title="">string</code> |  | <code title="">vlan-attachment</code> |
-| *region* | Region where the router resides | <code title="">string</code> |  | <code title="">europe-west1-b</code> |
-| *router_config* | Router asn and custom advertisement configuration, ip_ranges is a map of address ranges and descriptions..  | <code title="object&#40;&#123;&#10;description &#61; string&#10;asn         &#61; number&#10;advertise_config &#61; object&#40;&#123;&#10;groups    &#61; list&#40;string&#41;&#10;ip_ranges &#61; map&#40;string&#41;&#10;mode      &#61; string&#10;&#125;&#41;&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;description      &#61; null&#10;asn              &#61; 64514&#10;advertise_config &#61; null&#10;&#125;">...</code> |
-| *router_create* | Create router. | <code title="">bool</code> |  | <code title="">true</code> |
-| *router_name* | Router name used for auto created router, or to specify an existing router to use if `router_create` is set to `true`. Leave blank to use vlan attachment name for auto created router. | <code title="">string</code> |  | <code title="">router-vlan-attachment</code> |
-| *router_network* | A reference to the network to which this router belongs | <code title="">string</code> |  | <code title="">null</code> |
+|---|---|:---:|:---:|:---:|
+| interconnect | URL of the underlying Interconnect object that this attachment's traffic will traverse through. | <code>string</code> | ✓ |  |
+| peer | Peer Ip address and asn. Only IPv4 supported | <code title="object&#40;&#123;&#10;  ip_address &#61; string&#10;  asn        &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| project_id | The project containing the resources | <code>string</code> | ✓ |  |
+| router_config | Router asn and custom advertisement configuration, ip_ranges is a map of address ranges and descriptions..  | <code title="object&#40;&#123;&#10;  description &#61; string&#10;  asn         &#61; number&#10;  advertise_config &#61; object&#40;&#123;&#10;    groups    &#61; list&#40;string&#41;&#10;    ip_ranges &#61; map&#40;string&#41;&#10;    mode      &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;&#10;&#10;&#10;default &#61; &#123;&#10;  description      &#61; null&#10;  asn              &#61; 64514&#10;  advertise_config &#61; null&#10;&#125;">object&#40;&#123;&#8230;&#125;</code> | ✓ |  |
+| bgp | Bgp session parameters | <code title="object&#40;&#123;&#10;  session_range             &#61; string&#10;  candidate_ip_ranges       &#61; list&#40;string&#41;&#10;  advertised_route_priority &#61; number&#10;&#10;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| config | VLAN attachment parameters: description, vlan_id, bandwidth, admin_enabled, interconnect | <code title="object&#40;&#123;&#10;  description   &#61; string&#10;  vlan_id       &#61; number&#10;  bandwidth     &#61; string&#10;  admin_enabled &#61; bool&#10;  mtu           &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  description   &#61; null&#10;  vlan_id       &#61; null&#10;  bandwidth     &#61; &#34;BPS_10G&#34;&#10;  admin_enabled &#61; true&#10;  mtu           &#61; 1440&#10;&#125;">&#123;&#8230;&#125;</code> |
+| name | The name of the vlan attachment | <code>string</code> |  | <code>&#34;vlan-attachment&#34;</code> |
+| region | Region where the router resides | <code>string</code> |  | <code>&#34;europe-west1-b&#34;</code> |
+| router_create | Create router. | <code>bool</code> |  | <code>true</code> |
+| router_name | Router name used for auto created router, or to specify an existing router to use if `router_create` is set to `true`. Leave blank to use vlan attachment name for auto created router. | <code>string</code> |  | <code>&#34;router-vlan-attachment&#34;</code> |
+| router_network | A reference to the network to which this router belongs | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 
@@ -128,4 +129,6 @@ module "vlan-attachment-2" {
 | bgpsession | bgp session |  |
 | interconnect_attachment | interconnect attachment |  |
 | router | Router resource (only if auto-created). |  |
+
+
 <!-- END TFDOC -->
