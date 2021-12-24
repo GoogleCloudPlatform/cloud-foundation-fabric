@@ -19,16 +19,41 @@ variable "billing_account" {
 
 variable "cai_config" {
   type = object({
-    bq_dataset  = string
-    bq_table    = string
-    target_node = string
+    bq_dataset         = string
+    bq_table           = string
+    bq_table_overwrite = bool
+    target_node        = string
   })
   default = {
-    bq_dataset  = "my-dataset"
-    bq_table    = "my_table"
-    target_node = "organization/1234567890"
+    bq_dataset         = "my-dataset"
+    bq_table           = "my_table"
+    bq_table_overwrite = "true"
+    target_node        = "organization/1234567890"
   }
 }
+
+variable "cai_gcs_export" {
+  type    = bool
+  default = true
+}
+
+variable "file_config" {
+  type = object({
+    bucket     = string
+    filename   = string
+    format     = string
+    bq_dataset = string
+    bq_table   = string
+  })
+  default = {
+    bucket     = "my-bucket"
+    filename   = "my-folder/myfile.json"
+    format     = "NEWLINE_DELIMITED_JSON"
+    bq_dataset = "my-dataset"
+    bq_table   = "my_table"
+  }
+}
+
 
 variable "project_create" {
   type    = bool
