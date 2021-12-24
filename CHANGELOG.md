@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+- added new data-solutions example: Cloud Storage to Bigquery with Cloud Dataflow with least privileges
 
 ## [9.0.2] - 2021-12-22
 
