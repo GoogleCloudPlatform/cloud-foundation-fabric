@@ -174,6 +174,7 @@ module "bigquery-dataset" {
 # tftest:modules=1:resources=3
 ```
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -208,6 +209,6 @@ module "bigquery-dataset" {
 | view_ids | Map of fully qualified view ids keyed by view ids. |  |
 | views | View resources. |  |
 
-
 <!-- END TFDOC -->
+
 

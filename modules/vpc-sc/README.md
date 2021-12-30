@@ -231,6 +231,7 @@ module "vpc-sc-first" {
 # tftest:modules=1:resources=2
 ```
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -260,5 +261,5 @@ module "vpc-sc-first" {
 | perimeters_bridge | VPC-SC bridge perimeter resources. |  |
 | perimeters_standard | VPC-SC standard perimeter resources. |  |
 
-
 <!-- END TFDOC -->
+

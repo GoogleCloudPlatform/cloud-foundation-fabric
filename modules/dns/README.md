@@ -53,6 +53,7 @@ module "private-dns" {
 # tftest:modules=1:resources=1
 ```
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -85,5 +86,5 @@ module "private-dns" {
 | type | The DNS zone type. |  |
 | zone | DNS zone resource. |  |
 
-
 <!-- END TFDOC -->
+

@@ -293,6 +293,7 @@ module "instance-group" {
 # tftest:modules=1:resources=2
 ```
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -344,8 +345,8 @@ module "instance-group" {
 | template | Template resource. |  |
 | template_name | Template name. |  |
 
-
 <!-- END TFDOC -->
+
 
 ## TODO
 

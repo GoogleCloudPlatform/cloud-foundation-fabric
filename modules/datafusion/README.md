@@ -34,6 +34,7 @@ module "datafusion" {
 # tftest:modules=1:resources=3
 ```
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -66,5 +67,5 @@ module "datafusion" {
 | service_endpoint | DataFusion Service Endpoint. |  |
 | version | DataFusion version. |  |
 
-
 <!-- END TFDOC -->
+

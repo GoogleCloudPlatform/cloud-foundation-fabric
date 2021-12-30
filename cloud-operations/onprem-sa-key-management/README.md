@@ -61,6 +61,7 @@ gcloud auth activate-service-account --key-file data-uploader.json
 terraform destroy -var project_id=$GOOGLE_CLOUD_PROJECT
 ```
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -78,5 +79,5 @@ terraform destroy -var project_id=$GOOGLE_CLOUD_PROJECT
 |---|---|:---:|
 | sa-credentials | SA json key templates. |  |
 
-
 <!-- END TFDOC -->
+

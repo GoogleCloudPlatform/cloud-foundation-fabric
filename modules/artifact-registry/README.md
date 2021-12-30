@@ -20,6 +20,7 @@ module "docker_artifact_registry" {
 # tftest:modules=1:resources=2
 ```
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -41,5 +42,5 @@ module "docker_artifact_registry" {
 | id | Repository id |  |
 | name | Repository name |  |
 
-
 <!-- END TFDOC -->
+

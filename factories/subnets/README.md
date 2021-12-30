@@ -52,6 +52,7 @@ secondary_ip_ranges:              # Opt- List of secondary IP ranges
                                   # Secondary ranges in name: cidr format
 ```
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -66,5 +67,5 @@ secondary_ip_ranges:              # Opt- List of secondary IP ranges
 |---|---|:---:|
 | subnet | Generated subnets |  |
 
-
 <!-- END TFDOC -->
+

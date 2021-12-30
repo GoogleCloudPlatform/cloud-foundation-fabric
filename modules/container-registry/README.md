@@ -16,6 +16,7 @@ module "container_registry" {
 # tftest:modules=1:resources=2
 ```
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -32,5 +33,5 @@ module "container_registry" {
 |---|---|:---:|
 | bucket_id | ID of the GCS bucket created |  |
 
-
 <!-- END TFDOC -->
+

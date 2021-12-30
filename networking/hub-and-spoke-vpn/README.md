@@ -34,6 +34,7 @@ The example does not account for HA, but the VPN gateways can be easily upgraded
 
 If a single router and VPN gateway are used in the hub to manage all tunnels, particular care must be taken in announcing ranges from hub to spokes, as Cloud Router does not explicitly support transitivity and overlapping routes received from both sides create unintended side effects. The simple workaround is to announce a single aggregated route from hub to spokes so that it does not overlap with any of the ranges advertised by each spoke to the hub.
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -53,5 +54,5 @@ If a single router and VPN gateway are used in the hub to manage all tunnels, pa
 |---|---|:---:|
 | vms | GCE VMs. |  |
 
-
 <!-- END TFDOC -->
+

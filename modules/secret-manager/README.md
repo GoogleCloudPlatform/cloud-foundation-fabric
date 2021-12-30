@@ -73,6 +73,7 @@ module "secret-manager" {
 # tftest:modules=1:resources=5
 ```
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -94,8 +95,8 @@ module "secret-manager" {
 | version_ids | Version ids keyed by secret name : version name. |  |
 | versions | Secret versions. |  |
 
-
 <!-- END TFDOC -->
+
 
 ## Requirements
 

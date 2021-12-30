@@ -52,6 +52,7 @@ This is an optional part, created if `cai_gcs_export` is set to `true`. The high
 
 
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -79,6 +80,6 @@ This is an optional part, created if `cai_gcs_export` is set to `true`. The high
 | bq-dataset | Bigquery instance details. |  |
 | cloud-function | Cloud Function instance details. |  |
 
-
 <!-- END TFDOC -->
+
 

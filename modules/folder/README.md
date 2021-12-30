@@ -219,6 +219,7 @@ module "folder2" {
 # tftest:modules=2:resources=6
 ```
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -251,5 +252,5 @@ module "folder2" {
 | name | Folder name. |  |
 | sink_writer_identities | Writer identities created for each sink. |  |
 
-
 <!-- END TFDOC -->
+
