@@ -18,7 +18,7 @@
 # service perimeters are needed, switch to the
 # google_access_context_manager_service_perimeters resource
 
-resource "google_access_context_manager_service_perimeter" "regular" {
+resource "google_access_context_manager_service_perimeter" "default" {
   for_each       = var.service_perimeters
   parent         = "accessPolicies/${local.access_policy}"
   name           = "accessPolicies/${local.access_policy}/servicePerimeters/${each.key}"
@@ -297,4 +297,8 @@ resource "google_access_context_manager_service_perimeter" "regular" {
     # end vpc_accessible_services
   }
   use_explicit_dry_run_spec = true
+  depends_on = [
+    google_access_context_manager_access_policy.default,
+    google_access_context_manager_access_level.basic
+  ]
 }
