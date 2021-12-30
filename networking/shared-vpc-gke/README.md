@@ -42,6 +42,7 @@ alias k='HTTPS_PROXY=localhost:8888 kubectl $@'
 
 There's a minor glitch that can surface running `terraform destroy`, where the service project attachments to the Shared VPC will not get destroyed even with the relevant API call succeeding. We are investigating the issue, in the meantime just manually remove the attachment in the Cloud console or via the `gcloud beta compute shared-vpc associated-projects remove` command when `terraform destroy` fails, and then relaunch the command.
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -70,5 +71,5 @@ There's a minor glitch that can surface running `terraform destroy`, where the s
 | vms | GCE VMs. |  |
 | vpc | Shared VPC. |  |
 
-
 <!-- END TFDOC -->
+

@@ -68,6 +68,7 @@ module "kms" {
 # tftest:modules=1:resources=4
 ```
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -94,5 +95,5 @@ module "kms" {
 | location | Keyring location. |  |
 | name | Keyring name. |  |
 
-
 <!-- END TFDOC -->
+

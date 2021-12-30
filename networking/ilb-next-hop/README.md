@@ -60,6 +60,7 @@ A sample testing session using `tmux`:
 
 <a href="https://raw.githubusercontent.com/terraform-google-modules/cloud-foundation-fabric/master/networking/ilb-next-hop/test_session.png" title="Test session screenshot"><img src="./test_session.png" width="640px" alt="Test session screenshot"></img>
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -86,5 +87,5 @@ A sample testing session using `tmux`:
 | ssh_vm_left | Command-line login to left VMs. |  |
 | ssh_vm_right | Command-line login to right VMs. |  |
 
-
 <!-- END TFDOC -->
+

@@ -2,6 +2,7 @@
 
 This example is a companion setup to the Python script in the parent folder, and is used to bootstrap OpenShift clusters on GCP. Refer to the documentation in the parent folder for usage instructions.
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -30,5 +31,5 @@ This example is a companion setup to the Python script in the parent folder, and
 | bootstrap-ssh | Command to SSH to the bootstrap instance. |  |
 | masters-ssh | Command to SSH to the master instances. |  |
 
-
 <!-- END TFDOC -->
+

@@ -88,6 +88,7 @@ module "pubsub" {
 # tftest:modules=1:resources=3
 ```
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -115,5 +116,5 @@ module "pubsub" {
 | subscriptions | Subscription resources. |  |
 | topic | Topic resource. |  |
 
-
 <!-- END TFDOC -->
+

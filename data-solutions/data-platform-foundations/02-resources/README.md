@@ -51,6 +51,7 @@ Once done testing, you can clean up resources by running `terraform destroy`.
 ### CMEK configuration
 You can configure GCP resources to use existing CMEK keys configuring the 'service_encryption_key_ids' variable. You need to specify a 'global' and a 'multiregional' key.
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -81,5 +82,5 @@ You can configure GCP resources to use existing CMEK keys configuring the 'servi
 | transformation-buckets | List of buckets created for the transformation project. |  |
 | transformation-vpc | Transformation VPC details |  |
 
-
 <!-- END TFDOC -->
+

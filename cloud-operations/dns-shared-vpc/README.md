@@ -19,6 +19,7 @@ The resources created in this example are shown in the high level diagram below:
 
 Note that Terraform 0.13 at least is required due to the use of `for_each` with modules.
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -39,5 +40,5 @@ Note that Terraform 0.13 at least is required due to the use of `for_each` with 
 |---|---|:---:|
 | teams | Team resources |  |
 
-
 <!-- END TFDOC -->
+

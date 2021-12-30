@@ -19,6 +19,7 @@ module "repo" {
 # tftest:modules=1:resources=2
 ```
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -36,5 +37,5 @@ module "repo" {
 | id | Repository id. |  |
 | url | Repository URL. |  |
 
-
 <!-- END TFDOC -->
+

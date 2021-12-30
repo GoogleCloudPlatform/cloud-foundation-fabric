@@ -84,6 +84,7 @@ module "addresses" {
 # tftest:modules=1:resources=2
 ```
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -108,5 +109,5 @@ module "addresses" {
 | psa_addresses | Allocated internal addresses for PSA endpoints. |  |
 | psc_addresses | Allocated internal addresses for PSC endpoints. |  |
 
-
 <!-- END TFDOC -->
+

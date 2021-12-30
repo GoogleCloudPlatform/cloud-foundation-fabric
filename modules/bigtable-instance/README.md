@@ -33,6 +33,7 @@ module "bigtable-instance" {
 # tftest:modules=1:resources=4
 ```
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -61,6 +62,6 @@ module "bigtable-instance" {
 | table_ids | Map of fully qualified table ids keyed by table name. |  |
 | tables | Table resources. |  |
 
-
 <!-- END TFDOC -->
+
 

@@ -30,6 +30,7 @@ This sample creates several distinct groups of resources:
 - GCS
   - One bucket encrypted with a CMEK Cryptokey hosted in Cloud KMS
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -56,5 +57,5 @@ This sample creates several distinct groups of resources:
 | vm | GCE VM. |  |
 | vm_keys | GCE VM Cloud KMS crypto keys. |  |
 
-
 <!-- END TFDOC -->
+

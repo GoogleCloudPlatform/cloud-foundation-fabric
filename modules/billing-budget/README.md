@@ -62,6 +62,7 @@ module "pubsub" {
 # tftest:modules=2:resources=2
 ```
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -87,5 +88,5 @@ module "pubsub" {
 | budget | Budget resource. |  |
 | id | Budget ID. |  |
 
-
 <!-- END TFDOC -->
+

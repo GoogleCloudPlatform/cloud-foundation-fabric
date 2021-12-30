@@ -14,6 +14,7 @@ curl https://YOUR_REGION-YOUR_PROJECT_ID.cloudfunctions.net/YOUR_FUNCTION_NAME
 
 ![Cloud Function via Private Service Connect](diagram.png "High-level diagram")
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -32,6 +33,5 @@ curl https://YOUR_REGION-YOUR_PROJECT_ID.cloudfunctions.net/YOUR_FUNCTION_NAME
 | name | description | sensitive |
 |---|---|:---:|
 | function_url | URL of the Cloud Function. |  |
-
 
 <!-- END TFDOC -->

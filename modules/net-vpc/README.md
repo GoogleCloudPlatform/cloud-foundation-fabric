@@ -202,6 +202,7 @@ flow_logs:                        # enable, set to empty map to use defaults
   - metadata: "INCLUDE_ALL_METADATA"
 ```
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -249,7 +250,7 @@ flow_logs:                        # enable, set to empty map to use defaults
 | subnets | Subnet resources. |  |
 | subnets_l7ilb | L7 ILB subnet resources. |  |
 
-
 <!-- END TFDOC -->
+
 
 The key format is `subnet_region/subnet_name`. For example `europe-west1/my_subnet`.

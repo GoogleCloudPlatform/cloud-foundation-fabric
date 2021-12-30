@@ -23,6 +23,7 @@ Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/c
 - `terraform init`
 - `terraform apply -var project_id=my-project-id`
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -37,6 +38,6 @@ Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/c
 | region | Compute region used in the example. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
 | schedule_config | Schedule timer configuration in crontab format | <code>string</code> |  | <code>&#34;0 &#42; &#42; &#42; &#42;&#34;</code> |
 
-
 <!-- END TFDOC -->
+
 

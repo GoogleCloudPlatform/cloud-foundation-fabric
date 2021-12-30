@@ -20,6 +20,7 @@ The rules can be validated either using an automated process or a manual process
 the two). There is an example of a YAML-based validator using [Yamale](https://github.com/23andMe/Yamale) 
 in  the [`validator/`](validator/) subdirectory, which can be integrated as part of a CI/CD pipeline.
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -41,5 +42,5 @@ in  the [`validator/`](validator/) subdirectory, which can be integrated as part
 | projects | Project ids. |  |
 | vpc | Shared VPCs. |  |
 
-
 <!-- END TFDOC -->
+

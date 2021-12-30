@@ -32,6 +32,7 @@ module "group" {
 # tftest:modules=1:resources=4
 ```
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -51,5 +52,5 @@ module "group" {
 | id | Group ID. |  |
 | name | Group name. |  |
 
-
 <!-- END TFDOC -->
+

@@ -444,6 +444,7 @@ module "nginx-mig" {
 
 ```
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -474,8 +475,8 @@ module "nginx-mig" {
 | group_manager | Instance group resource. |  |
 | health_check | Auto-created health-check resource. |  |
 
-
 <!-- END TFDOC -->
+
 
 ## TODO
 

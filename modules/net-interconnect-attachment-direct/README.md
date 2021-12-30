@@ -104,6 +104,7 @@ module "vlan-attachment-2" {
 # tftest:modules=2:resources=8
 ```
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -130,5 +131,5 @@ module "vlan-attachment-2" {
 | interconnect_attachment | interconnect attachment |  |
 | router | Router resource (only if auto-created). |  |
 
-
 <!-- END TFDOC -->
+

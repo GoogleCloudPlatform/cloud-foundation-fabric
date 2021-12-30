@@ -63,6 +63,7 @@ module "cluster-1" {
 # tftest:modules=1:resources=1
 ```
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -120,5 +121,5 @@ module "cluster-1" {
 | name | Cluster name. |  |
 | notifications | GKE PubSub notifications topic. |  |
 
-
 <!-- END TFDOC -->
+
