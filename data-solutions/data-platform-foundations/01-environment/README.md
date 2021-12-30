@@ -47,6 +47,7 @@ gcloud access-context-manager perimeters list --format="json" | grep name
 
 The script use 'google_access_context_manager_service_perimeter_resource' terraform resource. If this resource is used alongside the 'vpc-sc' module, remember to uncomment the lifecycle block in the 'vpc-sc' module so they don't fight over which resources should be in the perimeter. 
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -70,5 +71,5 @@ The script use 'google_access_context_manager_service_perimeter_resource' terraf
 | service_account | Main service account. |  |
 | service_encryption_key_ids | Cloud KMS encryption keys in {LOCATION => [KEY_URL]} format. |  |
 
-
 <!-- END TFDOC -->
+

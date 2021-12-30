@@ -52,6 +52,7 @@ Run the `subscription_pull` command until it returns nothing, then run the follo
 - the `tag_show` command to verify that the function output matches the resource state
 
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -73,6 +74,6 @@ Run the `subscription_pull` command until it returns nothing, then run the follo
 | tag_add | Instance add tag command. |  |
 | tag_show | Instance add tag command. |  |
 
-
 <!-- END TFDOC -->
+
 

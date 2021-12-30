@@ -79,6 +79,7 @@ A few APIs need to be enabled in the project, if `apply` fails due to a service 
 
 The VPN used to connect the GKE masters VPC does not account for HA, upgrading to use HA VPN is reasonably simple by using the relevant [module](../../modules/net-vpn-ha).
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -100,5 +101,5 @@ The VPN used to connect the GKE masters VPC does not account for HA, upgrading t
 | project | Project id. |  |
 | vms | GCE VMs. |  |
 
-
 <!-- END TFDOC -->
+

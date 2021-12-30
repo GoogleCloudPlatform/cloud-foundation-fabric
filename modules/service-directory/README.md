@@ -88,6 +88,7 @@ module "dns-sd" {
 # tftest:modules=2:resources=5
 ```
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -115,5 +116,5 @@ module "dns-sd" {
 | service_names | Service ids (long names). |  |
 | services | Service resources. |  |
 
-
 <!-- END TFDOC -->
+

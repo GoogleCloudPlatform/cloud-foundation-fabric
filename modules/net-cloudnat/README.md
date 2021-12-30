@@ -15,6 +15,7 @@ module "nat" {
 # tftest:modules=1:resources=2
 ```
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -45,5 +46,5 @@ module "nat" {
 | router | Cloud NAT router resources (if auto created). |  |
 | router_name | Cloud NAT router name. |  |
 
-
 <!-- END TFDOC -->
+

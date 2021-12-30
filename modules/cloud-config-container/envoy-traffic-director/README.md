@@ -46,6 +46,7 @@ module "vm-cos" {
 ```
 
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -61,5 +62,5 @@ module "vm-cos" {
 |---|---|:---:|
 | cloud_config | Rendered cloud-config file to be passed as user-data instance metadata. |  |
 
-
 <!-- END TFDOC -->
+

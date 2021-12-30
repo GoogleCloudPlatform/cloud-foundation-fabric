@@ -25,6 +25,7 @@ The number of resources in this sample is kept to a minimum so as to make it gen
 
 This sample uses a top-level folder to encapsulate projects that host resources that are not specific to a single environment. If no shared services are needed,the Terraform and audit modules can be easily attached to the root node, and the shared services folder and project removed from `main.tf`.
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -57,5 +58,5 @@ This sample uses a top-level folder to encapsulate projects that host resources 
 | shared_resources_project | Project that holdes resources shared across business units. |  |
 | terraform_project | Project that holds the base Terraform resources. |  |
 
-
 <!-- END TFDOC -->
+

@@ -27,6 +27,7 @@ For more complex setups where multiple shared services projects are needed to en
 
 If no shared services are needed, the shared service project module can of course be removed from `main.tf`.
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -63,5 +64,5 @@ If no shared services are needed, the shared service project module can of cours
 | shared_services_project | Project that holdes resources shared across environments. |  |
 | terraform_project | Project that holds the base Terraform resources. |  |
 
-
 <!-- END TFDOC -->
+
