@@ -18,12 +18,12 @@
 # service perimeters are needed, switch to the
 # google_access_context_manager_service_perimeters resource
 
-resource "google_access_context_manager_service_perimeter" "default" {
-  for_each       = var.service_perimeters
+resource "google_access_context_manager_service_perimeter" "regular" {
+  for_each       = var.service_perimeters_regular
   parent         = "accessPolicies/${local.access_policy}"
   name           = "accessPolicies/${local.access_policy}/servicePerimeters/${each.key}"
   title          = each.key
-  perimeter_type = each.value.type
+  perimeter_type = "PERIMETER_TYPE_REGULAR"
   spec {
     access_levels       = each.value.access_levels
     resources           = each.value.resources

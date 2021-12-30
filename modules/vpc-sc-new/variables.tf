@@ -66,8 +66,21 @@ variable "access_policy_create" {
   default = null
 }
 
-variable "service_perimeters" {
-  description = "Service perimeters."
+variable "service_perimeters_bridge" {
+  description = "Bridge service perimeters."
+  type = map(object({
+    spec = object({
+      resources = list(string)
+    })
+    status = object({
+      resources = list(string)
+    })
+  }))
+  default = {}
+}
+
+variable "service_perimeters_regular" {
+  description = "Regular service perimeters."
   type = map(object({
     spec = object({
       access_levels       = list(string)
@@ -143,22 +156,11 @@ variable "service_perimeters" {
         enable_restriction = bool
       })
     })
-    perimeter_type            = string
     use_explicit_dry_run_spec = bool
   }))
   validation {
-    condition = alltrue([
-      for k, v in var.service_perimeters : (
-        v.perimeter_type == null ||
-        v.perimeter_type == "PERIMETER_TYPE_REGULAR" ||
-        v.perimeter_type == "PERIMETER_TYPE_BRIDGE"
-      )
-    ])
-    error_message = "Invalid `type` value (null, \"PERIMETER_TYPE_REGULAR\", \"PERIMETER_TYPE_BRIDGE\" accepted)."
-  }
-  validation {
     condition = alltrue(flatten([
-      for k, v in var.service_perimeters : [
+      for k, v in var.service_perimeters_regular : [
         for s in ["spec", "status"] : [
           for i in ["ingress_policies", "egress_policies"] : [
             for p in try(v[s][i], []) : (

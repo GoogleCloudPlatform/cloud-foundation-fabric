@@ -29,7 +29,12 @@ output "access_policy_name" {
   value       = local.access_policy
 }
 
-output "service_perimeters" {
-  description = "service perimeter resources."
-  value       = google_access_context_manager_service_perimeter.default
+output "service_perimeters_bridge" {
+  description = "Bridge service perimeter resources."
+  value       = google_access_context_manager_service_perimeter.bridge
+}
+
+output "service_perimeters_regular" {
+  description = "Regular service perimeter resources."
+  value       = google_access_context_manager_service_perimeter.regular
 }
