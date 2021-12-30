@@ -69,12 +69,9 @@ variable "access_policy_create" {
 variable "service_perimeters_bridge" {
   description = "Bridge service perimeters."
   type = map(object({
-    spec = object({
-      resources = list(string)
-    })
-    status = object({
-      resources = list(string)
-    })
+    spec_resources            = list(string)
+    status_resources          = list(string)
+    use_explicit_dry_run_spec = bool
   }))
   default = {}
 }
@@ -158,23 +155,5 @@ variable "service_perimeters_regular" {
     })
     use_explicit_dry_run_spec = bool
   }))
-  validation {
-    condition = alltrue(flatten([
-      for k, v in var.service_perimeters_regular : [
-        for s in ["spec", "status"] : [
-          for i in ["ingress_policies", "egress_policies"] : [
-            for p in try(v[s][i], []) : (
-              i.identity_type == null ||
-              i.identity_type == "ANY_IDENTITY" ||
-              i.identity_type == "ANY_SERVICE_ACCOUNT" ||
-              i.identity_type == "ANY_USER_ACCOUNT" ||
-              i.identity_type == "IDENTITY_TYPE_UNSPECIFIED"
-            )
-          ]
-        ]
-      ]
-    ]))
-    error_message = "Invalid `identity_type` for ingress/egress policy."
-  }
   default = {}
 }

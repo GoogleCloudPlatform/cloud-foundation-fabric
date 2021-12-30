@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
+output "access_level_names" {
+  description = "Access level resources."
+  value = {
+    for k, v in google_access_context_manager_access_level.basic :
+    k => v.name
+  }
+}
+
 output "access_levels" {
   description = "Access level resources."
   value       = google_access_context_manager_access_level.basic

@@ -19,18 +19,21 @@
 # google_access_context_manager_service_perimeters resource
 
 resource "google_access_context_manager_service_perimeter" "bridge" {
-  for_each       = var.service_perimeters_bridge
-  parent         = "accessPolicies/${local.access_policy}"
-  name           = "accessPolicies/${local.access_policy}/servicePerimeters/${each.key}"
-  title          = each.key
-  perimeter_type = "PERIMETER_TYPE_BRIDGE"
+  for_each                  = var.service_perimeters_bridge
+  parent                    = "accessPolicies/${local.access_policy}"
+  name                      = "accessPolicies/${local.access_policy}/servicePerimeters/${each.key}"
+  title                     = each.key
+  perimeter_type            = "PERIMETER_TYPE_BRIDGE"
+  use_explicit_dry_run_spec = each.value.use_explicit_dry_run_spec
   spec {
-    resources = each.value.resources
+    resources = each.value.spec_resources
   }
   status {
-    resources = each.value.resources
+    resources = each.value.status_resources
   }
-  use_explicit_dry_run_spec = true
+  lifecycle {
+    ignore_changes = [spec[0].resources, status[0].resources]
+  }
   depends_on = [
     google_access_context_manager_access_policy.default,
     google_access_context_manager_access_level.basic
