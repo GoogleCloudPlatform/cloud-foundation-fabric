@@ -93,9 +93,12 @@ module "org" {
   source          = "./modules/organization"
   organization_id = var.organization_id
   firewall_policy_factory = {
-    cidr_file   = "data/cidrs.yaml
+    cidr_file   = "data/cidrs.yaml"
     policy_name = null
     rules_file  = "data/rules.yaml"
+  }
+  firewall_policy_attachments = {
+    factory-policy = module.org.firewall_policy_id["factory"]
   }
 }
 # tftest:skip
@@ -106,7 +109,7 @@ module "org" {
 
 rfc1918:
   - 10.0.0.0/8
-  - 172.168.0.0/12
+  - 172.16.0.0/12
   - 192.168.0.0/16
 ```
 
@@ -236,6 +239,7 @@ module "org" {
 ```
 
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -272,4 +276,5 @@ module "org" {
 | sink_writer_identities | Writer identities created for each sink. |  |
 
 <!-- END TFDOC -->
+
 
