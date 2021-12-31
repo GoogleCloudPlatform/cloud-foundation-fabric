@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 - update hierarchical firewall resources to use the newer `google_compute_firewall_*` resources
 - **incompatible change** rename `firewall_policy_attachments` to `firewall_policy_association` in the `organization` and `folder` modules
+- **incompatible change** updated API for the `net-vpc-sc` module
 
 ## [9.0.2] - 2021-12-22
 
