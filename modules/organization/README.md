@@ -52,7 +52,7 @@ Hirerarchical firewall policies can be managed in two ways:
 - via the `firewall_policies` variable, to directly define policies and rules in Terraform
 - via the `firewall_policy_factory` variable, to leverage external YaML files via a simple "factory" embedded in the module ([see here](../../factories) for more context on factories)
 
-Once you have policies (either created via the module or externally), you can attach them using the `firewall_policy_attachments` variable.
+Once you have policies (either created via the module or externally), you can associate them using the `firewall_policy_association` variable.
 
 ### Directly defined firewall policies
 
@@ -77,8 +77,8 @@ module "org" {
       }
     }
   }
-  firewall_policy_attachments = {
-    iap_policy = module.org.firewall_policy_id["iap-policy"]
+  firewall_policy_association = {
+    iap_policy = "iap-policy"
   }
 }
 # tftest:modules=1:resources=3
@@ -240,6 +240,7 @@ module "org" {
 
 
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -250,7 +251,7 @@ module "org" {
 | contacts | List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | custom_roles | Map of role name => list of permissions to create in this project. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | firewall_policies | Hierarchical firewall policy rules created in the organization. | <code title="map&#40;map&#40;object&#40;&#123;&#10;  action                  &#61; string&#10;  description             &#61; string&#10;  direction               &#61; string&#10;  logging                 &#61; bool&#10;  ports                   &#61; map&#40;list&#40;string&#41;&#41;&#10;  priority                &#61; number&#10;  ranges                  &#61; list&#40;string&#41;&#10;  target_resources        &#61; list&#40;string&#41;&#10;  target_service_accounts &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;&#41;">map&#40;map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| firewall_policy_attachments | List of hierarchical firewall policy IDs attached to the organization. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| firewall_policy_association | The hierarchical firewall policy to associate to this folder. Must be either a key in the `firewall_policies` map or the id of a policy defined somewhere else. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | firewall_policy_factory | Configuration for the firewall policy factory. | <code title="object&#40;&#123;&#10;  cidr_file   &#61; string&#10;  policy_name &#61; string&#10;  rules_file  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | group_iam | Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | iam | IAM bindings, in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -276,5 +277,4 @@ module "org" {
 | sink_writer_identities | Writer identities created for each sink. |  |
 
 <!-- END TFDOC -->
-
 

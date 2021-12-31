@@ -74,7 +74,7 @@ variable "firewall_policies" {
   default = {}
 }
 
-variable "firewall_policy_attachments" {
+variable "firewall_policy_association" {
   type    = map(string)
   default = {}
 }
