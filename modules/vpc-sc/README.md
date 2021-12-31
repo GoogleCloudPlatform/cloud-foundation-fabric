@@ -91,7 +91,7 @@ module "test" {
       use_explicit_dry_run_spec = false
     }
     b2 = {
-      status_resources          = ["projects/222220", "projects/222221"]
+      status_resources          = null
       spec_resources            = ["projects/222220", "projects/222221"]
       use_explicit_dry_run_spec = true
     }
