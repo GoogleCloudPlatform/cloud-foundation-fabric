@@ -52,17 +52,15 @@ locals {
   }
 }
 
-resource "google_compute_organization_security_policy" "policy" {
-  provider     = google-beta
-  for_each     = local.firewall_policies
-  display_name = each.key
-  parent       = local.folder.id
+resource "google_compute_firewall_policy" "policy" {
+  for_each   = local.firewall_policies
+  short_name = each.key
+  parent     = local.folder.id
 }
 
-resource "google_compute_organization_security_policy_rule" "rule" {
-  provider                = google-beta
+resource "google_compute_firewall_policy_rule" "rule" {
   for_each                = local.firewall_rules
-  policy_id               = google_compute_organization_security_policy.policy[each.value.policy].id
+  firewall_policy         = google_compute_firewall_policy.policy[each.value.policy].id
   action                  = each.value.action
   direction               = each.value.direction
   priority                = try(each.value.priority, null)
@@ -70,33 +68,26 @@ resource "google_compute_organization_security_policy_rule" "rule" {
   target_service_accounts = try(each.value.target_service_accounts, null)
   enable_logging          = try(each.value.logging, null)
   # preview                 = each.value.preview
+  description = each.value.description
   match {
-    description = each.value.description
-    config {
-      src_ip_ranges  = each.value.direction == "INGRESS" ? each.value.ranges : null
-      dest_ip_ranges = each.value.direction == "EGRESS" ? each.value.ranges : null
-      dynamic "layer4_config" {
-        for_each = each.value.ports
-        iterator = port
-        content {
-          ip_protocol = port.key
-          ports       = port.value
-        }
+    src_ip_ranges  = each.value.direction == "INGRESS" ? each.value.ranges : null
+    dest_ip_ranges = each.value.direction == "EGRESS" ? each.value.ranges : null
+    dynamic "layer4_configs" {
+      for_each = each.value.ports
+      iterator = port
+      content {
+        ip_protocol = port.key
+        ports       = port.value
       }
     }
   }
-  # TODO: remove once provider issues is fixed
-  # https://github.com/hashicorp/terraform-provider-google/issues/7790
-  lifecycle {
-    ignore_changes = [match.0.description]
-  }
 }
 
-resource "google_compute_organization_security_policy_association" "attachment" {
-  provider      = google-beta
-  for_each      = var.firewall_policy_attachments
-  name          = "${local.folder.id}-${each.key}"
-  attachment_id = local.folder.id
-  policy_id     = each.value
+
+resource "google_compute_firewall_policy_association" "association" {
+  for_each          = var.firewall_policy_association
+  name              = replace(local.folder.id, "/", "-")
+  attachment_target = local.folder.id
+  firewall_policy   = try(google_compute_firewall_policy.policy[each.value].id, each.value)
 }
 

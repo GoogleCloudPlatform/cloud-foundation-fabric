@@ -192,22 +192,20 @@ module "folder1" {
   firewall_policies = {
     iap-policy = {
       allow-iap-ssh = {
-        description = "Always allow ssh from IAP"
-        direction   = "INGRESS"
-        action      = "allow"
-        priority    = 100
-        ranges      = ["35.235.240.0/20"]
-        ports = {
-          tcp = ["22"]
-        }
+        description             = "Always allow ssh from IAP"
+        direction               = "INGRESS"
+        action                  = "allow"
+        priority                = 100
+        ranges                  = ["35.235.240.0/20"]
+        ports                   = { tcp = ["22"] }
         target_service_accounts = null
         target_resources        = null
         logging                 = false
       }
     }
   }
-  firewall_policy_attachments = {
-    iap-policy = module.folder1.firewall_policy_id["iap-policy"]
+  firewall_policy_association = {
+    iap-policy = "iap-policy"
   }
 }
 
@@ -215,7 +213,7 @@ module "folder2" {
   source = "./modules/folder"
   parent = var.organization_id
   name   = "hf2"
-  firewall_policy_attachments = {
+  firewall_policy_association = {
     iap-policy = module.folder1.firewall_policy_id["iap-policy"]
   }
 }
@@ -232,7 +230,7 @@ module "folder2" {
 |---|---|:---:|:---:|:---:|
 | contacts | List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | firewall_policies | Hierarchical firewall policies created in this folder. | <code title="map&#40;map&#40;object&#40;&#123;&#10;  action                  &#61; string&#10;  description             &#61; string&#10;  direction               &#61; string&#10;  logging                 &#61; bool&#10;  ports                   &#61; map&#40;list&#40;string&#41;&#41;&#10;  priority                &#61; number&#10;  ranges                  &#61; list&#40;string&#41;&#10;  target_resources        &#61; list&#40;string&#41;&#10;  target_service_accounts &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;&#41;">map&#40;map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| firewall_policy_attachments | List of hierarchical firewall policy IDs to attached to this folder. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| firewall_policy_association | The hierarchical firewall policy to associate to this folder. Must be either a key in the `firewall_policies` map or the id of a policy defined somewhere else. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | firewall_policy_factory | Configuration for the firewall policy factory. | <code title="object&#40;&#123;&#10;  cidr_file   &#61; string&#10;  policy_name &#61; string&#10;  rules_file  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | folder_create | Create folder. When set to false, uses id to reference an existing folder. | <code>bool</code> |  | <code>true</code> |
 | group_iam | Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
