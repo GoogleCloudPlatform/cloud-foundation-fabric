@@ -79,9 +79,10 @@ def example_plan_runner(_plan_runner):
     "Runs Terraform plan and returns count of modules and resources."
     plan = _plan_runner(fixture_path)
     # the fixture is the example we are testing
+    modules = plan.modules or {}
     return (
-        len(plan.modules),
-        sum(len(m.resources) for m in plan.modules.values()))
+        len(modules),
+        sum(len(m.resources) for m in modules.values()))
 
   return run_plan
 
