@@ -70,7 +70,7 @@ module "test" {
 
 ### Service perimeters
 
-Bridge and regulare service perimeters use two separate variables, as bridge perimeters only accept a limited number of arguments, and can leverage a much simpler interface.
+Bridge and regular service perimeters use two separate variables, as bridge perimeters only accept a limited number of arguments, and can leverage a much simpler interface.
 
 The regular perimeters variable exposes all the complexity of the underlying resource, use [its documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/access_context_manager_service_perimeter) as a reference about the possible values and configurations.
 
