@@ -21,7 +21,6 @@
 # google_access_context_manager_access_levels resource
 
 resource "google_access_context_manager_access_level" "basic" {
-  provider = google.vpc-sc
   for_each = var.access_levels
   parent   = "accessPolicies/${local.access_policy}"
   name     = "accessPolicies/${local.access_policy}/accessLevels/${each.key}"

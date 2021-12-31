@@ -22,8 +22,7 @@ locals {
 }
 
 resource "google_access_context_manager_access_policy" "default" {
-  provider = google.vpc-sc
-  count    = var.access_policy_create != null ? 1 : 0
-  parent   = var.access_policy_create.parent
-  title    = var.access_policy_create.title
+  count  = var.access_policy_create != null ? 1 : 0
+  parent = var.access_policy_create.parent
+  title  = var.access_policy_create.title
 }
