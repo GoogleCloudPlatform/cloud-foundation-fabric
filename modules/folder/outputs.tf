@@ -15,18 +15,12 @@
  */
 output "firewall_policies" {
   description = "Map of firewall policy resources created in this folder."
-  value = {
-    for name, _ in var.firewall_policies :
-    name => google_compute_organization_security_policy.policy[name]
-  }
+  value       = { for k, v in google_compute_firewall_policy.policy : k => v }
 }
 
 output "firewall_policy_id" {
   description = "Map of firewall policy ids created in this folder."
-  value = {
-    for name, _ in local.firewall_policies :
-    name => google_compute_organization_security_policy.policy[name].id
-  }
+  value       = { for k, v in google_compute_firewall_policy.policy : k => v.id }
 }
 
 output "folder" {
