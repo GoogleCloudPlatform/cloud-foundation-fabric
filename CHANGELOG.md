@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [9.0.3] - 2021-12-31
+
 - update hierarchical firewall resources to use the newer `google_compute_firewall_*` resources
 - **incompatible change** rename `firewall_policy_attachments` to `firewall_policy_association` in the `organization` and `folder` modules
 - **incompatible change** updated API for the `net-vpc-sc` module
@@ -394,7 +396,8 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v9.0.2...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v9.0.3...HEAD
+[9.0.3]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v9.0.2...v9.0.3
 [9.0.2]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v9.0.0...v9.0.2
 [9.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v8.0.0...v9.0.0
 [8.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v7.0.0...v8.0.0
