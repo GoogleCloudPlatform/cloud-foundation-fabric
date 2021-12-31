@@ -4,6 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- update hierarchical firewall resources to use the newer `google_compute_firewall_*` resources
+- **incompatible chaange** rename `firewall_policy_attachments` to `firewall_policy_association` in the `organization` and `folder` modules
+
 ## [9.0.2] - 2021-12-22
 
 - ignore description changes in firewall policy rule to avoid permadiff, add factory example to `folder` module documentation
