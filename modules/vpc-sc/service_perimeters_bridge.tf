@@ -26,10 +26,10 @@ resource "google_access_context_manager_service_perimeter" "bridge" {
   perimeter_type            = "PERIMETER_TYPE_BRIDGE"
   use_explicit_dry_run_spec = each.value.use_explicit_dry_run_spec
   spec {
-    resources = each.value.spec_resources
+    resources = each.value.spec_resources == null ? [] : each.value.spec_resources
   }
   status {
-    resources = each.value.status_resources
+    resources = each.value.status_resources == null ? [] : each.value.status_resources
   }
   lifecycle {
     ignore_changes = [spec[0].resources, status[0].resources]
