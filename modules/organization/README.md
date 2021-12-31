@@ -240,6 +240,7 @@ module "org" {
 
 
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -270,9 +271,10 @@ module "org" {
 |---|---|:---:|
 | custom_role_id | Map of custom role IDs created in the organization. |  |
 | custom_roles | Map of custom roles resources created in the organization. |  |
-| firewall_policies | Map of firewall policy resources created in this folder. |  |
-| firewall_policy_id | Map of firewall policy ids created in this folder. |  |
+| firewall_policies | Map of firewall policy resources created in the organization. |  |
+| firewall_policy_id | Map of firewall policy ids created in the organization. |  |
 | organization_id | Organization id dependent on module resources. |  |
 | sink_writer_identities | Writer identities created for each sink. |  |
 
 <!-- END TFDOC -->
+
