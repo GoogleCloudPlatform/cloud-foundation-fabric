@@ -14,7 +14,6 @@
 
 
 import os
-import pytest
 
 
 FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
@@ -30,7 +29,7 @@ def test_create_policy(plan_runner):
   assert counts == {
       'google_access_context_manager_access_level.basic': 2,
       'google_access_context_manager_access_policy.default': 1,
-      'google_access_context_manager_service_perimeter.bridge': 1,
+      'google_access_context_manager_service_perimeter.bridge': 2,
       'google_access_context_manager_service_perimeter.regular': 2
   }
 
@@ -45,6 +44,6 @@ def test_use_policy(plan_runner):
     counts[n] = counts.get(n, 0) + 1
   assert counts == {
       'google_access_context_manager_access_level.basic': 2,
-      'google_access_context_manager_service_perimeter.bridge': 1,
+      'google_access_context_manager_service_perimeter.bridge': 2,
       'google_access_context_manager_service_perimeter.regular': 2
   }

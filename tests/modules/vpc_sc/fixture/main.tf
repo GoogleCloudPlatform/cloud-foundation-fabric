@@ -33,7 +33,7 @@ variable "access_policy_create" {
 }
 
 module "test" {
-  source               = "../../../../modules/vpc-sc-new"
+  source               = "../../../../modules/vpc-sc"
   access_policy        = var.access_policy
   access_policy_create = var.access_policy_create
   access_levels = {
@@ -75,9 +75,10 @@ module "test" {
   service_perimeters_bridge = {
     b1 = {
       status_resources          = ["projects/111110", "projects/111111"]
+      spec_resources            = null
       use_explicit_dry_run_spec = false
     }
-    b1 = {
+    b2 = {
       status_resources          = ["projects/111110", "projects/222220"]
       spec_resources            = ["projects/111110", "projects/222220"]
       use_explicit_dry_run_spec = true
