@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ def test_resources(plan_runner):
 
 def test_iam_roles(plan_runner):
   "Test iam roles with one member."
-  iam=('{"roles/iam.serviceAccountUser" = ["user:a@b.com"]}')
+  iam = ('{"roles/iam.serviceAccountUser" = ["user:a@b.com"]}')
   _, resources = plan_runner(FIXTURES_DIR, iam=iam)
   assert len(resources) == 2
   iam_resources = [r for r in resources
@@ -44,7 +44,7 @@ def test_iam_roles(plan_runner):
   assert len(iam_resources) == 1
 
   iam_resource = iam_resources[0]
-  assert iam_resource['type']  == 'google_service_account_iam_binding'
-  assert iam_resource['index']  == 'roles/iam.serviceAccountUser'
-  assert iam_resource['values']['role']  == 'roles/iam.serviceAccountUser'
-  assert iam_resource['values']['members']  == ["user:a@b.com"]
+  assert iam_resource['type'] == 'google_service_account_iam_binding'
+  assert iam_resource['index'] == 'roles/iam.serviceAccountUser'
+  assert iam_resource['values']['role'] == 'roles/iam.serviceAccountUser'
+  assert iam_resource['values']['members'] == ["user:a@b.com"]

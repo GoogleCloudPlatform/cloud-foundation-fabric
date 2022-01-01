@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,10 +15,10 @@
 # Access from GCP LBs https://cloud.google.com/load-balancing/docs/https/#firewall_rules
 lb-health-checks:
   allow:
-  - ports: []
-    protocol: tcp
+    - ports: []
+      protocol: tcp
   direction: INGRESS
   priority: 1001
   source_ranges:
-  - 35.191.0.0/16
-  - 130.211.0.0/22
+    - 35.191.0.0/16
+    - 130.211.0.0/22

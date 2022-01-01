@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,13 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# Access via SSH from IAP to all instancess https://cloud.google.com/iap/docs/using-tcp-forwarding#create-firewall-rule 
+# Access via SSH from IAP to all instancess https://cloud.google.com/iap/docs/using-tcp-forwarding#create-firewall-rule
 iap-ssh-access:
   allow:
-  - ports: [22]
-    protocol: tcp
+    - ports: [22]
+      protocol: tcp
   direction: INGRESS
   priority: 1001
   source_ranges:
-  - 35.235.240.0/20
-  
+    - 35.235.240.0/20

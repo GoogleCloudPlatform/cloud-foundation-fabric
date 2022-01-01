@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,15 +23,16 @@ MODULES_PATH = Path(__file__).parents[2] / 'modules/'
 def pytest_generate_tests(metafunc):
   if 'example' in metafunc.fixturenames:
     modules = [
-      x for x in MODULES_PATH.iterdir()
-      if x.is_dir()
+        x for x in MODULES_PATH.iterdir()
+        if x.is_dir()
     ]
     modules.sort()
     examples = []
     ids = []
     for module in modules:
       readme = module / 'README.md'
-      if not readme.exists(): continue
+      if not readme.exists():
+        continue
       doc = marko.parse(readme.read_text())
       index = 0
       for child in doc.children:
