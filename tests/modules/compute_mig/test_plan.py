@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ def test_defaults(plan_runner):
   assert mig['type'] == 'google_compute_region_instance_group_manager'
   assert mig['values']['target_size'] == 2
   assert mig['values']['region']
+
 
 def test_health_check(plan_runner):
   "Test health check resource."
@@ -75,19 +76,20 @@ def test_autoscaler(plan_runner):
   assert len(resources) == 2
   autoscaler = resources[0]
   assert autoscaler['type'] == 'google_compute_region_autoscaler'
-  
+
+
 def test_stateful_mig(plan_runner):
   "Test stateful instances - mig."
 
   stateful_config = (
-    '{'
+      '{'
       'per_instance_config = {},'
       'mig_config = {'
-        'stateful_disks = {'
-          'persistent-disk-1 = {delete_rule="NEVER"}'
-        '}' 
+      'stateful_disks = {'
+      'persistent-disk-1 = {delete_rule="NEVER"}'
       '}'
-    '}'
+      '}'
+      '}'
   )
   _, resources = plan_runner(
       FIXTURES_DIR, stateful_config=stateful_config)
@@ -98,37 +100,38 @@ def test_stateful_mig(plan_runner):
       'device_name': 'persistent-disk-1',
       'delete_rule': 'NEVER',
   }]
-  
+
+
 def test_stateful_instance(plan_runner):
   "Test stateful instances - instance."
   stateful_config = (
-    '{'
+      '{'
       'per_instance_config = {'
-        'instance-1 = {'
-          'stateful_disks = {'
-            'persistent-disk-1 = {'
-              'source = "test-disk",' 
-              'mode = "READ_ONLY",'
-              'delete_rule= "NEVER",'
-            '},'
-          '},'
-          'metadata = {'
-            'foo = "bar"'
-          '},'
-          'update_config = {'
-            'minimal_action                   = "NONE",'
-            'most_disruptive_allowed_action   = "REPLACE",'
-            'remove_instance_state_on_destroy = false,'
-            
-          '},'
-        '},'
+      'instance-1 = {'
+      'stateful_disks = {'
+      'persistent-disk-1 = {'
+      'source = "test-disk",'
+      'mode = "READ_ONLY",'
+      'delete_rule= "NEVER",'
+      '},'
+      '},'
+      'metadata = {'
+      'foo = "bar"'
+      '},'
+      'update_config = {'
+      'minimal_action                   = "NONE",'
+      'most_disruptive_allowed_action   = "REPLACE",'
+      'remove_instance_state_on_destroy = false,'
+
+      '},'
+      '},'
       '},'
       'mig_config = {'
-        'stateful_disks = {'
-          'persistent-disk-1 = {delete_rule="NEVER"}'
-        '}' 
+      'stateful_disks = {'
+      'persistent-disk-1 = {delete_rule="NEVER"}'
       '}'
-    '}'
+      '}'
+      '}'
   )
   _, resources = plan_runner(
       FIXTURES_DIR, stateful_config=stateful_config)
@@ -137,16 +140,16 @@ def test_stateful_instance(plan_runner):
   assert instanceconfig['type'] == 'google_compute_instance_group_manager'
   instanceconfig = resources[1]
   assert instanceconfig['type'] == 'google_compute_per_instance_config'
-  
+
   assert instanceconfig['values']['preserved_state'] == [{
       'disk': [{
-        'device_name': 'persistent-disk-1',
-        'delete_rule': 'NEVER',
-        'source': 'test-disk',
-        'mode': 'READ_ONLY',
+          'device_name': 'persistent-disk-1',
+          'delete_rule': 'NEVER',
+          'source': 'test-disk',
+          'mode': 'READ_ONLY',
       }],
       'metadata': {
-        'foo': 'bar'
+          'foo': 'bar'
       }
   }]
 

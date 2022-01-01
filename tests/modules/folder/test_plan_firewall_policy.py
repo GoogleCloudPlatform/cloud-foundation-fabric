@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ def test_firweall_policy(plan_runner):
   assert len(resources) == 5
 
   policies = [r for r in resources
-           if r['type'] == 'google_compute_firewall_policy']
+              if r['type'] == 'google_compute_firewall_policy']
   assert len(policies) == 1
 
   rules = [r for r in resources
@@ -78,18 +78,16 @@ def test_firweall_policy(plan_runner):
     rule_values.append((name, index, action, direction, priority, match))
 
   assert sorted(rule_values) == sorted([
-    ('rule', 'policy1-allow-ingress', 'allow', 'INGRESS', 100,[
-      {
-        'dest_ip_ranges': None,
-        'layer4_configs': [{'ip_protocol': 'tcp', 'ports': ['22']}],
-        'src_ip_ranges': ['10.0.0.0/8']
-      }]),
-    ('rule', 'policy1-deny-egress', 'deny', 'EGRESS', 200, [
-      {
-        'dest_ip_ranges': ['192.168.0.0/24'],
-        'layer4_configs': [{'ip_protocol': 'tcp', 'ports': ['443']}],
-        'src_ip_ranges': None
-      }])
+      ('rule', 'policy1-allow-ingress', 'allow', 'INGRESS', 100, [
+          {
+              'dest_ip_ranges': None,
+              'layer4_configs': [{'ip_protocol': 'tcp', 'ports': ['22']}],
+              'src_ip_ranges': ['10.0.0.0/8']
+          }]),
+      ('rule', 'policy1-deny-egress', 'deny', 'EGRESS', 200, [
+          {
+              'dest_ip_ranges': ['192.168.0.0/24'],
+              'layer4_configs': [{'ip_protocol': 'tcp', 'ports': ['443']}],
+              'src_ip_ranges': None
+          }])
   ])
-
-

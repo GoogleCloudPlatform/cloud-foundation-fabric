@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,29 +12,29 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-name: 'Validate firewall rules'
-description: 'Validate firewall rule YAML files'
+name: "Validate firewall rules"
+description: "Validate firewall rule YAML files"
 inputs:
   files:
-    description: 'Files to scan (supports wildcards)'
+    description: "Files to scan (supports wildcards)"
     required: false
-    default: '/github/workspace/firewall/**/*.yaml'
+    default: "/github/workspace/firewall/**/*.yaml"
   mode:
-    description: 'Mode (validate or approve)'
+    description: "Mode (validate or approve)"
     required: false
-    default: 'validate'
+    default: "validate"
   schema:
-    description: 'Schema'
+    description: "Schema"
     required: false
-    default: '/schemas/firewallSchema.yaml'
+    default: "/schemas/firewallSchema.yaml"
 outputs:
   ok:
-    description: 'Validation successful'
+    description: "Validation successful"
   errors:
-    description: 'Validation results'
+    description: "Validation results"
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
+  using: "docker"
+  image: "Dockerfile"
   args:
     - ${{ inputs.files }}
     - "--mode"

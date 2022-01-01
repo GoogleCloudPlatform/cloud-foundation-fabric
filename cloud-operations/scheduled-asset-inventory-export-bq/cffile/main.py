@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -44,6 +44,7 @@ def _configure_logging(verbose=True):
   logging.basicConfig(level=level)
   warnings.filterwarnings('ignore', r'.*end user credentials.*', UserWarning)
 
+
 @click.command()
 @click.option('--bucket', required=True, help='GCS bucket for export')
 @click.option('--filename', required=True, help='Path and filename with extension to export e.g. folder/export.json .')
@@ -59,6 +60,7 @@ def main_cli(bucket=None, filename=None, format=None, bq_dataset=None, bq_table=
     _main(bucket, filename, format, bq_dataset, bq_table, verbose)
   except RuntimeError:
     logging.exception('exception raised')
+
 
 def main(event, context):
   'Cloud Function entry point.'
@@ -83,10 +85,10 @@ def _main(bucket=None, filename=None, format=None, bq_dataset=None, bq_table=Non
   table_ref = dataset_ref.table(bq_table)
   job_config = bigquery.job.ExtractJobConfig()
   job_config.destination_format = (
-    getattr(bigquery.DestinationFormat, format) )
+      getattr(bigquery.DestinationFormat, format))
   extract_job = client.extract_table(
-    table_ref, destination_uri, job_config=job_config
-    )
+      table_ref, destination_uri, job_config=job_config
+  )
   try:
     extract_job.result()
   except (GoogleAPIError, googleapiclient.errors.HttpError) as e:

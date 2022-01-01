@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -57,7 +57,8 @@ def e2e_plan_runner(_plan_runner):
   def run_plan(fixture_path, targets=None, refresh=True,
                include_bare_resources=False, **tf_vars):
     "Runs Terraform plan on an end-to-end module using defaults, returns data."
-    plan = _plan_runner(fixture_path, targets=targets, refresh=refresh, **tf_vars)
+    plan = _plan_runner(fixture_path, targets=targets,
+                        refresh=refresh, **tf_vars)
     # skip the fixture
     root_module = plan.root_module['child_modules'][0]
     modules = dict((mod['address'], mod['resources'])
