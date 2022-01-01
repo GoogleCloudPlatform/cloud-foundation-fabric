@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: 'Tests'
+name: "Tests"
 on:
   schedule:
-    - cron:  '45 2 * * *'
+    - cron: "45 2 * * *"
   pull_request:
     branches:
       - master
@@ -35,7 +35,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.9'
+          python-version: "3.9"
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v1
@@ -64,7 +64,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.9'
+          python-version: "3.9"
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v1
@@ -93,7 +93,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.9'
+          python-version: "3.9"
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v1

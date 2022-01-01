@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ def test_resource_count(resources):
   "Test number of resources created."
   assert len(resources) == 5
 
+
 def test_iam(resources):
   "Test IAM binding resources."
   bindings = [r['values'] for r in resources if r['type']
@@ -37,14 +38,16 @@ def test_iam(resources):
   assert len(bindings) == 1
   assert bindings[0]['role'] == 'roles/run.invoker'
 
+
 def test_audit_log_triggers(resources):
   "Test audit logs Eventarc trigger resources."
   audit_log_triggers = [r['values'] for r in resources if r['type']
-              == 'google_eventarc_trigger' and r['name'] == 'audit_log_triggers']
+                        == 'google_eventarc_trigger' and r['name'] == 'audit_log_triggers']
   assert len(audit_log_triggers) == 1
+
 
 def test_pubsub_triggers(resources):
   "Test Pub/Sub Eventarc trigger resources."
   pubsub_triggers = [r['values'] for r in resources if r['type']
-              == 'google_eventarc_trigger' and r['name'] == 'pubsub_triggers']
+                     == 'google_eventarc_trigger' and r['name'] == 'pubsub_triggers']
   assert len(pubsub_triggers) == 2

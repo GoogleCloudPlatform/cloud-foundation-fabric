@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,10 +13,10 @@
 # limitations under the License.
 
 def main(request):
-    request_json = request.get_json()
-    if request.args and 'message' in request.args:
-        return request.args.get('message')
-    elif request_json and 'message' in request_json:
-        return request_json['message']
-    else:
-        return f'Hello World!!1\n'
+  request_json = request.get_json()
+  if request.args and 'message' in request.args:
+    return request.args.get('message')
+  elif request_json and 'message' in request_json:
+    return request_json['message']
+  else:
+    return f'Hello World!!1\n'
