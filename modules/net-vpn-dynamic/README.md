@@ -39,6 +39,7 @@ module "vpn-dynamic" {
 # tftest:modules=1:resources=10
 ```
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -73,5 +74,5 @@ module "vpn-dynamic" {
 | tunnel_self_links | VPN tunnel self links. |  |
 | tunnels | VPN tunnel resources. |  |
 
-
 <!-- END TFDOC -->
+

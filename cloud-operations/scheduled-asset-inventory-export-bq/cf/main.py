@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -62,7 +62,8 @@ def main_cli(project=None, bq_project=None, bq_dataset=None, bq_table=None, bq_t
   the dataset specified on a dated table with the name specified.
   '''
   try:
-    _main(project, bq_project, bq_dataset, bq_table, bq_table_overwrite, target_node, read_time, verbose)
+    _main(project, bq_project, bq_dataset, bq_table,
+          bq_table_overwrite, target_node, read_time, verbose)
   except RuntimeError:
     logging.exception('exception raised')
 
@@ -89,10 +90,10 @@ def _main(project=None, bq_project=None, bq_dataset=None, bq_table=None, bq_tabl
   if bq_table_overwrite == False:
     read_time = datetime.datetime.now()
     output_config.bigquery_destination.table = '%s_%s' % (
-      bq_table, read_time.strftime('%Y%m%d'))
+        bq_table, read_time.strftime('%Y%m%d'))
   else:
-      output_config.bigquery_destination.table = '%s_latest' % (
-      bq_table)
+    output_config.bigquery_destination.table = '%s_latest' % (
+        bq_table)
   content_type = asset_v1.ContentType.RESOURCE
   output_config.bigquery_destination.dataset = 'projects/%s/datasets/%s' % (
       bq_project, bq_dataset)

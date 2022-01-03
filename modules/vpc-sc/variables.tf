@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,90 +14,145 @@
  * limitations under the License.
  */
 
-variable "access_level_perimeters" {
-  description = "Enforced mode -> Access Level -> Perimeters mapping. Enforced mode can be 'enforced' or 'dry_run'"
-  type        = map(map(list(string)))
-  default     = {}
-}
-
 variable "access_levels" {
-  description = "Map of Access Levels to be created. For each Access Level you can specify 'ip_subnetworks, required_access_levels, members, negate or regions'."
+  description = "Map of access levels in name => [conditions] format."
   type = map(object({
     combining_function = string
     conditions = list(object({
+      device_policy = object({
+        require_screen_lock              = bool
+        allowed_encryption_statuses      = list(string)
+        allowed_device_management_levels = list(string)
+        os_constraints = list(object({
+          minimum_version            = string
+          os_type                    = string
+          require_verified_chrome_os = bool
+        }))
+        require_admin_approval = bool
+        require_corp_owned     = bool
+      })
       ip_subnetworks         = list(string)
-      required_access_levels = list(string)
       members                = list(string)
-      negate                 = string
+      negate                 = bool
       regions                = list(string)
+      required_access_levels = list(string)
     }))
+  }))
+  default = {}
+  validation {
+    condition = alltrue([
+      for k, v in var.access_levels : (
+        v.combining_function == null ||
+        v.combining_function == "AND" ||
+        v.combining_function == "OR"
+      )
+    ])
+    error_message = "Invalid `combining_function` value (null, \"AND\", \"OR\" accepted)."
+  }
+}
+
+variable "access_policy" {
+  description = "Access Policy name, leave null to use auto-created one."
+  type        = string
+}
+
+variable "access_policy_create" {
+  description = "Access Policy configuration, fill in to create. Parent is in 'organizations/123456' format."
+  type = object({
+    parent = string
+    title  = string
+  })
+  default = null
+}
+
+variable "service_perimeters_bridge" {
+  description = "Bridge service perimeters."
+  type = map(object({
+    spec_resources            = list(string)
+    status_resources          = list(string)
+    use_explicit_dry_run_spec = bool
   }))
   default = {}
 }
 
-variable "access_policy_create" {
-  description = "Enable autocreation of the Access Policy"
-  type        = bool
-  default     = true
-}
-
-variable "access_policy_name" {
-  description = "Referenced Access Policy name"
-  type        = string
-  default     = null
-}
-
-variable "access_policy_title" {
-  description = "Access Policy title to be created."
-  type        = string
-  default     = null
-}
-
-variable "egress_policies" {
-  description = "List of EgressPolicies in the form described in the [documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/access_context_manager_service_perimeter#egress_policies)"
-  default     = null
-}
-
-variable "egress_policies_perimeters" {
-  description = "Enforced mode -> Egress Policy -> Perimeters mapping. Enforced mode can be 'enforced' or 'dry_run'"
-  type        = map(map(list(string)))
-  default     = {}
-}
-
-variable "ingress_policies" {
-  description = "List of IngressPolicies in the form described in the [documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/access_context_manager_service_perimeter#ingress_policies)"
-  default     = null
-}
-
-variable "ingress_policies_perimeters" {
-  description = "Enforced mode -> Ingress Policy -> Perimeters mapping. Enforced mode can be 'enforced' or 'dry_run'"
-  type        = map(map(list(string)))
-  default     = {}
-}
-
-variable "organization_id" {
-  description = "Organization id in organizations/nnnnnn format."
-  type        = string
-}
-
-variable "perimeter_projects" {
-  description = "Perimeter -> Enforced Mode -> Projects Number mapping. Enforced mode can be 'enforced' or 'dry_run'."
-  type        = map(map(list(number)))
-  default     = {}
-}
-
-variable "perimeters" {
-  description = "Set of Perimeters."
+variable "service_perimeters_regular" {
+  description = "Regular service perimeters."
   type = map(object({
-    type = string
-    dry_run_config = object({
-      restricted_services     = list(string)
-      vpc_accessible_services = list(string)
+    spec = object({
+      access_levels       = list(string)
+      resources           = list(string)
+      restricted_services = list(string)
+      egress_policies = list(object({
+        egress_from = object({
+          identity_type = string
+          identities    = list(string)
+        })
+        egress_to = object({
+          operations = list(object({
+            method_selectors = list(string)
+            service_name     = string
+          }))
+          resources = list(string)
+        })
+      }))
+      ingress_policies = list(object({
+        ingress_from = object({
+          identity_type        = string
+          identities           = list(string)
+          source_access_levels = list(string)
+          source_resources     = list(string)
+        })
+        ingress_to = object({
+          operations = list(object({
+            method_selectors = list(string)
+            service_name     = string
+          }))
+          resources = list(string)
+        })
+      }))
+      vpc_accessible_services = object({
+        allowed_services   = list(string)
+        enable_restriction = bool
+      })
     })
-    enforced_config = object({
-      restricted_services     = list(string)
-      vpc_accessible_services = list(string)
+    status = object({
+      access_levels       = list(string)
+      resources           = list(string)
+      restricted_services = list(string)
+      egress_policies = list(object({
+        egress_from = object({
+          identity_type = string
+          identities    = list(string)
+        })
+        egress_to = object({
+          operations = list(object({
+            method_selectors = list(string)
+            service_name     = string
+          }))
+          resources = list(string)
+        })
+      }))
+      ingress_policies = list(object({
+        ingress_from = object({
+          identity_type        = string
+          identities           = list(string)
+          source_access_levels = list(string)
+          source_resources     = list(string)
+        })
+        ingress_to = object({
+          operations = list(object({
+            method_selectors = list(string)
+            service_name     = string
+          }))
+          resources = list(string)
+        })
+      }))
+      vpc_accessible_services = object({
+        allowed_services   = list(string)
+        enable_restriction = bool
+      })
     })
+    use_explicit_dry_run_spec = bool
   }))
   default = {}
 }

@@ -201,6 +201,7 @@ A single pre-existing project is used in this example to keep variables and comp
 
 The VPN-s used to connect to the on-premises environment do not account for HA, upgrading to use HA VPN is reasonably simple by using the relevant [module](../../modules/net-vpn-ha).
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -224,5 +225,5 @@ The VPN-s used to connect to the on-premises environment do not account for HA, 
 | test-instance1 | Test instance details. |  |
 | test-instance2 | Test instance details. |  |
 
-
 <!-- END TFDOC -->
+

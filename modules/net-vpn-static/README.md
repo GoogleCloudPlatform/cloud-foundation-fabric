@@ -32,6 +32,7 @@ module "vpn" {
 # tftest:modules=2:resources=8
 ```
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -61,5 +62,5 @@ module "vpn" {
 | tunnel_self_links | VPN tunnel self links. |  |
 | tunnels | VPN tunnel resources. |  |
 
-
 <!-- END TFDOC -->
+

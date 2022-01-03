@@ -15,6 +15,7 @@ You can optionally deploy the Squid server as [Managed Instance Group](https://c
 
 ![High-level diagram](squid.png "High-level diagram")
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -36,5 +37,5 @@ You can optionally deploy the Squid server as [Managed Instance Group](https://c
 |---|---|:---:|
 | squid-address | IP address of the Squid proxy. |  |
 
-
 <!-- END TFDOC -->
+

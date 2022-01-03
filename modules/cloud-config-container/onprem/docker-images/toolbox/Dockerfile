@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,11 +19,11 @@ COPY entrypoint.sh /entrypoint.sh
 RUN chmod 0755 /entrypoint.sh
 
 RUN apk update && \
-    apk add bash curl bind-tools busybox-extras netcat-openbsd && \
-    rm /var/cache/apk/*
+  apk add bash curl bind-tools busybox-extras netcat-openbsd && \
+  rm /var/cache/apk/*
 
 RUN curl -LO https://storage.googleapis.com/kubernetes-release/release/`curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt`/bin/linux/amd64/kubectl && \
-    chmod 755 kubectl && mv kubectl /usr/local/bin/
+  chmod 755 kubectl && mv kubectl /usr/local/bin/
 
 CMD ["/bin/bash"]
 

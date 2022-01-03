@@ -1,4 +1,4 @@
 pytest>=4.6.0
 PyYAML>=5.3
-tftest>=1.6.1
+tftest>=1.6.2
 marko>=0.9.1

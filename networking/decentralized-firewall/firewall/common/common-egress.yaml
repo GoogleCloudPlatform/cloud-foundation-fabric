@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,29 +15,29 @@
 # Deny all egress (egress traffic is allowed by default)
 deny-all:
   deny:
-  - ports: []
-    protocol: all
+    - ports: []
+      protocol: all
   direction: EGRESS
   priority: 65535
   destination_ranges:
-  - 0.0.0.0/0
+    - 0.0.0.0/0
 
-# Allow access to GCP APIs via Private Google Access 
+# Allow access to GCP APIs via Private Google Access
 # https://cloud.google.com/vpc/docs/access-apis-external-ip#config
 gcp-pga-apis:
   allow:
-  - ports: [443]
-    protocol: tcp
+    - ports: [443]
+      protocol: tcp
   direction: EGRESS
   priority: 500
   destination_ranges:
-  - 199.36.153.8/30
+    - 199.36.153.8/30
 
 # Allow egress to internal networks
 internal-egress:
   allow:
-  - ports: []
-    protocol: tcp
+    - ports: []
+      protocol: tcp
   direction: EGRESS
   destination_ranges:
-  - 10.0.0.0/16
+    - 10.0.0.0/16

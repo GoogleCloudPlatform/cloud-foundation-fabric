@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -40,8 +40,8 @@ def test_members(plan_runner):
 
   resource_types = Counter([r['type'] for r in resources])
   assert resource_types == {
-    'google_cloud_identity_group': 1,
-    'google_cloud_identity_group_membership': 1,
+      'google_cloud_identity_group': 1,
+      'google_cloud_identity_group_membership': 1,
   }
 
   values = next(r['values'] for r in resources if r['name'] == 'members')

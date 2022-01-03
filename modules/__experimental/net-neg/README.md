@@ -24,6 +24,7 @@ module "neg" {
 }
 ```
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -45,5 +46,5 @@ module "neg" {
 | self_lnk | Network endpoint group self link |  |
 | size | Size of the network endpoint group |  |
 
-
 <!-- END TFDOC -->
+

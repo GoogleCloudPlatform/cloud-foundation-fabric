@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -49,7 +49,7 @@ import urllib.parse
 import click
 
 
-__version__ = '2.0.1'
+__version__ = '2.1.0'
 
 
 # TODO(ludomagno): decide if we want to support variables*.tf and outputs*.tf
@@ -153,15 +153,18 @@ def _parse(body, enum=VAR_ENUM, re=VAR_RE, template=VAR_TEMPLATE):
         item[context].append(data)
 
 
-def parse_files(basepath):
+def parse_files(basepath, exclude_files=None):
   'Return a list of File named tuples in root module at basepath.'
+  exclude_files = exclude_files or []
   for name in glob.glob(os.path.join(basepath, '*tf')):
+    shortname = os.path.basename(name)
+    if shortname in exclude_files:
+      continue
     try:
       with open(name) as file:
         body = file.read()
     except (IOError, OSError) as e:
       raise SystemExit(f'Cannot read file {name}: {e}')
-    shortname = os.path.basename(name)
     tags = _extract_tags(body)
     description = tags.get(
         'file:description', FILE_DESC_DEFAULTS.get(shortname))
@@ -218,19 +221,16 @@ def format_doc(outputs, variables, files, show_extra=False):
   'Return formatted document.'
   buffer = []
   if files:
-    buffer.append('\n## Files\n')
-    for line in format_files(files):
-      buffer.append(line)
-    buffer.append('\n')
+    buffer += ['', '## Files', '']
+    buffer += list(format_files(files))
   if variables:
-    buffer.append('\n## Variables\n')
-    for line in format_variables(variables, show_extra):
-      buffer.append(line)
+    buffer += ['', '## Variables', '']
+    buffer += list(format_variables(variables, show_extra))
   if outputs:
-    buffer.append('\n## Outputs\n')
-    for line in format_outputs(outputs, show_extra):
-      buffer.append(line)
-  buffer.append('\n')
+    buffer += ['', '## Outputs', '']
+    buffer += list(format_outputs(outputs, show_extra))
+  if buffer:
+    buffer.append('')
   return '\n'.join(buffer)
 
 
@@ -321,9 +321,9 @@ def get_doc(readme):
   return {'doc': m.group(1), 'start': m.start(), 'end': m.end()}
 
 
-def create_doc(module_path, files=False, show_extra=False):
+def create_doc(module_path, files=False, show_extra=False, exclude_files=None):
   try:
-    mod_files = list(parse_files(module_path)) if files else []
+    mod_files = list(parse_files(module_path, exclude_files)) if files else []
     mod_variables = list(parse_variables(module_path))
     mod_outputs = list(parse_outputs(module_path))
   except (IOError, OSError) as e:
@@ -357,13 +357,14 @@ def replace_doc(module_path, doc):
 
 @ click.command()
 @ click.argument('module', type=click.Path(exists=True))
-@ click.option('--show-extra/--no-show-extra', default=False)
+@click.option('--exclude-file', '-x', multiple=True)
 @ click.option('--files/--no-files', default=False)
 @ click.option('--replace/--no-replace', default=True)
-def main(module=None, annotate=False, files=False, replace=True,
+@ click.option('--show-extra/--no-show-extra', default=False)
+def main(module=None, annotate=False, exclude_file=None, files=False, replace=True,
          show_extra=True):
   'Program entry point.'
-  doc = create_doc(module, files, show_extra)
+  doc = create_doc(module, files, show_extra, exclude_file)
   if replace:
     replace_doc(module, doc)
   else:

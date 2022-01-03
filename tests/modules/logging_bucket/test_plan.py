@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,66 +21,67 @@ FIXTURES_DIR = os.path.join(os.path.dirname(__file__), "fixture")
 
 
 def test_project_logging_bucket(plan_runner):
-    "Test project logging bucket."
-    _, resources = plan_runner(FIXTURES_DIR, parent_type="project", parent="myproject")
-    assert len(resources) == 1
+  "Test project logging bucket."
+  _, resources = plan_runner(
+      FIXTURES_DIR, parent_type="project", parent="myproject")
+  assert len(resources) == 1
 
-    resource = resources[0]
-    assert resource["type"] == "google_logging_project_bucket_config"
-    assert resource["values"] == {
-        "bucket_id": "mybucket",
-        "project": "myproject",
-        "location": "global",
-        "retention_days": 30,
-    }
+  resource = resources[0]
+  assert resource["type"] == "google_logging_project_bucket_config"
+  assert resource["values"] == {
+      "bucket_id": "mybucket",
+      "project": "myproject",
+      "location": "global",
+      "retention_days": 30,
+  }
 
 
 def test_folder_logging_bucket(plan_runner):
-    "Test project logging bucket."
-    _, resources = plan_runner(
-        FIXTURES_DIR, parent_type="folder", parent="folders/0123456789"
-    )
-    assert len(resources) == 1
+  "Test project logging bucket."
+  _, resources = plan_runner(
+      FIXTURES_DIR, parent_type="folder", parent="folders/0123456789"
+  )
+  assert len(resources) == 1
 
-    resource = resources[0]
-    assert resource["type"] == "google_logging_folder_bucket_config"
-    assert resource["values"] == {
-        "bucket_id": "mybucket",
-        "folder": "folders/0123456789",
-        "location": "global",
-        "retention_days": 30,
-    }
+  resource = resources[0]
+  assert resource["type"] == "google_logging_folder_bucket_config"
+  assert resource["values"] == {
+      "bucket_id": "mybucket",
+      "folder": "folders/0123456789",
+      "location": "global",
+      "retention_days": 30,
+  }
 
 
 def test_organization_logging_bucket(plan_runner):
-    "Test project logging bucket."
-    _, resources = plan_runner(
-        FIXTURES_DIR, parent_type="organization", parent="organizations/0123456789"
-    )
-    assert len(resources) == 1
+  "Test project logging bucket."
+  _, resources = plan_runner(
+      FIXTURES_DIR, parent_type="organization", parent="organizations/0123456789"
+  )
+  assert len(resources) == 1
 
-    resource = resources[0]
-    assert resource["type"] == "google_logging_organization_bucket_config"
-    assert resource["values"] == {
-        "bucket_id": "mybucket",
-        "organization": "organizations/0123456789",
-        "location": "global",
-        "retention_days": 30,
-    }
+  resource = resources[0]
+  assert resource["type"] == "google_logging_organization_bucket_config"
+  assert resource["values"] == {
+      "bucket_id": "mybucket",
+      "organization": "organizations/0123456789",
+      "location": "global",
+      "retention_days": 30,
+  }
 
 
 def test_billing_account_logging_bucket(plan_runner):
-    "Test project logging bucket."
-    _, resources = plan_runner(
-        FIXTURES_DIR, parent_type="billing_account", parent="0123456789"
-    )
-    assert len(resources) == 1
+  "Test project logging bucket."
+  _, resources = plan_runner(
+      FIXTURES_DIR, parent_type="billing_account", parent="0123456789"
+  )
+  assert len(resources) == 1
 
-    resource = resources[0]
-    assert resource["type"] == "google_logging_billing_account_bucket_config"
-    assert resource["values"] == {
-        "bucket_id": "mybucket",
-        "billing_account": "0123456789",
-        "location": "global",
-        "retention_days": 30,
-    }
+  resource = resources[0]
+  assert resource["type"] == "google_logging_billing_account_bucket_config"
+  assert resource["values"] == {
+      "bucket_id": "mybucket",
+      "billing_account": "0123456789",
+      "location": "global",
+      "retention_days": 30,
+  }

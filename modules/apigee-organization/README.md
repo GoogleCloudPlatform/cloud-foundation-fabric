@@ -99,6 +99,7 @@ module "apigee-organization" {
 # tftest:modules=1:resources=6
 ```
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -125,5 +126,5 @@ module "apigee-organization" {
 | org_id | Apigee Organization ID. |  |
 | subscription_type | Apigee subscription type. |  |
 
-
 <!-- END TFDOC -->
+

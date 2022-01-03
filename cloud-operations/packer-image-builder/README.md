@@ -67,6 +67,7 @@ The following example assumes that provisioning of a Compute Engine VM requires 
 the resources over the Internet (i.e. to install OS packages). Since Compute VM has no public IP
 address for security reasons, Internet connectivity is done with [Cloud NAT](https://cloud.google.com/nat/docs/overview).
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -93,5 +94,5 @@ address for security reasons, Internet connectivity is done with [Cloud NAT](htt
 | compute_subnetwork | Name of a subnetwork for Packer's temporary VM. |  |
 | compute_zone | Name of a compute engine zone for Packer's temporary VM. |  |
 
-
 <!-- END TFDOC -->
+

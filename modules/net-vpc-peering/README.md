@@ -41,6 +41,7 @@ module "peering-a-c" {
 # tftest:modules=2:resources=4
 ```
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -61,5 +62,5 @@ module "peering-a-c" {
 | local_network_peering | Network peering resource. |  |
 | peer_network_peering | Peer network peering resource. |  |
 
-
 <!-- END TFDOC -->
+

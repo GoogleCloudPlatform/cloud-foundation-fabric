@@ -110,6 +110,7 @@ schema_bq_import.json
 
 You can check data imported into Google BigQuery from the Google Cloud Console UI.
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -136,5 +137,5 @@ You can check data imported into Google BigQuery from the Google Cloud Console U
 | projects | Project ids. |  |
 | vm | GCE VM. |  |
 
-
 <!-- END TFDOC -->
+

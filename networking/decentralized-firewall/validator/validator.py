@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -199,7 +199,8 @@ class FirewallValidator:
     self.schema = yamale.make_schema(path=schema, validators=self.validators)
 
   def set_schema_from_string(self, schema):
-    self.schema = yamale.make_schema(content=schema, validators=self.validators)
+    self.schema = yamale.make_schema(
+        content=schema, validators=self.validators)
 
   def validate_file(self, file):
     print('Validating %s...' % (file), file=sys.stderr)

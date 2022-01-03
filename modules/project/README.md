@@ -173,6 +173,7 @@ module "project" {
 # tftest:modules=1:resources=7
 ```
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -222,6 +223,6 @@ module "project" {
 | service_accounts | Product robot service accounts in project. |  |
 | sink_writer_identities | Writer identities created for each sink. |  |
 
-
 <!-- END TFDOC -->
+
 

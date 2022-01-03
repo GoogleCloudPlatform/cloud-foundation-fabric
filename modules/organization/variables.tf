@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,8 +43,8 @@ variable "firewall_policies" {
   default = {}
 }
 
-variable "firewall_policy_attachments" {
-  description = "List of hierarchical firewall policy IDs attached to the organization."
+variable "firewall_policy_association" {
+  description = "The hierarchical firewall policy to associate to this folder. Must be either a key in the `firewall_policies` map or the id of a policy defined somewhere else."
   type        = map(string)
   default     = {}
 }

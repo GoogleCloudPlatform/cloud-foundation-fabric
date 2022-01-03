@@ -41,6 +41,7 @@ module "bucket-default" {
 ```
 
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -60,5 +61,5 @@ module "bucket-default" {
 |---|---|:---:|
 | id | ID of the created bucket. |  |
 
-
 <!-- END TFDOC -->
+

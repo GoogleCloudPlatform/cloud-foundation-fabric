@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +15,12 @@
  */
 output "firewall_policies" {
   description = "Map of firewall policy resources created in this folder."
-  value = {
-    for name, _ in var.firewall_policies :
-    name => google_compute_organization_security_policy.policy[name]
-  }
+  value       = { for k, v in google_compute_firewall_policy.policy : k => v }
 }
 
 output "firewall_policy_id" {
   description = "Map of firewall policy ids created in this folder."
-  value = {
-    for name, _ in var.firewall_policies :
-    name => google_compute_organization_security_policy.policy[name].id
-  }
+  value       = { for k, v in google_compute_firewall_policy.policy : k => v.id }
 }
 
 output "folder" {
