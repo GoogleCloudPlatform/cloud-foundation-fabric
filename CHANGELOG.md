@@ -4,7 +4,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-## [1.0.1] - 2022-01-03
+- **incompatible change** remove location from `gcs` bucket names
+
+## [10.0.1] - 2022-01-03
 
 - remove lifecycle block from vpc sc perimeter resources
 
