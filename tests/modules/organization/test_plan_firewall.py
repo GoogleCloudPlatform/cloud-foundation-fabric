@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -80,9 +80,9 @@ def test_custom(plan_runner):
   _, resources = plan_runner(FIXTURES_DIR, firewall_policies=_POLICIES)
   assert len(resources) == 5
   policies = [r for r in resources
-              if r['type'] == 'google_compute_organization_security_policy']
+              if r['type'] == 'google_compute_firewall_policy']
   rules = [r for r in resources
-           if r['type'] == 'google_compute_organization_security_policy_rule']
+           if r['type'] == 'google_compute_firewall_policy_rule']
   assert set(r['index'] for r in policies) == set([
       'policy1', 'policy2'
   ])
@@ -96,9 +96,9 @@ def test_factory(plan_runner):
   _, resources = plan_runner(FIXTURES_DIR, firewall_policy_factory=_FACTORY)
   assert len(resources) == 3
   policies = [r for r in resources
-              if r['type'] == 'google_compute_organization_security_policy']
+              if r['type'] == 'google_compute_firewall_policy']
   rules = [r for r in resources
-           if r['type'] == 'google_compute_organization_security_policy_rule']
+           if r['type'] == 'google_compute_firewall_policy_rule']
   assert set(r['index'] for r in policies) == set([
       'factory-1'
   ])
@@ -113,7 +113,7 @@ def test_factory_name(plan_runner):
   _, resources = plan_runner(FIXTURES_DIR, firewall_policy_factory=factory)
   assert len(resources) == 3
   policies = [r for r in resources
-              if r['type'] == 'google_compute_organization_security_policy']
+              if r['type'] == 'google_compute_firewall_policy']
   assert set(r['index'] for r in policies) == set([
       'factory'
   ])
@@ -125,9 +125,9 @@ def test_combined(plan_runner):
                              firewall_policy_factory=_FACTORY)
   assert len(resources) == 8
   policies = [r for r in resources
-              if r['type'] == 'google_compute_organization_security_policy']
+              if r['type'] == 'google_compute_firewall_policy']
   rules = [r for r in resources
-           if r['type'] == 'google_compute_organization_security_policy_rule']
+           if r['type'] == 'google_compute_firewall_policy_rule']
   assert set(r['index'] for r in policies) == set([
       'factory-1', 'policy1', 'policy2'
   ])

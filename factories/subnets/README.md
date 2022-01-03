@@ -52,16 +52,20 @@ secondary_ip_ranges:              # Opt- List of secondary IP ranges
                                   # Secondary ranges in name: cidr format
 ```
 
+
 <!-- BEGIN TFDOC -->
+
 ## Variables
 
 | name | description | type | required | default |
-|---|---|:---: |:---:|:---:|
-| config_folder | Relative path of the folder containing the subnet configuration | <code title="">string</code> | ✓ |  |
+|---|---|:---:|:---:|:---:|
+| config_folder | Relative path of the folder containing the subnet configuration | <code>string</code> | ✓ |  |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
 | subnet | Generated subnets |  |
+
 <!-- END TFDOC -->
+

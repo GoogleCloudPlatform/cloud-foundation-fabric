@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -98,6 +98,12 @@ variable "logging_sinks" {
     exclusions = map(string)
   }))
   default = {}
+}
+
+variable "metric_scopes" {
+  description = "List of projects that will act as metric scopes for this project."
+  type        = list(string)
+  default     = null
 }
 
 variable "name" {

@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import pytest
 
 FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
 
+
 def test_buckets(plan_runner):
   "Test bucket resources."
   _, resources = plan_runner(FIXTURES_DIR)
@@ -27,6 +28,7 @@ def test_buckets(plan_runner):
   assert r['type'] == 'google_storage_bucket'
   assert r['values']['name'] == 'bucket-a'
   assert r['values']['project'] == 'my-project'
+
 
 def test_prefix(plan_runner):
   "Test bucket name when prefix is set."
@@ -37,9 +39,9 @@ def test_prefix(plan_runner):
 def test_config_values(plan_runner):
   "Test that variables set the correct attributes on buckets."
   variables = dict(
-    uniform_bucket_level_access='true',
-    force_destroy='true',
-    versioning='true'
+      uniform_bucket_level_access='true',
+      force_destroy='true',
+      versioning='true'
   )
   _, resources = plan_runner(FIXTURES_DIR, **variables)
   assert len(resources) == 1
@@ -49,7 +51,7 @@ def test_config_values(plan_runner):
   assert r['values']['versioning'] == [{'enabled': True}]
   assert r['values']['logging'] == [{'log_bucket': 'foo'}]
   assert r['values']['retention_policy'] == [
-    {'is_locked': False, 'retention_period': 5}
+      {'is_locked': False, 'retention_period': 5}
   ]
 
 

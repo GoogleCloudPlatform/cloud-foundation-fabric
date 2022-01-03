@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,9 +50,22 @@ resource "google_compute_global_address" "psc" {
   project      = var.project_id
   name         = each.key
   description  = "Terraform managed."
+  address      = try(each.value.address, null)
   address_type = "INTERNAL"
   network      = each.value.network
-  address      = try(each.value.address, null)
   purpose      = "PRIVATE_SERVICE_CONNECT"
+  # labels       = lookup(var.internal_address_labels, each.key, {})
+}
+
+resource "google_compute_global_address" "psa" {
+  for_each      = var.psa_addresses
+  project       = var.project_id
+  name          = each.key
+  description   = "Terraform managed."
+  address       = each.value.address
+  address_type  = "INTERNAL"
+  network       = each.value.network
+  prefix_length = each.value.prefix_length
+  purpose       = "VPC_PEERING"
   # labels       = lookup(var.internal_address_labels, each.key, {})
 }

@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,14 +26,49 @@ variable "bundle_path" {
   default     = "./bundle.zip"
 }
 
+
+variable "bundle_path_cffile" {
+  description = "Path used to write the intermediate Cloud Function code bundle."
+  type        = string
+  default     = "./bundle_cffile.zip"
+}
+
 variable "cai_config" {
-  description = "Cloud Asset inventory export config."
+  description = "Cloud Asset Inventory export config."
   type = object({
-    bq_dataset  = string
-    bq_table    = string
-    target_node = string
+    bq_dataset         = string
+    bq_table           = string
+    bq_table_overwrite = bool
+    target_node        = string
   })
 }
+
+
+variable "cai_gcs_export" {
+  description = "Enable optional part to export tables to GCS"
+  type        = bool
+  default     = false
+}
+
+
+variable "file_config" {
+  description = "Optional BQ table as a file export function config."
+  type = object({
+    bucket     = string
+    filename   = string
+    format     = string
+    bq_dataset = string
+    bq_table   = string
+  })
+  default = {
+    bucket     = null
+    filename   = null
+    format     = null
+    bq_dataset = null
+    bq_table   = null
+  }
+}
+
 
 variable "location" {
   description = "Appe Engine location used in the example."
@@ -47,6 +82,15 @@ variable "name" {
   type        = string
   default     = "asset-inventory"
 }
+
+
+
+variable "name_cffile" {
+  description = "Arbitrary string used to name created resources."
+  type        = string
+  default     = "cffile-exporter"
+}
+
 
 variable "project_create" {
   description = "Create project instead ofusing an existing one."

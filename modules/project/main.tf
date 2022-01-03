@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -388,4 +388,11 @@ resource "google_kms_crypto_key_iam_member" "crypto_key" {
     data.google_project.project,
     data.google_storage_project_service_account.gcs_sa,
   ]
+}
+
+resource "google_monitoring_monitored_project" "primary" {
+  provider      = google-beta
+  for_each      = toset(coalesce(var.metric_scopes, []))
+  metrics_scope = each.value
+  name          = local.project.project_id
 }

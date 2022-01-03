@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -69,7 +69,7 @@ def test_exclussions(plan_runner):
       'policy-a', 'policy-b', 'policy-c'
   ]
   assert values[0]['list_policy'][0]['allow'] == [
-    {'all': True, 'values': None}]
+      {'all': True, 'values': None}]
   assert values[1]['list_policy'][0]['deny'] == [
-    {'all': False, 'values': ["bar"]}]
+      {'all': False, 'values': ["bar"]}]
   assert values[2]['restore_policy'] == [{'default': True}]

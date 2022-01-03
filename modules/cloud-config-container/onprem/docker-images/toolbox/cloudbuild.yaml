@@ -1,5 +1,4 @@
-
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,14 +16,14 @@
 # $ gcloud builds submit . --config=cloudbuild.yaml
 
 steps:
-- name: 'gcr.io/cloud-builders/docker'
-  args: 
-  - build 
-  - --tag=gcr.io/$PROJECT_ID/toolbox
-  - --tag=gcr.io/$PROJECT_ID/toolbox:latest
-  - .
-    
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      - build
+      - --tag=gcr.io/$PROJECT_ID/toolbox
+      - --tag=gcr.io/$PROJECT_ID/toolbox:latest
+      - .
+
 images:
-  - 'gcr.io/$PROJECT_ID/toolbox:latest'
-    
+  - "gcr.io/$PROJECT_ID/toolbox:latest"
+
 timeout: 1200s

@@ -59,24 +59,25 @@ module "on-prem" {
 }
 ```
 
+
 <!-- BEGIN TFDOC -->
+
 ## Variables
 
 | name | description | type | required | default |
-|---|---|:---: |:---:|:---:|
-| vpn_config | VPN configuration, type must be one of 'dynamic' or 'static'. | <code title="object&#40;&#123;&#10;peer_ip        &#61; string&#10;shared_secret  &#61; string&#10;type &#61; string&#10;peer_ip2       &#61; string&#10;shared_secret2 &#61; string&#10;&#125;&#41;">object({...})</code> | ✓ |  |
-| *config_variables* | Additional variables used to render the cloud-config and CoreDNS templates. | <code title="map&#40;any&#41;">map(any)</code> |  | <code title="">{}</code> |
-| *coredns_config* | CoreDNS configuration path, if null default will be used. | <code title="">string</code> |  | <code title="">null</code> |
-| *local_ip_cidr_range* | IP CIDR range used for the Docker onprem network. | <code title="">string</code> |  | <code title="">192.168.192.0/24</code> |
-| *test_instance* | Test/development instance attributes, leave null to skip creation. | <code title="object&#40;&#123;&#10;project_id &#61; string&#10;zone       &#61; string&#10;name       &#61; string&#10;type &#61; string&#10;network    &#61; string&#10;subnetwork &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
-| *test_instance_defaults* | Test/development instance defaults used for optional configuration. If image is null, COS stable will be used. | <code title="object&#40;&#123;&#10;disks &#61; map&#40;object&#40;&#123;&#10;read_only &#61; bool&#10;size      &#61; number&#10;&#125;&#41;&#41;&#10;image                 &#61; string&#10;metadata              &#61; map&#40;string&#41;&#10;nat                   &#61; bool&#10;service_account_roles &#61; list&#40;string&#41;&#10;tags                  &#61; list&#40;string&#41;&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;disks    &#61; &#123;&#125;&#10;image    &#61; null&#10;metadata &#61; &#123;&#125;&#10;nat      &#61; false&#10;service_account_roles &#61; &#91;&#10;&#34;roles&#47;logging.logWriter&#34;,&#10;&#34;roles&#47;monitoring.metricWriter&#34;&#10;&#93;&#10;tags &#61; &#91;&#34;ssh&#34;&#93;&#10;&#125;">...</code> |
-| *vpn_dynamic_config* | BGP configuration for dynamic VPN, ignored if VPN type is 'static'. | <code title="object&#40;&#123;&#10;local_bgp_asn      &#61; number&#10;local_bgp_address  &#61; string&#10;peer_bgp_asn       &#61; number&#10;peer_bgp_address   &#61; string&#10;local_bgp_asn2     &#61; number&#10;local_bgp_address2 &#61; string&#10;peer_bgp_asn2      &#61; number&#10;peer_bgp_address2  &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;local_bgp_asn      &#61; 64514&#10;local_bgp_address  &#61; &#34;169.254.1.2&#34;&#10;peer_bgp_asn       &#61; 64513&#10;peer_bgp_address   &#61; &#34;169.254.1.1&#34;&#10;local_bgp_asn2     &#61; 64514&#10;local_bgp_address2 &#61; &#34;169.254.2.2&#34;&#10;peer_bgp_asn2      &#61; 64520&#10;peer_bgp_address2  &#61; &#34;169.254.2.1&#34;&#10;&#125;">...</code> |
-| *vpn_static_ranges* | Remote CIDR ranges for static VPN, ignored if VPN type is 'dynamic'. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">["10.0.0.0/8"]</code> |
+|---|---|:---:|:---:|:---:|
+| vpn_config | VPN configuration, type must be one of 'dynamic' or 'static'. | <code title="object&#40;&#123;&#10;  peer_ip        &#61; string&#10;  shared_secret  &#61; string&#10;  type           &#61; string&#10;  peer_ip2       &#61; string&#10;  shared_secret2 &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| config_variables | Additional variables used to render the cloud-config and CoreDNS templates. | <code>map&#40;any&#41;</code> |  | <code>&#123;&#125;</code> |
+| coredns_config | CoreDNS configuration path, if null default will be used. | <code>string</code> |  | <code>null</code> |
+| local_ip_cidr_range | IP CIDR range used for the Docker onprem network. | <code>string</code> |  | <code>&#34;192.168.192.0&#47;24&#34;</code> |
+| vpn_dynamic_config | BGP configuration for dynamic VPN, ignored if VPN type is 'static'. | <code title="object&#40;&#123;&#10;  local_bgp_asn      &#61; number&#10;  local_bgp_address  &#61; string&#10;  peer_bgp_asn       &#61; number&#10;  peer_bgp_address   &#61; string&#10;  local_bgp_asn2     &#61; number&#10;  local_bgp_address2 &#61; string&#10;  peer_bgp_asn2      &#61; number&#10;  peer_bgp_address2  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  local_bgp_asn      &#61; 64514&#10;  local_bgp_address  &#61; &#34;169.254.1.2&#34;&#10;  peer_bgp_asn       &#61; 64513&#10;  peer_bgp_address   &#61; &#34;169.254.1.1&#34;&#10;  local_bgp_asn2     &#61; 64514&#10;  local_bgp_address2 &#61; &#34;169.254.2.2&#34;&#10;  peer_bgp_asn2      &#61; 64520&#10;  peer_bgp_address2  &#61; &#34;169.254.2.1&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| vpn_static_ranges | Remote CIDR ranges for static VPN, ignored if VPN type is 'dynamic'. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;10.0.0.0&#47;8&#34;&#93;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
 | cloud_config | Rendered cloud-config file to be passed as user-data instance metadata. |  |
-| test_instance | Optional test instance name and address |  |
+
 <!-- END TFDOC -->
+

@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,39 +14,35 @@
  * limitations under the License.
  */
 
-output "access_levels" {
-  description = "Access Levels."
+output "access_level_names" {
+  description = "Access level resources."
   value = {
-    for key, value in google_access_context_manager_access_level.default :
-    key => value
+    for k, v in google_access_context_manager_access_level.basic :
+    k => v.name
   }
+}
+
+output "access_levels" {
+  description = "Access level resources."
+  value       = google_access_context_manager_access_level.basic
+}
+
+output "access_policy" {
+  description = "Access policy resource, if autocreated."
+  value       = try(google_access_context_manager_access_policy.default.0, null)
 }
 
 output "access_policy_name" {
-  description = "Access Policy resource"
-  value       = local.access_policy_name
+  description = "Access policy name."
+  value       = local.access_policy
 }
 
-output "organization_id" {
-  description = "Organization id dependent on module resources."
-  value       = var.organization_id
-  depends_on = [
-    google_access_context_manager_access_policy.default
-  ]
+output "service_perimeters_bridge" {
+  description = "Bridge service perimeter resources."
+  value       = google_access_context_manager_service_perimeter.bridge
 }
 
-output "perimeters_bridge" {
-  description = "VPC-SC bridge perimeter resources."
-  value = {
-    for key, value in google_access_context_manager_service_perimeter.bridge :
-    key => value
-  }
-}
-
-output "perimeters_standard" {
-  description = "VPC-SC standard perimeter resources."
-  value = {
-    for key, value in google_access_context_manager_service_perimeter.standard :
-    key => value
-  }
+output "service_perimeters_regular" {
+  description = "Regular service perimeter resources."
+  value       = google_access_context_manager_service_perimeter.regular
 }

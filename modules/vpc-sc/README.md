@@ -1,261 +1,175 @@
-# VPC Service Control Module
+# VPC Service Controls
 
-This module allows managing VPC Service Control (VPC-SC) properties:
+This module offers a unified interface to manage VPC Service Controls [Access Policy](https://cloud.google.com/access-context-manager/docs/create-access-policy), [Access Levels](https://cloud.google.com/access-context-manager/docs/manage-access-levels), and [Service Perimeters](https://cloud.google.com/vpc-service-controls/docs/service-perimeters).
 
-- [Access Policy](https://cloud.google.com/access-context-manager/docs/create-access-policy)
-- [Access Levels](https://cloud.google.com/access-context-manager/docs/manage-access-levels)
-- [VPC-SC Perimeters](https://cloud.google.com/vpc-service-controls/docs/service-perimeters)
+Given the complexity of the underlying resources, the module intentionally mimics their interfaces to make it easier to map their documentation onto its variables, and reduce the internal complexity. The tradeoff is some verbosity, and a very complex type for the `service_perimeters_regular` variable (while [optional type attributes](https://www.terraform.io/language/expressions/type-constraints#experimental-optional-object-type-attributes) are still an experiment).
 
-The Use of this module requires credentials with the [correct permissions](https://cloud.google.com/access-context-manager/docs/access-control) to use Access Context Manager.
+If you are using [Application Default Credentials](https://cloud.google.com/sdk/gcloud/reference/auth/application-default) with Terraform and run into permissions issues, make sure to check out the recommended provider configuration in the [VPC SC resources documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/access_context_manager_access_level).
 
-## Example VCP-SC standard perimeter
+## Examples
+
+### Access policy
+
+By default, the module is configured to use an existing policy, passed in by name in the `access_policy` variable:
 
 ```hcl
-module "vpc-sc" {
-  source              = "./modules/vpc-sc"
-  organization_id     = "organizations/112233"
-  access_policy_title = "My Access Policy"
+module "test" {
+  source        = "./modules/vpc-sc"
+  access_policy = "accessPolicies/12345678"
+}
+# tftest:modules=0:resources=0
+```
+
+If you need the module to create the policy for you, use the `access_policy_create` variable, and set `access_policy` to `null`:
+
+```hcl
+module "test" {
+  source        = "./modules/vpc-sc"
+  access_policy = null
+  access_policy_create = {
+    parent = "organizations/123456"
+    title  = "vpcsc-policy"
+  }
+}
+# tftest:modules=1:resources=1
+```
+
+### Access levels
+
+As highlighted above, the `access_levels` type replicates the underlying resource structure.
+
+```hcl
+module "test" {
+  source        = "./modules/vpc-sc"
+  access_policy = "accessPolicies/12345678"
   access_levels = {
-    my_trusted_proxy = {
-      combining_function = "AND"
+    a1 = {
+      combining_function = null
       conditions = [{
-        ip_subnetworks = ["85.85.85.52/32"]
-        required_access_levels = null
-        members        = []
-        negate         = false
-        regions        = null
+        members       = ["user:ludomagno@google.com"],
+        device_policy = null, ip_subnetworks = null, negate = null,
+        regions       = null, required_access_levels = null
+      }]
+    }
+    a2 = {
+      combining_function = "OR"
+      conditions = [{
+        regions       = ["IT", "FR"],
+        device_policy = null, ip_subnetworks = null, members = null,
+        negate        = null, required_access_levels = null
+      },{
+        ip_subnetworks = ["101.101.101.0/24"],
+        device_policy  = null, members = null, negate = null,
+        regions        = null, required_access_levels = null
       }]
     }
   }
-  access_level_perimeters = {
-    enforced = {
-      my_trusted_proxy = ["perimeter"]
-    }
-  }
- ingress_policies = {
-   ingress_1 = {
-     ingress_from = {
-       identity_type = "ANY_IDENTITY"
-     }
-     ingress_to = {
-       resources = ["*"]
-       operations = {
-         "storage.googleapis.com" = [{ method = "google.storage.objects.create" }]
-         "bigquery.googleapis.com" = [{ method = "BigQueryStorage.ReadRows" }]
-       }
-     }
-   }
- }
- ingress_policies_perimeters = {
-   enforced = {
-     ingress_1 = ["default"]
-   }
- }
-
-  egress_policies = {
-    egress_1 = {
-      egress_from = {
-        identity_type = "ANY_USER_ACCOUNT"
-      }
-      egress_to = {
-       resources = ["*"]
-       operations = {
-         "storage.googleapis.com"  = [{ method = "google.storage.objects.create" }],
-         "bigquery.googleapis.com" = [{ method = "BigQueryStorage.ReadRows" },{ method = "TableService.ListTables" }, { permission = "bigquery.jobs.get" }]
-       }
-      }
-    }
-  }  
-  egress_policies_perimeters = {
-    enforced = {
-      egress_1 = ["perimeter"]
-    }  
-  }  
-  perimeters = {
-    perimeter = {
-      type           = "PERIMETER_TYPE_REGULAR"
-      dry_run_config = null
-      enforced_config = {
-        restricted_services     = ["storage.googleapis.com"]
-        vpc_accessible_services = ["storage.googleapis.com"]
-      }
-    }
-  }
-  perimeter_projects = {
-    perimeter = {
-      enforced = [111111111, 222222222]
-    }
-  }
 }
-# tftest:modules=1:resources=3
-```
-
-## Example VCP-SC standard perimeter with one service and one project in dry run mode
-```hcl
-module "vpc-sc" {
-  source              = "./modules/vpc-sc"
-  organization_id     = "organizations/112233"
-  access_policy_title = "My Access Policy"
-  access_levels = {
-    my_trusted_proxy = {
-      combining_function = "AND"
-      conditions = [{
-        ip_subnetworks = ["85.85.85.52/32"]
-        required_access_levels = null
-        members        = []
-        negate         = false
-        regions        = null
-      }]
-    }
-  }
-  access_level_perimeters = {
-    enforced = {
-      my_trusted_proxy = ["perimeter"]
-    }
-  }
-  perimeters = {
-    perimeter = {
-      type = "PERIMETER_TYPE_REGULAR"
-      dry_run_config = {
-        restricted_services     = ["storage.googleapis.com", "bigquery.googleapis.com"]
-        vpc_accessible_services = ["storage.googleapis.com", "bigquery.googleapis.com"]
-      }
-      enforced_config = {
-        restricted_services     = ["storage.googleapis.com"]
-        vpc_accessible_services = ["storage.googleapis.com"]
-      }
-    }
-  }
-  perimeter_projects = {
-    perimeter = {
-      enforced = [111111111, 222222222]
-      dry_run  = [333333333]
-    }
-  }
-}
-# tftest:modules=1:resources=3
-```
-
-## Example VCP-SC: 2 standard perimeters with one bridge  between the two (dry run mode).
-```hcl
-module "vpc-sc" {
-  source              = "./modules/vpc-sc"
-  organization_id     = "organizations/112233"
-  access_policy_title = "My Access Policy"
-  perimeters = {
-    perimeter_1 = {
-      type = "PERIMETER_TYPE_REGULAR"
-      dry_run_config = {
-        restricted_services     = ["storage.googleapis.com", "bigquery.googleapis.com"]
-        vpc_accessible_services = ["storage.googleapis.com", "bigquery.googleapis.com"]
-      }
-      enforced_config = null
-    }
-    perimeter_2 = {
-      type = "PERIMETER_TYPE_REGULAR"
-      dry_run_config = {
-        restricted_services     = ["storage.googleapis.com", "bigquery.googleapis.com"]
-        vpc_accessible_services = ["storage.googleapis.com", "bigquery.googleapis.com"]
-      }
-      enforced_config = null
-    }
-    perimeter_bridge = {
-      type = "PERIMETER_TYPE_BRIDGE"
-      dry_run_config = null
-      enforced_config = null
-    }
-  }
-  perimeter_projects = {
-    perimeter_1 = {
-      enforced = []
-      dry_run  = [111111111]
-    }
-    perimeter_2 = {
-      enforced = []
-      dry_run  = [222222222]
-    }
-    perimeter_bridge = {
-      enforced = []
-      dry_run  = [111111111, 222222222]
-    }
-  }
-}
-# tftest:modules=1:resources=4
-```
-
-## Example VCP-SC standard perimeter with one service and one project in dry run mode in a Organization with an already existent access policy
-```hcl
-module "vpc-sc-first" {
-  source              = "./modules/vpc-sc"
-  organization_id     = "organizations/112233"
-  access_policy_create = false
-  access_policy_name = "My Access Policy"
-  access_levels = {
-    my_trusted_proxy = {
-      combining_function = "AND"
-      conditions = [{
-        ip_subnetworks = ["85.85.85.52/32"]
-        required_access_levels = null
-        members        = []
-        negate         = false
-        regions        = null
-      }]
-    }
-  }
-  access_level_perimeters = {
-    enforced = {
-      my_trusted_proxy = ["perimeter"]
-    }
-  }
-  perimeters = {
-    perimeter = {
-      type = "PERIMETER_TYPE_REGULAR"
-      dry_run_config = {
-        restricted_services     = ["storage.googleapis.com", "bigquery.googleapis.com"]
-        vpc_accessible_services = ["storage.googleapis.com", "bigquery.googleapis.com"]
-      }
-      enforced_config = {
-        restricted_services     = ["storage.googleapis.com"]
-        vpc_accessible_services = ["storage.googleapis.com"]
-      }
-    }
-  }
-  perimeter_projects = {
-    perimeter = {
-      enforced = [111111111, 222222222]
-      dry_run  = [333333333]
-    }
-  }
-}
-
 # tftest:modules=1:resources=2
 ```
 
+### Service perimeters
+
+Bridge and regular service perimeters use two separate variables, as bridge perimeters only accept a limited number of arguments, and can leverage a much simpler interface.
+
+The regular perimeters variable exposes all the complexity of the underlying resource, use [its documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/access_context_manager_service_perimeter) as a reference about the possible values and configurations.
+
+If you need to refer to access levels created by the same module in regular service perimeters, simply use the module's outputs in the provided variables. The example below shows how to do this in practice.
+
+/*
+Resources for both perimeters have a `lifecycle` block that ignores changes to `spec` and `status` resources (projects), to allow using the additive resource `google_access_context_manager_service_perimeter_resource` at project creation. If this is not needed, the `lifecycle` blocks can be safely commented in the code.
+*/
+
+#### Bridge type
+
+```hcl
+module "test" {
+  source        = "./modules/vpc-sc"
+  access_policy = "accessPolicies/12345678"
+  service_perimeters_bridge = {
+    b1 = {
+      status_resources          = ["projects/111110", "projects/111111"]
+      spec_resources            = null
+      use_explicit_dry_run_spec = false
+    }
+    b2 = {
+      status_resources          = null
+      spec_resources            = ["projects/222220", "projects/222221"]
+      use_explicit_dry_run_spec = true
+    }
+  }
+}
+# tftest:modules=1:resources=2
+```
+
+#### Regular type
+
+```hcl
+module "test" {
+  source        = "./modules/vpc-sc"
+  access_policy = "accessPolicies/12345678"
+  access_levels = {
+    a1 = {
+      combining_function = null
+      conditions = [{
+        members       = ["user:ludomagno@google.com"],
+        device_policy = null, ip_subnetworks = null, negate = null,
+        regions       = null, required_access_levels = null
+      }]
+    }
+  }
+  service_perimeters_regular = {
+    r1 = {
+      spec = null
+      status = {
+        access_levels       = [module.test.access_level_names["a1"]]
+        resources           = ["projects/11111", "projects/111111"]
+        restricted_services = ["storage.googleapis.com"]
+        egress_policies     = null
+        ingress_policies    = null
+        vpc_accessible_services = {
+          allowed_services   = ["compute.googleapis.com"]
+          enable_restriction = true
+        }
+      }
+      use_explicit_dry_run_spec = false
+    }
+  }
+}
+# tftest:modules=1:resources=2
+```
+
+## TODO
+
+- [ ] implement support for the  `google_access_context_manager_gcp_user_access_binding` resource
+
+
+
+
 <!-- BEGIN TFDOC -->
+
 ## Variables
 
 | name | description | type | required | default |
-|---|---|:---: |:---:|:---:|
-| organization_id | Organization id in organizations/nnnnnn format. | <code title="">string</code> | ✓ |  |
-| *access_level_perimeters* | Enforced mode -> Access Level -> Perimeters mapping. Enforced mode can be 'enforced' or 'dry_run' | <code title="map&#40;map&#40;list&#40;string&#41;&#41;&#41;">map(map(list(string)))</code> |  | <code title="">{}</code> |
-| *access_levels* | Map of Access Levels to be created. For each Access Level you can specify 'ip_subnetworks, required_access_levels, members, negate or regions'. | <code title="map&#40;object&#40;&#123;&#10;combining_function &#61; string&#10;conditions &#61; list&#40;object&#40;&#123;&#10;ip_subnetworks         &#61; list&#40;string&#41;&#10;required_access_levels &#61; list&#40;string&#41;&#10;members                &#61; list&#40;string&#41;&#10;negate                 &#61; string&#10;regions                &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
-| *access_policy_create* | Enable autocreation of the Access Policy | <code title="">bool</code> |  | <code title="">true</code> |
-| *access_policy_name* | Referenced Access Policy name | <code title="">string</code> |  | <code title="">null</code> |
-| *access_policy_title* | Access Policy title to be created. | <code title="">string</code> |  | <code title="">null</code> |
-| *egress_policies* | List of EgressPolicies in the form described in the [documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/access_context_manager_service_perimeter#egress_policies) | <code title=""></code> |  | <code title="">null</code> |
-| *egress_policies_perimeters* | Enforced mode -> Egress Policy -> Perimeters mapping. Enforced mode can be 'enforced' or 'dry_run' | <code title="map&#40;map&#40;list&#40;string&#41;&#41;&#41;">map(map(list(string)))</code> |  | <code title="">{}</code> |
-| *ingress_policies* | List of IngressPolicies in the form described in the [documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/access_context_manager_service_perimeter#ingress_policies) | <code title=""></code> |  | <code title="">null</code> |
-| *ingress_policies_perimeters* | Enforced mode -> Ingress Policy -> Perimeters mapping. Enforced mode can be 'enforced' or 'dry_run' | <code title="map&#40;map&#40;list&#40;string&#41;&#41;&#41;">map(map(list(string)))</code> |  | <code title="">{}</code> |
-| *perimeter_projects* | Perimeter -> Enforced Mode -> Projects Number mapping. Enforced mode can be 'enforced' or 'dry_run'. | <code title="map&#40;map&#40;list&#40;number&#41;&#41;&#41;">map(map(list(number)))</code> |  | <code title="">{}</code> |
-| *perimeters* | Set of Perimeters. | <code title="map&#40;object&#40;&#123;&#10;type &#61; string&#10;dry_run_config &#61; object&#40;&#123;&#10;restricted_services     &#61; list&#40;string&#41;&#10;vpc_accessible_services &#61; list&#40;string&#41;&#10;&#125;&#41;&#10;enforced_config &#61; object&#40;&#123;&#10;restricted_services     &#61; list&#40;string&#41;&#10;vpc_accessible_services &#61; list&#40;string&#41;&#10;&#125;&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
+|---|---|:---:|:---:|:---:|
+| access_policy | Access Policy name, leave null to use auto-created one. | <code>string</code> | ✓ |  |
+| access_levels | Map of access levels in name => [conditions] format. | <code title="map&#40;object&#40;&#123;&#10;  combining_function &#61; string&#10;  conditions &#61; list&#40;object&#40;&#123;&#10;    device_policy &#61; object&#40;&#123;&#10;      require_screen_lock              &#61; bool&#10;      allowed_encryption_statuses      &#61; list&#40;string&#41;&#10;      allowed_device_management_levels &#61; list&#40;string&#41;&#10;      os_constraints &#61; list&#40;object&#40;&#123;&#10;        minimum_version            &#61; string&#10;        os_type                    &#61; string&#10;        require_verified_chrome_os &#61; bool&#10;      &#125;&#41;&#41;&#10;      require_admin_approval &#61; bool&#10;      require_corp_owned     &#61; bool&#10;    &#125;&#41;&#10;    ip_subnetworks         &#61; list&#40;string&#41;&#10;    members                &#61; list&#40;string&#41;&#10;    negate                 &#61; bool&#10;    regions                &#61; list&#40;string&#41;&#10;    required_access_levels &#61; list&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| access_policy_create | Access Policy configuration, fill in to create. Parent is in 'organizations/123456' format. | <code title="object&#40;&#123;&#10;  parent &#61; string&#10;  title  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| service_perimeters_bridge | Bridge service perimeters. | <code title="map&#40;object&#40;&#123;&#10;  spec_resources            &#61; list&#40;string&#41;&#10;  status_resources          &#61; list&#40;string&#41;&#10;  use_explicit_dry_run_spec &#61; bool&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| service_perimeters_regular | Regular service perimeters. | <code title="map&#40;object&#40;&#123;&#10;  spec &#61; object&#40;&#123;&#10;    access_levels       &#61; list&#40;string&#41;&#10;    resources           &#61; list&#40;string&#41;&#10;    restricted_services &#61; list&#40;string&#41;&#10;    egress_policies &#61; list&#40;object&#40;&#123;&#10;      egress_from &#61; object&#40;&#123;&#10;        identity_type &#61; string&#10;        identities    &#61; list&#40;string&#41;&#10;      &#125;&#41;&#10;      egress_to &#61; object&#40;&#123;&#10;        operations &#61; list&#40;object&#40;&#123;&#10;          method_selectors &#61; list&#40;string&#41;&#10;          service_name     &#61; string&#10;        &#125;&#41;&#41;&#10;        resources &#61; list&#40;string&#41;&#10;      &#125;&#41;&#10;    &#125;&#41;&#41;&#10;    ingress_policies &#61; list&#40;object&#40;&#123;&#10;      ingress_from &#61; object&#40;&#123;&#10;        identity_type        &#61; string&#10;        identities           &#61; list&#40;string&#41;&#10;        source_access_levels &#61; list&#40;string&#41;&#10;        source_resources     &#61; list&#40;string&#41;&#10;      &#125;&#41;&#10;      ingress_to &#61; object&#40;&#123;&#10;        operations &#61; list&#40;object&#40;&#123;&#10;          method_selectors &#61; list&#40;string&#41;&#10;          service_name     &#61; string&#10;        &#125;&#41;&#41;&#10;        resources &#61; list&#40;string&#41;&#10;      &#125;&#41;&#10;    &#125;&#41;&#41;&#10;    vpc_accessible_services &#61; object&#40;&#123;&#10;      allowed_services   &#61; list&#40;string&#41;&#10;      enable_restriction &#61; bool&#10;    &#125;&#41;&#10;  &#125;&#41;&#10;  status &#61; object&#40;&#123;&#10;    access_levels       &#61; list&#40;string&#41;&#10;    resources           &#61; list&#40;string&#41;&#10;    restricted_services &#61; list&#40;string&#41;&#10;    egress_policies &#61; list&#40;object&#40;&#123;&#10;      egress_from &#61; object&#40;&#123;&#10;        identity_type &#61; string&#10;        identities    &#61; list&#40;string&#41;&#10;      &#125;&#41;&#10;      egress_to &#61; object&#40;&#123;&#10;        operations &#61; list&#40;object&#40;&#123;&#10;          method_selectors &#61; list&#40;string&#41;&#10;          service_name     &#61; string&#10;        &#125;&#41;&#41;&#10;        resources &#61; list&#40;string&#41;&#10;      &#125;&#41;&#10;    &#125;&#41;&#41;&#10;    ingress_policies &#61; list&#40;object&#40;&#123;&#10;      ingress_from &#61; object&#40;&#123;&#10;        identity_type        &#61; string&#10;        identities           &#61; list&#40;string&#41;&#10;        source_access_levels &#61; list&#40;string&#41;&#10;        source_resources     &#61; list&#40;string&#41;&#10;      &#125;&#41;&#10;      ingress_to &#61; object&#40;&#123;&#10;        operations &#61; list&#40;object&#40;&#123;&#10;          method_selectors &#61; list&#40;string&#41;&#10;          service_name     &#61; string&#10;        &#125;&#41;&#41;&#10;        resources &#61; list&#40;string&#41;&#10;      &#125;&#41;&#10;    &#125;&#41;&#41;&#10;    vpc_accessible_services &#61; object&#40;&#123;&#10;      allowed_services   &#61; list&#40;string&#41;&#10;      enable_restriction &#61; bool&#10;    &#125;&#41;&#10;  &#125;&#41;&#10;  use_explicit_dry_run_spec &#61; bool&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| access_levels | Access Levels. |  |
-| access_policy_name | Access Policy resource |  |
-| organization_id | Organization id dependent on module resources. |  |
-| perimeters_bridge | VPC-SC bridge perimeter resources. |  |
-| perimeters_standard | VPC-SC standard perimeter resources. |  |
+| access_level_names | Access level resources. |  |
+| access_levels | Access level resources. |  |
+| access_policy | Access policy resource, if autocreated. |  |
+| access_policy_name | Access policy name. |  |
+| service_perimeters_bridge | Bridge service perimeter resources. |  |
+| service_perimeters_regular | Regular service perimeter resources. |  |
+
 <!-- END TFDOC -->
+
+
+

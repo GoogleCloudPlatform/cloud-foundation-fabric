@@ -52,16 +52,18 @@ Run the `subscription_pull` command until it returns nothing, then run the follo
 - the `tag_show` command to verify that the function output matches the resource state
 
 
+
 <!-- BEGIN TFDOC -->
+
 ## Variables
 
 | name | description | type | required | default |
-|---|---|:---: |:---:|:---:|
-| project_id | Project id that references existing project. | <code title="">string</code> | ✓ |  |
-| *bundle_path* | Path used to write the intermediate Cloud Function code bundle. | <code title="">string</code> |  | <code title="">./bundle.zip</code> |
-| *name* | Arbitrary string used to name created resources. | <code title="">string</code> |  | <code title="">asset-feed</code> |
-| *project_create* | Create project instead of using an existing one. | <code title="">bool</code> |  | <code title="">false</code> |
-| *region* | Compute region used in the example. | <code title="">string</code> |  | <code title="">europe-west1</code> |
+|---|---|:---:|:---:|:---:|
+| project_id | Project id that references existing project. | <code>string</code> | ✓ |  |
+| bundle_path | Path used to write the intermediate Cloud Function code bundle. | <code>string</code> |  | <code>&#34;.&#47;bundle.zip&#34;</code> |
+| name | Arbitrary string used to name created resources. | <code>string</code> |  | <code>&#34;asset-feed&#34;</code> |
+| project_create | Create project instead of using an existing one. | <code>bool</code> |  | <code>false</code> |
+| region | Compute region used in the example. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
 
 ## Outputs
 
@@ -71,5 +73,7 @@ Run the `subscription_pull` command until it returns nothing, then run the follo
 | subscription_pull | Subscription pull command. |  |
 | tag_add | Instance add tag command. |  |
 | tag_show | Instance add tag command. |  |
+
 <!-- END TFDOC -->
+
 

@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,22 @@ variable "initial_node_count" {
   description = "Initial number of nodes for the pool."
   type        = number
   default     = 1
+}
+
+variable "kubelet_config" {
+  description = "Kubelet configuration."
+  type = object({
+    cpu_cfs_quota        = string
+    cpu_cfs_quota_period = string
+    cpu_manager_policy   = string
+  })
+  default = null
+}
+
+variable "linux_node_config_sysctls" {
+  description = "Linux node configuration."
+  type        = map(string)
+  default     = null
 }
 
 variable "location" {
