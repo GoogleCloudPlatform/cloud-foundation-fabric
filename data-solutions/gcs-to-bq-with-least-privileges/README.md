@@ -1,12 +1,12 @@
 # Cloud Storage to Bigquery with Cloud Dataflow with least privileges
 
-This example creates the infrastructure needed to run a [Cloud Dataflow](https://cloud.google.com/dataflow) pipeline to import data from [GCS](https://cloud.google.com/storage) to [Bigquery](https://cloud.google.com/bigquery). The example will create different Service Account with least privileges on resources. To run the pipeline, users listed in `data_eng_users` or `data_eng_groups` can impersonate all those Service Accounts.
+This example creates the infrastructure needed to run a [Cloud Dataflow](https://cloud.google.com/dataflow) pipeline to import data from [GCS](https://cloud.google.com/storage) to [Bigquery](https://cloud.google.com/bigquery). The example will create different service accounts with least privileges on resources. To run the pipeline, users listed in `data_eng_users` or `data_eng_groups` can impersonate all those service accounts.
 
 The solution will use:
  - internal IPs for GCE and Dataflow instances
- - Cloud NAT to let resources comunicate to the Internet, run system updates, and install packages
- - relay on Google Service Account impersonification to better split roles
- - Service Account with least privilege on each resources
+ - Cloud NAT to let resources egress to the Internet, to run system updates and install packages
+ - rely on impersonation to avoid the use of service account keys
+ - service accounts with least privilege on each resources
  
 The example is designed to match real-world use cases with a minimum amount of resources. It can be used as a starting point for more complex scenarios.
 
