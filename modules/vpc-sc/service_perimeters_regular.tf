@@ -301,9 +301,9 @@ resource "google_access_context_manager_service_perimeter" "regular" {
       # end vpc_accessible_services
     }
   }
-  lifecycle {
-    ignore_changes = [spec[0].resources, status[0].resources]
-  }
+  # lifecycle {
+  #   ignore_changes = [spec[0].resources, status[0].resources]
+  # }
   depends_on = [
     google_access_context_manager_access_policy.default,
     google_access_context_manager_access_level.basic

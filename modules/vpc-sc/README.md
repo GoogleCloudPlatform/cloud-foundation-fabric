@@ -76,7 +76,9 @@ The regular perimeters variable exposes all the complexity of the underlying res
 
 If you need to refer to access levels created by the same module in regular service perimeters, simply use the module's outputs in the provided variables. The example below shows how to do this in practice.
 
+/*
 Resources for both perimeters have a `lifecycle` block that ignores changes to `spec` and `status` resources (projects), to allow using the additive resource `google_access_context_manager_service_perimeter_resource` at project creation. If this is not needed, the `lifecycle` blocks can be safely commented in the code.
+*/
 
 #### Bridge type
 
