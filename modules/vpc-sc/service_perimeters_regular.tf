@@ -30,7 +30,7 @@ resource "google_access_context_manager_service_perimeter" "regular" {
     content {
       access_levels = (
         each.value.spec.access_levels == null ? null : [
-          for k, v in each.value.spec.access_levels :
+          for k in each.value.spec.access_levels :
           try(google_access_context_manager_access_level.basic[k].id, k)
         ]
       )
@@ -174,7 +174,7 @@ resource "google_access_context_manager_service_perimeter" "regular" {
     content {
       access_levels = (
         each.value.status.access_levels == null ? null : [
-          for k, v in each.value.status.access_levels :
+          for k in each.value.status.access_levels :
           try(google_access_context_manager_access_level.basic[k].id, k)
         ]
       )
