@@ -103,7 +103,7 @@ module "test" {
     r2 = {
       spec = null
       status = {
-        access_levels       = [module.test.access_level_names["a1"]]
+        access_levels       = [module.test.access_level_names["a1"], "a2"]
         resources           = ["projects/222220", "projects/222221"]
         restricted_services = ["storage.googleapis.com"]
         egress_policies = [
