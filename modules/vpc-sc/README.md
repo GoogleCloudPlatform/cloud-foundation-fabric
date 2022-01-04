@@ -46,7 +46,7 @@ module "test" {
     a1 = {
       combining_function = null
       conditions = [{
-        members       = ["user:ludomagno@google.com"],
+        members       = ["user:user1@example.com"],
         device_policy = null, ip_subnetworks = null, negate = null,
         regions       = null, required_access_levels = null
       }]
@@ -74,7 +74,7 @@ Bridge and regular service perimeters use two separate variables, as bridge peri
 
 The regular perimeters variable exposes all the complexity of the underlying resource, use [its documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/access_context_manager_service_perimeter) as a reference about the possible values and configurations.
 
-If you need to refer to access levels created by the same module in regular service perimeters, simply use the module's outputs in the provided variables. The example below shows how to do this in practice.
+If you need to refer to access levels created by the same module in regular service perimeters, you can either use the module's outputs in the provided variables, or the key used to identify the relevant access level. The example below shows how to do this in practice.
 
 /*
 Resources for both perimeters have a `lifecycle` block that ignores changes to `spec` and `status` resources (projects), to allow using the additive resource `google_access_context_manager_service_perimeter_resource` at project creation. If this is not needed, the `lifecycle` blocks can be safely commented in the code.
@@ -112,7 +112,15 @@ module "test" {
     a1 = {
       combining_function = null
       conditions = [{
-        members       = ["user:ludomagno@google.com"],
+        members       = ["user:user1@example.com"],
+        device_policy = null, ip_subnetworks = null, negate = null,
+        regions       = null, required_access_levels = null
+      }]
+    }
+    a2 = {
+      combining_function = null
+      conditions = [{
+        members       = ["user:user2@example.com"],
         device_policy = null, ip_subnetworks = null, negate = null,
         regions       = null, required_access_levels = null
       }]
@@ -122,7 +130,7 @@ module "test" {
     r1 = {
       spec = null
       status = {
-        access_levels       = [module.test.access_level_names["a1"]]
+        access_levels       = [module.test.access_level_names["a1"], "a2"]
         resources           = ["projects/11111", "projects/111111"]
         restricted_services = ["storage.googleapis.com"]
         egress_policies     = null

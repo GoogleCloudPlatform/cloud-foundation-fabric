@@ -28,7 +28,12 @@ resource "google_access_context_manager_service_perimeter" "regular" {
   dynamic "spec" {
     for_each = each.value.spec == null ? {} : { 1 = 1 }
     content {
-      access_levels       = each.value.spec.access_levels
+      access_levels = (
+        each.value.spec.access_levels == null ? null : [
+          for k, v in each.value.spec.access_levels :
+          try(google_access_context_manager_access_level.basic[k].id, k)
+        ]
+      )
       resources           = each.value.spec.resources
       restricted_services = each.value.spec.restricted_services
       # begin egress_policies
@@ -167,7 +172,12 @@ resource "google_access_context_manager_service_perimeter" "regular" {
   dynamic "status" {
     for_each = each.value.status == null ? {} : { 1 = 1 }
     content {
-      access_levels       = each.value.status.access_levels
+      access_levels = (
+        each.value.status.access_levels == null ? null : [
+          for k, v in each.value.status.access_levels :
+          try(google_access_context_manager_access_level.basic[k].id, k)
+        ]
+      )
       resources           = each.value.status.resources
       restricted_services = each.value.status.restricted_services
       # begin egress_policies
