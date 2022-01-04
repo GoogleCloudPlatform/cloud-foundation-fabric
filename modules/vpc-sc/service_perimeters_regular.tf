@@ -65,14 +65,13 @@ resource "google_access_context_manager_service_perimeter" "regular" {
                   ? []
                   : policy.key.egress_to.operations
                 )
-                iterator = operation
                 content {
-                  service_name = operation.service_name
+                  service_name = operations.key.service_name
                   dynamic "method_selectors" {
                     for_each = toset(
-                      operation.key.method_selectors == null
+                      operations.key.method_selectors == null
                       ? []
-                      : operation.key.method_selectors
+                      : operations.key.method_selectors
                     )
                     content {
                       method = method_selectors.key
@@ -137,14 +136,13 @@ resource "google_access_context_manager_service_perimeter" "regular" {
                   ? []
                   : policy.key.ingress_to.operations
                 )
-                iterator = operation
                 content {
-                  service_name = operation.service_name
+                  service_name = operations.key.service_name
                   dynamic "method_selectors" {
                     for_each = toset(
-                      operation.key.method_selectors == null
+                      operations.key.method_selectors == null
                       ? []
-                      : operation.key.method_selectors
+                      : operations.key.method_selectors
                     )
                     content {
                       method = method_selectors.key
