@@ -144,15 +144,12 @@ module "test" {
     }
   }
 }
-# tftest:modules=1:resources=2
+# tftest:modules=1:resources=3
 ```
 
 ## TODO
 
 - [ ] implement support for the  `google_access_context_manager_gcp_user_access_binding` resource
-
-
-
 
 <!-- BEGIN TFDOC -->
 
