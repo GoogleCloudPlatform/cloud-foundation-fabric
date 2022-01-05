@@ -52,7 +52,10 @@ variable "m4ce_ssh_public_key" {
   type        = string
 }
 
-variable "vcenter_password" {}
+variable "vcenter_password" {
+  description = "VCenter user password"
+  type        = string
+}
 
 
 variable "m4ce_connector_ovf_url" {
