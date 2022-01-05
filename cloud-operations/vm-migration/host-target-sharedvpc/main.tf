@@ -13,7 +13,7 @@
 # limitations under the License.
 
 module "m4ce-host-project" {
-  source          = "../../modules/project"
+  source          = "../../../modules/project"
   billing_account = var.billing_account_id
   name            = var.m4ce_project_name
   parent          = var.m4ce_project_root
@@ -39,7 +39,7 @@ module "m4ce-host-project" {
 }
 
 module "m4ce-service-account" {
-  source       = "../../modules/iam-service-account"
+  source       = "../../../modules/iam-service-account"
   project_id   = module.m4ce-host-project.project_id
   name         = "gcp-m4ce-sa"
   generate_key = true
@@ -48,7 +48,7 @@ module "m4ce-service-account" {
 module "m4ce-target-projects" {
 
   for_each       = toset(var.m4ce_target_projects)
-  source         = "../../modules/project"
+  source         = "../../../modules/project"
   name           = each.key
   project_create = false
 
@@ -62,7 +62,16 @@ module "m4ce-target-projects" {
 
   iam_additive = {
     "roles/resourcemanager.projectIamAdmin" = var.m4ce_admin_users,
-    "roles/compute.viewer"                  = var.m4ce_admin_users,
     "roles/iam.serviceAccountUser"          = var.m4ce_admin_users
+  }
+}
+
+module "sharedvpc_host_project" {
+  source         = "../../../modules/project"
+  name           = var.sharedvpc_host_project_name
+  project_create = false
+
+  iam_additive = {
+    "roles/compute.viewer" = var.m4ce_admin_users,
   }
 }
