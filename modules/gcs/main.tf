@@ -18,7 +18,7 @@ locals {
   prefix = (
     var.prefix == null || var.prefix == "" # keep "" for backward compatibility
     ? ""
-    : join("-", [var.prefix, lower(var.location), ""])
+    : "${var.prefix}-"
   )
   notification = try(var.notification_config.enabled, false)
 }

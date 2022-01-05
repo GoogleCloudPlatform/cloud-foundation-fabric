@@ -19,18 +19,19 @@ variable "access_levels" {
   type = map(object({
     combining_function = string
     conditions = list(object({
-      device_policy = object({
-        require_screen_lock              = bool
-        allowed_encryption_statuses      = list(string)
-        allowed_device_management_levels = list(string)
-        os_constraints = list(object({
-          minimum_version            = string
-          os_type                    = string
-          require_verified_chrome_os = bool
-        }))
-        require_admin_approval = bool
-        require_corp_owned     = bool
-      })
+      # disabled to reduce var surface, uncomment here and in resource to enable
+      # device_policy = object({
+      #   require_screen_lock              = bool
+      #   allowed_encryption_statuses      = list(string)
+      #   allowed_device_management_levels = list(string)
+      #   os_constraints = list(object({
+      #     minimum_version            = string
+      #     os_type                    = string
+      #     require_verified_chrome_os = bool
+      #   }))
+      #   require_admin_approval = bool
+      #   require_corp_owned     = bool
+      # })
       ip_subnetworks         = list(string)
       members                = list(string)
       negate                 = bool

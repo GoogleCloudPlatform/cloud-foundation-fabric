@@ -46,21 +46,18 @@ module "test" {
     a1 = {
       combining_function = null
       conditions = [{
-        members       = ["user:ludomagno@google.com"],
-        device_policy = null, ip_subnetworks = null, negate = null,
-        regions       = null, required_access_levels = null
+        members = ["user:user1@example.com"], ip_subnetworks = null,
+        negate = null, regions = null,  required_access_levels = null
       }]
     }
     a2 = {
       combining_function = "OR"
       conditions = [{
-        regions       = ["IT", "FR"],
-        device_policy = null, ip_subnetworks = null, members = null,
-        negate        = null, required_access_levels = null
+        regions       = ["IT", "FR"], ip_subnetworks = null,
+        members = null, negate = null, required_access_levels = null
       },{
-        ip_subnetworks = ["101.101.101.0/24"],
-        device_policy  = null, members = null, negate = null,
-        regions        = null, required_access_levels = null
+        ip_subnetworks = ["101.101.101.0/24"], members = null,
+        negate = null, regions = null, required_access_levels = null
       }]
     }
   }
@@ -74,7 +71,7 @@ Bridge and regular service perimeters use two separate variables, as bridge peri
 
 The regular perimeters variable exposes all the complexity of the underlying resource, use [its documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/access_context_manager_service_perimeter) as a reference about the possible values and configurations.
 
-If you need to refer to access levels created by the same module in regular service perimeters, simply use the module's outputs in the provided variables. The example below shows how to do this in practice.
+If you need to refer to access levels created by the same module in regular service perimeters, you can either use the module's outputs in the provided variables, or the key used to identify the relevant access level. The example below shows how to do this in practice.
 
 /*
 Resources for both perimeters have a `lifecycle` block that ignores changes to `spec` and `status` resources (projects), to allow using the additive resource `google_access_context_manager_service_perimeter_resource` at project creation. If this is not needed, the `lifecycle` blocks can be safely commented in the code.
@@ -112,9 +109,15 @@ module "test" {
     a1 = {
       combining_function = null
       conditions = [{
-        members       = ["user:ludomagno@google.com"],
-        device_policy = null, ip_subnetworks = null, negate = null,
-        regions       = null, required_access_levels = null
+        members       = ["user:user1@example.com"], ip_subnetworks = null,
+        negate = null, regions = null, required_access_levels = null
+      }]
+    }
+    a2 = {
+      combining_function = null
+      conditions = [{
+        members       = ["user:user2@example.com"], ip_subnetworks = null,
+        negate = null, regions       = null, required_access_levels = null
       }]
     }
   }
@@ -122,7 +125,7 @@ module "test" {
     r1 = {
       spec = null
       status = {
-        access_levels       = [module.test.access_level_names["a1"]]
+        access_levels       = [module.test.access_level_names["a1"], "a2"]
         resources           = ["projects/11111", "projects/111111"]
         restricted_services = ["storage.googleapis.com"]
         egress_policies     = null
@@ -136,14 +139,12 @@ module "test" {
     }
   }
 }
-# tftest:modules=1:resources=2
+# tftest:modules=1:resources=3
 ```
 
 ## TODO
 
 - [ ] implement support for the  `google_access_context_manager_gcp_user_access_binding` resource
-
-
 
 
 <!-- BEGIN TFDOC -->
@@ -153,7 +154,7 @@ module "test" {
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | access_policy | Access Policy name, leave null to use auto-created one. | <code>string</code> | ✓ |  |
-| access_levels | Map of access levels in name => [conditions] format. | <code title="map&#40;object&#40;&#123;&#10;  combining_function &#61; string&#10;  conditions &#61; list&#40;object&#40;&#123;&#10;    device_policy &#61; object&#40;&#123;&#10;      require_screen_lock              &#61; bool&#10;      allowed_encryption_statuses      &#61; list&#40;string&#41;&#10;      allowed_device_management_levels &#61; list&#40;string&#41;&#10;      os_constraints &#61; list&#40;object&#40;&#123;&#10;        minimum_version            &#61; string&#10;        os_type                    &#61; string&#10;        require_verified_chrome_os &#61; bool&#10;      &#125;&#41;&#41;&#10;      require_admin_approval &#61; bool&#10;      require_corp_owned     &#61; bool&#10;    &#125;&#41;&#10;    ip_subnetworks         &#61; list&#40;string&#41;&#10;    members                &#61; list&#40;string&#41;&#10;    negate                 &#61; bool&#10;    regions                &#61; list&#40;string&#41;&#10;    required_access_levels &#61; list&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| access_levels | Map of access levels in name => [conditions] format. | <code title="map&#40;object&#40;&#123;&#10;  combining_function &#61; string&#10;  conditions &#61; list&#40;object&#40;&#123;&#10;    ip_subnetworks         &#61; list&#40;string&#41;&#10;    members                &#61; list&#40;string&#41;&#10;    negate                 &#61; bool&#10;    regions                &#61; list&#40;string&#41;&#10;    required_access_levels &#61; list&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | access_policy_create | Access Policy configuration, fill in to create. Parent is in 'organizations/123456' format. | <code title="object&#40;&#123;&#10;  parent &#61; string&#10;  title  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | service_perimeters_bridge | Bridge service perimeters. | <code title="map&#40;object&#40;&#123;&#10;  spec_resources            &#61; list&#40;string&#41;&#10;  status_resources          &#61; list&#40;string&#41;&#10;  use_explicit_dry_run_spec &#61; bool&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | service_perimeters_regular | Regular service perimeters. | <code title="map&#40;object&#40;&#123;&#10;  spec &#61; object&#40;&#123;&#10;    access_levels       &#61; list&#40;string&#41;&#10;    resources           &#61; list&#40;string&#41;&#10;    restricted_services &#61; list&#40;string&#41;&#10;    egress_policies &#61; list&#40;object&#40;&#123;&#10;      egress_from &#61; object&#40;&#123;&#10;        identity_type &#61; string&#10;        identities    &#61; list&#40;string&#41;&#10;      &#125;&#41;&#10;      egress_to &#61; object&#40;&#123;&#10;        operations &#61; list&#40;object&#40;&#123;&#10;          method_selectors &#61; list&#40;string&#41;&#10;          service_name     &#61; string&#10;        &#125;&#41;&#41;&#10;        resources &#61; list&#40;string&#41;&#10;      &#125;&#41;&#10;    &#125;&#41;&#41;&#10;    ingress_policies &#61; list&#40;object&#40;&#123;&#10;      ingress_from &#61; object&#40;&#123;&#10;        identity_type        &#61; string&#10;        identities           &#61; list&#40;string&#41;&#10;        source_access_levels &#61; list&#40;string&#41;&#10;        source_resources     &#61; list&#40;string&#41;&#10;      &#125;&#41;&#10;      ingress_to &#61; object&#40;&#123;&#10;        operations &#61; list&#40;object&#40;&#123;&#10;          method_selectors &#61; list&#40;string&#41;&#10;          service_name     &#61; string&#10;        &#125;&#41;&#41;&#10;        resources &#61; list&#40;string&#41;&#10;      &#125;&#41;&#10;    &#125;&#41;&#41;&#10;    vpc_accessible_services &#61; object&#40;&#123;&#10;      allowed_services   &#61; list&#40;string&#41;&#10;      enable_restriction &#61; bool&#10;    &#125;&#41;&#10;  &#125;&#41;&#10;  status &#61; object&#40;&#123;&#10;    access_levels       &#61; list&#40;string&#41;&#10;    resources           &#61; list&#40;string&#41;&#10;    restricted_services &#61; list&#40;string&#41;&#10;    egress_policies &#61; list&#40;object&#40;&#123;&#10;      egress_from &#61; object&#40;&#123;&#10;        identity_type &#61; string&#10;        identities    &#61; list&#40;string&#41;&#10;      &#125;&#41;&#10;      egress_to &#61; object&#40;&#123;&#10;        operations &#61; list&#40;object&#40;&#123;&#10;          method_selectors &#61; list&#40;string&#41;&#10;          service_name     &#61; string&#10;        &#125;&#41;&#41;&#10;        resources &#61; list&#40;string&#41;&#10;      &#125;&#41;&#10;    &#125;&#41;&#41;&#10;    ingress_policies &#61; list&#40;object&#40;&#123;&#10;      ingress_from &#61; object&#40;&#123;&#10;        identity_type        &#61; string&#10;        identities           &#61; list&#40;string&#41;&#10;        source_access_levels &#61; list&#40;string&#41;&#10;        source_resources     &#61; list&#40;string&#41;&#10;      &#125;&#41;&#10;      ingress_to &#61; object&#40;&#123;&#10;        operations &#61; list&#40;object&#40;&#123;&#10;          method_selectors &#61; list&#40;string&#41;&#10;          service_name     &#61; string&#10;        &#125;&#41;&#41;&#10;        resources &#61; list&#40;string&#41;&#10;      &#125;&#41;&#10;    &#125;&#41;&#41;&#10;    vpc_accessible_services &#61; object&#40;&#123;&#10;      allowed_services   &#61; list&#40;string&#41;&#10;      enable_restriction &#61; bool&#10;    &#125;&#41;&#10;  &#125;&#41;&#10;  use_explicit_dry_run_spec &#61; bool&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -170,6 +171,7 @@ module "test" {
 | service_perimeters_regular | Regular service perimeter resources. |  |
 
 <!-- END TFDOC -->
+
 
 
 

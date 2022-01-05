@@ -4,7 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-## [1.0.1] - 2022-01-03
+## [11.0.0] - 2022-01-04
+
+- **incompatible change** remove location from `gcs` bucket names
+- add support for interpolating access levels based on keys to the `vpc-sc` module
+
+## [10.0.1] - 2022-01-03
 
 - remove lifecycle block from vpc sc perimeter resources
 
@@ -408,7 +413,8 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v10.0.1...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v11.0.0...HEAD
+[11.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v10.0.1...v11.0.0
 [10.0.1]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v10.0.0...v10.0.1
 [10.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v9.0.3...v10.0.0
 [9.0.3]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v9.0.2...v9.0.3
