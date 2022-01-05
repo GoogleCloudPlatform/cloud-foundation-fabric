@@ -48,7 +48,7 @@ variable "m4ce_appliance_properties" {
 }
 
 variable "m4ce_ssh_public_key" {
-  description = "Filesystem Path to the public key for the SSH login"
+  description = "Filesystem path to the SSH public key for the migrate connector login"
   type        = string
 }
 
