@@ -33,30 +33,31 @@ resource "google_access_context_manager_access_level" "basic" {
       )
       iterator = condition
       content {
-        dynamic "device_policy" {
-          for_each = toset(
-            condition.key.device_policy == null ? [] : [condition.key.device_policy]
-          )
-          iterator = device_policy
-          content {
-            dynamic "os_constraints" {
-              for_each = toset(
-                device_policy.key.os_constraints == null ? [] : device_policy.key.os_constraints
-              )
-              iterator = os_constraint
-              content {
-                minimum_version            = os_constraint.key.minimum_version
-                os_type                    = os_constraint.key.os_type
-                require_verified_chrome_os = os_constraint.key.require_verified_chrome_os
-              }
-            }
-            allowed_encryption_statuses      = device_policy.key.allowed_encryption_statuses
-            allowed_device_management_levels = device_policy.key.allowed_device_management_levels
-            require_admin_approval           = device_policy.key.require_admin_approval
-            require_corp_owned               = device_policy.key.require_corp_owned
-            require_screen_lock              = device_policy.key.require_screen_lock
-          }
-        }
+        # uncomment here and in the variable type to enable
+        # dynamic "device_policy" {
+        #   for_each = toset(
+        #     condition.key.device_policy == null ? [] : [condition.key.device_policy]
+        #   )
+        #   iterator = device_policy
+        #   content {
+        #     dynamic "os_constraints" {
+        #       for_each = toset(
+        #         device_policy.key.os_constraints == null ? [] : device_policy.key.os_constraints
+        #       )
+        #       iterator = os_constraint
+        #       content {
+        #         minimum_version            = os_constraint.key.minimum_version
+        #         os_type                    = os_constraint.key.os_type
+        #         require_verified_chrome_os = os_constraint.key.require_verified_chrome_os
+        #       }
+        #     }
+        #     allowed_encryption_statuses      = device_policy.key.allowed_encryption_statuses
+        #     allowed_device_management_levels = device_policy.key.allowed_device_management_levels
+        #     require_admin_approval           = device_policy.key.require_admin_approval
+        #     require_corp_owned               = device_policy.key.require_corp_owned
+        #     require_screen_lock              = device_policy.key.require_screen_lock
+        #   }
+        # }
         ip_subnetworks = (
           condition.key.ip_subnetworks == null ? [] : condition.key.ip_subnetworks
         )
