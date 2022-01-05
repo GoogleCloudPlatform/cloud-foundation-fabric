@@ -1,6 +1,6 @@
 # M4CE(v5) - ESXi Connector
 
-This example deploys the virtual machine and the security prerequisites to run the Migrate for Compute Engine (v5) [connector](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/migrate-connector) on VMWare ESXi.
+This example deploys a virtual machine from an OVA image and the security prerequisites to run the Migrate for Compute Engine (v5) [connector](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/migrate-connector) on VMWare ESXi.
 
 The example is designed to deploy the M4CE (v5) connector on and existing VMWare environment. The [network configuration](https://cloud.google.com/migrate/compute-engine/docs/5.0/concepts/architecture#migration_architecture) required to allow the communication of the migrate connetor to the GCP API is not included in this example.
 
@@ -21,10 +21,10 @@ This sample creates several distinct groups of resources:
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| vsphere_environment | Billing account id used as default for new projects. | <code>string</code> | ✓ |  |
-| m4ce_appliance_properties | Root node for the m4ce host project. Must be of the form folders/folder_id or organizations/org_id. | <code>string</code> | ✓ |  |
-| m4ce_ssh_public_key | Local path to [SSH public key](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/migrate-connector#step-2) (eg. ~/.ssh/key.pub) | <code>string</code> | ✓ |  |
-| vcenter_password | Vcenter user password.  | <code>string</code> | ✓ |  |
+| vsphere_environment | VMware VSphere environment and connection parameters | <code title="object&#40;&#123;&#10;  health_check      &#61; string&#10;  initial_delay_sec &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| m4ce_appliance_properties | M4CE migrate connector OVA configuration parameters. | <code>string</code> | ✓ |  |
+| m4ce_ssh_public_key | File system path to the [SSH public key](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/migrate-connector#step-2) for the migrate connector login (eg. ~/.ssh/key.pub) | <code>string</code> | ✓ |  |
+| vcenter_password | VCenter user password.  | <code>string</code> | ✓ |  |
 | m4ce_connector_ovf_url | URL to public M4CE connector OVA image repository.  | <code>string</code> |  | <code>&#34;https://storage.googleapis.com/vmmigration-public-artifacts/migrate-connector-2-0-1663.ova &#34;</code> |
 
 ## Manual Steps
