@@ -36,6 +36,7 @@ resource "google_access_context_manager_service_perimeter" "bridge" {
   # }
   depends_on = [
     google_access_context_manager_access_policy.default,
-    google_access_context_manager_access_level.basic
+    google_access_context_manager_access_level.basic,
+    google_access_context_manager_service_perimeter.regular
   ]
 }
