@@ -53,5 +53,5 @@ This [example](./onprem-sa-key-management) shows how to manage IAM Service Accou
 <br clear="left">
 
 ## Migrate for Compute Engine (v5)
-<a href="./vm-migration/host-target-projects/diagram.png" title="Packer image builder"><img src="./packer-image-builder/diagram.png" align="left" width="280px"></a> This set of [examples](./vm-migration) show how to deploy Migrate for Compute Engine (v5) on top of existing Cloud Foundations on different scenarios. An example on how to deploy M4CE (v5) migrate connetor on ESXi is also part of the example.
+<a href="./vm-migration" title="Packer image builder"><img src="./vm-migration/host-target-projects/diagram.png" align="left" width="280px"></a> This set of [examples](./vm-migration) show how to deploy Migrate for Compute Engine (v5) on top of existing Cloud Foundations on different scenarios. An example on how to deploy M4CE (v5) migrate connetor on ESXi is also part of the example.
 <br clear="left">
