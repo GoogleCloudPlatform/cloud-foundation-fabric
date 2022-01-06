@@ -87,8 +87,8 @@ resource "google_compute_url_map" "url_map" {
   dynamic "path_matcher" {
     for_each = try(var.url_map_configs.path_matcher, null) == null ? [] : var.url_map_configs.path_matcher
     content {
-      name            = try(path_matcher.value.name, null)
-      description     = try(path_matcher.value.description, null)
+      name        = try(path_matcher.value.name, null)
+      description = try(path_matcher.value.description, null)
       default_service = try(
         google_compute_backend_bucket.bucket[var.url_map_configs.default_service].id,
         google_compute_backend_service.group[var.url_map_configs.default_service].id,
@@ -125,7 +125,7 @@ resource "google_compute_url_map" "url_map" {
       dynamic "path_rule" {
         for_each = try(path_matcher.value.path_rule, null) == null ? [] : path_matcher.value.path_rule
         content {
-          paths   = try(path_rule.value.paths, null)
+          paths = try(path_rule.value.paths, null)
           service = try(
             google_compute_backend_bucket.bucket[path_rule.value.service].id,
             google_compute_backend_service.group[path_rule.value.service].id,
@@ -233,7 +233,7 @@ resource "google_compute_url_map" "url_map" {
                 for_each = try(route_action.value.weighted_backend_services, null) == null ? [] : route_action.value.weighted_backend_services
                 iterator = weighted
                 content {
-                  weight          = try(weighted.value.weigth, null)
+                  weight = try(weighted.value.weigth, null)
                   backend_service = try(
                     google_compute_backend_bucket.bucket[weighted.value.backend_service].id,
                     google_compute_backend_service.group[weighted.value.backend_service].id,
@@ -289,7 +289,7 @@ resource "google_compute_url_map" "url_map" {
         for_each = try(path_matcher.value.route_rules, null) == null ? [] : path_matcher.value.route_rules
         content {
           priority = try(route_rules.value.priority, null)
-          service  = try(
+          service = try(
             google_compute_backend_bucket.bucket[route_rules.value.service].id,
             google_compute_backend_service.group[route_rules.value.service].id,
             route_rules.value.service,
@@ -480,7 +480,7 @@ resource "google_compute_url_map" "url_map" {
                 for_each = try(route_action.value.weighted_backend_services, null) == null ? [] : [route_action.value.url_rewrite]
                 iterator = weighted
                 content {
-                  weight          = try(weighted.value.weigth, null)
+                  weight = try(weighted.value.weigth, null)
                   backend_service = try(
                     google_compute_backend_bucket.bucket[weighted.value.backend_service].id,
                     google_compute_backend_service.group[weighted.value.backend_service].id,
@@ -645,7 +645,7 @@ resource "google_compute_url_map" "url_map" {
             for_each = try(default_route_action.value.weighted_backend_services, null) == null ? [] : default_route_action.value.weighted_backend_services
             iterator = weighted
             content {
-              weight          = try(weighted.value.weigth, null)
+              weight = try(weighted.value.weigth, null)
               backend_service = try(
                 google_compute_backend_bucket.bucket[weighted.value.backend_service].id,
                 google_compute_backend_service.group[weighted.value.backend_service].id,
@@ -692,7 +692,7 @@ resource "google_compute_url_map" "url_map" {
       description = try(test.value.description, null)
       host        = try(test.value.host, null)
       path        = try(test.value.path, null)
-      service     = try(
+      service = try(
         google_compute_backend_bucket.bucket[test.value.service].id,
         google_compute_backend_service.group[test.value.service].id,
         test.value.service,
@@ -813,7 +813,7 @@ resource "google_compute_url_map" "url_map" {
         for_each = try(default_route_action.value.weighted_backend_services, null) == null ? [] : default_route_action.value.weighted_backend_services
         iterator = weighted
         content {
-          weight          = try(weighted.value.weigth, null)
+          weight = try(weighted.value.weigth, null)
           backend_service = try(
             google_compute_backend_bucket.bucket[weighted.value.backend_service].id,
             google_compute_backend_service.group[weighted.value.backend_service].id,
