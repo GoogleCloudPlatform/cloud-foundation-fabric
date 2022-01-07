@@ -14,6 +14,24 @@
  * limitations under the License.
  */
 
+variable "devices_blocked" {
+  description = "Variable to setup devices status. blocked=false then devices are active"
+  type = boolean
+  default = false
+}
+
+variable "devices_certificates_format" {
+  description = "certificates format. Possible values are RSA_PEM, RSA_X509_PEM, ES256_PEM, and ES256_X509_PEM"
+  type = string
+  default = "RSA_X509_PEM"
+}
+
+variable "devices_gw_config" {
+  description = "Indicates whether the device is a gateway. Default value is NON_GATEWAY. Possible values are GATEWAY and NON_GATEWAY"
+  type        = string
+  default     = "NON_GATEWAY"
+}
+
 variable "devices_yaml_file" {
   description = "yaml file name including Devices map to be registered in the IoT Registry in the form DEVICE_ID: DEVICE_CERTIFICATE"
   type        = string
@@ -29,9 +47,27 @@ variable "extra_telemetry_pub_sub_topic_ids" {
   default = []
 }
 
+variable "log_level" {
+  description = "IoT Registry Log level"
+  type = string
+  default = "INFO"
+}
+
 variable "project_id" {
    description = "Project were resources will be deployed"
   type = string
+}
+
+variable "protocol_http" {
+  description = "http protocol activation. HTTP_ENABLED or HTTP_DISABLED"
+  type = string
+  default = "HTTP_ENABLED"
+}
+
+variable "protocol_mqtt" {
+  description = "Matt protocol activation. MQTT_ENABLED or MQTT_DISABLED"
+  type = string
+  default = "MQTT_ENABLED"
 }
 
 variable "region" {

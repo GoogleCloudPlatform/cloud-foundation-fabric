@@ -43,14 +43,14 @@ resource "google_cloudiot_registry" "test-registry" {
   }
 
   mqtt_config = {
-    mqtt_enabled_state = "MQTT_ENABLED"
+    mqtt_enabled_state = var.protocol_mqtt
   }
 
   http_config = {
-    http_enabled_state = "HTTP_ENABLED"
+    http_enabled_state = var.protocol_http
   }
 
-  log_level = "INFO"
+  log_level = var.log_level
 
 }
 
@@ -66,20 +66,16 @@ resource "google_cloudiot_device" "device" {
 
   credentials {
     public_key {
-        format = "RSA_X509_PEM"
+        format = var.devices_certificates_format
         key = file(each.value)
     }
   }
 
-  blocked = false
+  blocked = var.devices_blocked
 
-  log_level = "INFO"
-
-  metadata = {
-    test_key_1 = "test_value_1"
-  }
+  log_level = var.log_level
 
   gateway_config {
-    gateway_type = "NON_GATEWAY"
+    gateway_type = var.devices_gw_config
   }
 }
