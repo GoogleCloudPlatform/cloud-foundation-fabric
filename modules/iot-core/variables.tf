@@ -16,14 +16,14 @@
 
 variable "devices_blocked" {
   description = "Variable to setup devices status. blocked=false then devices are active"
-  type = boolean
-  default = false
+  type        = boolean
+  default     = false
 }
 
 variable "devices_certificates_format" {
   description = "certificates format. Possible values are RSA_PEM, RSA_X509_PEM, ES256_PEM, and ES256_X509_PEM"
-  type = string
-  default = "RSA_X509_PEM"
+  type        = string
+  default     = "RSA_X509_PEM"
 }
 
 variable "devices_gw_config" {
@@ -41,7 +41,7 @@ variable "devices_yaml_file" {
 variable "extra_telemetry_pub_sub_topic_ids" {
   description = "additional pub sub topics for telemetry messages in adhoc MQTT topics (Device-->GCP) in the format MQTT_TOPIC:PUB_SUB_TOPIC_ID"
   type = list(object({
-    mqtt_topic = string
+    mqtt_topic    = string
     pub_sub_topic = string
   }))
   default = []
@@ -49,44 +49,44 @@ variable "extra_telemetry_pub_sub_topic_ids" {
 
 variable "log_level" {
   description = "IoT Registry Log level"
-  type = string
-  default = "INFO"
+  type        = string
+  default     = "INFO"
 }
 
 variable "project_id" {
-   description = "Project were resources will be deployed"
-  type = string
+  description = "Project were resources will be deployed"
+  type        = string
 }
 
 variable "protocol_http" {
   description = "http protocol activation. HTTP_ENABLED or HTTP_DISABLED"
-  type = string
-  default = "HTTP_ENABLED"
+  type        = string
+  default     = "HTTP_ENABLED"
 }
 
 variable "protocol_mqtt" {
   description = "Matt protocol activation. MQTT_ENABLED or MQTT_DISABLED"
-  type = string
-  default = "MQTT_ENABLED"
+  type        = string
+  default     = "MQTT_ENABLED"
 }
 
 variable "region" {
-   description = "Region were resources will be deployed"
-  type = string
+  description = "Region were resources will be deployed"
+  type        = string
 }
 
 variable "registry_name" {
   description = "Name for the IoT Core Registry"
-  type = string
-  default = "cloudiot-registry"
+  type        = string
+  default     = "cloudiot-registry"
 }
 
 variable "status_pub_sub_topic_id" {
-   description = "pub sub topic for status messages (GCP-->Device)"
-  type = string
+  description = "pub sub topic for status messages (GCP-->Device)"
+  type        = string
 }
 
 variable "telemetry_pub_sub_topic_id" {
-   description = "pub sub topic for telemetry messages (Device-->GCP)"
-  type = string
+  description = "pub sub topic for telemetry messages (Device-->GCP)"
+  type        = string
 }

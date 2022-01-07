@@ -14,17 +14,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
- 
+
 #---------------------------------------------------------
 # Create IoT Core Registry
 #---------------------------------------------------------
 
 resource "google_cloudiot_registry" "registry" {
-  
-  name     = var.registry_name
-  project  = var.project_id
-  region   = var.region
-  
+
+  name    = var.registry_name
+  project = var.project_id
+  region  = var.region
+
   dynamic "event_notification_configs" {
     for_each = var.extra_telemetry_pub_sub_topic_ids
     content {
@@ -60,14 +60,14 @@ resource "google_cloudiot_registry" "registry" {
 #---------------------------------------------------------
 
 resource "google_cloudiot_device" "device" {
-  for_each = try(coalesce(yamldecode(file(var.devices_yaml_file)), {}),{})
+  for_each = try(coalesce(yamldecode(file(var.devices_yaml_file)), {}), {})
   name     = each.key
   registry = google_cloudiot_registry.registry.id
 
   credentials {
     public_key {
-        format = var.devices_certificates_format
-        key = file(each.value)
+      format = var.devices_certificates_format
+      key    = file(each.value)
     }
   }
 
