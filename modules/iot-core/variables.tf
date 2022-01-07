@@ -75,6 +75,12 @@ variable "region" {
   type = string
 }
 
+variable "registry_name" {
+  description = "Name for the IoT Core Registry"
+  type = string
+  default = "cloudiot-registry"
+}
+
 variable "status_pub_sub_topic_id" {
    description = "pub sub topic for status messages (GCP-->Device)"
   type = string
