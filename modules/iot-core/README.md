@@ -21,12 +21,12 @@ And then provision public certificate path in the devices yaml file following th
 
 ```hcl
 module "iot-platform" {
-  source     = "./modules/iot-core"
-  project_id = "my_project_id"
-  region = "europe-west1"
+  source                     = "./modules/iot-core"
+  project_id                 = "my_project_id"
+  region                     = "europe-west1"
   telemetry_pub_sub_topic_id = "telemetry_topic_id"
-  status_pub_sub_topic_id = "status_topic_id"
-  devices_yaml_file = "devices.yaml"
+  status_pub_sub_topic_id    = "status_topic_id"
+  devices_yaml_file          = "devices.yaml"
 }
 # tftest:modules=1:resources=2
 
@@ -40,18 +40,18 @@ If you need to match specific MQTT topics (eg, /temperature) into specific PubSu
 
 ```hcl
 module "iot-platform" {
-  source     = "./modules/iot-core"
-  project_id = "my_project_id"
-  region = "europe-west1"
+  source                     = "./modules/iot-core"
+  project_id                 = "my_project_id"
+  region                     = "europe-west1"
   telemetry_pub_sub_topic_id = "telemetry_topic_id"
-  status_pub_sub_topic_id = "statu_topic_id"
+  status_pub_sub_topic_id    = "statu_topic_id"
   extra_telemetry_pub_sub_topic_ids = [{
-      "mqtt_topic" = "humidity"
-      "pub_sub_topic" =  "hum_topic_id"
-  },
-  {
-      "mqtt_topic" = "temperature"
-      "pub_sub_topic" =  "temp_topic_id"
+    "mqtt_topic"    = "humidity"
+    "pub_sub_topic" = "hum_topic_id"
+    },
+    {
+      "mqtt_topic"    = "temperature"
+      "pub_sub_topic" = "temp_topic_id"
   }]
   devices_yaml_file = "devices.yaml"
 }
@@ -72,12 +72,12 @@ In this example, we will show how to extend the **[Data Foundations Platform](..
 
 ```hcl
 module "iot-platform" {
-  source     = "./modules/iot-core"
-  project_id = "landing-project-id"
-  region = "europe-west1"
+  source                     = "./modules/iot-core"
+  project_id                 = "landing-project-id"
+  region                     = "europe-west1"
   telemetry_pub_sub_topic_id = "landing_pubsub_topic_id"
-  status_pub_sub_topic_id = "status_pubsub_topic_id"
-  devices_yaml_file = "devices.yaml"
+  status_pub_sub_topic_id    = "status_pubsub_topic_id"
+  devices_yaml_file          = "devices.yaml"
 }
 # tftest:modules=1:resources=2
 ```
