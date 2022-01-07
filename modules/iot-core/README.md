@@ -1,16 +1,16 @@
 # Google Cloud IoT Core Module
 
-This module setup Cloud IoT Core Registry, register IoT Devices and configure Pub/Sub topics required in Cloud IoT Core.
+This module sets up Cloud IoT Core Registry, registers IoT Devices and configures Pub/Sub topics required in Cloud IoT Core.
 
-Requires enabling the following APIs:
+To use this module, ensure the following APIs are enabled:
 * pubsub.googleapis.com
 * cloudiot.googleapis.com
 
 ## Simple Example
 
-Basic example showing how to create an IoT Platform (IoT Core), connected to a set of given Pub-Sub topics and provision IoT devices.
+Basic example showing how to create an IoT Platform (IoT Core), connected to a set of given Pub/Sub topics and provision IoT devices.
 
-Before executing, device certificates shall be created, for example using:
+Devices certificates must exist before calling this module. You can generate these certificates using the following command
 
 ```
 openssl req -x509 -newkey rsa:2048 -keyout rsa_private.pem -nodes -out rsa_cert.pem -subj "/CN=unused"
@@ -60,7 +60,7 @@ module "iot-platform" {
 ```
 
 ## Example integrated with Data Foundation Platform
-In this example, we will show how to extend **[Data Foundations Platform](../../data-solutions/data-platform-foundations/)** including IoT Platform as a new source of data. 
+In this example, we will show how to extend the **[Data Foundations Platform](../../data-solutions/data-platform-foundations/)** to include IoT Platform as a new source of data. 
 
 ![Target architecture](./diagram_iot.png)
 
@@ -108,6 +108,7 @@ Or even better, create a new BigQuery table with our IoT sensors data columns an
 | *log_level* | IoT Registry Log level | <code title="">string</code> |  | <code title="">INFO</code> |
 | *protocol_http* | http protocol activation. HTTP_ENABLED or HTTP_DISABLED | <code title="">string</code> |  | <code title="">HTTP_ENABLED</code> |
 | *protocol_mqtt* | Matt protocol activation. MQTT_ENABLED or MQTT_DISABLED | <code title="">string</code> |  | <code title="">MQTT_ENABLED</code> |
+| *registry_name* | Name for the IoT Core Registry | <code title="">string</code> |  | <code title="">cloudiot-registry</code> |
 
 ## Outputs
 
