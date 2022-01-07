@@ -21,7 +21,7 @@ And then provision public certificate path in the devices yaml file following th
 
 ```hcl
 module "iot-platform" {
-  source     = "./iot-core"
+  source     = "./modules/iot-core"
   project_id = "my_project_id"
   region = "europe-west1"
   telemetry_pub_sub_topic_id = "telemetry_topic_id"
@@ -40,7 +40,7 @@ If you need to match specific MQTT topics (eg, /temperature) into specific PubSu
 
 ```hcl
 module "iot-platform" {
-  source     = "./iot-core"
+  source     = "./modules/iot-core"
   project_id = "my_project_id"
   region = "europe-west1"
   telemetry_pub_sub_topic_id = "telemetry_topic_id"
@@ -72,7 +72,7 @@ In this example, we will show how to extend **[Data Foundations Platform](../../
 
 ```hcl
 module "iot-platform" {
-  source     = "./iot-core"
+  source     = "./modules/iot-core"
   project_id = "landing-project-id"
   region = "europe-west1"
   telemetry_pub_sub_topic_id = "landing_pubsub_topic_id"
@@ -81,14 +81,14 @@ module "iot-platform" {
 }
 # tftest:modules=1:resources=2
 ```
-1. After that, we can setup the pipeline "PubSub to BigQuery" showm at **[Pipeline Setup](../../data-solutions/data-platform-foundations/03-pipeline/pubsub_to_bigquery.md)**
+1. After that, we can setup the pipeline "PubSub to BigQuery" shown at **[Pipeline Setup](../../data-solutions/data-platform-foundations/03-pipeline/pubsub_to_bigquery.md)**
 
 1. Finally, instead of testing the pipeline by sending messages to PubSub, we can now test sending telemetry messages from simulated IoT devices to our IoT Platform, for example using the MQTT demo client at https://github.com/googleapis/nodejs-iot/tree/main/samples/mqtt_example . We shall edit the client script cloudiot_mqtt_example_nodejs.js to send messages following the pipeline message format, so they are processed by DataFlow job and inserted in the BigQuery table.
 ```
 const payload = '{"name": "device4", "surname": "NA", "timestamp":"'+Math.floor(Date.now()/1000)+'"}';
 ```
 
-Or even better, create a new BigQuery table with our IoT sensors data and modify the DataFlow job to push data to it.
+Or even better, create a new BigQuery table with our IoT sensors data columns and modify the DataFlow job to push data to it.
 
 
 <!-- BEGIN TFDOC -->
@@ -100,8 +100,14 @@ Or even better, create a new BigQuery table with our IoT sensors data and modify
 | region | Region were resources will be deployed | <code title="">string</code> | ✓ |  |
 | status_pub_sub_topic_id | pub sub topic for status messages (GCP-->Device) | <code title="">string</code> | ✓ |  |
 | telemetry_pub_sub_topic_id | pub sub topic for telemetry messages (Device-->GCP) | <code title="">string</code> | ✓ |  |
+| *devices_blocked* | Variable to setup devices status. blocked=false then devices are active | <code title="">boolean</code> |  | <code title="">false</code> |
+| *devices_certificates_format* | certificates format. Possible values are RSA_PEM, RSA_X509_PEM, ES256_PEM, and ES256_X509_PEM | <code title="">string</code> |  | <code title="">RSA_X509_PEM</code> |
+| *devices_gw_config* | Indicates whether the device is a gateway. Default value is NON_GATEWAY. Possible values are GATEWAY and NON_GATEWAY | <code title="">string</code> |  | <code title="">NON_GATEWAY</code> |
 | *devices_yaml_file* | yaml file name including Devices map to be registered in the IoT Registry in the form DEVICE_ID: DEVICE_CERTIFICATE | <code title="">string</code> |  | <code title=""></code> |
 | *extra_telemetry_pub_sub_topic_ids* | additional pub sub topics for telemetry messages in adhoc MQTT topics (Device-->GCP) in the format MQTT_TOPIC:PUB_SUB_TOPIC_ID | <code title="list&#40;object&#40;&#123;&#10;mqtt_topic &#61; string&#10;pub_sub_topic &#61; string&#10;&#125;&#41;&#41;">list(object({...}))</code> |  | <code title="">[]</code> |
+| *log_level* | IoT Registry Log level | <code title="">string</code> |  | <code title="">INFO</code> |
+| *protocol_http* | http protocol activation. HTTP_ENABLED or HTTP_DISABLED | <code title="">string</code> |  | <code title="">HTTP_ENABLED</code> |
+| *protocol_mqtt* | Matt protocol activation. MQTT_ENABLED or MQTT_DISABLED | <code title="">string</code> |  | <code title="">MQTT_ENABLED</code> |
 
 ## Outputs
 
