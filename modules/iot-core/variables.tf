@@ -16,7 +16,7 @@
 
 variable "devices_blocked" {
   description = "Variable to setup devices status. blocked=false then devices are active"
-  type        = boolean
+  type        = bool
   default     = false
 }
 
