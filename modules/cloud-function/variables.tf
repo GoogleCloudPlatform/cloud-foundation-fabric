@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -131,15 +131,22 @@ variable "trigger_config" {
   default = null
 }
 
-variable "vpc_connector_config" {
-  description = "VPC connector configuration. Set `create_config` attributes to trigger creation."
+variable "vpc_connector" {
+  description = "VPC connector configuration. Set create to 'true' if a new connector needs to be created"
   type = object({
-    egress_settings = string
+    create          = bool
     name            = string
-    create_config = object({
-      ip_cidr_range = string
-      network       = string
-    })
+    egress_settings = string
   })
   default = null
 }
+
+variable "vpc_connector_config" {
+  description = "VPC connector network configuration. Must be provided if new VPC connector is being created"
+  type = object({
+    ip_cidr_range = string
+    network       = string
+  })
+  default = null
+}
+

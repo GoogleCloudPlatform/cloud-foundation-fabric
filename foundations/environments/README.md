@@ -27,26 +27,28 @@ For more complex setups where multiple shared services projects are needed to en
 
 If no shared services are needed, the shared service project module can of course be removed from `main.tf`.
 
+
 <!-- BEGIN TFDOC -->
+
 ## Variables
 
 | name | description | type | required | default |
-|---|---|:---: |:---:|:---:|
-| billing_account_id | Billing account id used as to create projects. | <code title="">string</code> | ✓ |  |
-| environments | Environment short names. | <code title="set&#40;string&#41;">set(string)</code> | ✓ |  |
-| organization_id | Organization id in organizations/nnnnnnnn format. | <code title="">string</code> | ✓ |  |
-| prefix | Prefix used for resources that need unique names. | <code title="">string</code> | ✓ |  |
-| root_node | Root node for the new hierarchy, either 'organizations/org_id' or 'folders/folder_id'. | <code title="">string</code> | ✓ |  |
-| *audit_filter* | Audit log filter used for the log sink. | <code title="">string</code> |  | <code title="&#60;&#60;END&#10;logName: &#34;&#47;logs&#47;cloudaudit.googleapis.com&#37;2Factivity&#34;&#10;OR&#10;logName: &#34;&#47;logs&#47;cloudaudit.googleapis.com&#37;2Fsystem_event&#34;&#10;END">...</code> |
-| *gcs_location* | GCS bucket location. | <code title="">string</code> |  | <code title="">EU</code> |
-| *iam_audit_viewers* | Audit project viewers, in IAM format. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
-| *iam_billing_config* | Control granting billing user role to service accounts. Target the billing account by default. | <code title="object&#40;&#123;&#10;grant      &#61; bool&#10;target_org &#61; bool&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;grant      &#61; true&#10;target_org &#61; false&#10;&#125;">...</code> |
-| *iam_folder_roles* | List of roles granted to each service account on its respective folder (excluding XPN roles). | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="&#91;&#10;&#34;roles&#47;compute.networkAdmin&#34;,&#10;&#34;roles&#47;owner&#34;,&#10;&#34;roles&#47;resourcemanager.folderViewer&#34;,&#10;&#34;roles&#47;resourcemanager.projectCreator&#34;,&#10;&#93;">...</code> |
-| *iam_shared_owners* | Shared services project owners, in IAM format. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
-| *iam_terraform_owners* | Terraform project owners, in IAM format. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
-| *iam_xpn_config* | Control granting Shared VPC creation roles to service accounts. Target the root node by default. | <code title="object&#40;&#123;&#10;grant      &#61; bool&#10;target_org &#61; bool&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;grant      &#61; true&#10;target_org &#61; true&#10;&#125;">...</code> |
-| *project_services* | Service APIs enabled by default in new projects. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="&#91;&#10;&#34;container.googleapis.com&#34;,&#10;&#34;stackdriver.googleapis.com&#34;,&#10;&#93;">...</code> |
-| *service_account_keys* | Generate and store service account keys in the state file. | <code title="">bool</code> |  | <code title="">true</code> |
+|---|---|:---:|:---:|:---:|
+| billing_account_id | Billing account id used as to create projects. | <code>string</code> | ✓ |  |
+| environments | Environment short names. | <code>set&#40;string&#41;</code> | ✓ |  |
+| organization_id | Organization id in organizations/nnnnnnnn format. | <code>string</code> | ✓ |  |
+| prefix | Prefix used for resources that need unique names. | <code>string</code> | ✓ |  |
+| root_node | Root node for the new hierarchy, either 'organizations/org_id' or 'folders/folder_id'. | <code>string</code> | ✓ |  |
+| audit_filter | Audit log filter used for the log sink. | <code>string</code> |  | <code title="&#34;&#10;logName: &#34;&#47;logs&#47;cloudaudit.googleapis.com&#37;2Factivity&#34;&#10;OR&#10;logName: &#34;&#47;logs&#47;cloudaudit.googleapis.com&#37;2Fsystem_event&#34;&#34;">&#8230;</code> |
+| gcs_location | GCS bucket location. | <code>string</code> |  | <code>&#34;EU&#34;</code> |
+| iam_audit_viewers | Audit project viewers, in IAM format. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| iam_billing_config | Control granting billing user role to service accounts. Target the billing account by default. | <code title="object&#40;&#123;&#10;  grant      &#61; bool&#10;  target_org &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  grant      &#61; true&#10;  target_org &#61; false&#10;&#125;">&#123;&#8230;&#125;</code> |
+| iam_folder_roles | List of roles granted to each service account on its respective folder (excluding XPN roles). | <code>list&#40;string&#41;</code> |  | <code title="&#91;&#10;  &#34;roles&#47;compute.networkAdmin&#34;,&#10;  &#34;roles&#47;owner&#34;,&#10;  &#34;roles&#47;resourcemanager.folderViewer&#34;,&#10;  &#34;roles&#47;resourcemanager.projectCreator&#34;,&#10;&#93;">&#91;&#8230;&#93;</code> |
+| iam_shared_owners | Shared services project owners, in IAM format. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| iam_terraform_owners | Terraform project owners, in IAM format. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| iam_xpn_config | Control granting Shared VPC creation roles to service accounts. Target the root node by default. | <code title="object&#40;&#123;&#10;  grant      &#61; bool&#10;  target_org &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  grant      &#61; true&#10;  target_org &#61; true&#10;&#125;">&#123;&#8230;&#125;</code> |
+| project_services | Service APIs enabled by default in new projects. | <code>list&#40;string&#41;</code> |  | <code title="&#91;&#10;  &#34;container.googleapis.com&#34;,&#10;  &#34;stackdriver.googleapis.com&#34;,&#10;&#93;">&#91;&#8230;&#93;</code> |
+| service_account_keys | Generate and store service account keys in the state file. | <code>bool</code> |  | <code>true</code> |
 
 ## Outputs
 
@@ -61,4 +63,6 @@ If no shared services are needed, the shared service project module can of cours
 | environment_tf_gcs_buckets | GCS buckets used for each environment Terraform state. |  |
 | shared_services_project | Project that holdes resources shared across environments. |  |
 | terraform_project | Project that holds the base Terraform resources. |  |
+
 <!-- END TFDOC -->
+

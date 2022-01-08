@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ locals {
   prefix = (
     var.prefix == null || var.prefix == "" # keep "" for backward compatibility
     ? ""
-    : join("-", [var.prefix, lower(var.location), ""])
+    : "${var.prefix}-"
   )
   notification = try(var.notification_config.enabled, false)
 }

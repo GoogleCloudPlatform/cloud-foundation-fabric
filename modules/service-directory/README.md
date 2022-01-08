@@ -88,19 +88,21 @@ module "dns-sd" {
 # tftest:modules=2:resources=5
 ```
 
+
 <!-- BEGIN TFDOC -->
+
 ## Variables
 
 | name | description | type | required | default |
-|---|---|:---: |:---:|:---:|
-| location | Namespace location. | <code title="">string</code> | ✓ |  |
-| name | Namespace name. | <code title="">string</code> | ✓ |  |
-| project_id | Project used for resources. | <code title="">string</code> | ✓ |  |
-| *endpoint_config* | Map of endpoint attributes, keys are in service/endpoint format. | <code title="map&#40;object&#40;&#123;&#10;address  &#61; string&#10;port     &#61; number&#10;metadata &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
-| *iam* | IAM bindings for namespace, in {ROLE => [MEMBERS]} format. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
-| *labels* | Labels. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
-| *service_iam* | IAM bindings for services, in {SERVICE => {ROLE => [MEMBERS]}} format. | <code title="map&#40;map&#40;list&#40;string&#41;&#41;&#41;">map(map(list(string)))</code> |  | <code title="">{}</code> |
-| *services* | Service configuration, using service names as keys. | <code title="map&#40;object&#40;&#123;&#10;endpoints &#61; list&#40;string&#41;&#10;metadata  &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
+|---|---|:---:|:---:|:---:|
+| location | Namespace location. | <code>string</code> | ✓ |  |
+| name | Namespace name. | <code>string</code> | ✓ |  |
+| project_id | Project used for resources. | <code>string</code> | ✓ |  |
+| endpoint_config | Map of endpoint attributes, keys are in service/endpoint format. | <code title="map&#40;object&#40;&#123;&#10;  address  &#61; string&#10;  port     &#61; number&#10;  metadata &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| iam | IAM bindings for namespace, in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| labels | Labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| service_iam | IAM bindings for services, in {SERVICE => {ROLE => [MEMBERS]}} format. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| services | Service configuration, using service names as keys. | <code title="map&#40;object&#40;&#123;&#10;  endpoints &#61; list&#40;string&#41;&#10;  metadata  &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
@@ -113,4 +115,6 @@ module "dns-sd" {
 | service_id | Service ids (short names). |  |
 | service_names | Service ids (long names). |  |
 | services | Service resources. |  |
+
 <!-- END TFDOC -->
+

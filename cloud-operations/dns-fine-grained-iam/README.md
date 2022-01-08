@@ -99,16 +99,18 @@ dig app1.svc.example.org +short
 # 127.0.0.7
 ```
 
+
 <!-- BEGIN TFDOC -->
+
 ## Variables
 
 | name | description | type | required | default |
-|---|---|:---: |:---:|:---:|
-| project_id | Existing project id. | <code title="">string</code> | ✓ |  |
-| *name* | Arbitrary string used to name created resources. | <code title="">string</code> |  | <code title="">dns-sd-test</code> |
-| *project_create* | Create project instead ofusing an existing one. | <code title="">bool</code> |  | <code title="">false</code> |
-| *region* | Compute region used in the example. | <code title="">string</code> |  | <code title="">europe-west1</code> |
-| *zone_domain* | Domain name used for the DNS zone. | <code title="">string</code> |  | <code title="">svc.example.org.</code> |
+|---|---|:---:|:---:|:---:|
+| project_id | Existing project id. | <code>string</code> | ✓ |  |
+| name | Arbitrary string used to name created resources. | <code>string</code> |  | <code>&#34;dns-sd-test&#34;</code> |
+| project_create | Create project instead ofusing an existing one. | <code>bool</code> |  | <code>false</code> |
+| region | Compute region used in the example. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| zone_domain | Domain name used for the DNS zone. | <code>string</code> |  | <code>&#34;svc.example.org.&#34;</code> |
 
 ## Outputs
 
@@ -116,4 +118,6 @@ dig app1.svc.example.org +short
 |---|---|:---:|
 | gcloud_commands | Commands used to SSH to the VMs. |  |
 | vms | VM names. |  |
+
 <!-- END TFDOC -->
+

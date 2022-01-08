@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,27 +27,36 @@ variable "custom_roles" {
 }
 
 variable "firewall_policies" {
-  description = "Hierarchical firewall policies to *create* in the organization."
+  description = "Hierarchical firewall policy rules created in the organization."
   type = map(map(object({
+    action                  = string
     description             = string
     direction               = string
-    action                  = string
+    logging                 = bool
+    ports                   = map(list(string))
     priority                = number
     ranges                  = list(string)
-    ports                   = map(list(string))
-    target_service_accounts = list(string)
     target_resources        = list(string)
-    logging                 = bool
-    #preview                 = bool
+    target_service_accounts = list(string)
+    # preview                 = bool
   })))
   default = {}
 }
 
-variable "firewall_policy_attachments" {
-  description = "List of hierarchical firewall policy IDs to *attach* to the organization"
-  # set to avoid manual casting with toset()
-  type    = map(string)
-  default = {}
+variable "firewall_policy_association" {
+  description = "The hierarchical firewall policy to associate to this folder. Must be either a key in the `firewall_policies` map or the id of a policy defined somewhere else."
+  type        = map(string)
+  default     = {}
+}
+
+variable "firewall_policy_factory" {
+  description = "Configuration for the firewall policy factory."
+  type = object({
+    cidr_file   = string
+    policy_name = string
+    rules_file  = string
+  })
+  default = null
 }
 
 variable "group_iam" {
@@ -111,14 +120,22 @@ variable "logging_exclusions" {
 variable "logging_sinks" {
   description = "Logging sinks to create for this organization."
   type = map(object({
-    destination      = string
-    type             = string
-    filter           = string
-    iam              = bool
-    include_children = bool
+    destination          = string
+    type                 = string
+    filter               = string
+    iam                  = bool
+    include_children     = bool
+    bq_partitioned_table = bool
     # TODO exclusions also support description and disabled
     exclusions = map(string)
   }))
+  validation {
+    condition = alltrue([
+      for k, v in(var.logging_sinks == null ? {} : var.logging_sinks) :
+      contains(["bigquery", "logging", "pubsub", "storage"], v.type)
+    ])
+    error_message = "Type must be one of 'bigquery', 'logging', 'pubsub', 'storage'."
+  }
   default = {}
 }
 

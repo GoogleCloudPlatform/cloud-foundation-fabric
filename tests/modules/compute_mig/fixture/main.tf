@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+# Used in stateful disk test
+resource "google_compute_disk" "default" {
+  name                      = "test-disk"
+  type                      = "pd-ssd"
+  zone                      = "europe-west1-c"
+  image                     = "debian-9-stretch-v20200805"
+  physical_block_size_bytes = 4096
+}
 
 module "test" {
   source      = "../../../../modules/compute-mig"
@@ -28,6 +37,8 @@ module "test" {
   health_check_config = var.health_check_config
   named_ports         = var.named_ports
   regional            = var.regional
-  update_policy       = var.update_policy
-  versions            = var.versions
+  stateful_config     = var.stateful_config
+
+  update_policy = var.update_policy
+  versions      = var.versions
 }

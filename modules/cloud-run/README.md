@@ -207,28 +207,30 @@ module "cloud_run" {
 # tftest:modules=1:resources=1
 ```
 
+
 <!-- BEGIN TFDOC -->
+
 ## Variables
 
 | name | description | type | required | default |
-|---|---|:---: |:---:|:---:|
-| containers | Containers | <code title="list&#40;object&#40;&#123;&#10;image &#61; string&#10;options &#61; object&#40;&#123;&#10;command &#61; list&#40;string&#41;&#10;args    &#61; list&#40;string&#41;&#10;env     &#61; map&#40;string&#41;&#10;env_from &#61; map&#40;object&#40;&#123;&#10;key  &#61; string&#10;name &#61; string&#10;&#125;&#41;&#41;&#10;&#125;&#41;&#10;resources &#61; object&#40;&#123;&#10;limits &#61; object&#40;&#123;&#10;cpu    &#61; string&#10;memory &#61; string&#10;&#125;&#41;&#10;requests &#61; object&#40;&#123;&#10;cpu    &#61; string&#10;memory &#61; string&#10;&#125;&#41;&#10;&#125;&#41;&#10;ports &#61; list&#40;object&#40;&#123;&#10;name           &#61; string&#10;protocol       &#61; string&#10;container_port &#61; string&#10;&#125;&#41;&#41;&#10;volume_mounts &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">list(object({...}))</code> | ✓ |  |
-| name | Name used for cloud run service | <code title="">string</code> | ✓ |  |
-| project_id | Project id used for all resources. | <code title="">string</code> | ✓ |  |
-| *audit_log_triggers* | Event arc triggers (Audit log) | <code title="list&#40;object&#40;&#123;&#10;service_name &#61; string&#10;method_name  &#61; string&#10;&#125;&#41;&#41;">list(object({...}))</code> |  | <code title="">null</code> |
-| *iam* | IAM bindings for Cloud Run service in {ROLE => [MEMBERS]} format. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
-| *ingress_settings* | Ingress settings | <code title="">string</code> |  | <code title="">null</code> |
-| *labels* | Resource labels | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
-| *prefix* | Optional prefix used for resource names. | <code title="">string</code> |  | <code title="">null</code> |
-| *pubsub_triggers* | Eventarc triggers (Pub/Sub) | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">null</code> |
-| *region* | Region used for all resources. | <code title="">string</code> |  | <code title="">europe-west1</code> |
-| *revision_name* | Revision name | <code title="">string</code> |  | <code title="">null</code> |
-| *service_account* | Service account email. Unused if service account is auto-created. | <code title="">string</code> |  | <code title="">null</code> |
-| *service_account_create* | Auto-create service account. | <code title="">bool</code> |  | <code title="">false</code> |
-| *traffic* | Traffic | <code title="map&#40;number&#41;">map(number)</code> |  | <code title="">null</code> |
-| *volumes* | Volumes | <code title="list&#40;object&#40;&#123;&#10;name        &#61; string&#10;secret_name &#61; string&#10;items &#61; list&#40;object&#40;&#123;&#10;key  &#61; string&#10;path &#61; string&#10;&#125;&#41;&#41;&#10;&#125;&#41;&#41;">list(object({...}))</code> |  | <code title="">null</code> |
-| *vpc_connector* | VPC connector configuration. Set create to 'true' if a new connecto needs to be created | <code title="object&#40;&#123;&#10;create          &#61; bool&#10;name            &#61; string&#10;egress_settings &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
-| *vpc_connector_config* | VPC connector network configuration. Must be provided if new VPC connector is being created | <code title="object&#40;&#123;&#10;ip_cidr_range &#61; string&#10;network       &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
+|---|---|:---:|:---:|:---:|
+| containers | Containers | <code title="list&#40;object&#40;&#123;&#10;  image &#61; string&#10;  options &#61; object&#40;&#123;&#10;    command &#61; list&#40;string&#41;&#10;    args    &#61; list&#40;string&#41;&#10;    env     &#61; map&#40;string&#41;&#10;    env_from &#61; map&#40;object&#40;&#123;&#10;      key  &#61; string&#10;      name &#61; string&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#10;  resources &#61; object&#40;&#123;&#10;    limits &#61; object&#40;&#123;&#10;      cpu    &#61; string&#10;      memory &#61; string&#10;    &#125;&#41;&#10;    requests &#61; object&#40;&#123;&#10;      cpu    &#61; string&#10;      memory &#61; string&#10;    &#125;&#41;&#10;  &#125;&#41;&#10;  ports &#61; list&#40;object&#40;&#123;&#10;    name           &#61; string&#10;    protocol       &#61; string&#10;    container_port &#61; string&#10;  &#125;&#41;&#41;&#10;  volume_mounts &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
+| name | Name used for cloud run service | <code>string</code> | ✓ |  |
+| project_id | Project id used for all resources. | <code>string</code> | ✓ |  |
+| audit_log_triggers | Event arc triggers (Audit log) | <code title="list&#40;object&#40;&#123;&#10;  service_name &#61; string&#10;  method_name  &#61; string&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
+| iam | IAM bindings for Cloud Run service in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| ingress_settings | Ingress settings | <code>string</code> |  | <code>null</code> |
+| labels | Resource labels | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| prefix | Optional prefix used for resource names. | <code>string</code> |  | <code>null</code> |
+| pubsub_triggers | Eventarc triggers (Pub/Sub) | <code>list&#40;string&#41;</code> |  | <code>null</code> |
+| region | Region used for all resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| revision_name | Revision name | <code>string</code> |  | <code>null</code> |
+| service_account | Service account email. Unused if service account is auto-created. | <code>string</code> |  | <code>null</code> |
+| service_account_create | Auto-create service account. | <code>bool</code> |  | <code>false</code> |
+| traffic | Traffic | <code>map&#40;number&#41;</code> |  | <code>null</code> |
+| volumes | Volumes | <code title="list&#40;object&#40;&#123;&#10;  name        &#61; string&#10;  secret_name &#61; string&#10;  items &#61; list&#40;object&#40;&#123;&#10;    key  &#61; string&#10;    path &#61; string&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
+| vpc_connector | VPC connector configuration. Set create to 'true' if a new connecto needs to be created | <code title="object&#40;&#123;&#10;  create          &#61; bool&#10;  name            &#61; string&#10;  egress_settings &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| vpc_connector_config | VPC connector network configuration. Must be provided if new VPC connector is being created | <code title="object&#40;&#123;&#10;  ip_cidr_range &#61; string&#10;  network       &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
@@ -240,4 +242,6 @@ module "cloud_run" {
 | service_account_iam_email | Service account email. |  |
 | service_name | Cloud Run service name |  |
 | vpc_connector | VPC connector resource if created. |  |
+
 <!-- END TFDOC -->
+

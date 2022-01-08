@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,30 +21,30 @@ FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
 
 
 def test_firewall_simple(plan_runner):
-    "Test firewall rules from rules/common.yaml with no extra options."
-    _, resources = plan_runner(FIXTURES_DIR)
-    assert len(resources) == 4
-    assert set(r['type'] for r in resources) == set([
-        'google_compute_firewall', 'time_static'
-    ])
-    firewall_values = [r['values'] for r in resources if r['type']
-                       == 'google_compute_firewall']
-    assert set([f['project'] for f in firewall_values]) == set(['my-project'])
-    assert set([f['network'] for f in firewall_values]) == set(['my-network'])
+  "Test firewall rules from rules/common.yaml with no extra options."
+  _, resources = plan_runner(FIXTURES_DIR)
+  assert len(resources) == 4
+  assert set(r['type'] for r in resources) == set([
+      'google_compute_firewall', 'time_static'
+  ])
+  firewall_values = [r['values'] for r in resources if r['type']
+                     == 'google_compute_firewall']
+  assert set([f['project'] for f in firewall_values]) == set(['my-project'])
+  assert set([f['network'] for f in firewall_values]) == set(['my-network'])
 
 
 def test_firewall_log_config(plan_runner):
-    "Test firewall rules log configuration."
-    log_config = """ {
+  "Test firewall rules log configuration."
+  log_config = """ {
       metadata = "INCLUDE_ALL_METADATA"
     }
     """
-    log_config_value = [{"metadata": "INCLUDE_ALL_METADATA"}]
-    _, resources = plan_runner(FIXTURES_DIR, log_config=log_config)
-    assert len(resources) == 4
-    assert set(r['type'] for r in resources) == set([
-        'google_compute_firewall', 'time_static'
-    ])
-    firewall_values = [r['values'] for r in resources if r['type']
-                       == 'google_compute_firewall']
-    assert all(f['log_config'] == log_config_value for f in firewall_values)
+  log_config_value = [{"metadata": "INCLUDE_ALL_METADATA"}]
+  _, resources = plan_runner(FIXTURES_DIR, log_config=log_config)
+  assert len(resources) == 4
+  assert set(r['type'] for r in resources) == set([
+      'google_compute_firewall', 'time_static'
+  ])
+  firewall_values = [r['values'] for r in resources if r['type']
+                     == 'google_compute_firewall']
+  assert all(f['log_config'] == log_config_value for f in firewall_values)

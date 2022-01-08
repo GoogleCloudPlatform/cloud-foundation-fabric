@@ -135,15 +135,17 @@ web-app-a-ingress:
     - web-app-a@myproject-id.iam.gserviceaccount.com
 ```
 
+
 <!-- BEGIN TFDOC -->
+
 ## Variables
 
 | name | description | type | required | default |
-|---|---|:---: |:---:|:---:|
-| config_directories | List of paths to folders where firewall configs are stored in yaml format. Folder may include subfolders with configuration files. Files suffix must be `.yaml` | <code title="list&#40;string&#41;">list(string)</code> | ✓ |  |
-| network | Name of the network this set of firewall rules applies to. | <code title="">string</code> | ✓ |  |
-| project_id | Project Id. | <code title="">string</code> | ✓ |  |
-| *log_config* | Log configuration. Possible values for `metadata` are `EXCLUDE_ALL_METADATA` and `INCLUDE_ALL_METADATA`. Set to `null` for disabling firewall logging. | <code title="object&#40;&#123;&#10;metadata &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
+|---|---|:---:|:---:|:---:|
+| config_directories | List of paths to folders where firewall configs are stored in yaml format. Folder may include subfolders with configuration files. Files suffix must be `.yaml` | <code>list&#40;string&#41;</code> | ✓ |  |
+| network | Name of the network this set of firewall rules applies to. | <code>string</code> | ✓ |  |
+| project_id | Project Id. | <code>string</code> | ✓ |  |
+| log_config | Log configuration. Possible values for `metadata` are `EXCLUDE_ALL_METADATA` and `INCLUDE_ALL_METADATA`. Set to `null` for disabling firewall logging. | <code title="object&#40;&#123;&#10;  metadata &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
@@ -153,4 +155,6 @@ web-app-a-ingress:
 | egress_deny_rules | Egress rules with allow blocks. |  |
 | ingress_allow_rules | Ingress rules with allow blocks. |  |
 | ingress_deny_rules | Ingress rules with deny blocks. |  |
+
 <!-- END TFDOC -->
+

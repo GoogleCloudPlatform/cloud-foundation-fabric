@@ -139,25 +139,27 @@ module "vpn_ha" {
 # tftest:modules=1:resources=10
 ```
 
+
 <!-- BEGIN TFDOC -->
+
 ## Variables
 
 | name | description | type | required | default |
-|---|---|:---: |:---:|:---:|
-| name | VPN Gateway name (if an existing VPN Gateway is not used), and prefix used for dependent resources. | <code title="">string</code> | ✓ |  |
-| network | VPC used for the gateway and routes. | <code title="">string</code> | ✓ |  |
-| project_id | Project where resources will be created. | <code title="">string</code> | ✓ |  |
-| region | Region used for resources. | <code title="">string</code> | ✓ |  |
-| *peer_external_gateway* | Configuration of an external VPN gateway to which this VPN is connected. | <code title="object&#40;&#123;&#10;redundancy_type &#61; string&#10;interfaces &#61; list&#40;object&#40;&#123;&#10;id         &#61; number&#10;ip_address &#61; string&#10;&#125;&#41;&#41;&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
-| *peer_gcp_gateway* | Self Link URL of the peer side HA GCP VPN gateway to which this VPN tunnel is connected. | <code title="">string</code> |  | <code title="">null</code> |
-| *route_priority* | Route priority, defaults to 1000. | <code title="">number</code> |  | <code title="">1000</code> |
-| *router_advertise_config* | Router custom advertisement configuration, ip_ranges is a map of address ranges and descriptions. | <code title="object&#40;&#123;&#10;groups    &#61; list&#40;string&#41;&#10;ip_ranges &#61; map&#40;string&#41;&#10;mode      &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="">null</code> |
-| *router_asn* | Router ASN used for auto-created router. | <code title="">number</code> |  | <code title="">64514</code> |
-| *router_create* | Create router. | <code title="">bool</code> |  | <code title="">true</code> |
-| *router_name* | Router name used for auto created router, or to specify an existing router to use if `router_create` is set to `true`. Leave blank to use VPN name for auto created router. | <code title="">string</code> |  | <code title=""></code> |
-| *tunnels* | VPN tunnel configurations, bgp_peer_options is usually null. | <code title="map&#40;object&#40;&#123;&#10;bgp_peer &#61; object&#40;&#123;&#10;address &#61; string&#10;asn     &#61; number&#10;&#125;&#41;&#10;bgp_peer_options &#61; object&#40;&#123;&#10;advertise_groups    &#61; list&#40;string&#41;&#10;advertise_ip_ranges &#61; map&#40;string&#41;&#10;advertise_mode      &#61; string&#10;route_priority      &#61; number&#10;&#125;&#41;&#10;bgp_session_range               &#61; string&#10;ike_version                     &#61; number&#10;peer_external_gateway_interface &#61; number&#10;router                          &#61; string&#10;shared_secret                   &#61; string&#10;vpn_gateway_interface           &#61; number&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
-| *vpn_gateway* | HA VPN Gateway Self Link for using an existing HA VPN Gateway, leave empty if `vpn_gateway_create` is set to `true`. | <code title="">string</code> |  | <code title="">null</code> |
-| *vpn_gateway_create* | Create HA VPN Gateway. | <code title="">bool</code> |  | <code title="">true</code> |
+|---|---|:---:|:---:|:---:|
+| name | VPN Gateway name (if an existing VPN Gateway is not used), and prefix used for dependent resources. | <code>string</code> | ✓ |  |
+| network | VPC used for the gateway and routes. | <code>string</code> | ✓ |  |
+| project_id | Project where resources will be created. | <code>string</code> | ✓ |  |
+| region | Region used for resources. | <code>string</code> | ✓ |  |
+| peer_external_gateway | Configuration of an external VPN gateway to which this VPN is connected. | <code title="object&#40;&#123;&#10;  redundancy_type &#61; string&#10;  interfaces &#61; list&#40;object&#40;&#123;&#10;    id         &#61; number&#10;    ip_address &#61; string&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| peer_gcp_gateway | Self Link URL of the peer side HA GCP VPN gateway to which this VPN tunnel is connected. | <code>string</code> |  | <code>null</code> |
+| route_priority | Route priority, defaults to 1000. | <code>number</code> |  | <code>1000</code> |
+| router_advertise_config | Router custom advertisement configuration, ip_ranges is a map of address ranges and descriptions. | <code title="object&#40;&#123;&#10;  groups    &#61; list&#40;string&#41;&#10;  ip_ranges &#61; map&#40;string&#41;&#10;  mode      &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| router_asn | Router ASN used for auto-created router. | <code>number</code> |  | <code>64514</code> |
+| router_create | Create router. | <code>bool</code> |  | <code>true</code> |
+| router_name | Router name used for auto created router, or to specify an existing router to use if `router_create` is set to `true`. Leave blank to use VPN name for auto created router. | <code>string</code> |  | <code>&#34;&#34;</code> |
+| tunnels | VPN tunnel configurations, bgp_peer_options is usually null. | <code title="map&#40;object&#40;&#123;&#10;  bgp_peer &#61; object&#40;&#123;&#10;    address &#61; string&#10;    asn     &#61; number&#10;  &#125;&#41;&#10;  bgp_peer_options &#61; object&#40;&#123;&#10;    advertise_groups    &#61; list&#40;string&#41;&#10;    advertise_ip_ranges &#61; map&#40;string&#41;&#10;    advertise_mode      &#61; string&#10;    route_priority      &#61; number&#10;  &#125;&#41;&#10;  bgp_session_range               &#61; string&#10;  ike_version                     &#61; number&#10;  peer_external_gateway_interface &#61; number&#10;  router                          &#61; string&#10;  shared_secret                   &#61; string&#10;  vpn_gateway_interface           &#61; number&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| vpn_gateway | HA VPN Gateway Self Link for using an existing HA VPN Gateway, leave empty if `vpn_gateway_create` is set to `true`. | <code>string</code> |  | <code>null</code> |
+| vpn_gateway_create | Create HA VPN Gateway. | <code>bool</code> |  | <code>true</code> |
 
 ## Outputs
 
@@ -174,4 +176,6 @@ module "vpn_ha" {
 | tunnel_names | VPN tunnel names. |  |
 | tunnel_self_links | VPN tunnel self links. |  |
 | tunnels | VPN tunnel resources. |  |
+
 <!-- END TFDOC -->
+

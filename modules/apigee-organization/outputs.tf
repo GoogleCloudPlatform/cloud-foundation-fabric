@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+output "envs" {
+  description = "Apigee Environments."
+  value       = google_apigee_environment.apigee_env
+}
 
 output "org" {
   description = "Apigee Organization."

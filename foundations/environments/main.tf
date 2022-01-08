@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -134,7 +134,6 @@ module "audit-dataset" {
 #   source          = "../../modules/organization"
 #   organization_id = var.root_node
 #   logging_sinks   = local.logging_sinks
-#   exclusions       = {}
 # }
 
 # module "root_folder" {
@@ -143,7 +142,6 @@ module "audit-dataset" {
 #   id            = var.root_node
 #   folder_create = false
 #   logging_sinks = local.logging_sinks
-#   exclusions       = {}
 # }
 
 

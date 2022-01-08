@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,11 +25,11 @@ output "name" {
 }
 output "notification" {
   description = "GCS Notification self link."
-  value       = local.notification == true ? google_storage_notification.notification[0].self_link : null
+  value       = local.notification ? google_storage_notification.notification[0].self_link : null
 }
 output "topic" {
   description = "Topic ID used by GCS."
-  value       = local.notification == true ? google_pubsub_topic.topic[0].id : null
+  value       = local.notification ? google_pubsub_topic.topic[0].id : null
 }
 output "url" {
   description = "Bucket URL."

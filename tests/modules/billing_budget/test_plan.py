@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,22 +26,24 @@ def test_pubsub(plan_runner):
   assert len(resources) == 1
   resource = resources[0]
   assert resource['values']['all_updates_rule'] == [
-    {'disable_default_iam_recipients': False,
-     'monitoring_notification_channels': [],
-     'pubsub_topic': 'topic',
-     'schema_version': '1.0'}
+      {'disable_default_iam_recipients': False,
+       'monitoring_notification_channels': [],
+       'pubsub_topic': 'topic',
+       'schema_version': '1.0'}
   ]
+
 
 def test_channel(plan_runner):
   _, resources = plan_runner(FIXTURES_DIR, notification_channels='["channel"]')
   assert len(resources) == 1
   resource = resources[0]
   assert resource['values']['all_updates_rule'] == [
-    {'disable_default_iam_recipients': True,
-     'monitoring_notification_channels': ['channel'],
-     'pubsub_topic': None,
-     'schema_version': '1.0'}
+      {'disable_default_iam_recipients': True,
+       'monitoring_notification_channels': ['channel'],
+       'pubsub_topic': None,
+       'schema_version': '1.0'}
   ]
+
 
 def test_emails(plan_runner):
   email_recipients = '{project_id = "project", emails = ["a@b.com", "c@d.com"]}'
@@ -59,11 +61,11 @@ def test_absolute_amount(plan_runner):
   assert amount['last_period_amount'] is None
   assert amount['specified_amount'] == [{'nanos': None, 'units': '100'}]
 
-  assert resource['values']['threshold_rules'] ==  [
-    {'spend_basis': 'CURRENT_SPEND',
-     'threshold_percent': 0.5},
-    {'spend_basis': 'CURRENT_SPEND',
-     'threshold_percent': 1},
-    {'spend_basis': 'FORECASTED_SPEND',
-     'threshold_percent': 1}
+  assert resource['values']['threshold_rules'] == [
+      {'spend_basis': 'CURRENT_SPEND',
+       'threshold_percent': 0.5},
+      {'spend_basis': 'CURRENT_SPEND',
+          'threshold_percent': 1},
+      {'spend_basis': 'FORECASTED_SPEND',
+          'threshold_percent': 1}
   ]

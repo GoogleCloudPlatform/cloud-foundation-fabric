@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,22 @@ locals {
       "effect" = lookup(local.node_taint_effect, element(split(":", taint), 1)),
     }
   ]
-  node_taints = local.temp_node_pools_taints
+  # The taint is added to match the one that
+  # GKE implicitly adds when Windows node pools are created.
+  win_node_pools_taint = (
+    var.node_image_type == null
+    ? []
+    : length(regexall("WINDOWS", var.node_image_type)) > 0
+    ? [
+      {
+        "key"    = "node.kubernetes.io/os"
+        "value"  = "windows"
+        "effect" = local.node_taint_effect.NoSchedule
+      }
+    ]
+    : []
+  )
+  node_taints = concat(local.temp_node_pools_taints, local.win_node_pools_taint)
 }
 
 resource "google_service_account" "service_account" {
@@ -129,6 +144,23 @@ resource "google_container_node_pool" "nodepool" {
       mode = var.workload_metadata_config
     }
 
+    dynamic "kubelet_config" {
+      for_each = var.kubelet_config != null ? [var.kubelet_config] : []
+      iterator = config
+      content {
+        cpu_manager_policy   = config.value.cpu_manager_policy
+        cpu_cfs_quota        = config.value.cpu_cfs_quota
+        cpu_cfs_quota_period = config.value.cpu_cfs_quota_period
+      }
+    }
+
+    dynamic "linux_node_config" {
+      for_each = var.linux_node_config_sysctls != null ? [var.linux_node_config_sysctls] : []
+      iterator = config
+      content {
+        sysctls = config.value
+      }
+    }
   }
 
   dynamic "autoscaling" {

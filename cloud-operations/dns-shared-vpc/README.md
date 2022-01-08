@@ -19,22 +19,26 @@ The resources created in this example are shown in the high level diagram below:
 
 Note that Terraform 0.13 at least is required due to the use of `for_each` with modules.
 
+
 <!-- BEGIN TFDOC -->
+
 ## Variables
 
 | name | description | type | required | default |
-|---|---|:---: |:---:|:---:|
-| billing_account_id | Billing account associated with the GCP Projects that will be created for each team. | <code title="">string</code> | ✓ |  |
-| folder_id | Folder ID in which DNS projects will be created. | <code title="">string</code> | ✓ |  |
-| shared_vpc_link | Shared VPC self link, used for DNS peering. | <code title="">string</code> | ✓ |  |
-| *dns_domain* | DNS domain under which each application team DNS domain will be created. | <code title="">string</code> |  | <code title="">example.org</code> |
-| *prefix* | Customer name to use as prefix for resources' naming. | <code title="">string</code> |  | <code title="">test-dns</code> |
-| *project_services* | Service APIs enabled by default. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="&#91;&#10;&#34;compute.googleapis.com&#34;,&#10;&#34;dns.googleapis.com&#34;,&#10;&#93;">...</code> |
-| *teams* | List of application teams requiring their own Cloud DNS instance. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="&#91;&#10;&#34;team1&#34;,&#10;&#34;team2&#34;,&#10;&#93;">...</code> |
+|---|---|:---:|:---:|:---:|
+| billing_account_id | Billing account associated with the GCP Projects that will be created for each team. | <code>string</code> | ✓ |  |
+| folder_id | Folder ID in which DNS projects will be created. | <code>string</code> | ✓ |  |
+| shared_vpc_link | Shared VPC self link, used for DNS peering. | <code>string</code> | ✓ |  |
+| dns_domain | DNS domain under which each application team DNS domain will be created. | <code>string</code> |  | <code>&#34;example.org&#34;</code> |
+| prefix | Customer name to use as prefix for resources' naming. | <code>string</code> |  | <code>&#34;test-dns&#34;</code> |
+| project_services | Service APIs enabled by default. | <code>list&#40;string&#41;</code> |  | <code title="&#91;&#10;  &#34;compute.googleapis.com&#34;,&#10;  &#34;dns.googleapis.com&#34;,&#10;&#93;">&#91;&#8230;&#93;</code> |
+| teams | List of application teams requiring their own Cloud DNS instance. | <code>list&#40;string&#41;</code> |  | <code title="&#91;&#10;  &#34;team1&#34;,&#10;  &#34;team2&#34;,&#10;&#93;">&#91;&#8230;&#93;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
 | teams | Team resources |  |
+
 <!-- END TFDOC -->
+

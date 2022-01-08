@@ -12,7 +12,7 @@ This module also allows defining custom template variables, to centralize common
 
 ```hcl
 module "hierarchical" {
-  source           = "./modules/resource-factories/hierarchical-firewall"
+  source           = "./factories/hierarchical-firewall-policies"
   config_folder    = "firewall/hierarchical"
   templates_folder = "firewall/templates"
 }
@@ -148,17 +148,21 @@ web_frontends:
   - web-frontends@project-wf2.iam.gserviceaccount.com
 ```
 
+
 <!-- BEGIN TFDOC -->
+
 ## Variables
 
 | name | description | type | required | default |
-|---|---|:---: |:---:|:---:|
-| config_folder | Relative path of the folder containing the hierarchical firewall configuration | <code title="">string</code> | ✓ |  |
-| templates_folder | Relative path of the folder containing the cidr/service account templates | <code title="">string</code> | ✓ |  |
+|---|---|:---:|:---:|:---:|
+| config_folder | Relative path of the folder containing the hierarchical firewall configuration | <code>string</code> | ✓ |  |
+| templates_folder | Relative path of the folder containing the cidr/service account templates | <code>string</code> | ✓ |  |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
 | hierarchical-firewall-rules | Generated Hierarchical Firewall Rules |  |
+
 <!-- END TFDOC -->
+
