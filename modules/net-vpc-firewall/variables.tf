@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,12 @@ variable "admin_ranges" {
   default     = []
 }
 
+variable "cidr_template_file" {
+  description = "Path for optional file containing name->cidr_list map to be used by the rules factory."
+  type        = string
+  default     = null
+}
+
 variable "custom_rules" {
   description = "List of custom rule definitions (refer to variables file for syntax)."
   type = map(object({
@@ -37,6 +43,12 @@ variable "custom_rules" {
     extra_attributes = map(string)
   }))
   default = {}
+}
+
+variable "data_folder" {
+  description = "Path for optional folder containing firewall rules defined as YaML objects used by the rules factory."
+  type        = string
+  default     = null
 }
 
 variable "http_source_ranges" {
@@ -80,3 +92,4 @@ variable "ssh_source_ranges" {
   type        = list(string)
   default     = ["35.235.240.0/20"]
 }
+

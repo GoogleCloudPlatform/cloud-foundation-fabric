@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,18 @@ output "internal_addresses" {
     address.name => {
       address   = address.address
       self_link = address.self_link
+    }
+  }
+}
+
+output "psa_addresses" {
+  description = "Allocated internal addresses for PSA endpoints."
+  value = {
+    for address in google_compute_global_address.psa :
+    address.name => {
+      address       = address.address
+      prefix_length = address.prefix_length
+      self_link     = address.self_link
     }
   }
 }

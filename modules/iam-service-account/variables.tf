@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,6 +82,12 @@ variable "prefix" {
 variable "project_id" {
   description = "Project id where service account will be created."
   type        = string
+}
+
+variable "public_keys_directory" {
+  description = "Path to public keys data files to upload to the service account (should have `.pem` extension)."
+  type        = string
+  default     = ""
 }
 
 variable "service_account_create" {

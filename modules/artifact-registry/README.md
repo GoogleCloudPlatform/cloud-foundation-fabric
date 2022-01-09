@@ -20,18 +20,20 @@ module "docker_artifact_registry" {
 # tftest:modules=1:resources=2
 ```
 
+
 <!-- BEGIN TFDOC -->
+
 ## Variables
 
 | name | description | type | required | default |
-|---|---|:---: |:---:|:---:|
-| id | Repository id | <code title="">string</code> | ✓ |  |
-| project_id | Registry project id. | <code title="">string</code> | ✓ |  |
-| *description* | An optional description for the repository | <code title="">string</code> |  | <code title="">Terraform-managed registry</code> |
-| *format* | Repository format. One of DOCKER or UNSPECIFIED | <code title="">string</code> |  | <code title="">DOCKER</code> |
-| *iam* | IAM bindings in {ROLE => [MEMBERS]} format. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
-| *labels* | Labels to be attached to the registry. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
-| *location* | Registry location. Use `gcloud beta artifacts locations list' to get valid values | <code title="">string</code> |  | <code title=""></code> |
+|---|---|:---:|:---:|:---:|
+| id | Repository id | <code>string</code> | ✓ |  |
+| project_id | Registry project id. | <code>string</code> | ✓ |  |
+| description | An optional description for the repository | <code>string</code> |  | <code>&#34;Terraform-managed registry&#34;</code> |
+| format | Repository format. One of DOCKER or UNSPECIFIED | <code>string</code> |  | <code>&#34;DOCKER&#34;</code> |
+| iam | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| labels | Labels to be attached to the registry. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| location | Registry location. Use `gcloud beta artifacts locations list' to get valid values | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 
@@ -39,4 +41,6 @@ module "docker_artifact_registry" {
 |---|---|:---:|
 | id | Repository id |  |
 | name | Repository name |  |
+
 <!-- END TFDOC -->
+

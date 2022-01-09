@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,19 +74,29 @@ variable "firewall_policies" {
   default = {}
 }
 
-variable "firewall_policy_attachments" {
+variable "firewall_policy_association" {
   type    = map(string)
   default = {}
 }
 
+variable "firewall_policy_factory" {
+  type = object({
+    cidr_file   = string
+    policy_name = string
+    rules_file  = string
+  })
+  default = null
+}
+
 variable "logging_sinks" {
   type = map(object({
-    destination      = string
-    type             = string
-    filter           = string
-    iam              = bool
-    include_children = bool
-    exclusions       = map(string)
+    destination          = string
+    type                 = string
+    filter               = string
+    iam                  = bool
+    include_children     = bool
+    bq_partitioned_table = bool
+    exclusions           = map(string)
   }))
   default = {}
 }

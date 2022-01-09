@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,8 @@ module "test" {
   policy_boolean              = var.policy_boolean
   policy_list                 = var.policy_list
   firewall_policies           = var.firewall_policies
-  firewall_policy_attachments = var.firewall_policy_attachments
+  firewall_policy_association = var.firewall_policy_association
+  firewall_policy_factory     = var.firewall_policy_factory
   logging_sinks               = var.logging_sinks
   logging_exclusions          = var.logging_exclusions
 }

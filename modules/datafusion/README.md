@@ -34,25 +34,27 @@ module "datafusion" {
 # tftest:modules=1:resources=3
 ```
 
+
 <!-- BEGIN TFDOC -->
+
 ## Variables
 
 | name | description | type | required | default |
-|---|---|:---: |:---:|:---:|
-| name | Name of the DataFusion instance. | <code title="">string</code> | ✓ |  |
-| network | Name of the network in the project with which the tenant project will be peered for executing pipelines in the form of projects/{project-id}/global/networks/{network} | <code title="">string</code> | ✓ |  |
-| project_id | Project ID. | <code title="">string</code> | ✓ |  |
-| region | DataFusion region. | <code title="">string</code> | ✓ |  |
-| *description* | DataFuzion instance description. | <code title="">string</code> |  | <code title="">Terraform managed.</code> |
-| *enable_stackdriver_logging* | Option to enable Stackdriver Logging. | <code title="">bool</code> |  | <code title="">false</code> |
-| *enable_stackdriver_monitoring* | Option to enable Stackdriver Monitorig. | <code title="">bool</code> |  | <code title="">false</code> |
-| *firewall_create* | Create Network firewall rules to enable SSH. | <code title="">bool</code> |  | <code title="">true</code> |
-| *ip_allocation* | Ip allocated for datafusion instance when not using the auto created one and created outside of the module. | <code title="">string</code> |  | <code title="">null</code> |
-| *ip_allocation_create* | Create Ip range for datafusion instance. | <code title="">bool</code> |  | <code title="">true</code> |
-| *labels* | The resource labels for instance to use to annotate any related underlying resources, such as Compute Engine VMs. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="">{}</code> |
-| *network_peering* | Create Network peering between project and DataFusion tenant project. | <code title="">bool</code> |  | <code title="">true</code> |
-| *private_instance* | Create private instance. | <code title="">bool</code> |  | <code title="">true</code> |
-| *type* | Datafusion Instance type. It can be BASIC or ENTERPRISE (default value). | <code title="">string</code> |  | <code title="">ENTERPRISE</code> |
+|---|---|:---:|:---:|:---:|
+| name | Name of the DataFusion instance. | <code>string</code> | ✓ |  |
+| network | Name of the network in the project with which the tenant project will be peered for executing pipelines in the form of projects/{project-id}/global/networks/{network} | <code>string</code> | ✓ |  |
+| project_id | Project ID. | <code>string</code> | ✓ |  |
+| region | DataFusion region. | <code>string</code> | ✓ |  |
+| description | DataFuzion instance description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
+| enable_stackdriver_logging | Option to enable Stackdriver Logging. | <code>bool</code> |  | <code>false</code> |
+| enable_stackdriver_monitoring | Option to enable Stackdriver Monitorig. | <code>bool</code> |  | <code>false</code> |
+| firewall_create | Create Network firewall rules to enable SSH. | <code>bool</code> |  | <code>true</code> |
+| ip_allocation | Ip allocated for datafusion instance when not using the auto created one and created outside of the module. | <code>string</code> |  | <code>null</code> |
+| ip_allocation_create | Create Ip range for datafusion instance. | <code>bool</code> |  | <code>true</code> |
+| labels | The resource labels for instance to use to annotate any related underlying resources, such as Compute Engine VMs. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| network_peering | Create Network peering between project and DataFusion tenant project. | <code>bool</code> |  | <code>true</code> |
+| private_instance | Create private instance. | <code>bool</code> |  | <code>true</code> |
+| type | Datafusion Instance type. It can be BASIC or ENTERPRISE (default value). | <code>string</code> |  | <code>&#34;ENTERPRISE&#34;</code> |
 
 ## Outputs
 
@@ -64,4 +66,6 @@ module "datafusion" {
 | service_account | DataFusion Service Account. |  |
 | service_endpoint | DataFusion Service Endpoint. |  |
 | version | DataFusion version. |  |
+
 <!-- END TFDOC -->
+

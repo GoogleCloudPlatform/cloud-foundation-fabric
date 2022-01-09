@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,6 +60,16 @@ variable "internal_addresses_config" {
 variable "project_id" {
   description = "Project where the addresses will be created."
   type        = string
+}
+
+variable "psa_addresses" {
+  description = "Map of internal addresses used for Private Service Access."
+  type = map(object({
+    address       = string
+    network       = string
+    prefix_length = number
+  }))
+  default = {}
 }
 
 variable "psc_addresses" {

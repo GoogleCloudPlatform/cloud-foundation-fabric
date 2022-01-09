@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ def test_resource_count(resources):
 def test_envgroup_attachment(resources):
   "Test Apigee Envgroup Attachments."
   attachments = [r['values'] for r in resources if r['type']
-              == 'google_apigee_envgroup_attachment']
+                 == 'google_apigee_envgroup_attachment']
   assert len(attachments) == 2
   assert set(a['environment'] for a in attachments) == set(['eval1', 'eval2'])
 
@@ -42,7 +42,7 @@ def test_envgroup_attachment(resources):
 def test_envgroup(resources):
   "Test env group."
   envgroups = [r['values'] for r in resources if r['type']
-          == 'google_apigee_envgroup']
+               == 'google_apigee_envgroup']
   assert len(envgroups) == 1
   assert envgroups[0]['name'] == 'eval'
   assert len(envgroups[0]['hostnames']) == 1

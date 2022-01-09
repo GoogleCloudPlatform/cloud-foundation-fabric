@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,37 +13,37 @@
 # limitations under the License.
 
 allowedPorts:
-- ports: 22         # SSH
-  approved: false
-- ports: 80         # HTTP
-  approved: true
-- ports: 443        # HTTPS
-  approved: true
-- ports: 3306        # MySQL
-  approved: false
-- ports: 8000-8999
-  approved: true
+  - ports: 22 # SSH
+    approved: false
+  - ports: 80 # HTTP
+    approved: true
+  - ports: 443 # HTTPS
+    approved: true
+  - ports: 3306 # MySQL
+    approved: false
+  - ports: 8000-8999
+    approved: true
 
 allowedSourceRanges:
-- cidr: 10.0.0.0/8          # Example on-premise range
-  approved: true
-- cidr: 35.191.0.0/16       # Load balancing & health checks
-  approved: true
-- cidr: 130.211.0.0/22      # Load balancing & health checks
-  approved: false
-- cidr: 35.235.240.0/20     # IAP source range
-  approved: true
+  - cidr: 10.0.0.0/8 # Example on-premise range
+    approved: true
+  - cidr: 35.191.0.0/16 # Load balancing & health checks
+    approved: true
+  - cidr: 130.211.0.0/22 # Load balancing & health checks
+    approved: false
+  - cidr: 35.235.240.0/20 # IAP source range
+    approved: true
 
 allowedDestinationRanges:
-- cidr: 10.0.0.0/8
-  approved: true
-- cidr: 0.0.0.0/0
-  approved: false
+  - cidr: 10.0.0.0/8
+    approved: true
+  - cidr: 0.0.0.0/0
+    approved: false
 
 allowedNetworkTags:
-- tag: '*'
-  approved: true
+  - tag: "*"
+    approved: true
 
 allowedServiceAccounts:
-- serviceAccount: '*'
-  approved: true
+  - serviceAccount: "*"
+    approved: true

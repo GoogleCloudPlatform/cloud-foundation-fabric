@@ -1,5 +1,4 @@
-
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,7 +18,7 @@ name: |
 on:
   workflow_dispatch:
   schedule:
-    - cron:  '0 2 * * *'
+    - cron: "0 2 * * *"
 
 permissions:
   contents: write
@@ -44,4 +43,3 @@ jobs:
           else
             echo "No changes in last 24 hours"
           fi
-          

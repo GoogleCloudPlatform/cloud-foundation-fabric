@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,8 +59,11 @@ resource "google_container_cluster" "cluster" {
 
   # TODO(ludomagno): compute addons map in locals and use a single dynamic block
   addons_config {
-    dns_cache_config {
-      enabled = var.addons.dns_cache_config
+    dynamic "dns_cache_config" {
+      for_each = var.enable_autopilot ? [] : [""]
+      content {
+        enabled = var.addons.dns_cache_config
+      }
     }
     http_load_balancing {
       disabled = !var.addons.http_load_balancing
@@ -274,6 +277,16 @@ resource "google_container_cluster" "cluster" {
       cluster_dns_domain = config.value.cluster_dns_domain
     }
   }
+
+  dynamic "notification_config" {
+    for_each = var.notification_config ? [""] : []
+    content {
+      pubsub {
+        enabled = var.notification_config
+        topic   = var.notification_config ? google_pubsub_topic.notifications[0].id : null
+      }
+    }
+  }
 }
 
 resource "google_compute_network_peering_routes_config" "gke_master" {
@@ -283,4 +296,12 @@ resource "google_compute_network_peering_routes_config" "gke_master" {
   network              = element(reverse(split("/", var.network)), 0)
   import_custom_routes = var.peering_config.import_routes
   export_custom_routes = var.peering_config.export_routes
+}
+
+resource "google_pubsub_topic" "notifications" {
+  count = var.notification_config ? 1 : 0
+  name  = "gke-pubsub-notifications"
+  labels = {
+    content = "gke-notifications"
+  }
 }

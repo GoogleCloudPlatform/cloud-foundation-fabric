@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,25 +21,35 @@ variable "contacts" {
 }
 
 variable "firewall_policies" {
-  description = "Hierarchical firewall policies to *create* in this folder."
+  description = "Hierarchical firewall policies created in this folder."
   type = map(map(object({
+    action                  = string
     description             = string
     direction               = string
-    action                  = string
+    logging                 = bool
+    ports                   = map(list(string))
     priority                = number
     ranges                  = list(string)
-    ports                   = map(list(string))
-    target_service_accounts = list(string)
     target_resources        = list(string)
-    logging                 = bool
+    target_service_accounts = list(string)
   })))
   default = {}
 }
 
-variable "firewall_policy_attachments" {
-  description = "List of hierarchical firewall policy IDs to *attach* to this folder."
+variable "firewall_policy_association" {
+  description = "The hierarchical firewall policy to associate to this folder. Must be either a key in the `firewall_policies` map or the id of a policy defined somewhere else."
   type        = map(string)
   default     = {}
+}
+
+variable "firewall_policy_factory" {
+  description = "Configuration for the firewall policy factory."
+  type = object({
+    cidr_file   = string
+    policy_name = string
+    rules_file  = string
+  })
+  default = null
 }
 
 variable "folder_create" {

@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -68,3 +68,13 @@ def test_internal_addresses_config(plan_runner):
           for r in resources] == ['10.0.0.2', None]
   assert [r['values'].get('purpose')
           for r in resources] == ['SHARED_LOADBALANCER_VIP', None]
+
+
+def test_psa_config(plan_runner):
+  psa_addresses = '{cloudsql-mysql={address="10.199.0.0", network="foobar", prefix_length = 24}}'
+  _, resources = plan_runner(FIXTURES_DIR,
+                             psa_addresses=psa_addresses)
+  assert set(r['values']['purpose']
+             for r in resources) == set(['VPC_PEERING'])
+  assert set(r['values']['address']
+             for r in resources) == set(['10.199.0.0'])

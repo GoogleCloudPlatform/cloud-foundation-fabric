@@ -1,4 +1,4 @@
-# Copyright 2021 Google LLC
+# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,5 +23,5 @@ FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
 def test_resources(e2e_plan_runner):
   "Test that plan works and the numbers of resources is as expected."
   modules, resources = e2e_plan_runner(FIXTURES_DIR)
-  assert len(modules) == 5
-  assert len(resources) == 23
+  assert len(modules) == 7
+  assert len(resources) == 29

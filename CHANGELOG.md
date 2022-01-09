@@ -3,8 +3,45 @@
 All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
+
+## [11.0.0] - 2022-01-04
+
+- **incompatible change** remove location from `gcs` bucket names
+- add support for interpolating access levels based on keys to the `vpc-sc` module
+
+## [10.0.1] - 2022-01-03
+
+- remove lifecycle block from vpc sc perimeter resources
+
+## [10.0.0] - 2021-12-31
+
+- fix cases where bridge perimeter status resources are `null` in `vpc-sc` module
+- re-release 9.0.3 as a major release as it contains breaking changes
+  - update hierarchical firewall resources to use the newer `google_compute_firewall_*` resources
+  - **incompatible change** rename `firewall_policy_attachments` to `firewall_policy_association` in the `organization` and `folder` modules
+  - **incompatible change** updated API for the `net-vpc-sc` module
+
+## [9.0.3] - 2021-12-31
+
+- update hierarchical firewall resources to use the newer `google_compute_firewall_*` resources
+- **incompatible change** rename `firewall_policy_attachments` to `firewall_policy_association` in the `organization` and `folder` modules
+- **incompatible change** updated API for the `net-vpc-sc` module
+
+## [9.0.2] - 2021-12-22
+
+- ignore description changes in firewall policy rule to avoid permadiff, add factory example to `folder` module documentation
+
+## [9.0.0] - 2021-12-22
+
 - new `cloud-run` module
 - added gVNIC support to `compute-vm` module
+- added a rule factory to `net-vpc-firewall` module
+- added a subnet factory to `net-vpc` module
+- **incompatible change** added support for partitioned tables to `organization` module sinks 
+- **incompatible change** renamed `private_service_networking_range` variable to `psc_ranges` in `net-vpc`module, and changed its type to `list(string)`
+- added a firewall policy factory to `organization` and `firewall` module
+- refactored `tfdoc`
+- added support for metric scopes to the `project` module
 
 ## [8.0.0] - 2021-10-21
 
@@ -376,7 +413,13 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v8.0.0...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v11.0.0...HEAD
+[11.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v10.0.1...v11.0.0
+[10.0.1]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v10.0.0...v10.0.1
+[10.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v9.0.3...v10.0.0
+[9.0.3]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v9.0.2...v9.0.3
+[9.0.2]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v9.0.0...v9.0.2
+[9.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v8.0.0...v9.0.0
 [8.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v7.0.0...v8.0.0
 [7.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v6.0.0...v7.0.0
 [6.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v5.1.0...v6.0.0

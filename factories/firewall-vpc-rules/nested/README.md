@@ -12,7 +12,7 @@ This module also allows for the definition of template variables, allowing to ce
 
 ```hcl
 module "vpc-firewall" {
-  source           = "../../cloud-foundation-fabric/modules/resource-factories/vpc-firewall"
+  source           = "./factories/firewall-vpc-rules/nested"
   config_folder    = "firewall/vpc"
   templates_folder = "firewall/templates"
 }
@@ -124,17 +124,21 @@ web_frontends:
   - web-frontends@project-wf2.iam.gserviceaccount.com
 ```
 
+
 <!-- BEGIN TFDOC -->
+
 ## Variables
 
 | name | description | type | required | default |
-|---|---|:---: |:---:|:---:|
-| config_folder | Relative path of the folder containing the hierarchical firewall configuration | <code title="">string</code> | ✓ |  |
-| templates_folder | Relative path of the folder containing the cidr/service account templates | <code title="">string</code> | ✓ |  |
+|---|---|:---:|:---:|:---:|
+| config_folder | Relative path of the folder containing the hierarchical firewall configuration | <code>string</code> | ✓ |  |
+| templates_folder | Relative path of the folder containing the cidr/service account templates | <code>string</code> | ✓ |  |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
 | vpc-firewall-rules | Generated VPC Firewall Rules |  |
+
 <!-- END TFDOC -->
+

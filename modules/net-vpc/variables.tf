@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,12 @@ variable "auto_create_subnetworks" {
   description = "Set to true to create an auto mode subnet, defaults to custom mode."
   type        = bool
   default     = false
+}
+
+variable "data_folder" {
+  description = "An optional folder containing the subnet configurations in YaML format."
+  type        = string
+  default     = null
 }
 
 variable "delete_default_routes_on_create" {
@@ -97,22 +103,22 @@ variable "peering_create_remote_end" {
   default     = true
 }
 
-variable "private_service_networking_range" {
-  description = "RFC1919 CIDR range used for Google services that support private service networking."
-  type        = string
-  default     = null
-  validation {
-    condition = (
-      var.private_service_networking_range == null ||
-      can(cidrnetmask(var.private_service_networking_range))
-    )
-    error_message = "Specify a valid RFC1918 CIDR range for private service networking."
-  }
-}
-
 variable "project_id" {
   description = "The ID of the project where this VPC will be created"
   type        = string
+}
+
+variable "psn_ranges" {
+  description = "CIDR ranges used for Google services that support Private Service Networking."
+  type        = list(string)
+  default     = null
+  validation {
+    condition = alltrue([
+      for r in(var.psn_ranges == null ? [] : var.psn_ranges) :
+      can(cidrnetmask(r))
+    ])
+    error_message = "Specify a valid RFC1918 CIDR range for Private Service Networking."
+  }
 }
 
 variable "routes" {

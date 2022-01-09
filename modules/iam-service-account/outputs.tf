@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,4 +39,9 @@ output "key" {
 output "service_account" {
   description = "Service account resource."
   value       = local.service_account
+}
+
+output "service_account_credentials" {
+  description = "Service account json credential templates for uploaded public keys data."
+  value       = local.service_account_credential_templates
 }

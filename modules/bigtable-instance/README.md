@@ -33,23 +33,25 @@ module "bigtable-instance" {
 # tftest:modules=1:resources=4
 ```
 
+
 <!-- BEGIN TFDOC -->
+
 ## Variables
 
 | name | description | type | required | default |
-|---|---|:---: |:---:|:---:|
-| name | The name of the Cloud Bigtable instance. | <code title="">string</code> | ✓ |  |
-| project_id | Id of the project where datasets will be created. | <code title="">string</code> | ✓ |  |
-| zone | The zone to create the Cloud Bigtable cluster in. | <code title="">string</code> | ✓ |  |
-| *cluster_id* | The ID of the Cloud Bigtable cluster. | <code title="">string</code> |  | <code title="">europe-west1</code> |
-| *deletion_protection* | Whether or not to allow Terraform to destroy the instance. Unless this field is set to false in Terraform state, a terraform destroy or terraform apply that would delete the instance will fail. | <code title=""></code> |  | <code title="">true</code> |
-| *display_name* | The human-readable display name of the Bigtable instance. | <code title=""></code> |  | <code title="">null</code> |
-| *iam* | IAM bindings for topic in {ROLE => [MEMBERS]} format. | <code title="map&#40;list&#40;string&#41;&#41;">map(list(string))</code> |  | <code title="">{}</code> |
-| *instance_type* | (deprecated) The instance type to create. One of 'DEVELOPMENT' or 'PRODUCTION'. | <code title="">string</code> |  | <code title="">null</code> |
-| *num_nodes* | The number of nodes in your Cloud Bigtable cluster. | <code title="">number</code> |  | <code title="">1</code> |
-| *storage_type* | The storage type to use. | <code title="">string</code> |  | <code title="">SSD</code> |
-| *table_options_defaults* | Default option of tables created in the BigTable instance. | <code title="object&#40;&#123;&#10;split_keys    &#61; list&#40;string&#41;&#10;column_family &#61; string&#10;&#125;&#41;">object({...})</code> |  | <code title="&#123;&#10;split_keys    &#61; &#91;&#93;&#10;column_family &#61; null&#10;&#125;">...</code> |
-| *tables* | Tables to be created in the BigTable instance, options can be null. | <code title="map&#40;object&#40;&#123;&#10;split_keys    &#61; list&#40;string&#41;&#10;column_family &#61; string&#10;&#125;&#41;&#41;">map(object({...}))</code> |  | <code title="">{}</code> |
+|---|---|:---:|:---:|:---:|
+| name | The name of the Cloud Bigtable instance. | <code>string</code> | ✓ |  |
+| project_id | Id of the project where datasets will be created. | <code>string</code> | ✓ |  |
+| zone | The zone to create the Cloud Bigtable cluster in. | <code>string</code> | ✓ |  |
+| cluster_id | The ID of the Cloud Bigtable cluster. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| deletion_protection | Whether or not to allow Terraform to destroy the instance. Unless this field is set to false in Terraform state, a terraform destroy or terraform apply that would delete the instance will fail. | <code></code> |  | <code>true</code> |
+| display_name | The human-readable display name of the Bigtable instance. | <code></code> |  | <code>null</code> |
+| iam | IAM bindings for topic in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| instance_type | (deprecated) The instance type to create. One of 'DEVELOPMENT' or 'PRODUCTION'. | <code>string</code> |  | <code>null</code> |
+| num_nodes | The number of nodes in your Cloud Bigtable cluster. | <code>number</code> |  | <code>1</code> |
+| storage_type | The storage type to use. | <code>string</code> |  | <code>&#34;SSD&#34;</code> |
+| table_options_defaults | Default option of tables created in the BigTable instance. | <code title="object&#40;&#123;&#10;  split_keys    &#61; list&#40;string&#41;&#10;  column_family &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  split_keys    &#61; &#91;&#93;&#10;  column_family &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
+| tables | Tables to be created in the BigTable instance, options can be null. | <code title="map&#40;object&#40;&#123;&#10;  split_keys    &#61; list&#40;string&#41;&#10;  column_family &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
@@ -59,5 +61,7 @@ module "bigtable-instance" {
 | instance | BigTable intance. |  |
 | table_ids | Map of fully qualified table ids keyed by table name. |  |
 | tables | Table resources. |  |
+
 <!-- END TFDOC -->
+
 

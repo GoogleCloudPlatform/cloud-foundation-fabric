@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,4 +44,9 @@ output "master_version" {
 output "name" {
   description = "Cluster name."
   value       = google_container_cluster.cluster.name
+}
+
+output "notifications" {
+  description = "GKE PubSub notifications topic."
+  value       = var.notification_config ? google_pubsub_topic.notifications[0].id : null
 }

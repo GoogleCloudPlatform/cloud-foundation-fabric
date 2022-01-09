@@ -25,22 +25,24 @@ The number of resources in this sample is kept to a minimum so as to make it gen
 
 This sample uses a top-level folder to encapsulate projects that host resources that are not specific to a single environment. If no shared services are needed,the Terraform and audit modules can be easily attached to the root node, and the shared services folder and project removed from `main.tf`.
 
+
 <!-- BEGIN TFDOC -->
+
 ## Variables
 
 | name | description | type | required | default |
-|---|---|:---: |:---:|:---:|
-| billing_account_id | Billing account id used as default for new projects. | <code title="">string</code> | ✓ |  |
-| organization_id | Organization id in organizations/nnnnnnn format. | <code title="">string</code> | ✓ |  |
-| prefix | Prefix used for resources that need unique names. | <code title="">string</code> | ✓ |  |
-| root_node | Root node for the new hierarchy, either 'organizations/org_id' or 'folders/folder_id'. | <code title="">string</code> | ✓ |  |
-| *audit_filter* | Audit log filter used for the log sink. | <code title="">string</code> |  | <code title="&#60;&#60;END&#10;logName: &#34;&#47;logs&#47;cloudaudit.googleapis.com&#37;2Factivity&#34;&#10;OR&#10;logName: &#34;&#47;logs&#47;cloudaudit.googleapis.com&#37;2Fsystem_event&#34;&#10;END">...</code> |
-| *environments* | Environment short names. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="&#123;&#10;dev  &#61; &#34;Development&#34;,&#10;test &#61; &#34;Testing&#34;,&#10;prod &#61; &#34;Production&#34;&#10;&#125;">...</code> |
-| *gcs_defaults* | Defaults use for the state GCS buckets. | <code title="map&#40;string&#41;">map(string)</code> |  | <code title="&#123;&#10;location      &#61; &#34;EU&#34;&#10;storage_class &#61; &#34;MULTI_REGIONAL&#34;&#10;&#125;">...</code> |
-| *iam_audit_viewers* | Audit project viewers, in IAM format. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
-| *iam_shared_owners* | Shared services project owners, in IAM format. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
-| *iam_terraform_owners* | Terraform project owners, in IAM format. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="">[]</code> |
-| *project_services* | Service APIs enabled by default in new projects. | <code title="list&#40;string&#41;">list(string)</code> |  | <code title="&#91;&#10;&#34;container.googleapis.com&#34;,&#10;&#34;stackdriver.googleapis.com&#34;,&#10;&#93;">...</code> |
+|---|---|:---:|:---:|:---:|
+| billing_account_id | Billing account id used as default for new projects. | <code>string</code> | ✓ |  |
+| organization_id | Organization id in organizations/nnnnnnn format. | <code>string</code> | ✓ |  |
+| prefix | Prefix used for resources that need unique names. | <code>string</code> | ✓ |  |
+| root_node | Root node for the new hierarchy, either 'organizations/org_id' or 'folders/folder_id'. | <code>string</code> | ✓ |  |
+| audit_filter | Audit log filter used for the log sink. | <code>string</code> |  | <code title="&#34;&#10;logName: &#34;&#47;logs&#47;cloudaudit.googleapis.com&#37;2Factivity&#34;&#10;OR&#10;logName: &#34;&#47;logs&#47;cloudaudit.googleapis.com&#37;2Fsystem_event&#34;&#34;">&#8230;</code> |
+| environments | Environment short names. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  dev  &#61; &#34;Development&#34;,&#10;  test &#61; &#34;Testing&#34;,&#10;  prod &#61; &#34;Production&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| gcs_defaults | Defaults use for the state GCS buckets. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  location      &#61; &#34;EU&#34;&#10;  storage_class &#61; &#34;MULTI_REGIONAL&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| iam_audit_viewers | Audit project viewers, in IAM format. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| iam_shared_owners | Shared services project owners, in IAM format. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| iam_terraform_owners | Terraform project owners, in IAM format. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| project_services | Service APIs enabled by default in new projects. | <code>list&#40;string&#41;</code> |  | <code title="&#91;&#10;  &#34;container.googleapis.com&#34;,&#10;  &#34;stackdriver.googleapis.com&#34;,&#10;&#93;">&#91;&#8230;&#93;</code> |
 
 ## Outputs
 
@@ -55,4 +57,6 @@ This sample uses a top-level folder to encapsulate projects that host resources 
 | shared_folder_id | Shared folder id. |  |
 | shared_resources_project | Project that holdes resources shared across business units. |  |
 | terraform_project | Project that holds the base Terraform resources. |  |
+
 <!-- END TFDOC -->
+

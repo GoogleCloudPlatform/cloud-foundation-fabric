@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ module "test" {
   source          = "../../../../cloud-operations/scheduled-asset-inventory-export-bq"
   billing_account = var.billing_account
   cai_config      = var.cai_config
+  cai_gcs_export  = var.cai_gcs_export
+  file_config     = var.file_config
   project_create  = var.project_create
   project_id      = var.project_id
 }

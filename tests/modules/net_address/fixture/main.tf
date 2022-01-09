@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,5 +20,6 @@ module "test" {
   global_addresses          = var.global_addresses
   internal_addresses        = var.internal_addresses
   internal_addresses_config = var.internal_addresses_config
+  psa_addresses             = var.psa_addresses
   project_id                = var.project_id
 }

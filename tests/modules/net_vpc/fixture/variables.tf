@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,6 +58,11 @@ variable "peering_config" {
     export_routes      = bool
     import_routes      = bool
   })
+  default = null
+}
+
+variable "psn_ranges" {
+  type    = list(string)
   default = null
 }
 
@@ -122,6 +127,12 @@ variable "subnet_private_access" {
 
 variable "private_service_networking_range" {
   description = "RFC1919 CIDR range used for Google services that support private service networking."
+  type        = string
+  default     = null
+}
+
+variable "data_folder" {
+  description = "An optional folder containing the subnet configurations in YaML format."
   type        = string
   default     = null
 }

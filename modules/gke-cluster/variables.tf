@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -235,6 +235,12 @@ variable "node_locations" {
   description = "Zones in which the cluster's nodes are located."
   type        = list(string)
   default     = []
+}
+
+variable "notification_config" {
+  description = "GKE Cluster upgrade notifications via PubSub."
+  type        = bool
+  default     = false
 }
 
 variable "peering_config" {
