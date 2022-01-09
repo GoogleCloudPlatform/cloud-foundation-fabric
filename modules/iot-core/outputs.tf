@@ -16,5 +16,5 @@
 
 output "iot_registry" {
   description = "Cloud IoT Core Registry"
-  value       = google_cloudiot_registry.test-registry
+  value       = google_cloudiot_registry.registry
 }
