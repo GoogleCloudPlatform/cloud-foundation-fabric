@@ -27,7 +27,7 @@ env:
   PYTEST_ADDOPTS: "--color=yes"
 
 jobs:
-  tests-environment:
+  examples:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -56,7 +56,7 @@ jobs:
         run: |
           pytest -n 4 -vv tests/examples
 
-  tests-examples:
+  module-examples:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -85,7 +85,7 @@ jobs:
         run: |
           pytest -n 4 -vv tests/modules/examples
 
-  tests-modules:
+  modules:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
