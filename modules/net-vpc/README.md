@@ -171,7 +171,7 @@ module "vpc" {
 ```
 
 ### Subnet Factory
-The `net-vpc` module includes a subnet factory (see [Resource Factories](../../factories/)) for the massive creation of subnets leveraging one configuration file per subnet.
+The `net-vpc` module includes a subnet factory (see [Resource Factories](../../examples/factories/)) for the massive creation of subnets leveraging one configuration file per subnet.
 
 
 ```hcl

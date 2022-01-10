@@ -17,7 +17,7 @@ This sample creates several distinct groups of resources:
 - one top-level project to set up and host centralized audit log exports (optional)
 - one top-level shared services project
 
-The number of resources in this sample is kept to a minimum so as to make it generally applicable, more resources can be easily added by leveraging other [modules from our bundle](../../modules/), or from other sources like the [CFT suite](https://github.com/terraform-google-modules).
+The number of resources in this sample is kept to a minimum so as to make it generally applicable, more resources can be easily added by leveraging other [modules from our bundle](../../../modules/), or from other sources like the [CFT suite](https://github.com/terraform-google-modules).
 
 ## Shared services project
 

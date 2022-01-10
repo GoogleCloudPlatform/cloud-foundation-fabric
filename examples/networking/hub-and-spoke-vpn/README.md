@@ -21,7 +21,7 @@ This sample creates several distinct groups of resources:
 
 ## Operational considerations
 
-A single pre-existing project is used in this example to keep variables and complexity to a minimum, in a real world scenarios each spoke would probably use a separate project. The provided project needs a valid billing account and the Compute and DNS APIs enabled. You can easily create such a project  with the [project module](../../modules/project) or with the following commands:
+A single pre-existing project is used in this example to keep variables and complexity to a minimum, in a real world scenarios each spoke would probably use a separate project. The provided project needs a valid billing account and the Compute and DNS APIs enabled. You can easily create such a project  with the [project module](../../../modules/project) or with the following commands:
 
 ``` shell
 MY_PROJECT_ID="<desired project id>"
@@ -30,7 +30,7 @@ gcloud alpha billing projects link --billing-account=XXXXXX-XXXXXX-XXXXXX $MY_PR
 gcloud services enable --project=$MY_PROJECT_ID {compute,dns}.googleapis.com
 ```
 
-The example does not account for HA, but the VPN gateways can be easily upgraded to use HA VPN via the [net-vpn-ha module](../../modules/net-vpn-ha).
+The example does not account for HA, but the VPN gateways can be easily upgraded to use HA VPN via the [net-vpn-ha module](../../../modules/net-vpn-ha).
 
 If a single router and VPN gateway are used in the hub to manage all tunnels, particular care must be taken in announcing ranges from hub to spokes, as Cloud Router does not explicitly support transitivity and overlapping routes received from both sides create unintended side effects. The simple workaround is to announce a single aggregated route from hub to spokes so that it does not overlap with any of the ranges advertised by each spoke to the hub.
 

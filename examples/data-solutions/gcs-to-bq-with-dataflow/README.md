@@ -49,7 +49,7 @@ You can now connect to the GCE instance with the following command:
  gcloud compute ssh vm-example
 ```
 
-You can run now the simple pipeline you can find [here](./script/data_ingestion/). Once you have installed required packages and copied a file into the GCS bucket, you can trigger the pipeline using internal ips with a command simila to:
+You can run now the simple pipeline you can find [here](./scripts/data_ingestion/). Once you have installed required packages and copied a file into the GCS bucket, you can trigger the pipeline using internal ips with a command simila to:
 
 ```hcl
 python data_ingestion.py \

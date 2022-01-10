@@ -1,6 +1,6 @@
 # Data Platform Foundations - Resources (Step 2)
 
-This is the second step needed to deploy Data Platform Foundations, which creates resources needed to store and process the data, in the projects created in the [previous step](./../environment/). Please refer to the [top-level README](../README.md) for prerequisites and how to run the first step.
+This is the second step needed to deploy Data Platform Foundations, which creates resources needed to store and process the data, in the projects created in the [previous step](../01-environment/README.md). Please refer to the [top-level README](../README.md) for prerequisites and how to run the first step.
 
 ![Data Foundation -  Phase 2](./diagram.png "High-level diagram")
 

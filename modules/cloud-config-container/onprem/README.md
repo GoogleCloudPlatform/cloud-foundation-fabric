@@ -10,7 +10,7 @@ The emulated on-premises infrastructure is composed of:
 - an Nginx container serving a simple static web page
 - a [generic Linux container](./docker-images/toolbox) used as a jump host inside the on-premises network
 
-A [complete scenario using this module](../../../networking/onprem-google-access-dns) is available in the networking examples.
+A [complete scenario using this module](../../../examples/networking/onprem-google-access-dns) is available in the networking examples.
 
 The module renders the generated cloud config in the `cloud_config` output, to be used in instances or instance templates via the `user-data` metadata.
 
