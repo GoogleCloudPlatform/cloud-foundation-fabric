@@ -12,17 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-import os
-import pytest
-
-
-FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
-
-
 def test_external_addresses(plan_runner):
   addresses = '{one = "europe-west1", two = "europe-west2"}'
-  _, resources = plan_runner(FIXTURES_DIR, external_addresses=addresses)
+  _, resources = plan_runner(external_addresses=addresses)
   assert [r['values']['name'] for r in resources] == ['one', 'two']
   assert set(r['values']['address_type']
              for r in resources) == set(['EXTERNAL'])
@@ -31,7 +23,7 @@ def test_external_addresses(plan_runner):
 
 
 def test_global_addresses(plan_runner):
-  _, resources = plan_runner(FIXTURES_DIR, global_addresses='["one", "two"]')
+  _, resources = plan_runner(global_addresses='["one", "two"]')
   assert [r['values']['name'] for r in resources] == ['one', 'two']
   assert set(r['values']['address_type'] for r in resources) == set([None])
 
@@ -41,7 +33,7 @@ def test_internal_addresses(plan_runner):
       '{one = {region = "europe-west1", subnetwork = "foobar"}, '
       'two = {region = "europe-west2", subnetwork = "foobarz"}}'
   )
-  _, resources = plan_runner(FIXTURES_DIR, internal_addresses=addresses)
+  _, resources = plan_runner(internal_addresses=addresses)
   assert [r['values']['name'] for r in resources] == ['one', 'two']
   assert set(r['values']['address_type']
              for r in resources) == set(['INTERNAL'])
@@ -58,8 +50,7 @@ def test_internal_addresses_config(plan_runner):
       '{one = {address = "10.0.0.2", purpose = "SHARED_LOADBALANCER_VIP", '
       'tier=null}}'
   )
-  _, resources = plan_runner(FIXTURES_DIR,
-                             internal_addresses=addresses,
+  _, resources = plan_runner(internal_addresses=addresses,
                              internal_addresses_config=config)
   assert [r['values']['name'] for r in resources] == ['one', 'two']
   assert set(r['values']['address_type']
@@ -72,8 +63,7 @@ def test_internal_addresses_config(plan_runner):
 
 def test_psa_config(plan_runner):
   psa_addresses = '{cloudsql-mysql={address="10.199.0.0", network="foobar", prefix_length = 24}}'
-  _, resources = plan_runner(FIXTURES_DIR,
-                             psa_addresses=psa_addresses)
+  _, resources = plan_runner(psa_addresses=psa_addresses)
   assert set(r['values']['purpose']
              for r in resources) == set(['VPC_PEERING'])
   assert set(r['values']['address']

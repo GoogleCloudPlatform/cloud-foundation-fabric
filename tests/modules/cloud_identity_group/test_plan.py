@@ -12,19 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-import os
-import pytest
-
 from collections import Counter
-
-
-FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
 
 
 def test_group(plan_runner):
   "Test group."
-  _, resources = plan_runner(FIXTURES_DIR)
+  _, resources = plan_runner()
   assert len(resources) == 1
   r = resources[0]
   assert r['type'] == 'google_cloud_identity_group'
@@ -36,7 +29,7 @@ def test_group(plan_runner):
 def test_members(plan_runner):
   "Test group members."
   members = '["member@example.com"]'
-  _, resources = plan_runner(FIXTURES_DIR, members=members)
+  _, resources = plan_runner(members=members)
 
   resource_types = Counter([r['type'] for r in resources])
   assert resource_types == {

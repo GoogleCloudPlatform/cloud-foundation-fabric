@@ -12,18 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-import os
-import pytest
-
-
-FIXTURES_DIR = os.path.join(os.path.dirname(__file__), "fixture")
-
-
 def test_project_logging_bucket(plan_runner):
   "Test project logging bucket."
-  _, resources = plan_runner(
-      FIXTURES_DIR, parent_type="project", parent="myproject")
+  _, resources = plan_runner(parent_type="project",
+                             parent="myproject")
   assert len(resources) == 1
 
   resource = resources[0]
@@ -39,7 +31,7 @@ def test_project_logging_bucket(plan_runner):
 def test_folder_logging_bucket(plan_runner):
   "Test project logging bucket."
   _, resources = plan_runner(
-      FIXTURES_DIR, parent_type="folder", parent="folders/0123456789"
+      parent_type="folder", parent="folders/0123456789"
   )
   assert len(resources) == 1
 
@@ -56,7 +48,7 @@ def test_folder_logging_bucket(plan_runner):
 def test_organization_logging_bucket(plan_runner):
   "Test project logging bucket."
   _, resources = plan_runner(
-      FIXTURES_DIR, parent_type="organization", parent="organizations/0123456789"
+      parent_type="organization", parent="organizations/0123456789"
   )
   assert len(resources) == 1
 
@@ -73,7 +65,7 @@ def test_organization_logging_bucket(plan_runner):
 def test_billing_account_logging_bucket(plan_runner):
   "Test project logging bucket."
   _, resources = plan_runner(
-      FIXTURES_DIR, parent_type="billing_account", parent="0123456789"
+      parent_type="billing_account", parent="0123456789"
   )
   assert len(resources) == 1
 

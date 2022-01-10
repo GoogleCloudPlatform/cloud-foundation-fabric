@@ -12,17 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-import os
-import pytest
-
-
-FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
-
-
 def test_pubsub(plan_runner):
   "Test number of resources created."
-  _, resources = plan_runner(FIXTURES_DIR, pubsub_topic='topic')
+  _, resources = plan_runner(pubsub_topic='topic')
   assert len(resources) == 1
   resource = resources[0]
   assert resource['values']['all_updates_rule'] == [
@@ -34,7 +26,7 @@ def test_pubsub(plan_runner):
 
 
 def test_channel(plan_runner):
-  _, resources = plan_runner(FIXTURES_DIR, notification_channels='["channel"]')
+  _, resources = plan_runner(notification_channels='["channel"]')
   assert len(resources) == 1
   resource = resources[0]
   assert resource['values']['all_updates_rule'] == [
@@ -47,13 +39,13 @@ def test_channel(plan_runner):
 
 def test_emails(plan_runner):
   email_recipients = '{project_id = "project", emails = ["a@b.com", "c@d.com"]}'
-  _, resources = plan_runner(FIXTURES_DIR, email_recipients=email_recipients)
+  _, resources = plan_runner(email_recipients=email_recipients)
   assert len(resources) == 3
 
 
 def test_absolute_amount(plan_runner):
   "Test absolute amount budget."
-  _, resources = plan_runner(FIXTURES_DIR, pubsub_topic='topic', amount="100")
+  _, resources = plan_runner(pubsub_topic='topic', amount="100")
   assert len(resources) == 1
   resource = resources[0]
 

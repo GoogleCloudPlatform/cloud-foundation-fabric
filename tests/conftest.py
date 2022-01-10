@@ -14,6 +14,7 @@
 
 "Shared fixtures"
 
+import inspect
 import os
 import shutil
 import tempfile
@@ -28,8 +29,13 @@ BASEDIR = os.path.dirname(os.path.dirname(__file__))
 def _plan_runner():
   "Returns a function to run Terraform plan on a fixture."
 
-  def run_plan(fixture_path, targets=None, refresh=True, **tf_vars):
+  def run_plan(fixture_path=None, targets=None, refresh=True, **tf_vars):
     "Runs Terraform plan and returns parsed output."
+    if fixture_path is None:
+      # find out the fixture directory from the caller's directory
+      caller = inspect.stack()[2]
+      fixture_path = os.path.join(os.path.dirname(caller.filename), "fixture")
+
     fixture_parent = os.path.dirname(fixture_path)
     fixture_prefix = os.path.basename(fixture_path) + "_"
 
@@ -50,7 +56,7 @@ def _plan_runner():
 def plan_runner(_plan_runner):
   "Returns a function to run Terraform plan on a module fixture."
 
-  def run_plan(fixture_path, targets=None, **tf_vars):
+  def run_plan(fixture_path=None, targets=None, **tf_vars):
     "Runs Terraform plan and returns plan and module resources."
     plan = _plan_runner(fixture_path, targets=targets, **tf_vars)
     # skip the fixture
@@ -64,7 +70,7 @@ def plan_runner(_plan_runner):
 def e2e_plan_runner(_plan_runner):
   "Returns a function to run Terraform plan on an end-to-end fixture."
 
-  def run_plan(fixture_path, targets=None, refresh=True,
+  def run_plan(fixture_path=None, targets=None, refresh=True,
                include_bare_resources=False, **tf_vars):
     "Runs Terraform plan on an end-to-end module using defaults, returns data."
     plan = _plan_runner(fixture_path, targets=targets,
@@ -86,7 +92,7 @@ def e2e_plan_runner(_plan_runner):
 def example_plan_runner(_plan_runner):
   "Returns a function to run Terraform plan on documentation examples."
 
-  def run_plan(fixture_path):
+  def run_plan(fixture_path=None):
     "Runs Terraform plan and returns count of modules and resources."
     plan = _plan_runner(fixture_path)
     # the fixture is the example we are testing
@@ -102,8 +108,13 @@ def example_plan_runner(_plan_runner):
 def apply_runner():
   "Returns a function to run Terraform apply on a fixture."
 
-  def run_apply(fixture_path, **tf_vars):
+  def run_apply(fixture_path=None, **tf_vars):
     "Runs Terraform plan and returns parsed output."
+    if fixture_path is None:
+      # find out the fixture directory from the caller's directory
+      caller = inspect.stack()[1]
+      fixture_path = os.path.join(os.path.dirname(caller.filename), "fixture")
+
     fixture_parent = os.path.dirname(fixture_path)
     fixture_prefix = os.path.basename(fixture_path) + "_"
 

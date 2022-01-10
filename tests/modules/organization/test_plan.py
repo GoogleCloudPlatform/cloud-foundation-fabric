@@ -12,18 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-import os
-import pytest
-
-
-FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
-
-
 def test_audit_config(plan_runner):
   "Test audit config."
   iam_audit_config = '{allServices={DATA_READ=[], DATA_WRITE=["user:me@example.org"]}}'
-  _, resources = plan_runner(FIXTURES_DIR, iam_audit_config=iam_audit_config)
+  _, resources = plan_runner(iam_audit_config=iam_audit_config)
   assert len(resources) == 1
   log_types = set(r['log_type']
                   for r in resources[0]['values']['audit_log_config'])
@@ -44,7 +36,7 @@ def test_iam(plan_runner):
       '"roles/browser" = ["domain:example.org"]'
       '}'
   )
-  _, resources = plan_runner(FIXTURES_DIR, group_iam=group_iam, iam=iam)
+  _, resources = plan_runner(group_iam=group_iam, iam=iam)
   roles = sorted([(r['values']['role'], sorted(r['values']['members']))
                   for r in resources if r['type'] == 'google_organization_iam_binding'])
   assert roles == [
@@ -62,7 +54,7 @@ def test_iam_additive_members(plan_runner):
       '{"user:one@example.org" = ["roles/owner"],'
       '"user:two@example.org" = ["roles/owner", "roles/editor"]}'
   )
-  _, resources = plan_runner(FIXTURES_DIR, iam_additive_members=iam)
+  _, resources = plan_runner(iam_additive_members=iam)
   roles = set((r['values']['role'], r['values']['member'])
               for r in resources if r['type'] == 'google_organization_iam_member')
   assert roles == set([
@@ -75,7 +67,7 @@ def test_iam_additive_members(plan_runner):
 def test_policy_boolean(plan_runner):
   "Test boolean org policy."
   policy_boolean = '{policy-a = true, policy-b = false, policy-c = null}'
-  _, resources = plan_runner(FIXTURES_DIR, policy_boolean=policy_boolean)
+  _, resources = plan_runner(policy_boolean=policy_boolean)
   assert len(resources) == 3
   constraints = set(r['values']['constraint'] for r in resources)
   assert set(constraints) == set(['policy-a', 'policy-b', 'policy-c'])
@@ -100,7 +92,7 @@ def test_policy_list(plan_runner):
       'policy-c = {inherit_from_parent = null, suggested_value = true, status = null, values = null}'
       '}'
   )
-  _, resources = plan_runner(FIXTURES_DIR, policy_list=policy_list)
+  _, resources = plan_runner(policy_list=policy_list)
   assert len(resources) == 3
   values = [r['values'] for r in resources]
   assert [r['constraint']

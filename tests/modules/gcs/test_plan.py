@@ -12,17 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-import os
-import pytest
-
-
-FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
-
-
 def test_buckets(plan_runner):
   "Test bucket resources."
-  _, resources = plan_runner(FIXTURES_DIR)
+  _, resources = plan_runner()
   assert len(resources) == 1
   r = resources[0]
   assert r['type'] == 'google_storage_bucket'
@@ -32,7 +24,7 @@ def test_buckets(plan_runner):
 
 def test_prefix(plan_runner):
   "Test bucket name when prefix is set."
-  _, resources = plan_runner(FIXTURES_DIR, prefix='foo')
+  _, resources = plan_runner(prefix='foo')
   assert resources[0]['values']['name'] == 'foo-bucket-a'
 
 
@@ -43,7 +35,7 @@ def test_config_values(plan_runner):
       force_destroy='true',
       versioning='true'
   )
-  _, resources = plan_runner(FIXTURES_DIR, **variables)
+  _, resources = plan_runner(**variables)
   assert len(resources) == 1
   r = resources[0]
   assert r['values']['uniform_bucket_level_access'] is True
@@ -58,5 +50,5 @@ def test_config_values(plan_runner):
 def test_iam(plan_runner):
   "Test bucket resources with iam roles and members."
   iam = '{ "roles/storage.admin" = ["user:a@b.com"] }'
-  _, resources = plan_runner(FIXTURES_DIR, iam=iam)
+  _, resources = plan_runner(iam=iam)
   assert len(resources) == 2

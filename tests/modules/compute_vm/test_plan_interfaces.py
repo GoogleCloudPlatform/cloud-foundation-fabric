@@ -12,14 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-import os
-import pytest
-
-
-FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
-
-
 def test_address(plan_runner):
   nics = '''[{
     network    = "https://www.googleapis.com/compute/v1/projects/my-project/global/networks/default",
@@ -28,7 +20,7 @@ def test_address(plan_runner):
     addresses  = {external=null, internal="10.0.0.2"}
   }]
   '''
-  _, resources = plan_runner(FIXTURES_DIR, network_interfaces=nics)
+  _, resources = plan_runner(network_interfaces=nics)
   assert len(resources) == 1
   n = resources[0]['values']['network_interface'][0]
   assert n['network_ip'] == "10.0.0.2"
@@ -43,7 +35,7 @@ def test_nat_address(plan_runner):
     addresses  = {external="8.8.8.8", internal=null}
   }]
   '''
-  _, resources = plan_runner(FIXTURES_DIR, network_interfaces=nics)
+  _, resources = plan_runner(network_interfaces=nics)
   assert len(resources) == 1
   n = resources[0]['values']['network_interface'][0]
   assert 'network_ip' not in n

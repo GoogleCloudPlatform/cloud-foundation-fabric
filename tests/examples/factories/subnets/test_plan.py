@@ -10,17 +10,10 @@
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
-# limitations under the License.
-
-import os
-import pytest
-
-FIXTURES_DIR = os.path.join(os.path.dirname(__file__), "fixture")
-
 
 def test_firewall(plan_runner):
   "Test hierarchical firewall rules from conf/rules"
-  _, resources = plan_runner(FIXTURES_DIR)
+  _, resources = plan_runner()
   assert len(resources) == 6
   assert set(r["type"] for r in resources) == set(
       ["google_compute_subnetwork", "google_compute_subnetwork_iam_binding"])

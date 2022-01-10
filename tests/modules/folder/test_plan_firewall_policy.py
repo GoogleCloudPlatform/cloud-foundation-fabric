@@ -12,14 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-import os
-import pytest
-
-
-FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
-
-
 def test_firweall_policy(plan_runner):
   "Test boolean folder policy."
   policy = """
@@ -55,7 +47,7 @@ def test_firweall_policy(plan_runner):
   }
   """
   association = '{policy1="policy1"}'
-  _, resources = plan_runner(FIXTURES_DIR, firewall_policies=policy,
+  _, resources = plan_runner(firewall_policies=policy,
                              firewall_policy_association=association)
   assert len(resources) == 5
 

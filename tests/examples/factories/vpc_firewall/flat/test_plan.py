@@ -12,17 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-import os
-import pytest
-
-
-FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
-
-
 def test_firewall_simple(plan_runner):
   "Test firewall rules from rules/common.yaml with no extra options."
-  _, resources = plan_runner(FIXTURES_DIR)
+  _, resources = plan_runner()
   assert len(resources) == 4
   assert set(r['type'] for r in resources) == set([
       'google_compute_firewall', 'time_static'
@@ -40,7 +32,7 @@ def test_firewall_log_config(plan_runner):
     }
     """
   log_config_value = [{"metadata": "INCLUDE_ALL_METADATA"}]
-  _, resources = plan_runner(FIXTURES_DIR, log_config=log_config)
+  _, resources = plan_runner(log_config=log_config)
   assert len(resources) == 4
   assert set(r['type'] for r in resources) == set([
       'google_compute_firewall', 'time_static'

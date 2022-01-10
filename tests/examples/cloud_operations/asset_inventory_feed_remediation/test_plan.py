@@ -12,16 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-import os
-import pytest
-
-
-FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
-
-
 def test_resources(e2e_plan_runner):
   "Test that plan works and the numbers of resources is as expected."
-  modules, resources = e2e_plan_runner(FIXTURES_DIR)
+  modules, resources = e2e_plan_runner()
   assert len(modules) == 6
   assert len(resources) == 18
