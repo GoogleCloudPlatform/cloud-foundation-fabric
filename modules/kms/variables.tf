@@ -15,13 +15,25 @@
  */
 
 variable "iam" {
-  description = "Keyring IAM bindings for topic in {ROLE => [MEMBERS]} format."
+  description = "Keyring IAM bindings in {ROLE => [MEMBERS]} format."
+  type        = map(list(string))
+  default     = {}
+}
+
+variable "iam_additive" {
+  description = "Keyring IAM additive bindings in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
   default     = {}
 }
 
 variable "key_iam" {
-  description = "Key IAM bindings for topic in {KEY => {ROLE => [MEMBERS]}} format."
+  description = "Key IAM bindings in {KEY => {ROLE => [MEMBERS]}} format."
+  type        = map(map(list(string)))
+  default     = {}
+}
+
+variable "key_iam_additive" {
+  description = "Key IAM additive bindings in {ROLE => [MEMBERS]} format."
   type        = map(map(list(string)))
   default     = {}
 }

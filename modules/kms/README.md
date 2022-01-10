@@ -17,7 +17,7 @@ module "kms" {
   source         = "./modules/kms"
   project_id     = "my-project"
   iam    = {
-    "roles/owner" = ["user:user1@example.com"]
+    "roles/cloudkms.admin" = ["user:user1@example.com"]
   }
   keyring        = { location = "europe-west1", name = "test" }
   keyring_create = false
@@ -32,9 +32,21 @@ module "kms" {
 module "kms" {
   source     = "./modules/kms"
   project_id = "my-project"
+  iam_additive = {
+    "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
+      "user:user1@example.com", "user:user2@example.com"
+    ]
+  }
   key_iam = {
     key-a = {
-      "roles/owner" = ["user:user1@example.com"]
+      "roles/cloudkms.admin" = ["user:user3@example.com"]
+    }
+  }
+  key_iam_additive = {
+    key-b = {
+      "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
+        "user:user4@example.com", "user:user5@example.com"
+      ]
     }
   }
   keyring = { location = "europe-west1", name = "test" }
@@ -44,7 +56,7 @@ module "kms" {
     key-c = { rotation_period = null, labels = { env = "test" } }
   }
 }
-# tftest:modules=1:resources=5
+# tftest:modules=1:resources=9
 ```
 
 ### Crypto key purpose
@@ -77,8 +89,10 @@ module "kms" {
 |---|---|:---:|:---:|:---:|
 | keyring | Keyring attributes. | <code title="object&#40;&#123;&#10;  location &#61; string&#10;  name     &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | project_id | Project id where the keyring will be created. | <code>string</code> | ✓ |  |
-| iam | Keyring IAM bindings for topic in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| key_iam | Key IAM bindings for topic in {KEY => {ROLE => [MEMBERS]}} format. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| iam | Keyring IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| iam_additive | Keyring IAM additive bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| key_iam | Key IAM bindings in {KEY => {ROLE => [MEMBERS]}} format. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| key_iam_additive | Key IAM additive bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | key_purpose | Per-key purpose, if not set defaults will be used. If purpose is not `ENCRYPT_DECRYPT` (the default), `version_template.algorithm` is required. | <code title="map&#40;object&#40;&#123;&#10;  purpose &#61; string&#10;  version_template &#61; object&#40;&#123;&#10;    algorithm        &#61; string&#10;    protection_level &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | key_purpose_defaults | Defaults used for key purpose when not defined at the key level. If purpose is not `ENCRYPT_DECRYPT` (the default), `version_template.algorithm` is required. | <code title="object&#40;&#123;&#10;  purpose &#61; string&#10;  version_template &#61; object&#40;&#123;&#10;    algorithm        &#61; string&#10;    protection_level &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  purpose          &#61; null&#10;  version_template &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
 | keyring_create | Set to false to manage keys and IAM bindings in an existing keyring. | <code>bool</code> |  | <code>true</code> |
@@ -96,4 +110,7 @@ module "kms" {
 | name | Keyring name. |  |
 
 <!-- END TFDOC -->
+
+
+
 
