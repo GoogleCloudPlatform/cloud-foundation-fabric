@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- add support for additive IAM bindings to `kms` module
+
 ## [11.0.0] - 2022-01-04
 
 - **incompatible change** remove location from `gcs` bucket names
