@@ -54,7 +54,7 @@ jobs:
       - name: Run tests environments
         id: test-environments
         run: |
-          pytest -vv tests/cloud_operations tests/data_solutions tests/factories tests/foundations tests/networking
+          pytest -n 4 --dist loadfile -vv tests/examples
 
   tests-examples:
     runs-on: ubuntu-latest
@@ -83,7 +83,7 @@ jobs:
       - name: Run tests examples
         id: test-examples
         run: |
-          pytest -vv tests/examples
+          pytest -n 4 --dist loadfile -vv tests/modules/examples
 
   tests-modules:
     runs-on: ubuntu-latest
@@ -112,4 +112,4 @@ jobs:
       - name: Run tests modules
         id: test-modules
         run: |
-          pytest -vv tests/modules
+          pytest -n 4 --dist loadgroup -vv --ignore=tests/modules/examples tests/modules
