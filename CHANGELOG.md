@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [11.1.0] - 2022-01-11
+
 - add support for additive IAM bindings to `kms` module
 
 ## [11.0.0] - 2022-01-04
@@ -415,7 +417,8 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v11.0.0...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v11.1.0...HEAD
+[11.1.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v11.0.0...v11.1.0
 [11.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v10.0.1...v11.0.0
 [10.0.1]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v10.0.0...v10.0.1
 [10.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v9.0.3...v10.0.0
