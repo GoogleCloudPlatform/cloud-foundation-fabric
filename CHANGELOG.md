@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## [12.0.0] - 2022-01-11
+
+- new repo structure. All end-to-end examples moved to the top level `examples` folder
+
 ## [11.2.0] - 2022-01-11
 
 - fix `net-vpc` subnet factory bug preventing the use of yamls with different shapes
@@ -420,7 +424,8 @@ All notable changes to this project will be documented in this file.
 - merge development branch with suite of new modules and end-to-end examples
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v11.2.0...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v12.0.0...HEAD
+[12.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v11.2.0...v12.0.0
 [11.2.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v11.1.0...v11.2.0
 [11.1.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v11.0.0...v11.1.0
 [11.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v10.0.1...v11.0.0
