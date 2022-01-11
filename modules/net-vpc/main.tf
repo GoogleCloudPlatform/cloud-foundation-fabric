@@ -15,7 +15,7 @@
  */
 
 locals {
-  _factory_data = var.data_folder == null ? {} : {
+  _factory_data = var.data_folder == null ? tomap({}) : {
     for f in fileset(var.data_folder, "**/*.yaml") :
     trimsuffix(basename(f), ".yaml") => yamldecode(file("${var.data_folder}/${f}"))
   }
