@@ -35,12 +35,11 @@ _VAR_DATA_FOLDER = "data"
 def test_subnet_factory(plan_runner):
   "Test subnet factory."
   _, resources = plan_runner(FIXTURES_DIR, data_folder=_VAR_DATA_FOLDER)
-  assert len(resources) == 3
+  assert len(resources) == 5
   subnets = [r['values']
              for r in resources if r['type'] == 'google_compute_subnetwork']
-  assert set(s['name'] for s in subnets) == set(
-      ['factory-subnet'])
-  assert set(len(s['secondary_ip_range']) for s in subnets) == set([1])
+  assert {s['name'] for s in subnets} == {'factory-subnet', 'factory-subnet2'}
+  assert {len(s['secondary_ip_range']) for s in subnets} == {0, 1}
 
 
 def test_subnets_simple(plan_runner):
@@ -49,9 +48,8 @@ def test_subnets_simple(plan_runner):
   assert len(resources) == 4
   subnets = [r['values']
              for r in resources if r['type'] == 'google_compute_subnetwork']
-  assert set(s['name'] for s in subnets) == set(
-      ['a', 'b', 'c'])
-  assert set(len(s['secondary_ip_range']) for s in subnets) == set([0, 0, 2])
+  assert {s['name'] for s in subnets} == {'a', 'b', 'c'}
+  assert {len(s['secondary_ip_range']) for s in subnets} == {0, 0, 2}
 
 
 def test_subnet_log_configs(plan_runner):
