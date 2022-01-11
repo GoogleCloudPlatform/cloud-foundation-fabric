@@ -36,7 +36,7 @@ Specific modules also offer support for non-authoritative bindings (e.g. `google
 
 ## Compute/Container
 
-- [COS container](./cos-container) (coredns, mysql, onprem, squid)
+- [COS container](./cloud-config-container/onprem/) (coredns, mysql, onprem, squid)
 - [GKE cluster](./gke-cluster)
 - [GKE nodepool](./gke-nodepool)
 - [Managed Instance Group](./compute-mig)
@@ -49,7 +49,7 @@ Specific modules also offer support for non-authoritative bindings (e.g. `google
 - [GCS](./gcs)
 - [Pub/Sub](./pubsub)
 - [Bigtable instance](./bigtable-instance)
-- [Cloud SQL instance](./modules/cloudsql-instance)
+- [Cloud SQL instance](./cloudsql-instance)
 
 ## Development
 

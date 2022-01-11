@@ -12,19 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-import os
-import pytest
-
-
-FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
-
 _BACKENDS = '[{balancing_mode="CONNECTION", group="foo", failover=false}]'
 
 
 def test_defaults(plan_runner):
   "Test variable defaults."
-  _, resources = plan_runner(FIXTURES_DIR, backends=_BACKENDS)
+  _, resources = plan_runner(backends=_BACKENDS)
   assert len(resources) == 3
   resources = dict((r['type'], r['values']) for r in resources)
   fwd_rule = resources['google_compute_forwarding_rule']
@@ -45,8 +38,9 @@ def test_defaults(plan_runner):
 
 def test_forwarding_rule(plan_runner):
   "Test forwarding rule variables."
-  _, resources = plan_runner(
-      FIXTURES_DIR, backends=_BACKENDS, global_access='true', ports="[80]")
+  _, resources = plan_runner(backends=_BACKENDS,
+                             global_access='true',
+                             ports="[80]")
   assert len(resources) == 3
   values = [r['values'] for r in resources if r['type']
             == 'google_compute_forwarding_rule'][0]

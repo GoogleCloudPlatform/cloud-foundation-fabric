@@ -83,7 +83,7 @@ module "firewall" {
 
 
 ### Rules Factory
-The module includes a rules factory (see [Resource Factories](../../factories/)) for the massive creation of rules leveraging YaML configuration files. Each configuration file can optionally contain more than one rule which a structure that reflects the `custom_rules` variable.
+The module includes a rules factory (see [Resource Factories](../../examples/factories/)) for the massive creation of rules leveraging YaML configuration files. Each configuration file can optionally contain more than one rule which a structure that reflects the `custom_rules` variable.
 
 ```hcl
 module "firewall" {

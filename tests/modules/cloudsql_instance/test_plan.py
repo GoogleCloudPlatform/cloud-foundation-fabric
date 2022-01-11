@@ -12,18 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
-import pytest
-
 from collections import Counter
-
-FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
 
 
 def test_simple_instance(plan_runner):
   "Test standalone instance."
 
-  _, resources = plan_runner(FIXTURES_DIR)
+  _, resources = plan_runner()
   assert len(resources) == 1
   r = resources[0]
   assert r['values']['project'] == 'my-project'
@@ -34,7 +29,7 @@ def test_simple_instance(plan_runner):
 def test_prefix(plan_runner):
   "Test instance prefix."
 
-  _, resources = plan_runner(FIXTURES_DIR, prefix="prefix")
+  _, resources = plan_runner(prefix="prefix")
   assert len(resources) == 1
   r = resources[0]
   assert r['values']['name'] == 'prefix-db'
@@ -44,7 +39,7 @@ def test_prefix(plan_runner):
     replica2 = "us-central1"
   }"""
 
-  _, resources = plan_runner(FIXTURES_DIR, prefix="prefix")
+  _, resources = plan_runner(prefix="prefix")
   assert len(resources) == 1
   r = resources[0]
   assert r['values']['name'] == 'prefix-db'
@@ -58,7 +53,7 @@ def test_replicas(plan_runner):
     replica2 = "us-central1"
   }"""
 
-  _, resources = plan_runner(FIXTURES_DIR, replicas=replicas, prefix="prefix")
+  _, resources = plan_runner(replicas=replicas, prefix="prefix")
   assert len(resources) == 3
 
   primary = [r for r in resources if r['name'] == 'primary'][0]
@@ -87,8 +82,7 @@ def test_mysql_replicas_enables_backup(plan_runner):
   replicas = """{
     replica1 = "europe-west3"
   }"""
-  _, resources = plan_runner(FIXTURES_DIR,
-                             replicas=replicas,
+  _, resources = plan_runner(replicas=replicas,
                              database_version="MYSQL_8_0")
   assert len(resources) == 2
   primary = [r for r in resources if r['name'] == 'primary'][0]
@@ -105,7 +99,7 @@ def test_users(plan_runner):
     user2 = null
   }"""
 
-  _, resources = plan_runner(FIXTURES_DIR, users=users)
+  _, resources = plan_runner(users=users)
   types = Counter(r['type'] for r in resources)
   assert types == {
       'google_sql_user': 2,
@@ -118,7 +112,7 @@ def test_databases(plan_runner):
   "Test database creation."
 
   databases = '["db1", "db2"]'
-  _, resources = plan_runner(FIXTURES_DIR, databases=databases)
+  _, resources = plan_runner(databases=databases)
 
   resources = [r for r in resources if r['type'] == 'google_sql_database']
   assert len(resources) == 2

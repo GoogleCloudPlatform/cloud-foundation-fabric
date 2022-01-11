@@ -12,21 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-import os
-import pytest
-
-
-FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
-
-
 def test_iam(plan_runner):
   "Test IAM bindings."
   iam = (
       '{"roles/owner" = ["user:one@example.org"],'
       '"roles/viewer" = ["user:two@example.org", "user:three@example.org"]}'
   )
-  _, resources = plan_runner(FIXTURES_DIR, iam=iam)
+  _, resources = plan_runner(iam=iam)
   roles = dict((r['values']['role'], r['values']['members'])
                for r in resources if r['type'] == 'google_project_iam_binding')
   assert roles == {
@@ -40,7 +32,7 @@ def test_iam_additive(plan_runner):
       '{"roles/owner" = ["user:one@example.org"],'
       '"roles/viewer" = ["user:two@example.org", "user:three@example.org"]}'
   )
-  _, resources = plan_runner(FIXTURES_DIR, iam_additive=iam)
+  _, resources = plan_runner(iam_additive=iam)
   roles = set((r['values']['role'], r['values']['member'])
               for r in resources if r['type'] == 'google_project_iam_member')
   assert roles == set([
@@ -56,7 +48,7 @@ def test_iam_additive_members(plan_runner):
       '{"user:one@example.org" = ["roles/owner"],'
       '"user:two@example.org" = ["roles/owner", "roles/editor"]}'
   )
-  _, resources = plan_runner(FIXTURES_DIR, iam_additive_members=iam)
+  _, resources = plan_runner(iam_additive_members=iam)
   roles = set((r['values']['role'], r['values']['member'])
               for r in resources if r['type'] == 'google_project_iam_member')
   assert roles == set([

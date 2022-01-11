@@ -12,13 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-import os
-import pytest
-
-
-FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
-
 _FACTORY = '''
 {
   cidr_file = "data/firewall-cidrs.yaml"
@@ -77,7 +70,7 @@ _POLICIES = '''
 
 def test_custom(plan_runner):
   'Test custom firewall policies.'
-  _, resources = plan_runner(FIXTURES_DIR, firewall_policies=_POLICIES)
+  _, resources = plan_runner(firewall_policies=_POLICIES)
   assert len(resources) == 5
   policies = [r for r in resources
               if r['type'] == 'google_compute_firewall_policy']
@@ -93,7 +86,7 @@ def test_custom(plan_runner):
 
 def test_factory(plan_runner):
   'Test firewall policy factory.'
-  _, resources = plan_runner(FIXTURES_DIR, firewall_policy_factory=_FACTORY)
+  _, resources = plan_runner(firewall_policy_factory=_FACTORY)
   assert len(resources) == 3
   policies = [r for r in resources
               if r['type'] == 'google_compute_firewall_policy']
@@ -110,7 +103,7 @@ def test_factory(plan_runner):
 def test_factory_name(plan_runner):
   'Test firewall policy factory default name.'
   factory = _FACTORY.replace('"factory-1"', 'null')
-  _, resources = plan_runner(FIXTURES_DIR, firewall_policy_factory=factory)
+  _, resources = plan_runner(firewall_policy_factory=factory)
   assert len(resources) == 3
   policies = [r for r in resources
               if r['type'] == 'google_compute_firewall_policy']
@@ -121,7 +114,7 @@ def test_factory_name(plan_runner):
 
 def test_combined(plan_runner):
   'Test combined rules.'
-  _, resources = plan_runner(FIXTURES_DIR, firewall_policies=_POLICIES,
+  _, resources = plan_runner(firewall_policies=_POLICIES,
                              firewall_policy_factory=_FACTORY)
   assert len(resources) == 8
   policies = [r for r in resources

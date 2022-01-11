@@ -12,16 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-import os
-
-
-FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
-
-
 def test_create_policy(plan_runner):
   "Test with auto-created policy."
-  _, resources = plan_runner(FIXTURES_DIR)
+  _, resources = plan_runner()
   counts = {}
   for r in resources:
     n = f'{r["type"]}.{r["name"]}'
@@ -36,7 +29,7 @@ def test_create_policy(plan_runner):
 
 def test_use_policy(plan_runner):
   "Test with existing policy."
-  _, resources = plan_runner(FIXTURES_DIR, access_policy_create="null",
+  _, resources = plan_runner(access_policy_create="null",
                              access_policy="accessPolicies/foobar")
   counts = {}
   for r in resources:

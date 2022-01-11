@@ -12,13 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-import os
-import pytest
-
 from collections import Counter
-
-FIXTURES_DIR = os.path.join(os.path.dirname(__file__), "fixture")
 
 
 def test_sinks(plan_runner):
@@ -65,7 +59,7 @@ def test_sinks(plan_runner):
     }
   }
   """
-  _, resources = plan_runner(FIXTURES_DIR, logging_sinks=logging_sinks)
+  _, resources = plan_runner(logging_sinks=logging_sinks)
   assert len(resources) == 8
 
   resource_types = Counter([r["type"] for r in resources])
@@ -158,8 +152,7 @@ def test_exclusions(plan_runner):
       'exclusion2 = "severity=NOTICE", '
       "}"
   )
-  _, resources = plan_runner(
-      FIXTURES_DIR, logging_exclusions=logging_exclusions)
+  _, resources = plan_runner(logging_exclusions=logging_exclusions)
   assert len(resources) == 2
   exclusions = [
       r for r in resources if r["type"] == "google_logging_organization_exclusion"

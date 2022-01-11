@@ -50,7 +50,7 @@ Some care must be takend with the `groups_iam` variable (and in some situations 
 Hirerarchical firewall policies can be managed in two ways:
 
 - via the `firewall_policies` variable, to directly define policies and rules in Terraform
-- via the `firewall_policy_factory` variable, to leverage external YaML files via a simple "factory" embedded in the module ([see here](../../factories) for more context on factories)
+- via the `firewall_policy_factory` variable, to leverage external YaML files via a simple "factory" embedded in the module ([see here](../../examples/factories) for more context on factories)
 
 Once you have policies (either created via the module or externally), you can associate them using the `firewall_policy_association` variable.
 

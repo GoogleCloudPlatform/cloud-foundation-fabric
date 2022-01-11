@@ -12,12 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-import os
-import pytest
-
-
-FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
 _VAR_BGP = (
     '{'
     'session_range="169.254.63.1/29", '
@@ -51,13 +45,13 @@ _VAR_ROUTER_CONFIG = (
 
 def test_router_create_false(plan_runner):
   "Test with no router creation."
-  _, resources = plan_runner(FIXTURES_DIR, router_create='false')
+  _, resources = plan_runner(router_create='false')
   assert len(resources) == 3
 
 
 def test_vlanattachment(plan_runner):
   "Test vlan attachment"
-  _, resources = plan_runner(FIXTURES_DIR, bgp=_VAR_BGP, config=_VAR_CONFIG)
+  _, resources = plan_runner(bgp=_VAR_BGP, config=_VAR_CONFIG)
   assert len(resources) == 4
   for r in resources:
     if r['type'] != 'google_compute_interconnect_attachment':
@@ -73,7 +67,7 @@ def test_vlanattachment(plan_runner):
 
   def test_router(plan_runner):
     "Test router"
-  _, resources = plan_runner(FIXTURES_DIR, router_config=_VAR_ROUTER_CONFIG)
+  _, resources = plan_runner(router_config=_VAR_ROUTER_CONFIG)
   assert len(resources) == 4
   for r in resources:
     if r['type'] != 'google_compute_router':
@@ -89,7 +83,7 @@ def test_vlanattachment(plan_runner):
 
   def test_router_peer(plan_runner):
     "Test router peer"
-  _, resources = plan_runner(FIXTURES_DIR, bgp=_VAR_BGP)
+  _, resources = plan_runner(bgp=_VAR_BGP)
   assert len(resources) == 4
   for r in resources:
     if r['type'] != 'google_compute_router_peer':
@@ -100,7 +94,7 @@ def test_vlanattachment(plan_runner):
 
   def test_router_interface(plan_runner):
     "Test router interface"
-  _, resources = plan_runner(FIXTURES_DIR, bgp=_VAR_BGP)
+  _, resources = plan_runner(bgp=_VAR_BGP)
   assert len(resources) == 4
   for r in resources:
     if r['type'] != 'google_compute_router_interface':

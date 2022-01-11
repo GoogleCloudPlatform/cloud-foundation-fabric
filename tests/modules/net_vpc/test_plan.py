@@ -12,12 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-import os
-import pytest
-
-
-FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
 _VAR_PEER_VPC_CONFIG = (
     '{'
     'peer_vpc_self_link="projects/my-project/global/networks/my-peer-vpc", '
@@ -46,7 +40,7 @@ _VAR_ROUTES_NEXT_HOPS = {
 
 def test_vpc_simple(plan_runner):
   "Test vpc with no extra options."
-  _, resources = plan_runner(FIXTURES_DIR)
+  _, resources = plan_runner()
   assert len(resources) == 1
   assert [r['type'] for r in resources] == ['google_compute_network']
   assert [r['values']['name'] for r in resources] == ['my-vpc']
@@ -55,7 +49,7 @@ def test_vpc_simple(plan_runner):
 
 def test_vpc_shared(plan_runner):
   "Test shared vpc variables."
-  _, resources = plan_runner(FIXTURES_DIR, shared_vpc_host='true',
+  _, resources = plan_runner(shared_vpc_host='true',
                              shared_vpc_service_projects='["tf-a", "tf-b"]')
   assert len(resources) == 4
   assert set(r['type'] for r in resources) == set([
@@ -66,7 +60,7 @@ def test_vpc_shared(plan_runner):
 
 def test_vpc_peering(plan_runner):
   "Test vpc peering variables."
-  _, resources = plan_runner(FIXTURES_DIR, peering_config=_VAR_PEER_VPC_CONFIG)
+  _, resources = plan_runner(peering_config=_VAR_PEER_VPC_CONFIG)
   assert len(resources) == 3
   assert set(r['type'] for r in resources) == set([
       'google_compute_network', 'google_compute_network_peering'
@@ -83,7 +77,7 @@ def test_vpc_routes(plan_runner):
   "Test vpc routes."
   for next_hop_type, next_hop in _VAR_ROUTES_NEXT_HOPS.items():
     _var_routes = _VAR_ROUTES_TEMPLATE % (next_hop_type, next_hop)
-    _, resources = plan_runner(FIXTURES_DIR, routes=_var_routes)
+    _, resources = plan_runner(routes=_var_routes)
     assert len(resources) == 3
     resource = [r for r in resources if r['values']
                 ['name'] == 'my-vpc-next-hop-test'][0]

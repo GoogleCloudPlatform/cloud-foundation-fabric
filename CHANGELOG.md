@@ -57,7 +57,7 @@ All notable changes to this project will be documented in this file.
 
 ## [7.0.0] - 2021-10-21
 
-- new cloud operations example showing how to deploy infrastructure for [Compute Engine image builder based on Hashicorp Packer](./cloud-operations/packer-image-builder)
+- new cloud operations example showing how to deploy infrastructure for [Compute Engine image builder based on Hashicorp Packer](./examples/cloud-operations/packer-image-builder)
 - **incompatible change** the format of the `records` variable in the `dns` module has changed, to better support dynamic values
 - new `naming-convention` module
 - new `cloudsql-instance` module
@@ -83,7 +83,7 @@ All notable changes to this project will be documented in this file.
 - fix `scheduled-asset-inventory-export-bq` module
 - output custom role information from the `organization` module
 - enable multiple `vpc-sc` perimeters over multiple modules
-- new cloud operations example showing how to [restrict service usage using delegated role grants](./cloud-operations/iam-delegated-role-grants)
+- new cloud operations example showing how to [restrict service usage using delegated role grants](./examples/cloud-operations/iam-delegated-role-grants)
 - **incompatible change** multiple instance support has been removed from the `compute-vm` module, to bring its interface in line with other modules and enable simple use of `for_each` at the module level; its variables have also slightly changed (`attached_disks`, `boot_disk_delete`, `crate_template`, `zone`)
 - **incompatible change** dropped the `admin_ranges_enabled` variable in `net-vpc-firewall`. Set `admin_ranges = []` to get the same effect
 - added the `named_ranges` variable to `net-vpc-firewall`
@@ -96,8 +96,8 @@ All notable changes to this project will be documented in this file.
 - add support for CMEK keys in Data Foundation end to end example
 - add support for VPC-SC perimeters in Data Foundation end to end example
 - fix `vpc-sc` module
-- new networking example showing how to use [Private Service Connect to call a Cloud Function from on-premises](./networking/private-cloud-function-from-onprem/)
-- new networking example showing how to organize [decentralized firewall](./networking/decentralized-firewall/) management on GCP
+- new networking example showing how to use [Private Service Connect to call a Cloud Function from on-premises](./examples/networking/private-cloud-function-from-onprem/)
+- new networking example showing how to organize [decentralized firewall](./examples/networking/decentralized-firewall/) management on GCP
 
 ## [5.0.0] - 2021-06-17
 
@@ -419,6 +419,7 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
+<!-- markdown-link-check-disable -->
 [Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v11.2.0...HEAD
 [11.2.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v11.1.0...v11.2.0
 [11.1.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v11.0.0...v11.1.0
@@ -481,3 +482,4 @@ All notable changes to this project will be documented in this file.
 [#82]: https://github.com/terraform-google-modules/cloud-foundation-fabric/pull/82
 [#103]: https://github.com/terraform-google-modules/cloud-foundation-fabric/pull/103
 [#156]: https://github.com/terraform-google-modules/cloud-foundation-fabric/pull/156
+<!-- markdown-link-check-enable -->

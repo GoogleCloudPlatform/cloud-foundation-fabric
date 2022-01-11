@@ -14,10 +14,13 @@
 
 "Shared fixtures"
 
+import inspect
 import os
+import shutil
+import tempfile
+
 import pytest
 import tftest
-
 
 BASEDIR = os.path.dirname(os.path.dirname(__file__))
 
@@ -26,12 +29,25 @@ BASEDIR = os.path.dirname(os.path.dirname(__file__))
 def _plan_runner():
   "Returns a function to run Terraform plan on a fixture."
 
-  def run_plan(fixture_path, targets=None, refresh=True, **tf_vars):
+  def run_plan(fixture_path=None, targets=None, refresh=True, **tf_vars):
     "Runs Terraform plan and returns parsed output."
-    tf = tftest.TerraformTest(fixture_path, BASEDIR,
-                              os.environ.get('TERRAFORM', 'terraform'))
-    tf.setup(upgrade=True)
-    return tf.plan(output=True, refresh=refresh, tf_vars=tf_vars, targets=targets)
+    if fixture_path is None:
+      # find out the fixture directory from the caller's directory
+      caller = inspect.stack()[2]
+      fixture_path = os.path.join(os.path.dirname(caller.filename), "fixture")
+
+    fixture_parent = os.path.dirname(fixture_path)
+    fixture_prefix = os.path.basename(fixture_path) + "_"
+
+    with tempfile.TemporaryDirectory(prefix=fixture_prefix,
+                                     dir=fixture_parent) as tmp_path:
+      # copy fixture to a temporary directory so we can execute
+      # multiple tests in parallel
+      shutil.copytree(fixture_path, tmp_path, dirs_exist_ok=True)
+      tf = tftest.TerraformTest(tmp_path, BASEDIR,
+                                os.environ.get('TERRAFORM', 'terraform'))
+      tf.setup(upgrade=True)
+      return tf.plan(output=True, refresh=refresh, tf_vars=tf_vars, targets=targets)
 
   return run_plan
 
@@ -40,7 +56,7 @@ def _plan_runner():
 def plan_runner(_plan_runner):
   "Returns a function to run Terraform plan on a module fixture."
 
-  def run_plan(fixture_path, targets=None, **tf_vars):
+  def run_plan(fixture_path=None, targets=None, **tf_vars):
     "Runs Terraform plan and returns plan and module resources."
     plan = _plan_runner(fixture_path, targets=targets, **tf_vars)
     # skip the fixture
@@ -54,7 +70,7 @@ def plan_runner(_plan_runner):
 def e2e_plan_runner(_plan_runner):
   "Returns a function to run Terraform plan on an end-to-end fixture."
 
-  def run_plan(fixture_path, targets=None, refresh=True,
+  def run_plan(fixture_path=None, targets=None, refresh=True,
                include_bare_resources=False, **tf_vars):
     "Runs Terraform plan on an end-to-end module using defaults, returns data."
     plan = _plan_runner(fixture_path, targets=targets,
@@ -76,7 +92,7 @@ def e2e_plan_runner(_plan_runner):
 def example_plan_runner(_plan_runner):
   "Returns a function to run Terraform plan on documentation examples."
 
-  def run_plan(fixture_path):
+  def run_plan(fixture_path=None):
     "Runs Terraform plan and returns count of modules and resources."
     plan = _plan_runner(fixture_path)
     # the fixture is the example we are testing
@@ -92,13 +108,26 @@ def example_plan_runner(_plan_runner):
 def apply_runner():
   "Returns a function to run Terraform apply on a fixture."
 
-  def run_apply(fixture_path, **tf_vars):
-    "Runs Terraform apply and returns parsed output"
-    tf = tftest.TerraformTest(fixture_path, BASEDIR,
-                              os.environ.get('TERRAFORM', 'terraform'))
-    tf.setup(upgrade=True)
-    apply = tf.apply(tf_vars=tf_vars)
-    output = tf.output(json_format=True)
-    return apply, output
+  def run_apply(fixture_path=None, **tf_vars):
+    "Runs Terraform plan and returns parsed output."
+    if fixture_path is None:
+      # find out the fixture directory from the caller's directory
+      caller = inspect.stack()[1]
+      fixture_path = os.path.join(os.path.dirname(caller.filename), "fixture")
+
+    fixture_parent = os.path.dirname(fixture_path)
+    fixture_prefix = os.path.basename(fixture_path) + "_"
+
+    with tempfile.TemporaryDirectory(prefix=fixture_prefix,
+                                     dir=fixture_parent) as tmp_path:
+      # copy fixture to a temporary directory so we can execute
+      # multiple tests in parallel
+      shutil.copytree(fixture_path, tmp_path, dirs_exist_ok=True)
+      tf = tftest.TerraformTest(tmp_path, BASEDIR,
+                                os.environ.get('TERRAFORM', 'terraform'))
+      tf.setup(upgrade=True)
+      apply = tf.apply(tf_vars=tf_vars)
+      output = tf.output(json_format=True)
+      return apply, output
 
   return run_apply

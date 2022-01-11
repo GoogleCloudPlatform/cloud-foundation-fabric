@@ -12,17 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-import os
-import pytest
-
-
-FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
-
-
 def test_vpc_firewall_simple(plan_runner):
   "Test vpc with no extra options."
-  _, resources = plan_runner(FIXTURES_DIR)
+  _, resources = plan_runner()
   assert len(resources) == 3
   assert set([r['type'] for r in resources]) == set(
       ['google_compute_firewall'])
@@ -35,7 +27,9 @@ def test_vpc_firewall_simple(plan_runner):
 def test_vpc_firewall_factory(plan_runner):
   "Test shared vpc variables."
   _, resources = plan_runner(
-      FIXTURES_DIR, data_folder="config/firewall", cidr_template_file="config/cidr_template.yaml")
+    data_folder="config/firewall",
+    cidr_template_file="config/cidr_template.yaml"
+  )
   assert len(resources) == 4
   factory_rule = [r for r in resources if r["values"]
                   ["name"] == "allow-healthchecks"][0]["values"]

@@ -18,3 +18,4 @@ bundle.zip
 .DS_Store
 **/packer_cache
 **/*.pkrvars.hcl
+fixture_*
