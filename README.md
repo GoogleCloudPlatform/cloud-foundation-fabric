@@ -16,18 +16,7 @@ Both the examples and modules require some measure of Terraform skills to be use
 
 ## End-to-end examples
 
-The examples in this repository are split in several main sections: **foundational examples** that bootstrap the organizational hierarchy and automation prerequisites, **networking examples** that implement core patterns or features, **data solutions examples** that demonstrate how to integrate data services in complete scenarios, **cloud operations examples** that leverage specific products to meet specific operational needs and **factories** that implement resource factories for the repetitive creation of specific resources.
-
-Currently available examples:
-
-- **foundations** - [single level hierarchy](./examples/foundations/environments/) (environments), [multiple level hierarchy](./examples/foundations/business-units/) (business units + environments)
-- **networking** - [hub and spoke via peering](./examples/networking/hub-and-spoke-peering/), [hub and spoke via VPN](./examples/networking/hub-and-spoke-vpn/), [DNS and Google Private Access for on-premises](./examples/networking/onprem-google-access-dns/), [Shared VPC with GKE support](./examples/networking/shared-vpc-gke/), [ILB as next hop](./examples/networking/ilb-next-hop), [PSC for on-premises Cloud Function invocation](./examples/networking/private-cloud-function-from-onprem/), [decentralized firewall](./examples/networking/decentralized-firewall)
-- **data solutions** - [GCE/GCS CMEK via centralized Cloud KMS](./examples/data-solutions/cmek-via-centralized-kms/), [Cloud Storage to Bigquery with Cloud Dataflow](./examples/data-solutions/gcs-to-bq-with-dataflow/)
-- **cloud operations** - [Resource tracking and remediation via Cloud Asset feeds](.//examples/cloud-operations/asset-inventory-feed-remediation), [Granular Cloud DNS IAM via Service Directory](./examples/cloud-operations/dns-fine-grained-iam), [Granular Cloud DNS IAM for Shared VPC](./examples/cloud-operations/dns-shared-vpc), [Compute Engine quota monitoring](./examples/cloud-operations/quota-monitoring), [Scheduled Cloud Asset Inventory Export to Bigquery](./examples/cloud-operations/scheduled-asset-inventory-export-bq), [Packer image builder](./examples/cloud-operations/packer-image-builder), [On-prem SA key management](./examples/cloud-operations/onprem-sa-key-management)
-- **third party solutions** - [OpenShift cluster on Shared VPC](./examples/third-party-solutions/openshift)
-- **factories** - [Example environments](./examples/factories/example-environments), [Hierarchical Firewall Policies](./examples/factories/firewall-hierarchical-policies), [VPC Firewall Rules](./examples/factories/firewall-vpc-rules), [Subnets](./examples/factories/subnets)
-
-For more information see the README files in the [foundations](./examples/foundations/), [networking](./examples/networking/), [data solutions](./examples/data-solutions/), [cloud operations](./examples/cloud-operations/) and [factories](./examples/factories/) folders.
+The [examples](./examples/) in this repository are split in several main sections: **[foundational examples](./examples/foundations/)** that bootstrap the organizational hierarchy and automation prerequisites, **[networking examples](./examples/networking/)** that implement core patterns or features, **[data solutions examples](./examples/data-solutions/)** that demonstrate how to integrate data services in complete scenarios, **[cloud operations examples](./examples/cloud-operations/)** that leverage specific products to meet specific operational needs and **[factories](./examples/factories/)** that implement resource factories for the repetitive creation of specific resources.
 
 ## Modules
 
