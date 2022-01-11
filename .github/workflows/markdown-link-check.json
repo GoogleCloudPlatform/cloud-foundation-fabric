@@ -1,0 +1,9 @@
+{
+  "aliveStatusCodes": [429, 200],
+  "retryOn429": false,
+  "ignorePatterns": [
+    {
+      "pattern": "^https://medium.com"
+    }
+  ]
+}

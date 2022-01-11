@@ -419,6 +419,7 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
+<!-- markdown-link-check-disable -->
 [Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v11.2.0...HEAD
 [11.2.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v11.1.0...v11.2.0
 [11.1.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v11.0.0...v11.1.0
@@ -481,3 +482,4 @@ All notable changes to this project will be documented in this file.
 [#82]: https://github.com/terraform-google-modules/cloud-foundation-fabric/pull/82
 [#103]: https://github.com/terraform-google-modules/cloud-foundation-fabric/pull/103
 [#156]: https://github.com/terraform-google-modules/cloud-foundation-fabric/pull/156
+<!-- markdown-link-check-enable -->
