@@ -11,7 +11,7 @@ This example shows how to manage IAM Service Account Keys by manually generating
 
 ## Running the example 
 
-Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fcloud-foundation-fabric&cloudshell_print=cloud-shell-readme.txt&cloudshell_working_dir=cloud-operations%2Fonprem-sa-key-management&cloudshell_open_in_editor=cloudshell_open%2Fcloud-foundation-fabric%2Fcloud-operations%2Fonprem-sa-key-management%2Fvariables.tf), then go through the following steps to create resources:
+Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fcloud-foundation-fabric&cloudshell_print=cloud-shell-readme.txt&cloudshell_working_dir=examples%2Fcloud-operations%2Fonprem-sa-key-management&cloudshell_open_in_editor=cloudshell_open%2Fcloud-foundation-fabric%2Fexamples%2Fcloud-operations%2Fonprem-sa-key-management%2Fvariables.tf), then go through the following steps to create resources:
 
 Cleaning up example keys
 ```bash

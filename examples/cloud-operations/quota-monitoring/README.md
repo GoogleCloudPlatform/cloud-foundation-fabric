@@ -18,7 +18,7 @@ The solution also creates a basic monitoring alert policy, to demonstrate how to
 
 ## Running the example
 
-Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fcloud-foundation-fabric&cloudshell_print=cloud-shell-readme.txt&cloudshell_working_dir=cloud-operations%2Fquota-monitoring), then go through the following steps to create resources:
+Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fcloud-foundation-fabric&cloudshell_print=cloud-shell-readme.txt&cloudshell_working_dir=examples%2Fcloud-operations%2Fquota-monitoring), then go through the following steps to create resources:
 
 - `terraform init`
 - `terraform apply -var project_id=my-project-id`

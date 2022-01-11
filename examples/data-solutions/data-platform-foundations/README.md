@@ -36,7 +36,7 @@ In order to bring up this example, you will need
 
 ## Bringing up the platform
 
-[![Open in Cloud Shell](https://gstatic.com/cloudssh/images/open-btn.svg)](https://ssh.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fcloud-foundation-fabric.git&cloudshell_open_in_editor=README.md&cloudshell_workspace=data-solutions%2Fdata-platform-foundations)
+[![Open in Cloud Shell](https://gstatic.com/cloudssh/images/open-btn.svg)](https://ssh.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fcloud-foundation-fabric.git&cloudshell_open_in_editor=README.md&cloudshell_workspace=examples%2Fdata-solutions%2Fdata-platform-foundations)
 
 The end-to-end example is composed of 2 foundational, and 1 optional steps:
 
