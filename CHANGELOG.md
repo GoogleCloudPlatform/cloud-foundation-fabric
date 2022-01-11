@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- fix `net-vpc` subnet factory bug preventing the use of yamls with different shapes
+
 ## [11.1.0] - 2022-01-11
 
 - add support for additive IAM bindings to `kms` module
