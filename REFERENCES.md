@@ -11,9 +11,9 @@ This is a non-exhaustive list of Fabric usage in the wild. Send us a PR if you s
 - [Fine-grained Cloud DNS IAM via Service Directory](https://medium.com/google-cloud/fine-grained-cloud-dns-iam-via-service-directory-446058b4362e)<br>*Medium / Ludovico Magnocavallo*
 - [Give app teams autonomy over their DNS records with Cloud DNS peering](https://cloud.google.com/blog/products/networking/how-to-use-cloud-dns-peering-in-a-shared-vpc-environment)<br>*Google Cloud Blog / Aurelien Legrand, Karthik Balakrishnan*
 - [Managing GCP service usage through delegated role grants](https://medium.com/google-cloud/managing-gcp-service-usage-through-delegated-role-grants-a843610f2226)<br>*Medium / Julio Castillo*
+- [Resource Factories: A descriptive approach to Terraform](https://medium.com/google-cloud/resource-factories-a-descriptive-approach-to-terraform-581b3ebb59c)<br>*Medium / Simone Ruffilli*
 - [Using Cloud Asset Inventory feeds for dynamic configuration and policy enforcement](https://medium.com/google-cloud/using-cloud-asset-inventory-feeds-for-dynamic-configuration-and-policy-enforcement-c37b6a590c49)<br>*Medium / Ludovico Magnocavallo*
 - [Using GCP Cloud Asset Inventory Export to keep track of your GCP resources over time](https://medium.com/google-cloud/using-gcp-cloud-asset-inventory-export-to-keep-track-of-your-gcp-resources-over-time-20fb6fa63c68)<br>*Medium / Lorenzo Caggioni*
-- [Resource Factories: A descriptive approach to Terraform](https://medium.com/google-cloud/resource-factories-a-descriptive-approach-to-terraform-581b3ebb59c)<br>*Medium / Simone Ruffilli*
 
 ## Books
 
