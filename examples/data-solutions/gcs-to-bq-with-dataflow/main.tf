@@ -30,15 +30,14 @@ module "project-service" {
   parent          = var.root_node
   billing_account = var.billing_account
   services = [
+    "bigquery.googleapis.com",
+    "bigqueryreservation.googleapis.com",
+    "bigquerystorage.googleapis.com",
     "cloudkms.googleapis.com",
     "compute.googleapis.com",
     "dataflow.googleapis.com",
     "servicenetworking.googleapis.com",
     "storage.googleapis.com",
-    "storage-component.googleapis.com",
-    "bigquery.googleapis.com",
-    "bigqueryreservation.googleapis.com",
-    "bigquerystorage.googleapis.com",
   ]
   oslogin = true
 }
