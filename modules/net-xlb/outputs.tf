@@ -18,7 +18,7 @@ output "health_checks" {
   description = "Health-check resources."
   value       = try(google_compute_health_check.health_check, [])
 }
-  
+
 output "backend_services" {
   description = "Backend service resources."
   value = {
