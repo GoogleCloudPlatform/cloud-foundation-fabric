@@ -15,15 +15,20 @@
  */
 
 locals {
+  # If no SSL certificates are defined, use the default one.
+  # Otherwise, look in the ssl_certificates_config map.
+  # Otherwise, use the SSL certificate id as is (already existing).
   ssl_certificates = (
-    # ssl_certificate_configs declared in ssl_certificates.tf
-    local.ssl_certificate_configs.source_type == "create"
-    ? (
-      local.ssl_certificate_configs.type == "managed"
-      ? try([google_compute_managed_ssl_certificate.managed.0.id], null)
-      : try([google_compute_ssl_certificate.unmanaged.0.id], null)
-    )
-    : local.ssl_certificate_configs.ids
+    var.https == true
+    ? [
+      for cert in try(var.target_proxy_https_config.ssl_certificates, ["default"]) :
+      try(
+        google_compute_managed_ssl_certificate.managed[cert].id,
+        google_compute_ssl_certificate.unmanaged[cert].id,
+        cert
+      )
+    ]
+    : []
   )
 }
 

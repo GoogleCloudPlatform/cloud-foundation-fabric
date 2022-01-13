@@ -24,50 +24,185 @@ variable "project_id" {
   type        = string
 }
 
-variable "health_check_config_default" {
-  description = "Auto-created helth check default configuration."
-  type        = any
-  default     = {}
+variable "health_checks_config_defaults" {
+  description = "Auto-created health check default configuration."
+  type = object({
+    type    = string      # http https tcp ssl http2
+    check   = map(any)    # actual health check block attributes
+    options = map(number) # interval, thresholds, timeout
+    logging = bool
+  })
+  default = {
+    type    = "http"
+    logging = false
+    options = {}
+    check = {
+      port_specification = "USE_SERVING_PORT"
+    }
+  }
 }
 
-# type    = string      # http https tcp ssl http2
-# check   = map(any)    # health check - check block attributes
-# logging = bool
-variable "health_checks_configs" {
-  description = "Custom health checks configurations."
-  type        = any
-  default     = {}
+variable "health_checks_config" {
+  description = "Custom health checks configuration."
+  type = map(object({
+    type    = string      # http https tcp ssl http2
+    check   = map(any)    # actual health check block attributes
+    options = map(number) # interval, thresholds, timeout
+    logging = bool
+  }))
+  default = {}
 }
 
-variable "backends_configs" {
-  #   type         = string      # bucket, group
-  #   config       = any         # optional additional params for each backend config
-  #   logging      = bool
-  #   health_check = map(string) # optional health_check, otherwise health_check_config_default will be used
-  #   backend      = [
-  #     {
-  #     }
-  #   ]
-  description = "The list of backends."
-  type        = any
+variable "backend_services_config" {
+  description = "The backends services configuration."
+  type = map(object({
+    enable_cdn = bool
+
+    cdn_config = object({
+      cache_mode                   = string
+      client_ttl                   = number
+      default_ttl                  = number
+      max_ttl                      = number
+      negative_caching             = bool
+      negative_caching_policy      = map(number)
+      serve_while_stale            = bool
+      signed_url_cache_max_age_sec = string
+    })
+
+    bucket_config = object({
+      bucket_name = string
+      options = object({
+        custom_response_headers = list(string)
+      })
+    })
+
+    group_config = object({
+      backends = list(object({
+        group = string # IG or NEG FQDN address
+        options = object({
+          balancing_mode               = string # Can be UTILIZATION, RATE, CONNECTION
+          capacity_scaler              = number # Valid range is [0.0,1.0]
+          max_connections              = number
+          max_connections_per_instance = number
+          max_connections_per_endpoint = number
+          max_rate                     = number
+          max_rate_per_instance        = number
+          max_rate_per_endpoint        = number
+          max_utilization              = number
+        })
+      }))
+
+      # Optional health check ids for backend service groups.
+      # Will lookup for ids in health_chacks_config first,
+      # then will use the id as is. If no ids are defined
+      # at all (null, []) health_checks_config_defaults is used
+      health_checks = list(string)
+
+      log_config = object({
+        enable      = bool
+        sample_rate = number # must be in [0, 1]
+      })
+
+      options = object({
+        affinity_cookie_ttl_sec         = number
+        custom_request_headers          = list(string)
+        custom_response_headers         = list(string)
+        connection_draining_timeout_sec = number
+        load_balancing_scheme           = string # only EXTERNAL (default) makes sense here
+        locality_lb_policy              = string
+        port_name                       = string
+        protocol                        = string
+        security_policy                 = string
+        session_affinity                = string
+        timeout_sec                     = number
+
+        circuits_breakers = object({
+          max_requests_per_connection = number # Set to 1 to disable keep-alive
+          max_connections             = number # Defaults to 1024
+          max_pending_requests        = number # Defaults to 1024
+          max_requests                = number # Defaults to 1024
+          max_retries                 = number # Defaults to 3
+        })
+
+        consistent_hash = object({
+          http_header_name  = string
+          minimum_ring_size = string
+          http_cookie = object({
+            name = string
+            path = string
+            ttl = object({
+              seconds = number
+              nanos   = number
+            })
+          })
+        })
+
+        iap = object({
+          oauth2_client_id            = string
+          oauth2_client_secret        = string
+          oauth2_client_secret_sha256 = string
+        })
+      })
+    })
+  }))
+  default = {}
 }
 
-variable "url_map_configs" {
+variable "url_map_config" {
   description = "The url-map configuration."
-  type        = any
-  default     = {}
+  type = object({
+    default_service      = string
+    default_route_action = any
+    default_url_redirect = map(any)
+    header_action        = any
+    host_rules           = list(any)
+    path_matchers        = list(any)
+    tests                = list(map(string))
+  })
+  default = null
 }
 
-variable "ssl_certificate_configs" {
-  description = "The SSL certificate configurations. Look at ssl_certificates.tf for defaults."
-  type        = any
-  default     = {}
+variable "ssl_certificates_config" {
+  description = "The SSL certificate configuration."
+  type = map(object({
+    domains = list(string)
+    # If unmanaged_config is null, the certificate will be managed
+    unmanaged_config = object({
+      tls_private_key      = string
+      tls_self_signed_cert = string
+    })
+  }))
+  default = {
+    default = {
+      domains          = ["example.com"],
+      unmanaged_config = null
+    }
+  }
 }
 
-variable "global_forwarding_rule_configs" {
+variable "target_proxy_https_config" {
+  description = "The HTTPS target proxy configuration."
+  type = object({
+    ssl_certificates = list(string)
+  })
+  default = null
+}
+
+variable "global_forwarding_rule_config" {
   description = "Global forwarding rule configurations."
-  type        = any
-  default     = {}
+  type = object({
+    ip_protocol           = string
+    ip_version            = string
+    load_balancing_scheme = string
+    port_range            = string
+
+  })
+  default = {
+    load_balancing_scheme = "EXTERNAL"
+    ip_protocol           = "TCP"
+    ip_version            = "IPV4"
+    port_range            = "80" # 80, 8080, 443
+  }
 }
 
 variable "https" {

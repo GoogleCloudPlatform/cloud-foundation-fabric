@@ -15,111 +15,121 @@
  */
 
 locals {
-  # Defaults
-  _health_checks_configs_default = {
-    type = "http"
-    check = {
-      port_specification = "USE_SERVING_PORT"
-    }
-    logging = false
-  }
-
   # Get group backend services without health checks defined
-  _backends_without_hc = [for k, v in var.backends_configs : v if v.type == "group" && try(v.health_check, null) == null]
-
-  # If group at least one backend service without
-  # hc is defined, create a default health check
-  health_checks_configs = (length(local._backends_without_hc) > 0
-    ? merge({
-      default = local._health_checks_configs_default },
-      var.health_checks_configs
+  _backends_without_hcs = [
+    for k, v in coalesce(var.backend_services_config, {}) :
+    v if(
+      v.group_config != null
+      && (
+        try(v.group_config.health_checks, null) == null
+        || length(try(v.group_config.health_checks, [])) == 0
+      )
     )
-    : var.health_checks_configs
-  )
+  ]
 
-  health_checks_http  = { for k, v in local.health_checks_configs : k => v if try(v.type, null) == "http" || try(v.type, null) == null }
-  health_checks_https = { for k, v in local.health_checks_configs : k => v if try(v.type, null) == "https" }
-  health_checks_tcp   = { for k, v in local.health_checks_configs : k => v if try(v.type, null) == "tcp" }
-  health_checks_ssl   = { for k, v in local.health_checks_configs : k => v if try(v.type, null) == "ssl" }
-  health_checks_http2 = { for k, v in local.health_checks_configs : k => v if try(v.type, null) == "http2" }
+  # If at least one group backend service without
+  # HC is defined, create also a default HC
+  health_checks_config = (
+    length(local._backends_without_hcs) > 0
+    ? merge(
+      { default = var.health_checks_config_defaults },
+      coalesce(var.health_checks_config, {})
+    )
+    : coalesce(var.health_checks_config, {})
+  )
 }
 
 resource "google_compute_health_check" "health_check" {
-  for_each            = { for k, v in local.health_checks_configs : k => v }
+  for_each            = local.health_checks_config
   provider            = google-beta
-  name                = var.name
+  name                = "${var.name}-${each.key}"
   project             = var.project_id
   description         = "Terraform managed."
-  check_interval_sec  = try(each.value.check_interval_sec, null)
-  healthy_threshold   = try(each.value.healthy_threshold, null)
-  timeout_sec         = try(each.value.timeout_sec, null)
-  unhealthy_threshold = try(each.value.unhealthy_threshold, null)
+  check_interval_sec  = try(each.value.options.check_interval_sec, null)
+  healthy_threshold   = try(each.value.options.healthy_threshold, null)
+  timeout_sec         = try(each.value.options.timeout_sec, null)
+  unhealthy_threshold = try(each.value.options.unhealthy_threshold, null)
 
   dynamic "http_health_check" {
-    for_each = local.health_checks_http
-    iterator = http
+    for_each = (
+      try(each.value.type, null) == "http" || try(each.value.type, null) == null
+      ? { 1 = 1 }
+      : {}
+    )
     content {
-      host               = try(http.value.check.host, null)
-      port               = try(http.value.check.port, null)
-      port_name          = try(http.value.check.port_name, null)
-      port_specification = try(http.value.check.port_specification, "USE_SERVING_PORT")
-      proxy_header       = try(http.value.check.proxy_header, null)
-      request_path       = try(http.value.check.request_path, null)
-      response           = try(http.value.check.response, null)
+      host               = try(each.value.check.host, null)
+      port               = try(each.value.check.port, null)
+      port_name          = try(each.value.check.port_name, null)
+      port_specification = try(each.value.check.port_specification, null)
+      proxy_header       = try(each.value.check.proxy_header, null)
+      request_path       = try(each.value.check.request_path, null)
+      response           = try(each.value.check.response, null)
     }
   }
 
   dynamic "https_health_check" {
-    for_each = local.health_checks_https
-    iterator = https
+    for_each = (
+      try(each.value.type, null) == "https" || try(each.value.type, null) == null
+      ? { 1 = 1 }
+      : {}
+    )
     content {
-      host               = try(https.value.check.host, null)
-      port               = try(https.value.check.port, null)
-      port_name          = try(https.value.check.port_name, null)
-      port_specification = try(https.value.check.port_specification, "USE_SERVING_PORT")
-      proxy_header       = try(https.value.check.proxy_header, null)
-      request_path       = try(https.value.check.request_path, null)
-      response           = try(https.value.check.response, null)
+      host               = try(each.value.check.host, null)
+      port               = try(each.value.check.port, null)
+      port_name          = try(each.value.check.port_name, null)
+      port_specification = try(each.value.check.port_specification, null)
+      proxy_header       = try(each.value.check.proxy_header, null)
+      request_path       = try(each.value.check.request_path, null)
+      response           = try(each.value.check.response, null)
     }
   }
 
   dynamic "tcp_health_check" {
-    for_each = local.health_checks_tcp
-    iterator = tcp
+    for_each = (
+      try(each.value.type, null) == "tcp" || try(each.value.type, null) == null
+      ? { 1 = 1 }
+      : {}
+    )
     content {
-      port               = try(tcp.value.check.port, null)
-      port_name          = try(tcp.value.check.port_name, null)
-      port_specification = try(tcp.value.check.port_specification, "USE_SERVING_PORT")
-      proxy_header       = try(tcp.value.check.proxy_header, null)
-      request            = try(tcp.value.check.request, null)
-      response           = try(tcp.value.check.response, null)
+      port               = try(each.value.check.port, null)
+      port_name          = try(each.value.check.port_name, null)
+      port_specification = try(each.value.check.port_specification, null)
+      proxy_header       = try(each.value.check.proxy_header, null)
+      request            = try(each.value.check.request, null)
+      response           = try(each.value.check.response, null)
     }
   }
 
   dynamic "ssl_health_check" {
-    for_each = local.health_checks_ssl
-    iterator = ssl
+    for_each = (
+      try(each.value.type, null) == "ssl" || try(each.value.type, null) == null
+      ? { 1 = 1 }
+      : {}
+    )
     content {
-      port               = try(ssl.value.check.port, null)
-      port_name          = try(ssl.value.check.port_name, null)
-      port_specification = try(ssl.value.check.port_specification, "USE_SERVING_PORT")
-      proxy_header       = try(ssl.value.check.proxy_header, null)
-      request            = try(ssl.value.check.request, null)
-      response           = try(ssl.value.check.response, null)
+      port               = try(each.value.check.port, null)
+      port_name          = try(each.value.check.port_name, null)
+      port_specification = try(each.value.check.port_specification, null)
+      proxy_header       = try(each.value.check.proxy_header, null)
+      request            = try(each.value.check.request, null)
+      response           = try(each.value.check.response, null)
     }
   }
 
   dynamic "http2_health_check" {
-    for_each = local.health_checks_http2
-    iterator = http2
+    for_each = (
+      try(each.value.type, null) == "http2" || try(each.value.type, null) == null
+      ? { 1 = 1 }
+      : {}
+    )
     content {
-      host               = try(http2.value.check.host, null)
-      port               = try(http2.value.check.port, null)
-      port_name          = try(http2.value.check.port_name, null)
-      port_specification = try(http2.value.check.port_specification, "USE_SERVING_PORT")
-      proxy_header       = try(http2.value.check.proxy_header, null)
-      request_path       = try(http2.value.check.request_path, null)
-      response           = try(http2.value.check.response, null)
+      host               = try(each.value.check.host, null)
+      port               = try(each.value.check.port, null)
+      port_name          = try(each.value.check.port_name, null)
+      port_specification = try(each.value.check.port_specification, null)
+      proxy_header       = try(each.value.check.proxy_header, null)
+      request_path       = try(each.value.check.request_path, null)
+      response           = try(each.value.check.response, null)
     }
   }
 

@@ -15,18 +15,6 @@
  */
 
 locals {
-  # Defaults
-  global_forwarding_rule_configs = {
-    load_balancing_scheme = try(var.global_forwarding_rule_configs.load_balancing_scheme, "EXTERNAL")
-    ip_protocol           = try(var.global_forwarding_rule_configs.ip_protocol, "TCP")
-    ip_version            = try(var.global_forwarding_rule_configs.ip_version, "IPV4")
-    port_range = (
-      try(var.global_forwarding_rule_configs.port_range, null) == null
-      ? var.https ? "443" : "80"
-      : var.global_forwarding_rule_configs.port_range
-    )
-  }
-
   ip_address = (
     var.reserve_ip_address
     ? google_compute_global_address.static_ip.0.id
@@ -45,9 +33,9 @@ resource "google_compute_global_forwarding_rule" "forwarding_rule" {
   name                  = var.name
   project               = var.project_id
   description           = "Terraform managed."
-  ip_protocol           = local.global_forwarding_rule_configs.ip_protocol
-  load_balancing_scheme = local.global_forwarding_rule_configs.load_balancing_scheme
-  port_range            = local.global_forwarding_rule_configs.port_range
+  ip_protocol           = var.global_forwarding_rule_config.ip_protocol
+  load_balancing_scheme = var.global_forwarding_rule_config.load_balancing_scheme
+  port_range            = var.global_forwarding_rule_config.port_range
   target                = local.target
   ip_address            = local.ip_address
 }

@@ -15,37 +15,35 @@
  */
 
 locals {
-  backends_bucket = { for k, v in var.backends_configs : k => v if v.type == "bucket" }
-  backends_group  = { for k, v in var.backends_configs : k => v if v.type == "group" }
-
-  # Name of the default health check if no health checks are defined
-  health_checks_default = (
-    try(
-      [google_compute_health_check.health_check["default"].self_link],
-      null
-    )
-  )
+  backend_services_bucket = {
+    for k, v in coalesce(var.backend_services_config, {}) :
+    k => v if v.bucket_config != null
+  }
+  backend_services_group = {
+    for k, v in coalesce(var.backend_services_config, {}) :
+    k => v if v.group_config != null
+  }
 }
 
 resource "google_compute_backend_bucket" "bucket" {
-  for_each                = local.backends_bucket
-  name                    = var.name
-  project                 = var.project_id
+  for_each                = local.backend_services_bucket
+  name                    = "${var.name}-${each.key}"
   description             = "Terraform managed."
-  bucket_name             = try(each.value.bucket_name, null)
+  project                 = var.project_id
+  bucket_name             = try(each.value.bucket_config.bucket_name, null)
+  custom_response_headers = try(each.value.bucket_config.options.custom_response_headers, null)
   enable_cdn              = try(each.value.enable_cdn, null)
-  custom_response_headers = try(each.value.custom_response_headers, null)
 
   dynamic "cdn_policy" {
     for_each = try(each.value.cdn_policy, null) == null ? [] : [each.value.cdn_policy]
     content {
-      signed_url_cache_max_age_sec = try(cdn_policy.value.signed_url_cache_max_age_sec, null)
+      cache_mode                   = try(cdn_policy.value.cache_mode, null)
+      client_ttl                   = try(cdn_policy.value.client_ttl, null)
       default_ttl                  = try(cdn_policy.value.default_ttl, null)
       max_ttl                      = try(cdn_policy.value.max_ttl, null)
-      client_ttl                   = try(cdn_policy.value.client_ttl, null)
       negative_caching             = try(cdn_policy.value.negative_caching, null)
-      cache_mode                   = try(cdn_policy.value.cache_mode, null)
       serve_while_stale            = try(cdn_policy.value.serve_while_stale, null)
+      signed_url_cache_max_age_sec = try(cdn_policy.value.signed_url_cache_max_age_sec, null)
 
       dynamic "negative_caching_policy" {
         for_each = try(cdn_policy.value.negative_caching_policy, null) == null ? [] : [cdn_policy.value.negative_caching_policy]
@@ -60,56 +58,64 @@ resource "google_compute_backend_bucket" "bucket" {
 }
 
 resource "google_compute_backend_service" "group" {
-  for_each                        = local.backends_group
-  name                            = var.name
+  for_each                        = local.backend_services_group
+  name                            = "${var.name}-${each.key}"
   project                         = var.project_id
   description                     = "Terraform managed."
-  affinity_cookie_ttl_sec         = try(each.value.affinity_cookie_ttl_sec, null)
+  affinity_cookie_ttl_sec         = try(each.value.group_config.options.affinity_cookie_ttl_sec, null)
   enable_cdn                      = try(each.value.enable_cdn, null)
-  custom_request_headers          = try(each.value.custom_request_headers, null)
-  custom_response_headers         = try(each.value.custom_response_headers, null)
-  connection_draining_timeout_sec = try(each.value.connection_draining_timeout_sec, null)
-  load_balancing_scheme           = try(each.value.load_balancing_scheme, null) # only EXTERNAL makes sense here
-  locality_lb_policy              = try(each.value.locality_lb_policy, null)
-  port_name                       = try(each.value.port_name, null)
-  protocol                        = try(each.value.protocol, null)
-  security_policy                 = try(each.value.security_policy, null)
-  session_affinity                = try(each.value.session_affinity, null)
-  timeout_sec                     = try(each.value.timeout_sec, null)
+  custom_request_headers          = try(each.value.group_config.options.custom_request_headers, null)
+  custom_response_headers         = try(each.value.group_config.options.custom_response_headers, null)
+  connection_draining_timeout_sec = try(each.value.group_config.options.connection_draining_timeout_sec, null)
+  load_balancing_scheme           = try(each.value.group_config.options.load_balancing_scheme, null)
+  locality_lb_policy              = try(each.value.group_config.options.locality_lb_policy, null)
+  port_name                       = try(each.value.group_config.options.port_name, null)
+  protocol                        = try(each.value.group_config.options.protocol, null)
+  security_policy                 = try(each.value.group_config.options.security_policy, null)
+  session_affinity                = try(each.value.group_config.options.session_affinity, null)
+  timeout_sec                     = try(each.value.group_config.options.timeout_sec, null)
 
-  # HC source_type == create -> find id in the health checks map
-  # HC source_type == attach -> use id given as existing resource self_link
-  # Otherwise, use the default health check (identified in locals above)
+  # If no health checks are defined, use the default one.
+  # Otherwise, look in the health_checks_config map.
+  # Otherwise, use the health_check id as is (already existing).
   health_checks = (
-    try(each.value.health_check.source_type, null) == "create"
-    # null is excluded from the list so the search won't
-    # silently fail, if the element is not found in any list
-    ? try([google_compute_health_check.health_check[each.value.health_check.id].self_link])
-    : (
-      try(each.value.health_check.source_type, null) == "attach"
-      ? [each.value.health_check.id]
-      : local.health_checks_default
+    try(each.value.group_config.health_checks, null) == null
+    || length(try(each.value.group_config.health_checks, [])) == 0
+    ? try(
+      [google_compute_health_check.health_check["default"].self_link],
+      null
     )
+    : [
+      for hc in each.value.group_config.health_checks :
+      try(
+        google_compute_health_check.health_check[hc].id,
+        hc
+      )
+    ]
   )
 
   dynamic "backend" {
-    for_each = try(each.value.backends, [])
+    for_each = try(each.value.group_config.backends, [])
     content {
-      balancing_mode               = try(backend.value.balancing_mode, null)  # Can be UTILIZATION, RATE, CONNECTION
-      capacity_scaler              = try(backend.value.capacity_scaler, null) # Valid range is [0.0,1.0]
-      group                        = try(backend.value.group, null)           # IG or NEG FQDN address
-      max_connections              = try(backend.value.max_connections, null)
-      max_connections_per_instance = try(backend.value.max_connections_per_instance, null)
-      max_connections_per_endpoint = try(backend.value.max_connections_per_endpoint, null)
-      max_rate                     = try(backend.value.max_rate, null)
-      max_rate_per_instance        = try(backend.value.max_rate_per_instance, null)
-      max_rate_per_endpoint        = try(backend.value.max_rate_per_endpoint, null)
-      max_utilization              = try(backend.value.max_utilization, null)
+      balancing_mode               = try(backend.value.options.balancing_mode, null)
+      capacity_scaler              = try(backend.value.options.capacity_scaler, null)
+      group                        = try(backend.value.group, null)
+      max_connections              = try(backend.value.options.max_connections, null)
+      max_connections_per_instance = try(backend.value.options.max_connections_per_instance, null)
+      max_connections_per_endpoint = try(backend.value.options.max_connections_per_endpoint, null)
+      max_rate                     = try(backend.value.options.max_rate, null)
+      max_rate_per_instance        = try(backend.value.options.max_rate_per_instance, null)
+      max_rate_per_endpoint        = try(backend.value.options.max_rate_per_endpoint, null)
+      max_utilization              = try(backend.value.options.max_utilization, null)
     }
   }
 
   dynamic "circuit_breakers" {
-    for_each = try(each.value.circuit_breakers, null) == null ? [] : [each.value.circuit_breakers]
+    for_each = (
+      try(each.value.group_config.options.circuit_breakers, null) == null
+      ? []
+      : [each.value.group_config.options.circuit_breakers]
+    )
     iterator = cb
     content {
       max_requests_per_connection = try(cb.value.max_requests_per_connection, null)
@@ -121,7 +127,11 @@ resource "google_compute_backend_service" "group" {
   }
 
   dynamic "consistent_hash" {
-    for_each = try(each.value.consistent_hash, null) == null ? [] : [each.value.consistent_hash]
+    for_each = (
+      try(each.value.group_config.options.consistent_hash, null) == null
+      ? []
+      : [each.value.group_config.options.consistent_hash]
+    )
     content {
       http_header_name  = try(consistent_hash.value.http_header_name, null)
       minimum_ring_size = try(consistent_hash.value.minimum_ring_size, null)
@@ -145,7 +155,11 @@ resource "google_compute_backend_service" "group" {
   }
 
   dynamic "cdn_policy" {
-    for_each = try(each.value.cdn_policy, null) == null ? [] : [each.value.cdn_policy]
+    for_each = (
+      try(each.value.cdn_policy, null) == null
+      ? []
+      : [each.value.cdn_policy]
+    )
     iterator = cdn_policy
     content {
       signed_url_cache_max_age_sec = try(cdn_policy.value.signed_url_cache_max_age_sec, null)
@@ -157,7 +171,11 @@ resource "google_compute_backend_service" "group" {
       serve_while_stale            = try(cdn_policy.value.serve_while_stale, null)
 
       dynamic "negative_caching_policy" {
-        for_each = try(cdn_policy.value.negative_caching_policy, null) == null ? [] : [cdn_policy.value.negative_caching_policy]
+        for_each = (
+          try(cdn_policy.value.negative_caching_policy, null) == null
+          ? []
+          : [cdn_policy.value.negative_caching_policy]
+        )
         iterator = ncp
         content {
           code = try(ncp.value.code, null)
@@ -168,7 +186,11 @@ resource "google_compute_backend_service" "group" {
   }
 
   dynamic "iap" {
-    for_each = try(each.value.iap, null) == null ? [] : [each.value.iap]
+    for_each = (
+      try(each.value.group_config.options.iap, null) == null
+      ? []
+      : [each.value.group_config.options.iap]
+    )
     content {
       oauth2_client_id            = try(iap.value.oauth2_client_id, null)
       oauth2_client_secret        = try(iap.value.oauth2_client_secret, null)        # sensitive
@@ -177,11 +199,14 @@ resource "google_compute_backend_service" "group" {
   }
 
   dynamic "log_config" {
-    for_each = try(each.value.logging, null) == null ? [] : [each.value.logging]
-    iterator = logging
+    for_each = (
+      try(each.value.group_config.log_config, null) == null
+      ? []
+      : [each.value.group_config.log_config]
+    )
     content {
-      enable      = try(each.value.logging, false)
-      sample_rate = try(logging.value.sample_rate, null) # must be in [0, 1]
+      enable      = try(log_config.value.enable, null)
+      sample_rate = try(log_config.value.sample_rate, null)
     }
   }
 }
