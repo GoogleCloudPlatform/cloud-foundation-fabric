@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-variable "config_folder" {
-  description = "Relative path of the folder containing the hierarchical firewall configuration"
-  type        = string
-}
-
-variable "templates_folder" {
-  description = "Relative path of the folder containing the cidr/service account templates"
-  type        = string
+module "firewall" {
+  source     = "../../../../../examples/factories/net-vpc-firewall-yaml"
+  project_id = "my-project"
+  network    = "my-network"
+  config_directories = [
+    "./rules"
+  ]
+  log_config = var.log_config
 }
