@@ -19,24 +19,18 @@ variable "billing_account" {
   default     = null
 }
 
-variable "location" {
-  description = "The location where resources will be deployed."
-  type        = string
-  default     = "europe"
-}
-
 variable "project_create" {
   description = "Set to true to create projects, will use existing ones by default."
   type        = bool
   default     = false
 }
 
-variable "project_kms_name" {
+variable "kms_project_id" {
   description = "Name for the new KMS Project."
   type        = string
 }
 
-variable "project_service_name" {
+variable "service_project_id" {
   description = "Name for the new Service Project."
   type        = string
 }
@@ -53,11 +47,12 @@ variable "root_node" {
   default     = null
 }
 
-variable "ssh_source_ranges" {
-  description = "IP CIDR ranges that will be allowed to connect via SSH to the onprem instance."
-  type        = list(string)
-  default     = ["0.0.0.0/0"]
-}
+# FIXME(jccb): this is not used
+# variable "ssh_source_ranges" {
+#   description = "IP CIDR ranges that will be allowed to connect via SSH to the onprem instance."
+#   type        = list(string)
+#   default     = ["0.0.0.0/0"]
+# }
 
 variable "vpc_ip_cidr_range" {
   description = "Ip range used in the subnet deployef in the Service Project."

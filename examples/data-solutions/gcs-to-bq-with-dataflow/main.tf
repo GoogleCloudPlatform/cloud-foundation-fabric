@@ -26,7 +26,7 @@ locals {
 
 module "project-service" {
   source          = "../../../modules/project"
-  name            = var.project_service_name
+  name            = var.service_project_id
   parent          = var.root_node
   billing_account = var.billing_account
   project_create  = var.project_create
@@ -40,12 +40,13 @@ module "project-service" {
     "servicenetworking.googleapis.com",
     "storage.googleapis.com",
   ]
-  oslogin = true
+  # TODO(jccb): doesn't work when project_create=false
+  # oslogin = true
 }
 
 module "project-kms" {
   source          = "../../../modules/project"
-  name            = var.project_kms_name
+  name            = var.kms_project_id
   parent          = var.root_node
   billing_account = var.billing_account
   project_create  = var.project_create
@@ -63,7 +64,7 @@ module "service-account-bq" {
   project_id = module.project-service.project_id
   name       = "bq-test"
   iam_project_roles = {
-    (var.project_service_name) = [
+    (var.service_project_id) = [
       "roles/logging.logWriter",
       "roles/monitoring.metricWriter",
       "roles/bigquery.admin"
@@ -76,7 +77,7 @@ module "service-account-gce" {
   project_id = module.project-service.project_id
   name       = "gce-test"
   iam_project_roles = {
-    (var.project_service_name) = [
+    (var.service_project_id) = [
       "roles/logging.logWriter",
       "roles/monitoring.metricWriter",
       "roles/dataflow.admin",
@@ -92,7 +93,7 @@ module "service-account-df" {
   project_id = module.project-service.project_id
   name       = "df-test"
   iam_project_roles = {
-    (var.project_service_name) = [
+    (var.service_project_id) = [
       "roles/dataflow.worker",
       "roles/bigquery.dataOwner",
       "roles/bigquery.metadataViewer",
@@ -101,14 +102,6 @@ module "service-account-df" {
     ]
   }
 }
-
-# data "google_bigquery_default_service_account" "bq_sa" {
-#   project = module.project-service.project_id
-# }
-
-# data "google_storage_project_service_account" "gcs_account" {
-#   project = module.project-service.project_id
-# }
 
 ###############################################################################
 #                                   KMS                                       #
@@ -119,39 +112,30 @@ module "kms" {
   project_id = module.project-kms.project_id
   keyring = {
     name     = "my-keyring",
-    location = var.location
+    location = var.region
   }
-  keys = { key-gce = null, key-gcs = null, key-bq = null }
+  keys = {
+    key-df  = null
+    key-gce = null
+    key-gcs = null
+    key-bq  = null
+  }
   key_iam = {
     key-gce = {
       "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
-        "serviceAccount:${module.project-service.service_accounts.robots.compute}",
+        "serviceAccount:${module.project-service.service_accounts.robots.compute}"
       ]
     },
     key-gcs = {
       "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
-        "serviceAccount:${module.project-service.service_accounts.robots.storage}",
-        #"serviceAccount:${data.google_storage_project_service_account.gcs_account.email_address}"
+        "serviceAccount:${module.project-service.service_accounts.robots.storage}"
       ]
     },
     key-bq = {
       "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
-        "serviceAccount:${module.project-service.service_accounts.robots.bq}",
-        #"serviceAccount:${data.google_bigquery_default_service_account.bq_sa.email}",
+        "serviceAccount:${module.project-service.service_accounts.robots.bq}"
       ]
     },
-  }
-}
-
-module "kms-regional" {
-  source     = "../../../modules/kms"
-  project_id = module.project-kms.project_id
-  keyring = {
-    name     = "my-keyring-regional",
-    location = var.region
-  }
-  keys = { key-df = null }
-  key_iam = {
     key-df = {
       "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
         "serviceAccount:${module.project-service.service_accounts.robots.dataflow}",
@@ -160,6 +144,18 @@ module "kms-regional" {
     }
   }
 }
+
+# module "kms-regional" {
+#   source     = "../../../modules/kms"
+#   project_id = module.project-kms.project_id
+#   keyring = {
+#     name     = "my-keyring-regional",
+#     location = var.region
+#   }
+#   keys = { key-df = null }
+#   key_iam = {
+#   }
+# }
 
 ###############################################################################
 #                                   Networking                                #
@@ -198,7 +194,7 @@ module "nat" {
 #                                   GCE                                       #
 ###############################################################################
 
-module "vm_example" {
+module "vm" {
   source     = "../../../modules/compute-vm"
   project_id = module.project-service.project_id
   zone       = "${var.region}-b"
@@ -266,7 +262,9 @@ module "kms-gcs" {
   project_id     = module.project-service.project_id
   prefix         = module.project-service.project_id
   name           = each.key
+  storage_class  = "REGIONAL"
   iam            = each.value.members
+  location       = var.region
   encryption_key = module.kms.keys.key-gcs.id
   force_destroy  = true
 }
@@ -279,6 +277,7 @@ module "bigquery-dataset" {
   source     = "../../../modules/bigquery-dataset"
   project_id = module.project-service.project_id
   id         = "bq_dataset"
+  location   = var.region
   access = {
     reader-group = { role = "READER", type = "user" }
     owner        = { role = "OWNER", type = "user" }

@@ -70,7 +70,9 @@ output "service_accounts" {
   depends_on = [
     google_project_service.project_services,
     google_kms_crypto_key_iam_member.crypto_key,
-    google_project_service_identity.jit_si
+    google_project_service_identity.jit_si,
+    data.google_bigquery_default_service_account.bq_sa,
+    data.google_storage_project_service_account.gcs_sa
   ]
 }
 

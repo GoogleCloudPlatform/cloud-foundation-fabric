@@ -25,6 +25,26 @@ output "buckets" {
   }
 }
 
+output "data_ingestion_command" {
+  value = <<-EOF
+    python data_ingestion.py \
+      --runner=DataflowRunner \
+      --max_num_workers=10 \
+      --autoscaling_algorithm=THROUGHPUT_BASED \
+      --region=${var.region} \
+      --staging_location=${module.kms-gcs["df-tmplocation"].url} \
+      --temp_location=${module.kms-gcs["df-tmplocation"].url}/ \
+      --project=${var.service_project_id} \
+      --input=${module.kms-gcs["data"].url}/### FILE NAME ###.csv \
+      --output=${module.bigquery-dataset.dataset_id}.${module.bigquery-dataset.table_ids.df_import} \
+      --service_account_email=${module.service-account-df.email} \
+      --network=${var.vpc_name} \
+      --subnetwork=${var.vpc_subnet_name} \
+      --dataflow_kms_key=${module.kms.key_ids.key-df} \
+      --no_use_public_ips
+  EOF
+}
+
 output "projects" {
   description = "Project ids."
   value = {
@@ -36,7 +56,7 @@ output "projects" {
 output "vm" {
   description = "GCE VM."
   value = {
-    name    = module.vm_example.instance.name
-    address = module.vm_example.internal_ip
+    name    = module.vm.instance.name
+    address = module.vm.internal_ip
   }
 }
