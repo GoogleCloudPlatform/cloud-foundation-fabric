@@ -16,12 +16,19 @@
 variable "billing_account" {
   description = "Billing account id used as default for new projects."
   type        = string
+  default     = null
 }
 
 variable "location" {
   description = "The location where resources will be deployed."
   type        = string
   default     = "europe"
+}
+
+variable "project_create" {
+  description = "Set to true to create projects, will use existing ones by default."
+  type        = bool
+  default     = false
 }
 
 variable "project_kms_name" {
@@ -43,6 +50,7 @@ variable "region" {
 variable "root_node" {
   description = "The resource name of the parent Folder or Organization. Must be of the form folders/folder_id or organizations/org_id."
   type        = string
+  default     = null
 }
 
 variable "ssh_source_ranges" {

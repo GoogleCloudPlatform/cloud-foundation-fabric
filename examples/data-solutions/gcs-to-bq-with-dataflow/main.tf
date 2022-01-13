@@ -29,6 +29,7 @@ module "project-service" {
   name            = var.project_service_name
   parent          = var.root_node
   billing_account = var.billing_account
+  project_create  = var.project_create
   services = [
     "bigquery.googleapis.com",
     "bigqueryreservation.googleapis.com",
@@ -47,6 +48,7 @@ module "project-kms" {
   name            = var.project_kms_name
   parent          = var.root_node
   billing_account = var.billing_account
+  project_create  = var.project_create
   services = [
     "cloudkms.googleapis.com",
   ]
