@@ -16,14 +16,14 @@
 
 output "health_checks" {
   description = "Health-check resources."
-  value       = try(google_compute_health_check.health_check[*], [])
+  value       = try(google_compute_health_check.health_check, [])
 }
-
+  
 output "backend_services" {
   description = "Backend service resources."
   value = {
-    bucket = try(google_compute_backend_bucket.bucket[*], [])
-    group  = try(google_compute_backend_service.group[*], [])
+    bucket = try(google_compute_backend_bucket.bucket, [])
+    group  = try(google_compute_backend_service.group, [])
   }
 }
 
