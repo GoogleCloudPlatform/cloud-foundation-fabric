@@ -111,19 +111,19 @@ schema_bq_import.json
 You can check data imported into Google BigQuery from the Google Cloud Console UI.
 
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| billing_account | Billing account id used as default for new projects. | <code>string</code> | ✓ |  |
-| project_kms_name | Name for the new KMS Project. | <code>string</code> | ✓ |  |
-| project_service_name | Name for the new Service Project. | <code>string</code> | ✓ |  |
-| root_node | The resource name of the parent Folder or Organization. Must be of the form folders/folder_id or organizations/org_id. | <code>string</code> | ✓ |  |
-| location | The location where resources will be deployed. | <code>string</code> |  | <code>&#34;europe&#34;</code> |
+| kms_project_id | Name for the new KMS Project. | <code>string</code> | ✓ |  |
+| service_project_id | Name for the new Service Project. | <code>string</code> | ✓ |  |
+| billing_account | Billing account id used as default for new projects. | <code>string</code> |  | <code>null</code> |
+| project_create | Set to true to create projects, will use existing ones by default. | <code>bool</code> |  | <code>false</code> |
 | region | The region where resources will be deployed. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| ssh_source_ranges | IP CIDR ranges that will be allowed to connect via SSH to the onprem instance. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;0.0.0.0&#47;0&#34;&#93;</code> |
+| root_node | The resource name of the parent Folder or Organization. Must be of the form folders/folder_id or organizations/org_id. | <code>string</code> |  | <code>null</code> |
 | vpc_ip_cidr_range | Ip range used in the subnet deployef in the Service Project. | <code>string</code> |  | <code>&#34;10.0.0.0&#47;20&#34;</code> |
 | vpc_name | Name of the VPC created in the Service Project. | <code>string</code> |  | <code>&#34;local&#34;</code> |
 | vpc_subnet_name | Name of the subnet created in the Service Project. | <code>string</code> |  | <code>&#34;subnet&#34;</code> |
@@ -134,8 +134,10 @@ You can check data imported into Google BigQuery from the Google Cloud Console U
 |---|---|:---:|
 | bq_tables | Bigquery Tables. |  |
 | buckets | GCS Bucket Cloud KMS crypto keys. |  |
+| data_ingestion_command |  |  |
 | projects | Project ids. |  |
 | vm | GCE VM. |  |
 
 <!-- END TFDOC -->
+
 
