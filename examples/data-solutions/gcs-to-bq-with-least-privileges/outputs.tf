@@ -18,7 +18,7 @@ output "bq_tables" {
 }
 
 output "buckets" {
-  description = "GCS Bucket Cloud KMS crypto keys."
+  description = "GCS bucket Cloud KMS crypto keys."
   value = {
     data   = module.gcs-data.name
     df-tmp = module.gcs-df-tmp.name
@@ -31,7 +31,7 @@ output "project_id" {
 }
 
 output "serviceaccount" {
-  description = "Service Account."
+  description = "Service account."
   value = {
     bq      = module.service-account-bq.email
     df      = module.service-account-df.email
@@ -46,7 +46,7 @@ output "command-01-gcs" {
 }
 
 output "command-02-dataflow" {
-  description = "gcloud command to run dataflow template impersonating the service account."
+  description = "Command to run Dataflow template impersonating the service account."
   value       = <<EOT
   gcloud --impersonate-service-account=${module.service-account-orch.email} dataflow jobs run test_batch_01 \
     --gcs-location gs://dataflow-templates/latest/GCS_Text_to_BigQuery \
@@ -68,7 +68,7 @@ bigQueryLoadingTemporaryDirectory=${module.gcs-df-tmp.url}
 }
 
 output "command-03-bq" {
-  description = "bq command to query imported data."
+  description = "BigQuery command to query imported data."
   value       = <<EOT
   bq query --project_id=${module.project.project_id} --use_legacy_sql=false 'SELECT * FROM `${module.project.project_id}.${module.bigquery-dataset.dataset_id}.${module.bigquery-dataset.tables["person"].table_id}` LIMIT 1000'"
   EOT
