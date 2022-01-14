@@ -62,6 +62,11 @@ module "bigquery-dataset" {
       }
       schema              = file("${path.module}/data-demo/person.json")
       deletion_protection = false
+      options = {
+        clustering      = null
+        encryption_key  = var.cmek_encryption ? try(module.kms[0].keys.key-bq.id, null) : null
+        expiration_time = null
+      }
     }
   }
   encryption_key = var.cmek_encryption ? try(module.kms[0].keys.key-bq.id, null) : null
