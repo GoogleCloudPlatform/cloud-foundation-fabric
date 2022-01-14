@@ -15,18 +15,30 @@
  */
 
 locals {
-  managed = (
+  # If at least one group backend service without
+  # HC is defined, create also a default HC
+  ssl_certificates_config = (
+    try(var.target_proxy_https_config.ssl_certificates, null) == null
+    || length(coalesce(try(var.target_proxy_https_config.ssl_certificates, null), [])) == 0
+    ? merge(
+      { default = var.ssl_certificates_config_defaults },
+      coalesce(var.ssl_certificates_config, {})
+    )
+    : coalesce(var.ssl_certificates_config, {})
+  )
+
+  ssl_certs_managed = (
     var.https
     ? {
-      for k, v in coalesce(var.ssl_certificates_config, {}) :
+      for k, v in coalesce(local.ssl_certificates_config, {}) :
       k => v if v.unmanaged_config == null
     }
     : {}
   )
-  unmanaged = (
+  ssl_certs_unmanaged = (
     var.https
     ? {
-      for k, v in coalesce(var.ssl_certificates_config, {}) :
+      for k, v in coalesce(local.ssl_certificates_config, {}) :
       k => v if v.unmanaged_config != null
     }
     : {}
@@ -34,7 +46,7 @@ locals {
 }
 
 resource "google_compute_managed_ssl_certificate" "managed" {
-  for_each = local.managed
+  for_each = local.ssl_certs_managed
   project  = var.project_id
   name     = "${var.name}-${each.key}"
   managed {
@@ -43,7 +55,7 @@ resource "google_compute_managed_ssl_certificate" "managed" {
 }
 
 resource "google_compute_ssl_certificate" "unmanaged" {
-  for_each    = local.unmanaged
+  for_each    = local.ssl_certs_unmanaged
   project     = var.project_id
   name        = "${var.name}-${each.key}"
   certificate = try(each.value.unmanaged_config.tls_self_signed_cert, null)
