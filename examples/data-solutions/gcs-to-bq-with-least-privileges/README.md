@@ -123,14 +123,17 @@ bq query --use_legacy_sql=false 'SELECT * FROM `PROJECT.datalake.person` LIMIT 1
 ```
 
 
+
 <!-- BEGIN TFDOC -->
+
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | prefix | Unique prefix used for resource names. Not used for project if 'project_create' is null. | <code>string</code> | ✓ |  |
 | project_id | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
-| data_eng_principals | Groups with Service Account Tocken creator role on service accounts in iam format 'group:group@domain.com' or 'user:user@domain.com'. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| cmek_encryption | Flag to enable CMEK on GCP resources created. | <code>bool</code> |  | <code>false</code> |
+| data_eng_principals | Groups with Service Account Token creator role on service accounts in IAM format, eg 'group:group@domain.com'. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 | project_create | Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | region | The region where resources will be deployed. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
 | vpc_subnet_range | Ip range used for the VPC subnet created for the example. | <code>string</code> |  | <code>&#34;10.0.0.0&#47;20&#34;</code> |
@@ -140,10 +143,12 @@ bq query --use_legacy_sql=false 'SELECT * FROM `PROJECT.datalake.person` LIMIT 1
 | name | description | sensitive |
 |---|---|:---:|
 | bq_tables | Bigquery Tables. |  |
-| buckets | GCS Bucket Cloud KMS crypto keys. |  |
+| buckets | GCS bucket Cloud KMS crypto keys. |  |
 | command-01-gcs | gcloud command to copy data into the created bucket impersonating the service account. |  |
-| command-02-dataflow | gcloud command to run dataflow template impersonating the service account. |  |
-| command-03-bq | bq command to query imported data. |  |
+| command-02-dataflow | Command to run Dataflow template impersonating the service account. |  |
+| command-03-bq | BigQuery command to query imported data. |  |
 | project_id | Project id. |  |
-| serviceaccount | Service Account. |  |
+| serviceaccount | Service account. |  |
+
 <!-- END TFDOC -->
+
