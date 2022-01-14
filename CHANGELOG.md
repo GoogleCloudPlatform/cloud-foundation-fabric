@@ -2,6 +2,10 @@
 
 All notable changes to this project will be documented in this file.
 
+## Unreleased
+
+- new `net-xlb` module for Global External Load balancer
+
 ## [12.0.0] - 2022-01-11
 
 - new repo structure. All end-to-end examples moved to the top level `examples` folder
