@@ -14,23 +14,22 @@
  * limitations under the License.
  */
 
-variable "billing_account" {
-  type    = string
-  default = "123456-123456-123456"
+variable "billing_account_id" {
+  default = "012345-678901-234567"
 }
 
-variable "root_node" {
-  description = "The resource name of the parent Folder or Organization. Must be of the form folders/folder_id or organizations/org_id."
-  type        = string
-  default     = "folders/12345678"
+variable "parent" {
+  default = "folders/01234567890"
 }
 
-variable "project_service_name" {
-  type    = string
-  default = "project-srv"
+variable "prefix" {
+  default = "fabric"
 }
 
-variable "project_kms_name" {
-  type    = string
-  default = "project-kms"
+variable "project_id" {
+  default = "gcs-to-bq"
+}
+
+variable "region" {
+  default = "europe-west1"
 }
