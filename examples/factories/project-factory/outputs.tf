@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-module "test" {
-  source     = "../../../../../examples/data-solutions/gcs-to-bq-with-dataflow/"
-  prefix     = var.prefix
-  project_id = var.project_id
-  project_create = {
-    billing_account_id = var.billing_account_id
-    parent             = var.parent
-  }
+# TODO(): proper outputs
+
+output "project_id" {
+  description = "Project ID."
+  value       = module.project.project_id
 }

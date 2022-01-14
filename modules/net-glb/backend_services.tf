@@ -79,18 +79,14 @@ resource "google_compute_backend_service" "group" {
   # Otherwise, look in the health_checks_config map.
   # Otherwise, use the health_check id as is (already existing).
   health_checks = (
-    try(each.value.group_config.health_checks, null) == null
-    || length(try(each.value.group_config.health_checks, [])) == 0
+    try(length(each.value.group_config.health_checks), 0) == 0
     ? try(
-      [google_compute_health_check.health_check["default"].self_link],
+      [google_compute_health_check.health_check["default"].id],
       null
     )
     : [
       for hc in each.value.group_config.health_checks :
-      try(
-        google_compute_health_check.health_check[hc].id,
-        hc
-      )
+      try(google_compute_health_check.health_check[hc].id, hc)
     ]
   )
 

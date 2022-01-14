@@ -14,16 +14,6 @@
  * limitations under the License.
  */
 
-variable "name" {
-  description = "Load balancer name."
-  type        = string
-}
-
-variable "project_id" {
-  description = "Project id."
-  type        = string
-}
-
 variable "health_checks_config_defaults" {
   description = "Auto-created health check default configuration."
   type = object({
@@ -172,11 +162,22 @@ variable "ssl_certificates_config" {
       tls_self_signed_cert = string
     })
   }))
+  default = {}
+}
+
+variable "ssl_certificates_config_defaults" {
+  description = "The SSL certificate default configuration."
+  type = object({
+    domains = list(string)
+    # If unmanaged_config is null, the certificate will be managed
+    unmanaged_config = object({
+      tls_private_key      = string
+      tls_self_signed_cert = string
+    })
+  })
   default = {
-    default = {
-      domains          = ["example.com"],
-      unmanaged_config = null
-    }
+    domains          = ["example.com"],
+    unmanaged_config = null
   }
 }
 
@@ -201,7 +202,8 @@ variable "global_forwarding_rule_config" {
     load_balancing_scheme = "EXTERNAL"
     ip_protocol           = "TCP"
     ip_version            = "IPV4"
-    port_range            = "80" # 80, 8080, 443
+    # If not specified, 80 for https = false, 443 otherwise
+    port_range = null
   }
 }
 

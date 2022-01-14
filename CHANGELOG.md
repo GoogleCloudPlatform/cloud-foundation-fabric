@@ -4,8 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
-- new `net-xlb` module for Global External Load balancer
-- added new data-solutions example: Cloud Storage to Bigquery with Cloud Dataflow with least privileges
+- new `net-glb` module for Global External Load balancer
+- new data-solutions example: Cloud Storage to Bigquery with Cloud Dataflow with least privileges
 
 ## [12.0.0] - 2022-01-11
 
