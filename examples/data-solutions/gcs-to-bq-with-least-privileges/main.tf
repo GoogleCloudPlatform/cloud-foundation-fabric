@@ -44,7 +44,7 @@ module "project" {
     "roles/storage.objectViewer" = [
       module.service-account-orch.iam_email,
     ],
-    #Bigquery roles
+    # BigQuery roles
     "roles/bigquery.admin" = concat([
       module.service-account-orch.iam_email,
       ], var.data_eng_principals
@@ -65,7 +65,7 @@ module "project" {
       module.service-account-bq.iam_email,
       module.service-account-df.iam_email
     ]
-    #Common roles
+    # common roles
     "roles/logging.logWriter" = [
       module.service-account-bq.iam_email,
       module.service-account-landing.iam_email,
@@ -85,7 +85,7 @@ module "project" {
     "roles/viewer" = concat(
       var.data_eng_principals
     )
-    #Dataflow roles
+    # Dataflow roles
     "roles/dataflow.admin" = concat([
       module.service-account-orch.iam_email,
       ], var.data_eng_principals
@@ -93,7 +93,7 @@ module "project" {
     "roles/dataflow.worker" = [
       module.service-account-df.iam_email,
     ]
-    #Network roles
+    # network roles
     "roles/compute.networkUser" = [
       module.service-account-df.iam_email,
       "serviceAccount:${module.project.service_accounts.robots.dataflow}"
