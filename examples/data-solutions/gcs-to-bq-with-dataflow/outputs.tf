@@ -20,23 +20,40 @@ output "bq_tables" {
 output "buckets" {
   description = "GCS Bucket Cloud KMS crypto keys."
   value = {
-    for name, bucket in module.kms-gcs :
-    bucket.name => bucket.url
+    data   = module.gcs-data.name
+    df-tmp = module.gcs-df-tmp.name
   }
 }
 
-output "projects" {
-  description = "Project ids."
-  value = {
-    service-project = module.project-service.project_id
-    kms-project     = module.project-kms.project_id
-  }
+output "data_ingestion_command" {
+  value = <<-EOF
+    python data_ingestion.py \
+      --runner=DataflowRunner \
+      --max_num_workers=10 \
+      --autoscaling_algorithm=THROUGHPUT_BASED \
+      --region=${var.region} \
+      --staging_location=${module.gcs-df-tmp.url} \
+      --temp_location=${module.gcs-df-tmp.url}/ \
+      --project=${var.project_id} \
+      --input=${module.gcs-data.url}/### FILE NAME ###.csv \
+      --output=${module.bigquery-dataset.dataset_id}.${module.bigquery-dataset.table_ids.df_import} \
+      --service_account_email=${module.service-account-df.email} \
+      --network=${module.vpc.name} \
+      --subnetwork=${local.subnet_name} \
+      --dataflow_kms_key=${module.kms.key_ids.key-df} \
+      --no_use_public_ips
+  EOF
+}
+
+output "project_id" {
+  description = "Project id."
+  value       = module.project.project_id
 }
 
 output "vm" {
   description = "GCE VM."
   value = {
-    name    = module.vm_example.instance.name
-    address = module.vm_example.internal_ip
+    name    = module.vm.instance.name
+    address = module.vm.internal_ip
   }
 }

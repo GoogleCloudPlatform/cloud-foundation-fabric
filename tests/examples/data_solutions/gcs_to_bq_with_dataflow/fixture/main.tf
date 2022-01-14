@@ -15,9 +15,11 @@
  */
 
 module "test" {
-  source               = "../../../../../examples/data-solutions/gcs-to-bq-with-dataflow/"
-  billing_account      = var.billing_account
-  project_kms_name     = var.project_kms_name
-  project_service_name = var.project_service_name
-  root_node            = var.root_node
+  source     = "../../../../../examples/data-solutions/gcs-to-bq-with-dataflow/"
+  prefix     = var.prefix
+  project_id = var.project_id
+  project_create = {
+    billing_account_id = var.billing_account_id
+    parent             = var.parent
+  }
 }
