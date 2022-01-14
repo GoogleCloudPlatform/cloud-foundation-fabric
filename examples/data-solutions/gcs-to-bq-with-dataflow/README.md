@@ -112,21 +112,18 @@ You can check data imported into Google BigQuery from the Google Cloud Console U
 
 
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| kms_project_id | Name for the new KMS Project. | <code>string</code> | ✓ |  |
-| service_project_id | Name for the new Service Project. | <code>string</code> | ✓ |  |
-| billing_account | Billing account id used as default for new projects. | <code>string</code> |  | <code>null</code> |
-| project_create | Set to true to create projects, will use existing ones by default. | <code>bool</code> |  | <code>false</code> |
+| prefix | Unique prefix used for resource names. Not used for project if 'project_create' is null. | <code>string</code> | ✓ |  |
+| project_id | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
+| project_create | Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | region | The region where resources will be deployed. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| root_node | The resource name of the parent Folder or Organization. Must be of the form folders/folder_id or organizations/org_id. | <code>string</code> |  | <code>null</code> |
-| vpc_ip_cidr_range | Ip range used in the subnet deployef in the Service Project. | <code>string</code> |  | <code>&#34;10.0.0.0&#47;20&#34;</code> |
-| vpc_name | Name of the VPC created in the Service Project. | <code>string</code> |  | <code>&#34;local&#34;</code> |
-| vpc_subnet_name | Name of the subnet created in the Service Project. | <code>string</code> |  | <code>&#34;subnet&#34;</code> |
+| vpc_subnet_range | Ip range used for the VPC subnet created for the example. | <code>string</code> |  | <code>&#34;10.0.0.0&#47;20&#34;</code> |
 
 ## Outputs
 
@@ -135,9 +132,10 @@ You can check data imported into Google BigQuery from the Google Cloud Console U
 | bq_tables | Bigquery Tables. |  |
 | buckets | GCS Bucket Cloud KMS crypto keys. |  |
 | data_ingestion_command |  |  |
-| projects | Project ids. |  |
+| project_id | Project id. |  |
 | vm | GCE VM. |  |
 
 <!-- END TFDOC -->
+
 
 
