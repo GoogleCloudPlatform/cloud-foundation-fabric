@@ -12,29 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-###############################################################################
-#                                 Projects                                    #
-###############################################################################
-
-module "project" {
-  source          = "../../../modules/project"
-  name            = var.project_id
-  parent          = try(var.project_create.parent, null)
-  billing_account = try(var.project_create.billing_account_id, null)
-  project_create  = var.project_create != null
-  prefix          = var.project_create == null ? null : var.prefix
-  services = [
-    "bigquery.googleapis.com",
-    "bigquerystorage.googleapis.com",
-    "bigqueryreservation.googleapis.com",
-    "cloudkms.googleapis.com",
-    "compute.googleapis.com",
-    "dataflow.googleapis.com",
-    "servicenetworking.googleapis.com",
-    "storage.googleapis.com",
-    "storage-component.googleapis.com",
-  ]
-  # additive IAM bindings avoid disrupting bindings in existing project
+locals {
   iam = {
     # GCS roles
     "roles/storage.objectAdmin" = [
@@ -99,6 +77,33 @@ module "project" {
       "serviceAccount:${module.project.service_accounts.robots.dataflow}"
     ]
   }
+}
+
+###############################################################################
+#                                 Projects                                    #
+###############################################################################
+
+module "project" {
+  source          = "../../../modules/project"
+  name            = var.project_id
+  parent          = try(var.project_create.parent, null)
+  billing_account = try(var.project_create.billing_account_id, null)
+  project_create  = var.project_create != null
+  prefix          = var.project_create == null ? null : var.prefix
+  services = [
+    "bigquery.googleapis.com",
+    "bigquerystorage.googleapis.com",
+    "bigqueryreservation.googleapis.com",
+    "cloudkms.googleapis.com",
+    "compute.googleapis.com",
+    "dataflow.googleapis.com",
+    "servicenetworking.googleapis.com",
+    "storage.googleapis.com",
+    "storage-component.googleapis.com",
+  ]
+  # additive IAM bindings avoid disrupting bindings in existing project
+  iam          = var.project_create != null ? local.iam : {}
+  iam_additive = var.project_create == null ? local.iam : {}
   service_config = {
     disable_on_destroy = false, disable_dependent_services = false
   }
