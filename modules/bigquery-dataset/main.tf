@@ -191,7 +191,6 @@ resource "google_bigquery_table" "default" {
       type          = each.value.partitioning.time.type
     }
   }
-
 }
 
 resource "google_bigquery_table" "views" {
