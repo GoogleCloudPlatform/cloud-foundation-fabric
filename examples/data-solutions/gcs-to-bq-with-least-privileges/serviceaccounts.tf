@@ -21,6 +21,7 @@ module "service-account-bq" {
   project_id = module.project.project_id
   name       = "bq-datalake"
 }
+
 module "service-account-landing" {
   source     = "../../../modules/iam-service-account"
   project_id = module.project.project_id
