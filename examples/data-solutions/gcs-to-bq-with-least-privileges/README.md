@@ -71,10 +71,11 @@ You should see the output of the Terraform script with resources created and som
 
 ## Test your environment with Cloud Dataflow
 
-We assume all those steps are run using a user listed on `data_eng_users` or `data_eng_groups`. You can authenticate as the user using the following command:
+We assume all those steps are run using a user listed on `data_eng_principals`. You can authenticate as the user using the following command:
 
 ```
 $ gcloud init
+$ gcloud auth application-default login 
 ```
 
 For the purpose of the example we will import from GCS to Bigquery a CSV file with the following structure:
