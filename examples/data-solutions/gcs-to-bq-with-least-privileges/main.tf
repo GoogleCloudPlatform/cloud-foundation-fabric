@@ -29,7 +29,7 @@ locals {
 ###############################################################################
 
 module "project-service" {
-  source          = "../../modules/project"
+  source          = "../../../modules/project"
   name            = var.project_name
   parent          = var.root_node
   billing_account = var.billing_account
@@ -94,6 +94,14 @@ module "project-service" {
     "roles/dataflow.admin" = [
       module.service-account-orch.iam_email,
     ]
+    "roles/dataflow.worker" = [
+      module.service-account-df.iam_email,
+    ]
+    #Network roles
+    "roles/compute.networkUser" = [
+      module.service-account-df.iam_email,
+      "serviceAccount:${module.project-service.service_accounts.robots.dataflow}"
+    ]
   }
   group_iam = {
     "roles/iam.serviceAccountTokenCreator" = concat(
@@ -103,5 +111,4 @@ module "project-service" {
       local.data_eng_groups_iam
     )
   }
-  oslogin = true
 }

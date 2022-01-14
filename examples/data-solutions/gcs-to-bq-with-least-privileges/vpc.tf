@@ -17,7 +17,7 @@
 ###############################################################################
 
 module "vpc" {
-  source     = "../../modules/net-vpc"
+  source     = "../../../modules/net-vpc"
   project_id = module.project-service.project_id
   name       = var.vpc_name
   subnets = [
@@ -31,14 +31,14 @@ module "vpc" {
 }
 
 module "vpc-firewall" {
-  source       = "../../modules/net-vpc-firewall"
+  source       = "../../../modules/net-vpc-firewall"
   project_id   = module.project-service.project_id
   network      = module.vpc.name
   admin_ranges = [var.vpc_ip_cidr_range]
 }
 
 module "nat" {
-  source         = "../../modules/net-cloudnat"
+  source         = "../../../modules/net-cloudnat"
   project_id     = module.project-service.project_id
   region         = var.region
   name           = "default"

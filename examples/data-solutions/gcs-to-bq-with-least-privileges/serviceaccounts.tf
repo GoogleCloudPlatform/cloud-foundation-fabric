@@ -17,62 +17,24 @@
 ###############################################################################
 
 module "service-account-bq" {
-  source     = "../../modules/iam-service-account"
+  source     = "../../../modules/iam-service-account"
   project_id = module.project-service.project_id
   name       = "bq-datalake"
-  iam = {
-    "roles/iam.serviceAccountTokenCreator" = concat(
-      local.data_eng_users_iam,
-      local.data_eng_groups_iam
-    )
-  }
 }
 module "service-account-landing" {
-  source     = "../../modules/iam-service-account"
+  source     = "../../../modules/iam-service-account"
   project_id = module.project-service.project_id
   name       = "gcs-landing"
-  iam = {
-    "roles/iam.serviceAccountTokenCreator" = concat(
-      local.data_eng_users_iam,
-      local.data_eng_groups_iam
-    )
-  }
 }
 
 module "service-account-orch" {
-  source     = "../../modules/iam-service-account"
+  source     = "../../../modules/iam-service-account"
   project_id = module.project-service.project_id
   name       = "orchestrator"
-  iam = {
-    "roles/iam.serviceAccountTokenCreator" = concat(
-      local.data_eng_users_iam,
-      local.data_eng_groups_iam
-    )
-  }
 }
 
 module "service-account-df" {
-  source     = "../../modules/iam-service-account"
+  source     = "../../../modules/iam-service-account"
   project_id = module.project-service.project_id
   name       = "df-loading"
-  iam_project_roles = {
-    (var.project_name) = [
-      "roles/dataflow.worker",
-      "roles/bigquery.dataOwner",
-      "roles/bigquery.metadataViewer",
-      "roles/storage.objectViewer",
-      "roles/bigquery.jobUser"
-    ]
-  }
-  iam = {
-    "roles/iam.serviceAccountTokenCreator" = concat(
-      local.data_eng_users_iam,
-      local.data_eng_groups_iam
-    ),
-    "roles/iam.serviceAccountUser" = concat(
-      [module.service-account-orch.iam_email],
-      local.data_eng_users_iam,
-      local.data_eng_groups_iam
-    )
-  }
 }

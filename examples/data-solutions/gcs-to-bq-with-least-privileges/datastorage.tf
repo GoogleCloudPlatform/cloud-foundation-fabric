@@ -3,7 +3,7 @@
 ###############################################################################
 
 module "gcs-01" {
-  source        = "../../modules/gcs"
+  source        = "../../../modules/gcs"
   for_each      = toset(["data-landing", "df-tmplocation"])
   project_id    = module.project-service.project_id
   prefix        = module.project-service.project_id
@@ -16,7 +16,7 @@ module "gcs-01" {
 ###############################################################################
 
 module "bigquery-dataset" {
-  source     = "../../modules/bigquery-dataset"
+  source     = "../../../modules/bigquery-dataset"
   project_id = module.project-service.project_id
   id         = "datalake"
   # Define Tables in Terraform for the porpuse of the example. 
