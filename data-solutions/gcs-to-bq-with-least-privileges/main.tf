@@ -83,6 +83,12 @@ module "project-service" {
     "roles/iam.serviceAccountUser" = [
       module.service-account-orch.iam_email,
     ]
+    #Dataflow roles
+    "roles/dataflow.admin" = [
+      module.service-account-orch.iam_email,
+    ]
+  }
+  group_iam = {
     "roles/iam.serviceAccountTokenCreator" = concat(
       local.data_eng_users_iam,
       local.data_eng_groups_iam
@@ -91,10 +97,6 @@ module "project-service" {
       local.data_eng_users_iam,
       local.data_eng_groups_iam
     )
-    #Dataflow roles
-    "roles/dataflow.admin" = [
-      module.service-account-orch.iam_email,
-    ]
   }
   oslogin = true
 }
