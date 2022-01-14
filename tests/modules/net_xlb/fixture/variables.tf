@@ -203,7 +203,7 @@ variable "global_forwarding_rule_config" {
     ip_protocol           = "TCP"
     ip_version            = "IPV4"
     # If not specified, 80 for https = false, 443 otherwise
-    port_range            = null
+    port_range = null
   }
 }
 

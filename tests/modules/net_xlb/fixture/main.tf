@@ -25,7 +25,7 @@ module "test" {
   https                            = var.https
   ssl_certificates_config          = var.ssl_certificates_config
   ssl_certificates_config_defaults = var.ssl_certificates_config_defaults
-  target_proxy_https_config        = var.target_proxy_https_config 
+  target_proxy_https_config        = var.target_proxy_https_config
   reserve_ip_address               = var.reserve_ip_address
   global_forwarding_rule_config    = var.global_forwarding_rule_config
 }
