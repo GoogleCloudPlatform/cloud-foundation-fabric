@@ -15,16 +15,13 @@
  */
 
 locals {
-  # If at least one group backend service without
-  # HC is defined, create also a default HC
-  ssl_certificates_config = (
-    try(var.target_proxy_https_config.ssl_certificates, null) == null
-    || length(coalesce(try(var.target_proxy_https_config.ssl_certificates, null), [])) == 0
-    ? merge(
-      { default = var.ssl_certificates_config_defaults },
-      coalesce(var.ssl_certificates_config, {})
-    )
-    : coalesce(var.ssl_certificates_config, {})
+  # If the HTTPS target proxy has no SSL certs
+  # set, create also a default managed SSL cert
+  ssl_certificates_config = merge(
+    coalesce(var.ssl_certificates_config, {}),
+    try(length(var.target_proxy_https_config.ssl_certificates), 0) == 0
+    ? { default = var.ssl_certificates_config_defaults }
+    : {}
   )
 
   ssl_certs_managed = (
