@@ -38,5 +38,6 @@ If needed, converting factories to consume JSON is a matter of switching from `y
 
 ### Dedicated Factories
 
-A dedicated resource factory for the massive creation of VPC firewall rules across different projects/VPCs is also provided as a reference: [net-vpc-firewall-yaml](net-vpc-firewall-yaml/README.md)
+- [net-vpc-firewall-yaml](net-vpc-firewall-yaml/README.md) for VPC firewall rules across different projects/VPCs
+- [project-factory](project-factory/README.md) for projects
  
