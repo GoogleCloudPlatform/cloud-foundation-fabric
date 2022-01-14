@@ -18,6 +18,18 @@ variable "billing_account" {
   type        = string
 }
 
+variable "data_eng_groups" {
+  description = "Groups with Service Account Tocken creator role on service accounts in the form 'USER/GROUP_EMAIL'."
+  type        = list(string)
+  default     = []
+}
+
+variable "data_eng_users" {
+  description = "Users with Service Account Tocken creator role on service accounts in the form 'USER/GROUP_EMAIL'."
+  type        = list(string)
+  default     = []
+}
+
 variable "location" {
   description = "The location where resources will be deployed."
   type        = string
@@ -44,18 +56,6 @@ variable "ssh_source_ranges" {
   description = "IP CIDR ranges that will be allowed to connect via SSH to the onprem instance."
   type        = list(string)
   default     = ["0.0.0.0/0"]
-}
-
-variable "data_eng_groups" {
-  description = "Groups with Service Account Tocken creator role on service accounts in the form 'USER/GROUP_EMAIL'."
-  type        = list(string)
-  default     = []
-}
-
-variable "data_eng_users" {
-  description = "Users with Service Account Tocken creator role on service accounts in the form 'USER/GROUP_EMAIL'."
-  type        = list(string)
-  default     = []
 }
 
 variable "vpc_ip_cidr_range" {
