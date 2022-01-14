@@ -29,12 +29,12 @@ module "project" {
     "bigqueryreservation.googleapis.com",
     "cloudkms.googleapis.com",
     "compute.googleapis.com",
+    "dataflow.googleapis.com",
     "servicenetworking.googleapis.com",
     "storage.googleapis.com",
     "storage-component.googleapis.com",
-    "dataflow.googleapis.com",
   ]
-  #Using Additive IAM to let users use existing project
+  # additive IAM bindings avoid disrupting bindings in existing project
   iam = {
     # GCS roles
     "roles/storage.objectAdmin" = [
