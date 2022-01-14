@@ -1,3 +1,17 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 ###############################################################################
 #                                   GCS                                       #
 ###############################################################################
@@ -45,7 +59,7 @@ module "bigquery-dataset" {
         range = null # use start/end/interval for range
         time  = null
       }
-      schema              = file("${path.module}/person.json")
+      schema              = file("${path.module}/data-demo/person.json")
       deletion_protection = false
     }
   }
