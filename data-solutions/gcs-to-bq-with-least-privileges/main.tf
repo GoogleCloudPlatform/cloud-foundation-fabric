@@ -33,6 +33,7 @@ module "project-service" {
   name            = var.project_name
   parent          = var.root_node
   billing_account = var.billing_account
+  project_create  = var.project_create
   services = [
     "compute.googleapis.com",
     "servicenetworking.googleapis.com",
@@ -83,6 +84,12 @@ module "project-service" {
     "roles/iam.serviceAccountUser" = [
       module.service-account-orch.iam_email,
     ]
+    "roles/iam.serviceAccountTokenCreator" = concat(
+      local.data_eng_users_iam,
+    )
+    "roles/viewer" = concat(
+      local.data_eng_users_iam,
+    )
     #Dataflow roles
     "roles/dataflow.admin" = [
       module.service-account-orch.iam_email,
@@ -90,11 +97,9 @@ module "project-service" {
   }
   group_iam = {
     "roles/iam.serviceAccountTokenCreator" = concat(
-      local.data_eng_users_iam,
       local.data_eng_groups_iam
     )
     "roles/viewer" = concat(
-      local.data_eng_users_iam,
       local.data_eng_groups_iam
     )
   }
