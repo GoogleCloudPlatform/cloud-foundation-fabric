@@ -19,13 +19,13 @@ variable "billing_account" {
 }
 
 variable "data_eng_groups" {
-  description = "Groups with Service Account Tocken creator role on service accounts in the form 'USER/GROUP_EMAIL'."
+  description = "Groups with Service Account Tocken creator role on service accounts in the form 'GROUP_EMAIL@DOMAIN.COM'."
   type        = list(string)
   default     = []
 }
 
 variable "data_eng_users" {
-  description = "Users with Service Account Tocken creator role on service accounts in the form 'USER/GROUP_EMAIL'."
+  description = "Users with Service Account Tocken creator role on service accounts in the form 'USER_EMAIL@DOMAIN.COM'. User level role is intended for the porpuse of the test, prefer group role based on real life use cases."
   type        = list(string)
   default     = []
 }
@@ -34,6 +34,12 @@ variable "location" {
   description = "The location where resources will be deployed."
   type        = string
   default     = "europe"
+}
+
+variable "project_create" {
+  description = "Set to true to create projects, will use existing ones by default."
+  type        = bool
+  default     = false
 }
 
 variable "project_name" {
