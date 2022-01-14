@@ -20,30 +20,29 @@ output "bq_tables" {
 output "buckets" {
   description = "GCS Bucket Cloud KMS crypto keys."
   value = {
-    for name, bucket in module.gcs-01 :
-    bucket.name => bucket.url
+    data   = module.gcs-data.name
+    df-tmp = module.gcs-df-tmp.name
   }
 }
 
-output "projects" {
-  description = "Project ids."
-  value = {
-    service-project = module.project-service.project_id
-  }
+output "project_id" {
+  description = "Project id."
+  value       = module.project.project_id
 }
 
 output "serviceaccount" {
   description = "Service Account."
   value = {
-    bq   = module.service-account-bq.email
-    df   = module.service-account-df.email
-    orch = module.service-account-orch.email
+    bq      = module.service-account-bq.email
+    df      = module.service-account-df.email
+    orch    = module.service-account-orch.email
+    landing = module.service-account-landing.email
   }
 }
 
 output "command-01-gcs" {
   description = "gcloud command to copy data into the created bucket impersonating the service account."
-  value       = "gsutil -i ${module.service-account-landing.email} cp data-demo/* ${module.gcs-01["data-landing"].url}"
+  value       = "gsutil -i ${module.service-account-landing.email} cp data-demo/* ${module.gcs-data.url}"
 }
 
 output "command-02-dataflow" {
@@ -51,23 +50,26 @@ output "command-02-dataflow" {
   value       = <<EOT
   gcloud --impersonate-service-account=${module.service-account-orch.email} dataflow jobs run test_batch_01 \
     --gcs-location gs://dataflow-templates/latest/GCS_Text_to_BigQuery \
-    --project ${module.project-service.project_id} \
+    --project ${module.project.project_id} \
     --region ${var.region} \
     --disable-public-ips \
     --subnetwork ${module.vpc.subnets[format("%s/%s", var.region, "subnet")].self_link} \
-    --staging-location ${module.gcs-01["df-tmplocation"].url} \
+    --staging-location ${module.gcs-df-tmp.url} \
     --service-account-email ${module.service-account-df.email} \
     --parameters \
 javascriptTextTransformFunctionName=transform,\
-JSONPath=${module.gcs-01["data-landing"].url}/person_schema.json,\
-javascriptTextTransformGcsPath=${module.gcs-01["data-landing"].url}/person_udf.js,\
-inputFilePattern=${module.gcs-01["data-landing"].url}/person.csv,\
-outputTable=${module.project-service.project_id}:${module.bigquery-dataset.dataset_id}.${module.bigquery-dataset.tables["person"].table_id},\
-bigQueryLoadingTemporaryDirectory=${module.gcs-01["df-tmplocation"].url} 
+JSONPath=${module.gcs-data.url}/person_schema.json,\
+javascriptTextTransformGcsPath=${module.gcs-data.url}/person_udf.js,\
+inputFilePattern=${module.gcs-data.url}/person.csv,\
+outputTable=${module.project.project_id}:${module.bigquery-dataset.dataset_id}.${module.bigquery-dataset.tables["person"].table_id},\
+bigQueryLoadingTemporaryDirectory=${module.gcs-df-tmp.url} 
   EOT
 }
 
 output "command-03-bq" {
   description = "bq command to query imported data."
-  value       = "bq query --use_legacy_sql=false 'SELECT * FROM `${module.project-service.project_id}.${module.bigquery-dataset.dataset_id}.${module.bigquery-dataset.tables["person"].table_id}` LIMIT 1000'"
+  value       = <<EOT
+  gcloud auth application-default login --impersonate-service-account=${module.service-account-bq.email}
+  bq query --project_id= ${module.project.project_id} --use_legacy_sql=false 'SELECT * FROM `${module.project.project_id}.${module.bigquery-dataset.dataset_id}.${module.bigquery-dataset.tables["person"].table_id}` LIMIT 1000'"
+  EOT
 }

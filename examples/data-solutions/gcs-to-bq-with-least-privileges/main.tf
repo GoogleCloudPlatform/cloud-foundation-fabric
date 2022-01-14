@@ -12,28 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-locals {
-  data_eng_users_iam = [
-    for item in var.data_eng_users :
-    "user:${item}"
-  ]
-
-  data_eng_groups_iam = [
-    for item in var.data_eng_groups :
-    "group:${item}"
-  ]
-}
-
 ###############################################################################
 #                                 Projects                                    #
 ###############################################################################
 
-module "project-service" {
+module "project" {
   source          = "../../../modules/project"
-  name            = var.project_name
-  parent          = var.root_node
-  billing_account = var.billing_account
-  project_create  = var.project_create
+  name            = var.project_id
+  parent          = try(var.project_create.parent, null)
+  billing_account = try(var.project_create.billing_account_id, null)
+  project_create  = var.project_create != null
+  prefix          = var.project_create == null ? null : var.prefix
   services = [
     "compute.googleapis.com",
     "servicenetworking.googleapis.com",
@@ -43,7 +32,8 @@ module "project-service" {
     "bigqueryreservation.googleapis.com",
     "dataflow.googleapis.com",
   ]
-  iam = {
+  #Using Additive IAM to let users use existing project
+  iam_additive = {
     # GCS roles
     "roles/storage.objectAdmin" = [
       module.service-account-df.iam_email,
@@ -58,13 +48,15 @@ module "project-service" {
     ]
     "roles/bigquery.dataEditor" = [
       module.service-account-df.iam_email,
+      module.service-account-bq.iam_email
     ]
     "roles/bigquery.dataViewer" = [
       module.service-account-bq.iam_email,
       module.service-account-orch.iam_email
     ]
     "roles/bigquery.jobUser" = [
-      module.service-account-df.iam_email
+      module.service-account-df.iam_email,
+      module.service-account-bq.iam_email
     ]
     "roles/bigquery.user" = [
       module.service-account-bq.iam_email,
@@ -85,30 +77,26 @@ module "project-service" {
       module.service-account-orch.iam_email,
     ]
     "roles/iam.serviceAccountTokenCreator" = concat(
-      local.data_eng_users_iam,
+      var.data_eng_principals,
     )
     "roles/viewer" = concat(
-      local.data_eng_users_iam,
+      var.data_eng_principals
     )
     #Dataflow roles
-    "roles/dataflow.admin" = [
+    "roles/dataflow.admin" = concat([
       module.service-account-orch.iam_email,
-    ]
+      ], var.data_eng_principals
+    )
     "roles/dataflow.worker" = [
       module.service-account-df.iam_email,
     ]
     #Network roles
     "roles/compute.networkUser" = [
       module.service-account-df.iam_email,
-      "serviceAccount:${module.project-service.service_accounts.robots.dataflow}"
+      "serviceAccount:${module.project.service_accounts.robots.dataflow}"
     ]
   }
-  group_iam = {
-    "roles/iam.serviceAccountTokenCreator" = concat(
-      local.data_eng_groups_iam
-    )
-    "roles/viewer" = concat(
-      local.data_eng_groups_iam
-    )
+  service_config = {
+    disable_on_destroy = false, disable_dependent_services = false
   }
 }

@@ -1,18 +1,25 @@
 # Cloud Storage to Bigquery with Cloud Dataflow with least privileges
 
-This example creates the infrastructure needed to run a [Cloud Dataflow](https://cloud.google.com/dataflow) pipeline to import data from [GCS](https://cloud.google.com/storage) to [Bigquery](https://cloud.google.com/bigquery). The example will create different service accounts with least privileges on resources. To run the pipeline, users listed in `data_eng_users` or `data_eng_groups` can impersonate all those service accounts.
+This example creates the infrastructure needed to run a [Cloud Dataflow](https://cloud.google.com/dataflow) pipeline to import data from [GCS](https://cloud.google.com/storage) to [Bigquery](https://cloud.google.com/bigquery). The example will create different service accounts with least privileges on resources. To run the pipeline, users listed in `data_eng_principals` can impersonate all those service accounts.
 
 The solution will use:
  - internal IPs for GCE and Dataflow instances
  - Cloud NAT to let resources egress to the Internet, to run system updates and install packages
  - rely on impersonation to avoid the use of service account keys
- - service accounts with least privilege on each resources
+ - service accounts with least privilege on each resource
  
-The example is designed to match real-world use cases with a minimum amount of resources. It can be used as a starting point for more complex scenarios.
+The example is designed to match real-world use cases with a minimum amount of resources and some compromise listed below. It can be used as a starting point for more complex scenarios.
 
 This is the high level diagram:
 
 ![GCS to Biquery High-level diagram](diagram.png "GCS to Biquery High-level diagram")
+## Example compromise
+In the example we implemented some compromise to keep the example minimal and easy to read. On a real word use case, you may evaluate the option to:
+ - Configure a Shared-VPC
+ - Use only Identity Groups to assigne roles
+ - Use Authorative IAM role assignement
+ - Split resources in different project: Data Landing, Data Transformation, Data Lake, ...
+ - CMEK adoption to encrypt resources
 
 ## Managed resources and services
 

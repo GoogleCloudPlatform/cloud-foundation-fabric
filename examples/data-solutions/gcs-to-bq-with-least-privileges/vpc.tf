@@ -18,12 +18,12 @@
 
 module "vpc" {
   source     = "../../../modules/net-vpc"
-  project_id = module.project-service.project_id
-  name       = var.vpc_name
+  project_id = module.project.project_id
+  name       = "${var.prefix}-vpc"
   subnets = [
     {
-      ip_cidr_range      = var.vpc_ip_cidr_range
-      name               = var.vpc_subnet_name
+      ip_cidr_range      = var.vpc_subnet_range
+      name               = "subnet"
       region             = var.region
       secondary_ip_range = {}
     }
@@ -32,15 +32,15 @@ module "vpc" {
 
 module "vpc-firewall" {
   source       = "../../../modules/net-vpc-firewall"
-  project_id   = module.project-service.project_id
+  project_id   = module.project.project_id
   network      = module.vpc.name
-  admin_ranges = [var.vpc_ip_cidr_range]
+  admin_ranges = [var.vpc_subnet_range]
 }
 
 module "nat" {
   source         = "../../../modules/net-cloudnat"
-  project_id     = module.project-service.project_id
+  project_id     = module.project.project_id
   region         = var.region
-  name           = "default"
+  name           = "${var.prefix}-default"
   router_network = module.vpc.name
 }

@@ -13,37 +13,28 @@
 # limitations under the License.
 
 
-variable "billing_account" {
-  description = "Billing account id used as default for new projects."
-  type        = string
-}
 
-variable "data_eng_groups" {
-  description = "Groups with Service Account Tocken creator role on service accounts in the form 'GROUP_EMAIL@DOMAIN.COM'."
+variable "data_eng_principals" {
+  description = "Groups with Service Account Tocken creator role on service accounts in iam format 'group:group@domain.com' or 'user:user@domain.com'."
   type        = list(string)
   default     = []
 }
-
-variable "data_eng_users" {
-  description = "Users with Service Account Tocken creator role on service accounts in the form 'USER_EMAIL@DOMAIN.COM'. User level role is intended for the porpuse of the test, prefer group role based on real life use cases."
-  type        = list(string)
-  default     = []
-}
-
-variable "location" {
-  description = "The location where resources will be deployed."
+variable "prefix" {
+  description = "Unique prefix used for resource names. Not used for project if 'project_create' is null."
   type        = string
-  default     = "europe"
 }
 
 variable "project_create" {
-  description = "Set to true to create projects, will use existing ones by default."
-  type        = bool
-  default     = false
+  description = "Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format"
+  type = object({
+    billing_account_id = string
+    parent             = string
+  })
+  default = null
 }
 
-variable "project_name" {
-  description = "Name for the new Service Project."
+variable "project_id" {
+  description = "Project id, references existing project if `project_create` is null."
   type        = string
 }
 
@@ -53,31 +44,8 @@ variable "region" {
   default     = "europe-west1"
 }
 
-variable "root_node" {
-  description = "The resource name of the parent Folder or Organization. Must be of the form folders/folder_id or organizations/org_id."
-  type        = string
-}
-
-variable "ssh_source_ranges" {
-  description = "IP CIDR ranges that will be allowed to connect via SSH to the onprem instance."
-  type        = list(string)
-  default     = ["0.0.0.0/0"]
-}
-
-variable "vpc_ip_cidr_range" {
-  description = "Ip range used in the subnet deployef in the Service Project."
+variable "vpc_subnet_range" {
+  description = "Ip range used for the VPC subnet created for the example."
   type        = string
   default     = "10.0.0.0/20"
-}
-
-variable "vpc_name" {
-  description = "Name of the VPC created in the Service Project."
-  type        = string
-  default     = "local"
-}
-
-variable "vpc_subnet_name" {
-  description = "Name of the subnet created in the Service Project."
-  type        = string
-  default     = "subnet"
 }

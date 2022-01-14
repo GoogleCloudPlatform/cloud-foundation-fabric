@@ -18,23 +18,23 @@
 
 module "service-account-bq" {
   source     = "../../../modules/iam-service-account"
-  project_id = module.project-service.project_id
+  project_id = module.project.project_id
   name       = "bq-datalake"
 }
 module "service-account-landing" {
   source     = "../../../modules/iam-service-account"
-  project_id = module.project-service.project_id
+  project_id = module.project.project_id
   name       = "gcs-landing"
 }
 
 module "service-account-orch" {
   source     = "../../../modules/iam-service-account"
-  project_id = module.project-service.project_id
+  project_id = module.project.project_id
   name       = "orchestrator"
 }
 
 module "service-account-df" {
   source     = "../../../modules/iam-service-account"
-  project_id = module.project-service.project_id
+  project_id = module.project.project_id
   name       = "df-loading"
 }

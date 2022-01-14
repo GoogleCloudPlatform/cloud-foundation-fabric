@@ -2,12 +2,25 @@
 #                                   GCS                                       #
 ###############################################################################
 
-module "gcs-01" {
+module "gcs-data" {
   source        = "../../../modules/gcs"
-  for_each      = toset(["data-landing", "df-tmplocation"])
-  project_id    = module.project-service.project_id
-  prefix        = module.project-service.project_id
-  name          = each.key
+  project_id    = module.project.project_id
+  prefix        = var.prefix
+  name          = "data"
+  location      = var.region
+  storage_class = "REGIONAL"
+  # encryption_key = module.kms.keys.key-gcs.id
+  force_destroy = true
+}
+
+module "gcs-df-tmp" {
+  source        = "../../../modules/gcs"
+  project_id    = module.project.project_id
+  prefix        = var.prefix
+  name          = "df-tmp"
+  location      = var.region
+  storage_class = "REGIONAL"
+  # encryption_key = module.kms.keys.key-gcs.id
   force_destroy = true
 }
 
@@ -17,7 +30,7 @@ module "gcs-01" {
 
 module "bigquery-dataset" {
   source     = "../../../modules/bigquery-dataset"
-  project_id = module.project-service.project_id
+  project_id = module.project.project_id
   id         = "datalake"
   # Define Tables in Terraform for the porpuse of the example. 
   # Probably in a production environment you would handle Tables creation in a 
