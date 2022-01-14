@@ -33,6 +33,7 @@ This sample creates several distinct groups of resources:
   - One bucket
 - BQ
   - One dataset
+  - One table. Tables are defined in Terraform for the porpuse of the example. Probably, in real scenario, would handle Tables creation in a separate Terraform State or using a different tool/pipeline (for example: Dataform).
 
 In this example you can also configure users or group of user to assign them viewer role on the resources created and the ability to imprsonate service accounts to test dataflow pipelines before autometing them with Composer or any other orchestration systems.
 
