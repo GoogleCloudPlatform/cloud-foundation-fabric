@@ -3,23 +3,24 @@
 This example creates the infrastructure needed to run a [Cloud Dataflow](https://cloud.google.com/dataflow) pipeline to import data from [GCS](https://cloud.google.com/storage) to [Bigquery](https://cloud.google.com/bigquery). The example will create different service accounts with least privileges on resources. To run the pipeline, users listed in `data_eng_principals` can impersonate all those service accounts.
 
 The solution will use:
- - internal IPs for GCE and Dataflow instances
+ - internal IPs for GCE and Cloud Dataflow instances
  - Cloud NAT to let resources egress to the Internet, to run system updates and install packages
- - rely on impersonation to avoid the use of service account keys
- - service accounts with least privilege on each resource
+ - rely on [Service Account Impersonation](https://cloud.google.com/iam/docs/impersonating-service-accounts) to avoid the use of service account keys
+ - Service Accounts with least privilege on each resource
  
 The example is designed to match real-world use cases with a minimum amount of resources and some compromise listed below. It can be used as a starting point for more complex scenarios.
 
 This is the high level diagram:
 
 ![GCS to Biquery High-level diagram](diagram.png "GCS to Biquery High-level diagram")
-## Example compromise
+## Move to real use case consideration
 In the example we implemented some compromise to keep the example minimal and easy to read. On a real word use case, you may evaluate the option to:
  - Configure a Shared-VPC
  - Use only Identity Groups to assigne roles
  - Use Authorative IAM role assignement
  - Split resources in different project: Data Landing, Data Transformation, Data Lake, ...
  - CMEK adoption to encrypt resources
+ - Use VPC-SC to mitigate data exfiltration
 
 ## Managed resources and services
 
@@ -120,3 +121,29 @@ You can check data imported into Google BigQuery using the  command returned in 
 ```
 bq query --use_legacy_sql=false 'SELECT * FROM `PROJECT.datalake.person` LIMIT 1000'
 ```
+
+
+<!-- BEGIN TFDOC -->
+## Variables
+
+| name | description | type | required | default |
+|---|---|:---:|:---:|:---:|
+| prefix | Unique prefix used for resource names. Not used for project if 'project_create' is null. | <code>string</code> | ✓ |  |
+| project_id | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
+| data_eng_principals | Groups with Service Account Tocken creator role on service accounts in iam format 'group:group@domain.com' or 'user:user@domain.com'. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| project_create | Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| region | The region where resources will be deployed. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| vpc_subnet_range | Ip range used for the VPC subnet created for the example. | <code>string</code> |  | <code>&#34;10.0.0.0&#47;20&#34;</code> |
+
+## Outputs
+
+| name | description | sensitive |
+|---|---|:---:|
+| bq_tables | Bigquery Tables. |  |
+| buckets | GCS Bucket Cloud KMS crypto keys. |  |
+| command-01-gcs | gcloud command to copy data into the created bucket impersonating the service account. |  |
+| command-02-dataflow | gcloud command to run dataflow template impersonating the service account. |  |
+| command-03-bq | bq command to query imported data. |  |
+| project_id | Project id. |  |
+| serviceaccount | Service Account. |  |
+<!-- END TFDOC -->
