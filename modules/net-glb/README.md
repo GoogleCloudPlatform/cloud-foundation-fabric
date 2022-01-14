@@ -9,9 +9,9 @@ The module allows managing External Global HTTP/HTTPS Load Balancers (XGLB), int
 This is a minimal example, which creates a global HTTP load balancer, pointing the path `/` to an existing GCS bucket called `my_test_bucket`.
 
 ```hcl
-module "xlb" {
-  source     = "./modules/net-xlb"
-  name       = "xlb-test"
+module "glb" {
+  source     = "./modules/net-glb"
+  name       = "glb-test"
   project_id = var.project_id
 
   backend_services_config = {
@@ -34,9 +34,9 @@ module "xlb" {
 A very similar coniguration also applies to GCE instance groups:
 
 ```hcl
-module "xlb" {
-  source     = "./modules/net-xlb"
-  name       = "xlb-test"
+module "glb" {
+  source     = "./modules/net-glb"
+  name       = "glb-test"
   project_id = var.project_id
 
   backend_services_config = {
@@ -71,9 +71,9 @@ Alternatively, one or more health checks can be either contextually created or a
 For example, to contextually create a health check and attach it to the backend service:
 
 ```hcl
-module "xlb" {
-  source     = "./modules/net-xlb"
-  name       = "xlb-test"
+module "glb" {
+  source     = "./modules/net-glb"
+  name       = "glb-test"
   project_id = var.project_id
 
   backend_services_config = {
@@ -116,9 +116,9 @@ module "xlb" {
 Backends can be multiple, group and bucket backends can be mixed and group backends support multiple groups.
 
 ```hcl
-module "xlb" {
-  source     = "./modules/net-xlb"
-  name       = "xlb-test"
+module "glb" {
+  source     = "./modules/net-glb"
+  name       = "glb-test"
   project_id = var.project_id
 
   backend_services_config = {
@@ -180,9 +180,9 @@ Backend services can be specified as needed in the url-map configuration, refere
 In this example, we're using one backend service as the default backend
 
 ```hcl
-module "xlb" {
-  source     = "./modules/net-xlb"
-  name       = "xlb-test"
+module "glb" {
+  source     = "./modules/net-glb"
+  name       = "glb-test"
   project_id = var.project_id
 
   url_map_config = {
@@ -248,9 +248,9 @@ module "xlb" {
 Optionally, a static IP address can be reserved:
 
 ```hcl
-module "xlb" {
-  source     = "./modules/net-xlb"
-  name       = "xlb-test"
+module "glb" {
+  source     = "./modules/net-glb"
+  name       = "glb-test"
   project_id = var.project_id
 
   reserve_ip_address = true
@@ -285,9 +285,9 @@ The module supports both managed and unmanaged certificates, and they can be eit
 If no `ssl_certificates_config` variable is specified, a managed certificate for the domain *example.com* is automatically created.
 
 ```hcl
-module "xlb" {
-  source     = "./modules/net-xlb"
-  name       = "xlb-test"
+module "glb" {
+  source     = "./modules/net-glb"
+  name       = "glb-test"
   project_id = var.project_id
 
   https = true
@@ -319,9 +319,9 @@ Otherwise, SSL certificates can be explicitely defined. In this case, they'll ne
 If the ids specified in the `target_proxy_https_config` variable are not found in the `ssl_certificates_config` map, they are used as is, assuming the ssl certificates already exist.
 
 ```hcl
-module "xlb" {
-  source     = "./modules/net-xlb"
-  name       = "xlb-test"
+module "glb" {
+  source     = "./modules/net-glb"
+  name       = "glb-test"
   project_id = var.project_id
 
   https = true
@@ -367,9 +367,9 @@ module "xlb" {
 Using unamanged certificates is also possible. Here is an example:
 
 ```hcl
-module "xlb" {
-  source     = "./modules/net-xlb"
-  name       = "xlb-test"
+module "glb" {
+  source     = "./modules/net-glb"
+  name       = "glb-test"
   project_id = var.project_id
 
   https = true

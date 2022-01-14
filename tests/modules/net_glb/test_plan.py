@@ -63,7 +63,7 @@ _BACKEND_GROUP_HC = '''{
   }
 }'''
 
-_NAME = 'xlb-test'
+_NAME = 'glb-test'
 
 _SSL_CERTIFICATES_CONFIG_MANAGED = '''{
   my-domain = {

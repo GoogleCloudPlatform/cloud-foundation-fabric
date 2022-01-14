@@ -15,9 +15,9 @@
  */
 
 module "test" {
-  source                           = "../../../../modules/net-xlb"
+  source                           = "../../../../modules/net-glb"
   project_id                       = "my-project"
-  name                             = "xlb-test"
+  name                             = "glb-test"
   health_checks_config_defaults    = var.health_checks_config_defaults
   health_checks_config             = var.health_checks_config
   backend_services_config          = var.backend_services_config

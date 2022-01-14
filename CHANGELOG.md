@@ -4,7 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
-- new `net-xlb` module for Global External Load balancer
+- new `net-glb` module for Global External Load balancer
 
 ## [12.0.0] - 2022-01-11
 
