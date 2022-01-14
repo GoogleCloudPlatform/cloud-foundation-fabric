@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,26 @@
  * limitations under the License.
  */
 
-variable "billing_account" {
-  type    = string
-  default = "123456-123456-123456"
+variable "prefix" {
+  description = "Unique prefix used for resource names. Not used for project if 'project_create' is null."
+  type        = string
+  default     = "prefix"
 }
 
-variable "project_name" {
-  description = "The project name."
-  type        = string
-  default     = "gcs2bq-least-privileges"
+variable "project_create" {
+  description = "Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format"
+  type = object({
+    billing_account_id = string
+    parent             = string
+  })
+  default = {
+    billing_account_id = "123456-123456-123456"
+    parent             = "folders/12345678"
+  }
 }
 
-variable "root_node" {
-  description = "The resource name of the parent Folder or Organization. Must be of the form folders/folder_id or organizations/org_id."
+variable "project_id" {
+  description = "Project id, references existing project if `project_create` is null."
   type        = string
-  default     = "folders/12345678"
+  default     = "datalake"
 }

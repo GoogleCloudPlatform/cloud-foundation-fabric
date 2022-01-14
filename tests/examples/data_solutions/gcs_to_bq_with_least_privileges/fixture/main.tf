@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
  */
 
 module "test" {
-  source          = "../../../../data-solutions/gcs-to-bq-with-least-privileges/"
-  billing_account = var.billing_account
-  root_node       = var.root_node
-  project_name    = var.project_name
+  source         = "../../../../../examples/data-solutions/gcs-to-bq-with-least-privileges/"
+  project_create = var.project_create
+  project_id     = var.project_id
+  prefix         = var.prefix
 }
