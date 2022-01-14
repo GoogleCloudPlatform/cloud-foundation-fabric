@@ -21,6 +21,11 @@ locals {
     : null
   )
 
+  port_range = coalesce(
+    var.global_forwarding_rule_config.port_range,
+    var.https ? "443" : "80"
+  )
+
   target = (
     var.https
     ? google_compute_target_https_proxy.https.0.id
@@ -35,7 +40,7 @@ resource "google_compute_global_forwarding_rule" "forwarding_rule" {
   description           = "Terraform managed."
   ip_protocol           = var.global_forwarding_rule_config.ip_protocol
   load_balancing_scheme = var.global_forwarding_rule_config.load_balancing_scheme
-  port_range            = var.global_forwarding_rule_config.port_range
+  port_range            = local.port_range
   target                = local.target
   ip_address            = local.ip_address
 }

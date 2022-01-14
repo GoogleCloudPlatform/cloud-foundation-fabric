@@ -19,16 +19,21 @@ locals {
   # Otherwise, look in the ssl_certificates_config map.
   # Otherwise, use the SSL certificate id as is (already existing).
   ssl_certificates = (
-    var.https == true
-    ? [
-      for cert in try(var.target_proxy_https_config.ssl_certificates, ["default"]) :
+    try(var.target_proxy_https_config.ssl_certificates, null) == null
+    || length(coalesce(try(var.target_proxy_https_config.ssl_certificates, null), [])) == 0
+    ? try(
+      [google_compute_managed_ssl_certificate.managed["default"].id],
+      [google_compute_ssl_certificate.unmanaged["default"].id],
+      null
+    )
+    : [
+      for cert in try(var.target_proxy_https_config.ssl_certificates, []) :
       try(
         google_compute_managed_ssl_certificate.managed[cert].id,
         google_compute_ssl_certificate.unmanaged[cert].id,
         cert
       )
     ]
-    : []
   )
 }
 

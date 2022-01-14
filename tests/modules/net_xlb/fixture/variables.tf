@@ -14,16 +14,6 @@
  * limitations under the License.
  */
 
-variable "name" {
-  description = "Load balancer name."
-  type        = string
-}
-
-variable "project_id" {
-  description = "Project id."
-  type        = string
-}
-
 variable "health_checks_config_defaults" {
   description = "Auto-created health check default configuration."
   type = object({
