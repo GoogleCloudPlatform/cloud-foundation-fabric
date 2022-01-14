@@ -46,5 +46,5 @@ It is meant to be used as a starting point for most Shared VPC configurations, a
 
 ### Decentralized firewall management
 
-<a href="./decentralized-firewall/" title="Decentralized firewall management"><img src="./decentralized-firewall/diagram.png" align="left" width="280px"></a> This [example](./decentralized-firewall/) shows how a decentralized firewall management can be organized using the [firewall factory](../factories/firewall-vpc-rules/).
+<a href="./decentralized-firewall/" title="Decentralized firewall management"><img src="./decentralized-firewall/diagram.png" align="left" width="280px"></a> This [example](./decentralized-firewall/) shows how a decentralized firewall management can be organized using the [firewall factory](../factories/net-vpc-firewall-yaml/).
 <br clear="left">

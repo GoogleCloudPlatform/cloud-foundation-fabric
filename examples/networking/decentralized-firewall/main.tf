@@ -109,7 +109,7 @@ module "dns-api-dev" {
 ###############################################################################
 
 module "vpc-firewall-prod" {
-  source = "../../factories/firewall-vpc-rules/flat"
+  source = "../../factories/net-vpc-firewall-yaml"
 
   project_id = module.project-host-prod.project_id
   network    = module.vpc-prod.name
@@ -125,7 +125,7 @@ module "vpc-firewall-prod" {
 }
 
 module "vpc-firewall-dev" {
-  source = "../../factories/firewall-vpc-rules/flat"
+  source = "../../factories/net-vpc-firewall-yaml"
 
   project_id = module.project-host-dev.project_id
   network    = module.vpc-dev.name
