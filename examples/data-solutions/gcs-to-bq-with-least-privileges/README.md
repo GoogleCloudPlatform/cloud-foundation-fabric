@@ -7,6 +7,7 @@ The solution will use:
  - Cloud NAT to let resources egress to the Internet, to run system updates and install packages
  - rely on [Service Account Impersonation](https://cloud.google.com/iam/docs/impersonating-service-accounts) to avoid the use of service account keys
  - Service Accounts with least privilege on each resource
+ - (Optional) CMEK encription for GCS bucket, DataFlow instances and BigQuery tables
  
 The example is designed to match real-world use cases with a minimum amount of resources and some compromise listed below. It can be used as a starting point for more complex scenarios.
 
@@ -19,7 +20,6 @@ In the example we implemented some compromise to keep the example minimal and ea
  - Use only Identity Groups to assigne roles
  - Use Authorative IAM role assignement
  - Split resources in different project: Data Landing, Data Transformation, Data Lake, ...
- - CMEK adoption to encrypt resources
  - Use VPC-SC to mitigate data exfiltration
 
 ## Managed resources and services

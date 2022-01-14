@@ -12,7 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
+variable "cmek_encryption" {
+  description = "Flag to enable CMEK on GCP resources created."
+  type        = bool
+  default     = false
+}
 
 variable "data_eng_principals" {
   description = "Groups with Service Account Tocken creator role on service accounts in iam format 'group:group@domain.com' or 'user:user@domain.com'."

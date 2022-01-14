@@ -56,6 +56,7 @@ output "command-02-dataflow" {
     --subnetwork ${module.vpc.subnets[format("%s/%s", var.region, "subnet")].self_link} \
     --staging-location ${module.gcs-df-tmp.url} \
     --service-account-email ${module.service-account-df.email} \
+    ${var.cmek_encryption ? format("--dataflow-kms-key=%s", module.kms[0].key_ids.key-df) : ""} \
     --parameters \
 javascriptTextTransformFunctionName=transform,\
 JSONPath=${module.gcs-data.url}/person_schema.json,\
@@ -69,7 +70,6 @@ bigQueryLoadingTemporaryDirectory=${module.gcs-df-tmp.url}
 output "command-03-bq" {
   description = "bq command to query imported data."
   value       = <<EOT
-  gcloud auth application-default login --impersonate-service-account=${module.service-account-bq.email}
-  bq query --project_id= ${module.project.project_id} --use_legacy_sql=false 'SELECT * FROM `${module.project.project_id}.${module.bigquery-dataset.dataset_id}.${module.bigquery-dataset.tables["person"].table_id}` LIMIT 1000'"
+  bq query --project_id=${module.project.project_id} --use_legacy_sql=false 'SELECT * FROM `${module.project.project_id}.${module.bigquery-dataset.dataset_id}.${module.bigquery-dataset.tables["person"].table_id}` LIMIT 1000'"
   EOT
 }

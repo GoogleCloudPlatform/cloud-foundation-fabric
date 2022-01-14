@@ -24,16 +24,18 @@ module "project" {
   project_create  = var.project_create != null
   prefix          = var.project_create == null ? null : var.prefix
   services = [
-    "compute.googleapis.com",
-    "servicenetworking.googleapis.com",
-    "storage-component.googleapis.com",
     "bigquery.googleapis.com",
     "bigquerystorage.googleapis.com",
     "bigqueryreservation.googleapis.com",
+    "cloudkms.googleapis.com",
+    "compute.googleapis.com",
+    "servicenetworking.googleapis.com",
+    "storage.googleapis.com",
+    "storage-component.googleapis.com",
     "dataflow.googleapis.com",
   ]
   #Using Additive IAM to let users use existing project
-  iam_additive = {
+  iam = {
     # GCS roles
     "roles/storage.objectAdmin" = [
       module.service-account-df.iam_email,
@@ -43,9 +45,10 @@ module "project" {
       module.service-account-orch.iam_email,
     ],
     #Bigquery roles
-    "roles/bigquery.admin" = [
+    "roles/bigquery.admin" = concat([
       module.service-account-orch.iam_email,
-    ]
+      ], var.data_eng_principals
+    )
     "roles/bigquery.dataEditor" = [
       module.service-account-df.iam_email,
       module.service-account-bq.iam_email
