@@ -1,0 +1,11 @@
+map(include('hierarchical_rule'))
+---
+hierarchical_rule:
+  description: str()
+  direction: enum("INGRESS", "EGRESS")
+  action: enum("allow", "deny")
+  priority: int()
+  ranges: list(str())
+  target_resources: any(null(), list(str()))
+  ports: map(list(str(), required=False))
+  enable_logging: bool()

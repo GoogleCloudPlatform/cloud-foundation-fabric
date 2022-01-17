@@ -1,0 +1,14 @@
+billing_account_id: str(matches='[A-F0-9]{6}-[A-F0-9]{6}-[A-F0-9]{6}', required=False)
+billing_alert: any(include('billing_alert'), null(), required=False)
+essential_contacts: list(str(), required=False)
+labels: map(str(), key=str(), required=False)
+notification_channels: list(str(), required=False)
+---
+billing_alert:
+  amount: int()
+  thresholds: include('billing_alert_thresholds')
+  credit_treatment: enum('INCLUDE_ALL_CREDITS', 'EXCLUDE_ALL_CREDITS')
+---
+billing_alert_thresholds:
+  current: list(num(min=0, max=1))
+  forecasted: list(num(min=0, max=1))
