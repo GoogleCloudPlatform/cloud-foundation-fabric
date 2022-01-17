@@ -15,7 +15,7 @@
  */
 
 module "stage" {
-  source = "../../../../stages/00-bootstrap"
+  source = "../../../../../fast/stages/00-bootstrap"
   prefix = "fast"
   organization = {
     domain      = "fast.example.com"

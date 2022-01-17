@@ -11,10 +11,3 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-
-def test_counts(fast_e2e_plan_runner):
-  "Test stage."
-  num_modules, num_resources, _ = fast_e2e_plan_runner()
-  # TODO: to re-enable per-module resource count check print _, then test
-  assert num_modules > 0 and num_resources > 0
