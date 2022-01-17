@@ -21,7 +21,7 @@ locals {
 }
 
 module "log-export-project" {
-  source          = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/project?ref=v12.0.0"
+  source          = "../../../modules/project"
   name            = "audit-logs-0"
   parent          = "organizations/${var.organization.id}"
   prefix          = local.prefix
@@ -42,7 +42,7 @@ module "log-export-project" {
 # one log export per type, with conditionals to skip those not needed
 
 module "log-export-dataset" {
-  source        = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/bigquery-dataset?ref=v12.0.0"
+  source        = "../../../modules/bigquery-dataset"
   count         = contains(local.log_types, "bigquery") ? 1 : 0
   project_id    = module.log-export-project.project_id
   id            = "audit_export"
@@ -50,7 +50,7 @@ module "log-export-dataset" {
 }
 
 module "log-export-gcs" {
-  source     = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/gcs?ref=v12.0.0"
+  source     = "../../../modules/gcs"
   count      = contains(local.log_types, "storage") ? 1 : 0
   project_id = module.log-export-project.project_id
   name       = "audit-logs-0"
@@ -58,7 +58,7 @@ module "log-export-gcs" {
 }
 
 module "log-export-logbucket" {
-  source      = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/logging-bucket?ref=v12.0.0"
+  source      = "../../../modules/logging-bucket"
   count       = contains(local.log_types, "logging") ? 1 : 0
   parent_type = "project"
   parent      = module.log-export-project.project_id
@@ -66,7 +66,7 @@ module "log-export-logbucket" {
 }
 
 module "log-export-pubsub" {
-  source     = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/pubsub?ref=v12.0.0"
+  source     = "../../../modules/pubsub"
   for_each   = toset([for k, v in var.log_sinks : k if v == "pubsub"])
   project_id = module.log-export-project.project_id
   name       = "audit-logs-${each.key}"
