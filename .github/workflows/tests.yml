@@ -18,6 +18,7 @@ on:
     - cron: "45 2 * * *"
   pull_request:
     branches:
+      - fast-dev
       - master
     tags:
       - ci
