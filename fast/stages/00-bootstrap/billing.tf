@@ -33,7 +33,7 @@ moved {
 }
 
 module "billing-export-project" {
-  source          = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/project?ref=v12.0.0"
+  source          = "../../../modules/project"
   count           = local.billing_org ? 1 : 0
   billing_account = var.billing_account.id
   name            = "billing-export-0"
@@ -58,7 +58,7 @@ moved {
 }
 
 module "billing-export-dataset" {
-  source        = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/bigquery-dataset?ref=v12.0.0"
+  source        = "../../../modules/bigquery-dataset"
   count         = local.billing_org ? 1 : 0
   project_id    = module.billing-export-project.0.project_id
   id            = "billing_export"
@@ -68,7 +68,7 @@ module "billing-export-dataset" {
 # billing account in a different org
 
 module "billing-organization-ext" {
-  source          = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/organization?ref=v12.0.0"
+  source          = "../../../modules/organization"
   count           = local.billing_org_ext ? 1 : 0
   organization_id = "organizations/${var.billing_account.organization_id}"
   iam_additive = {
