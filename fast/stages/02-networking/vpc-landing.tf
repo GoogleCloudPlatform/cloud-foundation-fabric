@@ -17,7 +17,7 @@
 # tfdoc:file:description Landing VPC and related resources.
 
 module "landing-project" {
-  source          = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/project?ref=v12.0.0"
+  source          = "../../../modules/project"
   billing_account = var.billing_account_id
   name            = "prod-net-landing-0"
   parent          = var.folder_id
@@ -40,7 +40,7 @@ module "landing-project" {
 }
 
 module "landing-vpc" {
-  source     = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/net-vpc?ref=v12.0.0"
+  source     = "../../../modules/net-vpc"
   project_id = module.landing-project.project_id
   name       = "prod-landing-0"
   mtu        = 1500
@@ -70,7 +70,7 @@ module "landing-vpc" {
 }
 
 module "landing-firewall" {
-  source              = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/net-vpc-firewall?ref=v12.0.0"
+  source              = "../../../modules/net-vpc-firewall"
   project_id          = module.landing-project.project_id
   network             = module.landing-vpc.name
   admin_ranges        = []
@@ -82,7 +82,7 @@ module "landing-firewall" {
 }
 
 module "landing-nat-ew1" {
-  source         = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/net-cloudnat?ref=v12.0.0"
+  source         = "../../../modules/net-cloudnat"
   project_id     = module.landing-project.project_id
   region         = "europe-west1"
   name           = "ew1"

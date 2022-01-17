@@ -17,7 +17,7 @@
 # tfdoc:file:description Production spoke VPC and related resources.
 
 module "prod-spoke-project" {
-  source          = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/project?ref=v12.0.0"
+  source          = "../../../modules/project"
   billing_account = var.billing_account_id
   name            = "prod-net-spoke-0"
   parent          = var.folder_id
@@ -44,7 +44,7 @@ module "prod-spoke-project" {
 }
 
 module "prod-spoke-vpc" {
-  source        = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/net-vpc?ref=v12.0.0"
+  source        = "../../../modules/net-vpc"
   project_id    = module.prod-spoke-project.project_id
   name          = "prod-spoke-0"
   mtu           = 1500
@@ -70,7 +70,7 @@ module "prod-spoke-vpc" {
 }
 
 module "prod-spoke-firewall" {
-  source              = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/net-vpc-firewall?ref=v12.0.0"
+  source              = "../../../modules/net-vpc-firewall"
   project_id          = module.prod-spoke-project.project_id
   network             = module.prod-spoke-vpc.name
   admin_ranges        = []
@@ -83,7 +83,7 @@ module "prod-spoke-firewall" {
 
 module "prod-spoke-cloudnat" {
   for_each       = toset(values(module.prod-spoke-vpc.subnet_regions))
-  source         = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/net-cloudnat?ref=v12.0.0"
+  source         = "../../../modules/net-cloudnat"
   project_id     = module.prod-spoke-project.project_id
   region         = each.value
   name           = "prod-nat-${local.region_trigram[each.value]}"
@@ -94,7 +94,7 @@ module "prod-spoke-cloudnat" {
 }
 
 module "prod-spoke-psa-addresses" {
-  source     = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/net-address?ref=v12.0.0"
+  source     = "../../../modules/net-address"
   project_id = module.prod-spoke-project.project_id
   psa_addresses = { for r, v in var.psa_ranges.prod : r => {
     address       = cidrhost(v, 0)

@@ -55,7 +55,7 @@ locals {
 }
 
 module "folder" {
-  source        = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/folder?ref=v12.0.0"
+  source        = "../../../modules/folder"
   parent        = "organizations/${var.organization.id}"
   name          = "Networking"
   folder_create = var.folder_id == null

@@ -11,6 +11,6 @@ TODO before merging
 - [ ] update modules references to local paths
   - [x] stage 00 (ludo)
   - [ ] stage 01 (julio)
-  - [ ] stage 02-net (simo)
+  - [x] stage 02-net (simo)
   - [x] stage 02-sec (ludo)
-  - [ ] stage 03-pf (simo)
+  - [x] stage 03-pf (simo)
