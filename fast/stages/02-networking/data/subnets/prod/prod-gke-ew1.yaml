@@ -1,8 +1,0 @@
-# skip boilerplate check
-
-region: europe-west1
-description: GKE subnet for prod
-ip_cidr_range: 10.140.0.0/24
-secondary_ip_ranges:
-  - pods: 10.140.1.0/16
-  - services: 10.140.2.0/24

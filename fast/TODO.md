@@ -3,7 +3,7 @@ TODO before merging
 - [x] fix tests
 - [x] fix linting errors
 - [x] fast-specific .gitignore
-- [ ] YAML samples thingy
+- [x] YAML samples thingy
 - [ ] stages README
 - [ ] fabric top-level README
 - [x] proper docstring on new tools
