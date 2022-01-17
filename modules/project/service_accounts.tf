@@ -21,9 +21,11 @@ locals {
     gae     = "${local.project.project_id}@appspot.gserviceaccount.com"
   }
   service_accounts_robot_services = {
+    artifactregistry  = "gcp-sa-artifactregistry"
     bq                = "bigquery-encryption"
     cloudasset        = "gcp-sa-cloudasset"
     cloudbuild        = "gcp-sa-cloudbuild"
+    composer          = "cloudcomposer-accounts"
     compute           = "compute-system"
     container-engine  = "container-engine-robot"
     containerregistry = "containerregistry"
