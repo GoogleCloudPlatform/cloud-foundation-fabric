@@ -6,7 +6,7 @@ TODO before merging
 - [ ] YAML samples thingy
 - [ ] stages README
 - [ ] fabric top-level README
-- [ ] proper docstring on new tools
+- [x] proper docstring on new tools
   - [x] validate_schema.py
   - [x] tfutils.py (deleted, it's an empty shell)
   - [x] check_boilerplate.py
