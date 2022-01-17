@@ -43,7 +43,7 @@ def _plan_runner():
                                      dir=fixture_parent) as tmp_path:
       # copy fixture to a temporary directory so we can execute
       # multiple tests in parallel
-      shutil.copytree(fixture_path, tmp_path, symlinks=True, dirs_exist_ok=True)
+      shutil.copytree(fixture_path, tmp_path, dirs_exist_ok=True)
       tf = tftest.TerraformTest(tmp_path, BASEDIR,
                                 os.environ.get('TERRAFORM', 'terraform'))
       tf.setup(upgrade=True)
