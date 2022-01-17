@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 ## Unreleased
 
 - new `net-glb` module for Global External Load balancer
+- Module `project`: add missing Service Identity Accounts: artifactregistry, composer.
 
 ## [12.0.0] - 2022-01-11
 
