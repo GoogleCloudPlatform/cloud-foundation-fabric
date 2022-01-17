@@ -44,7 +44,7 @@ locals {
 }
 
 module "vpc-sc" {
-  source = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/vpc-sc?ref=ea17e65"
+  source = "../../../modules/vpc-sc"
   # only enable if we have projects defined for perimeters
   count         = anytrue([for k, v in local.vpc_sc_counts : v > 0]) ? 1 : 0
   access_policy = null

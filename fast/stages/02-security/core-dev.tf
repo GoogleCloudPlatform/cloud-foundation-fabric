@@ -15,7 +15,7 @@
  */
 
 module "dev-sec-project" {
-  source          = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/project?ref=v12.0.0"
+  source          = "../../../modules/project"
   name            = "dev-sec-core-0"
   parent          = var.folder_id
   prefix          = var.prefix
@@ -29,7 +29,7 @@ module "dev-sec-project" {
 
 module "dev-sec-kms" {
   for_each   = toset(local.kms_locations)
-  source     = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/kms?ref=v12.0.0"
+  source     = "../../../modules/kms"
   project_id = module.dev-sec-project.project_id
   keyring = {
     location = each.key

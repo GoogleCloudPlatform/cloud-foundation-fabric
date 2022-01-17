@@ -8,4 +8,9 @@ TODO before merging
 - [ ] proper docstring on new tools
 - [x] modify github actions for different fast tfdoc usage
 - [ ] add roadmap to top-level fast README
-- [ ] update modules references to local paths (ludo:0+2sec, julio:1, simo:2net+3)
+- [ ] update modules references to local paths
+  - [x] stage 00 (ludo)
+  - [ ] stage 01 (julio)
+  - [ ] stage 02-net (simo)
+  - [x] stage 02-sec (ludo)
+  - [ ] stage 03-pf (simo)
