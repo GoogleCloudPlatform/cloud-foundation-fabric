@@ -10,7 +10,9 @@ It is intentionally simple, to minimize usage of administrative-level permission
 
 The following diagram can be used as a simple high level reference for the following sections, which describe the stage and its possible customizations in detail.
 
-![Organization-level diagram](diagram.png)
+<p align="center">
+  <img src="diagram.svg" alt="Organization-level diagram">
+</p>
 
 ## Design overview and choices
 

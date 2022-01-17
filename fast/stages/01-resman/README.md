@@ -9,7 +9,9 @@ The code is intentionally simple, as it's intended to provide a generic initial 
 
 The following diagram is a high level reference of the resources created and managed here:
 
-![Resource-management diagram](diagram.svg)
+<p align="center">
+  <img src="diagram.svg" alt="Resource-management diagram">
+</p>
 
 ## Design overview and choices
 

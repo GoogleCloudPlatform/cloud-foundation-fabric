@@ -8,7 +8,9 @@ Expanding this stage to include other security-related services like Secret Mana
 
 The following diagram illustrates the high level design of created resources, and a schema of the VPC SC design, which can be adapted to specific requirements via variables:
 
-![Security diagram](diagram.png)
+<p align="center">
+  <img src="diagram.svg" alt="Security diagram">
+</p>
 
 ## Design overview and choices
 

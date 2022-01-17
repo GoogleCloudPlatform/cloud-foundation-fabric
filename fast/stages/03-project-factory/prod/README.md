@@ -5,7 +5,9 @@ It is organized in folders representing environments (e.g. "dev", "prod"), each 
 
 ## Design overview and choices
 
-![Diagram](diagram.png)
+<p align="center">
+  <img src="diagram.svg" alt="Project factory diagram">
+</p>
 
 A single factory creates projects in a well-defined context, according to your resource management structure. In the diagram above, each Team is structured to have specific folders projects for a given environment, such as Production and Development, per the resource management structure configured in stage `01-resman`.
 
