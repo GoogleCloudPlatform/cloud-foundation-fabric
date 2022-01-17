@@ -105,7 +105,7 @@ locals {
 }
 
 module "organization" {
-  source          = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/organization?ref=v12.0.0"
+  source          = "../../../modules/organization"
   organization_id = "organizations/${var.organization.id}"
   # human (groups) IAM bindings
   group_iam = {
