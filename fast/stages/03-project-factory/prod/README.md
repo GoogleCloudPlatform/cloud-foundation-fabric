@@ -97,34 +97,36 @@ terraform apply
 
 
 
+
 <!-- BEGIN TFDOC -->
 
 ## Files
 
-| name                           | description       | modules                      | resources |
-| ------------------------------ | ----------------- | ---------------------------- | --------- |
-| [main.tf](./main.tf)           | Project factory.  | <code>project-factory</code> |           |
-| [outputs.tf](./outputs.tf)     | Module outputs.   |                              |           |
-| [variables.tf](./variables.tf) | Module variables. |                              |           |
+| name | description | modules | resources |
+|---|---|---|---|
+| [main.tf](./main.tf) | Project factory. | <code>project-factory</code> |  |
+| [outputs.tf](./outputs.tf) | Module outputs. |  |  |
+| [variables.tf](./variables.tf) | Module variables. |  |  |
 
 ## Variables
 
-| name                 | description                                                           |        type         | required |                    default                    |          producer          |
-| -------------------- | --------------------------------------------------------------------- | :-----------------: | :------: | :-------------------------------------------: | :------------------------: |
-| billing_account_id   | Billing account id.                                                   | <code>string</code> |    ✓     |                                               | <code>00-bootstrap</code>  |
-| shared_vpc_self_link | Self link for the shared VPC.                                         | <code>string</code> |    ✓     |                                               | <code>02-networking</code> |
-| vpc_host_project     | Host project for the shared VPC.                                      | <code>string</code> |    ✓     |                                               | <code>02-networking</code> |
-| data_dir             | Relative path for the folder storing configuration data.              | <code>string</code> |          |   <code>&#34;data&#47;projects&#34;</code>    |                            |
-| defaults_file        | Relative path for the file storing the project factory configuration. | <code>string</code> |          | <code>&#34;data&#47;defaults.yaml&#34;</code> |                            |
-| environment_dns_zone | DNS zone suffix for environment.                                      | <code>string</code> |          |               <code>null</code>               | <code>02-networking</code> |
+| name | description | type | required | default | producer |
+|---|---|:---:|:---:|:---:|:---:|
+| billing_account_id | Billing account id. | <code>string</code> | ✓ |  | <code>00-bootstrap</code> |
+| shared_vpc_self_link | Self link for the shared VPC. | <code>string</code> | ✓ |  | <code>02-networking</code> |
+| vpc_host_project | Host project for the shared VPC. | <code>string</code> | ✓ |  | <code>02-networking</code> |
+| data_dir | Relative path for the folder storing configuration data. | <code>string</code> |  | <code>&#34;data&#47;projects&#34;</code> |  |
+| defaults_file | Relative path for the file storing the project factory configuration. | <code>string</code> |  | <code>&#34;data&#47;defaults.yaml&#34;</code> |  |
+| environment_dns_zone | DNS zone suffix for environment. | <code>string</code> |  | <code>null</code> | <code>02-networking</code> |
 
 ## Outputs
 
-| name     | description                            | sensitive | consumers |
-| -------- | -------------------------------------- | :-------: | --------- |
-| projects | Created projects and service accounts. |           |           |
+| name | description | sensitive | consumers |
+|---|---|:---:|---|
+| projects | Created projects and service accounts. |  |  |
 
 <!-- END TFDOC -->
+
 
 
 
