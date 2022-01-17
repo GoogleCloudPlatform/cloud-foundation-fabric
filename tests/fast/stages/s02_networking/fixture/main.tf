@@ -27,4 +27,5 @@ module "stage" {
     dev  = "foo@iam"
     prod = "bar@iam"
   }
+  data_dir = "../../../../../fast/stages/02-networking/data/"
 }

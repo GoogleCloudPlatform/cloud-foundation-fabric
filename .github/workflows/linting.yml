@@ -16,6 +16,7 @@ name: "Linting"
 on:
   pull_request:
     branches:
+      - fast-dev
       - master
     tags:
       - ci
