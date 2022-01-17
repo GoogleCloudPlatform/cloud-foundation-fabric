@@ -21,8 +21,8 @@ is present in files with specific extensions. Files can be excluded by using a
 special comment anywhere in the file.
 
 The interface is purposefully simple and only supports passing one or more
-folder paths as arguments, as this tool is designed to be run automatically
-in a CI stage on pull requests.
+folder paths as arguments, as this tool is designed to be run in CI pipelines
+triggered by pull requests.
 '''
 
 import glob

@@ -14,6 +14,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+'''Recursively check freshness of tfdoc's generated tables in README files.
+
+This tool recursively checks that the embedded variables and outputs tables in
+README files, match what is generated at runtime by tfdoc based on current
+sources. As such, it accepts pretty much the same options as tfdoc does. Its
+main use is in CI pipelines triggered by pull requests.
+'''
+
 import difflib
 import enum
 import pathlib
@@ -29,6 +37,7 @@ State = enum.Enum('State', 'OK FAIL SKIP')
 
 
 def _check_dir(dir_name, files=False, show_extra=False):
+  'Invoke tfdoc on folder, using the relevant options.'
   dir_path = BASEDIR / dir_name
   for readme_path in dir_path.glob('**/README.md'):
     if '.terraform' in str(readme_path):
