@@ -34,7 +34,7 @@ TBD
 TBD
 
 ## Roadmap
-Besides the feature already described, FAST roadmap includes:
+Besides the features already described, FAST roadmap includes:
 
 * Stage to deploy environment-specific multitenant GKE clusters following Google's best practices
 

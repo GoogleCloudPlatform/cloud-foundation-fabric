@@ -11,7 +11,8 @@ TODO before merging
   - [x] tfutils.py (deleted, it's an empty shell)
   - [x] check_boilerplate.py
   - [x] check_documentation.py
-- [ ] remove GKE branch from resman and update diagram
+- [x] remove GKE branch from resman and update diagram
+- [x] remove GKE branch from resman and update diagram
 - [x] modify github actions for different fast tfdoc usage
 - [x] add roadmap to top-level fast README
 - [x] update modules references to local paths

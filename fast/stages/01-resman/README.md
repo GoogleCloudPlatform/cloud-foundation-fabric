@@ -9,7 +9,7 @@ The code is intentionally simple, as it's intended to provide a generic initial 
 
 The following diagram is a high level reference of the resources created and managed here:
 
-![Resource-management diagram](diagram.png)
+![Resource-management diagram](diagram.svg)
 
 ## Design overview and choices
 
@@ -139,6 +139,7 @@ Due to its simplicity, this stage lends itself easily to customizations: adding 
 
 
 
+
 <!-- BEGIN TFDOC -->
 
 ## Files
@@ -146,7 +147,6 @@ Due to its simplicity, this stage lends itself easily to customizations: adding 
 | name | description | modules | resources |
 |---|---|---|---|
 | [billing.tf](./billing.tf) | Billing resources for external billing use cases. | <code>organization</code> | <code>google_billing_account_iam_member</code> |
-| [branch-gke.tf](./branch-gke.tf) | GKE stage resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
 | [branch-networking.tf](./branch-networking.tf) | Networking stage resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
 | [branch-sandbox.tf](./branch-sandbox.tf) | Sandbox stage resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
 | [branch-security.tf](./branch-security.tf) | Security stage resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
@@ -183,6 +183,7 @@ Due to its simplicity, this stage lends itself easily to customizations: adding 
 | tfvars | Terraform variable files for the following stages. | ✓ |  |
 
 <!-- END TFDOC -->
+
 
 
 

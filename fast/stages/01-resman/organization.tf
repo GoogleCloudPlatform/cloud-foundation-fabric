@@ -18,11 +18,6 @@
 
 
 locals {
-  # set to the empty list if you remove the GKE branch
-  branch_gke_sa_iam_emails = [
-    module.branch-gke-dev-sa.iam_email,
-    module.branch-gke-prod-sa.iam_email
-  ]
   # set to the empty list if you remove the teams branch
   branch_teams_pf_sa_iam_emails = [
     module.branch-teams-dev-projectfactory-sa.iam_email,
@@ -49,14 +44,12 @@ module "organization" {
   iam_additive = merge(
     {
       (var.custom_roles.xpnServiceAdmin) = concat(
-        local.branch_gke_sa_iam_emails,
         local.branch_teams_pf_sa_iam_emails
       )
       "roles/accesscontextmanager.policyAdmin" = [
         module.branch-security-sa.iam_email
       ]
       "roles/billing.costsManager" = concat(
-        local.branch_gke_sa_iam_emails,
         local.branch_teams_pf_sa_iam_emails
       ),
       "roles/compute.orgFirewallPolicyAdmin" = [
@@ -77,7 +70,6 @@ module "organization" {
         # [
         #   for k, v in module.branch-teams-team-sa : v.iam_email
         # ],
-        local.branch_gke_sa_iam_emails,
         local.branch_teams_pf_sa_iam_emails
       )
     } : {}
