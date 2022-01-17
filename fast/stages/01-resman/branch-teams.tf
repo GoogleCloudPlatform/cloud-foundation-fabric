@@ -19,13 +19,13 @@
 # top-level teams folder and service account
 
 module "branch-teams-folder" {
-  source = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/folder?ref=v12.0.0"
+  source = "../../../modules/folder"
   parent = "organizations/${var.organization.id}"
   name   = "Teams"
 }
 
 module "branch-teams-prod-sa" {
-  source      = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/iam-service-account?ref=v12.0.0"
+  source      = "../../../modules/iam-service-account"
   project_id  = var.automation_project_id
   name        = "resman-teams-0"
   description = "Terraform resman production service account."
@@ -35,7 +35,7 @@ module "branch-teams-prod-sa" {
 # Team-level folders, service accounts and buckets for each individual team
 
 module "branch-teams-team-folder" {
-  source    = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/folder?ref=v12.0.0"
+  source    = "../../../modules/folder"
   for_each  = coalesce(var.team_folders, {})
   parent    = module.branch-teams-folder.id
   name      = each.value.descriptive_name
@@ -43,7 +43,7 @@ module "branch-teams-team-folder" {
 }
 
 module "branch-teams-team-sa" {
-  source      = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/iam-service-account?ref=v12.0.0"
+  source      = "../../../modules/iam-service-account"
   for_each    = coalesce(var.team_folders, {})
   project_id  = var.automation_project_id
   name        = "teams-${each.key}-0"
@@ -59,7 +59,7 @@ module "branch-teams-team-sa" {
 }
 
 module "branch-teams-team-gcs" {
-  source     = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/gcs?ref=v12.0.0"
+  source     = "../../../modules/gcs"
   for_each   = coalesce(var.team_folders, {})
   project_id = var.automation_project_id
   name       = "teams-${each.key}-0"
@@ -73,7 +73,7 @@ module "branch-teams-team-gcs" {
 # environment: development folder and project factory automation resources
 
 module "branch-teams-team-dev-folder" {
-  source   = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/folder?ref=v12.0.0"
+  source   = "../../../modules/folder"
   for_each = coalesce(var.team_folders, {})
   parent   = module.branch-teams-team-folder[each.key].id
   # naming: environment descriptive name
@@ -103,7 +103,7 @@ moved {
 }
 
 module "branch-teams-dev-projectfactory-sa" {
-  source     = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/iam-service-account?ref=v12.0.0"
+  source     = "../../../modules/iam-service-account"
   project_id = var.automation_project_id
   name       = "resman-pf-0"
   # naming: environment in description
@@ -117,7 +117,7 @@ moved {
 }
 
 module "branch-teams-dev-projectfactory-gcs" {
-  source     = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/gcs?ref=v12.0.0"
+  source     = "../../../modules/gcs"
   project_id = var.automation_project_id
   name       = "resman-pf-0"
   prefix     = local.prefixes.dev
@@ -130,7 +130,7 @@ module "branch-teams-dev-projectfactory-gcs" {
 # environment: production folder and project factory automation resources
 
 module "branch-teams-team-prod-folder" {
-  source   = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/folder?ref=v12.0.0"
+  source   = "../../../modules/folder"
   for_each = coalesce(var.team_folders, {})
   parent   = module.branch-teams-team-folder[each.key].id
   # naming: environment descriptive name
@@ -160,7 +160,7 @@ moved {
 }
 
 module "branch-teams-prod-projectfactory-sa" {
-  source     = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/iam-service-account?ref=v12.0.0"
+  source     = "../../../modules/iam-service-account"
   project_id = var.automation_project_id
   name       = "resman-pf-0"
   # naming: environment in description
@@ -174,7 +174,7 @@ moved {
 }
 
 module "branch-teams-prod-projectfactory-gcs" {
-  source     = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/gcs?ref=v12.0.0"
+  source     = "../../../modules/gcs"
   project_id = var.automation_project_id
   name       = "resman-pf-0"
   prefix     = local.prefixes.prod

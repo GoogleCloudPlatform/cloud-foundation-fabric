@@ -28,7 +28,8 @@ locals {
 # top-level GKE folder
 
 module "branch-gke-folder" {
-  source = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/folder?ref=v12.0.0"
+  source = "../../../modules/folder"
+  #source = "../../../modules/folder"
   parent = "organizations/${var.organization.id}"
   name   = "GKE"
 }
@@ -41,7 +42,7 @@ moved {
 }
 
 module "branch-gke-dev-folder" {
-  source = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/folder?ref=v12.0.0"
+  source = "../../../modules/folder"
   # naming: environment descriptive name
   name      = "Development"
   parent    = module.branch-gke-folder.id
@@ -65,7 +66,7 @@ moved {
 }
 
 module "branch-gke-dev-sa" {
-  source      = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/iam-service-account?ref=v12.0.0"
+  source      = "../../../modules/iam-service-account"
   name        = "resman-gke-0"
   project_id  = var.automation_project_id
   description = "Terraform GKE development service account."
@@ -78,7 +79,7 @@ moved {
 }
 
 module "branch-gke-dev-gcs" {
-  source     = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/gcs?ref=v12.0.0"
+  source     = "../../../modules/gcs"
   name       = "resman-gke-0"
   project_id = var.automation_project_id
   prefix     = local.prefixes.dev
@@ -96,7 +97,7 @@ moved {
 }
 
 module "branch-gke-prod-folder" {
-  source = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/folder?ref=v12.0.0"
+  source = "../../../modules/folder"
   # naming: environment descriptive name
   name      = "Production"
   parent    = module.branch-gke-folder.id
@@ -120,7 +121,7 @@ moved {
 }
 
 module "branch-gke-prod-sa" {
-  source      = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/iam-service-account?ref=v12.0.0"
+  source      = "../../../modules/iam-service-account"
   name        = "resman-gke-0"
   project_id  = var.automation_project_id
   description = "Terraform GKE production service account."
@@ -133,7 +134,7 @@ moved {
 }
 
 module "branch-gke-prod-gcs" {
-  source     = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/gcs?ref=v12.0.0"
+  source     = "../../../modules/gcs"
   name       = "resman-gke-0"
   project_id = var.automation_project_id
   prefix     = local.prefixes.prod

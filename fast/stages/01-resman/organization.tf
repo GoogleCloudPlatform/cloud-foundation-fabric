@@ -42,7 +42,7 @@ locals {
 }
 
 module "organization" {
-  source          = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/organization?ref=v12.0.0"
+  source          = "../../../modules/organization"
   organization_id = "organizations/${var.organization.id}"
   # IAM additive bindings, granted via the restricted Organization Admin custom
   # role assigned in stage 00; they need to be additive to avoid conflicts

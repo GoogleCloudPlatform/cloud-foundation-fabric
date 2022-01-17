@@ -10,7 +10,7 @@ TODO before merging
 - [x] add roadmap to top-level fast README
 - [ ] update modules references to local paths
   - [x] stage 00 (ludo)
-  - [ ] stage 01 (julio)
+  - [x] stage 01 (julio)
   - [x] stage 02-net (simo)
   - [x] stage 02-sec (ludo)
   - [x] stage 03-pf (simo)

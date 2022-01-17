@@ -17,7 +17,7 @@
 # tfdoc:file:description Networking stage resources.
 
 module "branch-network-folder" {
-  source = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/folder?ref=v12.0.0"
+  source = "../../../modules/folder"
   parent = "organizations/${var.organization.id}"
   name   = "Networking"
   group_iam = {
@@ -40,7 +40,7 @@ module "branch-network-folder" {
 }
 
 module "branch-network-sa" {
-  source      = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/iam-service-account?ref=v12.0.0"
+  source      = "../../../modules/iam-service-account"
   project_id  = var.automation_project_id
   name        = "resman-networking-0"
   description = "Terraform resman networking service account."
@@ -48,7 +48,7 @@ module "branch-network-sa" {
 }
 
 module "branch-network-gcs" {
-  source     = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/gcs?ref=v12.0.0"
+  source     = "../../../modules/gcs"
   project_id = var.automation_project_id
   name       = "resman-networking-0"
   prefix     = local.prefixes.prod
