@@ -7,6 +7,7 @@ TODO before merging
 - [ ] stages README
 - [ ] fabric top-level README
 - [ ] proper docstring on new tools
+- [ ] remove GKE branch from resman and update diagram
 - [x] modify github actions for different fast tfdoc usage
 - [x] add roadmap to top-level fast README
 - [x] update modules references to local paths
