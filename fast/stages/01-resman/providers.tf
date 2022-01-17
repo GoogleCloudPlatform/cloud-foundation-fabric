@@ -1,0 +1,1 @@
+../../configs/jccb/01-resman/providers.tf

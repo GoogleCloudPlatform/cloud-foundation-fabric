@@ -1,0 +1,15 @@
+map(include('firewall_rule'))
+---
+firewall_rule:
+  description: str()
+  direction: enum("INGRESS", "EGRESS")
+  action: enum("allow", "deny")
+  sources: list(str())
+  ranges: list(str())
+  targets: list(str())
+  use_service_accounts: bool()
+  rules: list(include('rule'))
+---
+rule:
+  protocol: enum("tcp", "udp", "all")
+  ports: list(num())
