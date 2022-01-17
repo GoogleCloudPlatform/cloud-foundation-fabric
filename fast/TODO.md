@@ -8,7 +8,7 @@ TODO before merging
 - [ ] fabric top-level README
 - [ ] proper docstring on new tools
   - [x] validate_schema.py
-  - [ ] tfutils.py
+  - [x] tfutils.py (deleted, it's an empty shell)
   - [x] check_boilerplate.py
   - [ ] check_documentation.py
 - [ ] remove GKE branch from resman and update diagram
