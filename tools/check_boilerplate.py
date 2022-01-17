@@ -33,22 +33,23 @@ _MATCH_STRING = (
 _MATCH_RE = re.compile(_MATCH_STRING, re.M)
 
 
-def main(dir):
-  "Cycle through files in dir and check for the Apache 2.0 boilerplate."
+def main(base_dirs):
+  "Cycle through files in base_dirs and check for the Apache 2.0 boilerplate."
   errors, warnings = [], []
-  for root, dirs, files in os.walk(dir):
-    dirs[:] = [d for d in dirs if d not in _EXCLUDE_DIRS]
-    for fname in files:
-      if fname in _MATCH_FILES or os.path.splitext(fname)[1] in _MATCH_FILES:
-        fpath = os.path.abspath(os.path.join(root, fname))
-        content = open(fpath).read()
-        if _EXCLUDE_RE.search(content):
-          continue
-        try:
-          if not _MATCH_RE.search(content):
-            errors.append(fpath)
-        except (IOError, OSError):
-          warnings.append(fpath)
+  for dir in base_dirs:
+    for root, dirs, files in os.walk(dir):
+      dirs[:] = [d for d in dirs if d not in _EXCLUDE_DIRS]
+      for fname in files:
+        if fname in _MATCH_FILES or os.path.splitext(fname)[1] in _MATCH_FILES:
+          fpath = os.path.abspath(os.path.join(root, fname))
+          content = open(fpath).read()
+          if _EXCLUDE_RE.search(content):
+            continue
+          try:
+            if not _MATCH_RE.search(content):
+              errors.append(fpath)
+          except (IOError, OSError):
+            warnings.append(fpath)
   if warnings:
     print('The following files cannot be accessed:')
     print('\n'.join(' - {}'.format(s) for s in warnings))
@@ -59,6 +60,6 @@ def main(dir):
 
 
 if __name__ == '__main__':
-  if len(sys.argv) != 2:
-    raise SystemExit('No directory passed.')
-  main(sys.argv[1])
+  if len(sys.argv) < 2:
+    raise SystemExit('No directory to check.')
+  main(sys.argv[1:])
