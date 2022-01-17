@@ -9,7 +9,7 @@ TODO before merging
 - [ ] proper docstring on new tools
   - [x] validate_schema.py
   - [ ] tfutils.py
-  - [ ] check_boilerplate.py
+  - [x] check_boilerplate.py
   - [ ] check_documentation.py
 - [ ] remove GKE branch from resman and update diagram
 - [x] modify github actions for different fast tfdoc usage

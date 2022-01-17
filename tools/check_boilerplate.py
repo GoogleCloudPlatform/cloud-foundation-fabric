@@ -14,6 +14,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+'''Check that boilerplate is present in relevant files.
+
+This tools offers a simple way of ensuring that the required boilerplate header
+is present in files with specific extensions. Files can be excluded by using a
+special comment anywhere in the file.
+
+The interface is purposefully simple and only supports passing one or more
+folder paths as arguments, as this tool is designed to be run automatically
+in a CI stage on pull requests.
+'''
+
 import glob
 import os
 import re
