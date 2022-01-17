@@ -32,3 +32,14 @@ TBD
 ## Implementation
 
 TBD
+
+## Roadmap
+Besides the feature already described, FAST roadmap includes:
+
+* Stage to deploy environment-specific multitenant GKE clusters following Google's best practices
+
+* Stage to deploy a fully featured data platform
+
+* Reference implementation to use FAST in CI/CD pipelines
+
+* Static policy enforcement
