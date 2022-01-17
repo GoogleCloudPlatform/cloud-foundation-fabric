@@ -1,13 +1,13 @@
 TODO before merging
 
-- [ ] fix tests
+- [x] fix tests
 - [x] fix linting errors
-- [ ] fast-specific .gitignore
+- [x] fast-specific .gitignore
 - [ ] YAML samples thingy
 - [ ] stages README
 - [ ] proper docstring on new tools
 - [x] modify github actions for different fast tfdoc usage
-- [ ] add roadmap to top-level fast README
+- [x] add roadmap to top-level fast README
 - [ ] update modules references to local paths
   - [x] stage 00 (ludo)
   - [ ] stage 01 (julio)
