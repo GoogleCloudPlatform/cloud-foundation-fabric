@@ -14,9 +14,11 @@ Fabric FAST was initially conceived to help enterprises quickly set up a GCP org
 
 FAST uses the concept of stages, which individually perform precise tasks but, taken together, build a functional, ready-to-use GCP organization. More importantly, stages are modeled around the security boundaries that typically appear in mature organizations. This arrangement allows delegating ownership of each stage to the team responsible for the types of resources it manages. For example, as its name suggests, the networking stage sets up all the networking elements and is usually the responsibility of a dedicated networking team within the organization.
 
-From the perspective of FAST's overall design, stages also work as contacts or interfaces, defining a set of pre-requisites and inputs required to perform their designed task and generating outputs needed by other stages lower in the chain.
+From the perspective of FAST's overall design, stages also work as contacts or interfaces, defining a set of pre-requisites and inputs required to perform their designed task and generating outputs needed by other stages lower in the chain. The diagram below shows the relationships between stages.
 
-<img src="./stages.png" alt="Stages diagram" style="margin: 0 auto; padding: 0; align: center;">
+<p align="center">
+  <img src="stages.svg" alt="Stages diagram">
+</p>
 
 ### Security-first design
 
@@ -36,7 +38,19 @@ TBD
 
 ## Implementation
 
-TBD
+There are many decisions and tasks required to convert an empty GCP organization to one that can host production environments safely. Arguably, FAST could expose those decisions as configuration options to allow for different outcomes. However, supporting all the possible combinations is almost impossible and leads to code which is hard to maintain efficiently.
+
+Instead, FAST aims to leverage different reference architectures as “pluggable modules”, and then have a small set of variables covering only the essential options of each stage. While we could expose every option of the underlying resources as stage-level variables, we prefer to provide the basic implementation and encourage users to modify the codebase if additional (or different) behavior is needed.
+
+Since we expect users to customize FAST to their specific needs, we strive to make its code easy to understand and modify. Root-level modules (i.e., stages) should be low in complexity, which among other things, means:
+* Code should avoid magic and be as explicit as possible.
+* We hide advanced features and complexity behind modules.
+* We prefer as little indirection as possible.
+* We favor flat over nested.
+
+We also recognize that FAST users don't need all of its features. Therefore, you don't need to use our project factory or our GKE implementation if you don't want to. Instead, remove those stages or pieces of code and keep what suits you.
+
+Those familiar with Python will note that FAST follows many of the maxims in the [Zen of Python](https://www.python.org/dev/peps/pep-0020/#id2).
 
 ## Roadmap
 
