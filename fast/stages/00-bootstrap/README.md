@@ -1,6 +1,6 @@
 # Organization bootstrap
 
-The main purpose of this stage is to enable critical organization-level functionality that depends on broad administrative permissions, and to prepare the prerequisites needed to enable automation in this and future stages.
+The primary purpose of this stage is to enable critical organization-level functionality that depends on broad administrative permissions, and prepare the prerequisites needed to enable automation in this and future stages.
 
 It is intentionally simple, to minimize usage of administrative-level permissions and enable simple auditing and troubleshooting, and only deals with three sets of resources:
 
@@ -8,7 +8,7 @@ It is intentionally simple, to minimize usage of administrative-level permission
 - projects, BQ datasets, and sinks for audit log and billing exports
 - IAM bindings on the organization
 
-The following diagram can be used as a simple high level reference for the following sections, which describe the stage and its possible customizations in detail.
+Use the following diagram as a simple high level reference for the following sections, which describe the stage and its possible customizations in detail.
 
 <p align="center">
   <img src="diagram.svg" alt="Organization-level diagram">
@@ -16,15 +16,15 @@ The following diagram can be used as a simple high level reference for the follo
 
 ## Design overview and choices
 
-As mentioned above, this stage only does the bare minimum required to bootstrap automation, and to ensure that base audit and billing exports are in place from the start to provide some measure of accountability, even before the security configurations are applied in a later stage.
+As mentioned above, this stage only does the bare minimum required to bootstrap automation, and ensure that base audit and billing exports are in place from the start to provide some measure of accountability, even before the security configurations are applied in a later stage.
 
-It also sets up organization-level IAM bindings so the Organization Administrator role is only used here, trading off some design freedom for ease of auditing and troubleshooting, and reducing the risk of costly security mistakes down the line. The only exception to this rule is for the [Resource Management stage](../01-resman) service account, and is described below.
+It also sets up organization-level IAM bindings so the Organization Administrator role is only used here, trading off some design freedom for ease of auditing and troubleshooting, and reducing the risk of costly security mistakes down the line. The only exception to this rule is for the [Resource Management stage](../01-resman) service account, described below.
 
 ### User groups
 
-User groups are particularly important, not only here but throughout the whole automation process, as they provide a stable frame of reference that allows decoupling the final set of permissions for each group, from the stage where entities and resources are created and their IAM bindings defined. As an example, the final set of roles for the networking group is contributed by this stage at the organization level (XPN Admin, Cloud Asset Viewer, etc.), and by the Resource Management stage at the folder level.
+User groups are important, not only here but throughout the whole automation process. They provide a stable frame of reference that allows decoupling the final set of permissions for each group, from the stage where entities and resources are created and their IAM bindings defined. For example, the final set of roles for the networking group is contributed by this stage at the organization level (XPN Admin, Cloud Asset Viewer, etc.), and by the Resource Management stage at the folder level.
 
-To simplify adoption, we have standardized the initial set of groups on those outlined in the [GCP Enterprise Setup Checklist](https://cloud.google.com/docs/enterprise/setup-checklist), as they provide a comprehensive and flexible starting point that can suit most users. Adding new groups, or deviating from the initial setup is of course possible and reasonably simple, and it's briefly outlined in the customization section below.
+We have standardized the initial set of groups on those outlined in the [GCP Enterprise Setup Checklist](https://cloud.google.com/docs/enterprise/setup-checklist) to simplify adoption. They provide a comprehensive and flexible starting point that can suit most users. Adding new groups, or deviating from the initial setup is  possible and reasonably simple, and it's briefly outlined in the customization section below.
 
 ### Organization-level IAM
 
@@ -34,11 +34,11 @@ In order to be able to assign those roles without having the full authority of t
 
 In this way, the Resource Management service account can effectively act as an Organization Admin, but only to grant the roles it effectively needs to control.
 
-One consequence of the above setup, is the need to configure IAM bindings as non-authoritative for the roles included in the IAM condition, since those same roles are effectively under control of two stages: this one, and Resource Management. Using authoritative bindings for these roles instead of non-authoritative ones, would generate potential conflicts where each stage tries to overwrite and negate the bindings applied by the other at each `apply` cycle.
+One consequence of the above setup, is the need to configure IAM bindings as non-authoritative for the roles included in the IAM condition, since those same roles are effectively under the control of two stages: this one and Resource Management. Using authoritative bindings for these roles (instead of non-authoritative ones) would generate potential conflicts, where each stage could try to overwrite and negate the bindings applied by the other at each `apply` cycle.
 
 ### Automation project and resources
 
-One other design choice worth mentioning here, is the use of a single automation project for all foundational stages, trading off some complexity on the API side (single source for usage quota, multiple service activation) for increased flexibility and simpler operations, while still effectively providing the same degree of separation via resource-level IAM.
+One other design choice worth mentioning here is using a single automation project for all foundational stages. We trade off some complexity on the API side (single source for usage quota, multiple service activation) for increased flexibility and simpler operations, while still effectively providing the same degree of separation via resource-level IAM.
 
 ### Billing account
 
@@ -50,11 +50,11 @@ We support three use cases in regards to billing:
 
 For same-organization billing, we configure a custom organization role that can set IAM bindings, via a delegated role grant to limit its scope to the relevant roles.
 
-For details on how to configure the different billing account modes, refer to the [How to run this stage](#how-to-run-this-stage) section below.
+For details on configuring the different billing account modes, refer to the [How to run this stage](#how-to-run-this-stage) section below.
 
 ### Naming
 
-We are intentionally not supporting random prefix/suffixes for names, as that is an antipattern that is typically only used in development, and does not map to the actual production usage we see at customers, who always adopt a fixed naming convention.
+We are intentionally not supporting random prefix/suffixes for names, as that is an antipattern typically only used in development. It does not map to our customer's actual production usage, who always adopt a fixed naming convention.
 
 What is implemented here is a fairly common convention, composed of tokens ordered by relative importance:
 
