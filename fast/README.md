@@ -16,9 +16,7 @@ FAST uses the concept of stages, which individually perform precise tasks but, t
 
 From the perspective of FAST's overall design, stages also work as contacts or interfaces, defining a set of pre-requisites and inputs required to perform their designed task and generating outputs needed by other stages lower in the chain.
 
-<p align="center">
-  <img src="./stages.svg" alt="Stages diagram">
-</p>
+<img src="./stages.png" alt="Stages diagram" style="align:center">
 
 ### Security-first design
 
