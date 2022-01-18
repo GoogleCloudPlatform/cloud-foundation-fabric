@@ -101,7 +101,7 @@ locals {
 
 module "billing-alert" {
   for_each              = local.billing_alert == null ? {} : { 1 = 1 }
-  source                = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/billing-budget?ref=v12.0.0"
+  source                = "../../../modules/billing-budget"
   billing_account       = local.billing_account_id
   name                  = "${module.project.project_id} budget"
   amount                = local.billing_alert.amount
@@ -116,7 +116,7 @@ module "billing-alert" {
 }
 
 module "dns" {
-  source          = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/dns?ref=v12.0.0"
+  source          = "../../../modules/dns"
   for_each        = toset(var.dns_zones)
   project_id      = module.project.project_id
   type            = "private"
@@ -126,7 +126,7 @@ module "dns" {
 }
 
 module "project" {
-  source                     = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/project?ref=v12.0.0"
+  source                     = "../../../modules/project"
   billing_account            = local.billing_account_id
   name                       = var.project_id
   contacts                   = { for c in local.essential_contacts : c => ["ALL"] }
@@ -144,7 +144,7 @@ module "project" {
 }
 
 module "service-accounts" {
-  source     = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/iam-service-account?ref=v12.0.0"
+  source     = "../../../modules/iam-service-account"
   for_each   = var.service_accounts
   name       = each.key
   project_id = module.project.project_id
