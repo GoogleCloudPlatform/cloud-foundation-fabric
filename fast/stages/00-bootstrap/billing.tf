@@ -27,11 +27,6 @@ locals {
 
 # billing account in same org (IAM is in the organization.tf file)
 
-moved {
-  from = module.billing-export-project
-  to   = module.billing-export-project.0
-}
-
 module "billing-export-project" {
   source          = "../../../modules/project"
   count           = local.billing_org ? 1 : 0
@@ -50,11 +45,6 @@ module "billing-export-project" {
     "bigquerydatatransfer.googleapis.com",
     "storage.googleapis.com"
   ]
-}
-
-moved {
-  from = module.billing-export-dataset
-  to   = module.billing-export-dataset.0
 }
 
 module "billing-export-dataset" {
