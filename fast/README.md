@@ -43,7 +43,7 @@ TBD
 Besides the features already described, the FAST roadmap includes:
 
 - Stage 3 for environment-specific multitenant GKE clusters following Google's best practices (in development)
-- Stage t3 for environment-specific fully featured data platform (in development)
+- Stage 3 for environment-specific fully featured data platform (in development)
 - Stage 3 for environment-specific GCE migration configuration
 - Reference implementation to use FAST in CI/CD pipelines
 - Static policy enforcement
