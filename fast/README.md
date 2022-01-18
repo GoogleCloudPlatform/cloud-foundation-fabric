@@ -16,6 +16,10 @@ FAST uses the concept of stages, which individually perform precise tasks but, t
 
 From the perspective of FAST's overall design, stages also work as contacts or interfaces, defining a set of pre-requisites and inputs required to perform their designed task and generating outputs needed by other stages lower in the chain.
 
+<p align="center">
+  <img src="./stages.svg" alt="Stages diagram">
+</p>
+
 ### Security-first design
 
 Security was, from the beginning, one of the most critical elements in the design of Fabric FAST. Many of FAST's design decisions aim to build the foundations of a secure organization. In fact, the first two stages deal mainly with the organization-wide security setup.
