@@ -205,7 +205,7 @@ Once the initial `apply` completes successfully, configure a remote backend usin
 ln -s [path set in outputs_location]/00-bootstrap/* ./
 # or from outputs if not using output files
 terraform output -json providers | jq -r '.["00-bootstrap"]' \
-  | tee providers.tf
+  > providers.tf
 # migrate state to GCS bucket configured in providers file
 terraform init -migrate-state
 ```
