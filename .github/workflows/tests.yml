@@ -26,7 +26,6 @@ on:
 
 env:
   PYTEST_ADDOPTS: "--color=yes"
-  TF_PLUGIN_CACHE_DIR: ${{ github.workspace }}/.terraform.d/plugin-cache
 
 jobs:
   doc-examples:
@@ -45,12 +44,11 @@ jobs:
           terraform_version: 1.1.3
           terraform_wrapper: false
 
-      - name: Create Terraform Plugin Cache Dir
-        run: mkdir --parents $TF_PLUGIN_CACHE_DIR
-
       - name: Set environment
         run: |
+          echo "TF_PLUGIN_CACHE_DIR=${{ github.workspace }}/.terraform.d/plugin-cache-${GITHUB_JOB" >> $GITHUB_ENV
           echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.github/workflows/fake-key.json" >> $GITHUB_ENV
+          mkdir --parents $TF_PLUGIN_CACHE_DIR
 
       - name: Install dependencies
         run: |
@@ -77,12 +75,11 @@ jobs:
           terraform_version: 1.1.3
           terraform_wrapper: false
 
-      # - name: Create Terraform Plugin Cache Dir
-      #   run: mkdir --parents $TF_PLUGIN_CACHE_DIR
-
       - name: Set environment
         run: |
+          echo "TF_PLUGIN_CACHE_DIR=${{ github.workspace }}/.terraform.d/plugin-cache-${GITHUB_JOB" >> $GITHUB_ENV
           echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.github/workflows/fake-key.json" >> $GITHUB_ENV
+          mkdir --parents $TF_PLUGIN_CACHE_DIR
 
       - name: Install dependencies
         run: |
@@ -109,12 +106,11 @@ jobs:
           terraform_version: 1.1.3
           terraform_wrapper: false
 
-      - name: Create Terraform Plugin Cache Dir
-        run: mkdir --parents $TF_PLUGIN_CACHE_DIR
-
       - name: Set environment
         run: |
+          echo "TF_PLUGIN_CACHE_DIR=${{ github.workspace }}/.terraform.d/plugin-cache-${GITHUB_JOB" >> $GITHUB_ENV
           echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.github/workflows/fake-key.json" >> $GITHUB_ENV
+          mkdir --parents $TF_PLUGIN_CACHE_DIR
 
       - name: Install dependencies
         run: |
