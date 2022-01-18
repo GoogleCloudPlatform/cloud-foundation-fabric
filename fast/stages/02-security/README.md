@@ -1,6 +1,6 @@
 # Shared security resources
 
-This stage sets up security resources and configurations which impact the whole org, or are shared across the hierarchy to other projects and teams.
+This stage sets up security resources and configurations which impact the whole organizagion, or are shared across the hierarchy to other projects and teams.
 
 The design of this stage is fairly general, and provides a reference example for [Cloud KMS](https://cloud.google.com/security-key-management) and a [VPC Service Controls](https://cloud.google.com/vpc-service-controls) configuration that sets up three perimeters (landing, development, production), their related bridge perimeters, and provides variables to configure their resources, access levels, and directional policies.
 
@@ -22,7 +22,7 @@ IAM for management-related operations is already assigned at the folder level to
 
 ### Cloud KMS
 
-A reference Cloud KMS implementation is part of this stage, to provide a simple way of managing centralized keys, that are then shared and consumed widely across the org to enable customer-managed encryption. The implementation is also easy to clone and modify to support other services like Secret Manager.
+A reference Cloud KMS implementation is part of this stage, to provide a simple way of managing centralized keys, that are then shared and consumed widely across the organization to enable customer-managed encryption. The implementation is also easy to clone and modify to support other services like Secret Manager.
 
 The Cloud KMS configuration allows defining keys by name (typically matching the downstream service that uses them) in different locations, either based on a common default or a per-key setting. It then takes care internally of provisioning the relevant keyrings and creating keys in the appropriate location.
 
@@ -73,7 +73,7 @@ terraform output -json providers | jq -r '.["02-security"]' \
 
 There are two broad sets of variables you will need to fill in:
 
-- variables shared by other stages (org id, billing account id, etc.), or derived from a resource managed by a different stage (folder id, automation project id, etc.)
+- variables shared by other stages (organization id, billing account id, etc.), or derived from a resource managed by a different stage (folder id, automation project id, etc.)
 - variables specific to resources managed by this stage
 
 To avoid the tedious job of filling in the first group of variables with values derived from other stages' outputs, the same mechanism used above for the provider configuration can be used to leverage pre-configured `.tfvars` files.
