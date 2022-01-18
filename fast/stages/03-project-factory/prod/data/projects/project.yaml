@@ -1,3 +1,5 @@
+# skip boilerplate check
+
 # [opt] Billing account id - overrides default if set
 billing_account_id: 012345-67890A-BCDEF0
 
