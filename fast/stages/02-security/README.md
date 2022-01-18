@@ -1,6 +1,6 @@
 # Shared security resources
 
-This stage sets up security resources and configurations which impact the whole organizagion, or are shared across the hierarchy to other projects and teams.
+This stage sets up security resources and configurations which impact the whole organization, or are shared across the hierarchy to other projects and teams.
 
 The design of this stage is fairly general, and provides a reference example for [Cloud KMS](https://cloud.google.com/security-key-management) and a [VPC Service Controls](https://cloud.google.com/vpc-service-controls) configuration that sets up three perimeters (landing, development, production), their related bridge perimeters, and provides variables to configure their resources, access levels, and directional policies.
 
