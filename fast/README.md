@@ -34,7 +34,20 @@ FAST uses YAML-based factories to deploy subnets and firewall rules and, as its 
 
 ## High level design
 
-TBD
+As mentioned before, fast relies on multiple stages to progressively bring up your GCP organization(s). In this section we briefly describe each stage.
+
+**Stage [00-bootstrap](stages/00-bootstrap/README.md)**: enables critical organization-level functionality that depends on broad permissions. Its primary purpose is to allow the execution of this and the following stages using service accounts (as opposed to nominal users). Critical automation resources, organization-level logging sinks, and billing are configured here.
+
+**Stage [01-resman](stages/01-resman/README.md)**: creates the base resource hierarchy (folders) and the automation resources required later to deploy each part of the hierarchy. This stage also configures organization-level policies and any exceptions needed by different branches of the resource hierarchy.
+
+**Stage [02-networking](stages/02-networking/README.md)**: uses a hub-and-spoke design to set up the shared network infrastructure for the whole organization.
+
+**Stage [02-security](stages/02-security/README.md)**: configures KMS and VPC Security Controls for the whole organization.
+
+**Project Factory stages (e.g. [03-projectfactory/prod](stages/03-project-factory/prod/README.md))**: creates and sets up projects (and related resources) to be used for workloads. Each environment gets its own project factory.
+
+Please refer to the READMEs of each stage for further details.
+
 
 ## Implementation
 
@@ -54,10 +67,12 @@ Those familiar with Python will note that FAST follows many of the maxims in the
 
 ## Roadmap
 
-Besides the features already described, the FAST roadmap includes:
+Besides the features already described, FAST roadmap includes:
 
-- Stage 3 for environment-specific multitenant GKE clusters following Google's best practices (in development)
-- Stage 3 for environment-specific fully featured data platform (in development)
-- Stage 3 for environment-specific GCE migration configuration
-- Reference implementation to use FAST in CI/CD pipelines
-- Static policy enforcement
+* Stage to deploy environment-specific multitenant GKE clusters following Google's best practices
+
+* Stage to deploy a fully featured data platform
+
+* Reference implementation to use FAST in CI/CD pipelines
+
+* Static policy enforcement
