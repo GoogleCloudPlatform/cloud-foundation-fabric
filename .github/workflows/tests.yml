@@ -48,12 +48,6 @@ jobs:
       - name: Create Terraform Plugin Cache Dir
         run: mkdir --parents $TF_PLUGIN_CACHE_DIR
 
-      - name: Cache Terraform
-        uses: actions/cache@v2
-        with:
-          path: ${{ env.TF_PLUGIN_CACHE_DIR }}
-          key: ${{ runner.os }}-terraform-cache
-
       - name: Set environment
         run: |
           echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.github/workflows/fake-key.json" >> $GITHUB_ENV
@@ -83,14 +77,8 @@ jobs:
           terraform_version: 1.1.3
           terraform_wrapper: false
 
-      - name: Create Terraform Plugin Cache Dir
-        run: mkdir --parents $TF_PLUGIN_CACHE_DIR
-
-      - name: Cache Terraform
-        uses: actions/cache@v2
-        with:
-          path: ${{ env.TF_PLUGIN_CACHE_DIR }}
-          key: ${{ runner.os }}-terraform-cache
+      # - name: Create Terraform Plugin Cache Dir
+      #   run: mkdir --parents $TF_PLUGIN_CACHE_DIR
 
       - name: Set environment
         run: |
@@ -123,12 +111,6 @@ jobs:
 
       - name: Create Terraform Plugin Cache Dir
         run: mkdir --parents $TF_PLUGIN_CACHE_DIR
-
-      - name: Cache Terraform
-        uses: actions/cache@v2
-        with:
-          path: ${{ env.TF_PLUGIN_CACHE_DIR }}
-          key: ${{ runner.os }}-terraform-cache
 
       - name: Set environment
         run: |
