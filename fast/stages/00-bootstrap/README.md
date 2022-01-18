@@ -54,7 +54,7 @@ For details on configuring the different billing account modes, refer to the [Ho
 
 ### Naming
 
-We are intentionally not supporting random prefix/suffixes for names, as that is an antipattern typically only used in development. It does not map to our customer's actual production usage, who always adopt a fixed naming convention.
+We are intentionally not supporting random prefix/suffixes for names, as that is an antipattern typically only used in development. It does not map to our customer's actual production usage, where they always adopt a fixed naming convention.
 
 What is implemented here is a fairly common convention, composed of tokens ordered by relative importance:
 
@@ -64,27 +64,27 @@ What is implemented here is a fairly common convention, composed of tokens order
 - a context identifier (e.g. `core` or `kms`)
 - an arbitrary identifier used to distinguish similar resources (e.g. `0`, `1`)
 
-Tokens are joined by a `-` character, which makes it easy to visually separate the individual tokens, and allows to programmatically split them in billing exports to derive initial high-level groupings for cost attribution.
+Tokens are joined by a `-` character, making it easy to separate the individual tokens visually, and to programmatically split them in billing exports to derive initial high-level groupings for cost attribution.
 
-The convention is used in its full form only for specific resources which have globally unique names (projects, GCS buckets), other resources adopt a shorter version for legibility, as the full context can always be derived from their project.
+The convention is used in its full form only for specific resources with globally unique names (projects, GCS buckets). Other resources adopt a shorter version for legibility, as the full context can always be derived from their project.
 
-The [Customizations](#names-and-naming-convention) section on names below explains how to configure tokens, or how to implement a different naming convention.
+The [Customizations](#names-and-naming-convention) section on names below explains how to configure tokens, or implement a different naming convention.
 
 ## How to run this stage
 
-This stage has very simple initial requirements, as it is designed to work on newly created GCP organizations. Four steps are needed to bring up this stage:
+This stage has straightforward initial requirements, as it is designed to work on newly created GCP organizations. Four steps are needed to bring up this stage:
 
 - an Organization Admin self-assigns the required roles listed below
 - the same administrator runs the first `init/apply` sequence passing a special variable to `apply`
 - the providers configuration file is derived from the Terraform output or linked from the generated file
-- a second `init` is run to migrate state, and from then on the stage is run via impersonation
+- a second `init` is run to migrate state, and from then on, the stage is run via impersonation
 
 ### Prerequisites
 
 The roles that the Organization Admin used in the first `apply` needs to self-grant are:
 
 - Billing Account Administrator (`roles/billing.admin`)
-  either on the org (if the billing account has been moved to the org) or on the billing account
+  either on the organization or the billing account (see the following section for details)
 - Logging Admin (`roles/logging.admin`)
 - Organization Role Administrator (`roles/iam.organizationRoleAdmin`)
 - Organization Administrator (`roles/resourcemanager.organizationAdmin`)
@@ -106,9 +106,9 @@ done
 
 If you are using a billing account belonging to a different organization (e.g. in multiple organization setups), some initial configurations are needed to ensure the identities running this stage can assign billing-related roles.
 
-If the billing organization is managed by another version of this stage, we leverage the `organizationIamAdmin` created there, to allow restricted granting of billing roles at the organization level.
+If the billing organization is managed by another version of this stage, we leverage the `organizationIamAdmin` role created there, to allow restricted granting of billing roles at the organization level.
 
-If that's not the case, an equivalent role needs to exist, or the predefined `resourcemanager.organizationAdmin` role can be used if it's not managed authoritatively. The role name then needs to be manually changed in the `billing.tf` file, in the `google_organization_iam_binding` resource.
+If that's not the case, an equivalent role needs to exist, or the predefined `resourcemanager.organizationAdmin` role can be used if not managed authoritatively. The role name then needs to be manually changed in the `billing.tf` file, in the `google_organization_iam_binding` resource.
 
 The identity applying this stage for the first time also needs two roles in billing organization, they can be removed after the first `apply` completes successfully:
 
@@ -133,7 +133,7 @@ gcloud beta billing accounts add-iam-policy-binding $BILLING_ACCOUNT \
 
 #### Groups
 
-Before the first run the following IAM groups must exist to allow IAM bindings to be created (actual names are flexible, see the [Customization](#customizations) section):
+Before the first run, the following IAM groups must exist to allow IAM bindings to be created (actual names are flexible, see the [Customization](#customizations) section):
 
 - gcp-billing-admins
 - gcp-devops
@@ -144,7 +144,7 @@ Before the first run the following IAM groups must exist to allow IAM bindings t
 
 #### Configure variables
 
-Then make sure you have configured the correct values for the following variables, by editing the defaults in `variables.tf` or providing a `terraform.tfvars` file (preferred):
+Then make sure you have configured the correct values for the following variables by editing  providing a `terraform.tfvars` file:
 
 - `billing_account`
   an object containing the id of your billing account, derived from the Cloud Console UI or by running `gcloud beta billing accounts list`, and the id of the organization owning it, or `null` to use the billing account in isolation
@@ -157,17 +157,17 @@ Then make sure you have configured the correct values for the following variable
 
 ### Output files and cross-stage variables
 
-At any time during the life of this stage, you can configure it to automatically generate providers configuration and variable files, to simplify exchanging inputs and outputs between stages and avoid having to edit files manually.
+At any time during the life of this stage, you can configure it to automatically generate provider configurations and variable files for the following, to simplify exchanging inputs and outputs between stages and avoid having to edit files manually.
 
-This is disabled by default, to enable the mechanism just set the `outputs_location` variable to a valid path on a local filesystem, e.g.
+Automatic generation of files is disabled by default. To enable the mechanism,  set the `outputs_location` variable to a valid path on a local filesystem, e.g.
 
 ```hcl
 outputs_location = "../../configs"
 ```
 
-Once the variable is set, `apply` will generate and manage providers and variables files, including the initial one used for this stage after the first run. You can simply link these files in the relevant stages, instead of having to manually transfer outputs from one stage, to Terraform variables in another.
+Once the variable is set, `apply` will generate and manage providers and variables files, including the initial one used for this stage after the first run. You can then link these files in the relevant stages, instead of manually transfering outputs from one stage, to Terraform variables in another.
 
-This is the outline of the output files generated by this stage:
+Below is the outline of the output files generated by this stage:
 
 ```bash
 [path specified in outputs_location]
@@ -180,12 +180,6 @@ This is the outline of the output files generated by this stage:
 │   ├── providers.tf
 │   ├── terraform-bootstrap.auto.tfvars.json
 ├── 02-security
-│   ├── providers.tf
-│   ├── terraform-bootstrap.auto.tfvars.json
-├── 03-gke-multitenant-dev
-│   ├── providers.tf
-│   ├── terraform-bootstrap.auto.tfvars.json
-├── 03-gke-multitenant-prod
 │   ├── providers.tf
 │   ├── terraform-bootstrap.auto.tfvars.json
 ├── 03-project-factory-dev
@@ -218,7 +212,7 @@ terraform init -migrate-state
 
 ## Customizations
 
-Most of the variables (e.g. `billing_account` and `organization`) are only used to input actual values and should be self-explanatory. The only meaningful customizations that apply here are groups, and IAM roles.
+Most variables (e.g. `billing_account` and `organization`) are only used to input actual values and should be self-explanatory. The only meaningful customizations that apply here are groups, and IAM roles.
 
 ### Group names
 
@@ -241,7 +235,7 @@ If your groups layout differs substantially from the checklist, define all relev
 
 ### IAM
 
-One other area where we directly support customizations is IAM. The code here, as in all other stages, follows a simple pattern derived from best practices:
+One other area where we directly support customizations is IAM. The code here, as in all stages, follows a simple pattern derived from best practices:
 
 - operational roles for humans are assigned to groups
 - any other principal is a service account
