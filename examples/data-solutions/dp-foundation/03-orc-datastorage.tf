@@ -19,7 +19,7 @@
 module "orc-cs-0" {
   source         = "../../../modules/gcs"
   project_id     = module.orc-prj.project_id
-  name           = "orc-cs-0"
+  name           = "cs-0"
   prefix         = local.prefix_orc
   location       = var.region
   storage_class  = "REGIONAL"

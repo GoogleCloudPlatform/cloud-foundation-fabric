@@ -51,6 +51,7 @@ resource "google_composer_environment" "orc-cmp-0" {
       }
     }
     software_config {
+      image_version = "composer-1.17.5-airflow-2.1.4"
       env_variables = {
         DTL_L0_BQ_DATASET  = module.dtl-0-bq-0.dataset_id
         DTL_L1_BQ_DATASET  = module.dtl-1-bq-0.dataset_id
@@ -76,7 +77,8 @@ resource "google_composer_environment" "orc-cmp-0" {
         ORC_PRJ            = module.orc-prj.project_id
         TRF_PRJ            = module.trf-prj.project_id
         LOD_SA_DF          = module.lod-sa-df-0.email
-        TRF_SA_DF          = module.lod-sa-df-0.email
+        TRF_SA_DF          = module.trf-sa-df-0.email
+        TRF_SA_BQ          = module.trf-sa-bq-0.email
       }
     }
     private_environment_config {

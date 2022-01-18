@@ -19,11 +19,12 @@
 module "trf-sa-df-0" {
   source     = "../../../modules/iam-service-account"
   project_id = module.trf-prj.project_id
-  name       = "trf-df-0"
+  name       = "df-0"
   prefix     = local.prefix_trf
   iam = {
     "roles/iam.serviceAccountTokenCreator" = [
       local.groups_iam.data-engineers,
+      module.orc-sa-cmp-0.iam_email,
     ],
     "roles/iam.serviceAccountUser" = [
       module.orc-sa-cmp-0.iam_email,
@@ -34,7 +35,7 @@ module "trf-sa-df-0" {
 module "trf-cs-df-0" {
   source         = "../../../modules/gcs"
   project_id     = module.trf-prj.project_id
-  name           = "trf-cs-0"
+  name           = "cs-0"
   prefix         = local.prefix_trf
   location       = var.region
   storage_class  = "REGIONAL"
@@ -48,11 +49,12 @@ module "trf-cs-df-0" {
 module "trf-sa-bq-0" {
   source     = "../../../modules/iam-service-account"
   project_id = module.trf-prj.project_id
-  name       = "trf-bq-0"
+  name       = "bq-0"
   prefix     = local.prefix_trf
   iam = {
     "roles/iam.serviceAccountTokenCreator" = [
       local.groups_iam.data-engineers,
+      module.orc-sa-cmp-0.iam_email,
     ],
     "roles/iam.serviceAccountUser" = [
       module.orc-sa-cmp-0.iam_email,

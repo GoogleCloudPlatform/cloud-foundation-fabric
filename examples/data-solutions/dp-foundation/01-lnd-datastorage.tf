@@ -27,18 +27,23 @@ module "lnd-sa-cs-0" {
   project_id = module.lnd-prj.project_id
   name       = "cs-0"
   prefix     = local.prefix_lnd
+  iam = {
+    "roles/iam.serviceAccountTokenCreator" = [
+      local.groups_iam.data-engineers
+    ]
+  }
 }
 
 module "lnd-cs-0" {
-  source           = "../../../modules/gcs"
-  project_id       = module.lnd-prj.project_id
-  name             = "cs-0"
-  prefix           = local.prefix_lnd
-  location         = var.region
-  storage_class    = "REGIONAL"
-  retention_policy = local.lnd_bucket_retention_policy
-  encryption_key   = var.cmek_encryption ? try(module.kms[0].keys.key-gcs.id, null) : null
-  force_destroy    = var.data_force_destroy
+  source        = "../../../modules/gcs"
+  project_id    = module.lnd-prj.project_id
+  name          = "cs-0"
+  prefix        = local.prefix_lnd
+  location      = var.region
+  storage_class = "REGIONAL"
+  # retention_policy = local.lnd_bucket_retention_policy
+  encryption_key = var.cmek_encryption ? try(module.kms[0].keys.key-gcs.id, null) : null
+  force_destroy  = var.data_force_destroy
 }
 
 ###############################################################################
@@ -50,6 +55,11 @@ module "lnd-sa-ps-0" {
   project_id = module.lnd-prj.project_id
   name       = "ps-0"
   prefix     = local.prefix_lnd
+  iam = {
+    "roles/iam.serviceAccountTokenCreator" = [
+      local.groups_iam.data-engineers
+    ]
+  }
 }
 
 module "lnd-ps-0" {
@@ -67,6 +77,11 @@ module "lnd-sa-bq-0" {
   project_id = module.lnd-prj.project_id
   name       = "bq-0"
   prefix     = local.prefix_lnd
+  iam = {
+    "roles/iam.serviceAccountTokenCreator" = [
+      local.groups_iam.data-engineers
+    ]
+  }
 }
 
 module "lnd-bq-0" {

@@ -36,9 +36,13 @@ locals {
       "serviceAccount:${module.trf-prj.service_accounts.robots.dataflow}",
       "serviceAccount:${module.orc-prj.service_accounts.cloud_services}"
     ]
+    "roles/iam.serviceAccountUser" = [
+      module.orc-sa-cmp-0.iam_email,
+    ]
     "roles/storage.objectAdmin" = [
       module.lod-sa-df-0.iam_email,
       module.orc-sa-cmp-0.iam_email,
+      "serviceAccount:${module.orc-prj.service_accounts.robots.composer}",
     ]
     "roles/storage.admin" = [
       module.lod-sa-df-0.iam_email,
@@ -53,6 +57,7 @@ locals {
       "roles/composer.admin",
       "roles/composer.environmentAndStorageObjectAdmin",
       "roles/iap.httpsResourceAccessor",
+      "roles/iam.serviceAccountUser",
       "roles/compute.networkUser",
       "roles/storage.objectAdmin",
       "roles/storage.admin",
@@ -73,6 +78,7 @@ module "orc-prj" {
   iam          = var.project_create != null ? local.iam_orc : {}
   iam_additive = var.project_create == null ? local.iam_orc : {}
   group_iam    = local.group_iam_orc
+  oslogin      = false
   services = concat(var.project_services, [
     "artifactregistry.googleapis.com",
     "bigquery.googleapis.com",

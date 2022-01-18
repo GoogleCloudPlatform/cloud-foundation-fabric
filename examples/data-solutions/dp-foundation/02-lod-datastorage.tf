@@ -19,7 +19,7 @@
 module "lod-sa-df-0" {
   source     = "../../../modules/iam-service-account"
   project_id = module.lod-prj.project_id
-  name       = "lod-df-0"
+  name       = "df-0"
   prefix     = local.prefix_lod
   iam = {
     "roles/iam.serviceAccountTokenCreator" = [
@@ -34,7 +34,7 @@ module "lod-sa-df-0" {
 module "lod-cs-df-0" {
   source         = "../../../modules/gcs"
   project_id     = module.lod-prj.project_id
-  name           = "lod-cs-0"
+  name           = "cs-0"
   prefix         = local.prefix_lod
   storage_class  = "REGIONAL"
   location       = var.region

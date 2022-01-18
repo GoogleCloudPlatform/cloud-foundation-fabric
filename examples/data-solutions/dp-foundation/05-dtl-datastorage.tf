@@ -19,7 +19,7 @@
 module "dtl-0-bq-0" {
   source         = "../../../modules/bigquery-dataset"
   project_id     = module.dtl-0-prj.project_id
-  id             = "${replace(local.prefix_lnd, "-", "_")}_0_bq_0"
+  id             = "${replace(local.prefix_dtl, "-", "_")}_0_bq_0"
   location       = var.region
   encryption_key = var.cmek_encryption ? try(module.kms[0].keys.key-bq.id, null) : null
 }
@@ -27,7 +27,7 @@ module "dtl-0-bq-0" {
 module "dtl-1-bq-0" {
   source         = "../../../modules/bigquery-dataset"
   project_id     = module.dtl-1-prj.project_id
-  id             = "${replace(local.prefix_lnd, "-", "_")}_1_bq_0"
+  id             = "${replace(local.prefix_dtl, "-", "_")}_1_bq_0"
   location       = var.region
   encryption_key = var.cmek_encryption ? try(module.kms[0].keys.key-bq.id, null) : null
 }
@@ -35,7 +35,7 @@ module "dtl-1-bq-0" {
 module "dtl-2-bq-0" {
   source         = "../../../modules/bigquery-dataset"
   project_id     = module.dtl-2-prj.project_id
-  id             = "${replace(local.prefix_lnd, "-", "_")}_2_bq_0"
+  id             = "${replace(local.prefix_dtl, "-", "_")}_2_bq_0"
   location       = var.region
   encryption_key = var.cmek_encryption ? try(module.kms[0].keys.key-bq.id, null) : null
 }
@@ -43,7 +43,7 @@ module "dtl-2-bq-0" {
 module "dtl-exp-bq-0" {
   source         = "../../../modules/bigquery-dataset"
   project_id     = module.dtl-exp-prj.project_id
-  id             = "${replace(local.prefix_lnd, "-", "_")}_exp_bq_0"
+  id             = "${replace(local.prefix_dtl, "-", "_")}_exp_bq_0"
   location       = var.region
   encryption_key = var.cmek_encryption ? try(module.kms[0].keys.key-bq.id, null) : null
 }

@@ -39,7 +39,8 @@ locals {
       "serviceAccount:${module.lod-prj.service_accounts.robots.dataflow}"
     ]
     "roles/storage.objectAdmin" = [
-      "serviceAccount:${module.lod-prj.service_accounts.robots.dataflow}"
+      "serviceAccount:${module.lod-prj.service_accounts.robots.dataflow}",
+      module.lod-sa-df-0.iam_email
     ]
   }
   prefix_lod = "${var.prefix}-lod"
