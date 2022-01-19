@@ -153,4 +153,3 @@ with models.DAG(
   )
   
   start >> [customers_import, purchases_import] >> join_customer_purchase >> end
-  #start >> join_customer_purchase >> end
