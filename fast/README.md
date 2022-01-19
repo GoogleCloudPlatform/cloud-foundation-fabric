@@ -47,7 +47,7 @@ As mentioned before, fast relies on multiple stages to progressively bring up yo
 
 - [Security](stages/02-security/README.md)<br/>
   Manages centralized security configurations in a separate stage, typically owned by the security team. This stage implements VPC Security Controls via separate perimeters for environments and central services, and creates projects to host centralized KMS keys used by the whole organization. It's intentionally easy to extend to include other security-related resources, like Secret Manager.
-- [Networking](stages/02-security/README.md)<br/>
+- [Networking](stages/02-networking/README.md)<br/>
   Manages centralized network resources in a separate stage, and is typically owned by the networking team. This stage implements a hub-and-spoke design, includes connectivity via VPN to on-premises, and YAML-based factories for firewall rules (hierarchical and VPC-level) and subnets.
 
 ### Environment-level resources (03)
