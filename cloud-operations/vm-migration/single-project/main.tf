@@ -12,38 +12,79 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module "m4ce-project" {
-  source          = "../../../modules/project"
-  billing_account = var.billing_account_id
-  name            = var.m4ce_project_name
-  parent          = var.m4ce_project_root
+module "landing-project" {
+  source = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/project?ref=v7.0.0"
+  billing_account = (var.project_create != null
+    ? var.project_create.billing_account_id
+    : null
+  )
+  name = var.project_name
+  parent = (var.project_create != null
+    ? var.project_create.parent
+    : null
+  )
 
   services = [
-    "vmmigration.googleapis.com",
-    "servicemanagement.googleapis.com",
-    "servicecontrol.googleapis.com",
-    "iam.googleapis.com",
     "cloudresourcemanager.googleapis.com",
     "compute.googleapis.com",
+    "iam.googleapis.com",
     "logging.googleapis.com",
     "networkconnectivity.googleapis.com",
+    "servicemanagement.googleapis.com",
+    "servicecontrol.googleapis.com",
+    "vmmigration.googleapis.com"
   ]
 
-  project_create = var.m4ce_project_create
-
-  auto_create_network = var.m4ce_project_create
+  project_create = var.project_create != null
 
   iam_additive = {
-    "roles/iam.serviceAccountKeyAdmin" = concat(var.m4ce_admin_users, [module.m4ce-service-account.iam_email]),
-    "roles/iam.serviceAccountCreator"  = concat(var.m4ce_admin_users, [module.m4ce-service-account.iam_email]),
-    "roles/vmmigration.admin"          = concat(var.m4ce_admin_users, [module.m4ce-service-account.iam_email]),
-    "roles/vmmigration.viewer"         = var.m4ce_viewer_users
+    "roles/iam.serviceAccountKeyAdmin" = var.migration_admin_users,
+    "roles/iam.serviceAccountCreator"  = var.migration_admin_users,
+    "roles/vmmigration.admin"          = var.migration_admin_users,
+    "roles/vmmigration.viewer"         = var.migration_viewer_users
   }
 }
 
 module "m4ce-service-account" {
-  source       = "../../../modules/iam-service-account"
-  project_id   = module.m4ce-project.project_id
-  name         = "gcp-m4ce-sa"
+  source       = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/iam-service-account?ref=v7.0.0"
+  project_id   = module.landing-project.project_id
+  name         = "m4ce-sa"
   generate_key = true
+}
+
+module "landing-vpc" {
+  source     = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/net-vpc?ref=v7.0.0"
+  project_id = module.landing-project.project_id
+  name       = "landing-vpc"
+  subnets = [
+    {
+      ip_cidr_range      = var.vpc_config.ip_cidr_range
+      name               = "landing-vpc-${var.vpc_config.region}"
+      region             = var.vpc_config.region
+      secondary_ip_range = {}
+    }
+  ]
+}
+
+module "landing-vpc-firewall" {
+  source              = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/net-vpc-firewall?ref=v7.0.0"
+  project_id          = module.landing-project.project_id
+  network             = module.landing-vpc.name
+  admin_ranges        = []
+  http_source_ranges  = []
+  https_source_ranges = []
+  ssh_source_ranges   = []
+  custom_rules = {
+    allow-ssh = {
+      description          = "Allow SSH from IAP"
+      direction            = "INGRESS"
+      action               = "allow"
+      sources              = []
+      ranges               = ["35.235.240.0/20"]
+      targets              = []
+      use_service_accounts = false
+      rules                = [{ protocol = "tcp", ports = ["22"] }]
+      extra_attributes     = {}
+    }
+  }
 }

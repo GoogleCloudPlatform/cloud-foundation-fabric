@@ -12,34 +12,39 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-variable "billing_account_id" {
-  description = "Billing account id used to create projects."
-  type        = string
+variable "project_create" {
+  description = "Define when to create a new project or use an existing one."
+  type = object({
+    billing_account_id = string
+    parent             = string
+  })
+  default = null
 }
 
-variable "m4ce_project_root" {
-  description = "Root node for the new m4ce host project, either 'organizations/org_id' or 'folders/folder_id'."
-  type        = string
-}
-
-variable "m4ce_project_name" {
-  description = "Name of the project dedicated to M4CE as host and target for the migration"
+variable "project_name" {
+  description = "Name of the project dedicated to M4CE as host and target for the migration. It could be an existing one or a new one."
   type        = string
   default     = "m4ce-host-project-000"
 }
 
-variable "m4ce_project_create" {
-  description = "Enable the creation of a new project dedicated to M4CE"
-  type        = bool
-  default     = true
+variable "vpc_config" {
+  description = "Define when to create a new project or use an existing one."
+  type = object({
+    ip_cidr_range = string,
+    region        = string
+  })
+  default = {
+    ip_cidr_range = "10.200.0.0/20",
+    region        = "us-west2"
+  }
 }
 
-variable "m4ce_admin_users" {
+variable "migration_admin_users" {
   description = "List of users authorized to create new M4CE sources and perform all other migration operations, in IAM format."
   type        = list(string)
 }
 
-variable "m4ce_viewer_users" {
+variable "migration_viewer_users" {
   description = "List of users authorized to retirve information about M4CE in the Google Cloud Console. Intended for users who are performing migrations, but not setting up the system or adding new migration sources, in IAM format."
   type        = list(string)
   default     = []
