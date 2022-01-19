@@ -12,66 +12,73 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module "m4ce-host-project" {
-  source          = "../../../modules/project"
-  billing_account = var.billing_account_id
-  name            = var.m4ce_project_name
-  parent          = var.m4ce_project_root
+module "host-project" {
+  source = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/project?ref=v7.0.0"
+  billing_account = (var.project_create != null
+    ? var.project_create.billing_account_id
+    : null
+  )
+  name = var.project_name
+  parent = (var.project_create != null
+    ? var.project_create.parent
+    : null
+  )
 
   services = [
-    "vmmigration.googleapis.com",
-    "servicemanagement.googleapis.com",
-    "servicecontrol.googleapis.com",
-    "iam.googleapis.com",
     "cloudresourcemanager.googleapis.com",
     "compute.googleapis.com",
+    "iam.googleapis.com",
     "logging.googleapis.com",
+    "servicemanagement.googleapis.com",
+    "servicecontrol.googleapis.com",
+    "vmmigration.googleapis.com",
   ]
 
-  project_create = var.m4ce_project_create
+  project_create = var.project_create != null
 
   iam_additive = {
-    "roles/iam.serviceAccountKeyAdmin" = concat(var.m4ce_admin_users, [module.m4ce-service-account.iam_email])
-    "roles/iam.serviceAccountCreator"  = concat(var.m4ce_admin_users, [module.m4ce-service-account.iam_email]),
-    "roles/vmmigration.admin"          = concat(var.m4ce_admin_users, [module.m4ce-service-account.iam_email]),
-    "roles/vmmigration.viewer"         = var.m4ce_viewer_users
+    "roles/iam.serviceAccountKeyAdmin" = var.migration_admin_users,
+    "roles/iam.serviceAccountCreator"  = var.migration_admin_users,
+    "roles/vmmigration.admin"          = var.migration_admin_users,
+    "roles/vmmigration.viewer"         = var.migration_viewer_users,
   }
 }
 
 module "m4ce-service-account" {
-  source       = "../../../modules/iam-service-account"
-  project_id   = module.m4ce-host-project.project_id
-  name         = "gcp-m4ce-sa"
-  generate_key = true
+  source     = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/iam-service-account"
+  project_id = module.host-project.project_id
+  name       = "m4ce-sa"
 }
 
-module "m4ce-target-projects" {
+module "target-projects" {
 
-  for_each       = toset(var.m4ce_target_projects)
-  source         = "../../../modules/project"
+  for_each       = toset(var.migration_target_projects)
+  source         = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/project?ref=v7.0.0"
   name           = each.key
   project_create = false
 
   services = [
+    "cloudresourcemanager.googleapis.com",
+    "compute.googleapis.com",
+    "iam.googleapis.com",
     "servicemanagement.googleapis.com",
     "servicecontrol.googleapis.com",
-    "iam.googleapis.com",
-    "cloudresourcemanager.googleapis.com",
-    "compute.googleapis.com"
   ]
 
   iam_additive = {
-    "roles/resourcemanager.projectIamAdmin" = var.m4ce_admin_users,
-    "roles/iam.serviceAccountUser"          = var.m4ce_admin_users
+    "roles/resourcemanager.projectIamAdmin" = var.migration_admin_users,
+    "roles/iam.serviceAccountUser"          = var.migration_admin_users,
   }
 }
 
 module "sharedvpc_host_project" {
-  source         = "../../../modules/project"
-  name           = var.sharedvpc_host_project_name
+
+  for_each       = toset(var.sharedvpc_host_projects)
+  source         = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/project?ref=v7.0.0"
+  name           = each.key
   project_create = false
 
   iam_additive = {
-    "roles/compute.viewer" = var.m4ce_admin_users,
+    "roles/compute.viewer" = var.migration_admin_users,
   }
 }

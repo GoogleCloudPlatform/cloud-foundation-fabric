@@ -48,14 +48,11 @@ variable "m4ce_appliance_properties" {
 }
 
 variable "m4ce_ssh_public_key" {
-  description = "Filesystem path to the SSH public key for the migrate connector login"
+  description = "Filesystem Path to the public key for the SSH login"
   type        = string
 }
 
-variable "vcenter_password" {
-  description = "VCenter user password"
-  type        = string
-}
+variable "vcenter_password" {}
 
 
 variable "m4ce_connector_ovf_url" {
