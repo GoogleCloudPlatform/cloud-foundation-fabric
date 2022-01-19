@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Dev spoke VPC and related resources.
+# tfdoc:file:description Production spoke VPC and related resources.
 
-module "dev-spoke-project" {
+module "prod-spoke-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account_id
-  name            = "dev-net-spoke-0"
+  # TODO: Reset counter before committing
+  name            = "prod-net-spoke-1"
   parent          = var.folder_id
   prefix          = var.prefix
   service_config = {
@@ -39,17 +40,17 @@ module "dev-spoke-project" {
   }
   metric_scopes = [module.landing-project.project_id]
   iam = {
-    "roles/dns.admin" = [var.project_factory_sa.dev]
+    "roles/dns.admin" = [var.project_factory_sa.prod]
   }
 }
 
-module "dev-spoke-vpc" {
+module "prod-spoke-vpc" {
   source        = "../../../modules/net-vpc"
-  project_id    = module.dev-spoke-project.project_id
-  name          = "dev-spoke-0"
+  project_id    = module.prod-spoke-project.project_id
+  name          = "prod-spoke-0"
   mtu           = 1500
-  data_folder   = "${var.data_dir}/subnets/dev"
-  subnets_l7ilb = local.l7ilb_subnets.dev
+  data_folder   = "${var.data_dir}/subnets/prod"
+  subnets_l7ilb = local.l7ilb_subnets.prod
   # set explicit routes for googleapis in case the default route is deleted
   routes = {
     private-googleapis = {
@@ -69,36 +70,24 @@ module "dev-spoke-vpc" {
   }
 }
 
-module "dev-spoke-firewall" {
+module "prod-spoke-firewall" {
   source              = "../../../modules/net-vpc-firewall"
-  project_id          = module.dev-spoke-project.project_id
-  network             = module.dev-spoke-vpc.name
+  project_id          = module.prod-spoke-project.project_id
+  network             = module.prod-spoke-vpc.name
   admin_ranges        = []
   http_source_ranges  = []
   https_source_ranges = []
   ssh_source_ranges   = []
-  data_folder         = "${var.data_dir}/firewall-rules/dev"
+  data_folder         = "${var.data_dir}/firewall-rules/prod"
   cidr_template_file  = "${var.data_dir}/cidrs.yaml"
 }
 
-module "dev-spoke-cloudnat" {
-  for_each       = toset(values(module.dev-spoke-vpc.subnet_regions))
-  source         = "../../../modules/net-cloudnat"
-  project_id     = module.dev-spoke-project.project_id
-  region         = each.value
-  name           = "dev-nat-${local.region_trigram[each.value]}"
-  router_create  = true
-  router_network = module.dev-spoke-vpc.name
-  router_asn     = 4200001024
-  logging_filter = "ERRORS_ONLY"
-}
-
-module "dev-spoke-psa-addresses" {
+module "prod-spoke-psa-addresses" {
   source     = "../../../modules/net-address"
-  project_id = module.dev-spoke-project.project_id
-  psa_addresses = { for r, v in var.psa_ranges.dev : r => {
+  project_id = module.prod-spoke-project.project_id
+  psa_addresses = { for r, v in var.psa_ranges.prod : r => {
     address       = cidrhost(v, 0)
-    network       = module.dev-spoke-vpc.self_link
+    network       = module.prod-spoke-vpc.self_link
     prefix_length = split("/", v)[1]
     }
   }

@@ -28,7 +28,7 @@ variable "custom_adv" {
     googleapis_private    = "199.36.153.8/30"
     googleapis_restricted = "199.36.153.4/30"
     rfc_1918_10           = "10.0.0.0/8"
-    rfc_1918_172          = "172.16.0.0/16"
+    rfc_1918_172          = "172.16.0.0/12"
     rfc_1918_192          = "192.168.0.0/16"
     landing_untrusted_ew1 = "10.128.0.0/16"
     landing_untrusted_ew4 = "10.129.0.0/16"

@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Production spoke DNS zones and peerings setup.
+# tfdoc:file:description Development spoke DNS zones and peerings setup.
 
 # GCP-specific environment zone
 
-module "prod-dns-private-zone" {
+module "dev-dns-private-zone" {
   source          = "../../../modules/dns"
   project_id      = module.landing-project.project_id
   type            = "private"
-  name            = "prod-gcp-example-com"
-  domain          = "prod.gcp.example.com."
-  client_networks = [module.prod-spoke-vpc.self_link]
+  name            = "dev-gcp-example-com"
+  domain          = "dev.gcp.example.com."
+  client_networks = [module.dev-spoke-vpc.self_link]
   recordsets = {
     "A localhost" = { type = "A", ttl = 300, records = ["127.0.0.1"] }
   }
@@ -32,22 +32,22 @@ module "prod-dns-private-zone" {
 
 # root zone peering to landing to centralize configuration; remove if unneeded
 
-module "prod-landing-root-dns-peering" {
+module "dev-landing-root-dns-peering" {
   source          = "../../../modules/dns"
-  project_id      = module.prod-spoke-project.project_id
+  project_id      = module.dev-spoke-project.project_id
   type            = "peering"
-  name            = "prod-root-dns-peering"
+  name            = "dev-root-dns-peering"
   domain          = "."
-  client_networks = [module.prod-spoke-vpc.self_link]
-  peer_network    = module.landing-vpc.self_link
+  client_networks = [module.dev-spoke-vpc.self_link]
+  peer_network    = module.landing-trusted-vpc.self_link
 }
 
-module "prod-reverse-10-dns-peering" {
+module "dev-reverse-10-dns-peering" {
   source          = "../../../modules/dns"
-  project_id      = module.prod-spoke-project.project_id
+  project_id      = module.dev-spoke-project.project_id
   type            = "peering"
-  name            = "prod-reverse-10-dns-peering"
+  name            = "dev-reverse-10-dns-peering"
   domain          = "10.in-addr.arpa."
-  client_networks = [module.prod-spoke-vpc.self_link]
-  peer_network    = module.landing-vpc.self_link
+  client_networks = [module.dev-spoke-vpc.self_link]
+  peer_network    = module.landing-trusted-vpc.self_link
 }

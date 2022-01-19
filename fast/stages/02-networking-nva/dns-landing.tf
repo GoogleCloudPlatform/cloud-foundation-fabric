@@ -24,7 +24,10 @@ module "onprem-example-dns-forwarding" {
   type            = "forwarding"
   name            = "example-com"
   domain          = "onprem.example.com."
-  client_networks = [module.landing-vpc.self_link]
+  client_networks = [
+    module.landing-untrusted-vpc.self_link,
+    module.landing-trusted-vpc.self_link
+  ]
   forwarders      = { for ip in var.dns.onprem : ip => null }
 }
 
@@ -34,7 +37,10 @@ module "reverse-10-dns-forwarding" {
   type            = "forwarding"
   name            = "root-reverse-10"
   domain          = "10.in-addr.arpa."
-  client_networks = [module.landing-vpc.self_link]
+  client_networks = [
+    module.landing-untrusted-vpc.self_link,
+    module.landing-trusted-vpc.self_link
+  ]
   forwarders      = { for ip in var.dns.onprem : ip => null }
 }
 
@@ -44,7 +50,10 @@ module "gcp-example-dns-private-zone" {
   type            = "private"
   name            = "gcp-example-com"
   domain          = "gcp.example.com."
-  client_networks = [module.landing-vpc.self_link]
+  client_networks = [
+    module.landing-untrusted-vpc.self_link,
+    module.landing-trusted-vpc.self_link
+  ]
   recordsets = {
     "A localhost" = { type = "A", ttl = 300, records = ["127.0.0.1"] }
   }
@@ -58,7 +67,10 @@ module "prod-gcp-example-dns-peering" {
   type            = "peering"
   name            = "prod-root-dns-peering"
   domain          = "prod.gcp.example.com."
-  client_networks = [module.landing-vpc.self_link]
+  client_networks = [
+    module.landing-untrusted-vpc.self_link,
+    module.landing-trusted-vpc.self_link
+  ]
   peer_network    = module.prod-spoke-vpc.self_link
 }
 
@@ -68,7 +80,10 @@ module "dev-gcp-example-dns-peering" {
   type            = "peering"
   name            = "dev-root-dns-peering"
   domain          = "dev.gcp.example.com."
-  client_networks = [module.landing-vpc.self_link]
+  client_networks = [
+    module.landing-untrusted-vpc.self_link,
+    module.landing-trusted-vpc.self_link
+  ]
   peer_network    = module.dev-spoke-vpc.self_link
 }
 
@@ -80,7 +95,10 @@ module "googleapis-private-zone" {
   type            = "private"
   name            = "googleapis-com"
   domain          = "googleapis.com."
-  client_networks = [module.landing-vpc.self_link]
+  client_networks = [
+    module.landing-untrusted-vpc.self_link,
+    module.landing-trusted-vpc.self_link
+  ]
   recordsets = {
     "A private" = { type = "A", ttl = 300, records = [
       "199.36.153.8", "199.36.153.9", "199.36.153.10", "199.36.153.11"
