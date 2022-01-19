@@ -38,22 +38,22 @@ As mentioned before, fast relies on multiple stages to progressively bring up yo
 
 ### Organizational level (00-01)
 
-- [Bootstrap](stages/00-bootstrap/README.md)  
-  Enables critical organization-level functionality that depends on broad permissions. It has two primary purposes. The first is to bootstrap the resources needed for automation of this and the following stages (service accounts, GCS buckets). And secondly, it applies the minimum amount of configuration needed at the organization level, to avoid the need of broad permissions later on, and to implement a minimum of security features like sinks and exports from the start.
-- [Resource Management](stages/01-resman/README.md)  
-  Creates the base resource hierarchy (folders) and the automation resources required later to delegate deployment of each part of the hierarchy to separate stages. This stage also configures organization-level policies and any exceptions needed by different branches of the resource hierarchy.
+- [Bootstrap](stages/00-bootstrap/README.md)
+  Enables critical organization-level functionality that depends on broad permissions. It has two primary purposes. The first is to bootstrap the resources needed to automate this and the following stages (service accounts, GCS buckets). And secondly, it applies the minimum amount of configuration needed at the organization level, to avoid the need for broad permissions later on, and to implement a minimum of security features like sinks and exports from the start.
+- [Resource Management](stages/01-resman/README.md)
+  Creates the base resource hierarchy (folders) and the automation resources required to delegate each part of the hierarchy to separate stages. This stage also configures organization-level policies and any exceptions needed by different branches of the resource hierarchy.
 
 ### Shared resources (02)
 
-- [Security](stages/02-security/README.md)  
-  Manages centralized security configurations in a separate stage, and is typically owned by the security team. This stage implements VPC Security Controls via separate perimeters for environments and central services, and creates projects to host centralized KMS keys used by the whole organization. It's meant to be easily extended to include other security-related resources which are required, like Secret Manager.
-- [Networking](stages/02-security/README.md)  
-  Manages centralized network resources in a separate stage, and is typically owned by the networking team. This stage implements a hub-and-spoke design, and includes connectivity via VPN to on-premises, and YAML-based factories for firewall rules (hierarchical and VPC-level) and subnets.
+- [Security](stages/02-security/README.md)
+  Manages centralized security configurations in a separate stage, typically owned by the security team. This stage implements VPC Security Controls via separate perimeters for environments and central services, and creates projects to host centralized KMS keys used by the whole organization. It's intentionally easy to extend to include other security-related resources, like Secret Manager.
+- [Networking](stages/02-security/README.md)
+  Manages centralized network resources in a separate stage, and is typically owned by the networking team. This stage implements a hub-and-spoke design, includes connectivity via VPN to on-premises, and YAML-based factories for firewall rules (hierarchical and VPC-level) and subnets.
 
 ### Environment-level resources (03)
 
-- [Project Factory](03-projectfactory/prod/README.md)  
-  YAML-based fatory to create and configure application or team-level projects. Configuration includes VPC-level settings for Shared VPC, service-level configuration for CMEK encryption via centralized keys, and service account creation for workloads and applications. This stage is meant to be used once per environment.
+- [Project Factory](03-projectfactory/prod/README.md)
+  YAML-based factory to create and configure application- or team-level projects. Configuration includes VPC-level settings for Shared VPC, service-level configuration for CMEK encryption via centralized keys, and service account creation for workloads and applications. This stage is meant to be used once per environment.
 - Data Platform (in development)
 - GKE Multitenant (in development)
 - GCE Migration (in development)
