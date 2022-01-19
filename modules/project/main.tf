@@ -66,14 +66,34 @@ locals {
       if sink.iam && sink.type == type
     }
   }
-  service_encryption_key_ids = flatten([
-    for service in keys(var.service_encryption_key_ids) : [
-      for key in var.service_encryption_key_ids[service] : {
-        service = service
-        key     = key
-      } if key != null
+  # Some services need Crypt/Decrypt role on the specified key for several robot accounts.
+  encrypt_service_subservice = {
+    "composer" : [
+      "artifactregistry",
+      "container-engine",
+      "composer",
+      "compute",
+      "pubsub",
+      "storage",
     ]
-  ])
+    "dataflow" : [
+      "compute",
+      "dataflow"
+    ]
+  }
+
+  service_encryption_key_ids = flatten(
+    [for service in keys(var.service_encryption_key_ids) :
+      [for sub_service in try(local.encrypt_service_subservice[service], [service]) :
+        [for key in var.service_encryption_key_ids[service] :
+          {
+            service = sub_service
+            key     = key
+          } if key != null
+        ]
+      ]
+    ]
+  )
 }
 
 
