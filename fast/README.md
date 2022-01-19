@@ -36,18 +36,29 @@ FAST uses YAML-based factories to deploy subnets and firewall rules and, as its 
 
 As mentioned before, fast relies on multiple stages to progressively bring up your GCP organization(s). In this section we briefly describe each stage.
 
-**Stage [00-bootstrap](stages/00-bootstrap/README.md)**: enables critical organization-level functionality that depends on broad permissions. Its primary purpose is to allow the execution of this and the following stages using service accounts (as opposed to nominal users). Critical automation resources, organization-level logging sinks, and billing are configured here.
+### Organizational level (00-01)
 
-**Stage [01-resman](stages/01-resman/README.md)**: creates the base resource hierarchy (folders) and the automation resources required later to deploy each part of the hierarchy. This stage also configures organization-level policies and any exceptions needed by different branches of the resource hierarchy.
+- [Bootstrap](stages/00-bootstrap/README.md)  
+  Enables critical organization-level functionality that depends on broad permissions. It has two primary purposes. The first is to bootstrap the resources needed for automation of this and the following stages (service accounts, GCS buckets). And secondly, it applies the minimum amount of configuration needed at the organization level, to avoid the need of broad permissions later on, and to implement a minimum of security features like sinks and exports from the start.
+- [Resource Management](stages/01-resman/README.md)  
+  Creates the base resource hierarchy (folders) and the automation resources required later to delegate deployment of each part of the hierarchy to separate stages. This stage also configures organization-level policies and any exceptions needed by different branches of the resource hierarchy.
 
-**Stage [02-networking](stages/02-networking/README.md)**: uses a hub-and-spoke design to set up the shared network infrastructure for the whole organization.
+### Shared resources (02)
 
-**Stage [02-security](stages/02-security/README.md)**: configures KMS and VPC Security Controls for the whole organization.
+- [Security](stages/02-security/README.md)  
+  Manages centralized security configurations in a separate stage, and is typically owned by the security team. This stage implements VPC Security Controls via separate perimeters for environments and central services, and creates projects to host centralized KMS keys used by the whole organization. It's meant to be easily extended to include other security-related resources which are required, like Secret Manager.
+- [Networking](stages/02-security/README.md)  
+  Manages centralized network resources in a separate stage, and is typically owned by the networking team. This stage implements a hub-and-spoke design, and includes connectivity via VPN to on-premises, and YAML-based factories for firewall rules (hierarchical and VPC-level) and subnets.
 
-**Project Factory stages (e.g. [03-projectfactory/prod](stages/03-project-factory/prod/README.md))**: creates and sets up projects (and related resources) to be used for workloads. Each environment gets its own project factory.
+### Environment-level resources (03)
+
+- [Project Factory](03-projectfactory/prod/README.md)  
+  YAML-based fatory to create and configure application or team-level projects. Configuration includes VPC-level settings for Shared VPC, service-level configuration for CMEK encryption via centralized keys, and service account creation for workloads and applications. This stage is meant to be used once per environment.
+- Data Platform (in development)
+- GKE Multitenant (in development)
+- GCE Migration (in development)
 
 Please refer to the READMEs of each stage for further details.
-
 
 ## Implementation
 
@@ -56,10 +67,11 @@ There are many decisions and tasks required to convert an empty GCP organization
 Instead, FAST aims to leverage different reference architectures as “pluggable modules”, and then have a small set of variables covering only the essential options of each stage. While we could expose every option of the underlying resources as stage-level variables, we prefer to provide the basic implementation and encourage users to modify the codebase if additional (or different) behavior is needed.
 
 Since we expect users to customize FAST to their specific needs, we strive to make its code easy to understand and modify. Root-level modules (i.e., stages) should be low in complexity, which among other things, means:
-* Code should avoid magic and be as explicit as possible.
-* We hide advanced features and complexity behind modules.
-* We prefer as little indirection as possible.
-* We favor flat over nested.
+
+- Code should avoid magic and be as explicit as possible.
+- We hide advanced features and complexity behind modules.
+- We prefer as little indirection as possible.
+- We favor flat over nested.
 
 We also recognize that FAST users don't need all of its features. Therefore, you don't need to use our project factory or our GKE implementation if you don't want to. Instead, remove those stages or pieces of code and keep what suits you.
 
@@ -69,10 +81,7 @@ Those familiar with Python will note that FAST follows many of the maxims in the
 
 Besides the features already described, FAST roadmap includes:
 
-* Stage to deploy environment-specific multitenant GKE clusters following Google's best practices
-
-* Stage to deploy a fully featured data platform
-
-* Reference implementation to use FAST in CI/CD pipelines
-
-* Static policy enforcement
+- Stage to deploy environment-specific multitenant GKE clusters following Google's best practices
+- Stage to deploy a fully featured data platform
+- Reference implementation to use FAST in CI/CD pipelines
+- Static policy enforcement
