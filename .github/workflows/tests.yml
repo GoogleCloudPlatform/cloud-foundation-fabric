@@ -46,9 +46,9 @@ jobs:
 
       - name: Set environment
         run: |
-          echo "TF_PLUGIN_CACHE_DIR=${{ github.workspace }}/.terraform.d/plugin-cache-${GITHUB_JOB}" >> $GITHUB_ENV
+          echo "TF_PLUGIN_CACHE_DIR=${GITHUB_WORKSPACE}/.terraform.d/plugin-cache-${GITHUB_JOB}" >> $GITHUB_ENV
           echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.github/workflows/fake-key.json" >> $GITHUB_ENV
-          mkdir --parents ${{ github.workspace }}/.terraform.d/plugin-cache-${GITHUB_JOB}
+          mkdir --parents ${GITHUB_WORKSPACE}/.terraform.d/plugin-cache-${GITHUB_JOB}
           terraform -chdir=tests providers lock
 
       - name: Install dependencies
@@ -78,9 +78,9 @@ jobs:
 
       - name: Set environment
         run: |
-          echo "TF_PLUGIN_CACHE_DIR=${{ github.workspace }}/.terraform.d/plugin-cache-${GITHUB_JOB}" >> $GITHUB_ENV
+          echo "TF_PLUGIN_CACHE_DIR=${GITHUB_WORKSPACE}/.terraform.d/plugin-cache-${GITHUB_JOB}" >> $GITHUB_ENV
           echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.github/workflows/fake-key.json" >> $GITHUB_ENV
-          mkdir --parents ${{ github.workspace }}/.terraform.d/plugin-cache-${GITHUB_JOB}
+          mkdir --parents ${GITHUB_WORKSPACE}/.terraform.d/plugin-cache-${GITHUB_JOB}
           terraform -chdir=tests providers lock
 
       - name: Install dependencies
@@ -110,9 +110,9 @@ jobs:
 
       - name: Set environment
         run: |
-          echo "TF_PLUGIN_CACHE_DIR=${{ github.workspace }}/.terraform.d/plugin-cache-${GITHUB_JOB}" >> $GITHUB_ENV
+          echo "TF_PLUGIN_CACHE_DIR=${GITHUB_WORKSPACE}/.terraform.d/plugin-cache-${GITHUB_JOB}" >> $GITHUB_ENV
           echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.github/workflows/fake-key.json" >> $GITHUB_ENV
-          mkdir --parents ${{ github.workspace }}/.terraform.d/plugin-cache-${GITHUB_JOB}
+          mkdir --parents ${GITHUB_WORKSPACE}/.terraform.d/plugin-cache-${GITHUB_JOB}
           terraform -chdir=tests providers lock
 
       - name: Install dependencies
