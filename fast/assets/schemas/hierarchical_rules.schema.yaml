@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,32 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pathlib
-
-import click
-
-
-def main(**kw):
-  pass
-
-
-@click.group()
-@click.option('--dry-run', is_flag=True, default=False)
-def cli(**kwargs):
-  basedir = pathlib.Path(source or '.')
-  for f in basedir.glob('**/*.tf'):
-    if '.terraform' in f:
-      continue
-    print(f)
-
-
-@cli.command()
-@click.argument('source', nargs=-1)
-@click.option('--from-static/--to-static', default=True)
-def mod_source(source=None, from_static=True):
-  print('mod_source')
-  print(source, from_static)
-
-
-if __name__ == '__main__':
-  cli()
+map(include('hierarchical_rule'))
+---
+hierarchical_rule:
+  description: str()
+  direction: enum("INGRESS", "EGRESS")
+  action: enum("allow", "deny")
+  priority: int()
+  ranges: list(str())
+  target_resources: any(null(), list(str()))
+  ports: map(list(str(), required=False))
+  enable_logging: bool()

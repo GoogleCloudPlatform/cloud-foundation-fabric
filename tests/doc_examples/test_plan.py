@@ -12,21 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import tftest
 import re
-import tempfile
 from pathlib import Path
 
-import marko
 
-MODULES_PATH = Path(__file__, '../../../../modules/').resolve()
-VARIABLES_PATH = Path(__file__, '../variables.tf').resolve()
+BASE_PATH = Path(__file__).parent
 EXPECTED_RESOURCES_RE = re.compile(r'# tftest:modules=(\d+):resources=(\d+)')
 
 
 def test_example(example_plan_runner, tmp_path, example):
-  (tmp_path / 'modules').symlink_to(MODULES_PATH)
-  (tmp_path / 'variables.tf').symlink_to(VARIABLES_PATH)
+  (tmp_path / 'modules').symlink_to(
+      Path(BASE_PATH, '../../modules/').resolve())
+  (tmp_path / 'variables.tf').symlink_to(
+      Path(BASE_PATH, 'variables.tf').resolve())
   (tmp_path / 'main.tf').write_text(example)
 
   match = EXPECTED_RESOURCES_RE.search(example)
