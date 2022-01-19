@@ -6,17 +6,17 @@
 
 This repository provides **end-to-end examples** and a **suite of Terraform modules** for Google Cloud, which support different use cases:
 
-- starter kits used to bootstrap real-world cloud foundations, and reference examples used to deep dive on network patterns or product features
-- composable modules that support quick prototyping and testing
-- a comprehensive source of lean modules that lend themselves well to changes
+- organization-wide [landing zone blueprint](fast/) used to bootstrap real-world cloud foundations
+- reference [examples](./examples/) used to deep dive on network patterns or product features
+- a comprehensive source of lean [modules](./modules/dns) that lend themselves well to changes
 
 The whole repository is meant to be cloned as a single unit, and then forked into separate owned repositories to seed production usage, or used as-is and periodically updated as a complete toolkit for prototyping. You can read more on this approach in our [manifesto](./MANIFESTO.md).
 
 Both the examples and modules require some measure of Terraform skills to be used effectively. If you are looking for a feature-rich black box to manage project or product creation with minimal specific skills, you might be better served by the [Cloud Foundation Toolkit](https://registry.terraform.io/modules/terraform-google-modules) suite of modules.
 
-## End-to-end examples
+## Organization blueprint (Fabric FAST)
 
-The [examples](./examples/) in this repository are split in several main sections: **[foundational examples](./examples/foundations/)** that bootstrap the organizational hierarchy and automation prerequisites, **[networking examples](./examples/networking/)** that implement core patterns or features, **[data solutions examples](./examples/data-solutions/)** that demonstrate how to integrate data services in complete scenarios, **[cloud operations examples](./examples/cloud-operations/)** that leverage specific products to meet specific operational needs and **[factories](./examples/factories/)** that implement resource factories for the repetitive creation of specific resources.
+Setting up a production-ready GCP organization is often a time-consuming process. Fabric [FAST](fast/) aims to speed up this process via two complementary goals. On the one hand, FAST provides a design of a GCP organization that includes the typical elements required by enterprise customers. Secondly, we provide a reference implementation of the FAST design using Terraform.
 
 ## Modules
 
@@ -37,3 +37,7 @@ Currently available modules:
 - **serverless** - [Cloud Function](./modules/cloud-function), [Cloud Run](./modules/cloud-run)
 
 For more information and usage examples see each module's README file.
+
+## End-to-end examples
+
+The [examples](./examples/) in this repository are split in several main sections: **[foundational examples](./examples/foundations/)** that bootstrap the organizational hierarchy and automation prerequisites, **[networking examples](./examples/networking/)** that implement core patterns or features, **[data solutions examples](./examples/data-solutions/)** that demonstrate how to integrate data services in complete scenarios, **[cloud operations examples](./examples/cloud-operations/)** that leverage specific products to meet specific operational needs and **[factories](./examples/factories/)** that implement resource factories for the repetitive creation of specific resources.

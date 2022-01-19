@@ -113,14 +113,15 @@ You can check data imported into Google BigQuery from the Google Cloud Console U
 
 
 
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| prefix | Unique prefix used for resource names. Not used for project if 'project_create' is null. | <code>string</code> | ✓ |  |
 | project_id | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
+| prefix | Unique prefix used for resource names. Not used for project if 'project_create' is null. | <code>string</code> |  | <code>null</code> |
 | project_create | Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | region | The region where resources will be deployed. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
 | vpc_subnet_range | Ip range used for the VPC subnet created for the example. | <code>string</code> |  | <code>&#34;10.0.0.0&#47;20&#34;</code> |
@@ -136,6 +137,7 @@ You can check data imported into Google BigQuery from the Google Cloud Console U
 | vm | GCE VM. |  |
 
 <!-- END TFDOC -->
+
 
 
 
