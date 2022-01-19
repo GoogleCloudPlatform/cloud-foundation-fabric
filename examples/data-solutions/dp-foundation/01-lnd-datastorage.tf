@@ -42,7 +42,7 @@ module "lnd-cs-0" {
   location      = var.region
   storage_class = "REGIONAL"
   # retention_policy = local.lnd_bucket_retention_policy
-  encryption_key = var.cmek_encryption ? try(module.kms[0].keys.key-gcs.id, null) : null
+  encryption_key = var.service_encryption_keys != null ? try(var.service_encryption_keys.storage, null) : null
   force_destroy  = var.data_force_destroy
 }
 
@@ -89,5 +89,5 @@ module "lnd-bq-0" {
   project_id     = module.lnd-prj.project_id
   id             = "${replace(local.prefix_lnd, "-", "_")}_bq_0"
   location       = var.region
-  encryption_key = var.cmek_encryption ? try(module.kms[0].keys.key-bq.id, null) : null
+  encryption_key = var.service_encryption_keys != null ? try(var.service_encryption_keys.bq, null) : null
 }

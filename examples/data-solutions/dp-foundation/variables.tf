@@ -12,10 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-variable "cmek_encryption" {
-  description = "Flag to enable CMEK on GCP resources created."
-  type        = bool
-  default     = false
+variable "service_encryption_keys" { # service encription key
+  description = "Cloud KMS to use to encrypt different services. Key location should match service region."
+  type = object({
+    bq       = string
+    composer = string
+    dataflow = string
+    storage  = string
+    pubsub   = string
+  })
+  default = null
 }
 
 variable "composer_config" {

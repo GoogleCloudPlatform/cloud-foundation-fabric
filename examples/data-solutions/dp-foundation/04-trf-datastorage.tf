@@ -39,7 +39,7 @@ module "trf-cs-df-0" {
   prefix         = local.prefix_trf
   location       = var.region
   storage_class  = "REGIONAL"
-  encryption_key = var.cmek_encryption ? try(module.kms[0].keys.key-gcs.id, null) : null
+  encryption_key = var.service_encryption_keys != null ? try(var.service_encryption_keys.storage, null) : null
 }
 
 ###############################################################################

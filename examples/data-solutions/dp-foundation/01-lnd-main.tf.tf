@@ -79,7 +79,7 @@ module "lnd-prj" {
   # additive IAM bindings avoid disrupting bindings in existing project
   iam          = var.project_create != null ? local.iam_lnd : {}
   iam_additive = var.project_create == null ? local.iam_lnd : {}
-  # group_iam    = local.group_iam_lnd
+  group_iam    = local.group_iam_lnd
   services = concat(var.project_services, [
     "bigquery.googleapis.com",
     "bigqueryreservation.googleapis.com",
@@ -89,4 +89,9 @@ module "lnd-prj" {
     "storage.googleapis.com",
     "storage-component.googleapis.com",
   ])
+  service_encryption_key_ids = {
+    bq      = [try(var.service_encryption_keys.bq, null)]
+    pubsub  = [try(var.service_encryption_keys.pubsub, null)]
+    storage = [try(var.service_encryption_keys.storage, null)]
+  }
 }

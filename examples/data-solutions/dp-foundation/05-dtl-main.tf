@@ -82,6 +82,10 @@ module "dtl-0-prj" {
     "storage.googleapis.com",
     "storage-component.googleapis.com"
   ])
+  service_encryption_key_ids = {
+    bq      = [try(var.service_encryption_keys.bq, null)]
+    storage = [try(var.service_encryption_keys.storage, null)]
+  }
 }
 
 module "dtl-1-prj" {
@@ -107,6 +111,10 @@ module "dtl-1-prj" {
     "storage.googleapis.com",
     "storage-component.googleapis.com"
   ])
+  service_encryption_key_ids = {
+    bq      = [try(var.service_encryption_keys.bq, null)]
+    storage = [try(var.service_encryption_keys.storage, null)]
+  }
 }
 
 module "dtl-2-prj" {
@@ -132,6 +140,10 @@ module "dtl-2-prj" {
     "storage.googleapis.com",
     "storage-component.googleapis.com"
   ])
+  service_encryption_key_ids = {
+    bq      = [try(var.service_encryption_keys.bq, null)]
+    storage = [try(var.service_encryption_keys.storage, null)]
+  }
 }
 
 module "dtl-exp-prj" {
@@ -157,4 +169,8 @@ module "dtl-exp-prj" {
     "storage.googleapis.com",
     "storage-component.googleapis.com"
   ])
+  service_encryption_key_ids = {
+    bq      = [try(var.service_encryption_keys.bq, null)]
+    storage = [try(var.service_encryption_keys.storage, null)]
+  }
 }

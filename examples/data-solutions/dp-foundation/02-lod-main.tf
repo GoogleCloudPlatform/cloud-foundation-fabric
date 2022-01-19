@@ -73,4 +73,9 @@ module "lod-prj" {
     "storage.googleapis.com",
     "storage-component.googleapis.com"
   ])
+  service_encryption_key_ids = {
+    pubsub   = [try(var.service_encryption_keys.pubsub, null)]
+    dataflow = [try(var.service_encryption_keys.dataflow, null)]
+    storage  = [try(var.service_encryption_keys.storage, null)]
+  }
 }

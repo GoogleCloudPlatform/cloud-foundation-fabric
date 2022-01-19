@@ -89,9 +89,9 @@ resource "google_composer_environment" "orc-cmp-0" {
     }
 
     dynamic "encryption_config" {
-      for_each = can(module.kms[0].keys.key-cmp.id) ? { 1 = 1 } : {}
+      for_each = var.service_encryption_keys != null ? { 1 = 1 } : {}
       content {
-        kms_key_name = var.cmek_encryption ? try(module.kms[0].keys.key-cmp.id, null) : null
+        kms_key_name = var.service_encryption_keys != null ? try(var.service_encryption_keys.composer, null) : null
       }
     }
 
