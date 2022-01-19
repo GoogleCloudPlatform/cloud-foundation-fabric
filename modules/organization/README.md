@@ -97,7 +97,7 @@ module "org" {
     policy_name = null
     rules_file  = "data/rules.yaml"
   }
-  firewall_policy_attachments = {
+  firewall_policy_association = {
     factory-policy = module.org.firewall_policy_id["factory"]
   }
 }
