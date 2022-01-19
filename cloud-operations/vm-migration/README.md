@@ -27,7 +27,8 @@ This example shows a complex scenario where Migrate for Compute Engine (v5) can 
 The example shows how to implement a Migrate for Compute Engine (v5) environment on top of an existing shared VPC topology where the shared VPC service projects are the targets projects for the migration. 
 <br clear="left">
 
-### ESXi Connector 
+### ESXi Connector
+
 <a href="./esxi/" title="M4CE ESXi connector"><img src="./esxi/diagram.png" align="left" width="280px"></a> This [example](./esxi/) implements a Migrate for Compute Engine (v5) environment on a VMWare ESXi cluster as source for VM migrations.
 
 The example shows how to deploy the Migrate for Compute Engine (v5) connector and implement all the security prerequisites for the migration to GCP.
