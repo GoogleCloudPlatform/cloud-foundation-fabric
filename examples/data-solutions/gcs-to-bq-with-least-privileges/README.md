@@ -49,7 +49,7 @@ In this example you can also configure users or group of user to assign them vie
 
 We assume the identiy running the following steps has the following role:
  - `resourcemanager.projectCreator` in case a new project will be created.
- - `owner` on the project in case you use an exiting project. 
+ - `owner` on the project in case you use an existing project. 
 
 Run Terraform init:
 
