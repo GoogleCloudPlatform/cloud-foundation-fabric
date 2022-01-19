@@ -38,12 +38,15 @@ def _plan_runner():
 
     fixture_parent = os.path.dirname(fixture_path)
     fixture_prefix = os.path.basename(fixture_path) + "_"
-
+    tf_lock = os.path.join(BASEDIR, 'tests/.terraform.lock.hcl')
+    tf_lock_use = os.path.isfile(tf_lock)
     with tempfile.TemporaryDirectory(prefix=fixture_prefix,
                                      dir=fixture_parent) as tmp_path:
       # copy fixture to a temporary directory so we can execute
       # multiple tests in parallel
       shutil.copytree(fixture_path, tmp_path, dirs_exist_ok=True)
+      if tf_lock_use:
+        os.symlink(tf_lock, os.path.join(tmp_path, '.terraform.lock.hcl'))
       tf = tftest.TerraformTest(tmp_path, BASEDIR,
                                 os.environ.get('TERRAFORM', 'terraform'))
       tf.setup(upgrade=True)
@@ -52,7 +55,7 @@ def _plan_runner():
   return run_plan
 
 
-@pytest.fixture(scope='session')
+@ pytest.fixture(scope='session')
 def plan_runner(_plan_runner):
   "Returns a function to run Terraform plan on a module fixture."
 
@@ -66,7 +69,7 @@ def plan_runner(_plan_runner):
   return run_plan
 
 
-@pytest.fixture(scope='session')
+@ pytest.fixture(scope='session')
 def e2e_plan_runner(_plan_runner):
   "Returns a function to run Terraform plan on an end-to-end fixture."
 
@@ -88,7 +91,7 @@ def e2e_plan_runner(_plan_runner):
   return run_plan
 
 
-@pytest.fixture(scope='session')
+@ pytest.fixture(scope='session')
 def example_plan_runner(_plan_runner):
   "Returns a function to run Terraform plan on documentation examples."
 
@@ -104,7 +107,7 @@ def example_plan_runner(_plan_runner):
   return run_plan
 
 
-@pytest.fixture(scope='session')
+@ pytest.fixture(scope='session')
 def apply_runner():
   "Returns a function to run Terraform apply on a fixture."
 
