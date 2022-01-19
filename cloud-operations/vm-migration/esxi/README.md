@@ -22,7 +22,7 @@ This sample creates several distinct groups of resources:
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | vsphere_environment | VMware VSphere environment and connection parameters | <code title="object&#40;&#123;&#10;  health_check      &#61; string&#10;  initial_delay_sec &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| m4ce_appliance_properties | M4CE migrate connector OVA configuration parameters. | <code>string</code> | ✓ |  |
+| m4ce_appliance_properties | M4CE migrate connector OVA configuration parameters. | <code title="object&#40;&#123;&#10;  health_check      &#61; string&#10;  initial_delay_sec &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | m4ce_ssh_public_key | File system path to the [SSH public key](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/migrate-connector#step-2) for the migrate connector login (eg. ~/.ssh/key.pub) | <code>string</code> | ✓ |  |
 | vcenter_password | VCenter user password.  | <code>string</code> | ✓ |  |
 | m4ce_connector_ovf_url | URL to public M4CE connector OVA image repository.  | <code>string</code> |  | <code>&#34;https://storage.googleapis.com/vmmigration-public-artifacts/migrate-connector-2-0-1663.ova &#34;</code> |
