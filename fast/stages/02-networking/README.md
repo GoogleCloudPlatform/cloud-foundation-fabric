@@ -91,7 +91,7 @@ Several other scenarios are possible of course, with varying degrees of complexi
 
 Future pluggable modules will allow to easily experiment, or deploy the above scenarios.
 
-### Firewall
+### VPC and Hierarchical Firewall
 
 The GCP Firewall is a stateful, distributed feature that allows the creation of L4 policies, either via VPC-level rules or more recently via hierarchical policies applied on the resource hierarchy (organization, folders).
 
@@ -196,19 +196,18 @@ VPNs ([`net-vpn`](https://github.com/terraform-google-modules/cloud-foundation-f
 
 Each VPC network ([`net-vpc`](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/net-vpc)) manages a separate routing table, which can define static routes (e.g. to private.googleapis.com) and receives dynamic routes from BGP sessions established with neighbor networks (e.g. landing receives routes from onprem and spokes, and spokes receive RFC1918 from landing).
 
-Static routes are defined in `vpc-*.tf` files, in the `routes` section of each `net-vpc` module. 
+Static routes are defined in `vpc-*.tf` files, in the `routes` section of each `net-vpc` module.
 
 BGP sessions for landing-spoke are configured through variable `vpn_spoke_configs`, while the ones for landing-onprem use variable `vpn_onprem_configs`
 
 ### Firewall
 
-**VPC firewall rules** ([`net-vpc-firewall`](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/net-vpc-firewall)) are defined per-vpc on each `vpc-*.tf` file and leverage a resource factory to massively create rules. 
+**VPC firewall rules** ([`net-vpc-firewall`](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/net-vpc-firewall)) are defined per-vpc on each `vpc-*.tf` file and leverage a resource factory to massively create rules.
 To add a new firewall rule, create a new file or edit an existing one in the `data_folder` directory defined in the module `net-vpc-firewall`, following the examples of the "[Rules factory](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/net-vpc-firewall#rules-factory)" section of the module documentation. Sample firewall rules are shipped in [data/firewall-rules/landing](./data/firewall-rules/landing) and can be easily customised.
 
 **Hierarchical firewall policies** ([`folder`](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/folder)) are defined in `main.tf`, and managed through a policy factory implemented by the `folder` module, which applies the defined hierarchical to the `Networking` folder, which contains all the core networking infrastructure. Policies are defined in the `rules_file` file - to define a new one simply use the instructions found on "[Firewall policy factory](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/organization#firewall-policy-factory)". Sample hierarchical firewall policies are shipped in [data/hierarchical-policy-rules.yaml](./data/hierarchical-policy-rules.yaml) and can be easily customised.
 
-
-### DNS
+### DNS architecture
 
 The DNS ([`dns`](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/dns)) infrastructure is defined in [`dns.tf`](dns.tf).
 
@@ -227,41 +226,43 @@ DNS queries sent to the on-premises infrastructure come from the `35.199.192.0/1
 
 #### On-prem to cloud
 
-The [Inbound DNS Policy](https://cloud.google.com/dns/docs/server-policies-overview#dns-server-policy-in) defined in module `landing-vpc` ([`landing.tf`](./landing.tf)) automatically reserves the first available IP address on each created subnet (typically the third one in a CIDR) to expose the Cloud DNS service so that it can be consumed from outside of GCP. 
+The [Inbound DNS Policy](https://cloud.google.com/dns/docs/server-policies-overview#dns-server-policy-in) defined in module `landing-vpc` ([`landing.tf`](./landing.tf)) automatically reserves the first available IP address on each created subnet (typically the third one in a CIDR) to expose the Cloud DNS service so that it can be consumed from outside of GCP.
 
 ### Private Google Access
+
 [Private Google Access](https://cloud.google.com/vpc/docs/private-google-access) (or PGA) enables VMs and on-prem systems to consume Google APIs from within the Google network, and is already fully configured on this environment.
 
 For PGA to work:
 
-* Private Google Access should be enabled on the subnet. \
+- Private Google Access should be enabled on the subnet. \
 Subnets created by the `net-vpc` module are PGA-enabled by default.
 
-* 199.36.153.4/30 (`restricted.googleapis.com`) and 199.36.153.8/30 (`private.googleapis.com`) should be routed from on-prem to VPC, and from there to the `default-internet-gateway`. \
+- 199.36.153.4/30 (`restricted.googleapis.com`) and 199.36.153.8/30 (`private.googleapis.com`) should be routed from on-prem to VPC, and from there to the `default-internet-gateway`. \
 Per variable `vpn_onprem_configs` such ranges are advertised to onprem - furthermore every VPC (e.g. see `landing-vpc` in [`landing.tf`](./landing.tf)) has explicit routes set in case the `0.0.0.0/0` route is changed.
 
-* A private DNS zone for `googleapis.com` should be created and configured per [this article](https://cloud.google.com/vpc/docs/configure-private-google-access-hybrid#config-domain, as implemented in module `googleapis-private-zone` in [`dns.tf`](./dns.tf) 
+- A private DNS zone for `googleapis.com` should be created and configured per [this article](https://cloud.google.com/vpc/docs/configure-private-google-access-hybrid#config-domain), as implemented in module `googleapis-private-zone` in [`dns.tf`](./dns.tf)
 
-### Preliminar activities 
+### Preliminar activities
 
 Before running `terraform apply` on this stage, make sure to adapt all of `variables.tf` to your needs, to update all reference to regions (e.g. `europe-west1` or `ew1`) in the whole directory to match your preferences.
 
-If you're not using FAST, you'll also need to create a `providers.tf` file to configure the GCS backend and the service account to use to run the deployment. 
+If you're not using FAST, you'll also need to create a `providers.tf` file to configure the GCS backend and the service account to use to run the deployment.
 
 You're now ready to run `terraform init` and `apply`.
 
 ### Post-deployment activities
 
-* On-prem routers should be configured to advertise all relevant CIDRs to the GCP environments. To avoid hitting GCP quotas, we recomment aggregating routes as much as possible.
-* On-prem routers should accept BGP sessions from their cloud peers.
-* On-prem DNS servers should have forward zones for GCP-managed ones.
+- On-prem routers should be configured to advertise all relevant CIDRs to the GCP environments. To avoid hitting GCP quotas, we recomment aggregating routes as much as possible.
+- On-prem routers should accept BGP sessions from their cloud peers.
+- On-prem DNS servers should have forward zones for GCP-managed ones.
 
 ## Customizations
 
 ### Adding an environment
+
 To create a new environment (e.g. `staging`), a few changes are required.
 
-Create a `vpc-spoke-staging.tf` file by copying `vpc-spoke-prod.tf` file, 
+Create a `vpc-spoke-staging.tf` file by copying `vpc-spoke-prod.tf` file,
 and adapt the new file by replacing the value "prod" with the value "staging".
 Running `diff vpc-spoke-dev.tf vpc-spoke-prod.tf` can help to see how environment files differ.
 
@@ -273,16 +274,13 @@ Variables managing L7 Interal Load Balancers (`l7ilb_subnets`) and Private Servi
 VPN HA connectivity (see also [VPNs](#vpns)) to `landing` is managed by the `vpn-spoke-*.tf` files.
 Copy `vpn-spoke-prod.tf` to `vpn-spoke-staging.tf` - replace "prod" with "staging" where relevant.
 
-VPN configuration also controls BGP advertisements, which requires the following variable changes: 
-* `router_configs` to configure the new routers (one per region) created for the `staging` VPC
-* `vpn_onprem_configs` to configure the new advertisments to on-premises for the new CIDRs
-* `vpn_spoke_configs` to configure the new advertisements to `landing` for the new VPC - new keys (one per region) should be added, such as e.g. `staging-ew1` and `staging-ew4`
+VPN configuration also controls BGP advertisements, which requires the following variable changes:
+
+- `router_configs` to configure the new routers (one per region) created for the `staging` VPC
+- `vpn_onprem_configs` to configure the new advertisments to on-premises for the new CIDRs
+- `vpn_spoke_configs` to configure the new advertisements to `landing` for the new VPC - new keys (one per region) should be added, such as e.g. `staging-ew1` and `staging-ew4`
 
 DNS configurations are centralised in the `dns.tf` file. Spokes delegate DNS resolution to Landing through DNS peering, and optionally define a private zone (e.g. `staging.gcp.example.com`) which the landing peers to. To configure DNS for a new environment, copy all the `prod-*` modules in the `dns.tf` file to `staging-*`, and update their content accordingly. Don't forget to add a peering zone from Landing to the newly created environment private zone.
-
-
-
-
 
 <!-- BEGIN TFDOC -->
 
@@ -338,23 +336,3 @@ DNS configurations are centralised in the `dns.tf` file. Spokes delegate DNS res
 | vpn_gateway_endpoints | External IP Addresses for the GCP VPN gateways. |  |  |
 
 <!-- END TFDOC -->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
