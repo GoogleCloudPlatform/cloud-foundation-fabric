@@ -30,85 +30,95 @@ env:
   TF_PLUGIN_CACHE_DIR: "/github/home/.terraform.d/plugin-cache"
 
 jobs:
-  doc-examples:
+  config:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Config auth
-        run: |
-          echo '{"type": "service_account", "project_id": "test-only"}' \
-            > $HOME/credentials.json
-      - name: Config plugin cache
-        run: |
-          mkdir -p $HOME/.terraform.d/plugin-cache
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.9"
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: 1.1.3
           terraform_wrapper: false
+      - name: Config auth
+        run: |
+          echo '{"type": "service_account", "project_id": "test-only"}' \
+            > /github/home/credentials.json
+      - name: Config plugin cache
+        run: |
+          mkdir -p /github/home/.terraform.d/plugin-cache
+
+  doc-examples:
+    needs: config
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.1.3
+          terraform_wrapper: false
+
       - name: Install dependencies
         run: |
           pip install -r tests/requirements.txt
+
       - name: Run tests on documentation examples
         id: doc-examples
         run: |
           pytest -vv tests/doc_examples
 
   examples:
+    needs: config
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Config auth
-        run: |
-          echo '{"type": "service_account", "project_id": "test-only"}' \
-            > $HOME/credentials.json
-      - name: Config plugin cache
-        run: |
-          mkdir -p $HOME/.terraform.d/plugin-cache
+
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: "3.9"
+
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: 1.1.3
           terraform_wrapper: false
+
       - name: Install dependencies
         run: |
           pip install -r tests/requirements.txt
+
       - name: Run tests environments
         id: test-environments
         run: |
           pytest -vv tests/examples
 
   modules:
+    needs: config
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Config auth
-        run: |
-          echo '{"type": "service_account", "project_id": "test-only"}' \
-            > $HOME/credentials.json
-      - name: Config plugin cache
-        run: |
-          mkdir -p $HOME/.terraform.d/plugin-cache
+
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: "3.9"
+
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: 1.1.3
           terraform_wrapper: false
+
       - name: Install dependencies
         run: |
           pip install -r tests/requirements.txt
+
       - name: Run tests modules
         id: test-modules
         run: |
