@@ -32,6 +32,7 @@ from airflow.providers.google.cloud.operators.bigquery import  BigQueryInsertJob
 # --------------------------------------------------------------------------------
 
 LND_GCS = os.environ.get("LND_GCS")
+ORC_GCS = os.environ.get("ORC_GCS")
 LOD_GCS_STAGING = os.environ.get("LOD_GCS_STAGING")
 DTL_L0_BQ_DATASET = os.environ.get("DTL_L0_BQ_DATASET")
 DTL_L0_PRJ = os.environ.get("DTL_L0_PRJ")
@@ -100,7 +101,7 @@ with models.DAG(
     template="gs://dataflow-templates/latest/GCS_Text_to_BigQuery",
     parameters={
       "javascriptTextTransformFunctionName": "transform",
-      "JSONPath": LND_GCS + "/customers_schema.json",
+      "JSONPath": ORC_GCS + "/customers_schema.json",
       "javascriptTextTransformGcsPath": LND_GCS + "/customers_udf.js",
       "inputFilePattern": LND_GCS + "/customers.csv",
       "outputTable": DTL_L0_PRJ + ":"+DTL_L0_BQ_DATASET+".customers",
@@ -113,8 +114,8 @@ with models.DAG(
     template="gs://dataflow-templates/latest/GCS_Text_to_BigQuery",
     parameters={
       "javascriptTextTransformFunctionName": "transform",
-      "JSONPath": LND_GCS + "/purchases_schema.json",
-      "javascriptTextTransformGcsPath": LND_GCS + "/purchases_udf.js",
+      "JSONPath": ORC_GCS + "/purchases_schema.json",
+      "javascriptTextTransformGcsPath": ORC_GCS + "/purchases_udf.js",
       "inputFilePattern": LND_GCS + "/purchases.csv",
       "outputTable": DTL_L0_PRJ + ":"+DTL_L0_BQ_DATASET+".purchases",
       "bigQueryLoadingTemporaryDirectory": LOD_GCS_STAGING + "/tmp/bq/",
