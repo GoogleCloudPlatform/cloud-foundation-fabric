@@ -37,11 +37,12 @@ jobs:
 
       - name: Config auth
         run: |
-          echo '{"type": "service_account", "project_id": "test-only"}' > $HOME/credentials.json
+          echo '{"type": "service_account", "project_id": "test-only"}' \
+            tee -a $GOOGLE_APPLICATION_CREDENTIALS
 
       - name: Config plugin cache
         run: |
-          mkdir -p $HOME/.terraform.d/plugin-cache
+          mkdir -p TF_PLUGIN_CACHE_DIR
 
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -70,11 +71,12 @@ jobs:
 
       - name: Config auth
         run: |
-          echo '{"type": "service_account", "project_id": "test-only"}' > $HOME/credentials.json
+          echo '{"type": "service_account", "project_id": "test-only"}' \
+            tee -a $GOOGLE_APPLICATION_CREDENTIALS
 
       - name: Config plugin cache
         run: |
-          mkdir -p $HOME/.terraform.d/plugin-cache
+          mkdir -p TF_PLUGIN_CACHE_DIR
 
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -103,11 +105,12 @@ jobs:
 
       - name: Config auth
         run: |
-          echo '{"type": "service_account", "project_id": "test-only"}' > $HOME/credentials.json
+          echo '{"type": "service_account", "project_id": "test-only"}' \
+            tee -a $GOOGLE_APPLICATION_CREDENTIALS
 
       - name: Config plugin cache
         run: |
-          mkdir -p $HOME/.terraform.d/plugin-cache
+          mkdir -p TF_PLUGIN_CACHE_DIR
 
       - name: Set up Python
         uses: actions/setup-python@v2
