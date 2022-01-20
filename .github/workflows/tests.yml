@@ -38,7 +38,7 @@ jobs:
       - name: Config auth
         run: |
           echo '{"type": "service_account", "project_id": "test-only"}' \
-            tee -a $GOOGLE_APPLICATION_CREDENTIALS
+            | tee -a $GOOGLE_APPLICATION_CREDENTIALS
 
       - name: Config plugin cache
         run: |
@@ -72,7 +72,7 @@ jobs:
       - name: Config auth
         run: |
           echo '{"type": "service_account", "project_id": "test-only"}' \
-            tee -a $GOOGLE_APPLICATION_CREDENTIALS
+            | tee -a $GOOGLE_APPLICATION_CREDENTIALS
 
       - name: Config plugin cache
         run: |
@@ -106,7 +106,7 @@ jobs:
       - name: Config auth
         run: |
           echo '{"type": "service_account", "project_id": "test-only"}' \
-            tee -a $GOOGLE_APPLICATION_CREDENTIALS
+            | tee -a $GOOGLE_APPLICATION_CREDENTIALS
 
       - name: Config plugin cache
         run: |
