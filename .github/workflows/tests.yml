@@ -25,9 +25,9 @@ on:
       - test
 
 env:
-  GOOGLE_APPLICATION_CREDENTIALS: "/github/home/credentials.json"
+  GOOGLE_APPLICATION_CREDENTIALS: "/home/runner/credentials.json"
   PYTEST_ADDOPTS: "--color=yes"
-  TF_PLUGIN_CACHE_DIR: "/github/home/.terraform.d/plugin-cache"
+  TF_PLUGIN_CACHE_DIR: "/home/runner/.terraform.d/plugin-cache"
 
 jobs:
   doc-examples:
@@ -37,11 +37,11 @@ jobs:
 
       - name: Config auth
         run: |
-          echo '{"type": "service_account", "project_id": "test-only"}' > /github/home/credentials.json
+          echo '{"type": "service_account", "project_id": "test-only"}' > $HOME/credentials.json
 
       - name: Config plugin cache
         run: |
-          mkdir -p /github/home/.terraform.d/plugin-cache
+          mkdir -p $HOME/.terraform.d/plugin-cache
 
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -70,11 +70,11 @@ jobs:
 
       - name: Config auth
         run: |
-          echo '{"type": "service_account", "project_id": "test-only"}' > /github/home/credentials.json
+          echo '{"type": "service_account", "project_id": "test-only"}' > $HOME/credentials.json
 
       - name: Config plugin cache
         run: |
-          mkdir -p /github/home/.terraform.d/plugin-cache
+          mkdir -p $HOME/.terraform.d/plugin-cache
 
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -103,12 +103,11 @@ jobs:
 
       - name: Config auth
         run: |
-          pwd && env && echo $HOME && ls -l $HOME && ls -l /github
-          echo '{"type": "service_account", "project_id": "test-only"}' > /github/home/credentials.json
+          echo '{"type": "service_account", "project_id": "test-only"}' > $HOME/credentials.json
 
       - name: Config plugin cache
         run: |
-          mkdir -p /github/home/.terraform.d/plugin-cache
+          mkdir -p $HOME/.terraform.d/plugin-cache
 
       - name: Set up Python
         uses: actions/setup-python@v2
