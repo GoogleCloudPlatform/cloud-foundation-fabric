@@ -29,6 +29,13 @@ env:
   PYTEST_ADDOPTS: "--color=yes"
   TF_PLUGIN_CACHE_DIR: "/tmp/plugin-cache"
 jobs:
+  config-auth:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fake credentials
+        run: |
+          echo '{"type": "service_account","project_id": "test-only"}' > $GOOGLE_APPLICATION_CREDENTIALS
+
   config-python:
     runs-on: ubuntu-latest
     steps:
@@ -51,7 +58,6 @@ jobs:
           terraform_wrapper: false
       - name: Set up Terraform environment
         run: |
-          cp .github/workflows/fake-key.json /tmp/
           mkdir -p /tmp/plugin-cache
           cd tests
           terraform providers lock
@@ -59,6 +65,7 @@ jobs:
 
   doc-examples:
     needs:
+      - config-auth
       - config-python
       - config-tf
     runs-on: ubuntu-latest
@@ -80,6 +87,7 @@ jobs:
 
   examples:
     needs:
+      - config-auth
       - config-python
       - config-tf
     runs-on: ubuntu-latest
@@ -101,6 +109,7 @@ jobs:
 
   modules:
     needs:
+      - config-auth
       - config-python
       - config-tf
     runs-on: ubuntu-latest
