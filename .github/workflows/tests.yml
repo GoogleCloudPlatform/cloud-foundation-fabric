@@ -103,7 +103,7 @@ jobs:
 
       - name: Config auth
         run: |
-          pwd && mount && ls -l $HOME && ls -l /github
+          pwd && env && echo $HOME && ls -l $HOME && ls -l /github
           echo '{"type": "service_account", "project_id": "test-only"}' > /github/home/credentials.json
 
       - name: Config plugin cache
