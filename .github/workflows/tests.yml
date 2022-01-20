@@ -50,6 +50,7 @@ jobs:
           echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.github/workflows/fake-key.json" >> $GITHUB_ENV
           mkdir --parents ${GITHUB_WORKSPACE}/.terraform.d/plugin-cache-${GITHUB_JOB}
           terraform -chdir=tests providers lock
+          terraform -chdir=tests init
 
       - name: Install dependencies
         run: |
@@ -82,6 +83,7 @@ jobs:
           echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.github/workflows/fake-key.json" >> $GITHUB_ENV
           mkdir --parents ${GITHUB_WORKSPACE}/.terraform.d/plugin-cache-${GITHUB_JOB}
           terraform -chdir=tests providers lock
+          terraform -chdir=tests init
 
       - name: Install dependencies
         run: |
@@ -114,6 +116,7 @@ jobs:
           echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.github/workflows/fake-key.json" >> $GITHUB_ENV
           mkdir --parents ${GITHUB_WORKSPACE}/.terraform.d/plugin-cache-${GITHUB_JOB}
           terraform -chdir=tests providers lock
+          terraform -chdir=tests init
 
       - name: Install dependencies
         run: |
