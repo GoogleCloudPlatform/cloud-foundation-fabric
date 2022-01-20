@@ -37,8 +37,7 @@ jobs:
 
       - name: Config auth
         run: |
-          echo '{"type": "service_account", "project_id": "test-only"}' \
-            > /github/home/credentials.json
+          echo '{"type": "service_account", "project_id": "test-only"}' > /github/home/credentials.json
 
       - name: Config plugin cache
         run: |
@@ -71,8 +70,7 @@ jobs:
 
       - name: Config auth
         run: |
-          echo '{"type": "service_account", "project_id": "test-only"}' \
-            > /github/home/credentials.json
+          echo '{"type": "service_account", "project_id": "test-only"}' > /github/home/credentials.json
 
       - name: Config plugin cache
         run: |
@@ -105,8 +103,7 @@ jobs:
 
       - name: Config auth
         run: |
-          echo '{"type": "service_account", "project_id": "test-only"}' \
-            > /github/home/credentials.json
+          echo '{"type": "service_account", "project_id": "test-only"}' > /github/home/credentials.json
 
       - name: Config plugin cache
         run: |
