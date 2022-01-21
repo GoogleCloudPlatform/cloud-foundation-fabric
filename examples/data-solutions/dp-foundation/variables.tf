@@ -59,6 +59,7 @@ variable "groups" {
   default = {
     data-engineers  = "gcp-data-engineers"
     data-scientists = "gcp-data-scientists"
+    data-security   = "gcp-data-security"
   }
 }
 
@@ -111,6 +112,7 @@ variable "project_id" {
     orchestration = string
     trasformation = string
     datalake      = string
+    security      = string
   })
   default = {
     landing       = "lnd"
@@ -118,6 +120,7 @@ variable "project_id" {
     orchestration = "orc"
     trasformation = "trf"
     datalake      = "dtl"
+    security      = "sec"
   }
 }
 

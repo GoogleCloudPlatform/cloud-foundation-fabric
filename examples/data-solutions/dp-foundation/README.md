@@ -30,6 +30,7 @@ Roles will be granted at Project level.
 Describe here groups to configure and their role:
 - Data Eng
 - Data Analyst
+- Data Security
 ## VPC design #TODO
 Internal: one VPC per prj, where neede (lod, trf, )
 ## IP ranges, subnetting #TODO
@@ -41,7 +42,7 @@ How to rely on Shared-VPC
 ## Encryption
 We suggest a centralized approach to Keys management, to let the Security team be the only team that can access encryption material. Keyrings and Keys belongs to a project external to the DP. 
 
-![Centralized Cloud KMS high level diagram](diagram.png "GCS to Biquery High-level diagram")
+![Centralized Cloud KMS high level diagram](.images/kms_diagram.png "Centralized Cloud KMS high level diagram")
 
 To configure the use of Cloud KMS on resources you have to specify key URL on the 'service_encryption_keys'. Key location should match the resource location. Example:
 
@@ -55,6 +56,15 @@ service_encryption_keys = {
 ```
 
 We consider this step optional, it depend on customer policy and security best practices.
+
+# Data Anonymization
+We suggest the use of Cloud Data Loss Prevention to identify/mask/tokenize your confidential data. The implementation of the Data Loss Prevention strategy is out of scope for this example. We enable the service in 2 different projects to let you implement the DLP strategy. We expect you will use DLP templates in one of the following way:
+- During the ingestion phase, from Dataflow
+- During the transformation phase, from BigQuery or Dataflow
+
+We implemented a centralized model for Data Loss Prevention material. Templates will be stored in the security project:
+
+![Centralized Cloud DLP high level diagram](./images/dlp_diagram.png "Centralized Cloud DLP high level diagram")
 
 # How to run this script #TODO
 The Data Prlatform is meant to be executed by a Service Account (or a regular user) having this minial set of permission:
@@ -75,7 +85,7 @@ Parallel workstream
  - GCS and BQ regional
  - KMS: Regional keyring, one key per product
  - Composer require "Require OS Login" not enforced
- - Groups: gcp-data-scientists, gcp-data-engineers
+ - Groups: gcp-data-scientists, gcp-data-engineers, gcp-data-security
 
  #TODO KMS: support key per product
  #TODO Write README

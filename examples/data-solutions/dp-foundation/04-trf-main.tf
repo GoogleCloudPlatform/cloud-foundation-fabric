@@ -64,6 +64,7 @@ module "trf-prj" {
     "cloudkms.googleapis.com",
     "compute.googleapis.com",
     "dataflow.googleapis.com",
+    "dlp.googleapis.com",
     "pubsub.googleapis.com",
     "servicenetworking.googleapis.com",
     "storage.googleapis.com",
