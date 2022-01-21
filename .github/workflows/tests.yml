@@ -25,42 +25,13 @@ on:
       - test
 
 env:
+  TF_PLUGIN_CACHE_DIR: "/home/runner/.terraform.d/plugin-cache"
   GOOGLE_APPLICATION_CREDENTIALS: "/home/runner/credentials.json"
   PYTEST_ADDOPTS: "--color=yes"
-  TF_PLUGIN_CACHE_DIR: "/home/runner/.terraform.d/plugin-cache"
 
 jobs:
-  plugin-cache:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_version: 1.1.4
-          terraform_wrapper: false
-
-      - name: Config plugin cache
-        run: |
-          mkdir -p $TF_PLUGIN_CACHE_DIR
-
-      - name: Cache Terraform Plugins
-        uses: actions/cache@v2
-        with:
-          path: ${{ env.TF_PLUGIN_CACHE_DIR }}
-          key: ${{ runner.os }}-terraform-${{ github.run_id }}
-
-      - name: Download plugins
-        working-directory: tests
-        run: |
-          terraform providers lock
-          terraform init
-
-
   doc-examples:
     runs-on: ubuntu-latest
-    needs: plugin-cache
     steps:
       - uses: actions/checkout@v2
 
@@ -73,27 +44,15 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: "3.9"
-
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_version: 1.1.4
-          terraform_wrapper: false
           
-      - name: Cache Terraform Plugins
-        uses: actions/cache@v2
-        with:
-          path: ${{ env.TF_PLUGIN_CACHE_DIR }}
-          key: ${{ runner.os }}-terraform-${{ github.run_id }}
-
       - name: Run tests on documentation examples
         run: |
+          mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
           pip install -r tests/requirements.txt
-          pytest -n 4 -vv tests/doc_examples
+          pytest -vv tests/doc_examples
 
   examples:
     runs-on: ubuntu-latest
-    needs: plugin-cache
     steps:
       - uses: actions/checkout@v2
 
@@ -112,21 +71,15 @@ jobs:
         with:
           terraform_version: 1.1.4
           terraform_wrapper: false
-
-      - name: Cache Terraform Plugins
-        uses: actions/cache@v2
-        with:
-          path: ${{ env.TF_PLUGIN_CACHE_DIR }}
-          key: ${{ runner.os }}-terraform-${{ github.run_id }}
           
       - name: Run tests environments
         run: |
+          mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
           pip install -r tests/requirements.txt
-          pytest -n 4 -vv tests/examples
+          pytest -vv tests/examples
 
   modules:
     runs-on: ubuntu-latest
-    needs: plugin-cache
     steps:
       - uses: actions/checkout@v2
 
@@ -145,14 +98,9 @@ jobs:
         with:
           terraform_version: 1.1.4
           terraform_wrapper: false
-
-      - name: Cache Terraform Plugins
-        uses: actions/cache@v2
-        with:
-          path: ${{ env.TF_PLUGIN_CACHE_DIR }}
-          key: ${{ runner.os }}-terraform-${{ github.run_id }}
           
       - name: Run tests modules
         run: |          
+          mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
           pip install -r tests/requirements.txt
-          pytest -n 4 -vv tests/modules
+          pytest -vv tests/modules
