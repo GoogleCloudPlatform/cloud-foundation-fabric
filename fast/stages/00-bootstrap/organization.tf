@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Organization-level IAM and org policies.
+# tfdoc:file:description Organization-level IAM.
 
 locals {
   # organization authoritative IAM bindings, in an easy to edit format before
