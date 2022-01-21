@@ -55,7 +55,7 @@ output "command_02_dataflow" {
     gcs_df_stg       = format("%s/%s", module.gcs-df-tmp.url, "stg")
     sa_df_email      = module.service-account-df.email
     cmek_encryption  = var.cmek_encryption
-    kms_key_df       = module.kms[0].key_ids.key-df
+    kms_key_df       = var.cmek_encryption ? module.kms[0].key_ids.key-df : null
     gcs_data         = module.gcs-data.url
     data_schema_file = format("%s/%s", module.gcs-data.url, "person_schema.json")
     data_udf_file    = format("%s/%s", module.gcs-data.url, "person_udf.js")
