@@ -17,7 +17,7 @@ Refer to each stage's documentation for a detailed description of its purpose, t
 
 - [Security](stages/02-security/README.md)  
   Manages centralized security configurations in a separate stage, and is typically owned by the security team. This stage implements VPC Security Controls via separate perimeters for environments and central services, and creates projects to host centralized KMS keys used by the whole organization. It's meant to be easily extended to include other security-related resources which are required, like Secret Manager.
-- [Networking](stages/02-security/README.md)  
+- [Networking](stages/02-networking/README.md)  
   Manages centralized network resources in a separate stage, and is typically owned by the networking team. This stage implements a hub-and-spoke design, and includes connectivity via VPN to on-premises, and YAML-based factories for firewall rules (hierarchical and VPC-level) and subnets.
 
 ## Environment-level resources (03)
