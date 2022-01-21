@@ -47,7 +47,6 @@ output "command_01_gcs" {
 
 output "command_02_dataflow" {
   description = "Command to run Dataflow template impersonating the service account."
-  # FIXME Maybe use templatefile() for this?
   value = templatefile("${path.module}/dataflow.tftpl", {
     sa_orch_email    = module.service-account-orch.email
     project_id       = module.project.project_id
