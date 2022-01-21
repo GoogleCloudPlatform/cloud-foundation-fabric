@@ -4,11 +4,26 @@ This module implement an opinionated Data Platform (DP) that create and set up p
 
 # Design overview and choices #TODO
 Diagram and introduction
-## Project structure #TODO
-One prj per data stage.
+## Project structure
+The DP is designed to rely on several projects, one prj per data stage. This is done to better separate different
+stages of the data journey and rely on project level roles.
+
+The following projects will be created:
+* **Landing** This Project is intended to store data temporarily. Data are pushed to Cloud Storage, BigQuery or Cloud PubSub. Resource configured with 3 months lifecycle policy.
+
+* **Load** This Project is intended to load data from `landing` to `data lake`. Load is made with minimal to zero transformation logic (mainly `cast`). Anonymization/tokenization/DLP PII data can be applied at this stage or a later stage.
+
+* **Data Lake** This project is intended to store your data. It reppresents where data will be persisted within 3 Layers. These layers reppresent different stages where data is processed and progressivly refined
+  * **L0 - Raw data** Structured Data, stored in adeguate format: structured data stored in bigquery, unstructured data stored on Cloud Storage with additional metadata stored in Bigquery (for example pictures stored in Cloud Storage and analysis of the picture for Cloud Vision API stored in Bigquery). 
+  * **L1 - Cleansed, aggregated and standardized data**
+  * **L2 - Curated layer**
+  * **Experimental** Store temporary tables that Data Analyst may use to perform R&D on data available on other Data Lake layers
+* **Orchestration** This project is inteded to host Cloud Composer. Cloud Composer will orchestrate all tasks to move your data on its journey.
+* **Transformation** This project is intended to host resources to move data from one layer of the Data Lake to the other. We strongly suggest to rely on BigQuery engine to perform transformation. If Bigquery do not have the feature needed to perform your transformation you suggest to use Clud Dataflow.
+* **Exposure** This project is intended to host resources to expose your data. To expose Bigquery data, we strongly suggest to rely on Authorized views. Other resources may better fit on particular data access pattern, example: Cloud SQL may be needed if you need to expose data with low latency, BigTable may be needed on use case where you need low latency to access data.
 
 ## Roles
-Assigned at PRJ level
+Roles will be granted at Project level.
 ## Service accounts #TODO
 - Service account with minimal roles
 ## Groups #TODO
@@ -64,8 +79,6 @@ Parallel workstream
 
  #TODO KMS: support key per product
  #TODO Write README
- #TODO Run a working test
- #TODO Write a working e2e test
  #TODO Column level access on BQ
  #TODO DataCatalog
  #TODO DLP
