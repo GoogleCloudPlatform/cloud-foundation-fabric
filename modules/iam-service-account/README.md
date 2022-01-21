@@ -24,8 +24,6 @@ module "myproject-default-service-accounts" {
 }
 # tftest:modules=1:resources=5
 ```
-
-
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -38,9 +36,9 @@ module "myproject-default-service-accounts" {
 | display_name | Display name of the service account to create. | <code>string</code> |  | <code>&#34;Terraform-managed.&#34;</code> |
 | generate_key | Generate a key for service account. | <code>bool</code> |  | <code>false</code> |
 | iam | IAM bindings on the service account in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| iam_billing_roles | Project roles granted to the service account, by billing account id. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| iam_folder_roles | Project roles granted to the service account, by folder id. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| iam_organization_roles | Project roles granted to the service account, by organization id. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| iam_billing_roles | Billing account roles granted to the service account, by billing account id. Non-authoritative. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| iam_folder_roles | Folder roles granted to the service account, by folder id. Non-authoritative. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| iam_organization_roles | Organization roles granted to the service account, by organization id. Non-authoritative. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | iam_project_roles | Project roles granted to the service account, by project id. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | iam_storage_roles | Storage roles granted to the service account, by bucket name. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | prefix | Prefix applied to service account names. | <code>string</code> |  | <code>null</code> |
@@ -58,4 +56,3 @@ module "myproject-default-service-accounts" {
 | service_account_credentials | Service account json credential templates for uploaded public keys data. |  |
 
 <!-- END TFDOC -->
-
