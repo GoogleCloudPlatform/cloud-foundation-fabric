@@ -93,13 +93,13 @@ module "organization" {
   }
   policy_list = {
     "constraints/cloudfunctions.allowedIngressSettings" = merge(
-      local.list_deny, { values = ["ALLOW_INTERNAL_ONLY"] }
+      local.list_deny, { values = ["is:ALLOW_INTERNAL_ONLY"] }
     )
     "constraints/cloudfunctions.allowedVpcConnectorEgressSettings" = merge(
-      local.list_deny, { values = ["PRIVATE_RANGES_ONLY"] }
+      local.list_deny, { values = ["is:PRIVATE_RANGES_ONLY"] }
     )
     "constraints/compute.restrictLoadBalancerCreationForTypes" = merge(
-      local.list_deny, { values = ["in:INTERNAL"] }
+      local.list_deny, { values = ["in:EXTERNAL"] }
     )
     "constraints/compute.vmExternalIpAccess" = local.list_deny
     "constraints/iam.allowedPolicyMemberDomains" = {
@@ -112,10 +112,10 @@ module "organization" {
       )
     }
     "constraints/run.allowedIngress" = merge(
-      local.list_deny, { values = ["internal"] }
+      local.list_deny, { values = ["is:internal"] }
     )
     "constraints/run.allowedVPCEgress" = merge(
-      local.list_deny, { values = ["private-ranges-only"] }
+      local.list_deny, { values = ["is:private-ranges-only"] }
     )
     # "constraints/compute.restrictCloudNATUsage"                      = local.list_deny
     # "constraints/compute.restrictDedicatedInterconnectUsage"         = local.list_deny
