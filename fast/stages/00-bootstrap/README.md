@@ -265,6 +265,7 @@ If a different convention is needed, identify names via search/grep (e.g. with `
 Names used in internal references (e.g. `module.foo-prod.id`) are only used by Terraform and do not influence resource naming, so they are best left untouched to avoid having to debug complex errors.
 
 
+
 <!-- BEGIN TFDOC -->
 
 ## Files
@@ -275,7 +276,7 @@ Names used in internal references (e.g. `module.foo-prod.id`) are only used by T
 | [billing.tf](./billing.tf) | Billing export project and dataset. | <code>bigquery-dataset</code> · <code>organization</code> · <code>project</code> | <code>google_billing_account_iam_member</code> · <code>google_organization_iam_binding</code> |
 | [log-export.tf](./log-export.tf) | Audit log project and sink. | <code>bigquery-dataset</code> · <code>gcs</code> · <code>logging-bucket</code> · <code>project</code> · <code>pubsub</code> |  |
 | [main.tf](./main.tf) | Module-level locals and resources. |  |  |
-| [organization.tf](./organization.tf) | Organization-level IAM and org policies. | <code>organization</code> | <code>google_organization_iam_binding</code> |
+| [organization.tf](./organization.tf) | Organization-level IAM. | <code>organization</code> | <code>google_organization_iam_binding</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  | <code>local_file</code> |
 | [variables.tf](./variables.tf) | Module variables. |  |  |
 
@@ -303,6 +304,7 @@ Names used in internal references (e.g. `module.foo-prod.id`) are only used by T
 | tfvars | Terraform variable files for the following stages. | ✓ |  |
 
 <!-- END TFDOC -->
+
 
 
 

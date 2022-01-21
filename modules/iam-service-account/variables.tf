@@ -39,19 +39,19 @@ variable "iam" {
 }
 
 variable "iam_billing_roles" {
-  description = "Project roles granted to the service account, by billing account id."
+  description = "Billing account roles granted to the service account, by billing account id. Non-authoritative."
   type        = map(list(string))
   default     = {}
 }
 
 variable "iam_folder_roles" {
-  description = "Project roles granted to the service account, by folder id."
+  description = "Folder roles granted to the service account, by folder id. Non-authoritative."
   type        = map(list(string))
   default     = {}
 }
 
 variable "iam_organization_roles" {
-  description = "Project roles granted to the service account, by organization id."
+  description = "Organization roles granted to the service account, by organization id. Non-authoritative."
   type        = map(list(string))
   default     = {}
 }
