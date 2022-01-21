@@ -47,9 +47,17 @@ locals {
   parent_id   = var.parent == null ? null : split("/", var.parent)[1]
   prefix      = var.prefix == null ? "" : "${var.prefix}-"
   project = (
-    var.project_create
-    ? try(google_project.project.0, null)
-    : try(data.google_project.project.0, null)
+    var.project_create ?
+    {
+      project_id = try(google_project.project.0.project_id, null)
+      number     = try(google_project.project.0.number, null)
+      name       = try(google_project.project.0.name, null)
+    }
+    : {
+      project_id = "${local.prefix}${var.name}"
+      number     = try(data.google_project.project.0.number, null)
+      name       = try(data.google_project.project.0.name, null)
+    }
   )
   logging_sinks = coalesce(var.logging_sinks, {})
   sink_type_destination = {
