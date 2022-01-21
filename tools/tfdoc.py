@@ -345,11 +345,11 @@ def replace_doc(module_path, doc):
     return
   try:
     open(readme_path, 'w').write('\n'.join([
-        readme[:result['start']],
+        readme[:result['start']].rstrip(),
         MARK_BEGIN,
         doc,
         MARK_END,
-        readme[result['end']:]
+        readme[result['end']:].lstrip()
     ]))
   except (IOError, OSError) as e:
     raise SystemExit(f'Error replacing README {readme_path}: {e}')
