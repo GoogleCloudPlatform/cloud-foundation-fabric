@@ -25,6 +25,8 @@ on:
       - test
 
 env:
+  TF_PLUGIN_CACHE_DIR: "/home/runner/.terraform.d/plugin-cache"
+  GOOGLE_APPLICATION_CREDENTIALS: "/home/runner/credentials.json"
   PYTEST_ADDOPTS: "--color=yes"
 
 jobs:
@@ -33,38 +35,32 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Config auth
+        run: |
+          echo '{"type": "service_account", "project_id": "test-only"}' \
+            | tee -a $GOOGLE_APPLICATION_CREDENTIALS
+
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: "3.9"
-
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_version: 1.1.3
-          terraform_wrapper: false
-
-      - name: Set environment
-        run: |
-          echo "TF_PLUGIN_CACHE_DIR=${{ github.workspace }}/.terraform.d/plugin-cache-${GITHUB_JOB}" >> $GITHUB_ENV
-          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.github/workflows/fake-key.json" >> $GITHUB_ENV
-          mkdir --parents ${{ github.workspace }}/.terraform.d/plugin-cache-${GITHUB_JOB}
-          terraform -chdir=tests providers lock
-
-      - name: Install dependencies
-        run: |
-          pip install -r tests/requirements.txt
-
+          
       - name: Run tests on documentation examples
-        id: doc-examples
         run: |
-          pytest -n 4 -vv tests/doc_examples
+          mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
+          pip install -r tests/requirements.txt
+          pytest -vv tests/doc_examples
 
   examples:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
+      - name: Config auth
+        run: |
+          echo '{"type": "service_account", "project_id": "test-only"}' \
+            | tee -a $GOOGLE_APPLICATION_CREDENTIALS
+
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
@@ -73,30 +69,25 @@ jobs:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v1
         with:
-          terraform_version: 1.1.3
+          terraform_version: 1.1.4
           terraform_wrapper: false
-
-      - name: Set environment
-        run: |
-          echo "TF_PLUGIN_CACHE_DIR=${{ github.workspace }}/.terraform.d/plugin-cache-${GITHUB_JOB}" >> $GITHUB_ENV
-          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.github/workflows/fake-key.json" >> $GITHUB_ENV
-          mkdir --parents ${{ github.workspace }}/.terraform.d/plugin-cache-${GITHUB_JOB}
-          terraform -chdir=tests providers lock
-
-      - name: Install dependencies
-        run: |
-          pip install -r tests/requirements.txt
-
+          
       - name: Run tests environments
-        id: test-environments
         run: |
-          pytest -n 4 -vv tests/examples
+          mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
+          pip install -r tests/requirements.txt
+          pytest -vv tests/examples
 
   modules:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
+      - name: Config auth
+        run: |
+          echo '{"type": "service_account", "project_id": "test-only"}' \
+            | tee -a $GOOGLE_APPLICATION_CREDENTIALS
+
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
@@ -105,21 +96,11 @@ jobs:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v1
         with:
-          terraform_version: 1.1.3
+          terraform_version: 1.1.4
           terraform_wrapper: false
-
-      - name: Set environment
-        run: |
-          echo "TF_PLUGIN_CACHE_DIR=${{ github.workspace }}/.terraform.d/plugin-cache-${GITHUB_JOB}" >> $GITHUB_ENV
-          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.github/workflows/fake-key.json" >> $GITHUB_ENV
-          mkdir --parents ${{ github.workspace }}/.terraform.d/plugin-cache-${GITHUB_JOB}
-          terraform -chdir=tests providers lock
-
-      - name: Install dependencies
-        run: |
-          pip install -r tests/requirements.txt
-
+          
       - name: Run tests modules
-        id: test-modules
-        run: |
-          pytest -n 4 -vv --ignore=tests/modules/examples tests/modules
+        run: |          
+          mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
+          pip install -r tests/requirements.txt
+          pytest -vv tests/modules
