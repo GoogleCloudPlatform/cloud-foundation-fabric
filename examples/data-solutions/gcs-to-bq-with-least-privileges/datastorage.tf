@@ -13,26 +13,24 @@
 # limitations under the License.
 
 module "gcs-data" {
-  source        = "../../../modules/gcs"
-  project_id    = module.project.project_id
-  prefix        = var.prefix
-  name          = "data"
-  location      = var.region
-  storage_class = "REGIONAL"
-  # FIXME: why do you need the try here?
-  encryption_key = var.cmek_encryption ? try(module.kms[0].keys.key-gcs.id, null) : null
+  source         = "../../../modules/gcs"
+  project_id     = module.project.project_id
+  prefix         = var.prefix
+  name           = "data"
+  location       = var.region
+  storage_class  = "REGIONAL"
+  encryption_key = var.cmek_encryption ? module.kms[0].keys.key-gcs.id : null
   force_destroy  = true
 }
 
 module "gcs-df-tmp" {
-  source        = "../../../modules/gcs"
-  project_id    = module.project.project_id
-  prefix        = var.prefix
-  name          = "df-tmp"
-  location      = var.region
-  storage_class = "REGIONAL"
-  # FIXME: why do you need the try here?
-  encryption_key = var.cmek_encryption ? try(module.kms[0].keys.key-gcs.id, null) : null
+  source         = "../../../modules/gcs"
+  project_id     = module.project.project_id
+  prefix         = var.prefix
+  name           = "df-tmp"
+  location       = var.region
+  storage_class  = "REGIONAL"
+  encryption_key = var.cmek_encryption ? module.kms[0].keys.key-gcs.id : null
   force_destroy  = true
 }
 
@@ -59,13 +57,11 @@ module "bigquery-dataset" {
       schema              = file("${path.module}/data-demo/person.json")
       deletion_protection = false
       options = {
-        clustering = null
-        # FIXME: why do you need the try here?
-        encryption_key  = var.cmek_encryption ? try(module.kms[0].keys.key-bq.id, null) : null
+        clustering      = null
+        encryption_key  = var.cmek_encryption ? module.kms[0].keys.key-bq.id : null
         expiration_time = null
       }
     }
   }
-  # FIXME: why do you need the try here?
-  encryption_key = var.cmek_encryption ? try(module.kms[0].keys.key-bq.id, null) : null
+  encryption_key = var.cmek_encryption ? module.kms[0].keys.key-bq.id : null
 }
