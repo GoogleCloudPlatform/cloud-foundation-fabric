@@ -38,7 +38,6 @@ def _plan_runner():
 
     fixture_parent = os.path.dirname(fixture_path)
     fixture_prefix = os.path.basename(fixture_path) + "_"
-
     with tempfile.TemporaryDirectory(prefix=fixture_prefix,
                                      dir=fixture_parent) as tmp_path:
       # copy fixture to a temporary directory so we can execute
@@ -52,7 +51,7 @@ def _plan_runner():
   return run_plan
 
 
-@pytest.fixture(scope='session')
+@ pytest.fixture(scope='session')
 def plan_runner(_plan_runner):
   "Returns a function to run Terraform plan on a module fixture."
 
@@ -66,7 +65,7 @@ def plan_runner(_plan_runner):
   return run_plan
 
 
-@pytest.fixture(scope='session')
+@ pytest.fixture(scope='session')
 def e2e_plan_runner(_plan_runner):
   "Returns a function to run Terraform plan on an end-to-end fixture."
 
@@ -88,7 +87,7 @@ def e2e_plan_runner(_plan_runner):
   return run_plan
 
 
-@pytest.fixture(scope='session')
+@ pytest.fixture(scope='session')
 def example_plan_runner(_plan_runner):
   "Returns a function to run Terraform plan on documentation examples."
 
@@ -104,7 +103,7 @@ def example_plan_runner(_plan_runner):
   return run_plan
 
 
-@pytest.fixture(scope='session')
+@ pytest.fixture(scope='session')
 def apply_runner():
   "Returns a function to run Terraform apply on a fixture."
 

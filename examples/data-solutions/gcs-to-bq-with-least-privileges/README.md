@@ -47,6 +47,10 @@ In this example you can also configure users or group of user to assign them vie
 
 ## Deploy your enviroment
 
+We assume the identiy running the following steps has the following role:
+ - `resourcemanager.projectCreator` in case a new project will be created.
+ - `owner` on the project in case you use an existing project. 
+
 Run Terraform init:
 
 ```
@@ -56,10 +60,9 @@ $ terraform init
 Configure the Terraform variable in your `terraform.tfvars` file. You need to spefify at least the following variables:
 
 ```
-billing_account = "0011322-334455-667788"
-root_node       = "folders/123456789012"
-project_name    = "test-demo-tf-001"
-data_eng_users  = ["your_email@domani.example"]
+data_eng_principals = ["user:data-eng@domain.com"]
+project_id      = "datalake-001"
+prefix          = "prefix"
 ```
 
 You can run now:
@@ -105,15 +108,15 @@ gcloud --impersonate-service-account=orch-test@PROJECT.iam.gserviceaccount.com d
     --region REGION \
     --disable-public-ips \
     --subnetwork https://www.googleapis.com/compute/v1/projects/PROJECT/regions/REGION/subnetworks/subnet \
-    --staging-location gs://PROJECT-eu-df-tmplocation \
-    --service-account-email df-test@PROJECT.iam.gserviceaccount.com \
+    --staging-location gs://PREFIX-df-tmp \
+    --service-account-email df-loading@PROJECT.iam.gserviceaccount.com \
     --parameters \
 javascriptTextTransformFunctionName=transform,\
-JSONPath=gs://PROJECT-eu-data/person_schema.json,\
-javascriptTextTransformGcsPath=gs://PROJECT-eu-data/person_udf.js,\
-inputFilePattern=gs://PROJECT-eu-data/person.csv,\
-outputTable=PROJECT:bq_dataset.person,\
-bigQueryLoadingTemporaryDirectory=gs://PROJECT-eu-df-tmplocation 
+JSONPath=gs://PREFIX-data/person_schema.json,\
+javascriptTextTransformGcsPath=gs://PREFIX-data/person_udf.js,\
+inputFilePattern=gs://PREFIX-data/person.csv,\
+outputTable=PROJECT:datalake.person,\
+bigQueryLoadingTemporaryDirectory=gs://PREFIX-df-tmp 
 ```
 
 You can check data imported into Google BigQuery using the  command returned in the terraform output as `command-03-bq`. Below an example:
