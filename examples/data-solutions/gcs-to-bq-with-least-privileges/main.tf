@@ -60,10 +60,6 @@ locals {
     "roles/iam.serviceAccountTokenCreator" = concat(
       var.data_eng_principals
     )
-    # FIXME: I wouldn't say viewer is least privilege. Maybe assign specific roles?
-    "roles/viewer" = concat(
-      var.data_eng_principals
-    )
     # Dataflow roles
     "roles/dataflow.admin" = concat(
       [module.service-account-orch.iam_email],
@@ -72,6 +68,8 @@ locals {
     "roles/dataflow.worker" = [
       module.service-account-df.iam_email,
     ]
+    "roles/dataflow.developer" = var.data_eng_principals
+    "roles/compute.viewer"     = var.data_eng_principals
     # network roles
     "roles/compute.networkUser" = [
       module.service-account-df.iam_email,
