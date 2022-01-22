@@ -15,8 +15,18 @@
  */
 
 locals {
-  descriptive_name = var.descriptive_name != null ? var.descriptive_name : "${local.prefix}${var.name}"
-  group_iam_roles  = distinct(flatten(values(var.group_iam)))
+  # service dependendencies for encryption keys
+  _service_encryption_key_dependent_services = {
+    "composer" : [
+      "composer",
+      "artifactregistry", "container-engine", "compute", "pubsub", "storage"
+    ]
+    "dataflow" : ["dataflow", "compute"]
+  }
+  descriptive_name = (
+    var.descriptive_name != null ? var.descriptive_name : "${local.prefix}${var.name}"
+  )
+  group_iam_roles = distinct(flatten(values(var.group_iam)))
   group_iam = {
     for r in local.group_iam_roles : r => [
       for k, v in var.group_iam : "group:${k}" if try(index(v, r), null) != null
@@ -74,36 +84,17 @@ locals {
       if sink.iam && sink.type == type
     }
   }
-  # Some services need Crypt/Decrypt role on the specified key for several robot accounts.
-  encrypt_service_subservice = {
-    "composer" : [
-      "artifactregistry",
-      "container-engine",
-      "composer",
-      "compute",
-      "pubsub",
-      "storage",
-    ]
-    "dataflow" : [
-      "compute",
-      "dataflow"
-    ]
-  }
-
-  service_encryption_key_ids = flatten(
-    [for service in keys(var.service_encryption_key_ids) :
-      [for sub_service in try(local.encrypt_service_subservice[service], [service]) :
-        [for key in var.service_encryption_key_ids[service] :
-          {
-            service = sub_service
-            key     = key
-          } if key != null
-        ]
+  service_encryption_key_ids = distinct(flatten([
+    for s in keys(var.service_encryption_key_ids) : [
+      for ss in try(local._service_encryption_key_dependent_services[s], [s]) : [
+        for key in var.service_encryption_key_ids[s] : {
+          service = ss
+          key     = key
+        } if key != null
       ]
     ]
-  )
+  ]))
 }
-
 
 data "google_project" "project" {
   count      = var.project_create ? 0 : 1
@@ -403,7 +394,9 @@ resource "google_access_context_manager_service_perimeter_resource" "service-per
 
 resource "google_kms_crypto_key_iam_member" "crypto_key" {
   for_each = {
-    for service_key in local.service_encryption_key_ids : "${service_key.service}.${service_key.key}" => service_key if service_key != service_key.key
+    for service_key in local.service_encryption_key_ids :
+    "${service_key.service}.${service_key.key}" => service_key
+    if service_key != service_key.key
   }
   crypto_key_id = each.value.key
   role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"

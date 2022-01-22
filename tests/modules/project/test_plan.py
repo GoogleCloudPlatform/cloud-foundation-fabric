@@ -40,3 +40,32 @@ def test_no_parent(plan_runner):
   assert len(resources) == 1
   assert resources[0]['values'].get('folder_id') == None
   assert resources[0]['values'].get('org_id') == None
+
+
+def test_service_encryption_keys(plan_runner):
+  "Test service encryption keys with no dependencies."
+  _, resources = plan_runner(service_encryption_key_ids=(
+      '{compute=["key1"], storage=["key1", "key2"]}'
+  ))
+  key_bindings = [
+      r['index'] for r in resources
+      if r['type'] == 'google_kms_crypto_key_iam_member'
+  ]
+  assert len(key_bindings), 3
+  assert key_bindings == ['compute.key1', 'storage.key1', 'storage.key2']
+
+
+def test_service_encryption_key_dependencies(plan_runner):
+  "Test service encryption keys with dependencies."
+  _, resources = plan_runner(service_encryption_key_ids=(
+      '{compute=["key1"], dataflow=["key1", "key2"]}'
+  ))
+  key_bindings = [
+      r['index'] for r in resources
+      if r['type'] == 'google_kms_crypto_key_iam_member'
+  ]
+  assert len(key_bindings), 3
+  # compute.key1 cannot repeat or we'll get a duplicate key error in for_each
+  assert key_bindings == [
+      'compute.key1', 'compute.key2', 'dataflow.key1', 'dataflow.key2'
+  ]

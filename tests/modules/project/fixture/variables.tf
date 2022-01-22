@@ -89,6 +89,11 @@ variable "prefix" {
   default = null
 }
 
+variable "service_encryption_key_ids" {
+  type    = map(list(string))
+  default = {}
+}
+
 variable "services" {
   type    = list(string)
   default = []
