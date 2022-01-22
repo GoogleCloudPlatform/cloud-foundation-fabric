@@ -71,6 +71,7 @@ FILE_RE_RESOURCES = re.compile(
 HEREDOC_RE = re.compile(r'(?sm)^<<\-?END(\s*.*?)\s*END$')
 MARK_BEGIN = '<!-- BEGIN TFDOC -->'
 MARK_END = '<!-- END TFDOC -->'
+MARK_OPTS_RE = re.compile(r'(?sm)<!-- TFDOC OPTS ((?:[a-z]+:[0-1]\s*?)+) -->')
 OUT_ENUM = enum.Enum('O', 'OPEN ATTR ATTR_DATA CLOSE COMMENT TXT SKIP')
 OUT_RE = re.compile(r'''(?smx)
     # output open
@@ -321,7 +322,28 @@ def get_doc(readme):
   return {'doc': m.group(1), 'start': m.start(), 'end': m.end()}
 
 
-def create_doc(module_path, files=False, show_extra=False, exclude_files=None):
+def get_doc_opts(readme):
+  'Check if README file is setting options via a mark, and return options.'
+  m = MARK_OPTS_RE.search(readme)
+  opts = {}
+  if not m:
+    return opts
+  try:
+    for o in m.group(1).split():
+      k, v = o.split(':')
+      opts[k] = bool(int(v))
+  except (TypeError, ValueError) as e:
+    raise SystemExit(f'incorrect option mark: {e}')
+  return opts
+
+
+def create_doc(module_path, files=False, show_extra=False, exclude_files=None,
+               readme=None):
+  if readme:
+    # check for overrides in doc
+    opts = get_doc_opts(readme)
+    files = opts.get('files', files)
+    show_extra = opts.get('show_extra', show_extra)
   try:
     mod_files = list(parse_files(module_path, exclude_files)) if files else []
     mod_variables = list(parse_variables(module_path))
@@ -331,13 +353,17 @@ def create_doc(module_path, files=False, show_extra=False, exclude_files=None):
   return format_doc(mod_outputs, mod_variables, mod_files, show_extra)
 
 
-def replace_doc(module_path, doc):
-  'Replace document in module\'s README.md file.'
-  readme_path = os.path.join(module_path, 'README.md')
+def get_readme(readme_path):
+  'Open and return README.md in module.'
   try:
-    readme = open(readme_path).read()
+    return open(readme_path).read()
   except (IOError, OSError) as e:
     raise SystemExit(f'Error opening README {readme_path}: {e}')
+
+
+def replace_doc(readme_path, doc, readme=None):
+  'Replace document in module\'s README.md file.'
+  readme = readme or get_readme(readme_path)
   result = get_doc(readme)
   if not result:
     raise SystemExit(f'Mark not found in README {readme_path}')
@@ -356,17 +382,19 @@ def replace_doc(module_path, doc):
 
 
 @ click.command()
-@ click.argument('module', type=click.Path(exists=True))
+@ click.argument('module_path', type=click.Path(exists=True))
 @click.option('--exclude-file', '-x', multiple=True)
 @ click.option('--files/--no-files', default=False)
 @ click.option('--replace/--no-replace', default=True)
 @ click.option('--show-extra/--no-show-extra', default=False)
-def main(module=None, annotate=False, exclude_file=None, files=False, replace=True,
+def main(module_path=None, exclude_file=None, files=False, replace=True,
          show_extra=True):
   'Program entry point.'
-  doc = create_doc(module, files, show_extra, exclude_file)
+  readme_path = os.path.join(module_path, 'README.md')
+  readme = get_readme(readme_path)
+  doc = create_doc(module_path, files, show_extra, exclude_file, readme)
   if replace:
-    replace_doc(module, doc)
+    replace_doc(readme_path, doc, readme)
   else:
     print(doc)
 
