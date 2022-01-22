@@ -23,7 +23,7 @@ module "landing-to-onprem-ew1-vpn" {
   region        = "europe-west1"
   name          = "vpn-to-onprem-ew1"
   router_create = true
-  router_name   = "dev-spoke-vpn-ew1"
+  router_name   = "landing-onprem-vpn-ew1"
   router_asn    = var.router_configs.landing-ew1.asn
   peer_external_gateway = {
     redundancy_type = "SINGLE_IP_INTERNALLY_REDUNDANT"
