@@ -238,8 +238,16 @@ def format_doc(outputs, variables, files, show_extra=False):
 def format_files(items):
   'Format files table.'
   items.sort(key=lambda i: i.name)
-  yield '| name | description | modules | resources |'
-  yield '|---|---|---|---|'
+  num_modules = sum(len(i.modules) for i in items)
+  num_resources = sum(len(i.resources) for i in items)
+  yield '| name | description |{}{}'.format(
+      ' modules |' if num_modules else '',
+      ' resources |' if num_resources else ''
+  )
+  yield '|---|---|{}{}'.format(
+      '---|' if num_modules else '',
+      '---|' if num_resources else ''
+  )
   for i in items:
     modules = resources = ''
     if i.modules:
@@ -248,7 +256,11 @@ def format_files(items):
     if i.resources:
       resources = '<code>%s</code>' % '</code> · <code>'.join(
           sorted(i.resources))
-    yield f'| [{i.name}](./{i.name}) | {i.description} | {modules} | {resources} |'
+    yield '| [{}](./{}) | {} |{}{}'.format(
+        i.name, i.name, i.description,
+        f' {modules} |' if num_modules else '',
+        f' {resources} |' if num_resources else ''
+    )
 
 
 def format_outputs(items, show_extra=True):
