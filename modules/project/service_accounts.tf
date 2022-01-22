@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description Service identities and supporting resources.
+
 locals {
   _service_accounts_cmek_service_dependencies = {
     "composer" : [

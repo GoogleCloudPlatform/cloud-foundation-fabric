@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description Project-level organization policies.
+
 resource "google_project_organization_policy" "boolean" {
   for_each   = var.policy_boolean
   project    = local.project.project_id

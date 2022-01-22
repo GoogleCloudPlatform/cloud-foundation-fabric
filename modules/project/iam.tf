@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description Generic and OSLogin-specific IAM bindings and roles.
+
 # IAM notes:
 # - external users need to have accepted the invitation email to join
 # - oslogin roles also require role to list instances

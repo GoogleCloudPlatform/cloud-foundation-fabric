@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description VPC-SC project-level perimeter configuration.
+
 moved {
   from = google_access_context_manager_service_perimeter_resource.service-perimeter-resource-standard
   to   = google_access_context_manager_service_perimeter_resource.standard

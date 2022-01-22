@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description Log sinks and supporting resources.
+
 locals {
   logging_sinks = coalesce(var.logging_sinks, {})
   sink_bindings = {

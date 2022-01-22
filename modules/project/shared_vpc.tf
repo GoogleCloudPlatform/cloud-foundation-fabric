@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description Shared VPC project-level configuration.
+
 resource "google_compute_shared_vpc_host_project" "shared_vpc_host" {
   count   = try(var.shared_vpc_host_config.enabled, false) ? 1 : 0
   project = local.project.project_id
