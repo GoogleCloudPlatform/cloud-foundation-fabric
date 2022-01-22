@@ -71,7 +71,7 @@ FILE_RE_RESOURCES = re.compile(
 HEREDOC_RE = re.compile(r'(?sm)^<<\-?END(\s*.*?)\s*END$')
 MARK_BEGIN = '<!-- BEGIN TFDOC -->'
 MARK_END = '<!-- END TFDOC -->'
-MARK_OPTS_RE = re.compile(r'(?sm)<!-- TFDOC OPTS ((?:[a-z]+:[0-1]\s*?)+) -->')
+MARK_OPTS_RE = re.compile(r'(?sm)<!-- TFDOC OPTS ((?:[a-z_]+:[0-1]\s*?)+) -->')
 OUT_ENUM = enum.Enum('O', 'OPEN ATTR ATTR_DATA CLOSE COMMENT TXT SKIP')
 OUT_RE = re.compile(r'''(?smx)
     # output open

@@ -141,30 +141,44 @@ Due to its simplicity, this stage lends itself easily to customizations: adding 
 <!-- TFDOC OPTS files:1 show_extra:1 -->
 <!-- BEGIN TFDOC -->
 
+## Files
+
+| name | description | modules | resources |
+|---|---|---|---|
+| [billing.tf](./billing.tf) | Billing resources for external billing use cases. | <code>organization</code> | <code>google_billing_account_iam_member</code> |
+| [branch-networking.tf](./branch-networking.tf) | Networking stage resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
+| [branch-sandbox.tf](./branch-sandbox.tf) | Sandbox stage resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
+| [branch-security.tf](./branch-security.tf) | Security stage resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
+| [branch-teams.tf](./branch-teams.tf) | Team stages resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
+| [main.tf](./main.tf) | Module-level locals and resources. |  |  |
+| [organization.tf](./organization.tf) | Organization policies. | <code>organization</code> |  |
+| [outputs.tf](./outputs.tf) | Module outputs. |  | <code>local_file</code> |
+| [variables.tf](./variables.tf) | Module variables. |  |  |
+
 ## Variables
 
-| name | description | type | required | default |
-|---|---|:---:|:---:|:---:|
-| automation_project_id | Project id for the automation project created by the bootstrap stage. | <code>string</code> | ✓ |  |
-| billing_account | Billing account id and organization id ('nnnnnnnn' or null). | <code title="object&#40;&#123;&#10;  id              &#61; string&#10;  organization_id &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| organization | Organization details. | <code title="object&#40;&#123;&#10;  domain      &#61; string&#10;  id          &#61; number&#10;  customer_id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| prefix | Prefix used for resources that need unique names. | <code>string</code> | ✓ |  |
-| custom_roles | Custom roles defined at the org level, in key => id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| groups | Group names to grant organization-level permissions. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  gcp-billing-admins      &#61; &#34;gcp-billing-admins&#34;,&#10;  gcp-devops              &#61; &#34;gcp-devops&#34;,&#10;  gcp-network-admins      &#61; &#34;gcp-network-admins&#34;&#10;  gcp-organization-admins &#61; &#34;gcp-organization-admins&#34;&#10;  gcp-security-admins     &#61; &#34;gcp-security-admins&#34;&#10;  gcp-support             &#61; &#34;gcp-support&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| organization_policy_configs | Organization policies customization. | <code title="object&#40;&#123;&#10;  allowed_policy_member_domains &#61; list&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| outputs_location | Path where providers and tfvars files for the following stages are written. Leave empty to disable. | <code>string</code> |  | <code>null</code> |
-| team_folders | Team folders to be created. Format is described in a code comment. | <code title="map&#40;object&#40;&#123;&#10;  descriptive_name     &#61; string&#10;  group_iam            &#61; map&#40;list&#40;string&#41;&#41;&#10;  impersonation_groups &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
+| name | description | type | required | default | producer |
+|---|---|:---:|:---:|:---:|:---:|
+| automation_project_id | Project id for the automation project created by the bootstrap stage. | <code>string</code> | ✓ |  | <code>00-bootstrap</code> |
+| billing_account | Billing account id and organization id ('nnnnnnnn' or null). | <code title="object&#40;&#123;&#10;  id              &#61; string&#10;  organization_id &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>00-bootstrap</code> |
+| organization | Organization details. | <code title="object&#40;&#123;&#10;  domain      &#61; string&#10;  id          &#61; number&#10;  customer_id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>00-bootstrap</code> |
+| prefix | Prefix used for resources that need unique names. | <code>string</code> | ✓ |  | <code>00-bootstrap</code> |
+| custom_roles | Custom roles defined at the org level, in key => id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>00-bootstrap</code> |
+| groups | Group names to grant organization-level permissions. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  gcp-billing-admins      &#61; &#34;gcp-billing-admins&#34;,&#10;  gcp-devops              &#61; &#34;gcp-devops&#34;,&#10;  gcp-network-admins      &#61; &#34;gcp-network-admins&#34;&#10;  gcp-organization-admins &#61; &#34;gcp-organization-admins&#34;&#10;  gcp-security-admins     &#61; &#34;gcp-security-admins&#34;&#10;  gcp-support             &#61; &#34;gcp-support&#34;&#10;&#125;">&#123;&#8230;&#125;</code> | <code>00-bootstrap</code> |
+| organization_policy_configs | Organization policies customization. | <code title="object&#40;&#123;&#10;  allowed_policy_member_domains &#61; list&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |  |
+| outputs_location | Path where providers and tfvars files for the following stages are written. Leave empty to disable. | <code>string</code> |  | <code>null</code> |  |
+| team_folders | Team folders to be created. Format is described in a code comment. | <code title="map&#40;object&#40;&#123;&#10;  descriptive_name     &#61; string&#10;  group_iam            &#61; map&#40;list&#40;string&#41;&#41;&#10;  impersonation_groups &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |  |
 
 ## Outputs
 
-| name | description | sensitive |
-|---|---|:---:|
-| networking | Data for the networking stage. |  |
-| project_factories | Data for the project factories stage. |  |
-| providers | Terraform provider files for this stage and dependent stages. | ✓ |
-| sandbox | Data for the sandbox stage. |  |
-| security | Data for the networking stage. |  |
-| teams | Data for the teams stage. |  |
-| tfvars | Terraform variable files for the following stages. | ✓ |
+| name | description | sensitive | consumers |
+|---|---|:---:|---|
+| networking | Data for the networking stage. |  | <code>02-networking</code> |
+| project_factories | Data for the project factories stage. |  | <code>xx-teams</code> |
+| providers | Terraform provider files for this stage and dependent stages. | ✓ | <code>02-networking</code> · <code>02-security</code> · <code>xx-sandbox</code> · <code>xx-teams</code> |
+| sandbox | Data for the sandbox stage. |  | <code>xx-sandbox</code> |
+| security | Data for the networking stage. |  | <code>02-security</code> |
+| teams | Data for the teams stage. |  |  |
+| tfvars | Terraform variable files for the following stages. | ✓ |  |
 
 <!-- END TFDOC -->

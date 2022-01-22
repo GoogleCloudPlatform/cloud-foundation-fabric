@@ -51,7 +51,8 @@ def _check_dir(dir_name, files=False, show_extra=False):
     else:
       try:
         new_doc = tfdoc.create_doc(readme_path.parent, files=files,
-                                   show_extra=show_extra, readme=readme)
+                                   show_extra=show_extra, exclude_files=None,
+                                   readme=readme)
       except SystemExit:
         state = state.SKIP
       else:
@@ -74,6 +75,7 @@ def _check_dir(dir_name, files=False, show_extra=False):
 @ click.option('--show-extra/--no-show-extra', default=False)
 def main(dirs, files=False, show_diffs=False, show_extra=False):
   'Cycle through modules and ensure READMEs are up-to-date.'
+  print(f'files: {files}, extra: {show_extra}, diffs: {show_diffs}\n')
   errors = []
   state_labels = {State.FAIL: '✗', State.OK: '✓', State.SKIP: '?'}
   for dir_name in dirs:
