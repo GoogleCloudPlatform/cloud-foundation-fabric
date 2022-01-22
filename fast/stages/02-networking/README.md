@@ -282,6 +282,7 @@ VPN configuration also controls BGP advertisements, which requires the following
 
 DNS configurations are centralised in the `dns.tf` file. Spokes delegate DNS resolution to Landing through DNS peering, and optionally define a private zone (e.g. `staging.gcp.example.com`) which the landing peers to. To configure DNS for a new environment, copy all the `prod-*` modules in the `dns.tf` file to `staging-*`, and update their content accordingly. Don't forget to add a peering zone from Landing to the newly created environment private zone.
 
+<!-- TFDOC OPTS files:1 show_extra:1 -->
 <!-- BEGIN TFDOC -->
 
 ## Files

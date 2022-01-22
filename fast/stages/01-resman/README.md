@@ -138,10 +138,7 @@ IAM roles can be easily edited in the relevant `branch-xxx.tf` file, following t
 
 Due to its simplicity, this stage lends itself easily to customizations: adding a new top-level branch (e.g. for shared GKE clusters) is as easy as cloning one of the `branch-xxx.tf` files, and changing names.
 
-
-
-
-
+<!-- TFDOC OPTS files:1 show_extra:1 -->
 <!-- BEGIN TFDOC -->
 
 ## Files
@@ -185,12 +182,3 @@ Due to its simplicity, this stage lends itself easily to customizations: adding 
 | tfvars | Terraform variable files for the following stages. | ✓ |  |
 
 <!-- END TFDOC -->
-
-
-
-
-
-
-
-
-

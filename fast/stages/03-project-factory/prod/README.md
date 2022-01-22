@@ -94,17 +94,16 @@ terraform init
 terraform apply
 ```
 
-
-
+<!-- TFDOC OPTS files:1 show_extra:1 -->
 <!-- BEGIN TFDOC -->
 
 ## Files
 
-| name | description | modules | resources |
-|---|---|---|---|
-| [main.tf](./main.tf) | Project factory. | <code>project-factory</code> |  |
-| [outputs.tf](./outputs.tf) | Module outputs. |  |  |
-| [variables.tf](./variables.tf) | Module variables. |  |  |
+| name | description | modules |
+|---|---|---|
+| [main.tf](./main.tf) | Project factory. | <code>project-factory</code> |
+| [outputs.tf](./outputs.tf) | Module outputs. |  |
+| [variables.tf](./variables.tf) | Module variables. |  |
 
 ## Variables
 
@@ -124,8 +123,3 @@ terraform apply
 | projects | Created projects and service accounts. |  |  |
 
 <!-- END TFDOC -->
-
-
-
-
-

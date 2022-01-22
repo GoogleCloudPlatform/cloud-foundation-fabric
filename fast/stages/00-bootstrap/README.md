@@ -264,8 +264,7 @@ If a different convention is needed, identify names via search/grep (e.g. with `
 
 Names used in internal references (e.g. `module.foo-prod.id`) are only used by Terraform and do not influence resource naming, so they are best left untouched to avoid having to debug complex errors.
 
-
-
+<!-- TFDOC OPTS files:1 show_extra:1 -->
 <!-- BEGIN TFDOC -->
 
 ## Files
@@ -304,9 +303,3 @@ Names used in internal references (e.g. `module.foo-prod.id`) are only used by T
 | tfvars | Terraform variable files for the following stages. | ✓ |  |
 
 <!-- END TFDOC -->
-
-
-
-
-
-

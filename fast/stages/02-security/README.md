@@ -265,9 +265,7 @@ Some references that might be useful in setting up this stage:
 
 - [VPC SC CSCC requirements](https://cloud.google.com/security-command-center/docs/troubleshooting).
 
-
-
-
+<!-- TFDOC OPTS files:1 show_extra:1 -->
 <!-- BEGIN TFDOC -->
 
 ## Files
@@ -309,15 +307,3 @@ Some references that might be useful in setting up this stage:
 | stage_perimeter_projects | Security project numbers. They can be added to perimeter resources. |  |  |
 
 <!-- END TFDOC -->
-
-
-
-
-
-
-
-
-
-
-
-
