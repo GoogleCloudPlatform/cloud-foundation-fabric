@@ -19,28 +19,25 @@ module "docker_artifact_registry" {
 }
 # tftest:modules=1:resources=2
 ```
-
-
 <!-- BEGIN TFDOC -->
 
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| id | Repository id | <code>string</code> | ✓ |  |
-| project_id | Registry project id. | <code>string</code> | ✓ |  |
-| description | An optional description for the repository | <code>string</code> |  | <code>&#34;Terraform-managed registry&#34;</code> |
-| format | Repository format. One of DOCKER or UNSPECIFIED | <code>string</code> |  | <code>&#34;DOCKER&#34;</code> |
-| iam | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| labels | Labels to be attached to the registry. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| location | Registry location. Use `gcloud beta artifacts locations list' to get valid values | <code>string</code> |  | <code>null</code> |
+| [id](variables.tf#L35) | Repository id | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L52) | Registry project id. | <code>string</code> | ✓ |  |
+| [description](variables.tf#L17) | An optional description for the repository | <code>string</code> |  | <code>&#34;Terraform-managed registry&#34;</code> |
+| [format](variables.tf#L23) | Repository format. One of DOCKER or UNSPECIFIED | <code>string</code> |  | <code>&#34;DOCKER&#34;</code> |
+| [iam](variables.tf#L29) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [labels](variables.tf#L40) | Labels to be attached to the registry. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [location](variables.tf#L46) | Registry location. Use `gcloud beta artifacts locations list' to get valid values | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| id | Repository id |  |
-| name | Repository name |  |
+| [id](outputs.tf#L17) | Repository id |  |
+| [name](outputs.tf#L22) | Repository name |  |
 
 <!-- END TFDOC -->
-

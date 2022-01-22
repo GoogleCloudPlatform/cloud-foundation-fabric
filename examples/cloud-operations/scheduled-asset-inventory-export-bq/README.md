@@ -49,37 +49,31 @@ It helps to create custom [scheduled query](https://cloud.google.com/bigquery/do
 This is an optional part, created if `cai_gcs_export` is set to `true`. The high level diagram extends to the following:
 
 <img src="diagram_optional.png" width="640px">
-
-
-
-
 <!-- BEGIN TFDOC -->
 
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| cai_config | Cloud Asset Inventory export config. | <code title="object&#40;&#123;&#10;  bq_dataset         &#61; string&#10;  bq_table           &#61; string&#10;  bq_table_overwrite &#61; bool&#10;  target_node        &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| project_id | Project id that references existing project. | <code>string</code> | ✓ |  |
-| billing_account | Billing account id used as default for new projects. | <code>string</code> |  | <code>null</code> |
-| bundle_path | Path used to write the intermediate Cloud Function code bundle. | <code>string</code> |  | <code>&#34;.&#47;bundle.zip&#34;</code> |
-| bundle_path_cffile | Path used to write the intermediate Cloud Function code bundle. | <code>string</code> |  | <code>&#34;.&#47;bundle_cffile.zip&#34;</code> |
-| cai_gcs_export | Enable optional part to export tables to GCS | <code>bool</code> |  | <code>false</code> |
-| file_config | Optional BQ table as a file export function config. | <code title="object&#40;&#123;&#10;  bucket     &#61; string&#10;  filename   &#61; string&#10;  format     &#61; string&#10;  bq_dataset &#61; string&#10;  bq_table   &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  bucket     &#61; null&#10;  filename   &#61; null&#10;  format     &#61; null&#10;  bq_dataset &#61; null&#10;  bq_table   &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
-| location | Appe Engine location used in the example. | <code>string</code> |  | <code>&#34;europe-west&#34;</code> |
-| name | Arbitrary string used to name created resources. | <code>string</code> |  | <code>&#34;asset-inventory&#34;</code> |
-| name_cffile | Arbitrary string used to name created resources. | <code>string</code> |  | <code>&#34;cffile-exporter&#34;</code> |
-| project_create | Create project instead ofusing an existing one. | <code>bool</code> |  | <code>true</code> |
-| region | Compute region used in the example. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| root_node | The resource name of the parent folder or organization for project creation, in 'folders/folder_id' or 'organizations/org_id' format. | <code>string</code> |  | <code>null</code> |
+| [cai_config](variables.tf#L36) | Cloud Asset Inventory export config. | <code title="object&#40;&#123;&#10;  bq_dataset         &#61; string&#10;  bq_table           &#61; string&#10;  bq_table_overwrite &#61; bool&#10;  target_node        &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [project_id](variables.tf#L101) | Project id that references existing project. | <code>string</code> | ✓ |  |
+| [billing_account](variables.tf#L17) | Billing account id used as default for new projects. | <code>string</code> |  | <code>null</code> |
+| [bundle_path](variables.tf#L23) | Path used to write the intermediate Cloud Function code bundle. | <code>string</code> |  | <code>&#34;.&#47;bundle.zip&#34;</code> |
+| [bundle_path_cffile](variables.tf#L30) | Path used to write the intermediate Cloud Function code bundle. | <code>string</code> |  | <code>&#34;.&#47;bundle_cffile.zip&#34;</code> |
+| [cai_gcs_export](variables.tf#L47) | Enable optional part to export tables to GCS | <code>bool</code> |  | <code>false</code> |
+| [file_config](variables.tf#L54) | Optional BQ table as a file export function config. | <code title="object&#40;&#123;&#10;  bucket     &#61; string&#10;  filename   &#61; string&#10;  format     &#61; string&#10;  bq_dataset &#61; string&#10;  bq_table   &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  bucket     &#61; null&#10;  filename   &#61; null&#10;  format     &#61; null&#10;  bq_dataset &#61; null&#10;  bq_table   &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [location](variables.tf#L73) | Appe Engine location used in the example. | <code>string</code> |  | <code>&#34;europe-west&#34;</code> |
+| [name](variables.tf#L80) | Arbitrary string used to name created resources. | <code>string</code> |  | <code>&#34;asset-inventory&#34;</code> |
+| [name_cffile](variables.tf#L88) | Arbitrary string used to name created resources. | <code>string</code> |  | <code>&#34;cffile-exporter&#34;</code> |
+| [project_create](variables.tf#L95) | Create project instead ofusing an existing one. | <code>bool</code> |  | <code>true</code> |
+| [region](variables.tf#L106) | Compute region used in the example. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [root_node](variables.tf#L112) | The resource name of the parent folder or organization for project creation, in 'folders/folder_id' or 'organizations/org_id' format. | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| bq-dataset | Bigquery instance details. |  |
-| cloud-function | Cloud Function instance details. |  |
+| [bq-dataset](outputs.tf#L17) | Bigquery instance details. |  |
+| [cloud-function](outputs.tf#L22) | Cloud Function instance details. |  |
 
 <!-- END TFDOC -->
-
-
