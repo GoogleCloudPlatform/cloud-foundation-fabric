@@ -60,24 +60,21 @@ gcloud auth activate-service-account --key-file data-uploader.json
 ```bash
 terraform destroy -var project_id=$GOOGLE_CLOUD_PROJECT
 ```
-
-
 <!-- BEGIN TFDOC -->
 
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| project_id | Project id. | <code>string</code> | ✓ |  |
-| project_create | Create project instead of using an existing one. | <code>bool</code> |  | <code>false</code> |
-| service_accounts | List of service accounts. | <code title="list&#40;object&#40;&#123;&#10;  name              &#61; string&#10;  iam_project_roles &#61; list&#40;string&#41;&#10;  public_keys_path  &#61; string&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code title="&#91;&#10;  &#123;&#10;    name &#61; &#34;data-uploader&#34;&#10;    iam_project_roles &#61; &#91;&#10;      &#34;roles&#47;bigquery.dataOwner&#34;,&#10;      &#34;roles&#47;bigquery.jobUser&#34;,&#10;      &#34;roles&#47;storage.objectAdmin&#34;&#10;    &#93;&#10;    public_keys_path &#61; &#34;public-keys&#47;data-uploader&#47;&#34;&#10;  &#125;,&#10;  &#123;&#10;    name &#61; &#34;prisma-security&#34;&#10;    iam_project_roles &#61; &#91;&#10;      &#34;roles&#47;iam.securityReviewer&#34;&#10;    &#93;&#10;    public_keys_path &#61; &#34;public-keys&#47;prisma-security&#47;&#34;&#10;  &#125;,&#10;&#93;">&#91;&#8230;&#93;</code> |
-| services | Service APIs to enable. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [project_id](variables.tf#L23) | Project id. | <code>string</code> | ✓ |  |
+| [project_create](variables.tf#L17) | Create project instead of using an existing one. | <code>bool</code> |  | <code>false</code> |
+| [service_accounts](variables.tf#L28) | List of service accounts. | <code title="list&#40;object&#40;&#123;&#10;  name              &#61; string&#10;  iam_project_roles &#61; list&#40;string&#41;&#10;  public_keys_path  &#61; string&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code title="&#91;&#10;  &#123;&#10;    name &#61; &#34;data-uploader&#34;&#10;    iam_project_roles &#61; &#91;&#10;      &#34;roles&#47;bigquery.dataOwner&#34;,&#10;      &#34;roles&#47;bigquery.jobUser&#34;,&#10;      &#34;roles&#47;storage.objectAdmin&#34;&#10;    &#93;&#10;    public_keys_path &#61; &#34;public-keys&#47;data-uploader&#47;&#34;&#10;  &#125;,&#10;  &#123;&#10;    name &#61; &#34;prisma-security&#34;&#10;    iam_project_roles &#61; &#91;&#10;      &#34;roles&#47;iam.securityReviewer&#34;&#10;    &#93;&#10;    public_keys_path &#61; &#34;public-keys&#47;prisma-security&#47;&#34;&#10;  &#125;,&#10;&#93;">&#91;&#8230;&#93;</code> |
+| [services](variables.tf#L56) | Service APIs to enable. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| sa-credentials | SA json key templates. |  |
+| [sa-credentials](outputs.tf#L17) | SA json key templates. |  |
 
 <!-- END TFDOC -->
-

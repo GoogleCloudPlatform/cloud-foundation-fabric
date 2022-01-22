@@ -64,29 +64,26 @@ module "project-tf" {
   name   = module.names-org.names.prj.tf
 }
 ```
-
-
 <!-- BEGIN TFDOC -->
 
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| environment | Environment abbreviation used in names and labels. | <code>string</code> | ✓ |  |
-| resources | Short resource names by type. | <code>map&#40;list&#40;string&#41;&#41;</code> | ✓ |  |
-| team | Team name. | <code>string</code> | ✓ |  |
-| labels | Per-resource labels. | <code>map&#40;map&#40;map&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| prefix | Optional name prefix. | <code>string</code> |  | <code>null</code> |
-| separator_override | Optional separator override for specific resource types. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| suffix | Optional name suffix. | <code>string</code> |  | <code>null</code> |
-| use_resource_prefixes | Prefix names with the resource type. | <code>bool</code> |  | <code>false</code> |
+| [environment](variables.tf#L17) | Environment abbreviation used in names and labels. | <code>string</code> | ✓ |  |
+| [resources](variables.tf#L34) | Short resource names by type. | <code>map&#40;list&#40;string&#41;&#41;</code> | ✓ |  |
+| [team](variables.tf#L51) | Team name. | <code>string</code> | ✓ |  |
+| [labels](variables.tf#L22) | Per-resource labels. | <code>map&#40;map&#40;map&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [prefix](variables.tf#L28) | Optional name prefix. | <code>string</code> |  | <code>null</code> |
+| [separator_override](variables.tf#L39) | Optional separator override for specific resource types. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [suffix](variables.tf#L45) | Optional name suffix. | <code>string</code> |  | <code>null</code> |
+| [use_resource_prefixes](variables.tf#L56) | Prefix names with the resource type. | <code>bool</code> |  | <code>false</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| labels | Per resource labels. |  |
-| names | Per resource names. |  |
+| [labels](outputs.tf#L17) | Per resource labels. |  |
+| [names](outputs.tf#L22) | Per resource names. |  |
 
 <!-- END TFDOC -->
-

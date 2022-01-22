@@ -110,9 +110,9 @@ VAR_TEMPLATE = ('default', 'description', 'type')
 
 File = collections.namedtuple('File', 'name description modules resources')
 Output = collections.namedtuple('Output',
-                                'name description sensitive consumers')
+                                'name description sensitive consumers line')
 Variable = collections.namedtuple(
-    'Variable', 'name description type default required source')
+    'Variable', 'name description type default required source line')
 
 
 # parsing functions
@@ -131,7 +131,11 @@ def _parse(body, enum=VAR_ENUM, re=VAR_RE, template=VAR_TEMPLATE):
     data = m.group(m.lastindex)
     # print(token, m.groups())
     if token == enum.OPEN:
-      item = {'name': data, 'tags': {}}
+      match = m.group(0)
+      leading_lines = len(match) - len(match.lstrip("\n"))
+      start = m.span()[0]
+      line = body[:start].count('\n') + leading_lines + 1
+      item = {'name': data, 'tags': {}, 'line': line}
       item.update({k: [] for k in template})
       context = None
     elif token == enum.CLOSE:
@@ -187,7 +191,8 @@ def parse_outputs(basepath):
   for item in _parse(body, enum=OUT_ENUM, re=OUT_RE, template=OUT_TEMPLATE):
     yield Output(name=item['name'], description=''.join(item['description']),
                  sensitive=item['sensitive'] != [],
-                 consumers=item['tags'].get('output:consumers', ''))
+                 consumers=item['tags'].get('output:consumers', ''),
+                 line=item['line'])
 
 
 def parse_variables(basepath):
@@ -207,7 +212,8 @@ def parse_variables(basepath):
     yield Variable(name=item['name'], description=''.join(item['description']),
                    type=vtype, default=default,
                    required=required,
-                   source=item['tags'].get('variable:source', ''))
+                   source=item['tags'].get('variable:source', ''),
+                   line=item['line'])
 
 
 # formatting functions
@@ -280,7 +286,7 @@ def format_outputs(items, show_extra=True):
       consumers = '<code>%s</code>' % '</code> · <code>'.join(
           consumers.split())
     sensitive = '✓' if i.sensitive else ''
-    format = f'| {i.name} | {i.description or ""} | {sensitive} |'
+    format = f'| [{i.name}](outputs.tf#L{i.line}) | {i.description or ""} | {sensitive} |'
     format += f' {consumers} |' if show_extra else ''
     yield format
 
@@ -316,7 +322,7 @@ def format_variables(items, show_extra=True):
           value = f'{value[0]}…{value[-1].strip()}'
         vars[k] = f'<code title="{_escape(title)}">{_escape(value)}</code>'
     format = (
-        f'| {i.name} | {i.description or ""} | {vars["type"]} '
+        f'| [{i.name}](variables.tf#L{i.line}) | {i.description or ""} | {vars["type"]} '
         f'| {vars["required"]} | {vars["default"]} |'
     )
     format += f' {vars["source"]} |' if show_extra else ''

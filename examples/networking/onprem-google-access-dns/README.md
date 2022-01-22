@@ -200,30 +200,27 @@ curl www.onprem.example.org -s |grep h1
 A single pre-existing project is used in this example to keep variables and complexity to a minimum, in a real world scenarios each spoke would probably use a separate project.
 
 The VPN-s used to connect to the on-premises environment do not account for HA, upgrading to use HA VPN is reasonably simple by using the relevant [module](../../../modules/net-vpn-ha).
-
-
 <!-- BEGIN TFDOC -->
 
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| project_id | Project id for all resources. | <code>string</code> | ✓ |  |
-| bgp_asn | BGP ASNs. | <code>map&#40;number&#41;</code> |  | <code title="&#123;&#10;  gcp1    &#61; 64513&#10;  gcp2    &#61; 64520&#10;  onprem1 &#61; 64514&#10;  onprem2 &#61; 64514&#10;&#125;">&#123;&#8230;&#125;</code> |
-| bgp_interface_ranges | BGP interface IP CIDR ranges. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  gcp1 &#61; &#34;169.254.1.0&#47;30&#34;&#10;  gcp2 &#61; &#34;169.254.2.0&#47;30&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| dns_forwarder_address | Address of the DNS server used to forward queries from on-premises. | <code>string</code> |  | <code>&#34;10.0.0.2&#34;</code> |
-| forwarder_address | GCP DNS inbound policy forwarder address. | <code>string</code> |  | <code>&#34;10.0.0.2&#34;</code> |
-| ip_ranges | IP CIDR ranges. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  gcp1   &#61; &#34;10.0.0.0&#47;24&#34;&#10;  gcp2   &#61; &#34;10.10.0.0&#47;24&#34;&#10;  onprem &#61; &#34;10.0.16.0&#47;24&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| region | VPC region. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  gcp1 &#61; &#34;europe-west1&#34;&#10;  gcp2 &#61; &#34;europe-west2&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| ssh_source_ranges | IP CIDR ranges that will be allowed to connect via SSH to the onprem instance. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;0.0.0.0&#47;0&#34;&#93;</code> |
+| [project_id](variables.tf#L59) | Project id for all resources. | <code>string</code> | ✓ |  |
+| [bgp_asn](variables.tf#L17) | BGP ASNs. | <code>map&#40;number&#41;</code> |  | <code title="&#123;&#10;  gcp1    &#61; 64513&#10;  gcp2    &#61; 64520&#10;  onprem1 &#61; 64514&#10;  onprem2 &#61; 64514&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [bgp_interface_ranges](variables.tf#L28) | BGP interface IP CIDR ranges. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  gcp1 &#61; &#34;169.254.1.0&#47;30&#34;&#10;  gcp2 &#61; &#34;169.254.2.0&#47;30&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [dns_forwarder_address](variables.tf#L37) | Address of the DNS server used to forward queries from on-premises. | <code>string</code> |  | <code>&#34;10.0.0.2&#34;</code> |
+| [forwarder_address](variables.tf#L43) | GCP DNS inbound policy forwarder address. | <code>string</code> |  | <code>&#34;10.0.0.2&#34;</code> |
+| [ip_ranges](variables.tf#L49) | IP CIDR ranges. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  gcp1   &#61; &#34;10.0.0.0&#47;24&#34;&#10;  gcp2   &#61; &#34;10.10.0.0&#47;24&#34;&#10;  onprem &#61; &#34;10.0.16.0&#47;24&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [region](variables.tf#L64) | VPC region. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  gcp1 &#61; &#34;europe-west1&#34;&#10;  gcp2 &#61; &#34;europe-west2&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [ssh_source_ranges](variables.tf#L73) | IP CIDR ranges that will be allowed to connect via SSH to the onprem instance. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;0.0.0.0&#47;0&#34;&#93;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| onprem-instance | Onprem instance details. |  |
-| test-instance1 | Test instance details. |  |
-| test-instance2 | Test instance details. |  |
+| [onprem-instance](outputs.tf#L17) | Onprem instance details. |  |
+| [test-instance1](outputs.tf#L26) | Test instance details. |  |
+| [test-instance2](outputs.tf#L33) | Test instance details. |  |
 
 <!-- END TFDOC -->
-

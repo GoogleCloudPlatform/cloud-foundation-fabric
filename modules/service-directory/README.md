@@ -87,34 +87,31 @@ module "dns-sd" {
 }
 # tftest:modules=2:resources=5
 ```
-
-
 <!-- BEGIN TFDOC -->
 
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| location | Namespace location. | <code>string</code> | ✓ |  |
-| name | Namespace name. | <code>string</code> | ✓ |  |
-| project_id | Project used for resources. | <code>string</code> | ✓ |  |
-| endpoint_config | Map of endpoint attributes, keys are in service/endpoint format. | <code title="map&#40;object&#40;&#123;&#10;  address  &#61; string&#10;  port     &#61; number&#10;  metadata &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| iam | IAM bindings for namespace, in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| labels | Labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| service_iam | IAM bindings for services, in {SERVICE => {ROLE => [MEMBERS]}} format. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| services | Service configuration, using service names as keys. | <code title="map&#40;object&#40;&#123;&#10;  endpoints &#61; list&#40;string&#41;&#10;  metadata  &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [location](variables.tf#L40) | Namespace location. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L45) | Namespace name. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L50) | Project used for resources. | <code>string</code> | ✓ |  |
+| [endpoint_config](variables.tf#L18) | Map of endpoint attributes, keys are in service/endpoint format. | <code title="map&#40;object&#40;&#123;&#10;  address  &#61; string&#10;  port     &#61; number&#10;  metadata &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam](variables.tf#L28) | IAM bindings for namespace, in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [labels](variables.tf#L34) | Labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [service_iam](variables.tf#L55) | IAM bindings for services, in {SERVICE => {ROLE => [MEMBERS]}} format. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [services](variables.tf#L61) | Service configuration, using service names as keys. | <code title="map&#40;object&#40;&#123;&#10;  endpoints &#61; list&#40;string&#41;&#10;  metadata  &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| endpoints | Endpoint resources. |  |
-| id | Namespace id (short name). |  |
-| name | Namespace name (long name). |  |
-| namespace | Namespace resource. |  |
-| service_id | Service ids (short names). |  |
-| service_names | Service ids (long names). |  |
-| services | Service resources. |  |
+| [endpoints](outputs.tf#L17) | Endpoint resources. |  |
+| [id](outputs.tf#L22) | Namespace id (short name). |  |
+| [name](outputs.tf#L27) | Namespace name (long name). |  |
+| [namespace](outputs.tf#L32) | Namespace resource. |  |
+| [service_id](outputs.tf#L40) | Service ids (short names). |  |
+| [service_names](outputs.tf#L50) | Service ids (long names). |  |
+| [services](outputs.tf#L60) | Service resources. |  |
 
 <!-- END TFDOC -->
-

@@ -58,26 +58,23 @@ module "on-prem" {
   }
 }
 ```
-
-
 <!-- BEGIN TFDOC -->
 
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| vpn_config | VPN configuration, type must be one of 'dynamic' or 'static'. | <code title="object&#40;&#123;&#10;  peer_ip        &#61; string&#10;  shared_secret  &#61; string&#10;  type           &#61; string&#10;  peer_ip2       &#61; string&#10;  shared_secret2 &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| config_variables | Additional variables used to render the cloud-config and CoreDNS templates. | <code>map&#40;any&#41;</code> |  | <code>&#123;&#125;</code> |
-| coredns_config | CoreDNS configuration path, if null default will be used. | <code>string</code> |  | <code>null</code> |
-| local_ip_cidr_range | IP CIDR range used for the Docker onprem network. | <code>string</code> |  | <code>&#34;192.168.192.0&#47;24&#34;</code> |
-| vpn_dynamic_config | BGP configuration for dynamic VPN, ignored if VPN type is 'static'. | <code title="object&#40;&#123;&#10;  local_bgp_asn      &#61; number&#10;  local_bgp_address  &#61; string&#10;  peer_bgp_asn       &#61; number&#10;  peer_bgp_address   &#61; string&#10;  local_bgp_asn2     &#61; number&#10;  local_bgp_address2 &#61; string&#10;  peer_bgp_asn2      &#61; number&#10;  peer_bgp_address2  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  local_bgp_asn      &#61; 64514&#10;  local_bgp_address  &#61; &#34;169.254.1.2&#34;&#10;  peer_bgp_asn       &#61; 64513&#10;  peer_bgp_address   &#61; &#34;169.254.1.1&#34;&#10;  local_bgp_asn2     &#61; 64514&#10;  local_bgp_address2 &#61; &#34;169.254.2.2&#34;&#10;  peer_bgp_asn2      &#61; 64520&#10;  peer_bgp_address2  &#61; &#34;169.254.2.1&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| vpn_static_ranges | Remote CIDR ranges for static VPN, ignored if VPN type is 'dynamic'. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;10.0.0.0&#47;8&#34;&#93;</code> |
+| [vpn_config](variables.tf#L35) | VPN configuration, type must be one of 'dynamic' or 'static'. | <code title="object&#40;&#123;&#10;  peer_ip        &#61; string&#10;  shared_secret  &#61; string&#10;  type           &#61; string&#10;  peer_ip2       &#61; string&#10;  shared_secret2 &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [config_variables](variables.tf#L17) | Additional variables used to render the cloud-config and CoreDNS templates. | <code>map&#40;any&#41;</code> |  | <code>&#123;&#125;</code> |
+| [coredns_config](variables.tf#L23) | CoreDNS configuration path, if null default will be used. | <code>string</code> |  | <code>null</code> |
+| [local_ip_cidr_range](variables.tf#L29) | IP CIDR range used for the Docker onprem network. | <code>string</code> |  | <code>&#34;192.168.192.0&#47;24&#34;</code> |
+| [vpn_dynamic_config](variables.tf#L46) | BGP configuration for dynamic VPN, ignored if VPN type is 'static'. | <code title="object&#40;&#123;&#10;  local_bgp_asn      &#61; number&#10;  local_bgp_address  &#61; string&#10;  peer_bgp_asn       &#61; number&#10;  peer_bgp_address   &#61; string&#10;  local_bgp_asn2     &#61; number&#10;  local_bgp_address2 &#61; string&#10;  peer_bgp_asn2      &#61; number&#10;  peer_bgp_address2  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  local_bgp_asn      &#61; 64514&#10;  local_bgp_address  &#61; &#34;169.254.1.2&#34;&#10;  peer_bgp_asn       &#61; 64513&#10;  peer_bgp_address   &#61; &#34;169.254.1.1&#34;&#10;  local_bgp_asn2     &#61; 64514&#10;  local_bgp_address2 &#61; &#34;169.254.2.2&#34;&#10;  peer_bgp_asn2      &#61; 64520&#10;  peer_bgp_address2  &#61; &#34;169.254.2.1&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [vpn_static_ranges](variables.tf#L70) | Remote CIDR ranges for static VPN, ignored if VPN type is 'dynamic'. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;10.0.0.0&#47;8&#34;&#93;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| cloud_config | Rendered cloud-config file to be passed as user-data instance metadata. |  |
+| [cloud_config](outputs.tf#L17) | Rendered cloud-config file to be passed as user-data instance metadata. |  |
 
 <!-- END TFDOC -->
-

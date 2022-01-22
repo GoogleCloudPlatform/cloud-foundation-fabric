@@ -66,33 +66,30 @@ configurations respectively.
 The following example assumes that provisioning of a Compute Engine VM requires access to
 the resources over the Internet (i.e. to install OS packages). Since Compute VM has no public IP
 address for security reasons, Internet connectivity is done with [Cloud NAT](https://cloud.google.com/nat/docs/overview).
-
-
 <!-- BEGIN TFDOC -->
 
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| project_id | Project id that references existing project. | <code>string</code> | ✓ |  |
-| billing_account | Billing account id used as default for new projects. | <code>string</code> |  | <code>null</code> |
-| cidrs | CIDR ranges for subnets | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  image-builder &#61; &#34;10.0.0.0&#47;24&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| create_packer_vars | Create packer variables file using template file and terraform output. | <code>bool</code> |  | <code>false</code> |
-| packer_account_users | List of members that will be allowed to impersonate Packer image builder service account in IAM format, i.e. 'user:{emailid}'. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| packer_source_cidrs | List of CIDR ranges allowed to connect to the temporary VM for provisioning. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;0.0.0.0&#47;0&#34;&#93;</code> |
-| project_create | Create project instead of using an existing one. | <code>bool</code> |  | <code>true</code> |
-| region | Default region for resources | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| root_node | The resource name of the parent folder or organization for project creation, in 'folders/folder_id' or 'organizations/org_id' format. | <code>string</code> |  | <code>null</code> |
-| use_iap | Use IAP tunnel to connect to Compute Engine instance for provisioning. | <code>bool</code> |  | <code>true</code> |
+| [project_id](variables.tf#L55) | Project id that references existing project. | <code>string</code> | ✓ |  |
+| [billing_account](variables.tf#L17) | Billing account id used as default for new projects. | <code>string</code> |  | <code>null</code> |
+| [cidrs](variables.tf#L23) | CIDR ranges for subnets | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  image-builder &#61; &#34;10.0.0.0&#47;24&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [create_packer_vars](variables.tf#L31) | Create packer variables file using template file and terraform output. | <code>bool</code> |  | <code>false</code> |
+| [packer_account_users](variables.tf#L37) | List of members that will be allowed to impersonate Packer image builder service account in IAM format, i.e. 'user:{emailid}'. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [packer_source_cidrs](variables.tf#L43) | List of CIDR ranges allowed to connect to the temporary VM for provisioning. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;0.0.0.0&#47;0&#34;&#93;</code> |
+| [project_create](variables.tf#L49) | Create project instead of using an existing one. | <code>bool</code> |  | <code>true</code> |
+| [region](variables.tf#L60) | Default region for resources | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [root_node](variables.tf#L66) | The resource name of the parent folder or organization for project creation, in 'folders/folder_id' or 'organizations/org_id' format. | <code>string</code> |  | <code>null</code> |
+| [use_iap](variables.tf#L72) | Use IAP tunnel to connect to Compute Engine instance for provisioning. | <code>bool</code> |  | <code>true</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| builder_sa | Packer's service account email. |  |
-| compute_sa | Packer's temporary VM service account email. |  |
-| compute_subnetwork | Name of a subnetwork for Packer's temporary VM. |  |
-| compute_zone | Name of a compute engine zone for Packer's temporary VM. |  |
+| [builder_sa](outputs.tf#L17) | Packer's service account email. |  |
+| [compute_sa](outputs.tf#L22) | Packer's temporary VM service account email. |  |
+| [compute_subnetwork](outputs.tf#L27) | Name of a subnetwork for Packer's temporary VM. |  |
+| [compute_zone](outputs.tf#L32) | Name of a compute engine zone for Packer's temporary VM. |  |
 
 <!-- END TFDOC -->
-

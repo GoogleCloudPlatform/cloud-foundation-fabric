@@ -59,33 +59,30 @@ watch '\
 A sample testing session using `tmux`:
 
 <a href="https://raw.githubusercontent.com/terraform-google-modules/cloud-foundation-fabric/master/networking/ilb-next-hop/test_session.png" title="Test session screenshot"><img src="./test_session.png" width="640px" alt="Test session screenshot"></img>
-
-
 <!-- BEGIN TFDOC -->
 
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| project_id | Existing project id. | <code>string</code> | ✓ |  |
-| ilb_right_enable | Route right to left traffic through ILB. | <code>bool</code> |  | <code>false</code> |
-| ilb_session_affinity | Session affinity configuration for ILBs. | <code>string</code> |  | <code>&#34;CLIENT_IP&#34;</code> |
-| ip_ranges | IP CIDR ranges used for VPC subnets. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  left  &#61; &#34;10.0.0.0&#47;24&#34;&#10;  right &#61; &#34;10.0.1.0&#47;24&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| prefix | Prefix used for resource names. | <code>string</code> |  | <code>&#34;ilb-test&#34;</code> |
-| project_create | Create project instead of using an existing one. | <code>bool</code> |  | <code>false</code> |
-| region | Region used for resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| zones | Zone suffixes used for instances. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;b&#34;, &#34;c&#34;&#93;</code> |
+| [project_id](variables.tf#L50) | Existing project id. | <code>string</code> | ✓ |  |
+| [ilb_right_enable](variables.tf#L17) | Route right to left traffic through ILB. | <code>bool</code> |  | <code>false</code> |
+| [ilb_session_affinity](variables.tf#L23) | Session affinity configuration for ILBs. | <code>string</code> |  | <code>&#34;CLIENT_IP&#34;</code> |
+| [ip_ranges](variables.tf#L29) | IP CIDR ranges used for VPC subnets. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  left  &#61; &#34;10.0.0.0&#47;24&#34;&#10;  right &#61; &#34;10.0.1.0&#47;24&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [prefix](variables.tf#L38) | Prefix used for resource names. | <code>string</code> |  | <code>&#34;ilb-test&#34;</code> |
+| [project_create](variables.tf#L44) | Create project instead of using an existing one. | <code>bool</code> |  | <code>false</code> |
+| [region](variables.tf#L55) | Region used for resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [zones](variables.tf#L61) | Zone suffixes used for instances. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;b&#34;, &#34;c&#34;&#93;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| addresses | IP addresses. |  |
-| backend_health_left | Command-line health status for left ILB backends. |  |
-| backend_health_right | Command-line health status for right ILB backends. |  |
-| ssh_gw | Command-line login to gateway VMs. |  |
-| ssh_vm_left | Command-line login to left VMs. |  |
-| ssh_vm_right | Command-line login to right VMs. |  |
+| [addresses](outputs.tf#L17) | IP addresses. |  |
+| [backend_health_left](outputs.tf#L28) | Command-line health status for left ILB backends. |  |
+| [backend_health_right](outputs.tf#L38) | Command-line health status for right ILB backends. |  |
+| [ssh_gw](outputs.tf#L48) | Command-line login to gateway VMs. |  |
+| [ssh_vm_left](outputs.tf#L56) | Command-line login to left VMs. |  |
+| [ssh_vm_right](outputs.tf#L64) | Command-line login to right VMs. |  |
 
 <!-- END TFDOC -->
-
