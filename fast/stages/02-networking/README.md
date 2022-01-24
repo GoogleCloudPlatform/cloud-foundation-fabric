@@ -295,7 +295,6 @@ DNS configurations are centralised in the `dns.tf` file. Spokes delegate DNS res
 | [main.tf](./main.tf) | Networking folder and hierarchical policy. | <code>folder</code> |  |
 | [monitoring.tf](./monitoring.tf) | Network monitoring dashboards. |  | <code>google_monitoring_dashboard</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  | <code>local_file</code> |
-| [providers.tf](./providers.tf) | Provider configurations. |  |  |
 | [test-resources.tf](./test-resources.tf) | temporary instances for testing | <code>compute-vm</code> |  |
 | [variables.tf](./variables.tf) | Module variables. |  |  |
 | [vpc-landing.tf](./vpc-landing.tf) | Landing VPC and related resources. | <code>net-cloudnat</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>project</code> |  |
