@@ -52,7 +52,7 @@ As mentioned before, fast relies on multiple stages to progressively bring up yo
 
 ### Environment-level resources (03)
 
-- [Project Factory](stages/03-projectfactory/prod/README.md)<br/>
+- [Project Factory](stages/03-project-factory/prod/README.md)<br/>
   YAML-based factory to create and configure application- or team-level projects. Configuration includes VPC-level settings for Shared VPC, service-level configuration for CMEK encryption via centralized keys, and service account creation for workloads and applications. This stage is meant to be used once per environment.
 - Data Platform (in development)
 - GKE Multitenant (in development)
