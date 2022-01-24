@@ -40,7 +40,7 @@ resource "local_file" "tfvars" {
 
 output "cloud_dns_inbound_policy" {
   description = "IP Addresses for Cloud DNS inbound policy."
-  value       = [for s in module.landing-vpc.subnets : cidrhost(s.ip_cidr_range, 2)]
+  value       = [for s in module.landing-untrusted-vpc.subnets : cidrhost(s.ip_cidr_range, 2)]
 }
 
 output "project_ids" {
@@ -64,27 +64,29 @@ output "project_numbers" {
 output "shared_vpc_host_projects" {
   description = "Shared VPC host projects."
   value = {
-    landing = module.landing-project.project_id
     dev     = module.dev-spoke-project.project_id
+    landing = module.landing-project.project_id
     prod    = module.prod-spoke-project.project_id
   }
 }
 
-
 output "shared_vpc_self_links" {
   description = "Shared VPC host projects."
   value = {
-    landing = module.landing-vpc.self_link
-    dev     = module.dev-spoke-vpc.self_link
-    prod    = module.prod-spoke-vpc.self_link
+    dev               = module.dev-spoke-vpc.self_link
+    landing-trusted   = module.landing-trusted-vpc.self_link
+    landing-untrusted = module.landing-untrusted-vpc.self_link
+    prod              = module.prod-spoke-vpc.self_link
   }
 }
-
 
 output "vpn_gateway_endpoints" {
   description = "External IP Addresses for the GCP VPN gateways."
   value = {
-    onprem-ew1 = { for v in module.landing-to-onprem-ew1-vpn.gateway.vpn_interfaces : v.id => v.ip_address }
+    onprem-ew1 = {
+      for v in module.landing-to-onprem-ew1-vpn.gateway.vpn_interfaces :
+      v.id => v.ip_address
+    }
   }
 }
 

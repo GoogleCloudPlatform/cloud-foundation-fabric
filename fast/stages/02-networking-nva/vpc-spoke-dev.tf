@@ -19,8 +19,8 @@
 module "dev-spoke-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account_id
-  # TODO: Reset counter before committing
-  name            = "dev-net-spoke-1"
+  # TODO: reset counter
+  name            = "dev-net-spoke-2"
   parent          = var.folder_id
   prefix          = var.prefix
   service_config = {

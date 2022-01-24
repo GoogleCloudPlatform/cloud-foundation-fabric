@@ -1,0 +1,5 @@
+# skip boilerplate check
+
+region: europe-west3
+ip_cidr_range: 10.135.0.0/24
+description: Default europe-west3 subnet for prod

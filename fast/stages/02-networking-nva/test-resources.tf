@@ -16,14 +16,14 @@
 
 # tfdoc:file:description temporary instances for testing
 
-module "test-vm-landing-0" {
+module "test-vm-landing-untrusted-0" {
   source     = "../../../modules/compute-vm"
   project_id = module.landing-project.project_id
   zone       = "europe-west1-b"
-  name       = "test-vm-1"
+  name       = "test-vm-0"
   network_interfaces = [{
-    network    = module.landing-vpc.self_link
-    subnetwork = module.landing-vpc.subnet_self_links["europe-west1/landing-default-ew1"]
+    network    = module.landing-untrusted-vpc.self_link
+    subnetwork = module.landing-untrusted-vpc.subnet_self_links["europe-west1/landing-untrusted-default-ew1"]
     alias_ips  = {}
     nat        = false
     addresses  = null
@@ -38,7 +38,34 @@ module "test-vm-landing-0" {
   metadata = {
     startup-script = <<EOF
       apt update
-      apt install iputils-ping 	bind9-dnsutils
+      apt install iputils-ping bind9-dnsutils
+    EOF
+  }
+}
+
+module "test-vm-landing-trusted-0" {
+  source     = "../../../modules/compute-vm"
+  project_id = module.landing-project.project_id
+  zone       = "europe-west1-b"
+  name       = "test-vm-1"
+  network_interfaces = [{
+    network    = module.landing-trusted-vpc.self_link
+    subnetwork = module.landing-trusted-vpc.subnet_self_links["europe-west1/landing-trusted-default-ew1"]
+    alias_ips  = {}
+    nat        = false
+    addresses  = null
+  }]
+  tags                   = ["ssh"]
+  service_account_create = true
+  boot_disk = {
+    image = "projects/debian-cloud/global/images/family/debian-10"
+    type  = "pd-balanced"
+    size  = 10
+  }
+  metadata = {
+    startup-script = <<EOF
+      apt update
+      apt install iputils-ping bind9-dnsutils
     EOF
   }
 }

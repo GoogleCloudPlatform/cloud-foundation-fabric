@@ -157,12 +157,8 @@ variable "router_configs" {
       adv = null
       # adv = { default = false, custom = [] }
     }
-    landing-ew1    = { asn = "64512", adv = null }
-    landing-ew4    = { asn = "64512", adv = null }
-    spoke-dev-ew1  = { asn = "64513", adv = null }
-    spoke-dev-ew4  = { asn = "64513", adv = null }
-    spoke-prod-ew1 = { asn = "64514", adv = null }
-    spoke-prod-ew4 = { asn = "64514", adv = null }
+    landing-untrusted-ew1 = { asn = "64512", adv = null }
+    landing-untrusted-ew4 = { asn = "64512", adv = null }
   }
 }
 
@@ -181,19 +177,21 @@ variable "vpn_onprem_configs" {
     })
   }))
   default = {
-    landing-ew1 = {
+    landing-untrusted-ew1 = {
       adv = {
         default = false
         custom = [
           "cloud_dns",
           "googleapis_restricted",
           "googleapis_private",
-          "landing_ew1",
-          "landing_ew4",
-          "spoke_prod_ew1",
-          "spoke_prod_ew4",
+          "landing_trusted_ew1",
+          "landing_trusted_ew4",
+          "landing_untrusted_ew1",
+          "landing_untrusted_ew4",
           "spoke_dev_ew1",
-          "spoke_dev_ew4"
+          "spoke_dev_ew4",
+          "spoke_prod_ew1",
+          "spoke_prod_ew4"
         ]
       }
       session_range = "169.254.1.0/29"
@@ -202,54 +200,6 @@ variable "vpn_onprem_configs" {
         asn       = 65534
         secret_id = "foobar"
       }
-    }
-  }
-}
-
-variable "vpn_spoke_configs" {
-  description = "VPN gateway configuration for spokes."
-  type = map(object({
-    adv = object({
-      default = bool
-      custom  = list(string)
-    })
-    session_range = string
-  }))
-  default = {
-    landing-ew1 = {
-      adv = {
-        default = false
-        custom  = ["rfc_1918_10", "rfc_1918_172", "rfc_1918_192"]
-      }
-      session_range = null # values for the landing router are pulled from the spoke range
-    }
-    landing-ew4 = {
-      adv = {
-        default = false
-        custom  = ["rfc_1918_10", "rfc_1918_172", "rfc_1918_192"]
-      }
-      session_range = null # values for the landing router are pulled from the spoke range
-    }
-    dev-ew1 = {
-      adv = {
-        default = false
-        custom  = ["spoke_dev_ew1", "spoke_dev_ew4"]
-      }
-      session_range = "169.254.0.0/27" # resize according to required number of tunnels
-    }
-    prod-ew1 = {
-      adv = {
-        default = false
-        custom  = ["spoke_prod_ew1", "spoke_prod_ew4"]
-      }
-      session_range = "169.254.0.64/27" # resize according to required number of tunnels
-    }
-    prod-ew4 = {
-      adv = {
-        default = false
-        custom  = ["spoke_prod_ew1", "spoke_prod_ew4"]
-      }
-      session_range = "169.254.0.96/27" # resize according to required number of tunnels
     }
   }
 }

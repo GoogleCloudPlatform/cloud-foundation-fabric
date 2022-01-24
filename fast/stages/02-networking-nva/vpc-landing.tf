@@ -19,7 +19,7 @@
 module "landing-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account_id
-  name            = "prod-net-landing-1" #TODO - reset counter
+  name            = "prod-net-landing-2" #TODO - reset counter
   parent          = var.folder_id
   prefix          = var.prefix
   service_config = {
@@ -101,11 +101,7 @@ module "landing-trusted-vpc" {
   project_id = module.landing-project.project_id
   name       = "prod-trusted-landing-0"
   mtu        = 1500
-  dns_policy = {
-    inbound  = true
-    logging  = false
-    outbound = null
-  }
+
   # set explicit routes for googleapis in case the default route is deleted
   routes = {
     private-googleapis = {
