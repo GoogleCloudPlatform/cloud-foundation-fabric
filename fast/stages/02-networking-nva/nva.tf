@@ -16,6 +16,10 @@
 
 # europe-west1
 
+data "template_file" "nva-startup-script-ew1" {
+  template = "${file("${path.module}/data/nva-startup-script-ew1.tpl")}"
+}
+
 module "nva-template-ew1" {
   source         = "../../../modules/compute-vm"
   project_id     = module.landing-project.project_id
@@ -44,7 +48,7 @@ module "nva-template-ew1" {
   }
   create_template = true
   metadata = {
-    startup-script = "apt update && apt install -y nginx && echo 'Running' > /var/www/index.html"
+    startup-script = data.template_file.nva-startup-script-ew1.rendered
   }
 }
 
@@ -75,6 +79,9 @@ module "ilb-nva-untrusted-ew1" {
     group          = module.nva-mig-ew1.group_manager.instance_group
     balancing_mode = "CONNECTION"
   }]
+  health_check_config = {
+    type = "http", check = { port = 80 }, config = {}, logging = false
+  }
 }
 
 module "ilb-nva-trusted-ew1" {
@@ -97,6 +104,10 @@ module "ilb-nva-trusted-ew1" {
 }
 
 # europe-west3
+
+data "template_file" "nva-startup-script-ew3" {
+  template = "${file("${path.module}/data/nva-startup-script-ew3.tpl")}"
+}
 
 module "nva-template-ew3" {
   source         = "../../../modules/compute-vm"
@@ -126,7 +137,7 @@ module "nva-template-ew3" {
   }
   create_template = true
   metadata = {
-    startup-script = "apt update && apt install -y nginx && echo 'Running' > /var/www/index.html"
+    startup-script = data.template_file.nva-startup-script-ew3.rendered
   }
 }
 
@@ -157,6 +168,9 @@ module "ilb-nva-untrusted-ew3" {
     group          = module.nva-mig-ew3.group_manager.instance_group
     balancing_mode = "CONNECTION"
   }]
+  health_check_config = {
+    type = "http", check = { port = 80 }, config = {}, logging = false
+  }
 }
 
 module "ilb-nva-trusted-ew3" {

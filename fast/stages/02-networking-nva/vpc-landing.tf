@@ -72,26 +72,39 @@ module "landing-untrusted-vpc" {
 }
 
 module "landing-untrusted-firewall" {
- source              = "../../../modules/net-vpc-firewall"
- project_id          = module.landing-project.project_id
- network             = module.landing-untrusted-vpc.name
- admin_ranges        = []
- http_source_ranges  = []
- https_source_ranges = []
- ssh_source_ranges   = []
- data_folder         = "${var.data_dir}/firewall-rules/landing-untrusted"
- cidr_template_file  = "${var.data_dir}/cidrs.yaml"
+  source              = "../../../modules/net-vpc-firewall"
+  project_id          = module.landing-project.project_id
+  network             = module.landing-untrusted-vpc.name
+  admin_ranges        = []
+  http_source_ranges  = []
+  https_source_ranges = []
+  ssh_source_ranges   = []
+  data_folder         = "${var.data_dir}/firewall-rules/landing-untrusted"
+  cidr_template_file  = "${var.data_dir}/cidrs.yaml"
 }
 
+# NAT
+
 module "landing-nat-ew1" {
- source         = "../../../modules/net-cloudnat"
- project_id     = module.landing-project.project_id
- region         = "europe-west1"
- name           = "ew1"
- router_create  = true
- router_name    = "prod-nat-ew1"
- router_network = module.landing-untrusted-vpc.name
- router_asn     = 4200001024
+  source         = "../../../modules/net-cloudnat"
+  project_id     = module.landing-project.project_id
+  region         = "europe-west1"
+  name           = "ew1"
+  router_create  = true
+  router_name    = "prod-nat-ew1"
+  router_network = module.landing-untrusted-vpc.name
+  router_asn     = 4200001024
+}
+
+module "landing-nat-ew3" {
+  source         = "../../../modules/net-cloudnat"
+  project_id     = module.landing-project.project_id
+  region         = "europe-west3"
+  name           = "ew3"
+  router_create  = true
+  router_name    = "prod-nat-ew3"
+  router_network = module.landing-untrusted-vpc.name
+  router_asn     = 4200001024
 }
 
 # Trusted VPC
@@ -123,13 +136,13 @@ module "landing-trusted-vpc" {
 }
 
 module "landing-trusted-firewall" {
- source              = "../../../modules/net-vpc-firewall"
- project_id          = module.landing-project.project_id
- network             = module.landing-trusted-vpc.name
- admin_ranges        = []
- http_source_ranges  = []
- https_source_ranges = []
- ssh_source_ranges   = []
- data_folder         = "${var.data_dir}/firewall-rules/landing-trusted"
- cidr_template_file  = "${var.data_dir}/cidrs.yaml"
+  source              = "../../../modules/net-vpc-firewall"
+  project_id          = module.landing-project.project_id
+  network             = module.landing-trusted-vpc.name
+  admin_ranges        = []
+  http_source_ranges  = []
+  https_source_ranges = []
+  ssh_source_ranges   = []
+  data_folder         = "${var.data_dir}/firewall-rules/landing-trusted"
+  cidr_template_file  = "${var.data_dir}/cidrs.yaml"
 }
