@@ -45,27 +45,42 @@ module "prod-spoke-project" {
 }
 
 module "prod-spoke-vpc" {
-  source        = "../../../modules/net-vpc"
-  project_id    = module.prod-spoke-project.project_id
-  name          = "prod-spoke-0"
-  mtu           = 1500
-  data_folder   = "${var.data_dir}/subnets/prod"
-  subnets_l7ilb = local.l7ilb_subnets.prod
-  # set explicit routes for googleapis in case the default route is deleted
+  source                          = "../../../modules/net-vpc"
+  project_id                      = module.prod-spoke-project.project_id
+  name                            = "prod-spoke-0"
+  mtu                             = 1500
+  data_folder                     = "${var.data_dir}/subnets/prod"
+  delete_default_routes_on_create = true
+  subnets_l7ilb                   = local.l7ilb_subnets.prod
+  # Set explicit routes for googleapis; send everything else to NVAs
   routes = {
     private-googleapis = {
       dest_range    = "199.36.153.8/30"
-      priority      = 1000
+      priority      = 999
       tags          = []
       next_hop_type = "gateway"
       next_hop      = "default-internet-gateway"
     }
     restricted-googleapis = {
       dest_range    = "199.36.153.4/30"
-      priority      = 1000
+      priority      = 999
       tags          = []
       next_hop_type = "gateway"
       next_hop      = "default-internet-gateway"
+    }
+    nva-ew1 = {
+      dest_range    = "0.0.0.0/0"
+      priority      = 1000
+      tags          = ["ew1"]
+      next_hop_type = "ilb"
+      next_hop      = module.ilb-nva-trusted-ew1.forwarding_rule_address
+    }
+    nva-ew3 = {
+      dest_range    = "0.0.0.0/0"
+      priority      = 1000
+      tags          = ["ew3"]
+      next_hop_type = "ilb"
+      next_hop      = module.ilb-nva-trusted-ew3.forwarding_rule_address
     }
   }
 }
