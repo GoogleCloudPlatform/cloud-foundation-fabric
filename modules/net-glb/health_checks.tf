@@ -27,12 +27,18 @@ locals {
     )
   ]
 
-  # If at least one group backend service without
-  # HC is defined, create also a default HC
+  health_checks_config_defaults = (
+    try(var.health_checks_config_defaults, null) == null
+    ? null
+    : { default = var.health_checks_config_defaults }
+  )
+
+  # If at least one group backend service without HC is defined,
+  # create also a default HC (if default HC is not null)
   health_checks_config = (
     length(local._backends_without_hcs) > 0
     ? merge(
-      { default = var.health_checks_config_defaults },
+      coalesce(local.health_checks_config_defaults, {}),
       coalesce(var.health_checks_config, {})
     )
     : coalesce(var.health_checks_config, {})
