@@ -30,7 +30,7 @@ FAST also aims to minimize the number of permissions granted to principals accor
 
 A resource factory consumes a simple representation of a resource (e.g., in YAML) and deploys it (e.g., using Terraform). Used correctly, factories can help decrease the management overhead of large-scale infrastructure deployments. See "[Resource Factories: A descriptive approach to Terraform](https://medium.com/google-cloud/resource-factories-a-descriptive-approach-to-terraform-581b3ebb59c)" for more details and the rationale behind factories.
 
-FAST uses YAML-based factories to deploy subnets and firewall rules and, as its name suggests, in the [project factory](./stages/03-project-factory/) stage.
+FAST uses YAML-based factories to deploy subnets and firewall rules and, as its name suggests, in the [project factory](./stages/03-project-factory/README.md) stage.
 
 ## High level design
 
@@ -52,7 +52,7 @@ As mentioned before, fast relies on multiple stages to progressively bring up yo
 
 ### Environment-level resources (03)
 
-- [Project Factory](03-projectfactory/prod/README.md)<br/>
+- [Project Factory](stages/03-project-factory/prod/README.md)<br/>
   YAML-based factory to create and configure application- or team-level projects. Configuration includes VPC-level settings for Shared VPC, service-level configuration for CMEK encryption via centralized keys, and service account creation for workloads and applications. This stage is meant to be used once per environment.
 - Data Platform (in development)
 - GKE Multitenant (in development)
