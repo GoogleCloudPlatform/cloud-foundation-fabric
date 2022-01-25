@@ -43,7 +43,7 @@ module "landing-to-onprem-ew1-vpn" {
   peer_external_gateway = var.vpn_onprem_configs.landing-ew1.peer_external_gateway
   tunnels = {
     for t in var.vpn_onprem_configs.landing-ew1.tunnels :
-    "remote-${t.vpn_gateway_interface}" => {
+    "remote-${t.vpn_gateway_interface}-${t.peer_external_gateway_interface}" => {
       bgp_peer = {
         address = cidrhost(t.session_range, 1)
         asn     = t.peer_asn
@@ -51,7 +51,7 @@ module "landing-to-onprem-ew1-vpn" {
       bgp_peer_options                = local.bgp_peer_options_onprem.landing-ew1
       bgp_session_range               = "${cidrhost(t.session_range, 2)}/30"
       ike_version                     = 2
-      peer_external_gateway_interface = 0
+      peer_external_gateway_interface = t.peer_external_gateway_interface
       router                          = null
       shared_secret                   = t.secret
       vpn_gateway_interface           = t.vpn_gateway_interface
