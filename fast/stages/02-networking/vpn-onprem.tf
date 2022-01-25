@@ -16,35 +16,45 @@
 
 # tfdoc:file:description VPN between landing and onprem.
 
-module "landing-to-onprem-ew1-vpn" {
-  source        = "../../../modules/net-vpn-ha"
-  project_id    = module.landing-project.project_id
-  network       = module.landing-vpc.self_link
-  region        = "europe-west1"
-  name          = "vpn-to-onprem-ew1"
-  router_create = true
-  router_name   = "landing-onprem-vpn-ew1"
-  router_asn    = var.router_configs.landing-ew1.asn
-  peer_external_gateway = {
-    redundancy_type = "SINGLE_IP_INTERNALLY_REDUNDANT"
-    interfaces = [{
-      id = 0
-      # on-prem router ip address
-      ip_address = var.vpn_onprem_configs.landing-ew1.peer.address
-    }]
-  }
-  tunnels = { for t in range(2) : "remote-${t}" => {
-    bgp_peer = {
-      address = cidrhost(var.vpn_onprem_configs.landing-ew1.session_range, 1 + (t * 4))
-      asn     = var.vpn_onprem_configs.landing-ew1.peer.asn
+locals {
+  bgp_peer_options_onprem = {
+    for k, v in var.vpn_onprem_configs :
+    k => v.adv == null ? null : {
+      advertise_groups = []
+      advertise_ip_ranges = {
+        for adv in(v.adv == null ? [] : v.adv.custom) :
+        var.custom_adv[adv] => adv
+      }
+      advertise_mode = try(v.adv.default, false) ? "DEFAULT" : "CUSTOM"
+      route_priority = null
     }
-    bgp_peer_options                = local.bgp_peer_options_onprem["landing-ew1"]
-    bgp_session_range               = "${cidrhost(var.vpn_onprem_configs.landing-ew1.session_range, 2 + (t * 4))}/30"
-    ike_version                     = 2
-    peer_external_gateway_interface = 0
-    router                          = null
-    shared_secret                   = var.vpn_onprem_configs.landing-ew1.peer.secret_id
-    vpn_gateway_interface           = t
+  }
+}
+
+module "landing-to-onprem-ew1-vpn" {
+  source                = "../../../modules/net-vpn-ha"
+  project_id            = module.landing-project.project_id
+  network               = module.landing-vpc.self_link
+  region                = "europe-west1"
+  name                  = "vpn-to-onprem-ew1"
+  router_create         = true
+  router_name           = "landing-onprem-vpn-ew1"
+  router_asn            = var.router_configs.landing-ew1.asn
+  peer_external_gateway = var.vpn_onprem_configs.landing-ew1.peer_external_gateway
+  tunnels = {
+    for t in var.vpn_onprem_configs.landing-ew1.tunnels :
+    "remote-${t.vpn_gateway_interface}" => {
+      bgp_peer = {
+        address = cidrhost(t.session_range, 1)
+        asn     = t.peer_asn
+      }
+      bgp_peer_options                = local.bgp_peer_options_onprem.landing-ew1
+      bgp_session_range               = "${cidrhost(t.session_range, 2)}/30"
+      ike_version                     = 2
+      peer_external_gateway_interface = 0
+      router                          = null
+      shared_secret                   = t.secret
+      vpn_gateway_interface           = t.vpn_gateway_interface
     }
   }
 }
