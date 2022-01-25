@@ -20,7 +20,7 @@ module "test-vm-landing-0" {
   source     = "../../../modules/compute-vm"
   project_id = module.landing-project.project_id
   zone       = "europe-west1-b"
-  name       = "test-vm-1"
+  name       = "test-vm-0"
   network_interfaces = [{
     network    = module.landing-vpc.self_link
     subnetwork = module.landing-vpc.subnet_self_links["europe-west1/landing-default-ew1"]
