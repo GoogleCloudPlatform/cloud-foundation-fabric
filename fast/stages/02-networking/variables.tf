@@ -47,7 +47,7 @@ variable "dns" {
   description = "Onprem DNS resolvers"
   type        = map(list(string))
   default = {
-    onprem = ["10.0.200.3"]
+    onprem = ["10.0.64.2"]
   }
 }
 
@@ -195,7 +195,7 @@ variable "vpn_onprem_configs" {
       peer_external_gateway = {
         redundancy_type = "SINGLE_IP_INTERNALLY_REDUNDANT"
         interfaces = [
-          { id = 0, ip_address = "8.8.8.8" },
+          { id = 0, ip_address = "78.46.123.183" },
         ]
       }
       tunnels = [

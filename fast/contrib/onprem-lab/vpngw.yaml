@@ -1,0 +1,264 @@
+#cloud-config
+users:
+  - name: admin
+    groups: users, admin
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    ssh_authorized_keys:
+      - ssh-rsa <key>
+package_update: true
+package_upgrade: true
+packages:
+  - nginx
+  - strongswan
+  - libstrongswan-standard-plugins
+  - frr
+
+runcmd:
+  - sed -ie '/^PasswordAuthentication/s/^.*$/PasswordAuthentication no/' /etc/ssh/sshd_config
+  - service ssh restart
+  - rm /var/www/html/*
+  - echo "Greetings from $(curl -s ifconfig.me)!" >>/var/www/html/index.html
+  - service strongswan-starter restart
+  - service frr restart
+  - curl -s -L https://github.com/coredns/coredns/releases/download/v1.8.7/coredns_1.8.7_linux_amd64.tgz | tar xz -C /usr/bin
+  - systemctl enable coredns.service
+  - systemctl start coredns.service
+
+write_files:
+  # IPSEC tunnel secret
+  - path: /etc/ipsec.secrets
+    owner: root:root
+    permissions: "0600"
+    content: |
+      ${peer1.peer_ip} : PSK "${peer1.shared_secret}"
+      ${peer2.peer_ip} : PSK "${peer2.shared_secret}"
+
+  # IPSEC tunnel configuration
+  - path: /etc/ipsec.conf
+    owner: root:root
+    permissions: "0644"
+    content: |
+      conn %default
+        ikelifetime=600m
+        keylife=180m
+        rekeymargin=3m
+        keyingtries=3
+        keyexchange=ikev2
+        mobike=no
+        ike=aes256gcm16-sha512-modp2048
+        esp=aes256gcm16-sha512-modp8192
+        authby=psk
+      conn gcp
+        leftupdown="/var/lib/strongswan/ipsec-vti.sh 0 ${peer1.peer_bgp_address}/30 ${peer1.local_bgp_address}/30"
+        left=%any
+        leftid=%any
+        leftsubnet=0.0.0.0/0
+        leftauth=psk
+        right=${peer1.peer_ip}
+        rightid=${peer1.peer_ip}
+        rightsubnet=0.0.0.0/0
+        rightauth=psk
+        type=tunnel
+        auto=start
+        dpdaction=restart
+        closeaction=restart
+        mark=%unique
+      conn gcp2
+        leftupdown="/var/lib/strongswan/ipsec-vti.sh 1 ${peer2.peer_bgp_address}/30 ${peer2.local_bgp_address}/30"
+        left=%any
+        leftid=%any
+        leftsubnet=0.0.0.0/0
+        leftauth=psk
+        right=${peer2.peer_ip}
+        rightid=${peer2.peer_ip}
+        rightsubnet=0.0.0.0/0
+        rightauth=psk
+        type=tunnel
+        auto=start
+        dpdaction=restart
+        closeaction=restart
+        mark=%unique
+
+  # Charon configuration
+  - path: /etc/strongswan.d/vti.conf
+    owner: root:root
+    permissions: "0644"
+    content: |
+      charon {
+          install_routes = no
+      }
+
+  # ipsec-vti.sh
+  - path: /var/lib/strongswan/ipsec-vti.sh
+    owner: root:root
+    permissions: "0755"
+    content: |
+      #!/bin/bash
+      # Copyright 2022 Google LLC
+      #
+      # Licensed under the Apache License, Version 2.0 (the "License");
+      # you may not use this file except in compliance with the License.
+      # You may obtain a copy of the License at
+      #
+      #      https://www.apache.org/licenses/LICENSE-2.0
+      #
+      # Unless required by applicable law or agreed to in writing, software
+      # distributed under the License is distributed on an "AS IS" BASIS,
+      # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+      # See the License for the specific language governing permissions and
+      # limitations under the License.
+
+      # originally published at
+      # https://cloud.google.com/community/tutorials/using-cloud-vpn-with-strongswan
+
+      set -o nounset
+      set -o errexit
+
+      IP=$(which ip)
+
+      PLUTO_MARK_OUT_ARR=($${PLUTO_MARK_OUT//// })
+      PLUTO_MARK_IN_ARR=($${PLUTO_MARK_IN//// })
+
+      VTI_TUNNEL_ID=$${1}
+      VTI_REMOTE=$${2}
+      VTI_LOCAL=$${3}
+
+      LOCAL_IF="$${PLUTO_INTERFACE}"
+      VTI_IF="vti$${VTI_TUNNEL_ID}"
+      # GCP's MTU is 1460
+      GCP_MTU="1460"
+      # ipsec overhead is 73 bytes, we need to compute new mtu.
+      VTI_MTU=$((GCP_MTU-73))
+
+      case "$${PLUTO_VERB}" in
+          up-client)
+              sudo $${IP} link add $${VTI_IF} type vti local $${PLUTO_ME} remote $${PLUTO_PEER} okey $${PLUTO_MARK_OUT_ARR[0]} ikey $${PLUTO_MARK_IN_ARR[0]}
+              sudo $${IP} addr add $${VTI_LOCAL} remote $${VTI_REMOTE} dev "$${VTI_IF}"
+              sudo $${IP} link set $${VTI_IF} up mtu $${VTI_MTU}
+
+              # Disable IPSEC Policy
+              sudo /sbin/sysctl -w net.ipv4.conf.$${VTI_IF}.disable_policy=1
+
+              # Enable loosy source validation, if possible. Otherwise disable validation.
+              sudo /sbin/sysctl -w net.ipv4.conf.$${VTI_IF}.rp_filter=2 || sysctl -w net.ipv4.conf.$${VTI_IF}.rp_filter=0
+
+              # If you would like to use VTI for policy-based you shoud take care of routing by yourselv, e.x.
+              if [[ "$${PLUTO_PEER_CLIENT}" != "0.0.0.0/0" ]]; then
+                  $${IP} r add "$${PLUTO_PEER_CLIENT}" dev "$${VTI_IF}"
+              fi
+              ;;
+          down-client)
+              sudo $${IP} tunnel del "$${VTI_IF}"
+              ;;
+      esac
+
+      # Enable IPv4 forwarding
+      sudo /sbin/sysctl -w net.ipv4.ip_forward=1
+
+      # Disable IPSEC Encryption on local net
+      sudo /sbin/sysctl -w net.ipv4.conf.$${LOCAL_IF}.disable_xfrm=1
+      sudo /sbin/sysctl -w net.ipv4.conf.$${LOCAL_IF}.disable_policy=1
+
+  # FRR config
+  - path: /etc/frr/frr.conf
+    owner: root:root
+    permissions: "0640"
+    content: |
+      frr defaults traditional
+      hostname vpngw
+      log syslog informational
+      no ipv6 forwarding
+      service integrated-vtysh-config
+      !
+      router bgp ${local_asn}
+      neighbor ${peer1.peer_bgp_address} remote-as ${remote_asn}
+      neighbor ${peer2.peer_bgp_address} remote-as ${remote_asn}
+      !
+      address-family ipv4 unicast
+        redistribute connected
+        neighbor ${peer1.peer_bgp_address} route-map gcp in
+        neighbor ${peer1.peer_bgp_address} route-map gcp out
+        neighbor ${peer2.peer_bgp_address} route-map gcp in
+        neighbor ${peer2.peer_bgp_address} route-map gcp out
+      exit-address-family
+      !
+      route-map gcp permit 10
+      !
+      route-map import permit 1
+      !
+      route-map export permit 1
+      !
+      line vty
+      !
+
+  # FRR daemons
+  - path: /etc/frr/daemons
+    owner: root:root
+    permissions: "0640"
+    content: |
+      bgpd=yes
+      ospfd=no
+      ospf6d=no
+      ripd=no
+      ripngd=no
+      isisd=no
+      pimd=no
+      ldpd=no
+      nhrpd=no
+      eigrpd=no
+      babeld=no
+      sharpd=no
+      pbrd=no
+      bfdd=no
+      fabricd=no
+      vrrpd=no
+      vtysh_enable=yes
+      zebra_options="  -A 127.0.0.1 -s 90000000"
+      bgpd_options="   -A 127.0.0.1"
+
+  # CoreDNS systemd unit
+  - path: /lib/systemd/system/coredns.service
+    owner: root:root
+    permissions: "0640"
+    content: |
+      [Unit]
+      Description=CoreDNS DNS server
+      Documentation=https://coredns.io
+      After=network.target
+      [Service]
+      PermissionsStartOnly=true
+      LimitNOFILE=1048576
+      LimitNPROC=512
+      CapabilityBoundingSet=CAP_NET_BIND_SERVICE
+      AmbientCapabilities=CAP_NET_BIND_SERVICE
+      NoNewPrivileges=true
+      User=root
+      WorkingDirectory=~
+      ExecStart=/usr/bin/coredns -conf=/etc/coredns/Corefile
+      ExecReload=/bin/kill -SIGUSR1 $MAINPID
+      Restart=on-failure
+      [Install]
+      WantedBy=multi-user.target
+
+  # CoreDNS config
+  - path: /etc/coredns/Corefile
+    owner: root:root
+    permissions: "0640"
+    content: |
+      . {
+          hosts /etc/coredns/onprem-hosts onprem.example.com {
+              127.0.0.1   localhost.onprem.example.com localhost
+          }
+          forward . /etc/resolv.conf
+          reload
+          log
+          errors
+      }
+
+  # CoreDNS sample hosts file
+  - path: /etc/coredns/onprem-hosts
+    owner: root:root
+    permissions: "0640"
+    content: |
+      127.0.0.10 ten

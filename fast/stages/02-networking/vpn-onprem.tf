@@ -32,15 +32,21 @@ locals {
 }
 
 module "landing-to-onprem-ew1-vpn" {
-  source                = "../../../modules/net-vpn-ha"
-  project_id            = module.landing-project.project_id
-  network               = module.landing-vpc.self_link
-  region                = "europe-west1"
-  name                  = "vpn-to-onprem-ew1"
-  router_create         = true
-  router_name           = "landing-onprem-vpn-ew1"
-  router_asn            = var.router_configs.landing-ew1.asn
-  peer_external_gateway = var.vpn_onprem_configs.landing-ew1.peer_external_gateway
+  source        = "../../../modules/net-vpn-ha"
+  project_id    = module.landing-project.project_id
+  network       = module.landing-vpc.self_link
+  region        = "europe-west1"
+  name          = "vpn-to-onprem-ew1"
+  router_create = true
+  router_name   = "landing-onprem-vpn-ew1"
+  router_asn    = var.router_configs.landing-ew1.asn
+  #peer_external_gateway = var.vpn_onprem_configs.landing-ew1.peer_external_gateway
+  peer_external_gateway = {
+    redundancy_type = "SINGLE_IP_INTERNALLY_REDUNDANT"
+    interfaces = [
+      { id = 0, ip_address = module.onprem.ips.public },
+    ]
+  }
   tunnels = {
     for t in var.vpn_onprem_configs.landing-ew1.tunnels :
     "remote-${t.vpn_gateway_interface}-${t.peer_external_gateway_interface}" => {

@@ -25,7 +25,7 @@ module "onprem-example-dns-forwarding" {
   name            = "example-com"
   domain          = "onprem.example.com."
   client_networks = [module.landing-vpc.self_link]
-  forwarders      = { for ip in var.dns.onprem : ip => null }
+  forwarders      = { (module.onprem.ips.private) = null }
 }
 
 module "reverse-10-dns-forwarding" {
@@ -35,7 +35,7 @@ module "reverse-10-dns-forwarding" {
   name            = "root-reverse-10"
   domain          = "10.in-addr.arpa."
   client_networks = [module.landing-vpc.self_link]
-  forwarders      = { for ip in var.dns.onprem : ip => null }
+  forwarders      = { (module.onprem.ips.private) = null }
 }
 
 module "gcp-example-dns-private-zone" {
