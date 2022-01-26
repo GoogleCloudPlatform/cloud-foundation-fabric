@@ -177,10 +177,11 @@ variable "vpn_onprem_configs" {
       }))
     })
     tunnels = list(object({
-      peer_asn              = number
-      secret                = string
-      session_range         = string
-      vpn_gateway_interface = number
+      peer_asn                        = number
+      peer_external_gateway_interface = number
+      secret                          = string
+      session_range                   = string
+      vpn_gateway_interface           = number
     }))
   }))
   default = {
@@ -199,16 +200,18 @@ variable "vpn_onprem_configs" {
       }
       tunnels = [
         {
-          peer_asn              = 65534
-          secret                = "foobar"
-          session_range         = "169.254.1.0/30"
-          vpn_gateway_interface = 0
+          peer_asn                        = 65534
+          peer_external_gateway_interface = 0
+          secret                          = "foobar"
+          session_range                   = "169.254.1.0/30"
+          vpn_gateway_interface           = 0
         },
         {
-          peer_asn              = 65534
-          secret                = "foobar"
-          session_range         = "169.254.1.4/30"
-          vpn_gateway_interface = 1
+          peer_asn                        = 65534
+          peer_external_gateway_interface = 0
+          secret                          = "foobar"
+          session_range                   = "169.254.1.4/30"
+          vpn_gateway_interface           = 1
         }
       ]
     }

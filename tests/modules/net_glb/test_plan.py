@@ -143,6 +143,22 @@ def test_group_default_hc(plan_runner):
   assert 'google_compute_url_map' in resources
 
 
+def test_group_no_hc(plan_runner):
+  "Tests a group backend service without HCs (including no default HC)."
+  _, resources = plan_runner(backend_services_config=_BACKEND_GROUP,
+                             health_checks_config_defaults='null')
+
+  assert len(resources) == 4
+  resources = dict((r['type'], r['values']) for r in resources)
+
+  assert 'google_compute_backend_service' in resources
+  assert 'google_compute_global_forwarding_rule' in resources
+  assert 'google_compute_health_check' not in resources
+  assert 'google_compute_target_http_proxy' in resources
+  assert 'google_compute_target_https_proxy' not in resources
+  assert 'google_compute_url_map' in resources
+
+
 def test_group_existing_hc(plan_runner):
   "Tests a group backend service with referencing an existing HC."
   _, resources = plan_runner(backend_services_config=_BACKEND_GROUP_HC)

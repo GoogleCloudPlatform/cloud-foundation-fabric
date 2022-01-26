@@ -111,6 +111,52 @@ module "glb" {
 # tftest:modules=1:resources=5
 ```
 
+### Serverless Backends
+
+Serverless backends can also be used, as shown in the example below.
+
+```hcl
+module "glb" {
+  source     = "./modules/net-glb"
+  name       = "glb-test"
+  project_id = var.project_id
+
+  # This is important as serverless backends require no HCs
+  health_checks_config_defaults = null
+
+  backend_services_config = {
+    my-serverless-backend = {
+      bucket_config = null
+      enable_cdn    = false
+      cdn_config    = null
+      group_config = {
+        backends = [
+          {
+            group   = google_compute_region_network_endpoint_group.serverless-neg.id
+            options = null
+          }
+        ],
+        health_checks = []
+        log_config = null
+        options = null
+      }
+    }
+  }
+}
+
+resource "google_compute_region_network_endpoint_group" "serverless-neg" {
+  name                  = "my-serverless-neg"
+  project               = var.project_id
+  region                = "europe-west1"
+  network_endpoint_type = "SERVERLESS"
+
+  cloud_run {
+    service = "my-cloud-run-service"
+  }
+}
+# tftest:modules=1:resources=4
+```
+
 ### Mixing Backends
 
 Backends can be multiple, group and bucket backends can be mixed and group backends support multiple groups.
