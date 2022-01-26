@@ -3,10 +3,12 @@
 This module implement an opinionated Data Platform (DP) that create and set up projects (and related resources) to be used for your workloads.
 
 # Design overview and choices #TODO
-Diagram and introduction
+This is the Data Platform architecture we are going to deploy.
+
+![Data Platform Architecture overview](./images/overview_diagram.png "Data Platform Architecture overview")
+
 ## Project structure
-The DP is designed to rely on several projects, one prj per data stage. This is done to better separate different
-stages of the data journey and rely on project level roles.
+The DP is designed to rely on several projects, one prj per data stage. This is done to better separate different stages of the data journey and rely on project level roles.
 
 The following projects will be created:
 * **Landing** This Project is intended to store data temporarily. Data are pushed to Cloud Storage, BigQuery or Cloud PubSub. Resource configured with 3 months lifecycle policy.
@@ -23,8 +25,33 @@ The following projects will be created:
 * **Exposure** This project is intended to host resources to expose your data. To expose Bigquery data, we strongly suggest to rely on Authorized views. Other resources may better fit on particular data access pattern, example: Cloud SQL may be needed if you need to expose data with low latency, BigTable may be needed on use case where you need low latency to access data.
 
 ## Roles
-Roles will be granted at Project level.
+We assigned roles on resources at Project level assigning the appropriate role to groups. We recommend not adding human users directly to the resource-access groups with IAM permissions to access data.
+
+The following roles where assigned to different groups:
+
+| Group  | Landing | Load | Data Lake - L0 | Data Lake - L1 | Data Lake - L2 | Data Lake - Exposure |
+| :----- | ------- | ---- | -------------- | -------------- | -------------- | -------------------- |
+| gcp-data-scientists | | | | | | | |
+| gcp-data-engineers | | | | | | | |
+| gcp-data-security | | | | | | |
+
+
+The following roles where assigned to different Service Accounts:
+
+
 ## Service accounts #TODO
+Service Account creation follow the following principals:
+- Each service account perform a single task aving access to the minimun number of projects (example: the Cloud Dataflow Service Account has access to the Landing project and to the Data Lake L0 project)
+- Each Service Account has least privilage on each project. 
+
+### Service Account Keys
+Service Account Keys (SAK) are out of scope for this example. The example implemented rely on Service Account Impersonification avoiding the creation of SAK.
+
+The use of SAK within a data pipeline incurs several security risks, as these are physical credentials, matched to an automated system, that can be distributed without oversight or control. 
+
+Whilst necessary in some scenarios, such as programmatic access from on-premise or alternative clouds, we recommend identify a structured process to mitigate risks associated with the use of service account keys.
+
+
 - Service account with minimal roles
 ## Groups #TODO
 Describe here groups to configure and their role:
@@ -42,7 +69,7 @@ How to rely on Shared-VPC
 ## Encryption
 We suggest a centralized approach to Keys management, to let the Security team be the only team that can access encryption material. Keyrings and Keys belongs to a project external to the DP. 
 
-![Centralized Cloud KMS high level diagram](.images/kms_diagram.png "Centralized Cloud KMS high level diagram")
+![Centralized Cloud KMS high level diagram](./images/kms_diagram.png "Centralized Cloud KMS high level diagram")
 
 To configure the use of Cloud KMS on resources you have to specify key URL on the 'service_encryption_keys'. Key location should match the resource location. Example:
 
