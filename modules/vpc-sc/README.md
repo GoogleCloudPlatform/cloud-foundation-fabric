@@ -143,7 +143,7 @@ module "test" {
 ```
 
 ## Notes
-- To remove an Access Level, first remove the binding between Perimeter and the Access Level. In a secon Terraform apply run you'll be able to remove the Access Level. 
+- To remove an Access Level, first remove the binding between Perimeter and the Access Level without removing the Access Level itself. In a second Terraform apply run you'll be able to remove the Access Level. 
 
 ## TODO
 
