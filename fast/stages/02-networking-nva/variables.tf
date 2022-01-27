@@ -20,6 +20,12 @@ variable "billing_account_id" {
   type        = string
 }
 
+variable "test_vms_in_secondary_region" {
+  description = "Whether the test VMs should be created also in the secondary region."
+  type        = bool
+  default     = false
+}
+
 variable "custom_adv" {
   description = "Custom advertisement definitions in name => range format."
   type        = map(string)

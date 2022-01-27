@@ -6,10 +6,12 @@ sysctl -p /etc/sysctl.conf &&
 /etc/init.d/procps restart
 
 echo 'Setting Routes'
-sudo ip route add 10.128.0.0/24 via 10.129.0.1 dev ens4
-sudo ip route add 10.130.0.0/24 via 10.131.0.1 dev ens5
-sudo ip route add 10.132.0.0/24 via 10.131.0.1 dev ens5
-sudo ip route add 10.133.0.0/24 via 10.131.0.1 dev ens5
+ip route add 10.128.0.0/24 via 10.129.0.1 dev ens4
+ip route add 10.130.0.0/24 via 10.131.0.1 dev ens5
+ip route add 10.132.0.0/24 via 10.131.0.1 dev ens5
+ip route add 10.133.0.0/24 via 10.131.0.1 dev ens5
+ip route add 10.134.0.0/24 via 10.131.0.1 dev ens5
+ip route add 10.135.0.0/24 via 10.131.0.1 dev ens5
 
 echo 'Adding PBR rules to answer HCs also from the secondary nic'
 grep -qxF '200 hc' /etc/iproute2/rt_tables || echo '200     hc' >> /etc/iproute2/rt_tables
@@ -22,7 +24,11 @@ done
 ip rule add from $ip_addr_ens5 lookup hc
 ip route add default via 10.131.0.1 dev ens5 table hc
 
+echo 'Setting NAT masquerade (for Internet connectivity)'
+sudo iptables --append FORWARD --in-interface ens5 -j ACCEPT
+sudo iptables --table nat --append POSTROUTING --out-interface ens4 -j MASQUERADE
+
 echo 'Installing Nginx for HC tests'
-apt update &&
-apt install -y nginx &&
+apt-get update &&
+apt-get install -y nginx &&
 echo 'Running' > /var/www/html/index.html

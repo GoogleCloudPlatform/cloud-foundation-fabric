@@ -110,10 +110,11 @@ module "landing-nat-ew3" {
 # Trusted VPC
 
 module "landing-trusted-vpc" {
-  source     = "../../../modules/net-vpc"
-  project_id = module.landing-project.project_id
-  name       = "prod-trusted-landing-0"
-  mtu        = 1500
+  source                          = "../../../modules/net-vpc"
+  project_id                      = module.landing-project.project_id
+  name                            = "prod-trusted-landing-0"
+  delete_default_routes_on_create = true
+  mtu                             = 1500
 
   # set explicit routes for googleapis in case the default route is deleted
   routes = {

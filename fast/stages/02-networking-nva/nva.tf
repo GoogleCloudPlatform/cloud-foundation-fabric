@@ -16,10 +16,6 @@
 
 # europe-west1
 
-data "template_file" "nva-startup-script-ew1" {
-  template = "${file("${path.module}/data/nva-startup-script-ew1.tpl")}"
-}
-
 module "nva-template-ew1" {
   source         = "../../../modules/compute-vm"
   project_id     = module.landing-project.project_id
@@ -48,7 +44,7 @@ module "nva-template-ew1" {
   }
   create_template = true
   metadata = {
-    startup-script = data.template_file.nva-startup-script-ew1.rendered
+    startup-script = templatefile("${path.module}/data/nva-startup-script-ew1.tpl", {})
   }
 }
 
@@ -105,10 +101,6 @@ module "ilb-nva-trusted-ew1" {
 
 # europe-west3
 
-data "template_file" "nva-startup-script-ew3" {
-  template = "${file("${path.module}/data/nva-startup-script-ew3.tpl")}"
-}
-
 module "nva-template-ew3" {
   source         = "../../../modules/compute-vm"
   project_id     = module.landing-project.project_id
@@ -137,7 +129,7 @@ module "nva-template-ew3" {
   }
   create_template = true
   metadata = {
-    startup-script = data.template_file.nva-startup-script-ew3.rendered
+    startup-script = templatefile("${path.module}/data/nva-startup-script-ew3.tpl", {})
   }
 }
 
