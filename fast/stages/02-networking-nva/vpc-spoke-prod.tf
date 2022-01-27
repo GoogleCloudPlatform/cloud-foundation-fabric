@@ -20,7 +20,7 @@ module "prod-spoke-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account_id
   # TODO: reset counter
-  name            = "prod-net-spoke-2"
+  name            = "prod-net-spoke-3"
   parent          = var.folder_id
   prefix          = var.prefix
   service_config = {
@@ -75,24 +75,24 @@ module "prod-spoke-vpc" {
       next_hop_type = "ilb"
       next_hop      = module.ilb-nva-trusted-ew1.forwarding_rule_address
     }
-    nva-ew3-to-ew3 = {
+    nva-ew4-to-ew4 = {
       dest_range    = "0.0.0.0/0"
       priority      = 1000
-      tags          = ["ew3"]
+      tags          = ["ew4"]
       next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-trusted-ew3.forwarding_rule_address
+      next_hop      = module.ilb-nva-trusted-ew4.forwarding_rule_address
     }
-    nva-ew1-to-ew3 = {
+    nva-ew1-to-ew4 = {
       dest_range    = "0.0.0.0/0"
       priority      = 1001
       tags          = ["ew1"]
       next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-trusted-ew3.forwarding_rule_address
+      next_hop      = module.ilb-nva-trusted-ew4.forwarding_rule_address
     }
-    nva-ew3-to-ew1 = {
+    nva-ew4-to-ew1 = {
       dest_range    = "0.0.0.0/0"
       priority      = 1001
-      tags          = ["ew3"]
+      tags          = ["ew4"]
       next_hop_type = "ilb"
       next_hop      = module.ilb-nva-trusted-ew1.forwarding_rule_address
     }

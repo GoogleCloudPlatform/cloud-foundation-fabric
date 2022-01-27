@@ -19,7 +19,7 @@
 module "landing-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account_id
-  name            = "prod-net-landing-2" #TODO - reset counter
+  name            = "prod-net-landing-3" #TODO - reset counter
   parent          = var.folder_id
   prefix          = var.prefix
   service_config = {
@@ -46,28 +46,30 @@ module "landing-untrusted-vpc" {
   project_id = module.landing-project.project_id
   name       = "prod-untrusted-landing-0"
   mtu        = 1500
+
   dns_policy = {
     inbound  = true
     logging  = false
     outbound = null
   }
-  # set explicit routes for googleapis in case the default route is deleted
-  # routes = {
-  #  private-googleapis = {
-  #    dest_range    = "199.36.153.8/30"
-  #    priority      = 1000
-  #    tags          = []
-  #    next_hop_type = "gateway"
-  #    next_hop      = "default-internet-gateway" #TODO: route to ILB 
-  #  }
-  #  restricted-googleapis = {
-  #    dest_range    = "199.36.153.4/30"
-  #    priority      = 1000
-  #    tags          = []
-  #    next_hop_type = "gateway"
-  #    next_hop      = "default-internet-gateway" #TODO: route to ILB 
-  #  }
-  #}
+
+  # Set explicit routes for googleapis in case the default route is deleted
+  routes = {
+   private-googleapis = {
+     dest_range    = "199.36.153.8/30"
+     priority      = 1000
+     tags          = []
+     next_hop_type = "gateway"
+     next_hop      = "default-internet-gateway" #TODO: route to ILB 
+   }
+   restricted-googleapis = {
+     dest_range    = "199.36.153.4/30"
+     priority      = 1000
+     tags          = []
+     next_hop_type = "gateway"
+     next_hop      = "default-internet-gateway" #TODO: route to ILB 
+   }
+  }
   data_folder = "${var.data_dir}/subnets/landing-untrusted"
 }
 
@@ -96,13 +98,13 @@ module "landing-nat-ew1" {
   router_asn     = 4200001024
 }
 
-module "landing-nat-ew3" {
+module "landing-nat-ew4" {
   source         = "../../../modules/net-cloudnat"
   project_id     = module.landing-project.project_id
-  region         = "europe-west3"
-  name           = "ew3"
+  region         = "europe-west4"
+  name           = "ew4"
   router_create  = true
-  router_name    = "prod-nat-ew3"
+  router_name    = "prod-nat-ew4"
   router_network = module.landing-untrusted-vpc.name
   router_asn     = 4200001024
 }
@@ -116,7 +118,7 @@ module "landing-trusted-vpc" {
   delete_default_routes_on_create = true
   mtu                             = 1500
 
-  # set explicit routes for googleapis in case the default route is deleted
+  # Set explicit routes for googleapis in case the default route is deleted
   routes = {
     private-googleapis = {
       dest_range    = "199.36.153.8/30"

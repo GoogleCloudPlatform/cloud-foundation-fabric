@@ -85,11 +85,11 @@ output "vpn_gateway_endpoints" {
   description = "External IP Addresses for the GCP VPN gateways."
   value = {
     onprem-ew1 = {
-      for v in module.landing-to-onprem-vpn-ew1.gateway.vpn_interfaces :
+      for v in module.landing-to-onprem-ew1-vpn.gateway.vpn_interfaces :
       v.id => v.ip_address
     }
-    onprem-ew3 = {
-      for v in module.landing-to-onprem-vpn-ew3.gateway.vpn_interfaces :
+    onprem-ew4 = {
+      for v in module.landing-to-onprem-ew4-vpn.gateway.vpn_interfaces :
       v.id => v.ip_address
     }
   }

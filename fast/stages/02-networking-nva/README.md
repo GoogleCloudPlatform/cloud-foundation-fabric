@@ -1,16 +1,17 @@
-# Networking
+# Networking with Network Virtual Appliance
 
-This stage sets up the shared network infrastructure for the whole organization which also require Network Virtual Appliances (NVAs).
-It adopts the common “hub and spoke” reference design, which is well suited for multiple scenarios and offers several advantages versus other designs:
+This stage sets up the shared network infrastructure for the whole organization. It is designed for those who would like to leverage Network Virtual Appliances (NVAs) between trusted and untrusted areas of the network, for example for Intrusion Prevention System (IPS) purposes.
+
+It adopts the common “hub and spoke” reference design, which is well suited to multiple scenarios, and offers several advantages versus other designs:
 
 - the “hub” VPC centralizes external connectivity to on-prem or other cloud environments, and is ready to host cross-environment services like CI/CD, code repositories, and monitoring probes
 - the “spoke” VPCs allow partitioning workloads (e.g. by environment like in this setup), while still retaining controlled access to central connectivity and services
 - Shared VPC in both hub and spokes splits management of network resources in specific (host) projects, while still allowing them to be consumed from workload (service) projects
 - the design also lends itself to easy DNS centralization, both from on-prem to cloud and from cloud to on-prem
 
-Connectivity between hub and spokes is established here via [VPC peering](https://cloud.google.com/vpc/docs/vpc-peering), which offer easy interoperability with some key GCP features (GKE, services leveraging Service Networking like Cloud SQL, etc.), allowing clear partitioning of quota and limits between environments, and fine-grained control of routing. Different ways of implementing connectivity, and their respective pros and cons, are discussed below.
+Connectivity between the hub and the spokes is established via [VPC network peerings](https://cloud.google.com/vpc/docs/vpc-peering), which offer higher bandwidths, lower latencies, at no additional costs and with a very low managemenet overhead. Different ways of implementing connectivity, and their respective pros and cons, are discussed below.
 
-The following diagram illustrates the high-level design, and should be used as a reference for the following sections. The final number of subnets, and their IP addressing design will of course depend on customer-specific requirements, and can be easily changed via variables or external data files without having to edit the actual code.
+The following diagram illustrates the high-level design, and should be used as a reference for the following sections. The final number of subnets, and their IP addressing design will of course depend on the customer-specific requirements, and can be easily changed via variables or external data files, without any need to edit the actual code.
 
 <p align="center">
   <img src="diagram.svg" alt="Networking diagram">
@@ -20,40 +21,51 @@ The following diagram illustrates the high-level design, and should be used as a
 
 ### VPC design
 
-The hub/landing VPC hosts external connectivity and shared services for spoke VPCs, which are connected to it via VPN HA tunnels. Spokes are used here to partition environments, which is a fairly common pattern:
+The "landing zone" is divided in two VPC networks: one trusted, acting as the connectivity hub towards the other trusted networks; one untrusted, acting -again- as the connectivity hub towards any other untrusted network or resource.
 
-- one spoke VPC for the production environment
+The VPCs are connected through two sets of sample NVA machines, grouped by region in [Managed Instance Groups (MIGs)](https://cloud.google.com/compute/docs/instance-groups). The appliances are plain Linux machines, performing simple routing/natting, leveraging some standard Linux features, such as *ip route* or *iptables*. While they are only suited for demo purposes, they should be substituted with enterprise appliances, before moving to production.
+The traffic destined to the VMs in each MIG is mediated through internal load balancers in each region, both in the trusted and in the untrusted networks.
+
+By default, the design assume the following:
+
+- on-prem networks (and related resources) are considered trusted. As such, the VPNs with on-prem are terminated in GCP on the trusted VPC
+- any traffic, from any trusted or untrusted network, going to another trusted or untrusted network, is currently analyzed by NVAs, although for demo purposes the current NVA performs simple routing/natting only
+- Any traffic from a trusted network to an untrusted network (by default, Internet) is also natted by the appliances
+
+De-facto, the trusted landing VPC acts as a hub and hosts the external connectivity and the shared services for the spoke VPCs, which are connected to it via VPC network peerings. Spokes are used to partition environments, which is a fairly common pattern:
+
 - one spoke VPC for the development environment
+- one spoke VPC for the production environment
 
 Each VPC is created into its own project, and each project is configured as a Shared VPC host, so that network-related resources and access configurations via IAM are kept separate for each VPC.
 
-The design easily lends itself to implementing additional environments, or adopting a different logical mapping for spokes (e.g. one spoke for each company entity, etc.). Adding spokes is a trivial operation, does not increase the design complexity, and is explained in operational terms in the following sections.
+The design easily lends itself to implementing additional environments, or adopting a different logical mapping for spokes (e.g. one spoke for each company entity, etc.). Adding spokes is a trivial operation, it does not increase the design complexity, and it is explained in operational terms in the following sections.
 
-In multi-organization scenarios, where production and non-production resources use different Cloud Identity and GCP organizations, the hub/landing VPC is usually part of the production organization, and establishes connections with production spokes in its same organization, and non-production spokes in a different organization.
+In multi-organization scenarios, where production and non-production resources use different Cloud Identity and GCP organizations, the hub/landing VPC is usually part of the production organization. It establishes connections with the production spokes within its same organization, and with non-production spokes in a different organization.
 
-An additional VPC is also deployed by default with the provided code, disconnected from the other VPCs and hosting a single VM that emulates on-prem for testing purposes, via a Docker network and containers for VPN, DNS, HTTP, etc.
+An additional VPC is also deployed by default with the provided code, disconnected from the other VPCs and hosting two VMs that emulate the on-prem environment for testing purposes, via a Docker network and containers for VPN, DNS, HTTP, etc.
 
 ### External connectivity
 
 External connectivity to on-prem is implemented here via VPN HA (two tunnels per region), as this is the minimum common denominator often used directly, or as a stop-gap solution to validate routing and transfer data, while waiting for [interconnects](https://cloud.google.com/network-connectivity/docs/interconnect) to be provisioned.
 
-Connectivity to additional on-prem sites or other cloud providers should be implemented in a similar fashion, via VPN tunnels or interconnects in the landing VPC sharing the same regional router.
+Connectivity to additional on-prem sites or other cloud providers should be implemented in a similar fashion, via VPN tunnels or interconnects, in the landing VPC (either trusted or untrusted, depending by the nature of the peer), sharing the same regional router.
 
 ### Internal connectivity
 
-As mentioned initially, there are of course other ways to implement internal connectivity other than VPN HA. These can be easily retrofitted with minimal code changes, but introduce additional considerations for service interoperability, quotas and management.
+As mentioned initially, there are other ways to implement internal connectivity other than VPN HA. These can be easily retrofitted with minimal code changes, but introduce additional considerations for service interoperability, quotas and management.
 
 This is a summary of the main options:
 
-- [VPN HA](https://cloud.google.com/network-connectivity/docs/vpn/concepts/topologies) (implemented here)
-  - Pros: simple compatibility with GCP services that leverage peering internally, better control on routes, avoids peering groups shared quotas and limits
-  - Cons: additional cost, marginal increase in latency, requires multiple tunnels for full bandwidth
-- [VPC Peering](https://cloud.google.com/vpc/docs/vpc-peering)
+- [VPC Peering](https://cloud.google.com/vpc/docs/vpc-peering) (implemented here)
   - Pros: no additional costs, full bandwidth with no configurations, no extra latency
   - Cons: no transitivity (e.g. to GKE masters, Cloud SQL, etc.), no selective exchange of routes, several quotas and limits shared between VPCs in a peering group
-- [Multi-NIC appliances](https://cloud.google.com/architecture/best-practices-vpc-design#multi-nic)
+- [Multi-NIC appliances](https://cloud.google.com/architecture/best-practices-vpc-design#multi-nic) (implemented here)
   - Pros: additional security features (e.g. IPS), potentially better integration with on-prem systems by using the same vendor
   - Cons: complex HA/failover setup, limited by VM bandwidth and scale, additional costs for VMs and licenses, out of band management of a critical cloud component
+- [VPN HA](https://cloud.google.com/network-connectivity/docs/vpn/concepts/topologies) 
+  - Pros: simple compatibility with GCP services that leverage peering internally, better control on routes, avoids peering groups shared quotas and limits
+  - Cons: additional cost, marginal increase in latency, requires multiple tunnels for full bandwidth
 
 ### IP ranges, subnetting, routing
 
@@ -295,35 +307,35 @@ DNS configurations are centralised in the `dns.tf` file. Spokes delegate DNS res
 | [dns-prod.tf](./dns-prod.tf) | Production spoke DNS zones and peerings setup. | <code>dns</code> |  |
 | [main.tf](./main.tf) | Networking folder and hierarchical policy. | <code>folder</code> |  |
 | [monitoring.tf](./monitoring.tf) | Network monitoring dashboards. |  | <code>google_monitoring_dashboard</code> |
-| [nva.tf](./nva.tf) | None | <code>compute-mig</code> · <code>compute-vm</code> · <code>net-ilb</code> |  |
 | [outputs.tf](./outputs.tf) | Module outputs. |  | <code>local_file</code> |
 | [test-resources.tf](./test-resources.tf) | temporary instances for testing | <code>compute-vm</code> |  |
 | [variables.tf](./variables.tf) | Module variables. |  |  |
 | [vpc-landing.tf](./vpc-landing.tf) | Landing VPC and related resources. | <code>net-cloudnat</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>project</code> |  |
-| [vpc-peering-dev.tf](./vpc-peering-dev.tf) | VPC peering between landing and dev spoke. | <code>net-vpc-peering</code> |  |
-| [vpc-peering-prod.tf](./vpc-peering-prod.tf) | VPC peering between landing and dev spoke. | <code>net-vpc-peering</code> |  |
-| [vpc-spoke-dev.tf](./vpc-spoke-dev.tf) | Dev spoke VPC and related resources. | <code>net-address</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>project</code> |  |
-| [vpc-spoke-prod.tf](./vpc-spoke-prod.tf) | Production spoke VPC and related resources. | <code>net-address</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>project</code> |  |
+| [vpc-spoke-dev.tf](./vpc-spoke-dev.tf) | Dev spoke VPC and related resources. | <code>net-address</code> · <code>net-cloudnat</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>project</code> |  |
+| [vpc-spoke-prod.tf](./vpc-spoke-prod.tf) | Production spoke VPC and related resources. | <code>net-address</code> · <code>net-cloudnat</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>project</code> |  |
 | [vpn-onprem.tf](./vpn-onprem.tf) | VPN between landing and onprem. | <code>net-vpn-ha</code> |  |
+| [vpn-spoke-dev.tf](./vpn-spoke-dev.tf) | VPN between landing and development spoke. | <code>net-vpn-ha</code> |  |
+| [vpn-spoke-prod.tf](./vpn-spoke-prod.tf) | VPN between landing and production spoke. | <code>net-vpn-ha</code> |  |
 
 ## Variables
 
 | name | description | type | required | default | producer |
 |---|---|:---:|:---:|:---:|:---:|
 | [billing_account_id](variables.tf#L17) | Billing account id. | <code>string</code> | ✓ |  | <code>00-bootstrap</code> |
-| [organization](variables.tf#L101) | Organization details. | <code title="object&#40;&#123;&#10;  domain      &#61; string&#10;  id          &#61; number&#10;  customer_id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>00-bootstrap</code> |
-| [prefix](variables.tf#L117) | Prefix used for resources that need unique names. | <code>string</code> | ✓ |  | <code>00-bootstrap</code> |
-| [custom_adv](variables.tf#L23) | Custom advertisement definitions in name => range format. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  cloud_dns             &#61; &#34;35.199.192.0&#47;19&#34;&#10;  googleapis_private    &#61; &#34;199.36.153.8&#47;30&#34;&#10;  googleapis_restricted &#61; &#34;199.36.153.4&#47;30&#34;&#10;  rfc_1918_10           &#61; &#34;10.0.0.0&#47;8&#34;&#10;  rfc_1918_172          &#61; &#34;172.16.0.0&#47;12&#34;&#10;  rfc_1918_192          &#61; &#34;192.168.0.0&#47;16&#34;&#10;  landing_untrusted_ew1 &#61; &#34;10.128.0.0&#47;16&#34;&#10;  landing_untrusted_ew4 &#61; &#34;10.129.0.0&#47;16&#34;&#10;  landing_trusted_ew1   &#61; &#34;10.132.0.0&#47;16&#34;&#10;  landing_trusted_ew4   &#61; &#34;10.133.0.0&#47;16&#34;&#10;  spoke_prod_ew1        &#61; &#34;10.136.0.0&#47;16&#34;&#10;  spoke_prod_ew4        &#61; &#34;10.137.0.0&#47;16&#34;&#10;  spoke_dev_ew1         &#61; &#34;10.144.0.0&#47;16&#34;&#10;  spoke_dev_ew4         &#61; &#34;10.145.0.0&#47;16&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
-| [data_dir](variables.tf#L44) | Relative path for the folder storing configuration data for network resources. | <code>string</code> |  | <code>&#34;data&#34;</code> |  |
-| [dns](variables.tf#L50) | Onprem DNS resolvers | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code title="&#123;&#10;  onprem &#61; &#91;&#34;10.0.200.3&#34;&#93;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
-| [folder_id](variables.tf#L58) | Folder to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created. | <code>string</code> |  | <code>null</code> | <code>01-resman</code> |
-| [gke](variables.tf#L72) |  | <code title="map&#40;object&#40;&#123;&#10;  folder_id &#61; string&#10;  sa        &#61; string&#10;  gcs       &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> | <code>01-resman</code> |
-| [l7ilb_subnets](variables.tf#L83) | Subnets used for L7 ILBs. | <code title="map&#40;list&#40;object&#40;&#123;&#10;  ip_cidr_range &#61; string&#10;  region        &#61; string&#10;&#125;&#41;&#41;&#41;">map&#40;list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;&#41;</code> |  | <code title="&#123;&#10;  prod &#61; &#91;&#10;    &#123; ip_cidr_range &#61; &#34;10.136.240.0&#47;24&#34;, region &#61; &#34;europe-west1&#34; &#125;,&#10;    &#123; ip_cidr_range &#61; &#34;10.137.240.0&#47;24&#34;, region &#61; &#34;europe-west4&#34; &#125;&#10;  &#93;&#10;  dev &#61; &#91;&#10;    &#123; ip_cidr_range &#61; &#34;10.144.240.0&#47;24&#34;, region &#61; &#34;europe-west1&#34; &#125;,&#10;    &#123; ip_cidr_range &#61; &#34;10.145.240.0&#47;24&#34;, region &#61; &#34;europe-west4&#34; &#125;&#10;  &#93;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
-| [outputs_location](variables.tf#L111) | Path where providers and tfvars files for the following stages are written. Leave empty to disable. | <code>string</code> |  | <code>null</code> |  |
-| [project_factory_sa](variables.tf#L123) | IAM emails for project factory service accounts | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>01-resman</code> |
-| [psa_ranges](variables.tf#L130) | IP ranges used for Private Service Access (e.g. CloudSQL). | <code>map&#40;map&#40;string&#41;&#41;</code> |  | <code title="&#123;&#10;  prod &#61; &#123;&#10;    cloudsql-mysql     &#61; &#34;10.136.250.0&#47;24&#34;&#10;    cloudsql-sqlserver &#61; &#34;10.136.251.0&#47;24&#34;&#10;  &#125;&#10;  dev &#61; &#123;&#10;    cloudsql-mysql     &#61; &#34;10.144.250.0&#47;24&#34;&#10;    cloudsql-sqlserver &#61; &#34;10.144.251.0&#47;24&#34;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
-| [router_configs](variables.tf#L145) | Configurations for CRs and onprem routers. | <code title="map&#40;object&#40;&#123;&#10;  adv &#61; object&#40;&#123;&#10;    custom  &#61; list&#40;string&#41;&#10;    default &#61; bool&#10;  &#125;&#41;&#10;  asn &#61; number&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code title="&#123;&#10;  onprem-landing-trusted-ew1 &#61; &#123;&#10;    asn &#61; &#34;64512&#34;&#10;    adv &#61; null&#10;  &#125;&#10;  onprem-landing-trusted-ew3 &#61; &#123;&#10;    asn &#61; &#34;64512&#34;&#10;    adv &#61; null&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
-| [vpn_onprem_configs](variables.tf#L168) | VPN gateway configuration for onprem interconnection. | <code title="map&#40;object&#40;&#123;&#10;  adv &#61; object&#40;&#123;&#10;    default &#61; bool&#10;    custom  &#61; list&#40;string&#41;&#10;  &#125;&#41;&#10;  session_range &#61; string&#10;  peer &#61; object&#40;&#123;&#10;    address   &#61; string&#10;    asn       &#61; number&#10;    secret_id &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code title="&#123;&#10;  landing-trusted-ew1 &#61; &#123;&#10;    adv &#61; &#123;&#10;      default &#61; false&#10;      custom &#61; &#91;&#10;        &#34;cloud_dns&#34;,&#10;        &#34;googleapis_restricted&#34;,&#10;        &#34;googleapis_private&#34;,&#10;        &#34;landing_trusted_ew1&#34;,&#10;        &#34;landing_trusted_ew4&#34;,&#10;        &#34;landing_untrusted_ew1&#34;,&#10;        &#34;landing_untrusted_ew4&#34;,&#10;        &#34;spoke_dev_ew1&#34;,&#10;        &#34;spoke_dev_ew4&#34;,&#10;        &#34;spoke_prod_ew1&#34;,&#10;        &#34;spoke_prod_ew4&#34;&#10;      &#93;&#10;    &#125;&#10;    session_range &#61; &#34;169.254.1.0&#47;29&#34;&#10;    peer &#61; &#123;&#10;      address   &#61; &#34;8.8.8.8&#34;&#10;      asn       &#61; 65534&#10;      secret_id &#61; &#34;foobar&#34;&#10;    &#125;&#10;  &#125;&#10;  landing-trusted-ew3 &#61; &#123;&#10;    adv &#61; &#123;&#10;      default &#61; false&#10;      custom &#61; &#91;&#10;        &#34;cloud_dns&#34;,&#10;        &#34;googleapis_restricted&#34;,&#10;        &#34;googleapis_private&#34;,&#10;        &#34;landing_trusted_ew1&#34;,&#10;        &#34;landing_trusted_ew4&#34;,&#10;        &#34;landing_untrusted_ew1&#34;,&#10;        &#34;landing_untrusted_ew4&#34;,&#10;        &#34;spoke_dev_ew1&#34;,&#10;        &#34;spoke_dev_ew4&#34;,&#10;        &#34;spoke_prod_ew1&#34;,&#10;        &#34;spoke_prod_ew4&#34;&#10;      &#93;&#10;    &#125;&#10;    session_range &#61; &#34;169.254.2.0&#47;29&#34;&#10;    peer &#61; &#123;&#10;      address   &#61; &#34;8.8.8.8&#34;&#10;      asn       &#61; 65534&#10;      secret_id &#61; &#34;foobar&#34;&#10;    &#125;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
+| [organization](variables.tf#L97) | Organization details. | <code title="object&#40;&#123;&#10;  domain      &#61; string&#10;  id          &#61; number&#10;  customer_id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>00-bootstrap</code> |
+| [prefix](variables.tf#L113) | Prefix used for resources that need unique names. | <code>string</code> | ✓ |  | <code>00-bootstrap</code> |
+| [custom_adv](variables.tf#L23) | Custom advertisement definitions in name => range format. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  cloud_dns             &#61; &#34;35.199.192.0&#47;19&#34;&#10;  gcp_all               &#61; &#34;10.128.0.0&#47;16&#34;&#10;  gcp_dev               &#61; &#34;10.128.32.0&#47;19&#34;&#10;  gcp_landing           &#61; &#34;10.128.0.0&#47;19&#34;&#10;  gcp_prod              &#61; &#34;10.128.0.0&#47;18&#34;&#10;  googleapis_private    &#61; &#34;199.36.153.8&#47;30&#34;&#10;  googleapis_restricted &#61; &#34;199.36.153.4&#47;30&#34;&#10;  rfc_1918_10           &#61; &#34;10.0.0.0&#47;8&#34;&#10;  rfc_1918_172          &#61; &#34;172.16.0.0&#47;16&#34;&#10;  rfc_1918_192          &#61; &#34;192.168.0.0&#47;16&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
+| [data_dir](variables.tf#L40) | Relative path for the folder storing configuration data for network resources. | <code>string</code> |  | <code>&#34;data&#34;</code> |  |
+| [dns](variables.tf#L46) | Onprem DNS resolvers | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code title="&#123;&#10;  onprem &#61; &#91;&#34;10.0.200.3&#34;&#93;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
+| [folder_id](variables.tf#L54) | Folder to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created. | <code>string</code> |  | <code>null</code> | <code>01-resman</code> |
+| [gke](variables.tf#L68) |  | <code title="map&#40;object&#40;&#123;&#10;  folder_id &#61; string&#10;  sa        &#61; string&#10;  gcs       &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> | <code>01-resman</code> |
+| [l7ilb_subnets](variables.tf#L79) | Subnets used for L7 ILBs. | <code title="map&#40;list&#40;object&#40;&#123;&#10;  ip_cidr_range &#61; string&#10;  region        &#61; string&#10;&#125;&#41;&#41;&#41;">map&#40;list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;&#41;</code> |  | <code title="&#123;&#10;  prod &#61; &#91;&#10;    &#123; ip_cidr_range &#61; &#34;10.136.240.0&#47;24&#34;, region &#61; &#34;europe-west1&#34; &#125;,&#10;    &#123; ip_cidr_range &#61; &#34;10.137.240.0&#47;24&#34;, region &#61; &#34;europe-west4&#34; &#125;&#10;  &#93;&#10;  dev &#61; &#91;&#10;    &#123; ip_cidr_range &#61; &#34;10.144.240.0&#47;24&#34;, region &#61; &#34;europe-west1&#34; &#125;,&#10;    &#123; ip_cidr_range &#61; &#34;10.145.240.0&#47;24&#34;, region &#61; &#34;europe-west4&#34; &#125;&#10;  &#93;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
+| [outputs_location](variables.tf#L107) | Path where providers and tfvars files for the following stages are written. Leave empty to disable. | <code>string</code> |  | <code>null</code> |  |
+| [project_factory_sa](variables.tf#L119) | IAM emails for project factory service accounts | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>01-resman</code> |
+| [psa_ranges](variables.tf#L126) | IP ranges used for Private Service Access (e.g. CloudSQL). | <code>map&#40;map&#40;string&#41;&#41;</code> |  | <code title="&#123;&#10;  prod &#61; &#123;&#10;    cloudsql-mysql     &#61; &#34;10.136.250.0&#47;24&#34;&#10;    cloudsql-sqlserver &#61; &#34;10.136.251.0&#47;24&#34;&#10;  &#125;&#10;  dev &#61; &#123;&#10;    cloudsql-mysql     &#61; &#34;10.144.250.0&#47;24&#34;&#10;    cloudsql-sqlserver &#61; &#34;10.144.251.0&#47;24&#34;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
+| [router_configs](variables.tf#L141) | Configurations for CRs and onprem routers. | <code title="map&#40;object&#40;&#123;&#10;  adv &#61; object&#40;&#123;&#10;    custom  &#61; list&#40;string&#41;&#10;    default &#61; bool&#10;  &#125;&#41;&#10;  asn &#61; number&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code title="&#123;&#10;  onprem-ew1 &#61; &#123;&#10;    asn &#61; &#34;65534&#34;&#10;    adv &#61; null&#10;  &#125;&#10;  landing-ew1    &#61; &#123; asn &#61; &#34;64512&#34;, adv &#61; null &#125;&#10;  landing-ew4    &#61; &#123; asn &#61; &#34;64512&#34;, adv &#61; null &#125;&#10;  spoke-dev-ew1  &#61; &#123; asn &#61; &#34;64513&#34;, adv &#61; null &#125;&#10;  spoke-dev-ew4  &#61; &#123; asn &#61; &#34;64513&#34;, adv &#61; null &#125;&#10;  spoke-prod-ew1 &#61; &#123; asn &#61; &#34;64514&#34;, adv &#61; null &#125;&#10;  spoke-prod-ew4 &#61; &#123; asn &#61; &#34;64514&#34;, adv &#61; null &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
+| [vpn_onprem_configs](variables.tf#L165) | VPN gateway configuration for onprem interconnection. | <code title="map&#40;object&#40;&#123;&#10;  adv &#61; object&#40;&#123;&#10;    default &#61; bool&#10;    custom  &#61; list&#40;string&#41;&#10;  &#125;&#41;&#10;  peer_external_gateway &#61; object&#40;&#123;&#10;    redundancy_type &#61; string&#10;    interfaces &#61; list&#40;object&#40;&#123;&#10;      id         &#61; number&#10;      ip_address &#61; string&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#10;  tunnels &#61; list&#40;object&#40;&#123;&#10;    peer_asn                        &#61; number&#10;    peer_external_gateway_interface &#61; number&#10;    secret                          &#61; string&#10;    session_range                   &#61; string&#10;    vpn_gateway_interface           &#61; number&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code title="&#123;&#10;  landing-ew1 &#61; &#123;&#10;    adv &#61; &#123;&#10;      default &#61; false&#10;      custom &#61; &#91;&#10;        &#34;cloud_dns&#34;, &#34;googleapis_private&#34;, &#34;googleapis_restricted&#34;, &#34;gcp_all&#34;&#10;      &#93;&#10;    &#125;&#10;    peer_external_gateway &#61; &#123;&#10;      redundancy_type &#61; &#34;SINGLE_IP_INTERNALLY_REDUNDANT&#34;&#10;      interfaces &#61; &#91;&#10;        &#123; id &#61; 0, ip_address &#61; &#34;8.8.8.8&#34; &#125;,&#10;      &#93;&#10;    &#125;&#10;    tunnels &#61; &#91;&#10;      &#123;&#10;        peer_asn                        &#61; 65534&#10;        peer_external_gateway_interface &#61; 0&#10;        secret                          &#61; &#34;foobar&#34;&#10;        session_range                   &#61; &#34;169.254.1.0&#47;30&#34;&#10;        vpn_gateway_interface           &#61; 0&#10;      &#125;,&#10;      &#123;&#10;        peer_asn                        &#61; 65534&#10;        peer_external_gateway_interface &#61; 0&#10;        secret                          &#61; &#34;foobar&#34;&#10;        session_range                   &#61; &#34;169.254.1.4&#47;30&#34;&#10;        vpn_gateway_interface           &#61; 1&#10;      &#125;&#10;    &#93;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
+| [vpn_spoke_configs](variables.tf#L221) | VPN gateway configuration for spokes. | <code title="map&#40;object&#40;&#123;&#10;  adv &#61; object&#40;&#123;&#10;    default &#61; bool&#10;    custom  &#61; list&#40;string&#41;&#10;  &#125;&#41;&#10;  session_range &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code title="&#123;&#10;  landing-ew1 &#61; &#123;&#10;    adv &#61; &#123;&#10;      default &#61; false&#10;      custom  &#61; &#91;&#34;rfc_1918_10&#34;, &#34;rfc_1918_172&#34;, &#34;rfc_1918_192&#34;&#93;&#10;    &#125;&#10;    session_range &#61; null&#10;  &#125;&#10;  landing-ew4 &#61; &#123;&#10;    adv &#61; &#123;&#10;      default &#61; false&#10;      custom  &#61; &#91;&#34;rfc_1918_10&#34;, &#34;rfc_1918_172&#34;, &#34;rfc_1918_192&#34;&#93;&#10;    &#125;&#10;    session_range &#61; null&#10;  &#125;&#10;  dev-ew1 &#61; &#123;&#10;    adv &#61; &#123;&#10;      default &#61; false&#10;      custom  &#61; &#91;&#34;gcp_dev&#34;&#93;&#10;    &#125;&#10;    session_range &#61; &#34;169.254.0.0&#47;27&#34;&#10;  &#125;&#10;  prod-ew1 &#61; &#123;&#10;    adv &#61; &#123;&#10;      default &#61; false&#10;      custom  &#61; &#91;&#34;gcp_prod&#34;&#93;&#10;    &#125;&#10;    session_range &#61; &#34;169.254.0.64&#47;27&#34;&#10;  &#125;&#10;  prod-ew4 &#61; &#123;&#10;    adv &#61; &#123;&#10;      default &#61; false&#10;      custom  &#61; &#91;&#34;gcp_prod&#34;&#93;&#10;    &#125;&#10;    session_range &#61; &#34;169.254.0.96&#47;27&#34;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
 
 ## Outputs
 
@@ -333,8 +345,8 @@ DNS configurations are centralised in the `dns.tf` file. Spokes delegate DNS res
 | [project_ids](outputs.tf#L46) | Network project ids. |  |  |
 | [project_numbers](outputs.tf#L55) | Network project numbers. |  |  |
 | [shared_vpc_host_projects](outputs.tf#L64) | Shared VPC host projects. |  |  |
-| [shared_vpc_self_links](outputs.tf#L73) | Shared VPC host projects. |  |  |
-| [tfvars](outputs.tf#L93) | Network-related variables used in other stages. | ✓ |  |
-| [vpn_gateway_endpoints](outputs.tf#L83) | External IP Addresses for the GCP VPN gateways. |  |  |
+| [shared_vpc_self_links](outputs.tf#L74) | Shared VPC host projects. |  |  |
+| [tfvars](outputs.tf#L91) | Network-related variables used in other stages. | ✓ |  |
+| [vpn_gateway_endpoints](outputs.tf#L84) | External IP Addresses for the GCP VPN gateways. |  |  |
 
 <!-- END TFDOC -->

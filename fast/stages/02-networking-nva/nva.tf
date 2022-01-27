@@ -99,25 +99,25 @@ module "ilb-nva-trusted-ew1" {
   }
 }
 
-# europe-west3
+# europe-west4
 
-module "nva-template-ew3" {
+module "nva-template-ew4" {
   source         = "../../../modules/compute-vm"
   project_id     = module.landing-project.project_id
   name           = "nva-template"
-  zone           = "europe-west3-a"
+  zone           = "europe-west4-a"
   tags           = ["nva"]
   can_ip_forward = true
   network_interfaces = [
       {
         network    = module.landing-untrusted-vpc.self_link
-        subnetwork = module.landing-untrusted-vpc.subnet_self_links["europe-west3/landing-untrusted-default-ew3"]
+        subnetwork = module.landing-untrusted-vpc.subnet_self_links["europe-west4/landing-untrusted-default-ew4"]
         nat        = false
         addresses  = null
       },
       {
         network    = module.landing-trusted-vpc.self_link
-        subnetwork = module.landing-trusted-vpc.subnet_self_links["europe-west3/landing-trusted-default-ew3"]
+        subnetwork = module.landing-trusted-vpc.subnet_self_links["europe-west4/landing-trusted-default-ew4"]
         nat        = false
         addresses  = null
       }
@@ -129,35 +129,35 @@ module "nva-template-ew3" {
   }
   create_template = true
   metadata = {
-    startup-script = templatefile("${path.module}/data/nva-startup-script-ew3.tpl", {})
+    startup-script = templatefile("${path.module}/data/nva-startup-script-ew4.tpl", {})
   }
 }
 
-module "nva-mig-ew3" {
+module "nva-mig-ew4" {
   source      = "../../../modules/compute-mig"
   project_id  = module.landing-project.project_id
   regional    = true
-  location    = "europe-west3"
+  location    = "europe-west4"
   name        = "nva"
   target_size = 2
   default_version = {
-    instance_template = module.nva-template-ew3.template.self_link
+    instance_template = module.nva-template-ew4.template.self_link
     name              = "default"
   }
 }
 
-module "ilb-nva-untrusted-ew3" {
+module "ilb-nva-untrusted-ew4" {
   source        = "../../../modules/net-ilb"
   project_id    = module.landing-project.project_id
-  region        = "europe-west3"
-  name          = "ilb-nva-untrusted-ew3"
+  region        = "europe-west4"
+  name          = "ilb-nva-untrusted-ew4"
   service_label = var.prefix
   global_access = true
   network       = module.landing-untrusted-vpc.self_link
-  subnetwork    = module.landing-untrusted-vpc.subnet_self_links["europe-west3/landing-untrusted-default-ew3"]
+  subnetwork    = module.landing-untrusted-vpc.subnet_self_links["europe-west4/landing-untrusted-default-ew4"]
   backends = [{
     failover       = false
-    group          = module.nva-mig-ew3.group_manager.instance_group
+    group          = module.nva-mig-ew4.group_manager.instance_group
     balancing_mode = "CONNECTION"
   }]
   health_check_config = {
@@ -165,18 +165,18 @@ module "ilb-nva-untrusted-ew3" {
   }
 }
 
-module "ilb-nva-trusted-ew3" {
+module "ilb-nva-trusted-ew4" {
   source        = "../../../modules/net-ilb"
   project_id    = module.landing-project.project_id
-  region        = "europe-west3"
-  name          = "ilb-nva-trusted-ew3"
+  region        = "europe-west4"
+  name          = "ilb-nva-trusted-ew4"
   service_label = var.prefix
   global_access = true
   network       = module.landing-trusted-vpc.self_link
-  subnetwork    = module.landing-trusted-vpc.subnet_self_links["europe-west3/landing-trusted-default-ew3"]
+  subnetwork    = module.landing-trusted-vpc.subnet_self_links["europe-west4/landing-trusted-default-ew4"]
   backends = [{
     failover       = false
-    group          = module.nva-mig-ew3.group_manager.instance_group
+    group          = module.nva-mig-ew4.group_manager.instance_group
     balancing_mode = "CONNECTION"
   }]
   health_check_config = {

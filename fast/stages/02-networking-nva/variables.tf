@@ -24,20 +24,21 @@ variable "custom_adv" {
   description = "Custom advertisement definitions in name => range format."
   type        = map(string)
   default = {
-    cloud_dns             = "35.199.192.0/19"
-    googleapis_private    = "199.36.153.8/30"
-    googleapis_restricted = "199.36.153.4/30"
-    rfc_1918_10           = "10.0.0.0/8"
-    rfc_1918_172          = "172.16.0.0/12"
-    rfc_1918_192          = "192.168.0.0/16"
-    landing_untrusted_ew1 = "10.128.0.0/16"
-    landing_untrusted_ew4 = "10.129.0.0/16"
-    landing_trusted_ew1   = "10.132.0.0/16"
-    landing_trusted_ew4   = "10.133.0.0/16"
-    spoke_prod_ew1        = "10.136.0.0/16"
-    spoke_prod_ew4        = "10.137.0.0/16"
-    spoke_dev_ew1         = "10.144.0.0/16"
-    spoke_dev_ew4         = "10.145.0.0/16"
+    cloud_dns                 = "35.199.192.0/19"
+    gcp_all                   = "10.128.0.0/16"
+    gcp_dev_ew1               = "10.128.128.0/19"
+    gcp_dev_ew4               = "10.128.160.0/19"
+    gcp_landing_trusted_ew1   = "10.128.64.0/19"
+    gcp_landing_trusted_ew4   = "10.128.96.0/19"
+    gcp_landing_untrusted_ew1 = "10.128.0.0/19"
+    gcp_landing_untrusted_ew4 = "10.128.32.0/19"
+    gcp_prod_ew1              = "10.128.192.0/19"
+    gcp_prod_ew4              = "10.128.224.0/19"
+    googleapis_private        = "199.36.153.8/30"
+    googleapis_restricted     = "199.36.153.4/30"
+    rfc_1918_10               = "10.0.0.0/8"
+    rfc_1918_172              = "172.16.0.0/12"
+    rfc_1918_192              = "192.168.0.0/16"
   }
 }
 
@@ -152,13 +153,13 @@ variable "router_configs" {
     asn = number
   }))
   default = {
-    onprem-landing-trusted-ew1 = {
-      asn = "64512"
+    landing-trusted-ew1 = {
+      asn = "65534"
       adv = null
       # adv = { default = false, custom = [] }
     }
-    onprem-landing-trusted-ew3 = {
-      asn = "64512"
+    landing-trusted-ew1 = {
+      asn = "65534"
       adv = null
       # adv = { default = false, custom = [] }
     }
@@ -172,61 +173,81 @@ variable "vpn_onprem_configs" {
       default = bool
       custom  = list(string)
     })
-    session_range = string
-    peer = object({
-      address   = string
-      asn       = number
-      secret_id = string
+    peer_external_gateway = object({
+      redundancy_type = string
+      interfaces = list(object({
+        id         = number
+        ip_address = string
+      }))
     })
+    tunnels = list(object({
+      peer_asn                        = number
+      peer_external_gateway_interface = number
+      secret                          = string
+      session_range                   = string
+      vpn_gateway_interface           = number
+    }))
   }))
   default = {
     landing-trusted-ew1 = {
       adv = {
         default = false
         custom = [
-          "cloud_dns",
-          "googleapis_restricted",
-          "googleapis_private",
-          "landing_trusted_ew1",
-          "landing_trusted_ew4",
-          "landing_untrusted_ew1",
-          "landing_untrusted_ew4",
-          "spoke_dev_ew1",
-          "spoke_dev_ew4",
-          "spoke_prod_ew1",
-          "spoke_prod_ew4"
+          "cloud_dns", "googleapis_private", "googleapis_restricted", "gcp_all"
         ]
       }
-      session_range = "169.254.1.0/29"
-      peer = {
-        address   = "8.8.8.8"
-        asn       = 65534
-        secret_id = "foobar"
+      peer_external_gateway = {
+        redundancy_type = "SINGLE_IP_INTERNALLY_REDUNDANT"
+        interfaces = [
+          { id = 0, ip_address = "8.8.8.8" },
+        ]
       }
+      tunnels = [
+        {
+          peer_asn                        = 65534
+          peer_external_gateway_interface = 0
+          secret                          = "foobar"
+          session_range                   = "169.254.1.0/30"
+          vpn_gateway_interface           = 0
+        },
+        {
+          peer_asn                        = 65534
+          peer_external_gateway_interface = 0
+          secret                          = "foobar"
+          session_range                   = "169.254.1.4/30"
+          vpn_gateway_interface           = 1
+        }
+      ]
     }
-    landing-trusted-ew3 = {
+    landing-trusted-ew4 = {
       adv = {
         default = false
         custom = [
-          "cloud_dns",
-          "googleapis_restricted",
-          "googleapis_private",
-          "landing_trusted_ew1",
-          "landing_trusted_ew4",
-          "landing_untrusted_ew1",
-          "landing_untrusted_ew4",
-          "spoke_dev_ew1",
-          "spoke_dev_ew4",
-          "spoke_prod_ew1",
-          "spoke_prod_ew4"
+          "cloud_dns", "googleapis_private", "googleapis_restricted", "gcp_all"
         ]
       }
-      session_range = "169.254.2.0/29"
-      peer = {
-        address   = "8.8.8.8"
-        asn       = 65534
-        secret_id = "foobar"
+      peer_external_gateway = {
+        redundancy_type = "SINGLE_IP_INTERNALLY_REDUNDANT"
+        interfaces = [
+          { id = 0, ip_address = "8.8.8.8" },
+        ]
       }
+      tunnels = [
+        {
+          peer_asn                        = 65534
+          peer_external_gateway_interface = 0
+          secret                          = "foobar"
+          session_range                   = "169.254.1.0/30"
+          vpn_gateway_interface           = 0
+        },
+        {
+          peer_asn                        = 65534
+          peer_external_gateway_interface = 0
+          secret                          = "foobar"
+          session_range                   = "169.254.1.4/30"
+          vpn_gateway_interface           = 1
+        }
+      ]
     }
   }
 }
