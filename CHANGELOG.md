@@ -3,6 +3,7 @@
 All notable changes to this project will be documented in this file.
 
 ## Unreleased
+-  **incompatible change** removed `iam` key from logging sink configuration in the `project` and `organization` modules
 
 ## [13.0.0] - 2022-01-27
 
