@@ -399,12 +399,12 @@ def replace_doc(readme_path, doc, readme=None):
     raise SystemExit(f'Error replacing README {readme_path}: {e}')
 
 
-@ click.command()
-@ click.argument('module_path', type=click.Path(exists=True))
+@click.command()
+@click.argument('module_path', type=click.Path(exists=True))
 @click.option('--exclude-file', '-x', multiple=True)
-@ click.option('--files/--no-files', default=False)
-@ click.option('--replace/--no-replace', default=True)
-@ click.option('--show-extra/--no-show-extra', default=False)
+@click.option('--files/--no-files', default=False)
+@click.option('--replace/--no-replace', default=True)
+@click.option('--show-extra/--no-show-extra', default=False)
 def main(module_path=None, exclude_file=None, files=False, replace=True,
          show_extra=True):
   'Program entry point.'
