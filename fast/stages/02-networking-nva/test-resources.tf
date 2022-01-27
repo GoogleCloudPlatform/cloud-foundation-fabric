@@ -45,8 +45,8 @@ module "test-vm-landing-untrusted-ew1-0" {
   }
 }
 
+# TODO: comment all ew3 machines before pushing
 module "test-vm-landing-untrusted-ew3-0" {
-  count      = var.test_vms_in_secondary_region ? 1 : 0
   source     = "../../../modules/compute-vm"
   project_id = module.landing-project.project_id
   zone       = "europe-west3-b"
@@ -103,7 +103,6 @@ module "test-vm-landing-trusted-ew1-0" {
 }
 
 module "test-vm-landing-trusted-ew3-0" {
-  count      = var.test_vms_in_secondary_region ? 1 : 0
   source     = "../../../modules/compute-vm"
   project_id = module.landing-project.project_id
   zone       = "europe-west3-b"
@@ -161,7 +160,6 @@ module "test-vm-dev-ew1-0" {
 }
 
 module "test-vm-dev-ew3-0" {
-  count      = var.test_vms_in_secondary_region ? 1 : 0
   source     = "../../../modules/compute-vm"
   project_id = module.dev-spoke-project.project_id
   zone       = "europe-west3-a"
@@ -220,7 +218,6 @@ module "test-vm-prod-ew1-0" {
 }
 
 module "test-vm-prod-ew3-0" {
-  count      = var.test_vms_in_secondary_region ? 1 : 0
   source     = "../../../modules/compute-vm"
   project_id = module.prod-spoke-project.project_id
   zone       = "europe-west3-b"

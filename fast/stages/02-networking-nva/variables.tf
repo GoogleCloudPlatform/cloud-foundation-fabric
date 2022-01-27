@@ -20,12 +20,6 @@ variable "billing_account_id" {
   type        = string
 }
 
-variable "test_vms_in_secondary_region" {
-  description = "Whether the test VMs should be created also in the secondary region."
-  type        = bool
-  default     = false
-}
-
 variable "custom_adv" {
   description = "Custom advertisement definitions in name => range format."
   type        = map(string)
@@ -158,13 +152,16 @@ variable "router_configs" {
     asn = number
   }))
   default = {
-    onprem-ew1 = {
-      asn = "65534"
+    onprem-landing-trusted-ew1 = {
+      asn = "64512"
       adv = null
       # adv = { default = false, custom = [] }
     }
-    landing-untrusted-ew1 = { asn = "64512", adv = null }
-    landing-untrusted-ew4 = { asn = "64512", adv = null }
+    onprem-landing-trusted-ew3 = {
+      asn = "64512"
+      adv = null
+      # adv = { default = false, custom = [] }
+    }
   }
 }
 
@@ -183,7 +180,7 @@ variable "vpn_onprem_configs" {
     })
   }))
   default = {
-    landing-untrusted-ew1 = {
+    landing-trusted-ew1 = {
       adv = {
         default = false
         custom = [
@@ -201,6 +198,30 @@ variable "vpn_onprem_configs" {
         ]
       }
       session_range = "169.254.1.0/29"
+      peer = {
+        address   = "8.8.8.8"
+        asn       = 65534
+        secret_id = "foobar"
+      }
+    }
+    landing-trusted-ew3 = {
+      adv = {
+        default = false
+        custom = [
+          "cloud_dns",
+          "googleapis_restricted",
+          "googleapis_private",
+          "landing_trusted_ew1",
+          "landing_trusted_ew4",
+          "landing_untrusted_ew1",
+          "landing_untrusted_ew4",
+          "spoke_dev_ew1",
+          "spoke_dev_ew4",
+          "spoke_prod_ew1",
+          "spoke_prod_ew4"
+        ]
+      }
+      session_range = "169.254.2.0/29"
       peer = {
         address   = "8.8.8.8"
         asn       = 65534

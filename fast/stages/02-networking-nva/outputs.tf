@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-# optionally generate providers and tfvars files for subsequent stages
+
+# Optionally, generate providers and tfvars files for subsequent stages
 
 locals {
   tfvars = {
@@ -36,7 +37,7 @@ resource "local_file" "tfvars" {
   content  = each.value
 }
 
-# outputs
+# Outputs
 
 output "cloud_dns_inbound_policy" {
   description = "IP Addresses for Cloud DNS inbound policy."
@@ -84,7 +85,11 @@ output "vpn_gateway_endpoints" {
   description = "External IP Addresses for the GCP VPN gateways."
   value = {
     onprem-ew1 = {
-      for v in module.landing-to-onprem-ew1-vpn.gateway.vpn_interfaces :
+      for v in module.landing-to-onprem-vpn-ew1.gateway.vpn_interfaces :
+      v.id => v.ip_address
+    }
+    onprem-ew3 = {
+      for v in module.landing-to-onprem-vpn-ew3.gateway.vpn_interfaces :
       v.id => v.ip_address
     }
   }

@@ -68,19 +68,33 @@ module "dev-spoke-vpc" {
       next_hop_type = "gateway"
       next_hop      = "default-internet-gateway"
     }
-    nva-ew1 = {
+    nva-ew1-to-ew1 = {
       dest_range    = "0.0.0.0/0"
       priority      = 1000
       tags          = ["ew1"]
       next_hop_type = "ilb"
       next_hop      = module.ilb-nva-trusted-ew1.forwarding_rule_address
     }
-    nva-ew3 = {
+    nva-ew3-to-ew3 = {
       dest_range    = "0.0.0.0/0"
       priority      = 1000
       tags          = ["ew3"]
       next_hop_type = "ilb"
       next_hop      = module.ilb-nva-trusted-ew3.forwarding_rule_address
+    }
+    nva-ew1-to-ew3 = {
+      dest_range    = "0.0.0.0/0"
+      priority      = 1001
+      tags          = ["ew1"]
+      next_hop_type = "ilb"
+      next_hop      = module.ilb-nva-trusted-ew3.forwarding_rule_address
+    }
+    nva-ew3-to-ew1 = {
+      dest_range    = "0.0.0.0/0"
+      priority      = 1001
+      tags          = ["ew3"]
+      next_hop_type = "ilb"
+      next_hop      = module.ilb-nva-trusted-ew1.forwarding_rule_address
     }
   }
 }
