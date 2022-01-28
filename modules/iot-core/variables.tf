@@ -39,12 +39,9 @@ variable "devices_yaml_file" {
 }
 
 variable "extra_telemetry_pubsub_topic_ids" {
-  description = "additional pubsub topics for telemetry messages in adhoc MQTT topics (Device-->GCP) in the format MQTT_TOPIC:PUBSUB_TOPIC_ID"
-  type = list(object({
-    mqtt_topic   = string
-    pubsub_topic = string
-  }))
-  default = []
+  description = "additional pubsub topics linked to adhoc MQTT topics (Device-->GCP) in the format MQTT_TOPIC = PUBSUB_TOPIC_ID"
+  type        = map(string)
+  default     = {}
 }
 
 variable "log_level" {
