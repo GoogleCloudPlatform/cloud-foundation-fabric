@@ -125,11 +125,7 @@ You can check data imported into Google BigQuery using the  command returned in 
 ```
 bq query --use_legacy_sql=false 'SELECT * FROM `PROJECT.datalake.person` LIMIT 1000'
 ```
-<<<<<<< HEAD
-=======
 
-
->>>>>>> 71d214f (Changes to gcs to bq least privilege example)
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -148,15 +144,6 @@ bq query --use_legacy_sql=false 'SELECT * FROM `PROJECT.datalake.person` LIMIT 1
 
 | name | description | sensitive |
 |---|---|:---:|
-<<<<<<< HEAD
-| [bq_tables](outputs.tf#L15) | Bigquery Tables. |  |
-| [buckets](outputs.tf#L20) | GCS bucket Cloud KMS crypto keys. |  |
-| [command-01-gcs](outputs.tf#L43) | gcloud command to copy data into the created bucket impersonating the service account. |  |
-| [command-02-dataflow](outputs.tf#L48) | Command to run Dataflow template impersonating the service account. |  |
-| [command-03-bq](outputs.tf#L70) | BigQuery command to query imported data. |  |
-| [project_id](outputs.tf#L28) | Project id. |  |
-| [serviceaccount](outputs.tf#L33) | Service account. |  |
-=======
 | bq_tables | Bigquery Tables. |  |
 | buckets | GCS bucket Cloud KMS crypto keys. |  |
 | command_01_gcs | gcloud command to copy data into the created bucket impersonating the service account. |  |
@@ -164,7 +151,6 @@ bq query --use_legacy_sql=false 'SELECT * FROM `PROJECT.datalake.person` LIMIT 1
 | command_03_bq | BigQuery command to query imported data. |  |
 | project_id | Project id. |  |
 | service_accounts | Service account. |  |
->>>>>>> 71d214f (Changes to gcs to bq least privilege example)
 
 <!-- END TFDOC -->
 
