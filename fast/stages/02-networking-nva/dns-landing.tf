@@ -19,37 +19,37 @@
 # forwarding to on-prem DNS resolvers
 
 module "onprem-example-dns-forwarding" {
-  source          = "../../../modules/dns"
-  project_id      = module.landing-project.project_id
-  type            = "forwarding"
-  name            = "example-com"
-  domain          = "onprem.example.com."
+  source     = "../../../modules/dns"
+  project_id = module.landing-project.project_id
+  type       = "forwarding"
+  name       = "example-com"
+  domain     = "onprem.example.com."
   client_networks = [
     module.landing-untrusted-vpc.self_link,
     module.landing-trusted-vpc.self_link
   ]
-  forwarders      = { for ip in var.dns.onprem : ip => null }
+  forwarders = { for ip in var.dns.onprem : ip => null }
 }
 
 module "reverse-10-dns-forwarding" {
-  source          = "../../../modules/dns"
-  project_id      = module.landing-project.project_id
-  type            = "forwarding"
-  name            = "root-reverse-10"
-  domain          = "10.in-addr.arpa."
+  source     = "../../../modules/dns"
+  project_id = module.landing-project.project_id
+  type       = "forwarding"
+  name       = "root-reverse-10"
+  domain     = "10.in-addr.arpa."
   client_networks = [
     module.landing-untrusted-vpc.self_link,
     module.landing-trusted-vpc.self_link
   ]
-  forwarders      = { for ip in var.dns.onprem : ip => null }
+  forwarders = { for ip in var.dns.onprem : ip => null }
 }
 
 module "gcp-example-dns-private-zone" {
-  source          = "../../../modules/dns"
-  project_id      = module.landing-project.project_id
-  type            = "private"
-  name            = "gcp-example-com"
-  domain          = "gcp.example.com."
+  source     = "../../../modules/dns"
+  project_id = module.landing-project.project_id
+  type       = "private"
+  name       = "gcp-example-com"
+  domain     = "gcp.example.com."
   client_networks = [
     module.landing-untrusted-vpc.self_link,
     module.landing-trusted-vpc.self_link
@@ -62,39 +62,39 @@ module "gcp-example-dns-private-zone" {
 # GCP-specific DNS zones peered to the environment spoke that holds the config
 
 module "prod-gcp-example-dns-peering" {
-  source          = "../../../modules/dns"
-  project_id      = module.landing-project.project_id
-  type            = "peering"
-  name            = "prod-root-dns-peering"
-  domain          = "prod.gcp.example.com."
+  source     = "../../../modules/dns"
+  project_id = module.landing-project.project_id
+  type       = "peering"
+  name       = "prod-root-dns-peering"
+  domain     = "prod.gcp.example.com."
   client_networks = [
     module.landing-untrusted-vpc.self_link,
     module.landing-trusted-vpc.self_link
   ]
-  peer_network    = module.prod-spoke-vpc.self_link
+  peer_network = module.prod-spoke-vpc.self_link
 }
 
 module "dev-gcp-example-dns-peering" {
-  source          = "../../../modules/dns"
-  project_id      = module.landing-project.project_id
-  type            = "peering"
-  name            = "dev-root-dns-peering"
-  domain          = "dev.gcp.example.com."
+  source     = "../../../modules/dns"
+  project_id = module.landing-project.project_id
+  type       = "peering"
+  name       = "dev-root-dns-peering"
+  domain     = "dev.gcp.example.com."
   client_networks = [
     module.landing-untrusted-vpc.self_link,
     module.landing-trusted-vpc.self_link
   ]
-  peer_network    = module.dev-spoke-vpc.self_link
+  peer_network = module.dev-spoke-vpc.self_link
 }
 
 # Google API zone to trigger Private Access
 
 module "googleapis-private-zone" {
-  source          = "../../../modules/dns"
-  project_id      = module.landing-project.project_id
-  type            = "private"
-  name            = "googleapis-com"
-  domain          = "googleapis.com."
+  source     = "../../../modules/dns"
+  project_id = module.landing-project.project_id
+  type       = "private"
+  name       = "googleapis-com"
+  domain     = "googleapis.com."
   client_networks = [
     module.landing-untrusted-vpc.self_link,
     module.landing-trusted-vpc.self_link

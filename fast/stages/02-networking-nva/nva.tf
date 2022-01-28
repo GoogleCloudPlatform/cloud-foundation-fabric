@@ -14,6 +14,17 @@
  * limitations under the License.
  */
 
+locals {
+  _subnets = var.data_dir == null ? tomap({}) : {
+    for f in fileset("${var.data_dir}/subnets", "**/*.yaml") :
+    trimsuffix(basename(f), ".yaml") => yamldecode(file("${var.data_dir}/subnets/${f}"))
+  }
+  subnets = merge(
+    { for k, v in local._subnets : "${k}-cidr" => v.ip_cidr_range },
+    { for k, v in local._subnets : "${k}-gw" => cidrhost(v.ip_cidr_range, 1) }
+  )
+}
+
 # europe-west1
 
 module "nva-template-ew1" {
@@ -24,18 +35,18 @@ module "nva-template-ew1" {
   tags           = ["nva"]
   can_ip_forward = true
   network_interfaces = [
-      {
-        network    = module.landing-untrusted-vpc.self_link
-        subnetwork = module.landing-untrusted-vpc.subnet_self_links["europe-west1/landing-untrusted-default-ew1"]
-        nat        = false
-        addresses  = null
-      },
-      {
-        network    = module.landing-trusted-vpc.self_link
-        subnetwork = module.landing-trusted-vpc.subnet_self_links["europe-west1/landing-trusted-default-ew1"]
-        nat        = false
-        addresses  = null
-      }
+    {
+      network    = module.landing-untrusted-vpc.self_link
+      subnetwork = module.landing-untrusted-vpc.subnet_self_links["europe-west1/landing-untrusted-default-ew1"]
+      nat        = false
+      addresses  = null
+    },
+    {
+      network    = module.landing-trusted-vpc.self_link
+      subnetwork = module.landing-trusted-vpc.subnet_self_links["europe-west1/landing-trusted-default-ew1"]
+      nat        = false
+      addresses  = null
+    }
   ]
   boot_disk = {
     image = "projects/debian-cloud/global/images/family/debian-10"
@@ -44,7 +55,7 @@ module "nva-template-ew1" {
   }
   create_template = true
   metadata = {
-    startup-script = templatefile("${path.module}/data/nva-startup-script-ew1.tpl", {})
+    startup-script = templatefile("${path.module}/data/nva-startup-script-ew1.tftpl", local.subnets)
   }
 }
 
@@ -109,18 +120,18 @@ module "nva-template-ew4" {
   tags           = ["nva"]
   can_ip_forward = true
   network_interfaces = [
-      {
-        network    = module.landing-untrusted-vpc.self_link
-        subnetwork = module.landing-untrusted-vpc.subnet_self_links["europe-west4/landing-untrusted-default-ew4"]
-        nat        = false
-        addresses  = null
-      },
-      {
-        network    = module.landing-trusted-vpc.self_link
-        subnetwork = module.landing-trusted-vpc.subnet_self_links["europe-west4/landing-trusted-default-ew4"]
-        nat        = false
-        addresses  = null
-      }
+    {
+      network    = module.landing-untrusted-vpc.self_link
+      subnetwork = module.landing-untrusted-vpc.subnet_self_links["europe-west4/landing-untrusted-default-ew4"]
+      nat        = false
+      addresses  = null
+    },
+    {
+      network    = module.landing-trusted-vpc.self_link
+      subnetwork = module.landing-trusted-vpc.subnet_self_links["europe-west4/landing-trusted-default-ew4"]
+      nat        = false
+      addresses  = null
+    }
   ]
   boot_disk = {
     image = "projects/debian-cloud/global/images/family/debian-10"
@@ -129,7 +140,7 @@ module "nva-template-ew4" {
   }
   create_template = true
   metadata = {
-    startup-script = templatefile("${path.module}/data/nva-startup-script-ew4.tpl", {})
+    startup-script = templatefile("${path.module}/data/nva-startup-script-ew4.tftpl", local.subnets)
   }
 }
 
