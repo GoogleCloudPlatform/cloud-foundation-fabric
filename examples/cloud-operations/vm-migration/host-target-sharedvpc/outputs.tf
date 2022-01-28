@@ -13,5 +13,6 @@
 # limitations under the License.
 
 output "m4ce_gmanaged_service_account" {
-  value = "serviceAccount:service-${module.host-project.number}@gcp-sa-vmmigration.iam.gserviceaccount.com"
+  description = "Google manager service account created automatically. It is used by M4CE to perform activities on target projects"
+  value       = "serviceAccount:service-${module.host-project.number}@gcp-sa-vmmigration.iam.gserviceaccount.com"
 }

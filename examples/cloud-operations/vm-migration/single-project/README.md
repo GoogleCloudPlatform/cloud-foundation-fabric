@@ -36,6 +36,6 @@ This sample creates several distinct groups of resources:
 
 | name | description | sensitive |
 |---|---|:---:|
-| [m4ce_gmanaged_service_account](outputs.tf#L15) |  |  |
+| [m4ce_gmanaged_service_account](outputs.tf#L15) | Google manager service account created automatically. It is used by M4CE to perform activities on target projects |  |
 
 <!-- END TFDOC -->
