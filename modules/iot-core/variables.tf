@@ -1,5 +1,5 @@
 /**
- * Copyright 2021 Google LLC
+ * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,32 +14,20 @@
  * limitations under the License.
  */
 
-variable "devices_blocked" {
-  description = "Variable to setup devices status. blocked=false then devices are active"
-  type        = bool
-  default     = false
-}
-
-variable "devices_certificates_format" {
-  description = "certificates format. Possible values are RSA_PEM, RSA_X509_PEM, ES256_PEM, and ES256_X509_PEM"
-  type        = string
-  default     = "RSA_X509_PEM"
-}
-
-variable "devices_gw_config" {
-  description = "Indicates whether the device is a gateway. Default value is NON_GATEWAY. Possible values are GATEWAY and NON_GATEWAY"
-  type        = string
-  default     = "NON_GATEWAY"
-}
-
-variable "devices_yaml_file" {
-  description = "yaml file name including Devices map to be registered in the IoT Registry in the form DEVICE_ID: DEVICE_CERTIFICATE"
-  type        = string
-  default     = ""
+variable "devices_config" {
+  description = "IoT configuration for the batch of devices to be configured. Certificates format values are RSA_PEM, RSA_X509_PEM, ES256_PEM, and ES256_X509_PEM. yaml_file name including Devices map to be registered in the IoT Registry in the form DEVICE_ID: DEVICE_CERTIFICATE"
+  type = object({
+    blocked            = bool,
+    certificate_format = string,
+    gateway            = bool,
+    yaml_file          = string,
+    log_level          = string
+  })
+  default = { blocked = false, certificate_format = "RSA_X509_PEM", gateway = false, yaml_file = "", log_level = "INFO" }
 }
 
 variable "extra_telemetry_pubsub_topic_ids" {
-  description = "additional pubsub topics linked to adhoc MQTT topics (Device-->GCP) in the format MQTT_TOPIC = PUBSUB_TOPIC_ID"
+  description = "additional pubsub topics linked to adhoc MQTT topics (Device-->GCP) in the format MQTT_TOPIC: PUBSUB_TOPIC_ID"
   type        = map(string)
   default     = {}
 }

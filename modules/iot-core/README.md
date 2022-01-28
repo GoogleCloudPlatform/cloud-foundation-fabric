@@ -26,7 +26,17 @@ module "iot-platform" {
   region                     = "europe-west1"
   telemetry_pubsub_topic_id = "telemetry_topic_id"
   status_pubsub_topic_id    = "status_topic_id"
-  devices_yaml_file          = "devices.yaml"
+  protocols = {
+      http = false,
+      mqtt = true
+  }
+  devices_config = {
+      blocked = false, 
+      certificate_format = "RSA_X509_PEM", 
+      gateway = false, 
+      yaml_file = "devices.yaml", 
+      log_level =  "INFO"
+  }
 }
 # tftest:skip
 
@@ -44,16 +54,22 @@ module "iot-platform" {
   project_id                 = "my_project_id"
   region                     = "europe-west1"
   telemetry_pubsub_topic_id = "telemetry_topic_id"
-  status_pubsub_topic_id    = "statu_topic_id"
-  extra_telemetry_pubsub_topic_ids = [{
-    "mqtt_topic"    = "humidity"
-    "pubsub_topic" = "hum_topic_id"
-    },
-    {
-      "mqtt_topic"    = "temperature"
-      "pubsub_topic" = "temp_topic_id"
-  }]
-  devices_yaml_file = "devices.yaml"
+  status_pubsub_topic_id    = "status_topic_id"
+  extra_telemetry_pubsub_topic_ids = {
+      "temperature" = "temp_topic_id",
+      "humidity" = "hum_topic_id"
+  }
+  protocols = {
+      http = false,
+      mqtt = true
+  }
+  devices_config = {
+      blocked = false, 
+      certificate_format = "RSA_X509_PEM", 
+      gateway = false, 
+      yaml_file = "devices.yaml", 
+      log_level =  "INFO"
+  }
 }
 # tftest:skip
 
@@ -77,7 +93,17 @@ module "iot-platform" {
   region                     = "europe-west1"
   telemetry_pubsub_topic_id = "landing_pubsub_topic_id"
   status_pubsub_topic_id    = "status_pubsub_topic_id"
-  devices_yaml_file          = "devices.yaml"
+  protocols = {
+      http = false,
+      mqtt = true
+  }
+  devices_config = {
+      blocked = false, 
+      certificate_format = "RSA_X509_PEM", 
+      gateway = false, 
+      yaml_file = "devices.yaml", 
+      log_level =  "INFO"
+  }
 }
 # tftest:skip
 ```
@@ -95,18 +121,15 @@ Or even better, create a new BigQuery table with our IoT sensors data columns an
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [project_id](variables.tf#L53) | Project were resources will be deployed | <code>string</code> | ✓ |  |
-| [region](variables.tf#L67) | Region were resources will be deployed | <code>string</code> | ✓ |  |
-| [status_pubsub_topic_id](variables.tf#L78) | pub sub topic for status messages (GCP-->Device) | <code>string</code> | ✓ |  |
-| [telemetry_pubsub_topic_id](variables.tf#L83) | pub sub topic for telemetry messages (Device-->GCP) | <code>string</code> | ✓ |  |
-| [devices_blocked](variables.tf#L17) | Variable to setup devices status. blocked=false then devices are active | <code>bool</code> |  | <code>false</code> |
-| [devices_certificates_format](variables.tf#L23) | certificates format. Possible values are RSA_PEM, RSA_X509_PEM, ES256_PEM, and ES256_X509_PEM | <code>string</code> |  | <code>&#34;RSA_X509_PEM&#34;</code> |
-| [devices_gw_config](variables.tf#L29) | Indicates whether the device is a gateway. Default value is NON_GATEWAY. Possible values are GATEWAY and NON_GATEWAY | <code>string</code> |  | <code>&#34;NON_GATEWAY&#34;</code> |
-| [devices_yaml_file](variables.tf#L35) | yaml file name including Devices map to be registered in the IoT Registry in the form DEVICE_ID: DEVICE_CERTIFICATE | <code>string</code> |  | <code>&#34;&#34;</code> |
-| [extra_telemetry_pubsub_topic_ids](variables.tf#L41) | additional pubsub topics linked to adhoc MQTT topics (Device-->GCP) in the format MQTT_TOPIC: PUBSUB_TOPIC_ID | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [log_level](variables.tf#L47) | IoT Registry Log level | <code>string</code> |  | <code>&#34;INFO&#34;</code> |
-| [protocols](variables.tf#L58) | IoT protocols (HTTP / MQTT) activation | <code title="object&#40;&#123;&#10;  http &#61; bool,&#10;  mqtt &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123; http &#61; true, mqtt &#61; true &#125;</code> |
-| [registry_name](variables.tf#L72) | Name for the IoT Core Registry | <code>string</code> |  | <code>&#34;cloudiot-registry&#34;</code> |
+| [project_id](variables.tf#L41) | Project were resources will be deployed | <code>string</code> | ✓ |  |
+| [region](variables.tf#L55) | Region were resources will be deployed | <code>string</code> | ✓ |  |
+| [status_pubsub_topic_id](variables.tf#L66) | pub sub topic for status messages (GCP-->Device) | <code>string</code> | ✓ |  |
+| [telemetry_pubsub_topic_id](variables.tf#L71) | pub sub topic for telemetry messages (Device-->GCP) | <code>string</code> | ✓ |  |
+| [devices_config](variables.tf#L17) | IoT configuration for the batch of devices to be configured. Certificates format values are RSA_PEM, RSA_X509_PEM, ES256_PEM, and ES256_X509_PEM. yaml_file name including Devices map to be registered in the IoT Registry in the form DEVICE_ID: DEVICE_CERTIFICATE | <code title="object&#40;&#123;&#10;  blocked &#61; bool,&#10;  certificate_format &#61; string,&#10;  gateway &#61; bool,&#10;  yaml_file &#61; string,&#10;  log_level &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123; blocked &#61; false, certificate_format &#61; &#34;RSA_X509_PEM&#34;, gateway &#61; false, yaml_file &#61; &#34;&#34;, log_level &#61;  &#34;INFO&#34;&#125;</code> |
+| [extra_telemetry_pubsub_topic_ids](variables.tf#L29) | additional pubsub topics linked to adhoc MQTT topics (Device-->GCP) in the format MQTT_TOPIC: PUBSUB_TOPIC_ID | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [log_level](variables.tf#L35) | IoT Registry Log level | <code>string</code> |  | <code>&#34;INFO&#34;</code> |
+| [protocols](variables.tf#L46) | IoT protocols (HTTP / MQTT) activation | <code title="object&#40;&#123;&#10;  http &#61; bool,&#10;  mqtt &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123; http &#61; true, mqtt &#61; true &#125;</code> |
+| [registry_name](variables.tf#L60) | Name for the IoT Core Registry | <code>string</code> |  | <code>&#34;cloudiot-registry&#34;</code> |
 
 ## Outputs
 

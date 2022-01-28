@@ -60,22 +60,22 @@ resource "google_cloudiot_registry" "registry" {
 #---------------------------------------------------------
 
 resource "google_cloudiot_device" "device" {
-  for_each = try(coalesce(yamldecode(file(var.devices_yaml_file)), {}), {})
+  for_each = try(yamldecode(file(var.devices_config.yaml_file)), {})
   name     = each.key
   registry = google_cloudiot_registry.registry.id
 
   credentials {
     public_key {
-      format = var.devices_certificates_format
+      format = var.devices_config.certificate_format
       key    = file(each.value)
     }
   }
 
-  blocked = var.devices_blocked
+  blocked = var.devices_config.blocked
 
-  log_level = var.log_level
+  log_level = var.devices_config.log_level
 
   gateway_config {
-    gateway_type = var.devices_gw_config
+    gateway_type = var.devices_config.gateway ? "GATEWAY" : "NON_GATEWAY"
   }
 }
