@@ -35,6 +35,6 @@ This sample creates\update several distinct groups of resources:
 
 | name | description | sensitive |
 |---|---|:---:|
-| [m4ce_gmanaged_service_account](outputs.tf#L15) | Google manager service account created automatically. It is used by M4CE to perform activities on target projects |  |
+| [m4ce_gmanaged_service_account](outputs.tf#L15) | Google managed service account created automatically during the migrate connector registration.. It is used by M4CE to perform activities on target projects |  |
 
 <!-- END TFDOC -->
