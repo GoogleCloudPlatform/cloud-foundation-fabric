@@ -41,7 +41,7 @@ As highlighted above, the `access_levels` type replicates the underlying resourc
 ```hcl
 module "test" {
   source        = "./modules/vpc-sc"
-  access_policy = "accessPolicies/12345678"
+  access_policy = "12345678"
   access_levels = {
     a1 = {
       combining_function = null
@@ -82,7 +82,7 @@ Resources for both perimeters have a `lifecycle` block that ignores changes to `
 ```hcl
 module "test" {
   source        = "./modules/vpc-sc"
-  access_policy = "accessPolicies/12345678"
+  access_policy = "12345678"
   service_perimeters_bridge = {
     b1 = {
       status_resources          = ["projects/111110", "projects/111111"]
@@ -104,7 +104,7 @@ module "test" {
 ```hcl
 module "test" {
   source        = "./modules/vpc-sc"
-  access_policy = "accessPolicies/12345678"
+  access_policy = "12345678"
   access_levels = {
     a1 = {
       combining_function = null
@@ -131,7 +131,7 @@ module "test" {
         egress_policies     = null
         ingress_policies    = null
         vpc_accessible_services = {
-          allowed_services   = ["compute.googleapis.com"]
+          allowed_services   = ["storage.googleapis.com"]
           enable_restriction = true
         }
       }
@@ -141,6 +141,10 @@ module "test" {
 }
 # tftest:modules=1:resources=3
 ```
+
+## Notes
+
+- To remove an access level, first remove the binding between perimeter and the access level in `status` and/or `spec` without removing the access level itself. Once you have run `terraform apply`, you'll then be able to remove the access level and run `terraform apply` again. 
 
 ## TODO
 
