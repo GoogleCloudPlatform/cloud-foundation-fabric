@@ -31,7 +31,7 @@ module "myproject-default-service-accounts" {
 
 | name | description | resources |
 |---|---|---|
-| [iam.tf](./iam.tf) | None | <code>google_billing_account_iam_member</code> · <code>google_folder_iam_member</code> · <code>google_organization_iam_member</code> · <code>google_project_iam_member</code> · <code>google_service_account_iam_binding</code> · <code>google_storage_bucket_iam_member</code> |
+| [iam.tf](./iam.tf) | IAM bindings. | <code>google_billing_account_iam_member</code> · <code>google_folder_iam_member</code> · <code>google_organization_iam_member</code> · <code>google_project_iam_member</code> · <code>google_service_account_iam_binding</code> · <code>google_storage_bucket_iam_member</code> |
 | [main.tf](./main.tf) | Module-level locals and resources. | <code>google_service_account</code> · <code>google_service_account_key</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |
 | [variables.tf](./variables.tf) | Module variables. |  |
