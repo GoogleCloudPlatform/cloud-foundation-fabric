@@ -179,7 +179,6 @@ module "org" {
       type                 = "storage"
       destination          = module.gcs.name
       filter               = "severity=WARNING"
-      iam                  = false
       include_children     = true
       bq_partitioned_table = null
       exclusions           = {}
@@ -188,7 +187,6 @@ module "org" {
       type                 = "bigquery"
       destination          = module.dataset.id
       filter               = "severity=INFO"
-      iam                  = false
       include_children     = true
       bq_partitioned_table = true
       exclusions           = {}
@@ -197,7 +195,6 @@ module "org" {
       type                 = "pubsub"
       destination          = module.pubsub.id
       filter               = "severity=NOTICE"
-      iam                  = true
       include_children     = true
       bq_partitioned_table = null
       exclusions           = {}
@@ -206,7 +203,6 @@ module "org" {
       type                 = "logging"
       destination          = module.bucket.id
       filter               = "severity=DEBUG"
-      iam                  = true
       include_children     = false
       bq_partitioned_table = null
       exclusions           = {
@@ -218,7 +214,7 @@ module "org" {
     no-gce-instances = "resource.type=gce_instance"
   }
 }
-# tftest:modules=5:resources=11
+# tftest:modules=5:resources=13
 ```
 
 ## Custom Roles
@@ -243,7 +239,7 @@ module "org" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [organization_id](variables.tf#L142) | Organization id in organizations/nnnnnn format. | <code>string</code> | ✓ |  |
+| [organization_id](variables.tf#L141) | Organization id in organizations/nnnnnn format. | <code>string</code> | ✓ |  |
 | [contacts](variables.tf#L17) | List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [custom_roles](variables.tf#L23) | Map of role name => list of permissions to create in this project. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [firewall_policies](variables.tf#L29) | Hierarchical firewall policy rules created in the organization. | <code title="map&#40;map&#40;object&#40;&#123;&#10;  action                  &#61; string&#10;  description             &#61; string&#10;  direction               &#61; string&#10;  logging                 &#61; bool&#10;  ports                   &#61; map&#40;list&#40;string&#41;&#41;&#10;  priority                &#61; number&#10;  ranges                  &#61; list&#40;string&#41;&#10;  target_resources        &#61; list&#40;string&#41;&#10;  target_service_accounts &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;&#41;">map&#40;map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -257,9 +253,9 @@ module "org" {
 | [iam_audit_config_authoritative](variables.tf#L97) | IAM Authoritative service audit logging configuration. Service as key, map of log permission (eg DATA_READ) and excluded members as value for each service. Audit config should also be authoritative when using authoritative bindings. Use with caution. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>null</code> |
 | [iam_bindings_authoritative](variables.tf#L108) | IAM authoritative bindings, in {ROLE => [MEMBERS]} format. Roles and members not explicitly listed will be cleared. Bindings should also be authoritative when using authoritative audit config. Use with caution. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>null</code> |
 | [logging_exclusions](variables.tf#L114) | Logging exclusions for this organization in the form {NAME -> FILTER}. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [logging_sinks](variables.tf#L120) | Logging sinks to create for this organization. | <code title="map&#40;object&#40;&#123;&#10;  destination          &#61; string&#10;  type                 &#61; string&#10;  filter               &#61; string&#10;  iam                  &#61; bool&#10;  include_children     &#61; bool&#10;  bq_partitioned_table &#61; bool&#10;  exclusions &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [policy_boolean](variables.tf#L151) | Map of boolean org policies and enforcement value, set value to null for policy restore. | <code>map&#40;bool&#41;</code> |  | <code>&#123;&#125;</code> |
-| [policy_list](variables.tf#L157) | Map of list org policies, status is true for allow, false for deny, null for restore. Values can only be used for allow or deny. | <code title="map&#40;object&#40;&#123;&#10;  inherit_from_parent &#61; bool&#10;  suggested_value     &#61; string&#10;  status              &#61; bool&#10;  values              &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [logging_sinks](variables.tf#L120) | Logging sinks to create for this organization. | <code title="map&#40;object&#40;&#123;&#10;  destination          &#61; string&#10;  type                 &#61; string&#10;  filter               &#61; string&#10;  include_children     &#61; bool&#10;  bq_partitioned_table &#61; bool&#10;  exclusions &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [policy_boolean](variables.tf#L150) | Map of boolean org policies and enforcement value, set value to null for policy restore. | <code>map&#40;bool&#41;</code> |  | <code>&#123;&#125;</code> |
+| [policy_list](variables.tf#L156) | Map of list org policies, status is true for allow, false for deny, null for restore. Values can only be used for allow or deny. | <code title="map&#40;object&#40;&#123;&#10;  inherit_from_parent &#61; bool&#10;  suggested_value     &#61; string&#10;  status              &#61; bool&#10;  values              &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

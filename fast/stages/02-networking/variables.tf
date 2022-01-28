@@ -28,7 +28,7 @@ variable "custom_adv" {
     gcp_all               = "10.128.0.0/16"
     gcp_dev               = "10.128.32.0/19"
     gcp_landing           = "10.128.0.0/19"
-    gcp_prod              = "10.128.0.0/18"
+    gcp_prod              = "10.128.64.0/19"
     googleapis_private    = "199.36.153.8/30"
     googleapis_restricted = "199.36.153.4/30"
     rfc_1918_10           = "10.0.0.0/8"
@@ -84,12 +84,12 @@ variable "l7ilb_subnets" {
   })))
   default = {
     prod = [
-      { ip_cidr_range = "10.136.240.0/24", region = "europe-west1" },
-      { ip_cidr_range = "10.137.240.0/24", region = "europe-west4" }
+      { ip_cidr_range = "10.128.92.0/24", region = "europe-west1" },
+      { ip_cidr_range = "10.128.93.0/24", region = "europe-west4" }
     ]
     dev = [
-      { ip_cidr_range = "10.144.240.0/24", region = "europe-west1" },
-      { ip_cidr_range = "10.145.240.0/24", region = "europe-west4" }
+      { ip_cidr_range = "10.128.60.0/24", region = "europe-west1" },
+      { ip_cidr_range = "10.128.61.0/24", region = "europe-west4" }
     ]
   }
 }
@@ -128,12 +128,12 @@ variable "psa_ranges" {
   type        = map(map(string))
   default = {
     prod = {
-      cloudsql-mysql     = "10.136.250.0/24"
-      cloudsql-sqlserver = "10.136.251.0/24"
+      cloudsql-mysql     = "10.128.94.0/24"
+      cloudsql-sqlserver = "10.128.95.0/24"
     }
     dev = {
-      cloudsql-mysql     = "10.144.250.0/24"
-      cloudsql-sqlserver = "10.144.251.0/24"
+      cloudsql-mysql     = "10.128.62.0/24"
+      cloudsql-sqlserver = "10.128.63.0/24"
     }
   }
 }
