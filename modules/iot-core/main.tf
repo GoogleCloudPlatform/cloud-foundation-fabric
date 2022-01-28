@@ -26,20 +26,20 @@ resource "google_cloudiot_registry" "registry" {
   region  = var.region
 
   dynamic "event_notification_configs" {
-    for_each = var.extra_telemetry_pub_sub_topic_ids
+    for_each = var.extra_telemetry_pubsub_topic_ids
     content {
-      pubsub_topic_name = event_notification_configs.value.pub_sub_topic
+      pubsub_topic_name = event_notification_configs.value.pubsub_topic
       subfolder_matches = event_notification_configs.value.mqtt_topic
     }
   }
 
   event_notification_configs {
-    pubsub_topic_name = var.telemetry_pub_sub_topic_id
+    pubsub_topic_name = var.telemetry_pubsub_topic_id
     subfolder_matches = ""
   }
 
   state_notification_config = {
-    pubsub_topic_name = var.status_pub_sub_topic_id
+    pubsub_topic_name = var.status_pubsub_topic_id
   }
 
   mqtt_config = {

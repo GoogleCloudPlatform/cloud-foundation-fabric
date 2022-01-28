@@ -38,11 +38,11 @@ variable "devices_yaml_file" {
   default     = ""
 }
 
-variable "extra_telemetry_pub_sub_topic_ids" {
-  description = "additional pub sub topics for telemetry messages in adhoc MQTT topics (Device-->GCP) in the format MQTT_TOPIC:PUB_SUB_TOPIC_ID"
+variable "extra_telemetry_pubsub_topic_ids" {
+  description = "additional pubsub topics for telemetry messages in adhoc MQTT topics (Device-->GCP) in the format MQTT_TOPIC:PUBSUB_TOPIC_ID"
   type = list(object({
     mqtt_topic    = string
-    pub_sub_topic = string
+    pubsub_topic = string
   }))
   default = []
 }
@@ -81,12 +81,12 @@ variable "registry_name" {
   default     = "cloudiot-registry"
 }
 
-variable "status_pub_sub_topic_id" {
+variable "status_pubsub_topic_id" {
   description = "pub sub topic for status messages (GCP-->Device)"
   type        = string
 }
 
-variable "telemetry_pub_sub_topic_id" {
+variable "telemetry_pubsub_topic_id" {
   description = "pub sub topic for telemetry messages (Device-->GCP)"
   type        = string
 }

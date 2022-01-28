@@ -24,8 +24,8 @@ module "iot-platform" {
   source                     = "./modules/iot-core"
   project_id                 = "my_project_id"
   region                     = "europe-west1"
-  telemetry_pub_sub_topic_id = "telemetry_topic_id"
-  status_pub_sub_topic_id    = "status_topic_id"
+  telemetry_pubsub_topic_id = "telemetry_topic_id"
+  status_pubsub_topic_id    = "status_topic_id"
   devices_yaml_file          = "devices.yaml"
 }
 # tftest:skip
@@ -36,22 +36,22 @@ Now, we can test sending telemetry messages from devices to our IoT Platform, fo
 
 ## Example with specific PubSub topics for custom MQTT topics
 
-If you need to match specific MQTT topics (eg, /temperature) into specific PubSub topics, you can use extra_telemetry_pub_sub_topic_ids for that, as in the following example:
+If you need to match specific MQTT topics (eg, /temperature) into specific PubSub topics, you can use extra_telemetry_pubsub_topic_ids for that, as in the following example:
 
 ```hcl
 module "iot-platform" {
   source                     = "./modules/iot-core"
   project_id                 = "my_project_id"
   region                     = "europe-west1"
-  telemetry_pub_sub_topic_id = "telemetry_topic_id"
-  status_pub_sub_topic_id    = "statu_topic_id"
-  extra_telemetry_pub_sub_topic_ids = [{
+  telemetry_pubsub_topic_id = "telemetry_topic_id"
+  status_pubsub_topic_id    = "statu_topic_id"
+  extra_telemetry_pubsub_topic_ids = [{
     "mqtt_topic"    = "humidity"
-    "pub_sub_topic" = "hum_topic_id"
+    "pubsub_topic" = "hum_topic_id"
     },
     {
       "mqtt_topic"    = "temperature"
-      "pub_sub_topic" = "temp_topic_id"
+      "pubsub_topic" = "temp_topic_id"
   }]
   devices_yaml_file = "devices.yaml"
 }
@@ -75,8 +75,8 @@ module "iot-platform" {
   source                     = "./modules/iot-core"
   project_id                 = "landing-project-id"
   region                     = "europe-west1"
-  telemetry_pub_sub_topic_id = "landing_pubsub_topic_id"
-  status_pub_sub_topic_id    = "status_pubsub_topic_id"
+  telemetry_pubsub_topic_id = "landing_pubsub_topic_id"
+  status_pubsub_topic_id    = "status_pubsub_topic_id"
   devices_yaml_file          = "devices.yaml"
 }
 # tftest:skip
@@ -100,13 +100,13 @@ Or even better, create a new BigQuery table with our IoT sensors data columns an
 |---|---|:---:|:---:|:---:|
 | project_id | Project were resources will be deployed | <code>string</code> | ✓ |  |
 | region | Region were resources will be deployed | <code>string</code> | ✓ |  |
-| status_pub_sub_topic_id | pub sub topic for status messages (GCP-->Device) | <code>string</code> | ✓ |  |
-| telemetry_pub_sub_topic_id | pub sub topic for telemetry messages (Device-->GCP) | <code>string</code> | ✓ |  |
+| status_pubsub_topic_id | pubsub topic for status messages (GCP-->Device) | <code>string</code> | ✓ |  |
+| telemetry_pubsub_topic_id | pubsub topic for telemetry messages (Device-->GCP) | <code>string</code> | ✓ |  |
 | devices_blocked | Variable to setup devices status. blocked=false then devices are active | <code>bool</code> |  | <code>false</code> |
 | devices_certificates_format | certificates format. Possible values are RSA_PEM, RSA_X509_PEM, ES256_PEM, and ES256_X509_PEM | <code>string</code> |  | <code>&#34;RSA_X509_PEM&#34;</code> |
 | devices_gw_config | Indicates whether the device is a gateway. Default value is NON_GATEWAY. Possible values are GATEWAY and NON_GATEWAY | <code>string</code> |  | <code>&#34;NON_GATEWAY&#34;</code> |
 | devices_yaml_file | yaml file name including Devices map to be registered in the IoT Registry in the form DEVICE_ID: DEVICE_CERTIFICATE | <code>string</code> |  | <code>&#34;&#34;</code> |
-| extra_telemetry_pub_sub_topic_ids | additional pub sub topics for telemetry messages in adhoc MQTT topics (Device-->GCP) in the format MQTT_TOPIC:PUB_SUB_TOPIC_ID | <code title="list&#40;object&#40;&#123;&#10;  mqtt_topic    &#61; string&#10;  pub_sub_topic &#61; string&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
+| extra_telemetry_pubsub_topic_ids | additional pub sub topics for telemetry messages in adhoc MQTT topics (Device-->GCP) in the format MQTT_TOPIC:pubsub_TOPIC_ID | <code title="list&#40;object&#40;&#123;&#10;  mqtt_topic    &#61; string&#10;  pubsub_topic &#61; string&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
 | log_level | IoT Registry Log level | <code>string</code> |  | <code>&#34;INFO&#34;</code> |
 | protocol_http | http protocol activation. HTTP_ENABLED or HTTP_DISABLED | <code>string</code> |  | <code>&#34;HTTP_ENABLED&#34;</code> |
 | protocol_mqtt | Matt protocol activation. MQTT_ENABLED or MQTT_DISABLED | <code>string</code> |  | <code>&#34;MQTT_ENABLED&#34;</code> |
