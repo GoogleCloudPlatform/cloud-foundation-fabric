@@ -17,7 +17,7 @@ module "test" {
   source        = "./modules/vpc-sc"
   access_policy = "accessPolicies/12345678"
 }
-# tftest:modules=0:resources=0
+# tftest modules=0 resources=0
 ```
 
 If you need the module to create the policy for you, use the `access_policy_create` variable, and set `access_policy` to `null`:
@@ -31,7 +31,7 @@ module "test" {
     title  = "vpcsc-policy"
   }
 }
-# tftest:modules=1:resources=1
+# tftest modules=1 resources=1
 ```
 
 ### Access levels
@@ -62,7 +62,7 @@ module "test" {
     }
   }
 }
-# tftest:modules=1:resources=2
+# tftest modules=1 resources=2
 ```
 
 ### Service perimeters
@@ -96,7 +96,7 @@ module "test" {
     }
   }
 }
-# tftest:modules=1:resources=2
+# tftest modules=1 resources=2
 ```
 
 #### Regular type
@@ -139,7 +139,7 @@ module "test" {
     }
   }
 }
-# tftest:modules=1:resources=3
+# tftest modules=1 resources=3
 ```
 
 ## Notes

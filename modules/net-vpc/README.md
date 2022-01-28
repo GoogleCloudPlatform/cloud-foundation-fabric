@@ -31,7 +31,7 @@ module "vpc" {
     }
   ]
 }
-# tftest:modules=1:resources=3
+# tftest modules=1 resources=3
 ```
 
 ### Peering
@@ -69,7 +69,7 @@ module "vpc-spoke-1" {
     import_routes      = true
   }
 }
-# tftest:modules=2:resources=6
+# tftest modules=2 resources=6
 ```
 
 ### Shared VPC
@@ -120,7 +120,7 @@ module "vpc-host" {
     }
   }
 }
-# tftest:modules=1:resources=7
+# tftest modules=1 resources=7
 ```
 
 ### Private Service Networking
@@ -140,7 +140,7 @@ module "vpc" {
   ]
   psn_ranges = ["10.10.0.0/16"]
 }
-# tftest:modules=1:resources=4
+# tftest modules=1 resources=4
 ```
 
 ### DNS Policies
@@ -167,7 +167,7 @@ module "vpc" {
     }
   ]
 }
-# tftest:modules=1:resources=3
+# tftest modules=1 resources=3
 ```
 
 ### Subnet Factory
@@ -181,7 +181,7 @@ module "vpc" {
   name        = "my-network"
   data_folder = "config/subnets"
 }
-# tftest:skip
+# tftest skip
 ```
 
 ```yaml

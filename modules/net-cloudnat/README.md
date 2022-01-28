@@ -12,7 +12,7 @@ module "nat" {
   name           = "default"
   router_network = "my-vpc"
 }
-# tftest:modules=1:resources=2
+# tftest modules=1 resources=2
 ```
 <!-- BEGIN TFDOC -->
 

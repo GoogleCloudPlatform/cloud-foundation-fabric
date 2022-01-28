@@ -32,7 +32,7 @@ module "org" {
     }
   }
 }
-# tftest:modules=1:resources=6
+# tftest modules=1 resources=6
 ```
 
 ## IAM
@@ -83,7 +83,7 @@ module "org" {
     iap_policy = "iap-policy"
   }
 }
-# tftest:modules=1:resources=3
+# tftest modules=1 resources=3
 ```
 
 ### Firewall policy factory
@@ -103,7 +103,7 @@ module "org" {
     factory-policy = module.org.firewall_policy_id["factory"]
   }
 }
-# tftest:skip
+# tftest skip
 ```
 
 ```yaml
@@ -216,7 +216,7 @@ module "org" {
     no-gce-instances = "resource.type=gce_instance"
   }
 }
-# tftest:modules=5:resources=13
+# tftest modules=5 resources=13
 ```
 
 ## Custom Roles
@@ -233,7 +233,7 @@ module "org" {
     (module.org.custom_role_id.myRole) = ["user:me@example.com"]
   }
 }
-# tftest:modules=1:resources=2
+# tftest modules=1 resources=2
 ```
 <!-- BEGIN TFDOC -->
 

@@ -16,7 +16,7 @@ module "datafusion" {
   # TODO: remove the following line
   firewall_create = false
 }
-# tftest:modules=1:resources=3
+# tftest modules=1 resources=3
 ```
 
 ### Externally managed IP allocation
@@ -31,7 +31,7 @@ module "datafusion" {
   ip_allocation_create = false
   ip_allocation        = "10.0.0.0/22"
 }
-# tftest:modules=1:resources=3
+# tftest modules=1 resources=3
 ```
 <!-- BEGIN TFDOC -->
 

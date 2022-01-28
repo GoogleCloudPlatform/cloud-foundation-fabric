@@ -27,7 +27,7 @@ module "simple-vm-example" {
   }]
   service_account_create = true
 }
-# tftest:modules=1:resources=2
+# tftest modules=1 resources=2
 
 ```
 
@@ -67,7 +67,7 @@ module "simple-vm-example" {
   }]
   service_account_create = true
 }
-# tftest:modules=1:resources=2
+# tftest modules=1 resources=2
 ```
 
 And the same example for an instance template (where not using the full self link of the disk triggers recreation of the template)
@@ -98,7 +98,7 @@ module "simple-vm-example" {
   service_account_create = true
   create_template  = true
 }
-# tftest:modules=1:resources=2
+# tftest modules=1 resources=2
 ```
 
 ### Disk encryption with Cloud KMS
@@ -138,7 +138,7 @@ module "kms-vm-example" {
     kms_key_self_link       = var.kms_key.self_link
   }
 }
-# tftest:modules=1:resources=3
+# tftest modules=1 resources=3
 ```
 
 ### Using Alias IPs
@@ -167,7 +167,7 @@ module "vm-with-alias-ips" {
   }
   service_account_create = true
 }
-# tftest:modules=1:resources=2
+# tftest modules=1 resources=2
 ```
 
 ### Using gVNIC
@@ -219,7 +219,7 @@ module "vm-with-gvnic" {
   }
   service_account_create = true
 }
-# tftest:modules=1:resources=2
+# tftest modules=1 resources=2
 ```
 
 ### Instance template
@@ -255,7 +255,7 @@ module "cos-test" {
   service_account        = "vm-default@my-project.iam.gserviceaccount.com"
   create_template  = true
 }
-# tftest:modules=1:resources=1
+# tftest modules=1 resources=1
 ```
 
 ### Instance group
@@ -290,7 +290,7 @@ module "instance-group" {
   }
   group = { named_ports = {} }
 }
-# tftest:modules=1:resources=2
+# tftest modules=1 resources=2
 ```
 <!-- BEGIN TFDOC -->
 

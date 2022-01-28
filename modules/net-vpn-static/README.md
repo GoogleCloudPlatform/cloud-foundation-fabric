@@ -29,7 +29,7 @@ module "vpn" {
     }
   }
 }
-# tftest:modules=2:resources=8
+# tftest modules=2 resources=8
 ```
 <!-- BEGIN TFDOC -->
 

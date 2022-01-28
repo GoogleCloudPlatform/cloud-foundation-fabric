@@ -30,7 +30,7 @@ module "cluster-1" {
     environment = "dev"
   }
 }
-# tftest:modules=1:resources=1
+# tftest modules=1 resources=1
 ```
 
 ### GKE Cluster with Dataplane V2 enabled
@@ -60,7 +60,7 @@ module "cluster-1" {
     environment = "dev"
   }
 }
-# tftest:modules=1:resources=1
+# tftest modules=1 resources=1
 ```
 <!-- BEGIN TFDOC -->
 

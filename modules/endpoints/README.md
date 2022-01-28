@@ -18,7 +18,7 @@ module "endpoint" {
     ]
   }
 }
-# tftest:skip
+# tftest skip
 ```
 
 [Here](https://github.com/GoogleCloudPlatform/python-docs-samples/blob/master/endpoints/getting-started/openapi.yaml) you can find an example of an openapi.yaml file. Once created the endpoint, remember to activate the service at project level.

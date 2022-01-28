@@ -21,7 +21,7 @@ module "folder" {
     "roles/owner" = ["user:one@example.com"]
   }
 }
-# tftest:modules=1:resources=3
+# tftest modules=1 resources=3
 ```
 
 ### Organization policies
@@ -44,7 +44,7 @@ module "folder" {
     }
   }
 }
-# tftest:modules=1:resources=4
+# tftest modules=1 resources=4
 ```
 
 ### Firewall policy factory
@@ -65,7 +65,7 @@ module "folder" {
     factory-policy = module.folder.firewall_policy_id["factory"]
   }
 }
-# tftest:skip
+# tftest skip
 ```
 
 ```yaml
@@ -174,7 +174,7 @@ module "folder-sink" {
     no-gce-instances = "resource.type=gce_instance"
   }
 }
-# tftest:modules=5:resources=14
+# tftest modules=5 resources=14
 ```
 
 ### Hierarchical firewall policies
@@ -213,7 +213,7 @@ module "folder2" {
     iap-policy = module.folder1.firewall_policy_id["iap-policy"]
   }
 }
-# tftest:modules=2:resources=6
+# tftest modules=2 resources=6
 ```
 <!-- BEGIN TFDOC -->
 

@@ -17,7 +17,7 @@ module "pubsub" {
     "roles/pubsub.subscriber" = ["user:user1@example.com"]
   }
 }
-# tftest:modules=1:resources=3
+# tftest modules=1 resources=3
 ```
 
 ### Subscriptions
@@ -42,7 +42,7 @@ module "pubsub" {
     }
   }
 }
-# tftest:modules=1:resources=3
+# tftest modules=1 resources=3
 ```
 
 ### Push subscriptions
@@ -65,7 +65,7 @@ module "pubsub" {
     }
   }
 }
-# tftest:modules=1:resources=2
+# tftest modules=1 resources=2
 ```
 
 ### Subscriptions with IAM
@@ -85,7 +85,7 @@ module "pubsub" {
     }
   }
 }
-# tftest:modules=1:resources=3
+# tftest modules=1 resources=3
 ```
 <!-- BEGIN TFDOC -->
 
