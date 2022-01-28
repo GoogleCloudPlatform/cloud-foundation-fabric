@@ -2,11 +2,16 @@
 
 This module implement an opinionated Data Platform (DP) Architecture that create and set up projects (and related resources) to be used for your data workloads.
 
-# Design overview and choices #TODO
-This is the Data Platform architecture we are going to deploy.
-
 ![Data Platform Architecture overview](./images/overview_diagram.png "Data Platform Architecture overview")
 
+# Design overview and choices #TODO
+This is the Data Platform architecture we are going to deploy.
+#TODO Add introduction
+- boundaries for each step
+- help identify actors
+- help assign minimal roles
+
+#TODO Rename secutiry to Core services
 ## Project structure
 The DP is designed to rely on several projects, one prj per data stage. This is done to better separate different stages of the data journey and rely on project level roles.
 
@@ -40,7 +45,6 @@ Service Account Keys (SAK) are out of scope for this example. The example implem
 The use of SAK within a data pipeline incurs several security risks, as these are physical credentials, matched to an automated system, that can be distributed without oversight or control. 
 
 Whilst necessary in some scenarios, such as programmatic access from on-premise or alternative clouds, we recommend identify a structured process to mitigate risks associated with the use of service account keys.
-
 
 ## Groups #TODO
 As default groups, we identified the following actors:
@@ -102,6 +106,7 @@ The Data Prlatform is meant to be executed by a Service Account (or a regular us
 # Variable configuration #TODO
 
 # Customizations #TODO
+Variables with default
 Add internal KMS?
 Parallel workstream
 
