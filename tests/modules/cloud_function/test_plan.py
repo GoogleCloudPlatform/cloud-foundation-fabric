@@ -12,17 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-import os
 import pytest
-
-
-FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
 
 
 @pytest.fixture
 def resources(plan_runner):
-  _, resources = plan_runner(FIXTURES_DIR)
+  _, resources = plan_runner()
   return resources
 
 

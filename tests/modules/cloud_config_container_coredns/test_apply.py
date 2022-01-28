@@ -12,19 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-import os
-import pytest
 import re
 import yaml
 
 
-FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
-
-
 def test_defaults(apply_runner):
   "Test defalt configuration."
-  _, output = apply_runner(FIXTURES_DIR)
+  _, output = apply_runner()
   cloud_config = output['cloud_config']
   yaml.safe_load(cloud_config)
   assert cloud_config.startswith('#cloud-config')

@@ -12,12 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-import os
-import pytest
-
-
-FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
 _VAR_SUBNETS = (
     '[ '
     '{name = "a", region = "europe-west1", ip_cidr_range = "10.0.0.0/24",'
@@ -34,24 +28,22 @@ _VAR_DATA_FOLDER = "data"
 
 def test_subnet_factory(plan_runner):
   "Test subnet factory."
-  _, resources = plan_runner(FIXTURES_DIR, data_folder=_VAR_DATA_FOLDER)
-  assert len(resources) == 3
+  _, resources = plan_runner(data_folder=_VAR_DATA_FOLDER)
+  assert len(resources) == 5
   subnets = [r['values']
              for r in resources if r['type'] == 'google_compute_subnetwork']
-  assert set(s['name'] for s in subnets) == set(
-      ['factory-subnet'])
-  assert set(len(s['secondary_ip_range']) for s in subnets) == set([1])
+  assert {s['name'] for s in subnets} == {'factory-subnet', 'factory-subnet2'}
+  assert {len(s['secondary_ip_range']) for s in subnets} == {0, 1}
 
 
 def test_subnets_simple(plan_runner):
   "Test subnets variable."
-  _, resources = plan_runner(FIXTURES_DIR, subnets=_VAR_SUBNETS)
+  _, resources = plan_runner(subnets=_VAR_SUBNETS)
   assert len(resources) == 4
   subnets = [r['values']
              for r in resources if r['type'] == 'google_compute_subnetwork']
-  assert set(s['name'] for s in subnets) == set(
-      ['a', 'b', 'c'])
-  assert set(len(s['secondary_ip_range']) for s in subnets) == set([0, 0, 2])
+  assert {s['name'] for s in subnets} == {'a', 'b', 'c'}
+  assert {len(s['secondary_ip_range']) for s in subnets} == {0, 0, 2}
 
 
 def test_subnet_log_configs(plan_runner):
@@ -62,7 +54,7 @@ def test_subnet_log_configs(plan_runner):
       'metadata = "INCLUDE_ALL_METADATA"}'
   )
   subnet_flow_logs = '{"europe-west1/a"=true, "europe-west1/b"=true}'
-  _, resources = plan_runner(FIXTURES_DIR, subnets=_VAR_SUBNETS,
+  _, resources = plan_runner(subnets=_VAR_SUBNETS,
                              log_configs=log_config,
                              log_config_defaults=log_config_defaults,
                              subnet_flow_logs=subnet_flow_logs)

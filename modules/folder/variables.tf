@@ -88,7 +88,6 @@ variable "logging_sinks" {
     destination      = string
     type             = string
     filter           = string
-    iam              = bool
     include_children = bool
     # TODO exclusions also support description and disabled
     exclusions = map(string)

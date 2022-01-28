@@ -72,32 +72,28 @@ module "secret-manager" {
 }
 # tftest:modules=1:resources=5
 ```
-
-
 <!-- BEGIN TFDOC -->
 
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| project_id | Project id where the keyring will be created. | <code>string</code> | ✓ |  |
-| iam | IAM bindings in {SECRET => {ROLE => [MEMBERS]}} format. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| labels | Optional labels for each secret. | <code>map&#40;map&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| secrets | Map of secrets to manage and their locations. If locations is null, automatic management will be set. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| versions | Optional versions to manage for each secret. Version names are only used internally to track individual versions. | <code title="map&#40;map&#40;object&#40;&#123;&#10;  enabled &#61; bool&#10;  data    &#61; string&#10;&#125;&#41;&#41;&#41;">map&#40;map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [project_id](variables.tf#L29) | Project id where the keyring will be created. | <code>string</code> | ✓ |  |
+| [iam](variables.tf#L17) | IAM bindings in {SECRET => {ROLE => [MEMBERS]}} format. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [labels](variables.tf#L23) | Optional labels for each secret. | <code>map&#40;map&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [secrets](variables.tf#L34) | Map of secrets to manage and their locations. If locations is null, automatic management will be set. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [versions](variables.tf#L40) | Optional versions to manage for each secret. Version names are only used internally to track individual versions. | <code title="map&#40;map&#40;object&#40;&#123;&#10;  enabled &#61; bool&#10;  data    &#61; string&#10;&#125;&#41;&#41;&#41;">map&#40;map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| ids | Secret ids keyed by secret_ids (names). |  |
-| secrets | Secret resources. |  |
-| version_ids | Version ids keyed by secret name : version name. |  |
-| versions | Secret versions. |  |
+| [ids](outputs.tf#L17) | Secret ids keyed by secret_ids (names). |  |
+| [secrets](outputs.tf#L24) | Secret resources. |  |
+| [version_ids](outputs.tf#L29) | Version ids keyed by secret name : version name. |  |
+| [versions](outputs.tf#L36) | Secret versions. |  |
 
 <!-- END TFDOC -->
-
-
 ## Requirements
 
 These sections describe requirements for using this module.

@@ -1,8 +1,0 @@
-# skip boilerplate check
-
-region: europe-west1
-ip_cidr_range: 10.0.0.0/24
-description: Sample Subnet in project project-a, vpc-a
-secondary_ip_ranges:
-  secondary-range-a: 192.168.0.0/24
-  secondary-range-b: 192.168.1.0/24

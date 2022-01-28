@@ -6,28 +6,17 @@
 
 This repository provides **end-to-end examples** and a **suite of Terraform modules** for Google Cloud, which support different use cases:
 
-- starter kits used to bootstrap real-world cloud foundations, and reference examples used to deep dive on network patterns or product features
-- composable modules that support quick prototyping and testing
-- a comprehensive source of lean modules that lend themselves well to changes
+- organization-wide [landing zone blueprint](fast/) used to bootstrap real-world cloud foundations
+- reference [examples](./examples/) used to deep dive on network patterns or product features
+- a comprehensive source of lean [modules](./modules/dns) that lend themselves well to changes
 
 The whole repository is meant to be cloned as a single unit, and then forked into separate owned repositories to seed production usage, or used as-is and periodically updated as a complete toolkit for prototyping. You can read more on this approach in our [manifesto](./MANIFESTO.md).
 
 Both the examples and modules require some measure of Terraform skills to be used effectively. If you are looking for a feature-rich black box to manage project or product creation with minimal specific skills, you might be better served by the [Cloud Foundation Toolkit](https://registry.terraform.io/modules/terraform-google-modules) suite of modules.
 
-## End-to-end examples
+## Organization blueprint (Fabric FAST)
 
-The examples in this repository are split in several main sections: **foundational examples** that bootstrap the organizational hierarchy and automation prerequisites, **networking examples** that implement core patterns or features, **data solutions examples** that demonstrate how to integrate data services in complete scenarios, **cloud operations examples** that leverage specific products to meet specific operational needs and **factories** that implement resource factories for the repetitive creation of specific resources.
-
-Currently available examples:
-
-- **foundations** - [single level hierarchy](./foundations/environments/) (environments), [multiple level hierarchy](./foundations/business-units/) (business units + environments)
-- **networking** - [hub and spoke via peering](./networking/hub-and-spoke-peering/), [hub and spoke via VPN](./networking/hub-and-spoke-vpn/), [DNS and Google Private Access for on-premises](./networking/onprem-google-access-dns/), [Shared VPC with GKE support](./networking/shared-vpc-gke/), [ILB as next hop](./networking/ilb-next-hop), [PSC for on-premises Cloud Function invocation](./networking/private-cloud-function-from-onprem/), [decentralized firewall](./networking/decentralized-firewall)
-- **data solutions** - [GCE/GCS CMEK via centralized Cloud KMS](./data-solutions/cmek-via-centralized-kms/), [Cloud Storage to Bigquery with Cloud Dataflow](./data-solutions/gcs-to-bq-with-dataflow/)
-- **cloud operations** - [Resource tracking and remediation via Cloud Asset feeds](.//cloud-operations/asset-inventory-feed-remediation), [Granular Cloud DNS IAM via Service Directory](./cloud-operations/dns-fine-grained-iam), [Granular Cloud DNS IAM for Shared VPC](./cloud-operations/dns-shared-vpc), [Compute Engine quota monitoring](./cloud-operations/quota-monitoring), [Scheduled Cloud Asset Inventory Export to Bigquery](./cloud-operations/scheduled-asset-inventory-export-bq), [Packer image builder](./cloud-operations/packer-image-builder), [On-prem SA key management](./cloud-operations/onprem-sa-key-management)
-- **third party solutions** - [OpenShift cluster on Shared VPC](./third-party-solutions/openshift)
-- **factories** - [Example environments](./factories/example-environments), [Hierarchical Firewall Policies](./factories/firewall-hierarchical-policies), [VPC Firewall Rules](./factories/firewall-vpc-rules), [Subnets](./factories/subnets)
-
-For more information see the README files in the [foundations](./foundations/), [networking](./networking/), [data solutions](./data-solutions/), [cloud operations](./cloud-operations/) and [factories](./factories/) folders.
+Setting up a production-ready GCP organization is often a time-consuming process. Fabric [FAST](fast/) aims to speed up this process via two complementary goals. On the one hand, FAST provides a design of a GCP organization that includes the typical elements required by enterprise customers. Secondly, we provide a reference implementation of the FAST design using Terraform.
 
 ## Modules
 
@@ -40,11 +29,15 @@ The current list of modules supports most of the core foundational and networkin
 Currently available modules:
 
 - **foundational** - [folder](./modules/folder), [organization](./modules/organization), [project](./modules/project), [service accounts](./modules/iam-service-account), [logging bucket](./modules/logging-bucket), [billing budget](./modules/billing-budget), [naming convention](./modules/naming-convention)
-- **networking** - [VPC](./modules/net-vpc), [VPC firewall](./modules/net-vpc-firewall), [VPC peering](./modules/net-vpc-peering), [VPN static](./modules/net-vpn-static), [VPN dynamic](./modules/net-vpn-dynamic), [VPN HA](./modules/net-vpn-ha), [NAT](./modules/net-cloudnat), [address reservation](./modules/net-address), [DNS](./modules/dns), [L4 ILB](./modules/net-ilb), [Service Directory](./modules/service-directory), [Cloud Endpoints](./modules/cloudenpoints)
-- **compute** - [VM/VM group](./modules/compute-vm), [MIG](./modules/compute-mig), [GKE cluster](./modules/gke-cluster), [GKE nodepool](./modules/gke-nodepool), [COS container](./modules/cos-container) (coredns, mysql, onprem, squid)
+- **networking** - [VPC](./modules/net-vpc), [VPC firewall](./modules/net-vpc-firewall), [VPC peering](./modules/net-vpc-peering), [VPN static](./modules/net-vpn-static), [VPN dynamic](./modules/net-vpn-dynamic), [VPN HA](./modules/net-vpn-ha), [NAT](./modules/net-cloudnat), [address reservation](./modules/net-address), [DNS](./modules/dns), [L4 ILB](./modules/net-ilb), [Service Directory](./modules/service-directory), [Cloud Endpoints](./modules/endpoints)
+- **compute** - [VM/VM group](./modules/compute-vm), [MIG](./modules/compute-mig), [GKE cluster](./modules/gke-cluster), [GKE nodepool](./modules/gke-nodepool), [COS container](./modules/cloud-config-container/cos-generic-metadata/) (coredns, mysql, onprem, squid)
 - **data** - [GCS](./modules/gcs), [BigQuery dataset](./modules/bigquery-dataset), [Pub/Sub](./modules/pubsub), [Datafusion](./modules/datafusion), [Bigtable instance](./modules/bigtable-instance), [Cloud SQL instance](./modules/cloudsql-instance)
 - **development** - [Cloud Source Repository](./modules/source-repository), [Container Registry](./modules/container-registry), [Artifact Registry](./modules/artifact-registry), [Apigee Organization](./modules/apigee-organization), [Apigee X Instance](./modules/apigee-x-instance)
 - **security** - [KMS](./modules/kms), [SecretManager](./modules/secret-manager), [VPC Service Control](./modules/vpc-sc)
 - **serverless** - [Cloud Function](./modules/cloud-function), [Cloud Run](./modules/cloud-run)
 
 For more information and usage examples see each module's README file.
+
+## End-to-end examples
+
+The [examples](./examples/) in this repository are split in several main sections: **[foundational examples](./examples/foundations/)** that bootstrap the organizational hierarchy and automation prerequisites, **[networking examples](./examples/networking/)** that implement core patterns or features, **[data solutions examples](./examples/data-solutions/)** that demonstrate how to integrate data services in complete scenarios, **[cloud operations examples](./examples/cloud-operations/)** that leverage specific products to meet specific operational needs and **[factories](./examples/factories/)** that implement resource factories for the repetitive creation of specific resources.

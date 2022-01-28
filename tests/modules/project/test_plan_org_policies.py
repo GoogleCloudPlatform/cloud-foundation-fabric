@@ -12,18 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-import os
-import pytest
-
-
-FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
-
-
 def test_policy_boolean(plan_runner):
   "Test boolean org policy."
   policy_boolean = '{policy-a = true, policy-b = false, policy-c = null}'
-  _, resources = plan_runner(FIXTURES_DIR, policy_boolean=policy_boolean)
+  _, resources = plan_runner(policy_boolean=policy_boolean)
   assert len(resources) == 4
   resources = [r for r in resources if r['type']
                == 'google_project_organization_policy']
@@ -52,7 +44,7 @@ def test_policy_list(plan_runner):
       'policy-c = {inherit_from_parent = null, suggested_value = true, status = null, values = null}'
       '}'
   )
-  _, resources = plan_runner(FIXTURES_DIR, policy_list=policy_list)
+  _, resources = plan_runner(policy_list=policy_list)
   assert len(resources) == 4
   values = [r['values'] for r in resources if r['type']
             == 'google_project_organization_policy']

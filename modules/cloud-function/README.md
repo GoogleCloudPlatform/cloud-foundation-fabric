@@ -154,45 +154,42 @@ module "cf-http" {
 }
 # tftest:skip
 ```
-
-
 <!-- BEGIN TFDOC -->
 
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| bucket_name | Name of the bucket that will be used for the function code. It will be created with prefix prepended if bucket_config is not null. | <code>string</code> | ✓ |  |
-| bundle_config | Cloud function source folder and generated zip bundle paths. Output path defaults to '/tmp/bundle.zip' if null. | <code title="object&#40;&#123;&#10;  source_dir  &#61; string&#10;  output_path &#61; string&#10;  excludes    &#61; list&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| name | Name used for cloud function and associated resources. | <code>string</code> | ✓ |  |
-| project_id | Project id used for all resources. | <code>string</code> | ✓ |  |
-| bucket_config | Enable and configure auto-created bucket. Set fields to null to use defaults. | <code title="object&#40;&#123;&#10;  location             &#61; string&#10;  lifecycle_delete_age &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| description | Optional description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
-| environment_variables | Cloud function environment variables. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| function_config | Cloud function configuration. | <code title="object&#40;&#123;&#10;  entry_point      &#61; string&#10;  ingress_settings &#61; string&#10;  instances        &#61; number&#10;  memory           &#61; number&#10;  runtime          &#61; string&#10;  timeout          &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  entry_point      &#61; &#34;main&#34;&#10;  ingress_settings &#61; null&#10;  instances        &#61; 1&#10;  memory           &#61; 256&#10;  runtime          &#61; &#34;python37&#34;&#10;  timeout          &#61; 180&#10;&#125;">&#123;&#8230;&#125;</code> |
-| iam | IAM bindings for topic in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| ingress_settings | Control traffic that reaches the cloud function. Allowed values are ALLOW_ALL and ALLOW_INTERNAL_ONLY. | <code>string</code> |  | <code>null</code> |
-| labels | Resource labels | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| prefix | Optional prefix used for resource names. | <code>string</code> |  | <code>null</code> |
-| region | Region used for all resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| service_account | Service account email. Unused if service account is auto-created. | <code>string</code> |  | <code>null</code> |
-| service_account_create | Auto-create service account. | <code>bool</code> |  | <code>false</code> |
-| trigger_config | Function trigger configuration. Leave null for HTTP trigger. | <code title="object&#40;&#123;&#10;  event    &#61; string&#10;  resource &#61; string&#10;  retry    &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| vpc_connector | VPC connector configuration. Set create to 'true' if a new connector needs to be created | <code title="object&#40;&#123;&#10;  create          &#61; bool&#10;  name            &#61; string&#10;  egress_settings &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| vpc_connector_config | VPC connector network configuration. Must be provided if new VPC connector is being created | <code title="object&#40;&#123;&#10;  ip_cidr_range &#61; string&#10;  network       &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [bucket_name](variables.tf#L26) | Name of the bucket that will be used for the function code. It will be created with prefix prepended if bucket_config is not null. | <code>string</code> | ✓ |  |
+| [bundle_config](variables.tf#L31) | Cloud function source folder and generated zip bundle paths. Output path defaults to '/tmp/bundle.zip' if null. | <code title="object&#40;&#123;&#10;  source_dir  &#61; string&#10;  output_path &#61; string&#10;  excludes    &#61; list&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [name](variables.tf#L88) | Name used for cloud function and associated resources. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L99) | Project id used for all resources. | <code>string</code> | ✓ |  |
+| [bucket_config](variables.tf#L17) | Enable and configure auto-created bucket. Set fields to null to use defaults. | <code title="object&#40;&#123;&#10;  location             &#61; string&#10;  lifecycle_delete_age &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [description](variables.tf#L40) | Optional description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
+| [environment_variables](variables.tf#L46) | Cloud function environment variables. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [function_config](variables.tf#L52) | Cloud function configuration. | <code title="object&#40;&#123;&#10;  entry_point &#61; string&#10;  instances   &#61; number&#10;  memory      &#61; number&#10;  runtime     &#61; string&#10;  timeout     &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  entry_point &#61; &#34;main&#34;&#10;  instances   &#61; 1&#10;  memory      &#61; 256&#10;  runtime     &#61; &#34;python37&#34;&#10;  timeout     &#61; 180&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [iam](variables.tf#L70) | IAM bindings for topic in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [ingress_settings](variables.tf#L76) | Control traffic that reaches the cloud function. Allowed values are ALLOW_ALL and ALLOW_INTERNAL_ONLY. | <code>string</code> |  | <code>null</code> |
+| [labels](variables.tf#L82) | Resource labels | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [prefix](variables.tf#L93) | Optional prefix used for resource names. | <code>string</code> |  | <code>null</code> |
+| [region](variables.tf#L104) | Region used for all resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [service_account](variables.tf#L110) | Service account email. Unused if service account is auto-created. | <code>string</code> |  | <code>null</code> |
+| [service_account_create](variables.tf#L116) | Auto-create service account. | <code>bool</code> |  | <code>false</code> |
+| [trigger_config](variables.tf#L122) | Function trigger configuration. Leave null for HTTP trigger. | <code title="object&#40;&#123;&#10;  event    &#61; string&#10;  resource &#61; string&#10;  retry    &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [vpc_connector](variables.tf#L132) | VPC connector configuration. Set create to 'true' if a new connector needs to be created | <code title="object&#40;&#123;&#10;  create          &#61; bool&#10;  name            &#61; string&#10;  egress_settings &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [vpc_connector_config](variables.tf#L142) | VPC connector network configuration. Must be provided if new VPC connector is being created | <code title="object&#40;&#123;&#10;  ip_cidr_range &#61; string&#10;  network       &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| bucket | Bucket resource (only if auto-created). |  |
-| bucket_name | Bucket name. |  |
-| function | Cloud function resources. |  |
-| function_name | Cloud function name. |  |
-| service_account | Service account resource. |  |
-| service_account_email | Service account email. |  |
-| service_account_iam_email | Service account email. |  |
-| vpc_connector | VPC connector resource if created. |  |
+| [bucket](outputs.tf#L17) | Bucket resource (only if auto-created). |  |
+| [bucket_name](outputs.tf#L24) | Bucket name. |  |
+| [function](outputs.tf#L29) | Cloud function resources. |  |
+| [function_name](outputs.tf#L34) | Cloud function name. |  |
+| [service_account](outputs.tf#L39) | Service account resource. |  |
+| [service_account_email](outputs.tf#L44) | Service account email. |  |
+| [service_account_iam_email](outputs.tf#L49) | Service account email. |  |
+| [vpc_connector](outputs.tf#L57) | VPC connector resource if created. |  |
 
 <!-- END TFDOC -->
-

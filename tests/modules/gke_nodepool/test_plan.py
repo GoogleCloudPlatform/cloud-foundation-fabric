@@ -12,12 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-import os
-import pytest
-
-
-FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
 OAUTH_SCOPE = ['https://www.googleapis.com/auth/cloud-platform']
 OAUTH_SCOPES = [
     'https://www.googleapis.com/auth/devstorage.read_only',
@@ -28,7 +22,7 @@ OAUTH_SCOPES = [
 
 def test_defaults(plan_runner):
   "Test resources created with variable defaults."
-  _, resources = plan_runner(FIXTURES_DIR)
+  _, resources = plan_runner()
   assert len(resources) == 1
   node_config = resources[0]['values']['node_config'][0]
   assert node_config['oauth_scopes'] == OAUTH_SCOPES
@@ -37,8 +31,7 @@ def test_defaults(plan_runner):
 
 def test_external_sa(plan_runner):
   "Test resources created with externally managed sa."
-  _, resources = plan_runner(
-      FIXTURES_DIR, node_service_account='foo@example.org')
+  _, resources = plan_runner(node_service_account='foo@example.org')
   assert len(resources) == 1
   node_config = resources[0]['values']['node_config'][0]
   assert node_config['oauth_scopes'] == OAUTH_SCOPES
@@ -48,8 +41,7 @@ def test_external_sa(plan_runner):
 def test_external_scopes(plan_runner):
   "Test resources created with externally defined scopes."
   oauth_scopes = '["https://www.googleapis.com/auth/cloud-platform"]'
-  _, resources = plan_runner(
-      FIXTURES_DIR, node_service_account_scopes=oauth_scopes)
+  _, resources = plan_runner(node_service_account_scopes=oauth_scopes)
   assert len(resources) == 1
   node_config = resources[0]['values']['node_config'][0]
   assert node_config['oauth_scopes'] == OAUTH_SCOPE
@@ -58,7 +50,7 @@ def test_external_scopes(plan_runner):
 
 def test_internal_sa(plan_runner):
   "Test resources created with internally managed sa."
-  _, resources = plan_runner(FIXTURES_DIR, node_service_account_create='true')
+  _, resources = plan_runner(node_service_account_create='true')
   assert len(resources) == 2
   node_config = resources[0]['values']['node_config'][0]
   assert node_config['oauth_scopes'] == OAUTH_SCOPE

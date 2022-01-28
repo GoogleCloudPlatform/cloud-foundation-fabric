@@ -12,14 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-import os
-import pytest
-
-
-FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
-
-
 def test_types(plan_runner):
   _disks = '''[{
     name = "data1"
@@ -41,7 +33,7 @@ def test_types(plan_runner):
     options = null
   }]
   '''
-  _, resources = plan_runner(FIXTURES_DIR, attached_disks=_disks)
+  _, resources = plan_runner(attached_disks=_disks)
   assert len(resources) == 3
   disks = {r['values']['name']: r['values']
            for r in resources if r['type'] == 'google_compute_disk'}
@@ -78,7 +70,7 @@ def test_options(plan_runner):
     }
   }]
   '''
-  _, resources = plan_runner(FIXTURES_DIR, attached_disks=_disks)
+  _, resources = plan_runner(attached_disks=_disks)
   assert len(resources) == 3
   disks_z = [r['values']
              for r in resources if r['type'] == 'google_compute_disk']
@@ -110,8 +102,8 @@ def test_template(plan_runner):
     }
   }]
   '''
-  _, resources = plan_runner(
-      FIXTURES_DIR, attached_disks=_disks, create_template="true")
+  _, resources = plan_runner(attached_disks=_disks,
+                             create_template="true")
   assert len(resources) == 1
   template = [r['values'] for r in resources if r['type']
               == 'google_compute_instance_template'][0]

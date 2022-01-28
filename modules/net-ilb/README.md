@@ -54,7 +54,7 @@ This example spins up a simple HTTP server and combines four modules:
 - [`compute-vm`](../compute-vm) to manage the instance template and unmanaged instance group
 - this module to create an Internal Load Balancer in front of the managed instance group
 
-Note that the example uses the GCE default service account. You might want to create an ad-hoc service account by combining the [`iam-service-accounts`](../iam-service-accounts) module, or by having the GCE VM module create one for you. In both cases, remember to set at least logging write permissions for the service account, or the container on the instances won't be able to start.
+Note that the example uses the GCE default service account. You might want to create an ad-hoc service account by combining the [`iam-service-account`](../iam-service-account) module, or by having the GCE VM module create one for you. In both cases, remember to set at least logging write permissions for the service account, or the container on the instances won't be able to start.
 
 ```hcl
 module "cos-nginx" {
@@ -107,48 +107,45 @@ module "ilb" {
 }
 # tftest:modules=3:resources=7
 ```
-
-
 <!-- BEGIN TFDOC -->
 
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| backends | Load balancer backends, balancing mode is one of 'CONNECTION' or 'UTILIZATION'. | <code title="list&#40;object&#40;&#123;&#10;  failover       &#61; bool&#10;  group          &#61; string&#10;  balancing_mode &#61; string&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
-| name | Name used for all resources. | <code>string</code> | ✓ |  |
-| network | Network used for resources. | <code>string</code> | ✓ |  |
-| project_id | Project id where resources will be created. | <code>string</code> | ✓ |  |
-| region | GCP region. | <code>string</code> | ✓ |  |
-| subnetwork | Subnetwork used for the forwarding rule. | <code>string</code> | ✓ |  |
-| address | Optional IP address used for the forwarding rule. | <code>string</code> |  | <code>null</code> |
-| backend_config | Optional backend configuration. | <code title="object&#40;&#123;&#10;  session_affinity                &#61; string&#10;  timeout_sec                     &#61; number&#10;  connection_draining_timeout_sec &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| failover_config | Optional failover configuration. | <code title="object&#40;&#123;&#10;  disable_connection_drain  &#61; bool&#10;  drop_traffic_if_unhealthy &#61; bool&#10;  ratio                     &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| global_access | Global access, defaults to false if not set. | <code>bool</code> |  | <code>null</code> |
-| group_configs | Optional unmanaged groups to create. Can be referenced in backends via outputs. | <code title="map&#40;object&#40;&#123;&#10;  instances   &#61; list&#40;string&#41;&#10;  named_ports &#61; map&#40;number&#41;&#10;  zone        &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| health_check | Name of existing health check to use, disables auto-created health check. | <code>string</code> |  | <code>null</code> |
-| health_check_config | Configuration of the auto-created helth check. | <code title="object&#40;&#123;&#10;  type    &#61; string      &#35; http https tcp ssl http2&#10;  check   &#61; map&#40;any&#41;    &#35; actual health check block attributes&#10;  config  &#61; map&#40;number&#41; &#35; interval, thresholds, timeout&#10;  logging &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  type &#61; &#34;http&#34;&#10;  check &#61; &#123;&#10;    port_specification &#61; &#34;USE_SERVING_PORT&#34;&#10;  &#125;&#10;  config  &#61; &#123;&#125;&#10;  logging &#61; false&#10;&#125;">&#123;&#8230;&#125;</code> |
-| labels | Labels set on resources. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| ports | Comma-separated ports, leave null to use all ports. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
-| protocol | IP protocol used, defaults to TCP. | <code>string</code> |  | <code>&#34;TCP&#34;</code> |
-| service_label | Optional prefix of the fully qualified forwarding rule name. | <code>string</code> |  | <code>null</code> |
+| [backends](variables.tf#L33) | Load balancer backends, balancing mode is one of 'CONNECTION' or 'UTILIZATION'. | <code title="list&#40;object&#40;&#123;&#10;  failover       &#61; bool&#10;  group          &#61; string&#10;  balancing_mode &#61; string&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
+| [name](variables.tf#L98) | Name used for all resources. | <code>string</code> | ✓ |  |
+| [network](variables.tf#L103) | Network used for resources. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L114) | Project id where resources will be created. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L125) | GCP region. | <code>string</code> | ✓ |  |
+| [subnetwork](variables.tf#L136) | Subnetwork used for the forwarding rule. | <code>string</code> | ✓ |  |
+| [address](variables.tf#L17) | Optional IP address used for the forwarding rule. | <code>string</code> |  | <code>null</code> |
+| [backend_config](variables.tf#L23) | Optional backend configuration. | <code title="object&#40;&#123;&#10;  session_affinity                &#61; string&#10;  timeout_sec                     &#61; number&#10;  connection_draining_timeout_sec &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [failover_config](variables.tf#L42) | Optional failover configuration. | <code title="object&#40;&#123;&#10;  disable_connection_drain  &#61; bool&#10;  drop_traffic_if_unhealthy &#61; bool&#10;  ratio                     &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [global_access](variables.tf#L52) | Global access, defaults to false if not set. | <code>bool</code> |  | <code>null</code> |
+| [group_configs](variables.tf#L58) | Optional unmanaged groups to create. Can be referenced in backends via outputs. | <code title="map&#40;object&#40;&#123;&#10;  instances   &#61; list&#40;string&#41;&#10;  named_ports &#61; map&#40;number&#41;&#10;  zone        &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [health_check](variables.tf#L68) | Name of existing health check to use, disables auto-created health check. | <code>string</code> |  | <code>null</code> |
+| [health_check_config](variables.tf#L74) | Configuration of the auto-created helth check. | <code title="object&#40;&#123;&#10;  type    &#61; string      &#35; http https tcp ssl http2&#10;  check   &#61; map&#40;any&#41;    &#35; actual health check block attributes&#10;  config  &#61; map&#40;number&#41; &#35; interval, thresholds, timeout&#10;  logging &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  type &#61; &#34;http&#34;&#10;  check &#61; &#123;&#10;    port_specification &#61; &#34;USE_SERVING_PORT&#34;&#10;  &#125;&#10;  config  &#61; &#123;&#125;&#10;  logging &#61; false&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [labels](variables.tf#L92) | Labels set on resources. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [ports](variables.tf#L108) | Comma-separated ports, leave null to use all ports. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
+| [protocol](variables.tf#L119) | IP protocol used, defaults to TCP. | <code>string</code> |  | <code>&#34;TCP&#34;</code> |
+| [service_label](variables.tf#L130) | Optional prefix of the fully qualified forwarding rule name. | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| backend | Backend resource. |  |
-| backend_id | Backend id. |  |
-| backend_self_link | Backend self link. |  |
-| forwarding_rule | Forwarding rule resource. |  |
-| forwarding_rule_address | Forwarding rule address. |  |
-| forwarding_rule_id | Forwarding rule id. |  |
-| forwarding_rule_self_link | Forwarding rule self link. |  |
-| group_self_links | Optional unmanaged instance group self links. |  |
-| groups | Optional unmanaged instance group resources. |  |
-| health_check | Auto-created health-check resource. |  |
-| health_check_self_id | Auto-created health-check self id. |  |
-| health_check_self_link | Auto-created health-check self link. |  |
+| [backend](outputs.tf#L17) | Backend resource. |  |
+| [backend_id](outputs.tf#L22) | Backend id. |  |
+| [backend_self_link](outputs.tf#L27) | Backend self link. |  |
+| [forwarding_rule](outputs.tf#L32) | Forwarding rule resource. |  |
+| [forwarding_rule_address](outputs.tf#L37) | Forwarding rule address. |  |
+| [forwarding_rule_id](outputs.tf#L42) | Forwarding rule id. |  |
+| [forwarding_rule_self_link](outputs.tf#L47) | Forwarding rule self link. |  |
+| [group_self_links](outputs.tf#L52) | Optional unmanaged instance group self links. |  |
+| [groups](outputs.tf#L59) | Optional unmanaged instance group resources. |  |
+| [health_check](outputs.tf#L64) | Auto-created health-check resource. |  |
+| [health_check_self_id](outputs.tf#L69) | Auto-created health-check self id. |  |
+| [health_check_self_link](outputs.tf#L74) | Auto-created health-check self link. |  |
 
 <!-- END TFDOC -->
-

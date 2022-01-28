@@ -1,6 +1,7 @@
 **/.terraform
 **/terraform.tfstate*
 **/terraform.tfvars
+**/*.auto.tfvars
 **/.terraform.tfstate.lock.info
 **/.terraform.lock.hcl
 !tests/**/terraform.tfvars
@@ -18,3 +19,9 @@ bundle.zip
 .DS_Store
 **/packer_cache
 **/*.pkrvars.hcl
+fixture_*
+fast/configs
+fast/stages/**/providers.tf
+fast/stages/**/terraform.tfvars
+fast/stages/**/terraform.tfvars.json
+fast/stages/**/terraform-*.auto.tfvars.json

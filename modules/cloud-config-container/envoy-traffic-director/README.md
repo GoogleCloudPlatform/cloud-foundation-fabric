@@ -44,23 +44,19 @@ module "vm-cos" {
   service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
 }
 ```
-
-
-
 <!-- BEGIN TFDOC -->
 
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| envoy_image | Envoy Proxy container image to use. | <code>string</code> |  | <code>&#34;envoyproxy&#47;envoy:v1.14.1&#34;</code> |
-| gcp_logging | Should container logs be sent to Google Cloud Logging | <code>bool</code> |  | <code>true</code> |
+| [envoy_image](variables.tf#L17) | Envoy Proxy container image to use. | <code>string</code> |  | <code>&#34;envoyproxy&#47;envoy:v1.14.1&#34;</code> |
+| [gcp_logging](variables.tf#L23) | Should container logs be sent to Google Cloud Logging | <code>bool</code> |  | <code>true</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| cloud_config | Rendered cloud-config file to be passed as user-data instance metadata. |  |
+| [cloud_config](outputs.tf#L17) | Rendered cloud-config file to be passed as user-data instance metadata. |  |
 
 <!-- END TFDOC -->
-

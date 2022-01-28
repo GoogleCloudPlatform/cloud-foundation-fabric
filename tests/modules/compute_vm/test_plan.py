@@ -12,22 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-import os
-import pytest
-
-
-FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
-
-
 def test_defaults(plan_runner):
-  _, resources = plan_runner(FIXTURES_DIR)
+  _, resources = plan_runner()
   assert len(resources) == 1
   assert resources[0]['type'] == 'google_compute_instance'
 
 
 def test_service_account(plan_runner):
-  _, resources = plan_runner(FIXTURES_DIR, service_account_create='true')
+  _, resources = plan_runner(service_account_create='true')
   assert len(resources) == 2
   assert set(r['type'] for r in resources) == set([
       'google_compute_instance', 'google_service_account'
@@ -35,14 +27,14 @@ def test_service_account(plan_runner):
 
 
 def test_template(plan_runner):
-  _, resources = plan_runner(FIXTURES_DIR, create_template='true')
+  _, resources = plan_runner(create_template='true')
   assert len(resources) == 1
   assert resources[0]['type'] == 'google_compute_instance_template'
   assert resources[0]['values']['name_prefix'] == 'test-'
 
 
 def test_group(plan_runner):
-  _, resources = plan_runner(FIXTURES_DIR, group='{named_ports={}}')
+  _, resources = plan_runner(group='{named_ports={}}')
   assert len(resources) == 2
   assert set(r['type'] for r in resources) == set([
       'google_compute_instance_group', 'google_compute_instance'
@@ -54,7 +46,7 @@ def test_iam(plan_runner):
       '{"roles/compute.instanceAdmin" = ["user:a@a.com", "user:b@a.com"],'
       '"roles/iam.serviceAccountUser" = ["user:a@a.com"]}'
   )
-  _, resources = plan_runner(FIXTURES_DIR, iam=iam)
+  _, resources = plan_runner(iam=iam)
   assert len(resources) == 3
   assert set(r['type'] for r in resources) == set([
       'google_compute_instance', 'google_compute_instance_iam_binding'])
@@ -69,7 +61,7 @@ def test_iam(plan_runner):
 
 
 def test_confidential_compute(plan_runner):
-  _, resources = plan_runner(FIXTURES_DIR, confidential_compute='true')
+  _, resources = plan_runner(confidential_compute='true')
   assert len(resources) == 1
   assert resources[0]['values']['confidential_instance_config'] == [
       {'enable_confidential_compute': True}]
@@ -77,7 +69,7 @@ def test_confidential_compute(plan_runner):
 
 
 def test_confidential_compute_template(plan_runner):
-  _, resources = plan_runner(FIXTURES_DIR, confidential_compute='true',
+  _, resources = plan_runner(confidential_compute='true',
                              create_template='true')
   assert len(resources) == 1
   assert resources[0]['values']['confidential_instance_config'] == [

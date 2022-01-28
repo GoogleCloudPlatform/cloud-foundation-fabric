@@ -12,17 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-import os
-import pytest
-
-
-FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
-
-
 def test_resources(plan_runner):
   "Test module resources."
-  _, resources = plan_runner(FIXTURES_DIR)
+  _, resources = plan_runner()
   assert sorted(r['type'] for r in resources) == [
       'google_kms_crypto_key',
       'google_kms_crypto_key',

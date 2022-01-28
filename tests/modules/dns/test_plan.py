@@ -12,17 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-import os
-import pytest
-
-
-FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
-
-
 def test_private(plan_runner):
   "Test private zone with three recordsets."
-  _, resources = plan_runner(FIXTURES_DIR)
+  _, resources = plan_runner()
   assert len(resources) == 5
   assert set(r['type'] for r in resources) == set([
       'google_dns_record_set', 'google_dns_managed_zone'
@@ -36,7 +28,7 @@ def test_private(plan_runner):
 
 def test_private_recordsets(plan_runner):
   "Test recordsets in private zone."
-  _, resources = plan_runner(FIXTURES_DIR)
+  _, resources = plan_runner()
   recordsets = [r['values']
                 for r in resources if r['type'] == 'google_dns_record_set']
   assert set(r['name'] for r in recordsets) == set([
@@ -49,7 +41,7 @@ def test_private_recordsets(plan_runner):
 
 def test_private_no_networks(plan_runner):
   "Test private zone not exposed to any network."
-  _, resources = plan_runner(FIXTURES_DIR, client_networks='[]')
+  _, resources = plan_runner(client_networks='[]')
   for r in resources:
     if r['type'] != 'google_dns_managed_zone':
       continue
@@ -59,7 +51,7 @@ def test_private_no_networks(plan_runner):
 
 def test_forwarding_recordsets_null_forwarders(plan_runner):
   "Test forwarding zone with wrong set of attributes does not break."
-  _, resources = plan_runner(FIXTURES_DIR, type='forwarding')
+  _, resources = plan_runner(type='forwarding')
   assert len(resources) == 1
   resource = resources[0]
   assert resource['type'] == 'google_dns_managed_zone'
@@ -69,7 +61,7 @@ def test_forwarding_recordsets_null_forwarders(plan_runner):
 def test_forwarding(plan_runner):
   "Test forwarding zone with single forwarder."
   _, resources = plan_runner(
-      FIXTURES_DIR, type='forwarding', recordsets='null',
+      type='forwarding', recordsets='null',
       forwarders='{ "1.2.3.4" = null }')
   assert len(resources) == 1
   resource = resources[0]
@@ -80,8 +72,9 @@ def test_forwarding(plan_runner):
 
 def test_peering(plan_runner):
   "Test peering zone."
-  _, resources = plan_runner(FIXTURES_DIR, type='peering',
-                             recordsets='null', peer_network='dummy-vpc-self-link')
+  _, resources = plan_runner(type='peering',
+                             recordsets='null',
+                             peer_network='dummy-vpc-self-link')
   assert len(resources) == 1
   resource = resources[0]
   assert resource['type'] == 'google_dns_managed_zone'
@@ -91,7 +84,7 @@ def test_peering(plan_runner):
 
 def test_public(plan_runner):
   "Test public zone with two recordsets."
-  _, resources = plan_runner(FIXTURES_DIR, type='public')
+  _, resources = plan_runner(type='public')
   for r in resources:
     if r['type'] != 'google_dns_managed_zone':
       continue

@@ -16,6 +16,7 @@ name: "Linting"
 on:
   pull_request:
     branches:
+      - fast-dev
       - master
     tags:
       - ci
@@ -51,13 +52,17 @@ jobs:
         run: |
           terraform fmt -recursive -check -diff $GITHUB_WORKSPACE
 
-      - name: Check documentation
-        id: documentation
+      - name: Check documentation (fabric)
+        id: documentation-fabric
         run: |
-          python3 tools/check_documentation.py \
-            cloud-operations \
-            data-solutions \
-            factories \
-            foundations \
-            modules \
-            networking
+          python3 tools/check_documentation.py examples modules fast
+
+  # markdown-link-check:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@master
+  #     - uses: gaurav-nelson/github-action-markdown-link-check@v1
+  #       with:
+  #         use-quiet-mode: "yes"
+  #         use-verbose-mode: "yes"
+  #         config-file: ".github/workflows/markdown-link-check.json"

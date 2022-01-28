@@ -39,27 +39,23 @@ module "bucket-default" {
 }
 # tftest:modules=2:resources=2
 ```
-
-
-
 <!-- BEGIN TFDOC -->
 
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| id | Name of the logging bucket. | <code>string</code> | ✓ |  |
-| parent | ID of the parentresource containing the bucket in the format 'project_id' 'folders/folder_id', 'organizations/organization_id' or 'billing_account_id'. | <code>string</code> | ✓ |  |
-| parent_type | Parent object type for the bucket (project, folder, organization, billing_account). | <code>string</code> | ✓ |  |
-| description | Human-readable description for the logging bucket. | <code>string</code> |  | <code>null</code> |
-| location | Location of the bucket. | <code>string</code> |  | <code>&#34;global&#34;</code> |
-| retention | Retention time in days for the logging bucket. | <code>number</code> |  | <code>30</code> |
+| [id](variables.tf#L23) | Name of the logging bucket. | <code>string</code> | ✓ |  |
+| [parent](variables.tf#L34) | ID of the parentresource containing the bucket in the format 'project_id' 'folders/folder_id', 'organizations/organization_id' or 'billing_account_id'. | <code>string</code> | ✓ |  |
+| [parent_type](variables.tf#L39) | Parent object type for the bucket (project, folder, organization, billing_account). | <code>string</code> | ✓ |  |
+| [description](variables.tf#L17) | Human-readable description for the logging bucket. | <code>string</code> |  | <code>null</code> |
+| [location](variables.tf#L28) | Location of the bucket. | <code>string</code> |  | <code>&#34;global&#34;</code> |
+| [retention](variables.tf#L44) | Retention time in days for the logging bucket. | <code>number</code> |  | <code>30</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| id | ID of the created bucket. |  |
+| [id](outputs.tf#L17) | ID of the created bucket. |  |
 
 <!-- END TFDOC -->
-

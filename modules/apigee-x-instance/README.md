@@ -42,30 +42,27 @@ module "apigee-x-instance" {
 }
 # tftest:modules=1:resources=5
 ```
-
-
 <!-- BEGIN TFDOC -->
 
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| apigee_org_id | Apigee Organization ID | <code>string</code> | ✓ |  |
-| cidr_mask | CIDR mask for the Apigee instance | <code>number</code> | ✓ |  |
-| name | Apigee instance name. | <code>string</code> | ✓ |  |
-| region | Compute region. | <code>string</code> | ✓ |  |
-| apigee_envgroups | Apigee Environment Groups. | <code title="map&#40;object&#40;&#123;&#10;  environments &#61; list&#40;string&#41;&#10;  hostnames    &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| apigee_environments | Apigee Environment Names. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| disk_encryption_key | Customer Managed Encryption Key (CMEK) self link (e.g. `projects/foo/locations/us/keyRings/bar/cryptoKeys/baz`) used for disk and volume encryption (required for PAID Apigee Orgs only). | <code>string</code> |  | <code>null</code> |
+| [apigee_org_id](variables.tf#L32) | Apigee Organization ID | <code>string</code> | ✓ |  |
+| [cidr_mask](variables.tf#L37) | CIDR mask for the Apigee instance | <code>number</code> | ✓ |  |
+| [name](variables.tf#L52) | Apigee instance name. | <code>string</code> | ✓ |  |
+| [region](variables.tf#L57) | Compute region. | <code>string</code> | ✓ |  |
+| [apigee_envgroups](variables.tf#L17) | Apigee Environment Groups. | <code title="map&#40;object&#40;&#123;&#10;  environments &#61; list&#40;string&#41;&#10;  hostnames    &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [apigee_environments](variables.tf#L26) | Apigee Environment Names. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [disk_encryption_key](variables.tf#L46) | Customer Managed Encryption Key (CMEK) self link (e.g. `projects/foo/locations/us/keyRings/bar/cryptoKeys/baz`) used for disk and volume encryption (required for PAID Apigee Orgs only). | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| endpoint | Internal endpoint of the Apigee instance. |  |
-| id | Apigee instance ID. |  |
-| instance | Apigee instance. |  |
-| port | Port number of the internal endpoint of the Apigee instance. |  |
+| [endpoint](outputs.tf#L17) | Internal endpoint of the Apigee instance. |  |
+| [id](outputs.tf#L22) | Apigee instance ID. |  |
+| [instance](outputs.tf#L27) | Apigee instance. |  |
+| [port](outputs.tf#L32) | Port number of the internal endpoint of the Apigee instance. |  |
 
 <!-- END TFDOC -->
-

@@ -30,7 +30,7 @@ output "name" {
     google_project_organization_policy.list,
     google_project_service.project_services,
     google_compute_shared_vpc_service_project.service_projects,
-    google_kms_crypto_key_iam_member.crypto_key
+    google_kms_crypto_key_iam_member.service_identity_cmek
   ]
 }
 
@@ -42,7 +42,7 @@ output "number" {
     google_project_organization_policy.list,
     google_project_service.project_services,
     google_compute_shared_vpc_service_project.service_projects,
-    google_kms_crypto_key_iam_member.crypto_key
+    google_kms_crypto_key_iam_member.service_identity_cmek
   ]
 }
 
@@ -56,7 +56,7 @@ output "project_id" {
     google_project_organization_policy.list,
     google_project_service.project_services,
     google_compute_shared_vpc_service_project.service_projects,
-    google_kms_crypto_key_iam_member.crypto_key
+    google_kms_crypto_key_iam_member.service_identity_cmek
   ]
 }
 
@@ -69,8 +69,10 @@ output "service_accounts" {
   }
   depends_on = [
     google_project_service.project_services,
-    google_kms_crypto_key_iam_member.crypto_key,
-    google_project_service_identity.jit_si
+    google_kms_crypto_key_iam_member.service_identity_cmek,
+    google_project_service_identity.jit_si,
+    data.google_bigquery_default_service_account.bq_sa,
+    data.google_storage_project_service_account.gcs_sa
   ]
 }
 

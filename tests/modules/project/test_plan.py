@@ -12,31 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-import os
-import pytest
-
-
-FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
-
-
 def test_prefix(plan_runner):
   "Test project id prefix."
-  _, resources = plan_runner(FIXTURES_DIR)
+  _, resources = plan_runner()
   assert len(resources) == 1
   assert resources[0]['values']['name'] == 'my-project'
-  _, resources = plan_runner(FIXTURES_DIR, prefix='foo')
+  _, resources = plan_runner(prefix='foo')
   assert len(resources) == 1
   assert resources[0]['values']['name'] == 'foo-my-project'
 
 
 def test_parent(plan_runner):
   "Test project parent."
-  _, resources = plan_runner(FIXTURES_DIR, parent='folders/12345678')
+  _, resources = plan_runner(parent='folders/12345678')
   assert len(resources) == 1
   assert resources[0]['values']['folder_id'] == '12345678'
   assert resources[0]['values'].get('org_id') == None
-  _, resources = plan_runner(FIXTURES_DIR, parent='organizations/12345678')
+  _, resources = plan_runner(parent='organizations/12345678')
   assert len(resources) == 1
   assert resources[0]['values']['org_id'] == '12345678'
   assert resources[0]['values'].get('folder_id') == None
@@ -44,7 +36,36 @@ def test_parent(plan_runner):
 
 def test_no_parent(plan_runner):
   "Test null project parent."
-  _, resources = plan_runner(FIXTURES_DIR)
+  _, resources = plan_runner()
   assert len(resources) == 1
   assert resources[0]['values'].get('folder_id') == None
   assert resources[0]['values'].get('org_id') == None
+
+
+def test_service_encryption_keys(plan_runner):
+  "Test service encryption keys with no dependencies."
+  _, resources = plan_runner(service_encryption_key_ids=(
+      '{compute=["key1"], storage=["key1", "key2"]}'
+  ))
+  key_bindings = [
+      r['index'] for r in resources
+      if r['type'] == 'google_kms_crypto_key_iam_member'
+  ]
+  assert len(key_bindings), 3
+  assert key_bindings == ['compute.key1', 'storage.key1', 'storage.key2']
+
+
+def test_service_encryption_key_dependencies(plan_runner):
+  "Test service encryption keys with dependencies."
+  _, resources = plan_runner(service_encryption_key_ids=(
+      '{compute=["key1"], dataflow=["key1", "key2"]}'
+  ))
+  key_bindings = [
+      r['index'] for r in resources
+      if r['type'] == 'google_kms_crypto_key_iam_member'
+  ]
+  assert len(key_bindings), 3
+  # compute.key1 cannot repeat or we'll get a duplicate key error in for_each
+  assert key_bindings == [
+      'compute.key1', 'compute.key2', 'dataflow.key1', 'dataflow.key2'
+  ]
