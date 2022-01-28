@@ -12,12 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-provider "vsphere" {
-  # If you use a domain, set your login like this "Domain\\User"
-  user           = var.vsphere_environment.vcenter_user
-  password       = var.vcenter_password
-  vsphere_server = var.vsphere_environment.vcenter_ip
+module "single-project-test" {
+  source                 = "../../../../../../examples/cloud-operations/vm-migration/single-project"
+  project_create         = var.project_create
+  migration_admin_users  = ["user:admin@example.com"]
+  migration_viewer_users = ["user:viewer@example.com"]
+}
 
-  # If you have a self-signed cert
-  allow_unverified_ssl = true
+variable "project_create" {
+  type = object({
+    billing_account_id = string
+    parent             = string
+  })
+  default = {
+    billing_account_id = "1234-ABCD-1234"
+    parent             = "folders/1234563"
+  }
 }
