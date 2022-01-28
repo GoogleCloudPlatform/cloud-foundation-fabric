@@ -43,11 +43,11 @@ resource "google_cloudiot_registry" "registry" {
   }
 
   mqtt_config = {
-    mqtt_enabled_state = var.protocol_mqtt
+    mqtt_enabled_state = var.protocols.mqtt ? "MQTT_ENABLED" : "MQTT_DISABLED"
   }
 
   http_config = {
-    http_enabled_state = var.protocol_http
+    http_enabled_state = var.protocols.http ? "HTTP_ENABLED" : "HTTP_DISABLED"
   }
 
   log_level = var.log_level

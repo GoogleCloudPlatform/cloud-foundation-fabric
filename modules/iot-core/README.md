@@ -89,35 +89,29 @@ const payload = '{"name": "device4", "surname": "NA", "timestamp":"'+Math.floor(
 ```
 
 Or even better, create a new BigQuery table with our IoT sensors data columns and modify the DataFlow job to push data to it.
-
-
-
 <!-- BEGIN TFDOC -->
 
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| project_id | Project were resources will be deployed | <code>string</code> | ✓ |  |
-| region | Region were resources will be deployed | <code>string</code> | ✓ |  |
-| status_pubsub_topic_id | pubsub topic for status messages (GCP-->Device) | <code>string</code> | ✓ |  |
-| telemetry_pubsub_topic_id | pubsub topic for telemetry messages (Device-->GCP) | <code>string</code> | ✓ |  |
-| devices_blocked | Variable to setup devices status. blocked=false then devices are active | <code>bool</code> |  | <code>false</code> |
-| devices_certificates_format | certificates format. Possible values are RSA_PEM, RSA_X509_PEM, ES256_PEM, and ES256_X509_PEM | <code>string</code> |  | <code>&#34;RSA_X509_PEM&#34;</code> |
-| devices_gw_config | Indicates whether the device is a gateway. Default value is NON_GATEWAY. Possible values are GATEWAY and NON_GATEWAY | <code>string</code> |  | <code>&#34;NON_GATEWAY&#34;</code> |
-| devices_yaml_file | yaml file name including Devices map to be registered in the IoT Registry in the form DEVICE_ID: DEVICE_CERTIFICATE | <code>string</code> |  | <code>&#34;&#34;</code> |
-| extra_telemetry_pubsub_topic_ids | additional pub sub topics for telemetry messages in adhoc MQTT topics (Device-->GCP) in the format MQTT_TOPIC:pubsub_TOPIC_ID | <code title="list&#40;object&#40;&#123;&#10;  mqtt_topic    &#61; string&#10;  pubsub_topic &#61; string&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
-| log_level | IoT Registry Log level | <code>string</code> |  | <code>&#34;INFO&#34;</code> |
-| protocol_http | http protocol activation. HTTP_ENABLED or HTTP_DISABLED | <code>string</code> |  | <code>&#34;HTTP_ENABLED&#34;</code> |
-| protocol_mqtt | Matt protocol activation. MQTT_ENABLED or MQTT_DISABLED | <code>string</code> |  | <code>&#34;MQTT_ENABLED&#34;</code> |
-| registry_name | Name for the IoT Core Registry | <code>string</code> |  | <code>&#34;cloudiot-registry&#34;</code> |
+| [project_id](variables.tf#L56) | Project were resources will be deployed | <code>string</code> | ✓ |  |
+| [region](variables.tf#L70) | Region were resources will be deployed | <code>string</code> | ✓ |  |
+| [status_pubsub_topic_id](variables.tf#L81) | pub sub topic for status messages (GCP-->Device) | <code>string</code> | ✓ |  |
+| [telemetry_pubsub_topic_id](variables.tf#L86) | pub sub topic for telemetry messages (Device-->GCP) | <code>string</code> | ✓ |  |
+| [devices_blocked](variables.tf#L17) | Variable to setup devices status. blocked=false then devices are active | <code>bool</code> |  | <code>false</code> |
+| [devices_certificates_format](variables.tf#L23) | certificates format. Possible values are RSA_PEM, RSA_X509_PEM, ES256_PEM, and ES256_X509_PEM | <code>string</code> |  | <code>&#34;RSA_X509_PEM&#34;</code> |
+| [devices_gw_config](variables.tf#L29) | Indicates whether the device is a gateway. Default value is NON_GATEWAY. Possible values are GATEWAY and NON_GATEWAY | <code>string</code> |  | <code>&#34;NON_GATEWAY&#34;</code> |
+| [devices_yaml_file](variables.tf#L35) | yaml file name including Devices map to be registered in the IoT Registry in the form DEVICE_ID: DEVICE_CERTIFICATE | <code>string</code> |  | <code>&#34;&#34;</code> |
+| [extra_telemetry_pubsub_topic_ids](variables.tf#L41) | additional pubsub topics for telemetry messages in adhoc MQTT topics (Device-->GCP) in the format MQTT_TOPIC:PUBSUB_TOPIC_ID | <code title="list&#40;object&#40;&#123;&#10;  mqtt_topic   &#61; string&#10;  pubsub_topic &#61; string&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
+| [log_level](variables.tf#L50) | IoT Registry Log level | <code>string</code> |  | <code>&#34;INFO&#34;</code> |
+| [protocols](variables.tf#L61) | IoT protocols (HTTP / MQTT) activation | <code title="object&#40;&#123;&#10;  http &#61; bool,&#10;  mqtt &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123; http &#61; true, mqtt &#61; true &#125;</code> |
+| [registry_name](variables.tf#L75) | Name for the IoT Core Registry | <code>string</code> |  | <code>&#34;cloudiot-registry&#34;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| iot_registry | Cloud IoT Core Registry |  |
+| [iot_registry](outputs.tf#L17) | Cloud IoT Core Registry |  |
 
 <!-- END TFDOC -->
-
-

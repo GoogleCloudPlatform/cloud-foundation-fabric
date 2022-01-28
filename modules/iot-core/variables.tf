@@ -41,7 +41,7 @@ variable "devices_yaml_file" {
 variable "extra_telemetry_pubsub_topic_ids" {
   description = "additional pubsub topics for telemetry messages in adhoc MQTT topics (Device-->GCP) in the format MQTT_TOPIC:PUBSUB_TOPIC_ID"
   type = list(object({
-    mqtt_topic    = string
+    mqtt_topic   = string
     pubsub_topic = string
   }))
   default = []
@@ -58,16 +58,13 @@ variable "project_id" {
   type        = string
 }
 
-variable "protocol_http" {
-  description = "http protocol activation. HTTP_ENABLED or HTTP_DISABLED"
-  type        = string
-  default     = "HTTP_ENABLED"
-}
-
-variable "protocol_mqtt" {
-  description = "Matt protocol activation. MQTT_ENABLED or MQTT_DISABLED"
-  type        = string
-  default     = "MQTT_ENABLED"
+variable "protocols" {
+  description = "IoT protocols (HTTP / MQTT) activation"
+  type = object({
+    http = bool,
+    mqtt = bool
+  })
+  default = { http = true, mqtt = true }
 }
 
 variable "region" {
