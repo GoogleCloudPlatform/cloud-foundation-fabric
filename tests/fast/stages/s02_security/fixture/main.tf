@@ -15,7 +15,7 @@
  */
 
 module "stage" {
-  source             = "../../../../stages/02-security"
+  source             = "../../../../../fast/stages/02-security"
   billing_account_id = "000000-111111-222222"
   folder_id          = "folders/12345678"
   organization = {

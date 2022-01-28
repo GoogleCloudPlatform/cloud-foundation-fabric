@@ -186,14 +186,16 @@ variable "service_encryption_key_ids" {
   default     = {}
 }
 
+# accessPolicies/ACCESS_POLICY_NAME/servicePerimeters/PERIMETER_NAME
 variable "service_perimeter_bridges" {
-  description = "Name of VPC-SC Bridge perimeters to add project into. Specify the name in the form of 'accessPolicies/ACCESS_POLICY_NAME/servicePerimeters/PERIMETER_NAME'."
+  description = "Name of VPC-SC Bridge perimeters to add project into. See comment in the variables file for format."
   type        = list(string)
   default     = null
 }
 
+# accessPolicies/ACCESS_POLICY_NAME/servicePerimeters/PERIMETER_NAME
 variable "service_perimeter_standard" {
-  description = "Name of VPC-SC Standard perimeter to add project into. Specify the name in the form of 'accessPolicies/ACCESS_POLICY_NAME/servicePerimeters/PERIMETER_NAME'."
+  description = "Name of VPC-SC Standard perimeter to add project into. See comment in the variables file for format."
   type        = string
   default     = null
 }

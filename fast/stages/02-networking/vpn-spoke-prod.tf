@@ -17,7 +17,7 @@
 # tfdoc:file:description VPN between landing and production spoke.
 
 module "landing-to-prod-ew1-vpn" {
-  source           = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/net-vpn-ha?ref=v12.0.0"
+  source           = "../../../modules/net-vpn-ha"
   project_id       = module.landing-project.project_id
   network          = module.landing-vpc.self_link
   region           = "europe-west1"
@@ -43,7 +43,7 @@ module "landing-to-prod-ew1-vpn" {
 }
 
 module "prod-to-landing-ew1-vpn" {
-  source           = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/net-vpn-ha?ref=v12.0.0"
+  source           = "../../../modules/net-vpn-ha"
   project_id       = module.prod-spoke-project.project_id
   network          = module.prod-spoke-vpc.self_link
   region           = "europe-west1"
@@ -69,7 +69,7 @@ module "prod-to-landing-ew1-vpn" {
 }
 
 module "landing-to-prod-ew4-vpn" {
-  source           = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/net-vpn-ha?ref=v12.0.0"
+  source           = "../../../modules/net-vpn-ha"
   project_id       = module.landing-project.project_id
   network          = module.landing-vpc.self_link
   region           = "europe-west1"
@@ -95,7 +95,7 @@ module "landing-to-prod-ew4-vpn" {
 }
 
 module "prod-to-landing-ew4-vpn" {
-  source           = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/net-vpn-ha?ref=v12.0.0"
+  source           = "../../../modules/net-vpn-ha"
   project_id       = module.prod-spoke-project.project_id
   network          = module.prod-spoke-vpc.self_link
   region           = "europe-west1"

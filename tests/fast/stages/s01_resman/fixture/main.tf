@@ -15,7 +15,7 @@
  */
 
 module "stage" {
-  source                = "../../../../stages/01-resman"
+  source                = "../../../../../fast/stages/01-resman"
   automation_project_id = "fast-prod-automation"
   billing_account = {
     id              = "000000-111111-222222"

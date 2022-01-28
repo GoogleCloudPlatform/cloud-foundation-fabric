@@ -73,27 +73,24 @@ module "cos-mysql" {
   }
 }
 ```
-
-
 <!-- BEGIN TFDOC -->
 
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| mysql_password | MySQL root password. If an encrypted password is set, use the kms_config variable to specify KMS configuration. | <code>string</code> | ✓ |  |
-| cloud_config | Cloud config template path. If null default will be used. | <code>string</code> |  | <code>null</code> |
-| config_variables | Additional variables used to render the cloud-config template. | <code>map&#40;any&#41;</code> |  | <code>&#123;&#125;</code> |
-| image | MySQL container image. | <code>string</code> |  | <code>&#34;mysql:5.7&#34;</code> |
-| kms_config | Optional KMS configuration to decrypt passed-in password. Leave null if a plaintext password is used. | <code title="object&#40;&#123;&#10;  project_id &#61; string&#10;  keyring    &#61; string&#10;  location   &#61; string&#10;  key        &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| mysql_config | MySQL configuration file content, if null container default will be used. | <code>string</code> |  | <code>null</code> |
-| mysql_data_disk | MySQL data disk name in /dev/disk/by-id/ including the google- prefix. If null the boot disk will be used for data. | <code>string</code> |  | <code>null</code> |
+| [mysql_password](variables.tf#L58) | MySQL root password. If an encrypted password is set, use the kms_config variable to specify KMS configuration. | <code>string</code> | ✓ |  |
+| [cloud_config](variables.tf#L17) | Cloud config template path. If null default will be used. | <code>string</code> |  | <code>null</code> |
+| [config_variables](variables.tf#L23) | Additional variables used to render the cloud-config template. | <code>map&#40;any&#41;</code> |  | <code>&#123;&#125;</code> |
+| [image](variables.tf#L29) | MySQL container image. | <code>string</code> |  | <code>&#34;mysql:5.7&#34;</code> |
+| [kms_config](variables.tf#L35) | Optional KMS configuration to decrypt passed-in password. Leave null if a plaintext password is used. | <code title="object&#40;&#123;&#10;  project_id &#61; string&#10;  keyring    &#61; string&#10;  location   &#61; string&#10;  key        &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [mysql_config](variables.tf#L46) | MySQL configuration file content, if null container default will be used. | <code>string</code> |  | <code>null</code> |
+| [mysql_data_disk](variables.tf#L52) | MySQL data disk name in /dev/disk/by-id/ including the google- prefix. If null the boot disk will be used for data. | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| cloud_config | Rendered cloud-config file to be passed as user-data instance metadata. |  |
+| [cloud_config](outputs.tf#L17) | Rendered cloud-config file to be passed as user-data instance metadata. |  |
 
 <!-- END TFDOC -->
-

@@ -43,6 +43,7 @@ module "dev-sec-kms" {
 }
 
 # TODO(ludo): add support for conditions to Fabric modules
+# TODO(ludo): grant delegated role at key instead of project level
 
 resource "google_project_iam_member" "dev_key_admin_delegated" {
   for_each = toset(try(var.kms_restricted_admins.dev, []))

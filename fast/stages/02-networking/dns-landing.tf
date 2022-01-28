@@ -19,7 +19,7 @@
 # forwarding to on-prem DNS resolvers
 
 module "onprem-example-dns-forwarding" {
-  source          = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/dns?ref=v12.0.0"
+  source          = "../../../modules/dns"
   project_id      = module.landing-project.project_id
   type            = "forwarding"
   name            = "example-com"
@@ -29,7 +29,7 @@ module "onprem-example-dns-forwarding" {
 }
 
 module "reverse-10-dns-forwarding" {
-  source          = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/dns?ref=v12.0.0"
+  source          = "../../../modules/dns"
   project_id      = module.landing-project.project_id
   type            = "forwarding"
   name            = "root-reverse-10"
@@ -39,7 +39,7 @@ module "reverse-10-dns-forwarding" {
 }
 
 module "gcp-example-dns-private-zone" {
-  source          = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/dns?ref=v12.0.0"
+  source          = "../../../modules/dns"
   project_id      = module.landing-project.project_id
   type            = "private"
   name            = "gcp-example-com"
@@ -53,7 +53,7 @@ module "gcp-example-dns-private-zone" {
 # GCP-specific DNS zones peered to the environment spoke that holds the config
 
 module "prod-gcp-example-dns-peering" {
-  source          = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/dns?ref=v12.0.0"
+  source          = "../../../modules/dns"
   project_id      = module.landing-project.project_id
   type            = "peering"
   name            = "prod-root-dns-peering"
@@ -63,7 +63,7 @@ module "prod-gcp-example-dns-peering" {
 }
 
 module "dev-gcp-example-dns-peering" {
-  source          = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/dns?ref=v12.0.0"
+  source          = "../../../modules/dns"
   project_id      = module.landing-project.project_id
   type            = "peering"
   name            = "dev-root-dns-peering"
@@ -75,7 +75,7 @@ module "dev-gcp-example-dns-peering" {
 # Google API zone to trigger Private Access
 
 module "googleapis-private-zone" {
-  source          = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/dns?ref=v12.0.0"
+  source          = "../../../modules/dns"
   project_id      = module.landing-project.project_id
   type            = "private"
   name            = "googleapis-com"

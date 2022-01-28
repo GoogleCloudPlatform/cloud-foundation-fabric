@@ -17,7 +17,7 @@
 # tfdoc:file:description Security stage resources.
 
 module "branch-security-folder" {
-  source = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/folder?ref=v12.0.0"
+  source = "../../../modules/folder"
   parent = "organizations/${var.organization.id}"
   name   = "Security"
   group_iam = {
@@ -42,7 +42,7 @@ module "branch-security-folder" {
 }
 
 module "branch-security-sa" {
-  source      = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/iam-service-account?ref=v12.0.0"
+  source      = "../../../modules/iam-service-account"
   project_id  = var.automation_project_id
   name        = "resman-security-0"
   description = "Terraform resman security service account."
@@ -50,7 +50,7 @@ module "branch-security-sa" {
 }
 
 module "branch-security-gcs" {
-  source     = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/gcs?ref=v12.0.0"
+  source     = "../../../modules/gcs"
   project_id = var.automation_project_id
   name       = "resman-security-0"
   prefix     = local.prefixes.prod

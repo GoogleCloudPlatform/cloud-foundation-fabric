@@ -25,17 +25,15 @@ variable "custom_adv" {
   type        = map(string)
   default = {
     cloud_dns             = "35.199.192.0/19"
+    gcp_all               = "10.128.0.0/16"
+    gcp_dev               = "10.128.32.0/19"
+    gcp_landing           = "10.128.0.0/19"
+    gcp_prod              = "10.128.0.0/18"
     googleapis_private    = "199.36.153.8/30"
     googleapis_restricted = "199.36.153.4/30"
     rfc_1918_10           = "10.0.0.0/8"
     rfc_1918_172          = "172.16.0.0/16"
     rfc_1918_192          = "192.168.0.0/16"
-    landing_ew1           = "10.128.0.0/16"
-    landing_ew4           = "10.129.0.0/16"
-    spoke_prod_ew1        = "10.136.0.0/16"
-    spoke_prod_ew4        = "10.137.0.0/16"
-    spoke_dev_ew1         = "10.144.0.0/16"
-    spoke_dev_ew4         = "10.145.0.0/16"
   }
 }
 
@@ -171,35 +169,48 @@ variable "vpn_onprem_configs" {
       default = bool
       custom  = list(string)
     })
-    session_range = string
-    peer = object({
-      address   = string
-      asn       = number
-      secret_id = string
+    peer_external_gateway = object({
+      redundancy_type = string
+      interfaces = list(object({
+        id         = number
+        ip_address = string
+      }))
     })
+    tunnels = list(object({
+      peer_asn              = number
+      secret                = string
+      session_range         = string
+      vpn_gateway_interface = number
+    }))
   }))
   default = {
     landing-ew1 = {
       adv = {
         default = false
         custom = [
-          "cloud_dns",
-          "googleapis_restricted",
-          "googleapis_private",
-          "landing_ew1",
-          "landing_ew4",
-          "spoke_prod_ew1",
-          "spoke_prod_ew4",
-          "spoke_dev_ew1",
-          "spoke_dev_ew4"
+          "cloud_dns", "googleapis_private", "googleapis_restricted", "gcp_all"
         ]
       }
-      session_range = "169.254.1.0/29"
-      peer = {
-        address   = "8.8.8.8"
-        asn       = 65534
-        secret_id = "foobar"
+      peer_external_gateway = {
+        redundancy_type = "SINGLE_IP_INTERNALLY_REDUNDANT"
+        interfaces = [
+          { id = 0, ip_address = "8.8.8.8" },
+        ]
       }
+      tunnels = [
+        {
+          peer_asn              = 65534
+          secret                = "foobar"
+          session_range         = "169.254.1.0/30"
+          vpn_gateway_interface = 0
+        },
+        {
+          peer_asn              = 65534
+          secret                = "foobar"
+          session_range         = "169.254.1.4/30"
+          vpn_gateway_interface = 1
+        }
+      ]
     }
   }
 }
@@ -219,35 +230,40 @@ variable "vpn_spoke_configs" {
         default = false
         custom  = ["rfc_1918_10", "rfc_1918_172", "rfc_1918_192"]
       }
-      session_range = null # values for the landing router are pulled from the spoke range
+      # values for the landing router are pulled from the spoke range
+      session_range = null
     }
     landing-ew4 = {
       adv = {
         default = false
         custom  = ["rfc_1918_10", "rfc_1918_172", "rfc_1918_192"]
       }
-      session_range = null # values for the landing router are pulled from the spoke range
+      # values for the landing router are pulled from the spoke range
+      session_range = null
     }
     dev-ew1 = {
       adv = {
         default = false
-        custom  = ["spoke_dev_ew1", "spoke_dev_ew4"]
+        custom  = ["gcp_dev"]
       }
-      session_range = "169.254.0.0/27" # resize according to required number of tunnels
+      # resize according to required number of tunnels
+      session_range = "169.254.0.0/27"
     }
     prod-ew1 = {
       adv = {
         default = false
-        custom  = ["spoke_prod_ew1", "spoke_prod_ew4"]
+        custom  = ["gcp_prod"]
       }
-      session_range = "169.254.0.64/27" # resize according to required number of tunnels
+      # resize according to required number of tunnels
+      session_range = "169.254.0.64/27"
     }
     prod-ew4 = {
       adv = {
         default = false
-        custom  = ["spoke_prod_ew1", "spoke_prod_ew4"]
+        custom  = ["gcp_prod"]
       }
-      session_range = "169.254.0.96/27" # resize according to required number of tunnels
+      # resize according to required number of tunnels
+      session_range = "169.254.0.96/27"
     }
   }
 }

@@ -172,7 +172,7 @@ terraform init
 terraform apply
 ```
 
-If you want to preserve state (which is always a good idea), configure a [GCS backend](https://www.terraform.io/docs/language/settings/backends/gcs.html) as you would do for any other Terraform GCP setup.
+If you want to preserve state (which is always a good idea), configure a [GCS backend](https://www.terraform.io/language/settings/backends/gcs) as you would do for any other Terraform GCP setup.
 
 ### Waiting for bootstrap to complete
 

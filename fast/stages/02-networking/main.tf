@@ -20,32 +20,21 @@ locals {
   # define the structures used for BGP peers in the VPN resources
   bgp_peer_options = {
     for k, v in var.vpn_spoke_configs :
-    k => var.vpn_spoke_configs[k].adv == null ? null : {
+    k => v.adv == null ? null : {
       advertise_groups = []
       advertise_ip_ranges = {
-        for adv in(var.vpn_spoke_configs[k].adv == null ? [] : var.vpn_spoke_configs[k].adv.custom) :
+        for adv in(v.adv == null ? [] : v.adv.custom) :
         var.custom_adv[adv] => adv
       }
-      advertise_mode = try(var.vpn_spoke_configs[k].adv.default, false) ? "DEFAULT" : "CUSTOM"
+      advertise_mode = try(v.adv.default, false) ? "DEFAULT" : "CUSTOM"
       route_priority = null
     }
   }
-  bgp_peer_options_onprem = {
-    for k, v in var.vpn_onprem_configs :
-    k => var.vpn_onprem_configs[k].adv == null ? null : {
-      advertise_groups = []
-      advertise_ip_ranges = {
-        for adv in(var.vpn_onprem_configs[k].adv == null ? [] : var.vpn_onprem_configs[k].adv.custom) :
-        var.custom_adv[adv] => adv
-      }
-      advertise_mode = try(var.vpn_onprem_configs[k].adv.default, false) ? "DEFAULT" : "CUSTOM"
-      route_priority = null
-    }
-  }
-  l7ilb_subnets = { for env, v in var.l7ilb_subnets : env => [
-    for s in v : merge(s, {
-      active = true
-      name   = "${env}-l7ilb-${s.region}"
+  l7ilb_subnets = {
+    for env, v in var.l7ilb_subnets : env => [
+      for s in v : merge(s, {
+        active = true
+        name   = "${env}-l7ilb-${s.region}"
     })]
   }
   region_trigram = {
@@ -55,7 +44,7 @@ locals {
 }
 
 module "folder" {
-  source        = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/folder?ref=v12.0.0"
+  source        = "../../../modules/folder"
   parent        = "organizations/${var.organization.id}"
   name          = "Networking"
   folder_create = var.folder_id == null

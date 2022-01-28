@@ -16,6 +16,7 @@ name: "Linting"
 on:
   pull_request:
     branches:
+      - fast-dev
       - master
     tags:
       - ci
@@ -54,12 +55,7 @@ jobs:
       - name: Check documentation (fabric)
         id: documentation-fabric
         run: |
-          python3 tools/check_documentation.py examples modules
-
-      - name: Check documentation (fast)
-        id: documentation-fast
-        run: |
-          python3 tools/check_documentation.py --files --show-extra fast
+          python3 tools/check_documentation.py examples modules fast
 
   # markdown-link-check:
   #   runs-on: ubuntu-latest

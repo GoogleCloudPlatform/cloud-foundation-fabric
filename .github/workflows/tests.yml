@@ -18,20 +18,49 @@ on:
     - cron: "45 2 * * *"
   pull_request:
     branches:
+      - fast-dev
       - master
     tags:
       - ci
       - test
 
 env:
+  TF_PLUGIN_CACHE_DIR: "/home/runner/.terraform.d/plugin-cache"
+  GOOGLE_APPLICATION_CREDENTIALS: "/home/runner/credentials.json"
   PYTEST_ADDOPTS: "--color=yes"
 
 jobs:
+  doc-examples:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Config auth
+        run: |
+          echo '{"type": "service_account", "project_id": "test-only"}' \
+            | tee -a $GOOGLE_APPLICATION_CREDENTIALS
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.9"
+          
+      - name: Run tests on documentation examples
+        run: |
+          mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
+          pip install -r tests/requirements.txt
+          pytest -vv tests/doc_examples
+
   examples:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
+      - name: Config auth
+        run: |
+          echo '{"type": "service_account", "project_id": "test-only"}' \
+            | tee -a $GOOGLE_APPLICATION_CREDENTIALS
+
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
@@ -40,56 +69,25 @@ jobs:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v1
         with:
-          terraform_version: 1.0.9
+          terraform_version: 1.1.4
           terraform_wrapper: false
-
-      - name: Set environment
-        run: |
-          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.github/workflows/fake-key.json" >> $GITHUB_ENV
-
-      - name: Install dependencies
-        run: |
-          pip install -r tests/requirements.txt
-
+          
       - name: Run tests environments
-        id: test-environments
         run: |
-          pytest -n 4 -vv tests/examples
-
-  module-examples:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: "3.9"
-
-      - name: Set up Terraform
-        uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_version: 1.0.9
-          terraform_wrapper: false
-
-      - name: Set environment
-        run: |
-          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.github/workflows/fake-key.json" >> $GITHUB_ENV
-
-      - name: Install dependencies
-        run: |
+          mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
           pip install -r tests/requirements.txt
-
-      - name: Run tests examples
-        id: test-examples
-        run: |
-          pytest -n 4 -vv tests/modules/examples
+          pytest -vv tests/examples
 
   modules:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
+      - name: Config auth
+        run: |
+          echo '{"type": "service_account", "project_id": "test-only"}' \
+            | tee -a $GOOGLE_APPLICATION_CREDENTIALS
+
       - name: Set up Python
         uses: actions/setup-python@v2
         with:
@@ -98,18 +96,11 @@ jobs:
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v1
         with:
-          terraform_version: 1.0.9
+          terraform_version: 1.1.4
           terraform_wrapper: false
-
-      - name: Set environment
-        run: |
-          echo "GOOGLE_APPLICATION_CREDENTIALS=${GITHUB_WORKSPACE}/.github/workflows/fake-key.json" >> $GITHUB_ENV
-
-      - name: Install dependencies
-        run: |
-          pip install -r tests/requirements.txt
-
+          
       - name: Run tests modules
-        id: test-modules
-        run: |
-          pytest -n 4 -vv --ignore=tests/modules/examples tests/modules
+        run: |          
+          mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
+          pip install -r tests/requirements.txt
+          pytest -vv tests/modules

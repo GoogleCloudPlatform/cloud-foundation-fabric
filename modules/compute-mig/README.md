@@ -443,41 +443,37 @@ module "nginx-mig" {
 # tftest:modules=2:resources=4
 
 ```
-
-
 <!-- BEGIN TFDOC -->
 
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| default_version | Default application version template. Additional versions can be specified via the `versions` variable. | <code title="object&#40;&#123;&#10;  instance_template &#61; string&#10;  name              &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| location | Compute zone, or region if `regional` is set to true. | <code>string</code> | ✓ |  |
-| name | Managed group name. | <code>string</code> | ✓ |  |
-| project_id | Project id. | <code>string</code> | ✓ |  |
-| auto_healing_policies | Auto-healing policies for this group. | <code title="object&#40;&#123;&#10;  health_check      &#61; string&#10;  initial_delay_sec &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| autoscaler_config | Optional autoscaler configuration. Only one of 'cpu_utilization_target' 'load_balancing_utilization_target' or 'metric' can be not null. | <code title="object&#40;&#123;&#10;  max_replicas                      &#61; number&#10;  min_replicas                      &#61; number&#10;  cooldown_period                   &#61; number&#10;  cpu_utilization_target            &#61; number&#10;  load_balancing_utilization_target &#61; number&#10;  metric &#61; object&#40;&#123;&#10;    name                       &#61; string&#10;    single_instance_assignment &#61; number&#10;    target                     &#61; number&#10;    type                       &#61; string &#35; GAUGE, DELTA_PER_SECOND, DELTA_PER_MINUTE&#10;    filter                     &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| health_check_config | Optional auto-created health check configuration, use the output self-link to set it in the auto healing policy. Refer to examples for usage. | <code title="object&#40;&#123;&#10;  type    &#61; string      &#35; http https tcp ssl http2&#10;  check   &#61; map&#40;any&#41;    &#35; actual health check block attributes&#10;  config  &#61; map&#40;number&#41; &#35; interval, thresholds, timeout&#10;  logging &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| named_ports | Named ports. | <code>map&#40;number&#41;</code> |  | <code>null</code> |
-| regional | Use regional instance group. When set, `location` should be set to the region. | <code>bool</code> |  | <code>false</code> |
-| stateful_config | Stateful configuration can be done by individual instances or for all instances in the MIG. They key in per_instance_config is the name of the specific instance. The key of the stateful_disks is the 'device_name' field of the resource. Please note that device_name is defined at the OS mount level, unlike the disk name. | <code title="object&#40;&#123;&#10;  per_instance_config &#61; map&#40;object&#40;&#123;&#10;    stateful_disks &#61; map&#40;object&#40;&#123;&#10;      source      &#61; string&#10;      mode        &#61; string &#35; READ_WRITE &#124; READ_ONLY &#10;      delete_rule &#61; string &#35; NEVER &#124; ON_PERMANENT_INSTANCE_DELETION&#10;    &#125;&#41;&#41;&#10;    metadata &#61; map&#40;string&#41;&#10;    update_config &#61; object&#40;&#123;&#10;      minimal_action                   &#61; string &#35; NONE &#124; REPLACE &#124; RESTART &#124; REFRESH&#10;      most_disruptive_allowed_action   &#61; string &#35; REPLACE &#124; RESTART &#124; REFRESH &#124; NONE&#10;      remove_instance_state_on_destroy &#61; bool&#10;    &#125;&#41;&#10;  &#125;&#41;&#41;&#10;&#10;&#10;  mig_config &#61; object&#40;&#123;&#10;    stateful_disks &#61; map&#40;object&#40;&#123;&#10;      delete_rule &#61; string &#35; NEVER &#124; ON_PERMANENT_INSTANCE_DELETION&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#10;&#10;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| target_pools | Optional list of URLs for target pools to which new instances in the group are added. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| target_size | Group target size, leave null when using an autoscaler. | <code>number</code> |  | <code>null</code> |
-| update_policy | Update policy. Type can be 'OPPORTUNISTIC' or 'PROACTIVE', action 'REPLACE' or 'restart', surge type 'fixed' or 'percent'. | <code title="object&#40;&#123;&#10;  type                 &#61; string &#35; OPPORTUNISTIC &#124; PROACTIVE&#10;  minimal_action       &#61; string &#35; REPLACE &#124; RESTART&#10;  min_ready_sec        &#61; number&#10;  max_surge_type       &#61; string &#35; fixed &#124; percent&#10;  max_surge            &#61; number&#10;  max_unavailable_type &#61; string&#10;  max_unavailable      &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| versions | Additional application versions, target_type is either 'fixed' or 'percent'. | <code title="map&#40;object&#40;&#123;&#10;  instance_template &#61; string&#10;  target_type       &#61; string &#35; fixed &#124; percent&#10;  target_size       &#61; number&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
-| wait_for_instances | Wait for all instances to be created/updated before returning. | <code>bool</code> |  | <code>null</code> |
+| [default_version](variables.tf#L45) | Default application version template. Additional versions can be specified via the `versions` variable. | <code title="object&#40;&#123;&#10;  instance_template &#61; string&#10;  name              &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [location](variables.tf#L64) | Compute zone, or region if `regional` is set to true. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L68) | Managed group name. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L79) | Project id. | <code>string</code> | ✓ |  |
+| [auto_healing_policies](variables.tf#L17) | Auto-healing policies for this group. | <code title="object&#40;&#123;&#10;  health_check      &#61; string&#10;  initial_delay_sec &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [autoscaler_config](variables.tf#L26) | Optional autoscaler configuration. Only one of 'cpu_utilization_target' 'load_balancing_utilization_target' or 'metric' can be not null. | <code title="object&#40;&#123;&#10;  max_replicas                      &#61; number&#10;  min_replicas                      &#61; number&#10;  cooldown_period                   &#61; number&#10;  cpu_utilization_target            &#61; number&#10;  load_balancing_utilization_target &#61; number&#10;  metric &#61; object&#40;&#123;&#10;    name                       &#61; string&#10;    single_instance_assignment &#61; number&#10;    target                     &#61; number&#10;    type                       &#61; string &#35; GAUGE, DELTA_PER_SECOND, DELTA_PER_MINUTE&#10;    filter                     &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [health_check_config](variables.tf#L53) | Optional auto-created health check configuration, use the output self-link to set it in the auto healing policy. Refer to examples for usage. | <code title="object&#40;&#123;&#10;  type    &#61; string      &#35; http https tcp ssl http2&#10;  check   &#61; map&#40;any&#41;    &#35; actual health check block attributes&#10;  config  &#61; map&#40;number&#41; &#35; interval, thresholds, timeout&#10;  logging &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [named_ports](variables.tf#L73) | Named ports. | <code>map&#40;number&#41;</code> |  | <code>null</code> |
+| [regional](variables.tf#L84) | Use regional instance group. When set, `location` should be set to the region. | <code>bool</code> |  | <code>false</code> |
+| [stateful_config](variables.tf#L90) | Stateful configuration can be done by individual instances or for all instances in the MIG. They key in per_instance_config is the name of the specific instance. The key of the stateful_disks is the 'device_name' field of the resource. Please note that device_name is defined at the OS mount level, unlike the disk name. | <code title="object&#40;&#123;&#10;  per_instance_config &#61; map&#40;object&#40;&#123;&#10;    stateful_disks &#61; map&#40;object&#40;&#123;&#10;      source      &#61; string&#10;      mode        &#61; string &#35; READ_WRITE &#124; READ_ONLY &#10;      delete_rule &#61; string &#35; NEVER &#124; ON_PERMANENT_INSTANCE_DELETION&#10;    &#125;&#41;&#41;&#10;    metadata &#61; map&#40;string&#41;&#10;    update_config &#61; object&#40;&#123;&#10;      minimal_action                   &#61; string &#35; NONE &#124; REPLACE &#124; RESTART &#124; REFRESH&#10;      most_disruptive_allowed_action   &#61; string &#35; REPLACE &#124; RESTART &#124; REFRESH &#124; NONE&#10;      remove_instance_state_on_destroy &#61; bool&#10;    &#125;&#41;&#10;  &#125;&#41;&#41;&#10;&#10;&#10;  mig_config &#61; object&#40;&#123;&#10;    stateful_disks &#61; map&#40;object&#40;&#123;&#10;      delete_rule &#61; string &#35; NEVER &#124; ON_PERMANENT_INSTANCE_DELETION&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#10;&#10;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [target_pools](variables.tf#L121) | Optional list of URLs for target pools to which new instances in the group are added. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [target_size](variables.tf#L127) | Group target size, leave null when using an autoscaler. | <code>number</code> |  | <code>null</code> |
+| [update_policy](variables.tf#L133) | Update policy. Type can be 'OPPORTUNISTIC' or 'PROACTIVE', action 'REPLACE' or 'restart', surge type 'fixed' or 'percent'. | <code title="object&#40;&#123;&#10;  type                 &#61; string &#35; OPPORTUNISTIC &#124; PROACTIVE&#10;  minimal_action       &#61; string &#35; REPLACE &#124; RESTART&#10;  min_ready_sec        &#61; number&#10;  max_surge_type       &#61; string &#35; fixed &#124; percent&#10;  max_surge            &#61; number&#10;  max_unavailable_type &#61; string&#10;  max_unavailable      &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [versions](variables.tf#L147) | Additional application versions, target_type is either 'fixed' or 'percent'. | <code title="map&#40;object&#40;&#123;&#10;  instance_template &#61; string&#10;  target_type       &#61; string &#35; fixed &#124; percent&#10;  target_size       &#61; number&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
+| [wait_for_instances](variables.tf#L157) | Wait for all instances to be created/updated before returning. | <code>bool</code> |  | <code>null</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| autoscaler | Auto-created autoscaler resource. |  |
-| group_manager | Instance group resource. |  |
-| health_check | Auto-created health-check resource. |  |
+| [autoscaler](outputs.tf#L17) | Auto-created autoscaler resource. |  |
+| [group_manager](outputs.tf#L26) | Instance group resource. |  |
+| [health_check](outputs.tf#L35) | Auto-created health-check resource. |  |
 
 <!-- END TFDOC -->
-
-
 ## TODO
 
 - [✓] add support for instance groups

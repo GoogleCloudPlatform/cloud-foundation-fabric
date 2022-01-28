@@ -15,7 +15,7 @@
  */
 
 module "stage" {
-  source             = "../../../../stages/02-networking"
+  source             = "../../../../../fast/stages/02-networking"
   billing_account_id = "000000-111111-222222"
   organization = {
     domain      = "gcp-pso-italy.net"
@@ -27,4 +27,5 @@ module "stage" {
     dev  = "foo@iam"
     prod = "bar@iam"
   }
+  data_dir = "../../../../../fast/stages/02-networking/data/"
 }

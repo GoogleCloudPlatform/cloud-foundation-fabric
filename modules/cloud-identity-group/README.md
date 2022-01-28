@@ -31,26 +31,23 @@ module "group" {
 }
 # tftest:modules=1:resources=4
 ```
-
-
 <!-- BEGIN TFDOC -->
 
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| customer_id | Directory customer ID in the form customers/C0xxxxxxx. | <code>string</code> | ✓ |  |
-| display_name | Group display name. | <code>string</code> | ✓ |  |
-| name | Group ID (usually an email). | <code>string</code> | ✓ |  |
-| description | Group description | <code>string</code> |  | <code>null</code> |
-| members | List of group members. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [customer_id](variables.tf#L17) | Directory customer ID in the form customers/C0xxxxxxx. | <code>string</code> | ✓ |  |
+| [display_name](variables.tf#L32) | Group display name. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L43) | Group ID (usually an email). | <code>string</code> | ✓ |  |
+| [description](variables.tf#L26) | Group description | <code>string</code> |  | <code>null</code> |
+| [members](variables.tf#L37) | List of group members. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| id | Group ID. |  |
-| name | Group name. |  |
+| [id](outputs.tf#L17) | Group ID. |  |
+| [name](outputs.tf#L22) | Group name. |  |
 
 <!-- END TFDOC -->
-

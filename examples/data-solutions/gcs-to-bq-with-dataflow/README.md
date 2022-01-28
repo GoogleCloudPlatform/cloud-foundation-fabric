@@ -109,35 +109,26 @@ schema_bq_import.json
 ```
 
 You can check data imported into Google BigQuery from the Google Cloud Console UI.
-
-
-
-
-
 <!-- BEGIN TFDOC -->
 
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| project_id | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
-| prefix | Unique prefix used for resource names. Not used for project if 'project_create' is null. | <code>string</code> |  | <code>null</code> |
-| project_create | Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| region | The region where resources will be deployed. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| vpc_subnet_range | Ip range used for the VPC subnet created for the example. | <code>string</code> |  | <code>&#34;10.0.0.0&#47;20&#34;</code> |
+| [project_id](variables.tf#L31) | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
+| [prefix](variables.tf#L16) | Unique prefix used for resource names. Not used for project if 'project_create' is null. | <code>string</code> |  | <code>null</code> |
+| [project_create](variables.tf#L22) | Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [region](variables.tf#L36) | The region where resources will be deployed. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [vpc_subnet_range](variables.tf#L42) | Ip range used for the VPC subnet created for the example. | <code>string</code> |  | <code>&#34;10.0.0.0&#47;20&#34;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| bq_tables | Bigquery Tables. |  |
-| buckets | GCS Bucket Cloud KMS crypto keys. |  |
-| data_ingestion_command |  |  |
-| project_id | Project id. |  |
-| vm | GCE VM. |  |
+| [bq_tables](outputs.tf#L15) | Bigquery Tables. |  |
+| [buckets](outputs.tf#L20) | GCS Bucket Cloud KMS crypto keys. |  |
+| [data_ingestion_command](outputs.tf#L28) |  |  |
+| [project_id](outputs.tf#L48) | Project id. |  |
+| [vm](outputs.tf#L53) | GCE VM. |  |
 
 <!-- END TFDOC -->
-
-
-
-

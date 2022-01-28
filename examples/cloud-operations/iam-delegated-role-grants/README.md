@@ -62,21 +62,17 @@ If you get any warnings, check the roles and remove any of them granting any of 
 - `resourcemanager.projects.setIamPolicy`
 - `resourcemanager.folders.setIamPolicy`
 - `resourcemanager.organizations.setIamPolicy`
-
-
-
 <!-- BEGIN TFDOC -->
 
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| project_administrators | List identities granted administrator permissions. | <code>list&#40;string&#41;</code> | ✓ |  |
-| project_id | GCP project id where to grant direct and delegated roles to the users listed in project_administrators. | <code>string</code> | ✓ |  |
-| delegated_role_grants | List of roles that project administrators will be allowed to grant/revoke. | <code>list&#40;string&#41;</code> |  | <code title="&#91;&#10;  &#34;roles&#47;storage.admin&#34;,&#10;  &#34;roles&#47;storage.hmacKeyAdmin&#34;,&#10;  &#34;roles&#47;storage.legacyBucketOwner&#34;,&#10;  &#34;roles&#47;storage.objectAdmin&#34;,&#10;  &#34;roles&#47;storage.objectCreator&#34;,&#10;  &#34;roles&#47;storage.objectViewer&#34;,&#10;  &#34;roles&#47;compute.admin&#34;,&#10;  &#34;roles&#47;compute.imageUser&#34;,&#10;  &#34;roles&#47;compute.instanceAdmin&#34;,&#10;  &#34;roles&#47;compute.instanceAdmin.v1&#34;,&#10;  &#34;roles&#47;compute.networkAdmin&#34;,&#10;  &#34;roles&#47;compute.networkUser&#34;,&#10;  &#34;roles&#47;compute.networkViewer&#34;,&#10;  &#34;roles&#47;compute.orgFirewallPolicyAdmin&#34;,&#10;  &#34;roles&#47;compute.orgFirewallPolicyUser&#34;,&#10;  &#34;roles&#47;compute.orgSecurityPolicyAdmin&#34;,&#10;  &#34;roles&#47;compute.orgSecurityPolicyUser&#34;,&#10;  &#34;roles&#47;compute.orgSecurityResourceAdmin&#34;,&#10;  &#34;roles&#47;compute.osAdminLogin&#34;,&#10;  &#34;roles&#47;compute.osLogin&#34;,&#10;  &#34;roles&#47;compute.osLoginExternalUser&#34;,&#10;  &#34;roles&#47;compute.packetMirroringAdmin&#34;,&#10;  &#34;roles&#47;compute.packetMirroringUser&#34;,&#10;  &#34;roles&#47;compute.publicIpAdmin&#34;,&#10;  &#34;roles&#47;compute.securityAdmin&#34;,&#10;  &#34;roles&#47;compute.serviceAgent&#34;,&#10;  &#34;roles&#47;compute.storageAdmin&#34;,&#10;  &#34;roles&#47;compute.viewer&#34;,&#10;  &#34;roles&#47;viewer&#34;&#10;&#93;">&#91;&#8230;&#93;</code> |
-| direct_role_grants | List of roles granted directly to project administrators. | <code>list&#40;string&#41;</code> |  | <code title="&#91;&#10;  &#34;roles&#47;compute.admin&#34;,&#10;  &#34;roles&#47;storage.admin&#34;,&#10;&#93;">&#91;&#8230;&#93;</code> |
-| project_create | Create project instead of using an existing one. | <code>bool</code> |  | <code>false</code> |
-| restricted_role_grant | Role grant to which the restrictions will apply. | <code>string</code> |  | <code>&#34;roles&#47;resourcemanager.projectIamAdmin&#34;</code> |
+| [project_administrators](variables.tf#L62) | List identities granted administrator permissions. | <code>list&#40;string&#41;</code> | ✓ |  |
+| [project_id](variables.tf#L73) | GCP project id where to grant direct and delegated roles to the users listed in project_administrators. | <code>string</code> | ✓ |  |
+| [delegated_role_grants](variables.tf#L17) | List of roles that project administrators will be allowed to grant/revoke. | <code>list&#40;string&#41;</code> |  | <code title="&#91;&#10;  &#34;roles&#47;storage.admin&#34;,&#10;  &#34;roles&#47;storage.hmacKeyAdmin&#34;,&#10;  &#34;roles&#47;storage.legacyBucketOwner&#34;,&#10;  &#34;roles&#47;storage.objectAdmin&#34;,&#10;  &#34;roles&#47;storage.objectCreator&#34;,&#10;  &#34;roles&#47;storage.objectViewer&#34;,&#10;  &#34;roles&#47;compute.admin&#34;,&#10;  &#34;roles&#47;compute.imageUser&#34;,&#10;  &#34;roles&#47;compute.instanceAdmin&#34;,&#10;  &#34;roles&#47;compute.instanceAdmin.v1&#34;,&#10;  &#34;roles&#47;compute.networkAdmin&#34;,&#10;  &#34;roles&#47;compute.networkUser&#34;,&#10;  &#34;roles&#47;compute.networkViewer&#34;,&#10;  &#34;roles&#47;compute.orgFirewallPolicyAdmin&#34;,&#10;  &#34;roles&#47;compute.orgFirewallPolicyUser&#34;,&#10;  &#34;roles&#47;compute.orgSecurityPolicyAdmin&#34;,&#10;  &#34;roles&#47;compute.orgSecurityPolicyUser&#34;,&#10;  &#34;roles&#47;compute.orgSecurityResourceAdmin&#34;,&#10;  &#34;roles&#47;compute.osAdminLogin&#34;,&#10;  &#34;roles&#47;compute.osLogin&#34;,&#10;  &#34;roles&#47;compute.osLoginExternalUser&#34;,&#10;  &#34;roles&#47;compute.packetMirroringAdmin&#34;,&#10;  &#34;roles&#47;compute.packetMirroringUser&#34;,&#10;  &#34;roles&#47;compute.publicIpAdmin&#34;,&#10;  &#34;roles&#47;compute.securityAdmin&#34;,&#10;  &#34;roles&#47;compute.serviceAgent&#34;,&#10;  &#34;roles&#47;compute.storageAdmin&#34;,&#10;  &#34;roles&#47;compute.viewer&#34;,&#10;  &#34;roles&#47;viewer&#34;&#10;&#93;">&#91;&#8230;&#93;</code> |
+| [direct_role_grants](variables.tf#L53) | List of roles granted directly to project administrators. | <code>list&#40;string&#41;</code> |  | <code title="&#91;&#10;  &#34;roles&#47;compute.admin&#34;,&#10;  &#34;roles&#47;storage.admin&#34;,&#10;&#93;">&#91;&#8230;&#93;</code> |
+| [project_create](variables.tf#L67) | Create project instead of using an existing one. | <code>bool</code> |  | <code>false</code> |
+| [restricted_role_grant](variables.tf#L78) | Role grant to which the restrictions will apply. | <code>string</code> |  | <code>&#34;roles&#47;resourcemanager.projectIamAdmin&#34;</code> |
 
 <!-- END TFDOC -->
-

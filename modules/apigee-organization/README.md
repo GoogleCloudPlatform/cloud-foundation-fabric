@@ -98,33 +98,30 @@ module "apigee-organization" {
 }
 # tftest:modules=1:resources=6
 ```
-
-
 <!-- BEGIN TFDOC -->
 
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| analytics_region | Analytics Region for the Apigee Organization (immutable). See https://cloud.google.com/apigee/docs/api-platform/get-started/install-cli. | <code>string</code> | ✓ |  |
-| project_id | Project ID to host this Apigee organization (will also become the Apigee Org name). | <code>string</code> | ✓ |  |
-| runtime_type | Apigee runtime type. Must be `CLOUD` or `HYBRID`. | <code>string</code> | ✓ |  |
-| apigee_envgroups | Apigee Environment Groups. | <code title="map&#40;object&#40;&#123;&#10;  environments &#61; list&#40;string&#41;&#10;  hostnames    &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| apigee_environments | Apigee Environment Names. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| authorized_network | VPC network self link (requires service network peering enabled (Used in Apigee X only). | <code>string</code> |  | <code>null</code> |
-| database_encryption_key | Cloud KMS key self link (e.g. `projects/foo/locations/us/keyRings/bar/cryptoKeys/baz`) used for encrypting the data that is stored and replicated across runtime instances (immutable, used in Apigee X only). | <code>string</code> |  | <code>null</code> |
-| description | Description of the Apigee Organization. | <code>string</code> |  | <code>&#34;Apigee Organization created by tf module&#34;</code> |
-| display_name | Display Name of the Apigee Organization. | <code>string</code> |  | <code>null</code> |
+| [analytics_region](variables.tf#L17) | Analytics Region for the Apigee Organization (immutable). See https://cloud.google.com/apigee/docs/api-platform/get-started/install-cli. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L61) | Project ID to host this Apigee organization (will also become the Apigee Org name). | <code>string</code> | ✓ |  |
+| [runtime_type](variables.tf#L66) | Apigee runtime type. Must be `CLOUD` or `HYBRID`. | <code>string</code> | ✓ |  |
+| [apigee_envgroups](variables.tf#L22) | Apigee Environment Groups. | <code title="map&#40;object&#40;&#123;&#10;  environments &#61; list&#40;string&#41;&#10;  hostnames    &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [apigee_environments](variables.tf#L31) | Apigee Environment Names. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [authorized_network](variables.tf#L37) | VPC network self link (requires service network peering enabled (Used in Apigee X only). | <code>string</code> |  | <code>null</code> |
+| [database_encryption_key](variables.tf#L43) | Cloud KMS key self link (e.g. `projects/foo/locations/us/keyRings/bar/cryptoKeys/baz`) used for encrypting the data that is stored and replicated across runtime instances (immutable, used in Apigee X only). | <code>string</code> |  | <code>null</code> |
+| [description](variables.tf#L49) | Description of the Apigee Organization. | <code>string</code> |  | <code>&#34;Apigee Organization created by tf module&#34;</code> |
+| [display_name](variables.tf#L55) | Display Name of the Apigee Organization. | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| envs | Apigee Environments. |  |
-| org | Apigee Organization. |  |
-| org_ca_certificate | Apigee organization CA certificate. |  |
-| org_id | Apigee Organization ID. |  |
-| subscription_type | Apigee subscription type. |  |
+| [envs](outputs.tf#L17) | Apigee Environments. |  |
+| [org](outputs.tf#L22) | Apigee Organization. |  |
+| [org_ca_certificate](outputs.tf#L27) | Apigee organization CA certificate. |  |
+| [org_id](outputs.tf#L32) | Apigee Organization ID. |  |
+| [subscription_type](outputs.tf#L37) | Apigee subscription type. |  |
 
 <!-- END TFDOC -->
-

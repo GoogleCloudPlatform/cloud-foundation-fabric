@@ -17,7 +17,7 @@
 # tfdoc:file:description Sandbox stage resources.
 
 module "branch-sandbox-folder" {
-  source = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/folder?ref=v12.0.0"
+  source = "../../../modules/folder"
   parent = "organizations/${var.organization.id}"
   name   = "Sandbox"
   iam = {
@@ -40,7 +40,7 @@ module "branch-sandbox-folder" {
 }
 
 module "branch-sandbox-gcs" {
-  source     = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/gcs?ref=v12.0.0"
+  source     = "../../../modules/gcs"
   project_id = var.automation_project_id
   name       = "resman-sandbox-0"
   prefix     = local.prefixes.dev
@@ -51,7 +51,7 @@ module "branch-sandbox-gcs" {
 }
 
 module "branch-sandbox-sa" {
-  source      = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/iam-service-account?ref=v12.0.0"
+  source      = "../../../modules/iam-service-account"
   project_id  = var.automation_project_id
   name        = "resman-sandbox-0"
   description = "Terraform resman sandbox service account."

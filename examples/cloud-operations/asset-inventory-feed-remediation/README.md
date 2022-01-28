@@ -50,30 +50,25 @@ Run the `subscription_pull` command until it returns nothing, then run the follo
 - the `tag_add` command
 - the `cf_logs` command until the logs show that the change has been picked up, verified, and the compliant tags have been force-set on the instance
 - the `tag_show` command to verify that the function output matches the resource state
-
-
-
 <!-- BEGIN TFDOC -->
 
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| project_id | Project id that references existing project. | <code>string</code> | ✓ |  |
-| bundle_path | Path used to write the intermediate Cloud Function code bundle. | <code>string</code> |  | <code>&#34;.&#47;bundle.zip&#34;</code> |
-| name | Arbitrary string used to name created resources. | <code>string</code> |  | <code>&#34;asset-feed&#34;</code> |
-| project_create | Create project instead of using an existing one. | <code>bool</code> |  | <code>false</code> |
-| region | Compute region used in the example. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [project_id](variables.tf#L35) | Project id that references existing project. | <code>string</code> | ✓ |  |
+| [bundle_path](variables.tf#L17) | Path used to write the intermediate Cloud Function code bundle. | <code>string</code> |  | <code>&#34;.&#47;bundle.zip&#34;</code> |
+| [name](variables.tf#L23) | Arbitrary string used to name created resources. | <code>string</code> |  | <code>&#34;asset-feed&#34;</code> |
+| [project_create](variables.tf#L29) | Create project instead of using an existing one. | <code>bool</code> |  | <code>false</code> |
+| [region](variables.tf#L40) | Compute region used in the example. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| cf_logs | Cloud Function logs read command. |  |
-| subscription_pull | Subscription pull command. |  |
-| tag_add | Instance add tag command. |  |
-| tag_show | Instance add tag command. |  |
+| [cf_logs](outputs.tf#L17) | Cloud Function logs read command. |  |
+| [subscription_pull](outputs.tf#L29) | Subscription pull command. |  |
+| [tag_add](outputs.tf#L39) | Instance add tag command. |  |
+| [tag_show](outputs.tf#L49) | Instance add tag command. |  |
 
 <!-- END TFDOC -->
-
-

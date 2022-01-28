@@ -4,10 +4,14 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+- initial Fabric Fast implementation
 - new `net-glb` module for Global External Load balancer
 - new `project-factory` module in [`examples/factories`](./examples/factories)
-- Module `project`: add missing Service Identity Accounts: artifactregistry, composer.
-- new data-solutions example: Cloud Storage to Bigquery with Cloud Dataflow with least privileges
+- add missing service identity accounts (artifactregistry, composer) in project module
+- new "Cloud Storage to Bigquery with Cloud Dataflow with least privileges" example
+- support service dependencies for crypto key bindings in project module
+- refactor project module in multiple files
+- add support for per-file option overrides to tfdoc
 
 ## [12.0.0] - 2022-01-11
 

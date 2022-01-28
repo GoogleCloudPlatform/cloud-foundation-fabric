@@ -34,7 +34,7 @@ locals {
 
 module "projects" {
   #TODO(sruffilli): Pin to release
-  source             = "github.com/terraform-google-modules/cloud-foundation-fabric/examples/factories/project-factory"
+  source             = "../../../../../examples/factories/project-factory"
   for_each           = local.projects
   defaults           = local.defaults
   project_id         = each.key

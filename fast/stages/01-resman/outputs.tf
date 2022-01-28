@@ -35,16 +35,6 @@ locals {
       name   = "sandbox"
       sa     = module.branch-sandbox-sa.email
     })
-    "03-gke-multitenant-dev" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
-      bucket = module.branch-gke-dev-gcs.name
-      name   = "gke-dev"
-      sa     = module.branch-gke-dev-sa.email
-    })
-    "03-gke-multitenant-prod" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
-      bucket = module.branch-gke-prod-gcs.name
-      name   = "gke-prod"
-      sa     = module.branch-gke-prod-sa.email
-    })
     "03-project-factory-dev" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
       bucket = module.branch-teams-dev-projectfactory-gcs.name
       name   = "team-dev"
@@ -66,12 +56,6 @@ locals {
       kms_restricted_admins = {
         for k, v in local._project_factory_sas : k => [v]
       }
-    })
-    "03-gke-multitenant-dev" = jsonencode({
-      folder_id = module.branch-gke-dev-folder.id
-    })
-    "03-gke-multitenant-prod" = jsonencode({
-      folder_id = module.branch-gke-prod-folder.id
     })
   }
 }

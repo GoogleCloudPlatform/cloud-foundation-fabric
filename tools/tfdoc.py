@@ -71,6 +71,7 @@ FILE_RE_RESOURCES = re.compile(
 HEREDOC_RE = re.compile(r'(?sm)^<<\-?END(\s*.*?)\s*END$')
 MARK_BEGIN = '<!-- BEGIN TFDOC -->'
 MARK_END = '<!-- END TFDOC -->'
+MARK_OPTS_RE = re.compile(r'(?sm)<!-- TFDOC OPTS ((?:[a-z_]+:[0-1]\s*?)+) -->')
 OUT_ENUM = enum.Enum('O', 'OPEN ATTR ATTR_DATA CLOSE COMMENT TXT SKIP')
 OUT_RE = re.compile(r'''(?smx)
     # output open
@@ -109,9 +110,9 @@ VAR_TEMPLATE = ('default', 'description', 'type')
 
 File = collections.namedtuple('File', 'name description modules resources')
 Output = collections.namedtuple('Output',
-                                'name description sensitive consumers')
+                                'name description sensitive consumers line')
 Variable = collections.namedtuple(
-    'Variable', 'name description type default required source')
+    'Variable', 'name description type default required source line')
 
 
 # parsing functions
@@ -130,7 +131,11 @@ def _parse(body, enum=VAR_ENUM, re=VAR_RE, template=VAR_TEMPLATE):
     data = m.group(m.lastindex)
     # print(token, m.groups())
     if token == enum.OPEN:
-      item = {'name': data, 'tags': {}}
+      match = m.group(0)
+      leading_lines = len(match) - len(match.lstrip("\n"))
+      start = m.span()[0]
+      line = body[:start].count('\n') + leading_lines + 1
+      item = {'name': data, 'tags': {}, 'line': line}
       item.update({k: [] for k in template})
       context = None
     elif token == enum.CLOSE:
@@ -186,7 +191,8 @@ def parse_outputs(basepath):
   for item in _parse(body, enum=OUT_ENUM, re=OUT_RE, template=OUT_TEMPLATE):
     yield Output(name=item['name'], description=''.join(item['description']),
                  sensitive=item['sensitive'] != [],
-                 consumers=item['tags'].get('output:consumers', ''))
+                 consumers=item['tags'].get('output:consumers', ''),
+                 line=item['line'])
 
 
 def parse_variables(basepath):
@@ -206,7 +212,8 @@ def parse_variables(basepath):
     yield Variable(name=item['name'], description=''.join(item['description']),
                    type=vtype, default=default,
                    required=required,
-                   source=item['tags'].get('variable:source', ''))
+                   source=item['tags'].get('variable:source', ''),
+                   line=item['line'])
 
 
 # formatting functions
@@ -237,8 +244,16 @@ def format_doc(outputs, variables, files, show_extra=False):
 def format_files(items):
   'Format files table.'
   items.sort(key=lambda i: i.name)
-  yield '| name | description | modules | resources |'
-  yield '|---|---|---|---|'
+  num_modules = sum(len(i.modules) for i in items)
+  num_resources = sum(len(i.resources) for i in items)
+  yield '| name | description |{}{}'.format(
+      ' modules |' if num_modules else '',
+      ' resources |' if num_resources else ''
+  )
+  yield '|---|---|{}{}'.format(
+      '---|' if num_modules else '',
+      '---|' if num_resources else ''
+  )
   for i in items:
     modules = resources = ''
     if i.modules:
@@ -247,7 +262,11 @@ def format_files(items):
     if i.resources:
       resources = '<code>%s</code>' % '</code> · <code>'.join(
           sorted(i.resources))
-    yield f'| [{i.name}](./{i.name}) | {i.description} | {modules} | {resources} |'
+    yield '| [{}](./{}) | {} |{}{}'.format(
+        i.name, i.name, i.description,
+        f' {modules} |' if num_modules else '',
+        f' {resources} |' if num_resources else ''
+    )
 
 
 def format_outputs(items, show_extra=True):
@@ -267,7 +286,7 @@ def format_outputs(items, show_extra=True):
       consumers = '<code>%s</code>' % '</code> · <code>'.join(
           consumers.split())
     sensitive = '✓' if i.sensitive else ''
-    format = f'| {i.name} | {i.description or ""} | {sensitive} |'
+    format = f'| [{i.name}](outputs.tf#L{i.line}) | {i.description or ""} | {sensitive} |'
     format += f' {consumers} |' if show_extra else ''
     yield format
 
@@ -303,7 +322,7 @@ def format_variables(items, show_extra=True):
           value = f'{value[0]}…{value[-1].strip()}'
         vars[k] = f'<code title="{_escape(title)}">{_escape(value)}</code>'
     format = (
-        f'| {i.name} | {i.description or ""} | {vars["type"]} '
+        f'| [{i.name}](variables.tf#L{i.line}) | {i.description or ""} | {vars["type"]} '
         f'| {vars["required"]} | {vars["default"]} |'
     )
     format += f' {vars["source"]} |' if show_extra else ''
@@ -321,7 +340,28 @@ def get_doc(readme):
   return {'doc': m.group(1), 'start': m.start(), 'end': m.end()}
 
 
-def create_doc(module_path, files=False, show_extra=False, exclude_files=None):
+def get_doc_opts(readme):
+  'Check if README file is setting options via a mark, and return options.'
+  m = MARK_OPTS_RE.search(readme)
+  opts = {}
+  if not m:
+    return opts
+  try:
+    for o in m.group(1).split():
+      k, v = o.split(':')
+      opts[k] = bool(int(v))
+  except (TypeError, ValueError) as e:
+    raise SystemExit(f'incorrect option mark: {e}')
+  return opts
+
+
+def create_doc(module_path, files=False, show_extra=False, exclude_files=None,
+               readme=None):
+  if readme:
+    # check for overrides in doc
+    opts = get_doc_opts(readme)
+    files = opts.get('files', files)
+    show_extra = opts.get('show_extra', show_extra)
   try:
     mod_files = list(parse_files(module_path, exclude_files)) if files else []
     mod_variables = list(parse_variables(module_path))
@@ -331,13 +371,17 @@ def create_doc(module_path, files=False, show_extra=False, exclude_files=None):
   return format_doc(mod_outputs, mod_variables, mod_files, show_extra)
 
 
-def replace_doc(module_path, doc):
-  'Replace document in module\'s README.md file.'
-  readme_path = os.path.join(module_path, 'README.md')
+def get_readme(readme_path):
+  'Open and return README.md in module.'
   try:
-    readme = open(readme_path).read()
+    return open(readme_path).read()
   except (IOError, OSError) as e:
     raise SystemExit(f'Error opening README {readme_path}: {e}')
+
+
+def replace_doc(readme_path, doc, readme=None):
+  'Replace document in module\'s README.md file.'
+  readme = readme or get_readme(readme_path)
   result = get_doc(readme)
   if not result:
     raise SystemExit(f'Mark not found in README {readme_path}')
@@ -345,28 +389,30 @@ def replace_doc(module_path, doc):
     return
   try:
     open(readme_path, 'w').write('\n'.join([
-        readme[:result['start']],
+        readme[:result['start']].rstrip(),
         MARK_BEGIN,
         doc,
         MARK_END,
-        readme[result['end']:]
+        readme[result['end']:].lstrip()
     ]))
   except (IOError, OSError) as e:
     raise SystemExit(f'Error replacing README {readme_path}: {e}')
 
 
 @ click.command()
-@ click.argument('module', type=click.Path(exists=True))
+@ click.argument('module_path', type=click.Path(exists=True))
 @click.option('--exclude-file', '-x', multiple=True)
 @ click.option('--files/--no-files', default=False)
 @ click.option('--replace/--no-replace', default=True)
 @ click.option('--show-extra/--no-show-extra', default=False)
-def main(module=None, annotate=False, exclude_file=None, files=False, replace=True,
+def main(module_path=None, exclude_file=None, files=False, replace=True,
          show_extra=True):
   'Program entry point.'
-  doc = create_doc(module, files, show_extra, exclude_file)
+  readme_path = os.path.join(module_path, 'README.md')
+  readme = get_readme(readme_path)
+  doc = create_doc(module_path, files, show_extra, exclude_file, readme)
   if replace:
-    replace_doc(module, doc)
+    replace_doc(readme_path, doc, readme)
   else:
     print(doc)
 

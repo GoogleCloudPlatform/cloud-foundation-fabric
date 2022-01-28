@@ -14,6 +14,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+'''Recursively check freshness of tfdoc's generated tables in README files.
+
+This tool recursively checks that the embedded variables and outputs tables in
+README files, match what is generated at runtime by tfdoc based on current
+sources. As such, it accepts pretty much the same options as tfdoc does. Its
+main use is in CI pipelines triggered by pull requests.
+'''
+
 import difflib
 import enum
 import pathlib
@@ -29,8 +37,9 @@ State = enum.Enum('State', 'OK FAIL SKIP')
 
 
 def _check_dir(dir_name, files=False, show_extra=False):
+  'Invoke tfdoc on folder, using the relevant options.'
   dir_path = BASEDIR / dir_name
-  for readme_path in dir_path.glob('**/README.md'):
+  for readme_path in sorted(dir_path.glob('**/README.md')):
     if '.terraform' in str(readme_path):
       continue
     diff = None
@@ -41,8 +50,9 @@ def _check_dir(dir_name, files=False, show_extra=False):
       state = State.SKIP
     else:
       try:
-        new_doc = tfdoc.create_doc(
-            readme_path.parent, files=files, show_extra=show_extra)
+        new_doc = tfdoc.create_doc(readme_path.parent, files=files,
+                                   show_extra=show_extra, exclude_files=None,
+                                   readme=readme)
       except SystemExit:
         state = state.SKIP
       else:
@@ -65,6 +75,7 @@ def _check_dir(dir_name, files=False, show_extra=False):
 @ click.option('--show-extra/--no-show-extra', default=False)
 def main(dirs, files=False, show_diffs=False, show_extra=False):
   'Cycle through modules and ensure READMEs are up-to-date.'
+  print(f'files: {files}, extra: {show_extra}, diffs: {show_diffs}\n')
   errors = []
   state_labels = {State.FAIL: '✗', State.OK: '✓', State.SKIP: '?'}
   for dir_name in dirs:

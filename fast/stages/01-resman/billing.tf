@@ -27,7 +27,6 @@ locals {
     # [
     #   for k, v in module.branch-teams-team-sa : v.iam_email
     # ],
-    local.branch_gke_sa_iam_emails,
     local.branch_teams_pf_sa_iam_emails
   )
 }
@@ -37,7 +36,7 @@ locals {
 # billing account in a different org
 
 module "billing-organization-ext" {
-  source          = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/organization?ref=v12.0.0"
+  source          = "../../../modules/organization"
   count           = local.billing_org_ext ? 1 : 0
   organization_id = "organizations/${var.billing_account.organization_id}"
   iam_additive = {
