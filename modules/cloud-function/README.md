@@ -26,7 +26,7 @@ module "cf-http" {
     excludes    = null
   }
 }
-# tftest:skip
+# tftest skip
 ```
 
 ### PubSub and non-HTTP triggers
@@ -50,7 +50,7 @@ module "cf-http" {
     retry = null
   }
 }
-# tftest:skip
+# tftest skip
 ```
 
 ### Controlling HTTP access
@@ -72,7 +72,7 @@ module "cf-http" {
     "roles/cloudfunctions.invoker" = ["allUsers"]
   }
 }
-# tftest:skip
+# tftest skip
 ```
 
 ### GCS bucket creation
@@ -95,7 +95,7 @@ module "cf-http" {
     excludes    = null
   }
 }
-# tftest:skip
+# tftest skip
 ```
 
 ### Service account management
@@ -115,7 +115,7 @@ module "cf-http" {
   }
   service_account_create = true
 }
-# tftest:skip
+# tftest skip
 ```
 
 To use an externally managed service account, pass its email in `service_account` and leave `service_account_create` to `false` (the default).
@@ -133,7 +133,7 @@ module "cf-http" {
   }
   service_account = local.service_account_email
 }
-# tftest:skip
+# tftest skip
 ```
 
 ### Custom bundle config
@@ -152,7 +152,7 @@ module "cf-http" {
     excludes    = ["__pycache__"]
   }
 }
-# tftest:skip
+# tftest skip
 ```
 <!-- BEGIN TFDOC -->
 

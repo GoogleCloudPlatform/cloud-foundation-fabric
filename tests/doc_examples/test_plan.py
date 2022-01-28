@@ -17,7 +17,7 @@ from pathlib import Path
 
 
 BASE_PATH = Path(__file__).parent
-EXPECTED_RESOURCES_RE = re.compile(r'# tftest:modules=(\d+):resources=(\d+)')
+EXPECTED_RESOURCES_RE = re.compile(r'# tftest modules=(\d+) resources=(\d+)')
 
 
 def test_example(example_plan_runner, tmp_path, example):

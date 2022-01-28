@@ -31,7 +31,7 @@ module "cluster-1-nodepool-1" {
   name                        = "nodepool-1"
   node_service_account_create = true
 }
-# tftest:modules=1:resources=2
+# tftest modules=1 resources=2
 ```
 <!-- BEGIN TFDOC -->
 

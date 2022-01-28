@@ -38,7 +38,7 @@ def pytest_generate_tests(metafunc):
         if isinstance(child, marko.block.FencedCode) and child.lang == 'hcl':
           index += 1
           code = child.children[0].children
-          if 'tftest:skip' in code:
+          if 'tftest skip' in code:
             continue
           examples.append(code)
           ids.append(f'{module.stem}:example{index}')

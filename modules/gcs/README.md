@@ -11,7 +11,7 @@ module "bucket" {
     "roles/storage.admin" = ["group:storage@example.com"]
   }
 }
-# tftest:modules=1:resources=2
+# tftest modules=1 resources=2
 ```
 
 ### Example with Cloud KMS
@@ -27,7 +27,7 @@ module "bucket" {
   }
   encryption_key = "my-encryption-key"
 }
-# tftest:modules=1:resources=2
+# tftest modules=1 resources=2
 ```
 
 ### Example with retention policy
@@ -52,7 +52,7 @@ module "bucket" {
     log_object_prefix = null
   }
 }
-# tftest:modules=1:resources=2
+# tftest modules=1 resources=2
 ```
 
 ### Example with lifecycle rule
@@ -86,7 +86,7 @@ module "bucket" {
     }
   }
 }
-# tftest:modules=1:resources=2
+# tftest modules=1 resources=2
 ```
 ### Minimal example with GCS notifications
 ```hcl
@@ -104,7 +104,7 @@ module "bucket-gcs-notification" {
     custom_attributes = {}
   }
 }
-# tftest:modules=1:resources=4
+# tftest modules=1 resources=4
 ```
 <!-- BEGIN TFDOC -->
 

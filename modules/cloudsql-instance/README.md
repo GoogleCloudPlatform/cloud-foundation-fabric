@@ -37,7 +37,7 @@ module "db" {
   database_version = "POSTGRES_13"
   tier             = "db-g1-small"
 }
-# tftest:modules=3:resources=6
+# tftest modules=3 resources=6
 ```
 
 ## Cross-regional read replica
@@ -57,7 +57,7 @@ module "db" {
     replica2 = "us-central1"
   }
 }
-# tftest:modules=1:resources=3
+# tftest modules=1 resources=3
 ```
 
 ## Custom flags, databases and users
@@ -88,7 +88,7 @@ module "db" {
     user2  = "mypassword"
   }
 }
-# tftest:modules=1:resources=6
+# tftest modules=1 resources=6
 ```
 <!-- BEGIN TFDOC -->
 

@@ -36,7 +36,7 @@ module "dev-firewall" {
     "./common"
   ]
 }
-# tftest:skip
+# tftest skip
 ```
 
 ### Configuration Structure

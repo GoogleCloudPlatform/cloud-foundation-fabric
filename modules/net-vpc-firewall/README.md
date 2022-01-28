@@ -21,7 +21,7 @@ module "firewall" {
   network              = "my-network"
   admin_ranges         = ["10.0.0.0/8"]
 }
-# tftest:modules=1:resources=4
+# tftest modules=1 resources=4
 ```
 
 ### Custom rules
@@ -48,7 +48,7 @@ module "firewall" {
     }
   }
 }
-# tftest:modules=1:resources=5
+# tftest modules=1 resources=5
 ```
 
 ### No predefined rules
@@ -78,7 +78,7 @@ module "firewall" {
     }
   }
 }
-# tftest:modules=1:resources=1
+# tftest modules=1 resources=1
 ```
 
 
@@ -93,7 +93,7 @@ module "firewall" {
   data_folder        = "config/firewall"
   cidr_template_file = "config/cidr_template.yaml"
 }
-# tftest:skip
+# tftest skip
 ```
 
 ```yaml

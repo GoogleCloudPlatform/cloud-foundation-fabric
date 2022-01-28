@@ -19,7 +19,7 @@ module "vlan-attachment-1" {
     asn        = 65418
   }
 }
-# tftest:modules=1:resources=4
+# tftest modules=1 resources=4
 ```
 #### Direct Interconnect VLAN attachments to achieve 99.9% SLA setup
 
@@ -101,7 +101,7 @@ module "vlan-attachment-2" {
     candidate_ip_ranges       = ["169.254.63.8/29"]
   }
 }
-# tftest:modules=2:resources=8
+# tftest modules=2 resources=8
 ```
 <!-- BEGIN TFDOC -->
 

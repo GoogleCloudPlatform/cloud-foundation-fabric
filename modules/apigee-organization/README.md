@@ -29,7 +29,7 @@ module "apigee-organization" {
     }
   }
 }
-# tftest:modules=1:resources=6
+# tftest modules=1 resources=6
 ```
 
 ### Apigee X Paid Organization
@@ -69,7 +69,7 @@ module "apigee-organization" {
     }
   }
 }
-# tftest:modules=1:resources=11
+# tftest modules=1 resources=11
 ```
 
 ### Apigee hybrid Organization
@@ -96,7 +96,7 @@ module "apigee-organization" {
     }
   }
 }
-# tftest:modules=1:resources=6
+# tftest modules=1 resources=6
 ```
 <!-- BEGIN TFDOC -->
 

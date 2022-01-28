@@ -19,7 +19,7 @@ module "apigee-x-instance" {
     "eval2"
   ]
 }
-# tftest:modules=1:resources=3
+# tftest modules=1 resources=3
 ```
 
 ### Apigee X Paid Instance
@@ -40,7 +40,7 @@ module "apigee-x-instance" {
     "test2"
   ]
 }
-# tftest:modules=1:resources=5
+# tftest modules=1 resources=5
 ```
 <!-- BEGIN TFDOC -->
 

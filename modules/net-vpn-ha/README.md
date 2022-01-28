@@ -87,7 +87,7 @@ module "vpn_ha-2" {
     }
   }
 }
-# tftest:modules=2:resources=18
+# tftest modules=2 resources=18
 ```
 
 ### GCP to on-prem
@@ -136,7 +136,7 @@ module "vpn_ha" {
     }
   }
 }
-# tftest:modules=1:resources=10
+# tftest modules=1 resources=10
 ```
 <!-- BEGIN TFDOC -->
 

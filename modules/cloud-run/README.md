@@ -29,7 +29,7 @@ module "cloud_run" {
     volume_mounts = null
   }]
 }
-# tftest:modules=1:resources=1
+# tftest modules=1 resources=1
 ```
 
 ### Environment variables (value read from secret)
@@ -57,7 +57,7 @@ module "cloud_run" {
     volume_mounts = null
   }]
 }
-# tftest:modules=1:resources=1
+# tftest modules=1 resources=1
 ```
 
 ### Secret mounted as volume
@@ -89,7 +89,7 @@ module "cloud_run" {
     }
   ]
 }
-# tftest:modules=1:resources=1
+# tftest modules=1 resources=1
 ```
 
 ### Traffic split
@@ -114,7 +114,7 @@ module "cloud_run" {
     "green" = 75
   }
 }
-# tftest:modules=1:resources=1
+# tftest modules=1 resources=1
 ```
 
 ### Eventarc trigger (Pub/Sub)
@@ -138,7 +138,7 @@ module "cloud_run" {
     "topic2"
   ]
 }
-# tftest:modules=1:resources=3
+# tftest modules=1 resources=3
 ```
 
 ### Eventarc trigger (Audit logs)
@@ -164,7 +164,7 @@ module "cloud_run" {
     }
   ]
 }
-# tftest:modules=1:resources=2
+# tftest modules=1 resources=2
 ```
 
 ### Service account management
@@ -185,7 +185,7 @@ module "cloud_run" {
   }]
   service_account_create = true
 }
-# tftest:modules=1:resources=2
+# tftest modules=1 resources=2
 ```
 
 To use an externally managed service account, pass its email in `service_account` and leave `service_account_create` to `false` (the default).
@@ -204,7 +204,7 @@ module "cloud_run" {
   }]
   service_account = "cloud-run@my-project.iam.gserviceaccount.com"
 }
-# tftest:modules=1:resources=1
+# tftest modules=1 resources=1
 ```
 <!-- BEGIN TFDOC -->
 

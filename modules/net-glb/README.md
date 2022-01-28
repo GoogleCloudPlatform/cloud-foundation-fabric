@@ -26,7 +26,7 @@ module "glb" {
     }
   }
 }
-# tftest:modules=1:resources=4
+# tftest modules=1 resources=4
 ```
 
 ### Group Backend Service Minimal Example
@@ -58,7 +58,7 @@ module "glb" {
     }
   }
 }
-# tftest:modules=1:resources=5
+# tftest modules=1 resources=5
 ```
 
 ### Health Checks For Group Backend Services
@@ -108,7 +108,7 @@ module "glb" {
     }
   }
 }
-# tftest:modules=1:resources=5
+# tftest modules=1 resources=5
 ```
 
 ### Serverless Backends
@@ -154,7 +154,7 @@ resource "google_compute_region_network_endpoint_group" "serverless-neg" {
     service = "my-cloud-run-service"
   }
 }
-# tftest:modules=1:resources=4
+# tftest modules=1 resources=4
 ```
 
 ### Mixing Backends
@@ -211,7 +211,7 @@ module "glb" {
     }
   }
 }
-# tftest:modules=1:resources=7
+# tftest modules=1 resources=7
 ```
 
 ### Url-map
@@ -286,7 +286,7 @@ module "glb" {
     }
   }
 }
-# tftest:modules=1:resources=6
+# tftest modules=1 resources=6
 ```
 
 ### Reserve a static IP address
@@ -320,7 +320,7 @@ module "glb" {
     }
   }
 }
-# tftest:modules=1:resources=6
+# tftest modules=1 resources=6
 ```
 
 ### HTTPS And SSL Certificates
@@ -357,7 +357,7 @@ module "glb" {
     }
   }
 }
-# tftest:modules=1:resources=6
+# tftest modules=1 resources=6
 ```
 
 Otherwise, SSL certificates can be explicitely defined. In this case, they'll need to be referenced from the `target_proxy_https_config.ssl_certificates` variable.
@@ -407,7 +407,7 @@ module "glb" {
     }
   }
 }
-# tftest:modules=1:resources=6
+# tftest modules=1 resources=6
 ```
 
 Using unamanged certificates is also possible. Here is an example:
@@ -479,7 +479,7 @@ resource "tls_self_signed_cert" "self_signed_cert" {
     organization = "My Test Org"
   }
 }
-# tftest:modules=1:resources=6
+# tftest modules=1 resources=6
 ```
 
 ## Components And Files Mapping

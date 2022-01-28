@@ -25,7 +25,7 @@ module "project" {
     ]
   }
 }
-# tftest:modules=1:resources=4
+# tftest modules=1 resources=4
 ```
 
 ### Minimal example with IAM additive roles
@@ -41,7 +41,7 @@ module "project" {
     "roles/owner"                = ["group:three@example.org"],
   }
 }
-# tftest:modules=1:resources=5
+# tftest modules=1 resources=5
 ```
 
 ### Organization policies
@@ -70,7 +70,7 @@ module "project" {
     }
   }
 }
-# tftest:modules=1:resources=6
+# tftest modules=1 resources=6
 ```
 
 ## Logging Sinks
@@ -146,7 +146,7 @@ module "project-host" {
     no-gce-instances = "resource.type=gce_instance"
   }
 }
-# tftest:modules=5:resources=12
+# tftest modules=5 resources=12
 ```
 
 ## Cloud KMS encryption keys
@@ -171,7 +171,7 @@ module "project" {
     ]
   }
 }
-# tftest:modules=1:resources=7
+# tftest modules=1 resources=7
 ```
 
 <!-- TFDOC OPTS files:1 -->
