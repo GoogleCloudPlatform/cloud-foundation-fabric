@@ -36,36 +36,42 @@ variable "iam" {
   description = "IAM bindings on the service account in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
   default     = {}
+  nullable    = false
 }
 
 variable "iam_billing_roles" {
   description = "Billing account roles granted to the service account, by billing account id. Non-authoritative."
   type        = map(list(string))
   default     = {}
+  nullable    = false
 }
 
 variable "iam_folder_roles" {
   description = "Folder roles granted to the service account, by folder id. Non-authoritative."
   type        = map(list(string))
   default     = {}
+  nullable    = false
 }
 
 variable "iam_organization_roles" {
   description = "Organization roles granted to the service account, by organization id. Non-authoritative."
   type        = map(list(string))
   default     = {}
+  nullable    = false
 }
 
 variable "iam_project_roles" {
   description = "Project roles granted to the service account, by project id."
   type        = map(list(string))
   default     = {}
+  nullable    = false
 }
 
 variable "iam_storage_roles" {
   description = "Storage roles granted to the service account, by bucket name."
   type        = map(list(string))
   default     = {}
+  nullable    = false
 }
 
 variable "name" {

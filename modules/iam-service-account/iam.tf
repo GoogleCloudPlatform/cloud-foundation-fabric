@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description IAM bindings.
+
 locals {
   iam_billing_pairs = flatten([
     for entity, roles in var.iam_billing_roles : [
