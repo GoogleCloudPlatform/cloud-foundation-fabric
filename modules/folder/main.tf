@@ -40,7 +40,7 @@ locals {
     type => {
       for name, sink in local.logging_sinks :
       name => sink
-      if sink.iam && sink.type == type
+      if sink.type == type
     }
   }
   folder = (
