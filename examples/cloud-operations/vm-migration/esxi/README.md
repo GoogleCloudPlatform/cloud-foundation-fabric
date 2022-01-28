@@ -16,17 +16,19 @@ This sample creates several distinct groups of resources:
   - [M4CE migrate connector](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/migrate-connector#installing_the_migrate_connector) 
 - IAM
   - [vCenter user role](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/migrate-connector#step-1)
+<!-- BEGIN TFDOC -->
 
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| vsphere_environment | VMware VSphere environment and connection parameters | <code title="object&#40;&#123;&#10;  health_check      &#61; string&#10;  initial_delay_sec &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| m4ce_appliance_properties | M4CE migrate connector OVA configuration parameters. | <code title="object&#40;&#123;&#10;  health_check      &#61; string&#10;  initial_delay_sec &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| m4ce_ssh_public_key | File system path to the [SSH public key](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/migrate-connector#step-2) for the migrate connector login (eg. ~/.ssh/key.pub) | <code>string</code> | ✓ |  |
-| vcenter_password | VCenter user password.  | <code>string</code> | ✓ |  |
-| m4ce_connector_ovf_url | URL to public M4CE connector OVA image repository.  | <code>string</code> |  | <code>&#34;https://storage.googleapis.com/vmmigration-public-artifacts/migrate-connector-2-0-1663.ova &#34;</code> |
+| [m4ce_ssh_public_key](variables.tf#L43) | Filesystem path to the public key for the SSH login | <code>string</code> | ✓ |  |
+| [vcenter_password](variables.tf#L48) | VCenter user password. | <code>string</code> | ✓ |  |
+| [vsphere_environment](variables.tf#L53) | VMVware VSphere connection parameters | <code title="object&#40;&#123;&#10;  vcenter_ip    &#61; string&#10;  vcenter_user  &#61; string&#10;  data_center   &#61; string&#10;  resource_pool &#61; string&#10;  host_ip       &#61; string&#10;  datastore     &#61; string&#10;  virtual_net   &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [m4ce_appliance_properties](variables.tf#L15) | M4CE connector OVA image configuration parameters | <code title="object&#40;&#123;&#10;  hostname &#61; string&#10;  ip0      &#61; string&#10;  netmask0 &#61; string&#10;  gateway  &#61; string&#10;  DNS      &#61; string&#10;  proxy    &#61; string&#10;  route0   &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  &#34;hostname&#34; &#61; &#34;gcp-m4ce-connector&#34;&#10;  &#34;ip0&#34;      &#61; &#34;0.0.0.0&#34;&#10;  &#34;netmask0&#34; &#61; &#34;0.0.0.0&#34;&#10;  &#34;gateway&#34;  &#61; &#34;0.0.0.0&#34;&#10;  &#34;DNS&#34;      &#61; &#34;&#34;&#10;  &#34;proxy&#34;    &#61; &#34;&#34;&#10;  &#34;route0&#34;   &#61; &#34;&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [m4ce_connector_ovf_url](variables.tf#L37) | http URL to the public M4CE connector OVA image | <code>string</code> |  | <code>&#34;https:&#47;&#47;storage.googleapis.com&#47;vmmigration-public-artifacts&#47;migrate-connector-2-0-1663.ova&#34;</code> |
 
+<!-- END TFDOC -->
 ## Manual Steps
 Once this example is deployed a VCenter user has to be created and binded to the M4CE role in order to allow the connector access the VMWare resources.
 The user can be created manually through the VCenter web interface or througt GOV commandline if it is available:

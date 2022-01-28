@@ -20,23 +20,22 @@ This sample creates several distinct groups of resources:
   - One [service account](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/migrate-connector#step-3) used at runtime by the M4CE connector for data replication
   - Grant [migration admin roles](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/enable-services#using_predefined_roles) to admin user accounts
   - Grant [migration viewer role](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/enable-services#using_predefined_roles) to viewer user accounts
-
 <!-- BEGIN TFDOC -->
 
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| migration_admin_users | List of users authorized to create new M4CE sources and perform all other migration operations, in IAM format. | <code>list&#40;string&#41;</code> | ✓ |  |
-| migration_viewer_users | List of users authorized to retirve information about M4CE in the Google Cloud Console. Intended for users who are performing migrations, but not setting up the system or adding new migration sources, in IAM format. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| project_create | Parameters for the creation of the new project designated as M4CE host and migration landing. | <code title="object&#40;&#123;&#10;  billing_account_id&#61; string&#10;  parent&#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| project_name | Name of an existing project or of the new project assigned as M4CE host and migration landing. | <code>string</code> |  | <code>&#34;m4ce-host-project-000&#34;</code>  |
-| vpc_config | VPC parameters for the migration landing network.  | <code title="object&#40;&#123;&#10;  ip_cidr_range&#61; string&#10;  region&#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code>  |  | |
+| [migration_admin_users](variables.tf#L15) | List of users authorized to create a new M4CE sources and perform all other migration operations, in IAM format | <code>list&#40;string&#41;</code> | ✓ |  |
+| [migration_viewer_users](variables.tf#L20) | List of users authorized to retrive information about M4CE in the Google Cloud Console, in IAM format | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [project_create](variables.tf#L26) | Parameters for the creation of the new project to host the M4CE backend | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [project_name](variables.tf#L35) | Name of an existing project or of the new project assigned as M4CE host an target project | <code>string</code> |  | <code>&#34;m4ce-host-project-000&#34;</code> |
+| [vpc_config](variables.tf#L41) | Parameters to create a simple VPC on the M4CE project | <code title="object&#40;&#123;&#10;  ip_cidr_range &#61; string,&#10;  region        &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  ip_cidr_range &#61; &#34;10.200.0.0&#47;20&#34;,&#10;  region        &#61; &#34;us-west2&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| m4ce_gmanaged_service_account | Google-managed service accounts used by M4CE to operate on target projects. This service account will be created automatically by the migrate connector installation and it might requires additional permissions to be configured manually. ([Configuring permission on target project service account](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/target-sa-compute-engine#configuring_the_default_service_account), [Configuring permissions for a shared VPC](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/shared-vpc#setting-sa) ) |  |
+| [m4ce_gmanaged_service_account](outputs.tf#L15) |  |  |
 
 <!-- END TFDOC -->

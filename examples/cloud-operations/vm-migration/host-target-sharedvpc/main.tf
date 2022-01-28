@@ -13,7 +13,7 @@
 # limitations under the License.
 
 module "host-project" {
-  source = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/project?ref=v7.0.0"
+  source = "../../../../modules/project"
   billing_account = (var.project_create != null
     ? var.project_create.billing_account_id
     : null
@@ -45,7 +45,7 @@ module "host-project" {
 }
 
 module "m4ce-service-account" {
-  source     = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/iam-service-account"
+  source     = "../../../../modules/iam-service-account"
   project_id = module.host-project.project_id
   name       = "m4ce-sa"
 }
@@ -53,7 +53,7 @@ module "m4ce-service-account" {
 module "target-projects" {
 
   for_each       = toset(var.migration_target_projects)
-  source         = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/project?ref=v7.0.0"
+  source         = "../../../../modules/project"
   name           = each.key
   project_create = false
 
@@ -74,7 +74,7 @@ module "target-projects" {
 module "sharedvpc_host_project" {
 
   for_each       = toset(var.sharedvpc_host_projects)
-  source         = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/project?ref=v7.0.0"
+  source         = "../../../../modules/project"
   name           = each.key
   project_create = false
 

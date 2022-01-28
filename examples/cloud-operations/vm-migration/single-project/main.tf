@@ -13,7 +13,7 @@
 # limitations under the License.
 
 module "landing-project" {
-  source = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/project?ref=v7.0.0"
+  source = "../../../../modules/project"
   billing_account = (var.project_create != null
     ? var.project_create.billing_account_id
     : null
@@ -46,14 +46,14 @@ module "landing-project" {
 }
 
 module "m4ce-service-account" {
-  source       = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/iam-service-account?ref=v7.0.0"
+  source       = "../../../../modules/iam-service-account"
   project_id   = module.landing-project.project_id
   name         = "m4ce-sa"
   generate_key = true
 }
 
 module "landing-vpc" {
-  source     = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/net-vpc?ref=v7.0.0"
+  source     = "../../../../modules/net-vpc"
   project_id = module.landing-project.project_id
   name       = "landing-vpc"
   subnets = [
@@ -67,7 +67,7 @@ module "landing-vpc" {
 }
 
 module "landing-vpc-firewall" {
-  source              = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/net-vpc-firewall?ref=v7.0.0"
+  source              = "../../../../modules/net-vpc-firewall"
   project_id          = module.landing-project.project_id
   network             = module.landing-vpc.name
   admin_ranges        = []
