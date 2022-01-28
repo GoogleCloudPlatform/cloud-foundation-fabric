@@ -123,7 +123,6 @@ variable "logging_sinks" {
     destination          = string
     type                 = string
     filter               = string
-    iam                  = bool
     include_children     = bool
     bq_partitioned_table = bool
     # TODO exclusions also support description and disabled
