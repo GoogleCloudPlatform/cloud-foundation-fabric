@@ -1,10 +1,6 @@
 # Networking
 
-<<<<<<< HEAD
-This stage sets up the shared network infrastructure for the whole org. It adopts the common “hub and spoke” reference design, which is well suited to multiple scenarios, and offers several advantages versus other designs:
-=======
 This stage sets up the shared network infrastructure for the whole organization. It adopts the common “hub and spoke” reference design, which is well suited to multiple scenarios, and offers several advantages versus other designs:
->>>>>>> master
 
 - the “hub” VPC centralizes external connectivity to on-prem or other cloud environments, and is ready to host cross-environment services like CI/CD, code repositories, and monitoring probes
 - the “spoke” VPCs allow partitioning workloads (e.g. by environment like in this setup), while still retaining controlled access to central connectivity and services
@@ -15,13 +11,9 @@ Connectivity between hub and spokes is established here via [VPN HA](https://clo
 
 The following diagram illustrates the high-level design, and should be used as a reference for the following sections. The final number of subnets, and their IP addressing design will of course depend on customer-specific requirements, and can be easily changed via variables or external data files without having to edit the actual code.
 
-<<<<<<< HEAD
-![Networking diagram](diagram.png)
-=======
 <p align="center">
   <img src="diagram.svg" alt="Networking diagram">
 </p>
->>>>>>> master
 
 ## Design overview and choices
 
@@ -99,11 +91,7 @@ Several other scenarios are possible of course, with varying degrees of complexi
 
 Future pluggable modules will allow to easily experiment, or deploy the above scenarios.
 
-<<<<<<< HEAD
-### Firewall
-=======
 ### VPC and Hierarchical Firewall
->>>>>>> master
 
 The GCP Firewall is a stateful, distributed feature that allows the creation of L4 policies, either via VPC-level rules or more recently via hierarchical policies applied on the resource hierarchy (organization, folders).
 
@@ -188,14 +176,9 @@ Each file contains the same resources, described in the following paragraphs.
 
 The **project** ([`project`](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/project)) contains the VPC, and enables the required APIs and sets itself as a "[host project](https://cloud.google.com/vpc/docs/shared-vpc)".
 
-<<<<<<< HEAD
-The **VPC** ([`net-vpc`](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/net-vpc)) manages the DNS inbound policy (for Landing), explicit routes for `{private,restricted}.googleapis.com`, and its **subnets**. Subnets are created leveraging a "resource factory" paradigm, where the configuration is separated from the module that implements it, and stored in a well-structured file. To add a new subnet, simply create a new file in the `data_folder` directory defined in the module, following the examples found in the [Fabric `net-vpc` documentation](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/net-vpc#subnet-factory). 
-Subnets for [L7 ILBs](https://cloud.google.com/load-balancing/docs/l7-internal/proxy-only-subnets) are defined in variable `l7ilb_subnets`, while ranges for [PSA](https://cloud.google.com/vpc/docs/configure-private-services-access#allocating-range) are in variable `psa_ranges` - such variables are consumed by spoke VPCs.
-=======
 The **VPC** ([`net-vpc`](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/net-vpc)) manages the DNS inbound policy (for Landing), explicit routes for `{private,restricted}.googleapis.com`, and its **subnets**. Subnets are created leveraging a "resource factory" paradigm, where the configuration is separated from the module that implements it, and stored in a well-structured file. To add a new subnet, simply create a new file in the `data_folder` directory defined in the module, following the examples found in the [Fabric `net-vpc` documentation](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/net-vpc#subnet-factory). Sample subnets are shipped in [data/subnets](./data/subnets), and can be easily customised to fit your needs.
 
 Subnets for [L7 ILBs](https://cloud.google.com/load-balancing/docs/l7-internal/proxy-only-subnets) are handled differently, and defined in variable `l7ilb_subnets`, while ranges for [PSA](https://cloud.google.com/vpc/docs/configure-private-services-access#allocating-range) are configured by variable `psa_ranges` - such variables are consumed by spoke VPCs.
->>>>>>> master
 
 **Cloud NAT** ([`net-cloudnat`](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/net-cloudnat)) manages the networking infrastructure required to enable internet egress.
 
@@ -213,32 +196,18 @@ VPNs ([`net-vpn`](https://github.com/terraform-google-modules/cloud-foundation-f
 
 Each VPC network ([`net-vpc`](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/net-vpc)) manages a separate routing table, which can define static routes (e.g. to private.googleapis.com) and receives dynamic routes from BGP sessions established with neighbor networks (e.g. landing receives routes from onprem and spokes, and spokes receive RFC1918 from landing).
 
-<<<<<<< HEAD
-Static routes are defined in `vpc-*.tf` files, in the `routes` section of each `net-vpc` module. 
-=======
 Static routes are defined in `vpc-*.tf` files, in the `routes` section of each `net-vpc` module.
->>>>>>> master
 
 BGP sessions for landing-spoke are configured through variable `vpn_spoke_configs`, while the ones for landing-onprem use variable `vpn_onprem_configs`
 
 ### Firewall
 
-<<<<<<< HEAD
-**VPC firewall rules** ([`net-vpc-firewall`](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/net-vpc-firewall)) are defined per-vpc on each `vpc-*.tf` file and leverage a resource factory to massively create rules. 
-To add a new firewall rule, create a new file or edit an existing one in the `data_folder` directory defined in the module `net-vpc-firewall`, following the examples of the "[Rules factory](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/net-vpc-firewall#rules-factory)" section of the module documentation.
-
-**Hierarchical firewall policies** ([`folder`](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/folder)) are defined in `main.tf`, and managed through a policy factory implemented by the `folder` module, which applies the defined hierarchical to the `Networking` folder, which contains all the core networking infrastructure. Policies are defined in the `rules_file` file - to define a new one simply use the instructions found on "[Firewall policy factory](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/organization#firewall-policy-factory)".
-
-
-### DNS
-=======
 **VPC firewall rules** ([`net-vpc-firewall`](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/net-vpc-firewall)) are defined per-vpc on each `vpc-*.tf` file and leverage a resource factory to massively create rules.
 To add a new firewall rule, create a new file or edit an existing one in the `data_folder` directory defined in the module `net-vpc-firewall`, following the examples of the "[Rules factory](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/net-vpc-firewall#rules-factory)" section of the module documentation. Sample firewall rules are shipped in [data/firewall-rules/landing](./data/firewall-rules/landing) and can be easily customised.
 
 **Hierarchical firewall policies** ([`folder`](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/folder)) are defined in `main.tf`, and managed through a policy factory implemented by the `folder` module, which applies the defined hierarchical to the `Networking` folder, which contains all the core networking infrastructure. Policies are defined in the `rules_file` file - to define a new one simply use the instructions found on "[Firewall policy factory](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/organization#firewall-policy-factory)". Sample hierarchical firewall policies are shipped in [data/hierarchical-policy-rules.yaml](./data/hierarchical-policy-rules.yaml) and can be easily customised.
 
 ### DNS architecture
->>>>>>> master
 
 The DNS ([`dns`](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/dns)) infrastructure is defined in [`dns.tf`](dns.tf).
 
@@ -257,35 +226,14 @@ DNS queries sent to the on-premises infrastructure come from the `35.199.192.0/1
 
 #### On-prem to cloud
 
-<<<<<<< HEAD
-The [Inbound DNS Policy](https://cloud.google.com/dns/docs/server-policies-overview#dns-server-policy-in) defined in module `landing-vpc` ([`landing.tf`](./landing.tf)) automatically reserves the first available IP address on each created subnet (typically the third one in a CIDR) to expose the Cloud DNS service so that it can be consumed from outside of GCP. 
-
-### Private Google Access
-=======
 The [Inbound DNS Policy](https://cloud.google.com/dns/docs/server-policies-overview#dns-server-policy-in) defined in module `landing-vpc` ([`landing.tf`](./landing.tf)) automatically reserves the first available IP address on each created subnet (typically the third one in a CIDR) to expose the Cloud DNS service so that it can be consumed from outside of GCP.
 
 ### Private Google Access
 
->>>>>>> master
 [Private Google Access](https://cloud.google.com/vpc/docs/private-google-access) (or PGA) enables VMs and on-prem systems to consume Google APIs from within the Google network, and is already fully configured on this environment.
 
 For PGA to work:
 
-<<<<<<< HEAD
-* Private Google Access should be enabled on the subnet. \
-Subnets created by the `net-vpc` module are PGA-enabled by default.
-
-* 199.36.153.4/30 (`restricted.googleapis.com`) and 199.36.153.8/30 (`private.googleapis.com`) should be routed from on-prem to VPC, and from there to the `default-internet-gateway`. \
-Per variable `vpn_onprem_configs` such ranges are advertised to onprem - furthermore every VPC (e.g. see `landing-vpc` in [`landing.tf`](./landing.tf)) has explicit routes set in case the `0.0.0.0/0` route is changed.
-
-* A private DNS zone for `googleapis.com` should be created and configured per [this article](https://cloud.google.com/vpc/docs/configure-private-google-access-hybrid#config-domain, as implemented in module `googleapis-private-zone` in [`dns.tf`](./dns.tf) 
-
-### Preliminar activities 
-
-Before running `terraform apply` on this stage, make sure to adapt all of `variables.tf` to your needs, to update all reference to regions (e.g. `europe-west1` or `ew1`) in the whole directory to match your preferences.
-
-If you're not using FAST, you'll also need to create a `providers.tf` file to configure the GCS backend and the service account to use to run the deployment. 
-=======
 - Private Google Access should be enabled on the subnet. \
 Subnets created by the `net-vpc` module are PGA-enabled by default.
 
@@ -299,35 +247,22 @@ Per variable `vpn_onprem_configs` such ranges are advertised to onprem - further
 Before running `terraform apply` on this stage, make sure to adapt all of `variables.tf` to your needs, to update all reference to regions (e.g. `europe-west1` or `ew1`) in the whole directory to match your preferences.
 
 If you're not using FAST, you'll also need to create a `providers.tf` file to configure the GCS backend and the service account to use to run the deployment.
->>>>>>> master
 
 You're now ready to run `terraform init` and `apply`.
 
 ### Post-deployment activities
 
-<<<<<<< HEAD
-* On-prem routers should be configured to advertise all relevant CIDRs to the GCP environments. To avoid hitting GCP quotas, we recomment aggregating routes as much as possible.
-* On-prem routers should accept BGP sessions from their cloud peers.
-* On-prem DNS servers should have forward zones for GCP-managed ones.
-=======
 - On-prem routers should be configured to advertise all relevant CIDRs to the GCP environments. To avoid hitting GCP quotas, we recomment aggregating routes as much as possible.
 - On-prem routers should accept BGP sessions from their cloud peers.
 - On-prem DNS servers should have forward zones for GCP-managed ones.
->>>>>>> master
 
 ## Customizations
 
 ### Adding an environment
-<<<<<<< HEAD
-To create a new environment (e.g. `staging`), a few changes are required.
-
-Create a `vpc-spoke-staging.tf` file by copying `vpc-spoke-prod.tf` file, 
-=======
 
 To create a new environment (e.g. `staging`), a few changes are required.
 
 Create a `vpc-spoke-staging.tf` file by copying `vpc-spoke-prod.tf` file,
->>>>>>> master
 and adapt the new file by replacing the value "prod" with the value "staging".
 Running `diff vpc-spoke-dev.tf vpc-spoke-prod.tf` can help to see how environment files differ.
 
@@ -339,18 +274,6 @@ Variables managing L7 Interal Load Balancers (`l7ilb_subnets`) and Private Servi
 VPN HA connectivity (see also [VPNs](#vpns)) to `landing` is managed by the `vpn-spoke-*.tf` files.
 Copy `vpn-spoke-prod.tf` to `vpn-spoke-staging.tf` - replace "prod" with "staging" where relevant.
 
-<<<<<<< HEAD
-VPN configuration also controls BGP advertisements, which requires the following variable changes: 
-* `router_configs` to configure the new routers (one per region) created for the `staging` VPC
-* `vpn_onprem_configs` to configure the new advertisments to on-premises for the new CIDRs
-* `vpn_spoke_configs` to configure the new advertisements to `landing` for the new VPC - new keys (one per region) should be added, such as e.g. `staging-ew1` and `staging-ew4`
-
-DNS configurations are centralised in the `dns.tf` file. Spokes delegate DNS resolution to Landing through DNS peering, and optionally define a private zone (e.g. `staging.gcp.example.com`) which the landing peers to. To configure DNS for a new environment, copy all the `prod-*` modules in the `dns.tf` file to `staging-*`, and update their content accordingly. Don't forget to add a peering zone from Landing to the newly created environment private zone.
-
-
-
-
-=======
 VPN configuration also controls BGP advertisements, which requires the following variable changes:
 
 - `router_configs` to configure the new routers (one per region) created for the `staging` VPC
@@ -360,7 +283,6 @@ VPN configuration also controls BGP advertisements, which requires the following
 DNS configurations are centralised in the `dns.tf` file. Spokes delegate DNS resolution to Landing through DNS peering, and optionally define a private zone (e.g. `staging.gcp.example.com`) which the landing peers to. To configure DNS for a new environment, copy all the `prod-*` modules in the `dns.tf` file to `staging-*`, and update their content accordingly. Don't forget to add a peering zone from Landing to the newly created environment private zone.
 
 <!-- TFDOC OPTS files:1 show_extra:1 -->
->>>>>>> master
 <!-- BEGIN TFDOC -->
 
 ## Files
@@ -386,23 +308,6 @@ DNS configurations are centralised in the `dns.tf` file. Spokes delegate DNS res
 
 | name | description | type | required | default | producer |
 |---|---|:---:|:---:|:---:|:---:|
-<<<<<<< HEAD
-| billing_account_id | Billing account id. | <code>string</code> | ✓ |  | <code>00-bootstrap</code> |
-| organization | Organization details. | <code title="object&#40;&#123;&#10;  domain      &#61; string&#10;  id          &#61; number&#10;  customer_id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>00-bootstrap</code> |
-| prefix | Prefix used for resources that need unique names. | <code>string</code> | ✓ |  | <code>00-bootstrap</code> |
-| custom_adv | Custom advertisement definitions in name => range format. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  cloud_dns             &#61; &#34;35.199.192.0&#47;19&#34;&#10;  googleapis_private    &#61; &#34;199.36.153.8&#47;30&#34;&#10;  googleapis_restricted &#61; &#34;199.36.153.4&#47;30&#34;&#10;  rfc_1918_10           &#61; &#34;10.0.0.0&#47;8&#34;&#10;  rfc_1918_172          &#61; &#34;172.16.0.0&#47;16&#34;&#10;  rfc_1918_192          &#61; &#34;192.168.0.0&#47;16&#34;&#10;  landing_ew1           &#61; &#34;10.128.0.0&#47;16&#34;&#10;  landing_ew4           &#61; &#34;10.129.0.0&#47;16&#34;&#10;  spoke_prod_ew1        &#61; &#34;10.136.0.0&#47;16&#34;&#10;  spoke_prod_ew4        &#61; &#34;10.137.0.0&#47;16&#34;&#10;  spoke_dev_ew1         &#61; &#34;10.144.0.0&#47;16&#34;&#10;  spoke_dev_ew4         &#61; &#34;10.145.0.0&#47;16&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
-| data_dir | Relative path for the folder storing configuration data for network resources. | <code>string</code> |  | <code>&#34;data&#34;</code> |  |
-| dns | Onprem DNS resolvers | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code title="&#123;&#10;  onprem &#61; &#91;&#34;10.0.200.3&#34;&#93;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
-| folder_id | Folder to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created. | <code>string</code> |  | <code>null</code> | <code>01-resman</code> |
-| gke |  | <code title="map&#40;object&#40;&#123;&#10;  folder_id &#61; string&#10;  sa        &#61; string&#10;  gcs       &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> | <code>01-resman</code> |
-| l7ilb_subnets | Subnets used for L7 ILBs. | <code title="map&#40;list&#40;object&#40;&#123;&#10;  ip_cidr_range &#61; string&#10;  region        &#61; string&#10;&#125;&#41;&#41;&#41;">map&#40;list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;&#41;</code> |  | <code title="&#123;&#10;  prod &#61; &#91;&#10;    &#123; ip_cidr_range &#61; &#34;10.136.240.0&#47;24&#34;, region &#61; &#34;europe-west1&#34; &#125;,&#10;    &#123; ip_cidr_range &#61; &#34;10.137.240.0&#47;24&#34;, region &#61; &#34;europe-west4&#34; &#125;&#10;  &#93;&#10;  dev &#61; &#91;&#10;    &#123; ip_cidr_range &#61; &#34;10.144.240.0&#47;24&#34;, region &#61; &#34;europe-west1&#34; &#125;,&#10;    &#123; ip_cidr_range &#61; &#34;10.145.240.0&#47;24&#34;, region &#61; &#34;europe-west4&#34; &#125;&#10;  &#93;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
-| outputs_location | Path where providers and tfvars files for the following stages are written. Leave empty to disable. | <code>string</code> |  | <code>null</code> |  |
-| project_factory_sa | IAM emails for project factory service accounts | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>01-resman</code> |
-| psa_ranges | IP ranges used for Private Service Access (e.g. CloudSQL). | <code>map&#40;map&#40;string&#41;&#41;</code> |  | <code title="&#123;&#10;  prod &#61; &#123;&#10;    cloudsql-mysql     &#61; &#34;10.136.250.0&#47;24&#34;&#10;    cloudsql-sqlserver &#61; &#34;10.136.251.0&#47;24&#34;&#10;  &#125;&#10;  dev &#61; &#123;&#10;    cloudsql-mysql     &#61; &#34;10.144.250.0&#47;24&#34;&#10;    cloudsql-sqlserver &#61; &#34;10.144.251.0&#47;24&#34;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
-| router_configs | Configurations for CRs and onprem routers. | <code title="map&#40;object&#40;&#123;&#10;  adv &#61; object&#40;&#123;&#10;    custom  &#61; list&#40;string&#41;&#10;    default &#61; bool&#10;  &#125;&#41;&#10;  asn &#61; number&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code title="&#123;&#10;  onprem-ew1 &#61; &#123;&#10;    asn &#61; &#34;65534&#34;&#10;    adv &#61; null&#10;  &#125;&#10;  landing-ew1    &#61; &#123; asn &#61; &#34;64512&#34;, adv &#61; null &#125;&#10;  landing-ew4    &#61; &#123; asn &#61; &#34;64512&#34;, adv &#61; null &#125;&#10;  spoke-dev-ew1  &#61; &#123; asn &#61; &#34;64513&#34;, adv &#61; null &#125;&#10;  spoke-dev-ew4  &#61; &#123; asn &#61; &#34;64513&#34;, adv &#61; null &#125;&#10;  spoke-prod-ew1 &#61; &#123; asn &#61; &#34;64514&#34;, adv &#61; null &#125;&#10;  spoke-prod-ew4 &#61; &#123; asn &#61; &#34;64514&#34;, adv &#61; null &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
-| vpn_onprem_configs | VPN gateway configuration for onprem interconnection. | <code title="map&#40;object&#40;&#123;&#10;  adv &#61; object&#40;&#123;&#10;    default &#61; bool&#10;    custom  &#61; list&#40;string&#41;&#10;  &#125;&#41;&#10;  session_range &#61; string&#10;  peer &#61; object&#40;&#123;&#10;    address   &#61; string&#10;    asn       &#61; number&#10;    secret_id &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code title="&#123;&#10;  landing-ew1 &#61; &#123;&#10;    adv &#61; &#123;&#10;      default &#61; false&#10;      custom &#61; &#91;&#10;        &#34;cloud_dns&#34;,&#10;        &#34;googleapis_restricted&#34;,&#10;        &#34;googleapis_private&#34;,&#10;        &#34;landing_ew1&#34;,&#10;        &#34;landing_ew4&#34;,&#10;        &#34;spoke_prod_ew1&#34;,&#10;        &#34;spoke_prod_ew4&#34;,&#10;        &#34;spoke_dev_ew1&#34;,&#10;        &#34;spoke_dev_ew4&#34;&#10;      &#93;&#10;    &#125;&#10;    session_range &#61; &#34;169.254.1.0&#47;29&#34;&#10;    peer &#61; &#123;&#10;      address   &#61; &#34;8.8.8.8&#34;&#10;      asn       &#61; 65534&#10;      secret_id &#61; &#34;foobar&#34;&#10;    &#125;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
-| vpn_spoke_configs | VPN gateway configuration for spokes. | <code title="map&#40;object&#40;&#123;&#10;  adv &#61; object&#40;&#123;&#10;    default &#61; bool&#10;    custom  &#61; list&#40;string&#41;&#10;  &#125;&#41;&#10;  session_range &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code title="&#123;&#10;  landing-ew1 &#61; &#123;&#10;    adv &#61; &#123;&#10;      default &#61; false&#10;      custom  &#61; &#91;&#34;rfc_1918_10&#34;, &#34;rfc_1918_172&#34;, &#34;rfc_1918_192&#34;&#93;&#10;    &#125;&#10;    session_range &#61; null &#35; values for the landing router are pulled from the spoke range&#10;  &#125;&#10;  landing-ew4 &#61; &#123;&#10;    adv &#61; &#123;&#10;      default &#61; false&#10;      custom  &#61; &#91;&#34;rfc_1918_10&#34;, &#34;rfc_1918_172&#34;, &#34;rfc_1918_192&#34;&#93;&#10;    &#125;&#10;    session_range &#61; null &#35; values for the landing router are pulled from the spoke range&#10;  &#125;&#10;  dev-ew1 &#61; &#123;&#10;    adv &#61; &#123;&#10;      default &#61; false&#10;      custom  &#61; &#91;&#34;spoke_dev_ew1&#34;, &#34;spoke_dev_ew4&#34;&#93;&#10;    &#125;&#10;    session_range &#61; &#34;169.254.0.0&#47;27&#34; &#35; resize according to required number of tunnels&#10;  &#125;&#10;  prod-ew1 &#61; &#123;&#10;    adv &#61; &#123;&#10;      default &#61; false&#10;      custom  &#61; &#91;&#34;spoke_prod_ew1&#34;, &#34;spoke_prod_ew4&#34;&#93;&#10;    &#125;&#10;    session_range &#61; &#34;169.254.0.64&#47;27&#34; &#35; resize according to required number of tunnels&#10;  &#125;&#10;  prod-ew4 &#61; &#123;&#10;    adv &#61; &#123;&#10;      default &#61; false&#10;      custom  &#61; &#91;&#34;spoke_prod_ew1&#34;, &#34;spoke_prod_ew4&#34;&#93;&#10;    &#125;&#10;    session_range &#61; &#34;169.254.0.96&#47;27&#34; &#35; resize according to required number of tunnels&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
-=======
 | [billing_account_id](variables.tf#L17) | Billing account id. | <code>string</code> | ✓ |  | <code>00-bootstrap</code> |
 | [organization](variables.tf#L97) | Organization details. | <code title="object&#40;&#123;&#10;  domain      &#61; string&#10;  id          &#61; number&#10;  customer_id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>00-bootstrap</code> |
 | [prefix](variables.tf#L113) | Prefix used for resources that need unique names. | <code>string</code> | ✓ |  | <code>00-bootstrap</code> |
@@ -418,42 +323,11 @@ DNS configurations are centralised in the `dns.tf` file. Spokes delegate DNS res
 | [router_configs](variables.tf#L141) | Configurations for CRs and onprem routers. | <code title="map&#40;object&#40;&#123;&#10;  adv &#61; object&#40;&#123;&#10;    custom  &#61; list&#40;string&#41;&#10;    default &#61; bool&#10;  &#125;&#41;&#10;  asn &#61; number&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code title="&#123;&#10;  onprem-ew1 &#61; &#123;&#10;    asn &#61; &#34;65534&#34;&#10;    adv &#61; null&#10;  &#125;&#10;  landing-ew1    &#61; &#123; asn &#61; &#34;64512&#34;, adv &#61; null &#125;&#10;  landing-ew4    &#61; &#123; asn &#61; &#34;64512&#34;, adv &#61; null &#125;&#10;  spoke-dev-ew1  &#61; &#123; asn &#61; &#34;64513&#34;, adv &#61; null &#125;&#10;  spoke-dev-ew4  &#61; &#123; asn &#61; &#34;64513&#34;, adv &#61; null &#125;&#10;  spoke-prod-ew1 &#61; &#123; asn &#61; &#34;64514&#34;, adv &#61; null &#125;&#10;  spoke-prod-ew4 &#61; &#123; asn &#61; &#34;64514&#34;, adv &#61; null &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
 | [vpn_onprem_configs](variables.tf#L165) | VPN gateway configuration for onprem interconnection. | <code title="map&#40;object&#40;&#123;&#10;  adv &#61; object&#40;&#123;&#10;    default &#61; bool&#10;    custom  &#61; list&#40;string&#41;&#10;  &#125;&#41;&#10;  peer_external_gateway &#61; object&#40;&#123;&#10;    redundancy_type &#61; string&#10;    interfaces &#61; list&#40;object&#40;&#123;&#10;      id         &#61; number&#10;      ip_address &#61; string&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#10;  tunnels &#61; list&#40;object&#40;&#123;&#10;    peer_asn              &#61; number&#10;    secret                &#61; string&#10;    session_range         &#61; string&#10;    vpn_gateway_interface &#61; number&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code title="&#123;&#10;  landing-ew1 &#61; &#123;&#10;    adv &#61; &#123;&#10;      default &#61; false&#10;      custom &#61; &#91;&#10;        &#34;cloud_dns&#34;, &#34;googleapis_private&#34;, &#34;googleapis_restricted&#34;, &#34;gcp_all&#34;&#10;      &#93;&#10;    &#125;&#10;    peer_external_gateway &#61; &#123;&#10;      redundancy_type &#61; &#34;SINGLE_IP_INTERNALLY_REDUNDANT&#34;&#10;      interfaces &#61; &#91;&#10;        &#123; id &#61; 0, ip_address &#61; &#34;8.8.8.8&#34; &#125;,&#10;      &#93;&#10;    &#125;&#10;    tunnels &#61; &#91;&#10;      &#123;&#10;        peer_asn              &#61; 65534&#10;        secret                &#61; &#34;foobar&#34;&#10;        session_range         &#61; &#34;169.254.1.0&#47;30&#34;&#10;        vpn_gateway_interface &#61; 0&#10;      &#125;,&#10;      &#123;&#10;        peer_asn              &#61; 65534&#10;        secret                &#61; &#34;foobar&#34;&#10;        session_range         &#61; &#34;169.254.1.4&#47;30&#34;&#10;        vpn_gateway_interface &#61; 1&#10;      &#125;&#10;    &#93;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
 | [vpn_spoke_configs](variables.tf#L218) | VPN gateway configuration for spokes. | <code title="map&#40;object&#40;&#123;&#10;  adv &#61; object&#40;&#123;&#10;    default &#61; bool&#10;    custom  &#61; list&#40;string&#41;&#10;  &#125;&#41;&#10;  session_range &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code title="&#123;&#10;  landing-ew1 &#61; &#123;&#10;    adv &#61; &#123;&#10;      default &#61; false&#10;      custom  &#61; &#91;&#34;rfc_1918_10&#34;, &#34;rfc_1918_172&#34;, &#34;rfc_1918_192&#34;&#93;&#10;    &#125;&#10;    session_range &#61; null&#10;  &#125;&#10;  landing-ew4 &#61; &#123;&#10;    adv &#61; &#123;&#10;      default &#61; false&#10;      custom  &#61; &#91;&#34;rfc_1918_10&#34;, &#34;rfc_1918_172&#34;, &#34;rfc_1918_192&#34;&#93;&#10;    &#125;&#10;    session_range &#61; null&#10;  &#125;&#10;  dev-ew1 &#61; &#123;&#10;    adv &#61; &#123;&#10;      default &#61; false&#10;      custom  &#61; &#91;&#34;gcp_dev&#34;&#93;&#10;    &#125;&#10;    session_range &#61; &#34;169.254.0.0&#47;27&#34;&#10;  &#125;&#10;  prod-ew1 &#61; &#123;&#10;    adv &#61; &#123;&#10;      default &#61; false&#10;      custom  &#61; &#91;&#34;gcp_prod&#34;&#93;&#10;    &#125;&#10;    session_range &#61; &#34;169.254.0.64&#47;27&#34;&#10;  &#125;&#10;  prod-ew4 &#61; &#123;&#10;    adv &#61; &#123;&#10;      default &#61; false&#10;      custom  &#61; &#91;&#34;gcp_prod&#34;&#93;&#10;    &#125;&#10;    session_range &#61; &#34;169.254.0.96&#47;27&#34;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
->>>>>>> master
 
 ## Outputs
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-<<<<<<< HEAD
-| cloud_dns_inbound_policy | IP Addresses for Cloud DNS inbound policy. |  |  |
-| project_ids | Network project ids. |  |  |
-| project_numbers | Network project numbers. |  |  |
-| shared_vpc_host_projects | Shared VPC host projects. |  |  |
-| shared_vpc_self_links | Shared VPC host projects. |  |  |
-| tfvars | Network-related variables used in other stages. | ✓ |  |
-| vpn_gateway_endpoints | External IP Addresses for the GCP VPN gateways. |  |  |
-
-<!-- END TFDOC -->
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-=======
 | [cloud_dns_inbound_policy](outputs.tf#L41) | IP Addresses for Cloud DNS inbound policy. |  |  |
 | [project_ids](outputs.tf#L46) | Network project ids. |  |  |
 | [project_numbers](outputs.tf#L55) | Network project numbers. |  |  |
@@ -463,4 +337,3 @@ DNS configurations are centralised in the `dns.tf` file. Spokes delegate DNS res
 | [vpn_gateway_endpoints](outputs.tf#L84) | External IP Addresses for the GCP VPN gateways. |  |  |
 
 <!-- END TFDOC -->
->>>>>>> master
