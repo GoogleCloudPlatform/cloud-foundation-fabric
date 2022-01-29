@@ -18,6 +18,7 @@ variable "contacts" {
   description = "List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES"
   type        = map(list(string))
   default     = {}
+  nullable    = false
 }
 
 variable "firewall_policies" {
@@ -33,13 +34,15 @@ variable "firewall_policies" {
     target_resources        = list(string)
     target_service_accounts = list(string)
   })))
-  default = {}
+  default  = {}
+  nullable = false
 }
 
 variable "firewall_policy_association" {
   description = "The hierarchical firewall policy to associate to this folder. Must be either a key in the `firewall_policies` map or the id of a policy defined somewhere else."
   type        = map(string)
   default     = {}
+  nullable    = false
 }
 
 variable "firewall_policy_factory" {
@@ -62,12 +65,14 @@ variable "group_iam" {
   description = "Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable."
   type        = map(list(string))
   default     = {}
+  nullable    = false
 }
 
 variable "iam" {
   description = "IAM bindings in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
   default     = {}
+  nullable    = false
 }
 
 variable "id" {
@@ -80,6 +85,7 @@ variable "logging_exclusions" {
   description = "Logging exclusions for this folder in the form {NAME -> FILTER}."
   type        = map(string)
   default     = {}
+  nullable    = false
 }
 
 variable "logging_sinks" {
@@ -92,7 +98,15 @@ variable "logging_sinks" {
     # TODO exclusions also support description and disabled
     exclusions = map(string)
   }))
-  default = {}
+  validation {
+    condition = alltrue([
+      for k, v in(var.logging_sinks == null ? {} : var.logging_sinks) :
+      contains(["bigquery", "logging", "pubsub", "storage"], v.type)
+    ])
+    error_message = "Type must be one of 'bigquery', 'logging', 'pubsub', 'storage'."
+  }
+  default  = {}
+  nullable = false
 }
 
 variable "name" {
@@ -115,6 +129,7 @@ variable "policy_boolean" {
   description = "Map of boolean org policies and enforcement value, set value to null for policy restore."
   type        = map(bool)
   default     = {}
+  nullable    = false
 }
 
 variable "policy_list" {
@@ -125,5 +140,6 @@ variable "policy_list" {
     status              = bool
     values              = list(string)
   }))
-  default = {}
+  default  = {}
+  nullable = false
 }

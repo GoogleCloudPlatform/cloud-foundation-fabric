@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Organization policies.
+# tfdoc:file:description Folder-level organization policies.
 
-resource "google_organization_policy" "boolean" {
+resource "google_folder_organization_policy" "boolean" {
   for_each   = var.policy_boolean
-  org_id     = local.organization_id_numeric
+  folder     = local.folder.name
   constraint = each.key
 
   dynamic "boolean_policy" {
@@ -35,19 +35,11 @@ resource "google_organization_policy" "boolean" {
       default = true
     }
   }
-
-  depends_on = [
-    google_organization_iam_audit_config.config,
-    google_organization_iam_binding.authoritative,
-    google_organization_iam_custom_role.roles,
-    google_organization_iam_member.additive,
-    google_organization_iam_policy.authoritative,
-  ]
 }
 
-resource "google_organization_policy" "list" {
+resource "google_folder_organization_policy" "list" {
   for_each   = var.policy_list
-  org_id     = local.organization_id_numeric
+  folder     = local.folder.name
   constraint = each.key
 
   dynamic "list_policy" {
@@ -95,12 +87,4 @@ resource "google_organization_policy" "list" {
       default = true
     }
   }
-
-  depends_on = [
-    google_organization_iam_audit_config.config,
-    google_organization_iam_binding.authoritative,
-    google_organization_iam_custom_role.roles,
-    google_organization_iam_member.additive,
-    google_organization_iam_policy.authoritative,
-  ]
 }
