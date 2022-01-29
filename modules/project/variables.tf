@@ -30,12 +30,14 @@ variable "contacts" {
   description = "List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES"
   type        = map(list(string))
   default     = {}
+  nullable    = false
 }
 
 variable "custom_roles" {
   description = "Map of role name => list of permissions to create in this project."
   type        = map(list(string))
   default     = {}
+  nullable    = false
 }
 
 variable "descriptive_name" {
@@ -48,18 +50,21 @@ variable "group_iam" {
   description = "Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable."
   type        = map(list(string))
   default     = {}
+  nullable    = false
 }
 
 variable "iam" {
   description = "IAM bindings in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
   default     = {}
+  nullable    = false
 }
 
 variable "iam_additive" {
   description = "IAM additive bindings in {ROLE => [MEMBERS]} format."
   type        = map(list(string))
   default     = {}
+  nullable    = false
 }
 
 variable "iam_additive_members" {
@@ -72,6 +77,7 @@ variable "labels" {
   description = "Resource labels."
   type        = map(string)
   default     = {}
+  nullable    = false
 }
 
 variable "lien_reason" {
@@ -112,7 +118,8 @@ variable "logging_sinks" {
 variable "metric_scopes" {
   description = "List of projects that will act as metric scopes for this project."
   type        = list(string)
-  default     = null
+  default     = []
+  nullable    = false
 }
 
 variable "name" {
@@ -130,12 +137,15 @@ variable "oslogin_admins" {
   description = "List of IAM-style identities that will be granted roles necessary for OS Login administrators."
   type        = list(string)
   default     = []
+  nullable    = false
+
 }
 
 variable "oslogin_users" {
   description = "List of IAM-style identities that will be granted roles necessary for OS Login users."
   type        = list(string)
   default     = []
+  nullable    = false
 }
 
 variable "parent" {
@@ -152,6 +162,7 @@ variable "policy_boolean" {
   description = "Map of boolean org policies and enforcement value, set value to null for policy restore."
   type        = map(bool)
   default     = {}
+  nullable    = false
 }
 
 variable "policy_list" {
@@ -162,7 +173,8 @@ variable "policy_list" {
     status              = bool
     values              = list(string)
   }))
-  default = {}
+  default  = {}
+  nullable = false
 }
 
 variable "prefix" {
@@ -225,6 +237,7 @@ variable "shared_vpc_host_config" {
     enabled          = false
     service_projects = []
   }
+  nullable = false
 }
 
 variable "shared_vpc_service_config" {
@@ -237,6 +250,7 @@ variable "shared_vpc_service_config" {
     attach       = false
     host_project = ""
   }
+  nullable = false
 }
 
 variable "skip_delete" {

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description Log sinks and supporting resources.
+
 locals {
   sink_bindings = {
     for type in ["bigquery", "pubsub", "logging", "storage"] :
