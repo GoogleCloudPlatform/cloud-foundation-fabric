@@ -486,7 +486,7 @@ resource "tls_self_signed_cert" "self_signed_cert" {
 
 An External Global Load Balancer is made of multiple components, that change depending on the configurations. Sometimes, it may be tricky to understand what they are, and how they relate to each other. Following, we provide a very brief overview to become more familiar with them.
 
-- The global load balancer [forwarding rule](global_forwarding_rule.tf) binds a frontend [public Virtual IP (VIP)](ip_address.tf) to an HTTP(S) [target proxy](target_proxy.tf).
+- The global load balancer [forwarding rule](global_forwarding_rule.tf) binds a frontend public Virtual IP (VIP) to an HTTP(S) [target proxy](target_proxy.tf).
 - If the target proxy is HTTPS, it requires one or more managed or unmanaged [SSL certificates](ssl_certificates.tf).
 - Target proxies  leverage [url-maps](url_map.tf): set of L7 rules, which create a mapping between specific hostnames, URIs (and more) to one or more [backends services](backend_services.tf).
 - [Backend services](backend_services.tf) can either link to a bucket or one or multiple groups, which can be GCE instance groups or NEGs. It is assumed in this module that buckets and groups are previously created through other modules, and passed in as input variables.
