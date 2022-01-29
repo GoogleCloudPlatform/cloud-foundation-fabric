@@ -84,6 +84,7 @@ variable "logging_exclusions" {
   description = "Logging exclusions for this project in the form {NAME -> FILTER}."
   type        = map(string)
   default     = {}
+  nullable    = false
 }
 
 variable "logging_sinks" {
@@ -97,7 +98,15 @@ variable "logging_sinks" {
     # TODO exclusions also support description and disabled
     exclusions = map(string)
   }))
-  default = {}
+  validation {
+    condition = alltrue([
+      for k, v in(var.logging_sinks == null ? {} : var.logging_sinks) :
+      contains(["bigquery", "logging", "pubsub", "storage"], v.type)
+    ])
+    error_message = "Type must be one of 'bigquery', 'logging', 'pubsub', 'storage'."
+  }
+  default  = {}
+  nullable = false
 }
 
 variable "metric_scopes" {

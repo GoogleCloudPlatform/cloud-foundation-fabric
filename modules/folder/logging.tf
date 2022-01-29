@@ -14,26 +14,25 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Log sinks and supporting resources.
-
 locals {
   sink_bindings = {
     for type in ["bigquery", "pubsub", "logging", "storage"] :
     type => {
       for name, sink in var.logging_sinks :
-      name => sink if sink.iam && sink.type == type
+      name => sink
+      if sink.type == type
     }
   }
 }
 
-resource "google_logging_project_sink" "sink" {
+resource "google_logging_folder_sink" "sink" {
   for_each = var.logging_sinks
   name     = each.key
   #description = "${each.key} (Terraform-managed)"
-  project                = local.project.project_id
-  destination            = "${each.value.type}.googleapis.com/${each.value.destination}"
-  filter                 = each.value.filter
-  unique_writer_identity = each.value.unique_writer
+  folder           = local.folder.name
+  destination      = "${each.value.type}.googleapis.com/${each.value.destination}"
+  filter           = each.value.filter
+  include_children = each.value.include_children
 
   dynamic "exclusions" {
     for_each = each.value.exclusions
@@ -45,8 +44,7 @@ resource "google_logging_project_sink" "sink" {
   }
 
   depends_on = [
-    google_project_iam_binding.authoritative,
-    google_project_iam_member.additive
+    google_folder_iam_binding.authoritative
   ]
 }
 
@@ -54,7 +52,7 @@ resource "google_storage_bucket_iam_member" "gcs-sinks-binding" {
   for_each = local.sink_bindings["storage"]
   bucket   = each.value.destination
   role     = "roles/storage.objectCreator"
-  member   = google_logging_project_sink.sink[each.key].writer_identity
+  member   = google_logging_folder_sink.sink[each.key].writer_identity
 }
 
 resource "google_bigquery_dataset_iam_member" "bq-sinks-binding" {
@@ -62,7 +60,7 @@ resource "google_bigquery_dataset_iam_member" "bq-sinks-binding" {
   project    = split("/", each.value.destination)[1]
   dataset_id = split("/", each.value.destination)[3]
   role       = "roles/bigquery.dataEditor"
-  member     = google_logging_project_sink.sink[each.key].writer_identity
+  member     = google_logging_folder_sink.sink[each.key].writer_identity
 }
 
 resource "google_pubsub_topic_iam_member" "pubsub-sinks-binding" {
@@ -70,22 +68,22 @@ resource "google_pubsub_topic_iam_member" "pubsub-sinks-binding" {
   project  = split("/", each.value.destination)[1]
   topic    = split("/", each.value.destination)[3]
   role     = "roles/pubsub.publisher"
-  member   = google_logging_project_sink.sink[each.key].writer_identity
+  member   = google_logging_folder_sink.sink[each.key].writer_identity
 }
 
 resource "google_project_iam_member" "bucket-sinks-binding" {
   for_each = local.sink_bindings["logging"]
   project  = split("/", each.value.destination)[1]
   role     = "roles/logging.bucketWriter"
-  member   = google_logging_project_sink.sink[each.key].writer_identity
+  member   = google_logging_folder_sink.sink[each.key].writer_identity
   # TODO(jccb): use a condition to limit writer-identity only to this
   # bucket
 }
 
-resource "google_logging_project_exclusion" "logging-exclusion" {
+resource "google_logging_folder_exclusion" "logging-exclusion" {
   for_each    = var.logging_exclusions
   name        = each.key
-  project     = local.project.project_id
+  folder      = local.folder.name
   description = "${each.key} (Terraform-managed)"
   filter      = each.value
 }
