@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description Hierarchical firewall policies.
+
 locals {
   _factory_cidrs = try(
     yamldecode(file(var.firewall_policy_factory.cidr_file)), {}

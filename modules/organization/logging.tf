@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description Log sinks and supporting resources.
+
 locals {
-  logging_sinks = coalesce(var.logging_sinks, {})
   sink_bindings = {
     for type in ["bigquery", "logging", "pubsub", "storage"] :
     type => {
-      for name, sink in local.logging_sinks :
+      for name, sink in var.logging_sinks :
       name => sink if sink.type == type
     }
   }
 }
 
 resource "google_logging_organization_sink" "sink" {
-  for_each         = local.logging_sinks
+  for_each         = var.logging_sinks
   name             = each.key
   org_id           = local.organization_id_numeric
   destination      = "${each.value.type}.googleapis.com/${each.value.destination}"
@@ -87,7 +88,7 @@ resource "google_project_iam_member" "bucket-sinks-binding" {
 }
 
 resource "google_logging_organization_exclusion" "logging-exclusion" {
-  for_each    = coalesce(var.logging_exclusions, {})
+  for_each    = var.logging_exclusions
   name        = each.key
   org_id      = local.organization_id_numeric
   description = "${each.key} (Terraform-managed)"
