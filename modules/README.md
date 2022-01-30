@@ -8,19 +8,15 @@ Authoritative IAM bindings are primarily used (e.g. `google_storage_bucket_iam_b
 
 Specific modules also offer support for non-authoritative bindings (e.g. `google_storage_bucket_iam_member` for service accounts), to allow granular permission management on resources that they don't manage directly.
 
-These modules are not necessarily backward compatible. Actually, whenever there is a major release, one or more modules have experienced a non-backward compatible change. This means that if you upgrade the version of one of the modules in an existing Terraform configuration, things might stop working. As backward compatibility is not guaranteed, we recommend you to only upgrade a module's version, if the new version provides functionality not existing in the version you are using. If the version you are using, does what you need, refrain from upgrading. 
+These modules are not necessarily backward compatible. Changes breaking compatibility in modules are marked by major releases (but not all major releases contain breaking changes). Please be mindful when upgrading Fabric modules in existing Terraform setups, and always try to use versioned references in module sources so you can easily revert back to a previous version. Since the introduction of the `moved` block in Terraform we try to use it whenever possible to make updates non-breaking, but that does not cover all changes we might need to make.
 
-These modules are used in the examples included in this repository. If you are using any of those examples in your own Terraform configuration, make sure that you are using the same version for all the modules.
+These modules are used in the examples included in this repository. If you are using any of those examples in your own Terraform configuration, make sure that you are using the same version for all the modules, and switch module sources to GitHub format using references. The recommended approach to working with Fabric modules is the following:
 
-The recommended approach to work with these modules is the following one:
-
-* Fork the repository and own the fork. This will allow you to:
-
+- Fork the repository and own the fork. This will allow you to:
     - Evolve the existing modules.
     - Create your own modules.
     - Sync from the upstream repository to get all the updates.
-
-* Use git refs to reference the modules in your fork. See an example below:
+- Use GitHub sources with refs to reference the modules in your fork. See an example below:
 
     ```
     module "project" {
