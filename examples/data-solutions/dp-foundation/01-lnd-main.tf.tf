@@ -20,7 +20,7 @@ locals {
       "roles/storage.admin",
       "roles/storage.objectViewer",
     ],
-    "${local.groups.data-scientists}" = [
+    "${local.groups.data-analysts}" = [
       "roles/bigquery.dataViewer",
       "roles/bigquery.jobUser",
       "roles/bigquery.user",
@@ -89,8 +89,8 @@ module "lnd-prj" {
     "storage-component.googleapis.com",
   ])
   service_encryption_key_ids = {
-    bq      = [try(var.service_encryption_keys.bq, null)]
-    pubsub  = [try(var.service_encryption_keys.pubsub, null)]
-    storage = [try(var.service_encryption_keys.storage, null)]
+    bq      = [try(local.service_encryption_keys.bq, null)]
+    pubsub  = [try(local.service_encryption_keys.pubsub, null)]
+    storage = [try(local.service_encryption_keys.storage, null)]
   }
 }

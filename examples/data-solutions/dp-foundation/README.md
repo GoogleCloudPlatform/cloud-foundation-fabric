@@ -1,17 +1,25 @@
 # Data Platform
 
-This module implement an opinionated Data Platform (DP) Architecture that create and set up projects (and related resources) to be used for your data workloads.
+This module implement an opinionated Data Platform (DP) Architecture that create and set up projects (and related resources) to be used for to create your data platform.
+
+The code is intentionally simple, as it's intended to provide a generic initial setup (Networking, Security, etc.), and then allow easy customizations to complete the implementation of the intended hierarchy design.
+
+The following diagram is a high level reference of the resources created and managed here:
 
 ![Data Platform Architecture overview](./images/overview_diagram.png "Data Platform Architecture overview")
 
-# Design overview and choices #TODO
-This is the Data Platform architecture we are going to deploy.
-#TODO Add introduction
+#TODO Rename secutiry to Core services
+# Design overview and choices
+Despite its simplicity, this stage implements the basics of a design that we've seen working well for a variety of customers.
+
+The approach adapts to different high level requirements: 
 - boundaries for each step
 - help identify actors
 - help assign minimal roles
 
-#TODO Rename secutiry to Core services
+Additionally, a few critical benefits are directly provided by this design:
+- adding a new set
+
 ## Project structure
 The DP is designed to rely on several projects, one prj per data stage. This is done to better separate different stages of the data journey and rely on project level roles.
 
@@ -32,9 +40,7 @@ The following projects will be created:
 ## Roles
 We assigned roles on resources at Project level assigning the appropriate role to groups. We recommend not adding human users directly to the resource-access groups with IAM permissions to access data.
 
-The only exception is for BigQuery dataset. We let you configure IAM at dataset level to host in the same infrastructure dataset that need access level segregation.
-
-## Service accounts #TODO
+## Service accounts
 Service Account creation follow the following principals:
 - Each service account perform a single task aving access to the minimun number of resources (example: the Cloud Dataflow Service Account has access to the Landing project and to the Data Lake L0 project)
 - Each Service Account has least privilage on each project.
@@ -46,26 +52,50 @@ The use of SAK within a data pipeline incurs several security risks, as these ar
 
 Whilst necessary in some scenarios, such as programmatic access from on-premise or alternative clouds, we recommend identify a structured process to mitigate risks associated with the use of service account keys.
 
-## Groups #TODO
+## Groups
 As default groups, we identified the following actors:
 - *Data Engineers*: the group that handle and run the Data Hub. The group has Read access to all resources to be able to troubleshoot possible issue with the pipeline. The team has also the ability to impersonate all service accounts. Default value: `gcp-data-engineers@DOMAIN.COM`. 
 - *Data Analyst*: the group that perform analysis on the dataset. The group has Read access to the Data Lake L2 project and Bigquery READ/WRITE access to the `experimental` project. Default value: `gcp-data-analyst@DOMAIN.COM`
 - *Data Security*: the project that handle security features related to the Data Hub. Default name: `gcp-data-security@DOMAIN.com`
-## VPC design #TODO
-The DP except as input an existing Shared-VPC to run resources. You can configure subsets for DP resource specifying the link to the subnet in the `` variable. You may want to configure a shared-VPC to run your resources in the case your pipelines may need to reach on-premise resources.
+## VPC design
+The DP except as input an existing Shared-VPC to run resources. You can configure subsets for DP resource specifying the link to the subnet in the `network_config` variable. You may want to configure a shared-VPC to run your resources in the case your pipelines may need to reach on-premise resources.
 
-If no VPC configuration, the project will create a VPC on each project that require a VPC: *laod* project, *trasformation* project and *orchestration* project.
-## IP ranges, subnetting #TODO
+If `network_config` variable is not configured, the script will create a VPC on each project that require a VPC: *laod*, *trasformation* and *orchestration* projects with the default configuration.
+## IP ranges, subnetting
 To run your DP resources you need the following ranges:
-- Load project VPC for Dataflow. Range: '/24'.
-- Transformation VPC for Dataflow. Range: '/24'.
+- Load project VPC for Cloud Dataflow workers. Range: '/24'.
+- Transformation VPC for Cloud Dataflow workers. Range: '/24'.
 - Orchestration VPC for Cloud Composer:
   - Cloud SQL. Range: '/24'
   - GKE Master. Range: '/28'
   - Web Server: Range: '/28'
   - Secondary ip ranges. Pods range: '/22', Services range: '/24'  
 
-## Resource naming convention #TODO
+## Resource naming convention
+Reousces in the script use the following acronims:
+ - `lnd` for `landing`
+ - `lod` for `load`
+ - `orc` for `orchestration`
+ - `trf` for `trasformation`
+ - `dtl` for `Data Lake`
+ - 2 letters acronym for GCP products, example: `bq` for `Bigquery`, `df` for `Cloud Dataflow`, ...
+
+Resources follow the naming convention described below.
+
+Projects:
+```
+PREFIX-LAYER
+```
+
+Services:
+```
+PREFIX-LAYER[2]-GCP_PRODUCT[2]-COUNTER
+```
+
+Service Accounts:
+```
+PREFIX-LAYER[2]-GCP_PRODUCT[2]-COUNTER
+```
 
 ## Encryption
 We suggest a centralized approach to Keys management, to let the Security team be the only team that can access encryption material. Keyrings and Keys belongs to a project external to the DP. 
@@ -95,32 +125,54 @@ We implemented a centralized model for Data Loss Prevention material. Templates 
 ![Centralized Cloud DLP high level diagram](./images/dlp_diagram.png "Centralized Cloud DLP high level diagram")
 
 # How to run this script #TODO
-The Data Prlatform is meant to be executed by a Service Account (or a regular user) having this minial set of permission:
-* **Org level**
-  * TODO
-* **Cloud KMS Keys** (if Cloud KMS keys are configured)
-  * TODO
-* **Network** (if DP needs to rely on an existing Shared-VPC)
-  * TODO
+The Data Platform is meant to be executed by a Service Account (or a regular user) having this minial set of permission:
+* **Org level**:
+  * `"compute.organizations.enableXpnResource"`
+  * `"compute.organizations.disableXpnResource"`
+  * `"compute.subnetworks.setIamPolicy"`
+* **Folder level**:
+  * `"roles/logging.admin"`
+  * `"roles/owner"`
+  * `"roles/resourcemanager.folderAdmin"`
+  * `"roles/resourcemanager.projectCreator"`
+* **Cloud KMS Keys** (if Cloud KMS keys are configured):
+  * `"roles/cloudkms.admin"` or Permissions: `cloudkms.cryptoKeys.getIamPolicy`, `cloudkms.cryptoKeys.list`, `cloudkms.cryptoKeys.setIamPolicyTODO`
+* **on the host project** for the Shared VPC/s
+  * `"roles/browser"`
+  * `"roles/compute.viewer"`
+  * `"roles/dns.admin"`
 
-# Variable configuration #TODO
+# Variable configuration
+There are three sets of variables you will need to fill in:
 
-# Customizations #TODO
-Variables with default
-Add internal KMS?
-Parallel workstream
+```
+prefix             = "PRFX"
+project_create = {
+  parent             = "folders/123456789012"
+  billing_account_id = "111111-222222-333333"
+}
+organization = {
+  domain = "DOMAIN.com"
+}
+```
 
-# RAW notes, TO BE delete
- - GCS and BQ regional
- - KMS: Regional keyring, one key per product
- - Composer require "Require OS Login" not enforced
- - Groups: gcp-data-scientists, gcp-data-engineers, gcp-data-security
+For a more fined grained configuration, check variables on [`variables.tf`](./variables.tf) and update accordingly to the desired configuration.
 
- #TODO KMS: support key per product
- #TODO Write README
- #TODO Column level access on BQ
- #TODO DataCatalog
- #TODO DLP
- #TODO DataLake layers: Tables, views and Authorized views
- #TODO ShareVPC Role: roles/composer.sharedVpcAgent, roles/container.hostServiceAgentUser
- #TODO Composer require "Require OS Login" not enforced
+# Customizations
+## Create Cloud KMS as part of the Data Platform
+To create Cloud KMS keys within the Data Platform you can uncomment the Cloud KMS resources configuraed in the [`06-sec-main.tf`](./06-sec-main.tf) file and update KMS keys pointers on `local.service_encryption_keys.*` to the local resource created.
+
+## Assign roles at BQ Dataset level
+To handle multiple groups of `data-analyst` accessing the same Data Lake layer Projects but only to the dataset belonging to a specific group, you may want to assign roles at Bigquery dataset level instead of at project level. 
+To do this, you need to remove IAM binging at Project level for the `data-analyst` group and assign roles at Bigquery dataset level using the `iam` variable on `bigquery-dataset` modules.
+
+# TODOs
+ * Add support for Column level access on Bigquery
+ * Add example templates for DataCatalog
+ * Add example on how to use Cloud DLP
+ * Add solution to handle Tables, Views and Authorized Views lifecycle
+ * Add solution to handle Metadata lifecycle
+
+# Test/Fix
+ * Composer require "Require OS Login" not enforced
+ * External Shared-VPC

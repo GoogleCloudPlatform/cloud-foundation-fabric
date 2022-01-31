@@ -17,13 +17,15 @@ locals {
     "${local.groups.data-engineers}" = [
       "roles/bigquery.dataEditor",
       "roles/storage.admin",
-      "roles/storage.objectCreator",
-      "roles/storage.objectViewer",
-      "roles/viewer",
     ],
-    # "${local.groups.data-scientists}" = [
-    #   "roles/bigquery.jobUser",
-    # ]
+    "${local.groups.data-analysts}" = [
+      "roles/bigquery.dataViewer",
+      "roles/bigquery.jobUser",
+      "roles/bigquery.user",
+      "roles/datacatalog.viewer",
+      "roles/datacatalog.tagTemplateViewer",
+      "roles/storage.objectViewer",
+    ]
   }
   iam_dtl = {
     "roles/bigquery.dataEditor" = [
@@ -61,7 +63,7 @@ locals {
 
 module "dtl-0-prj" {
   source          = "../../../modules/project"
-  name            = "${var.project_id["datalake"]}-0"
+  name            = var.project_create == null ? var.project_id["datalake"] : "${var.project_id["datalake"]}-0"
   parent          = try(var.project_create.parent, null)
   billing_account = try(var.project_create.billing_account_id, null)
   project_create  = var.project_create != null
@@ -83,14 +85,14 @@ module "dtl-0-prj" {
     "storage-component.googleapis.com"
   ])
   service_encryption_key_ids = {
-    bq      = [try(var.service_encryption_keys.bq, null)]
-    storage = [try(var.service_encryption_keys.storage, null)]
+    bq      = [try(local.service_encryption_keys.bq, null)]
+    storage = [try(local.service_encryption_keys.storage, null)]
   }
 }
 
 module "dtl-1-prj" {
   source          = "../../../modules/project"
-  name            = "${var.project_id["datalake"]}-1"
+  name            = var.project_create == null ? var.project_id["datalake"] : "${var.project_id["datalake"]}-1"
   parent          = try(var.project_create.parent, null)
   billing_account = try(var.project_create.billing_account_id, null)
   project_create  = var.project_create != null
@@ -112,14 +114,14 @@ module "dtl-1-prj" {
     "storage-component.googleapis.com"
   ])
   service_encryption_key_ids = {
-    bq      = [try(var.service_encryption_keys.bq, null)]
-    storage = [try(var.service_encryption_keys.storage, null)]
+    bq      = [try(local.service_encryption_keys.bq, null)]
+    storage = [try(local.service_encryption_keys.storage, null)]
   }
 }
 
 module "dtl-2-prj" {
   source          = "../../../modules/project"
-  name            = "${var.project_id["datalake"]}-2"
+  name            = var.project_create == null ? var.project_id["datalake"] : "${var.project_id["datalake"]}-2"
   parent          = try(var.project_create.parent, null)
   billing_account = try(var.project_create.billing_account_id, null)
   project_create  = var.project_create != null
@@ -141,14 +143,14 @@ module "dtl-2-prj" {
     "storage-component.googleapis.com"
   ])
   service_encryption_key_ids = {
-    bq      = [try(var.service_encryption_keys.bq, null)]
-    storage = [try(var.service_encryption_keys.storage, null)]
+    bq      = [try(local.service_encryption_keys.bq, null)]
+    storage = [try(local.service_encryption_keys.storage, null)]
   }
 }
 
 module "dtl-exp-prj" {
   source          = "../../../modules/project"
-  name            = "${var.project_id["datalake"]}-exp"
+  name            = var.project_create == null ? var.project_id["datalake"] : "${var.project_id["datalake"]}-exp"
   parent          = try(var.project_create.parent, null)
   billing_account = try(var.project_create.billing_account_id, null)
   project_create  = var.project_create != null
@@ -170,7 +172,7 @@ module "dtl-exp-prj" {
     "storage-component.googleapis.com"
   ])
   service_encryption_key_ids = {
-    bq      = [try(var.service_encryption_keys.bq, null)]
-    storage = [try(var.service_encryption_keys.storage, null)]
+    bq      = [try(local.service_encryption_keys.bq, null)]
+    storage = [try(local.service_encryption_keys.storage, null)]
   }
 }

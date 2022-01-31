@@ -94,7 +94,7 @@ module "orc-prj" {
     "storage-component.googleapis.com"
   ])
   service_encryption_key_ids = {
-    composer = [try(var.service_encryption_keys.composer, null)]
-    storage  = [try(var.service_encryption_keys.storage, null)]
+    composer = [try(local.service_encryption_keys.composer, null)]
+    storage  = [try(local.service_encryption_keys.storage, null)]
   }
 }

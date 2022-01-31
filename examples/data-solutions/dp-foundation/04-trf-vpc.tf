@@ -20,12 +20,12 @@ module "trf-vpc" {
   count      = var.network_config.network != null ? 0 : 1
   source     = "../../../modules/net-vpc"
   project_id = module.trf-prj.project_id
-  name       = "${local.prefix_trf}-trf-vpc"
+  name       = "${local.prefix_trf}-vpc"
   subnets = [
     {
       ip_cidr_range      = var.network_config.vpc_subnet_range.transformation
-      name               = "subnet"
-      region             = var.region
+      name               = "${local.prefix_trf}-subnet"
+      region             = var.location_config.region
       secondary_ip_range = {}
     }
   ]
@@ -43,7 +43,7 @@ module "trf-nat" {
   count          = var.network_config.network != null ? 0 : 1
   source         = "../../../modules/net-cloudnat"
   project_id     = module.trf-prj.project_id
-  region         = var.region
+  region         = var.location_config.region
   name           = "${local.prefix_trf}-default"
   router_network = module.trf-vpc[0].name
 }

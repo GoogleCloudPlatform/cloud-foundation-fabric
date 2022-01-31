@@ -13,6 +13,17 @@
 # limitations under the License.
 
 locals {
-  groups     = { for k, v in var.groups : k => "${v}@${var.organization.domain}" }
-  groups_iam = { for k, v in local.groups : k => "group:${v}" }
+  groups                  = { for k, v in var.groups : k => "${v}@${var.organization.domain}" }
+  groups_iam              = { for k, v in local.groups : k => "group:${v}" }
+  service_encryption_keys = var.service_encryption_keys
+
+  # Uncomment this section and assigne comment the previous line
+
+  # service_encryption_keys = {
+  #   bq       = module.sec-kms-1.key_ids.bq
+  #   composer = module.sec-kms-2.key_ids.composer
+  #   dataflow = module.sec-kms-2.key_ids.dataflow
+  #   storage  = module.sec-kms-1.key_ids.storage
+  #   pubsub   = module.sec-kms-0.key_ids.pubsub
+  # }
 }

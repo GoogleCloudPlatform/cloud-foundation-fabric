@@ -20,12 +20,12 @@ module "orc-vpc" {
   count      = var.network_config.network != null ? 0 : 1
   source     = "../../../modules/net-vpc"
   project_id = module.orc-prj.project_id
-  name       = "${local.prefix_orc}-orc-vpc"
+  name       = "${local.prefix_orc}-vpc"
   subnets = [
     {
       ip_cidr_range      = var.network_config.vpc_subnet_range.orchestration
-      name               = "subnet"
-      region             = var.region
+      name               = "${local.prefix_orc}-subnet"
+      region             = var.location_config.region
       secondary_ip_range = {}
       secondary_ip_range = {
         pods     = var.composer_config.secondary_ip_range.pods
@@ -47,7 +47,7 @@ module "orc-nat" {
   count          = var.network_config.network != null ? 0 : 1
   source         = "../../../modules/net-cloudnat"
   project_id     = module.orc-prj.project_id
-  region         = var.region
+  region         = var.location_config.region
   name           = "${local.prefix_orc}-default"
   router_network = module.orc-vpc[0].name
 }

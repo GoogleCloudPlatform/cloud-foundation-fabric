@@ -12,18 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-variable "service_encryption_keys" { # service encription key
-  description = "Cloud KMS to use to encrypt different services. Key location should match service region."
-  type = object({
-    bq       = string
-    composer = string
-    dataflow = string
-    storage  = string
-    pubsub   = string
-  })
-  default = null
-}
-
 variable "composer_config" {
   type = object({
     ip_range_cloudsql   = string
@@ -57,9 +45,9 @@ variable "groups" {
   description = "Groups."
   type        = map(string)
   default = {
-    data-engineers  = "gcp-data-engineers"
-    data-scientists = "gcp-data-scientists"
-    data-security   = "gcp-data-security"
+    data-analysts  = "gcp-data-analysts"
+    data-engineers = "gcp-data-engineers"
+    data-security  = "gcp-data-security"
   }
 }
 
@@ -134,8 +122,26 @@ variable "project_services" {
   ]
 }
 
-variable "region" {
-  description = "The region where resources will be deployed."
-  type        = string
-  default     = "europe-west1"
+variable "location_config" {
+  description = "Locations where resources will be deployed. Map to configure region and multiregion specs."
+  type = object({
+    region       = string
+    multi_region = string
+  })
+  default = {
+    region       = "europe-west1"
+    multi_region = "eu"
+  }
+}
+
+variable "service_encryption_keys" { # service encription key
+  description = "Cloud KMS to use to encrypt different services. Key location should match service region."
+  type = object({
+    bq       = string
+    composer = string
+    dataflow = string
+    storage  = string
+    pubsub   = string
+  })
+  default = null
 }

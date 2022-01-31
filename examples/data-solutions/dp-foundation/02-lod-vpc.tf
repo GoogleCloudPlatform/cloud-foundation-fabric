@@ -20,12 +20,12 @@ module "lod-vpc" {
   count      = var.network_config.network != null ? 0 : 1
   source     = "../../../modules/net-vpc"
   project_id = module.lod-prj.project_id
-  name       = "${local.prefix_lod}-lod-vpc"
+  name       = "${local.prefix_lod}-vpc"
   subnets = [
     {
       ip_cidr_range      = var.network_config.vpc_subnet_range.load
-      name               = "subnet"
-      region             = var.region
+      name               = "${local.prefix_lod}-subnet"
+      region             = var.location_config.region
       secondary_ip_range = {}
     }
   ]
@@ -43,7 +43,7 @@ module "lod-nat" {
   count          = var.network_config.network != null ? 0 : 1
   source         = "../../../modules/net-cloudnat"
   project_id     = module.lod-prj.project_id
-  region         = var.region
+  region         = var.location_config.region
   name           = "${local.prefix_lod}-default"
   router_network = module.lod-vpc[0].name
 }

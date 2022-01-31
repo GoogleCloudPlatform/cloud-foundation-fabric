@@ -42,7 +42,7 @@ resource "google_composer_environment" "orc-cmp-0" {
       zone            = "${var.composer_config.region}-b"
       service_account = module.orc-sa-cmp-0.email
       network         = module.orc-vpc[0].self_link
-      subnetwork      = module.orc-vpc[0].subnet_self_links["${var.composer_config.region}/subnet"]
+      subnetwork      = module.orc-vpc[0].subnet_self_links["${var.composer_config.region}/${local.prefix_orc}-subnet"]
       tags            = ["composer-worker", "http-server", "https-server"]
       ip_allocation_policy {
         use_ip_aliases                = "true"
@@ -74,7 +74,7 @@ resource "google_composer_environment" "orc-cmp-0" {
         LOD_GCS_STAGING    = module.lod-cs-df-0.url
         LOD_SA_DF          = module.lod-sa-df-0.email
         NET_VPC            = module.orc-vpc[0].self_link
-        NET_SUBNET         = module.orc-vpc[0].subnet_self_links["${var.composer_config.region}/subnet"]
+        NET_SUBNET         = module.orc-vpc[0].subnet_self_links["${var.composer_config.region}/${local.prefix_orc}-subnet"]
         ORC_PRJ            = module.orc-prj.project_id
         ORC_GCS            = module.orc-cs-0.url
         TRF_PRJ            = module.trf-prj.project_id
@@ -91,9 +91,9 @@ resource "google_composer_environment" "orc-cmp-0" {
     }
 
     dynamic "encryption_config" {
-      for_each = var.service_encryption_keys != null ? { 1 = 1 } : {}
+      for_each = try(local.service_encryption_keys.composer != null, false) ? { 1 = 1 } : {}
       content {
-        kms_key_name = var.service_encryption_keys != null ? try(var.service_encryption_keys.composer, null) : null
+        kms_key_name = try(local.service_encryption_keys.composer != null, false) ? try(local.service_encryption_keys.composer, null) : null
       }
     }
 

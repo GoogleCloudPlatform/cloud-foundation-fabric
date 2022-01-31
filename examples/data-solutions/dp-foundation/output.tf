@@ -37,6 +37,11 @@ output "gcs-buckets" {
   }
 }
 
+output "kms_keys" {
+  description = "Cloud MKS keys."
+  value       = local.service_encryption_keys
+}
+
 output "projects" {
   description = "GCP Projects."
   value = {

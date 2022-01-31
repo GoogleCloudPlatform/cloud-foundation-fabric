@@ -37,9 +37,9 @@ module "trf-cs-df-0" {
   project_id     = module.trf-prj.project_id
   name           = "cs-0"
   prefix         = local.prefix_trf
-  location       = var.region
+  location       = var.location_config.region
   storage_class  = "REGIONAL"
-  encryption_key = var.service_encryption_keys != null ? try(var.service_encryption_keys.storage, null) : null
+  encryption_key = try(local.service_encryption_keys.storage != null, false) ? try(local.service_encryption_keys.storage, null) : null
 }
 
 ###############################################################################

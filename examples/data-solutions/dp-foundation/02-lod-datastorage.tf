@@ -37,6 +37,6 @@ module "lod-cs-df-0" {
   name           = "cs-0"
   prefix         = local.prefix_lod
   storage_class  = "REGIONAL"
-  location       = var.region
-  encryption_key = var.service_encryption_keys != null ? try(var.service_encryption_keys.storage, null) : null
+  location       = var.location_config.region
+  encryption_key = try(local.service_encryption_keys.storage != null, false) ? try(local.service_encryption_keys.storage, null) : null
 }
