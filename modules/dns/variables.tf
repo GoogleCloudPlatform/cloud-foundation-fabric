@@ -76,7 +76,7 @@ variable "project_id" {
 }
 
 variable "recordsets" {
-  description = "Map of DNS recordsets in \"type name\." => {ttl, [records]} format."
+  description = "Map of DNS recordsets in \"type name\" => {ttl, [records]} format."
   type = map(object({
     ttl     = number
     records = list(string)
