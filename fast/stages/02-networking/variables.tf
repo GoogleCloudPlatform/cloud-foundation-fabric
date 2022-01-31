@@ -44,7 +44,7 @@ variable "data_dir" {
 }
 
 variable "dns" {
-  description = "Onprem DNS resolvers"
+  description = "Onprem DNS resolvers."
   type        = map(list(string))
   default = {
     onprem = ["10.0.200.3"]
@@ -118,7 +118,7 @@ variable "prefix" {
 
 variable "project_factory_sa" {
   # tfdoc:variable:source 01-resman
-  description = "IAM emails for project factory service accounts"
+  description = "IAM emails for project factory service accounts."
   type        = map(string)
   default     = {}
 }

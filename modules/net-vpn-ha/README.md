@@ -166,7 +166,7 @@ module "vpn_ha" {
 | [bgp_peers](outputs.tf#L18) | BGP peer resources. |  |
 | [external_gateway](outputs.tf#L25) | External VPN gateway resource. |  |
 | [gateway](outputs.tf#L34) | VPN gateway resource (only if auto-created). |  |
-| [name](outputs.tf#L43) | VPN gateway name (only if auto-created).  |  |
+| [name](outputs.tf#L43) | VPN gateway name (only if auto-created). . |  |
 | [random_secret](outputs.tf#L52) | Generated secret. |  |
 | [router](outputs.tf#L57) | Router resource (only if auto-created). |  |
 | [router_name](outputs.tf#L66) | Router name. |  |

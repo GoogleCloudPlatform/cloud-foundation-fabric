@@ -36,6 +36,6 @@ Note that Terraform 0.13 at least is required due to the use of `for_each` with 
 
 | name | description | sensitive |
 |---|---|:---:|
-| [teams](outputs.tf#L17) | Team resources |  |
+| [teams](outputs.tf#L17) | Team resources. |  |
 
 <!-- END TFDOC -->

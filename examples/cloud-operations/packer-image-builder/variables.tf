@@ -21,7 +21,7 @@ variable "billing_account" {
 }
 
 variable "cidrs" {
-  description = "CIDR ranges for subnets"
+  description = "CIDR ranges for subnets."
   type        = map(string)
   default = {
     image-builder = "10.0.0.0/24"
@@ -58,7 +58,7 @@ variable "project_id" {
 }
 
 variable "region" {
-  description = "Default region for resources"
+  description = "Default region for resources."
   type        = string
   default     = "europe-west1"
 }

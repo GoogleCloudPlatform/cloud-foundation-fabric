@@ -69,7 +69,7 @@ resource "google_project_iam_binding" "iam_bindings" {
   members  = var.project_administrators
   condition {
     title       = "delegated_role_grant_${each.value.index}"
-    description = "Delegated role grants (${each.value.index}/${length(local.expressions)})"
+    description = "Delegated role grants (${each.value.index}/${length(local.expressions)})."
     expression  = each.value.expression
   }
 }

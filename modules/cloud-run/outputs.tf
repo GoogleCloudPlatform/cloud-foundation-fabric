@@ -16,7 +16,7 @@
  */
 
 output "service" {
-  description = "Cloud Run service"
+  description = "Cloud Run service."
   value       = google_cloud_run_service.service
 }
 
@@ -39,7 +39,7 @@ output "service_account_iam_email" {
 }
 
 output "service_name" {
-  description = "Cloud Run service name"
+  description = "Cloud Run service name."
   value       = google_cloud_run_service.service.name
 }
 
