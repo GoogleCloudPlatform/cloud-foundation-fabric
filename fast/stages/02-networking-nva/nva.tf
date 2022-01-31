@@ -100,7 +100,7 @@ module "ilb-nva-untrusted-ew1" {
     balancing_mode = "CONNECTION"
   }]
   health_check_config = {
-    type = "http", check = { port = 80 }, config = {}, logging = false
+    type = "tcp", check = { port = 22 }, config = {}, logging = false
   }
 }
 
@@ -198,7 +198,7 @@ module "ilb-nva-untrusted-ew4" {
     balancing_mode = "CONNECTION"
   }]
   health_check_config = {
-    type = "http", check = { port = 80 }, config = {}, logging = false
+    type = "tcp", check = { port = 22 }, config = {}, logging = false
   }
 }
 

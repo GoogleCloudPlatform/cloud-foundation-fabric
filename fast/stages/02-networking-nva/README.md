@@ -1,7 +1,7 @@
 # Networking with Network Virtual Appliance
 
 This stage sets up the shared network infrastructure for the whole organization.
-It is an alternative to the [02-networking-nva stage](../02-networking-nva/README.md).
+It is an alternative to the [02-networking stage](../02-networking/README.md).
 
 It is designed for those who would like to leverage Network Virtual Appliances (NVAs) between trusted and untrusted areas of the network, for example for Intrusion Prevention System (IPS) purposes.
 
@@ -12,9 +12,9 @@ It adopts the common “hub and spoke” reference design, which is well suited 
 - Shared VPCs in both hub and spokes split management of network resources into specific (host) projects, while still allowing them to be consumed from the workload (service) projects
 - the design also lends itself to easy DNS centralization, both from on-prem to cloud and from cloud to on-prem
 
-Connectivity between the hub and the spokes is established via [VPC network peerings](https://cloud.google.com/vpc/docs/vpc-peering), which offer a higher bandwidth, lower latencies, at no additional costs and with a very low managemenet overhead. Different ways of implementing connectivity, and related pros and cons, are discussed below.
+Connectivity between the hub and the spokes is established via [VPC network peerings](https://cloud.google.com/vpc/docs/vpc-peering), which offer a uncapped bandwidth, lower latencies, at no additional costs and with a very low managemenet overhead. Different ways of implementing connectivity, and related pros and cons, are discussed below.
 
-The following diagram shows the high-level design and it should be used as a reference for the following sections. The final number of subnets, and their IP addressing design will depend on the customer-specific requirements, and it can be easily changed via variables or external data files, without any need to edit the actual code.
+The following diagram shows the high-level design and it should be used as a reference for the following sections. The final number of subnets, and their IP addressing design will depend on the user-specific requirements, and it can be easily changed via variables or external data files, without any need to edit the actual code.
 
 <p align="center">
   <img src="diagram.svg" alt="Networking diagram">
@@ -47,8 +47,6 @@ The design can be easily extended to host additional environments, or adopting a
 
 In multi-organization scenarios, where production and non-production resources use different Cloud Identity and GCP organizations, the hub/landing VPC is usually part of the production organization. It establishes connections with the production spokes within its same organization, and with non-production spokes in a different organization.
 
-An additional VPC disconnected from the rest of the networks is deployed with this code. It hosts two VMs emulating the on-prem environment for testing purposes, via a Docker network and containers (for VPN, DNS, HTTP, etc).
-
 ### External connectivity
 
 External connectivity to on-prem is implemented here via [VPN HA](https://cloud.google.com/network-connectivity/docs/vpn/concepts/topologies) (two tunnels per region), as this is the minimum common denominator often used directly, or as a stop-gap solution to validate routing and to transfer data, while waiting for [interconnects](https://cloud.google.com/network-connectivity/docs/interconnect) to be provisioned.
@@ -75,7 +73,7 @@ This is a summary of the main options:
 
 Minimizing the number of routes (and subnets) in use on the cloud environment is an important consideration, as it simplifies management and avoids hitting [Cloud Router](https://cloud.google.com/network-connectivity/docs/router/quotas) and [VPC](https://cloud.google.com/vpc/docs/quota) quotas and limits. For this reason, we recommend to carefully plan the IP space used in your cloud environment, to be able to use large IP CIDR blocks in routes whenever possible.
 
-This stage uses a dedicated /16 block (which should be sized to your needs) for each region in each VPC, and subnets created in each VPC derive their ranges from the relevant block.
+This stage uses a dedicated /16 block (which should be sized to your needs) and subnets created in each VPC derive from this range.
 
 Spoke VPCs also define and reserve two "special" CIDR ranges dedicated to [PSA (Private Service Access)](https://cloud.google.com/vpc/docs/private-services-access) and [Internal HTTPs Load Balancers (L7ILB)](https://cloud.google.com/load-balancing/docs/l7-internal).
 
