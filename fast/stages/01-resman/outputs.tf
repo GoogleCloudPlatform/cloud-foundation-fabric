@@ -35,6 +35,11 @@ locals {
       name   = "sandbox"
       sa     = module.branch-sandbox-sa.email
     })
+    "03-gke" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
+      bucket = module.branch-gke-gcs.name
+      name   = "security"
+      sa     = module.branch-gke-sa.email
+    })
     "03-project-factory-dev" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
       bucket = module.branch-teams-dev-projectfactory-gcs.name
       name   = "team-dev"
@@ -127,6 +132,16 @@ output "security" {
     folder          = module.branch-security-folder.id
     gcs_bucket      = module.branch-security-gcs.name
     service_account = module.branch-security-sa.iam_email
+  }
+}
+
+output "gke" {
+  # tfdoc:output:consumers 02-security
+  description = "Data for the gke stage."
+  value = {
+    folder          = module.branch-gke-folder.id
+    gcs_bucket      = module.branch-gke-gcs.name
+    service_account = module.branch-gke-sa.iam_email
   }
 }
 
