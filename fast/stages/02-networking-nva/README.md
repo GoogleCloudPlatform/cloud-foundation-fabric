@@ -10,11 +10,11 @@ It adopts the common “hub and spoke” reference design, which is well suited 
 - the "trusted hub" VPC centralizes the external connectivity towards trusted network resources (e.g. to on-prem, other cloud environments and the spokes), and it is ready to host cross-environment services like CI/CD, code repositories, and monitoring probes
 - the "spoke" VPCs allow partitioning workloads (e.g. by environment like in this setup), while still retaining controlled access to central connectivity and services
 - Shared VPCs in both hub and spokes split management of network resources into specific (host) projects, while still allowing them to be consumed from the workload (service) projects
-- the design also lends itself to easy DNS centralization, both from on-premises to cloud and from cloud to on-prem
+- the design facilitates DNS centralization
 
-Connectivity between the hub and the spokes is established via [VPC network peerings](https://cloud.google.com/vpc/docs/vpc-peering), which offer a uncapped bandwidth, lower latencies, at no additional costs and with a very low management overhead. Different ways of implementing connectivity, and related pros and cons, are discussed below.
+Connectivity between the hub and the spokes is established via [VPC network peerings](https://cloud.google.com/vpc/docs/vpc-peering), which offer uncapped bandwidth, lower latencies, at no additional costs and with a very low management overhead. Different ways of implementing connectivity, and related pros and cons, are discussed below.
 
-The following diagram shows the high-level design and it should be used as a reference for the following sections. The final number of subnets, and their IP addressing design will depend on the user-specific requirements, and it can be easily changed via variables or external data files, without any need to edit the actual code.
+The diagram shows the high-level design and it should be used as a reference throughout the following sections. The final number of subnets, and their IP addressing will depend on the user-specific requirements. It can be easily changed via variables or external data files, without any need to edit the code.
 
 <p align="center">
   <img src="diagram.svg" alt="Networking diagram">
@@ -22,48 +22,56 @@ The following diagram shows the high-level design and it should be used as a ref
 
 ## Design overview and choices
 
+### Multi-regional deployment
+
+The stage deploys the the infrastructure in two regions. By default, europe-west1 and europe-west4. Regional resources (deployed in this stage in two regions) include NVAs (templates, MIGs, ILBs) and test VMs.
+This provides enough redundancy to be resilient to regional failures.
+
 ### VPC design
 
-The "landing zone" is divided into two VPC networks: the trusted VPC, acting as the connectivity hub towards other trusted networks and the untrusted VPC, acting as the connectivity hub towards any other untrusted network.
+The "landing zone" is divided into two VPC networks:
+- the trusted VPC: the connectivity hub towards other trusted networks
+- the untrusted VPC: the connectivity hub towards any other untrusted network
 
-The VPCs are connected through two sets of sample NVA machines, grouped by region in [Managed Instance Groups (MIGs)](https://cloud.google.com/compute/docs/instance-groups). The appliances are plain Linux machines, performing simple routing/natting, leveraging some standard Linux features, such as *ip route* or *iptables*. While they are suited for demo purposes only, they should be substituted with enterprise appliances, before moving to production.
+The VPCs are connected with two sets of sample NVA machines, grouped by region in [Managed Instance Groups (MIGs)](https://cloud.google.com/compute/docs/instance-groups). The appliances are plain Linux machines, performing simple routing/natting, leveraging some standard Linux features, such as *ip route* or *iptables*. While they are suited for demo purposes only, they should be substituted with enterprise appliances, before moving to production.
 The traffic destined to the VMs in each MIG is mediated through internal load balancers in each region, both in the trusted and in the untrusted networks.
 
 By default, the design assumes the following:
 
-- on-premise networks (and related resources) are considered trusted. As such, the VPNs with on-premises are terminated in GCP on the trusted VPC
+- on-premise networks (and related resources) are considered trusted. As such, the VPNs connecting with on-premises are terminated in GCP, in the trusted VPC
 - the public Internet is considered untrusted. As such [Cloud NAT](https://cloud.google.com/nat/docs/overview) has been deployed in the untrusted landing VPC only
-- any traffic from an untrusted network to a trusted network (and vice-versa), and cross-environment traffic passes through the NVAs. For demo purposes the current NVA performs simple routing/natting only
-- any traffic from a trusted network to an untrusted network (e.g. Internet) is natted by the appliances. Further exclusions can be anyway configured ad-hoc
+- cross-environment traffic, and traffic from any untrusted network to any trusted network (and vice versa) pass through the NVAs. For demo purposes, the current NVA performs simple routing/natting only
+- any traffic from a trusted network to an untrusted network (e.g. Internet) is natted by the appliances. Users can anyway configure further exclusions
 
-The trusted landing VPC acts as a hub and hosts the external connectivity and the shared services consumed by the spoke VPCs, which are connected to it via VPC network peerings. Spokes are used to partition environments, which is a fairly common pattern:
+The trusted landing VPC acts as a hub: it bridges internal resources with the outside world and it hosts the shared services consumed by the spoke VPCs, connected to the hub thorugh VPC network peerings. Spokes are used to partition the environments. By default:
 
-- one spoke VPC for the development environment
-- one spoke VPC for the production environment
+- one spoke VPC to host the development environment resources
+- one spoke VPC to host the production environment resources
 
-Each VPC is created into its own project, and each project is configured as a Shared VPC host, so that network-related resources and access configurations via IAM are kept separate for each VPC.
+Each virtual network is a [shared VPC](https://cloud.google.com/vpc/docs/shared-vpc): shared VPCs are managed in dedicated *host projects* and shared with other *service projects* that can only consume the network resources.
+Shared VPC lets organization administrators delegate administrative responsibilities, such as creating and managing instances, to Service Project Admins while maintaining centralized control over network resources like subnets, routes, and firewalls.
 
-The design can be easily extended to host additional environments, or adopt a different logical mapping for spokes (e.g. one spoke for each company entity, etc.). Adding spokes is a trivial operation and it does not increase the design complexity. Operational processes to add more spokes are further explained in the following sections.
+Users can easily extend the design to host additional environments, or adopt different logical mappings for the spokes (for example, in order to create a new spoke for each company entity). Adding spokes is a trivial operation and it does not increase the design complexity. The steps to add more spokes are provided in the following sections.
 
-In multi-organization scenarios, where production and non-production resources use different Cloud Identity and GCP organizations, the hub/landing VPC is usually part of the production organization. It establishes connections with the production spokes within its same organization, and with non-production spokes in a different organization.
+In multi-organization scenarios, where production and non-production resources use different Cloud Identity and GCP organizations, the hub/landing VPC is usually part of the production organization. It establishes connections with the production spokes within the same organization, and with non-production spokes in a different organization.
 
 ### External connectivity
 
-External connectivity to on-prem is implemented here via [VPN HA](https://cloud.google.com/network-connectivity/docs/vpn/concepts/topologies) (two tunnels per region), as this is the minimum common denominator often used directly, or as a stop-gap solution to validate routing and to transfer data, while waiting for [interconnects](https://cloud.google.com/network-connectivity/docs/interconnect) to be provisioned.
+External connectivity to on-prem is implemented via [VPN HA](https://cloud.google.com/network-connectivity/docs/vpn/concepts/topologies) (two tunnels per region), as this is the minimum common denominator often used directly, or as a stop-gap solution to validate routing and to transfer data, while waiting for [interconnects](https://cloud.google.com/network-connectivity/docs/interconnect) to be provisioned.
 
 Connectivity to additional on-prem sites or to other cloud providers should be implemented in a similar fashion, via VPN tunnels or interconnects, in the landing VPC (either trusted or untrusted, depending by the nature of the peer), sharing the same regional router.
 
 ### Internal connectivity
 
-As mentioned, there are other ways to implement internal connectivity other than VPC network peering. These can be easily retrofitted with minimal code changes, but introduce additional considerations for service interoperability, quotas and management.
+As mentioned, there are other ways to implement internal connectivity other than VPC network peering. These can be easily retrofitted with minimal code changes, although they introduce additional considerations on service interoperability, quotas and management.
 
-This is a summary of the main options:
+This is an options summary:
 
-- [VPC Peering](https://cloud.google.com/vpc/docs/vpc-peering) (implemented here)
+- [VPC Peering](https://cloud.google.com/vpc/docs/vpc-peering) (implemented here to connect the trusted landing VPC with the spokes)
   - Pros: no additional costs, full bandwidth with no configurations, no extra latency
   - Cons: no transitivity (e.g. to GKE masters, Cloud SQL, etc.), no selective exchange of routes, several quotas and limits shared between VPCs in a peering group
-- [Multi-NIC appliances](https://cloud.google.com/architecture/best-practices-vpc-design#multi-nic) (implemented here)
-  - Pros: additional security features (e.g. IPS), potentially better integration with on-prem systems by using the same vendor
+- [Multi-NIC appliances](https://cloud.google.com/architecture/best-practices-vpc-design#multi-nic) (implemented here to connect the trusted landing and untrusted VPCs)
+  - Pros: provides additional security features (e.g. IPS), potentially better integration with on-prem systems by using the same vendor
   - Cons: complex HA/failover setup, limited by VM bandwidth and scale, additional costs for VMs and licenses, out of band management of a critical cloud component
 - [VPN HA](https://cloud.google.com/network-connectivity/docs/vpn/concepts/topologies)
   - Pros: simple compatibility with GCP services that leverage peering internally, better control on routes, avoids peering groups shared quotas and limits
@@ -71,34 +79,34 @@ This is a summary of the main options:
 
 ### IP ranges, subnetting, routing
 
-Minimizing the number of routes (and subnets) in use on the cloud environment is an important consideration, as it simplifies management and avoids hitting [Cloud Router](https://cloud.google.com/network-connectivity/docs/router/quotas) and [VPC](https://cloud.google.com/vpc/docs/quota) quotas and limits. For this reason, we recommend to carefully plan the IP space used in your cloud environment, to be able to use large IP CIDR blocks in routes whenever possible.
+Minimizing the number of routes (and subnets) in the cloud environment is important, as it simplifies management and it avoids hitting [Cloud Router](https://cloud.google.com/network-connectivity/docs/router/quotas) and [VPC](https://cloud.google.com/vpc/docs/quota) quotas and limits. For this reason, we recommend to carefully plan the IP space used in your cloud environment, thus being able to use larger IP CIDR blocks in routes, whenever possible.
 
-This stage uses a dedicated /16 block (which should be sized to your needs) and subnets created in each VPC derive from this range.
+This stage uses a dedicated /16 block, which should be sized to the users' needs. The subnets created in each VPC derive from this range.
 
 Spoke VPCs also define and reserve two "special" CIDR ranges dedicated to [PSA (Private Service Access)](https://cloud.google.com/vpc/docs/private-services-access) and [Internal HTTPs Load Balancers (L7ILB)](https://cloud.google.com/load-balancing/docs/l7-internal).
 
-Routes in GCP are either automatically created for VPC subnets, manually created via static routes, dynamically exchanged through VPC peerings, or dynamically programmed by [Cloud Routers](https://cloud.google.com/network-connectivity/docs/router#docs) via BGP sessions, which can be configured to advertise VPC ranges, and/or custom ranges via custom advertisements.
+Routes in GCP are either automatically created (e.g. when a subnet is added to a VPC), manually created via static routes, dynamically exchanged through VPC peerings, or dynamically programmed by [Cloud Routers](https://cloud.google.com/network-connectivity/docs/router#docs) when a BGP session is established. BGP sessions can be configured to advertise VPC ranges, and/or custom ranges via custom advertisements.
 
 In this setup:
 
 - routes between multiple subnets within the same VPC are automatically exchanged by GCP
-- the spokes and the trusted VPC exchange routes with via VPC peering
-- on-prem is connected to the trusted VPC and it dynamically exchanges BGP routes with GCP (with the trusted VPC) using VPN HA
-- for cross-environment (spokes) communications, for environments to communicate with on-prem and with the Internet, each spoke leverages some default tagged routes, sending the traffic of each region (whose machines are identified by a dedicated network tag, e.g. *ew1*) to a corresponding regional NVA in the trusted VPC, through an ILB (whose VIP is set as the route next-hop)
-- the spokes are configured with backup default routes, so if NVAs in the same region become unavailable, routes to the NVAs in the other region are already available. Current routes are not able to understand if the next-hop ILBs become unhealthy. As such, in case of regional failure, users will need to manually withdraw the primary default routes and the secondaries will take over
-- the NVAs are configured with static routes that allow the communication with on-prem and between the GCP resources (including the cross-environment communication)
+- the spokes and the trusted landing VPC exchange routes with via VPC peering
+- on-premises is connected to the trusted landing VPC and it dynamically exchanges BGP routes with GCP (with the trusted VPC) using VPN HA
+- for cross-environment (spokes) communications, and for connections to on-premises and to the Internet, the spokes leverage some default tagged routes that send the traffic of each region (whose machines are identified by a dedicated network tag, e.g. *ew1*) to a corresponding regional NVA in the trusted VPC, through an ILB (whose VIP is set as the route next-hop)
+- the spokes are configured with backup default routes, so if the NVAs in the same region become unavailable, more routes to the NVAs in the other region are already available. Current routes are not able to understand if the next-hop ILBs become unhealthy. As such, in case of a regional failure, users will need to manually withdraw the primary default routes, so the secondaries will take over
+- the NVAs are configured with static routes that allow the communication with on-premises and between the GCP resources (including the cross-environment communication)
 
-The Cloud Routers (connected to the VPN gateways in the trusted VPC) are configured to exclude the default advertisement of VPC ranges, and they only advertise their respective aggregate ranges via custom advertisements. This greatly simplifies the routing configuration, and more importantly it allows to avoid quota or limit issues by keeping the number of routes small, instead of making it proportional to the subnets and to the secondary ranges in the VPCs.
+The Cloud Routers (connected to the VPN gateways in the trusted VPC) are configured to exclude the default advertisement of VPC ranges and they only advertise their respective aggregate ranges, via custom advertisements. This greatly simplifies the routing configuration and avoids quota or limit issues, by keeping the number of routes small, instead of making it proportional to the subnets and to the secondary ranges in the VPCs.
 
 ### Internet egress
 
-In this setup Internet egress is realized through [Cloud NAT](https://cloud.google.com/nat/docs/overview), instantiated in the landing untrusted VPC. This allows instances in all other VPCs to reach the Internet, passing through the NVAs (being the public Internet considered untrusted).
+In this setup, Internet egress is realized through [Cloud NAT](https://cloud.google.com/nat/docs/overview), deployed in the untrusted landing VPC. This allows instances in all other VPCs to reach the Internet, passing through the NVAs (being the public Internet considered untrusted).
 
 Several other scenarios are possible, with varying degrees of complexity:
 
 - deploy Cloud NAT in every VPC
 - add forwarding proxies, with optional URL filters
-- send Internet traffic to on-prem, so the existing egress infrastructure can be leveraged
+- send Internet traffic to on-premises, so the existing egress infrastructure can be leveraged
 
 Future pluggable modules will allow users to easily experiment the above scenarios.
 
@@ -182,11 +190,11 @@ Please refer to the [Variables](#variables) table below for a map of the variabl
 
 ### VPCs
 
-VPCs are defined in separate files, one for `landing untrusted`, one for `landing trusted`, one for each of `prod` and `dev`.
+VPCs are defined in separate files, one for `untrusted landing`, one for `trusted landing`, one for each of `prod` and `dev`.
 These files contain different resources:
 
 - The **project** ([`project`](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/project)) contains the VPC, and enables the required APIs and sets itself as a "[host project](https://cloud.google.com/vpc/docs/shared-vpc)".
-- The **VPC** ([`net-vpc`](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/net-vpc)) manages the subnets, the explicit routes for `{private,restricted}.googleapis.com`, and the DNS inbound policy (for the landing trusted VPC). Subnets are created leveraging a "resource factory" paradigm, where the configuration is separated from the module that implements it, and stored in a well-structured file. To add a new subnet, simply create a new file in the `data_folder` directory defined in the module, following the examples found in the [Fabric `net-vpc` documentation](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/net-vpc#subnet-factory). Sample subnets are shipped in [data/subnets](./data/subnets), and can be easily customized to fit users' needs.
+- The **VPC** ([`net-vpc`](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/net-vpc)) manages the subnets, the explicit routes for `{private,restricted}.googleapis.com`, and the DNS inbound policy (for the trusted landing VPC). Subnets are created leveraging a "resource factory" paradigm, where the configuration is separated from the module that implements it, and stored in a well-structured file. To add a new subnet, simply create a new file in the `data_folder` directory defined in the module, following the examples found in the [Fabric `net-vpc` documentation](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/net-vpc#subnet-factory). Sample subnets are shipped in [data/subnets](./data/subnets), and can be easily customized to fit users' needs.
 
 Subnets for [L7 ILBs](https://cloud.google.com/load-balancing/docs/l7-internal/proxy-only-subnets) are handled differently, and defined in variable `l7ilb_subnets`, while ranges for [PSA](https://cloud.google.com/vpc/docs/configure-private-services-access#allocating-range) are configured by variable `psa_ranges` - such variables are consumed by spoke VPCs.
 
@@ -194,7 +202,7 @@ Subnets for [L7 ILBs](https://cloud.google.com/load-balancing/docs/l7-internal/p
 
 ### VPNs
 
-Connectivity between on-prem and GCP (the landing trusted VPC) is implemented with VPN HA ([`net-vpn`](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/net-vpn)) and defined in [`vpn-onprem.tf`](./vpn-onprem.tf). The file provisionally implements a single logical connection between on-premises and landing at `europe-west1`, and the relevant parameters for its configuration are found in variable `vpn_onprem_configs`.
+Connectivity between on-prem and GCP (the trusted landing VPC) is implemented with VPN HA ([`net-vpn`](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/net-vpn)) and defined in [`vpn-onprem.tf`](./vpn-onprem.tf). The file provisionally implements a single logical connection between on-premises and landing at `europe-west1`, and the relevant parameters for its configuration are found in variable `vpn_onprem_configs`.
 
 ### Routing and BGP
 
@@ -202,7 +210,7 @@ Each VPC network ([`net-vpc`](https://github.com/terraform-google-modules/cloud-
 
 Static routes are defined in `vpc-*.tf` files, in the `routes` section of each `net-vpc` module.
 
-BGP sessions for landing trusted to on-premises are configured through the variable `vpn_onprem_configs`.
+BGP sessions for trusted landing to on-premises are configured through the variable `vpn_onprem_configs`.
 
 ### Firewall
 
@@ -230,7 +238,7 @@ DNS queries sent to the on-premises infrastructure come from the `35.199.192.0/1
 
 #### On-premises to cloud
 
-The [Inbound DNS Policy](https://cloud.google.com/dns/docs/server-policies-overview#dns-server-policy-in) defined in *landing trusted VPC module* ([`vpc-landing.tf`](./vpc-landing.tf)) automatically reserves the first available IP address on each subnet (typically the third one in a CIDR) to expose the Cloud DNS service, so that it can be consumed from outside of GCP.
+The [Inbound DNS Policy](https://cloud.google.com/dns/docs/server-policies-overview#dns-server-policy-in) defined in *trusted landing VPC module* ([`vpc-landing.tf`](./vpc-landing.tf)) automatically reserves the first available IP address on each subnet (typically the third one in a CIDR) to expose the Cloud DNS service, so that it can be consumed from outside of GCP.
 
 ### Private Google Access
 
@@ -275,7 +283,7 @@ The new VPC requires a set of dedicated CIDRs, one per region, added to variable
 >
 Variables managing L7 Internal Load Balancers (`l7ilb_subnets`) and Private Service Access (`psa_ranges`) should also be adapted, and subnets and firewall rules for the new spoke should be added as described above.
 
-VPC network peering connectivity to the `landing trusted VPC` is managed by the `vpc-peering-*.tf` files.
+VPC network peering connectivity to the `trusted landing VPC` is managed by the `vpc-peering-*.tf` files.
 Copy `vpc-peering-prod.tf` to `vpc-peering-staging.tf` and replace within the files "prod" with "staging", where relevant.
 
 Configure the NVAs deployed or update the sample NVA config files (for [ew1](data/nva-startup-script-ew1.tftpl) and for [ew4](data/nva-startup-script-ew1.tftpl)), thus making sure they support the new subnets, so the interconnection with the rest of the system.
