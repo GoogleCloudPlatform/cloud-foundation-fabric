@@ -65,17 +65,6 @@ variable "folder_id" {
   }
 }
 
-variable "gke" {
-  #tfdoc:variable:source 01-resman
-  description = ""
-  type = map(object({
-    folder_id = string
-    sa        = string
-    gcs       = string
-  }))
-  default = {}
-}
-
 variable "l7ilb_subnets" {
   description = "Subnets used for L7 ILBs."
   type = map(list(object({
