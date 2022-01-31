@@ -121,3 +121,10 @@ module "dev-spoke-psa-addresses" {
     }
   }
 }
+
+module "peering-dev" {
+  source        = "../../../modules/net-vpc-peering"
+  prefix        = "dev-peering-0"
+  local_network = module.dev-spoke-vpc.self_link
+  peer_network  = module.landing-trusted-vpc.self_link
+}

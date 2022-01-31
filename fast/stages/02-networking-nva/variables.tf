@@ -70,17 +70,6 @@ variable "folder_id" {
   }
 }
 
-variable "gke" {
-  #tfdoc:variable:source 01-resman
-  description = ""
-  type = map(object({
-    folder_id = string
-    sa        = string
-    gcs       = string
-  }))
-  default = {}
-}
-
 variable "l7ilb_subnets" {
   description = "Subnets used for L7 ILBs."
   type = map(list(object({
@@ -96,6 +85,14 @@ variable "l7ilb_subnets" {
       { ip_cidr_range = "10.144.240.0/24", region = "europe-west1" },
       { ip_cidr_range = "10.145.240.0/24", region = "europe-west4" }
     ]
+  }
+}
+
+variable "onprem_cidr" {
+  description = "Onprem addresses in name => range format."
+  type        = map(string)
+  default = {
+    main = "10.0.0.0/24"
   }
 }
 

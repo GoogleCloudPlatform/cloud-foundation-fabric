@@ -55,7 +55,20 @@ module "nva-template-ew1" {
   }
   create_template = true
   metadata = {
-    startup-script = templatefile("${path.module}/data/nva-startup-script-ew1.tftpl", local.subnets)
+    startup-script = templatefile(
+      "${path.module}/data/nva-startup-script.tftpl",
+      {
+        dev-default-ew1-cidr           = local.subnets.dev-default-ew1-cidr
+        dev-default-ew4-cidr           = local.subnets.dev-default-ew4-cidr
+        gateway-trusted                = local.subnets.landing-trusted-default-ew1-gw
+        gateway-untrusted              = local.subnets.landing-untrusted-default-ew1-gw
+        landing-trusted-other-region   = local.subnets.landing-trusted-default-ew4-cidr
+        landing-untrusted-other-region = local.subnets.landing-untrusted-default-ew4-cidr
+        onprem-main-cidr               = var.onprem_cidr.main
+        prod-default-ew1-cidr          = local.subnets.prod-default-ew1-cidr
+        prod-default-ew4-cidr          = local.subnets.prod-default-ew4-cidr
+      }
+    )
   }
 }
 
@@ -106,7 +119,7 @@ module "ilb-nva-trusted-ew1" {
     balancing_mode = "CONNECTION"
   }]
   health_check_config = {
-    type = "http", check = { port = 80 }, config = {}, logging = false
+    type = "tcp", check = { port = 22 }, config = {}, logging = false
   }
 }
 
@@ -140,7 +153,20 @@ module "nva-template-ew4" {
   }
   create_template = true
   metadata = {
-    startup-script = templatefile("${path.module}/data/nva-startup-script-ew4.tftpl", local.subnets)
+    startup-script = templatefile(
+      "${path.module}/data/nva-startup-script.tftpl",
+      {
+        dev-default-ew1-cidr           = local.subnets.dev-default-ew1-cidr
+        dev-default-ew4-cidr           = local.subnets.dev-default-ew4-cidr
+        gateway-trusted                = local.subnets.landing-trusted-default-ew4-gw
+        gateway-untrusted              = local.subnets.landing-untrusted-default-ew4-gw
+        landing-trusted-other-region   = local.subnets.landing-trusted-default-ew1-cidr
+        landing-untrusted-other-region = local.subnets.landing-untrusted-default-ew1-cidr
+        onprem-main-cidr               = var.onprem_cidr.main
+        prod-default-ew1-cidr          = local.subnets.prod-default-ew1-cidr
+        prod-default-ew4-cidr          = local.subnets.prod-default-ew4-cidr
+      }
+    )
   }
 }
 
@@ -191,6 +217,6 @@ module "ilb-nva-trusted-ew4" {
     balancing_mode = "CONNECTION"
   }]
   health_check_config = {
-    type = "http", check = { port = 80 }, config = {}, logging = false
+    type = "tcp", check = { port = 22 }, config = {}, logging = false
   }
 }

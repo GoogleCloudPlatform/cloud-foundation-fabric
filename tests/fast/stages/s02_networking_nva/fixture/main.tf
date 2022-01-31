@@ -14,11 +14,18 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description VPC peering between landing and dev spoke.
-
-module "peering-prod" {
-  source        = "../../../modules/net-vpc-peering"
-  prefix        = "prod-peering-0"
-  local_network = module.prod-spoke-vpc.self_link
-  peer_network  = module.landing-trusted-vpc.self_link
+module "stage" {
+  source             = "../../../../../fast/stages/02-networking-nva"
+  billing_account_id = "000000-111111-222222"
+  organization = {
+    domain      = "gcp-pso-italy.net"
+    id          = 856933387836
+    customer_id = "C01lmug8b"
+  }
+  prefix = "fast"
+  project_factory_sa = {
+    dev  = "foo@iam"
+    prod = "bar@iam"
+  }
+  data_dir = "../../../../../fast/stages/02-networking-nva/data/"
 }
