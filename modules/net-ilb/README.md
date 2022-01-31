@@ -43,7 +43,7 @@ module "ilb" {
     type = "http", check = { port = 80 }, config = {}, logging = true
   }
 }
-# tftest:modules=1:resources=4
+# tftest modules=1 resources=4
 ```
 
 ### End to end example
@@ -105,7 +105,7 @@ module "ilb" {
     type = "http", check = { port = 80 }, config = {}, logging = true
   }
 }
-# tftest:modules=3:resources=7
+# tftest modules=3 resources=7
 ```
 <!-- BEGIN TFDOC -->
 

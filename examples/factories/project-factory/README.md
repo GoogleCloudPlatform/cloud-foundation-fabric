@@ -223,7 +223,7 @@ vpc:
 | [project_id](variables.tf#L111) | Project id. | <code>string</code> | ✓ |  |
 | [billing_alert](variables.tf#L22) | Billing alert configuration. | <code title="object&#40;&#123;&#10;  amount &#61; number&#10;  thresholds &#61; object&#40;&#123;&#10;    current    &#61; list&#40;number&#41;&#10;    forecasted &#61; list&#40;number&#41;&#10;  &#125;&#41;&#10;  credit_treatment &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [dns_zones](variables.tf#L56) | DNS private zones to create as child of var.defaults.environment_dns_zone. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [essential_contacts](variables.tf#L62) | Email contacts to be used for billing and GCP notifications | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [essential_contacts](variables.tf#L62) | Email contacts to be used for billing and GCP notifications. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 | [group_iam](variables.tf#L73) | Custom IAM settings in group => [role] format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam](variables.tf#L79) | Custom IAM settings in role => [principal] format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [kms_service_agents](variables.tf#L85) | KMS IAM configuration in as service => [key]. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |

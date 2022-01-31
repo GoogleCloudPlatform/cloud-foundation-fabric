@@ -148,7 +148,7 @@ resource "google_cloud_scheduler_job" "job" {
   project     = google_app_engine_application.app.project
   region      = var.region
   name        = "cai-export-job"
-  description = "CAI Export Job"
+  description = "CAI Export Job."
   schedule    = "* 9 * * 1"
   time_zone   = "Etc/UTC"
 
@@ -171,7 +171,7 @@ resource "google_cloud_scheduler_job" "job_file" {
   project     = google_app_engine_application.app.project
   region      = var.region
   name        = "file-export-job"
-  description = "File export from BQ Job"
+  description = "File export from BQ Job."
   schedule    = "* 9 * * 1"
   time_zone   = "Etc/UTC"
 

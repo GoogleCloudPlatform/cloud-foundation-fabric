@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description URL maps.
+
 locals {
   # Look for a backend services in the config whose id is
   # the default_service given in the url-map.
@@ -34,8 +36,8 @@ locals {
     && try(var.url_map_config.default_route_action.weighted_backend_services, null) == null
     && try(var.url_map_config.default_url_redirect, null) == null
     ? try(
-      google_compute_backend_bucket.bucket.0.id,
-      google_compute_backend_service.group.0.id,
+      google_compute_backend_bucket.bucket[keys(google_compute_backend_bucket.bucket)[0]].id,
+      google_compute_backend_service.group[keys(google_compute_backend_service.group)[0]].id,
       null
     )
     : null

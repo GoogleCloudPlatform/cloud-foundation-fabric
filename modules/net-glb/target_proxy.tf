@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description HTTP and HTTPS target proxies.
+
 locals {
   # If no SSL certificates are defined, use the default one.
   # Otherwise, look in the ssl_certificates_config map.

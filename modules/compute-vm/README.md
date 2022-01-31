@@ -27,7 +27,7 @@ module "simple-vm-example" {
   }]
   service_account_create = true
 }
-# tftest:modules=1:resources=2
+# tftest modules=1 resources=2
 
 ```
 
@@ -67,7 +67,7 @@ module "simple-vm-example" {
   }]
   service_account_create = true
 }
-# tftest:modules=1:resources=2
+# tftest modules=1 resources=2
 ```
 
 And the same example for an instance template (where not using the full self link of the disk triggers recreation of the template)
@@ -98,7 +98,7 @@ module "simple-vm-example" {
   service_account_create = true
   create_template  = true
 }
-# tftest:modules=1:resources=2
+# tftest modules=1 resources=2
 ```
 
 ### Disk encryption with Cloud KMS
@@ -138,7 +138,7 @@ module "kms-vm-example" {
     kms_key_self_link       = var.kms_key.self_link
   }
 }
-# tftest:modules=1:resources=3
+# tftest modules=1 resources=3
 ```
 
 ### Using Alias IPs
@@ -167,7 +167,7 @@ module "vm-with-alias-ips" {
   }
   service_account_create = true
 }
-# tftest:modules=1:resources=2
+# tftest modules=1 resources=2
 ```
 
 ### Using gVNIC
@@ -219,7 +219,7 @@ module "vm-with-gvnic" {
   }
   service_account_create = true
 }
-# tftest:modules=1:resources=2
+# tftest modules=1 resources=2
 ```
 
 ### Instance template
@@ -255,7 +255,7 @@ module "cos-test" {
   service_account        = "vm-default@my-project.iam.gserviceaccount.com"
   create_template  = true
 }
-# tftest:modules=1:resources=1
+# tftest modules=1 resources=1
 ```
 
 ### Instance group
@@ -290,7 +290,7 @@ module "instance-group" {
   }
   group = { named_ports = {} }
 }
-# tftest:modules=1:resources=2
+# tftest modules=1 resources=2
 ```
 <!-- BEGIN TFDOC -->
 
@@ -310,7 +310,7 @@ module "instance-group" {
 | [confidential_compute](variables.tf#L84) | Enable Confidential Compute for these instances. | <code>bool</code> |  | <code>false</code> |
 | [create_template](variables.tf#L90) | Create instance template instead of instances. | <code>bool</code> |  | <code>false</code> |
 | [description](variables.tf#L95) | Description of a Compute Instance. | <code>string</code> |  | <code>&#34;Managed by the compute-vm Terraform module.&#34;</code> |
-| [enable_display](variables.tf#L100) | Enable virtual display on the instances | <code>bool</code> |  | <code>false</code> |
+| [enable_display](variables.tf#L100) | Enable virtual display on the instances. | <code>bool</code> |  | <code>false</code> |
 | [encryption](variables.tf#L106) | Encryption options. Only one of kms_key_self_link and disk_encryption_key_raw may be set. If needed, you can specify to encrypt or not the boot disk. | <code title="object&#40;&#123;&#10;  encrypt_boot            &#61; bool&#10;  disk_encryption_key_raw &#61; string&#10;  kms_key_self_link       &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [group](variables.tf#L116) | Define this variable to create an instance group for instances. Disabled for template use. | <code title="object&#40;&#123;&#10;  named_ports &#61; map&#40;number&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [hostname](variables.tf#L124) | Instance FQDN name. | <code>string</code> |  | <code>null</code> |

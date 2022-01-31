@@ -47,7 +47,7 @@ output "transformation-buckets" {
 }
 
 output "transformation-vpc" {
-  description = "Transformation VPC details"
+  description = "Transformation VPC details."
   value = {
     name = module.vpc-transformation.name
     subnets = {

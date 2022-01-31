@@ -28,11 +28,11 @@ variable "custom_adv" {
     gcp_all               = "10.128.0.0/16"
     gcp_dev               = "10.128.32.0/19"
     gcp_landing           = "10.128.0.0/19"
-    gcp_prod              = "10.128.0.0/18"
+    gcp_prod              = "10.128.64.0/19"
     googleapis_private    = "199.36.153.8/30"
     googleapis_restricted = "199.36.153.4/30"
     rfc_1918_10           = "10.0.0.0/8"
-    rfc_1918_172          = "172.16.0.0/16"
+    rfc_1918_172          = "172.16.0.0/12"
     rfc_1918_192          = "192.168.0.0/16"
   }
 }
@@ -44,7 +44,7 @@ variable "data_dir" {
 }
 
 variable "dns" {
-  description = "Onprem DNS resolvers"
+  description = "Onprem DNS resolvers."
   type        = map(list(string))
   default = {
     onprem = ["10.0.200.3"]
@@ -65,17 +65,6 @@ variable "folder_id" {
   }
 }
 
-variable "gke" {
-  #tfdoc:variable:source 01-resman
-  description = ""
-  type = map(object({
-    folder_id = string
-    sa        = string
-    gcs       = string
-  }))
-  default = {}
-}
-
 variable "l7ilb_subnets" {
   description = "Subnets used for L7 ILBs."
   type = map(list(object({
@@ -84,12 +73,12 @@ variable "l7ilb_subnets" {
   })))
   default = {
     prod = [
-      { ip_cidr_range = "10.136.240.0/24", region = "europe-west1" },
-      { ip_cidr_range = "10.137.240.0/24", region = "europe-west4" }
+      { ip_cidr_range = "10.128.92.0/24", region = "europe-west1" },
+      { ip_cidr_range = "10.128.93.0/24", region = "europe-west4" }
     ]
     dev = [
-      { ip_cidr_range = "10.144.240.0/24", region = "europe-west1" },
-      { ip_cidr_range = "10.145.240.0/24", region = "europe-west4" }
+      { ip_cidr_range = "10.128.60.0/24", region = "europe-west1" },
+      { ip_cidr_range = "10.128.61.0/24", region = "europe-west4" }
     ]
   }
 }
@@ -118,7 +107,7 @@ variable "prefix" {
 
 variable "project_factory_sa" {
   # tfdoc:variable:source 01-resman
-  description = "IAM emails for project factory service accounts"
+  description = "IAM emails for project factory service accounts."
   type        = map(string)
   default     = {}
 }
@@ -128,12 +117,12 @@ variable "psa_ranges" {
   type        = map(map(string))
   default = {
     prod = {
-      cloudsql-mysql     = "10.136.250.0/24"
-      cloudsql-sqlserver = "10.136.251.0/24"
+      cloudsql-mysql     = "10.128.94.0/24"
+      cloudsql-sqlserver = "10.128.95.0/24"
     }
     dev = {
-      cloudsql-mysql     = "10.144.250.0/24"
-      cloudsql-sqlserver = "10.144.251.0/24"
+      cloudsql-mysql     = "10.128.62.0/24"
+      cloudsql-sqlserver = "10.128.63.0/24"
     }
   }
 }
@@ -177,10 +166,11 @@ variable "vpn_onprem_configs" {
       }))
     })
     tunnels = list(object({
-      peer_asn              = number
-      secret                = string
-      session_range         = string
-      vpn_gateway_interface = number
+      peer_asn                        = number
+      peer_external_gateway_interface = number
+      secret                          = string
+      session_range                   = string
+      vpn_gateway_interface           = number
     }))
   }))
   default = {
@@ -199,16 +189,18 @@ variable "vpn_onprem_configs" {
       }
       tunnels = [
         {
-          peer_asn              = 65534
-          secret                = "foobar"
-          session_range         = "169.254.1.0/30"
-          vpn_gateway_interface = 0
+          peer_asn                        = 65534
+          peer_external_gateway_interface = 0
+          secret                          = "foobar"
+          session_range                   = "169.254.1.0/30"
+          vpn_gateway_interface           = 0
         },
         {
-          peer_asn              = 65534
-          secret                = "foobar"
-          session_range         = "169.254.1.4/30"
-          vpn_gateway_interface = 1
+          peer_asn                        = 65534
+          peer_external_gateway_interface = 0
+          secret                          = "foobar"
+          session_range                   = "169.254.1.4/30"
+          vpn_gateway_interface           = 1
         }
       ]
     }

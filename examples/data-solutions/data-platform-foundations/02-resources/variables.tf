@@ -14,13 +14,13 @@
 
 
 variable "admins" {
-  description = "List of users allowed to impersonate the service account"
+  description = "List of users allowed to impersonate the service account."
   type        = list(string)
   default     = null
 }
 
 variable "datamart_bq_datasets" {
-  description = "Datamart Bigquery datasets"
+  description = "Datamart Bigquery datasets."
   type = map(object({
     iam      = map(list(string))
     location = string
@@ -38,7 +38,7 @@ variable "datamart_bq_datasets" {
 }
 
 variable "dwh_bq_datasets" {
-  description = "DWH Bigquery datasets"
+  description = "DWH Bigquery datasets."
   type = map(object({
     location = string
     iam      = map(list(string))
@@ -52,7 +52,7 @@ variable "dwh_bq_datasets" {
 }
 
 variable "landing_buckets" {
-  description = "List of landing buckets to create"
+  description = "List of landing buckets to create."
   type = map(object({
     location = string
     name     = string
@@ -70,7 +70,7 @@ variable "landing_buckets" {
 }
 
 variable "landing_pubsub" {
-  description = "List of landing pubsub topics and subscriptions to create"
+  description = "List of landing pubsub topics and subscriptions to create."
   type = map(map(object({
     iam    = map(list(string))
     labels = map(string)
@@ -147,7 +147,7 @@ variable "service_encryption_key_ids" {
 }
 
 variable "transformation_buckets" {
-  description = "List of transformation buckets to create"
+  description = "List of transformation buckets to create."
   type = map(object({
     location = string
     name     = string

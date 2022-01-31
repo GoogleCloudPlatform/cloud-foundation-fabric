@@ -64,7 +64,7 @@ variable "https_source_ranges" {
 }
 
 variable "named_ranges" {
-  description = "Names that can be used of valid values for the `ranges` field of `custom_rules`"
+  description = "Names that can be used of valid values for the `ranges` field of `custom_rules`."
   type        = map(list(string))
   default = {
     any                   = ["0.0.0.0/0"]

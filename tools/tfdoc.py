@@ -105,14 +105,14 @@ VAR_RE = re.compile(r'''(?smx)
     (?:^(.*?)$)
 ''')
 VAR_RE_TYPE = re.compile(r'([\(\{\}\)])')
-VAR_TEMPLATE = ('default', 'description', 'type')
+VAR_TEMPLATE = ('default', 'description', 'type', 'nullable')
 
 
 File = collections.namedtuple('File', 'name description modules resources')
 Output = collections.namedtuple('Output',
                                 'name description sensitive consumers line')
 Variable = collections.namedtuple(
-    'Variable', 'name description type default required source line')
+    'Variable', 'name description type default required nullable source line')
 
 
 # parsing functions
@@ -129,7 +129,6 @@ def _parse(body, enum=VAR_ENUM, re=VAR_RE, template=VAR_TEMPLATE):
   for m in re.finditer(body):
     token = enum(m.lastindex)
     data = m.group(m.lastindex)
-    # print(token, m.groups())
     if token == enum.OPEN:
       match = m.group(0)
       leading_lines = len(match) - len(match.lstrip("\n"))
@@ -189,7 +188,8 @@ def parse_outputs(basepath):
   except (IOError, OSError) as e:
     raise SystemExit(f'No outputs file in {basepath}.')
   for item in _parse(body, enum=OUT_ENUM, re=OUT_RE, template=OUT_TEMPLATE):
-    yield Output(name=item['name'], description=''.join(item['description']),
+    yield Output(name=item['name'],
+                 description=''.join(item['description']),
                  sensitive=item['sensitive'] != [],
                  consumers=item['tags'].get('output:consumers', ''),
                  line=item['line'])
@@ -203,17 +203,20 @@ def parse_variables(basepath):
   except (IOError, OSError) as e:
     raise SystemExit(f'No variables file in {basepath}.')
   for item in _parse(body):
-    # print(item)
     default = HEREDOC_RE.sub(r'\1', '\n'.join(item['default']))
     required = not item['default']
     vtype = '\n'.join(item['type'])
+    nullable = item.get('nullable') != ['false']
     if not required and default != 'null' and vtype == 'string':
       default = f'"{default}"'
-    yield Variable(name=item['name'], description=''.join(item['description']),
-                   type=vtype, default=default,
+    yield Variable(name=item['name'],
+                   description=''.join(item['description']),
+                   type=vtype,
+                   default=default,
                    required=required,
                    source=item['tags'].get('variable:source', ''),
-                   line=item['line'])
+                   line=item['line'],
+                   nullable=nullable)
 
 
 # formatting functions
@@ -399,12 +402,12 @@ def replace_doc(readme_path, doc, readme=None):
     raise SystemExit(f'Error replacing README {readme_path}: {e}')
 
 
-@ click.command()
-@ click.argument('module_path', type=click.Path(exists=True))
+@click.command()
+@click.argument('module_path', type=click.Path(exists=True))
 @click.option('--exclude-file', '-x', multiple=True)
-@ click.option('--files/--no-files', default=False)
-@ click.option('--replace/--no-replace', default=True)
-@ click.option('--show-extra/--no-show-extra', default=False)
+@click.option('--files/--no-files', default=False)
+@click.option('--replace/--no-replace', default=True)
+@click.option('--show-extra/--no-show-extra', default=False)
 def main(module_path=None, exclude_file=None, files=False, replace=True,
          show_extra=True):
   'Program entry point.'

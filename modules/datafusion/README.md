@@ -16,7 +16,7 @@ module "datafusion" {
   # TODO: remove the following line
   firewall_create = false
 }
-# tftest:modules=1:resources=3
+# tftest modules=1 resources=3
 ```
 
 ### Externally managed IP allocation
@@ -31,7 +31,7 @@ module "datafusion" {
   ip_allocation_create = false
   ip_allocation        = "10.0.0.0/22"
 }
-# tftest:modules=1:resources=3
+# tftest modules=1 resources=3
 ```
 <!-- BEGIN TFDOC -->
 
@@ -40,7 +40,7 @@ module "datafusion" {
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [name](variables.tf#L63) | Name of the DataFusion instance. | <code>string</code> | ✓ |  |
-| [network](variables.tf#L68) | Name of the network in the project with which the tenant project will be peered for executing pipelines in the form of projects/{project-id}/global/networks/{network} | <code>string</code> | ✓ |  |
+| [network](variables.tf#L68) | Name of the network in the project with which the tenant project will be peered for executing pipelines in the form of projects/{project-id}/global/networks/{network}. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L85) | Project ID. | <code>string</code> | ✓ |  |
 | [region](variables.tf#L90) | DataFusion region. | <code>string</code> | ✓ |  |
 | [description](variables.tf#L21) | DataFuzion instance description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |

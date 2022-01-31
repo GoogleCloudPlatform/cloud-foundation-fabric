@@ -15,7 +15,7 @@
  */
 
 variable "boot_commands" {
-  description = "List of cloud-init `bootcmd`s"
+  description = "List of cloud-init `bootcmd`s."
   type        = list(string)
   default     = []
 }
@@ -27,13 +27,13 @@ variable "cloud_config" {
 }
 
 variable "config_variables" {
-  description = "Additional variables used to render the template passed via `cloud_config`"
+  description = "Additional variables used to render the template passed via `cloud_config`."
   type        = map(any)
   default     = {}
 }
 
 variable "container_args" {
-  description = "Arguments for container"
+  description = "Arguments for container."
   type        = string
   default     = ""
 }
@@ -45,13 +45,13 @@ variable "container_image" {
 }
 
 variable "container_name" {
-  description = "Name of the container to be run"
+  description = "Name of the container to be run."
   type        = string
   default     = "container"
 }
 
 variable "container_volumes" {
-  description = "List of volumes"
+  description = "List of volumes."
   type = list(object({
     host      = string,
     container = string
@@ -60,7 +60,7 @@ variable "container_volumes" {
 }
 
 variable "docker_args" {
-  description = "Extra arguments to be passed for docker"
+  description = "Extra arguments to be passed for docker."
   type        = string
   default     = null
 }
@@ -88,13 +88,13 @@ variable "files" {
 }
 
 variable "gcp_logging" {
-  description = "Should container logs be sent to Google Cloud Logging"
+  description = "Should container logs be sent to Google Cloud Logging."
   type        = bool
   default     = true
 }
 
 variable "run_commands" {
-  description = "List of cloud-init `runcmd`s"
+  description = "List of cloud-init `runcmd`s."
   type        = list(string)
   default     = []
 }

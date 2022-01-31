@@ -21,7 +21,7 @@ module "firewall" {
   network              = "my-network"
   admin_ranges         = ["10.0.0.0/8"]
 }
-# tftest:modules=1:resources=4
+# tftest modules=1 resources=4
 ```
 
 ### Custom rules
@@ -48,7 +48,7 @@ module "firewall" {
     }
   }
 }
-# tftest:modules=1:resources=5
+# tftest modules=1 resources=5
 ```
 
 ### No predefined rules
@@ -78,7 +78,7 @@ module "firewall" {
     }
   }
 }
-# tftest:modules=1:resources=1
+# tftest modules=1 resources=1
 ```
 
 
@@ -93,7 +93,7 @@ module "firewall" {
   data_folder        = "config/firewall"
   cidr_template_file = "config/cidr_template.yaml"
 }
-# tftest:skip
+# tftest skip
 ```
 
 ```yaml
@@ -137,7 +137,7 @@ healthchecks:
 | [data_folder](variables.tf#L48) | Path for optional folder containing firewall rules defined as YaML objects used by the rules factory. | <code>string</code> |  | <code>null</code> |
 | [http_source_ranges](variables.tf#L54) | List of IP CIDR ranges for tag-based HTTP rule, defaults to the health checkers ranges. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;35.191.0.0&#47;16&#34;, &#34;130.211.0.0&#47;22&#34;, &#34;209.85.152.0&#47;22&#34;, &#34;209.85.204.0&#47;22&#34;&#93;</code> |
 | [https_source_ranges](variables.tf#L60) | List of IP CIDR ranges for tag-based HTTPS rule, defaults to the health checkers ranges. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;35.191.0.0&#47;16&#34;, &#34;130.211.0.0&#47;22&#34;, &#34;209.85.152.0&#47;22&#34;, &#34;209.85.204.0&#47;22&#34;&#93;</code> |
-| [named_ranges](variables.tf#L66) | Names that can be used of valid values for the `ranges` field of `custom_rules` | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code title="&#123;&#10;  any                   &#61; &#91;&#34;0.0.0.0&#47;0&#34;&#93;&#10;  dns-forwarders        &#61; &#91;&#34;35.199.192.0&#47;19&#34;&#93;&#10;  health-checkers       &#61; &#91;&#34;35.191.0.0&#47;16&#34;, &#34;130.211.0.0&#47;22&#34;, &#34;209.85.152.0&#47;22&#34;, &#34;209.85.204.0&#47;22&#34;&#93;&#10;  iap-forwarders        &#61; &#91;&#34;35.235.240.0&#47;20&#34;&#93;&#10;  private-googleapis    &#61; &#91;&#34;199.36.153.8&#47;30&#34;&#93;&#10;  restricted-googleapis &#61; &#91;&#34;199.36.153.4&#47;30&#34;&#93;&#10;  rfc1918               &#61; &#91;&#34;10.0.0.0&#47;8&#34;, &#34;172.16.0.0&#47;12&#34;, &#34;192.168.0.0&#47;16&#34;&#93;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [named_ranges](variables.tf#L66) | Names that can be used of valid values for the `ranges` field of `custom_rules`. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code title="&#123;&#10;  any                   &#61; &#91;&#34;0.0.0.0&#47;0&#34;&#93;&#10;  dns-forwarders        &#61; &#91;&#34;35.199.192.0&#47;19&#34;&#93;&#10;  health-checkers       &#61; &#91;&#34;35.191.0.0&#47;16&#34;, &#34;130.211.0.0&#47;22&#34;, &#34;209.85.152.0&#47;22&#34;, &#34;209.85.204.0&#47;22&#34;&#93;&#10;  iap-forwarders        &#61; &#91;&#34;35.235.240.0&#47;20&#34;&#93;&#10;  private-googleapis    &#61; &#91;&#34;199.36.153.8&#47;30&#34;&#93;&#10;  restricted-googleapis &#61; &#91;&#34;199.36.153.4&#47;30&#34;&#93;&#10;  rfc1918               &#61; &#91;&#34;10.0.0.0&#47;8&#34;, &#34;172.16.0.0&#47;12&#34;, &#34;192.168.0.0&#47;16&#34;&#93;&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [ssh_source_ranges](variables.tf#L90) | List of IP CIDR ranges for tag-based SSH rule, defaults to the IAP forwarders range. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;35.235.240.0&#47;20&#34;&#93;</code> |
 
 ## Outputs

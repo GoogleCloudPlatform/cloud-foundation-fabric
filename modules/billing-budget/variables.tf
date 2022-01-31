@@ -26,7 +26,7 @@ variable "billing_account" {
 }
 
 variable "credit_treatment" {
-  description = "How credits should be treated when determining spend for threshold calculations. Only INCLUDE_ALL_CREDITS or EXCLUDE_ALL_CREDITS are supported"
+  description = "How credits should be treated when determining spend for threshold calculations. Only INCLUDE_ALL_CREDITS or EXCLUDE_ALL_CREDITS are supported."
   type        = string
   default     = "INCLUDE_ALL_CREDITS"
   validation {
