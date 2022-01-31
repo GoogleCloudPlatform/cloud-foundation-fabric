@@ -60,7 +60,7 @@ This is an optional part, created if `cai_gcs_export` is set to `true`. The high
 | [billing_account](variables.tf#L17) | Billing account id used as default for new projects. | <code>string</code> |  | <code>null</code> |
 | [bundle_path](variables.tf#L23) | Path used to write the intermediate Cloud Function code bundle. | <code>string</code> |  | <code>&#34;.&#47;bundle.zip&#34;</code> |
 | [bundle_path_cffile](variables.tf#L30) | Path used to write the intermediate Cloud Function code bundle. | <code>string</code> |  | <code>&#34;.&#47;bundle_cffile.zip&#34;</code> |
-| [cai_gcs_export](variables.tf#L47) | Enable optional part to export tables to GCS | <code>bool</code> |  | <code>false</code> |
+| [cai_gcs_export](variables.tf#L47) | Enable optional part to export tables to GCS. | <code>bool</code> |  | <code>false</code> |
 | [file_config](variables.tf#L54) | Optional BQ table as a file export function config. | <code title="object&#40;&#123;&#10;  bucket     &#61; string&#10;  filename   &#61; string&#10;  format     &#61; string&#10;  bq_dataset &#61; string&#10;  bq_table   &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  bucket     &#61; null&#10;  filename   &#61; null&#10;  format     &#61; null&#10;  bq_dataset &#61; null&#10;  bq_table   &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [location](variables.tf#L73) | Appe Engine location used in the example. | <code>string</code> |  | <code>&#34;europe-west&#34;</code> |
 | [name](variables.tf#L80) | Arbitrary string used to name created resources. | <code>string</code> |  | <code>&#34;asset-inventory&#34;</code> |

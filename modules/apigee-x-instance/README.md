@@ -48,8 +48,8 @@ module "apigee-x-instance" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [apigee_org_id](variables.tf#L32) | Apigee Organization ID | <code>string</code> | ✓ |  |
-| [cidr_mask](variables.tf#L37) | CIDR mask for the Apigee instance | <code>number</code> | ✓ |  |
+| [apigee_org_id](variables.tf#L32) | Apigee Organization ID. | <code>string</code> | ✓ |  |
+| [cidr_mask](variables.tf#L37) | CIDR mask for the Apigee instance. | <code>number</code> | ✓ |  |
 | [name](variables.tf#L52) | Apigee instance name. | <code>string</code> | ✓ |  |
 | [region](variables.tf#L57) | Compute region. | <code>string</code> | ✓ |  |
 | [apigee_envgroups](variables.tf#L17) | Apigee Environment Groups. | <code title="map&#40;object&#40;&#123;&#10;  environments &#61; list&#40;string&#41;&#10;  hostnames    &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |

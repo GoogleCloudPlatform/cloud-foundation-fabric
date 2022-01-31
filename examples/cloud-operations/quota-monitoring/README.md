@@ -34,6 +34,6 @@ Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/c
 | [project_create](variables.tf#L29) | Create project instead ofusing an existing one. | <code>bool</code> |  | <code>false</code> |
 | [quota_config](variables.tf#L40) | Cloud function configuration. | <code title="object&#40;&#123;&#10;  filters  &#61; list&#40;string&#41;&#10;  projects &#61; list&#40;string&#41;&#10;  regions  &#61; list&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  filters  &#61; null&#10;  projects &#61; null&#10;  regions  &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [region](variables.tf#L54) | Compute region used in the example. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| [schedule_config](variables.tf#L60) | Schedule timer configuration in crontab format | <code>string</code> |  | <code>&#34;0 &#42; &#42; &#42; &#42;&#34;</code> |
+| [schedule_config](variables.tf#L60) | Schedule timer configuration in crontab format. | <code>string</code> |  | <code>&#34;0 &#42; &#42; &#42; &#42;&#34;</code> |
 
 <!-- END TFDOC -->
