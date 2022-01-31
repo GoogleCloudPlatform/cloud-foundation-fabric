@@ -38,11 +38,13 @@ DTL_L0_BQ_DATASET = os.environ.get("DTL_L0_BQ_DATASET")
 DTL_L0_PRJ = os.environ.get("DTL_L0_PRJ")
 DTL_L1_BQ_DATASET = os.environ.get("DTL_L1_BQ_DATASET")
 DTL_L1_PRJ = os.environ.get("DTL_L1_PRJ")
+DTL_L2_BQ_DATASET = os.environ.get("DTL_L2_BQ_DATASET")
+DTL_L2_PRJ = os.environ.get("DTL_L2_PRJ")
 LOD_PRJ = os.environ.get("LOD_PRJ")
 DF_ZONE = os.environ.get("GCP_REGION") + "-b"
 DF_REGION = BQ_REGION = os.environ.get("GCP_REGION")
-NET_VPC = os.environ.get("NET_VPC")
-NET_SUBNET = "https://www.googleapis.com/compute/v1/projects/lc-04-lod/regions/europe-west1/subnetworks/subnet" #"https://www.googleapis.com/compute/v1/" + os.environ.get("NET_SUBNET")
+LOD_NET_VPC = os.environ.get("LOD_NET_VPC")
+LOD_NET_SUBNET = os.environ.get("LOD_NET_SUBNET")
 LOD_SA_DF = os.environ.get("LOD_SA_DF")
 TRF_SA_DF = os.environ.get("TRF_SA_DF")
 TRF_SA_BQ = os.environ.get("TRF_SA_BQ")
@@ -73,7 +75,7 @@ default_args = {
     'stagingLocation': LOD_GCS_STAGING,
     'tempLocation': LOD_GCS_STAGING + "/tmp",
     'serviceAccountEmail': LOD_SA_DF,
-    'subnetwork': NET_SUBNET,
+    'subnetwork': LOD_NET_SUBNET,
     'ipConfiguration': "WORKER_IP_PRIVATE"
   },  
 }
@@ -102,7 +104,7 @@ with models.DAG(
     parameters={
       "javascriptTextTransformFunctionName": "transform",
       "JSONPath": ORC_GCS + "/customers_schema.json",
-      "javascriptTextTransformGcsPath": LND_GCS + "/customers_udf.js",
+      "javascriptTextTransformGcsPath": ORC_GCS + "/customers_udf.js",
       "inputFilePattern": LND_GCS + "/customers.csv",
       "outputTable": DTL_L0_PRJ + ":"+DTL_L0_BQ_DATASET+".customers",
       "bigQueryLoadingTemporaryDirectory": LOD_GCS_STAGING + "/tmp/bq/",
@@ -139,9 +141,9 @@ with models.DAG(
                   p.item as item,
                   p.price as price,
                   p.timestamp as timestamp
-                FROM `lc-04-dtl-0.lc_04_dtl_0_bq_0.customers` c
-                JOIN `lc-04-dtl-0.lc_04_dtl_0_bq_0.purchases` p ON c.id = p.customer_id 
-              """,
+                FROM `{dtl_0_prj}.{dtl_0_dataset}.customers` c
+                JOIN `{dtl_0_prj}.{dtl_0_dataset}.purchases` p ON c.id = p.customer_id 
+              """.format(dtl_0_prj=DTL_L0_PRJ, dtl_0_dataset=DTL_L0_BQ_DATASET, ),
         'destinationTable':{
           'projectId': DTL_L1_PRJ,
           'datasetId': DTL_L1_BQ_DATASET,
@@ -152,5 +154,35 @@ with models.DAG(
     },
     impersonation_chain=[TRF_SA_BQ]    
   )
+
+  l2_customer_purchase = BigQueryInsertJobOperator(
+    task_id='bq_l2_customer_purchase',
+    gcp_conn_id='bigquery_default',
+    project_id=TRF_PRJ,
+    location=BQ_REGION,
+    configuration={
+      'jobType':'QUERY',
+      'writeDisposition':'WRITE_TRUNCATE',
+      'query':{
+        'query':"""SELECT  
+                     customer_id,
+                     purchase_id,
+                     name,
+                     surname,
+                     item,
+                     price,
+                     timestamp
+                FROM `{dtl_1_prj}.{dtl_1_dataset}.customer_purchase`
+              """.format(dtl_1_prj=DTL_L1_PRJ, dtl_1_dataset=DTL_L1_BQ_DATASET, ),
+        'destinationTable':{
+          'projectId': DTL_L2_PRJ,
+          'datasetId': DTL_L2_BQ_DATASET,
+          'tableId': 'customer_purchase'          
+        },
+        "useLegacySql": False
+      }
+    },
+    impersonation_chain=[TRF_SA_BQ]    
+  )
   
-  start >> [customers_import, purchases_import] >> join_customer_purchase >> end
+  start >> [customers_import, purchases_import] >> join_customer_purchase >> l2_customer_purchase >> end

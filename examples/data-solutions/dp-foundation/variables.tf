@@ -84,7 +84,7 @@ variable "prefix" {
 }
 
 variable "project_create" {
-  description = "Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format"
+  description = "Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format."
   type = object({
     billing_account_id = string
     parent             = string
@@ -113,7 +113,8 @@ variable "project_id" {
 }
 
 variable "project_services" {
-  type = list(string)
+  description = "List of core services enabled on all projects."
+  type        = list(string)
   default = [
     "cloudresourcemanager.googleapis.com",
     "iam.googleapis.com",

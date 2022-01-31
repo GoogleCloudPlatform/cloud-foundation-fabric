@@ -19,12 +19,6 @@ locals {
       "roles/pubsub.editor",
       "roles/storage.admin",
       "roles/storage.objectViewer",
-    ],
-    "${local.groups.data-analysts}" = [
-      "roles/bigquery.dataViewer",
-      "roles/bigquery.jobUser",
-      "roles/bigquery.user",
-      "roles/pubsub.viewer",
     ]
   }
   iam_lnd = {

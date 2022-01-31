@@ -17,7 +17,6 @@ locals {
     "${local.groups.data-engineers}" = [
       "roles/bigquery.jobUser",
       "roles/dataflow.admin",
-      "roles/viewer",
     ]
   }
   iam_trf = {

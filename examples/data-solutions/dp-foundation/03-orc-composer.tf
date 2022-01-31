@@ -72,9 +72,9 @@ resource "google_composer_environment" "orc-cmp-0" {
         LND_PS             = module.lnd-ps-0.id
         LOD_PRJ            = module.lod-prj.project_id
         LOD_GCS_STAGING    = module.lod-cs-df-0.url
+        LOD_NET_VPC        = module.lod-vpc[0].self_link
+        LOD_NET_SUBNET     = module.lod-vpc[0].subnet_self_links["${var.composer_config.region}/${local.prefix_lod}-subnet"]
         LOD_SA_DF          = module.lod-sa-df-0.email
-        NET_VPC            = module.orc-vpc[0].self_link
-        NET_SUBNET         = module.orc-vpc[0].subnet_self_links["${var.composer_config.region}/${local.prefix_orc}-subnet"]
         ORC_PRJ            = module.orc-prj.project_id
         ORC_GCS            = module.orc-cs-0.url
         TRF_PRJ            = module.trf-prj.project_id

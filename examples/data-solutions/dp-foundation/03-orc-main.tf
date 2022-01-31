@@ -13,6 +13,22 @@
 # limitations under the License.
 
 locals {
+  group_iam_orc = {
+    "${local.groups.data-engineers}" = [
+      "roles/bigquery.dataEditor",
+      "roles/bigquery.jobUser",
+      "roles/cloudbuild.builds.editor",
+      "roles/composer.admin",
+      "roles/composer.environmentAndStorageObjectAdmin",
+      "roles/iap.httpsResourceAccessor",
+      "roles/iam.serviceAccountUser",
+      "roles/compute.networkUser",
+      "roles/storage.objectAdmin",
+      "roles/storage.admin",
+      "roles/compute.networkUser"
+    ]
+  }
+
   iam_orc = {
     "roles/bigquery.dataEditor" = [
       module.lod-sa-df-0.iam_email,
@@ -49,21 +65,7 @@ locals {
       module.trf-sa-df-0.iam_email
     ]
   }
-  group_iam_orc = {
-    "${local.groups.data-engineers}" = [
-      "roles/bigquery.dataEditor",
-      "roles/bigquery.jobUser",
-      "roles/cloudbuild.builds.editor",
-      "roles/composer.admin",
-      "roles/composer.environmentAndStorageObjectAdmin",
-      "roles/iap.httpsResourceAccessor",
-      "roles/iam.serviceAccountUser",
-      "roles/compute.networkUser",
-      "roles/storage.objectAdmin",
-      "roles/storage.admin",
-      "roles/compute.networkUser"
-    ]
-  }
+
   prefix_orc = "${var.prefix}-orc"
 }
 

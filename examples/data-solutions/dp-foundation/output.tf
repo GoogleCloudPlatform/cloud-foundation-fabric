@@ -65,14 +65,15 @@ output "VPC" {
   }
 }
 
-output "ZZZ_demo_commands" {
+output "demo_commands" {
   description = "Demo commands"
   value = {
-    01 = "gsutil -i ${module.lod-sa-df-0.email} cp demo/data/*.csv gs://${module.lnd-cs-0.name}"
-    02 = "gsutil cp demo/data/*.j* gs://${module.orc-cs-0.name}"
-    03 = "gsutil cp demo/gcs2bq.py ${google_composer_environment.orc-cmp-0.config[0].dag_gcs_prefix}/"
-    04 = "bq mk --table --description 'Customers table' ${module.dtl-0-prj.project_id}:${module.dtl-0-bq-0.dataset_id}.customers demo/data/customers.json"
-    05 = "bq mk --table --description 'Purchases table' ${module.dtl-0-prj.project_id}:${module.dtl-0-bq-0.dataset_id}.purchases demo/data/purchases.json"
-    06 = "bq mk --table --description 'Customer_Purchase table' ${module.dtl-1-prj.project_id}:${module.dtl-1-bq-0.dataset_id}.customers demo/data/customer_purchase.json"
+    01 = "gsutil -i ${module.lnd-sa-cs-0.email} cp demo/data/*.csv gs://${module.lnd-cs-0.name}"
+    02 = "gsutil -i ${module.orc-sa-cmp-0.email} cp demo/data/*.j* gs://${module.orc-cs-0.name}"
+    03 = "gsutil -i ${module.orc-sa-cmp-0.email} cp demo/gcs2bq.py ${google_composer_environment.orc-cmp-0.config[0].dag_gcs_prefix}/"
+    04 = "Open: ${google_composer_environment.orc-cmp-0.config.0.airflow_uri}"
+    05 = <<EOT
+           bq query --project_id=${module.dtl-2-prj.project_id} --use_legacy_sql=false 'SELECT * FROM `${module.dtl-2-prj.project_id}.${module.dtl-2-bq-0.dataset_id}.customer_purchase` LIMIT 1000'"
+         EOT
   }
 }

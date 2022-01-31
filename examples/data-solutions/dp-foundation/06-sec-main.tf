@@ -55,40 +55,40 @@ module "sec-prj" {
 # Uncomment this section and assigne key links accondingly in local. variable
 # if you want to create KMS keys in the security projet
 
-module "sec-kms-0" {
-  source     = "../../../modules/kms"
-  project_id = module.sec-prj.project_id
-  keyring = {
-    name     = "${var.prefix}-kr-global",
-    location = var.location_config.region
-  }
-  keys = {
-    pubsub = null
-  }
-}
+# module "sec-kms-0" {
+#   source     = "../../../modules/kms"
+#   project_id = module.sec-prj.project_id
+#   keyring = {
+#     name     = "${var.prefix}-kr-global",
+#     location = var.location_config.region
+#   }
+#   keys = {
+#     pubsub = null
+#   }
+# }
 
-module "sec-kms-1" {
-  source     = "../../../modules/kms"
-  project_id = module.sec-prj.project_id
-  keyring = {
-    name     = "${var.prefix}-kr-mregional",
-    location = var.location_config.region
-  }
-  keys = {
-    bq      = null
-    storage = null
-  }
-}
+# module "sec-kms-1" {
+#   source     = "../../../modules/kms"
+#   project_id = module.sec-prj.project_id
+#   keyring = {
+#     name     = "${var.prefix}-kr-mregional",
+#     location = var.location_config.region
+#   }
+#   keys = {
+#     bq      = null
+#     storage = null
+#   }
+# }
 
-module "sec-kms-2" {
-  source     = "../../../modules/kms"
-  project_id = module.sec-prj.project_id
-  keyring = {
-    name     = "${var.prefix}-kr-regional",
-    location = var.location_config.region
-  }
-  keys = {
-    composer = null
-    dataflow = null
-  }
-}
+# module "sec-kms-2" {
+#   source     = "../../../modules/kms"
+#   project_id = module.sec-prj.project_id
+#   keyring = {
+#     name     = "${var.prefix}-kr-regional",
+#     location = var.location_config.region
+#   }
+#   keys = {
+#     composer = null
+#     dataflow = null
+#   }
+# }

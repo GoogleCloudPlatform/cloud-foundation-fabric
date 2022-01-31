@@ -8,7 +8,6 @@ The following diagram is a high level reference of the resources created and man
 
 ![Data Platform Architecture overview](./images/overview_diagram.png "Data Platform Architecture overview")
 
-#TODO Rename secutiry to Core services
 # Design overview and choices
 Despite its simplicity, this stage implements the basics of a design that we've seen working well for a variety of customers.
 
@@ -166,13 +165,25 @@ To create Cloud KMS keys within the Data Platform you can uncomment the Cloud KM
 To handle multiple groups of `data-analyst` accessing the same Data Lake layer Projects but only to the dataset belonging to a specific group, you may want to assign roles at Bigquery dataset level instead of at project level. 
 To do this, you need to remove IAM binging at Project level for the `data-analyst` group and assign roles at Bigquery dataset level using the `iam` variable on `bigquery-dataset` modules.
 
+# Demo pipeline
+The application layer is out of scope of this script, but as a demo, it is provided a Cloud Composer DAG to mode data from the `landing` area to `DataLake L2` dataset.
+
+Just follow the commands you find in the `demo_commands` Terraform output, go in the Cloud Composer UI and run the `data_pipeline_dag`.
+
+Description of commands:
+- 01: copy sample data to `landing` storage bucket impersonating the `load` service account.
+- 02: copy sample data structure definition in the `orchestration` storage bucket impersonating the `orchestration` service account.
+- 03: copy the Cloud Composer DAG to Cloud Composer storage bucket impersonating the `orchestration` service account.
+- 04: Open the Cloud Composer Airflow UI and run the imported DAG.
+- 05: Run the Bigquery query to see results.
 # TODOs
+Features to add in futere releases:
  * Add support for Column level access on Bigquery
  * Add example templates for DataCatalog
  * Add example on how to use Cloud DLP
  * Add solution to handle Tables, Views and Authorized Views lifecycle
  * Add solution to handle Metadata lifecycle
 
-# Test/Fix
+# To Test/Fix
  * Composer require "Require OS Login" not enforced
  * External Shared-VPC
