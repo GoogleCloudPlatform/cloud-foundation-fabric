@@ -10,9 +10,9 @@ It adopts the common “hub and spoke” reference design, which is well suited 
 - the "trusted hub" VPC centralizes the external connectivity towards trusted network resources (e.g. to on-prem, other cloud environments and the spokes), and it is ready to host cross-environment services like CI/CD, code repositories, and monitoring probes
 - the "spoke" VPCs allow partitioning workloads (e.g. by environment like in this setup), while still retaining controlled access to central connectivity and services
 - Shared VPCs in both hub and spokes split management of network resources into specific (host) projects, while still allowing them to be consumed from the workload (service) projects
-- the design also lends itself to easy DNS centralization, both from on-prem to cloud and from cloud to on-prem
+- the design also lends itself to easy DNS centralization, both from on-premises to cloud and from cloud to on-prem
 
-Connectivity between the hub and the spokes is established via [VPC network peerings](https://cloud.google.com/vpc/docs/vpc-peering), which offer a uncapped bandwidth, lower latencies, at no additional costs and with a very low managemenet overhead. Different ways of implementing connectivity, and related pros and cons, are discussed below.
+Connectivity between the hub and the spokes is established via [VPC network peerings](https://cloud.google.com/vpc/docs/vpc-peering), which offer a uncapped bandwidth, lower latencies, at no additional costs and with a very low management overhead. Different ways of implementing connectivity, and related pros and cons, are discussed below.
 
 The following diagram shows the high-level design and it should be used as a reference for the following sections. The final number of subnets, and their IP addressing design will depend on the user-specific requirements, and it can be easily changed via variables or external data files, without any need to edit the actual code.
 
@@ -24,17 +24,17 @@ The following diagram shows the high-level design and it should be used as a ref
 
 ### VPC design
 
-The "landing zone" is divided in two VPC networks: the trusted VPC, acting as the connectivity hub towards other trusted networks and the untrusted VPC, acting as the connectivity hub towards any other untrusted network.
+The "landing zone" is divided into two VPC networks: the trusted VPC, acting as the connectivity hub towards other trusted networks and the untrusted VPC, acting as the connectivity hub towards any other untrusted network.
 
 The VPCs are connected through two sets of sample NVA machines, grouped by region in [Managed Instance Groups (MIGs)](https://cloud.google.com/compute/docs/instance-groups). The appliances are plain Linux machines, performing simple routing/natting, leveraging some standard Linux features, such as *ip route* or *iptables*. While they are suited for demo purposes only, they should be substituted with enterprise appliances, before moving to production.
 The traffic destined to the VMs in each MIG is mediated through internal load balancers in each region, both in the trusted and in the untrusted networks.
 
 By default, the design assumes the following:
 
-- on-prem networks (and related resources) are considered trusted. As such, the VPNs with on-prem are terminated in GCP on the trusted VPC
+- on-premise networks (and related resources) are considered trusted. As such, the VPNs with on-premises are terminated in GCP on the trusted VPC
 - the public Internet is considered untrusted. As such [Cloud NAT](https://cloud.google.com/nat/docs/overview) has been deployed in the untrusted landing VPC only
 - any traffic from an untrusted network to a trusted network (and vice-versa), and cross-environment traffic passes through the NVAs. For demo purposes the current NVA performs simple routing/natting only
-- any traffic from a trusted network to an untrusted network (e.g. Internet) is natted by the appliances. Futher exclusions can be anyway configured ad-hoc
+- any traffic from a trusted network to an untrusted network (e.g. Internet) is natted by the appliances. Further exclusions can be anyway configured ad-hoc
 
 The trusted landing VPC acts as a hub and hosts the external connectivity and the shared services consumed by the spoke VPCs, which are connected to it via VPC network peerings. Spokes are used to partition environments, which is a fairly common pattern:
 
@@ -43,7 +43,7 @@ The trusted landing VPC acts as a hub and hosts the external connectivity and th
 
 Each VPC is created into its own project, and each project is configured as a Shared VPC host, so that network-related resources and access configurations via IAM are kept separate for each VPC.
 
-The design can be easily extended to host additional environments, or adopting a different logical mapping for spokes (e.g. one spoke for each company entity, etc.). Adding spokes is a trivial operation and it does not increase the design complexity. Operational processes to add more spokes are further explained in the following sections.
+The design can be easily extended to host additional environments, or adopt a different logical mapping for spokes (e.g. one spoke for each company entity, etc.). Adding spokes is a trivial operation and it does not increase the design complexity. Operational processes to add more spokes are further explained in the following sections.
 
 In multi-organization scenarios, where production and non-production resources use different Cloud Identity and GCP organizations, the hub/landing VPC is usually part of the production organization. It establishes connections with the production spokes within its same organization, and with non-production spokes in a different organization.
 
@@ -85,7 +85,7 @@ In this setup:
 - the spokes and the trusted VPC exchange routes with via VPC peering
 - on-prem is connected to the trusted VPC and it dynamically exchanges BGP routes with GCP (with the trusted VPC) using VPN HA
 - for cross-environment (spokes) communications, for environments to communicate with on-prem and with the Internet, each spoke leverages some default tagged routes, sending the traffic of each region (whose machines are identified by a dedicated network tag, e.g. *ew1*) to a corresponding regional NVA in the trusted VPC, through an ILB (whose VIP is set as the route next-hop)
-- the spokes are configured with backup default routes, so if NVAs in the same region become unavailalble, routes to the NVAs in the other region are already available. Current routes are not able to understand if the next-hop ILBs become unhealthy. As such, in case of regional failure, users will need to manually withdraw the primary default routes and the secondaries will take over
+- the spokes are configured with backup default routes, so if NVAs in the same region become unavailable, routes to the NVAs in the other region are already available. Current routes are not able to understand if the next-hop ILBs become unhealthy. As such, in case of regional failure, users will need to manually withdraw the primary default routes and the secondaries will take over
 - the NVAs are configured with static routes that allow the communication with on-prem and between the GCP resources (including the cross-environment communication)
 
 The Cloud Routers (connected to the VPN gateways in the trusted VPC) are configured to exclude the default advertisement of VPC ranges, and they only advertise their respective aggregate ranges via custom advertisements. This greatly simplifies the routing configuration, and more importantly it allows to avoid quota or limit issues by keeping the number of routes small, instead of making it proportional to the subnets and to the secondary ranges in the VPCs.
@@ -98,9 +98,9 @@ Several other scenarios are possible, with varying degrees of complexity:
 
 - deploy Cloud NAT in every VPC
 - add forwarding proxies, with optional URL filters
-- send Internet traffic to on-prem, so the existing egress ingrastructure can be leveraged
+- send Internet traffic to on-prem, so the existing egress infrastructure can be leveraged
 
-Future pluggable modules will allow to easily experiment, or deploy the above scenarios.
+Future pluggable modules will allow users to easily experiment the above scenarios.
 
 ### VPC and Hierarchical Firewall
 
@@ -128,7 +128,7 @@ To complete the configuration, the 35.199.192.0/19 range should be routed on the
 - `restricted.googleapis.com`
 - `gcp.example.com` (used as a placeholder)
 
-From cloud, the `example.com` domain (used as a placeholder) is forwarded to on-prem.
+From the cloud, the `example.com` domain (used as a placeholder) is forwarded to on-prem.
 
 This configuration is battle-tested, and flexible enough to lend itself to simple modifications without subverting its design, for example by forwarding and peering root zones to bypass Cloud DNS external resolution.
 
@@ -186,7 +186,7 @@ VPCs are defined in separate files, one for `landing untrusted`, one for `landin
 These files contain different resources:
 
 - The **project** ([`project`](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/project)) contains the VPC, and enables the required APIs and sets itself as a "[host project](https://cloud.google.com/vpc/docs/shared-vpc)".
-- The **VPC** ([`net-vpc`](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/net-vpc)) manages the subnets, the explicit routes for `{private,restricted}.googleapis.com`, and the DNS inbound policy (for the landing trusted VPC). Subnets are created leveraging a "resource factory" paradigm, where the configuration is separated from the module that implements it, and stored in a well-structured file. To add a new subnet, simply create a new file in the `data_folder` directory defined in the module, following the examples found in the [Fabric `net-vpc` documentation](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/net-vpc#subnet-factory). Sample subnets are shipped in [data/subnets](./data/subnets), and can be easily customised to fit your needs.
+- The **VPC** ([`net-vpc`](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/net-vpc)) manages the subnets, the explicit routes for `{private,restricted}.googleapis.com`, and the DNS inbound policy (for the landing trusted VPC). Subnets are created leveraging a "resource factory" paradigm, where the configuration is separated from the module that implements it, and stored in a well-structured file. To add a new subnet, simply create a new file in the `data_folder` directory defined in the module, following the examples found in the [Fabric `net-vpc` documentation](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/net-vpc#subnet-factory). Sample subnets are shipped in [data/subnets](./data/subnets), and can be easily customized to fit users' needs.
 
 Subnets for [L7 ILBs](https://cloud.google.com/load-balancing/docs/l7-internal/proxy-only-subnets) are handled differently, and defined in variable `l7ilb_subnets`, while ranges for [PSA](https://cloud.google.com/vpc/docs/configure-private-services-access#allocating-range) are configured by variable `psa_ranges` - such variables are consumed by spoke VPCs.
 
@@ -194,61 +194,61 @@ Subnets for [L7 ILBs](https://cloud.google.com/load-balancing/docs/l7-internal/p
 
 ### VPNs
 
-Connectivity between on-prem and GCP (the landing trusted VPC) is implemented with VPN HA ([`net-vpn`](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/net-vpn)) and defined in [`vpn-onprem.tf`](./vpn-onprem.tf). The file provisionally implements a single logical connection between onprem and landing at `europe-west1`, and the relevant parameters for its configuration are found in variable `vpn_onprem_configs`.
+Connectivity between on-prem and GCP (the landing trusted VPC) is implemented with VPN HA ([`net-vpn`](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/net-vpn)) and defined in [`vpn-onprem.tf`](./vpn-onprem.tf). The file provisionally implements a single logical connection between on-premises and landing at `europe-west1`, and the relevant parameters for its configuration are found in variable `vpn_onprem_configs`.
 
 ### Routing and BGP
 
-Each VPC network ([`net-vpc`](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/net-vpc)) manages a separate routing table, which can define static routes (e.g. to private.googleapis.com) and receives dynamic routes through VPC peering and BGP sessions established with neighbor networks (e.g. landing receives routes from onprem, and the spokes receive RFC1918 from landing).
+Each VPC network ([`net-vpc`](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/net-vpc)) manages a separate routing table, which can define static routes (e.g. to private.googleapis.com) and receives dynamic routes through VPC peering and BGP sessions established with neighbor networks (e.g. landing receives routes from on-premises, and the spokes receive RFC1918 from landing).
 
 Static routes are defined in `vpc-*.tf` files, in the `routes` section of each `net-vpc` module.
 
-BGP sessions for landing trusted to on-prem are configured through the variable `vpn_onprem_configs`.
+BGP sessions for landing trusted to on-premises are configured through the variable `vpn_onprem_configs`.
 
 ### Firewall
 
 **VPC firewall rules** ([`net-vpc-firewall`](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/net-vpc-firewall)) are defined per-vpc on each `vpc-*.tf` file and leverage a resource factory to massively create rules.
-To add a new firewall rule, create a new file or edit an existing one in the `data_folder` directory defined in the module `net-vpc-firewall`, following the examples of the "[Rules factory](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/net-vpc-firewall#rules-factory)" section of the module documentation. Sample firewall rules are shipped in [data/firewall-rules/landing](./data/firewall-rules/landing) and can be easily customised.
+To add a new firewall rule, create a new file or edit an existing one in the `data_folder` directory defined in the module `net-vpc-firewall`, following the examples of the "[Rules factory](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/net-vpc-firewall#rules-factory)" section of the module documentation. Sample firewall rules are shipped in [data/firewall-rules/landing](./data/firewall-rules/landing) and can be easily customized.
 
-**Hierarchical firewall policies** ([`folder`](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/folder)) are defined in `main.tf`, and managed through a policy factory implemented by the `folder` module, which applies the defined hierarchical to the `Networking` folder, which contains all the core networking infrastructure. Policies are defined in the `rules_file` file - to define a new one simply use the instructions found on "[Firewall policy factory](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/organization#firewall-policy-factory)". Sample hierarchical firewall policies are shipped in [data/hierarchical-policy-rules.yaml](./data/hierarchical-policy-rules.yaml) and can be easily customised.
+**Hierarchical firewall policies** ([`folder`](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/folder)) are defined in `main.tf`, and managed through a policy factory implemented by the `folder` module, which applies the defined hierarchical to the `Networking` folder, which contains all the core networking infrastructure. Policies are defined in the `rules_file` file - to define a new one simply use the instructions found on "[Firewall policy factory](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/organization#firewall-policy-factory)". Sample hierarchical firewall policies are shipped in [data/hierarchical-policy-rules.yaml](./data/hierarchical-policy-rules.yaml) and can be easily customized.
 
 ### DNS architecture
 
 The DNS ([`dns`](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/dns)) infrastructure is defined in [`dns-*.tf`] files.
 
-Cloud DNS manages onprem forwarding, the main GCP zone (in this example `gcp.example.com`) and is peered to environment-specific zones (i.e. `dev.gcp.example.com` and `prod.gcp.example.com`).
+Cloud DNS manages on-premises forwarding, the main GCP zone (in this example `gcp.example.com`) and is peered to environment-specific zones (i.e. `dev.gcp.example.com` and `prod.gcp.example.com`).
 
 #### Cloud environment
 
 The root DNS zone defined in the landing project acts as the source of truth for DNS within the Cloud environment. Resources defined in the spoke VPCs consume the landing DNS infrastructure through DNS peering (e.g. `prod-landing-root-dns-peering`).
 Spokes can optionally define private zones (e.g. `prod-dns-private-zone`) - granting visibility to the Landing VPC ensures that the whole cloud environment can query such zones.
 
-#### Cloud to on-prem
+#### Cloud to on-premises
 
-Leveraging the forwarding zones defined on landing project (e.g. `onprem-example-dns-forwarding` and `reverse-10-dns-forwarding`), the cloud environment can resolve `in-addr.arpa.` and `onprem.example.com.` using the on-premises DNS infrastructure. Onprem resolvers IPs are set in variable `dns.onprem`.
+Leveraging the forwarding zones defined on landing project (e.g. `onprem-example-dns-forwarding` and `reverse-10-dns-forwarding`), the cloud environment can resolve `in-addr.arpa.` and `onprem.example.com.` using the on-premises DNS infrastructure. On-premise resolvers IPs are set in variable `dns.onprem`.
 
 DNS queries sent to the on-premises infrastructure come from the `35.199.192.0/19` source range.
 
-#### On-prem to cloud
+#### On-premises to cloud
 
 The [Inbound DNS Policy](https://cloud.google.com/dns/docs/server-policies-overview#dns-server-policy-in) defined in *landing trusted VPC module* ([`vpc-landing.tf`](./vpc-landing.tf)) automatically reserves the first available IP address on each subnet (typically the third one in a CIDR) to expose the Cloud DNS service, so that it can be consumed from outside of GCP.
 
 ### Private Google Access
 
-[Private Google Access](https://cloud.google.com/vpc/docs/private-google-access) (or PGA) enables VMs and on-prem systems to consume Google APIs from within the Google network, and is already fully configured on this environment.
+[Private Google Access](https://cloud.google.com/vpc/docs/private-google-access) (or PGA) enables VMs and on-premise systems to consume Google APIs from within the Google network, and is already fully configured on this environment.
 
 For PGA to work:
 
 - Private Google Access should be enabled on the subnet. \
 Subnets created using the `net-vpc` module are PGA-enabled by default.
 
-- 199.36.153.4/30 (`restricted.googleapis.com`) and 199.36.153.8/30 (`private.googleapis.com`) should be routed from on-prem to VPC, and from there to the `default-internet-gateway`. \
-Per variable `vpn_onprem_configs` such ranges are advertised to onprem - furthermore every VPC (e.g. see `landing-vpc` in [`landing.tf`](./landing.tf)) has explicit routes set in case the `0.0.0.0/0` route is changed.
+- 199.36.153.4/30 (`restricted.googleapis.com`) and 199.36.153.8/30 (`private.googleapis.com`) should be routed from on-premises to VPC, and from there to the `default-internet-gateway`. \
+Per variable `vpn_onprem_configs` such ranges are advertised to on-premises - furthermore every VPC (e.g. see `landing-vpc` in [`landing.tf`](./landing.tf)) has explicit routes set in case the `0.0.0.0/0` route is changed.
 
 - A private DNS zone for `googleapis.com` should be created and configured per [this article](https://cloud.google.com/vpc/docs/configure-private-google-access-hybrid#config-domain), as implemented in module `googleapis-private-zone` in [`dns.tf`](./dns.tf)
 
 ### Preliminar activities
 
-Before running `terraform apply` on this stage, make sure to adapt all of `variables.tf` to your needs, to update all reference to regions (e.g. `europe-west1` or `ew1`) in the whole directory to match your preferences.
+Before running `terraform apply` on this stage, make sure to adapt all of `variables.tf` to your needs, to update all references to regions (e.g. `europe-west1` or `ew1`) in the whole directory to match your preferences.
 
 If you're not using FAST, you'll also need to create a `providers.tf` file to configure the GCS backend and the service account to use to run the deployment.
 
@@ -256,9 +256,9 @@ You're now ready to run `terraform init` and `apply`.
 
 ### Post-deployment activities
 
-- On-prem routers should be configured to advertise all relevant CIDRs to the GCP environments. To avoid hitting GCP quotas, we recomment aggregating routes as much as possible.
-- On-prem routers should accept BGP sessions from their cloud peers.
-- On-prem DNS servers should have forward zones for GCP-managed ones.
+- On-premise routers should be configured to advertise all relevant CIDRs to the GCP environments. To avoid hitting GCP quotas, we recommend aggregating routes as much as possible.
+- On-premise routers should accept BGP sessions from their cloud peers.
+- On-premise DNS servers should have forward zones for GCP-managed ones.
 
 ## Customizations
 
@@ -273,7 +273,7 @@ Running `diff vpc-spoke-dev.tf vpc-spoke-prod.tf` can help to see how environmen
 The new VPC requires a set of dedicated CIDRs, one per region, added to variable `custom_adv` (for example as `spoke_staging_ew1` and `spoke_staging_ew4`).
 >`custom_adv` is a map that "resolves" CIDR names to actual addresses, and will be used later to configure routing.
 >
-Variables managing L7 Interal Load Balancers (`l7ilb_subnets`) and Private Service Access (`psa_ranges`) should also be adapted, and subnets and firewall rules for the new spoke should be added as described above.
+Variables managing L7 Internal Load Balancers (`l7ilb_subnets`) and Private Service Access (`psa_ranges`) should also be adapted, and subnets and firewall rules for the new spoke should be added as described above.
 
 VPC network peering connectivity to the `landing trusted VPC` is managed by the `vpc-peering-*.tf` files.
 Copy `vpc-peering-prod.tf` to `vpc-peering-staging.tf` and replace within the files "prod" with "staging", where relevant.
@@ -282,7 +282,7 @@ Configure the NVAs deployed or update the sample NVA config files (for [ew1](dat
 
 DNS configurations are managed in the `dns-*.tf` files.
 Copy for example the `dns-dev.tf` to `dns-staging.tf` and replace within the files "prod" with "staging", where relevant.
-Don't forget to add a peering zone in landing project and point it to the newly created environment private zone.
+Don't forget to add a peering zone in the landing project and point it to the newly created environment private zone.
 
 <!-- TFDOC OPTS files:1 show_extra:1 -->
 <!-- BEGIN TFDOC -->
