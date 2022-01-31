@@ -80,7 +80,7 @@ variable "ingress_settings" {
 }
 
 variable "labels" {
-  description = "Resource labels"
+  description = "Resource labels."
   type        = map(string)
   default     = {}
 }
@@ -130,7 +130,7 @@ variable "trigger_config" {
 }
 
 variable "vpc_connector" {
-  description = "VPC connector configuration. Set create to 'true' if a new connector needs to be created"
+  description = "VPC connector configuration. Set create to 'true' if a new connector needs to be created."
   type = object({
     create          = bool
     name            = string
@@ -140,7 +140,7 @@ variable "vpc_connector" {
 }
 
 variable "vpc_connector_config" {
-  description = "VPC connector network configuration. Must be provided if new VPC connector is being created"
+  description = "VPC connector network configuration. Must be provided if new VPC connector is being created."
   type = object({
     ip_cidr_range = string
     network       = string

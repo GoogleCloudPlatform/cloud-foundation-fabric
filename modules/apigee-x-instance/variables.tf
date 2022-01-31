@@ -30,12 +30,12 @@ variable "apigee_environments" {
 }
 
 variable "apigee_org_id" {
-  description = "Apigee Organization ID"
+  description = "Apigee Organization ID."
   type        = string
 }
 
 variable "cidr_mask" {
-  description = "CIDR mask for the Apigee instance"
+  description = "CIDR mask for the Apigee instance."
   type        = number
   validation {
     condition     = contains([16, 20, 22], var.cidr_mask)

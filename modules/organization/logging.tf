@@ -91,6 +91,6 @@ resource "google_logging_organization_exclusion" "logging-exclusion" {
   for_each    = var.logging_exclusions
   name        = each.key
   org_id      = local.organization_id_numeric
-  description = "${each.key} (Terraform-managed)"
+  description = "${each.key} (Terraform-managed)."
   filter      = each.value
 }

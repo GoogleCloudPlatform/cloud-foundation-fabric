@@ -29,7 +29,7 @@ locals {
 resource "google_logging_project_sink" "sink" {
   for_each = var.logging_sinks
   name     = each.key
-  #description = "${each.key} (Terraform-managed)"
+  #description = "${each.key} (Terraform-managed)."
   project                = local.project.project_id
   destination            = "${each.value.type}.googleapis.com/${each.value.destination}"
   filter                 = each.value.filter
@@ -86,6 +86,6 @@ resource "google_logging_project_exclusion" "logging-exclusion" {
   for_each    = var.logging_exclusions
   name        = each.key
   project     = local.project.project_id
-  description = "${each.key} (Terraform-managed)"
+  description = "${each.key} (Terraform-managed)."
   filter      = each.value
 }

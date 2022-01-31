@@ -15,12 +15,12 @@
  */
 
 variable "host_project" {
-  description = "Host project name"
+  description = "Host project name."
   default     = "host"
 }
 
 variable "service_projects" {
-  description = "List of service project names"
+  description = "List of service project names."
   type        = list(any)
   default = [
     "app-team1",
@@ -29,7 +29,7 @@ variable "service_projects" {
 }
 
 variable "region" {
-  description = "Region in which to create the subnet"
+  description = "Region in which to create the subnet."
   default     = "europe-west1"
 }
 
@@ -42,24 +42,24 @@ variable "project_services" {
 }
 
 variable "organization_id" {
-  description = "The organization ID"
+  description = "The organization ID."
 }
 
 variable "billing_account" {
-  description = "The ID of the billing account to associate this project with"
+  description = "The ID of the billing account to associate this project with."
 }
 
 variable "prefix" {
-  description = "Customer name to use as prefix for resources' naming"
+  description = "Customer name to use as prefix for resources' naming."
   default     = "test-dns"
 }
 
 variable "dns_domain" {
-  description = "DNS domain under which each application team DNS domain will be created"
+  description = "DNS domain under which each application team DNS domain will be created."
   default     = "prod.internal"
 }
 
 variable "teams" {
-  description = "List of teams that require their own Cloud DNS instance"
+  description = "List of teams that require their own Cloud DNS instance."
   default     = ["appteam1", "appteam2"]
 }

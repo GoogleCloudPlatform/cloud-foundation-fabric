@@ -15,7 +15,7 @@
  */
 
 variable "auto_create_network" {
-  description = "Whether to create the default network for the project"
+  description = "Whether to create the default network for the project."
   type        = bool
   default     = false
 }
@@ -27,7 +27,7 @@ variable "billing_account" {
 }
 
 variable "contacts" {
-  description = "List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES"
+  description = "List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES."
   type        = map(list(string))
   default     = {}
   nullable    = false
@@ -41,7 +41,7 @@ variable "custom_roles" {
 }
 
 variable "descriptive_name" {
-  description = "Name of the project name. Used for project name instead of `name` variable"
+  description = "Name of the project name. Used for project name instead of `name` variable."
   type        = string
   default     = null
 }

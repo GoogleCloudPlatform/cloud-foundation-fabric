@@ -65,7 +65,7 @@ module "org" {
   firewall_policies = {
     iap-policy = {
       allow-iap-ssh = {
-        description = "Always allow ssh from IAP"
+        description = "Always allow ssh from IAP."
         direction   = "INGRESS"
         action      = "allow"
         priority    = 100

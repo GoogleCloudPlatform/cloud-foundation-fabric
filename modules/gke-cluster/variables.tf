@@ -107,7 +107,7 @@ variable "dns_config" {
 }
 
 variable "enable_autopilot" {
-  description = "Create cluster in autopilot mode. With autopilot there's no need to create node-pools and some features are not supported (e.g. setting default_max_pods_per_node)"
+  description = "Create cluster in autopilot mode. With autopilot there's no need to create node-pools and some features are not supported (e.g. setting default_max_pods_per_node)."
   type        = bool
   default     = false
 }
@@ -119,7 +119,7 @@ variable "enable_binary_authorization" {
 }
 
 variable "enable_dataplane_v2" {
-  description = "Enable Dataplane V2 on the cluster, will disable network_policy addons config"
+  description = "Enable Dataplane V2 on the cluster, will disable network_policy addons config."
   type        = bool
   default     = false
 }
@@ -172,7 +172,7 @@ variable "logging_service" {
 }
 
 variable "maintenance_config" {
-  description = "Maintenance window configuration"
+  description = "Maintenance window configuration."
   type = object({
     daily_maintenance_window = object({
       start_time = string

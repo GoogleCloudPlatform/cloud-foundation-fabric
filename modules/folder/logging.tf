@@ -30,7 +30,7 @@ locals {
 resource "google_logging_folder_sink" "sink" {
   for_each = var.logging_sinks
   name     = each.key
-  #description = "${each.key} (Terraform-managed)"
+  #description = "${each.key} (Terraform-managed)."
   folder           = local.folder.name
   destination      = "${each.value.type}.googleapis.com/${each.value.destination}"
   filter           = each.value.filter
@@ -86,6 +86,6 @@ resource "google_logging_folder_exclusion" "logging-exclusion" {
   for_each    = var.logging_exclusions
   name        = each.key
   folder      = local.folder.name
-  description = "${each.key} (Terraform-managed)"
+  description = "${each.key} (Terraform-managed)."
   filter      = each.value
 }

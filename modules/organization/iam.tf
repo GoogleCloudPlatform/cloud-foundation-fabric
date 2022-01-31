@@ -51,7 +51,7 @@ resource "google_organization_iam_custom_role" "roles" {
   org_id      = local.organization_id_numeric
   role_id     = each.key
   title       = "Custom role ${each.key}"
-  description = "Terraform-managed"
+  description = "Terraform-managed."
   permissions = each.value
 }
 

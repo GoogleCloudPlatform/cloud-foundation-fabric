@@ -73,7 +73,7 @@ variable "clients" {
 }
 
 variable "default_action" {
-  description = "Default action for domains not matching neither the allow or deny lists"
+  description = "Default action for domains not matching neither the allow or deny lists."
   type        = string
   default     = "deny"
   validation {
