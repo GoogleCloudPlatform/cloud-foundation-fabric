@@ -30,8 +30,6 @@ The design easily lends itself to implementing additional environments, or adopt
 
 In multi-organization scenarios, where production and non-production resources use different Cloud Identity and GCP organizations, the hub/landing VPC is usually part of the production organization, and establishes connections with production spokes in its same organization, and non-production spokes in a different organization.
 
-An additional VPC is also deployed by default with the provided code, disconnected from the other VPCs and hosting a single VM that emulates on-prem for testing purposes, via a Docker network and containers for VPN, DNS, HTTP, etc.
-
 ### External connectivity
 
 External connectivity to on-prem is implemented here via VPN HA (two tunnels per region), as this is the minimum common denominator often used directly, or as a stop-gap solution to validate routing and transfer data, while waiting for [interconnects](https://cloud.google.com/network-connectivity/docs/interconnect) to be provisioned.
