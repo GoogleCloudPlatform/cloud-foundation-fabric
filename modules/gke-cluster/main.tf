@@ -87,6 +87,12 @@ resource "google_container_cluster" "cluster" {
     gce_persistent_disk_csi_driver_config {
       enabled = var.addons.gce_persistent_disk_csi_driver_config
     }
+    kalm_config {
+      enabled = var.addons.kalm_config
+    }
+    config_connector_config {
+      enabled = var.addons.config_connector_config
+    }
   }
 
   # TODO(ludomagno): support setting address ranges instead of range names
