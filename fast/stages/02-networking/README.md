@@ -136,8 +136,8 @@ To simplify setup, the previous stage pre-configures a valid providers file in i
 If you have set a valid value for `outputs_location` in the bootstrap stage, simply link the relevant `providers.tf` file from this stage's folder in the path you specified:
 
 ```bash
-# `outputs_location` is set to `../../configs/example`
-ln -s ../../configs/example/02-networking/providers.tf
+# `outputs_location` is set to `../../config`
+ln -s ../../config/02-networking/providers.tf
 ```
 
 If you have not configured `outputs_location` in bootstrap, you can derive the providers file from that stage's outputs:
@@ -160,9 +160,9 @@ To avoid the tedious job of filling in the first group of variables with values 
 If you have set a valid value for `outputs_location` in the bootstrap and in the resman stage, simply link the relevant `terraform-*.auto.tfvars.json` files from this stage's folder in the path you specified, where the `*` above is set to the name of the stage that produced it. For this stage, a single `.tfvars` file is available:
 
 ```bash
-# `outputs_location` is set to `../../configs/example`
-ln -s ../../configs/example/02-networking/terraform-bootstrap.auto.tfvars.json
-ln -s ../../configs/example/02-networking/terraform-resman.auto.tfvars.json
+# `outputs_location` is set to `../../config`
+ln -s ../../config/02-networking/terraform-bootstrap.auto.tfvars.json
+ln -s ../../config/02-networking/terraform-resman.auto.tfvars.json
 ```
 
 If you want to continue to rely on `outputs_location` logic, create a `terraform.tfvars` file and configure it as deacribed [here](../00-bootstrap/#output-files-and-cross-stage-variables).

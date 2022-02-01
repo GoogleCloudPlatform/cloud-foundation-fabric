@@ -26,7 +26,6 @@ The project factory takes care of the following activities:
 * Billing setup (billing account attachment and budget configuration)
 * Essential contacts definition (for [budget alerts](https://cloud.google.com/billing/docs/how-to/budgets) and [important notifications](https://cloud.google.com/resource-manager/docs/managing-notification-contacts?hl=en))
   
-
 ## How to run this stage
 
 This stage is meant to be executed after "foundational stages" (i.e., stages [`00-bootstrap`](../../00-bootstrap), [`01-resman`](../../01-resman), [`02-networking`](../../02-networking) and [`02-security`](../../02-security)) have been run.
@@ -41,14 +40,14 @@ It's of course possible to run this stage in isolation, by making sure the archi
     * `"dns.networks.bindPrivateDNSZone"`
     * and role `"roles/orgpolicy.policyAdmin"`
   * on each folder where projects are created
-    * `"roles/logging.admin"` 
-    * `"roles/owner"` 
-    * `"roles/resourcemanager.folderAdmin"` 
+    * `"roles/logging.admin"`
+    * `"roles/owner"`
+    * `"roles/resourcemanager.folderAdmin"`
     * `"roles/resourcemanager.projectCreator"`
   * on the host project for the Shared VPC
-    * `"roles/browser"`       
+    * `"roles/browser"`
     * `"roles/compute.viewer"`
-    * `"roles/dns.admin"`     
+    * `"roles/dns.admin"`
 * If networking is used (e.g., for VMs, GKE Clusters or AppEngine flex), VPC Host projects and their subnets should exist when creating projects
 * If per-environment DNS sub-zones are required, one "root" zone per environment should exist when creating projects (e.g., prod.gcp.example.com.)
 
@@ -57,33 +56,33 @@ It's of course possible to run this stage in isolation, by making sure the archi
 If you're running this on top of Fast, you should run the following commands to create the providers file, and populate the required variables from the previous stage.
 
 ```bash
-# Variable `outputs_location` is set to `../../configs/example` in stage 01-resman
+# Variable `outputs_location` is set to `../../config` in stage 01-resman
 $ cd fabric-fast/stages/03-project-factory/prod
-ln -s ../../../configs/example/03-project-factory-prod/providers.tf
+ln -s ../../../config/03-project-factory-prod/providers.tf
 ```
 
 ### Variable configuration
 
 There are two broad sets of variables you will need to fill in:
 
-- variables shared by other stages (org id, billing account id, etc.), or derived from a resource managed by a different stage (folder id, automation project id, etc.)
-- variables specific to resources managed by this stage
+* variables shared by other stages (org id, billing account id, etc.), or derived from a resource managed by a different stage (folder id, automation project id, etc.)
+* variables specific to resources managed by this stage
 
 To avoid the tedious job of filling in the first group of variables with values derived from other stages' outputs, the same mechanism used above for the provider configuration can be used to leverage pre-configured `.tfvars` files.
 
 If you configured a valid path for `outputs_location` in the bootstrap and networking stage, simply link the relevant `terraform-*.auto.tfvars.json` files from this stage's outputs folder (under the path you specified), where the `*` above is set to the name of the stage that produced it. For this stage, a single `.tfvars` file is available:
 
 ```bash
-# Variable `outputs_location` is set to `../../configs/example` in stages 01-bootstrap and 02-networking
-ln -s ../../../configs/example/03-project-factory-prod/terraform-bootstrap.auto.tfvars.json
-ln -s ../../../configs/example/03-project-factory-prod/terraform-networking.auto.tfvars.json
+# Variable `outputs_location` is set to `../../config` in stages 01-bootstrap and 02-networking
+ln -s ../../../config/03-project-factory-prod/terraform-bootstrap.auto.tfvars.json
+ln -s ../../../config/03-project-factory-prod/terraform-networking.auto.tfvars.json
 ```
 
 If you're not using Fast, refer to the [Variables](#variables) table at the bottom of this document for a full list of variables, their origin (e.g., a stage or specific to this one), and descriptions explaining their meaning.
 
-Besides the values above, a project factory takes 2 additional inputs: 
+Besides the values above, a project factory takes 2 additional inputs:
 
-* `data/defaults.yaml`, manually configured by adapting the [`prod/data/defaults.yaml.sample`](./prod/data/defaults.yaml.sample), which defines per-environment default values e.g., for billing alerts and labels. 
+* `data/defaults.yaml`, manually configured by adapting the [`prod/data/defaults.yaml.sample`](./prod/data/defaults.yaml.sample), which defines per-environment default values e.g., for billing alerts and labels.
 
 * `data/projects/*.yaml`, one file per project (optionally grouped in folders), which configures each project. A [`prod/data/projects/project.yaml.sample`](./prod/data/projects/project.yaml.sample) is provided as reference and documentation for the schema. Projects will be named after the filename, e.g., `fast-prod-lab0.yaml` will create project `fast-prod-lab0`.
 
