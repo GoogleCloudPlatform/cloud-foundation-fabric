@@ -94,13 +94,13 @@ We need to create 3 file:
  - A `person_udf.js` containing the UDF javascript file used by the Dataflow template.
  - A `person_schema.json` file containing the table schema used to import the CSV.
  
-You can find an example of those file in the folder `./data-demo`. You can copy the example files in the GCS bucket using the  command returned in the terraform output as `command-01-gcs`. Below an example:
+You can find an example of those file in the folder `./data-demo`. You can copy the example files in the GCS bucket using the  command returned in the terraform output as `command_01_gcs`. Below an example:
 
 ```bash
 gsutil -i gcs-landing@PROJECT.iam.gserviceaccount.com cp data-demo/* gs://LANDING_BUCKET
 ```
 
-We can now run the Dataflow pipeline using the `gcloud` returned in the terraform output as `command-02-dataflow`. Below an example:
+We can now run the Dataflow pipeline using the `gcloud` returned in the terraform output as `command_02_dataflow`. Below an example:
 
 ```bash
 gcloud --impersonate-service-account=orch-test@PROJECT.iam.gserviceaccount.com dataflow jobs run test_batch_01 \
@@ -120,7 +120,7 @@ outputTable=PROJECT:datalake.person,\
 bigQueryLoadingTemporaryDirectory=gs://PREFIX-df-tmp 
 ```
 
-You can check data imported into Google BigQuery using the  command returned in the terraform output as `command-03-bq`. Below an example:
+You can check data imported into Google BigQuery using the  command returned in the terraform output as `command_03_bq`. Below an example:
 
 ```
 bq query --use_legacy_sql=false 'SELECT * FROM `PROJECT.datalake.person` LIMIT 1000'
