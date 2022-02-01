@@ -98,7 +98,6 @@ module "project" {
   ]
 
   # additive IAM bindings avoid disrupting bindings in existing project
-  # FIXME: this looks weird. What are you trying here?
   iam          = var.project_create != null ? local.iam : {}
   iam_additive = var.project_create == null ? local.iam : {}
   service_config = {
