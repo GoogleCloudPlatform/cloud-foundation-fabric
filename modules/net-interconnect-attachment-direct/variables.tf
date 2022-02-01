@@ -15,7 +15,7 @@
  */
 
 variable "bgp" {
-  description = "Bgp session parameters"
+  description = "Bgp session parameters."
   type = object({
     session_range             = string
     candidate_ip_ranges       = list(string)
@@ -26,7 +26,7 @@ variable "bgp" {
 }
 
 variable "config" {
-  description = "VLAN attachment parameters: description, vlan_id, bandwidth, admin_enabled, interconnect"
+  description = "VLAN attachment parameters: description, vlan_id, bandwidth, admin_enabled, interconnect."
   type = object({
     description   = string
     vlan_id       = number
@@ -49,13 +49,13 @@ variable "interconnect" {
 }
 
 variable "name" {
-  description = "The name of the vlan attachment"
+  description = "The name of the vlan attachment."
   type        = string
   default     = "vlan-attachment"
 }
 
 variable "peer" {
-  description = "Peer Ip address and asn. Only IPv4 supported"
+  description = "Peer Ip address and asn. Only IPv4 supported."
   type = object({
     ip_address = string
     asn        = number
@@ -63,18 +63,18 @@ variable "peer" {
 }
 
 variable "project_id" {
-  description = "The project containing the resources"
+  description = "The project containing the resources."
   type        = string
 }
 
 variable "region" {
-  description = "Region where the router resides"
+  description = "Region where the router resides."
   type        = string
   default     = "europe-west1-b"
 }
 
 variable "router_config" {
-  description = "Router asn and custom advertisement configuration, ip_ranges is a map of address ranges and descriptions.. "
+  description = "Router asn and custom advertisement configuration, ip_ranges is a map of address ranges and descriptions.. ."
   type = object({
     description = string
     asn         = number
@@ -105,7 +105,7 @@ variable "router_name" {
 }
 
 variable "router_network" {
-  description = "A reference to the network to which this router belongs"
+  description = "A reference to the network to which this router belongs."
   type        = string
   default     = null
 }

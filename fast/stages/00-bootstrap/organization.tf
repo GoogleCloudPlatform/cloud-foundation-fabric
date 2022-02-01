@@ -182,7 +182,7 @@ resource "google_organization_iam_binding" "org_admin_delegated" {
   members = [module.automation-tf-resman-sa.iam_email]
   condition {
     title       = "automation_sa_delegated_grants"
-    description = "Automation service account delegated grants"
+    description = "Automation service account delegated grants."
     expression = format(
       "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
       join(",", formatlist("'%s'", concat(

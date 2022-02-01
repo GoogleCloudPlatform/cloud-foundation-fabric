@@ -15,13 +15,13 @@
  */
 
 variable "description" {
-  description = "An optional description for the repository"
+  description = "An optional description for the repository."
   type        = string
   default     = "Terraform-managed registry"
 }
 
 variable "format" {
-  description = "Repository format. One of DOCKER or UNSPECIFIED"
+  description = "Repository format. One of DOCKER or UNSPECIFIED."
   type        = string
   default     = "DOCKER"
 }
@@ -33,7 +33,7 @@ variable "iam" {
 }
 
 variable "id" {
-  description = "Repository id"
+  description = "Repository id."
   type        = string
 }
 
@@ -44,7 +44,7 @@ variable "labels" {
 }
 
 variable "location" {
-  description = "Registry location. Use `gcloud beta artifacts locations list' to get valid values"
+  description = "Registry location. Use `gcloud beta artifacts locations list' to get valid values."
   type        = string
   default     = null
 }

@@ -29,7 +29,7 @@ variable "billing_account" {
 }
 
 variable "cidrs" {
-  description = "CIDR ranges for subnets"
+  description = "CIDR ranges for subnets."
   type        = map(string)
   default = {
     apps  = "10.0.0.0/24"
@@ -55,7 +55,7 @@ variable "prefix" {
 }
 
 variable "region" {
-  description = "Default region for resources"
+  description = "Default region for resources."
   type        = string
   default     = "europe-west1"
 }

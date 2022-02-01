@@ -39,7 +39,7 @@ As mentioned before, fast relies on multiple stages to progressively bring up yo
 ### Organizational level (00-01)
 
 - [Bootstrap](stages/00-bootstrap/README.md)<br/>
-  Enables critical organization-level functionality that depends on broad permissions. It has two primary purposes. The first is to bootstrap the resources needed to automate this and the following stages (service accounts, GCS buckets). And secondly, it applies the minimum amount of configuration needed at the organization level, to avoid the need for broad permissions later on, and to implement a minimum of security features like sinks and exports from the start.
+  Enables critical organization-level functionality that directly depends on Organization Administrator permissions. It has two primary purposes. The first is to bootstrap the resources needed to automate this and the following stages (service accounts, GCS buckets). And secondly, it applies the minimum amount of configuration needed at the organization level to avoid the need to grant organization-level permissions via Organization Administrator later on, and to implement a minimum of security features like sinks and exports from the start.
 - [Resource Management](stages/01-resman/README.md)<br/>
   Creates the base resource hierarchy (folders) and the automation resources required to delegate each part of the hierarchy to separate stages. This stage also configures organization-level policies and any exceptions needed by different branches of the resource hierarchy.
 
@@ -52,7 +52,7 @@ As mentioned before, fast relies on multiple stages to progressively bring up yo
 
 ### Environment-level resources (03)
 
-- [Project Factory](03-projectfactory/prod/README.md)<br/>
+- [Project Factory](stages/03-project-factory/prod/README.md)<br/>
   YAML-based factory to create and configure application- or team-level projects. Configuration includes VPC-level settings for Shared VPC, service-level configuration for CMEK encryption via centralized keys, and service account creation for workloads and applications. This stage is meant to be used once per environment.
 - Data Platform (in development)
 - GKE Multitenant (in development)

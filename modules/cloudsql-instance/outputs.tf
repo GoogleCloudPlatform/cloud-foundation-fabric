@@ -22,12 +22,12 @@ locals {
 }
 
 output "connection_name" {
-  description = "Connection name of the primary instance"
+  description = "Connection name of the primary instance."
   value       = google_sql_database_instance.primary.connection_name
 }
 
 output "connection_names" {
-  description = "Connection names of all instances"
+  description = "Connection names of all instances."
   value = {
     for id, instance in local._all_intances :
     id => instance.connection_name
@@ -35,12 +35,12 @@ output "connection_names" {
 }
 
 output "id" {
-  description = "ID of the primary instance"
+  description = "ID of the primary instance."
   value       = google_sql_database_instance.primary.private_ip_address
 }
 
 output "ids" {
-  description = "IDs of all instances"
+  description = "IDs of all instances."
   value = {
     for id, instance in local._all_intances :
     id => instance.id
@@ -48,18 +48,18 @@ output "ids" {
 }
 
 output "instances" {
-  description = "Cloud SQL instance resources"
+  description = "Cloud SQL instance resources."
   value       = local._all_intances
   sensitive   = true
 }
 
 output "ip" {
-  description = "IP address of the primary instance"
+  description = "IP address of the primary instance."
   value       = google_sql_database_instance.primary.private_ip_address
 }
 
 output "ips" {
-  description = "IP addresses of all instances"
+  description = "IP addresses of all instances."
   value = {
     for id, instance in local._all_intances :
     id => instance.private_ip_address
@@ -67,12 +67,12 @@ output "ips" {
 }
 
 output "self_link" {
-  description = "Self link of the primary instance"
+  description = "Self link of the primary instance."
   value       = google_sql_database_instance.primary.self_link
 }
 
 output "self_links" {
-  description = "Self links of all instances"
+  description = "Self links of all instances."
   value = {
     for id, instance in local._all_intances :
     id => instance.self_link

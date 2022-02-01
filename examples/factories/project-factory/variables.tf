@@ -60,7 +60,7 @@ variable "dns_zones" {
 }
 
 variable "essential_contacts" {
-  description = "Email contacts to be used for billing and GCP notifications"
+  description = "Email contacts to be used for billing and GCP notifications."
   type        = list(string)
   default     = []
 }

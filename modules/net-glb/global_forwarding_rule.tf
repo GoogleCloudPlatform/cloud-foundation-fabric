@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description Global address and forwarding rule.
+
 locals {
   ip_address = (
     var.reserve_ip_address
@@ -31,6 +33,14 @@ locals {
     ? google_compute_target_https_proxy.https.0.id
     : google_compute_target_http_proxy.http.0.id
   )
+}
+
+resource "google_compute_global_address" "static_ip" {
+  count       = var.reserve_ip_address ? 1 : 0
+  provider    = google-beta
+  name        = var.name
+  project     = var.project_id
+  description = "Terraform managed."
 }
 
 resource "google_compute_global_forwarding_rule" "forwarding_rule" {
