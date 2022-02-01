@@ -67,6 +67,10 @@ locals {
         for k, v in local._project_factory_sas : k => [v]
       }
     })
+    "03-gke-multitenant-prod" = jsonencode({
+      folder_id   = module.branch-gke-envs-folder["prod"].id
+      environment = "prod"
+    })
   }
 }
 
