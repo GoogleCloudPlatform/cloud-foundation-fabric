@@ -199,7 +199,7 @@ Description of commands:
 |---|---|:---:|
 | [VPC](outputs.tf#L61) | VPC networks. |  |
 | [bigquery-datasets](outputs.tf#L17) | BigQuery datasets. |  |
-| [demo_commands](outputs.tf#L70) | Demo commands |  |
+| [demo_commands](outputs.tf#L70) | Demo commands. |  |
 | [gcs-buckets](outputs.tf#L28) | GCS buckets. |  |
 | [kms_keys](outputs.tf#L42) | Cloud MKS keys. |  |
 | [projects](outputs.tf#L47) | GCP Projects. |  |
