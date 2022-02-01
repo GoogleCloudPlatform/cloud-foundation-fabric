@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# tfdoc:file:description Load project.
+# tfdoc:file:description Load project and VPC.
 
 locals {
   group_iam_lod = {
@@ -79,4 +79,36 @@ module "lod-prj" {
     dataflow = [try(local.service_encryption_keys.dataflow, null)]
     storage  = [try(local.service_encryption_keys.storage, null)]
   }
+}
+
+module "lod-vpc" {
+  count      = var.network_config.network != null ? 0 : 1
+  source     = "../../../modules/net-vpc"
+  project_id = module.lod-prj.project_id
+  name       = "${local.prefix_lod}-vpc"
+  subnets = [
+    {
+      ip_cidr_range      = var.network_config.vpc_subnet_range.load
+      name               = "${local.prefix_lod}-subnet"
+      region             = var.location_config.region
+      secondary_ip_range = {}
+    }
+  ]
+}
+
+module "lod-vpc-firewall" {
+  count        = var.network_config.network != null ? 0 : 1
+  source       = "../../../modules/net-vpc-firewall"
+  project_id   = module.lod-prj.project_id
+  network      = module.lod-vpc[0].name
+  admin_ranges = values(module.lod-vpc[0].subnet_ips)
+}
+
+module "lod-nat" {
+  count          = var.network_config.network != null ? 0 : 1
+  source         = "../../../modules/net-cloudnat"
+  project_id     = module.lod-prj.project_id
+  region         = var.location_config.region
+  name           = "${local.prefix_lod}-default"
+  router_network = module.lod-vpc[0].name
 }
