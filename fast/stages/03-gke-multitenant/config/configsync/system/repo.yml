@@ -1,0 +1,8 @@
+# For the mono-repo mode, declaring a Repo resource under system/ directory is required.
+# For the multi-repo mode, declaring a Repo resource under system/ directory is optional.
+# apiVersion: configmanagement.gke.io/v1
+# kind: Repo
+# metadata:
+#  name: repo
+#spec:
+#  version: 1.0.0

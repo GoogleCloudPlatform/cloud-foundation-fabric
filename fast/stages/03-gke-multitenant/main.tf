@@ -19,7 +19,7 @@ locals {
 }
 
 module "gke-project-0" {
-  source          = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/project?ref=v12.0.0"
+  source          = "../../../modules/project"
   billing_account = var.billing_account_id
   name            = "${var.environment}-gke-clusters-0"
   parent          = var.folder_id
@@ -59,7 +59,7 @@ module "gke-project-0" {
 }
 
 module "gke-dataset-resource-usage" {
-  source        = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/bigquery-dataset?ref=v12.0.0"
+  source        = "../../../modules/bigquery-dataset"
   project_id    = module.gke-project-0.project_id
   id            = "resource_usage"
   friendly_name = "GKE resource usage."

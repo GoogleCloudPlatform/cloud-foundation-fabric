@@ -1,0 +1,25 @@
+apiVersion: constraints.gatekeeper.sh/v1beta1
+kind: K8sRequiredLabels
+metadata:
+  name: ns-must-have-geo
+  annotations:
+    configsync.gke.io/cluster-name-selector: gke-1 #to adjust
+spec:
+  enforcementAction: dryrun
+  match:
+    excludedNamespaces: 
+    - "kube-system"
+    - "kube-public"
+    - "kube-node-lease"
+    - "resource-group-system"
+    - "config-management-monitoring"
+    - "config-management-system"
+    - "cos-auditd"
+    - "gatekeeper-system"
+    - "kube-node-lease"
+    kinds:
+      - apiGroups: [""]
+        kinds: ["Namespace"]
+  parameters:
+    labels:
+      - key: "geo"

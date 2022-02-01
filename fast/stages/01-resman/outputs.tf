@@ -111,21 +111,6 @@ output "project_factories" {
   }
 }
 
-output "gke_multitenant" {
-  # tfdoc:output:consumers xx-teams
-  description = "Data for the project factories stage."
-  value = {
-    # dev = {
-    #   bucket = module.branch-gke-env-dev-gcs.name
-    #   sa     = module.branch-gke-env-dev-sa.email
-    # }
-    # prod = {
-    #   bucket = module.branch-gke-env-prod-gcs.name
-    #   sa     = module.branch-gke-env-prod-sa.email
-    # }
-  }
-}
-
 # ready to use provider configurations for subsequent stages
 
 output "providers" {
@@ -155,7 +140,7 @@ output "security" {
   }
 }
 
-output "gke" {
+output "gke_multitenant" {
   # tfdoc:output:consumers 03-gke-multitenant
   description = "Data for the gke stage."
   value = {

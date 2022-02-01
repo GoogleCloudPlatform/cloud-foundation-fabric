@@ -28,7 +28,7 @@ locals {
 }
 
 module "gke_1_nodepool" {
-  source             = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/gke-nodepool?ref=v12.0.0"
+  source             = "../../../modules/gke-nodepool"
   for_each           = local.nodepools
   name               = each.value.name
   project_id         = module.gke-project-0.project_id

@@ -1,0 +1,33 @@
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: high-priority-system
+value: 1000000
+globalDefault: false
+description: "This priority class will cause other pods to be preempted."
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: high-priority
+value: 1000
+globalDefault: false
+description: "This priority class will cause other pods to be preempted."
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: mid-priority
+value: 100
+globalDefault: false
+# preemptionPolicy: Never
+description: "This priority class will cause other pods to be preempted."
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: low-priority
+value: 10
+globalDefault: true
+# preemptionPolicy: Never
+description: "This priority class will cause other pods to be preempted."
