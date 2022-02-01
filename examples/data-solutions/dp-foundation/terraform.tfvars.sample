@@ -4,5 +4,5 @@ project_create = {
   billing_account_id = "111111-222222-333333"
 }
 organization = {
-  domain = "caggioland.com"
+  domain = "example.com"
 }
