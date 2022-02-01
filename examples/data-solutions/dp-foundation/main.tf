@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# tfdoc:file:description TODO
+
 locals {
   groups                  = { for k, v in var.groups : k => "${v}@${var.organization.domain}" }
   groups_iam              = { for k, v in local.groups : k => "group:${v}" }

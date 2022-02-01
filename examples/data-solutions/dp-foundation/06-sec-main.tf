@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# tfdoc:file:description Security project
+
 locals {
   group_iam_sec = {
     "${local.groups.data-engineers}" = [

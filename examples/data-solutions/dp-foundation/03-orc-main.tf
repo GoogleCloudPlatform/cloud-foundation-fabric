@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# tfdoc:file:description Orchestration project
+
 locals {
   group_iam_orc = {
     "${local.groups.data-engineers}" = [

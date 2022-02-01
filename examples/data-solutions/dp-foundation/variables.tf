@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# tfdoc:file:description TODO
+
 variable "composer_config" {
   type = object({
     ip_range_cloudsql   = string

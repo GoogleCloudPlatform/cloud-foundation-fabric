@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# tfdoc:file:description Datalake projects
+
 locals {
   group_iam_dtl = {
     "${local.groups.data-engineers}" = [
