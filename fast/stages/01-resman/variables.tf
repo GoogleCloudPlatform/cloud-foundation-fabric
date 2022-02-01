@@ -103,3 +103,22 @@ variable "team_folders" {
   #   }
   # }
 }
+
+variable "gke_environments" {
+  description = "GKE folders to be created. Format is described in a code comment."
+  type = map(object({
+    descriptive_name     = string
+    group_iam            = map(list(string))
+    impersonation_groups = list(string)
+  }))
+  default = null
+  # default = {
+  #   prod = {
+  #     descriptive_name = "Prod"
+  #     group_iam = {
+  #       admin-group = [roles/owner, roles/projectCreator]
+  #     }
+  #     impersonation_groups = ["gcp-gke-admins@example.com"]
+  #   }
+  # }
+}

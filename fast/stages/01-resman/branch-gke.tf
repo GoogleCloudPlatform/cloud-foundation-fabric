@@ -16,46 +16,152 @@
 
 # tfdoc:file:description Security stage resources.
 
+# top-level gke folder and service account
+
 module "branch-gke-folder" {
   source = "../../../modules/folder"
   parent = "organizations/${var.organization.id}"
   name   = "GKE"
-  group_iam = {
-    (local.groups.gcp-gke-admins) = [
-      # add any needed roles for resources/services not managed via Terraform,
-      # e.g.
-      # "roles/bigquery.admin",
-      # "roles/cloudasset.owner",
-      # "roles/cloudkms.admin",
-      # "roles/logging.admin",
-      # "roles/secretmanager.admin",
-      # "roles/storage.admin",
-      "roles/viewer"
-    ]
-  }
-  iam = {
-    "roles/logging.admin"                  = [module.branch-gke-sa.iam_email]
-    "roles/owner"                          = [module.branch-gke-sa.iam_email]
-    "roles/resourcemanager.folderAdmin"    = [module.branch-gke-sa.iam_email]
-    "roles/resourcemanager.projectCreator" = [module.branch-gke-sa.iam_email]
-  }
 }
 
-module "branch-gke-sa" {
+module "branch-gke-prod-sa" {
   source      = "../../../modules/iam-service-account"
   project_id  = var.automation_project_id
   name        = "resman-gke-0"
-  description = "Terraform gke security service account."
+  description = "Terraform gke production service account."
   prefix      = local.prefixes.prod
 }
 
-module "branch-gke-gcs" {
+# GKE-level folders, service accounts and buckets for each individual environment
+
+module "branch-gke-envs-folder" {
+  source    = "../../../modules/folder"
+  for_each  = coalesce(var.gke_environments, {})
+  parent    = module.branch-gke-folder.id
+  name      = each.value.descriptive_name
+  group_iam = each.value.group_iam == null ? {} : each.value.group_iam
+}
+
+module "branch-gke-env-sa" {
+  source      = "../../../modules/iam-service-account"
+  for_each    = coalesce(var.gke_environments, {})
+  project_id  = var.automation_project_id
+  name        = "gke-${each.key}-0"
+  description = "Terraform env ${each.key} service account."
+  prefix      = local.prefixes.prod
+  iam = {
+    "roles/iam.serviceAccountTokenCreator" = (
+      each.value.impersonation_groups == null
+      ? []
+      : [for g in each.value.impersonation_groups : "group:${g}"]
+    )
+  }
+}
+
+module "branch-gke-env-gcs" {
   source     = "../../../modules/gcs"
+  for_each   = coalesce(var.gke_environments, {})
   project_id = var.automation_project_id
-  name       = "resman-gke-0"
+  name       = "gke-${each.key}-0"
   prefix     = local.prefixes.prod
   versioning = true
   iam = {
-    "roles/storage.objectAdmin" = [module.branch-gke-sa.iam_email]
+    "roles/storage.objectAdmin" = [module.branch-gke-env-sa[each.key].iam_email]
+  }
+}
+
+# environment: dev folder automation resources
+
+module "branch-gke-env-dev-folder" {
+  source   = "../../../modules/folder"
+  for_each = coalesce(var.gke_environments, {})
+  parent   = module.branch-gke-envs-folder[each.key].id
+  # naming: environment descriptive name
+  name = "${module.branch-gke-envs-folder[each.key].name} - Dev"
+  # environment-wide human permissions on the whole gke environment
+  group_iam = {}
+  iam = {
+    # remove owner here and at project level if SA does not manage project resources
+    "roles/owner" = [
+      module.branch-gke-env-prod-sa.iam_email
+    ]
+    "roles/logging.admin" = [
+      module.branch-gke-env-prod-sa.iam_email
+    ]
+    "roles/resourcemanager.folderAdmin" = [
+      module.branch-gke-env-prod-sa.iam_email
+    ]
+    "roles/resourcemanager.projectCreator" = [
+      module.branch-gke-env-prod-sa.iam_email
+    ]
+  }
+}
+
+module "branch-gke-env-dev-sa" {
+  source     = "../../../modules/iam-service-account"
+  project_id = var.automation_project_id
+  name       = "resman-gke-env-0"
+  # naming: environment in description
+  description = "Terraform gke multitenant production service account."
+  prefix      = local.prefixes.dev
+}
+
+module "branch-gke-env-dev-gcs" {
+  source     = "../../../modules/gcs"
+  project_id = var.automation_project_id
+  name       = "resman-gke-env-0"
+  prefix     = local.prefixes.dev
+  versioning = true
+  iam = {
+    "roles/storage.objectAdmin" = [module.branch-gke-env-prod-sa.iam_email]
+  }
+}
+
+
+
+# environment: production folder automation resources
+
+module "branch-gke-env-prod-folder" {
+  source   = "../../../modules/folder"
+  for_each = coalesce(var.gke_environments, {})
+  parent   = module.branch-gke-envs-folder[each.key].id
+  # naming: environment descriptive name
+  name = "${module.branch-gke-envs-folder[each.key].name} - Production"
+  # environment-wide human permissions on the whole gke environment
+  group_iam = {}
+  iam = {
+    # remove owner here and at project level if SA does not manage project resources
+    "roles/owner" = [
+      module.branch-gke-env-prod-sa.iam_email
+    ]
+    "roles/logging.admin" = [
+      module.branch-gke-env-prod-sa.iam_email
+    ]
+    "roles/resourcemanager.folderAdmin" = [
+      module.branch-gke-env-prod-sa.iam_email
+    ]
+    "roles/resourcemanager.projectCreator" = [
+      module.branch-gke-env-prod-sa.iam_email
+    ]
+  }
+}
+
+module "branch-gke-env-prod-sa" {
+  source     = "../../../modules/iam-service-account"
+  project_id = var.automation_project_id
+  name       = "resman-gke-env-0"
+  # naming: environment in description
+  description = "Terraform gke multitenant production service account."
+  prefix      = local.prefixes.prod
+}
+
+module "branch-gke-env-prod-gcs" {
+  source     = "../../../modules/gcs"
+  project_id = var.automation_project_id
+  name       = "resman-gke-env-0"
+  prefix     = local.prefixes.prod
+  versioning = true
+  iam = {
+    "roles/storage.objectAdmin" = [module.branch-gke-env-prod-sa.iam_email]
   }
 }
