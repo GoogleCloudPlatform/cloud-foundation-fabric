@@ -203,7 +203,7 @@ terraform apply \
 Once the initial `apply` completes successfully, configure a remote backend using the new GCS bucket, and impersonation on the automation service account for this stage. To do this, you can use the generated `providers.tf` file if you have configured output files as described above, or extract its contents from Terraform's output, then migrate state with `terraform init`:
 
 ```bash
-# if using output files via the outputs_location and set to `../../config/example`
+# if using output files via the outputs_location and set to `../../config`
 ln -s ../../config/00-bootstrap/* ./
 # or from outputs if not using output files
 terraform output -json providers | jq -r '.["00-bootstrap"]' \
