@@ -123,7 +123,7 @@ We implemented a centralized model for Data Loss Prevention material. Templates 
 
 ![Centralized Cloud DLP high level diagram](./images/dlp_diagram.png "Centralized Cloud DLP high level diagram")
 
-# How to run this script #TODO
+# How to run this script
 The Data Platform is meant to be executed by a Service Account (or a regular user) having this minial set of permission:
 * **Org level**:
   * `"compute.organizations.enableXpnResource"`
@@ -135,7 +135,7 @@ The Data Platform is meant to be executed by a Service Account (or a regular use
   * `"roles/resourcemanager.folderAdmin"`
   * `"roles/resourcemanager.projectCreator"`
 * **Cloud KMS Keys** (if Cloud KMS keys are configured):
-  * `"roles/cloudkms.admin"` or Permissions: `cloudkms.cryptoKeys.getIamPolicy`, `cloudkms.cryptoKeys.list`, `cloudkms.cryptoKeys.setIamPolicyTODO`
+  * `"roles/cloudkms.admin"` or Permissions: `cloudkms.cryptoKeys.getIamPolicy`, `cloudkms.cryptoKeys.list`, `cloudkms.cryptoKeys.setIamPolicy`
 * **on the host project** for the Shared VPC/s
   * `"roles/browser"`
   * `"roles/compute.viewer"`

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# tfdoc:file:description TODO
+# tfdoc:file:description Output variables
 
 output "bigquery-datasets" {
   description = "BigQuery datasets."

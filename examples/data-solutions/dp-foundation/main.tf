@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# tfdoc:file:description TODO
+# tfdoc:file:description Core locals
 
 locals {
   groups                  = { for k, v in var.groups : k => "${v}@${var.organization.domain}" }
