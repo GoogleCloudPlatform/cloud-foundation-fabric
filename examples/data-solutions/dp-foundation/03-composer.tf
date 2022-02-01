@@ -102,30 +102,4 @@ resource "google_composer_environment" "orc-cmp-0" {
     #   }
     # }
   }
-  depends_on = [
-    module.dtl-0-bq-0,
-    module.dtl-1-bq-0,
-    module.dtl-2-bq-0,
-    module.dtl-exp-bq-0,
-    module.dtl-0-cs-0,
-    module.dtl-1-cs-0,
-    module.dtl-2-cs-0,
-    module.dtl-exp-cs-0,
-    module.lnd-cs-0,
-    module.lnd-bq-0,
-    module.lnd-ps-0,
-    module.lod-cs-df-0,
-    module.trf-cs-df-0,
-    module.orc-vpc,
-    module.orc-vpc,
-    module.dtl-0-prj,
-    module.dtl-1-prj,
-    module.dtl-2-prj,
-    module.lnd-prj,
-    module.lod-prj,
-    module.orc-prj,
-    module.trf-prj,
-    module.lod-sa-df-0,
-    module.lod-sa-df-0,
-  ]
 }

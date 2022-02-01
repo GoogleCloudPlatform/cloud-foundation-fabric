@@ -176,6 +176,35 @@ Description of commands:
 - 03: copy the Cloud Composer DAG to Cloud Composer storage bucket impersonating the `orchestration` service account.
 - 04: Open the Cloud Composer Airflow UI and run the imported DAG.
 - 05: Run the Bigquery query to see results.
+<!-- BEGIN TFDOC -->
+
+## Variables
+
+| name | description | type | required | default |
+|---|---|:---:|:---:|:---:|
+| [organization](variables.tf#L76) | Organization details. | <code title="object&#40;&#123;&#10;  domain &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [prefix](variables.tf#L83) | Unique prefix used for resource names. Not used for project if 'project_create' is null. | <code>string</code> | ✓ |  |
+| [composer_config](variables.tf#L17) |  | <code title="object&#40;&#123;&#10;  ip_range_cloudsql   &#61; string&#10;  ip_range_gke_master &#61; string&#10;  ip_range_web_server &#61; string&#10;  region              &#61; string&#10;  secondary_ip_range &#61; object&#40;&#123;&#10;    pods     &#61; string&#10;    services &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  ip_range_cloudsql   &#61; &#34;10.20.10.0&#47;24&#34;&#10;  ip_range_gke_master &#61; &#34;10.20.11.0&#47;28&#34;&#10;  ip_range_web_server &#61; &#34;10.20.11.16&#47;28&#34;&#10;  region              &#61; &#34;europe-west1&#34;&#10;  secondary_ip_range &#61; &#123;&#10;    pods     &#61; &#34;10.10.8.0&#47;22&#34;&#10;    services &#61; &#34;10.10.12.0&#47;24&#34;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [data_force_destroy](variables.tf#L40) | Flag to set 'force_destroy' on data services like biguqery or cloud storage. | <code>bool</code> |  | <code>false</code> |
+| [groups](variables.tf#L46) | Groups. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  data-analysts  &#61; &#34;gcp-data-analysts&#34;&#10;  data-engineers &#61; &#34;gcp-data-engineers&#34;&#10;  data-security  &#61; &#34;gcp-data-security&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [location_config](variables.tf#L128) | Locations where resources will be deployed. Map to configure region and multiregion specs. | <code title="object&#40;&#123;&#10;  region       &#61; string&#10;  multi_region &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  region       &#61; &#34;europe-west1&#34;&#10;  multi_region &#61; &#34;eu&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [network_config](variables.tf#L56) | Shared VPC to use. If not null networks will be created in projects. | <code title="object&#40;&#123;&#10;  network &#61; string&#10;  vpc_subnet_range &#61; object&#40;&#123;&#10;    load           &#61; string&#10;    transformation &#61; string&#10;    orchestration  &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  network &#61; null&#10;  vpc_subnet_range &#61; &#123;&#10;    load           &#61; &#34;10.10.0.0&#47;24&#34;&#10;    transformation &#61; &#34;10.10.0.0&#47;24&#34;&#10;    orchestration  &#61; &#34;10.10.0.0&#47;24&#34;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [project_create](variables.tf#L88) | Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [project_id](variables.tf#L97) | Project id, references existing project if `project_create` is null. | <code title="object&#40;&#123;&#10;  landing       &#61; string&#10;  load          &#61; string&#10;  orchestration &#61; string&#10;  trasformation &#61; string&#10;  datalake      &#61; string&#10;  security      &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  landing       &#61; &#34;lnd&#34;&#10;  load          &#61; &#34;lod&#34;&#10;  orchestration &#61; &#34;orc&#34;&#10;  trasformation &#61; &#34;trf&#34;&#10;  datalake      &#61; &#34;dtl&#34;&#10;  security      &#61; &#34;sec&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [project_services](variables.tf#L117) | List of core services enabled on all projects. | <code>list&#40;string&#41;</code> |  | <code title="&#91;&#10;  &#34;cloudresourcemanager.googleapis.com&#34;,&#10;  &#34;iam.googleapis.com&#34;,&#10;  &#34;serviceusage.googleapis.com&#34;,&#10;  &#34;stackdriver.googleapis.com&#34;&#10;&#93;">&#91;&#8230;&#93;</code> |
+
+## Outputs
+
+| name | description | sensitive |
+|---|---|:---:|
+| [VPC](outputs.tf#L61) | VPC networks. |  |
+| [bigquery-datasets](outputs.tf#L17) | BigQuery datasets. |  |
+| [demo_commands](outputs.tf#L70) | Demo commands |  |
+| [gcs-buckets](outputs.tf#L28) | GCS buckets. |  |
+| [kms_keys](outputs.tf#L42) | Cloud MKS keys. |  |
+| [projects](outputs.tf#L47) | GCP Projects. |  |
+
+<!-- END TFDOC -->
 # TODOs
 Features to add in futere releases:
  * Add support for Column level access on Bigquery

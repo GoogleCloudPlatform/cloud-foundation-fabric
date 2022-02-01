@@ -68,7 +68,7 @@ output "VPC" {
 }
 
 output "demo_commands" {
-  description = "Demo commands"
+  description = "Demo commands."
   value = {
     01 = "gsutil -i ${module.lnd-sa-cs-0.email} cp demo/data/*.csv gs://${module.lnd-cs-0.name}"
     02 = "gsutil -i ${module.orc-sa-cmp-0.email} cp demo/data/*.j* gs://${module.orc-cs-0.name}"
