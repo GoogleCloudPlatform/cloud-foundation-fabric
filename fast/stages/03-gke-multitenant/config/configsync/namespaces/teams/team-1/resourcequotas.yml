@@ -1,0 +1,21 @@
+# ResourceQuota Reference: https://kubernetes.io/docs/concepts/policy/resource-quotas/
+kind: ResourceQuota
+apiVersion: v1
+metadata:
+  namespace: team-a
+  name: pvc
+spec:
+  hard:
+    persistentvolumeclaims: "3"
+---
+apiVersion: v1
+kind: ResourceQuota
+metadata:
+  namespace: team-a
+  name: mem-cpu-store
+spec:
+  hard:
+    requests.cpu: "1"
+    requests.memory: 1Gi
+    limits.cpu: "2"
+    limits.memory: 2Gi

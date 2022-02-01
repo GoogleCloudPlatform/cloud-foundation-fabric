@@ -1,0 +1,13 @@
+kind: ClusterRoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: namespace-viewer
+roleRef:
+  kind: ClusterRole
+  name: dev-namespace-viewer
+  apiGroup: rbac.authorization.k8s.io
+subjects:
+- kind: Group
+  name: developers@[DOMAIN]
+  apiGroup: rbac.authorization.k8s.io
+  namespace: team-1

@@ -24,7 +24,7 @@ locals {
 }
 
 module "gke-cluster" {
-  source                   = "github.com/terraform-google-modules/cloud-foundation-fabric//modules/gke-cluster?ref=v12.0.0"
+  source                   = "../../../modules/gke-cluster"
   for_each                 = local.clusters
   project_id               = module.gke-project-0.project_id
   name                     = each.key

@@ -1,0 +1,16 @@
+# This Namespace is configured with RepoSync
+# Doc ref: https://cloud.google.com/anthos-config-management/docs/how-to/namespace-repositories#namespace-root
+
+apiVersion: configsync.gke.io/v1beta1
+kind: RepoSync
+metadata:
+  name: repo-sync
+  namespace: team-1
+spec:
+  sourceFormat: unstructured
+  git:
+    repo: https://github.com/danielmarzini/configsync-application-example
+    branch: main
+    revision: HEAD
+    dir: "configsync/clusters/cluster-east/namespaces/zoneprinter"
+    auth: none

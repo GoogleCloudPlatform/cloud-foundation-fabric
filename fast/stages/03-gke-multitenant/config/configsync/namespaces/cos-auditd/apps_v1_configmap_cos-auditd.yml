@@ -1,0 +1,39 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: fluentd-gcp-config-cos-auditd
+  namespace: cos-auditd
+  annotations:
+    kubernetes.io/description: 'ConfigMap for Linux auditd logging daemonset on COS nodes.'
+data:
+  google-fluentd.conf: |-
+    <source>
+      @type systemd
+      filters [{ "SYSLOG_IDENTIFIER": "audit" }]
+      pos_file /var/log/gcp-journald-audit.pos
+      read_from_head true
+      tag linux-auditd
+    </source>
+
+    # Do not collect fluentd's own logs to avoid infinite loops.
+    <match fluent.**>
+      @type null
+    </match>
+
+    <match **>
+      @type google_cloud
+
+      enable_monitoring false
+      split_logs_by_tag false
+      detect_subservice false
+      buffer_type file
+      buffer_path /var/log/fluentd-buffers/system.audit.buffer
+      buffer_queue_full_action block
+      buffer_chunk_limit 512k
+      buffer_queue_limit 2
+      flush_interval 5s
+      max_retry_wait 30
+      disable_retry_limit
+      num_threads 2
+      use_grpc true
+    </match>
