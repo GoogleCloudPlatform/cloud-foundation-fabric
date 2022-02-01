@@ -23,5 +23,5 @@ module "orc-cs-0" {
   prefix         = local.prefix_orc
   location       = var.location_config.region
   storage_class  = "REGIONAL"
-  encryption_key = try(local.service_encryption_keys.storage != null, false) ? try(local.service_encryption_keys.storage, null) : null
+  encryption_key = try(local.service_encryption_keys.storage, null)
 }

@@ -21,7 +21,7 @@ module "dtl-0-bq-0" {
   project_id     = module.dtl-0-prj.project_id
   id             = "${replace(local.prefix_dtl, "-", "_")}_0_bq_0"
   location       = var.location_config.region
-  encryption_key = try(local.service_encryption_keys.bq != null, false) ? try(local.service_encryption_keys.bq, null) : null
+  encryption_key = try(local.service_encryption_keys.bq, null)
 }
 
 module "dtl-1-bq-0" {
@@ -29,7 +29,7 @@ module "dtl-1-bq-0" {
   project_id     = module.dtl-1-prj.project_id
   id             = "${replace(local.prefix_dtl, "-", "_")}_1_bq_0"
   location       = var.location_config.region
-  encryption_key = try(local.service_encryption_keys.bq != null, false) ? try(local.service_encryption_keys.bq, null) : null
+  encryption_key = try(local.service_encryption_keys.bq, null)
 }
 
 module "dtl-2-bq-0" {
@@ -37,7 +37,7 @@ module "dtl-2-bq-0" {
   project_id     = module.dtl-2-prj.project_id
   id             = "${replace(local.prefix_dtl, "-", "_")}_2_bq_0"
   location       = var.location_config.region
-  encryption_key = try(local.service_encryption_keys.bq != null, false) ? try(local.service_encryption_keys.bq, null) : null
+  encryption_key = try(local.service_encryption_keys.bq, null)
 }
 
 module "dtl-exp-bq-0" {
@@ -45,7 +45,7 @@ module "dtl-exp-bq-0" {
   project_id     = module.dtl-exp-prj.project_id
   id             = "${replace(local.prefix_dtl, "-", "_")}_exp_bq_0"
   location       = var.location_config.region
-  encryption_key = try(local.service_encryption_keys.bq != null, false) ? try(local.service_encryption_keys.bq, null) : null
+  encryption_key = try(local.service_encryption_keys.bq, null)
 }
 
 # Cloud storage
@@ -57,7 +57,7 @@ module "dtl-0-cs-0" {
   prefix         = local.prefix_dtl
   location       = var.location_config.region
   storage_class  = "REGIONAL"
-  encryption_key = try(local.service_encryption_keys.storage != null, false) ? try(local.service_encryption_keys.storage, null) : null
+  encryption_key = try(local.service_encryption_keys.storage, null)
   force_destroy  = var.data_force_destroy
 }
 
@@ -68,7 +68,7 @@ module "dtl-1-cs-0" {
   prefix         = local.prefix_dtl
   location       = var.location_config.region
   storage_class  = "REGIONAL"
-  encryption_key = try(local.service_encryption_keys.storage != null, false) ? try(local.service_encryption_keys.storage, null) : null
+  encryption_key = try(local.service_encryption_keys.storage, null)
   force_destroy  = var.data_force_destroy
 }
 
@@ -79,7 +79,7 @@ module "dtl-2-cs-0" {
   prefix         = local.prefix_dtl
   location       = var.location_config.region
   storage_class  = "REGIONAL"
-  encryption_key = try(local.service_encryption_keys.storage != null, false) ? try(local.service_encryption_keys.storage, null) : null
+  encryption_key = try(local.service_encryption_keys.storage, null)
   force_destroy  = var.data_force_destroy
 }
 
@@ -90,6 +90,6 @@ module "dtl-exp-cs-0" {
   prefix         = local.prefix_dtl
   location       = var.location_config.region
   storage_class  = "REGIONAL"
-  encryption_key = try(local.service_encryption_keys.storage != null, false) ? try(local.service_encryption_keys.storage, null) : null
+  encryption_key = try(local.service_encryption_keys.storage, null)
   force_destroy  = var.data_force_destroy
 }

@@ -91,7 +91,7 @@ resource "google_composer_environment" "orc-cmp-0" {
     dynamic "encryption_config" {
       for_each = try(local.service_encryption_keys.composer != null, false) ? { 1 = 1 } : {}
       content {
-        kms_key_name = try(local.service_encryption_keys.composer != null, false) ? try(local.service_encryption_keys.composer, null) : null
+        kms_key_name = try(local.service_encryption_keys.composer, null)
       }
     }
 
