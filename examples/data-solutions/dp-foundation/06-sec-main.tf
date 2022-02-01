@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# tfdoc:file:description Security project
+# tfdoc:file:description Security project.
 
 locals {
   group_iam_sec = {

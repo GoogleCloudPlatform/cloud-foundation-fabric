@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# tfdoc:file:description Load VPC
+# tfdoc:file:description Load VPC.
 
 module "lod-vpc" {
   count      = var.network_config.network != null ? 0 : 1

@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# tfdoc:file:description Orchestration Cloud Composer definition
+# tfdoc:file:description Orchestration Cloud Composer definition.
 
 module "orc-sa-cmp-0" {
   source     = "../../../modules/iam-service-account"

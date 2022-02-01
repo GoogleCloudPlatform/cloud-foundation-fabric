@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# tfdoc:file:description Orchestration VPC
+# tfdoc:file:description Orchestration VPC.
 
 module "orc-vpc" {
   count      = var.network_config.network != null ? 0 : 1

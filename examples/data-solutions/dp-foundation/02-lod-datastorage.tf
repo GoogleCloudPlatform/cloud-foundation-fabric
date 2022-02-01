@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# tfdoc:file:description Load storage resources (Cloud Storage)
+# tfdoc:file:description Load storage resources (Cloud Storage).
 
 # Cloud Storage
 

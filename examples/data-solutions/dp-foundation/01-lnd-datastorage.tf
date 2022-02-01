@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# tfdoc:file:description Landing storage resources (Bigquery, Cloud PubSub, Cloud Storage)
+# tfdoc:file:description Landing storage resources (Bigquery, Cloud PubSub, Cloud Storage).
 
 locals {
   lnd_bucket_retention_policy = {

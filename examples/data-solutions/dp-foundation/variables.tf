@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# tfdoc:file:description Terraform Variables
+# tfdoc:file:description Terraform Variables.
 
 variable "composer_config" {
   type = object({
