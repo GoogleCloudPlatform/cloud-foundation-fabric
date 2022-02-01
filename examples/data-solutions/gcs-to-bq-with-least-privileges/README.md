@@ -125,7 +125,6 @@ You can check data imported into Google BigQuery using the  command returned in 
 ```
 bq query --use_legacy_sql=false 'SELECT * FROM `PROJECT.datalake.person` LIMIT 1000'
 ```
-
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -144,13 +143,12 @@ bq query --use_legacy_sql=false 'SELECT * FROM `PROJECT.datalake.person` LIMIT 1
 
 | name | description | sensitive |
 |---|---|:---:|
-| bq_tables | Bigquery Tables. |  |
-| buckets | GCS bucket Cloud KMS crypto keys. |  |
-| command_01_gcs | gcloud command to copy data into the created bucket impersonating the service account. |  |
-| command_02_dataflow | Command to run Dataflow template impersonating the service account. |  |
-| command_03_bq | BigQuery command to query imported data. |  |
-| project_id | Project id. |  |
-| service_accounts | Service account. |  |
+| [bq_tables](outputs.tf#L15) | Bigquery Tables. |  |
+| [buckets](outputs.tf#L20) | GCS bucket Cloud KMS crypto keys. |  |
+| [command_01_gcs](outputs.tf#L43) | gcloud command to copy data into the created bucket impersonating the service account. |  |
+| [command_02_dataflow](outputs.tf#L48) | Command to run Dataflow template impersonating the service account. |  |
+| [command_03_bq](outputs.tf#L69) | BigQuery command to query imported data. |  |
+| [project_id](outputs.tf#L28) | Project id. |  |
+| [service_accounts](outputs.tf#L33) | Service account. |  |
 
 <!-- END TFDOC -->
-
