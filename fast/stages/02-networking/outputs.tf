@@ -27,6 +27,20 @@ locals {
       shared_vpc_self_link = module.prod-spoke-vpc.self_link
       vpc_host_project     = module.prod-spoke-project.project_id
     })
+    "03-gke-multitenant-dev" = jsonencode({
+      project_config = {
+        shared_vpc_self_link       = module.dev-spoke-vpc.self_link
+        shared_vpc_host_project    = module.dev-spoke-project.project_id
+        service_encryption_key_ids = [] # TODO
+      }
+    })
+    "03-gke-multitenant-prod" = jsonencode({
+      project_config = {
+        shared_vpc_self_link       = module.prod-spoke-vpc.self_link
+        shared_vpc_host_project    = module.prod-spoke-project.project_id
+        service_encryption_key_ids = [] #TODO
+      }
+    })
   }
 }
 
