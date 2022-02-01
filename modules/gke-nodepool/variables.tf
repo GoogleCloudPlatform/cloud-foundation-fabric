@@ -83,7 +83,7 @@ variable "name" {
 }
 
 variable "node_boot_disk_kms_key" {
-  description = "Customer Managed Encryption Key used to encrypt the boot disk attached to each node"
+  description = "Customer Managed Encryption Key used to encrypt the boot disk attached to each node."
   type        = string
   default     = null
 }
@@ -201,7 +201,7 @@ variable "node_tags" {
 }
 
 variable "node_taints" {
-  description = "Kubernetes taints applied to nodes. E.g. type=blue:NoSchedule"
+  description = "Kubernetes taints applied to nodes. E.g. type=blue:NoSchedule."
   type        = list(string)
   default     = []
 }

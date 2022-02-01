@@ -36,7 +36,7 @@ module "vpn-dynamic" {
     }
   }
 }
-# tftest:modules=1:resources=10
+# tftest modules=1 resources=10
 ```
 <!-- BEGIN TFDOC -->
 

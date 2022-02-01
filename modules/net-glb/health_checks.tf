@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description Health checks.
+
 locals {
   # Get group backend services without health checks defined
   _backends_without_hcs = [
