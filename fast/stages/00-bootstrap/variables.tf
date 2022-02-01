@@ -40,6 +40,8 @@ variable "groups" {
     gcp-security-admins     = "gcp-security-admins"
     gcp-gke-admins          = "gcp-gke-admins"
     gcp-support             = "gcp-support"
+    team-a-admins           = "team-a-admins"
+    team-a                  = "team-a"
   }
 }
 
