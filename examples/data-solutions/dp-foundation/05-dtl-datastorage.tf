@@ -14,9 +14,7 @@
 
 # tfdoc:file:description Datalake storage resources (Bigquery, Cloud Storage)
 
-###############################################################################
-#                                   BQ                                        #
-###############################################################################
+# Bigquery
 
 module "dtl-0-bq-0" {
   source         = "../../../modules/bigquery-dataset"
@@ -50,9 +48,7 @@ module "dtl-exp-bq-0" {
   encryption_key = try(local.service_encryption_keys.bq != null, false) ? try(local.service_encryption_keys.bq, null) : null
 }
 
-###############################################################################
-#                                   GCS                                       #
-###############################################################################
+# Cloud storage
 
 module "dtl-0-cs-0" {
   source         = "../../../modules/gcs"

@@ -14,9 +14,7 @@
 
 # tfdoc:file:description Landing storage resources (Bigquery, Cloud Storage)
 
-###############################################################################
-#                                     GCS                                     #
-###############################################################################
+# Cloud Storage
 
 module "trf-sa-df-0" {
   source     = "../../../modules/iam-service-account"
@@ -44,9 +42,7 @@ module "trf-cs-df-0" {
   encryption_key = try(local.service_encryption_keys.storage != null, false) ? try(local.service_encryption_keys.storage, null) : null
 }
 
-###############################################################################
-#                                     BQ                                      #
-###############################################################################
+# Bigquery
 
 module "trf-sa-bq-0" {
   source     = "../../../modules/iam-service-account"

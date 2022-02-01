@@ -14,10 +14,6 @@
 
 # tfdoc:file:description Orchestration VPC
 
-###############################################################################
-#                                  Network                                    #
-###############################################################################
-
 module "orc-vpc" {
   count      = var.network_config.network != null ? 0 : 1
   source     = "../../../modules/net-vpc"

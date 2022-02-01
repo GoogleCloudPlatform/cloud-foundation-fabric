@@ -14,10 +14,6 @@
 
 # tfdoc:file:description Trasformation VPC
 
-###############################################################################
-#                                  Network                                    #
-###############################################################################
-
 module "trf-vpc" {
   count      = var.network_config.network != null ? 0 : 1
   source     = "../../../modules/net-vpc"

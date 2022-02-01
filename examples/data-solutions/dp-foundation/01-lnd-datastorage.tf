@@ -20,9 +20,8 @@ locals {
     is_locked        = false
   }
 }
-###############################################################################
-#                                     GCS                                     #
-###############################################################################
+
+# Cloud Storage resources
 
 module "lnd-sa-cs-0" {
   source     = "../../../modules/iam-service-account"
@@ -48,9 +47,7 @@ module "lnd-cs-0" {
   force_destroy  = var.data_force_destroy
 }
 
-###############################################################################
-#                                    PubSub                                   #
-###############################################################################
+# Cloud PubSub resources
 
 module "lnd-sa-ps-0" {
   source     = "../../../modules/iam-service-account"
@@ -70,9 +67,7 @@ module "lnd-ps-0" {
   name       = "${local.prefix_lnd}-ps-0"
 }
 
-###############################################################################
-#                                   BigQuery                                  #
-###############################################################################
+# Bigquery resources
 
 module "lnd-sa-bq-0" {
   source     = "../../../modules/iam-service-account"

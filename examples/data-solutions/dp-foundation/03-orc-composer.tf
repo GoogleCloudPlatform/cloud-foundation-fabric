@@ -14,10 +14,6 @@
 
 # tfdoc:file:description Orchestration Cloud Composer definition
 
-###############################################################################
-#                                Composer                                     #
-###############################################################################
-
 module "orc-sa-cmp-0" {
   source     = "../../../modules/iam-service-account"
   project_id = module.orc-prj.project_id

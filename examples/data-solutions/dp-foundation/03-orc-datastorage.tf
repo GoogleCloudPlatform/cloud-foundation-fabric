@@ -14,9 +14,7 @@
 
 # tfdoc:file:description Orchestration storage resources (Cloud Storage)
 
-###############################################################################
-#                                   GCS                                       #
-###############################################################################
+# Cloud Storage
 
 module "orc-cs-0" {
   source         = "../../../modules/gcs"

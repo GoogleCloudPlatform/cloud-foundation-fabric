@@ -14,9 +14,7 @@
 
 # tfdoc:file:description Load storage resources (Cloud Storage)
 
-###############################################################################
-#                                     GCS                                     #
-###############################################################################
+# Cloud Storage
 
 module "lod-sa-df-0" {
   source     = "../../../modules/iam-service-account"
