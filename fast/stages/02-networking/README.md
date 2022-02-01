@@ -167,6 +167,8 @@ ln -s ../../configs/example/02-networking/terraform-bootstrap.auto.tfvars.json
 ln -s ../../configs/example/02-networking/terraform-resman.auto.tfvars.json
 ```
 
+If you want to continue to rely on `outputs_location` logic, create a `terraform.tfvars` file and configure it as deacribed [here](../00-bootstrap/#output-files-and-cross-stage-variables).
+
 Please refer to the [Variables](#variables) table below for a map of the variable origins, and to the sections below on how to adapt this stage to your networking configuration.
 
 ### VPCs

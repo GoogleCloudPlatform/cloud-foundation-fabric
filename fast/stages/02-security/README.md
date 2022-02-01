@@ -69,6 +69,8 @@ terraform output -json providers | jq -r '.["02-security"]' \
   > ../02-security/providers.tf
 ```
 
+If you want to continue to rely on `outputs_location` logic, create a `terraform.tfvars` file and configure it as deacribed [here](../00-bootstrap/#output-files-and-cross-stage-variables).
+
 ### Variable configuration
 
 There are two broad sets of variables you will need to fill in:

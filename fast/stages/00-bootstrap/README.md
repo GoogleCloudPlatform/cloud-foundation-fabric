@@ -162,7 +162,7 @@ At any time during the life of this stage, you can configure it to automatically
 Automatic generation of files is disabled by default. To enable the mechanism,  set the `outputs_location` variable to a valid path on a local filesystem, e.g.
 
 ```hcl
-outputs_location = "../../configs"
+outputs_location = "../../configs/example"
 ```
 
 Once the variable is set, `apply` will generate and manage providers and variables files, including the initial one used for this stage after the first run. You can then link these files in the relevant stages, instead of manually transfering outputs from one stage, to Terraform variables in another.
@@ -201,13 +201,15 @@ terraform apply \
 Once the initial `apply` completes successfully, configure a remote backend using the new GCS bucket, and impersonation on the automation service account for this stage. To do this, you can use the generated `providers.tf` file if you have configured output files as described above, or extract its contents from Terraform's output, then migrate state with `terraform init`:
 
 ```bash
-# if using output files via the outputs_location variable
-ln -s [path set in outputs_location]/00-bootstrap/* ./
+# if using output files via the outputs_location and set to `../../configs/example`
+ln -s ../../configs/example/00-bootstrap/* ./
 # or from outputs if not using output files
 terraform output -json providers | jq -r '.["00-bootstrap"]' \
   > providers.tf
 # migrate state to GCS bucket configured in providers file
 terraform init -migrate-state
+# run terraform apply to remo user iam binding 
+terraform apply
 ```
 
 ## Customizations
