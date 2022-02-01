@@ -21,14 +21,11 @@ locals {
   )
 }
 
-data "google_client_config" "current" {
-}
+data "google_client_config" "current" {}
 
 data "http" "addresses" {
   for_each = toset(var.regions)
   url      = "${local.url}/regions/${each.key}/addresses?filter=purpose%20%3D%20%22DNS_RESOLVER%22"
-
-  # Optional request headers
   request_headers = {
     Authorization = "Bearer ${data.google_client_config.current.access_token}"
   }
