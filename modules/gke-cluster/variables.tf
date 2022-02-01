@@ -27,6 +27,8 @@ variable "addons" {
     })
     network_policy_config                 = bool
     gce_persistent_disk_csi_driver_config = bool
+    config_connector_config               = bool
+    kalm_config                           = bool
   })
   default = {
     cloudrun_config            = false
@@ -39,6 +41,8 @@ variable "addons" {
     }
     network_policy_config                 = false
     gce_persistent_disk_csi_driver_config = false
+    config_connector_config               = false
+    kalm_config                           = false
   }
 }
 
