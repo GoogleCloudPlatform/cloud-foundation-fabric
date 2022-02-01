@@ -35,15 +35,15 @@ locals {
       name   = "sandbox"
       sa     = module.branch-sandbox-sa.email
     })
-    "03-gke-multitenant-dev" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
-      bucket = module.branch-gke-env-dev-gcs.name
-      name   = "gke-dev"
-      sa     = module.branch-gke-env-dev-sa.email
-    })
+    # "03-gke-multitenant-dev" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
+    #   bucket = module.branch-gke-env-dev-gcs.name
+    #   name   = "gke-dev"
+    #   sa     = module.branch-gke-env-dev-sa.email
+    # })
     "03-gke-multitenant-prod" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
-      bucket = module.branch-gke-env-prod-gcs.name
+      bucket = module.branch-gke-env-gcs["prod"].name
       name   = "gke-prod"
-      sa     = module.branch-gke-env-prod-sa.email
+      sa     = module.branch-gke-env-sa["prod"].email
     })
     "03-project-factory-dev" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
       bucket = module.branch-teams-dev-projectfactory-gcs.name
@@ -101,12 +101,12 @@ output "project_factories" {
   description = "Data for the project factories stage."
   value = {
     dev = {
-      bucket = module.branch-gke-env-dev-gcs.name
-      sa     = module.branch-gke-env-dev-sa.email
+      bucket = module.branch-teams-dev-projectfactory-gcs.name
+      sa     = module.branch-teams-dev-projectfactory-sa.email
     }
     prod = {
-      bucket = module.branch-gke-env-prod-gcs.name
-      sa     = module.branch-gke-env-prod-sa.email
+      bucket = module.branch-teams-prod-projectfactory-gcs.name
+      sa     = module.branch-teams-prod-projectfactory-sa.email
     }
   }
 }
@@ -115,14 +115,14 @@ output "gke_multitenant" {
   # tfdoc:output:consumers xx-teams
   description = "Data for the project factories stage."
   value = {
-    dev = {
-      bucket = module.branch-teams-dev-projectfactory-gcs.name
-      sa     = module.branch-teams-dev-projectfactory-sa.email
-    }
-    prod = {
-      bucket = module.branch-teams-prod-projectfactory-gcs.name
-      sa     = module.branch-teams-prod-projectfactory-sa.email
-    }
+    # dev = {
+    #   bucket = module.branch-gke-env-dev-gcs.name
+    #   sa     = module.branch-gke-env-dev-sa.email
+    # }
+    # prod = {
+    #   bucket = module.branch-gke-env-prod-gcs.name
+    #   sa     = module.branch-gke-env-prod-sa.email
+    # }
   }
 }
 
@@ -155,15 +155,17 @@ output "security" {
   }
 }
 
-# output "gke" {
-#   # tfdoc:output:consumers 02-security
-#   description = "Data for the gke stage."
-#   value = {
-#     folder          = module.branch-gke-folder.id
-#     gcs_bucket      = module.branch-gke-gcs.name
-#     service_account = module.branch-gke-sa.iam_email
-#   }
-# }
+output "gke" {
+  # tfdoc:output:consumers 03-gke-multitenant
+  description = "Data for the gke stage."
+  value = {
+    for k, v in module.branch-gke-envs-folder : k => {
+      folder          = v.id
+      gcs_bucket      = module.branch-gke-env-gcs[k].name
+      service_account = module.branch-gke-env-sa[k].email
+    }
+  }
+}
 
 output "teams" {
   description = "Data for the teams stage."
