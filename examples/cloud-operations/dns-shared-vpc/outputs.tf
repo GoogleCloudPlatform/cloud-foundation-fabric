@@ -15,7 +15,7 @@
  */
 
 output "teams" {
-  description = "Team resources"
+  description = "Team resources."
   value = {
     for k, v in local.projects : k => {
       project = v

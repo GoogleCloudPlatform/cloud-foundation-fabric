@@ -66,7 +66,7 @@ variable "name" {
 }
 
 variable "network" {
-  description = "Name of the network in the project with which the tenant project will be peered for executing pipelines in the form of projects/{project-id}/global/networks/{network}"
+  description = "Name of the network in the project with which the tenant project will be peered for executing pipelines in the form of projects/{project-id}/global/networks/{network}."
   type        = string
 }
 

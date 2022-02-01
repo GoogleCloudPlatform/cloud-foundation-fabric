@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 output "bgpsession" {
-  description = "bgp session"
+  description = "bgp session."
   value       = google_compute_router_peer.peer
 }
 
 output "interconnect_attachment" {
-  description = "interconnect attachment"
+  description = "interconnect attachment."
   value       = google_compute_interconnect_attachment.interconnect_vlan_attachment
 }
 

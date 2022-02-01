@@ -54,7 +54,7 @@ The script use 'google_access_context_manager_service_perimeter_resource' terraf
 |---|---|:---:|:---:|:---:|
 | [billing_account_id](variables.tf#L21) | Billing account id. | <code>string</code> | ✓ |  |
 | [root_node](variables.tf#L50) | Parent folder or organization in 'folders/folder_id' or 'organizations/org_id' format. | <code>string</code> | ✓ |  |
-| [admins](variables.tf#L15) | List of users allowed to impersonate the service account | <code>list&#40;string&#41;</code> |  | <code>null</code> |
+| [admins](variables.tf#L15) | List of users allowed to impersonate the service account. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
 | [prefix](variables.tf#L26) | Prefix used to generate project id and name. | <code>string</code> |  | <code>null</code> |
 | [project_names](variables.tf#L32) | Override this variable if you need non-standard names. | <code title="object&#40;&#123;&#10;  datamart       &#61; string&#10;  dwh            &#61; string&#10;  landing        &#61; string&#10;  services       &#61; string&#10;  transformation &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  datamart       &#61; &#34;datamart&#34;&#10;  dwh            &#61; &#34;datawh&#34;&#10;  landing        &#61; &#34;landing&#34;&#10;  services       &#61; &#34;services&#34;&#10;  transformation &#61; &#34;transformation&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [service_account_names](variables.tf#L55) | Override this variable if you need non-standard names. | <code title="object&#40;&#123;&#10;  main &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  main &#61; &#34;data-platform-main&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |

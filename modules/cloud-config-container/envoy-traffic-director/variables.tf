@@ -21,7 +21,7 @@ variable "envoy_image" {
 }
 
 variable "gcp_logging" {
-  description = "Should container logs be sent to Google Cloud Logging"
+  description = "Should container logs be sent to Google Cloud Logging."
   type        = bool
   default     = true
 }

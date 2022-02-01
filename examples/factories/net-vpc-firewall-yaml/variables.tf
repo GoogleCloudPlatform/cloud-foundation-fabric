@@ -15,7 +15,7 @@
  */
 
 variable "config_directories" {
-  description = "List of paths to folders where firewall configs are stored in yaml format. Folder may include subfolders with configuration files. Files suffix must be `.yaml`"
+  description = "List of paths to folders where firewall configs are stored in yaml format. Folder may include subfolders with configuration files. Files suffix must be `.yaml`."
   type        = list(string)
 }
 

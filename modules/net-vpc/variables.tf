@@ -83,7 +83,7 @@ variable "mtu" {
 }
 
 variable "name" {
-  description = "The name of the network being created"
+  description = "The name of the network being created."
   type        = string
 }
 
@@ -98,13 +98,13 @@ variable "peering_config" {
 }
 
 variable "peering_create_remote_end" {
-  description = "Skip creation of peering on the remote end when using peering_config"
+  description = "Skip creation of peering on the remote end when using peering_config."
   type        = bool
   default     = true
 }
 
 variable "project_id" {
-  description = "The ID of the project where this VPC will be created"
+  description = "The ID of the project where this VPC will be created."
   type        = string
 }
 
@@ -134,7 +134,7 @@ variable "routes" {
 }
 
 variable "routing_mode" {
-  description = "The network routing mode (default 'GLOBAL')"
+  description = "The network routing mode (default 'GLOBAL')."
   type        = string
   default     = "GLOBAL"
   validation {
@@ -150,7 +150,7 @@ variable "shared_vpc_host" {
 }
 
 variable "shared_vpc_service_projects" {
-  description = "Shared VPC service projects to register with this host"
+  description = "Shared VPC service projects to register with this host."
   type        = list(string)
   default     = []
 }
