@@ -48,7 +48,7 @@ module "landing-untrusted-vpc" {
   mtu        = 1500
 
   dns_policy = {
-    inbound  = true
+    inbound  = false
     logging  = false
     outbound = null
   }
@@ -118,6 +118,13 @@ module "landing-trusted-vpc" {
       next_hop      = "default-internet-gateway"
     }
   }
+
+  dns_policy = {
+    inbound  = true
+    logging  = false
+    outbound = null
+  }
+
   data_folder = "${var.data_dir}/subnets/landing-trusted"
 }
 

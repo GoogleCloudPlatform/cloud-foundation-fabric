@@ -49,7 +49,7 @@ module "test-vm-landing-untrusted-ew1-0" {
 module "test-vm-landing-untrusted-ew4-0" {
   source     = "../../../modules/compute-vm"
   project_id = module.landing-project.project_id
-  zone       = "europe-west4-b"
+  zone       = "europe-west4-a"
   name       = "test-vm-lnd-unt-ew4-0"
   network_interfaces = [{
     network    = module.landing-untrusted-vpc.self_link
@@ -105,7 +105,7 @@ module "test-vm-landing-trusted-ew1-0" {
 module "test-vm-landing-trusted-ew4-0" {
   source     = "../../../modules/compute-vm"
   project_id = module.landing-project.project_id
-  zone       = "europe-west4-b"
+  zone       = "europe-west4-a"
   name       = "test-vm-lnd-tru-ew4-0"
   network_interfaces = [{
     network    = module.landing-trusted-vpc.self_link
@@ -220,7 +220,7 @@ module "test-vm-prod-ew1-0" {
 module "test-vm-prod-ew4-0" {
   source     = "../../../modules/compute-vm"
   project_id = module.prod-spoke-project.project_id
-  zone       = "europe-west4-b"
+  zone       = "europe-west4-a"
   name       = "test-vm-prod-ew4-0"
   network_interfaces = [{
     network = module.prod-spoke-vpc.self_link

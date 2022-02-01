@@ -39,11 +39,6 @@ resource "local_file" "tfvars" {
 
 # Outputs
 
-output "cloud_dns_inbound_policy" {
-  description = "IP Addresses for Cloud DNS inbound policy."
-  value       = [for s in module.landing-trusted-vpc.subnets : cidrhost(s.ip_cidr_range, 2)]
-}
-
 output "project_ids" {
   description = "Network project ids."
   value = {
