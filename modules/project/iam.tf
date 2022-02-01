@@ -56,7 +56,7 @@ resource "google_project_iam_custom_role" "roles" {
   project     = local.project.project_id
   role_id     = each.key
   title       = "Custom role ${each.key}"
-  description = "Terraform-managed"
+  description = "Terraform-managed."
   permissions = each.value
 }
 

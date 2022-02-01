@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description SSL certificates.
+
 locals {
   # If the HTTPS target proxy has no SSL certs
   # set, create also a default managed SSL cert

@@ -50,7 +50,7 @@ variable "labels" {
 }
 
 variable "lifecycle_rule" {
-  description = "Bucket lifecycle rule"
+  description = "Bucket lifecycle rule."
   type = object({
     action = object({
       type          = string

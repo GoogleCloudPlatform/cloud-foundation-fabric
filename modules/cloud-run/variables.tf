@@ -16,7 +16,7 @@
  */
 
 variable "audit_log_triggers" {
-  description = "Event arc triggers (Audit log)"
+  description = "Event arc triggers (Audit log)."
   type = list(object({
     service_name = string
     method_name  = string
@@ -25,7 +25,7 @@ variable "audit_log_triggers" {
 }
 
 variable "containers" {
-  description = "Containers"
+  description = "Containers."
   type = list(object({
     image = string
     options = object({
@@ -63,19 +63,19 @@ variable "iam" {
 }
 
 variable "ingress_settings" {
-  description = "Ingress settings"
+  description = "Ingress settings."
   type        = string
   default     = null
 }
 
 variable "labels" {
-  description = "Resource labels"
+  description = "Resource labels."
   type        = map(string)
   default     = {}
 }
 
 variable "name" {
-  description = "Name used for cloud run service"
+  description = "Name used for cloud run service."
   type        = string
 }
 
@@ -91,7 +91,7 @@ variable "project_id" {
 }
 
 variable "pubsub_triggers" {
-  description = "Eventarc triggers (Pub/Sub)"
+  description = "Eventarc triggers (Pub/Sub)."
   type        = list(string)
   default     = null
 }
@@ -103,7 +103,7 @@ variable "region" {
 }
 
 variable "revision_name" {
-  description = "Revision name"
+  description = "Revision name."
   type        = string
   default     = null
 }
@@ -121,13 +121,13 @@ variable "service_account_create" {
 }
 
 variable "traffic" {
-  description = "Traffic"
+  description = "Traffic."
   type        = map(number)
   default     = null
 }
 
 variable "volumes" {
-  description = "Volumes"
+  description = "Volumes."
   type = list(object({
     name        = string
     secret_name = string
@@ -140,7 +140,7 @@ variable "volumes" {
 }
 
 variable "vpc_connector" {
-  description = "VPC connector configuration. Set create to 'true' if a new connecto needs to be created"
+  description = "VPC connector configuration. Set create to 'true' if a new connecto needs to be created."
   type = object({
     create          = bool
     name            = string
@@ -150,7 +150,7 @@ variable "vpc_connector" {
 }
 
 variable "vpc_connector_config" {
-  description = "VPC connector network configuration. Must be provided if new VPC connector is being created"
+  description = "VPC connector network configuration. Must be provided if new VPC connector is being created."
   type = object({
     ip_cidr_range = string
     network       = string

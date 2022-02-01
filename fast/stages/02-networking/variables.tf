@@ -32,7 +32,7 @@ variable "custom_adv" {
     googleapis_private    = "199.36.153.8/30"
     googleapis_restricted = "199.36.153.4/30"
     rfc_1918_10           = "10.0.0.0/8"
-    rfc_1918_172          = "172.16.0.0/16"
+    rfc_1918_172          = "172.16.0.0/12"
     rfc_1918_192          = "192.168.0.0/16"
   }
 }
@@ -44,7 +44,7 @@ variable "data_dir" {
 }
 
 variable "dns" {
-  description = "Onprem DNS resolvers"
+  description = "Onprem DNS resolvers."
   type        = map(list(string))
   default = {
     onprem = ["10.0.200.3"]
@@ -63,17 +63,6 @@ variable "folder_id" {
     )
     error_message = "Invalid folder_id. Should be in 'folders/nnnnnnnnnnn' format."
   }
-}
-
-variable "gke" {
-  #tfdoc:variable:source 01-resman
-  description = ""
-  type = map(object({
-    folder_id = string
-    sa        = string
-    gcs       = string
-  }))
-  default = {}
 }
 
 variable "l7ilb_subnets" {
@@ -118,7 +107,7 @@ variable "prefix" {
 
 variable "project_factory_sa" {
   # tfdoc:variable:source 01-resman
-  description = "IAM emails for project factory service accounts"
+  description = "IAM emails for project factory service accounts."
   type        = map(string)
   default     = {}
 }
