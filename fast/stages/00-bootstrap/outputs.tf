@@ -46,9 +46,12 @@ locals {
       organization       = var.organization
       prefix             = var.prefix
     })
-    "03-gke" = jsonencode({
+    "03-gke-multitenant-dev" = jsonencode({
       billing_account_id = var.billing_account.id
-      organization       = var.organization
+      prefix             = var.prefix
+    })
+    "03-gke-multitenant-prod" = jsonencode({
+      billing_account_id = var.billing_account.id
       prefix             = var.prefix
     })
     "03-project-factory-dev" = jsonencode({
