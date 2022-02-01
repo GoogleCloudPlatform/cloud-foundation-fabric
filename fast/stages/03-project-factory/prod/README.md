@@ -15,16 +15,16 @@ Projects for each environment across different teams are created by dedicated se
 
 The project factory takes care of the following activities:
 
-* Project creation
-* API/Services enablement
-* Service accounts creation
-* IAM roles assignment for groups and service accounts
-* KMS keys roles assignment
-* Shared VPC attachment and subnets IAM binding
-* DNS zones creation and visibility configuration
-* Project-level org policies definition
-* Billing setup (billing account attachment and budget configuration)
-* Essential contacts definition (for [budget alerts](https://cloud.google.com/billing/docs/how-to/budgets) and [important notifications](https://cloud.google.com/resource-manager/docs/managing-notification-contacts?hl=en))
+- Project creation
+- API/Services enablement
+- Service accounts creation
+- IAM roles assignment for groups and service accounts
+- KMS keys roles assignment
+- Shared VPC attachment and subnets IAM binding
+- DNS zones creation and visibility configuration
+- Project-level org policies definition
+- Billing setup (billing account attachment and budget configuration)
+- Essential contacts definition (for [budget alerts](https://cloud.google.com/billing/docs/how-to/budgets) and [important notifications](https://cloud.google.com/resource-manager/docs/managing-notification-contacts?hl=en))
   
 ## How to run this stage
 
@@ -32,24 +32,24 @@ This stage is meant to be executed after "foundational stages" (i.e., stages [`0
 
 It's of course possible to run this stage in isolation, by making sure the architectural prerequisites are satisfied (e.g., networking), and that the Service Account running the stage is granted the roles/permissions below:
 
-* One service account per environment, each with appropriate permissions
-  * at the organization level a custom role for networking operations including the following permissions
-    * `"compute.organizations.enableXpnResource"`,
-    * `"compute.organizations.disableXpnResource"`,
-    * `"compute.subnetworks.setIamPolicy"`,
-    * `"dns.networks.bindPrivateDNSZone"`
-    * and role `"roles/orgpolicy.policyAdmin"`
-  * on each folder where projects are created
-    * `"roles/logging.admin"`
-    * `"roles/owner"`
-    * `"roles/resourcemanager.folderAdmin"`
-    * `"roles/resourcemanager.projectCreator"`
-  * on the host project for the Shared VPC
-    * `"roles/browser"`
-    * `"roles/compute.viewer"`
-    * `"roles/dns.admin"`
-* If networking is used (e.g., for VMs, GKE Clusters or AppEngine flex), VPC Host projects and their subnets should exist when creating projects
-* If per-environment DNS sub-zones are required, one "root" zone per environment should exist when creating projects (e.g., prod.gcp.example.com.)
+- One service account per environment, each with appropriate permissions
+  - at the organization level a custom role for networking operations including the following permissions
+    - `"compute.organizations.enableXpnResource"`,
+    - `"compute.organizations.disableXpnResource"`,
+    - `"compute.subnetworks.setIamPolicy"`,
+    - `"dns.networks.bindPrivateDNSZone"`
+    - and role `"roles/orgpolicy.policyAdmin"`
+  - on each folder where projects are created
+    - `"roles/logging.admin"`
+    - `"roles/owner"`
+    - `"roles/resourcemanager.folderAdmin"`
+    - `"roles/resourcemanager.projectCreator"`
+  - on the host project for the Shared VPC
+    - `"roles/browser"`
+    - `"roles/compute.viewer"`
+    - `"roles/dns.admin"`
+- If networking is used (e.g., for VMs, GKE Clusters or AppEngine flex), VPC Host projects and their subnets should exist when creating projects
+- If per-environment DNS sub-zones are required, one "root" zone per environment should exist when creating projects (e.g., prod.gcp.example.com.)
 
 ### Providers configuration
 
@@ -65,8 +65,8 @@ ln -s ../../../config/03-project-factory-prod/providers.tf
 
 There are two broad sets of variables you will need to fill in:
 
-* variables shared by other stages (org id, billing account id, etc.), or derived from a resource managed by a different stage (folder id, automation project id, etc.)
-* variables specific to resources managed by this stage
+- variables shared by other stages (org id, billing account id, etc.), or derived from a resource managed by a different stage (folder id, automation project id, etc.)
+- variables specific to resources managed by this stage
 
 To avoid the tedious job of filling in the first group of variables with values derived from other stages' outputs, the same mechanism used above for the provider configuration can be used to leverage pre-configured `.tfvars` files.
 
@@ -82,9 +82,8 @@ If you're not using Fast, refer to the [Variables](#variables) table at the bott
 
 Besides the values above, a project factory takes 2 additional inputs:
 
-* `data/defaults.yaml`, manually configured by adapting the [`prod/data/defaults.yaml.sample`](./prod/data/defaults.yaml.sample), which defines per-environment default values e.g., for billing alerts and labels.
-
-* `data/projects/*.yaml`, one file per project (optionally grouped in folders), which configures each project. A [`prod/data/projects/project.yaml.sample`](./prod/data/projects/project.yaml.sample) is provided as reference and documentation for the schema. Projects will be named after the filename, e.g., `fast-prod-lab0.yaml` will create project `fast-prod-lab0`.
+- `data/defaults.yaml`, manually configured by adapting the [`prod/data/defaults.yaml.sample`](./prod/data/defaults.yaml.sample), which defines per-environment default values e.g., for billing alerts and labels.
+- `data/projects/*.yaml`, one file per project (optionally grouped in folders), which configures each project. A [`prod/data/projects/project.yaml.sample`](./prod/data/projects/project.yaml.sample) is provided as reference and documentation for the schema. Projects will be named after the filename, e.g., `fast-prod-lab0.yaml` will create project `fast-prod-lab0`.
 
 Once the configuration is complete, run the project factory by running
 
