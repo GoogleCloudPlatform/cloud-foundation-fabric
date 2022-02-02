@@ -14,16 +14,9 @@
  * limitations under the License.
  */
 
-variable "devices_config" {
-  description = "IoT configuration for the batch of devices to be configured. Certificates format values are RSA_PEM, RSA_X509_PEM, ES256_PEM, and ES256_X509_PEM. yaml_file name including Devices map to be registered in the IoT Registry in the form DEVICE_ID: DEVICE_CERTIFICATE"
-  type = object({
-    blocked            = bool,
-    certificate_format = string,
-    gateway            = bool,
-    yaml_file          = string,
-    log_level          = string
-  })
-  default = { blocked = false, certificate_format = "RSA_X509_PEM", gateway = false, yaml_file = "", log_level = "INFO" }
+variable "devices_config_directories" {
+  description = "List of paths to folders where devices configs are stored in yaml format. Folder may include subfolders with configuration files. Files suffix must be `.yaml`."
+  type        = list(string)
 }
 
 variable "extra_telemetry_pubsub_topic_ids" {

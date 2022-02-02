@@ -15,6 +15,28 @@
  * limitations under the License.
  */
 
+locals {
+  devices_config_files = flatten(
+    [
+      for config_path in var.devices_config_directories :
+      concat(
+        [
+          for config_file in fileset("${path.root}/${config_path}", "**/*.yaml") :
+          "${path.root}/${config_path}/${config_file}"
+        ]
+      )
+
+    ]
+  )
+
+  device_config = merge(
+    [
+      for config_file in local.devices_config_files :
+      try(yamldecode(file(config_file)), {})
+    ]...
+  )
+}
+
 #---------------------------------------------------------
 # Create IoT Core Registry
 #---------------------------------------------------------
@@ -60,22 +82,22 @@ resource "google_cloudiot_registry" "registry" {
 #---------------------------------------------------------
 
 resource "google_cloudiot_device" "device" {
-  for_each = try(yamldecode(file(var.devices_config.yaml_file)), {})
+  for_each = local.device_config
   name     = each.key
   registry = google_cloudiot_registry.registry.id
 
   credentials {
     public_key {
-      format = var.devices_config.certificate_format
-      key    = file(each.value)
+      format = each.value.certificate_format
+      key    = file(each.value.certificate_file)
     }
   }
 
-  blocked = var.devices_config.blocked
+  blocked = each.value.is_blocked
 
-  log_level = var.devices_config.log_level
+  log_level = each.value.log_level
 
   gateway_config {
-    gateway_type = var.devices_config.gateway ? "GATEWAY" : "NON_GATEWAY"
+    gateway_type = each.value.is_gateway ? "GATEWAY" : "NON_GATEWAY"
   }
 }

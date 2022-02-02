@@ -16,8 +16,31 @@ Devices certificates must exist before calling this module. You can generate the
 openssl req -x509 -newkey rsa:2048 -keyout rsa_private.pem -nodes -out rsa_cert.pem -subj "/CN=unused"
 ```
 
-And then provision public certificate path in the devices yaml file following the convention device_id: device_cert
+And then provision public certificate path, together with the rest of device configuration in a devices yaml file following the following format
+```
+device_id: # id of your IoT Device
+is_blocked: # false to allow device connection with IoT Registry
+is_gateway: # true to indicate the device connecting acts as a gateway for other IoT Devices
+log_level: # device logs level
+certificate_file: # public certificate path, generated as explained in the previous step
+certificate_format: # Certificates format values are RSA_PEM, RSA_X509_PEM, ES256_PEM, and ES256_X509_PEM
+```
 
+Example Device config yaml configuration
+```
+device_1:
+is_blocked: false
+is_gateway: false
+log_level: INFO
+certificate_file: device_certs/rsa_cert5.pem
+certificate_format: RSA_X509_PEM
+device_2:
+is_blocked: true
+is_gateway: false
+log_level: INFO
+certificate_file: device_certs/rsa_cert5.pem
+certificate_format: RSA_X509_PEM
+```
 
 ```hcl
 module "iot-platform" {
@@ -30,13 +53,9 @@ module "iot-platform" {
       http = false,
       mqtt = true
   }
-  devices_config = {
-      blocked = false, 
-      certificate_format = "RSA_X509_PEM", 
-      gateway = false, 
-      yaml_file = "devices.yaml", 
-      log_level =  "INFO"
-  }
+  devices_config_directories = [
+      "./devices_config_folder"
+  ]
 }
 # tftest:skip
 
@@ -63,13 +82,9 @@ module "iot-platform" {
       http = false,
       mqtt = true
   }
-  devices_config = {
-      blocked = false, 
-      certificate_format = "RSA_X509_PEM", 
-      gateway = false, 
-      yaml_file = "devices.yaml", 
-      log_level =  "INFO"
-  }
+  devices_config_directories = [
+      "./devices_config_folder"
+  ]
 }
 # tftest:skip
 
@@ -97,13 +112,9 @@ module "iot-platform" {
       http = false,
       mqtt = true
   }
-  devices_config = {
-      blocked = false, 
-      certificate_format = "RSA_X509_PEM", 
-      gateway = false, 
-      yaml_file = "devices.yaml", 
-      log_level =  "INFO"
-  }
+  devices_config_directories = [
+      "./devices_config_folder"
+  ]
 }
 # tftest:skip
 ```
@@ -121,15 +132,15 @@ Or even better, create a new BigQuery table with our IoT sensors data columns an
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [project_id](variables.tf#L41) | Project were resources will be deployed | <code>string</code> | ✓ |  |
-| [region](variables.tf#L55) | Region were resources will be deployed | <code>string</code> | ✓ |  |
-| [status_pubsub_topic_id](variables.tf#L66) | pub sub topic for status messages (GCP-->Device) | <code>string</code> | ✓ |  |
-| [telemetry_pubsub_topic_id](variables.tf#L71) | pub sub topic for telemetry messages (Device-->GCP) | <code>string</code> | ✓ |  |
-| [devices_config](variables.tf#L17) | IoT configuration for the batch of devices to be configured. Certificates format values are RSA_PEM, RSA_X509_PEM, ES256_PEM, and ES256_X509_PEM. yaml_file name including Devices map to be registered in the IoT Registry in the form DEVICE_ID: DEVICE_CERTIFICATE | <code title="object&#40;&#123;&#10;  blocked &#61; bool,&#10;  certificate_format &#61; string,&#10;  gateway &#61; bool,&#10;  yaml_file &#61; string,&#10;  log_level &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123; blocked &#61; false, certificate_format &#61; &#34;RSA_X509_PEM&#34;, gateway &#61; false, yaml_file &#61; &#34;&#34;, log_level &#61;  &#34;INFO&#34;&#125;</code> |
-| [extra_telemetry_pubsub_topic_ids](variables.tf#L29) | additional pubsub topics linked to adhoc MQTT topics (Device-->GCP) in the format MQTT_TOPIC: PUBSUB_TOPIC_ID | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [log_level](variables.tf#L35) | IoT Registry Log level | <code>string</code> |  | <code>&#34;INFO&#34;</code> |
-| [protocols](variables.tf#L46) | IoT protocols (HTTP / MQTT) activation | <code title="object&#40;&#123;&#10;  http &#61; bool,&#10;  mqtt &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123; http &#61; true, mqtt &#61; true &#125;</code> |
-| [registry_name](variables.tf#L60) | Name for the IoT Core Registry | <code>string</code> |  | <code>&#34;cloudiot-registry&#34;</code> |
+| [devices_config_directories](variables.tf#L17) | List of paths to folders where devices configs are stored in yaml format. Folder may include subfolders with configuration files. Files suffix must be `.yaml`. | <code>list&#40;string&#41;</code> | ✓ |  |
+| [project_id](variables.tf#L34) | Project were resources will be deployed | <code>string</code> | ✓ |  |
+| [region](variables.tf#L48) | Region were resources will be deployed | <code>string</code> | ✓ |  |
+| [status_pubsub_topic_id](variables.tf#L59) | pub sub topic for status messages (GCP-->Device) | <code>string</code> | ✓ |  |
+| [telemetry_pubsub_topic_id](variables.tf#L64) | pub sub topic for telemetry messages (Device-->GCP) | <code>string</code> | ✓ |  |
+| [extra_telemetry_pubsub_topic_ids](variables.tf#L22) | additional pubsub topics linked to adhoc MQTT topics (Device-->GCP) in the format MQTT_TOPIC: PUBSUB_TOPIC_ID | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [log_level](variables.tf#L28) | IoT Registry Log level | <code>string</code> |  | <code>&#34;INFO&#34;</code> |
+| [protocols](variables.tf#L39) | IoT protocols (HTTP / MQTT) activation | <code title="object&#40;&#123;&#10;  http &#61; bool,&#10;  mqtt &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123; http &#61; true, mqtt &#61; true &#125;</code> |
+| [registry_name](variables.tf#L53) | Name for the IoT Core Registry | <code>string</code> |  | <code>&#34;cloudiot-registry&#34;</code> |
 
 ## Outputs
 
