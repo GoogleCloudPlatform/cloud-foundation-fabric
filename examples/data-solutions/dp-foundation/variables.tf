@@ -38,7 +38,7 @@ variable "composer_config" {
 }
 
 variable "data_force_destroy" {
-  description = "Flag to set 'force_destroy' on data services like biguqery or cloud storage."
+  description = "Flag to set 'force_destroy' on data services like BiguQery or Cloud Storage."
   type        = bool
   default     = false
 }
@@ -81,7 +81,7 @@ variable "organization" {
 }
 
 variable "prefix" {
-  description = "Unique prefix used for resource names. Not used for project if 'project_create' is null."
+  description = "Unique prefix used for resource names. Not used for projects if 'project_create' is null."
   type        = string
 }
 
