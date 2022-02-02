@@ -58,19 +58,18 @@ locals {
       module.service-account-orch.iam_email,
     ]
     "roles/iam.serviceAccountTokenCreator" = concat(
-      var.data_eng_principals,
-    )
-    "roles/viewer" = concat(
       var.data_eng_principals
     )
     # Dataflow roles
-    "roles/dataflow.admin" = concat([
-      module.service-account-orch.iam_email,
-      ], var.data_eng_principals
+    "roles/dataflow.admin" = concat(
+      [module.service-account-orch.iam_email],
+      var.data_eng_principals
     )
     "roles/dataflow.worker" = [
       module.service-account-df.iam_email,
     ]
+    "roles/dataflow.developer" = var.data_eng_principals
+    "roles/compute.viewer"     = var.data_eng_principals
     # network roles
     "roles/compute.networkUser" = [
       module.service-account-df.iam_email,
@@ -78,10 +77,6 @@ locals {
     ]
   }
 }
-
-###############################################################################
-#                                 Projects                                    #
-###############################################################################
 
 module "project" {
   source          = "../../../modules/project"
@@ -101,6 +96,7 @@ module "project" {
     "storage.googleapis.com",
     "storage-component.googleapis.com",
   ]
+
   # additive IAM bindings avoid disrupting bindings in existing project
   iam          = var.project_create != null ? local.iam : {}
   iam_additive = var.project_create == null ? local.iam : {}

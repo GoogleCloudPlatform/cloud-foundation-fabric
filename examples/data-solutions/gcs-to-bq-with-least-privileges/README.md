@@ -3,17 +3,18 @@
 This example creates the infrastructure needed to run a [Cloud Dataflow](https://cloud.google.com/dataflow) pipeline to import data from [GCS](https://cloud.google.com/storage) to [Bigquery](https://cloud.google.com/bigquery). The example will create different service accounts with least privileges on resources. To run the pipeline, users listed in `data_eng_principals` can impersonate all those service accounts.
 
 The solution will use:
- - internal IPs for GCE and Cloud Dataflow instances
- - Cloud NAT to let resources egress to the Internet, to run system updates and install packages
- - rely on [Service Account Impersonation](https://cloud.google.com/iam/docs/impersonating-service-accounts) to avoid the use of service account keys
- - Service Accounts with least privilege on each resource
- - (Optional) CMEK encription for GCS bucket, DataFlow instances and BigQuery tables
- 
-The example is designed to match real-world use cases with a minimum amount of resources and some compromise listed below. It can be used as a starting point for more complex scenarios.
+- internal IPs for GCE and Cloud Dataflow instances
+- Cloud NAT to let resources egress to the Internet, to run system updates and install packages
+- rely on [Service Account Impersonation](https://cloud.google.com/iam/docs/impersonating-service-accounts) to avoid the use of service account keys
+- Service Accounts with least privilege on each resource
+- (Optional) CMEK encription for GCS bucket, DataFlow instances and BigQuery tables
+
+The example is designed to match real-world use cases with a minimum amount of resources and some compromises listed below. It can be used as a starting point for more complex scenarios.
 
 This is the high level diagram:
 
 ![GCS to Biquery High-level diagram](diagram.png "GCS to Biquery High-level diagram")
+
 ## Move to real use case consideration
 In the example we implemented some compromise to keep the example minimal and easy to read. On a real word use case, you may evaluate the option to:
  - Configure a Shared-VPC
@@ -93,13 +94,13 @@ We need to create 3 file:
  - A `person_udf.js` containing the UDF javascript file used by the Dataflow template.
  - A `person_schema.json` file containing the table schema used to import the CSV.
  
-You can find an example of those file in the folder `./data-demo`. You can copy the example files in the GCS bucket using the  command returned in the terraform output as `command-01-gcs`. Below an example:
+You can find an example of those file in the folder `./data-demo`. You can copy the example files in the GCS bucket using the  command returned in the terraform output as `command_01_gcs`. Below an example:
 
 ```bash
 gsutil -i gcs-landing@PROJECT.iam.gserviceaccount.com cp data-demo/* gs://LANDING_BUCKET
 ```
 
-We can now run the Dataflow pipeline using the `gcloud` returned in the terraform output as `command-02-dataflow`. Below an example:
+We can now run the Dataflow pipeline using the `gcloud` returned in the terraform output as `command_02_dataflow`. Below an example:
 
 ```bash
 gcloud --impersonate-service-account=orch-test@PROJECT.iam.gserviceaccount.com dataflow jobs run test_batch_01 \
@@ -119,7 +120,7 @@ outputTable=PROJECT:datalake.person,\
 bigQueryLoadingTemporaryDirectory=gs://PREFIX-df-tmp 
 ```
 
-You can check data imported into Google BigQuery using the  command returned in the terraform output as `command-03-bq`. Below an example:
+You can check data imported into Google BigQuery using the  command returned in the terraform output as `command_03_bq`. Below an example:
 
 ```
 bq query --use_legacy_sql=false 'SELECT * FROM `PROJECT.datalake.person` LIMIT 1000'
@@ -144,10 +145,10 @@ bq query --use_legacy_sql=false 'SELECT * FROM `PROJECT.datalake.person` LIMIT 1
 |---|---|:---:|
 | [bq_tables](outputs.tf#L15) | Bigquery Tables. |  |
 | [buckets](outputs.tf#L20) | GCS bucket Cloud KMS crypto keys. |  |
-| [command-01-gcs](outputs.tf#L43) | gcloud command to copy data into the created bucket impersonating the service account. |  |
-| [command-02-dataflow](outputs.tf#L48) | Command to run Dataflow template impersonating the service account. |  |
-| [command-03-bq](outputs.tf#L70) | BigQuery command to query imported data. |  |
+| [command_01_gcs](outputs.tf#L43) | gcloud command to copy data into the created bucket impersonating the service account. |  |
+| [command_02_dataflow](outputs.tf#L48) | Command to run Dataflow template impersonating the service account. |  |
+| [command_03_bq](outputs.tf#L69) | BigQuery command to query imported data. |  |
 | [project_id](outputs.tf#L28) | Project id. |  |
-| [serviceaccount](outputs.tf#L33) | Service account. |  |
+| [service_accounts](outputs.tf#L33) | Service account. |  |
 
 <!-- END TFDOC -->
