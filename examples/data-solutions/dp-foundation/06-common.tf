@@ -48,6 +48,7 @@ module "cmn-prj" {
   iam_additive = var.project_create == null ? local.iam_cmn : {}
   group_iam    = local.group_iam_cmn
   services = concat(var.project_services, [
+    "datacatalog.googleapis.com",
     "dlp.googleapis.com",
   ])
 }
@@ -55,9 +56,9 @@ module "cmn-prj" {
 # Uncomment this section and assigne key links accondingly in local. variable
 # if you want to create KMS keys in the common projet
 
-# module "sec-kms-0" {
+# module "cmn-kms-0" {
 #   source     = "../../../modules/kms"
-#   project_id = module.sec-prj.project_id
+#   project_id = module.cmn-prj.project_id
 #   keyring = {
 #     name     = "${var.prefix}-kr-global",
 #     location = var.location_config.region
@@ -67,9 +68,9 @@ module "cmn-prj" {
 #   }
 # }
 
-# module "sec-kms-1" {
+# module "cmn-kms-1" {
 #   source     = "../../../modules/kms"
-#   project_id = module.sec-prj.project_id
+#   project_id = module.cmn-prj.project_id
 #   keyring = {
 #     name     = "${var.prefix}-kr-mregional",
 #     location = var.location_config.region
@@ -80,9 +81,9 @@ module "cmn-prj" {
 #   }
 # }
 
-# module "sec-kms-2" {
+# module "cmn-kms-2" {
 #   source     = "../../../modules/kms"
-#   project_id = module.sec-prj.project_id
+#   project_id = module.cmn-prj.project_id
 #   keyring = {
 #     name     = "${var.prefix}-kr-regional",
 #     location = var.location_config.region

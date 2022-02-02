@@ -168,7 +168,7 @@ For a more fine grained configuration, check variables on [`variables.tf`](./var
 
 ## Customizations
 ### Create Cloud Key Management keys as part of the DP
-To create Cloud Key Management keys in the DP you can uncomment the Cloud Key Management resources configured in the [`06-sec-main.tf`](./06-sec-main.tf) file and update Cloud Key Management keys pointers on `local.service_encryption_keys.*` to the local resource created.
+To create Cloud Key Management keys in the DP you can uncomment the Cloud Key Management resources configured in the [`06-common.tf`](./06-common.tf) file and update Cloud Key Management keys pointers on `local.service_encryption_keys.*` to the local resource created.
 
 ### Assign roles at BQ Dataset level
 To handle multiple groups of `data-analysts` accessing the same Data Lake layer projects but only to the dataset belonging to a specific group, you may want to assign roles at BigQuery dataset level instead of at project-level. 
