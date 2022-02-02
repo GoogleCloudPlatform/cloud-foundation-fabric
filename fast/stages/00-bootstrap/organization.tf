@@ -130,10 +130,6 @@ module "organization" {
       "roles/logging.admin",
       "roles/securitycenter.admin",
     ],
-    (local.groups.gcp-gke-admins) = [
-      "roles/logging.admin",
-      "roles/container.admin",
-    ],
     (local.groups.gcp-support) = [
       "roles/cloudsupport.techSupportEditor",
       "roles/logging.viewer",

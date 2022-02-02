@@ -14,75 +14,83 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Security stage resources.
+# tfdoc:file:description GKE multitenant stage resources.
 
-# top-level gke folder and service account
+# top-level gke folder
 
 module "branch-gke-folder" {
   source = "../../../modules/folder"
   parent = "organizations/${var.organization.id}"
   name   = "GKE"
-  iam = {
-    "roles/logging.admin"                  = [module.branch-gke-sa.iam_email]
-    "roles/owner"                          = [module.branch-gke-sa.iam_email]
-    "roles/resourcemanager.folderAdmin"    = [module.branch-gke-sa.iam_email]
-    "roles/resourcemanager.projectCreator" = [module.branch-gke-sa.iam_email]
-  }
-}
-
-module "branch-gke-sa" {
-  source      = "../../../modules/iam-service-account"
-  project_id  = var.automation_project_id
-  name        = "resman-gke-0"
-  description = "Terraform gke production service account."
-  prefix      = local.prefixes.prod
-}
-
-module "branch-gke-gcs" {
-  source     = "../../../modules/gcs"
-  project_id = var.automation_project_id
-  name       = "resman-gke-0"
-  prefix     = local.prefixes.prod
-  versioning = true
-  iam = {
-    "roles/storage.objectAdmin" = [module.branch-gke-sa.iam_email]
-  }
+  # iam = {
+  #   "roles/logging.admin"                  = [module.branch-gke-sa.iam_email]
+  #   "roles/owner"                          = [module.branch-gke-sa.iam_email]
+  #   "roles/resourcemanager.folderAdmin"    = [module.branch-gke-sa.iam_email]
+  #   "roles/resourcemanager.projectCreator" = [module.branch-gke-sa.iam_email]
+  # }
 }
 
 # GKE-level folders, service accounts and buckets for each individual environment
 
-module "branch-gke-envs-folder" {
-  source    = "../../../modules/folder"
-  for_each  = coalesce(var.gke_environments, {})
-  parent    = module.branch-gke-folder.id
-  name      = each.value.descriptive_name
-  group_iam = each.value.group_iam == null ? {} : each.value.group_iam
+module "branch-gke-multitenant-prod-folder" {
+  source = "../../../modules/folder"
+  parent = module.branch-gke-folder.id
+  name   = "prod"
+  # FIXME(jccb)
+  // group_iam = each.value.group_iam == null ? {} : each.value.group_iam
 }
 
-module "branch-gke-env-sa" {
+module "branch-gke-multitenant-prod-sa" {
   source      = "../../../modules/iam-service-account"
-  for_each    = coalesce(var.gke_environments, {})
   project_id  = var.automation_project_id
-  name        = "gke-${each.key}-0"
-  description = "Terraform env ${each.key} service account."
+  name        = "gke-prod-0"
+  description = "Terraform gke multitenant prod service account."
   prefix      = local.prefixes.prod
   iam = {
-    "roles/iam.serviceAccountTokenCreator" = (
-      each.value.impersonation_groups == null
-      ? []
-      : [for g in each.value.impersonation_groups : "group:${g}"]
-    )
+    # FIXME(jccb): who should we use here?
+    "roles/iam.serviceAccountTokenCreator" = ["group:${local.groups.gcp-devops}"]
   }
 }
 
-module "branch-gke-env-gcs" {
+module "branch-gke-multitenant-prod-gcs" {
   source     = "../../../modules/gcs"
-  for_each   = coalesce(var.gke_environments, {})
   project_id = var.automation_project_id
-  name       = "gke-${each.key}-0"
+  name       = "gke-prod-0"
   prefix     = local.prefixes.prod
   versioning = true
   iam = {
-    "roles/storage.objectAdmin" = [module.branch-gke-env-sa[each.key].iam_email]
+    "roles/storage.objectAdmin" = [module.branch-gke-multitenant-prod-sa.iam_email]
+  }
+}
+
+
+module "branch-gke-multitenant-dev-folder" {
+  source = "../../../modules/folder"
+  parent = module.branch-gke-folder.id
+  name   = "dev"
+  # FIXME(jccb)
+  //group_iam = each.value.group_iam == null ? {} : each.value.group_iam
+}
+
+module "branch-gke-multitenant-dev-sa" {
+  source      = "../../../modules/iam-service-account"
+  project_id  = var.automation_project_id
+  name        = "gke-dev-0"
+  description = "Terraform gke multitenant dev service account."
+  prefix      = local.prefixes.dev
+  iam = {
+    # FIXME(jccb): who should we use here?
+    "roles/iam.serviceAccountTokenCreator" = ["group:${local.groups.gcp-devops}"]
+  }
+}
+
+module "branch-gke-multitenant-dev-gcs" {
+  source     = "../../../modules/gcs"
+  project_id = var.automation_project_id
+  name       = "gke-dev-0"
+  prefix     = local.prefixes.dev
+  versioning = true
+  iam = {
+    "roles/storage.objectAdmin" = [module.branch-gke-multitenant-dev-sa.iam_email]
   }
 }
