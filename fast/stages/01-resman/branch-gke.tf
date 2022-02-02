@@ -36,8 +36,14 @@ module "branch-gke-multitenant-prod-folder" {
   source = "../../../modules/folder"
   parent = module.branch-gke-folder.id
   name   = "prod"
-  # FIXME(jccb)
-  // group_iam = each.value.group_iam == null ? {} : each.value.group_iam
+  iam = {
+    "roles/owner" = [
+      module.branch-gke-multitenant-prod-sa.iam_email
+    ]
+    "roles/resourcemanager.projectCreator" = [
+      module.branch-gke-multitenant-prod-sa.iam_email
+    ]
+  }
 }
 
 module "branch-gke-multitenant-prod-sa" {
@@ -68,8 +74,14 @@ module "branch-gke-multitenant-dev-folder" {
   source = "../../../modules/folder"
   parent = module.branch-gke-folder.id
   name   = "dev"
-  # FIXME(jccb)
-  //group_iam = each.value.group_iam == null ? {} : each.value.group_iam
+  iam = {
+    "roles/owner" = [
+      module.branch-gke-multitenant-dev-sa.iam_email
+    ]
+    "roles/resourcemanager.projectCreator" = [
+      module.branch-gke-multitenant-dev-sa.iam_email
+    ]
+  }
 }
 
 module "branch-gke-multitenant-dev-sa" {

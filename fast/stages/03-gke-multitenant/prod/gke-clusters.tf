@@ -41,6 +41,8 @@ module "gke-cluster" {
     http_load_balancing                   = true
     gce_persistent_disk_csi_driver_config = true
     horizontal_pod_autoscaling            = true
+    config_connector_config               = true
+    kalm_config                           = false
     # enable only if enable_dataplane_v2 is changed to false below
     network_policy_config = false
     istio_config = {
@@ -49,12 +51,12 @@ module "gke-cluster" {
     }
   }
   # change these here for all clusters if absolutely needed
-  authenticator_security_group = var.authenticator_security_group
-  enable_dataplane_v2          = true
-  enable_l4_ilb_subsetting     = false
-  enable_intranode_visibility  = true
-  enable_shielded_nodes        = true
-  workload_identity            = true
+  # authenticator_security_group = var.authenticator_security_group
+  enable_dataplane_v2         = true
+  enable_l4_ilb_subsetting    = false
+  enable_intranode_visibility = true
+  enable_shielded_nodes       = true
+  workload_identity           = true
   private_cluster_config = {
     enable_private_nodes    = true
     enable_private_endpoint = true
@@ -71,12 +73,12 @@ module "gke-cluster" {
   peering_config = {
     export_routes = true
     import_routes = false
-    project_id    = var.project_config.shared_vpc_host_project
+    project_id    = var.vpc_host_project
   }
-  resource_usage_export_config = {
-    enabled = true
-    dataset = module.gke-dataset-resource-usage.id
-  }
+  # resource_usage_export_config = {
+  #   enabled = true
+  #   dataset = module.gke-dataset-resource-usage.id
+  # }
   # TODO: the attributes below are "primed" from project-level defaults
   #       in locals, merge defaults with cluster-level stuff
   # TODO(jccb): change fabric module
@@ -107,4 +109,8 @@ module "gke-cluster" {
   #     memory_max = each.value.cluster_autoscaling.memory_max
   #   }
   # }
+
+  depends_on = [
+    google_project_iam_member.gke_robot
+  ]
 }

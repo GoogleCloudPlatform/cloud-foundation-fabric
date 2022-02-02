@@ -18,11 +18,11 @@
 # 1 project, m clusters
 # cloud dns for gke?
 
-variable "authenticator_security_group" {
-  description = "Optional group used for Groups for GKE."
-  type        = string
-  default     = null
-}
+# variable "authenticator_security_group" {
+#   description = "Optional group used for Groups for GKE."
+#   type        = string
+#   default     = null
+# }
 
 variable "billing_account_id" {
   # tfdoc:variable:source 00-bootstrap
@@ -155,13 +155,8 @@ variable "prefix" {
   type        = string
 }
 
-variable "project_config" {
+variable "vpc_host_project" {
   # tfdoc:variable:source 02-networking
-  description = "Shared VPC host project."
-  type = object({
-
-    shared_vpc_host_project = string
-  })
+  description = "Host project for the shared VPC."
+  type        = string
 }
-
-# service_encryption_key_ids = list(string) -> was above

@@ -103,3 +103,23 @@ module "prod-spoke-psa-addresses" {
     }
   }
 }
+
+# allow the service accounts used to spin up clusters to grant
+# roles/container.hostServiceAgentUser on the host project. This is
+# required by GKE to create new clusters on a shared VPC
+
+resource "google_project_iam_binding" "project_iam_delegated" {
+  project = module.prod-spoke-project.project_id
+  role    = "roles/resourcemanager.projectIamAdmin"
+  members = ["serviceAccount:jast2-prod-gke-prod-0@jast2-prod-iac-core-0.iam.gserviceaccount.com"]
+  condition {
+    title       = "gke_prod_sa_delegated_grants"
+    description = "GKE production service account delegated grants."
+    expression = format(
+      "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
+      join(",", formatlist("'%s'", [
+        "roles/container.hostServiceAgentUser",
+        ]
+    )))
+  }
+}

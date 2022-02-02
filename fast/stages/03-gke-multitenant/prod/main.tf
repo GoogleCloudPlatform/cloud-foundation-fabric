@@ -41,7 +41,7 @@ module "gke-project-0" {
   # }
   shared_vpc_service_config = {
     attach       = true
-    host_project = var.project_config.shared_vpc_host_project
+    host_project = var.vpc_host_project
   }
   # specify project-level org policies here if you need them
 
@@ -65,3 +65,8 @@ module "gke-dataset-resource-usage" {
   friendly_name = "GKE resource usage."
 }
 
+resource "google_project_iam_member" "gke_robot" {
+  project = var.vpc_host_project
+  role    = "roles/container.hostServiceAgentUser"
+  member  = "serviceAccount:${module.gke-project-0.service_accounts.robots.container-engine}"
+}
