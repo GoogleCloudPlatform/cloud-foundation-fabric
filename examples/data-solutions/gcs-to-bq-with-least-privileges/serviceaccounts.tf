@@ -12,10 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-###############################################################################
-#                              Service Accounts                               #
-###############################################################################
-
 module "service-account-bq" {
   source     = "../../../modules/iam-service-account"
   project_id = module.project.project_id

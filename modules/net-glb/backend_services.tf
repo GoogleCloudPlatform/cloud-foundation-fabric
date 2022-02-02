@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description Bucket and group backend services.
+
 locals {
   backend_services_bucket = {
     for k, v in coalesce(var.backend_services_config, {}) :

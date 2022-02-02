@@ -41,7 +41,7 @@ output "gateway" {
 }
 
 output "name" {
-  description = "VPN gateway name (only if auto-created). "
+  description = "VPN gateway name (only if auto-created). ."
   value = (
     var.vpn_gateway_create
     ? google_compute_ha_vpn_gateway.ha_gateway[0].name

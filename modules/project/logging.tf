@@ -17,28 +17,21 @@
 # tfdoc:file:description Log sinks and supporting resources.
 
 locals {
-  logging_sinks = coalesce(var.logging_sinks, {})
   sink_bindings = {
-    for type in ["gcs", "bigquery", "pubsub", "logging"] :
+    for type in ["bigquery", "pubsub", "logging", "storage"] :
     type => {
-      for name, sink in local.logging_sinks :
+      for name, sink in var.logging_sinks :
       name => sink if sink.iam && sink.type == type
     }
-  }
-  sink_type_destination = {
-    gcs      = "storage.googleapis.com"
-    bigquery = "bigquery.googleapis.com"
-    pubsub   = "pubsub.googleapis.com"
-    logging  = "logging.googleapis.com"
   }
 }
 
 resource "google_logging_project_sink" "sink" {
-  for_each = local.logging_sinks
+  for_each = var.logging_sinks
   name     = each.key
-  #description = "${each.key} (Terraform-managed)"
+  #description = "${each.key} (Terraform-managed)."
   project                = local.project.project_id
-  destination            = "${local.sink_type_destination[each.value.type]}/${each.value.destination}"
+  destination            = "${each.value.type}.googleapis.com/${each.value.destination}"
   filter                 = each.value.filter
   unique_writer_identity = each.value.unique_writer
 
@@ -58,7 +51,7 @@ resource "google_logging_project_sink" "sink" {
 }
 
 resource "google_storage_bucket_iam_member" "gcs-sinks-binding" {
-  for_each = local.sink_bindings["gcs"]
+  for_each = local.sink_bindings["storage"]
   bucket   = each.value.destination
   role     = "roles/storage.objectCreator"
   member   = google_logging_project_sink.sink[each.key].writer_identity
@@ -90,9 +83,9 @@ resource "google_project_iam_member" "bucket-sinks-binding" {
 }
 
 resource "google_logging_project_exclusion" "logging-exclusion" {
-  for_each    = coalesce(var.logging_exclusions, {})
+  for_each    = var.logging_exclusions
   name        = each.key
   project     = local.project.project_id
-  description = "${each.key} (Terraform-managed)"
+  description = "${each.key} (Terraform-managed)."
   filter      = each.value
 }

@@ -49,7 +49,7 @@ module "nginx-mig" {
     name              = "default"
   }
 }
-# tftest:modules=2:resources=2
+# tftest modules=2 resources=2
 ```
 
 ### Multiple versions
@@ -102,7 +102,7 @@ module "nginx-mig" {
     }
   }
 }
-# tftest:modules=2:resources=2
+# tftest modules=2 resources=2
 ```
 
 ### Health check and autohealing policies
@@ -158,7 +158,7 @@ module "nginx-mig" {
     logging = true
   }
 }
-# tftest:modules=2:resources=3
+# tftest modules=2 resources=3
 ```
 
 ### Autoscaling
@@ -212,7 +212,7 @@ module "nginx-mig" {
     metric                            = null
   }
 }
-# tftest:modules=2:resources=3
+# tftest modules=2 resources=3
 ```
 
 ### Update policy
@@ -265,7 +265,7 @@ module "nginx-mig" {
     max_unavailable      = null
   }
 }
-# tftest:modules=2:resources=2
+# tftest modules=2 resources=2
 ```
 
 ### Stateful MIGs - MIG Config
@@ -347,7 +347,7 @@ module "nginx-mig" {
     }
   }
 }
-# tftest:modules=2:resources=3
+# tftest modules=2 resources=3
 
 ```
 
@@ -440,7 +440,7 @@ module "nginx-mig" {
     }
   }
 }
-# tftest:modules=2:resources=4
+# tftest modules=2 resources=4
 
 ```
 <!-- BEGIN TFDOC -->
