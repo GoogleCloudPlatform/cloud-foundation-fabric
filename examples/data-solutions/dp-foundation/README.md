@@ -81,6 +81,8 @@ Resources in the script use the following acronyms:
  - `orc` for `orchestration`
  - `trf` for `transformation`
  - `dtl` for `Data Lake`
+ - `cmn` for `common`
+ - `plg` for `playground`
  - 2 letters acronym for GCP products, example: `bq` for `BigQuery`, `df` for `Cloud Dataflow`, ...
 
 Resources follow the naming convention described below.
