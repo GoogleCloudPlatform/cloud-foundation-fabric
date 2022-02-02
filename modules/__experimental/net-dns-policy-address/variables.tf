@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-resource "google_compute_global_address" "static_ip" {
-  count       = var.reserve_ip_address ? 1 : 0
-  provider    = google-beta
-  name        = var.name
-  project     = var.project_id
-  description = "Terraform managed."
+variable "project_id" {
+  description = "Project id."
+  type        = string
+}
+
+variable "regions" {
+  description = "Regions to fetch addresses from."
+  nullable    = false
+  type        = list(string)
+  default     = ["europe-west1"]
 }

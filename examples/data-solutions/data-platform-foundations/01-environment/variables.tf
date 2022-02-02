@@ -13,7 +13,7 @@
 # limitations under the License.
 
 variable "admins" {
-  description = "List of users allowed to impersonate the service account"
+  description = "List of users allowed to impersonate the service account."
   type        = list(string)
   default     = null
 }

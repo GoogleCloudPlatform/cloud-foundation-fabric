@@ -31,7 +31,7 @@ module "cluster-1-nodepool-1" {
   name                        = "nodepool-1"
   node_service_account_create = true
 }
-# tftest:modules=1:resources=2
+# tftest modules=1 resources=2
 ```
 <!-- BEGIN TFDOC -->
 
@@ -50,7 +50,7 @@ module "cluster-1-nodepool-1" {
 | [management_config](variables.tf#L64) | Optional node management configuration. | <code title="object&#40;&#123;&#10;  auto_repair  &#61; bool&#10;  auto_upgrade &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [max_pods_per_node](variables.tf#L73) | Maximum number of pods per node. | <code>number</code> |  | <code>null</code> |
 | [name](variables.tf#L79) | Optional nodepool name. | <code>string</code> |  | <code>null</code> |
-| [node_boot_disk_kms_key](variables.tf#L85) | Customer Managed Encryption Key used to encrypt the boot disk attached to each node | <code>string</code> |  | <code>null</code> |
+| [node_boot_disk_kms_key](variables.tf#L85) | Customer Managed Encryption Key used to encrypt the boot disk attached to each node. | <code>string</code> |  | <code>null</code> |
 | [node_count](variables.tf#L91) | Number of nodes per instance group, can be updated after creation. Ignored when autoscaling is set. | <code>number</code> |  | <code>null</code> |
 | [node_disk_size](variables.tf#L97) | Node disk size, defaults to 100GB. | <code>number</code> |  | <code>100</code> |
 | [node_disk_type](variables.tf#L103) | Node disk type, defaults to pd-standard. | <code>string</code> |  | <code>&#34;pd-standard&#34;</code> |
@@ -69,7 +69,7 @@ module "cluster-1-nodepool-1" {
 | [node_service_account_scopes](variables.tf#L182) | Scopes applied to service account. Default to: 'cloud-platform' when creating a service account; 'devstorage.read_only', 'logging.write', 'monitoring.write' otherwise. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 | [node_shielded_instance_config](variables.tf#L188) | Shielded instance options. | <code title="object&#40;&#123;&#10;  enable_secure_boot          &#61; bool&#10;  enable_integrity_monitoring &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [node_tags](variables.tf#L197) | Network tags applied to nodes. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
-| [node_taints](variables.tf#L203) | Kubernetes taints applied to nodes. E.g. type=blue:NoSchedule | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [node_taints](variables.tf#L203) | Kubernetes taints applied to nodes. E.g. type=blue:NoSchedule. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 | [upgrade_config](variables.tf#L215) | Optional node upgrade configuration. | <code title="object&#40;&#123;&#10;  max_surge       &#61; number&#10;  max_unavailable &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [workload_metadata_config](variables.tf#L224) | Metadata configuration to expose to workloads on the node pool. | <code>string</code> |  | <code>&#34;GKE_METADATA&#34;</code> |
 

@@ -36,7 +36,7 @@ module "dev-firewall" {
     "./common"
   ]
 }
-# tftest:skip
+# tftest skip
 ```
 
 ### Configuration Structure
@@ -140,7 +140,7 @@ web-app-a-ingress:
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [config_directories](variables.tf#L17) | List of paths to folders where firewall configs are stored in yaml format. Folder may include subfolders with configuration files. Files suffix must be `.yaml` | <code>list&#40;string&#41;</code> | ✓ |  |
+| [config_directories](variables.tf#L17) | List of paths to folders where firewall configs are stored in yaml format. Folder may include subfolders with configuration files. Files suffix must be `.yaml`. | <code>list&#40;string&#41;</code> | ✓ |  |
 | [network](variables.tf#L30) | Name of the network this set of firewall rules applies to. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L35) | Project Id. | <code>string</code> | ✓ |  |
 | [log_config](variables.tf#L22) | Log configuration. Possible values for `metadata` are `EXCLUDE_ALL_METADATA` and `INCLUDE_ALL_METADATA`. Set to `null` for disabling firewall logging. | <code title="object&#40;&#123;&#10;  metadata &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
