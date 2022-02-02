@@ -22,14 +22,31 @@ module "branch-gke-folder" {
   source = "../../../modules/folder"
   parent = "organizations/${var.organization.id}"
   name   = "GKE"
+  iam = {
+    "roles/logging.admin"                  = [module.branch-gke-sa.iam_email]
+    "roles/owner"                          = [module.branch-gke-sa.iam_email]
+    "roles/resourcemanager.folderAdmin"    = [module.branch-gke-sa.iam_email]
+    "roles/resourcemanager.projectCreator" = [module.branch-gke-sa.iam_email]
+  }
 }
 
-module "branch-gke-prod-sa" {
+module "branch-gke-sa" {
   source      = "../../../modules/iam-service-account"
   project_id  = var.automation_project_id
   name        = "resman-gke-0"
   description = "Terraform gke production service account."
   prefix      = local.prefixes.prod
+}
+
+module "branch-gke-gcs" {
+  source     = "../../../modules/gcs"
+  project_id = var.automation_project_id
+  name       = "resman-gke-0"
+  prefix     = local.prefixes.prod
+  versioning = true
+  iam = {
+    "roles/storage.objectAdmin" = [module.branch-gke-sa.iam_email]
+  }
 }
 
 # GKE-level folders, service accounts and buckets for each individual environment

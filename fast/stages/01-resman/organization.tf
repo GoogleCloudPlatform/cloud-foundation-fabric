@@ -23,6 +23,9 @@ locals {
     module.branch-teams-dev-projectfactory-sa.iam_email,
     module.branch-teams-prod-projectfactory-sa.iam_email
   ]
+  branch_gke_sa_iam_emails = [
+    module.branch-gke-sa.iam_email
+  ]
   list_allow = {
     inherit_from_parent = false
     suggested_value     = null
@@ -50,13 +53,15 @@ module "organization" {
   iam_additive = merge(
     {
       (var.custom_roles.xpnServiceAdmin) = concat(
-        local.branch_teams_pf_sa_iam_emails
+        local.branch_teams_pf_sa_iam_emails,
+        local.branch_gke_sa_iam_emails
       )
       "roles/accesscontextmanager.policyAdmin" = [
         module.branch-security-sa.iam_email
       ]
       "roles/billing.costsManager" = concat(
-        local.branch_teams_pf_sa_iam_emails
+        local.branch_teams_pf_sa_iam_emails,
+        local.branch_gke_sa_iam_emails
       ),
       "roles/compute.orgFirewallPolicyAdmin" = [
         module.branch-network-sa.iam_email
@@ -76,7 +81,8 @@ module "organization" {
         # [
         #   for k, v in module.branch-teams-team-sa : v.iam_email
         # ],
-        local.branch_teams_pf_sa_iam_emails
+        local.branch_teams_pf_sa_iam_emails,
+        local.branch_gke_sa_iam_emails
       )
     } : {}
   )
