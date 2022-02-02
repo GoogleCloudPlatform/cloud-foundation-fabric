@@ -40,10 +40,10 @@ module "dtl-2-bq-0" {
   encryption_key = try(local.service_encryption_keys.bq, null)
 }
 
-module "dtl-exp-bq-0" {
+module "dtl-plg-bq-0" {
   source         = "../../../modules/bigquery-dataset"
-  project_id     = module.dtl-exp-prj.project_id
-  id             = "${replace(local.prefix_dtl, "-", "_")}_exp_bq_0"
+  project_id     = module.dtl-plg-prj.project_id
+  id             = "${replace(local.prefix_dtl, "-", "_")}_plg_bq_0"
   location       = var.location_config.region
   encryption_key = try(local.service_encryption_keys.bq, null)
 }
@@ -83,10 +83,10 @@ module "dtl-2-cs-0" {
   force_destroy  = var.data_force_destroy
 }
 
-module "dtl-exp-cs-0" {
+module "dtl-plg-cs-0" {
   source         = "../../../modules/gcs"
-  project_id     = module.dtl-exp-prj.project_id
-  name           = "exp-cs-0"
+  project_id     = module.dtl-plg-prj.project_id
+  name           = "plg-cs-0"
   prefix         = local.prefix_dtl
   location       = var.location_config.region
   storage_class  = "REGIONAL"

@@ -2,11 +2,13 @@
 
 This module implements an opinionated Data Platform (DP) Architecture that creates and setup projects (and related resources) to be used to create your DP.
 
-The code is intentionally simple, as it's intended to provide a generic initial setup (Networking, Security, etc.), and then allow easy customizations to complete the implementation of the intended hierarchy design.
+The code is intentionally simple, as it's intended to provide a generic initial setup (Networking, Cloud Storage Buckets, BigQuery datasets, etc.), and then allow easy customizations to complete the implementation of the intended design.
 
 The following diagram is a high-level reference of the resources created and managed here:
 
 ![Data Platform architecture overview](./images/overview_diagram.png "Data Platform architecture overview")
+
+A demo pipeline is also part of this example: it can be built and run on top of the foundational infrastructure to quickly verify or test the setup.
 
 ## Design overview and choices
 Despite its simplicity, this stage implements the basics of a design that we've seen working well for a variety of customers.
@@ -37,10 +39,10 @@ The following projects will be created:
   - **L0 - Raw data** Structured Data, stored in the adequate format: structured data stored in BigQuery, unstructured data stored on Cloud Storage with additional metadata stored in BigQuery (for example pictures stored in Cloud Storage and analysis of the picture for Cloud Vision API stored in BigQuery). 
   - **L1 - Cleansed, aggregated and standardized data**
   - **L2 - Curated layer**
-  - **Experimental** Store temporary tables that Data Analyst may use to perform R&D on data available on other Data Lake layers
+  - **Playground** Store temporary tables that Data Analyst may use to perform R&D on data available on other Data Lake layers
 - **Orchestration** This project is intended to host Cloud Composer. Cloud Composer will orchestrate all tasks to move your data on its journey.
 - **Transformation** This project is intended to host resources to move data from one layer of the Data Lake to the other. We strongly suggest relying on BigQuery engine to perform transformations. If BigQuery doesn't have the feature needed to perform your transformation you suggest using Cloud Dataflow. The use of [Cloud Dataflow templates](https://cloud.google.com/dataflow/docs/concepts/dataflow-templates) is suggested. Anonymization/tokenization Personally Identifiable Information can be applied at this stage or in the transformation stage depending on your requirements.
-- **Exposure** This project is intended to host resources to expose your data. To expose BigQuery data, we strongly suggest relying on Authorized views. Other resources may better fit a particular data access pattern, example: Cloud SQL may be needed if you need to expose data with low latency, BigTable may be needed in a use case where you need lower latency to access data.
+- **Exposure** This project is intended to host resources to expose your data. To expose BigQuery data, we strongly suggest relying on Authorized views. Other resources may better fit a particular data access pattern, example: Cloud SQL may be needed if you need to expose data with low latency, BigTable may be needed in a use case where you need lower latency to access data. For the porpuse of this example, no resources will be deployed on this project, please customize the exple as needed.
 
 ### Roles
 We assigned roles on resources at project-level assigning the appropriate role to groups. We recommend not adding human users directly to the resource-access groups with IAM permissions to access data.
@@ -60,7 +62,7 @@ Whilst necessary in some scenarios, such as programmatic access from on-premise 
 ### Groups
 As default groups, we identified the following actors:
 - *Data Engineers*: the group that handles and runs the Data Hub. The group has Read access to all resources to be able to troubleshoot possible issues with the pipeline. The team also can impersonate all service accounts. Default value: `gcp-data-engineers@DOMAIN.COM`. 
-- *Data Analyst*: the group that performs analysis on the dataset. The group has Read access to the Data Lake L2 project and BigQuery READ/WRITE access to the `experimental` project. Default value: `gcp-data-analyst@DOMAIN.COM`
+- *Data Analyst*: the group that performs analysis on the dataset. The group has Read access to the Data Lake L2 project and BigQuery READ/WRITE access to the `playground` project. Default value: `gcp-data-analyst@DOMAIN.COM`
 - *Data Security*: the project that handles security features related to the Data Hub. Default name: `gcp-data-security@DOMAIN.com`
 ### Virtual Private Cloud (VPC) design
 The DP except as input an existing [Shared-VPC](https://cloud.google.com/vpc/docs/shared-vpc) to run resources. You can configure subsets for DP resources specifying the link to the subnet in the `network_config` variable. You may want to configure a shared-VPC to run your resources in the case your pipelines may need to reach on-premise resources.
@@ -74,7 +76,7 @@ To run your DP resources you need the following ranges:
   - Cloud SQL. Range: '/24'
   - GKE Master. Range: '/28'
   - Web Server: Range: '/28'
-  - Secondary IP ranges. Pods range: '/22', Services range: '/24'  
+  - Secondary IP ranges. Pods range: '/22', Services range: '/24'
 
 ### Resource naming convention
 Resources in the script use the following acronyms:
@@ -130,6 +132,11 @@ We implemented a centralized model for Cloud Data Loss Prevention resources. Tem
 ![Centralized Cloud Data Loss Prevention high-level diagram](./images/dlp_diagram.png "Centralized Cloud Data Loss Prevention high-level diagram")
 
 ## How to run this script
+In order to bring up this example, you will need
+
+- a folder or organization where new projects will be created
+- a billing account that will be associated to new projects
+
 The DP is meant to be executed by a Service Account (or a regular user) having this minimal set of permission:
 * **Org level**:
   * `"compute.organizations.enableXpnResource"`

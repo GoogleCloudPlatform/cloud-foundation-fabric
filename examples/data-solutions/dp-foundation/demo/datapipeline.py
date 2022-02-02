@@ -29,26 +29,39 @@ from airflow.providers.google.cloud.operators.bigquery import  BigQueryInsertJob
 
 # --------------------------------------------------------------------------------
 # Set variables
-# --------------------------------------------------------------------------------
-
-LND_GCS = os.environ.get("LND_GCS")
-ORC_GCS = os.environ.get("ORC_GCS")
-LOD_GCS_STAGING = os.environ.get("LOD_GCS_STAGING")
-DTL_L0_BQ_DATASET = os.environ.get("DTL_L0_BQ_DATASET")
+# ------------------------------------------------------------
 DTL_L0_PRJ = os.environ.get("DTL_L0_PRJ")
-DTL_L1_BQ_DATASET = os.environ.get("DTL_L1_BQ_DATASET")
+DTL_L0_BQ_DATASET = os.environ.get("DTL_L0_BQ_DATASET")
+DTL_L0_GCS = os.environ.get("DTL_L0_GCS")
 DTL_L1_PRJ = os.environ.get("DTL_L1_PRJ")
-DTL_L2_BQ_DATASET = os.environ.get("DTL_L2_BQ_DATASET")
+DTL_L1_BQ_DATASET = os.environ.get("DTL_L1_BQ_DATASET")
+DTL_L1_GCS = os.environ.get("DTL_L1_GCS")
 DTL_L2_PRJ = os.environ.get("DTL_L2_PRJ")
+DTL_L2_BQ_DATASET = os.environ.get("DTL_L2_BQ_DATASET")
+DTL_L2_GCS = os.environ.get("DTL_L2_GCS")
+DTL_PLG_PRJ = os.environ.get("DTL_PLG_PRJ")
+DTL_PLG_BQ_DATASET = os.environ.get("DTL_PLG_BQ_DATASET")
+DTL_PLG_GCS = os.environ.get("DTL_PLG_GCS")
+GCP_REGION = os.environ.get("GCP_REGION")
+LND_PRJ = os.environ.get("LND_PRJ")
+LND_BQ = os.environ.get("LND_BQ")
+LND_GCS = os.environ.get("LND_GCS")
+LND_PS = os.environ.get("LND_PS")
 LOD_PRJ = os.environ.get("LOD_PRJ")
-DF_ZONE = os.environ.get("GCP_REGION") + "-b"
-DF_REGION = BQ_REGION = os.environ.get("GCP_REGION")
+LOD_GCS_STAGING = os.environ.get("LOD_GCS_STAGING")
 LOD_NET_VPC = os.environ.get("LOD_NET_VPC")
 LOD_NET_SUBNET = os.environ.get("LOD_NET_SUBNET")
 LOD_SA_DF = os.environ.get("LOD_SA_DF")
+ORC_PRJ = os.environ.get("ORC_PRJ")
+ORC_GCS = os.environ.get("ORC_GCS")
+TRF_PRJ = os.environ.get("TRF_PRJ")
+TRF_GCS_STAGING = os.environ.get("TRF_GCS_STAGING")
+TRF_NET_VPC = os.environ.get("TRF_NET_VPC")
+TRF_NET_SUBNET = os.environ.get("TRF_NET_SUBNET")
 TRF_SA_DF = os.environ.get("TRF_SA_DF")
 TRF_SA_BQ = os.environ.get("TRF_SA_BQ")
-TRF_PRJ = os.environ.get("TRF_PRJ")
+DF_ZONE = os.environ.get("GCP_REGION") + "-b"
+DF_REGION = BQ_REGION = os.environ.get("GCP_REGION")
 
 # --------------------------------------------------------------------------------
 # Set default arguments
@@ -77,7 +90,7 @@ default_args = {
     'serviceAccountEmail': LOD_SA_DF,
     'subnetwork': LOD_NET_SUBNET,
     'ipConfiguration': "WORKER_IP_PRIVATE"
-  },  
+  },
 }
 
 # --------------------------------------------------------------------------------
@@ -131,9 +144,8 @@ with models.DAG(
     location=BQ_REGION,
     configuration={
       'jobType':'QUERY',
-      'writeDisposition':'WRITE_TRUNCATE',
       'query':{
-        'query':"""SELECT  
+        'query':"""SELECT
                   c.id as customer_id,
                   p.id as purchase_id,
                   c.name as name,
@@ -142,17 +154,18 @@ with models.DAG(
                   p.price as price,
                   p.timestamp as timestamp
                 FROM `{dtl_0_prj}.{dtl_0_dataset}.customers` c
-                JOIN `{dtl_0_prj}.{dtl_0_dataset}.purchases` p ON c.id = p.customer_id 
+                JOIN `{dtl_0_prj}.{dtl_0_dataset}.purchases` p ON c.id = p.customer_id
               """.format(dtl_0_prj=DTL_L0_PRJ, dtl_0_dataset=DTL_L0_BQ_DATASET, ),
         'destinationTable':{
           'projectId': DTL_L1_PRJ,
           'datasetId': DTL_L1_BQ_DATASET,
-          'tableId': 'customer_purchase'          
+          'tableId': 'customer_purchase'
         },
+        'writeDisposition':'WRITE_TRUNCATE',
         "useLegacySql": False
       }
     },
-    impersonation_chain=[TRF_SA_BQ]    
+    impersonation_chain=[TRF_SA_BQ]
   )
 
   l2_customer_purchase = BigQueryInsertJobOperator(
@@ -162,9 +175,8 @@ with models.DAG(
     location=BQ_REGION,
     configuration={
       'jobType':'QUERY',
-      'writeDisposition':'WRITE_TRUNCATE',
       'query':{
-        'query':"""SELECT  
+        'query':"""SELECT
                      customer_id,
                      purchase_id,
                      name,
@@ -177,12 +189,13 @@ with models.DAG(
         'destinationTable':{
           'projectId': DTL_L2_PRJ,
           'datasetId': DTL_L2_BQ_DATASET,
-          'tableId': 'customer_purchase'          
+          'tableId': 'customer_purchase'
         },
+        'writeDisposition':'WRITE_TRUNCATE',
         "useLegacySql": False
       }
     },
-    impersonation_chain=[TRF_SA_BQ]    
+    impersonation_chain=[TRF_SA_BQ]
   )
-  
+
   start >> [customers_import, purchases_import] >> join_customer_purchase >> l2_customer_purchase >> end

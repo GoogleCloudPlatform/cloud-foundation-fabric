@@ -51,9 +51,6 @@ resource "google_composer_environment" "orc-cmp-0" {
     software_config {
       image_version = "composer-1.17.5-airflow-2.1.4"
       env_variables = {
-        DTL_EXP_PRJ        = module.dtl-0-prj.project_id
-        DTL_EXP_BQ_DATASET = module.dtl-exp-bq-0.dataset_id
-        DTL_EXP_GCS        = module.dtl-exp-cs-0.url
         DTL_L0_PRJ         = module.dtl-0-prj.project_id
         DTL_L0_BQ_DATASET  = module.dtl-0-bq-0.dataset_id
         DTL_L0_GCS         = module.dtl-0-cs-0.url
@@ -63,6 +60,9 @@ resource "google_composer_environment" "orc-cmp-0" {
         DTL_L2_PRJ         = module.dtl-2-prj.project_id
         DTL_L2_BQ_DATASET  = module.dtl-2-bq-0.dataset_id
         DTL_L2_GCS         = module.dtl-2-cs-0.url
+        DTL_PLG_PRJ        = module.dtl-plg-prj.project_id
+        DTL_PLG_BQ_DATASET = module.dtl-plg-bq-0.dataset_id
+        DTL_PLG_GCS        = module.dtl-plg-cs-0.url
         GCP_REGION         = var.composer_config.region
         LND_PRJ            = module.lnd-prj.project_id
         LND_BQ             = module.lnd-bq-0.dataset_id
@@ -77,6 +77,8 @@ resource "google_composer_environment" "orc-cmp-0" {
         ORC_GCS            = module.orc-cs-0.url
         TRF_PRJ            = module.trf-prj.project_id
         TRF_GCS_STAGING    = module.trf-cs-df-0.url
+        TRF_NET_VPC        = module.trf-vpc[0].self_link
+        TRF_NET_SUBNET     = module.trf-vpc[0].subnet_self_links["${var.composer_config.region}/${local.prefix_trf}-subnet"]
         TRF_SA_DF          = module.trf-sa-df-0.email
         TRF_SA_BQ          = module.trf-sa-bq-0.email
       }

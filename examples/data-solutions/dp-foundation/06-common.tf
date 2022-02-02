@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# tfdoc:file:description Security project.
+# tfdoc:file:description common project.
 
 locals {
-  group_iam_sec = {
+  group_iam_cmn = {
     "${local.groups.data-engineers}" = [
       "roles/dlp.reader",
       "roles/dlp.user",
@@ -25,35 +25,35 @@ locals {
       "roles/dlp.admin",
     ],
   }
-  iam_sec = {
+  iam_cmn = {
     "roles/dlp.user" = [
       module.lod-sa-df-0.iam_email,
       module.trf-sa-df-0.iam_email
     ]
   }
-  prefix_sec = "${var.prefix}-sec"
+  prefix_cmn = "${var.prefix}-cmn"
 }
 
 # Project
 
-module "sec-prj" {
+module "cmn-prj" {
   source          = "../../../modules/project"
-  name            = var.project_id["security"]
+  name            = var.project_id["common"]
   parent          = try(var.project_create.parent, null)
   billing_account = try(var.project_create.billing_account_id, null)
   project_create  = var.project_create != null
   prefix          = var.project_create == null ? null : var.prefix
   # additive IAM bindings avoid disrupting bindings in existing project
-  iam          = var.project_create != null ? local.iam_trf : {}
-  iam_additive = var.project_create == null ? local.iam_trf : {}
-  group_iam    = local.group_iam_trf
+  iam          = var.project_create != null ? local.iam_cmn : {}
+  iam_additive = var.project_create == null ? local.iam_cmn : {}
+  group_iam    = local.group_iam_cmn
   services = concat(var.project_services, [
     "dlp.googleapis.com",
   ])
 }
 
 # Uncomment this section and assigne key links accondingly in local. variable
-# if you want to create KMS keys in the security projet
+# if you want to create KMS keys in the common projet
 
 # module "sec-kms-0" {
 #   source     = "../../../modules/kms"

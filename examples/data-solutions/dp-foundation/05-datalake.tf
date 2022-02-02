@@ -63,7 +63,7 @@ locals {
 
 module "dtl-0-prj" {
   source          = "../../../modules/project"
-  name            = var.project_create == null ? var.project_id["datalake"] : "${var.project_id["datalake"]}-0"
+  name            = var.project_id["datalake-l0"]
   parent          = try(var.project_create.parent, null)
   billing_account = try(var.project_create.billing_account_id, null)
   project_create  = var.project_create != null
@@ -92,7 +92,7 @@ module "dtl-0-prj" {
 
 module "dtl-1-prj" {
   source          = "../../../modules/project"
-  name            = var.project_create == null ? var.project_id["datalake"] : "${var.project_id["datalake"]}-1"
+  name            = var.project_id["datalake-l1"]
   parent          = try(var.project_create.parent, null)
   billing_account = try(var.project_create.billing_account_id, null)
   project_create  = var.project_create != null
@@ -121,7 +121,7 @@ module "dtl-1-prj" {
 
 module "dtl-2-prj" {
   source          = "../../../modules/project"
-  name            = var.project_create == null ? var.project_id["datalake"] : "${var.project_id["datalake"]}-2"
+  name            = var.project_id["datalake-l2"]
   parent          = try(var.project_create.parent, null)
   billing_account = try(var.project_create.billing_account_id, null)
   project_create  = var.project_create != null
@@ -148,9 +148,9 @@ module "dtl-2-prj" {
   }
 }
 
-module "dtl-exp-prj" {
+module "dtl-plg-prj" {
   source          = "../../../modules/project"
-  name            = var.project_create == null ? var.project_id["datalake"] : "${var.project_id["datalake"]}-exp"
+  name            = var.project_id["datalake-playground"]
   parent          = try(var.project_create.parent, null)
   billing_account = try(var.project_create.billing_account_id, null)
   project_create  = var.project_create != null

@@ -97,20 +97,28 @@ variable "project_create" {
 variable "project_id" {
   description = "Project id, references existing project if `project_create` is null."
   type = object({
-    landing       = string
-    load          = string
-    orchestration = string
-    trasformation = string
-    datalake      = string
-    security      = string
+    landing             = string
+    load                = string
+    orchestration       = string
+    trasformation       = string
+    datalake-l0         = string
+    datalake-l1         = string
+    datalake-l2         = string
+    datalake-playground = string
+    common              = string
+    exposure            = string
   })
   default = {
-    landing       = "lnd"
-    load          = "lod"
-    orchestration = "orc"
-    trasformation = "trf"
-    datalake      = "dtl"
-    security      = "sec"
+    landing             = "lnd"
+    load                = "lod"
+    orchestration       = "orc"
+    trasformation       = "trf"
+    datalake-l0         = "dtl-0"
+    datalake-l1         = "dtl-1"
+    datalake-l2         = "dtl-2"
+    datalake-playground = "dtl-plg"
+    common              = "cmn"
+    exposure            = "exp"
   }
 }
 
