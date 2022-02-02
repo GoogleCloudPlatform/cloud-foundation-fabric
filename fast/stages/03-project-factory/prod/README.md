@@ -15,51 +15,50 @@ Projects for each environment across different teams are created by dedicated se
 
 The project factory takes care of the following activities:
 
-* Project creation
-* API/Services enablement
-* Service accounts creation
-* IAM roles assignment for groups and service accounts
-* KMS keys roles assignment
-* Shared VPC attachment and subnets IAM binding
-* DNS zones creation and visibility configuration
-* Project-level org policies definition
-* Billing setup (billing account attachment and budget configuration)
-* Essential contacts definition (for [budget alerts](https://cloud.google.com/billing/docs/how-to/budgets) and [important notifications](https://cloud.google.com/resource-manager/docs/managing-notification-contacts?hl=en))
+- Project creation
+- API/Services enablement
+- Service accounts creation
+- IAM roles assignment for groups and service accounts
+- KMS keys roles assignment
+- Shared VPC attachment and subnets IAM binding
+- DNS zones creation and visibility configuration
+- Project-level org policies definition
+- Billing setup (billing account attachment and budget configuration)
+- Essential contacts definition (for [budget alerts](https://cloud.google.com/billing/docs/how-to/budgets) and [important notifications](https://cloud.google.com/resource-manager/docs/managing-notification-contacts?hl=en))
   
-
 ## How to run this stage
 
 This stage is meant to be executed after "foundational stages" (i.e., stages [`00-bootstrap`](../../00-bootstrap), [`01-resman`](../../01-resman), [`02-networking`](../../02-networking) and [`02-security`](../../02-security)) have been run.
 
 It's of course possible to run this stage in isolation, by making sure the architectural prerequisites are satisfied (e.g., networking), and that the Service Account running the stage is granted the roles/permissions below:
 
-* One service account per environment, each with appropriate permissions
-  * at the organization level a custom role for networking operations including the following permissions
-    * `"compute.organizations.enableXpnResource"`,
-    * `"compute.organizations.disableXpnResource"`,
-    * `"compute.subnetworks.setIamPolicy"`,
-    * `"dns.networks.bindPrivateDNSZone"`
-    * and role `"roles/orgpolicy.policyAdmin"`
-  * on each folder where projects are created
-    * `"roles/logging.admin"` 
-    * `"roles/owner"` 
-    * `"roles/resourcemanager.folderAdmin"` 
-    * `"roles/resourcemanager.projectCreator"`
-  * on the host project for the Shared VPC
-    * `"roles/browser"`       
-    * `"roles/compute.viewer"`
-    * `"roles/dns.admin"`     
-* If networking is used (e.g., for VMs, GKE Clusters or AppEngine flex), VPC Host projects and their subnets should exist when creating projects
-* If per-environment DNS sub-zones are required, one "root" zone per environment should exist when creating projects (e.g., prod.gcp.example.com.)
+- One service account per environment, each with appropriate permissions
+  - at the organization level a custom role for networking operations including the following permissions
+    - `"compute.organizations.enableXpnResource"`,
+    - `"compute.organizations.disableXpnResource"`,
+    - `"compute.subnetworks.setIamPolicy"`,
+    - `"dns.networks.bindPrivateDNSZone"`
+    - and role `"roles/orgpolicy.policyAdmin"`
+  - on each folder where projects are created
+    - `"roles/logging.admin"`
+    - `"roles/owner"`
+    - `"roles/resourcemanager.folderAdmin"`
+    - `"roles/resourcemanager.projectCreator"`
+  - on the host project for the Shared VPC
+    - `"roles/browser"`
+    - `"roles/compute.viewer"`
+    - `"roles/dns.admin"`
+- If networking is used (e.g., for VMs, GKE Clusters or AppEngine flex), VPC Host projects and their subnets should exist when creating projects
+- If per-environment DNS sub-zones are required, one "root" zone per environment should exist when creating projects (e.g., prod.gcp.example.com.)
 
 ### Providers configuration
 
 If you're running this on top of Fast, you should run the following commands to create the providers file, and populate the required variables from the previous stage.
 
 ```bash
-# Variable `outputs_location` is set to `../../configs/example` in stage 01-resman
+# Variable `outputs_location` is set to `../../config` in stage 01-resman
 $ cd fabric-fast/stages/03-project-factory/prod
-ln -s ../../../configs/example/03-project-factory-prod/providers.tf
+ln -s ../../../config/03-project-factory-prod/providers.tf
 ```
 
 ### Variable configuration
@@ -74,18 +73,17 @@ To avoid the tedious job of filling in the first group of variables with values 
 If you configured a valid path for `outputs_location` in the bootstrap and networking stage, simply link the relevant `terraform-*.auto.tfvars.json` files from this stage's outputs folder (under the path you specified), where the `*` above is set to the name of the stage that produced it. For this stage, a single `.tfvars` file is available:
 
 ```bash
-# Variable `outputs_location` is set to `../../configs/example` in stages 01-bootstrap and 02-networking
-ln -s ../../../configs/example/03-project-factory-prod/terraform-bootstrap.auto.tfvars.json
-ln -s ../../../configs/example/03-project-factory-prod/terraform-networking.auto.tfvars.json
+# Variable `outputs_location` is set to `../../config` in stages 01-bootstrap and 02-networking
+ln -s ../../../config/03-project-factory-prod/terraform-bootstrap.auto.tfvars.json
+ln -s ../../../config/03-project-factory-prod/terraform-networking.auto.tfvars.json
 ```
 
 If you're not using Fast, refer to the [Variables](#variables) table at the bottom of this document for a full list of variables, their origin (e.g., a stage or specific to this one), and descriptions explaining their meaning.
 
-Besides the values above, a project factory takes 2 additional inputs: 
+Besides the values above, a project factory takes 2 additional inputs:
 
-* `data/defaults.yaml`, manually configured by adapting the [`prod/data/defaults.yaml.sample`](./prod/data/defaults.yaml.sample), which defines per-environment default values e.g., for billing alerts and labels. 
-
-* `data/projects/*.yaml`, one file per project (optionally grouped in folders), which configures each project. A [`prod/data/projects/project.yaml.sample`](./prod/data/projects/project.yaml.sample) is provided as reference and documentation for the schema. Projects will be named after the filename, e.g., `fast-prod-lab0.yaml` will create project `fast-prod-lab0`.
+- `data/defaults.yaml`, manually configured by adapting the [`prod/data/defaults.yaml.sample`](./prod/data/defaults.yaml.sample), which defines per-environment default values e.g., for billing alerts and labels.
+- `data/projects/*.yaml`, one file per project (optionally grouped in folders), which configures each project. A [`prod/data/projects/project.yaml.sample`](./prod/data/projects/project.yaml.sample) is provided as reference and documentation for the schema. Projects will be named after the filename, e.g., `fast-prod-lab0.yaml` will create project `fast-prod-lab0`.
 
 Once the configuration is complete, run the project factory by running
 
