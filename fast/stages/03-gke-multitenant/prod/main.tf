@@ -19,7 +19,7 @@ locals {
 }
 
 module "gke-project-0" {
-  source          = "../../../modules/project"
+  source          = "../../../../modules/project"
   billing_account = var.billing_account_id
   name            = "${var.environment}-gke-clusters-0"
   parent          = var.folder_id
@@ -36,9 +36,9 @@ module "gke-project-0" {
     # "trafficdirector.googleapis.com"
   ]
   # add here any other service ids and keys for robot accounts which are needed
-  service_encryption_key_ids = {
-    container = var.project_config.service_encryption_key_ids
-  }
+  # service_encryption_key_ids = {
+  #   container = var.project_config.service_encryption_key_ids
+  # }
   shared_vpc_service_config = {
     attach       = true
     host_project = var.project_config.shared_vpc_host_project
@@ -59,7 +59,7 @@ module "gke-project-0" {
 }
 
 module "gke-dataset-resource-usage" {
-  source        = "../../../modules/bigquery-dataset"
+  source        = "../../../../modules/bigquery-dataset"
   project_id    = module.gke-project-0.project_id
   id            = "resource_usage"
   friendly_name = "GKE resource usage."

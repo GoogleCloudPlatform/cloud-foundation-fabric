@@ -28,7 +28,7 @@ locals {
 }
 
 module "gke_1_nodepool" {
-  source             = "../../../modules/gke-nodepool"
+  source             = "../../../../modules/gke-nodepool"
   for_each           = local.nodepools
   name               = each.value.name
   project_id         = module.gke-project-0.project_id

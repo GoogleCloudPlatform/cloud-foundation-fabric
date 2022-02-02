@@ -159,7 +159,9 @@ variable "project_config" {
   # tfdoc:variable:source 02-networking
   description = "Shared VPC host project."
   type = object({
-    service_encryption_key_ids = list(string)
-    shared_vpc_host_project    = string
+
+    shared_vpc_host_project = string
   })
 }
+
+# service_encryption_key_ids = list(string) -> was above
