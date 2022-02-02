@@ -12,6 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+locals {
+  rsa-public-key = file(var.m4ce_ssh_public_key)
+}
+
 resource "vsphere_role" "gcp-m4ce-role" {
   name = "gcp-m4ce-role"
   role_privileges = [
@@ -24,10 +28,6 @@ resource "vsphere_role" "gcp-m4ce-role" {
     "VirtualMachine.State.CreateSnapshot",
     "VirtualMachine.State.RemoveSnapshot"
   ]
-}
-
-locals {
-  rsa-public-key = file(var.m4ce_ssh_public_key)
 }
 
 resource "vsphere_virtual_machine" "gcp-m4ce-connector" {

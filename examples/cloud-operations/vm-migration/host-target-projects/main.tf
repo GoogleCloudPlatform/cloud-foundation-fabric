@@ -52,7 +52,6 @@ module "m4ce-service-account" {
 }
 
 module "target-projects" {
-
   for_each       = toset(var.migration_target_projects)
   source         = "../../../../modules/project"
   name           = each.key

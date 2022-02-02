@@ -8,23 +8,23 @@ They are meant to be used as minimal but complete starting points to create migr
 
 ### M4CE on a single project
 
-<a href="./single-project/" title="M4CE with single project"><img src="./single-project/diagram.png" align="left" width="280px"></a> This [example](./single-project/) implements a simple environment for Migrate for Compute Engine (v5) where both the API backend and the migration target environment in deployed on a single GCP project.
+<a href="./single-project/" title="M4CE with single project"><img src="./single-project/diagram.png" align="left" width="280px"></a> This [example](./single-project/) implements a simple environment for Migrate for Compute Engine (v5) where both the API backend and the migration target environment are deployed on a single GCP project.
 
 This example represents the easiest sceario to implement a Migrate for Compute Engine (v5) enviroment suitable for small migrations on simple enviroments or for product showcases. 
 <br clear="left">
 
 ### M4CE with host and target projects
 
-<a href="./host-target-projects/" title="M4CE with host and target projects"><img src="./host-target-projects/diagram.png" align="left" width="280px"></a> This [example](./host-target-projects/) implements a Migrate for Compute Engine (v5) host and target projects topology where the API backend and access grants are implemented on the host project while workloads are migrated on a different target projects.
+<a href="./host-target-projects/" title="M4CE with host and target projects"><img src="./host-target-projects/diagram.png" align="left" width="280px"></a> This [example](./host-target-projects/) implements a Migrate for Compute Engine (v5) host and target projects topology where the API backend and access grants are implemented on the host project while workloads are migrated on a different target project.
 
-This example shows a complex scenario where Migrate for Compute Engine (v5) can be deployed on top of and existing HUB and SPOKE topology and the migration target projects are deployed with pplatform forundations.
+This example shows a complex scenario where Migrate for Compute Engine (v5) can be deployed on top of and existing HUB and SPOKE topology and the migration target projects are deployed with platform foundations.
 <br clear="left">
 
 ### M4CE with Host and Target Projects and Shared VPC
 
 <a href="./host-target-sharedvpc/" title="M4CE with host and target projects and shared VPC"><img src="./host-target-sharedvpc/diagram.png" align="left" width="280px"></a> This [example](./host-target-sharedvpc/) implements a Migrate for Compute Engine (v5) host and target projects topology as described above with the support of shared VPC. 
 
-The example shows how to implement a Migrate for Compute Engine (v5) environment on top of an existing shared VPC topology where the shared VPC service projects are the targets projects for the migration. 
+The example shows how to implement a Migrate for Compute Engine (v5) environment on top of an existing shared VPC topology where the shared VPC service projects are the target projects for the migration. 
 <br clear="left">
 
 ### ESXi Connector
