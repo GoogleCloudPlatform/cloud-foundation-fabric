@@ -119,10 +119,12 @@ variable "psa_ranges" {
     prod = {
       cloudsql-mysql     = "10.128.94.0/24"
       cloudsql-sqlserver = "10.128.95.0/24"
+      gke                = "10.128.96.0/28"
     }
     dev = {
       cloudsql-mysql     = "10.128.62.0/24"
       cloudsql-sqlserver = "10.128.63.0/24"
+      gke                = "10.128.64.0/28"
     }
   }
 }
