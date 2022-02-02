@@ -2,16 +2,16 @@
 
 This module implements an opinionated Data Platform (DP) Architecture that creates and setup projects (and related resources) to be used to create your DP.
 
-The code is intentionally simple, as it's intended to provide a generic initial setup (Networking, Cloud Storage Buckets, BigQuery datasets, etc.), and then allow easy customizations to complete the implementation of the intended design.
+The code is intentionally simple, as it's intended to provide a generic initial setup (Networking, Cloud Storage Buckets, BigQuery datasets, etc.) and then allow easy customizations to complete the implementation of the intended design.
 
 The following diagram is a high-level reference of the resources created and managed here:
 
 ![Data Platform architecture overview](./images/overview_diagram.png "Data Platform architecture overview")
 
-A demo pipeline is also part of this example: it can be built and run on top of the foundational infrastructure to quickly verify or test the setup.
+A demo pipeline is also part of this example: it can be built and run on top of the foundational infrastructure to verify or test the setup quickly.
 
 ## Design overview and choices
-Despite its simplicity, this stage implements the basics of a design that we've seen working well for a variety of customers.
+Despite its simplicity, this stage implements the basics of a design that we've seen working well for various customers.
 
 The approach adapts to different high-level requirements: 
 - boundaries for each step
@@ -19,7 +19,7 @@ The approach adapts to different high-level requirements:
 - least privilege principle
 - rely on service account impersonification
 
-The code in this example doesn't address Organization level configuration (Organization policy, VPC-SC, centralized logs). Those are aspects that we expect to be addressed on stages external to this script. 
+The code in this example doesn't address Organization level configuration (Organization policy, VPC-SC, centralized logs). We expect to address those aspects on stages external to this script. 
 
 ### Project structure
 The DP is designed to rely on several projects, one project per data stage. The stages identified are:
@@ -30,19 +30,19 @@ The DP is designed to rely on several projects, one project per data stage. The 
 - transformation
 - exposure
 
-This is done to better separate different stages of the data journey and rely on project-level roles.
+This separation into projects allows adhering the least-privilege principle relying on project-level roles.
 
-The following projects will be created:
-- **Landing** This project is intended to store data temporarily. Data are pushed to Cloud Storage, BigQuery or Cloud PubSub. Resource configured with 3 months lifecycle policy.
-- **Load** This project is intended to load data from `landing` to `data lake`. Load is made with minimal to zero transformation logic (mainly `cast`). Anonymization/tokenization Personally Identifiable Information can be applied at this stage or in the transformation stage depending on your requirements. The use of [Cloud Dataflow templates](https://cloud.google.com/dataflow/docs/concepts/dataflow-templates) is suggested.
-- **Data Lake** Those projects are intended to store your data. It represents where data will be persisted within 3 Layers. These layers represent different stages where data is processed and progressively refined
-  - **L0 - Raw data** Structured Data, stored in the adequate format: structured data stored in BigQuery, unstructured data stored on Cloud Storage with additional metadata stored in BigQuery (for example pictures stored in Cloud Storage and analysis of the picture for Cloud Vision API stored in BigQuery). 
+The script will create the following projects:
+- **Landing** This project is intended to store data temporarily. Data are pushed to Cloud Storage, BigQuery, or Cloud PubSub. Resource configured with 3-months lifecycle policy.
+- **Load** This project is intended to load data from `landing` to the `data lake`. The load is made with minimal to zero transformation logic (mainly `cast`). This stage can anonymization/tokenization Personally Identifiable Information (PII). Alternatively, it can be done in the transformation stage depending on your requirements. The use of [Cloud Dataflow templates](https://cloud.google.com/dataflow/docs/concepts/dataflow-templates) is recommended.
+- **Data Lake** projects where data are stored. itìs composed of 3 layers that progressively process and define data:
+  - **L0 - Raw data** Structured Data, stored in the adequate format: structured data stored in BigQuery, unstructured data stored on Cloud Storage with additional metadata stored in BigQuery (for example pictures stored in Cloud Storage and analysis of the images for Cloud Vision API stored in BigQuery). 
   - **L1 - Cleansed, aggregated and standardized data**
   - **L2 - Curated layer**
   - **Playground** Store temporary tables that Data Analyst may use to perform R&D on data available on other Data Lake layers
 - **Orchestration** This project is intended to host Cloud Composer. Cloud Composer will orchestrate all tasks to move your data on its journey.
-- **Transformation** This project is intended to host resources to move data from one layer of the Data Lake to the other. We strongly suggest relying on BigQuery engine to perform transformations. If BigQuery doesn't have the feature needed to perform your transformation you suggest using Cloud Dataflow. The use of [Cloud Dataflow templates](https://cloud.google.com/dataflow/docs/concepts/dataflow-templates) is suggested. Anonymization/tokenization Personally Identifiable Information can be applied at this stage or in the transformation stage depending on your requirements.
-- **Exposure** This project is intended to host resources to expose your data. To expose BigQuery data, we strongly suggest relying on Authorized views. Other resources may better fit a particular data access pattern, example: Cloud SQL may be needed if you need to expose data with low latency, BigTable may be needed in a use case where you need lower latency to access data. For the porpuse of this example, no resources will be deployed on this project, please customize the exple as needed.
+- **Transformation** This project is used to move data between layers of the Data Lake. We strongly suggest relying on BigQuery engine to perform transformations. If BigQuery doesn't have the feature needed to perform your transformation you recommend using Cloud Dataflow together with [Cloud Dataflow templates](https://cloud.google.com/dataflow/docs/concepts/dataflow-templates). This stage can optionally be used to anonymiza/tokenize PII.
+- **Exposure** This project is intended to host resources to expose your data. For BigQuery data, we strongly suggest relying on [Authorized views](https://cloud.google.com/bigquery/docs/authorized-views). Other resources may better fit a particular data access pattern, example: Cloud SQL may be needed if you need to expose data with low latency, BigTable may be needed in a use case where you need lower latency to access data. For the porpuse of this example, no resources will be deployed on this project, please customize the exple as needed.
 
 ### Roles
 We assigned roles on resources at project-level assigning the appropriate role to groups. We recommend not adding human users directly to the resource-access groups with IAM permissions to access data.
