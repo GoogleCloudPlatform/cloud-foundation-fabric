@@ -41,9 +41,9 @@ locals {
     #   sa     = module.branch-gke-env-dev-sa.email
     # })
     "03-gke-multitenant-prod" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
-      bucket = module.branch-gke-env-gcs["prod"].name
+      bucket = module.branch-gke-gcs.name
       name   = "gke-prod"
-      sa     = module.branch-gke-env-sa["prod"].email
+      sa     = module.branch-gke-sa.email
     })
     "03-project-factory-dev" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
       bucket = module.branch-teams-dev-projectfactory-gcs.name

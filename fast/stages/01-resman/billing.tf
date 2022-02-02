@@ -22,6 +22,7 @@ locals {
     [
       module.branch-network-sa.iam_email,
       module.branch-security-sa.iam_email,
+      module.branch-gke-sa.iam_email,
     ],
     # enable if individual teams can create their own projects
     # [
