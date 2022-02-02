@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#      http://www.apache.org/licenses/LICENSE-2.0
+#     https://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,16 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-import os
-import pytest
-
-
-FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
-
-
-def test_resources(e2e_plan_runner):
-  "Test that plan works and the numbers of resources is as expected."
-  modules, resources = e2e_plan_runner(FIXTURES_DIR)
-  assert len(modules) == 11
-  assert len(resources) == 44
+output "m4ce_gmanaged_service_account" {
+  description = "Google managed service account created automatically during the migrate connector registration.. It is used by M4CE to perform activities on target projects"
+  value       = "serviceAccount:service-${module.host-project.number}@gcp-sa-vmmigration.iam.gserviceaccount.com"
+}
