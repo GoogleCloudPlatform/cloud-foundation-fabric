@@ -42,34 +42,30 @@ The script will create the following projects:
   - **Playground** Store temporary tables that Data Analyst may use to perform R&D on data available on other Data Lake layers
 - **Orchestration** This project is intended to host Cloud Composer. Cloud Composer will orchestrate all tasks to move your data on its journey.
 - **Transformation** This project is used to move data between layers of the Data Lake. We strongly suggest relying on BigQuery engine to perform transformations. If BigQuery doesn't have the feature needed to perform your transformation you recommend using Cloud Dataflow together with [Cloud Dataflow templates](https://cloud.google.com/dataflow/docs/concepts/dataflow-templates). This stage can optionally be used to anonymiza/tokenize PII.
-- **Exposure** This project is intended to host resources to expose your data. For BigQuery data, we strongly suggest relying on [Authorized views](https://cloud.google.com/bigquery/docs/authorized-views). Other resources may better fit a particular data access pattern, example: Cloud SQL may be needed if you need to expose data with low latency, BigTable may be needed in a use case where you need lower latency to access data. For the porpuse of this example, no resources will be deployed on this project, please customize the exple as needed.
+- **Exposure** This project is intended to host resources to share your processed data with external systems your data. For the porpuse of this example we leace this project empty. Depending on the access pattern, data can be presented on Cloud SQL, BigQuery, or Bigtable. For BigQuery data, we strongly suggest relying on [Authorized views](https://cloud.google.com/bigquery/docs/authorized-views). 
 
 ### Roles
-We assigned roles on resources at project-level assigning the appropriate role to groups. We recommend not adding human users directly to the resource-access groups with IAM permissions to access data.
+We assign roles on resources at project level setting the appropriate role to groups. We recommend not adding human users directly to the resource-access groups with IAM permissions to access data.
 
 ### Service accounts
 Service Account creation follows the following principles:
-- Each service account perform a single task having access to the minimum number of resources (example: the Cloud Dataflow Service Account has access to the Landing project and to the Data Lake L0 project)
+- Each service account perform a single task having access to the minimum number of resources (example: the Cloud Dataflow Service Account has access to the Landing project and the Data Lake L0 project)
 - Each Service Account has the least privilege on each project.
 
 #### Service Account Keys
-Service Account Keys (SAK) are out of scope for this example. The example implemented relies on Service Account Impersonification avoiding the creation of SAK.
-
-The use of SAK within a data pipeline incurs several security risks, as these are physical credentials, matched to an automated system, that can be distributed without oversight or control. 
-
-Whilst necessary in some scenarios, such as programmatic access from on-premise or alternative clouds, we recommend identifying a structured process to mitigate risks associated with the use of service account keys.
+The use of SAK within a data pipeline incurs several security risks, as these credentials, that could be leaked without oversight or control. This example relies on Service Account Impersonation to avoid the creation of private keys.
 
 ### Groups
-As default groups, we identified the following actors:
-- *Data Engineers*: the group that handles and runs the Data Hub. The group has Read access to all resources to be able to troubleshoot possible issues with the pipeline. The team also can impersonate all service accounts. Default value: `gcp-data-engineers@DOMAIN.COM`. 
+We use thress groups based on the required access:
+- *Data Engineers*: the group that handles and runs the Data Hub. The group has Read access to all resources to troubleshoot possible issues with the pipeline. The team also can impersonate all service accounts. Default value: `gcp-data-engineers@DOMAIN.COM`. 
 - *Data Analyst*: the group that performs analysis on the dataset. The group has Read access to the Data Lake L2 project and BigQuery READ/WRITE access to the `playground` project. Default value: `gcp-data-analyst@DOMAIN.COM`
-- *Data Security*: the project that handles security features related to the Data Hub. Default name: `gcp-data-security@DOMAIN.com`
+- *Data Security*: the group handling security configurations related to the Data Hub. Default name: `gcp-data-security@DOMAIN.com`
 ### Virtual Private Cloud (VPC) design
-The DP except as input an existing [Shared-VPC](https://cloud.google.com/vpc/docs/shared-vpc) to run resources. You can configure subsets for DP resources specifying the link to the subnet in the `network_config` variable. You may want to configure a shared-VPC to run your resources in the case your pipelines may need to reach on-premise resources.
+The DP accepts as input an existing [Shared-VPC](https://cloud.google.com/vpc/docs/shared-vpc) to run resources. You can configure subnets for DP resources specifying the link to the subnet in the `network_config` variable. You may want to configure a shared-VPC to host your resources if your pipelines may need to reach on-premise resources.
 
-If `network_config` variable is not configured, the script will create a VPC on each project that requires a VPC: *load*, *transformation*, and *orchestration* projects with the default configuration.
+If `network_config` variable is not provided, the script will create a VPC on each project that requires a VPC: *load*, *transformation*, and *orchestration* projects with the default configuration.
 ### IP ranges, subnetting
-To run your DP resources you need the following ranges:
+To deploy your DP you need the following ranges:
 - Load project VPC for Cloud Dataflow workers. Range: '/24'.
 - Transformation VPC for Cloud Dataflow workers. Range: '/24'.
 - Orchestration VPC for Cloud Composer:
@@ -123,7 +119,7 @@ service_encryption_keys = {
 We consider this step optional, it depends on customer policy and security best practices.
 
 ## Data Anonymization
-We suggest the use of Cloud Data Loss Prevention to identify/mask/tokenize your confidential data. The implementation of the Data Loss Prevention strategy is out of scope for this example. We enable the service in 2 different projects to let you implement the data loss prevention strategy. We expect you will use [Cloud Data Loss Prevention templates](https://cloud.google.com/dlp/docs/concepts-templates) in one of the following ways:
+We suggest using Cloud Data Loss Prevention to identify/mask/tokenize your confidential data. Implementing the Data Loss Prevention strategy is out of scope for this example. We enable the service in 2 different projects to implement the data loss prevention strategy. We expect you will use [Cloud Data Loss Prevention templates](https://cloud.google.com/dlp/docs/concepts-templates) in one of the following ways:
 - During the ingestion phase, from Dataflow
 - During the transformation phase, from [BigQuery](https://cloud.google.com/bigquery/docs/scan-with-dlp) or [Cloud Dataflow](https://cloud.google.com/architecture/running-automated-dataflow-pipeline-de-identify-pii-dataset)
 
@@ -132,10 +128,10 @@ We implemented a centralized model for Cloud Data Loss Prevention resources. Tem
 ![Centralized Cloud Data Loss Prevention high-level diagram](./images/dlp_diagram.png "Centralized Cloud Data Loss Prevention high-level diagram")
 
 ## How to run this script
-In order to bring up this example, you will need
+To deploy this example on your GCP organization, you will need
 
 - a folder or organization where new projects will be created
-- a billing account that will be associated to new projects
+- a billing account that will be associated with the new projects
 
 The DP is meant to be executed by a Service Account (or a regular user) having this minimal set of permission:
 * **Org level**:
@@ -172,11 +168,11 @@ For a more fine grained configuration, check variables on [`variables.tf`](./var
 
 ## Customizations
 ### Create Cloud Key Management keys as part of the DP
-To create Cloud Key Management keys within the DP you can uncomment the Cloud Key Management resources configured in the [`06-sec-main.tf`](./06-sec-main.tf) file and update Cloud Key Management keys pointers on `local.service_encryption_keys.*` to the local resource created.
+To create Cloud Key Management keys in the DP you can uncomment the Cloud Key Management resources configured in the [`06-sec-main.tf`](./06-sec-main.tf) file and update Cloud Key Management keys pointers on `local.service_encryption_keys.*` to the local resource created.
 
 ### Assign roles at BQ Dataset level
 To handle multiple groups of `data-analysts` accessing the same Data Lake layer projects but only to the dataset belonging to a specific group, you may want to assign roles at BigQuery dataset level instead of at project-level. 
-To do this, you need to remove IAM binging at project-level for the `data-analysts` group and assign roles at BigQuery dataset level using the `iam` variable on `bigquery-dataset` modules.
+To do this, you need to remove IAM binging at project-level for the `data-analysts` group and give roles at BigQuery dataset level using the `iam` variable on `bigquery-dataset` modules.
 
 ## Demo pipeline
 The application layer is out of scope of this script, but as a demo, it is provided with a Cloud Composer DAG to mode data from the `landing` area to the `DataLake L2` dataset.
