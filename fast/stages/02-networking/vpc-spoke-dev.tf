@@ -116,11 +116,7 @@ resource "google_project_iam_binding" "dev_spoke_project_iam_delegated" {
     description = "Development host project delegated grants."
     expression = format(
       "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
-      join(",", formatlist("'%s'", [
-        "roles/compute.networkUser",
-        "roles/container.hostServiceAgentUser",
-        "roles/vpcaccess.user",
-        ]
-    )))
+      join(",", formatlist("'%s'", local.stage3_sas_delegated_grants))
+    )
   }
 }

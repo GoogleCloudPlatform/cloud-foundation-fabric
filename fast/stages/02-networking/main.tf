@@ -41,6 +41,13 @@ locals {
     europe-west1 = "ew1"
     europe-west3 = "ew3"
   }
+  stage3_sas_delegated_grants = [
+    "roles/composer.sharedVpcAgent"
+    "roles/compute.networkUser",
+    "roles/container.hostServiceAgentUser",
+    "roles/vpcaccess.user",
+    var.custom_roles.serviceProjectNetworkAdmin
+  ]
 }
 
 module "folder" {
