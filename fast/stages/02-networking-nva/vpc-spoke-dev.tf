@@ -40,34 +40,60 @@ module "dev-spoke-project" {
   metric_scopes = [module.landing-project.project_id]
   iam = {
     "roles/dns.admin" = [var.project_factory_sa.dev]
-    (var.custom_roles.serviceProjectNetworkAdmin) = [
-      var.project_factory_sa.prod
-    ]
   }
 }
 
 module "dev-spoke-vpc" {
-  source        = "../../../modules/net-vpc"
-  project_id    = module.dev-spoke-project.project_id
-  name          = "dev-spoke-0"
-  mtu           = 1500
-  data_folder   = "${var.data_dir}/subnets/dev"
-  subnets_l7ilb = local.l7ilb_subnets.dev
-  # set explicit routes for googleapis in case the default route is deleted
+  source                          = "../../../modules/net-vpc"
+  project_id                      = module.dev-spoke-project.project_id
+  name                            = "dev-spoke-0"
+  mtu                             = 1500
+  data_folder                     = "${var.data_dir}/subnets/dev"
+  delete_default_routes_on_create = true
+  subnets_l7ilb                   = local.l7ilb_subnets.dev
+  # Set explicit routes for googleapis; send everything else to NVAs
   routes = {
     private-googleapis = {
       dest_range    = "199.36.153.8/30"
-      priority      = 1000
+      priority      = 999
       tags          = []
       next_hop_type = "gateway"
       next_hop      = "default-internet-gateway"
     }
     restricted-googleapis = {
       dest_range    = "199.36.153.4/30"
-      priority      = 1000
+      priority      = 999
       tags          = []
       next_hop_type = "gateway"
       next_hop      = "default-internet-gateway"
+    }
+    nva-ew1-to-ew1 = {
+      dest_range    = "0.0.0.0/0"
+      priority      = 1000
+      tags          = ["ew1"]
+      next_hop_type = "ilb"
+      next_hop      = module.ilb-nva-trusted-ew1.forwarding_rule_address
+    }
+    nva-ew4-to-ew4 = {
+      dest_range    = "0.0.0.0/0"
+      priority      = 1000
+      tags          = ["ew4"]
+      next_hop_type = "ilb"
+      next_hop      = module.ilb-nva-trusted-ew4.forwarding_rule_address
+    }
+    nva-ew1-to-ew4 = {
+      dest_range    = "0.0.0.0/0"
+      priority      = 1001
+      tags          = ["ew1"]
+      next_hop_type = "ilb"
+      next_hop      = module.ilb-nva-trusted-ew4.forwarding_rule_address
+    }
+    nva-ew4-to-ew1 = {
+      dest_range    = "0.0.0.0/0"
+      priority      = 1001
+      tags          = ["ew4"]
+      next_hop_type = "ilb"
+      next_hop      = module.ilb-nva-trusted-ew1.forwarding_rule_address
     }
   }
 }
@@ -84,18 +110,6 @@ module "dev-spoke-firewall" {
   cidr_template_file  = "${var.data_dir}/cidrs.yaml"
 }
 
-module "dev-spoke-cloudnat" {
-  for_each       = toset(values(module.dev-spoke-vpc.subnet_regions))
-  source         = "../../../modules/net-cloudnat"
-  project_id     = module.dev-spoke-project.project_id
-  region         = each.value
-  name           = "dev-nat-${local.region_trigram[each.value]}"
-  router_create  = true
-  router_network = module.dev-spoke-vpc.name
-  router_asn     = 4200001024
-  logging_filter = "ERRORS_ONLY"
-}
-
 module "dev-spoke-psa-addresses" {
   source     = "../../../modules/net-address"
   project_id = module.dev-spoke-project.project_id
@@ -107,19 +121,9 @@ module "dev-spoke-psa-addresses" {
   }
 }
 
-# Create delegated grants for stage3 service accounts
-resource "google_project_iam_binding" "dev_spoke_project_iam_delegated" {
-  project = module.dev-spoke-project.project_id
-  role    = "roles/resourcemanager.projectIamAdmin"
-  members = [
-    var.project_factory_sa.dev
-  ]
-  condition {
-    title       = "dev_stage3_sa_delegated_grants"
-    description = "Development host project delegated grants."
-    expression = format(
-      "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
-      join(",", formatlist("'%s'", local.stage3_sas_delegated_grants))
-    )
-  }
+module "peering-dev" {
+  source        = "../../../modules/net-vpc-peering"
+  prefix        = "dev-peering-0"
+  local_network = module.dev-spoke-vpc.self_link
+  peer_network  = module.landing-trusted-vpc.self_link
 }

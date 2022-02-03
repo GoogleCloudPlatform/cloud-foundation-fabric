@@ -17,36 +17,12 @@
 # tfdoc:file:description Networking folder and hierarchical policy.
 
 locals {
-  # define the structures used for BGP peers in the VPN resources
-  bgp_peer_options = {
-    for k, v in var.vpn_spoke_configs :
-    k => v.adv == null ? null : {
-      advertise_groups = []
-      advertise_ip_ranges = {
-        for adv in(v.adv == null ? [] : v.adv.custom) :
-        var.custom_adv[adv] => adv
-      }
-      advertise_mode = try(v.adv.default, false) ? "DEFAULT" : "CUSTOM"
-      route_priority = null
-    }
-  }
-  l7ilb_subnets = {
-    for env, v in var.l7ilb_subnets : env => [
-      for s in v : merge(s, {
-        active = true
-        name   = "${env}-l7ilb-${s.region}"
+  l7ilb_subnets = { for env, v in var.l7ilb_subnets : env => [
+    for s in v : merge(s, {
+      active = true
+      name   = "${env}-l7ilb-${s.region}"
     })]
   }
-  region_trigram = {
-    europe-west1 = "ew1"
-    europe-west3 = "ew3"
-  }
-  stage3_sas_delegated_grants = [
-    "roles/composer.sharedVpcAgent",
-    "roles/compute.networkUser",
-    "roles/container.hostServiceAgentUser",
-    "roles/vpcaccess.user",
-  ]
 }
 
 module "folder" {
@@ -64,4 +40,3 @@ module "folder" {
     factory-policy = "factory"
   }
 }
-

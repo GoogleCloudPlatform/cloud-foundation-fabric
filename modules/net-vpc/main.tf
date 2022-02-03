@@ -49,7 +49,7 @@ locals {
       ip_cidr_range      = v.ip_cidr_range
       name               = k
       region             = v.region
-      secondary_ip_range = try(v.secondary_ip_range, [])
+      secondary_ip_range = try(v.secondary_ip_range, {})
     }
   }
   _iam    = var.iam == null ? {} : var.iam

@@ -24,24 +24,22 @@ variable "custom_adv" {
   description = "Custom advertisement definitions in name => range format."
   type        = map(string)
   default = {
-    cloud_dns             = "35.199.192.0/19"
-    gcp_all               = "10.128.0.0/16"
-    gcp_dev               = "10.128.32.0/19"
-    gcp_landing           = "10.128.0.0/19"
-    gcp_prod              = "10.128.64.0/19"
-    googleapis_private    = "199.36.153.8/30"
-    googleapis_restricted = "199.36.153.4/30"
-    rfc_1918_10           = "10.0.0.0/8"
-    rfc_1918_172          = "172.16.0.0/12"
-    rfc_1918_192          = "192.168.0.0/16"
+    cloud_dns                 = "35.199.192.0/19"
+    gcp_all                   = "10.128.0.0/16"
+    gcp_dev_ew1               = "10.128.128.0/19"
+    gcp_dev_ew4               = "10.128.160.0/19"
+    gcp_landing_trusted_ew1   = "10.128.64.0/19"
+    gcp_landing_trusted_ew4   = "10.128.96.0/19"
+    gcp_landing_untrusted_ew1 = "10.128.0.0/19"
+    gcp_landing_untrusted_ew4 = "10.128.32.0/19"
+    gcp_prod_ew1              = "10.128.192.0/19"
+    gcp_prod_ew4              = "10.128.224.0/19"
+    googleapis_private        = "199.36.153.8/30"
+    googleapis_restricted     = "199.36.153.4/30"
+    rfc_1918_10               = "10.0.0.0/8"
+    rfc_1918_172              = "172.16.0.0/12"
+    rfc_1918_192              = "192.168.0.0/16"
   }
-}
-
-variable "custom_roles" {
-  # tfdoc:variable:source 00-bootstrap
-  description = "Custom roles defined at the org level, in key => id format."
-  type        = map(string)
-  default     = {}
 }
 
 variable "data_dir" {
@@ -51,7 +49,7 @@ variable "data_dir" {
 }
 
 variable "dns" {
-  description = "Onprem DNS resolvers."
+  description = "Onprem DNS resolvers"
   type        = map(list(string))
   default = {
     onprem = ["10.0.200.3"]
@@ -80,13 +78,21 @@ variable "l7ilb_subnets" {
   })))
   default = {
     prod = [
-      { ip_cidr_range = "10.128.92.0/24", region = "europe-west1" },
-      { ip_cidr_range = "10.128.93.0/24", region = "europe-west4" }
+      { ip_cidr_range = "10.136.240.0/24", region = "europe-west1" },
+      { ip_cidr_range = "10.137.240.0/24", region = "europe-west4" }
     ]
     dev = [
-      { ip_cidr_range = "10.128.60.0/24", region = "europe-west1" },
-      { ip_cidr_range = "10.128.61.0/24", region = "europe-west4" }
+      { ip_cidr_range = "10.144.240.0/24", region = "europe-west1" },
+      { ip_cidr_range = "10.145.240.0/24", region = "europe-west4" }
     ]
+  }
+}
+
+variable "onprem_cidr" {
+  description = "Onprem addresses in name => range format."
+  type        = map(string)
+  default = {
+    main = "10.0.0.0/24"
   }
 }
 
@@ -114,7 +120,7 @@ variable "prefix" {
 
 variable "project_factory_sa" {
   # tfdoc:variable:source 01-resman
-  description = "IAM emails for project factory service accounts."
+  description = "IAM emails for project factory service accounts"
   type        = map(string)
   default     = {}
 }
@@ -124,12 +130,12 @@ variable "psa_ranges" {
   type        = map(map(string))
   default = {
     prod = {
-      cloudsql-mysql     = "10.128.94.0/24"
-      cloudsql-sqlserver = "10.128.95.0/24"
+      cloudsql-mysql     = "10.136.250.0/24"
+      cloudsql-sqlserver = "10.136.251.0/24"
     }
     dev = {
-      cloudsql-mysql     = "10.128.62.0/24"
-      cloudsql-sqlserver = "10.128.63.0/24"
+      cloudsql-mysql     = "10.144.250.0/24"
+      cloudsql-sqlserver = "10.144.251.0/24"
     }
   }
 }
@@ -144,17 +150,16 @@ variable "router_configs" {
     asn = number
   }))
   default = {
-    onprem-ew1 = {
+    landing-trusted-ew1 = {
       asn = "65534"
       adv = null
       # adv = { default = false, custom = [] }
     }
-    landing-ew1    = { asn = "64512", adv = null }
-    landing-ew4    = { asn = "64512", adv = null }
-    spoke-dev-ew1  = { asn = "64513", adv = null }
-    spoke-dev-ew4  = { asn = "64513", adv = null }
-    spoke-prod-ew1 = { asn = "64514", adv = null }
-    spoke-prod-ew4 = { asn = "64514", adv = null }
+    landing-trusted-ew1 = {
+      asn = "65534"
+      adv = null
+      # adv = { default = false, custom = [] }
+    }
   }
 }
 
@@ -181,7 +186,7 @@ variable "vpn_onprem_configs" {
     }))
   }))
   default = {
-    landing-ew1 = {
+    landing-trusted-ew1 = {
       adv = {
         default = false
         custom = [
@@ -211,58 +216,35 @@ variable "vpn_onprem_configs" {
         }
       ]
     }
-  }
-}
-
-variable "vpn_spoke_configs" {
-  description = "VPN gateway configuration for spokes."
-  type = map(object({
-    adv = object({
-      default = bool
-      custom  = list(string)
-    })
-    session_range = string
-  }))
-  default = {
-    landing-ew1 = {
+    landing-trusted-ew4 = {
       adv = {
         default = false
-        custom  = ["rfc_1918_10", "rfc_1918_172", "rfc_1918_192"]
+        custom = [
+          "cloud_dns", "googleapis_private", "googleapis_restricted", "gcp_all"
+        ]
       }
-      # values for the landing router are pulled from the spoke range
-      session_range = null
-    }
-    landing-ew4 = {
-      adv = {
-        default = false
-        custom  = ["rfc_1918_10", "rfc_1918_172", "rfc_1918_192"]
+      peer_external_gateway = {
+        redundancy_type = "SINGLE_IP_INTERNALLY_REDUNDANT"
+        interfaces = [
+          { id = 0, ip_address = "8.8.8.8" },
+        ]
       }
-      # values for the landing router are pulled from the spoke range
-      session_range = null
-    }
-    dev-ew1 = {
-      adv = {
-        default = false
-        custom  = ["gcp_dev"]
-      }
-      # resize according to required number of tunnels
-      session_range = "169.254.0.0/27"
-    }
-    prod-ew1 = {
-      adv = {
-        default = false
-        custom  = ["gcp_prod"]
-      }
-      # resize according to required number of tunnels
-      session_range = "169.254.0.64/27"
-    }
-    prod-ew4 = {
-      adv = {
-        default = false
-        custom  = ["gcp_prod"]
-      }
-      # resize according to required number of tunnels
-      session_range = "169.254.0.96/27"
+      tunnels = [
+        {
+          peer_asn                        = 65534
+          peer_external_gateway_interface = 0
+          secret                          = "foobar"
+          session_range                   = "169.254.1.0/30"
+          vpn_gateway_interface           = 0
+        },
+        {
+          peer_asn                        = 65534
+          peer_external_gateway_interface = 0
+          secret                          = "foobar"
+          session_range                   = "169.254.1.4/30"
+          vpn_gateway_interface           = 1
+        }
+      ]
     }
   }
 }

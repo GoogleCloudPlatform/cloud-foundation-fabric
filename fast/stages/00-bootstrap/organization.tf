@@ -147,7 +147,7 @@ module "organization" {
       "resourcemanager.organizations.getIamPolicy",
       "resourcemanager.organizations.setIamPolicy"
     ]
-    "xpnServiceAdmin" = [
+    "serviceProjectNetworkAdmin" = [
       "compute.globalOperations.get",
       "compute.organizations.disableXpnResource",
       "compute.organizations.enableXpnResource",
