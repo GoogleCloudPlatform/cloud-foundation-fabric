@@ -105,7 +105,7 @@ module "lod-vpc-firewall" {
 }
 
 module "lod-nat" {
-  count          = var.network_config.network != null ? 0 : 1
+  count          = var.network_config.enable_cloud_nat ? 0 : 1
   source         = "../../../modules/net-cloudnat"
   project_id     = module.lod-prj.project_id
   region         = var.location_config.region
