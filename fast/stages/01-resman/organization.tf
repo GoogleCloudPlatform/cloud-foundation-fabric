@@ -84,6 +84,7 @@ module "organization" {
   policy_boolean = {
     "constraints/compute.disableInternetNetworkEndpointGroup"     = true
     "constraints/compute.disableNestedVirtualization"             = true
+    "constraints/compute.disableSerialPortAccess"                 = true
     "constraints/compute.restrictXpnProjectLienRemoval"           = true
     "constraints/compute.skipDefaultNetworkCreation"              = true
     "constraints/iam.automaticIamGrantsForDefaultServiceAccounts" = true
@@ -93,7 +94,6 @@ module "organization" {
     "constraints/storage.uniformBucketLevelAccess"                = true
     # "constraints/cloudfunctions.requireVPCConnector"              = true
     # "constraints/compute.disableGuestAttributesAccess"            = true
-    # "constraints/compute.disableSerialPortAccess"                 = true
     # "constraints/compute.requireOsLogin"                          = true
     # "constraints/iam.disableServiceAccountKeyUpload"              = true
   }
