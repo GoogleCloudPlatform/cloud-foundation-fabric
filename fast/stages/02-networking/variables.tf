@@ -112,6 +112,13 @@ variable "project_factory_sa" {
   default     = {}
 }
 
+variable "gke_multitenant_sa" {
+  # tfdoc:variable:source 01-resman
+  description = "IAM emails for GKE multitenant service accounts."
+  type        = map(string)
+  default     = {}
+}
+
 variable "psa_ranges" {
   description = "IP ranges used for Private Service Access (e.g. CloudSQL)."
   type        = map(map(string))

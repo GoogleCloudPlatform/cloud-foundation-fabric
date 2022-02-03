@@ -111,7 +111,7 @@ module "prod-spoke-psa-addresses" {
 resource "google_project_iam_binding" "project_iam_delegated" {
   project = module.prod-spoke-project.project_id
   role    = "roles/resourcemanager.projectIamAdmin"
-  members = ["serviceAccount:jast2-prod-gke-prod-0@jast2-prod-iac-core-0.iam.gserviceaccount.com"]
+  members = [var.gke_multitenant_sa.prod]
   condition {
     title       = "gke_prod_sa_delegated_grants"
     description = "GKE production service account delegated grants."

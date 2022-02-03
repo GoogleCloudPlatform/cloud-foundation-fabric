@@ -19,6 +19,10 @@ locals {
     dev  = module.branch-teams-dev-projectfactory-sa.iam_email
     prod = module.branch-teams-prod-projectfactory-sa.iam_email
   }
+  _gke_multitenant_sas = {
+    dev  = module.branch-gke-multitenant-dev-sa.iam_email
+    prod = module.branch-gke-multitenant-prod-sa.iam_email
+  }
   providers = {
     "02-networking" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
       bucket = module.branch-network-gcs.name
@@ -60,12 +64,14 @@ locals {
     "02-networking" = jsonencode({
       folder_id          = module.branch-network-folder.id
       project_factory_sa = local._project_factory_sas
+      gke_multitenant_sa = local._gke_multitenant_sas
     })
     "02-security" = jsonencode({
       folder_id = module.branch-security-folder.id
       kms_restricted_admins = {
         for k, v in local._project_factory_sas : k => [v]
       }
+      gke_multitenant_sa = local._gke_multitenant_sas
     })
     "03-gke-multitenant-dev" = jsonencode({
       folder_id   = module.branch-gke-multitenant-dev-folder.id
