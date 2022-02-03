@@ -176,7 +176,7 @@ resource "google_compute_subnetwork" "subnetwork" {
   region        = each.value.region
   name          = each.value.name
   ip_cidr_range = each.value.ip_cidr_range
-  secondary_ip_range = [
+  secondary_ip_range = each.value.secondary_ip_range == null ? [] : [
     for name, range in each.value.secondary_ip_range :
     { range_name = name, ip_cidr_range = range }
   ]
