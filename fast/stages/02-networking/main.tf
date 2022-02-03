@@ -46,7 +46,6 @@ locals {
     "roles/compute.networkUser",
     "roles/container.hostServiceAgentUser",
     "roles/vpcaccess.user",
-    var.custom_roles.serviceProjectNetworkAdmin
   ]
 }
 

@@ -147,17 +147,15 @@ module "organization" {
       "resourcemanager.organizations.getIamPolicy",
       "resourcemanager.organizations.setIamPolicy"
     ]
-    "xpnServiceAdmin" = [
+    "serviceProjectNetworkAdmin" = [
       "compute.globalOperations.get",
       "compute.organizations.disableXpnResource",
       "compute.organizations.enableXpnResource",
       "compute.projects.get",
-      "resourcemanager.projects.get",
-    ]
-    "serviceProjectNetworkAdmin" = [
       "compute.subnetworks.getIamPolicy",
       "compute.subnetworks.setIamPolicy",
       "dns.networks.bindPrivateDNSZone",
+      "resourcemanager.projects.get",
     ]
   }
   logging_sinks = {
