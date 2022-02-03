@@ -82,20 +82,20 @@ module "organization" {
   )
   # sample subset of useful organization policies, edit to suit requirements
   policy_boolean = {
-    "constraints/cloudfunctions.requireVPCConnector"              = true
-    "constraints/compute.disableGuestAttributesAccess"            = true
     "constraints/compute.disableInternetNetworkEndpointGroup"     = true
     "constraints/compute.disableNestedVirtualization"             = true
-    "constraints/compute.disableSerialPortAccess"                 = true
-    "constraints/compute.requireOsLogin"                          = true
     "constraints/compute.restrictXpnProjectLienRemoval"           = true
     "constraints/compute.skipDefaultNetworkCreation"              = true
     "constraints/iam.automaticIamGrantsForDefaultServiceAccounts" = true
     "constraints/iam.disableServiceAccountKeyCreation"            = true
-    "constraints/iam.disableServiceAccountKeyUpload"              = true
     "constraints/sql.restrictPublicIp"                            = true
     "constraints/sql.restrictAuthorizedNetworks"                  = true
     "constraints/storage.uniformBucketLevelAccess"                = true
+    # "constraints/cloudfunctions.requireVPCConnector"              = true
+    # "constraints/compute.disableGuestAttributesAccess"            = true
+    # "constraints/compute.disableSerialPortAccess"                 = true
+    # "constraints/compute.requireOsLogin"                          = true
+    # "constraints/iam.disableServiceAccountKeyUpload"              = true
   }
   policy_list = {
     "constraints/cloudfunctions.allowedIngressSettings" = merge(
