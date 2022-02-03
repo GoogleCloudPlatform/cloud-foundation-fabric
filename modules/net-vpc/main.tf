@@ -49,7 +49,7 @@ locals {
       ip_cidr_range      = v.ip_cidr_range
       name               = k
       region             = v.region
-      secondary_ip_range = try(v.secondary_ip_range, [])
+      secondary_ip_range = try(v.secondary_ip_range, {})
     }
   }
   _iam    = var.iam == null ? {} : var.iam
@@ -176,7 +176,7 @@ resource "google_compute_subnetwork" "subnetwork" {
   region        = each.value.region
   name          = each.value.name
   ip_cidr_range = each.value.ip_cidr_range
-  secondary_ip_range = each.value.secondary_ip_range == null ? [] : [
+  secondary_ip_range = [
     for name, range in each.value.secondary_ip_range :
     { range_name = name, ip_cidr_range = range }
   ]

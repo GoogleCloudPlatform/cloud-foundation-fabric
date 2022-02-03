@@ -103,3 +103,24 @@ module "dev-spoke-psa-addresses" {
     }
   }
 }
+
+# Create delegated grants for stage3 service accounts
+resource "google_project_iam_binding" "dev_spoke_project_iam_delegated" {
+  project = module.dev-spoke-project.project_id
+  role    = "roles/resourcemanager.projectIamAdmin"
+  members = [
+    var.project_factory_sa.dev
+  ]
+  condition {
+    title       = "dev_stage3_sa_delegated_grants"
+    description = "Development host project delegated grants."
+    expression = format(
+      "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
+      join(",", formatlist("'%s'", [
+        "roles/compute.networkUser",
+        "roles/container.hostServiceAgentUser",
+        "roles/vpcaccess.user",
+        ]
+    )))
+  }
+}
