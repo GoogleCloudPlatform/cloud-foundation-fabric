@@ -102,6 +102,7 @@ module "orc-prj" {
     composer = [try(local.service_encryption_keys.composer, null)]
     storage  = [try(local.service_encryption_keys.storage, null)]
   }
+  shared_vpc_service_config = local._shared_vpc_service_config
 }
 
 module "orc-vpc" {
@@ -127,8 +128,8 @@ module "orc-vpc-firewall" {
   count        = var.network_config.network != null ? 0 : 1
   source       = "../../../modules/net-vpc-firewall"
   project_id   = module.orc-prj.project_id
-  network      = module.orc-vpc[0].name
-  admin_ranges = values(module.orc-vpc[0].subnet_ips)
+  network      = local._networks.orchestration.network_name
+  admin_ranges = [local._networks.orchestration.subnet_range]
 }
 
 module "orc-nat" {
@@ -137,5 +138,5 @@ module "orc-nat" {
   project_id     = module.orc-prj.project_id
   region         = var.location_config.region
   name           = "${local.prefix_orc}-default"
-  router_network = module.orc-vpc[0].name
+  router_network = local._networks.orchestration.network_name
 }

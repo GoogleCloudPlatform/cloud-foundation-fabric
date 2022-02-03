@@ -72,12 +72,21 @@ output "projects" {
   }
 }
 
-output "VPC" {
-  description = "VPC networks."
+output "vpc_network" {
+  description = "VPC network."
   value = {
-    lod-vpc = try(module.lod-vpc[0].name, var.network_config.load)
-    orc-vpc = try(module.orc-vpc[0].name, var.network_config.orchestrator)
-    trf-vpc = try(module.trf-vpc[0].name, var.network_config.transformation)
+    lod-vpc = local._networks.load.network
+    orc-vpc = local._networks.orchestration.network
+    trf-vpc = local._networks.transformation.network
+  }
+}
+
+output "vpc_subnet" {
+  description = "VPC subnetworks."
+  value = {
+    lod-vpc = local._networks.load.subnet
+    orc-vpc = local._networks.orchestration.subnet
+    trf-vpc = local._networks.transformation.subnet
   }
 }
 

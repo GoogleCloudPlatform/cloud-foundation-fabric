@@ -56,11 +56,17 @@ variable "groups" {
 }
 
 variable "network_config" {
-  description = "Shared VPC to use. If not null networks will be created in projects."
+  description = "Network configurations to use. Specify a shared VPC to use, if null networks will be created in projects."
   type = object({
     enable_cloud_nat = bool
+    host_project     = string
     network          = string
     vpc_subnet_range = object({
+      load           = string
+      transformation = string
+      orchestration  = string
+    })
+    vpc_subnet_self_link = object({
       load           = string
       transformation = string
       orchestration  = string
@@ -68,12 +74,14 @@ variable "network_config" {
   })
   default = {
     enable_cloud_nat = false
+    host_project     = null
     network          = null
     vpc_subnet_range = {
       load           = "10.10.0.0/24"
       transformation = "10.10.0.0/24"
       orchestration  = "10.10.0.0/24"
     }
+    vpc_subnet_self_link = null
   }
 }
 

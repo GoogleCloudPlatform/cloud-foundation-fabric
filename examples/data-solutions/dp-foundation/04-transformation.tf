@@ -73,6 +73,7 @@ module "trf-prj" {
     dataflow = [try(local.service_encryption_keys.dataflow, null)]
     storage  = [try(local.service_encryption_keys.storage, null)]
   }
+  shared_vpc_service_config = local._shared_vpc_service_config
 }
 
 module "trf-vpc" {
@@ -94,8 +95,8 @@ module "trf-vpc-firewall" {
   count        = var.network_config.network != null ? 0 : 1
   source       = "../../../modules/net-vpc-firewall"
   project_id   = module.trf-prj.project_id
-  network      = module.trf-vpc[0].name
-  admin_ranges = values(module.orc-vpc[0].subnet_ips)
+  network      = local._networks.transformation.network_name
+  admin_ranges = [local._networks.transformation.subnet_range]
 }
 
 module "trf-nat" {
@@ -103,6 +104,6 @@ module "trf-nat" {
   source         = "../../../modules/net-cloudnat"
   project_id     = module.trf-prj.project_id
   region         = var.location_config.region
-  name           = "${local.prefix_trf}-default"
-  router_network = module.trf-vpc[0].name
+  name           = local._networks.transformation.network_name
+  router_network = local._networks.transformation.network_name
 }

@@ -79,6 +79,7 @@ module "lod-prj" {
     dataflow = [try(local.service_encryption_keys.dataflow, null)]
     storage  = [try(local.service_encryption_keys.storage, null)]
   }
+  shared_vpc_service_config = local._shared_vpc_service_config
 }
 
 module "lod-vpc" {
@@ -100,8 +101,8 @@ module "lod-vpc-firewall" {
   count        = var.network_config.network != null ? 0 : 1
   source       = "../../../modules/net-vpc-firewall"
   project_id   = module.lod-prj.project_id
-  network      = module.lod-vpc[0].name
-  admin_ranges = values(module.lod-vpc[0].subnet_ips)
+  network      = local._networks.load.network_name
+  admin_ranges = [local._networks.load.subnet_range]
 }
 
 module "lod-nat" {
@@ -110,5 +111,5 @@ module "lod-nat" {
   project_id     = module.lod-prj.project_id
   region         = var.location_config.region
   name           = "${local.prefix_lod}-default"
-  router_network = module.lod-vpc[0].name
+  router_network = local._networks.load.network_name
 }

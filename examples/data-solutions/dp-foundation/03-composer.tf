@@ -39,8 +39,8 @@ resource "google_composer_environment" "orc-cmp-0" {
     node_config {
       zone            = "${var.composer_config.region}-b"
       service_account = module.orc-sa-cmp-0.email
-      network         = module.orc-vpc[0].self_link
-      subnetwork      = module.orc-vpc[0].subnet_self_links["${var.composer_config.region}/${local.prefix_orc}-subnet"]
+      network         = local._networks.orchestration.network
+      subnetwork      = local._networks.orchestration.subnet
       tags            = ["composer-worker", "http-server", "https-server"]
       ip_allocation_policy {
         use_ip_aliases                = "true"
@@ -70,15 +70,15 @@ resource "google_composer_environment" "orc-cmp-0" {
         LND_PS             = module.lnd-ps-0.id
         LOD_PRJ            = module.lod-prj.project_id
         LOD_GCS_STAGING    = module.lod-cs-df-0.url
-        LOD_NET_VPC        = module.lod-vpc[0].self_link
-        LOD_NET_SUBNET     = module.lod-vpc[0].subnet_self_links["${var.composer_config.region}/${local.prefix_lod}-subnet"]
+        LOD_NET_VPC        = local._networks.load.network
+        LOD_NET_SUBNET     = local._networks.load.subnet
         LOD_SA_DF          = module.lod-sa-df-0.email
         ORC_PRJ            = module.orc-prj.project_id
         ORC_GCS            = module.orc-cs-0.url
         TRF_PRJ            = module.trf-prj.project_id
         TRF_GCS_STAGING    = module.trf-cs-df-0.url
-        TRF_NET_VPC        = module.trf-vpc[0].self_link
-        TRF_NET_SUBNET     = module.trf-vpc[0].subnet_self_links["${var.composer_config.region}/${local.prefix_trf}-subnet"]
+        TRF_NET_VPC        = local._networks.transformation.network
+        TRF_NET_SUBNET     = local._networks.transformation.subnet
         TRF_SA_DF          = module.trf-sa-df-0.email
         TRF_SA_BQ          = module.trf-sa-bq-0.email
       }
