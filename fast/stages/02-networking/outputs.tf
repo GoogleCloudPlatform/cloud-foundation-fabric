@@ -25,6 +25,18 @@ locals {
     })
     "03-gke-multitenant-prod" = jsonencode({
       shared_vpc_self_link = module.prod-spoke-vpc.self_link
+      shared_vpc_subnets = {
+        ew1 = {
+          primary = module.prod-spoke-vpc.subnet_ips["europe-west1/prod-gke-nodes-ew1"] #TOFIX
+          secondary_pods = module.prod-spoke-vpc.subnet_secondary_ranges["europe-west1/prod-gke-nodes-ew1"]["pods"]
+          secondary_services = module.prod-spoke-vpc.subnet_secondary_ranges["europe-west1/prod-gke-nodes-ew1"]["services"]
+        }
+        ew3 = {
+          primary = module.prod-spoke-vpc.subnet_ips["europe-west3/prod-gke-nodes-ew3"] #TOFIX
+          secondary_pods = module.prod-spoke-vpc.subnet_secondary_ranges["europe-west3/prod-gke-nodes-ew3"]["pods"]
+          secondary_services = module.prod-spoke-vpc.subnet_secondary_ranges["europe-west3/prod-gke-nodes-ew3"]["services"]
+        }
+      }
       vpc_host_project     = module.prod-spoke-project.project_id
       # TODO
       # service_encryption_key_ids = []
@@ -53,6 +65,11 @@ resource "local_file" "tfvars" {
 output "cloud_dns_inbound_policy" {
   description = "IP Addresses for Cloud DNS inbound policy."
   value       = [for s in module.landing-vpc.subnets : cidrhost(s.ip_cidr_range, 2)]
+}
+
+output "test" {
+  description = "test"
+  value = module.prod-spoke-vpc.subnet_secondary_ranges["europe-west1/prod-gke-nodes-ew1"]["pods"]
 }
 
 output "project_ids" {
