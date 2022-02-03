@@ -36,7 +36,7 @@ The "landing zone" is divided into two VPC networks:
 - the trusted VPC: the connectivity hub towards other trusted networks
 - the untrusted VPC: the connectivity hub towards any other untrusted network
 
-The VPCs are connected with two sets of sample NVA machines, grouped in regional (multi-zone) [Managed Instance Groups (MIGs)](https://cloud.google.com/compute/docs/instance-groups). The appliances are plain Linux machines, performing simple routing/natting, leveraging some standard Linux features, such as *ip route* or *iptables*. While they are suited for demo purposes only, they should be substituted with enterprise appliances, before moving to production.
+The VPCs are connected with two sets of sample NVA machines, grouped in regional (multi-zone) [Managed Instance Groups (MIGs)](https://cloud.google.com/compute/docs/instance-groups). The appliances are plain Linux machines, performing simple routing/natting, leveraging some standard Linux features, such as *ip route* or *iptables*. The appliances are suited for demo purposes only and they should be replaced with enterprise-grade solutions before moving to production.
 The traffic destined to the VMs in each MIG is mediated through regional internal load balancers, both in the trusted and in the untrusted networks.
 
 By default, the design assumes the following:
@@ -161,7 +161,7 @@ If you have set a valid value for `outputs_location` in the bootstrap stage, sim
 
 ```bash
 # `outputs_location` is set to `../../configs/example`
-ln -s ../../configs/example/02-networking-nva-nva/providers.tf
+ln -s ../../configs/example/02-networking-nva/providers.tf
 ```
 
 If you have not configured `outputs_location` in bootstrap, you can derive the providers file from that stage outputs:
@@ -219,7 +219,7 @@ BGP sessions for trusted landing to on-premises are configured through the varia
 ### Firewall
 
 **VPC firewall rules** ([`net-vpc-firewall`](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/net-vpc-firewall)) are defined per-vpc on each `vpc-*.tf` file and leverage a resource factory to massively create rules.
-To add a new firewall rule, create a new file or edit an existing one in the `data_folder` directory defined in the module `net-vpc-firewall`, following the examples of the "[Rules factory](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/net-vpc-firewall#rules-factory)" section of the module documentation. Sample firewall rules are shipped in [data/firewall-rules/landing](./data/firewall-rules/landing) and can be easily customized.
+To add a new firewall rule, create a new file or edit an existing one in the `data_folder` directory defined in the module `net-vpc-firewall`, following the examples of the "[Rules factory](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/net-vpc-firewall#rules-factory)" section of the module documentation. Sample firewall rules are shipped in [data/firewall-rules/landing-untrusted](./data/firewall-rules/landing-untrusted) and in [data/firewall-rules/landing-trusted](./data/firewall-rules/landing-trusted), and can be easily customized.
 
 **Hierarchical firewall policies** ([`folder`](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/folder)) are defined in `main.tf`, and managed through a policy factory implemented by the `folder` module, which applies the defined hierarchical to the `Networking` folder, which contains all the core networking infrastructure. Policies are defined in the `rules_file` file - to define a new one simply use the instructions found on "[Firewall policy factory](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/organization#firewall-policy-factory)". Sample hierarchical firewall policies are shipped in [data/hierarchical-policy-rules.yaml](./data/hierarchical-policy-rules.yaml) and can be easily customized.
 
@@ -232,11 +232,11 @@ Cloud DNS manages on-premises forwarding, the main GCP zone (in this example `gc
 #### Cloud environment
 
 The root DNS zone defined in the landing project acts as the source of truth for DNS within the Cloud environment. The resources defined in the spoke VPCs consume the landing DNS infrastructure through DNS peering (e.g. `prod-landing-root-dns-peering`).
-The spokes can optionally define private zones (e.g. `prod-dns-private-zone`). Granting visibility to the landing VPC ensures that the whole cloud environment can query such zones.
+The spokes can optionally define private zones (e.g. `prod-dns-private-zone`). Granting visibility both to the trusted and untrusted landing VPCs ensures that the whole cloud environment can query such zones.
 
 #### Cloud to on-premises
 
-Leveraging the forwarding zone defined in the trusted landing project (e.g. `onprem-example-dns-forwarding` and `reverse-10-dns-forwarding`), the cloud environment can resolve `in-addr.arpa.` and `onprem.example.com.` using the on-premise DNS infrastructure. On-premise resolver IPs are set in the variable `dns.onprem`.
+Leveraging the forwarding zone defined in the landing project (e.g. `onprem-example-dns-forwarding` and `reverse-10-dns-forwarding`), the cloud environment can resolve `in-addr.arpa.` and `onprem.example.com.` using the on-premise DNS infrastructure. On-premise resolver IPs are set in the variable `dns.onprem`.
 
 DNS queries sent to the on-premise infrastructure come from the `35.199.192.0/19` source range.
 
