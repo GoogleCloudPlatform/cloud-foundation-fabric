@@ -39,6 +39,6 @@ def test_instance(resources):
   instances = [r['values'] for r in resources if r['type']
                == 'google_apigee_instance']
   assert len(instances) == 1
-  assert instances[0]['peering_cidr_range'] == 'SLASH_22'
+  assert instances[0]['ip_range'] == '10.0.0.0/22'
   assert instances[0]['name'] == 'my-test-instance'
   assert instances[0]['location'] == 'europe-west1'
