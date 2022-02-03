@@ -79,10 +79,11 @@ module "orc-prj" {
   project_create  = var.project_create != null
   prefix          = var.project_create == null ? null : var.prefix
   # additive IAM bindings avoid disrupting bindings in existing project
-  iam          = var.project_create != null ? local.iam_orc : {}
-  iam_additive = var.project_create == null ? local.iam_orc : {}
-  group_iam    = local.group_iam_orc
-  oslogin      = false
+  iam            = var.project_create != null ? local.iam_orc : {}
+  iam_additive   = var.project_create == null ? local.iam_orc : {}
+  group_iam      = local.group_iam_orc
+  oslogin        = false
+  policy_boolean = var.composer_config.policy_boolean
   services = concat(var.project_services, [
     "artifactregistry.googleapis.com",
     "bigquery.googleapis.com",

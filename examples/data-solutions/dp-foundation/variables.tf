@@ -19,6 +19,7 @@ variable "composer_config" {
     ip_range_cloudsql   = string
     ip_range_gke_master = string
     ip_range_web_server = string
+    policy_boolean      = map(bool)
     region              = string
     secondary_ip_range = object({
       pods     = string
@@ -29,6 +30,7 @@ variable "composer_config" {
     ip_range_cloudsql   = "10.20.10.0/24"
     ip_range_gke_master = "10.20.11.0/28"
     ip_range_web_server = "10.20.11.16/28"
+    policy_boolean      = null
     region              = "europe-west1"
     secondary_ip_range = {
       pods     = "10.10.8.0/22"
