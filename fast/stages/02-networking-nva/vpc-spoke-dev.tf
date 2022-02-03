@@ -19,10 +19,9 @@
 module "dev-spoke-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account_id
-  # TODO: reset counter
-  name   = "dev-net-spoke-3"
-  parent = var.folder_id
-  prefix = var.prefix
+  name            = "dev-net-spoke-0"
+  parent          = var.folder_id
+  prefix          = var.prefix
   service_config = {
     disable_on_destroy         = false
     disable_dependent_services = false

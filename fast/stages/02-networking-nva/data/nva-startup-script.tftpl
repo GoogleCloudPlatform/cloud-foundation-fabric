@@ -12,7 +12,6 @@ ip route add ${dev-default-ew1-cidr} via ${gateway-trusted} dev ens5
 ip route add ${dev-default-ew4-cidr} via ${gateway-trusted} dev ens5
 ip route add ${prod-default-ew1-cidr} via ${gateway-trusted} dev ens5
 ip route add ${prod-default-ew4-cidr} via ${gateway-trusted} dev ens5
-# TODO: set this to the right on-prem range before merging
 ip route add ${onprem-main-cidr} via ${gateway-trusted} dev ens5
 
 echo 'Adding PBR rules to answer HCs also from the secondary nic'

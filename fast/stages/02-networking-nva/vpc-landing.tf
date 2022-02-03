@@ -19,7 +19,7 @@
 module "landing-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account_id
-  name            = "prod-net-landing-3" #TODO - reset counter
+  name            = "prod-net-landing-0"
   parent          = var.folder_id
   prefix          = var.prefix
   service_config = {
