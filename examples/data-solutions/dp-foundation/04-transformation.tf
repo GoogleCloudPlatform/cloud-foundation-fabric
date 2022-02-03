@@ -100,10 +100,10 @@ module "trf-vpc-firewall" {
 }
 
 module "trf-nat" {
-  count          = var.network_config.enable_cloud_nat ? 0 : 1
+  count          = var.network_config.enable_cloud_nat ? 1 : 0
   source         = "../../../modules/net-cloudnat"
   project_id     = module.trf-prj.project_id
   region         = var.location_config.region
-  name           = local._networks.transformation.network_name
+  name           = "${local.prefix_trf}-default"
   router_network = local._networks.transformation.network_name
 }
