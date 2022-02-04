@@ -1,6 +1,6 @@
 # Organization bootstrap
 
-The primary purpose of this stage is to enable critical organization-level functionality that depends on broad administrative permissions, and prepare the prerequisites needed to enable automation in this and future stages.
+The primary purpose of this stage is to enable critical organization-level functionalities that depend on broad administrative permissions, and prepare the prerequisites needed to enable automation in this and future stages.
 
 It is intentionally simple, to minimize usage of administrative-level permissions and enable simple auditing and troubleshooting, and only deals with three sets of resources:
 
