@@ -15,6 +15,10 @@
  */
 
 locals {
+  _data_platform_sas = {
+    dev  = module.branch-dp-dev-sa.iam_email
+    prod = module.branch-dp-prod-sa.iam_email
+  }
   _project_factory_sas = {
     dev  = module.branch-teams-dev-projectfactory-sa.iam_email
     prod = module.branch-teams-prod-projectfactory-sa.iam_email
@@ -29,6 +33,16 @@ locals {
       bucket = module.branch-security-gcs.name
       name   = "security"
       sa     = module.branch-security-sa.email
+    })
+    "03-data-platform-dev" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
+      bucket = module.branch-dp-dev-gcs.name
+      name   = "dp-dev"
+      sa     = module.branch-dp-dev-sa.email
+    })
+    "03-data-platform-prod" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
+      bucket = module.branch-dp-prod-gcs.name
+      name   = "dp-prod"
+      sa     = module.branch-dp-prod-sa.email
     })
     "03-project-factory-dev" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
       bucket = module.branch-teams-dev-projectfactory-gcs.name
@@ -48,6 +62,7 @@ locals {
   }
   tfvars = {
     "02-networking" = jsonencode({
+      data_platform_sa = local._data_platform_sas
       folder_ids = {
         networking      = module.branch-network-folder.id
         networking-dev  = module.branch-network-dev-folder.id
@@ -60,6 +75,14 @@ locals {
       kms_restricted_admins = {
         for k, v in local._project_factory_sas : k => [v]
       }
+    })
+    "03-data-platform-dev" = jsonencode({
+      folder_id        = module.branch-dp-dev-folder.id
+      date_platform_sa = module.branch-dp-dev-sa.iam_email
+    })
+    "03-data-platform-prod" = jsonencode({
+      folder_id        = module.branch-dp-dev-folder.id
+      date_platform_sa = module.branch-dp-dev-sa.iam_email
     })
   }
 }

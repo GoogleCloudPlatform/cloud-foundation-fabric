@@ -23,6 +23,11 @@ locals {
     module.branch-teams-dev-projectfactory-sa.iam_email,
     module.branch-teams-prod-projectfactory-sa.iam_email
   ]
+  # set to the empty list if you remove the data platform branch
+  branch_dataplatform_pf_sa_iam_emails = [
+    module.branch-dp-dev-sa.iam_email,
+    module.branch-dp-prod-sa.iam_email
+  ]
   list_allow = {
     inherit_from_parent = false
     suggested_value     = null
@@ -53,6 +58,7 @@ module "organization" {
         module.branch-security-sa.iam_email
       ]
       "roles/billing.costsManager" = concat(
+        local.branch_dataplatform_pf_sa_iam_emails,
         local.branch_teams_pf_sa_iam_emails
       ),
       "roles/compute.orgFirewallPolicyAdmin" = [
@@ -61,13 +67,18 @@ module "organization" {
       "roles/compute.xpnAdmin" = [
         module.branch-network-sa.iam_email
       ]
-      "roles/orgpolicy.policyAdmin" = local.branch_teams_pf_sa_iam_emails
+      "roles/orgpolicy.policyAdmin" = concat(
+        local.branch_dataplatform_pf_sa_iam_emails,
+        local.branch_teams_pf_sa_iam_emails
+      )
     },
     local.billing_org ? {
       "roles/billing.user" = concat(
         [
           module.branch-network-sa.iam_email,
           module.branch-security-sa.iam_email,
+          module.branch-dp-dev-sa.iam_email,
+          module.branch-dp-prod-sa.iam_email,
         ],
         # enable if individual teams can create their own projects
         # [

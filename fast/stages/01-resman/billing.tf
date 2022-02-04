@@ -20,6 +20,8 @@ locals {
   # used here for convenience, in organization.tf members are explicit
   billing_ext_users = concat(
     [
+      module.branch-dp-dev-sa.iam_email,
+      module.branch-dp-prod-sa.iam_email,
       module.branch-network-sa.iam_email,
       module.branch-security-sa.iam_email,
     ],
