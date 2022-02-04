@@ -167,6 +167,14 @@ module "organization" {
       "compute.subnetworks.setIamPolicy",
       "dns.networks.bindPrivateDNSZone",
       "resourcemanager.projects.get",
+
+      # if you prefer not granting permissions to create peerings to
+      # service accounts deploying service projects, remove these
+      # permissions and ask you network administrator to create any
+      # needed peerings (e.g. if you need to update routes for a GKE
+      # cluster)
+      "compute.networks.updatePeering",
+      "compute.networks.get",
     ]
   }
   logging_sinks = {
