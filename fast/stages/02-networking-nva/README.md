@@ -145,7 +145,7 @@ This configuration is battle-tested, and flexible enough to lend itself to simpl
 
 ## How to run this stage
 
-This stage is meant to be executed after the [resman](../01-resman) stage has run. It leverages the automation service account and the storage bucket created there, and additional resources configured in the [bootstrap](../00-boostrap) stage.
+This stage is meant to be executed after the [resman](../01-resman) stage has run. It leverages the automation service account and the storage bucket created there, and additional resources configured in the [bootstrap](../00-bootstrap) stage.
 
 It's possible to run this stage in isolation, but that's outside of the scope of this document. Please, refer to the previous stages for the environment requirements.
 
@@ -153,7 +153,7 @@ Before running this stage, you need to make sure you have the correct credential
 
 ### Providers configuration
 
-The default way of making sure you have the right permissions, is to use the identity of the service account pre-created for this stage, during the [resource management](./01-resman) stage, and that you are a member of the group that can impersonate it via provider-level configuration (`gcp-devops` or `organization-admins`).
+The default way of making sure you have the right permissions, is to use the identity of the service account pre-created for this stage, during the [resource management](../01-resman) stage, and that you are a member of the group that can impersonate it via provider-level configuration (`gcp-devops` or `organization-admins`).
 
 To simplify the setup, the previous stage pre-configures a valid providers file in its output and optionally writes it to a local file if the `outputs_location` variable is set to a valid path.
 
@@ -290,7 +290,7 @@ Variables managing L7 Internal Load Balancers (`l7ilb_subnets`) and Private Serv
 VPC network peering connectivity to the `trusted landing VPC` is managed by the `vpc-peering-*.tf` files.
 Copy `vpc-peering-prod.tf` to `vpc-peering-staging.tf` and replace "prod" with "staging", where relevant.
 
-Configure the NVAs deployed or update the sample NVA config files ([ew1](data/nva-startup-script-ew1.tftpl) and [ew4](data/nva-startup-script-ew1.tftpl)), thus making sure they support the new subnets.
+Configure the NVAs deployed or update the sample [NVA config file](data/nva-startup-script.tftpl) making sure they support the new subnets.
 
 DNS configurations are managed in the `dns-*.tf` files.
 Copy the `dns-prod.tf` to `dns-staging.tf` and replace within the files "prod" with "staging", where relevant.
