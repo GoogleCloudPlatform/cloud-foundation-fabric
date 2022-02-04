@@ -121,7 +121,7 @@ This configuration is battle-tested, and flexible enough to lend itself to simpl
 
 ## How to run this stage
 
-This stage is meant to be executed after the [resman](../01-resman) stage has run, as it leverages the automation service account and bucket created there, and additional resources configured in the [bootstrap](../00-boostrap) stage.
+This stage is meant to be executed after the [resman](../01-resman) stage has run, as it leverages the automation service account and bucket created there, and additional resources configured in the [bootstrap](../00-bootstrap) stage.
 
 It's of course possible to run this stage in isolation, but that's outside the scope of this document, and you would need to refer to the code for the previous stages for the environmental requirements.
 
@@ -129,7 +129,7 @@ Before running this stage, you need to make sure you have the correct credential
 
 ### Providers configuration
 
-The default way of making sure you have the right permissions, is to use the identity of the service account pre-created for this stage during the [resource management](./01-resman) stage, and that you are a member of the group that can impersonate it via provider-level configuration (`gcp-devops` or `organization-admins`).
+The default way of making sure you have the right permissions, is to use the identity of the service account pre-created for this stage during the [resource management](../01-resman) stage, and that you are a member of the group that can impersonate it via provider-level configuration (`gcp-devops` or `organization-admins`).
 
 To simplify setup, the previous stage pre-configures a valid providers file in its output, and optionally writes it to a local file if the `outputs_location` variable is set to a valid path.
 
@@ -209,7 +209,7 @@ To add a new firewall rule, create a new file or edit an existing one in the `da
 
 ### DNS architecture
 
-The DNS ([`dns`](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/dns)) infrastructure is defined in [`dns.tf`](dns.tf).
+The DNS ([`dns`](https://github.com/terraform-google-modules/cloud-foundation-fabric/tree/master/modules/dns)) infrastructure is defined in the respective `vpc-xxx.tf` files.
 
 Cloud DNS manages onprem forwarding, the main GCP zone (in this example `gcp.example.com`) and is peered to environment-specific zones (i.e. `dev.gcp.example.com` and `prod.gcp.example.com`).
 
@@ -226,7 +226,7 @@ DNS queries sent to the on-premises infrastructure come from the `35.199.192.0/1
 
 #### On-prem to cloud
 
-The [Inbound DNS Policy](https://cloud.google.com/dns/docs/server-policies-overview#dns-server-policy-in) defined in module `landing-vpc` ([`landing.tf`](./landing.tf)) automatically reserves the first available IP address on each created subnet (typically the third one in a CIDR) to expose the Cloud DNS service so that it can be consumed from outside of GCP.
+The [Inbound DNS Policy](https://cloud.google.com/dns/docs/server-policies-overview#dns-server-policy-in) defined in module `landing-vpc` ([`landing.tf`](./vpc-landing.tf)) automatically reserves the first available IP address on each created subnet (typically the third one in a CIDR) to expose the Cloud DNS service so that it can be consumed from outside of GCP.
 
 ### Private Google Access
 
