@@ -28,6 +28,11 @@ locals {
     module.branch-teams-dev-projectfactory-sa.iam_email,
     module.branch-teams-prod-projectfactory-sa.iam_email
   ]
+  # set to the empty list if you remove the data platform branch
+  branch_dataplatform_pf_sa_iam_emails = [
+    module.branch-dp-dev-sa.iam_email,
+    module.branch-dp-prod-sa.iam_email
+  ]
   list_allow = {
     inherit_from_parent = false
     suggested_value     = null
@@ -77,6 +82,8 @@ module "organization" {
         [
           module.branch-network-sa.iam_email,
           module.branch-security-sa.iam_email,
+          module.branch-dp-dev-sa.iam_email,
+          module.branch-dp-prod-sa.iam_email,
         ],
         # enable if individual teams can create their own projects
         # [
