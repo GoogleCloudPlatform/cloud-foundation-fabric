@@ -58,7 +58,7 @@ jobs:
           python3 tools/check_documentation.py examples modules fast
 
       - name: Check documentation links (fabric)
-        id: documentation-fabric
+        id: documentation-links-fabric
         run: |
           python3 tools/check_links.py .
 
