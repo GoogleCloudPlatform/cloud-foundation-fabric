@@ -28,7 +28,7 @@ We have standardized the initial set of groups on those outlined in the [GCP Ent
 
 ### Organization-level IAM
 
-The service account used in the [Resource Management stage](../01-resman) needs to be able to grant specific roles at the organizational level (`roles/billing.user`, `roles/compute.xpnAdmin`, etc.), to enable specific functionality for subsequent stages that deal with network or security resources, or billing-related activities.
+The service account used in the [Resource Management stage](../01-resman) needs to be able to grant specific permissions at the organizational level, to enable specific functionality for subsequent stages that deal with network or security resources, or billing-related activities.
 
 In order to be able to assign those roles without having the full authority of the Organization Admin role, this stage defines a custom role that only allows setting IAM policies on the organization, and grants it via a [delegated role grant](https://cloud.google.com/iam/docs/setting-limits-on-granting-roles) that only allows it to be used to grant a limited subset of roles.
 
