@@ -14,9 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-'''Recursively check link destination validity in README files.
+'''Recursively check link destination validity in Markdown files.
 
-This tool recursively checks that local links in README files point to valid
+This tool recursively checks that local links in Markdown files point to valid
 destinations. Its main use is in CI pipelines triggered by pull requests.
 '''
 
@@ -35,9 +35,9 @@ LINK = collections.namedtuple('LINK', 'dest valid')
 
 
 def check_docs(dir_name):
-  'Traverse dir_name and check links in README.md files.'
+  'Traverse dir_name and check links in Markdown files.'
   dir_path = BASEDIR / dir_name
-  for readme_path in sorted(dir_path.glob('**/README.md')):
+  for readme_path in sorted(dir_path.glob('**/*.md')):
     if '.terraform' in str(readme_path) or '.pytest' in str(readme_path):
       continue
     links = []
@@ -60,7 +60,7 @@ def check_docs(dir_name):
 @ click.command()
 @ click.argument('dirs', type=str, nargs=-1)
 def main(dirs):
-  'Check links in README files contained in dirs.'
+  'Check links in Markdown files contained in dirs.'
   errors = 0
   for dir_name in dirs:
     print(f'----- {dir_name} -----')
