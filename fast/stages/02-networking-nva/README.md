@@ -187,6 +187,7 @@ If you have set a valid value for `outputs_location` in the bootstrap and in the
 ln -s ../../configs/example/02-networking/terraform-bootstrap.auto.tfvars.json
 ln -s ../../configs/example/02-networking/terraform-resman.auto.tfvars.json
 ```
+If you want to continue to rely on `outputs_location` logic, create a `terraform.tfvars` file and configure it as described [here](../00-bootstrap/#output-files-and-cross-stage-variables).
 
 Please, refer to the [variables](#variables) table below for a map of the variable origins, and use the sections below to understand how to adapt this stage to your networking configuration.
 
