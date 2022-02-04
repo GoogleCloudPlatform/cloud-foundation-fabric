@@ -26,14 +26,14 @@ variable "custom_adv" {
   default = {
     cloud_dns                 = "35.199.192.0/19"
     gcp_all                   = "10.128.0.0/16"
-    gcp_dev_ew1               = "10.128.128.0/19"
-    gcp_dev_ew4               = "10.128.160.0/19"
+    gcp_dev_ew1               = "10.128.128.0/20"
+    gcp_dev_ew4               = "10.128.160.0/20"
     gcp_landing_trusted_ew1   = "10.128.64.0/19"
     gcp_landing_trusted_ew4   = "10.128.96.0/19"
     gcp_landing_untrusted_ew1 = "10.128.0.0/19"
     gcp_landing_untrusted_ew4 = "10.128.32.0/19"
-    gcp_prod_ew1              = "10.128.192.0/19"
-    gcp_prod_ew4              = "10.128.224.0/19"
+    gcp_prod_ew1              = "10.128.192.0/20"
+    gcp_prod_ew4              = "10.128.224.0/20"
     googleapis_private        = "199.36.153.8/30"
     googleapis_restricted     = "199.36.153.4/30"
     rfc_1918_10               = "10.0.0.0/8"
@@ -69,13 +69,13 @@ variable "l7ilb_subnets" {
     region        = string
   })))
   default = {
-    prod = [
-      { ip_cidr_range = "10.128.92.0/24", region = "europe-west1" },
-      { ip_cidr_range = "10.128.93.0/24", region = "europe-west4" }
-    ]
     dev = [
-      { ip_cidr_range = "10.128.60.0/24", region = "europe-west1" },
-      { ip_cidr_range = "10.128.61.0/24", region = "europe-west4" }
+      { ip_cidr_range = "10.128.159.0/24", region = "europe-west1" },
+      { ip_cidr_range = "10.128.191.0/24", region = "europe-west4" }
+    ]
+    prod = [
+      { ip_cidr_range = "10.128.223.0/24", region = "europe-west1" },
+      { ip_cidr_range = "10.128.255.0/24", region = "europe-west4" }
     ]
   }
 }
@@ -121,13 +121,17 @@ variable "psa_ranges" {
   description = "IP ranges used for Private Service Access (e.g. CloudSQL)."
   type        = map(map(string))
   default = {
-    prod = {
-      cloudsql-mysql     = "10.128.94.0/24"
-      cloudsql-sqlserver = "10.128.95.0/24"
-    }
     dev = {
-      cloudsql-mysql     = "10.128.62.0/24"
-      cloudsql-sqlserver = "10.128.63.0/24"
+      cloudsql-mysql-ew1     = "10.128.157.0/24"
+      cloudsql-mysql-ew4     = "10.128.189.0/24"
+      cloudsql-sqlserver-ew1 = "10.128.158.0/24"
+      cloudsql-sqlserver-ew4 = "10.128.190.0/24"
+    }
+    prod = {
+      cloudsql-mysql-ew1     = "10.128.221.0/24"
+      cloudsql-mysql-ew4     = "10.128.222.0/24"
+      cloudsql-sqlserver-ew1 = "10.128.253.0/24"
+      cloudsql-sqlserver-ew4 = "10.128.254.0/24"
     }
   }
 }
@@ -143,12 +147,12 @@ variable "router_configs" {
   }))
   default = {
     landing-trusted-ew1 = {
-      asn = "65534"
+      asn = "64512"
       adv = null
       # adv = { default = false, custom = [] }
     }
     landing-trusted-ew4 = {
-      asn = "65534"
+      asn = "64512"
       adv = null
       # adv = { default = false, custom = [] }
     }
