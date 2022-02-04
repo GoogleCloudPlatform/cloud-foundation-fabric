@@ -103,6 +103,7 @@ resource "google_project_iam_binding" "prod_spoke_project_iam_delegated" {
   members = [
     local.service_accounts.data-platform-prod,
     local.service_accounts.project-factory-prod,
+    local.service_accounts.gke-multitenant-prod,
   ]
   condition {
     title       = "prod_stage3_sa_delegated_grants"

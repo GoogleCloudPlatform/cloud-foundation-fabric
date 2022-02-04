@@ -74,13 +74,15 @@ locals {
   }
   folder_ids = merge(
     {
-      data-platform   = module.branch-dp-dev-folder.id
-      networking      = module.branch-network-folder.id
-      networking-dev  = module.branch-network-dev-folder.id
-      networking-prod = module.branch-network-prod-folder.id
-      sandbox         = module.branch-sandbox-folder.id
-      security        = module.branch-security-folder.id
-      teams           = module.branch-teams-folder.id
+      data-platform        = module.branch-dp-dev-folder.id
+      gke-multitenant-dev  = module.branch-gke-multitenant-dev-folder.id
+      gke-multitenant-prod = module.branch-gke-multitenant-prod-folder.id
+      networking           = module.branch-network-folder.id
+      networking-dev       = module.branch-network-dev-folder.id
+      networking-prod      = module.branch-network-prod-folder.id
+      sandbox              = module.branch-sandbox-folder.id
+      security             = module.branch-security-folder.id
+      teams                = module.branch-teams-folder.id
     },
     {
       for k, v in module.branch-teams-team-folder :
@@ -116,6 +118,16 @@ locals {
       name   = "dp-prod"
       sa     = module.branch-dp-prod-sa.email
     })
+    "03-gke-multitenant-dev" = templatefile(local._tpl_providers, {
+      bucket = module.branch-gke-multitenant-dev-gcs.name
+      name   = "gke-multitenant-dev"
+      sa     = module.branch-gke-multitenant-dev-sa.email
+    })
+    "03-gke-multitenant-prod" = templatefile(local._tpl_providers, {
+      bucket = module.branch-gke-multitenant-prod-gcs.name
+      name   = "gke-multitenant-prod"
+      sa     = module.branch-gke-multitenant-prod-sa.email
+    })
     "03-project-factory-dev" = templatefile(local._tpl_providers, {
       bucket = module.branch-teams-dev-pf-gcs.name
       name   = "team-dev"
@@ -136,6 +148,8 @@ locals {
     {
       data-platform-dev    = module.branch-dp-dev-sa.email
       data-platform-prod   = module.branch-dp-prod-sa.email
+      gke-multitenant-dev  = module.branch-gke-multitenant-dev-sa.iam_email
+      gke-multitenant-prod = module.branch-gke-multitenant-prod-sa.iam_email
       networking           = module.branch-network-sa.email
       project-factory-dev  = module.branch-teams-dev-pf-sa.email
       project-factory-prod = module.branch-teams-prod-pf-sa.email
@@ -231,6 +245,23 @@ output "security" {
     folder          = module.branch-security-folder.id
     gcs_bucket      = module.branch-security-gcs.name
     service_account = module.branch-security-sa.iam_email
+  }
+}
+
+output "gke_multitenant" {
+  # tfdoc:output:consumers 03-gke-multitenant
+  description = "Data for the GKE multitenant stage."
+  value = {
+    "dev" = {
+      folder          = module.branch-gke-multitenant-dev-folder.id
+      gcs_bucket      = module.branch-gke-multitenant-dev-gcs.name
+      service_account = module.branch-gke-multitenant-dev-sa.email
+    }
+    "prod" = {
+      folder          = module.branch-gke-multitenant-prod-folder.id
+      gcs_bucket      = module.branch-gke-multitenant-prod-gcs.name
+      service_account = module.branch-gke-multitenant-prod-sa.email
+    }
   }
 }
 
