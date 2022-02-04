@@ -193,7 +193,7 @@ Please, refer to the [variables](#variables) table below for a map of the variab
 
 ### VPCs
 
-VPCs are defined in separate files, one for `untrusted landing`, one for `trusted landing`, one for `prod` and one for `dev`.
+VPCs are defined in separate files, one for `landing` (trusted and untrusted), one for `prod` and one for `dev`.
 
 These files contain different resources:
 
