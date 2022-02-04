@@ -37,6 +37,10 @@ locals {
     "roles/resourcemanager.organizationViewer" = [
       "domain:${var.organization.domain}"
     ]
+    "roles/resourcemanager.projectCreator" = concat(
+      [module.automation-tf-bootstrap-sa.iam_email],
+      local._iam_bootstrap_user
+    )
   }
   # organization additive IAM bindings, in an easy to edit format before
   # they are combined with var.iam_additive a bit further in locals
@@ -177,7 +181,6 @@ module "organization" {
 
 resource "google_organization_iam_binding" "org_admin_delegated" {
   org_id  = var.organization.id
-  count   = local.billing_org ? 1 : 0
   role    = module.organization.custom_role_id.organizationIamAdmin
   members = [module.automation-tf-resman-sa.iam_email]
   condition {
