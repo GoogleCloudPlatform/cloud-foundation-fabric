@@ -69,7 +69,7 @@ variable "folder_id" {
     error_message = "Invalid folder_id. Should be in 'folders/nnnnnnnnnnn' format."
   }
 }
-
+   
 variable "l7ilb_subnets" {
   description = "Subnets used for L7 ILBs."
   type = map(list(object({
@@ -78,12 +78,12 @@ variable "l7ilb_subnets" {
   })))
   default = {
     prod = [
-      { ip_cidr_range = "10.136.240.0/24", region = "europe-west1" },
-      { ip_cidr_range = "10.137.240.0/24", region = "europe-west4" }
+      { ip_cidr_range = "10.128.92.0/24", region = "europe-west1" },
+      { ip_cidr_range = "10.128.93.0/24", region = "europe-west4" }
     ]
     dev = [
-      { ip_cidr_range = "10.144.240.0/24", region = "europe-west1" },
-      { ip_cidr_range = "10.145.240.0/24", region = "europe-west4" }
+      { ip_cidr_range = "10.128.60.0/24", region = "europe-west1" },
+      { ip_cidr_range = "10.128.61.0/24", region = "europe-west4" }
     ]
   }
 }
@@ -130,12 +130,12 @@ variable "psa_ranges" {
   type        = map(map(string))
   default = {
     prod = {
-      cloudsql-mysql     = "10.136.250.0/24"
-      cloudsql-sqlserver = "10.136.251.0/24"
+      cloudsql-mysql     = "10.128.94.0/24"
+      cloudsql-sqlserver = "10.128.95.0/24"
     }
     dev = {
-      cloudsql-mysql     = "10.144.250.0/24"
-      cloudsql-sqlserver = "10.144.251.0/24"
+      cloudsql-mysql     = "10.128.62.0/24"
+      cloudsql-sqlserver = "10.128.63.0/24"
     }
   }
 }
