@@ -95,7 +95,7 @@ To quickly self-grant the above roles, run the following code snippet as the ini
 ```bash
 export BOOTSTRAP_ORG_ID=123456
 export BOOTSTRAP_USER=$(gcloud config list --format 'value(core.account)')
-export BOOTSTRAP_ROLES=(roles/billing.admin roles/logging.admin roles/iam.organizationRoleAdmin roles/resourcemanager.projectCreator)
+export BOOTSTRAP_ROLES="roles/billing.admin roles/logging.admin roles/iam.organizationRoleAdmin roles/resourcemanager.projectCreator"
 for role in $BOOTSTRAP_ROLES; do
   gcloud organizations add-iam-policy-binding $BOOTSTRAP_ORG_ID \
     --member user:$BOOTSTRAP_USER --role $role
