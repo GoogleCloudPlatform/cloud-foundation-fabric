@@ -36,6 +36,7 @@ module "branch-network-folder" {
     "roles/owner"                          = [module.branch-network-sa.iam_email]
     "roles/resourcemanager.folderAdmin"    = [module.branch-network-sa.iam_email]
     "roles/resourcemanager.projectCreator" = [module.branch-network-sa.iam_email]
+    "roles/compute.xpnAdmin"               = [module.branch-network-sa.iam_email]
   }
 }
 
@@ -55,5 +56,28 @@ module "branch-network-gcs" {
   versioning = true
   iam = {
     "roles/storage.objectAdmin" = [module.branch-network-sa.iam_email]
+  }
+}
+
+module "branch-network-prod-folder" {
+  source = "../../../modules/folder"
+  parent = "organizations/${var.organization.id}"
+  name   = "prod"
+  iam = {
+    "roles/compute.xpnAdmin" = [
+      module.branch-teams-prod-projectfactory-sa.iam_email
+    ]
+  }
+}
+
+
+module "branch-network-dev-folder" {
+  source = "../../../modules/folder"
+  parent = "organizations/${var.organization.id}"
+  name   = "dev"
+  iam = {
+    "roles/compute.xpnAdmin" = [
+      module.branch-teams-dev-projectfactory-sa.iam_email
+    ]
   }
 }
