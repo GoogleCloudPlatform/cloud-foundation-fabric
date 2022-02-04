@@ -25,15 +25,15 @@ locals {
       name   = "networking"
       sa     = module.branch-network-sa.email
     })
+    "02-networking-nva" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
+      bucket = module.branch-network-gcs.name
+      name   = "networking-nva"
+      sa     = module.branch-network-sa.email
+    })
     "02-security" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
       bucket = module.branch-security-gcs.name
       name   = "security"
       sa     = module.branch-security-sa.email
-    })
-    "99-sandbox" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
-      bucket = module.branch-sandbox-gcs.name
-      name   = "sandbox"
-      sa     = module.branch-sandbox-sa.email
     })
     "03-project-factory-dev" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
       bucket = module.branch-teams-dev-projectfactory-gcs.name
@@ -45,9 +45,18 @@ locals {
       name   = "team-prod"
       sa     = module.branch-teams-prod-projectfactory-sa.email
     })
+    "99-sandbox" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
+      bucket = module.branch-sandbox-gcs.name
+      name   = "sandbox"
+      sa     = module.branch-sandbox-sa.email
+    })
   }
   tfvars = {
     "02-networking" = jsonencode({
+      folder_id          = module.branch-network-folder.id
+      project_factory_sa = local._project_factory_sas
+    })
+    "02-networkin-nva" = jsonencode({
       folder_id          = module.branch-network-folder.id
       project_factory_sa = local._project_factory_sas
     })

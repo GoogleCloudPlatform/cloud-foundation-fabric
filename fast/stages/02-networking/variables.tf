@@ -37,6 +37,13 @@ variable "custom_adv" {
   }
 }
 
+variable "custom_roles" {
+  # tfdoc:variable:source 00-bootstrap
+  description = "Custom roles defined at the org level, in key => id format."
+  type        = map(string)
+  default     = {}
+}
+
 variable "data_dir" {
   description = "Relative path for the folder storing configuration data for network resources."
   type        = string

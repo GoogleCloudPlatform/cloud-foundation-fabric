@@ -499,13 +499,13 @@ An External Global Load Balancer is made of multiple components, that change dep
 
 | name | description | resources |
 |---|---|---|
-| [backend_services.tf](./backend_services.tf) | Bucket and group backend services. | <code>google_compute_backend_bucket</code> · <code>google_compute_backend_service</code> |
-| [global_forwarding_rule.tf](./global_forwarding_rule.tf) | Global address and forwarding rule. | <code>google_compute_global_address</code> · <code>google_compute_global_forwarding_rule</code> |
-| [health_checks.tf](./health_checks.tf) | Health checks. | <code>google_compute_health_check</code> |
+| [backend-services.tf](./backend-services.tf) | Bucket and group backend services. | <code>google_compute_backend_bucket</code> · <code>google_compute_backend_service</code> |
+| [global-forwarding-rule.tf](./global-forwarding-rule.tf) | Global address and forwarding rule. | <code>google_compute_global_address</code> · <code>google_compute_global_forwarding_rule</code> |
+| [health-checks.tf](./health-checks.tf) | Health checks. | <code>google_compute_health_check</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |
-| [ssl_certificates.tf](./ssl_certificates.tf) | SSL certificates. | <code>google_compute_managed_ssl_certificate</code> · <code>google_compute_ssl_certificate</code> |
-| [target_proxy.tf](./target_proxy.tf) | HTTP and HTTPS target proxies. | <code>google_compute_target_http_proxy</code> · <code>google_compute_target_https_proxy</code> |
-| [url_map.tf](./url_map.tf) | URL maps. | <code>google_compute_url_map</code> |
+| [ssl-certificates.tf](./ssl-certificates.tf) | SSL certificates. | <code>google_compute_managed_ssl_certificate</code> · <code>google_compute_ssl_certificate</code> |
+| [target-proxy.tf](./target-proxy.tf) | HTTP and HTTPS target proxies. | <code>google_compute_target_http_proxy</code> · <code>google_compute_target_https_proxy</code> |
+| [url-map.tf](./url-map.tf) | URL maps. | <code>google_compute_url_map</code> |
 | [variables.tf](./variables.tf) | Module variables. |  |
 | [versions.tf](./versions.tf) | Version pins. |  |
 

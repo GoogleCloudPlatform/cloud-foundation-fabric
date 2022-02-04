@@ -147,7 +147,7 @@ module "organization" {
       "resourcemanager.organizations.getIamPolicy",
       "resourcemanager.organizations.setIamPolicy"
     ]
-    "xpnServiceAdmin" = [
+    "serviceProjectNetworkAdmin" = [
       "compute.globalOperations.get",
       "compute.organizations.disableXpnResource",
       "compute.organizations.enableXpnResource",
@@ -191,7 +191,6 @@ resource "google_organization_iam_binding" "org_admin_delegated" {
           "roles/compute.orgFirewallPolicyAdmin",
           "roles/compute.xpnAdmin",
           "roles/orgpolicy.policyAdmin",
-          module.organization.custom_role_id.xpnServiceAdmin
         ],
         local.billing_org ? [
           "roles/billing.admin",

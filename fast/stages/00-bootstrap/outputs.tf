@@ -38,6 +38,13 @@ locals {
     })
     "02-networking" = jsonencode({
       billing_account_id = var.billing_account.id
+      custom_roles       = module.organization.custom_role_id
+      organization       = var.organization
+      prefix             = var.prefix
+    })
+    "02-networking-nva" = jsonencode({
+      billing_account_id = var.billing_account.id
+      custom_roles       = module.organization.custom_role_id
       organization       = var.organization
       prefix             = var.prefix
     })

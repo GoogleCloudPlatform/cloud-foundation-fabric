@@ -23,3 +23,8 @@ variable "region" {
   type    = string
   default = "europe-west1"
 }
+
+variable "ip_range" {
+  type    = string
+  default = "10.0.0.0/22"
+}

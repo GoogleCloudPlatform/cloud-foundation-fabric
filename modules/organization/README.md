@@ -243,11 +243,11 @@ module "org" {
 
 | name | description | resources |
 |---|---|---|
-| [firewall_policies.tf](./firewall_policies.tf) | Hierarchical firewall policies. | <code>google_compute_firewall_policy</code> · <code>google_compute_firewall_policy_association</code> · <code>google_compute_firewall_policy_rule</code> |
+| [firewall-policies.tf](./firewall-policies.tf) | Hierarchical firewall policies. | <code>google_compute_firewall_policy</code> · <code>google_compute_firewall_policy_association</code> · <code>google_compute_firewall_policy_rule</code> |
 | [iam.tf](./iam.tf) | IAM bindings, roles and audit logging resources. | <code>google_organization_iam_audit_config</code> · <code>google_organization_iam_binding</code> · <code>google_organization_iam_custom_role</code> · <code>google_organization_iam_member</code> · <code>google_organization_iam_policy</code> |
 | [logging.tf](./logging.tf) | Log sinks and supporting resources. | <code>google_bigquery_dataset_iam_member</code> · <code>google_logging_organization_exclusion</code> · <code>google_logging_organization_sink</code> · <code>google_project_iam_member</code> · <code>google_pubsub_topic_iam_member</code> · <code>google_storage_bucket_iam_member</code> |
 | [main.tf](./main.tf) | Module-level locals and resources. | <code>google_essential_contacts_contact</code> |
-| [organization_policies.tf](./organization_policies.tf) | Organization-level organization policies. | <code>google_organization_policy</code> |
+| [organization-policies.tf](./organization-policies.tf) | Organization-level organization policies. | <code>google_organization_policy</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |
 | [variables.tf](./variables.tf) | Module variables. |  |
 | [versions.tf](./versions.tf) | Version pins. |  |

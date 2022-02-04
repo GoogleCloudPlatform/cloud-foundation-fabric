@@ -49,9 +49,6 @@ module "organization" {
   # role assigned in stage 00; they need to be additive to avoid conflicts
   iam_additive = merge(
     {
-      (var.custom_roles.xpnServiceAdmin) = concat(
-        local.branch_teams_pf_sa_iam_emails
-      )
       "roles/accesscontextmanager.policyAdmin" = [
         module.branch-security-sa.iam_email
       ]

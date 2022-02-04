@@ -40,6 +40,9 @@ module "prod-spoke-project" {
   metric_scopes = [module.landing-project.project_id]
   iam = {
     "roles/dns.admin" = [var.project_factory_sa.prod]
+    (var.custom_roles.serviceProjectNetworkAdmin) = [
+      var.project_factory_sa.prod
+    ]
   }
 }
 
@@ -101,5 +104,22 @@ module "prod-spoke-psa-addresses" {
     network       = module.prod-spoke-vpc.self_link
     prefix_length = split("/", v)[1]
     }
+  }
+}
+
+# Create delegated grants for stage3 service accounts
+resource "google_project_iam_binding" "prod_spoke_project_iam_delegated" {
+  project = module.prod-spoke-project.project_id
+  role    = "roles/resourcemanager.projectIamAdmin"
+  members = [
+    var.project_factory_sa.prod
+  ]
+  condition {
+    title       = "prod_stage3_sa_delegated_grants"
+    description = "Production host project delegated grants."
+    expression = format(
+      "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
+      join(",", formatlist("'%s'", local.stage3_sas_delegated_grants))
+    )
   }
 }

@@ -18,7 +18,7 @@ resource "google_apigee_instance" "apigee_instance" {
   org_id                   = var.apigee_org_id
   name                     = var.name
   location                 = var.region
-  peering_cidr_range       = "SLASH_${var.cidr_mask}"
+  ip_range                 = var.ip_range
   disk_encryption_key_name = var.disk_encryption_key
 }
 
