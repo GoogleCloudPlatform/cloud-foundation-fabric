@@ -191,7 +191,7 @@ resource "google_organization_iam_binding" "org_admin_delegated" {
           "roles/compute.orgFirewallPolicyAdmin",
           "roles/compute.xpnAdmin",
           "roles/orgpolicy.policyAdmin",
-          module.organization.custom_role_id.xpnServiceAdmin
+          module.organization.custom_role_id.serviceProjectNetworkAdmin
         ],
         local.billing_org ? [
           "roles/billing.admin",
