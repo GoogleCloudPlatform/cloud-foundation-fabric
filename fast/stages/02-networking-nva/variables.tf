@@ -155,7 +155,7 @@ variable "router_configs" {
       adv = null
       # adv = { default = false, custom = [] }
     }
-    landing-trusted-ew1 = {
+    landing-trusted-ew4 = {
       asn = "65534"
       adv = null
       # adv = { default = false, custom = [] }
