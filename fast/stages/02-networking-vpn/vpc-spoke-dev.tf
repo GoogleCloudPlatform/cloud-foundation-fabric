@@ -27,6 +27,7 @@ module "dev-spoke-project" {
     disable_dependent_services = false
   }
   services = [
+    "container.googleapis.com",
     "compute.googleapis.com",
     "dns.googleapis.com",
     "iap.googleapis.com",
@@ -41,7 +42,8 @@ module "dev-spoke-project" {
   iam = {
     "roles/dns.admin" = [var.project_factory_sa.dev]
     (var.custom_roles.serviceProjectNetworkAdmin) = [
-      var.project_factory_sa.prod
+      var.project_factory_sa.prod,
+      var.gke_multitenant_sa.prod,
     ]
   }
 }
@@ -112,7 +114,8 @@ resource "google_project_iam_binding" "dev_spoke_project_iam_delegated" {
   project = module.dev-spoke-project.project_id
   role    = "roles/resourcemanager.projectIamAdmin"
   members = [
-    var.project_factory_sa.dev
+    var.project_factory_sa.dev,
+    var.gke_multitenant_sa.dev,
   ]
   condition {
     title       = "dev_stage3_sa_delegated_grants"

@@ -54,6 +54,7 @@ module "automation-project" {
     "cloudkms.googleapis.com",
     "cloudresourcemanager.googleapis.com",
     "compute.googleapis.com",
+    "container.googleapis.com",
     "essentialcontacts.googleapis.com",
     "iam.googleapis.com",
     "pubsub.googleapis.com",

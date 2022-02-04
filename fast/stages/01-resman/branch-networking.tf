@@ -65,7 +65,8 @@ module "branch-network-prod-folder" {
   name   = "prod"
   iam = {
     "roles/compute.xpnAdmin" = [
-      module.branch-teams-prod-projectfactory-sa.iam_email
+      module.branch-teams-prod-projectfactory-sa.iam_email,
+      module.branch-gke-multitenant-prod-sa.iam_email,
     ]
   }
 }
@@ -76,7 +77,8 @@ module "branch-network-dev-folder" {
   name   = "dev"
   iam = {
     "roles/compute.xpnAdmin" = [
-      module.branch-teams-dev-projectfactory-sa.iam_email
+      module.branch-teams-dev-projectfactory-sa.iam_email,
+      module.branch-gke-multitenant-dev-sa.iam_email,
     ]
   }
 }
