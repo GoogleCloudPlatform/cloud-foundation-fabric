@@ -147,7 +147,7 @@ Before the first run, the following IAM groups must exist to allow IAM bindings 
 Then make sure you have configured the correct values for the following variables by editing  providing a `terraform.tfvars` file:
 
 - `billing_account`
-  an object containing the id of your billing account, derived from the Cloud Console UI or by running `gcloud beta billing accounts list`, and the id of the organization owning it, or `null` to use the billing account in isolation
+  an object containing `id` as the id of your billing account, derived from the Cloud Console UI or by running `gcloud beta billing accounts list`, and `organization_id` as the id of the organization owning it, or `null` to use the billing account in isolation
 - `groups`
   the name mappings for your groups, if you're following the default convention you can leave this to the provided default
 - `organization.id`, `organization.domain`, `organization.customer_id`
