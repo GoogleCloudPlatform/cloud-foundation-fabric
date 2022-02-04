@@ -83,7 +83,7 @@ module "orc-prj" {
   iam_additive   = var.project_create == null ? local.iam_orc : {}
   group_iam      = local.group_iam_orc
   oslogin        = false
-  policy_boolean = var.composer_config.policy_boolean
+  policy_boolean = var.composer_config.project_policy_boolean
   services = concat(var.project_services, [
     "artifactregistry.googleapis.com",
     "bigquery.googleapis.com",
@@ -112,15 +112,49 @@ module "orc-vpc" {
   name       = "${local.prefix_orc}-vpc"
   subnets = [
     {
-      ip_cidr_range      = var.network_config.vpc_subnet_range.orchestration
+      ip_cidr_range      = var.network_config.vpc_subnet.orchestration.range
       name               = "${local.prefix_orc}-subnet"
       region             = var.location_config.region
       secondary_ip_range = {}
       secondary_ip_range = {
-        pods     = var.composer_config.secondary_ip_range.pods
-        services = var.composer_config.secondary_ip_range.services
+        pods     = var.network_config.vpc_subnet.orchestration.secondary_range.pods
+        services = var.network_config.vpc_subnet.orchestration.secondary_range.services
       }
     }
+  ]
+}
+
+#TODO Check with Simo/Ludo
+resource "google_project_iam_binding" "composer_shared_vpc_agent" {
+  count   = var.network_config.network != null ? 1 : 0
+  project = var.network_config.host_project
+  role    = "roles/composer.sharedVpcAgent"
+  members = [
+    "serviceAccount:${module.orc-prj.service_accounts.robots.composer}"
+  ]
+}
+
+resource "google_project_iam_binding" "gke_host_service_agent_user" {
+  count   = var.network_config.network != null ? 1 : 0
+  project = var.network_config.host_project
+  role    = "roles/container.hostServiceAgentUser"
+  members = [
+    "serviceAccount:${module.orc-prj.service_accounts.robots.container-engine}"
+  ]
+}
+
+resource "google_project_iam_binding" "composer_network_user_agent" {
+  count   = var.network_config.network != null ? 1 : 0
+  project = var.network_config.host_project
+  role    = "roles/compute.networkUser"
+  members = [
+    module.orc-sa-cmp-0.iam_email,
+    module.lod-sa-df-0.iam_email,
+    module.trf-sa-df-0.iam_email,
+    "serviceAccount:${module.lod-prj.service_accounts.robots.dataflow}",
+    "serviceAccount:${module.orc-prj.service_accounts.cloud_services}",
+    "serviceAccount:${module.orc-prj.service_accounts.robots.container-engine}",
+    "serviceAccount:${module.trf-prj.service_accounts.robots.dataflow}",
   ]
 }
 

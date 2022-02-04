@@ -89,7 +89,7 @@ module "lod-vpc" {
   name       = "${local.prefix_lod}-vpc"
   subnets = [
     {
-      ip_cidr_range      = var.network_config.vpc_subnet_range.load
+      ip_cidr_range      = var.network_config.vpc_subnet.load.range
       name               = "${local.prefix_lod}-subnet"
       region             = var.location_config.region
       secondary_ip_range = {}
