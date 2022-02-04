@@ -231,7 +231,7 @@ terraform output -json providers | jq -r '.["00-bootstrap"]' \
   > providers.tf
 # migrate state to GCS bucket configured in providers file
 terraform init -migrate-state
-# run terraform apply to remo user iam binding 
+# run terraform apply to remove the bootstrap_user iam binding 
 terraform apply
 ```
 
