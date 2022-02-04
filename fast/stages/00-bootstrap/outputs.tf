@@ -63,6 +63,16 @@ locals {
       billing_account_id = var.billing_account.id
       prefix             = var.prefix
     })
+    "03-data-platform-dev" = jsonencode({
+      billing_account_id = var.billing_account.id
+      organization       = var.organization
+      prefix             = var.prefix
+    })
+    "03-data-platform-prod" = jsonencode({
+      billing_account_id = var.billing_account.id
+      organization       = var.organization
+      prefix             = var.prefix
+    })
   }
 }
 
