@@ -17,6 +17,18 @@
 
 locals {
   tfvars = {
+    "03-gke-multitenant-dev" = jsonencode({
+      vpc_host_project     = module.dev-spoke-project.project_id
+      shared_vpc_self_link = module.dev-spoke-vpc.self_link
+      # TODO
+      # service_encryption_key_ids = []
+    })
+    "03-gke-multitenant-prod" = jsonencode({
+      vpc_host_project     = module.prod-spoke-project.project_id
+      shared_vpc_self_link = module.prod-spoke-vpc.self_link
+      # TODO
+      # service_encryption_key_ids = []
+    })
     "03-project-factory-dev" = jsonencode({
       environment_dns_zone = module.dev-dns-private-zone.domain
       shared_vpc_self_link = module.dev-spoke-vpc.self_link

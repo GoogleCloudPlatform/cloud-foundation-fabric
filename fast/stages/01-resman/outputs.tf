@@ -19,6 +19,10 @@ locals {
     dev  = module.branch-teams-dev-projectfactory-sa.iam_email
     prod = module.branch-teams-prod-projectfactory-sa.iam_email
   }
+  _gke_multitenant_sas = {
+    dev  = module.branch-gke-multitenant-dev-sa.iam_email
+    prod = module.branch-gke-multitenant-prod-sa.iam_email
+  }
   providers = {
     "02-networking" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
       bucket = module.branch-network-gcs.name
@@ -29,6 +33,16 @@ locals {
       bucket = module.branch-security-gcs.name
       name   = "security"
       sa     = module.branch-security-sa.email
+    })
+    "03-gke-multitenant-dev" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
+      bucket = module.branch-gke-multitenant-dev-gcs.name
+      name   = "gke-multitenant-dev"
+      sa     = module.branch-gke-multitenant-dev-sa.email
+    })
+    "03-gke-multitenant-prod" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
+      bucket = module.branch-gke-multitenant-prod-gcs.name
+      name   = "gke-multitenant-prod"
+      sa     = module.branch-gke-multitenant-prod-sa.email
     })
     "03-project-factory-dev" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
       bucket = module.branch-teams-dev-projectfactory-gcs.name
@@ -54,12 +68,21 @@ locals {
         networking-prod = module.branch-network-prod-folder.id
       }
       project_factory_sa = local._project_factory_sas
+      gke_multitenant_sa = local._gke_multitenant_sas
     })
     "02-security" = jsonencode({
       folder_id = module.branch-security-folder.id
       kms_restricted_admins = {
         for k, v in local._project_factory_sas : k => [v]
       }
+    })
+    "03-gke-multitenant-dev" = jsonencode({
+      folder_id   = module.branch-gke-multitenant-dev-folder.id
+      environment = "dev"
+    })
+    "03-gke-multitenant-prod" = jsonencode({
+      folder_id   = module.branch-gke-multitenant-prod-folder.id
+      environment = "prod"
     })
   }
 }
@@ -131,6 +154,23 @@ output "security" {
     folder          = module.branch-security-folder.id
     gcs_bucket      = module.branch-security-gcs.name
     service_account = module.branch-security-sa.iam_email
+  }
+}
+
+output "gke_multitenant" {
+  # tfdoc:output:consumers 03-gke-multitenant
+  description = "Data for the GKE multitenant stage."
+  value = {
+    "dev" = {
+      folder          = module.branch-gke-multitenant-dev-folder.id
+      gcs_bucket      = module.branch-gke-multitenant-dev-gcs.name
+      service_account = module.branch-gke-multitenant-dev-sa.email
+    }
+    "prod" = {
+      folder          = module.branch-gke-multitenant-prod-folder.id
+      gcs_bucket      = module.branch-gke-multitenant-prod-gcs.name
+      service_account = module.branch-gke-multitenant-prod-sa.email
+    }
   }
 }
 
