@@ -144,7 +144,7 @@ Before the first run, the following IAM groups must exist to allow IAM bindings 
 
 #### Configure variables
 
-Then make sure you have configured the correct values for the following variables by editing  providing a `terraform.tfvars` file:
+Then make sure you have configured the correct values for the following variables by providing a `terraform.tfvars` file:
 
 - `billing_account`
   an object containing `id` as the id of your billing account, derived from the Cloud Console UI or by running `gcloud beta billing accounts list`, and `organization_id` as the id of the organization owning it, or `null` to use the billing account in isolation
@@ -154,6 +154,25 @@ Then make sure you have configured the correct values for the following variable
   the id, domain and customer id of your organization, derived from the Cloud Console UI or by running `gcloud organizations list`
 - `prefix`
   the fixed prefix used in your naming convention
+
+You can also adapt the example that follows to your needs:
+
+```hcl
+# fetch the required id by running `gcloud beta billing accounts list`
+billing_account={
+    id="019EFC-140A1D-7EDA6B"
+    organization_id=null
+}
+# get the required info by running `gcloud organizations list`
+organization={
+    id="583992375761"
+    domain="fast-lab-0.gcp-pso-italy.net"
+    customer_id="C04es9p30"
+}
+# create your own 4-letters prefix
+prefix="fast"
+outputs_location = "../../fast-config"
+```
 
 ### Output files and cross-stage variables
 
