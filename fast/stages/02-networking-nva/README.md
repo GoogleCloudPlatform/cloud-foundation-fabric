@@ -1,7 +1,6 @@
 # Networking with Network Virtual Appliance
 
 This stage sets up the shared network infrastructure for the whole organization.
-It is an alternative to the [02-networking stage](../02-networking/README.md).
 
 It is designed for those who would like to leverage Network Virtual Appliances (NVAs) between trusted and untrusted areas of the network, for example for Intrusion Prevention System (IPS) purposes.
 
@@ -145,7 +144,7 @@ This configuration is battle-tested, and flexible enough to lend itself to simpl
 
 ## How to run this stage
 
-This stage is meant to be executed after the [resman](../01-resman) stage has run. It leverages the automation service account and the storage bucket created there, and additional resources configured in the [bootstrap](../00-boostrap) stage.
+This stage is meant to be executed after the [resman](../01-resman) stage has run. It leverages the automation service account and the storage bucket created there, and additional resources configured in the [bootstrap](../00-bootstrap) stage.
 
 It's possible to run this stage in isolation, but that's outside of the scope of this document. Please, refer to the previous stages for the environment requirements.
 
@@ -153,7 +152,7 @@ Before running this stage, you need to make sure you have the correct credential
 
 ### Providers configuration
 
-The default way of making sure you have the right permissions, is to use the identity of the service account pre-created for this stage, during the [resource management](./01-resman) stage, and that you are a member of the group that can impersonate it via provider-level configuration (`gcp-devops` or `organization-admins`).
+The default way of making sure you have the right permissions, is to use the identity of the service account pre-created for this stage, during the [resource management](../01-resman) stage, and that you are a member of the group that can impersonate it via provider-level configuration (`gcp-devops` or `organization-admins`).
 
 To simplify the setup, the previous stage pre-configures a valid providers file in its output and optionally writes it to a local file if the `outputs_location` variable is set to a valid path.
 
@@ -161,15 +160,15 @@ If you have set a valid value for `outputs_location` in the bootstrap stage, sim
 
 ```bash
 # `outputs_location` is set to `../../configs/example`
-ln -s ../../configs/example/02-networking-nva/providers.tf
+ln -s ../../configs/example/02-networking/providers.tf
 ```
 
 If you have not configured `outputs_location` in bootstrap, you can derive the providers file from that stage outputs:
 
 ```bash
 cd ../00-bootstrap
-terraform output -json providers | jq -r '.["02-networking-nva"]' \
-  > ../02-networking-nva-nva/providers.tf
+terraform output -json providers | jq -r '.["02-networking"]' \
+  > ../02-networking-nva/providers.tf
 ```
 
 ### Variable configuration
@@ -185,8 +184,8 @@ If you have set a valid value for `outputs_location` in the bootstrap and in the
 
 ```bash
 # `outputs_location` is set to `../../configs/example`
-ln -s ../../configs/example/02-networking-nva/terraform-bootstrap.auto.tfvars.json
-ln -s ../../configs/example/02-networking-nva/terraform-resman.auto.tfvars.json
+ln -s ../../configs/example/02-networking/terraform-bootstrap.auto.tfvars.json
+ln -s ../../configs/example/02-networking/terraform-resman.auto.tfvars.json
 ```
 
 Please, refer to the [variables](#variables) table below for a map of the variable origins, and use the sections below to understand how to adapt this stage to your networking configuration.
@@ -290,7 +289,7 @@ Variables managing L7 Internal Load Balancers (`l7ilb_subnets`) and Private Serv
 VPC network peering connectivity to the `trusted landing VPC` is managed by the `vpc-peering-*.tf` files.
 Copy `vpc-peering-prod.tf` to `vpc-peering-staging.tf` and replace "prod" with "staging", where relevant.
 
-Configure the NVAs deployed or update the sample NVA config files ([ew1](data/nva-startup-script-ew1.tftpl) and [ew4](data/nva-startup-script-ew1.tftpl)), thus making sure they support the new subnets.
+Configure the NVAs deployed or update the sample [NVA config file](data/nva-startup-script.tftpl) making sure they support the new subnets.
 
 DNS configurations are managed in the `dns-*.tf` files.
 Copy the `dns-prod.tf` to `dns-staging.tf` and replace within the files "prod" with "staging", where relevant.

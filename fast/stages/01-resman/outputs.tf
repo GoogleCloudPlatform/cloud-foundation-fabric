@@ -56,10 +56,6 @@ locals {
       folder_id          = module.branch-network-folder.id
       project_factory_sa = local._project_factory_sas
     })
-    "02-networkin-nva" = jsonencode({
-      folder_id          = module.branch-network-folder.id
-      project_factory_sa = local._project_factory_sas
-    })
     "02-security" = jsonencode({
       folder_id = module.branch-security-folder.id
       kms_restricted_admins = {

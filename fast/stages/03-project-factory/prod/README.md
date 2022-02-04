@@ -28,7 +28,7 @@ The project factory takes care of the following activities:
   
 ## How to run this stage
 
-This stage is meant to be executed after "foundational stages" (i.e., stages [`00-bootstrap`](../../00-bootstrap), [`01-resman`](../../01-resman), [`02-networking`](../../02-networking) and [`02-security`](../../02-security)) have been run.
+This stage is meant to be executed after "foundational stages" (i.e., stages [`00-bootstrap`](../../00-bootstrap), [`01-resman`](../../01-resman), 02-networking (either [VPN](../../02-networking-vpn) or [NVA](../../02-networking-nva)) and [`02-security`](../../02-security)) have been run.
 
 It's of course possible to run this stage in isolation, by making sure the architectural prerequisites are satisfied (e.g., networking), and that the Service Account running the stage is granted the roles/permissions below:
 
@@ -73,7 +73,7 @@ To avoid the tedious job of filling in the first group of variables with values 
 If you configured a valid path for `outputs_location` in the bootstrap and networking stage, simply link the relevant `terraform-*.auto.tfvars.json` files from this stage's outputs folder (under the path you specified), where the `*` above is set to the name of the stage that produced it. For this stage, a single `.tfvars` file is available:
 
 ```bash
-# Variable `outputs_location` is set to `../../config` in stages 01-bootstrap and 02-networking
+# Variable `outputs_location` is set to `../../config` in stages 01-bootstrap and the 02-networking stage in use
 ln -s ../../../config/03-project-factory-prod/terraform-bootstrap.auto.tfvars.json
 ln -s ../../../config/03-project-factory-prod/terraform-networking.auto.tfvars.json
 ```
