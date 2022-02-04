@@ -69,7 +69,7 @@ variable "folder_id" {
     error_message = "Invalid folder_id. Should be in 'folders/nnnnnnnnnnn' format."
   }
 }
-   
+
 variable "l7ilb_subnets" {
   description = "Subnets used for L7 ILBs."
   type = map(list(object({
