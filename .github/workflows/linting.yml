@@ -57,6 +57,11 @@ jobs:
         run: |
           python3 tools/check_documentation.py examples modules fast
 
+      - name: Check documentation links (fabric)
+        id: documentation-fabric
+        run: |
+          python3 tools/check_links.py .
+
   # markdown-link-check:
   #   runs-on: ubuntu-latest
   #   steps:
