@@ -29,15 +29,15 @@ locals {
       name   = "networking"
       sa     = module.branch-network-sa.email
     })
+    "02-networking-nva" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
+      bucket = module.branch-network-gcs.name
+      name   = "networking-nva"
+      sa     = module.branch-network-sa.email
+    })
     "02-security" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
       bucket = module.branch-security-gcs.name
       name   = "security"
       sa     = module.branch-security-sa.email
-    })
-    "99-sandbox" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
-      bucket = module.branch-sandbox-gcs.name
-      name   = "sandbox"
-      sa     = module.branch-sandbox-sa.email
     })
     "03-project-factory-dev" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
       bucket = module.branch-teams-dev-projectfactory-gcs.name
@@ -49,15 +49,10 @@ locals {
       name   = "team-prod"
       sa     = module.branch-teams-prod-projectfactory-sa.email
     })
-    "03-data-platform-dev" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
-      bucket = module.branch-dp-dev-gcs.name
-      name   = "dp-dev"
-      sa     = module.branch-dp-dev-sa.email
-    })
-    "03-data-platform-prod" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
-      bucket = module.branch-dp-prod-gcs.name
-      name   = "dp-prod"
-      sa     = module.branch-dp-prod-sa.email
+    "99-sandbox" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
+      bucket = module.branch-sandbox-gcs.name
+      name   = "sandbox"
+      sa     = module.branch-sandbox-sa.email
     })
   }
   tfvars = {
