@@ -65,7 +65,7 @@ terraform output -json providers | jq -r '.["01-resman"]' \
   > ../01-resman/providers.tf
 ```
 
-If you want to continue to rely on `outputs_location` logic, create a `terraform.tfvars` file and configure it as deacribed [here](../00-bootstrap/#output-files-and-cross-stage-variables).
+If you want to continue to rely on `outputs_location` logic, create a `terraform.tfvars` file and configure it as described [here](../00-bootstrap/#output-files-and-cross-stage-variables).
 
 ### Variable configuration
 
