@@ -16,18 +16,10 @@
  */
 
 locals {
-  devices_config_files = flatten(
-    [
-      for config_path in var.devices_config_directories :
-      concat(
-        [
-          for config_file in fileset("${path.root}/${config_path}", "**/*.yaml") :
-          "${path.root}/${config_path}/${config_file}"
-        ]
-      )
-
-    ]
-  )
+  devices_config_files = [
+    for config_file in fileset("${path.root}/${var.devices_config_directory}", "**/*.yaml") :
+    "${path.root}/${var.devices_config_directory}/${config_file}"
+  ]
 
   device_config = merge(
     [
@@ -88,16 +80,16 @@ resource "google_cloudiot_device" "device" {
 
   credentials {
     public_key {
-      format = each.value.certificate_format
-      key    = file(each.value.certificate_file)
+      format = try(each.value.certificate_format, null)
+      key    = try(file(each.value.certificate_file), null)
     }
   }
 
-  blocked = each.value.is_blocked
+  blocked = try(each.value.is_blocked, null)
 
-  log_level = each.value.log_level
+  log_level = try(each.value.log_level, null)
 
   gateway_config {
-    gateway_type = each.value.is_gateway ? "GATEWAY" : "NON_GATEWAY"
+    gateway_type = try(each.value.is_gateway, null) ? "GATEWAY" : "NON_GATEWAY"
   }
 }

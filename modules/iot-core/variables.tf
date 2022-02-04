@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-variable "devices_config_directories" {
-  description = "List of paths to folders where devices configs are stored in yaml format. Folder may include subfolders with configuration files. Files suffix must be `.yaml`."
-  type        = list(string)
+variable "devices_config_directory" {
+  description = "Path to folder where devices configs are stored in yaml format. Folder may include subfolders with configuration files. Files suffix must be `.yaml`."
+  type        = string
 }
 
 variable "extra_telemetry_pubsub_topic_ids" {

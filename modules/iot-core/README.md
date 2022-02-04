@@ -17,29 +17,29 @@ openssl req -x509 -newkey rsa:2048 -keyout rsa_private.pem -nodes -out rsa_cert.
 ```
 
 And then provision public certificate path, together with the rest of device configuration in a devices yaml file following the following format
-```
+```yaml
 device_id: # id of your IoT Device
-is_blocked: # false to allow device connection with IoT Registry
-is_gateway: # true to indicate the device connecting acts as a gateway for other IoT Devices
-log_level: # device logs level
-certificate_file: # public certificate path, generated as explained in the previous step
-certificate_format: # Certificates format values are RSA_PEM, RSA_X509_PEM, ES256_PEM, and ES256_X509_PEM
+  is_blocked: # false to allow device connection with IoT Registry
+  is_gateway: # true to indicate the device connecting acts as a gateway for other IoT Devices
+  log_level: # device logs level
+  certificate_file: # public certificate path, generated as explained in the previous step
+  certificate_format: # Certificates format values are RSA_PEM, RSA_X509_PEM, ES256_PEM, and ES256_X509_PEM
 ```
 
 Example Device config yaml configuration
-```
+```yaml
 device_1:
-is_blocked: false
-is_gateway: false
-log_level: INFO
-certificate_file: device_certs/rsa_cert5.pem
-certificate_format: RSA_X509_PEM
+  is_blocked: false
+  is_gateway: false
+  log_level: INFO
+  certificate_file: device_certs/rsa_cert5.pem
+  certificate_format: RSA_X509_PEM
 device_2:
-is_blocked: true
-is_gateway: false
-log_level: INFO
-certificate_file: device_certs/rsa_cert5.pem
-certificate_format: RSA_X509_PEM
+  is_blocked: true
+  is_gateway: false
+  log_level: INFO
+  certificate_file: device_certs/rsa_cert5.pem
+  certificate_format: RSA_X509_PEM
 ```
 
 ```hcl
@@ -53,9 +53,7 @@ module "iot-platform" {
       http = false,
       mqtt = true
   }
-  devices_config_directories = [
-      "./devices_config_folder"
-  ]
+  devices_config_directory = "./devices_config_folder"
 }
 # tftest:skip
 
@@ -82,9 +80,7 @@ module "iot-platform" {
       http = false,
       mqtt = true
   }
-  devices_config_directories = [
-      "./devices_config_folder"
-  ]
+  devices_config_directory = "./devices_config_folder"
 }
 # tftest:skip
 
@@ -112,9 +108,7 @@ module "iot-platform" {
       http = false,
       mqtt = true
   }
-  devices_config_directories = [
-      "./devices_config_folder"
-  ]
+  devices_config_directory = "./devices_config_folder"
 }
 # tftest:skip
 ```
@@ -132,7 +126,7 @@ Or even better, create a new BigQuery table with our IoT sensors data columns an
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [devices_config_directories](variables.tf#L17) | List of paths to folders where devices configs are stored in yaml format. Folder may include subfolders with configuration files. Files suffix must be `.yaml`. | <code>list&#40;string&#41;</code> | ✓ |  |
+| [devices_config_directory](variables.tf#L17) | Path to folder where devices configs are stored in yaml format. Folder may include subfolders with configuration files. Files suffix must be `.yaml`. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L34) | Project were resources will be deployed | <code>string</code> | ✓ |  |
 | [region](variables.tf#L48) | Region were resources will be deployed | <code>string</code> | ✓ |  |
 | [status_pubsub_topic_id](variables.tf#L59) | pub sub topic for status messages (GCP-->Device) | <code>string</code> | ✓ |  |
