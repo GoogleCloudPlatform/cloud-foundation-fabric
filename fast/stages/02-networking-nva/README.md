@@ -1,7 +1,6 @@
 # Networking with Network Virtual Appliance
 
 This stage sets up the shared network infrastructure for the whole organization.
-It is an alternative to the [02-networking stage](../02-networking/README.md).
 
 It is designed for those who would like to leverage Network Virtual Appliances (NVAs) between trusted and untrusted areas of the network, for example for Intrusion Prevention System (IPS) purposes.
 
@@ -161,15 +160,15 @@ If you have set a valid value for `outputs_location` in the bootstrap stage, sim
 
 ```bash
 # `outputs_location` is set to `../../configs/example`
-ln -s ../../configs/example/02-networking-nva/providers.tf
+ln -s ../../configs/example/02-networking/providers.tf
 ```
 
 If you have not configured `outputs_location` in bootstrap, you can derive the providers file from that stage outputs:
 
 ```bash
 cd ../00-bootstrap
-terraform output -json providers | jq -r '.["02-networking-nva"]' \
-  > ../02-networking-nva-nva/providers.tf
+terraform output -json providers | jq -r '.["02-networking"]' \
+  > ../02-networking-nva/providers.tf
 ```
 
 ### Variable configuration
@@ -185,8 +184,8 @@ If you have set a valid value for `outputs_location` in the bootstrap and in the
 
 ```bash
 # `outputs_location` is set to `../../configs/example`
-ln -s ../../configs/example/02-networking-nva/terraform-bootstrap.auto.tfvars.json
-ln -s ../../configs/example/02-networking-nva/terraform-resman.auto.tfvars.json
+ln -s ../../configs/example/02-networking/terraform-bootstrap.auto.tfvars.json
+ln -s ../../configs/example/02-networking/terraform-resman.auto.tfvars.json
 ```
 
 Please, refer to the [variables](#variables) table below for a map of the variable origins, and use the sections below to understand how to adapt this stage to your networking configuration.
