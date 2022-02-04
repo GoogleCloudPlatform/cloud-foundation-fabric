@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <svg
    version="1.1"
-   viewBox="0.0 0.0 960.0 540.0"
+   viewBox="0 0 935 428"
    fill="none"
    stroke="none"
    stroke-linecap="square"
@@ -9,6 +9,11 @@
    id="svg1480"
    sodipodi:docname="stages.svg"
    inkscape:version="1.1.1 (c3084ef, 2021-09-22)"
+   inkscape:export-filename="/Users/sruffilli/Downloads/stages.png"
+   inkscape:export-xdpi="177.77777"
+   inkscape:export-ydpi="177.77777"
+   width="935"
+   height="428"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns="http://www.w3.org/2000/svg"
@@ -25,25 +30,26 @@
      inkscape:pagecheckerboard="0"
      showgrid="false"
      inkscape:zoom="1.1739583"
-     inkscape:cx="449.76043"
-     inkscape:cy="252.56433"
-     inkscape:window-width="1691"
+     inkscape:cx="566.03373"
+     inkscape:cy="252.56434"
+     inkscape:window-width="1794"
      inkscape:window-height="969"
      inkscape:window-x="0"
      inkscape:window-y="25"
      inkscape:window-maximized="0"
-     inkscape:current-layer="svg1480" />
+     inkscape:current-layer="svg1480"
+     height="539px" />
   <clipPath
      id="g1128f5c6967_0_0.0">
     <path
-       d="m0 0l960.0 0l0 540.0l-960.0 0l0 -540.0z"
+       d="M 0,0 H 960 V 540 H 0 Z"
        clip-rule="nonzero"
        id="path1175" />
   </clipPath>
   <g
      clip-path="url(#g1128f5c6967_0_0.0)"
      id="g1478"
-     transform="matrix(1.1577016,0,0,1.1577016,-42.279957,-58.22818)">
+     transform="matrix(1.1577016,0,0,1.1577016,-56.279957,-108.22818)">
     <path
        fill="#fce5cd"
        d="m 60.440945,303.10245 v 0 c 0,-2.60635 2.112881,-4.71924 4.719257,-4.71924 H 175.94217 c 1.25162,0 2.45198,0.49719 3.33701,1.38223 0.88504,0.88504 1.38225,2.08539 1.38225,3.33701 v 18.87646 c 0,2.60636 -2.11289,4.71924 -4.71926,4.71924 H 65.160202 c -2.606376,0 -4.719257,-2.11288 -4.719257,-4.71924 z"
