@@ -18,12 +18,10 @@ locals {
   labels = merge(var.labels, { environment = var.environment })
   
   _gke_robot_sas      = [
-    "serviceAccount:${module.gke-project-0.service_accounts.robots.container-engine}",
-    "serviceAccount:${module.gke-project-1.service_accounts.robots.container-engine}"
+    "serviceAccount:${module.gke-project-0.service_accounts.robots.container-engine}"
   ]
   _cloud_services_sas = [
-    "serviceAccount:${module.gke-project-0.service_accounts.cloud_services}",
-    "serviceAccount:${module.gke-project-1.service_accounts.cloud_services}"
+    "serviceAccount:${module.gke-project-0.service_accounts.cloud_services}"
   ]
   host_project_cloud_services_bindings = [ for member in local._cloud_services_sas :
     {role = "roles/compute.networkUser", member = member }
@@ -73,47 +71,6 @@ module "gke-project-0" {
   #   }
   # }
 }
-
-module "gke-project-1" {
-  source          = "../../../../modules/project"
-  billing_account = var.billing_account_id
-  name            = "${var.environment}-gke-clusters-1"
-  parent          = var.folder_id
-  prefix          = var.prefix
-  labels          = local.labels
-  services = [
-    "container.googleapis.com",
-    "dns.googleapis.com",
-    "stackdriver.googleapis.com",
-    # uncomment if you need Multi-cluster Ingress / Gateway API
-    # "gkehub.googleapis.com",
-    # "multiclusterservicediscovery.googleapis.com",
-    # "multiclusteringress.googleapis.com",
-    # "trafficdirector.googleapis.com"
-  ]
-  # add here any other service ids and keys for robot accounts which are needed
-  # service_encryption_key_ids = {
-  #   container = var.project_config.service_encryption_key_ids
-  # }
-  shared_vpc_service_config = {
-    attach       = true
-    host_project = var.vpc_host_project
-  }
-  # specify project-level org policies here if you need them
-
-  # policy_boolean = {
-  #   "constraints/compute.disableGuestAttributesAccess" = true
-  # }
-  # policy_list = {
-  #   "constraints/compute.trustedImageProjects" = {
-  #     inherit_from_parent = null
-  #     suggested_value     = null
-  #     status              = true
-  #     values              = ["projects/fl01-prod-iac-core-0"]
-  #   }
-  # }
-}
-
 
 module "gke-dataset-resource-usage" {
   source        = "../../../../modules/bigquery-dataset"
