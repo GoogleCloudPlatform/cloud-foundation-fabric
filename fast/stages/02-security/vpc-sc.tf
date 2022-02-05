@@ -18,7 +18,7 @@ locals {
   # compute the number of projects in each perimeter to detect which to create
   vpc_sc_counts = {
     for k in ["dev", "landing", "prod"] : k => length(
-      coalesce(try(var.vpc_sc_perimeter_projects[k], null), [])
+      coalesce(try(local._vpc_sc_perimeter_projects[k], null), [])
     )
   }
   # dereference perimeter egress policy names to the actual objects
@@ -60,8 +60,8 @@ module "vpc-sc" {
       landing_to_dev = {
         status_resources = null
         spec_resources = concat(
-          var.vpc_sc_perimeter_projects.landing,
-          var.vpc_sc_perimeter_projects.dev
+          local._vpc_sc_perimeter_projects.landing,
+          local._vpc_sc_perimeter_projects.dev
         )
         use_explicit_dry_run_spec = true
       }
@@ -71,8 +71,8 @@ module "vpc-sc" {
       landing_to_prod = {
         status_resources = null
         spec_resources = concat(
-          var.vpc_sc_perimeter_projects.landing,
-          var.vpc_sc_perimeter_projects.prod
+          local._vpc_sc_perimeter_projects.landing,
+          local._vpc_sc_perimeter_projects.prod
         )
         # set to null and switch spec and status above to enforce
         use_explicit_dry_run_spec = true
@@ -81,14 +81,14 @@ module "vpc-sc" {
   )
   # regular type perimeters
   service_perimeters_regular = merge(
-    # dev if we have projects in var.vpc_sc_perimeter_projects.dev
+    # dev if we have projects in local._vpc_sc_perimeter_projects.dev
     local.vpc_sc_counts.dev == 0 ? {} : {
       dev = {
         spec = {
           access_levels = coalesce(
             try(var.vpc_sc_perimeter_access_levels.dev, null), []
           )
-          resources           = var.vpc_sc_perimeter_projects.dev
+          resources           = local._vpc_sc_perimeter_projects.dev
           restricted_services = local.vpcsc_restricted_services
           egress_policies = try(
             local.vpc_sc_perimeter_egress_policies.dev, null
@@ -108,7 +108,7 @@ module "vpc-sc" {
         use_explicit_dry_run_spec = true
       }
     },
-    # prod if we have projects in var.vpc_sc_perimeter_projects.prod
+    # prod if we have projects in local._vpc_sc_perimeter_projects.prod
     local.vpc_sc_counts.prod == 0 ? {} : {
       prod = {
         spec = {
@@ -116,7 +116,7 @@ module "vpc-sc" {
             try(var.vpc_sc_perimeter_access_levels.prod, null), []
           )
           # combine the security project, and any specified in the variable
-          resources           = var.vpc_sc_perimeter_projects.prod
+          resources           = local._vpc_sc_perimeter_projects.prod
           restricted_services = local.vpcsc_restricted_services
           egress_policies = try(
             local.vpc_sc_perimeter_egress_policies.prod, null
@@ -136,14 +136,14 @@ module "vpc-sc" {
         use_explicit_dry_run_spec = true
       }
     },
-    # prod if we have projects in var.vpc_sc_perimeter_projects.prod
+    # prod if we have projects in local._vpc_sc_perimeter_projects.prod
     local.vpc_sc_counts.landing == 0 ? {} : {
       landing = {
         spec = {
           access_levels = coalesce(
             try(var.vpc_sc_perimeter_access_levels.landing, null), []
           )
-          resources           = var.vpc_sc_perimeter_projects.landing
+          resources           = local._vpc_sc_perimeter_projects.landing
           restricted_services = local.vpcsc_restricted_services
           egress_policies = try(
             local.vpc_sc_perimeter_egress_policies.landing, null
