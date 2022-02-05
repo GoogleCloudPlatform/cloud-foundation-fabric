@@ -15,7 +15,7 @@
  */
 
 module "test" {
-  source       = "../../../../../examples/data-solutions/data_platform_foundations/"
+  source       = "../../../../../examples/data-solutions/data-platform-foundations/"
   organization = { domain : "example.com" }
   project_create = {
     billing_account_id = "123456-123456-123456"
