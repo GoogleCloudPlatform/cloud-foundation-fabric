@@ -14,7 +14,6 @@
 
 # tfdoc:file:description Output variables.
 
-<<<<<<< HEAD
 locals {
   tfvars = {
     "02-security" = jsonencode({
@@ -33,8 +32,6 @@ resource "local_file" "tfvars" {
 }
 
 # outputs
-=======
->>>>>>> b976dd6 (First commit)
 output "bigquery_datasets" {
   description = "BigQuery datasets."
   value       = module.data-platform.bigquery-datasets
@@ -52,7 +49,7 @@ output "kms_keys" {
 
 output "projects" {
   description = "GCP Projects informations."
-  value       = module.data-platform.projects
+  value       = values(module.data-platform.projects.project_number)
 }
 
 output "vpc_network" {
