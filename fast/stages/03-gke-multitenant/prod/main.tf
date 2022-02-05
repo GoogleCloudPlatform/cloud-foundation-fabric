@@ -69,7 +69,7 @@ module "gke-project-0" {
 module "gke-project-1" {
   source          = "../../../../modules/project"
   billing_account = var.billing_account_id
-  name            = "${var.environment}-gke-clusters-2j"
+  name            = "${var.environment}-gke-clusters-1"
   parent          = var.folder_id
   prefix          = var.prefix
   labels          = local.labels
