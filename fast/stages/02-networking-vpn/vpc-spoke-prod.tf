@@ -112,6 +112,7 @@ resource "google_project_iam_binding" "prod_spoke_project_iam_delegated" {
   project = module.prod-spoke-project.project_id
   role    = "roles/resourcemanager.projectIamAdmin"
   members = [
+    var.data_platform_sa.prod,
     var.project_factory_sa.prod
   ]
   condition {

@@ -31,11 +31,6 @@ locals {
       network_config = {
         host_project = module.dev-spoke-project.project_id
         network      = module.dev-spoke-vpc.self_link
-        vpc_subnet_range = {
-          load           = module.dev-spoke-vpc.subnets["europe-west1/dev-dp-lod-ew1"].ip_cidr_range
-          orchestration  = module.dev-spoke-vpc.subnets["europe-west1/dev-dp-orc-ew1"].ip_cidr_range
-          transformation = module.dev-spoke-vpc.subnets["europe-west1/dev-dp-trf-ew1"].ip_cidr_range
-        }
         vpc_subnet_self_link = {
           load           = module.dev-spoke-vpc.subnets["europe-west1/dev-dp-lod-ew1"].self_link
           orchestration  = module.dev-spoke-vpc.subnets["europe-west1/dev-dp-orc-ew1"].self_link
