@@ -77,8 +77,6 @@ module "organization" {
         [
           module.branch-network-sa.iam_email,
           module.branch-security-sa.iam_email,
-          module.branch-dp-dev-sa.iam_email,
-          module.branch-dp-prod-sa.iam_email,
         ],
         # enable if individual teams can create their own projects
         # [
