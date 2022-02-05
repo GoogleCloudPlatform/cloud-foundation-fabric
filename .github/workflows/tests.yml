@@ -19,6 +19,7 @@ on:
   pull_request:
     branches:
       - fast-dev
+      - fast-dev-gke
       - master
     tags:
       - ci
@@ -44,7 +45,7 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: "3.9"
-          
+
       - name: Run tests on documentation examples
         run: |
           mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
@@ -71,7 +72,7 @@ jobs:
         with:
           terraform_version: 1.1.4
           terraform_wrapper: false
-          
+
       - name: Run tests environments
         run: |
           mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
@@ -98,9 +99,9 @@ jobs:
         with:
           terraform_version: 1.1.4
           terraform_wrapper: false
-          
+
       - name: Run tests modules
-        run: |          
+        run: |
           mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
           pip install -r tests/requirements.txt
           pytest -vv tests/modules

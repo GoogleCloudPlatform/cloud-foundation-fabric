@@ -1,4 +1,4 @@
-# Copyright 2022 Google LLC
+1# Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ on:
   pull_request:
     branches:
       - fast-dev
+      - fast-dev-gke
       - master
     tags:
       - ci
@@ -61,13 +62,3 @@ jobs:
         id: documentation-links-fabric
         run: |
           python3 tools/check_links.py .
-
-  # markdown-link-check:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@master
-  #     - uses: gaurav-nelson/github-action-markdown-link-check@v1
-  #       with:
-  #         use-quiet-mode: "yes"
-  #         use-verbose-mode: "yes"
-  #         config-file: ".github/workflows/markdown-link-check.json"
