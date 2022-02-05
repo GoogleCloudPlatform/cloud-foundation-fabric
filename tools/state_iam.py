@@ -45,11 +45,15 @@ def get_bindings(resources, prefix=None, folders=None):
       conditions = ' '.join(c['title'] for c in attrs.get('condition', []))
       resource_id = attrs[resource_type if resource_type !=
                           'organization' else 'org_id']
+      if prefix and resource_id.startswith(prefix):
+        resource_id = resource_id[len(prefix) + 1:]
       members = attrs['members'] if authoritative else [attrs['member']]
       if resource_type == 'folder' and folders:
         resource_id = folders.get(resource_id, resource_id)
       for member in members:
         member_type, _, member_id = member.partition(':')
+        if member_type == 'user':
+          continue
         member_id = member_id.rpartition('@')[0]
         if prefix and member_id.startswith(prefix):
           member_id = member_id[len(prefix) + 1:]
@@ -73,9 +77,36 @@ def output_csv(bindings):
     print(','.join(str(getattr(b, f)) for f in FIELDS))
 
 
+def output_principals(bindings):
+  'Output bindings in Markdown format by principals.'
+  resource_grouper = itertools.groupby(
+      bindings, key=lambda b: (b.resource_type, b.resource_id))
+  print('# IAM bindings reference')
+  print('\nLegend: <code>+</code> additive, <code>•</code> conditional.')
+  for resource, resource_groups in resource_grouper:
+    if resource[0] == 'organization':
+      print('\n## Organization')
+    else:
+      print(f'\n## {resource[0].title()} <i>{resource[1].lower()}</i>\n')
+    principal_grouper = itertools.groupby(
+        resource_groups, key=lambda b: (b.member_type, b.member_id))
+    print('| members | roles |')
+    print('|---|---|')
+    for principal, principal_groups in principal_grouper:
+      roles = []
+      for b in principal_groups:
+        additive = '<code>+</code>' if not b.authoritative else ''
+        conditions = '<code>•</code>' if b.conditions else ''
+        roles.append(f'{b.role} {additive}{conditions}')
+      print((
+          f'|<b>{principal[1]}</b><br><small><i>{principal[0]}</i></small>|'
+          f'{"<br>".join(roles)}|'
+      ))
+
+
 @click.command()
 @click.argument('state-file', type=click.File('r'), default=sys.stdin)
-@click.option('--format', type=click.Choice(['csv', 'raw']), default='raw')
+@click.option('--format', type=click.Choice(['csv', 'principals', 'raw']), default='raw')
 @click.option('--prefix', default=None)
 def main(state_file, format, prefix=None):
   'Output IAM bindings parsed from Terraform state file or standard input.'
@@ -86,7 +117,7 @@ def main(state_file, format, prefix=None):
   bindings = get_bindings(resources, prefix=prefix, folders=folders)
   bindings = sorted(bindings, key=lambda b: (
       RESOURCE_SORT.get(b.resource_type, 99), b.resource_id,
-      b.authoritative * -1, b.member_type, b.member_id))
+      b.member_type, b.member_id))
   if format == 'raw':
     for b in bindings:
       print(b)

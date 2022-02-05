@@ -36,6 +36,8 @@ In this way, the Resource Management service account can effectively act as an O
 
 One consequence of the above setup, is the need to configure IAM bindings as non-authoritative for the roles included in the IAM condition, since those same roles are effectively under the control of two stages: this one and Resource Management. Using authoritative bindings for these roles (instead of non-authoritative ones) would generate potential conflicts, where each stage could try to overwrite and negate the bindings applied by the other at each `apply` cycle.
 
+A full reference of IAM roles managed by this stage [is available here](./IAM.md).
+
 ### Automation project and resources
 
 One other design choice worth mentioning here is using a single automation project for all foundational stages. We trade off some complexity on the API side (single source for usage quota, multiple service activation) for increased flexibility and simpler operations, while still effectively providing the same degree of separation via resource-level IAM.
