@@ -190,6 +190,12 @@ variable "vpc_sc_dataplatform_folders" {
   type = object({
     dev  = list(string)
     prod = list(string)
+variable "vpc_sc_dataplatform_projects" {
+  description = "VPC SC perimeter resources."
+  type = object({
+    dev     = list(string)
+    landing = list(string)
+    prod    = list(string)
   })
   default = null
 }
