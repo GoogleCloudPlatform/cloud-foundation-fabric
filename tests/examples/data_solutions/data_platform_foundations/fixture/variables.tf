@@ -14,13 +14,27 @@
  * limitations under the License.
  */
 
-variable "billing_account" {
-  type    = string
-  default = "123456-123456-123456"
+variable "organization" {
+  type = object({
+    domain = string
+  })
+  default = {
+    domain = "example.com"
+  }
 }
 
-variable "root_node" {
-  description = "The resource name of the parent Folder or Organization. Must be of the form folders/folder_id or organizations/org_id."
-  type        = string
-  default     = "folders/12345678"
+variable "prefix" {
+  type    = string
+  default = "prefix"
+}
+
+variable "project_create" {
+  type = object({
+    billing_account_id = string
+    parent             = string
+  })
+  default = {
+    billing_account_id = "123456-123456-123456"
+    parent             = "folders/12345678"
+  }
 }
