@@ -44,4 +44,8 @@ locals {
     "secretmanager.googleapis.com",
     "stackdriver.googleapis.com"
   ]
+  _vpc_sc_perimeter_projects = {
+    for k in try(concat(keys(var.vpc_sc_perimeter_projects, var.vpc_sc_dataplatform_projects)), []) :
+    k => concat(try(var.vpc_sc_perimeter_projects[k], []), try(var.vpc_sc_dataplatform_projects[k], []))
+  }
 }

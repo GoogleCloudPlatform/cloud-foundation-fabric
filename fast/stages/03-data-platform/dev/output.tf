@@ -14,6 +14,21 @@
 
 # tfdoc:file:description Output variables.
 
+locals {
+  tfvars = {
+    "02-security" = jsonencode({
+      vpc_sc_dataplatform_projects = module.dev-dns-private-zone.domain
+    })
+  }
+}
+
+resource "local_file" "tfvars" {
+  for_each = var.outputs_location == null ? {} : local.tfvars
+  filename = "${var.outputs_location}/${each.key}/terraform-dataplatform-dev.auto.tfvars.json"
+  content  = each.value
+}
+
+# outputs
 output "bigquery_datasets" {
   description = "BigQuery datasets."
   value       = module.data-platform.bigquery-datasets
@@ -31,7 +46,7 @@ output "kms_keys" {
 
 output "projects" {
   description = "GCP Projects informations."
-  value       = module.data-platform.projects
+  value       = values(module.data-platform.projects.project_number)
 }
 
 output "vpc_network" {
