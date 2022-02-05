@@ -51,8 +51,8 @@ def get_bindings(resources, prefix=None, folders=None):
       for member in members:
         member_type, _, member_id = member.partition(':')
         member_id = member_id.rpartition('@')[0]
-        if prefix:
-          member_id = member_id.lstrip(f'{prefix}-')
+        if prefix and member_id.startswith(prefix):
+          member_id = member_id[len(prefix) + 1:]
         yield Binding(authoritative, resource_type, resource_id, attrs['role'],
                       member_type, member_id, conditions)
 
@@ -66,11 +66,18 @@ def get_folders(resources):
       yield i['attributes']['id'], i['attributes']['display_name']
 
 
+def output_csv(bindings):
+  'Output bindings in CSV format.'
+  print(','.join(FIELDS))
+  for b in bindings:
+    print(','.join(str(getattr(b, f)) for f in FIELDS))
+
+
 @click.command()
 @click.argument('state-file', type=click.File('r'), default=sys.stdin)
-@click.option('--output', type=click.Choice(['csv', 'raw']), default='raw')
+@click.option('--format', type=click.Choice(['csv', 'raw']), default='raw')
 @click.option('--prefix', default=None)
-def main(state_file, output, prefix=None):
+def main(state_file, format, prefix=None):
   'Output IAM bindings parsed from Terraform state file or standard input.'
   with state_file:
     data = json.load(state_file)
@@ -80,15 +87,14 @@ def main(state_file, output, prefix=None):
   bindings = sorted(bindings, key=lambda b: (
       RESOURCE_SORT.get(b.resource_type, 99), b.resource_id,
       b.authoritative * -1, b.member_type, b.member_id))
-  if output == 'raw':
+  if format == 'raw':
     for b in bindings:
       print(b)
-  elif output == 'csv':
-    print(','.join(FIELDS))
-    for b in bindings:
-      print(','.join(str(getattr(b, f)) for f in FIELDS))
   else:
-    raise SystemExit('Unknown format.')
+    func = globals().get(f'output_{format}')
+    if not func:
+      raise SystemExit('Unknown format.')
+    func(bindings)
 
 
 if __name__ == '__main__':
