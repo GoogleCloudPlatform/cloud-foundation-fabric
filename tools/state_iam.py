@@ -27,13 +27,21 @@ FIELDS = (
     'authoritative', 'resource_type', 'resource_id', 'role', 'member_type',
     'member_id', 'conditions'
 )
+ORG_IDS = {}
 RESOURCE_SORT = {'organization': 0, 'folder': 1, 'project': 2}
 RESOURCE_TYPE_RE = re.compile(r'^google_([^_]+)_iam_([^_]+)$')
 Binding = collections.namedtuple('Binding', ' '.join(FIELDS))
 
 
+def _org_id(resource_id):
+  if resource_id not in ORG_IDS:
+    ORG_IDS[resource_id] = f'[org_id #{len(ORG_IDS)}]'
+  return ORG_IDS[resource_id]
+
+
 def get_bindings(resources, prefix=None, folders=None):
   'Parse resources and return bindings.'
+  org_ids = {}
   for r in resources:
     m = RESOURCE_TYPE_RE.match(r['type'])
     if not m:
@@ -43,10 +51,16 @@ def get_bindings(resources, prefix=None, folders=None):
     for i in r.get('instances'):
       attrs = i['attributes']
       conditions = ' '.join(c['title'] for c in attrs.get('condition', []))
-      resource_id = attrs[resource_type if resource_type !=
-                          'organization' else 'org_id']
-      if prefix and resource_id.startswith(prefix):
-        resource_id = resource_id[len(prefix) + 1:]
+      if resource_type == 'organization':
+        resource_id = _org_id(attrs['org_id'])
+      else:
+        resource_id = attrs[resource_type]
+        if prefix and resource_id.startswith(prefix):
+          resource_id = resource_id[len(prefix) + 1:]
+      role = attrs['role']
+      if role.startswith('organizations/'):
+        org_id = role.split('/')[1]
+        role = role.replace(org_id, _org_id(org_id))
       members = attrs['members'] if authoritative else [attrs['member']]
       if resource_type == 'folder' and folders:
         resource_id = folders.get(resource_id, resource_id)
@@ -57,7 +71,7 @@ def get_bindings(resources, prefix=None, folders=None):
         member_id = member_id.rpartition('@')[0]
         if prefix and member_id.startswith(prefix):
           member_id = member_id[len(prefix) + 1:]
-        yield Binding(authoritative, resource_type, resource_id, attrs['role'],
+        yield Binding(authoritative, resource_type, resource_id, role,
                       member_type, member_id, conditions)
 
 
@@ -84,10 +98,7 @@ def output_principals(bindings):
   print('# IAM bindings reference')
   print('\nLegend: <code>+</code> additive, <code>•</code> conditional.')
   for resource, resource_groups in resource_grouper:
-    if resource[0] == 'organization':
-      print('\n## Organization')
-    else:
-      print(f'\n## {resource[0].title()} <i>{resource[1].lower()}</i>\n')
+    print(f'\n## {resource[0].title()} <i>{resource[1].lower()}</i>\n')
     principal_grouper = itertools.groupby(
         resource_groups, key=lambda b: (b.member_type, b.member_id))
     print('| members | roles |')
@@ -97,9 +108,14 @@ def output_principals(bindings):
       for b in principal_groups:
         additive = '<code>+</code>' if not b.authoritative else ''
         conditions = '<code>•</code>' if b.conditions else ''
-        short_role = b.role.replace('roles/', '')
-        url = f'https://cloud.google.com/iam/docs/understanding-roles#{short_role}'
-        roles.append(f'[{b.role}]({url}) {additive}{conditions}')
+        if b.role.startswith('organizations/'):
+          roles.append(f'{b.role} {additive}{conditions}')
+        else:
+          url = (
+              'https://cloud.google.com/iam/docs/understanding-roles#'
+              f'{b.role.replace("roles/", "")}'
+          )
+          roles.append(f'[{b.role}]({url}) {additive}{conditions}')
       print((
           f'|<b>{principal[1]}</b><br><small><i>{principal[0]}</i></small>|'
           f'{"<br>".join(roles)}|'
