@@ -97,7 +97,9 @@ def output_principals(bindings):
       for b in principal_groups:
         additive = '<code>+</code>' if not b.authoritative else ''
         conditions = '<code>•</code>' if b.conditions else ''
-        roles.append(f'{b.role} {additive}{conditions}')
+        short_role = b.role.replace('roles/', '')
+        url = f'https://cloud.google.com/iam/docs/understanding-roles#{short_role}'
+        roles.append(f'[{b.role}]({url}) {additive}{conditions}')
       print((
           f'|<b>{principal[1]}</b><br><small><i>{principal[0]}</i></small>|'
           f'{"<br>".join(roles)}|'
