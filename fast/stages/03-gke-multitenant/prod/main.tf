@@ -25,11 +25,6 @@ locals {
     "serviceAccount:${module.gke-project-0.service_accounts.cloud_services}",
     "serviceAccount:${module.gke-project-1.service_accounts.cloud_services}"
   ]
-  # host_project_bindings = [
-  #   { role = "roles/container.hostServiceAgentUser", member = local._gke_robot_sas },
-  #   { role = "roles/compute.networkUser", member = local._gke_robot_sas },
-  #   { role = "roles/compute.networkUser", member = local._cloud_services_sas }
-  # ]
   host_project_cloud_services_bindings = [ for member in local._cloud_services_sas :
     {role = "roles/compute.networkUser", member = member }
   ]
