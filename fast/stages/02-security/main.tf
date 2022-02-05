@@ -45,7 +45,10 @@ locals {
     "stackdriver.googleapis.com"
   ]
   _vpc_sc_perimeter_projects = {
-    for k in try(concat(keys(var.vpc_sc_perimeter_projects, var.vpc_sc_dataplatform_projects)), []) :
-    k => concat(try(var.vpc_sc_perimeter_projects[k], []), try(var.vpc_sc_dataplatform_projects[k], []))
+    for k in concat(try(keys(var.vpc_sc_perimeter_projects), []), try(keys(var.vpc_sc_dataplatform_projects), [])) :
+    k => concat(
+      try(flatten(lookup(var.vpc_sc_perimeter_projects, k, [])), []),
+      try(flatten(lookup(var.vpc_sc_dataplatform_projects, k, [])), [])
+    )
   }
 }
