@@ -1,0 +1,8 @@
+# skip boilerplate check
+
+region: europe-west1
+description: Default subnet for dev Data Platform - Orchestration layer Composer
+ip_cidr_range: 172.18.16.0/24
+secondary_ip_range :
+   pods: 172.18.24.0/22
+   services: 172.18.28.0/24

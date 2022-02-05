@@ -39,6 +39,16 @@ locals {
       name   = "security"
       sa     = module.branch-security-sa.email
     })
+    "03-data-platform-dev" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
+      bucket = module.branch-dp-dev-gcs.name
+      name   = "dp-dev"
+      sa     = module.branch-dp-dev-sa.email
+    })
+    "03-data-platform-prod" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
+      bucket = module.branch-dp-prod-gcs.name
+      name   = "dp-prod"
+      sa     = module.branch-dp-prod-sa.email
+    })
     "03-project-factory-dev" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
       bucket = module.branch-teams-dev-projectfactory-gcs.name
       name   = "team-dev"
@@ -60,6 +70,7 @@ locals {
       data_platform_sa   = local._data_platform_sas
       folder_id          = module.branch-network-folder.id
       project_factory_sa = local._project_factory_sas
+      data_platform_sa   = local._data_platform_sas
     })
     "02-security" = jsonencode({
       folder_id = module.branch-security-folder.id
