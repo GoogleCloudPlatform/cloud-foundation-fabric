@@ -28,11 +28,22 @@ locals {
       vpc_host_project     = module.prod-spoke-project.project_id
     })
     "03-data-platform-dev" = jsonencode({
+<<<<<<< HEAD
       network_self_link = module.dev-spoke-project.project_id
       subnet_self_links = {
         load           = module.dev-spoke-vpc.subnets["europe-west1/dev-dp-lod-ew1"].self_link
         orchestration  = module.dev-spoke-vpc.subnets["europe-west1/dev-dp-orc-ew1"].self_link
         transformation = module.dev-spoke-vpc.subnets["europe-west1/dev-dp-trf-ew1"].self_link
+=======
+      network_config = {
+        host_project = module.dev-spoke-project.project_id
+        network      = module.dev-spoke-vpc.self_link
+        vpc_subnet_self_link = {
+          load           = module.dev-spoke-vpc.subnets["europe-west1/dev-dp-lod-ew1"].self_link
+          orchestration  = module.dev-spoke-vpc.subnets["europe-west1/dev-dp-orc-ew1"].self_link
+          transformation = module.dev-spoke-vpc.subnets["europe-west1/dev-dp-trf-ew1"].self_link
+        }
+>>>>>>> b976dd6 (First commit)
       }
     })
     "03-data-platform-prod" = jsonencode({
