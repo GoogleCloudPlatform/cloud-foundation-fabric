@@ -17,7 +17,11 @@
 locals {
   tfvars = {
     "02-security" = jsonencode({
-      vpc_sc_dataplatform_projects = module.dev-dns-private-zone.domain
+      vpc_sc_dataplatform_projects = {
+        dev     = formatlist("projects/%s", values(module.data-platform.projects.project_number))
+        landing = null
+        prod    = null
+      }
     })
   }
 }
@@ -46,7 +50,7 @@ output "kms_keys" {
 
 output "projects" {
   description = "GCP Projects informations."
-  value       = values(module.data-platform.projects.project_number)
+  value       = module.data-platform.projects
 }
 
 output "vpc_network" {
