@@ -68,6 +68,7 @@ variable "clusters" {
       memory_min = number
       memory_max = number
     })
+    project_id = string
     description = string
     dns_domain  = string
     labels      = map(string)
