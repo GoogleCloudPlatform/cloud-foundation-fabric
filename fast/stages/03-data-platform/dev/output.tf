@@ -49,7 +49,7 @@ output "kms_keys" {
 
 output "projects" {
   description = "GCP Projects informations."
-  value       = values(module.data-platform.projects.project_number)
+  value       = module.data-platform.projects
 }
 
 output "vpc_network" {
