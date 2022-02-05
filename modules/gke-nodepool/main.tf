@@ -69,10 +69,14 @@ locals {
   node_taints = concat(local.temp_node_pools_taints, local.win_node_pools_taint)
 }
 
+resource "random_id" "sa" {
+  byte_length = 4
+}
+
 resource "google_service_account" "service_account" {
   count        = var.node_service_account_create ? 1 : 0
   project      = var.project_id
-  account_id   = "tf-gke-${var.name}"
+  account_id   = "tf-gke-${var.name}-${random_id.sa.hex}"
   display_name = "Terraform GKE ${var.cluster_name} ${var.name}."
 }
 
