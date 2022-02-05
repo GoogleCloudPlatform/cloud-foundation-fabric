@@ -16,25 +16,29 @@
 
 variable "composer_config" {
   type = object({
-    ip_range_cloudsql   = string
-    ip_range_gke_master = string
-    ip_range_web_server = string
-    policy_boolean      = map(bool)
-    region              = string
-    secondary_ip_range = object({
-      pods     = string
-      services = string
+    node_count             = number
+    ip_range_cloudsql      = string
+    ip_range_gke_master    = string
+    ip_range_web_server    = string
+    project_policy_boolean = map(bool)
+    region                 = string
+    ip_allocation_policy = object({
+      use_ip_aliases                = string
+      cluster_secondary_range_name  = string
+      services_secondary_range_name = string
     })
   })
   default = {
-    ip_range_cloudsql   = "10.20.10.0/24"
-    ip_range_gke_master = "10.20.11.0/28"
-    ip_range_web_server = "10.20.11.16/28"
-    policy_boolean      = null
-    region              = "europe-west1"
-    secondary_ip_range = {
-      pods     = "10.10.8.0/22"
-      services = "10.10.12.0/24"
+    node_count             = 3
+    ip_range_cloudsql      = "10.20.10.0/24"
+    ip_range_gke_master    = "10.20.11.0/28"
+    ip_range_web_server    = "10.20.11.16/28"
+    project_policy_boolean = null
+    region                 = "europe-west1"
+    ip_allocation_policy = {
+      use_ip_aliases                = "true"
+      cluster_secondary_range_name  = "pods"
+      services_secondary_range_name = "services"
     }
   }
 }
@@ -61,10 +65,19 @@ variable "network_config" {
     enable_cloud_nat = bool
     host_project     = string
     network          = string
-    vpc_subnet_range = object({
-      load           = string
-      transformation = string
-      orchestration  = string
+    vpc_subnet = object({
+      load = object({
+        range           = string
+        secondary_range = map(string)
+      })
+      transformation = object({
+        range           = string
+        secondary_range = map(string)
+      })
+      orchestration = object({
+        range           = string
+        secondary_range = map(string)
+      })
     })
     vpc_subnet_self_link = object({
       load           = string
@@ -76,10 +89,22 @@ variable "network_config" {
     enable_cloud_nat = false
     host_project     = null
     network          = null
-    vpc_subnet_range = {
-      load           = "10.10.0.0/24"
-      transformation = "10.10.0.0/24"
-      orchestration  = "10.10.0.0/24"
+    vpc_subnet = {
+      load = {
+        range           = "10.10.0.0/24"
+        secondary_range = null
+      }
+      transformation = {
+        range           = "10.10.0.0/24"
+        secondary_range = null
+      }
+      orchestration = {
+        range = "10.10.0.0/24"
+        secondary_range = {
+          pods     = "10.10.8.0/22"
+          services = "10.10.12.0/24"
+        }
+      }
     }
     vpc_subnet_self_link = null
   }

@@ -83,7 +83,7 @@ module "trf-vpc" {
   name       = "${local.prefix_trf}-vpc"
   subnets = [
     {
-      ip_cidr_range      = var.network_config.vpc_subnet_range.transformation
+      ip_cidr_range      = var.network_config.vpc_subnet.transformation.range
       name               = "${local.prefix_trf}-subnet"
       region             = var.location_config.region
       secondary_ip_range = {}

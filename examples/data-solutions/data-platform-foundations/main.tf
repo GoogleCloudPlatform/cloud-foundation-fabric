@@ -21,21 +21,21 @@ locals {
       network_name = element(split("/", var.network_config.network != null ? var.network_config.network : module.lod-vpc[0].self_link), length(split("/", var.network_config.network != null ? var.network_config.network : module.lod-vpc[0].self_link)) - 1)
       network      = var.network_config.network != null ? var.network_config.network : module.lod-vpc[0].self_link
       subnet       = var.network_config.network != null ? var.network_config.vpc_subnet_self_link.load : module.lod-vpc[0].subnet_self_links["${var.composer_config.region}/${local.prefix_lod}-subnet"]
-      subnet_range = var.network_config.vpc_subnet_range.load
+      subnet_range = try(var.network_config.vpc_subnet.load.range, null)
     }
     orchestration = {
       #TODO Fix Network name logic
       network_name = element(split("/", var.network_config.network != null ? var.network_config.network : module.orc-vpc[0].self_link), length(split("/", var.network_config.network != null ? var.network_config.network : module.orc-vpc[0].self_link)) - 1)
       network      = var.network_config.network != null ? var.network_config.network : module.orc-vpc[0].self_link
       subnet       = var.network_config.network != null ? var.network_config.vpc_subnet_self_link.orchestration : module.orc-vpc[0].subnet_self_links["${var.composer_config.region}/${local.prefix_orc}-subnet"]
-      subnet_range = var.network_config.vpc_subnet_range.orchestration
+      subnet_range = try(var.network_config.vpc_subnet.orchestration.range, null)
     }
     transformation = {
       #TODO Fix Network name logic
       network_name = element(split("/", var.network_config.network != null ? var.network_config.network : module.trf-vpc[0].self_link), length(split("/", var.network_config.network != null ? var.network_config.network : module.trf-vpc[0].self_link)) - 1)
       network      = var.network_config.network != null ? var.network_config.network : module.trf-vpc[0].self_link
       subnet       = var.network_config.network != null ? var.network_config.vpc_subnet_self_link.transformation : module.trf-vpc[0].subnet_self_links["${var.composer_config.region}/${local.prefix_trf}-subnet"]
-      subnet_range = var.network_config.vpc_subnet_range.transformation
+      subnet_range = try(var.network_config.vpc_subnet.transformation.range, null)
     }
   }
 

@@ -35,7 +35,7 @@ resource "google_composer_environment" "orc-cmp-0" {
   provider = google-beta
   project  = module.orc-prj.project_id
   config {
-    node_count = 3
+    node_count = var.composer_config.node_count
     node_config {
       zone            = "${var.composer_config.region}-b"
       service_account = module.orc-sa-cmp-0.email
@@ -43,9 +43,9 @@ resource "google_composer_environment" "orc-cmp-0" {
       subnetwork      = local._networks.orchestration.subnet
       tags            = ["composer-worker", "http-server", "https-server"]
       ip_allocation_policy {
-        use_ip_aliases                = "true"
-        cluster_secondary_range_name  = "pods"
-        services_secondary_range_name = "services"
+        use_ip_aliases                = var.composer_config.ip_allocation_policy.use_ip_aliases
+        cluster_secondary_range_name  = var.composer_config.ip_allocation_policy.cluster_secondary_range_name
+        services_secondary_range_name = var.composer_config.ip_allocation_policy.services_secondary_range_name
       }
     }
     software_config {
