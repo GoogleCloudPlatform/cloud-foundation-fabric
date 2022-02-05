@@ -43,6 +43,9 @@ module "branch-gke-multitenant-prod-folder" {
     "roles/resourcemanager.projectCreator" = [
       module.branch-gke-multitenant-prod-sa.iam_email
     ]
+    "roles/compute.xpnAdmin" = [
+      module.branch-gke-multitenant-prod-sa.iam_email
+    ]
   }
 }
 
@@ -79,6 +82,9 @@ module "branch-gke-multitenant-dev-folder" {
       module.branch-gke-multitenant-dev-sa.iam_email
     ]
     "roles/resourcemanager.projectCreator" = [
+      module.branch-gke-multitenant-dev-sa.iam_email
+    ]
+    "roles/compute.xpnAdmin" = [
       module.branch-gke-multitenant-dev-sa.iam_email
     ]
   }
