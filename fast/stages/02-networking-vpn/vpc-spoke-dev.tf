@@ -27,6 +27,7 @@ module "dev-spoke-project" {
     disable_dependent_services = false
   }
   services = [
+    "container.googleapis.com",
     "compute.googleapis.com",
     "dns.googleapis.com",
     "iap.googleapis.com",
@@ -112,6 +113,7 @@ resource "google_project_iam_binding" "dev_spoke_project_iam_delegated" {
   project = module.dev-spoke-project.project_id
   role    = "roles/resourcemanager.projectIamAdmin"
   members = [
+    var.data_platform_sa.dev,
     var.project_factory_sa.dev
   ]
   condition {
