@@ -30,6 +30,7 @@ Binding = collections.namedtuple(
 
 
 # TODO(ludomagno): strip domain part from principals
+# TODO(ludomagno): parse folder resources and use names in bindings if available
 # TODO(ludomagno): optionally output one record per role/principal to allow pivots
 
 def get_additive_bindings(resources, node='organization'):
