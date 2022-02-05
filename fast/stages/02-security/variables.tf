@@ -174,6 +174,7 @@ variable "vpc_sc_perimeter_ingress_policies" {
   default = null
 }
 
+#TODO Ask Ludo
 variable "vpc_sc_dataplatform_projects" {
   description = "VPC SC perimeter resources."
   type = object({
