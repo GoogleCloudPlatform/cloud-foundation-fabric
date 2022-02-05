@@ -17,84 +17,74 @@
 import collections
 import json
 import itertools
+import re
 import sys
 
 import click
 
 
-RESOURCE_ATTR = {'organization': 'org_id',
-                 'folder': 'folder', 'project': 'project'}
+FIELDS = (
+    'authoritative', 'resource_type', 'resource_id', 'role', 'member_type',
+    'member_id', 'conditions'
+)
+RESOURCE_TYPE_RE = re.compile(r'^google_([^_]+)_iam_([^_]+)$')
+Binding = collections.namedtuple('Binding', ' '.join(FIELDS))
 
-Binding = collections.namedtuple(
-    'Binding', 'resource_type resource role members authoritative conditions')
 
-
-def get_additive_bindings(resources, node='organization'):
-  'Parse additive bindings for node type.'
-  bindings = {}
-  resource_type = f'google_{node}_iam_member'
-  for resource in resources:
-    if resource['type'] != resource_type:
+def get_bindings(resources, prefix=None, folders=None):
+  'Parse resources and return bindings.'
+  for r in resources:
+    m = RESOURCE_TYPE_RE.match(r['type'])
+    if not m:
       continue
-    name = resource['name']
-    for i in resource.get('instances'):
+    resource_type = m.group(1)
+    authoritative = m.group(2) == 'binding'
+    for i in r.get('instances'):
       attrs = i['attributes']
-      conditions = tuple(c['title'] for c in attrs.get('condition', []))
-      resource = attrs[RESOURCE_ATTR[node]]
-      binding = bindings.setdefault((resource, attrs['role'], conditions), [])
-      binding.append(attrs['member'])
-  for k, v in bindings.items():
-    yield Binding(node, k[0], k[1], v, False, k[2])
+      conditions = ' '.join(c['title'] for c in attrs.get('condition', []))
+      resource_id = attrs[resource_type if resource_type !=
+                          'organization' else 'org_id']
+      members = attrs['members'] if authoritative else [attrs['member']]
+      if resource_type == 'folder' and folders:
+        resource_id = folders.get(resource_id, resource_id)
+      for member in members:
+        member_type, _, member_id = member.partition(':')
+        member_id = member_id.rpartition('@')[0]
+        if prefix:
+          member_id = member_id.lstrip(f'{prefix}-')
+        yield Binding(authoritative, resource_type, resource_id, attrs['role'],
+                      member_type, member_id, conditions)
 
 
-def get_authoritative_bindings(resources, node='organization'):
-  'Parse authoritative bindings for node type.'
-  resource_type = f'google_{node}_iam_binding'
-  for resource in resources:
-    if resource['type'] != resource_type:
+def get_folders(resources):
+  'Parse resources and return folder id, name tuples.'
+  for r in resources:
+    if r['type'] != 'google_folder':
       continue
-    name = resource['name']
-    for i in resource.get('instances'):
-      attrs = i['attributes']
-      conditions = tuple(c['title'] for c in attrs.get('condition', []))
-      resource = attrs[RESOURCE_ATTR[node]]
-      yield Binding(node, resource, attrs['role'], attrs['members'], True,
-                    conditions)
-
-
-def output_csv(bindings):
-  'Output bindings in CSV format.'
-  row = '{authoritative},{type},{id},{role},"{members}",{conditions}'
-  print('authoritative,resource_type,resource_id,role,members,conditions')
-  for b in bindings:
-    print(row.format(
-        authoritative=b.authoritative, type=b.resource_type, id=b.resource,
-        role=b.role, members='\n'.join(b.members), conditions=' '.join(b.conditions)
-    ))
+    for i in r['instances']:
+      yield i['attributes']['id'], i['attributes']['display_name']
 
 
 @click.command()
 @click.argument('state-file', type=click.File('r'), default=sys.stdin)
 @click.option('--output', type=click.Choice(['csv', 'raw']), default='raw')
-def main(state_file, output):
-  'Outputs IAM bindings parsed from Terraform state file or standard input.'
+@click.option('--prefix', default=None)
+def main(state_file, output, prefix=None):
+  'Output IAM bindings parsed from Terraform state file or standard input.'
   with state_file:
     data = json.load(state_file)
   resources = data.get('resources', [])
-  bindings = itertools.chain.from_iterable(
-      func(resources, node) for node, func in
-      itertools.product(
-          ('organization', 'folder', 'project'),
-          (get_authoritative_bindings, get_additive_bindings)
-      )
-  )
+  folders = dict(get_folders(resources))
+  bindings = get_bindings(resources, prefix=prefix, folders=folders)
   if output == 'raw':
-    for binding in bindings:
-      print(binding)
+    for b in bindings:
+      print(b)
   elif output == 'csv':
-    output_csv(bindings)
+    print(','.join(FIELDS))
+    for b in bindings:
+      print(','.join(str(getattr(b, f)) for f in FIELDS))
   else:
-    raise SystemExit('invalid output specification')
+    raise SystemExit('Unknown format.')
 
 
 if __name__ == '__main__':
