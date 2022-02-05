@@ -27,6 +27,7 @@ FIELDS = (
     'authoritative', 'resource_type', 'resource_id', 'role', 'member_type',
     'member_id', 'conditions'
 )
+RESOURCE_SORT = {'organization': 0, 'folder': 1, 'project': 2}
 RESOURCE_TYPE_RE = re.compile(r'^google_([^_]+)_iam_([^_]+)$')
 Binding = collections.namedtuple('Binding', ' '.join(FIELDS))
 
@@ -76,6 +77,9 @@ def main(state_file, output, prefix=None):
   resources = data.get('resources', [])
   folders = dict(get_folders(resources))
   bindings = get_bindings(resources, prefix=prefix, folders=folders)
+  bindings = sorted(bindings, key=lambda b: (
+      RESOURCE_SORT.get(b.resource_type, 99), b.resource_id,
+      b.authoritative * -1, b.member_type, b.member_id))
   if output == 'raw':
     for b in bindings:
       print(b)
