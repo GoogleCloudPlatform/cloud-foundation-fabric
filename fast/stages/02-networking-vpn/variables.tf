@@ -50,6 +50,13 @@ variable "data_dir" {
   default     = "data"
 }
 
+variable "data_platform_sa" {
+  # tfdoc:variable:source 01-resman
+  description = "IAM emails for Data Platform service accounts."
+  type        = map(string)
+  default     = {}
+}
+
 variable "dns" {
   description = "Onprem DNS resolvers."
   type        = map(list(string))

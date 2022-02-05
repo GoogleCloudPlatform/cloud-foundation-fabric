@@ -70,6 +70,7 @@ locals {
       data_platform_sa   = local._data_platform_sas
       folder_id          = module.branch-network-folder.id
       project_factory_sa = local._project_factory_sas
+      data_platform_sa   = local._data_platform_sas
     })
     "02-security" = jsonencode({
       folder_id = module.branch-security-folder.id
