@@ -18,9 +18,8 @@ locals {
   tfvars = {
     "02-security" = jsonencode({
       vpc_sc_dataplatform_projects = {
-        dev     = formatlist("projects/%s", values(module.data-platform.projects.project_number))
-        landing = null
-        prod    = null
+        dev  = formatlist("projects/%s", values(module.data-platform.projects.project_number))
+        prod = null
       }
     })
   }
