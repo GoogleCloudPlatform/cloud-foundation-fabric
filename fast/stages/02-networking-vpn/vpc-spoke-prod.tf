@@ -20,7 +20,7 @@ module "prod-spoke-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account_id
   name            = "prod-net-spoke-0"
-  parent          = var.folder_id
+  parent          = var.folder_ids.networking-prod
   prefix          = var.prefix
   service_config = {
     disable_on_destroy         = false
