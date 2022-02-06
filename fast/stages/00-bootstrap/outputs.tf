@@ -70,13 +70,13 @@ locals {
 
 resource "local_file" "providers" {
   for_each = var.outputs_location == null ? {} : local.providers
-  filename = "${var.outputs_location}/${each.key}/providers.tf"
+  filename = "${pathexpand(var.outputs_location)}/${each.key}/providers.tf"
   content  = each.value
 }
 
 resource "local_file" "tfvars" {
   for_each = var.outputs_location == null ? {} : local.tfvars
-  filename = "${var.outputs_location}/${each.key}/terraform-bootstrap.auto.tfvars.json"
+  filename = "${pathexpand(var.outputs_location)}/${each.key}/terraform-bootstrap.auto.tfvars.json"
   content  = each.value
 }
 

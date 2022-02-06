@@ -94,6 +94,9 @@ module "branch-teams-team-dev-folder" {
     "roles/resourcemanager.projectCreator" = [
       module.branch-teams-dev-projectfactory-sa.iam_email
     ]
+    "roles/compute.xpnAdmin" = [
+      module.branch-teams-dev-projectfactory-sa.iam_email
+    ]
   }
 }
 
@@ -139,6 +142,9 @@ module "branch-teams-team-prod-folder" {
       module.branch-teams-prod-projectfactory-sa.iam_email
     ]
     "roles/resourcemanager.projectCreator" = [
+      module.branch-teams-prod-projectfactory-sa.iam_email
+    ]
+    "roles/compute.xpnAdmin" = [
       module.branch-teams-prod-projectfactory-sa.iam_email
     ]
   }

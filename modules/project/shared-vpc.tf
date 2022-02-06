@@ -17,11 +17,13 @@
 # tfdoc:file:description Shared VPC project-level configuration.
 
 resource "google_compute_shared_vpc_host_project" "shared_vpc_host" {
-  count   = try(var.shared_vpc_host_config.enabled, false) ? 1 : 0
-  project = local.project.project_id
+  provider = google-beta
+  count    = try(var.shared_vpc_host_config.enabled, false) ? 1 : 0
+  project  = local.project.project_id
 }
 
 resource "google_compute_shared_vpc_service_project" "service_projects" {
+  provider = google-beta
   for_each = (
     try(var.shared_vpc_host_config.enabled, false)
     ? toset(coalesce(var.shared_vpc_host_config.service_projects, []))
@@ -33,6 +35,7 @@ resource "google_compute_shared_vpc_service_project" "service_projects" {
 }
 
 resource "google_compute_shared_vpc_service_project" "shared_vpc_service" {
+  provider        = google-beta
   count           = try(var.shared_vpc_service_config.attach, false) ? 1 : 0
   host_project    = var.shared_vpc_service_config.host_project
   service_project = local.project.project_id
