@@ -32,17 +32,18 @@ locals {
 }
 
 module "data-platform" {
-  source = "../../../../examples/data-solutions/dp-foundation"
+  source = "../../../../examples/data-solutions/data-platform-foundations"
   organization = {
     domain = var.organization.domain
   }
-  prefix             = var.prefix
-  composer_config    = var.composer_config
-  data_force_destroy = var.data_force_destroy
-  groups             = var.groups
-  location_config    = var.location_config
-  network_config     = local._network_config
-  project_create     = local._project_create
-  project_id         = var.project_id
-  project_services   = var.project_services
+  prefix                  = var.prefix
+  composer_config         = var.composer_config
+  data_force_destroy      = var.data_force_destroy
+  groups                  = var.groups
+  location_config         = var.location_config
+  network_config          = local._network_config
+  project_create          = local._project_create
+  project_id              = var.project_id
+  project_services        = var.project_services
+  service_encryption_keys = var.service_encryption_keys
 }
