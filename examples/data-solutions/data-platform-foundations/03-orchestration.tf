@@ -112,10 +112,9 @@ module "orc-vpc" {
   name       = "${local.prefix_orc}-vpc"
   subnets = [
     {
-      ip_cidr_range      = var.network_config.vpc_subnet.orchestration.range
-      name               = "${local.prefix_orc}-subnet"
-      region             = var.location_config.region
-      secondary_ip_range = {}
+      ip_cidr_range = var.network_config.vpc_subnet.orchestration.range
+      name          = "${local.prefix_orc}-subnet"
+      region        = var.location_config.region
       secondary_ip_range = {
         #TODO make keys variables
         pods     = var.network_config.vpc_subnet.orchestration.secondary_range.pods
