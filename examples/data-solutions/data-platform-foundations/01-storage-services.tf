@@ -65,6 +65,7 @@ module "lnd-ps-0" {
   source     = "../../../modules/pubsub"
   project_id = module.lnd-prj.project_id
   name       = "${local.prefix_lnd}-ps-0"
+  kms_key    = try(local.service_encryption_keys.pubsub, null)
 }
 
 # Bigquery resources
