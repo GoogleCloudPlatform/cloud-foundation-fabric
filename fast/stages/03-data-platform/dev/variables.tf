@@ -174,16 +174,5 @@ variable "service_encryption_keys" { # service encription key
     storage  = string
     pubsub   = string
   })
-<<<<<<< HEAD
-  default = {
-    bq       = null
-    composer = null
-    dataflow = null
-    storage  = null
-    #TODO remove test
-    pubsub = "projects/fs01-dev-sec-core-0/locations/global/keyRings/dev-global/cryptoKeys/dp_pubsub"
-  }
-=======
   default = null
->>>>>>> b976dd6 (First commit)
 }
