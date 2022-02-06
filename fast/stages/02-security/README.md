@@ -306,6 +306,6 @@ Some references that might be useful in setting up this stage:
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [stage_perimeter_projects](outputs.tf#L37) | Security project numbers. They can be added to perimeter resources. |  |  |
+| [stage_perimeter_projects](outputs.tf#L40) | Security project numbers. They can be added to perimeter resources. |  |  |
 
 <!-- END TFDOC -->
