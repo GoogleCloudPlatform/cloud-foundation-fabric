@@ -66,6 +66,25 @@ module "gke-project-0" {
   # }
 }
 
+module "gke-project-0-np-1-sa" {
+  source      = "../../../../modules/iam-service-account"
+  project_id  = module.gke-project-0.project_id
+  name        = "gke-prod-0-np-1-sa"
+  description = "Terraform gke multitenant prod nodepool service account."
+  prefix      = var.prefix
+  iam_project_roles = {
+    "${module.gke-project-0.project_id}" = [
+      "roles/logging.logWriter",
+      "roles/monitoring.metricWriter",
+      "roles/stackdriver.resourceMetadata.writer",
+      "roles/monitoring.viewer",
+      "roles/storage.objectViewer",
+      "roles/artifactregistry.reader",
+      "roles/secretmanager.secretAccessor",
+    ]
+  }
+}
+
 module "gke-dataset-resource-usage" {
   source        = "../../../../modules/bigquery-dataset"
   project_id    = module.gke-project-0.project_id

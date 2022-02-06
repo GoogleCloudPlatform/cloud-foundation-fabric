@@ -68,7 +68,7 @@ variable "clusters" {
       memory_min = number
       memory_max = number
     })
-    project_id = string
+    project_id  = string
     description = string
     dns_domain  = string
     labels      = map(string)
@@ -138,8 +138,8 @@ variable "nodepool_defaults" {
 variable "nodepools" {
   description = ""
   type = map(map(object({
-    node_count = number
-    node_type  = string
+    node_count         = number
+    node_type          = string
     initial_node_count = number
     overrides = object({
       image_type        = string
@@ -148,7 +148,8 @@ variable "nodepools" {
       node_tags         = list(string)
       node_taints       = list(string)
     })
-    preemptible = bool
+    preemptible     = bool
+    service_account = string
   })))
 }
 
