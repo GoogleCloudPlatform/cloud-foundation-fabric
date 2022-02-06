@@ -181,6 +181,12 @@ organization = {
 
 For more fine details check variables on [`variables.tf`](./variables.tf) and update according to the desired configuration.
 
+Once the configuration is complete, run the project factory by running
+
+```bash
+terraform init
+terraform apply
+
 ## Customizations
 
 ### Create Cloud Key Management keys as part of the DP
