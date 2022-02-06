@@ -32,5 +32,5 @@ Legend: <code>+</code> additive, <code>•</code> conditional.
 |---|---|
 |<b>gcp-devops</b><br><small><i>group</i></small>|[roles/iam.serviceAccountAdmin](https://cloud.google.com/iam/docs/understanding-roles#iam.serviceAccountAdmin) <br>[roles/iam.serviceAccountTokenCreator](https://cloud.google.com/iam/docs/understanding-roles#iam.serviceAccountTokenCreator) |
 |<b>gcp-organization-admins</b><br><small><i>group</i></small>|[roles/iam.serviceAccountTokenCreator](https://cloud.google.com/iam/docs/understanding-roles#iam.serviceAccountTokenCreator) |
-|<b>prod-bootstrap-0</b><br><small><i>serviceAccount</i></small>|[roles/iam.serviceAccountAdmin](https://cloud.google.com/iam/docs/understanding-roles#iam.serviceAccountAdmin) <br>[roles/owner](https://cloud.google.com/iam/docs/understanding-roles#owner) <br>[roles/storage.admin](https://cloud.google.com/iam/docs/understanding-roles#storage.admin) |
+|<b>prod-bootstrap-0</b><br><small><i>serviceAccount</i></small>|[roles/owner](https://cloud.google.com/iam/docs/understanding-roles#owner) |
 |<b>prod-resman-0</b><br><small><i>serviceAccount</i></small>|[roles/iam.serviceAccountAdmin](https://cloud.google.com/iam/docs/understanding-roles#iam.serviceAccountAdmin) <br>[roles/storage.admin](https://cloud.google.com/iam/docs/understanding-roles#storage.admin) |
