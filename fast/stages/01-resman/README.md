@@ -136,6 +136,8 @@ For policies where additional data is needed, a root-level `organization_policy_
 
 IAM roles can be easily edited in the relevant `branch-xxx.tf` file, following the best practice outlined in the [bootstrap stage](../00-bootstrap#customizations) documentation of separating user-level and service-account level IAM policies in modules' `iam_groups`, `iam`, and `iam_additive` variables.
 
+A full reference of IAM roles managed by this stage [is available here](./IAM.md).
+
 ### Additional folders
 
 Due to its simplicity, this stage lends itself easily to customizations: adding a new top-level branch (e.g. for shared GKE clusters) is as easy as cloning one of the `branch-xxx.tf` files, and changing names.

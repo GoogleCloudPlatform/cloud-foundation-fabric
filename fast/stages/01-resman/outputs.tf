@@ -48,7 +48,11 @@ locals {
   }
   tfvars = {
     "02-networking" = jsonencode({
-      folder_id          = module.branch-network-folder.id
+      folder_ids = {
+        networking      = module.branch-network-folder.id
+        networking-dev  = module.branch-network-dev-folder.id
+        networking-prod = module.branch-network-prod-folder.id
+      }
       project_factory_sa = local._project_factory_sas
     })
     "02-security" = jsonencode({

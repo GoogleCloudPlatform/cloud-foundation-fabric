@@ -58,18 +58,10 @@ variable "dns" {
   }
 }
 
-variable "folder_id" {
+variable "folder_ids" {
   # tfdoc:variable:source 01-resman
-  description = "Folder to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created."
-  type        = string
-  default     = null
-  validation {
-    condition = (
-      var.folder_id == null ||
-      can(regex("folders/[0-9]{8,}", var.folder_id))
-    )
-    error_message = "Invalid folder_id. Should be in 'folders/nnnnnnnnnnn' format."
-  }
+  description = "Folders to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created."
+  type        = map(string)
 }
 
 variable "l7ilb_subnets" {

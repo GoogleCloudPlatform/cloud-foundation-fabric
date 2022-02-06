@@ -12,8 +12,6 @@ This repository provides **end-to-end examples** and a **suite of Terraform modu
 
 The whole repository is meant to be cloned as a single unit, and then forked into separate owned repositories to seed production usage, or used as-is and periodically updated as a complete toolkit for prototyping. You can read more on this approach in our [manifesto](./MANIFESTO.md).
 
-Both the examples and modules require some measure of Terraform skills to be used effectively. If you are looking for a feature-rich black box to manage project or product creation with minimal specific skills, you might be better served by the [Cloud Foundation Toolkit](https://registry.terraform.io/modules/terraform-google-modules) suite of modules.
-
 ## Organization blueprint (Fabric FAST)
 
 Setting up a production-ready GCP organization is often a time-consuming process. Fabric [FAST](fast/) aims to speed up this process via two complementary goals. On the one hand, FAST provides a design of a GCP organization that includes the typical elements required by enterprise customers. Secondly, we provide a reference implementation of the FAST design using Terraform.
