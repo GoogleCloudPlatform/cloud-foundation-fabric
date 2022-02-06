@@ -328,12 +328,12 @@ DNS configurations are centralised in the `dns.tf` file. Spokes delegate DNS res
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [cloud_dns_inbound_policy](outputs.tf#L42) | IP Addresses for Cloud DNS inbound policy. |  |  |
-| [project_ids](outputs.tf#L47) | Network project ids. |  |  |
-| [project_numbers](outputs.tf#L56) | Network project numbers. |  |  |
-| [shared_vpc_host_projects](outputs.tf#L65) | Shared VPC host projects. |  |  |
-| [shared_vpc_self_links](outputs.tf#L75) | Shared VPC host projects. |  |  |
-| [tfvars](outputs.tf#L92) | Network-related variables used in other stages. | ✓ |  |
-| [vpn_gateway_endpoints](outputs.tf#L85) | External IP Addresses for the GCP VPN gateways. |  |  |
+| [cloud_dns_inbound_policy](outputs.tf#L41) | IP Addresses for Cloud DNS inbound policy. |  |  |
+| [project_ids](outputs.tf#L46) | Network project ids. |  |  |
+| [project_numbers](outputs.tf#L55) | Network project numbers. |  |  |
+| [shared_vpc_host_projects](outputs.tf#L64) | Shared VPC host projects. |  |  |
+| [shared_vpc_self_links](outputs.tf#L74) | Shared VPC host projects. |  |  |
+| [tfvars](outputs.tf#L91) | Network-related variables used in other stages. | ✓ |  |
+| [vpn_gateway_endpoints](outputs.tf#L84) | External IP Addresses for the GCP VPN gateways. |  |  |
 
 <!-- END TFDOC -->

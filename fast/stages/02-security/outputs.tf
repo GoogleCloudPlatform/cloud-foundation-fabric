@@ -15,13 +15,10 @@
  */
 
 # optionally generate files for subsequent stages
-locals {
-  outputs_location = pathexpand(var.outputs_location)
-}
 
 resource "local_file" "dev_sec_kms" {
   for_each = var.outputs_location == null ? {} : { 1 = 1 }
-  filename = "${local.outputs_location}/yamls/02-security-kms-dev-keys.yaml"
+  filename = "${pathexpand(var.outputs_location)}/yamls/02-security-kms-dev-keys.yaml"
   content = yamlencode({
     for k, m in module.dev-sec-kms : k => m.key_ids
   })
@@ -29,7 +26,7 @@ resource "local_file" "dev_sec_kms" {
 
 resource "local_file" "prod_sec_kms" {
   for_each = var.outputs_location == null ? {} : { 1 = 1 }
-  filename = "${local.outputs_location}/yamls/02-security-kms-prod-keys.yaml"
+  filename = "${pathexpand(var.outputs_location)}/yamls/02-security-kms-prod-keys.yaml"
   content = yamlencode({
     for k, m in module.prod-sec-kms : k => m.key_ids
   })
