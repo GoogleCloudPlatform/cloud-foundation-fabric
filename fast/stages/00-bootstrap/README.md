@@ -160,14 +160,14 @@ You can also adapt the example that follows to your needs:
 ```hcl
 # fetch the required id by running `gcloud beta billing accounts list`
 billing_account={
-    id="019EFC-140A1D-7EDA6B"
-    organization_id=null
+    id="012345-67890A-BCDEF0"
+    organization_id="01234567890"
 }
 # get the required info by running `gcloud organizations list`
 organization={
-    id="583992375761"
-    domain="fast-lab-0.gcp-pso-italy.net"
-    customer_id="C04es9p30"
+    id="01234567890"
+    domain="fast.example.com"
+    customer_id="Cxxxxxxx"
 }
 # create your own 4-letters prefix
 prefix="fast"
