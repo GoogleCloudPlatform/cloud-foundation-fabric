@@ -68,6 +68,7 @@ variable "clusters" {
       memory_min = number
       memory_max = number
     })
+    project_id = string
     description = string
     dns_domain  = string
     labels      = map(string)
@@ -139,6 +140,7 @@ variable "nodepools" {
   type = map(map(object({
     node_count = number
     node_type  = string
+    initial_node_count = number
     overrides = object({
       image_type        = string
       max_pods_per_node = number

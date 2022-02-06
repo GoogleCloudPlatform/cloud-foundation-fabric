@@ -34,7 +34,7 @@ module "gke_1_nodepool" {
   project_id         = module.gke-project-0.project_id
   cluster_name       = module.gke-cluster[each.value.cluster].name
   location           = module.gke-cluster[each.value.cluster].location
-  initial_node_count = each.value.node_count
+  initial_node_count = each.value.initial_node_count 
   node_machine_type  = each.value.node_type
   # TODO(jccb): can we use spot instances here?
   node_preemptible = each.value.preemptible
