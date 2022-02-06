@@ -17,6 +17,7 @@
 # Optionally, generate providers and tfvars files for subsequent stages
 
 locals {
+  outputs_location = pathexpand(var.outputs_location)
   tfvars = {
     "03-project-factory-dev" = jsonencode({
       environment_dns_zone = module.dev-dns-private-zone.domain
@@ -33,7 +34,7 @@ locals {
 
 resource "local_file" "tfvars" {
   for_each = var.outputs_location == null ? {} : local.tfvars
-  filename = "${var.outputs_location}/${each.key}/terraform-networking.auto.tfvars.json"
+  filename = "${local.outputs_location}/${each.key}/terraform-networking.auto.tfvars.json"
   content  = each.value
 }
 

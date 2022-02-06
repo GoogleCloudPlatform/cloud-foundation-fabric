@@ -19,6 +19,7 @@ locals {
     dev  = module.branch-teams-dev-projectfactory-sa.iam_email
     prod = module.branch-teams-prod-projectfactory-sa.iam_email
   }
+  outputs_location = pathexpand(var.outputs_location)
   providers = {
     "02-networking" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
       bucket = module.branch-network-gcs.name
@@ -68,13 +69,13 @@ locals {
 
 resource "local_file" "providers" {
   for_each = var.outputs_location == null ? {} : local.providers
-  filename = "${var.outputs_location}/${each.key}/providers.tf"
+  filename = "${local.outputs_location}/${each.key}/providers.tf"
   content  = each.value
 }
 
 resource "local_file" "tfvars" {
   for_each = var.outputs_location == null ? {} : local.tfvars
-  filename = "${var.outputs_location}/${each.key}/terraform-resman.auto.tfvars.json"
+  filename = "${local.outputs_location}/${each.key}/terraform-resman.auto.tfvars.json"
   content  = each.value
 }
 
