@@ -16,19 +16,13 @@
 
 locals {
   labels = merge(var.labels, { environment = var.environment })
-  
-  _gke_robot_sas      = [
-    "serviceAccount:${module.gke-project-0.service_accounts.robots.container-engine}"
-  ]
-  _cloud_services_sas = [
-    "serviceAccount:${module.gke-project-0.service_accounts.cloud_services}"
-  ]
-  host_project_cloud_services_bindings = [ for member in local._cloud_services_sas :
-    {role = "roles/compute.networkUser", member = member }
-  ]
-  host_project_gke_robot_bindings = [ for member in local._gke_robot_sas : 
-    [{role = "roles/container.hostServiceAgentUser", member = member },
-    {role = "roles/compute.networkUser", member = member }]
+
+  _gke_robot_sa      = "serviceAccount:${module.gke-project-0.service_accounts.robots.container-engine}"
+  _cloud_services_sa = "serviceAccount:${module.gke-project-0.service_accounts.cloud_services}"
+  host_project_bindings = [
+    { role = "roles/container.hostServiceAgentUser", member = local._gke_robot_sa },
+    { role = "roles/compute.networkUser", member = local._gke_robot_sa },
+    { role = "roles/compute.networkUser", member = local._cloud_services_sa }
   ]
 }
 
@@ -79,14 +73,8 @@ module "gke-dataset-resource-usage" {
   friendly_name = "GKE resource usage."
 }
 
-resource "google_project_iam_member" "host_project_gke_robot_bindings" {
-  for_each = { for i, v in flatten(local.host_project_gke_robot_bindings) : i => v }
-  project  = var.vpc_host_project
-  role     = each.value.role
-  member   = each.value.member
-}
-resource "google_project_iam_member" "host_project_cloud_services_bindings" {
-  for_each = { for i, v in local.host_project_cloud_services_bindings : i => v }
+resource "google_project_iam_member" "host_project_bindings" {
+  for_each = { for i, v in local.host_project_bindings : i => v }
   project  = var.vpc_host_project
   role     = each.value.role
   member   = each.value.member
