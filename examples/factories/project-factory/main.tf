@@ -73,8 +73,13 @@ locals {
   }
   labels = merge(coalesce(var.labels, {}), coalesce(var.defaults.labels, {}))
   network_user_service_accounts = concat(
-    contains(local.services, "compute.googleapis.com") ? ["serviceAccount:${local.service_accounts_robots.compute}"] : [],
-    contains(local.services, "container.googleapis.com") ? ["serviceAccount:${local.service_accounts_robots.container-engine}"] : [],
+    contains(local.services, "compute.googleapis.com") ? [
+      "serviceAccount:${local.service_accounts_robots.compute}"
+    ] : [],
+    contains(local.services, "container.googleapis.com") ? [
+      "serviceAccount:${local.service_accounts_robots.container-engine}",
+      "serviceAccount:${local.service_accounts.cloud_services}"
+    ] : [],
   [])
   services = distinct(concat(var.services, local._services))
   service_accounts_robots = {
