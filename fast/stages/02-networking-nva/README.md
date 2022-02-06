@@ -340,11 +340,11 @@ Don't forget to add a peering zone in the landing project and point it to the ne
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [project_ids](outputs.tf#L43) | Network project ids. |  |  |
-| [project_numbers](outputs.tf#L52) | Network project numbers. |  |  |
-| [shared_vpc_host_projects](outputs.tf#L61) | Shared VPC host projects. |  |  |
-| [shared_vpc_self_links](outputs.tf#L70) | Shared VPC host projects. |  |  |
-| [tfvars](outputs.tf#L94) | Network-related variables used in other stages. | ✓ |  |
-| [vpn_gateway_endpoints](outputs.tf#L80) | External IP Addresses for the GCP VPN gateways. |  |  |
+| [project_ids](outputs.tf#L42) | Network project ids. |  |  |
+| [project_numbers](outputs.tf#L51) | Network project numbers. |  |  |
+| [shared_vpc_host_projects](outputs.tf#L60) | Shared VPC host projects. |  |  |
+| [shared_vpc_self_links](outputs.tf#L69) | Shared VPC host projects. |  |  |
+| [tfvars](outputs.tf#L93) | Network-related variables used in other stages. | ✓ |  |
+| [vpn_gateway_endpoints](outputs.tf#L79) | External IP Addresses for the GCP VPN gateways. |  |  |
 
 <!-- END TFDOC -->
