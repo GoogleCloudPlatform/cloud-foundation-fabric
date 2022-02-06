@@ -115,6 +115,6 @@ module "gke-cluster" {
   # }
 
   depends_on = [
-    google_project_iam_member.host_project_bindings,
+    google_project_iam_member.host_project_bindings
   ]
 }
