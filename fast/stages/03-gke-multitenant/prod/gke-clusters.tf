@@ -27,7 +27,7 @@ module "gke-cluster" {
   source                   = "../../../../modules/gke-cluster"
   for_each                 = local.clusters
   name                     = each.key
-  project_id               = each.value.project_id
+  project_id               = module.gke-project-0.project_id
   description              = each.value.description
   location                 = each.value.location
   network                  = each.value.net.vpc
