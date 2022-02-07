@@ -77,13 +77,13 @@ module "trf-prj" {
 }
 
 module "trf-vpc" {
-  count      = var.network_config.network != null ? 0 : 1
+  count      = var.network_config.network_self_link != null ? 0 : 1
   source     = "../../../modules/net-vpc"
   project_id = module.trf-prj.project_id
   name       = "${local.prefix_trf}-vpc"
   subnets = [
     {
-      ip_cidr_range      = var.network_config.vpc_subnet.transformation.range
+      ip_cidr_range      = "10.10.0.0/24"
       name               = "${local.prefix_trf}-subnet"
       region             = var.location_config.region
       secondary_ip_range = {}
@@ -92,18 +92,18 @@ module "trf-vpc" {
 }
 
 module "trf-vpc-firewall" {
-  count        = var.network_config.network != null ? 0 : 1
+  count        = var.network_config.network_self_link != null ? 0 : 1
   source       = "../../../modules/net-vpc-firewall"
   project_id   = module.trf-prj.project_id
   network      = local._networks.transformation.network_name
-  admin_ranges = [local._networks.transformation.subnet_range]
+  admin_ranges = ["10.10.0.0/24"]
 }
 
 module "trf-nat" {
-  count          = var.network_config.enable_cloud_nat ? 1 : 0
+  count          = var.network_config.network_self_link != null ? 0 : 1
   source         = "../../../modules/net-cloudnat"
   project_id     = module.trf-prj.project_id
   region         = var.location_config.region
   name           = "${local.prefix_trf}-default"
-  router_network = local._networks.transformation.network_name
+  router_network = module.trf-vpc[0].name
 }

@@ -8,7 +8,7 @@ The following diagram is a high-level reference of the resources created and man
 
 ![Data Platform architecture overview](./images/overview_diagram.png "Data Platform architecture overview")
 
-A demo pipeline is also part of this example: it can be built and run on top of the foundational infrastructure to verify or test the setup quickly.
+A demo Airflow pipeline is also part of this example: it can be built and run on top of the foundational infrastructure to verify or test the setup quickly.
 
 ## Design overview and choices
 
@@ -21,7 +21,7 @@ The approach adapts to different high-level requirements:
 - least privilege principle
 - rely on service account impersonation
 
-The code in this example doesn't address Organization-level configurations (Organization policy, VPC-SC, centralized logs). We expect those to be managed by automation stages external to this script like those in [FAST](../../../fast).
+The code in this example doesn't address Organization-level configurations (Organization policy, VPC-SC, centralized logs). We expect those elements to be managed by automation stages external to this script like those in [FAST](../../../fast).
 
 ### Project structure
 

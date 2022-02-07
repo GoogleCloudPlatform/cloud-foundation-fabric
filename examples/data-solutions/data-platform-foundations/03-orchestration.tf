@@ -79,11 +79,13 @@ module "orc-prj" {
   project_create  = var.project_create != null
   prefix          = var.project_create == null ? null : var.prefix
   # additive IAM bindings avoid disrupting bindings in existing project
-  iam            = var.project_create != null ? local.iam_orc : {}
-  iam_additive   = var.project_create == null ? local.iam_orc : {}
-  group_iam      = local.group_iam_orc
-  oslogin        = false
-  policy_boolean = var.composer_config.project_policy_boolean
+  iam          = var.project_create != null ? local.iam_orc : {}
+  iam_additive = var.project_create == null ? local.iam_orc : {}
+  group_iam    = local.group_iam_orc
+  oslogin      = false
+  policy_boolean = {
+    "constraints/compute.requireOsLogin" = false
+  }
   services = concat(
     var.project_services,
     [
@@ -111,28 +113,26 @@ module "orc-prj" {
 }
 
 module "orc-vpc" {
-  count      = var.network_config.network != null ? 0 : 1
+  count      = var.network_config.network_self_link != null ? 0 : 1
   source     = "../../../modules/net-vpc"
   project_id = module.orc-prj.project_id
   name       = "${local.prefix_orc}-vpc"
   subnets = [
     {
-      ip_cidr_range      = var.network_config.vpc_subnet.orchestration.range
-      name               = "${local.prefix_orc}-subnet"
-      region             = var.location_config.region
-      secondary_ip_range = {}
+      ip_cidr_range = "10.10.0.0/24"
+      name          = "${local.prefix_orc}-subnet"
+      region        = var.location_config.region
       secondary_ip_range = {
-        pods     = var.network_config.vpc_subnet.orchestration.secondary_range.pods
-        services = var.network_config.vpc_subnet.orchestration.secondary_range.services
+        pods     = "10.10.8.0/22"
+        services = "10.10.12.0/24"
       }
     }
   ]
 }
 
-#TODO Check with Simo/Ludo
 resource "google_project_iam_binding" "composer_shared_vpc_agent" {
-  count   = var.network_config.network != null ? 1 : 0
-  project = var.network_config.host_project
+  count   = var.network_config.network_self_link != null ? 1 : 0
+  project = local._shared_vpc_project
   role    = "roles/composer.sharedVpcAgent"
   members = [
     "serviceAccount:${module.orc-prj.service_accounts.robots.composer}"
@@ -140,8 +140,8 @@ resource "google_project_iam_binding" "composer_shared_vpc_agent" {
 }
 
 resource "google_project_iam_binding" "gke_host_service_agent_user" {
-  count   = var.network_config.network != null ? 1 : 0
-  project = var.network_config.host_project
+  count   = var.network_config.network_self_link != null ? 1 : 0
+  project = local._shared_vpc_project
   role    = "roles/container.hostServiceAgentUser"
   members = [
     "serviceAccount:${module.orc-prj.service_accounts.robots.container-engine}"
@@ -149,8 +149,8 @@ resource "google_project_iam_binding" "gke_host_service_agent_user" {
 }
 
 resource "google_project_iam_binding" "composer_network_user_agent" {
-  count   = var.network_config.network != null ? 1 : 0
-  project = var.network_config.host_project
+  count   = var.network_config.network_self_link != null ? 1 : 0
+  project = local._shared_vpc_project
   role    = "roles/compute.networkUser"
   members = [
     module.orc-sa-cmp-0.iam_email,
@@ -164,15 +164,15 @@ resource "google_project_iam_binding" "composer_network_user_agent" {
 }
 
 module "orc-vpc-firewall" {
-  count        = var.network_config.network != null ? 0 : 1
+  count        = var.network_config.network_self_link != null ? 0 : 1
   source       = "../../../modules/net-vpc-firewall"
   project_id   = module.orc-prj.project_id
   network      = local._networks.orchestration.network_name
-  admin_ranges = [local._networks.orchestration.subnet_range]
+  admin_ranges = ["10.10.0.0/24"]
 }
 
 module "orc-nat" {
-  count          = var.network_config.enable_cloud_nat ? 1 : 0
+  count          = var.network_config.network_self_link != null ? 0 : 1
   source         = "../../../modules/net-cloudnat"
   project_id     = module.orc-prj.project_id
   region         = var.location_config.region

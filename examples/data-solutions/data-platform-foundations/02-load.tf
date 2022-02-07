@@ -83,13 +83,13 @@ module "lod-prj" {
 }
 
 module "lod-vpc" {
-  count      = var.network_config.network != null ? 0 : 1
+  count      = var.network_config.network_self_link != null ? 0 : 1
   source     = "../../../modules/net-vpc"
   project_id = module.lod-prj.project_id
   name       = "${local.prefix_lod}-vpc"
   subnets = [
     {
-      ip_cidr_range      = var.network_config.vpc_subnet.load.range
+      ip_cidr_range      = "10.10.0.0/24"
       name               = "${local.prefix_lod}-subnet"
       region             = var.location_config.region
       secondary_ip_range = {}
@@ -98,18 +98,18 @@ module "lod-vpc" {
 }
 
 module "lod-vpc-firewall" {
-  count        = var.network_config.network != null ? 0 : 1
+  count        = var.network_config.network_self_link != null ? 0 : 1
   source       = "../../../modules/net-vpc-firewall"
   project_id   = module.lod-prj.project_id
   network      = local._networks.load.network_name
-  admin_ranges = [local._networks.load.subnet_range]
+  admin_ranges = ["10.10.0.0/24"]
 }
 
 module "lod-nat" {
-  count          = var.network_config.enable_cloud_nat ? 1 : 0
+  count          = var.network_config.network_self_link != null ? 0 : 1
   source         = "../../../modules/net-cloudnat"
   project_id     = module.lod-prj.project_id
   region         = var.location_config.region
   name           = "${local.prefix_lod}-default"
-  router_network = local._networks.load.network_name
+  router_network = module.lod-vpc[0].name
 }

@@ -31,63 +31,65 @@ module "orc-sa-cmp-0" {
 
 resource "google_composer_environment" "orc-cmp-0" {
   name     = "${local.prefix_orc}-cmp-0"
-  region   = var.composer_config.region
+  region   = var.location_config.region
   provider = google-beta
   project  = module.orc-prj.project_id
   config {
     node_count = var.composer_config.node_count
     node_config {
-      zone            = "${var.composer_config.region}-b"
+      zone            = "${var.location_config.region}-b"
       service_account = module.orc-sa-cmp-0.email
       network         = local._networks.orchestration.network
       subnetwork      = local._networks.orchestration.subnet
       tags            = ["composer-worker", "http-server", "https-server"]
       ip_allocation_policy {
-        use_ip_aliases                = var.composer_config.ip_allocation_policy.use_ip_aliases
-        cluster_secondary_range_name  = var.composer_config.ip_allocation_policy.cluster_secondary_range_name
-        services_secondary_range_name = var.composer_config.ip_allocation_policy.services_secondary_range_name
+        use_ip_aliases                = "true"
+        cluster_secondary_range_name  = try(var.network_config.composer_secondary_ranges.pods, "pods")
+        services_secondary_range_name = try(var.network_config.composer_secondary_ranges.services, "services")
       }
     }
     software_config {
-      image_version = "composer-1.17.5-airflow-2.1.4"
-      env_variables = {
-        DTL_L0_PRJ         = module.dtl-0-prj.project_id
-        DTL_L0_BQ_DATASET  = module.dtl-0-bq-0.dataset_id
-        DTL_L0_GCS         = module.dtl-0-cs-0.url
-        DTL_L1_PRJ         = module.dtl-1-prj.project_id
-        DTL_L1_BQ_DATASET  = module.dtl-1-bq-0.dataset_id
-        DTL_L1_GCS         = module.dtl-1-cs-0.url
-        DTL_L2_PRJ         = module.dtl-2-prj.project_id
-        DTL_L2_BQ_DATASET  = module.dtl-2-bq-0.dataset_id
-        DTL_L2_GCS         = module.dtl-2-cs-0.url
-        DTL_PLG_PRJ        = module.dtl-plg-prj.project_id
-        DTL_PLG_BQ_DATASET = module.dtl-plg-bq-0.dataset_id
-        DTL_PLG_GCS        = module.dtl-plg-cs-0.url
-        GCP_REGION         = var.composer_config.region
-        LND_PRJ            = module.lnd-prj.project_id
-        LND_BQ             = module.lnd-bq-0.dataset_id
-        LND_GCS            = module.lnd-cs-0.url
-        LND_PS             = module.lnd-ps-0.id
-        LOD_PRJ            = module.lod-prj.project_id
-        LOD_GCS_STAGING    = module.lod-cs-df-0.url
-        LOD_NET_VPC        = local._networks.load.network
-        LOD_NET_SUBNET     = local._networks.load.subnet
-        LOD_SA_DF          = module.lod-sa-df-0.email
-        ORC_PRJ            = module.orc-prj.project_id
-        ORC_GCS            = module.orc-cs-0.url
-        TRF_PRJ            = module.trf-prj.project_id
-        TRF_GCS_STAGING    = module.trf-cs-df-0.url
-        TRF_NET_VPC        = local._networks.transformation.network
-        TRF_NET_SUBNET     = local._networks.transformation.subnet
-        TRF_SA_DF          = module.trf-sa-df-0.email
-        TRF_SA_BQ          = module.trf-sa-bq-0.email
-      }
+      image_version = var.composer_config.airflow_version
+      env_variables = merge(
+        var.composer_config.env_variables, {
+          DTL_L0_PRJ         = module.dtl-0-prj.project_id
+          DTL_L0_BQ_DATASET  = module.dtl-0-bq-0.dataset_id
+          DTL_L0_GCS         = module.dtl-0-cs-0.url
+          DTL_L1_PRJ         = module.dtl-1-prj.project_id
+          DTL_L1_BQ_DATASET  = module.dtl-1-bq-0.dataset_id
+          DTL_L1_GCS         = module.dtl-1-cs-0.url
+          DTL_L2_PRJ         = module.dtl-2-prj.project_id
+          DTL_L2_BQ_DATASET  = module.dtl-2-bq-0.dataset_id
+          DTL_L2_GCS         = module.dtl-2-cs-0.url
+          DTL_PLG_PRJ        = module.dtl-plg-prj.project_id
+          DTL_PLG_BQ_DATASET = module.dtl-plg-bq-0.dataset_id
+          DTL_PLG_GCS        = module.dtl-plg-cs-0.url
+          GCP_REGION         = var.location_config.region
+          LND_PRJ            = module.lnd-prj.project_id
+          LND_BQ             = module.lnd-bq-0.dataset_id
+          LND_GCS            = module.lnd-cs-0.url
+          LND_PS             = module.lnd-ps-0.id
+          LOD_PRJ            = module.lod-prj.project_id
+          LOD_GCS_STAGING    = module.lod-cs-df-0.url
+          LOD_NET_VPC        = local._networks.load.network
+          LOD_NET_SUBNET     = local._networks.load.subnet
+          LOD_SA_DF          = module.lod-sa-df-0.email
+          ORC_PRJ            = module.orc-prj.project_id
+          ORC_GCS            = module.orc-cs-0.url
+          TRF_PRJ            = module.trf-prj.project_id
+          TRF_GCS_STAGING    = module.trf-cs-df-0.url
+          TRF_NET_VPC        = local._networks.transformation.network
+          TRF_NET_SUBNET     = local._networks.transformation.subnet
+          TRF_SA_DF          = module.trf-sa-df-0.email
+          TRF_SA_BQ          = module.trf-sa-bq-0.email
+        }
+      )
     }
     private_environment_config {
       enable_private_endpoint    = "true"
-      master_ipv4_cidr_block     = var.composer_config.ip_range_gke_master
-      cloud_sql_ipv4_cidr_block  = var.composer_config.ip_range_cloudsql
-      web_server_ipv4_cidr_block = var.composer_config.ip_range_web_server
+      cloud_sql_ipv4_cidr_block  = try(var.network_config.composer_ip_ranges.gke_master, "10.20.10.0/24")
+      master_ipv4_cidr_block     = try(var.network_config.composer_ip_ranges.cloudsql, "10.20.11.0/28")
+      web_server_ipv4_cidr_block = try(var.network_config.composer_ip_ranges.web_server, "10.20.11.16/28")
     }
 
     dynamic "encryption_config" {

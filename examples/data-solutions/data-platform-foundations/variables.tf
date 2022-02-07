@@ -19,43 +19,12 @@ variable "composer_config" {
   type = object({
     node_count      = number
     airflow_version = string
-    environment     = map(string)
+    env_variables   = map(string)
   })
   default = {
     node_count      = 3
-    airflow_version = "TODO"
-    environment     = {}
-  }
-}
-variable "composer_config" {
-  type = object({
-    node_count = number
-    #TODO Move to network
-    ip_range_cloudsql   = string
-    ip_range_gke_master = string
-    ip_range_web_server = string
-    #TODO hardcoded
-    project_policy_boolean = map(bool)
-    region                 = string
-    ip_allocation_policy = object({
-      use_ip_aliases                = string
-      cluster_secondary_range_name  = string
-      services_secondary_range_name = string
-    })
-    #TODO Add Env variables, Airflow version
-  })
-  default = {
-    node_count             = 3
-    ip_range_cloudsql      = "10.20.10.0/24"
-    ip_range_gke_master    = "10.20.11.0/28"
-    ip_range_web_server    = "10.20.11.16/28"
-    project_policy_boolean = null
-    region                 = "europe-west1"
-    ip_allocation_policy = {
-      use_ip_aliases                = "true"
-      cluster_secondary_range_name  = "pods"
-      services_secondary_range_name = "services"
-    }
+    airflow_version = "composer-1.17.5-airflow-2.1.4"
+    env_variables   = {}
   }
 }
 
@@ -76,11 +45,9 @@ variable "groups" {
 }
 
 variable "network_config" {
-  description = "Network configurations to use. Specify a shared VPC to use, if null networks will be created in projects."
+  description = "Shared VPC network configurations to use. If null networks will be created in projects with preconfigured values."
   type = object({
-    #TODO hardcoded Cloud NAT
     network_self_link = string
-    #TODO hardcoded VPC ranges
     subnet_self_links = object({
       load           = string
       transformation = string
@@ -96,29 +63,12 @@ variable "network_config" {
       services = string
     })
   })
-  default = {
-    enable_cloud_nat = false
-    host_project     = null
-    network          = null
 
-    vpc_subnet = {
-      load = {
-        range           = "10.10.0.0/24"
-        secondary_range = null
-      }
-      transformation = {
-        range           = "10.10.0.0/24"
-        secondary_range = null
-      }
-      orchestration = {
-        range = "10.10.0.0/24"
-        secondary_range = {
-          pods     = "10.10.8.0/22"
-          services = "10.10.12.0/24"
-        }
-      }
-    }
-    vpc_subnet_self_link = null
+  default = {
+    network_self_link         = null
+    subnet_self_links         = null
+    composer_ip_ranges        = null
+    composer_secondary_ranges = null
   }
 }
 
