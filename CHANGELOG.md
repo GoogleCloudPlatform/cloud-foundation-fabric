@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file.
 - support service dependencies for crypto key bindings in project module
 - refactor project module in multiple files
 - add support for per-file option overrides to tfdoc
+- add `data-catalog-policy-tag` module
 
 ## [12.0.0] - 2022-01-11
 
