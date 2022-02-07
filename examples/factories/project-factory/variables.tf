@@ -51,6 +51,7 @@ variable "defaults" {
     shared_vpc_self_link  = string
     vpc_host_project      = string
   })
+  default = null
 }
 
 variable "dns_zones" {
@@ -106,6 +107,12 @@ variable "org_policies" {
     }))
   })
   default = null
+}
+
+variable "prefix" {
+  description = "Prefix used for the project id."
+  type        = string
+  default     = null
 }
 
 variable "project_id" {
