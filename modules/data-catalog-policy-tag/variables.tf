@@ -15,7 +15,7 @@
  */
 
 variable "activated_policy_types" {
-  description = "A list of policy types that are activated for this taxonomy. See the [documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/data_catalog_taxonomy#activated_policy_types) for possible values."
+  description = "A list of policy types that are activated for this taxonomy."
   type        = list(string)
   default     = ["FINE_GRAINED_ACCESS_CONTROL"]
 }
@@ -68,7 +68,7 @@ variable "prefix" {
 }
 
 variable "project_id" {
-  description = "GCP project ID."
+  description = "GCP project id."
 }
 
 variable "tags" {
