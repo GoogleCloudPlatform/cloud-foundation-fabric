@@ -1,6 +1,6 @@
 # Data Catalog Module
 
-This module simplifies the creation of [Data Catalog](https://cloud.google.com/data-catalog) Policy Tags.
+This module simplifies the creation of [Data Catalog](https://cloud.google.com/data-catalog) Policy Tags. Policy Tags can be used to configure [Bigquery column-level access](https://cloud.google.com/bigquery/docs/best-practices-policy-tags).
 
 Note: Data Catalog is still in beta, hence this module currently uses the beta provider.
 ## Examples

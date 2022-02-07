@@ -31,3 +31,13 @@ resource "google_data_catalog_taxonomy" "default" {
   description            = var.description
   activated_policy_types = var.activated_policy_types
 }
+
+resource "google_data_catalog_policy_tag" "default" {
+  for_each     = toset(var.tags)
+  provider     = google-beta
+  taxonomy     = google_data_catalog_taxonomy.default.id
+  display_name = each.key
+  description  = "${each.key} - Terraform managed.  "
+}
+
+#TODO Add IAM at tag level
