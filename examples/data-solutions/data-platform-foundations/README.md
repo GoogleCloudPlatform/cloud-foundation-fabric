@@ -141,6 +141,8 @@ Cloud Data Loss Prevention resources and templates should be stored in the secur
 
 ![Centralized Cloud Data Loss Prevention high-level diagram](./images/dlp_diagram.png "Centralized Cloud Data Loss Prevention high-level diagram")
 
+You can find more details and best practices on using DLP to De-identification and re-identification of PII in large-scale datasets in the [GCP documentation](https://cloud.google.com/architecture/de-identification-re-identification-pii-using-cloud-dlp).
+
 ## How to run this script
 
 To deploy this example on your GCP organization, you will need
