@@ -14,12 +14,27 @@
 
 # tfdoc:file:description Terraform Variables.
 
+
 variable "composer_config" {
   type = object({
-    node_count             = number
-    ip_range_cloudsql      = string
-    ip_range_gke_master    = string
-    ip_range_web_server    = string
+    node_count      = number
+    airflow_version = string
+    environment     = map(string)
+  })
+  default = {
+    node_count      = 3
+    airflow_version = "TODO"
+    environment     = {}
+  }
+}
+variable "composer_config" {
+  type = object({
+    node_count = number
+    #TODO Move to network
+    ip_range_cloudsql   = string
+    ip_range_gke_master = string
+    ip_range_web_server = string
+    #TODO hardcoded
     project_policy_boolean = map(bool)
     region                 = string
     ip_allocation_policy = object({
@@ -27,6 +42,7 @@ variable "composer_config" {
       cluster_secondary_range_name  = string
       services_secondary_range_name = string
     })
+    #TODO Add Env variables, Airflow version
   })
   default = {
     node_count             = 3
@@ -62,33 +78,29 @@ variable "groups" {
 variable "network_config" {
   description = "Network configurations to use. Specify a shared VPC to use, if null networks will be created in projects."
   type = object({
-    enable_cloud_nat = bool
-    host_project     = string
-    network          = string
-    vpc_subnet = object({
-      load = object({
-        range           = string
-        secondary_range = map(string)
-      })
-      transformation = object({
-        range           = string
-        secondary_range = map(string)
-      })
-      orchestration = object({
-        range           = string
-        secondary_range = map(string)
-      })
-    })
-    vpc_subnet_self_link = object({
+    #TODO hardcoded Cloud NAT
+    network_self_link = string
+    #TODO hardcoded VPC ranges
+    subnet_self_links = object({
       load           = string
       transformation = string
       orchestration  = string
+    })
+    composer_ip_ranges = object({
+      cloudsql   = string
+      gke_master = string
+      web_server = string
+    })
+    composer_secondary_ranges = object({
+      pods     = string
+      services = string
     })
   })
   default = {
     enable_cloud_nat = false
     host_project     = null
     network          = null
+
     vpc_subnet = {
       load = {
         range           = "10.10.0.0/24"

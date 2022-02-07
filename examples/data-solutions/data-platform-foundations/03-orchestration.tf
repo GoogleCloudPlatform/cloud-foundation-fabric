@@ -122,7 +122,6 @@ module "orc-vpc" {
       region             = var.location_config.region
       secondary_ip_range = {}
       secondary_ip_range = {
-        #TODO make keys variables
         pods     = var.network_config.vpc_subnet.orchestration.secondary_range.pods
         services = var.network_config.vpc_subnet.orchestration.secondary_range.services
       }
