@@ -41,6 +41,7 @@ module "gke-project-0" {
     "anthosconfigmanagement.googleapis.com",
     "sourcerepo.googleapis.com",
     # uncomment if you need Multi-cluster Ingress / Gateway API
+    # "gkehub.googleapis.com",
     # "multiclusterservicediscovery.googleapis.com",
     # "multiclusteringress.googleapis.com",
     # "trafficdirector.googleapis.com"

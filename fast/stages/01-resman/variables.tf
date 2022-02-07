@@ -96,7 +96,7 @@ variable "team_folders" {
   #   team-a = {
   #     descriptive_name = "Team A"
   #     group_iam = {
-  #       team-a-group = [roles/owner, roles/projectCreator]
+  #       team-a-group@example.com = ["roles/owner", "roles/resourcemanager.projectCreator"]
   #     }
   #     impersonation_groups = ["team-a-admins@example.com"]
   #   }
