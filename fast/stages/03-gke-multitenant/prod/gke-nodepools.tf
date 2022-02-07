@@ -28,14 +28,13 @@ locals {
 }
 
 module "gke_1_nodepool" {
-  source             = "../../../../modules/gke-nodepool"
-  for_each           = local.nodepools
-  name               = each.value.name
-  project_id         = module.gke-project-0.project_id
-  cluster_name       = module.gke-cluster[each.value.cluster].name
-  location           = module.gke-cluster[each.value.cluster].location
-  initial_node_count = each.value.initial_node_count
-  node_machine_type  = each.value.node_type
+  source            = "../../../../modules/gke-nodepool"
+  for_each          = local.nodepools
+  name              = each.value.name
+  project_id        = module.gke-project-0.project_id
+  cluster_name      = module.gke-cluster[each.value.cluster].name
+  location          = module.gke-cluster[each.value.cluster].location
+  node_machine_type = each.value.node_type
   # TODO(jccb): can we use spot instances here?
   node_preemptible = each.value.preemptible
 
@@ -52,11 +51,12 @@ module "gke_1_nodepool" {
   # }
 
   # overrides
-  node_locations    = each.value.overrides.node_locations
-  max_pods_per_node = each.value.overrides.max_pods_per_node
-  node_image_type   = each.value.overrides.image_type
-  node_tags         = each.value.overrides.node_tags
-  node_taints       = each.value.overrides.node_taints
+  initial_node_count = each.value.overrides.initial_node_count
+  node_locations     = each.value.overrides.node_locations
+  max_pods_per_node  = each.value.overrides.max_pods_per_node
+  node_image_type    = each.value.overrides.image_type
+  node_tags          = each.value.overrides.node_tags
+  node_taints        = each.value.overrides.node_taints
 
   management_config = {
     auto_repair  = true

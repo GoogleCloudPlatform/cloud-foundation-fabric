@@ -120,33 +120,35 @@ variable "labels" {
 variable "nodepool_defaults" {
   description = ""
   type = object({
-    image_type        = string
-    max_pods_per_node = number
-    node_locations    = list(string)
-    node_tags         = list(string)
-    node_taints       = list(string)
+    initial_node_count = number
+    image_type         = string
+    max_pods_per_node  = number
+    node_locations     = list(string)
+    node_tags          = list(string)
+    node_taints        = list(string)
   })
   default = {
-    image_type        = "COS_CONTAINERD"
-    max_pods_per_node = 110
-    node_locations    = null
-    node_tags         = null
-    node_taints       = []
+    initial_node_count = null
+    image_type         = "COS_CONTAINERD"
+    max_pods_per_node  = 110
+    node_locations     = null
+    node_tags          = null
+    node_taints        = []
   }
 }
 
 variable "nodepools" {
   description = ""
   type = map(map(object({
-    node_count         = number
-    node_type          = string
-    initial_node_count = number
+    node_count = number
+    node_type  = string
     overrides = object({
-      image_type        = string
-      max_pods_per_node = number
-      node_locations    = list(string)
-      node_tags         = list(string)
-      node_taints       = list(string)
+      initial_node_count = number
+      image_type         = string
+      max_pods_per_node  = number
+      node_locations     = list(string)
+      node_tags          = list(string)
+      node_taints        = list(string)
     })
     preemptible     = bool
     service_account = string
