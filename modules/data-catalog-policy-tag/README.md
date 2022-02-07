@@ -42,7 +42,30 @@ module "cmn-dc" {
 ```
 <!-- BEGIN TFDOC -->
 
-<!-- END TFDOC -->
+## Variables
 
+| name | description | type | required | default |
+|---|---|:---:|:---:|:---:|
+| [name](variables.tf#L59) | Name of this taxonomy. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L70) | GCP project ID. | <code></code> | ✓ |  |
+| [activated_policy_types](variables.tf#L17) | A list of policy types that are activated for this taxonomy. See the [documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/data_catalog_taxonomy#activated_policy_types) for possible values. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;FINE_GRAINED_ACCESS_CONTROL&#34;&#93;</code> |
+| [description](variables.tf#L23) | Description of this taxonomy. | <code>string</code> |  | <code>&#34;Taxonomy - Terraform managed&#34;</code> |
+| [group_iam](variables.tf#L29) | Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam](variables.tf#L35) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_additive](variables.tf#L41) | IAM additive bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam_additive_members](variables.tf#L47) | IAM additive bindings in {MEMBERS => [ROLE]} format. This might break if members are dynamic values. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [location](variables.tf#L53) | Data Catalog Taxonomy location. | <code>string</code> |  | <code>&#34;eu&#34;</code> |
+| [prefix](variables.tf#L64) | Prefix used to generate project id and name. | <code>string</code> |  | <code>null</code> |
+| [tags](variables.tf#L74) | List of Data Catalog Policy tags to be created. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+
+## Outputs
+
+| name | description | sensitive |
+|---|---|:---:|
+| [tags](outputs.tf#L17) | Policy Tags. |  |
+| [taxonomy](outputs.tf#L21) | Taxonomy ID |  |
+
+<!-- END TFDOC -->
 ## TODO
 - Support IAM at tag level.
+- Support Child policy tags
