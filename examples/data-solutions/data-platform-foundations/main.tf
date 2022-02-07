@@ -19,7 +19,7 @@ locals {
     load = {
       network_name = element(split("/", var.network_config.network_self_link != null ? var.network_config.network_self_link : module.lod-vpc[0].self_link), length(split("/", var.network_config.network_self_link != null ? var.network_config.network_self_link : module.lod-vpc[0].self_link)) - 1)
       network      = var.network_config.network_self_link != null ? var.network_config.network_self_link : module.lod-vpc[0].self_link
-      subnet       = var.network_config.network_self_link != null ? var.network_config.subnet_selfs_link.load : module.lod-vpc[0].subnet_self_links["${var.location_config.region}/${local.prefix_lod}-subnet"]
+      subnet       = var.network_config.network_self_link != null ? var.network_config.subnet_self_links.load : module.lod-vpc[0].subnet_self_links["${var.location_config.region}/${local.prefix_lod}-subnet"]
     }
     orchestration = {
       #TODO Fix Network name logic

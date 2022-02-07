@@ -174,26 +174,6 @@ variable "vpc_sc_perimeter_ingress_policies" {
   default = null
 }
 
-#TODO Ask Team
-variable "vpc_sc_dataplatform_projects" {
-  description = "VPC SC perimeter resources."
-  type = object({
-    dev  = list(string)
-    prod = list(string)
-  })
-  default = null
-}
-
-#TODO Ask Team
-variable "vpc_sc_dataplatform_folders" {
-  description = "VPC SC perimeter resources."
-  type = object({
-    dev  = list(string)
-    prod = list(string)
-  })
-  default = null
-}
-
 variable "vpc_sc_perimeter_projects" {
   description = "VPC SC perimeter resources."
   type = object({

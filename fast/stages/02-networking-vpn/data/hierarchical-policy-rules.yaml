@@ -22,7 +22,7 @@ allow-healthchecks:
   ports:
     tcp: ["80", "443"]
   target_resources: null
-  enable_logging: true
+  enable_logging: false
 
 allow-ssh-from-iap:
   description: Enable SSH from IAP

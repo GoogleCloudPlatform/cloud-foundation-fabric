@@ -15,14 +15,7 @@
 # tfdoc:file:description Output variables.
 
 locals {
-  tfvars = {
-    "02-security" = jsonencode({
-      vpc_sc_dataplatform_projects = {
-        dev  = formatlist("projects/%s", values(module.data-platform.projects.project_number))
-        prod = null
-      }
-    })
-  }
+  tfvars = {}
 }
 
 resource "local_file" "tfvars" {

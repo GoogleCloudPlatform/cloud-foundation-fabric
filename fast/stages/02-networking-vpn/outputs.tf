@@ -27,30 +27,12 @@ locals {
       shared_vpc_self_link = module.prod-spoke-vpc.self_link
       vpc_host_project     = module.prod-spoke-project.project_id
     })
-    "03-data-platform-dev" = jsonencode({
-      network_self_link = module.dev-spoke-project.project_id
-      subnet_self_links = {
-        load           = module.dev-spoke-vpc.subnets["europe-west1/dev-dp-lod-ew1"].self_link
-        orchestration  = module.dev-spoke-vpc.subnets["europe-west1/dev-dp-orc-ew1"].self_link
-        transformation = module.dev-spoke-vpc.subnets["europe-west1/dev-dp-trf-ew1"].self_link
-      network_config = {
-        network_self_link = module.dev-spoke-vpc.self_link
-        subnet_self_links = {
-          load           = module.dev-spoke-vpc.subnets["europe-west1/dev-dp-lod-ew1"].self_link
-          orchestration  = module.dev-spoke-vpc.subnets["europe-west1/dev-dp-orc-ew1"].self_link
-          transformation = module.dev-spoke-vpc.subnets["europe-west1/dev-dp-trf-ew1"].self_link
-        }
-<<<<<<< HEAD
->>>>>>> b976dd6 (First commit)
-      }
-    })
     "03-data-platform-prod" = jsonencode({
       network_self_link = module.prod-spoke-vpc.self_link
       subnet_self_links = {
         load           = module.prod-spoke-vpc.subnets["europe-west1/prod-dp-lod-ew1"].self_link
         orchestration  = module.prod-spoke-vpc.subnets["europe-west1/prod-dp-orc-ew1"].self_link
         transformation = module.prod-spoke-vpc.subnets["europe-west1/prod-dp-trf-ew1"].self_link
-=======
       }
     })
     "03-data-platform-prod" = jsonencode({
@@ -67,7 +49,6 @@ locals {
           orchestration  = module.prod-spoke-vpc.subnets["europe-west1/prod-dp-orc-ew1"].self_link
           transformation = module.prod-spoke-vpc.subnets["europe-west1/prod-dp-trf-ew1"].self_link
         }
->>>>>>> a91cbd600fa972eacbdad92c8bdc5fbd4d6062f6
       }
     })
   }
