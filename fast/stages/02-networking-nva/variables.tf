@@ -129,8 +129,8 @@ variable "psa_ranges" {
     }
     prod = {
       cloudsql-mysql-ew1     = "10.128.221.0/24"
-      cloudsql-mysql-ew4     = "10.128.222.0/24"
-      cloudsql-sqlserver-ew1 = "10.128.253.0/24"
+      cloudsql-mysql-ew4     = "10.128.253.0/24"
+      cloudsql-sqlserver-ew1 = "10.128.222.0/24"
       cloudsql-sqlserver-ew4 = "10.128.254.0/24"
     }
   }
