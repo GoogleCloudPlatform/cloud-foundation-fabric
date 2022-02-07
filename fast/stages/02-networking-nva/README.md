@@ -87,7 +87,7 @@ This stage uses a dedicated /16 block (10.128.0.0/16), which should be sized to 
 
 The /16 block is evenly split in eight, smaller /19 blocks, assigned to different areas of the GCP network: *landing untrusted europe-west1*, *landing untrusted europe-west4*, *landing trusted europe-west1*, *landing untrusted europe-west4*, *development europe-west1*, *development europe-west4*, *production europe-west1*, *production europe-west4*.
 
-The first /24 range is carved from each /19 and effectively allocated for the subnet.
+The first /24 range in every area is allocated for a default subnet, which can be removed or modified as needed.
 
 Spoke VPCs also define and reserve three "special" CIDR ranges, derived from the respective /19, dedicated to
 
