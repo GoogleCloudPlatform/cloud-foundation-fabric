@@ -10,8 +10,8 @@ Note: Data Catalog is still in beta, hence this module currently uses the beta p
 ```hcl
 module "cmn-dc" {
   source     = "./modules/data-catalog-policy-tag"
-  name       = "dc-tags"
-  project_id = module.cmn-prj.project_id
+  name       = "my-datacatalog-policy-tags"
+  project_id = "my-project"
   tags       = ["low", "medium", "high"]
 }
 # tftest modules=1 resources=4
@@ -22,8 +22,8 @@ module "cmn-dc" {
 ```hcl
 module "cmn-dc" {
   source     = "./modules/data-catalog-policy-tag"
-  name       = "dc-tags"
-  project_id = module.cmn-prj.project_id
+  name       = "my-datacatalog-policy-tags"
+  project_id = "my-project"
   tags       = ["low", "medium", "high"]
   iam = {
     "roles/datacatalog.categoryAdmin" = ["group:GROUP_NAME@example.com"]
