@@ -17,20 +17,20 @@
 # tfdoc:file:description Data Catalog Taxonomy IAM definition.
 
 locals {
-  _group_iam_roles = distinct(flatten(values(var.group_iam)))
   _group_iam = {
     for r in local._group_iam_roles : r => [
       for k, v in var.group_iam : "group:${k}" if try(index(v, r), null) != null
     ]
   }
-  _iam_additive_pairs = flatten([
-    for role, members in var.iam_additive : [
-      for member in members : { role = role, member = member }
-    ]
-  ])
+  _group_iam_roles = distinct(flatten(values(var.group_iam)))
   _iam_additive_member_pairs = flatten([
     for member, roles in var.iam_additive_members : [
       for role in roles : { role = role, member = member }
+    ]
+  ])
+  _iam_additive_pairs = flatten([
+    for role, members in var.iam_additive : [
+      for member in members : { role = role, member = member }
     ]
   ])
   iam = {

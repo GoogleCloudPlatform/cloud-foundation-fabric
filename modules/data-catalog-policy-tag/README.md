@@ -1,33 +1,25 @@
 # Data Catalog Module
 
+This module simplifies the creation of [Data Catalog](https://cloud.google.com/data-catalog) Policy Tags.
+
+Note: Data Catalog is still in beta, hence this module currently uses the beta provider.
 ## Examples
-
-### Simple Taxonomy
-```hcl
-
-#TODO
-
-# tftest modules=1 resources=4
-```
 
 ### Simple Taxonomy with policy tags
 
 ```hcl
-
 module "cmn-dc" {
   source     = "../../../modules/data-catalog"
   name       = "dc-tags"
   project_id = module.cmn-prj.project_id
   tags       = ["low", "medium", "high"]
 }
-
 # tftest modules=1 resources=4
 ```
 
 ### Simple Taxonomy with IAM binding
 
 ```hcl
-
 module "cmn-dc" {
   source     = "../../../modules/data-catalog"
   name       = "dc-tags"
@@ -37,7 +29,6 @@ module "cmn-dc" {
     "roles/datacatalog.categoryAdmin" = ["group:GROUP_NAME@example.com"]
   }
 }
-
 # tftest modules=1 resources=5
 ```
 <!-- BEGIN TFDOC -->
