@@ -20,7 +20,7 @@ variable "project_id" {
 }
 
 variable "name" {
-  description = "NEG name"
+  description = "NEG name."
   type        = string
 }
 
@@ -35,12 +35,12 @@ variable "subnetwork" {
 }
 
 variable "zone" {
-  description = "NEG zone"
+  description = "NEG zone."
   type        = string
 }
 
 variable "endpoints" {
-  description = "List of (instance, port, address) of the NEG"
+  description = "List of (instance, port, address) of the NEG."
   type = list(object({
     instance   = string
     port       = number

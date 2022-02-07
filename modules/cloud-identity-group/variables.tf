@@ -24,7 +24,7 @@ variable "customer_id" {
 }
 
 variable "description" {
-  description = "Group description"
+  description = "Group description."
   type        = string
   default     = null
 }

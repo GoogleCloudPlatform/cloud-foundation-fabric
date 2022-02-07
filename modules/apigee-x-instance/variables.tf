@@ -30,16 +30,16 @@ variable "apigee_environments" {
 }
 
 variable "apigee_org_id" {
-  description = "Apigee Organization ID"
+  description = "Apigee Organization ID."
   type        = string
 }
 
-variable "cidr_mask" {
-  description = "CIDR mask for the Apigee instance"
-  type        = number
+variable "ip_range" {
+  description = "Customer-provided CIDR block of length 22 for the Apigee instance."
+  type        = string
   validation {
-    condition     = contains([16, 20, 22], var.cidr_mask)
-    error_message = "Invalid CIDR mask; Allowed values for cidr_mask: [16, 20, 22]."
+    condition     = try(cidrnetmask(var.ip_range), null) == "255.255.252.0"
+    error_message = "Invalid CIDR block provided; Allowed pattern for ip_range: X.X.X.X/22."
   }
 }
 

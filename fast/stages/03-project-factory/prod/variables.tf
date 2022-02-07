@@ -45,10 +45,12 @@ variable "shared_vpc_self_link" {
   # tfdoc:variable:source 02-networking
   description = "Self link for the shared VPC."
   type        = string
+  default     = null
 }
 
 variable "vpc_host_project" {
   # tfdoc:variable:source 02-networking
   description = "Host project for the shared VPC."
   type        = string
+  default     = null
 }

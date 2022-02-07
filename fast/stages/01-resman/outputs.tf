@@ -30,11 +30,6 @@ locals {
       name   = "security"
       sa     = module.branch-security-sa.email
     })
-    "99-sandbox" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
-      bucket = module.branch-sandbox-gcs.name
-      name   = "sandbox"
-      sa     = module.branch-sandbox-sa.email
-    })
     "03-project-factory-dev" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
       bucket = module.branch-teams-dev-projectfactory-gcs.name
       name   = "team-dev"
@@ -45,10 +40,19 @@ locals {
       name   = "team-prod"
       sa     = module.branch-teams-prod-projectfactory-sa.email
     })
+    "99-sandbox" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
+      bucket = module.branch-sandbox-gcs.name
+      name   = "sandbox"
+      sa     = module.branch-sandbox-sa.email
+    })
   }
   tfvars = {
     "02-networking" = jsonencode({
-      folder_id          = module.branch-network-folder.id
+      folder_ids = {
+        networking      = module.branch-network-folder.id
+        networking-dev  = module.branch-network-dev-folder.id
+        networking-prod = module.branch-network-prod-folder.id
+      }
       project_factory_sa = local._project_factory_sas
     })
     "02-security" = jsonencode({
@@ -64,13 +68,13 @@ locals {
 
 resource "local_file" "providers" {
   for_each = var.outputs_location == null ? {} : local.providers
-  filename = "${var.outputs_location}/${each.key}/providers.tf"
+  filename = "${pathexpand(var.outputs_location)}/${each.key}/providers.tf"
   content  = each.value
 }
 
 resource "local_file" "tfvars" {
   for_each = var.outputs_location == null ? {} : local.tfvars
-  filename = "${var.outputs_location}/${each.key}/terraform-resman.auto.tfvars.json"
+  filename = "${pathexpand(var.outputs_location)}/${each.key}/terraform-resman.auto.tfvars.json"
   content  = each.value
 }
 

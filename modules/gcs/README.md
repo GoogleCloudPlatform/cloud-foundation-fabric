@@ -11,7 +11,7 @@ module "bucket" {
     "roles/storage.admin" = ["group:storage@example.com"]
   }
 }
-# tftest:modules=1:resources=2
+# tftest modules=1 resources=2
 ```
 
 ### Example with Cloud KMS
@@ -27,7 +27,7 @@ module "bucket" {
   }
   encryption_key = "my-encryption-key"
 }
-# tftest:modules=1:resources=2
+# tftest modules=1 resources=2
 ```
 
 ### Example with retention policy
@@ -52,7 +52,7 @@ module "bucket" {
     log_object_prefix = null
   }
 }
-# tftest:modules=1:resources=2
+# tftest modules=1 resources=2
 ```
 
 ### Example with lifecycle rule
@@ -86,7 +86,7 @@ module "bucket" {
     }
   }
 }
-# tftest:modules=1:resources=2
+# tftest modules=1 resources=2
 ```
 ### Minimal example with GCS notifications
 ```hcl
@@ -104,7 +104,7 @@ module "bucket-gcs-notification" {
     custom_attributes = {}
   }
 }
-# tftest:modules=1:resources=4
+# tftest modules=1 resources=4
 ```
 <!-- BEGIN TFDOC -->
 
@@ -119,7 +119,7 @@ module "bucket-gcs-notification" {
 | [force_destroy](variables.tf#L34) | Optional map to set force destroy keyed by name, defaults to false. | <code>bool</code> |  | <code>false</code> |
 | [iam](variables.tf#L40) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [labels](variables.tf#L46) | Labels to be attached to all buckets. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [lifecycle_rule](variables.tf#L52) | Bucket lifecycle rule | <code title="object&#40;&#123;&#10;  action &#61; object&#40;&#123;&#10;    type          &#61; string&#10;    storage_class &#61; string&#10;  &#125;&#41;&#10;  condition &#61; object&#40;&#123;&#10;    age                        &#61; number&#10;    created_before             &#61; string&#10;    with_state                 &#61; string&#10;    matches_storage_class      &#61; list&#40;string&#41;&#10;    num_newer_versions         &#61; string&#10;    custom_time_before         &#61; string&#10;    days_since_custom_time     &#61; string&#10;    days_since_noncurrent_time &#61; string&#10;    noncurrent_time_before     &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [lifecycle_rule](variables.tf#L52) | Bucket lifecycle rule. | <code title="object&#40;&#123;&#10;  action &#61; object&#40;&#123;&#10;    type          &#61; string&#10;    storage_class &#61; string&#10;  &#125;&#41;&#10;  condition &#61; object&#40;&#123;&#10;    age                        &#61; number&#10;    created_before             &#61; string&#10;    with_state                 &#61; string&#10;    matches_storage_class      &#61; list&#40;string&#41;&#10;    num_newer_versions         &#61; string&#10;    custom_time_before         &#61; string&#10;    days_since_custom_time     &#61; string&#10;    days_since_noncurrent_time &#61; string&#10;    noncurrent_time_before     &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [location](variables.tf#L74) | Bucket location. | <code>string</code> |  | <code>&#34;EU&#34;</code> |
 | [logging_config](variables.tf#L80) | Bucket logging configuration. | <code title="object&#40;&#123;&#10;  log_bucket        &#61; string&#10;  log_object_prefix &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [notification_config](variables.tf#L94) | GCS Notification configuration. | <code title="object&#40;&#123;&#10;  enabled           &#61; bool&#10;  payload_format    &#61; string&#10;  topic_name        &#61; string&#10;  sa_email          &#61; string&#10;  event_types       &#61; list&#40;string&#41;&#10;  custom_attributes &#61; map&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |

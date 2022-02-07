@@ -1,6 +1,6 @@
 # Organization bootstrap
 
-The primary purpose of this stage is to enable critical organization-level functionality that depends on broad administrative permissions, and prepare the prerequisites needed to enable automation in this and future stages.
+The primary purpose of this stage is to enable critical organization-level functionalities that depend on broad administrative permissions, and prepare the prerequisites needed to enable automation in this and future stages.
 
 It is intentionally simple, to minimize usage of administrative-level permissions and enable simple auditing and troubleshooting, and only deals with three sets of resources:
 
@@ -28,13 +28,15 @@ We have standardized the initial set of groups on those outlined in the [GCP Ent
 
 ### Organization-level IAM
 
-The service account used in the [Resource Management stage](../01-resman) needs to be able to grant specific roles at the organizational level (`roles/billing.user`, `roles/compute.xpnAdmin`, etc.), to enable specific functionality for subsequent stages that deal with network or security resources, or billing-related activities.
+The service account used in the [Resource Management stage](../01-resman) needs to be able to grant specific permissions at the organizational level, to enable specific functionality for subsequent stages that deal with network or security resources, or billing-related activities.
 
 In order to be able to assign those roles without having the full authority of the Organization Admin role, this stage defines a custom role that only allows setting IAM policies on the organization, and grants it via a [delegated role grant](https://cloud.google.com/iam/docs/setting-limits-on-granting-roles) that only allows it to be used to grant a limited subset of roles.
 
 In this way, the Resource Management service account can effectively act as an Organization Admin, but only to grant the roles it effectively needs to control.
 
 One consequence of the above setup, is the need to configure IAM bindings as non-authoritative for the roles included in the IAM condition, since those same roles are effectively under the control of two stages: this one and Resource Management. Using authoritative bindings for these roles (instead of non-authoritative ones) would generate potential conflicts, where each stage could try to overwrite and negate the bindings applied by the other at each `apply` cycle.
+
+A full reference of IAM roles managed by this stage [is available here](./IAM.md).
 
 ### Automation project and resources
 
@@ -95,7 +97,7 @@ To quickly self-grant the above roles, run the following code snippet as the ini
 ```bash
 export BOOTSTRAP_ORG_ID=123456
 export BOOTSTRAP_USER=$(gcloud config list --format 'value(core.account)')
-export BOOTSTRAP_ROLES=(roles/billing.admin roles/logging.admin roles/iam.organizationRoleAdmin roles/resourcemanager.projectCreator)
+export BOOTSTRAP_ROLES="roles/billing.admin roles/logging.admin roles/iam.organizationRoleAdmin roles/resourcemanager.projectCreator"
 for role in $BOOTSTRAP_ROLES; do
   gcloud organizations add-iam-policy-binding $BOOTSTRAP_ORG_ID \
     --member user:$BOOTSTRAP_USER --role $role
@@ -144,16 +146,35 @@ Before the first run, the following IAM groups must exist to allow IAM bindings 
 
 #### Configure variables
 
-Then make sure you have configured the correct values for the following variables by editing  providing a `terraform.tfvars` file:
+Then make sure you have configured the correct values for the following variables by providing a `terraform.tfvars` file:
 
 - `billing_account`
-  an object containing the id of your billing account, derived from the Cloud Console UI or by running `gcloud beta billing accounts list`, and the id of the organization owning it, or `null` to use the billing account in isolation
+  an object containing `id` as the id of your billing account, derived from the Cloud Console UI or by running `gcloud beta billing accounts list`, and `organization_id` as the id of the organization owning it, or `null` to use the billing account in isolation
 - `groups`
   the name mappings for your groups, if you're following the default convention you can leave this to the provided default
 - `organization.id`, `organization.domain`, `organization.customer_id`
   the id, domain and customer id of your organization, derived from the Cloud Console UI or by running `gcloud organizations list`
 - `prefix`
   the fixed prefix used in your naming convention
+
+You can also adapt the example that follows to your needs:
+
+```hcl
+# fetch the required id by running `gcloud beta billing accounts list`
+billing_account={
+    id="012345-67890A-BCDEF0"
+    organization_id="01234567890"
+}
+# get the required info by running `gcloud organizations list`
+organization={
+    id="01234567890"
+    domain="fast.example.com"
+    customer_id="Cxxxxxxx"
+}
+# create your own 4-letters prefix
+prefix="fast"
+outputs_location = "../../fast-config"
+```
 
 ### Output files and cross-stage variables
 
@@ -162,7 +183,7 @@ At any time during the life of this stage, you can configure it to automatically
 Automatic generation of files is disabled by default. To enable the mechanism,  set the `outputs_location` variable to a valid path on a local filesystem, e.g.
 
 ```hcl
-outputs_location = "../../configs"
+outputs_location = "../../config"
 ```
 
 Once the variable is set, `apply` will generate and manage providers and variables files, including the initial one used for this stage after the first run. You can then link these files in the relevant stages, instead of manually transfering outputs from one stage, to Terraform variables in another.
@@ -177,11 +198,13 @@ Below is the outline of the output files generated by this stage:
 │   ├── providers.tf
 │   ├── terraform-bootstrap.auto.tfvars.json
 ├── 02-networking
-│   ├── providers.tf
 │   ├── terraform-bootstrap.auto.tfvars.json
 ├── 02-security
-│   ├── providers.tf
 │   ├── terraform-bootstrap.auto.tfvars.json
+├── 03-gke-multitenant-dev
+│   └── terraform-bootstrap.auto.tfvars.json
+├── 03-gke-multitenant-prod
+│   └── terraform-bootstrap.auto.tfvars.json
 ├── 03-project-factory-dev
 │   └── terraform-bootstrap.auto.tfvars.json
 ├── 03-project-factory-prod
@@ -190,7 +213,9 @@ Below is the outline of the output files generated by this stage:
 
 ### Running the stage
 
-The first `apply` run as a user needs a special runtime variable, so that the user roles are preserved when setting IAM bindings:
+Before running `init` and `apply`, check your environment so no extra variables that might influence authentication are present (e.g. `GOOGLE_IMPERSONATE_SERVICE_ACCOUNT`). In general you should use user application credentials, and FAST will then take care to provision automation identities and configure impersonation for you.
+
+When running the first `apply` as a user, you need to pass a special runtime variable so that the user roles are preserved when setting IAM bindings.
 
 ```bash
 terraform init
@@ -201,13 +226,15 @@ terraform apply \
 Once the initial `apply` completes successfully, configure a remote backend using the new GCS bucket, and impersonation on the automation service account for this stage. To do this, you can use the generated `providers.tf` file if you have configured output files as described above, or extract its contents from Terraform's output, then migrate state with `terraform init`:
 
 ```bash
-# if using output files via the outputs_location variable
-ln -s [path set in outputs_location]/00-bootstrap/* ./
+# if using output files via the outputs_location and set to `../../config`
+ln -s ../../config/00-bootstrap/* ./
 # or from outputs if not using output files
 terraform output -json providers | jq -r '.["00-bootstrap"]' \
   > providers.tf
 # migrate state to GCS bucket configured in providers file
 terraform init -migrate-state
+# run terraform apply to remove the bootstrap_user iam binding 
+terraform apply
 ```
 
 ## Customizations
@@ -297,9 +324,9 @@ Names used in internal references (e.g. `module.foo-prod.id`) are only used by T
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [billing_dataset](outputs.tf#L84) | BigQuery dataset prepared for billing export. |  |  |
-| [project_ids](outputs.tf#L89) | Projects created by this stage. |  |  |
-| [providers](outputs.tf#L100) | Terraform provider files for this stage and dependent stages. | ✓ | <code>stage-01</code> |
-| [tfvars](outputs.tf#L109) | Terraform variable files for the following stages. | ✓ |  |
+| [billing_dataset](outputs.tf#L85) | BigQuery dataset prepared for billing export. |  |  |
+| [project_ids](outputs.tf#L90) | Projects created by this stage. |  |  |
+| [providers](outputs.tf#L101) | Terraform provider files for this stage and dependent stages. | ✓ | <code>stage-01</code> |
+| [tfvars](outputs.tf#L110) | Terraform variable files for the following stages. | ✓ |  |
 
 <!-- END TFDOC -->

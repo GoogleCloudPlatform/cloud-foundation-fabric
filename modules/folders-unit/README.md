@@ -21,7 +21,7 @@ module "folders-unit" {
   }
   service_account_keys  = true
 }
-# tftest:modules=1:resources=37
+# tftest modules=1 resources=37
 ```
 <!-- BEGIN TFDOC -->
 

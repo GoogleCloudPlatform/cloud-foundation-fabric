@@ -12,10 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-###############################################################################
-#                                   GCS                                       #
-###############################################################################
-
 module "gcs-data" {
   source         = "../../../modules/gcs"
   project_id     = module.project.project_id
@@ -23,7 +19,7 @@ module "gcs-data" {
   name           = "data"
   location       = var.region
   storage_class  = "REGIONAL"
-  encryption_key = var.cmek_encryption ? try(module.kms[0].keys.key-gcs.id, null) : null
+  encryption_key = var.cmek_encryption ? module.kms[0].keys.key-gcs.id : null
   force_destroy  = true
 }
 
@@ -34,22 +30,20 @@ module "gcs-df-tmp" {
   name           = "df-tmp"
   location       = var.region
   storage_class  = "REGIONAL"
-  encryption_key = var.cmek_encryption ? try(module.kms[0].keys.key-gcs.id, null) : null
+  encryption_key = var.cmek_encryption ? module.kms[0].keys.key-gcs.id : null
   force_destroy  = true
 }
-
-###############################################################################
-#                                   BQ                                        #
-###############################################################################
 
 module "bigquery-dataset" {
   source     = "../../../modules/bigquery-dataset"
   project_id = module.project.project_id
   id         = "datalake"
   location   = var.region
-  # Define Tables in Terraform for the porpuse of the example. 
-  # Probably in a production environment you would handle Tables creation in a 
-  # separate Terraform State or using a different tool/pipeline (for example: Dataform).
+
+  # Note: we define tables in Terraform for the purpose of this
+  # example. A production environment would probably handle table
+  # creation in a separate terraform pipeline or using a different
+  # tool (for example: Dataform)
   tables = {
     person = {
       friendly_name = "Person. Dataflow import."
@@ -64,10 +58,10 @@ module "bigquery-dataset" {
       deletion_protection = false
       options = {
         clustering      = null
-        encryption_key  = var.cmek_encryption ? try(module.kms[0].keys.key-bq.id, null) : null
+        encryption_key  = var.cmek_encryption ? module.kms[0].keys.key-bq.id : null
         expiration_time = null
       }
     }
   }
-  encryption_key = var.cmek_encryption ? try(module.kms[0].keys.key-bq.id, null) : null
+  encryption_key = var.cmek_encryption ? module.kms[0].keys.key-bq.id : null
 }

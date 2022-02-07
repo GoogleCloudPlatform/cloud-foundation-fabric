@@ -21,7 +21,7 @@ variable "iam" {
 }
 
 variable "location" {
-  description = "Registry location. Can be US, EU, ASIA or empty"
+  description = "Registry location. Can be US, EU, ASIA or empty."
   type        = string
   default     = ""
 }

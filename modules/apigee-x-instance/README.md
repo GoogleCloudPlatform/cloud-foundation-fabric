@@ -11,7 +11,7 @@ module "apigee-x-instance" {
   source             = "./modules/apigee-x-instance"
   name               = "my-us-instance"
   region             = "us-central1"
-  cidr_mask          = 22
+  ip_range           = "10.0.0.0/22"
 
   apigee_org_id      = "my-project"
   apigee_environments = [
@@ -19,7 +19,7 @@ module "apigee-x-instance" {
     "eval2"
   ]
 }
-# tftest:modules=1:resources=3
+# tftest modules=1 resources=3
 ```
 
 ### Apigee X Paid Instance
@@ -29,7 +29,7 @@ module "apigee-x-instance" {
   source              = "./modules/apigee-x-instance"
   name                = "my-us-instance"
   region              = "us-central1"
-  cidr_mask           = 16
+  ip_range            = "10.0.0.0/22"
   disk_encryption_key = "my-disk-key"
 
   apigee_org_id       = "my-project"
@@ -40,7 +40,7 @@ module "apigee-x-instance" {
     "test2"
   ]
 }
-# tftest:modules=1:resources=5
+# tftest modules=1 resources=5
 ```
 <!-- BEGIN TFDOC -->
 
@@ -48,8 +48,8 @@ module "apigee-x-instance" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [apigee_org_id](variables.tf#L32) | Apigee Organization ID | <code>string</code> | ✓ |  |
-| [cidr_mask](variables.tf#L37) | CIDR mask for the Apigee instance | <code>number</code> | ✓ |  |
+| [apigee_org_id](variables.tf#L32) | Apigee Organization ID. | <code>string</code> | ✓ |  |
+| [ip_range](variables.tf#L37) | Customer-provided CIDR block of length 22 for the Apigee instance. | <code>string</code> | ✓ |  |
 | [name](variables.tf#L52) | Apigee instance name. | <code>string</code> | ✓ |  |
 | [region](variables.tf#L57) | Compute region. | <code>string</code> | ✓ |  |
 | [apigee_envgroups](variables.tf#L17) | Apigee Environment Groups. | <code title="map&#40;object&#40;&#123;&#10;  environments &#61; list&#40;string&#41;&#10;  hostnames    &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |

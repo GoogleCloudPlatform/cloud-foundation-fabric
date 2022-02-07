@@ -98,7 +98,7 @@ variable "description" {
   default     = "Managed by the compute-vm Terraform module."
 }
 variable "enable_display" {
-  description = "Enable virtual display on the instances"
+  description = "Enable virtual display on the instances."
   type        = bool
   default     = false
 }

@@ -26,7 +26,7 @@ module "glb" {
     }
   }
 }
-# tftest:modules=1:resources=4
+# tftest modules=1 resources=4
 ```
 
 ### Group Backend Service Minimal Example
@@ -58,7 +58,7 @@ module "glb" {
     }
   }
 }
-# tftest:modules=1:resources=5
+# tftest modules=1 resources=5
 ```
 
 ### Health Checks For Group Backend Services
@@ -108,7 +108,53 @@ module "glb" {
     }
   }
 }
-# tftest:modules=1:resources=5
+# tftest modules=1 resources=5
+```
+
+### Serverless Backends
+
+Serverless backends can also be used, as shown in the example below.
+
+```hcl
+module "glb" {
+  source     = "./modules/net-glb"
+  name       = "glb-test"
+  project_id = var.project_id
+
+  # This is important as serverless backends require no HCs
+  health_checks_config_defaults = null
+
+  backend_services_config = {
+    my-serverless-backend = {
+      bucket_config = null
+      enable_cdn    = false
+      cdn_config    = null
+      group_config = {
+        backends = [
+          {
+            group   = google_compute_region_network_endpoint_group.serverless-neg.id
+            options = null
+          }
+        ],
+        health_checks = []
+        log_config = null
+        options = null
+      }
+    }
+  }
+}
+
+resource "google_compute_region_network_endpoint_group" "serverless-neg" {
+  name                  = "my-serverless-neg"
+  project               = var.project_id
+  region                = "europe-west1"
+  network_endpoint_type = "SERVERLESS"
+
+  cloud_run {
+    service = "my-cloud-run-service"
+  }
+}
+# tftest modules=1 resources=4
 ```
 
 ### Mixing Backends
@@ -165,7 +211,7 @@ module "glb" {
     }
   }
 }
-# tftest:modules=1:resources=7
+# tftest modules=1 resources=7
 ```
 
 ### Url-map
@@ -240,7 +286,7 @@ module "glb" {
     }
   }
 }
-# tftest:modules=1:resources=6
+# tftest modules=1 resources=6
 ```
 
 ### Reserve a static IP address
@@ -274,7 +320,7 @@ module "glb" {
     }
   }
 }
-# tftest:modules=1:resources=6
+# tftest modules=1 resources=6
 ```
 
 ### HTTPS And SSL Certificates
@@ -311,7 +357,7 @@ module "glb" {
     }
   }
 }
-# tftest:modules=1:resources=6
+# tftest modules=1 resources=6
 ```
 
 Otherwise, SSL certificates can be explicitely defined. In this case, they'll need to be referenced from the `target_proxy_https_config.ssl_certificates` variable.
@@ -361,7 +407,7 @@ module "glb" {
     }
   }
 }
-# tftest:modules=1:resources=6
+# tftest modules=1 resources=6
 ```
 
 Using unamanged certificates is also possible. Here is an example:
@@ -433,19 +479,63 @@ resource "tls_self_signed_cert" "self_signed_cert" {
     organization = "My Test Org"
   }
 }
-# tftest:modules=1:resources=6
+# tftest modules=1 resources=6
 ```
 
 ## Components And Files Mapping
 
 An External Global Load Balancer is made of multiple components, that change depending on the configurations. Sometimes, it may be tricky to understand what they are, and how they relate to each other. Following, we provide a very brief overview to become more familiar with them.
 
-* The global load balancer ([global_forwarding_rule.tf](global_forwarding_rule.tf)) binds a frontend public Virtual IP (VIP) (ip_address.tf)[ip_address.tf] to an HTTP(S) target proxy ((target_proxy.tf)[target_proxy.tf]).
+- The global load balancer [forwarding rule](global_forwarding_rule.tf) binds a frontend public Virtual IP (VIP) to an HTTP(S) [target proxy](target_proxy.tf).
+- If the target proxy is HTTPS, it requires one or more managed or unmanaged [SSL certificates](ssl_certificates.tf).
+- Target proxies  leverage [url-maps](url_map.tf): set of L7 rules, which create a mapping between specific hostnames, URIs (and more) to one or more [backends services](backend_services.tf).
+- [Backend services](backend_services.tf) can either link to a bucket or one or multiple groups, which can be GCE instance groups or NEGs. It is assumed in this module that buckets and groups are previously created through other modules, and passed in as input variables.
+- Backend services support one or more [health checks](health_checks.tf), used to verify that the backend is indeed healthy, so that traffic can be forwarded to it. Health checks currently supported in this module are HTTP, HTTPS, HTTP2, SSL, TCP.
 
-* If the target proxy ((target_proxy.tf)[target_proxy.tf]) is HTTPS, it requires one or more -managed or unmanaged- SSL certificates ((ssl_certificates.tf)[ssl_certificates.tf]).
+<!-- TFDOC OPTS files:1 -->
+<!-- BEGIN TFDOC -->
 
-* Target proxies ((target_proxy.tf)[target_proxy.tf]) leverage url-maps ((url_map.tf)[url_map.tf]): set of L7 rules, which create a mapping between specific hostnames, URIs (and more) to one or more backends services ((backend_services.tf)[backend_services.tf]).
+## Files
 
-* Backends services ((backend_services.tf)[backend_services.tf]) can either link to a bucket or -one or multiple- groups, which can be GCE instance groups or NEGs. It is assumed in this module that buckets and groups are previously created through other modules, and passed in as input variables.
+| name | description | resources |
+|---|---|---|
+| [backend-services.tf](./backend-services.tf) | Bucket and group backend services. | <code>google_compute_backend_bucket</code> · <code>google_compute_backend_service</code> |
+| [global-forwarding-rule.tf](./global-forwarding-rule.tf) | Global address and forwarding rule. | <code>google_compute_global_address</code> · <code>google_compute_global_forwarding_rule</code> |
+| [health-checks.tf](./health-checks.tf) | Health checks. | <code>google_compute_health_check</code> |
+| [outputs.tf](./outputs.tf) | Module outputs. |  |
+| [ssl-certificates.tf](./ssl-certificates.tf) | SSL certificates. | <code>google_compute_managed_ssl_certificate</code> · <code>google_compute_ssl_certificate</code> |
+| [target-proxy.tf](./target-proxy.tf) | HTTP and HTTPS target proxies. | <code>google_compute_target_http_proxy</code> · <code>google_compute_target_https_proxy</code> |
+| [url-map.tf](./url-map.tf) | URL maps. | <code>google_compute_url_map</code> |
+| [variables.tf](./variables.tf) | Module variables. |  |
+| [versions.tf](./versions.tf) | Version pins. |  |
 
-* Backends services ((backend_services.tf)[backend_services.tf]) support one or more health checks ((health_cheks.tf)[health_checks.tf]), used to verify that the backend is indeed healthy, so that traffic can be forwarded to it. Health checks currently supported in this module are HTTP, HTTPS, HTTP2, SSL, TCP.
+## Variables
+
+| name | description | type | required | default |
+|---|---|:---:|:---:|:---:|
+| [name](variables.tf#L17) | Load balancer name. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L22) | Project id. | <code>string</code> | ✓ |  |
+| [backend_services_config](variables.tf#L56) | The backends services configuration. | <code title="map&#40;object&#40;&#123;&#10;  enable_cdn &#61; bool&#10;&#10;&#10;  cdn_config &#61; object&#40;&#123;&#10;    cache_mode                   &#61; string&#10;    client_ttl                   &#61; number&#10;    default_ttl                  &#61; number&#10;    max_ttl                      &#61; number&#10;    negative_caching             &#61; bool&#10;    negative_caching_policy      &#61; map&#40;number&#41;&#10;    serve_while_stale            &#61; bool&#10;    signed_url_cache_max_age_sec &#61; string&#10;  &#125;&#41;&#10;&#10;&#10;  bucket_config &#61; object&#40;&#123;&#10;    bucket_name &#61; string&#10;    options &#61; object&#40;&#123;&#10;      custom_response_headers &#61; list&#40;string&#41;&#10;    &#125;&#41;&#10;  &#125;&#41;&#10;&#10;&#10;  group_config &#61; object&#40;&#123;&#10;    backends &#61; list&#40;object&#40;&#123;&#10;      group &#61; string &#35; IG or NEG FQDN address&#10;      options &#61; object&#40;&#123;&#10;        balancing_mode               &#61; string &#35; Can be UTILIZATION, RATE, CONNECTION&#10;        capacity_scaler              &#61; number &#35; Valid range is &#91;0.0,1.0&#93;&#10;        max_connections              &#61; number&#10;        max_connections_per_instance &#61; number&#10;        max_connections_per_endpoint &#61; number&#10;        max_rate                     &#61; number&#10;        max_rate_per_instance        &#61; number&#10;        max_rate_per_endpoint        &#61; number&#10;        max_utilization              &#61; number&#10;      &#125;&#41;&#10;    &#125;&#41;&#41;&#10;    health_checks &#61; list&#40;string&#41;&#10;&#10;&#10;    log_config &#61; object&#40;&#123;&#10;      enable      &#61; bool&#10;      sample_rate &#61; number &#35; must be in &#91;0, 1&#93;&#10;    &#125;&#41;&#10;&#10;&#10;    options &#61; object&#40;&#123;&#10;      affinity_cookie_ttl_sec         &#61; number&#10;      custom_request_headers          &#61; list&#40;string&#41;&#10;      custom_response_headers         &#61; list&#40;string&#41;&#10;      connection_draining_timeout_sec &#61; number&#10;      load_balancing_scheme           &#61; string &#35; only EXTERNAL &#40;default&#41; makes sense here&#10;      locality_lb_policy              &#61; string&#10;      port_name                       &#61; string&#10;      protocol                        &#61; string&#10;      security_policy                 &#61; string&#10;      session_affinity                &#61; string&#10;      timeout_sec                     &#61; number&#10;&#10;&#10;      circuits_breakers &#61; object&#40;&#123;&#10;        max_requests_per_connection &#61; number &#35; Set to 1 to disable keep-alive&#10;        max_connections             &#61; number &#35; Defaults to 1024&#10;        max_pending_requests        &#61; number &#35; Defaults to 1024&#10;        max_requests                &#61; number &#35; Defaults to 1024&#10;        max_retries                 &#61; number &#35; Defaults to 3&#10;      &#125;&#41;&#10;&#10;&#10;      consistent_hash &#61; object&#40;&#123;&#10;        http_header_name  &#61; string&#10;        minimum_ring_size &#61; string&#10;        http_cookie &#61; object&#40;&#123;&#10;          name &#61; string&#10;          path &#61; string&#10;          ttl &#61; object&#40;&#123;&#10;            seconds &#61; number&#10;            nanos   &#61; number&#10;          &#125;&#41;&#10;        &#125;&#41;&#10;      &#125;&#41;&#10;&#10;&#10;      iap &#61; object&#40;&#123;&#10;        oauth2_client_id            &#61; string&#10;        oauth2_client_secret        &#61; string&#10;        oauth2_client_secret_sha256 &#61; string&#10;      &#125;&#41;&#10;    &#125;&#41;&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [global_forwarding_rule_config](variables.tf#L202) | Global forwarding rule configurations. | <code title="object&#40;&#123;&#10;  ip_protocol           &#61; string&#10;  ip_version            &#61; string&#10;  load_balancing_scheme &#61; string&#10;  port_range            &#61; string&#10;&#10;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  load_balancing_scheme &#61; &#34;EXTERNAL&#34;&#10;  ip_protocol           &#61; &#34;TCP&#34;&#10;  ip_version            &#61; &#34;IPV4&#34;&#10;  port_range &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [health_checks_config](variables.tf#L45) | Custom health checks configuration. | <code title="map&#40;object&#40;&#123;&#10;  type    &#61; string      &#35; http https tcp ssl http2&#10;  check   &#61; map&#40;any&#41;    &#35; actual health check block attributes&#10;  options &#61; map&#40;number&#41; &#35; interval, thresholds, timeout&#10;  logging &#61; bool&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [health_checks_config_defaults](variables.tf#L27) | Auto-created health check default configuration. | <code title="object&#40;&#123;&#10;  type    &#61; string      &#35; http https tcp ssl http2&#10;  check   &#61; map&#40;any&#41;    &#35; actual health check block attributes&#10;  options &#61; map&#40;number&#41; &#35; interval, thresholds, timeout&#10;  logging &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  type    &#61; &#34;http&#34;&#10;  logging &#61; false&#10;  options &#61; &#123;&#125;&#10;  check &#61; &#123;&#10;    port_specification &#61; &#34;USE_SERVING_PORT&#34;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [https](variables.tf#L220) | Whether to enable HTTPS. | <code>bool</code> |  | <code>false</code> |
+| [reserve_ip_address](variables.tf#L226) | Whether to reserve a static global IP address. | <code>bool</code> |  | <code>false</code> |
+| [ssl_certificates_config](variables.tf#L165) | The SSL certificate configuration. | <code title="map&#40;object&#40;&#123;&#10;  domains &#61; list&#40;string&#41;&#10;  unmanaged_config &#61; object&#40;&#123;&#10;    tls_private_key      &#61; string&#10;    tls_self_signed_cert &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [ssl_certificates_config_defaults](variables.tf#L178) | The SSL certificate default configuration. | <code title="object&#40;&#123;&#10;  domains &#61; list&#40;string&#41;&#10;  unmanaged_config &#61; object&#40;&#123;&#10;    tls_private_key      &#61; string&#10;    tls_self_signed_cert &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  domains          &#61; &#91;&#34;example.com&#34;&#93;,&#10;  unmanaged_config &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [target_proxy_https_config](variables.tf#L194) | The HTTPS target proxy configuration. | <code title="object&#40;&#123;&#10;  ssl_certificates &#61; list&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [url_map_config](variables.tf#L151) | The url-map configuration. | <code title="object&#40;&#123;&#10;  default_service      &#61; string&#10;  default_route_action &#61; any&#10;  default_url_redirect &#61; map&#40;any&#41;&#10;  header_action        &#61; any&#10;  host_rules           &#61; list&#40;any&#41;&#10;  path_matchers        &#61; list&#40;any&#41;&#10;  tests                &#61; list&#40;map&#40;string&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+
+## Outputs
+
+| name | description | sensitive |
+|---|---|:---:|
+| [backend_services](outputs.tf#L22) | Backend service resources. |  |
+| [global_forwarding_rule](outputs.tf#L57) | The global forwarding rule. |  |
+| [health_checks](outputs.tf#L17) | Health-check resources. |  |
+| [ip_address](outputs.tf#L44) | The reserved global IP address. |  |
+| [ssl_certificates](outputs.tf#L35) | The SSL certificate. |  |
+| [target_proxy](outputs.tf#L49) | The target proxy. |  |
+| [url_map](outputs.tf#L30) | The url-map. |  |
+
+<!-- END TFDOC -->

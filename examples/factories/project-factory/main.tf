@@ -15,15 +15,12 @@
  */
 
 locals {
-  _gke_iam_hsau = try(var.vpc.gke_setup.enable_security_admin, false) ? {
-    "roles/container.hostServiceAgentUser" = [
-      "serviceAccount:${local.service_accounts_robots["container-engine"]}"
-  ] } : {}
-
+  _gke_iam_hsau = try(var.vpc.gke_setup.enable_host_service_agent, false) ? {
+    "roles/container.hostServiceAgentUser" = "serviceAccount:${module.project.service_accounts.robots.container-engine}"
+  } : {}
   _gke_iam_securityadmin = try(var.vpc.gke_setup.enable_security_admin, false) ? {
-    "roles/compute.securityAdmin" = [
-      "serviceAccount:${local.service_accounts_robots["container-engine"]}"
-  ] } : {}
+    "roles/compute.securityAdmin" = "serviceAccount:${module.project.service_accounts.robots.container-engine}"
+  } : {}
   _group_iam = {
     for r in local._group_iam_roles : r => [
       for k, v in var.group_iam : "group:${k}" if try(index(v, r), null) != null
@@ -47,54 +44,41 @@ locals {
   _services_iam_roles = distinct(flatten(values(var.services_iam)))
   _services_iam = {
     for r in local._services_iam_roles : r => [
-      for k, v in var.services_iam : "serviceAccount:${local.service_accounts_robots[k]}" if try(index(v, r), null) != null
+      for k, v in var.services_iam : "serviceAccount:${module.project.service_accounts.robots[k]}" if try(index(v, r), null) != null
     ]
   }
-  billing_account_id = coalesce(var.billing_account_id, var.defaults.billing_account_id)
-  billing_alert      = var.billing_alert == null ? var.defaults.billing_alert : var.billing_alert
+  billing_account_id = coalesce(var.billing_account_id, try(var.defaults.billing_account_id, ""))
+  billing_alert      = var.billing_alert == null ? try(var.defaults.billing_alert, null) : var.billing_alert
   essential_contacts = concat(try(var.defaults.essential_contacts, []), var.essential_contacts)
+  host_project_bindings = merge(
+    local._gke_iam_hsau,
+    local._gke_iam_securityadmin
+  )
   iam = {
     for role in distinct(concat(
       keys(var.iam),
       keys(local._group_iam),
-      keys(local._gke_iam_hsau),
-      keys(local._gke_iam_securityadmin),
       keys(local._service_accounts_iam),
       keys(local._services_iam),
     )) :
     role => concat(
       try(var.iam[role], []),
       try(local._group_iam[role], []),
-      try(local._gke_iam_hsau[role], []),
-      try(local._gke_iam_securityadmin[role], []),
       try(local._service_accounts_iam[role], []),
       try(local._services_iam[role], []),
     )
   }
-  labels = merge(coalesce(var.labels, {}), coalesce(var.defaults.labels, {}))
+  labels = merge(coalesce(var.labels, {}), coalesce(try(var.defaults.labels, {}), {}))
   network_user_service_accounts = concat(
-    contains(local.services, "compute.googleapis.com") ? ["serviceAccount:${local.service_accounts_robots.compute}"] : [],
-    contains(local.services, "container.googleapis.com") ? ["serviceAccount:${local.service_accounts_robots.container-engine}"] : [],
+    contains(local.services, "compute.googleapis.com") ? [
+      "serviceAccount:${module.project.service_accounts.robots.compute}"
+    ] : [],
+    contains(local.services, "container.googleapis.com") ? [
+      "serviceAccount:${module.project.service_accounts.robots.container-engine}",
+      "serviceAccount:${module.project.service_accounts.cloud_services}"
+    ] : [],
   [])
-  services = distinct(concat(var.services, local._services))
-  service_accounts_robots = {
-    for service, name in local.service_accounts_robot_services :
-    service => "${service == "bq" ? "bq" : "service"}-${module.project.number}@${name}.iam.gserviceaccount.com"
-  }
-  service_accounts_robot_services = {
-    cloudasset        = "gcp-sa-cloudasset"
-    cloudbuild        = "gcp-sa-cloudbuild"
-    compute           = "compute-system"
-    container-engine  = "container-engine-robot"
-    containerregistry = "containerregistry"
-    dataflow          = "dataflow-service-producer-prod"
-    dataproc          = "dataproc-accounts"
-    gae-flex          = "gae-api-prod"
-    gcf               = "gcf-admin-robot"
-    pubsub            = "gcp-sa-pubsub"
-    secretmanager     = "gcp-sa-secretmanager"
-    storage           = "gs-project-accounts"
-  }
+  services         = distinct(concat(var.services, local._services))
   vpc_host_project = try(var.vpc.host_project, var.defaults.vpc_host_project)
   vpc_setup        = var.vpc != null
 }
@@ -129,6 +113,7 @@ module "project" {
   source                     = "../../../modules/project"
   billing_account            = local.billing_account_id
   name                       = var.project_id
+  prefix                     = var.prefix
   contacts                   = { for c in local.essential_contacts : c => ["ALL"] }
   iam                        = local.iam
   labels                     = local.labels
@@ -150,6 +135,7 @@ module "service-accounts" {
   project_id = module.project.project_id
 }
 
+# TODO(jccb): we should probably change this to non-authoritative bindings
 resource "google_compute_subnetwork_iam_binding" "binding" {
   for_each   = local.vpc_setup ? coalesce(var.vpc.subnets_iam, {}) : {}
   project    = local.vpc_host_project
@@ -157,4 +143,11 @@ resource "google_compute_subnetwork_iam_binding" "binding" {
   region     = split("/", each.key)[0]
   role       = "roles/compute.networkUser"
   members    = concat(each.value, local.network_user_service_accounts)
+}
+
+resource "google_project_iam_member" "host_project_bindings" {
+  for_each = local.host_project_bindings
+  project  = local.vpc_host_project
+  role     = each.key
+  member   = each.value
 }

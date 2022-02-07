@@ -20,7 +20,7 @@ module "private-dns" {
     "A localhost" = { type = "A", ttl = 300, records = ["127.0.0.1"] }
   }
 }
-# tftest:modules=1:resources=2
+# tftest modules=1 resources=2
 ```
 
 ### Forwarding Zone
@@ -35,7 +35,7 @@ module "private-dns" {
   client_networks = [var.vpc.self_link]
   forwarders      = { "10.0.1.1" = null, "1.2.3.4" = "private" }
 }
-# tftest:modules=1:resources=1
+# tftest modules=1 resources=1
 ```
 
 ### Peering Zone
@@ -50,7 +50,7 @@ module "private-dns" {
   client_networks = [var.vpc.self_link]
   peer_network    = var.vpc2.self_link
 }
-# tftest:modules=1:resources=1
+# tftest modules=1 resources=1
 ```
 <!-- BEGIN TFDOC -->
 

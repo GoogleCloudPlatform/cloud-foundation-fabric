@@ -12,10 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-###############################################################################
-#                                   Networking                                #
-###############################################################################
-
 module "vpc" {
   source     = "../../../modules/net-vpc"
   project_id = module.project.project_id

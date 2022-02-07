@@ -51,7 +51,7 @@ module "vm-cos" {
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [envoy_image](variables.tf#L17) | Envoy Proxy container image to use. | <code>string</code> |  | <code>&#34;envoyproxy&#47;envoy:v1.14.1&#34;</code> |
-| [gcp_logging](variables.tf#L23) | Should container logs be sent to Google Cloud Logging | <code>bool</code> |  | <code>true</code> |
+| [gcp_logging](variables.tf#L23) | Should container logs be sent to Google Cloud Logging. | <code>bool</code> |  | <code>true</code> |
 
 ## Outputs
 
