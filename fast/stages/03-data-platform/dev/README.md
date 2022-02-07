@@ -5,10 +5,10 @@ The Data Platform (DP) builds on top of your foundations to create and set up pr
 ## Design overview and choices
 
 <p align="center">
-  <img src="diagram.svg" alt="Data Platform diagram">
+  <img src="diagram.png" alt="Data Platform diagram">
 </p>
 
-A DP creates projects in a well-defined context, according to your resource management structure. For example, in the diagram above, within the DP folder, you have resources organized by environment. 
+The DP creates projects in a well-defined context, according to your resource management structure. For example, in the diagram above, within the DP folder, you have resources organized by environment. 
 
 Projects for each environment across different data layer are created to separate Service Account and Group roles. Roles are ssigned at project level.
 
@@ -46,7 +46,7 @@ It's of course possible to run this stage in isolation, by making sure the archi
   - on the host project for the Shared VPC
     - `"roles/browser"`
     - `"roles/compute.viewer"`
-- If networking is used (e.g., for VMs, GKE Clusters or AppEngine flex), VPC Host projects and their subnets should exist when creating projects
+- VPC Host projects and their subnets should exist when creating projects
 
 ### Providers configuration
 

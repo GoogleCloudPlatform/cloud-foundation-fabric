@@ -24,7 +24,7 @@ module "branch-dp-folder" {
   name   = "Dataplatform"
 }
 
-#TODO check if I can delete those modules
+#TODO check if I can delete those modules, Would you create a data-platform TF to run dev/prod?
 # module "branch-dp-sa" {
 #   source      = "../../../modules/iam-service-account"
 #   project_id  = var.automation_project_id
