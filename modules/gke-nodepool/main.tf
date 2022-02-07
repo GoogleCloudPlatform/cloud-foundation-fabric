@@ -85,10 +85,17 @@ resource "google_container_node_pool" "nodepool" {
   name     = var.name
 
   initial_node_count = var.initial_node_count
-  max_pods_per_node  = var.max_pods_per_node
-  node_count         = var.autoscaling_config == null ? var.node_count : null
-  node_locations     = var.node_locations
-  version            = var.gke_version
+
+  lifecycle {
+    ignore_changes = [
+      initial_node_count
+    ]
+  }
+
+  max_pods_per_node = var.max_pods_per_node
+  node_count        = var.autoscaling_config == null ? var.node_count : null
+  node_locations    = var.node_locations
+  version           = var.gke_version
 
   node_config {
     disk_size_gb      = var.node_disk_size
