@@ -84,19 +84,24 @@ module "orc-prj" {
   group_iam      = local.group_iam_orc
   oslogin        = false
   policy_boolean = var.composer_config.project_policy_boolean
-  services = concat(var.project_services, [
-    "artifactregistry.googleapis.com",
-    "bigquery.googleapis.com",
-    "bigqueryreservation.googleapis.com",
-    "bigquerystorage.googleapis.com",
-    "cloudkms.googleapis.com",
-    "composer.googleapis.com",
-    "container.googleapis.com",
-    "dataflow.googleapis.com",
-    "pubsub.googleapis.com",
-    "servicenetworking.googleapis.com",
-    "storage.googleapis.com",
-    "storage-component.googleapis.com"
+  services = concat(
+    var.project_services,
+    [
+      "artifactregistry.googleapis.com",
+      "bigquery.googleapis.com",
+      "bigqueryreservation.googleapis.com",
+      "bigquerystorage.googleapis.com",
+      "cloudbuild.googleapis.com",
+      "cloudkms.googleapis.com",
+      "composer.googleapis.com",
+      "compute.googleapis.com",
+      "container.googleapis.com",
+      "containerregistry.googleapis.com",
+      "dataflow.googleapis.com",
+      "pubsub.googleapis.com",
+      "servicenetworking.googleapis.com",
+      "storage.googleapis.com",
+      "storage-component.googleapis.com"
   ])
   service_encryption_key_ids = {
     composer = [try(local.service_encryption_keys.composer, null)]

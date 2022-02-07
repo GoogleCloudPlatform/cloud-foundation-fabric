@@ -64,11 +64,13 @@ Using of service account keys within a data pipeline exposes to several security
 We use three groups to control access to resources:
 
 - *Data Engineers* They handle and run the Data Hub, with read access to all resources in order to troubleshoot possible issues with pipelines. This team can also impersonate any service account.
-- *Data Analyst*. They perform analysis on datasets, with read access to the data lake L2 project, and BigQuery READ/WRITE access to the playground project. - *Data Security*:. They handle security configurations related to the Data Hub.
+- *Data Analyst*. They perform analysis on datasets, with read access to the data lake L2 project, and BigQuery READ/WRITE access to the playground project. 
+- *Data Security*:. They handle security configurations related to the Data Hub.
 
+You can configure groups via the `groups` variable.
 ### Virtual Private Cloud (VPC) design
 
-As is often the case in real-world configurations, this example accepts as input an existing [Shared-VPC](https://cloud.google.com/vpc/docs/shared-vpc) via the `network_config` variable.
+As is often the case in real-world configurations, this example accepts as input an existing [Shared-VPC](https://cloud.google.com/vpc/docs/shared-vpc) via the `network_config` variable. Make sure that the GKE API (`container.googleapis.com`) is enabled in the VPC host project.
 
 If the `network_config` variable is not provided, one VPC will be created in each project that supports network resources (load, transformation and orchestration).
 
@@ -179,7 +181,7 @@ organization = {
 }
 ```
 
-For more fine details check variables on [`variables.tf`](./variables.tf) and update according to the desired configuration.
+For more fine details check variables on [`variables.tf`](./variables.tf) and update according to the desired configuration. Remember to create team groups described [below](#groups).
 
 Once the configuration is complete, run the project factory by running
 
