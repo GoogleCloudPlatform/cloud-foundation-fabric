@@ -9,7 +9,7 @@ Note: Data Catalog is still in beta, hence this module currently uses the beta p
 
 ```hcl
 module "cmn-dc" {
-  source     = "./modules/data-catalog"
+  source     = "./modules/data-catalog-policy-tag"
   name       = "dc-tags"
   project_id = module.cmn-prj.project_id
   tags       = ["low", "medium", "high"]
@@ -21,7 +21,7 @@ module "cmn-dc" {
 
 ```hcl
 module "cmn-dc" {
-  source     = "./modules/data-catalog"
+  source     = "./modules/data-catalog-policy-tag"
   name       = "dc-tags"
   project_id = module.cmn-prj.project_id
   tags       = ["low", "medium", "high"]
