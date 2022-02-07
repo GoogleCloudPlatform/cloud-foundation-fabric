@@ -19,23 +19,23 @@ locals {
     load = {
       network_name = element(split("/", var.network_config.network_self_link != null ? var.network_config.network_self_link : module.lod-vpc[0].self_link), length(split("/", var.network_config.network_self_link != null ? var.network_config.network_self_link : module.lod-vpc[0].self_link)) - 1)
       network      = var.network_config.network_self_link != null ? var.network_config.network_self_link : module.lod-vpc[0].self_link
-      subnet       = var.network_config.network_self_link != null ? var.network_config.vpc_subnet_self_link.load : module.lod-vpc[0].subnet_self_links["${var.location_config.region}/${local.prefix_lod}-subnet"]
+      subnet       = var.network_config.network_self_link != null ? var.network_config.subnet_selfs_link.load : module.lod-vpc[0].subnet_self_links["${var.location_config.region}/${local.prefix_lod}-subnet"]
     }
     orchestration = {
       #TODO Fix Network name logic
       network_name = element(split("/", var.network_config.network_self_link != null ? var.network_config.network_self_link : module.orc-vpc[0].self_link), length(split("/", var.network_config.network_self_link != null ? var.network_config.network_self_link : module.orc-vpc[0].self_link)) - 1)
       network      = var.network_config.network_self_link != null ? var.network_config.network_self_link : module.orc-vpc[0].self_link
-      subnet       = var.network_config.network_self_link != null ? var.network_config.vpc_subnet_self_link.orchestration : module.orc-vpc[0].subnet_self_links["${var.location_config.region}/${local.prefix_orc}-subnet"]
+      subnet       = var.network_config.network_self_link != null ? var.network_config.subnet_self_links.orchestration : module.orc-vpc[0].subnet_self_links["${var.location_config.region}/${local.prefix_orc}-subnet"]
     }
     transformation = {
       #TODO Fix Network name logic
       network_name = element(split("/", var.network_config.network_self_link != null ? var.network_config.network_self_link : module.trf-vpc[0].self_link), length(split("/", var.network_config.network_self_link != null ? var.network_config.network_self_link : module.trf-vpc[0].self_link)) - 1)
       network      = var.network_config.network_self_link != null ? var.network_config.network_self_link : module.trf-vpc[0].self_link
-      subnet       = var.network_config.network_self_link != null ? var.network_config.vpc_subnet_self_link.transformation : module.trf-vpc[0].subnet_self_links["${var.location_config.region}/${local.prefix_trf}-subnet"]
+      subnet       = var.network_config.network_self_link != null ? var.network_config.subnet_self_links.transformation : module.trf-vpc[0].subnet_self_links["${var.location_config.region}/${local.prefix_trf}-subnet"]
     }
   }
 
-  _shared_vpc_project = try(regex("projects/([a-z0-9-]{6,30})", var.network_config.network_self_link), null)
+  _shared_vpc_project = try(regex("projects/([a-z0-9-]{6,30})", var.network_config.network_self_link)[0], null)
   _shared_vpc_service_config = var.network_config.network_self_link != null ? {
     attach       = true
     host_project = local._shared_vpc_project

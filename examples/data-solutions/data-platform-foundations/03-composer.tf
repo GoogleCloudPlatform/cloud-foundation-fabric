@@ -87,8 +87,8 @@ resource "google_composer_environment" "orc-cmp-0" {
     }
     private_environment_config {
       enable_private_endpoint    = "true"
-      cloud_sql_ipv4_cidr_block  = try(var.network_config.composer_ip_ranges.gke_master, "10.20.10.0/24")
-      master_ipv4_cidr_block     = try(var.network_config.composer_ip_ranges.cloudsql, "10.20.11.0/28")
+      cloud_sql_ipv4_cidr_block  = try(var.network_config.composer_ip_ranges.cloudsql, "10.20.10.0/24")
+      master_ipv4_cidr_block     = try(var.network_config.composer_ip_ranges.gke_master, "10.20.11.0/28")
       web_server_ipv4_cidr_block = try(var.network_config.composer_ip_ranges.web_server, "10.20.11.16/28")
     }
 
