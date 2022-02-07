@@ -22,32 +22,14 @@ variable "billing_account_id" {
 
 variable "composer_config" {
   type = object({
-    node_count             = number
-    ip_range_cloudsql      = string
-    ip_range_gke_master    = string
-    ip_range_web_server    = string
-    project_policy_boolean = map(bool)
-    region                 = string
-    ip_allocation_policy = object({
-      use_ip_aliases                = string
-      cluster_secondary_range_name  = string
-      services_secondary_range_name = string
-    })
+    node_count      = number
+    airflow_version = string
+    env_variables   = map(string)
   })
   default = {
-    node_count          = 3
-    ip_range_cloudsql   = "172.18.29.0/24"
-    ip_range_gke_master = "172.18.30.0/28"
-    ip_range_web_server = "172.18.30.16/28"
-    project_policy_boolean = {
-      "constraints/compute.requireOsLogin" = true
-    }
-    region = "europe-west1"
-    ip_allocation_policy = {
-      use_ip_aliases                = "true"
-      cluster_secondary_range_name  = "pods"
-      services_secondary_range_name = "services"
-    }
+    node_count      = 3
+    airflow_version = "composer-1.17.5-airflow-2.1.4"
+    env_variables   = {}
   }
 }
 
@@ -94,9 +76,8 @@ variable "location_config" {
 variable "network_config" {
   description = "Network configurations to use. Specify a shared VPC to use, if null networks will be created in projects."
   type = object({
-    host_project = string
-    network      = string
-    vpc_subnet_self_link = object({
+    network_self_link = string
+    subnet_self_links = object({
       load           = string
       transformation = string
       orchestration  = string
@@ -179,7 +160,6 @@ variable "service_encryption_keys" { # service encription key
     composer = null
     dataflow = null
     storage  = null
-    #TODO remove test
-    pubsub = "projects/fs01-dev-sec-core-0/locations/global/keyRings/dev-global/cryptoKeys/dp_pubsub"
+    pubsub   = null
   }
 }

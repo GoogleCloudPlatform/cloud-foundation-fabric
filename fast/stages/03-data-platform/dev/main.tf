@@ -20,8 +20,15 @@ locals {
   _network_config = merge(
     #TODO Ask
     {
-      enable_cloud_nat = var.enable_cloud_nat
-      vpc_subnet       = null
+      composer_ip_ranges = {
+        cloudsql   = "172.18.29.0/24"
+        gke_master = "172.18.30.0/28"
+        web_server = "172.18.30.16/28"
+      }
+      composer_secondary_ranges = {
+        pods     = "pods"
+        services = "services"
+      }
     },
     var.network_config
   )
