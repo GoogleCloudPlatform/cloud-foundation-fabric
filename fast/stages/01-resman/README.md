@@ -53,8 +53,8 @@ To simplify setup, the previous stage pre-configures a valid providers file in i
 If you have set a valid value for `outputs_location` in the bootstrap stage, simply link the relevant `providers.tf` file from this stage's folder in the path you specified:
 
 ```bash
-# `outputs_location` is set to `../../configs/example`
-ln -s ../../configs/example/01-resman/providers.tf
+# `outputs_location` is set to `../../config`
+ln -s ../../config/01-resman/providers.tf
 ```
 
 If you have not configured `outputs_location` in bootstrap, you can derive the providers file from that stage's outputs:
@@ -64,6 +64,8 @@ cd ../00-bootstrap
 terraform output -json providers | jq -r '.["01-resman"]' \
   > ../01-resman/providers.tf
 ```
+
+If you want to continue to rely on `outputs_location` logic, create a `terraform.tfvars` file and configure it as described [here](../00-bootstrap/#output-files-and-cross-stage-variables).
 
 ### Variable configuration
 
@@ -77,8 +79,8 @@ To avoid the tedious job of filling in the first group of variable with values d
 If you configured a valid path for `outputs_location` in the bootstrap stage, simply link the relevant `terraform-*.auto.tfvars.json` files from this stage's outputs folder (under the path you specified), where the `*` above is set to the name of the stage that produced it. For this stage, a single `.tfvars` file is avalaible:
 
 ```bash
-# `outputs_location` is set to `../../configs/example`
-ln -s ../../configs/example/01-resman/terraform-bootstrap.auto.tfvars.json
+# `outputs_location` is set to `../../config`
+ln -s ../../config/01-resman/terraform-bootstrap.auto.tfvars.json
 ```
 
 A second set of variables is specific to this stage, they are all optional so if you need to customize them, create an extra `terraform.tfvars` file.
@@ -134,6 +136,8 @@ For policies where additional data is needed, a root-level `organization_policy_
 
 IAM roles can be easily edited in the relevant `branch-xxx.tf` file, following the best practice outlined in the [bootstrap stage](../00-bootstrap#customizations) documentation of separating user-level and service-account level IAM policies in modules' `iam_groups`, `iam`, and `iam_additive` variables.
 
+A full reference of IAM roles managed by this stage [is available here](./IAM.md).
+
 ### Additional folders
 
 Due to its simplicity, this stage lends itself easily to customizations: adding a new top-level branch (e.g. for shared GKE clusters) is as easy as cloning one of the `branch-xxx.tf` files, and changing names.
@@ -173,12 +177,12 @@ Due to its simplicity, this stage lends itself easily to customizations: adding 
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [networking](outputs.tf#L79) | Data for the networking stage. |  | <code>02-networking</code> |
-| [project_factories](outputs.tf#L89) | Data for the project factories stage. |  | <code>xx-teams</code> |
-| [providers](outputs.tf#L106) | Terraform provider files for this stage and dependent stages. | ✓ | <code>02-networking</code> · <code>02-security</code> · <code>xx-sandbox</code> · <code>xx-teams</code> |
-| [sandbox](outputs.tf#L113) | Data for the sandbox stage. |  | <code>xx-sandbox</code> |
-| [security](outputs.tf#L123) | Data for the networking stage. |  | <code>02-security</code> |
-| [teams](outputs.tf#L133) | Data for the teams stage. |  |  |
-| [tfvars](outputs.tf#L146) | Terraform variable files for the following stages. | ✓ |  |
+| [networking](outputs.tf#L83) | Data for the networking stage. |  | <code>02-networking</code> |
+| [project_factories](outputs.tf#L93) | Data for the project factories stage. |  | <code>xx-teams</code> |
+| [providers](outputs.tf#L110) | Terraform provider files for this stage and dependent stages. | ✓ | <code>02-networking</code> · <code>02-security</code> · <code>xx-sandbox</code> · <code>xx-teams</code> |
+| [sandbox](outputs.tf#L117) | Data for the sandbox stage. |  | <code>xx-sandbox</code> |
+| [security](outputs.tf#L127) | Data for the networking stage. |  | <code>02-security</code> |
+| [teams](outputs.tf#L137) | Data for the teams stage. |  |  |
+| [tfvars](outputs.tf#L150) | Terraform variable files for the following stages. | ✓ |  |
 
 <!-- END TFDOC -->

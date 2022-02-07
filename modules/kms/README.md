@@ -23,7 +23,7 @@ module "kms" {
   keyring_create = false
   keys           = { key-a = null, key-b = null, key-c = null }
 }
-# tftest:skip
+# tftest skip
 ```
 
 ### Keyring creation and crypto key rotation and IAM roles
@@ -56,7 +56,7 @@ module "kms" {
     key-c = { rotation_period = null, labels = { env = "test" } }
   }
 }
-# tftest:modules=1:resources=9
+# tftest modules=1 resources=9
 ```
 
 ### Crypto key purpose
@@ -77,7 +77,7 @@ module "kms" {
   keyring     = { location = "europe-west1", name = "test" }
   keys        = { key-a = null, key-b = null, key-c = null }
 }
-# tftest:modules=1:resources=4
+# tftest modules=1 resources=4
 ```
 <!-- BEGIN TFDOC -->
 

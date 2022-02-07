@@ -37,6 +37,10 @@ locals {
     "roles/resourcemanager.organizationViewer" = [
       "domain:${var.organization.domain}"
     ]
+    "roles/resourcemanager.projectCreator" = concat(
+      [module.automation-tf-bootstrap-sa.iam_email],
+      local._iam_bootstrap_user
+    )
   }
   # organization additive IAM bindings, in an easy to edit format before
   # they are combined with var.iam_additive a bit further in locals
@@ -147,7 +151,7 @@ module "organization" {
       "resourcemanager.organizations.getIamPolicy",
       "resourcemanager.organizations.setIamPolicy"
     ]
-    "xpnServiceAdmin" = [
+    "serviceProjectNetworkAdmin" = [
       "compute.globalOperations.get",
       "compute.organizations.disableXpnResource",
       "compute.organizations.enableXpnResource",
@@ -177,12 +181,11 @@ module "organization" {
 
 resource "google_organization_iam_binding" "org_admin_delegated" {
   org_id  = var.organization.id
-  count   = local.billing_org ? 1 : 0
   role    = module.organization.custom_role_id.organizationIamAdmin
   members = [module.automation-tf-resman-sa.iam_email]
   condition {
     title       = "automation_sa_delegated_grants"
-    description = "Automation service account delegated grants"
+    description = "Automation service account delegated grants."
     expression = format(
       "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
       join(",", formatlist("'%s'", concat(
@@ -191,7 +194,6 @@ resource "google_organization_iam_binding" "org_admin_delegated" {
           "roles/compute.orgFirewallPolicyAdmin",
           "roles/compute.xpnAdmin",
           "roles/orgpolicy.policyAdmin",
-          module.organization.custom_role_id.xpnServiceAdmin
         ],
         local.billing_org ? [
           "roles/billing.admin",

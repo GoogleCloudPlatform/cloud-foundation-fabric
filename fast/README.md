@@ -32,33 +32,10 @@ A resource factory consumes a simple representation of a resource (e.g., in YAML
 
 FAST uses YAML-based factories to deploy subnets and firewall rules and, as its name suggests, in the [project factory](./stages/03-project-factory/) stage.
 
-## High level design
+## Stages and high level design
 
-As mentioned before, fast relies on multiple stages to progressively bring up your GCP organization(s). In this section we briefly describe each stage.
-
-### Organizational level (00-01)
-
-- [Bootstrap](stages/00-bootstrap/README.md)<br/>
-  Enables critical organization-level functionality that depends on broad permissions. It has two primary purposes. The first is to bootstrap the resources needed to automate this and the following stages (service accounts, GCS buckets). And secondly, it applies the minimum amount of configuration needed at the organization level, to avoid the need for broad permissions later on, and to implement a minimum of security features like sinks and exports from the start.
-- [Resource Management](stages/01-resman/README.md)<br/>
-  Creates the base resource hierarchy (folders) and the automation resources required to delegate each part of the hierarchy to separate stages. This stage also configures organization-level policies and any exceptions needed by different branches of the resource hierarchy.
-
-### Shared resources (02)
-
-- [Security](stages/02-security/README.md)<br/>
-  Manages centralized security configurations in a separate stage, typically owned by the security team. This stage implements VPC Security Controls via separate perimeters for environments and central services, and creates projects to host centralized KMS keys used by the whole organization. It's intentionally easy to extend to include other security-related resources, like Secret Manager.
-- [Networking](stages/02-networking/README.md)<br/>
-  Manages centralized network resources in a separate stage, and is typically owned by the networking team. This stage implements a hub-and-spoke design, includes connectivity via VPN to on-premises, and YAML-based factories for firewall rules (hierarchical and VPC-level) and subnets.
-
-### Environment-level resources (03)
-
-- [Project Factory](03-projectfactory/prod/README.md)<br/>
-  YAML-based factory to create and configure application- or team-level projects. Configuration includes VPC-level settings for Shared VPC, service-level configuration for CMEK encryption via centralized keys, and service account creation for workloads and applications. This stage is meant to be used once per environment.
-- Data Platform (in development)
-- GKE Multitenant (in development)
-- GCE Migration (in development)
-
-Please refer to the READMEs of each stage for further details.
+As mentioned before, fast relies on multiple stages to progressively bring up your GCP organization(s).
+Please refer to the [stages](./stages/) section for further details.
 
 ## Implementation
 

@@ -30,7 +30,7 @@ output "project_id" {
   value       = module.project.project_id
 }
 
-output "serviceaccount" {
+output "service_accounts" {
   description = "Service account."
   value = {
     bq      = module.service-account-bq.email
@@ -40,36 +40,38 @@ output "serviceaccount" {
   }
 }
 
-output "command-01-gcs" {
+output "command_01_gcs" {
   description = "gcloud command to copy data into the created bucket impersonating the service account."
   value       = "gsutil -i ${module.service-account-landing.email} cp data-demo/* ${module.gcs-data.url}"
 }
 
-output "command-02-dataflow" {
+output "command_02_dataflow" {
   description = "Command to run Dataflow template impersonating the service account."
-  value       = <<EOT
-  gcloud --impersonate-service-account=${module.service-account-orch.email} dataflow jobs run test_batch_01 \
-    --gcs-location gs://dataflow-templates/latest/GCS_Text_to_BigQuery \
-    --project ${module.project.project_id} \
-    --region ${var.region} \
-    --disable-public-ips \
-    --subnetwork ${module.vpc.subnets[format("%s/%s", var.region, "subnet")].self_link} \
-    --staging-location ${module.gcs-df-tmp.url} \
-    --service-account-email ${module.service-account-df.email} \
-    ${var.cmek_encryption ? format("--dataflow-kms-key=%s", module.kms[0].key_ids.key-df) : ""} \
-    --parameters \
-javascriptTextTransformFunctionName=transform,\
-JSONPath=${module.gcs-data.url}/person_schema.json,\
-javascriptTextTransformGcsPath=${module.gcs-data.url}/person_udf.js,\
-inputFilePattern=${module.gcs-data.url}/person.csv,\
-outputTable=${module.project.project_id}:${module.bigquery-dataset.dataset_id}.${module.bigquery-dataset.tables["person"].table_id},\
-bigQueryLoadingTemporaryDirectory=${module.gcs-df-tmp.url} 
-  EOT
+  value = templatefile("${path.module}/dataflow.tftpl", {
+    sa_orch_email    = module.service-account-orch.email
+    project_id       = module.project.project_id
+    region           = var.region
+    subnet           = module.vpc.subnets["${var.region}/subnet"].self_link
+    gcs_df_stg       = format("%s/%s", module.gcs-df-tmp.url, "stg")
+    sa_df_email      = module.service-account-df.email
+    cmek_encryption  = var.cmek_encryption
+    kms_key_df       = var.cmek_encryption ? module.kms[0].key_ids.key-df : null
+    gcs_data         = module.gcs-data.url
+    data_schema_file = format("%s/%s", module.gcs-data.url, "person_schema.json")
+    data_udf_file    = format("%s/%s", module.gcs-data.url, "person_udf.js")
+    data_file        = format("%s/%s", module.gcs-data.url, "person.csv")
+    bigquery_dataset = module.bigquery-dataset.dataset_id
+    bigquery_table   = module.bigquery-dataset.tables["person"].table_id
+    gcs_df_tmp       = format("%s/%s", module.gcs-df-tmp.url, "tmp")
+  })
 }
 
-output "command-03-bq" {
+output "command_03_bq" {
   description = "BigQuery command to query imported data."
-  value       = <<EOT
-  bq query --project_id=${module.project.project_id} --use_legacy_sql=false 'SELECT * FROM `${module.project.project_id}.${module.bigquery-dataset.dataset_id}.${module.bigquery-dataset.tables["person"].table_id}` LIMIT 1000'"
-  EOT
+  value = templatefile("${path.module}/bigquery.tftpl", {
+    project_id       = module.project.project_id
+    bigquery_dataset = module.bigquery-dataset.dataset_id
+    bigquery_table   = module.bigquery-dataset.tables["person"].table_id
+    sql_limit        = 1000
+  })
 }

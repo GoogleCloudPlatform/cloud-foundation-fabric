@@ -65,7 +65,7 @@ module "cos-squid" {
 | [clients](variables.tf#L69) | List of CIDR ranges from which Squid will allow connections. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 | [cloud_config](variables.tf#L17) | Cloud config template path. If null default will be used. | <code>string</code> |  | <code>null</code> |
 | [config_variables](variables.tf#L23) | Additional variables used to render the cloud-config and Squid templates. | <code>map&#40;any&#41;</code> |  | <code>&#123;&#125;</code> |
-| [default_action](variables.tf#L75) | Default action for domains not matching neither the allow or deny lists | <code>string</code> |  | <code>&#34;deny&#34;</code> |
+| [default_action](variables.tf#L75) | Default action for domains not matching neither the allow or deny lists. | <code>string</code> |  | <code>&#34;deny&#34;</code> |
 | [deny](variables.tf#L63) | List of domains Squid will deny connections to. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 | [file_defaults](variables.tf#L35) | Default owner and permissions for files. | <code title="object&#40;&#123;&#10;  owner       &#61; string&#10;  permissions &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  owner       &#61; &#34;root&#34;&#10;  permissions &#61; &#34;0644&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [files](variables.tf#L47) | Map of extra files to create on the instance, path as key. Owner and permissions will use defaults if null. | <code title="map&#40;object&#40;&#123;&#10;  content     &#61; string&#10;  owner       &#61; string&#10;  permissions &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description IAM bindings, roles and audit logging resources.
+
 locals {
   _group_iam_roles = distinct(flatten(values(var.group_iam)))
   _group_iam = {
@@ -49,7 +51,7 @@ resource "google_organization_iam_custom_role" "roles" {
   org_id      = local.organization_id_numeric
   role_id     = each.key
   title       = "Custom role ${each.key}"
-  description = "Terraform-managed"
+  description = "Terraform-managed."
   permissions = each.value
 }
 

@@ -30,7 +30,7 @@ module "bigtable-instance" {
     "roles/bigtable.user" = ["user:viewer@testdomain.com"]
   }
 }
-# tftest:modules=1:resources=4
+# tftest modules=1 resources=4
 ```
 <!-- BEGIN TFDOC -->
 

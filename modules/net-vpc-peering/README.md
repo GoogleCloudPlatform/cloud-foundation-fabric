@@ -18,7 +18,7 @@ module "peering" {
   local_network = "projects/project-1/global/networks/vpc-1"
   peer_network  = "projects/project-1/global/networks/vpc-2"
 }
-# tftest:modules=1:resources=2
+# tftest modules=1 resources=2
 ```
 
 If you need to create more than one peering for the same VPC Network `(A -> B, A -> C)` you use a `depends_on` for second one to keep order of peering creation (It is not currently possible to create more than one peering connection for a VPC Network at the same time).
@@ -38,7 +38,7 @@ module "peering-a-c" {
   peer_network  = "projects/project-c/global/networks/vpc-c"
   depends_on    = [module.peering-a-b]
 }
-# tftest:modules=2:resources=4
+# tftest modules=2 resources=4
 ```
 <!-- BEGIN TFDOC -->
 

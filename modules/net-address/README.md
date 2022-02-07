@@ -16,7 +16,7 @@ module "addresses" {
   }
   global_addresses = ["app-1", "app-2"]
 }
-# tftest:modules=1:resources=4
+# tftest modules=1 resources=4
 ```
 
 ### Internal addresses
@@ -44,7 +44,7 @@ module "addresses" {
     }
   }
 }
-# tftest:modules=1:resources=2
+# tftest modules=1 resources=2
 ```
 
 ### PSA addresses
@@ -61,7 +61,7 @@ module "addresses" {
     }
   }
 }
-# tftest:modules=1:resources=1
+# tftest modules=1 resources=1
 ```
 
 ### PSC addresses
@@ -81,7 +81,7 @@ module "addresses" {
     }
   }
 }
-# tftest:modules=1:resources=2
+# tftest modules=1 resources=2
 ```
 <!-- BEGIN TFDOC -->
 

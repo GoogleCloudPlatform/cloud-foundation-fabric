@@ -78,7 +78,7 @@ variable "routes" {
 }
 
 variable "routing_mode" {
-  description = "The network routing mode (default 'GLOBAL')"
+  description = "The network routing mode (default 'GLOBAL')."
   type        = string
   default     = "GLOBAL"
 }
@@ -90,13 +90,13 @@ variable "shared_vpc_host" {
 }
 
 variable "shared_vpc_service_projects" {
-  description = "Shared VPC service projects to register with this host"
+  description = "Shared VPC service projects to register with this host."
   type        = list(string)
   default     = []
 }
 
 variable "subnets" {
-  description = "The list of subnets being created"
+  description = "The list of subnets being created."
   type = list(object({
     name               = string
     ip_cidr_range      = string

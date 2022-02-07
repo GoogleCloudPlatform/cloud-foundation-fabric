@@ -17,7 +17,7 @@ module "bucket" {
   parent      = var.project_id
   id          = "mybucket"
 }
-# tftest:modules=1:resources=1
+# tftest modules=1 resources=1
 ```
 
 
@@ -37,7 +37,7 @@ module "bucket-default" {
   id          = "_Default"
   retention   = 10
 }
-# tftest:modules=2:resources=2
+# tftest modules=2 resources=2
 ```
 <!-- BEGIN TFDOC -->
 

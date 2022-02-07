@@ -34,13 +34,20 @@ def pytest_generate_tests(metafunc):
         continue
       doc = marko.parse(readme.read_text())
       index = 0
+      last_header = None
       for child in doc.children:
         if isinstance(child, marko.block.FencedCode) and child.lang == 'hcl':
           index += 1
           code = child.children[0].children
-          if 'tftest:skip' in code:
+          if 'tftest skip' in code:
             continue
           examples.append(code)
-          ids.append(f'{module.stem}:example{index}')
+          name = f'{module.stem}:{last_header}'
+          if index > 1:
+            name += f' {index}'
+          ids.append(name)
+        elif isinstance(child, marko.block.Heading):
+          last_header = child.children[0].children
+          index = 0
 
     metafunc.parametrize('example', examples, ids=ids)

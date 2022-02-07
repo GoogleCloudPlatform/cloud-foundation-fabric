@@ -3,8 +3,11 @@
 All notable changes to this project will be documented in this file.
 
 ## Unreleased
+-  **incompatible change** removed `iam` key from logging sink configuration in the `project` and `organization` modules
 
-- initial Fabric Fast implementation
+## [13.0.0] - 2022-01-27
+
+- **initial Fabric Fast implementation**
 - new `net-glb` module for Global External Load balancer
 - new `project-factory` module in [`examples/factories`](./examples/factories)
 - add missing service identity accounts (artifactregistry, composer) in project module
@@ -12,6 +15,7 @@ All notable changes to this project will be documented in this file.
 - support service dependencies for crypto key bindings in project module
 - refactor project module in multiple files
 - add support for per-file option overrides to tfdoc
+- the `net-vpc` and `project` modules now use the beta provider for shared VPC-related resources
 - add `data-catalog-policy-tag` module
 
 ## [12.0.0] - 2022-01-11
@@ -436,7 +440,8 @@ All notable changes to this project will be documented in this file.
 - merge development branch with suite of new modules and end-to-end examples
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v12.0.0...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v13.0.0...HEAD
+[13.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v12.0.0...v13.0.0
 [12.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v11.2.0...v12.0.0
 [11.2.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v11.1.0...v11.2.0
 [11.1.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v11.0.0...v11.1.0

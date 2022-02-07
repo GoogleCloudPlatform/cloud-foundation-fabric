@@ -45,7 +45,7 @@ variable "cai_config" {
 
 
 variable "cai_gcs_export" {
-  description = "Enable optional part to export tables to GCS"
+  description = "Enable optional part to export tables to GCS."
   type        = bool
   default     = false
 }

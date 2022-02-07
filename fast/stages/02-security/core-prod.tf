@@ -51,7 +51,7 @@ resource "google_project_iam_member" "prod_key_admin_delegated" {
   member   = each.key
   condition {
     title       = "kms_sa_delegated_grants"
-    description = "Automation service account delegated grants"
+    description = "Automation service account delegated grants."
     expression = format(
       "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
       join(",", formatlist("'%s'", [

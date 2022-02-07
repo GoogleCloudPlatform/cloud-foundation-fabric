@@ -49,7 +49,7 @@ locals {
       ip_cidr_range      = v.ip_cidr_range
       name               = k
       region             = v.region
-      secondary_ip_range = try(v.secondary_ip_range, [])
+      secondary_ip_range = try(v.secondary_ip_range, {})
     }
   }
   _iam    = var.iam == null ? {} : var.iam
@@ -153,12 +153,14 @@ resource "google_compute_network_peering" "remote" {
 }
 
 resource "google_compute_shared_vpc_host_project" "shared_vpc_host" {
+  provider   = google-beta
   count      = var.shared_vpc_host ? 1 : 0
   project    = var.project_id
   depends_on = [local.network]
 }
 
 resource "google_compute_shared_vpc_service_project" "service_projects" {
+  provider = google-beta
   for_each = (
     var.shared_vpc_host && var.shared_vpc_service_projects != null
     ? toset(var.shared_vpc_service_projects)

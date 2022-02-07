@@ -21,7 +21,7 @@ module "folder" {
     "roles/owner" = ["user:one@example.com"]
   }
 }
-# tftest:modules=1:resources=3
+# tftest modules=1 resources=3
 ```
 
 ### Organization policies
@@ -44,7 +44,7 @@ module "folder" {
     }
   }
 }
-# tftest:modules=1:resources=4
+# tftest modules=1 resources=4
 ```
 
 ### Firewall policy factory
@@ -65,7 +65,7 @@ module "folder" {
     factory-policy = module.folder.firewall_policy_id["factory"]
   }
 }
-# tftest:skip
+# tftest skip
 ```
 
 ```yaml
@@ -140,10 +140,9 @@ module "folder-sink" {
   name   = "my-folder"
   logging_sinks = {
     warnings = {
-      type             = "gcs"
+      type             = "storage"
       destination      = module.gcs.name
       filter           = "severity=WARNING"
-      iam              = false
       include_children = true
       exclusions       = {}
     }
@@ -151,7 +150,6 @@ module "folder-sink" {
       type             = "bigquery"
       destination      = module.dataset.id
       filter           = "severity=INFO"
-      iam              = false
       include_children = true
       exclusions       = {}
     }
@@ -159,7 +157,6 @@ module "folder-sink" {
       type             = "pubsub"
       destination      = module.pubsub.id
       filter           = "severity=NOTICE"
-      iam              = true
       include_children = true
       exclusions       = {}
     }
@@ -167,7 +164,6 @@ module "folder-sink" {
       type             = "logging"
       destination      = module.bucket.id
       filter           = "severity=DEBUG"
-      iam              = true
       include_children = true
       exclusions = {
         no-compute = "logName:compute"
@@ -178,7 +174,7 @@ module "folder-sink" {
     no-gce-instances = "resource.type=gce_instance"
   }
 }
-# tftest:modules=5:resources=12
+# tftest modules=5 resources=14
 ```
 
 ### Hierarchical firewall policies
@@ -217,28 +213,43 @@ module "folder2" {
     iap-policy = module.folder1.firewall_policy_id["iap-policy"]
   }
 }
-# tftest:modules=2:resources=6
+# tftest modules=2 resources=6
 ```
+
+<!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
+
+## Files
+
+| name | description | resources |
+|---|---|---|
+| [firewall-policies.tf](./firewall-policies.tf) | None | <code>google_compute_firewall_policy</code> · <code>google_compute_firewall_policy_association</code> · <code>google_compute_firewall_policy_rule</code> |
+| [iam.tf](./iam.tf) | IAM bindings, roles and audit logging resources. | <code>google_folder_iam_binding</code> |
+| [logging.tf](./logging.tf) | Log sinks and supporting resources. | <code>google_bigquery_dataset_iam_member</code> · <code>google_logging_folder_exclusion</code> · <code>google_logging_folder_sink</code> · <code>google_project_iam_member</code> · <code>google_pubsub_topic_iam_member</code> · <code>google_storage_bucket_iam_member</code> |
+| [main.tf](./main.tf) | Module-level locals and resources. | <code>google_essential_contacts_contact</code> · <code>google_folder</code> |
+| [organization-policies.tf](./organization-policies.tf) | Folder-level organization policies. | <code>google_folder_organization_policy</code> |
+| [outputs.tf](./outputs.tf) | Module outputs. |  |
+| [variables.tf](./variables.tf) | Module variables. |  |
+| [versions.tf](./versions.tf) | Version pins. |  |
 
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [contacts](variables.tf#L17) | List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [firewall_policies](variables.tf#L23) | Hierarchical firewall policies created in this folder. | <code title="map&#40;map&#40;object&#40;&#123;&#10;  action                  &#61; string&#10;  description             &#61; string&#10;  direction               &#61; string&#10;  logging                 &#61; bool&#10;  ports                   &#61; map&#40;list&#40;string&#41;&#41;&#10;  priority                &#61; number&#10;  ranges                  &#61; list&#40;string&#41;&#10;  target_resources        &#61; list&#40;string&#41;&#10;  target_service_accounts &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;&#41;">map&#40;map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [firewall_policy_association](variables.tf#L39) | The hierarchical firewall policy to associate to this folder. Must be either a key in the `firewall_policies` map or the id of a policy defined somewhere else. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [firewall_policy_factory](variables.tf#L45) | Configuration for the firewall policy factory. | <code title="object&#40;&#123;&#10;  cidr_file   &#61; string&#10;  policy_name &#61; string&#10;  rules_file  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [folder_create](variables.tf#L55) | Create folder. When set to false, uses id to reference an existing folder. | <code>bool</code> |  | <code>true</code> |
-| [group_iam](variables.tf#L61) | Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [iam](variables.tf#L67) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [id](variables.tf#L73) | Folder ID in case you use folder_create=false | <code>string</code> |  | <code>null</code> |
-| [logging_exclusions](variables.tf#L79) | Logging exclusions for this folder in the form {NAME -> FILTER}. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [logging_sinks](variables.tf#L85) | Logging sinks to create for this folder. | <code title="map&#40;object&#40;&#123;&#10;  destination      &#61; string&#10;  type             &#61; string&#10;  filter           &#61; string&#10;  iam              &#61; bool&#10;  include_children &#61; bool&#10;  exclusions &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [name](variables.tf#L99) | Folder name. | <code>string</code> |  | <code>null</code> |
-| [parent](variables.tf#L105) | Parent in folders/folder_id or organizations/org_id format. | <code>string</code> |  | <code>null</code> |
-| [policy_boolean](variables.tf#L115) | Map of boolean org policies and enforcement value, set value to null for policy restore. | <code>map&#40;bool&#41;</code> |  | <code>&#123;&#125;</code> |
-| [policy_list](variables.tf#L121) | Map of list org policies, status is true for allow, false for deny, null for restore. Values can only be used for allow or deny. | <code title="map&#40;object&#40;&#123;&#10;  inherit_from_parent &#61; bool&#10;  suggested_value     &#61; string&#10;  status              &#61; bool&#10;  values              &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [contacts](variables.tf#L17) | List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [firewall_policies](variables.tf#L24) | Hierarchical firewall policies created in this folder. | <code title="map&#40;map&#40;object&#40;&#123;&#10;  action                  &#61; string&#10;  description             &#61; string&#10;  direction               &#61; string&#10;  logging                 &#61; bool&#10;  ports                   &#61; map&#40;list&#40;string&#41;&#41;&#10;  priority                &#61; number&#10;  ranges                  &#61; list&#40;string&#41;&#10;  target_resources        &#61; list&#40;string&#41;&#10;  target_service_accounts &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;&#41;">map&#40;map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [firewall_policy_association](variables.tf#L41) | The hierarchical firewall policy to associate to this folder. Must be either a key in the `firewall_policies` map or the id of a policy defined somewhere else. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [firewall_policy_factory](variables.tf#L48) | Configuration for the firewall policy factory. | <code title="object&#40;&#123;&#10;  cidr_file   &#61; string&#10;  policy_name &#61; string&#10;  rules_file  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [folder_create](variables.tf#L58) | Create folder. When set to false, uses id to reference an existing folder. | <code>bool</code> |  | <code>true</code> |
+| [group_iam](variables.tf#L64) | Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [iam](variables.tf#L71) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [id](variables.tf#L78) | Folder ID in case you use folder_create=false. | <code>string</code> |  | <code>null</code> |
+| [logging_exclusions](variables.tf#L84) | Logging exclusions for this folder in the form {NAME -> FILTER}. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [logging_sinks](variables.tf#L91) | Logging sinks to create for this folder. | <code title="map&#40;object&#40;&#123;&#10;  destination      &#61; string&#10;  type             &#61; string&#10;  filter           &#61; string&#10;  include_children &#61; bool&#10;  exclusions &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [name](variables.tf#L112) | Folder name. | <code>string</code> |  | <code>null</code> |
+| [parent](variables.tf#L118) | Parent in folders/folder_id or organizations/org_id format. | <code>string</code> |  | <code>null</code> |
+| [policy_boolean](variables.tf#L128) | Map of boolean org policies and enforcement value, set value to null for policy restore. | <code>map&#40;bool&#41;</code> |  | <code>&#123;&#125;</code> |
+| [policy_list](variables.tf#L135) | Map of list org policies, status is true for allow, false for deny, null for restore. Values can only be used for allow or deny. | <code title="map&#40;object&#40;&#123;&#10;  inherit_from_parent &#61; bool&#10;  suggested_value     &#61; string&#10;  status              &#61; bool&#10;  values              &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
