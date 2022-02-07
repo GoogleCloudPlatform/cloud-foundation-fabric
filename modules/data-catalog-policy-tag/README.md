@@ -38,8 +38,8 @@ module "cmn-dc" {
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [name](variables.tf#L59) | Name of this taxonomy. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L70) | GCP project ID. | <code></code> | ✓ |  |
-| [activated_policy_types](variables.tf#L17) | A list of policy types that are activated for this taxonomy. See the [documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/data_catalog_taxonomy#activated_policy_types) for possible values. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;FINE_GRAINED_ACCESS_CONTROL&#34;&#93;</code> |
+| [project_id](variables.tf#L70) | GCP project id. | <code></code> | ✓ |  |
+| [activated_policy_types](variables.tf#L17) | A list of policy types that are activated for this taxonomy. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;FINE_GRAINED_ACCESS_CONTROL&#34;&#93;</code> |
 | [description](variables.tf#L23) | Description of this taxonomy. | <code>string</code> |  | <code>&#34;Taxonomy - Terraform managed&#34;</code> |
 | [group_iam](variables.tf#L29) | Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [iam](variables.tf#L35) | IAM bindings in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -54,7 +54,7 @@ module "cmn-dc" {
 | name | description | sensitive |
 |---|---|:---:|
 | [tags](outputs.tf#L17) | Policy Tags. |  |
-| [taxonomy](outputs.tf#L21) | Taxonomy ID |  |
+| [taxonomy_id](outputs.tf#L22) | Taxonomy id. |  |
 
 <!-- END TFDOC -->
 ## TODO

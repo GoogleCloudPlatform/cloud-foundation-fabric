@@ -20,6 +20,6 @@ output "tags" {
 }
 
 output "taxonomy_id" {
-  description = "Taxonomy ID."
+  description = "Taxonomy id."
   value       = google_data_catalog_taxonomy.default.id
 }
