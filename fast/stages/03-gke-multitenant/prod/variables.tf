@@ -59,6 +59,18 @@ variable "cluster_defaults" {
   }
 }
 
+variable "config_management" {
+  description = ""
+  type = object({
+    repository_url       = string
+    workload_identity_sa = string
+  })
+  default = {
+    repository_url       = null
+    workload_identity_sa = null
+  }
+}
+
 variable "clusters" {
   description = ""
   type = map(object({

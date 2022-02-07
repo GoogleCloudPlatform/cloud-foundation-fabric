@@ -37,8 +37,10 @@ module "gke-project-0" {
     "container.googleapis.com",
     "dns.googleapis.com",
     "stackdriver.googleapis.com",
+    "gkehub.googleapis.com",
+    "anthosconfigmanagement.googleapis.com",
+    "sourcerepo.googleapis.com",
     # uncomment if you need Multi-cluster Ingress / Gateway API
-    # "gkehub.googleapis.com",
     # "multiclusterservicediscovery.googleapis.com",
     # "multiclusteringress.googleapis.com",
     # "trafficdirector.googleapis.com"
@@ -82,6 +84,16 @@ module "gke-project-0-np-1-sa" {
       "roles/artifactregistry.reader",
       "roles/secretmanager.secretAccessor",
     ]
+  }
+}
+
+module "gke-project-0-wid-1-sa" {
+  source       = "../../../../modules/iam-service-account"
+  project_id   = module.gke-project-0.project_id
+  name         = "gke-project-0-wid-1-sa"
+  generate_key = false
+  iam = {
+    "roles/iam.workloadIdentityUser" = ["serviceAccount:${module.gke-project-0.project_id}.svc.id.goog[config-management-system/root-reconciler]"]
   }
 }
 
