@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 
 -  **incompatible change** removed `iam` key from logging sink configuration in the `project` and `organization` modules
 - remove GCS to BQ with Dataflow example, replace by GCS to BQ with least privileges
+- the `net-vpc` and `project` modules now use the beta provider for shared VPC-related resources
+- new `iot-core` module
 
 ## [13.0.0] - 2022-01-27
 
@@ -17,8 +19,6 @@ All notable changes to this project will be documented in this file.
 - support service dependencies for crypto key bindings in project module
 - refactor project module in multiple files
 - add support for per-file option overrides to tfdoc
-- the `net-vpc` and `project` modules now use the beta provider for shared VPC-related resources
-- new `iot-core` module
 
 ## [12.0.0] - 2022-01-11
 
