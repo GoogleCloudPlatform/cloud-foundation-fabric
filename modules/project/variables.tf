@@ -247,6 +247,7 @@ variable "shared_vpc_service_config" {
     host_project         = string
     service_identity_iam = map(list(string))
   })
+  # the list of valid service identities is in service-accounts.tf
   default = {
     attach               = false
     host_project         = ""

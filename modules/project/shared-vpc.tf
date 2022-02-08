@@ -17,6 +17,7 @@
 # tfdoc:file:description Shared VPC project-level configuration.
 
 locals {
+  # compute the host project IAM bindings for this project's service identities
   _svpc_service_iam = flatten([
     for role, services in var.shared_vpc_service_config.service_identity_iam : [
       for service in services : {
