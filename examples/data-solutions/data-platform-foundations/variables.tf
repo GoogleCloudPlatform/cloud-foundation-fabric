@@ -93,7 +93,7 @@ variable "project_create" {
   default = null
 }
 
-variable "project_id" {
+variable "project_ids" {
   description = "Project id, references existing project if `project_create` is null."
   type = object({
     landing             = string

@@ -17,24 +17,22 @@
 locals {
   _networks = {
     load = {
-      network_name = element(split("/", var.network_config.network_self_link != null ? var.network_config.network_self_link : module.lod-vpc[0].self_link), length(split("/", var.network_config.network_self_link != null ? var.network_config.network_self_link : module.lod-vpc[0].self_link)) - 1)
-      network      = var.network_config.network_self_link != null ? var.network_config.network_self_link : module.lod-vpc[0].self_link
-      subnet       = var.network_config.network_self_link != null ? var.network_config.subnet_self_links.load : module.lod-vpc[0].subnet_self_links["${var.location_config.region}/${local.prefix_lod}-subnet"]
+      network_name = coalesce(local._shared_vpc_network, module.lod-vpc[0].name)
+      network      = coalesce(var.network_config.network_self_link, module.lod-vpc[0].self_link)
+      subnet       = try(var.network_config.subnet_self_links.load, module.lod-vpc[0].subnet_self_links["${var.location_config.region}/${local.prefix_lod}-subnet"])
     }
     orchestration = {
-      #TODO Fix Network name logic
-      network_name = element(split("/", var.network_config.network_self_link != null ? var.network_config.network_self_link : module.orc-vpc[0].self_link), length(split("/", var.network_config.network_self_link != null ? var.network_config.network_self_link : module.orc-vpc[0].self_link)) - 1)
-      network      = var.network_config.network_self_link != null ? var.network_config.network_self_link : module.orc-vpc[0].self_link
-      subnet       = var.network_config.network_self_link != null ? var.network_config.subnet_self_links.orchestration : module.orc-vpc[0].subnet_self_links["${var.location_config.region}/${local.prefix_orc}-subnet"]
+      network_name = coalesce(local._shared_vpc_network, module.orc-vpc[0].name)
+      network      = coalesce(var.network_config.network_self_link, module.orc-vpc[0].self_link)
+      subnet       = try(var.network_config.subnet_self_links.orchestration, module.orc-vpc[0].subnet_self_links["${var.location_config.region}/${local.prefix_orc}-subnet"])
     }
     transformation = {
-      #TODO Fix Network name logic
-      network_name = element(split("/", var.network_config.network_self_link != null ? var.network_config.network_self_link : module.trf-vpc[0].self_link), length(split("/", var.network_config.network_self_link != null ? var.network_config.network_self_link : module.trf-vpc[0].self_link)) - 1)
-      network      = var.network_config.network_self_link != null ? var.network_config.network_self_link : module.trf-vpc[0].self_link
-      subnet       = var.network_config.network_self_link != null ? var.network_config.subnet_self_links.transformation : module.trf-vpc[0].subnet_self_links["${var.location_config.region}/${local.prefix_trf}-subnet"]
+      network_name = coalesce(local._shared_vpc_network, module.trf-vpc[0].name)
+      network      = coalesce(var.network_config.network_self_link, module.trf-vpc[0].self_link)
+      subnet       = try(var.network_config.subnet_self_links.transformation, module.trf-vpc[0].subnet_self_links["${var.location_config.region}/${local.prefix_trf}-subnet"])
     }
   }
-
+  _shared_vpc_network = try(regex("[a-z]([-a-z0-9]*[a-z0-9])?$", var.network_config.network_self_link), null)
   _shared_vpc_project = try(regex("projects/([a-z0-9-]{6,30})", var.network_config.network_self_link)[0], null)
   _shared_vpc_service_config = var.network_config.network_self_link != null ? {
     attach       = true
@@ -45,7 +43,7 @@ locals {
   groups_iam              = { for k, v in local.groups : k => "group:${v}" }
   service_encryption_keys = var.service_encryption_keys
 
-  # Uncomment this section and assigne comment the previous line
+  # To create KMS keys in the common projet: uncomment assignement below and comment assignement above
 
   # service_encryption_keys = {
   #   bq       = module.sec-kms-1.key_ids.bq

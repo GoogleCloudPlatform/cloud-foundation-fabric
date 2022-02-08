@@ -64,11 +64,11 @@ locals {
 
 module "lnd-prj" {
   source          = "../../../modules/project"
-  name            = var.project_id["landing"]
+  name            = try(var.project_ids["landing"], "lnd")
   parent          = try(var.project_create.parent, null)
   billing_account = try(var.project_create.billing_account_id, null)
-  project_create  = var.project_create != null
-  prefix          = var.project_create == null ? null : var.prefix
+  project_create  = can(var.project_ids["landing"])
+  prefix          = can(var.project_ids["landing"]) ? var.prefix : null
   # additive IAM bindings avoid disrupting bindings in existing project
   iam          = var.project_create != null ? local.iam_lnd : {}
   iam_additive = var.project_create == null ? local.iam_lnd : {}

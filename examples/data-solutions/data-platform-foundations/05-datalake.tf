@@ -63,11 +63,11 @@ locals {
 
 module "dtl-0-prj" {
   source          = "../../../modules/project"
-  name            = var.project_id["datalake-l0"]
+  name            = try(var.project_ids["datalake-l0"], "dtl-0")
   parent          = try(var.project_create.parent, null)
   billing_account = try(var.project_create.billing_account_id, null)
-  project_create  = var.project_create != null
-  prefix          = var.project_create == null ? null : var.prefix
+  project_create  = can(var.project_ids["datalake-l0"])
+  prefix          = can(var.project_ids["datalake-l0"]) ? var.prefix : null
   # additive IAM bindings avoid disrupting bindings in existing project
   iam          = var.project_create != null ? local.iam_dtl : {}
   iam_additive = var.project_create == null ? local.iam_dtl : {}
@@ -92,11 +92,11 @@ module "dtl-0-prj" {
 
 module "dtl-1-prj" {
   source          = "../../../modules/project"
-  name            = var.project_id["datalake-l1"]
+  name            = try(var.project_ids["datalake-l1"], "dtl-1")
   parent          = try(var.project_create.parent, null)
   billing_account = try(var.project_create.billing_account_id, null)
-  project_create  = var.project_create != null
-  prefix          = var.project_create == null ? null : var.prefix
+  project_create  = can(var.project_ids["datalake-l1"])
+  prefix          = can(var.project_ids["datalake-l1"]) ? var.prefix : null
   # additive IAM bindings avoid disrupting bindings in existing project
   iam          = var.project_create != null ? local.iam_dtl : {}
   iam_additive = var.project_create == null ? local.iam_dtl : {}
@@ -121,11 +121,11 @@ module "dtl-1-prj" {
 
 module "dtl-2-prj" {
   source          = "../../../modules/project"
-  name            = var.project_id["datalake-l2"]
+  name            = try(var.project_ids["datalake-l2"], "dtl-2")
   parent          = try(var.project_create.parent, null)
   billing_account = try(var.project_create.billing_account_id, null)
-  project_create  = var.project_create != null
-  prefix          = var.project_create == null ? null : var.prefix
+  project_create  = can(var.project_ids["datalake-l2"])
+  prefix          = can(var.project_ids["datalake-l2"]) ? var.prefix : null
   # additive IAM bindings avoid disrupting bindings in existing project
   iam          = var.project_create != null ? local.iam_dtl : {}
   iam_additive = var.project_create == null ? local.iam_dtl : {}
@@ -150,11 +150,11 @@ module "dtl-2-prj" {
 
 module "dtl-plg-prj" {
   source          = "../../../modules/project"
-  name            = var.project_id["datalake-playground"]
+  name            = try(var.project_ids["datalake-playground"], "dtl-plg")
   parent          = try(var.project_create.parent, null)
   billing_account = try(var.project_create.billing_account_id, null)
-  project_create  = var.project_create != null
-  prefix          = var.project_create == null ? null : var.prefix
+  project_create  = can(var.project_ids["datalake-playground"])
+  prefix          = can(var.project_ids["datalake-playground"]) ? var.prefix : null
   # additive IAM bindings avoid disrupting bindings in existing project
   iam          = var.project_create != null ? local.iam_dtl : {}
   iam_additive = var.project_create == null ? local.iam_dtl : {}

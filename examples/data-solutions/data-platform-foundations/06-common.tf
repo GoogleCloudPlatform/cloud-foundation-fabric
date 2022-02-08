@@ -38,11 +38,11 @@ locals {
 
 module "cmn-prj" {
   source          = "../../../modules/project"
-  name            = var.project_id["common"]
+  name            = try(var.project_ids["common"], "cmn")
   parent          = try(var.project_create.parent, null)
   billing_account = try(var.project_create.billing_account_id, null)
-  project_create  = var.project_create != null
-  prefix          = var.project_create == null ? null : var.prefix
+  project_create  = can(var.project_ids["common"])
+  prefix          = can(var.project_ids["common"]) ? var.prefix : null
   # additive IAM bindings avoid disrupting bindings in existing project
   iam          = var.project_create != null ? local.iam_cmn : {}
   iam_additive = var.project_create == null ? local.iam_cmn : {}
@@ -53,8 +53,7 @@ module "cmn-prj" {
   ])
 }
 
-# Uncomment this section and assigne key links accondingly in local. variable
-# if you want to create KMS keys in the common projet
+# To create KMS keys in the common projet: uncomment this section and assigne key links accondingly in local.service_encryption_keys variable
 
 # module "cmn-kms-0" {
 #   source     = "../../../modules/kms"
