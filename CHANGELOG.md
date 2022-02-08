@@ -3,7 +3,9 @@
 All notable changes to this project will be documented in this file.
 
 ## Unreleased
+
 -  **incompatible change** removed `iam` key from logging sink configuration in the `project` and `organization` modules
+- remove GCS to BQ with Dataflow example, replace by GCS to BQ with least privileges
 
 ## [13.0.0] - 2022-01-27
 
