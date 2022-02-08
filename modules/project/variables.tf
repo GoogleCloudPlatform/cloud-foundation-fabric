@@ -243,12 +243,14 @@ variable "shared_vpc_host_config" {
 variable "shared_vpc_service_config" {
   description = "Configures this project as a Shared VPC service project (mutually exclusive with shared_vpc_host_config)."
   type = object({
-    attach       = bool
-    host_project = string
+    attach               = bool
+    host_project         = string
+    service_identity_iam = map(list(string))
   })
   default = {
-    attach       = false
-    host_project = ""
+    attach               = false
+    host_project         = ""
+    service_identity_iam = {}
   }
   nullable = false
 }

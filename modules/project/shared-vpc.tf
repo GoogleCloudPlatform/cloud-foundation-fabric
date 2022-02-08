@@ -16,6 +16,20 @@
 
 # tfdoc:file:description Shared VPC project-level configuration.
 
+locals {
+  _svpc_service_iam = flatten([
+    for role, services in var.shared_vpc_service_config.service_identity_iam : [
+      for service in services : {
+        role    = role
+        service = service
+      }
+    ]
+  ])
+  svpc_service_iam = {
+    for b in local._svpc_service_iam : "${b.role}:${b.service}" => b
+  }
+}
+
 resource "google_compute_shared_vpc_host_project" "shared_vpc_host" {
   provider = google-beta
   count    = try(var.shared_vpc_host_config.enabled, false) ? 1 : 0
@@ -40,3 +54,15 @@ resource "google_compute_shared_vpc_service_project" "shared_vpc_service" {
   host_project    = var.shared_vpc_service_config.host_project
   service_project = local.project.project_id
 }
+
+resource "google_project_iam_member" "shared_vpc_host_robots" {
+  for_each = local.svpc_service_iam
+  project  = var.shared_vpc_service_config.host_project
+  role     = each.value.role
+  member = (
+    each.value.service == "cloudservices"
+    ? local.service_account_cloud_services
+    : local.service_accounts_robots[each.value.service]
+  )
+}
+

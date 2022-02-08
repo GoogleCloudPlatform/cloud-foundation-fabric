@@ -36,12 +36,44 @@ module "project" {
   name            = "project-example"
 
   iam_additive = {
-    "roles/viewer"               = ["group:one@example.org", "group:two@xample.org"],
-    "roles/storage.objectAdmin"  = ["group:two@example.org"],
-    "roles/owner"                = ["group:three@example.org"],
+    "roles/viewer"               = [
+      "group:one@example.org", "group:two@xample.org"
+    ],
+    "roles/storage.objectAdmin"  = [
+      "group:two@example.org"
+    ],
+    "roles/owner"                = [
+      "group:three@example.org"
+    ],
   }
 }
 # tftest modules=1 resources=5
+```
+
+### Shared VPC service
+
+```hcl
+module "project" {
+  source          = "./modules/project"
+  name            = "project-example"
+
+  shared_vpc_service_config = {
+    attach               = true
+    host_project         = "my-host-project"
+    service_identity_iam = {
+      "roles/compute.networkUser"            = [
+        "cloudservices", "container-engine"
+      ]
+      "roles/vpcaccess.user"                 = [
+        "cloudrun"
+      ]
+      "roles/container.hostServiceAgentUser" = [
+        "container-engine"
+      ]
+    }
+  }
+}
+# tftest modules=1 resources=6
 ```
 
 ### Organization policies
@@ -74,6 +106,7 @@ module "project" {
 ```
 
 ## Logging Sinks
+
 ```hcl
 module "gcs" {
   source        = "./modules/gcs"
@@ -187,7 +220,7 @@ module "project" {
 | [organization-policies.tf](./organization-policies.tf) | Project-level organization policies. | <code>google_project_organization_policy</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |
 | [service-accounts.tf](./service-accounts.tf) | Service identities and supporting resources. | <code>google_kms_crypto_key_iam_member</code> · <code>google_project_service_identity</code> |
-| [shared-vpc.tf](./shared-vpc.tf) | Shared VPC project-level configuration. | <code>google_compute_shared_vpc_host_project</code> · <code>google_compute_shared_vpc_service_project</code> |
+| [shared-vpc.tf](./shared-vpc.tf) | Shared VPC project-level configuration. | <code>google_compute_shared_vpc_host_project</code> · <code>google_compute_shared_vpc_service_project</code> · <code>google_project_iam_member</code> |
 | [variables.tf](./variables.tf) | Module variables. |  |
 | [versions.tf](./versions.tf) | Version pins. |  |
 | [vpc-sc.tf](./vpc-sc.tf) | VPC-SC project-level perimeter configuration. | <code>google_access_context_manager_service_perimeter_resource</code> |
@@ -225,8 +258,8 @@ module "project" {
 | [service_perimeter_standard](variables.tf#L218) | Name of VPC-SC Standard perimeter to add project into. See comment in the variables file for format. | <code>string</code> |  | <code>null</code> |
 | [services](variables.tf#L224) | Service APIs to enable. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 | [shared_vpc_host_config](variables.tf#L230) | Configures this project as a Shared VPC host project (mutually exclusive with shared_vpc_service_project). | <code title="object&#40;&#123;&#10;  enabled          &#61; bool&#10;  service_projects &#61; list&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  enabled          &#61; false&#10;  service_projects &#61; &#91;&#93;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [shared_vpc_service_config](variables.tf#L243) | Configures this project as a Shared VPC service project (mutually exclusive with shared_vpc_host_config). | <code title="object&#40;&#123;&#10;  attach       &#61; bool&#10;  host_project &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  attach       &#61; false&#10;  host_project &#61; &#34;&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [skip_delete](variables.tf#L256) | Allows the underlying resources to be destroyed without destroying the project itself. | <code>bool</code> |  | <code>false</code> |
+| [shared_vpc_service_config](variables.tf#L243) | Configures this project as a Shared VPC service project (mutually exclusive with shared_vpc_host_config). | <code title="object&#40;&#123;&#10;  attach               &#61; bool&#10;  host_project         &#61; string&#10;  service_identity_iam &#61; map&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  attach               &#61; false&#10;  host_project         &#61; &#34;&#34;&#10;  service_identity_iam &#61; &#123;&#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [skip_delete](variables.tf#L258) | Allows the underlying resources to be destroyed without destroying the project itself. | <code>bool</code> |  | <code>false</code> |
 
 ## Outputs
 
