@@ -62,7 +62,8 @@ locals {
       ]
       "roles/orgpolicy.policyAdmin" = [
         module.automation-tf-resman-sa.iam_email,
-        local.groups_iam.gcp-security-admins
+        local.groups_iam.gcp-security-admins,
+        local.groups_iam.gcp-organization-admins
       ]
     },
     local.billing_org ? {
