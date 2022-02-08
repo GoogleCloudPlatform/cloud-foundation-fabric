@@ -38,7 +38,7 @@ locals {
     )
   }
   # define dry run spec at file level for convenience
-  vpc_sc_explicit_dry_run_spec = false
+  vpc_sc_explicit_dry_run_spec = true
   # compute perimeter bridge resources (projects)
   vpc_sc_p_bridge_resources = {
     landing_to_dev = concat(
