@@ -15,12 +15,6 @@
  */
 
 locals {
-  _gke_iam_hsau = try(var.vpc.gke_setup.enable_host_service_agent, false) ? {
-    "roles/container.hostServiceAgentUser" = "serviceAccount:${module.project.service_accounts.robots.container-engine}"
-  } : {}
-  _gke_iam_securityadmin = try(var.vpc.gke_setup.enable_security_admin, false) ? {
-    "roles/compute.securityAdmin" = "serviceAccount:${module.project.service_accounts.robots.container-engine}"
-  } : {}
   _group_iam = {
     for r in local._group_iam_roles : r => [
       for k, v in var.group_iam : "group:${k}" if try(index(v, r), null) != null
@@ -29,7 +23,9 @@ locals {
   _group_iam_roles = distinct(flatten(values(var.group_iam)))
   _service_accounts_iam = {
     for r in local._service_accounts_iam_roles : r => [
-      for k, v in var.service_accounts : "serviceAccount:${k}@${var.project_id}.iam.gserviceaccount.com" if try(index(v, r), null) != null
+      for k, v in var.service_accounts :
+      "serviceAccount:${k}@${var.project_id}.iam.gserviceaccount.com"
+      if try(index(v, r), null) != null
     ]
   }
   _service_accounts_iam_roles = distinct(flatten(values(var.service_accounts)))
@@ -44,12 +40,22 @@ locals {
   _services_iam_roles = distinct(flatten(values(var.services_iam)))
   _services_iam = {
     for r in local._services_iam_roles : r => [
-      for k, v in var.services_iam : "serviceAccount:${module.project.service_accounts.robots[k]}" if try(index(v, r), null) != null
+      for k, v in var.services_iam :
+      "serviceAccount:${module.project.service_accounts.robots[k]}"
+      if try(index(v, r), null) != null
     ]
   }
-  billing_account_id = coalesce(var.billing_account_id, try(var.defaults.billing_account_id, ""))
-  billing_alert      = var.billing_alert == null ? try(var.defaults.billing_alert, null) : var.billing_alert
-  essential_contacts = concat(try(var.defaults.essential_contacts, []), var.essential_contacts)
+  billing_account_id = coalesce(
+    var.billing_account_id, try(var.defaults.billing_account_id, "")
+  )
+  billing_alert = (
+    var.billing_alert == null
+    ? try(var.defaults.billing_alert, null)
+    : var.billing_alert
+  )
+  essential_contacts = concat(
+    try(var.defaults.essential_contacts, []), var.essential_contacts
+  )
   host_project_bindings = merge(
     local._gke_iam_hsau,
     local._gke_iam_securityadmin
@@ -68,19 +74,24 @@ locals {
       try(local._services_iam[role], []),
     )
   }
-  labels = merge(coalesce(var.labels, {}), coalesce(try(var.defaults.labels, {}), {}))
-  network_user_service_accounts = concat(
-    contains(local.services, "compute.googleapis.com") ? [
-      "serviceAccount:${module.project.service_accounts.robots.compute}"
-    ] : [],
-    contains(local.services, "container.googleapis.com") ? [
-      "serviceAccount:${module.project.service_accounts.robots.container-engine}",
-      "serviceAccount:${module.project.service_accounts.cloud_services}"
-    ] : [],
-  [])
-  services         = distinct(concat(var.services, local._services))
-  vpc_host_project = try(var.vpc.host_project, var.defaults.vpc_host_project)
-  vpc_setup        = var.vpc != null
+  labels = merge(
+    coalesce(var.labels, {}), coalesce(try(var.defaults.labels, {}), {})
+  )
+  services = distinct(concat(var.services, local._services))
+  vpc = coalesce(var.vpc, {
+    host_project = null, gke_setup = null, subnets_iam = null
+  })
+  vpc_cloudservices = (
+    local.vpc_gke_service_agent ||
+    contains(var.services, "compute.googleapis.com")
+  )
+  vpc_gke_security_admin = coalesce(
+    try(local.vpc.gke_setup.enable_security_admin, null), false
+  )
+  vpc_gke_service_agent = coalesce(
+    try(local.vpc.gke_setup.enable_host_service_agent, null), false
+  )
+  vpc_setup = var.vpc != null
 }
 
 module "billing-alert" {
@@ -122,9 +133,21 @@ module "project" {
   policy_list                = try(var.org_policies.policy_list, {})
   service_encryption_key_ids = var.kms_service_agents
   services                   = local.services
-  shared_vpc_service_config = {
-    attach       = local.vpc_setup
-    host_project = local.vpc_host_project
+  shared_vpc_service_config = !var.vpc_setup ? null : {
+    host_project = local.vpc.host_project
+    # these are non-authoritative
+    service_identity_iam = {
+      "roles/compute.networkUser" = compact([
+        local.vpc_gke_service_agent ? "container-engine" : null,
+        local.vpc_cloudservices ? "cloudservices" : null
+      ])
+      "roles/compute.securityAdmin" = compact([
+        local.vpc_gke_security_admin ? "container-engine" : null,
+      ])
+      "roles/container.hostServiceAgentUser" = compact([
+        local.vpc_gke_service_agent ? "container-engine" : null
+      ])
+    }
   }
 }
 
@@ -142,7 +165,7 @@ resource "google_compute_subnetwork_iam_binding" "binding" {
   subnetwork = "projects/${local.vpc_host_project}/regions/${split("/", each.key)[0]}/subnetworks/${split("/", each.key)[1]}"
   region     = split("/", each.key)[0]
   role       = "roles/compute.networkUser"
-  members    = concat(each.value, local.network_user_service_accounts)
+  members    = each.value
 }
 
 resource "google_project_iam_member" "host_project_bindings" {

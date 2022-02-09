@@ -130,6 +130,7 @@ variable "services" {
   description = "Services to be enabled for the project."
   type        = list(string)
   default     = []
+  nullable    = false
 }
 
 variable "services_iam" {
