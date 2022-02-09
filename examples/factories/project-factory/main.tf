@@ -15,20 +15,26 @@
  */
 
 locals {
+  # internal structures for group IAM bindings
   _group_iam = {
-    for r in local._group_iam_roles : r => [
-      for k, v in var.group_iam : "group:${k}" if try(index(v, r), null) != null
+    for r in local._group_iam_bindings : r => [
+      for k, v in var.group_iam :
+      "group:${k}" if try(index(v, r), null) != null
     ]
   }
-  _group_iam_roles = distinct(flatten(values(var.group_iam)))
+  _group_iam_bindings = distinct(flatten(values(var.group_iam)))
+  # internal structures for project service accounts IAM bindings
   _service_accounts_iam = {
-    for r in local._service_accounts_iam_roles : r => [
+    for r in local._service_accounts_iam_bindings : r => [
       for k, v in var.service_accounts :
       "serviceAccount:${k}@${var.project_id}.iam.gserviceaccount.com"
       if try(index(v, r), null) != null
     ]
   }
-  _service_accounts_iam_roles = distinct(flatten(values(var.service_accounts)))
+  _service_accounts_iam_bindings = distinct(flatten(
+    values(var.service_accounts)
+  ))
+  # internal structures for project services
   _services = concat([
     "billingbudgets.googleapis.com",
     "essentialcontacts.googleapis.com"
@@ -37,14 +43,30 @@ locals {
     try(var.vpc.gke_setup, null) != null ? ["container.googleapis.com"] : [],
     var.vpc != null ? ["compute.googleapis.com"] : [],
   )
-  _services_iam_roles = distinct(flatten(values(var.services_iam)))
-  _services_iam = {
-    for r in local._services_iam_roles : r => [
-      for k, v in var.services_iam :
-      "serviceAccount:${module.project.service_accounts.robots[k]}"
-      if try(index(v, r), null) != null
+  # internal structures for service identity IAM bindings
+  _service_identities_roles = distinct(flatten(values(var.service_identities_iam)))
+  _service_identities_iam = {
+    for role in local._service_identities_roles : role => [
+      for service, roles in var.service_identities_iam :
+      "serviceAccount:${module.project.service_accounts.robots[service]}"
+      if contains(roles, role)
     ]
   }
+  # internal structure for Shared VPC service project IAM bindings
+  _vpc_subnet_bindings = (
+    local.vpc.subnets_iam == null || local.vpc.host_project == null
+    ? []
+    : flatten([
+      for subnet, members in local.vpc.subnets_iam : [
+        for member in members : {
+          region = split("/", subnet)[0]
+          subnet = split("/", subnet)[1]
+          member = member
+        }
+      ]
+    ])
+  )
+  # structures for billing id
   billing_account_id = coalesce(
     var.billing_account_id, try(var.defaults.billing_account_id, "")
   )
@@ -53,27 +75,32 @@ locals {
     ? try(var.defaults.billing_alert, null)
     : var.billing_alert
   )
+  # structure for essential contacts
   essential_contacts = concat(
     try(var.defaults.essential_contacts, []), var.essential_contacts
   )
+  # structure that combines all authoritative IAM bindings
   iam = {
     for role in distinct(concat(
       keys(var.iam),
       keys(local._group_iam),
       keys(local._service_accounts_iam),
-      keys(local._services_iam),
+      keys(local._service_identities_iam),
     )) :
     role => concat(
       try(var.iam[role], []),
       try(local._group_iam[role], []),
       try(local._service_accounts_iam[role], []),
-      try(local._services_iam[role], []),
+      try(local._service_identities_iam[role], []),
     )
   }
+  # merge labels with defaults
   labels = merge(
     coalesce(var.labels, {}), coalesce(try(var.defaults.labels, {}), {})
   )
+  # deduplicate services
   services = distinct(concat(var.services, local._services))
+  # structures for Shared VPC resources in host project
   vpc = coalesce(var.vpc, {
     host_project = null, gke_setup = null, subnets_iam = null
   })
@@ -87,7 +114,10 @@ locals {
   vpc_gke_service_agent = coalesce(
     try(local.vpc.gke_setup.enable_host_service_agent, null), false
   )
-  vpc_setup = var.vpc != null
+  vpc_subnet_bindings = {
+    for binding in local._vpc_subnet_bindings :
+    "${binding.subnet}:${binding.member}" => binding
+  }
 }
 
 module "billing-alert" {
@@ -155,10 +185,10 @@ module "service-accounts" {
 }
 
 resource "google_compute_subnetwork_iam_member" "default" {
-  for_each   = local.vpc_setup ? coalesce(var.vpc.subnets_iam, {}) : {}
+  for_each   = local.vpc_subnet_bindings
   project    = local.vpc.host_project
-  subnetwork = "projects/${local.vpc.host_project}/regions/${split("/", each.key)[0]}/subnetworks/${split("/", each.key)[1]}"
-  region     = split("/", each.key)[0]
+  subnetwork = "projects/${local.vpc.host_project}/regions/${each.value.region}/subnetworks/${each.value.subnet}"
+  region     = each.value.region
   role       = "roles/compute.networkUser"
-  member     = each.value
+  member     = each.value.member
 }

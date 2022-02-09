@@ -72,8 +72,8 @@ services:
   - stackdriver.googleapis.com
   - compute.googleapis.com
 
-# [opt] Roles to assign to the robots service accounts in robot => [roles] format
-services_iam:
+# [opt] Roles to assign to the service identities in service => [roles] format
+service_identities_iam:
   compute:
     - roles/storage.objectViewer
 
