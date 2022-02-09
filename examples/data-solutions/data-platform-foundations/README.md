@@ -55,16 +55,15 @@ We assign roles on resources at the project level, granting the appropriate role
 
 ### Service accounts
 
-Service account creation follows the least privilege principle, performing a single task which requires access to a defined set of resources. In the table below you can find an high level overview on roles for each service account. For semplicy `READ` or `WRITE` roles are used, for detailed roles refer to the code.
+Service account creation follows the least privilege principle, performing a single task which requires access to a defined set of resources. In the table below you can find an high level overview on roles for each service account. For semplicy `READ` or `WRITE` roles are used, for detailed roles please refer to the code.
 
 
 |Service Account|Landing|DataLake L0|DataLake L1|DataLake L2|
 |-|:-:|:-:|:-:|:-:|
-|landing-sa|WRITE||||
-|load-sa|READ|READ/WRITE|||
-|transformation-sa||READ/WRITE|READ/WRITE|READ/WRITE|
-|orchestration-sa|||||
-|-|-|-|-|-|
+|landing-sa|WRITE|-|-|-|
+|load-sa|READ|READ/WRITE|-|-|
+|transformation-sa|-|READ/WRITE|READ/WRITE|READ/WRITE|
+|orchestration-sa|-|-|-|-|
 
 Using of service account keys within a data pipeline exposes to several security risks deriving from a credentials leak. This example shows how to leverage impersonation to avoid the need of creating keys.
 
@@ -76,7 +75,15 @@ We use three groups to control access to resources:
 
 - *Data Engineers* They handle and run the Data Hub, with read access to all resources in order to troubleshoot possible issues with pipelines. This team can also impersonate any service account.
 - *Data Analyst*. They perform analysis on datasets, with read access to the data lake L2 project, and BigQuery READ/WRITE access to the playground project. 
-- *Data Security*:. They handle security configurations related to the Data Hub. This team has admin access to the common project to configure Cloud DLP templates or Data Catalog policy tgs.a
+- *Data Security*:. They handle security configurations related to the Data Hub. This team has admin access to the common project to configure Cloud DLP templates or Data Catalog policy tags.
+
+In the table below you can find an high level overview on roles for each group. For semplicy `READ`, `WRITE` and `ADMIN` roles are used, for detailed roles please refer to the code.
+
+|Group|Landing|Load|Transformation|Data Lake L0|Data Lake L1|Data Lake L2|Data Lake Playground|Orchestration|Common|
+|-|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+|Data Engineers|ADMIN|ADMIN|ADMIN|ADMIN|ADMIN|ADMIN|ADMIN|ADMIN|ADMIN|
+|Data Analyst|-|-|-|-|-|READ|READ/WRITE|-|-|
+|Data Security|-|-|-|-|-|-|-|-|ADMIN|
 
 You can configure groups via the `groups` variable.
 ### Virtual Private Cloud (VPC) design
