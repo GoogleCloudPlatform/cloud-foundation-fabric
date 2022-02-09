@@ -69,13 +69,13 @@ variable "l7ilb_subnets" {
     region        = string
   })))
   default = {
-    prod = [
-      { ip_cidr_range = "10.128.92.0/24", region = "europe-west1" },
-      { ip_cidr_range = "10.128.93.0/24", region = "europe-west4" }
-    ]
     dev = [
-      { ip_cidr_range = "10.128.60.0/24", region = "europe-west1" },
-      { ip_cidr_range = "10.128.61.0/24", region = "europe-west4" }
+      { ip_cidr_range = "10.128.159.0/24", region = "europe-west1" },
+      { ip_cidr_range = "10.128.191.0/24", region = "europe-west4" }
+    ]
+    prod = [
+      { ip_cidr_range = "10.128.223.0/24", region = "europe-west1" },
+      { ip_cidr_range = "10.128.255.0/24", region = "europe-west4" }
     ]
   }
 }
@@ -121,13 +121,17 @@ variable "psa_ranges" {
   description = "IP ranges used for Private Service Access (e.g. CloudSQL)."
   type        = map(map(string))
   default = {
-    prod = {
-      cloudsql-mysql     = "10.128.94.0/24"
-      cloudsql-sqlserver = "10.128.95.0/24"
-    }
     dev = {
-      cloudsql-mysql     = "10.128.62.0/24"
-      cloudsql-sqlserver = "10.128.63.0/24"
+      cloudsql-mysql-ew1     = "10.128.157.0/24"
+      cloudsql-mysql-ew4     = "10.128.189.0/24"
+      cloudsql-sqlserver-ew1 = "10.128.158.0/24"
+      cloudsql-sqlserver-ew4 = "10.128.190.0/24"
+    }
+    prod = {
+      cloudsql-mysql-ew1     = "10.128.221.0/24"
+      cloudsql-mysql-ew4     = "10.128.253.0/24"
+      cloudsql-sqlserver-ew1 = "10.128.222.0/24"
+      cloudsql-sqlserver-ew4 = "10.128.254.0/24"
     }
   }
 }
@@ -143,12 +147,12 @@ variable "router_configs" {
   }))
   default = {
     landing-trusted-ew1 = {
-      asn = "65534"
+      asn = "64512"
       adv = null
       # adv = { default = false, custom = [] }
     }
     landing-trusted-ew4 = {
-      asn = "65534"
+      asn = "64512"
       adv = null
       # adv = { default = false, custom = [] }
     }

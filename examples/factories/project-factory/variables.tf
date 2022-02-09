@@ -51,6 +51,7 @@ variable "defaults" {
     shared_vpc_self_link  = string
     vpc_host_project      = string
   })
+  default = null
 }
 
 variable "dns_zones" {
@@ -108,6 +109,12 @@ variable "org_policies" {
   default = null
 }
 
+variable "prefix" {
+  description = "Prefix used for the project id."
+  type        = string
+  default     = null
+}
+
 variable "project_id" {
   description = "Project id."
   type        = string
@@ -123,12 +130,14 @@ variable "services" {
   description = "Services to be enabled for the project."
   type        = list(string)
   default     = []
+  nullable    = false
 }
 
-variable "services_iam" {
-  description = "Custom IAM settings for robot ServiceAccounts in service => [role] format."
+variable "service_identities_iam" {
+  description = "Custom IAM settings for service identities in service => [role] format."
   type        = map(list(string))
   default     = {}
+  nullable    = false
 }
 
 variable "vpc" {

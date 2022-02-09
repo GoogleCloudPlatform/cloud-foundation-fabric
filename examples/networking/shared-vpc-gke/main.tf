@@ -31,9 +31,6 @@ module "project-host" {
     service_projects = [] # defined later
   }
   iam = {
-    "roles/container.hostServiceAgentUser" = [
-      "serviceAccount:${module.project-svc-gke.service_accounts.robots.container-engine}"
-    ]
     "roles/owner" = var.owners_host
   }
 }
@@ -48,8 +45,10 @@ module "project-svc-gce" {
   oslogin         = true
   oslogin_admins  = var.owners_gce
   shared_vpc_service_config = {
-    attach       = true
     host_project = module.project-host.project_id
+    service_identity_iam = {
+      "roles/compute.networkUser" = ["cloudservices"]
+    }
   }
   iam = {
     "roles/owner" = var.owners_gce
@@ -67,8 +66,11 @@ module "project-svc-gke" {
   name            = "gke"
   services        = var.project_services
   shared_vpc_service_config = {
-    attach       = true
     host_project = module.project-host.project_id
+    service_identity_iam = {
+      "roles/container.hostServiceAgentUser" = ["container-engine"]
+      "roles/compute.networkUser"            = ["container-engine"]
+    }
   }
   iam = merge(
     {

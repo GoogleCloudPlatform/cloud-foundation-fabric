@@ -16,7 +16,21 @@
 
 # TODO(): proper outputs
 
+output "project" {
+  description = "The project resource as return by the `project` module"
+  value       = module.project
+
+  depends_on = [
+    google_compute_subnetwork_iam_member.default,
+    module.dns
+  ]
+}
+
 output "project_id" {
   description = "Project ID."
   value       = module.project.project_id
+  depends_on = [
+    google_compute_subnetwork_iam_member.default,
+    module.dns
+  ]
 }
