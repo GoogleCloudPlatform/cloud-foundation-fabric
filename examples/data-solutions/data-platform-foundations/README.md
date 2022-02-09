@@ -55,7 +55,16 @@ We assign roles on resources at the project level, granting the appropriate role
 
 ### Service accounts
 
-Service account creation follows the least privilege principle, performing a single task which requires access to a defined set of resources. For example, the Cloud Dataflow service account only has access to the landing project and the data lake L0 project.
+Service account creation follows the least privilege principle, performing a single task which requires access to a defined set of resources. In the table below you can find an high level overview on roles for each service account. For semplicy `READ` or `WRITE` roles are used, for detailed roles refer to the code.
+
+
+|Service Account|Landing|DataLake L0|DataLake L1|DataLake L2|
+|-|:-:|:-:|:-:|:-:|
+|landing-sa|WRITE||||
+|load-sa|READ|READ/WRITE|||
+|transformation-sa||READ/WRITE|READ/WRITE|READ/WRITE|
+|orchestration-sa|||||
+|-|-|-|-|-|
 
 Using of service account keys within a data pipeline exposes to several security risks deriving from a credentials leak. This example shows how to leverage impersonation to avoid the need of creating keys.
 
@@ -193,6 +202,7 @@ Once the configuration is complete, run the project factory by running
 ```bash
 terraform init
 terraform apply
+```
 
 ## Customizations
 
