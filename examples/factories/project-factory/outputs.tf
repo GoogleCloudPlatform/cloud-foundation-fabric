@@ -21,8 +21,7 @@ output "project" {
   value       = module.project
 
   depends_on = [
-    google_compute_subnetwork_iam_binding.binding,
-    google_project_iam_member.host_project_bindings,
+    google_compute_subnetwork_iam_member.default,
     module.dns
   ]
 }
@@ -31,8 +30,7 @@ output "project_id" {
   description = "Project ID."
   value       = module.project.project_id
   depends_on = [
-    google_compute_subnetwork_iam_binding.binding,
-    google_project_iam_member.host_project_bindings,
+    google_compute_subnetwork_iam_member.default,
     module.dns
   ]
 }
