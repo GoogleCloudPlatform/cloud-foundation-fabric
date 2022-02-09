@@ -69,8 +69,7 @@ resource "google_project_iam_member" "shared_vpc_host_robots" {
   role     = each.value.role
   member = (
     each.value.service == "cloudservices"
-    ? local.service_account_cloud_services
-    : local.service_accounts_robots[each.value.service]
+    ? "serviceAccount:${local.service_account_cloud_services}"
+    : "serviceAccount:${local.service_accounts_robots[each.value.service]}"
   )
 }
-
