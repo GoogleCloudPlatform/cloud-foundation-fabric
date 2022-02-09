@@ -10,6 +10,8 @@ All notable changes to this project will be documented in this file.
 - new `iot-core` module
 - **incompatible change** the variables for host and service Shared VPCs have changed in the project module
 - **incompatible change** the variable for service identities IAM has changed in the project factory
+- the `net-vpc` and `project` modules now use the beta provider for shared VPC-related resources
+- add `data-catalog-policy-tag` module
 
 ## [13.0.0] - 2022-01-27
 
