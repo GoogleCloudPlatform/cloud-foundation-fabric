@@ -19,11 +19,6 @@ locals {
 
   _gke_robot_sa      = "serviceAccount:${module.gke-project-0.service_accounts.robots.container-engine}"
   _cloud_services_sa = "serviceAccount:${module.gke-project-0.service_accounts.cloud_services}"
-  host_project_bindings = [
-    { role = "roles/container.hostServiceAgentUser", member = local._gke_robot_sa },
-    { role = "roles/compute.networkUser", member = local._gke_robot_sa },
-    { role = "roles/compute.networkUser", member = local._cloud_services_sa }
-  ]
 }
 
 module "gke-project-0" {
@@ -50,9 +45,17 @@ module "gke-project-0" {
   shared_vpc_service_config = {
     attach       = true
     host_project = var.vpc_host_project
+    service_identity_iam = {
+      "roles/compute.networkUser" = [
+        "cloudservices", "container-engine"
+      ]
+      "roles/container.hostServiceAgentUser" = [
+        "container-engine"
+      ]
+    }
   }
-  # specify project-level org policies here if you need them
 
+  # specify project-level org policies here if you need them
   # policy_boolean = {
   #   "constraints/compute.disableGuestAttributesAccess" = true
   # }
@@ -71,11 +74,4 @@ module "gke-dataset-resource-usage" {
   project_id    = module.gke-project-0.project_id
   id            = "resource_usage"
   friendly_name = "GKE resource usage."
-}
-
-resource "google_project_iam_member" "host_project_bindings" {
-  for_each = { for i, v in local.host_project_bindings : i => v }
-  project  = var.vpc_host_project
-  role     = each.value.role
-  member   = each.value.member
 }
