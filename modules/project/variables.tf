@@ -233,27 +233,17 @@ variable "shared_vpc_host_config" {
     enabled          = bool
     service_projects = list(string)
   })
-  default = {
-    enabled          = false
-    service_projects = []
-  }
-  nullable = false
+  default = null
 }
 
 variable "shared_vpc_service_config" {
   description = "Configures this project as a Shared VPC service project (mutually exclusive with shared_vpc_host_config)."
+  # the list of valid service identities is in service-accounts.tf
   type = object({
-    attach               = bool
     host_project         = string
     service_identity_iam = map(list(string))
   })
-  # the list of valid service identities is in service-accounts.tf
-  default = {
-    attach               = false
-    host_project         = ""
-    service_identity_iam = {}
-  }
-  nullable = false
+  default = null
 }
 
 variable "skip_delete" {

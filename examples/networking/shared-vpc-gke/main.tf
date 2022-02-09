@@ -45,7 +45,6 @@ module "project-svc-gce" {
   oslogin         = true
   oslogin_admins  = var.owners_gce
   shared_vpc_service_config = {
-    attach       = true
     host_project = module.project-host.project_id
     service_identity_iam = {
       "roles/compute.networkUser" = ["cloudservices"]
@@ -67,7 +66,6 @@ module "project-svc-gke" {
   name            = "gke"
   services        = var.project_services
   shared_vpc_service_config = {
-    attach       = true
     host_project = module.project-host.project_id
     service_identity_iam = {
       "roles/container.hostServiceAgentUser" = ["container-engine"]
