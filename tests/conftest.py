@@ -88,12 +88,15 @@ def e2e_plan_runner(_plan_runner):
 
 
 @ pytest.fixture(scope='session')
-def example_plan_runner(_plan_runner):
+def doc_example_plan_runner(_plan_runner):
   "Returns a function to run Terraform plan on documentation examples."
 
   def run_plan(fixture_path=None):
     "Runs Terraform plan and returns count of modules and resources."
-    plan = _plan_runner(fixture_path)
+    tf = tftest.TerraformTest(fixture_path, BASEDIR,
+                              os.environ.get('TERRAFORM', 'terraform'))
+    tf.setup(upgrade=True)
+    plan = tf.plan(output=True, refresh=True)
     # the fixture is the example we are testing
     modules = plan.modules or {}
     return (
