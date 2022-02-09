@@ -87,6 +87,7 @@ module "organization" {
     "constraints/compute.requireOsLogin"                          = true
     "constraints/compute.restrictXpnProjectLienRemoval"           = true
     "constraints/compute.skipDefaultNetworkCreation"              = true
+    "constraints/compute.setNewProjectDefaultToZonalDNSOnly"      = true
     "constraints/iam.automaticIamGrantsForDefaultServiceAccounts" = true
     "constraints/iam.disableServiceAccountKeyCreation"            = true
     "constraints/iam.disableServiceAccountKeyUpload"              = true
