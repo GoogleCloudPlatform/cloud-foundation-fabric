@@ -2,15 +2,15 @@
 
 The Data Platform (DP) builds on top of your foundations to create and set up projects (and related resources) to be used for your data platform.
 
-## Design overview and choices
-
 <p align="center">
   <img src="diagram.png" alt="Data Platform diagram">
 </p>
 
-The DP creates projects in a well-defined context, according to your resource management structure. For example, in the diagram above, within the DP folder, you have resources organized by environment. 
+## Design overview and choices
 
-Projects for each environment across different data layer are created to separate Service Account and Group roles. Roles are ssigned at project level.
+The DP creates projects in a well-defined context, according to your resource management structure. Within the DP folder, resources are organized by environment. 
+
+Projects for each environment across different data layer are created to separate Service Account and Group roles. Roles are assigned at project level.
 
 The Data Platform takes care of the following activities:
 
@@ -24,7 +24,18 @@ The Data Platform takes care of the following activities:
 - Billing setup (billing account attachment and budget configuration)
 - Resource on each project to handle your data platform.
 
-You can find more details on the DP implemented on the DP [README](../../../examples/data-solutions/data-platform-foundations/README.md).
+You can find more details on the DP implemented on the DP [README](../../../examples/data-solutions/data-platform-foundations/).
+
+### User Groups
+
+The DP rely on user groups to assign roles. They provide a stable frame of reference that allows decoupling the final set of permissions for each group, from the stage where entities and resources are created and their IAM bindings defined. [Here]((../../../examples/data-solutions/data-platform-foundations/#groups)) you can find more detail on  users groups used by the DP. 
+### Network
+
+The DP rely on the shared VPC defined on the `[02-networking](../../../02-network-vpn)` stage. 
+
+### Encryption
+
+The DP may rely on Cloud KMS crypto keys created by the `[02-security](../../../02-security)` stage.
 
 ## How to run this stage
 
