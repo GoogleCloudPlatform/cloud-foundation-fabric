@@ -267,9 +267,9 @@ module "project" {
 |---|---|:---:|
 | [custom_roles](outputs.tf#L17) | Ids of the created custom roles. |  |
 | [name](outputs.tf#L25) | Project name. |  |
-| [number](outputs.tf#L37) | Project number. |  |
-| [project_id](outputs.tf#L49) | Project id. |  |
-| [service_accounts](outputs.tf#L63) | Product robot service accounts in project. |  |
-| [sink_writer_identities](outputs.tf#L79) | Writer identities created for each sink. |  |
+| [number](outputs.tf#L38) | Project number. |  |
+| [project_id](outputs.tf#L51) | Project id. |  |
+| [service_accounts](outputs.tf#L66) | Product robot service accounts in project. |  |
+| [sink_writer_identities](outputs.tf#L82) | Writer identities created for each sink. |  |
 
 <!-- END TFDOC -->
