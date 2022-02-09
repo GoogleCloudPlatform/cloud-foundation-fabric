@@ -14,29 +14,10 @@
 
 # tfdoc:file:description common project.
 
-locals {
-  group_iam_exp = {
-    #TODO add group => role mapping to asign on exposure project
-  }
-  iam_exp = {
-    #TODO add role => service account mapping to assign roles on exposure project
-  }
-  prefix_exp = "${var.prefix}-exp"
-}
-
-# Project
-
-module "exp-prj" {
+module "exp-project" {
   source          = "../../../modules/project"
-  name            = try(var.project_ids["exposure"], "exp")
-  parent          = try(var.project_create.parent, null)
-  billing_account = try(var.project_create.billing_account_id, null)
-  project_create  = can(var.project_ids["exposure"])
-  prefix          = can(var.project_ids["exposure"]) ? var.prefix : null
-  # additive IAM bindings avoid disrupting bindings in existing project
-  iam          = var.project_create != null ? local.iam_exp : {}
-  iam_additive = var.project_create == null ? local.iam_exp : {}
-  group_iam    = local.group_iam_exp
-  services = concat(var.project_services, [
-  ])
+  parent          = var.folder_id
+  billing_account = var.billing_account_id
+  prefix          = var.prefix
+  name            = "exp"
 }

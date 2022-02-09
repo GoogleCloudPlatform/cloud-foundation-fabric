@@ -14,39 +14,28 @@
 
 # tfdoc:file:description common project.
 
-locals {
-  group_iam_cmn = {
-    "${local.groups.data-engineers}" = [
+module "common-project" {
+  source          = "../../../modules/project"
+  parent          = var.folder_id
+  billing_account = var.billing_account_id
+  prefix          = var.prefix
+  name            = "cmn"
+  group_iam = {
+    (local.groups.data-engineers) = [
       "roles/dlp.reader",
       "roles/dlp.user",
       "roles/dlp.estimatesAdmin",
-    ],
-    "${local.groups.data-security}" = [
+    ]
+    (local.groups.data-security) = [
       "roles/dlp.admin",
-    ],
-  }
-  iam_cmn = {
-    "roles/dlp.user" = [
-      module.lod-sa-df-0.iam_email,
-      module.trf-sa-df-0.iam_email
     ]
   }
-  prefix_cmn = "${var.prefix}-cmn"
-}
-
-# Project
-
-module "cmn-prj" {
-  source          = "../../../modules/project"
-  name            = try(var.project_ids["common"], "cmn")
-  parent          = try(var.project_create.parent, null)
-  billing_account = try(var.project_create.billing_account_id, null)
-  project_create  = can(var.project_ids["common"])
-  prefix          = can(var.project_ids["common"]) ? var.prefix : null
-  # additive IAM bindings avoid disrupting bindings in existing project
-  iam          = var.project_create != null ? local.iam_cmn : {}
-  iam_additive = var.project_create == null ? local.iam_cmn : {}
-  group_iam    = local.group_iam_cmn
+  iam = {
+    "roles/dlp.user" = [
+      module.load-sa-df-0.iam_email,
+      module.transf-sa-df-0.iam_email
+    ]
+  }
   services = concat(var.project_services, [
     "datacatalog.googleapis.com",
     "dlp.googleapis.com",

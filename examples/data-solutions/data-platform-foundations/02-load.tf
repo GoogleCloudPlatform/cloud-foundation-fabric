@@ -15,52 +15,53 @@
 # tfdoc:file:description Load project and VPC.
 
 locals {
-  group_iam_lod = {
-    "${local.groups.data-engineers}" = [
+  load_service_accounts = [
+    "serviceAccount:${module.load-project.service_accounts.robots.dataflow}",
+    module.load-sa-df-0.iam_email
+  ]
+  load_subnet = (
+    local.use_shared_vpc
+    ? var.network_config.subnet_self_links.orchestration
+    : values(module.load-vpc.0.subnet_self_links)[0]
+  )
+  load_vpc = (
+    local.use_shared_vpc
+    ? var.network_config.network_self_link
+    : module.load-vpc.0.self_link
+  )
+}
+
+# Project
+
+module "load-project" {
+  source          = "../../../modules/project"
+  parent          = var.folder_id
+  billing_account = var.billing_account_id
+  prefix          = var.prefix
+  name            = "lod"
+  group_iam = {
+    (local.groups.data-engineers) = [
       "roles/compute.viewer",
       "roles/dataflow.admin",
       "roles/dataflow.developer",
       "roles/viewer",
     ]
   }
-  iam_lod = {
-    "roles/bigquery.jobUser" = [
-      module.lod-sa-df-0.iam_email
-    ]
-    "roles/compute.serviceAgent" = [
-      "serviceAccount:${module.lod-prj.service_accounts.robots.compute}"
-    ]
+  iam = {
+    "roles/bigquery.jobUser" = [module.load-sa-df-0.iam_email]
     "roles/dataflow.admin" = [
-      module.orc-sa-cmp-0.iam_email,
-      module.lod-sa-df-0.iam_email
+      module.orch-sa-cmp-0.iam_email, module.load-sa-df-0.iam_email
     ]
-    "roles/dataflow.worker" = [
-      module.lod-sa-df-0.iam_email
-    ]
-    "roles/dataflow.serviceAgent" = [
-      "serviceAccount:${module.lod-prj.service_accounts.robots.dataflow}"
-    ]
-    "roles/storage.objectAdmin" = [
-      "serviceAccount:${module.lod-prj.service_accounts.robots.dataflow}",
-      module.lod-sa-df-0.iam_email
-    ]
+    "roles/dataflow.worker"     = [module.load-sa-df-0.iam_email]
+    "roles/storage.objectAdmin" = local.load_service_accounts
+    # TODO: these are needed on the shared VPC?
+    # "roles/compute.serviceAgent" = [
+    #   "serviceAccount:${module.load-project.service_accounts.robots.compute}"
+    # ]
+    # "roles/dataflow.serviceAgent" = [
+    #   "serviceAccount:${module.load-project.service_accounts.robots.dataflow}"
+    # ]
   }
-  prefix_lod = "${var.prefix}-lod"
-}
-
-# Project
-
-module "lod-prj" {
-  source          = "../../../modules/project"
-  name            = try(var.project_ids["load"], "lod")
-  parent          = try(var.project_create.parent, null)
-  billing_account = try(var.project_create.billing_account_id, null)
-  project_create  = can(var.project_ids["load"])
-  prefix          = can(var.project_ids["load"]) ? var.prefix : null
-  # additive IAM bindings avoid disrupting bindings in existing project
-  iam          = var.project_create != null ? local.iam_lod : {}
-  iam_additive = var.project_create == null ? local.iam_lod : {}
-  # group_iam    = local.group_iam_lod
   services = concat(var.project_services, [
     "bigquery.googleapis.com",
     "bigqueryreservation.googleapis.com",
@@ -79,37 +80,67 @@ module "lod-prj" {
     dataflow = [try(local.service_encryption_keys.dataflow, null)]
     storage  = [try(local.service_encryption_keys.storage, null)]
   }
-  shared_vpc_service_config = local._shared_vpc_service_config
+  shared_vpc_service_config = local.shared_vpc_project == null ? null : {
+    attach       = true
+    host_project = local.shared_vpc_project
+    service_identity_iam = {
+      # TODO: worker service account
+      "compute.networkUser" = ["dataflow"]
+    }
+  }
 }
 
-module "lod-vpc" {
-  count      = var.network_config.network_self_link != null ? 0 : 1
+module "load-sa-df-0" {
+  source     = "../../../modules/iam-service-account"
+  project_id = module.load-project.project_id
+  prefix     = var.prefix
+  name       = "load-df-0"
+  iam = {
+    "roles/iam.serviceAccountTokenCreator" = [local.groups_iam.data-engineers]
+    "roles/iam.serviceAccountUser"         = [module.orch-sa-cmp-0.iam_email]
+  }
+}
+
+module "load-cs-df-0" {
+  source         = "../../../modules/gcs"
+  project_id     = module.load-project.project_id
+  prefix         = var.prefix
+  name           = "load-cs-0"
+  storage_class  = "REGIONAL"
+  location       = var.region
+  encryption_key = try(local.service_encryption_keys.storage, null)
+}
+
+# internal VPC resources
+
+module "load-vpc" {
   source     = "../../../modules/net-vpc"
-  project_id = module.lod-prj.project_id
-  name       = "${local.prefix_lod}-vpc"
+  count      = local.use_shared_vpc ? 0 : 1
+  project_id = module.load-project.project_id
+  name       = "{var.prefix}-default"
   subnets = [
     {
       ip_cidr_range      = "10.10.0.0/24"
-      name               = "${local.prefix_lod}-subnet"
-      region             = var.location_config.region
+      name               = "default"
+      region             = var.region
       secondary_ip_range = {}
     }
   ]
 }
 
-module "lod-vpc-firewall" {
-  count        = var.network_config.network_self_link != null ? 0 : 1
+module "load-vpc-firewall" {
   source       = "../../../modules/net-vpc-firewall"
-  project_id   = module.lod-prj.project_id
-  network      = local._networks.load.network_name
+  count        = local.use_shared_vpc ? 0 : 1
+  project_id   = module.load-project.project_id
+  network      = module.load-vpc.0.name
   admin_ranges = ["10.10.0.0/24"]
 }
 
-module "lod-nat" {
-  count          = var.network_config.network_self_link != null ? 0 : 1
+module "load-nat" {
   source         = "../../../modules/net-cloudnat"
-  project_id     = module.lod-prj.project_id
-  region         = var.location_config.region
-  name           = "${local.prefix_lod}-default"
-  router_network = module.lod-vpc[0].name
+  count          = local.use_shared_vpc ? 0 : 1
+  project_id     = module.load-project.project_id
+  name           = "${var.prefix}-default"
+  region         = var.region
+  router_network = module.load-vpc.0.name
 }
