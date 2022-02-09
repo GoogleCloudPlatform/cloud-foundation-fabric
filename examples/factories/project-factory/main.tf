@@ -56,10 +56,6 @@ locals {
   essential_contacts = concat(
     try(var.defaults.essential_contacts, []), var.essential_contacts
   )
-  host_project_bindings = merge(
-    local._gke_iam_hsau,
-    local._gke_iam_securityadmin
-  )
   iam = {
     for role in distinct(concat(
       keys(var.iam),
@@ -133,7 +129,7 @@ module "project" {
   policy_list                = try(var.org_policies.policy_list, {})
   service_encryption_key_ids = var.kms_service_agents
   services                   = local.services
-  shared_vpc_service_config = !var.vpc_setup ? null : {
+  shared_vpc_service_config = var.vpc == null ? null : {
     host_project = local.vpc.host_project
     # these are non-authoritative
     service_identity_iam = {
@@ -158,19 +154,11 @@ module "service-accounts" {
   project_id = module.project.project_id
 }
 
-# TODO(jccb): we should probably change this to non-authoritative bindings
-resource "google_compute_subnetwork_iam_binding" "binding" {
+resource "google_compute_subnetwork_iam_member" "default" {
   for_each   = local.vpc_setup ? coalesce(var.vpc.subnets_iam, {}) : {}
-  project    = local.vpc_host_project
-  subnetwork = "projects/${local.vpc_host_project}/regions/${split("/", each.key)[0]}/subnetworks/${split("/", each.key)[1]}"
+  project    = local.vpc.host_project
+  subnetwork = "projects/${local.vpc.host_project}/regions/${split("/", each.key)[0]}/subnetworks/${split("/", each.key)[1]}"
   region     = split("/", each.key)[0]
   role       = "roles/compute.networkUser"
-  members    = each.value
-}
-
-resource "google_project_iam_member" "host_project_bindings" {
-  for_each = local.host_project_bindings
-  project  = local.vpc_host_project
-  role     = each.key
-  member   = each.value
+  member     = each.value
 }
