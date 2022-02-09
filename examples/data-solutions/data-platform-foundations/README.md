@@ -59,13 +59,15 @@ Service account creation follows the least privilege principle, performing a sin
 
 Using of service account keys within a data pipeline exposes to several security risks deriving from a credentials leak. This example shows how to leverage impersonation to avoid the need of creating keys.
 
-### Groups
+### User groups
+
+User groups are important. They provide a stable frame of reference that allows decoupling the final set of permissions for each group, from the stage where entities and resources are created and their IAM bindings defined.
 
 We use three groups to control access to resources:
 
 - *Data Engineers* They handle and run the Data Hub, with read access to all resources in order to troubleshoot possible issues with pipelines. This team can also impersonate any service account.
 - *Data Analyst*. They perform analysis on datasets, with read access to the data lake L2 project, and BigQuery READ/WRITE access to the playground project. 
-- *Data Security*:. They handle security configurations related to the Data Hub.
+- *Data Security*:. They handle security configurations related to the Data Hub. This team has admin access to the common project to configure Cloud DLP templates or Data Catalog policy tgs.a
 
 You can configure groups via the `groups` variable.
 ### Virtual Private Cloud (VPC) design
@@ -107,11 +109,12 @@ Resources in the script use the following acronyms:
 Resources follow the naming convention described below.
 
 - `prefix-layer` for projects
+- `prefix-layer-prduct` for resources
 - `prefix-layer[2]-gcp-product[2]-counter` for services and service accounts
 
 ### Encryption
 
-We suggest a centralized approach to key management, where Security is the only team that can access encryption material, and keyrings and keys are managed in a project external to the DP.
+We suggest a centralized approach to key management, where Organization Security is the only team that can access encryption material, and keyrings and keys are managed in a project external to the DP.
 
 ![Centralized Cloud Key Management high-level diagram](./images/kms_diagram.png "Centralized Cloud Key Management high-level diagram")
 
