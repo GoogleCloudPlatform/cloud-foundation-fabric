@@ -119,7 +119,7 @@ module "load-vpc" {
   source     = "../../../modules/net-vpc"
   count      = local.use_shared_vpc ? 0 : 1
   project_id = module.load-project.project_id
-  name       = "{var.prefix}-default"
+  name       = "${var.prefix}-default"
   subnets = [
     {
       ip_cidr_range      = "10.10.0.0/24"
