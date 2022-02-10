@@ -41,6 +41,12 @@ variable "defaults_file" {
   default     = "data/defaults.yaml"
 }
 
+variable "prefix" {
+  # tfdoc:variable:source 00-bootstrap
+  description = "Prefix used for resources that need unique names."
+  type        = string
+}
+
 variable "shared_vpc_self_link" {
   # tfdoc:variable:source 02-networking
   description = "Self link for the shared VPC."
