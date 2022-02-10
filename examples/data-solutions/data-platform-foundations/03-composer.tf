@@ -19,6 +19,8 @@ module "orch-sa-cmp-0" {
   project_id = module.orch-project.project_id
   prefix     = var.prefix
   name       = "orc-cmp-0"
+  # TODO: descriptive name
+  display_name = "TODO"
   iam = {
     "roles/iam.serviceAccountTokenCreator" = [local.groups_iam.data-engineers]
     "roles/iam.serviceAccountUser"         = [module.orch-sa-cmp-0.iam_email]

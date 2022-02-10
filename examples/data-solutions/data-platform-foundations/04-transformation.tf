@@ -89,6 +89,8 @@ module "transf-sa-df-0" {
   project_id = module.transf-project.project_id
   prefix     = var.prefix
   name       = "trf-df-0"
+  # TODO: descriptive name
+  display_name = "TODO"
   iam = {
     "roles/iam.serviceAccountTokenCreator" = [
       local.groups_iam.data-engineers,
@@ -117,6 +119,8 @@ module "transf-sa-bq-0" {
   project_id = module.transf-project.project_id
   prefix     = var.prefix
   name       = "trf-bq-0"
+  # TODO: descriptive name
+  display_name = "TODO"
   iam = {
     "roles/iam.serviceAccountTokenCreator" = [
       local.groups_iam.data-engineers,

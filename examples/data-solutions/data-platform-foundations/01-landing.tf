@@ -69,6 +69,8 @@ module "land-sa-cs-0" {
   project_id = module.land-project.project_id
   prefix     = var.prefix
   name       = "lnd-cs-0"
+  # TODO: descriptive name
+  display_name = "TODO"
   iam = {
     "roles/iam.serviceAccountTokenCreator" = [
       local.groups_iam.data-engineers
@@ -98,6 +100,8 @@ module "land-sa-ps-0" {
   project_id = module.land-project.project_id
   prefix     = var.prefix
   name       = "lnd-ps-0"
+  # TODO: descriptive name
+  display_name = "TODO"
   iam = {
     "roles/iam.serviceAccountTokenCreator" = [
       local.groups_iam.data-engineers
@@ -119,6 +123,8 @@ module "land-sa-bq-0" {
   project_id = module.land-project.project_id
   prefix     = var.prefix
   name       = "lnd-bq-0"
+  # TODO: descriptive name
+  display_name = "TODO"
   iam = {
     "roles/iam.serviceAccountTokenCreator" = [local.groups_iam.data-engineers]
   }
