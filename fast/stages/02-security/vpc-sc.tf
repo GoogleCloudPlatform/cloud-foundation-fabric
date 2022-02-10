@@ -15,6 +15,7 @@
  */
 
 locals {
+  _perimeter_names = ["dev", "landing", "prod"]
   # dereference perimeter egress policy names to the actual objects
   _vpc_sc_perimeter_egress_policies = {
     for k, v in coalesce(var.vpc_sc_perimeter_egress_policies, {}) :
@@ -33,7 +34,7 @@ locals {
   }
   # compute the number of projects in each perimeter to detect which to create
   vpc_sc_counts = {
-    for k in ["dev", "landing", "prod"] : k => length(
+    for k in local._perimeter_names : k => length(
       local.vpc_sc_perimeter_projects[k]
     )
   }
@@ -109,10 +110,16 @@ locals {
     }
   }
   # account for null values in variable
-  vpc_sc_perimeter_projects = {
-    for k, v in var.vpc_sc_perimeter_projects :
-    k => v == null ? [] : v
-  }
+  vpc_sc_perimeter_projects = (
+    var.vpc_sc_perimeter_projects == null ?
+    {
+      for k in local._perimeter_names : k => []
+    }
+    : {
+      for k, v in local._perimeter_names :
+      k => v == null ? [] : v
+    }
+  )
   # get the list of restricted services from the yaml file
   vpc_sc_restricted_services = yamldecode(
     file("${path.module}/vpc-sc-restricted-services.yaml")
