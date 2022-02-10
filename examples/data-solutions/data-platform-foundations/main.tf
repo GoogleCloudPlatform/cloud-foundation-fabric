@@ -23,21 +23,15 @@ locals {
   }
   service_encryption_keys = var.service_encryption_keys
   shared_vpc_project      = try(var.network_config.host_project, null)
-  use_shared_vpc          = var.network_config != null
-}
-
-module "shared-vpc-project" {
-  source         = "../../../modules/project"
-  count          = local.use_shared_vpc ? 1 : 0
-  name           = var.network_config.host_project
-  project_create = false
-  iam_additive = {
+  shared_vpc_roles = {
     "roles/compute.networkUser" = [
       # load Dataflow service agent and worker service account
       module.load-project.service_accounts.robots.dataflow,
       module.load-sa-df-0.iam_email,
+      module.transf-project.service_accounts.robots.dataflow,
+      module.transf-sa-df-0.iam_email,
       # orchestration Composer service agents
-      module.orch-project.service_accounts.robots.cloudservices,
+      module.orch-project.service_accounts.cloud_services,
       module.orch-project.service_accounts.robots.container-engine,
       module.orch-project.service_accounts.robots.dataflow,
     ],
@@ -50,4 +44,12 @@ module "shared-vpc-project" {
       module.orch-project.service_accounts.robots.dataflow,
     ]
   }
+  use_shared_vpc = var.network_config != null
+}
+
+resource "google_project_iam_binding" "shared_vpc_roles" {
+  for_each = local.use_shared_vpc ? null : local.shared_vpc_roles
+  project  = try(var.network_config.host_project, null)
+  role     = each.key
+  members  = each.value
 }
