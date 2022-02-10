@@ -25,3 +25,29 @@ locals {
   shared_vpc_project      = try(var.network_config.host_project, null)
   use_shared_vpc          = var.network_config != null
 }
+
+module "shared-vpc-project" {
+  source         = "../../../modules/project"
+  count          = use_shared_vpc ? 1 : 0
+  project_id     = var.network_config.host_project
+  project_create = false
+  iam_additive = {
+    "roles/compute.networkUser" = [
+      # load Dataflow service agent and worker service account
+      module.load-project.service_accounts.robots.dataflow,
+      module.load-sa-df-0.iam_email,
+      # orchestration Composer service agents
+      module.orch-project.service_accounts.robots.cloudservices,
+      module.orch-project.service_accounts.robots.container-engine,
+      module.orch-project.service_accounts.robots.dataflow,
+    ],
+    "roles/composer.sharedVpcAgent" = [
+      # orchestration Composer service agent
+      module.orch-project.service_accounts.robots.composer
+    ],
+    "roles/container.hostServiceAgentUser" = [
+      # orchestration Composer service agents
+      module.orch-project.service_accounts.robots.dataflow,
+    ]
+  }
+}
