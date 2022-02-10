@@ -54,6 +54,8 @@ variable "iam_additive" {
   default     = {}
 }
 
+# See https://cloud.google.com/architecture/exporting-stackdriver-logging-for-security-and-access-analytics
+# for additional logging filter examples
 variable "log_sinks" {
   description = "Org-level log sinks, in name => {type, filter} format."
   type = map(object({
