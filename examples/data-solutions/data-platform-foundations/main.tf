@@ -28,8 +28,8 @@ locals {
 
 module "shared-vpc-project" {
   source         = "../../../modules/project"
-  count          = use_shared_vpc ? 1 : 0
-  project_id     = var.network_config.host_project
+  count          = local.use_shared_vpc ? 1 : 0
+  name           = var.network_config.host_project
   project_create = false
   iam_additive = {
     "roles/compute.networkUser" = [
