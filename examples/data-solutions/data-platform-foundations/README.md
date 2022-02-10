@@ -55,7 +55,7 @@ We assign roles on resources at the project level, granting the appropriate role
 
 ### Service accounts
 
-Service account creation follows the least privilege principle, performing a single task which requires access to a defined set of resources. In the table below you can find an high level overview on roles for each service account. For semplicy `READ` or `WRITE` roles are used, for detailed roles please refer to the code.
+Service account creation follows the least privilege principle, performing a single task which requires access to a defined set of resources. In the table below you can find an high level overview on roles for each service account on each data layer. For semplicy `READ` or `WRITE` roles are used, for detailed roles please refer to the code.
 
 
 |Service Account|Landing|DataLake L0|DataLake L1|DataLake L2|
@@ -77,7 +77,7 @@ We use three groups to control access to resources:
 - *Data Analyst*. They perform analysis on datasets, with read access to the data lake L2 project, and BigQuery READ/WRITE access to the playground project. 
 - *Data Security*:. They handle security configurations related to the Data Hub. This team has admin access to the common project to configure Cloud DLP templates or Data Catalog policy tags.
 
-In the table below you can find an high level overview on roles for each group. For semplicy `READ`, `WRITE` and `ADMIN` roles are used, for detailed roles please refer to the code.
+In the table below you can find an high level overview on roles for each group on each project. For semplicy `READ`, `WRITE` and `ADMIN` roles are used, for detailed roles please refer to the code.
 
 |Group|Landing|Load|Transformation|Data Lake L0|Data Lake L1|Data Lake L2|Data Lake Playground|Orchestration|Common|
 |-|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
@@ -110,17 +110,6 @@ In both VPC scenarios, you also need these ranges for Composer:
 - one /28 for the web server
 
 ### Resource naming conventions
-
-Resources in the script use the following acronyms:
-
-- `lnd` for `landing`
-- `lod` for `load`
-- `orc` for `orchestration`
-- `trf` for `transformation`
-- `dtl` for `Data Lake`
-- `cmn` for `common`
-- `plg` for `playground`
-- 2 letters acronym for GCP products, example: `bq` for `BigQuery`, `df` for `Cloud Dataflow`, ...
 
 Resources follow the naming convention described below.
 
