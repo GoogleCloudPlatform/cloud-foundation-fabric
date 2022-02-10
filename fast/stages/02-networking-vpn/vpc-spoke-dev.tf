@@ -40,7 +40,7 @@ module "dev-spoke-project" {
   metric_scopes = [module.landing-project.project_id]
   iam = {
     "roles/dns.admin" = [var.project_factory_sa.dev]
-    (var.custom_roles.serviceProjectNetworkAdmin) = [
+    (var.custom_roles.service_project_network_admin) = [
       var.project_factory_sa.prod
     ]
   }
