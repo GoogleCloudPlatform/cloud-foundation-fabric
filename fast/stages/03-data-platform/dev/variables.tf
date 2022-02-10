@@ -39,12 +39,6 @@ variable "data_force_destroy" {
   default     = false
 }
 
-variable "enable_cloud_nat" {
-  description = "Network Cloud NAT flag."
-  type        = bool
-  default     = false
-}
-
 variable "folder_id" {
   # tfdoc:variable:source resman
   description = "Folder to be used for the networking resources in folders/nnnn format."
@@ -61,21 +55,10 @@ variable "groups" {
   }
 }
 
-variable "location_config" {
-  description = "Locations where resources will be deployed. Map to configure region and multiregion specs."
-  type = object({
-    region       = string
-    multi_region = string
-  })
-  default = {
-    region       = "europe-west1"
-    multi_region = "eu"
-  }
-}
-
 variable "network_config" {
   description = "Network configurations to use. Specify a shared VPC to use, if null networks will be created in projects."
   type = object({
+    host_project      = string
     network_self_link = string
     subnet_self_links = object({
       load           = string
@@ -85,14 +68,35 @@ variable "network_config" {
   })
 }
 
-variable "organization" {
-  # tfdoc:variable:source 00-bootstrap
-  description = "Organization details."
+variable "network_config_composer" {
+  description = "Network configurations to use for Composer."
   type = object({
-    domain      = string
-    id          = number
-    customer_id = string
+    composer_ip_ranges = object({
+      cloudsql   = string
+      gke_master = string
+      web_server = string
+    })
+    composer_secondary_ranges = object({
+      pods     = string
+      services = string
+    })
   })
+  default = {
+    composer_ip_ranges = {
+      cloudsql   = "172.18.29.0/24"
+      gke_master = "172.18.30.0/28"
+      web_server = "172.18.30.16/28"
+    }
+    composer_secondary_ranges = {
+      pods     = "pods"
+      services = "services"
+    }
+  }
+}
+
+variable "organization_domain" {
+  description = "Organization domain."
+  type        = string
 }
 
 variable "outputs_location" {
@@ -107,34 +111,6 @@ variable "prefix" {
   type        = string
 }
 
-variable "project_id" {
-  description = "Project id, references existing project if `project_create` is null."
-  type = object({
-    landing             = string
-    load                = string
-    orchestration       = string
-    trasformation       = string
-    datalake-l0         = string
-    datalake-l1         = string
-    datalake-l2         = string
-    datalake-playground = string
-    common              = string
-    exposure            = string
-  })
-  default = {
-    landing             = "lnd"
-    load                = "lod"
-    orchestration       = "orc"
-    trasformation       = "trf"
-    datalake-l0         = "dtl-0"
-    datalake-l1         = "dtl-1"
-    datalake-l2         = "dtl-2"
-    datalake-playground = "dtl-plg"
-    common              = "cmn"
-    exposure            = "exp"
-  }
-}
-
 variable "project_services" {
   description = "List of core services enabled on all projects."
   type        = list(string)
@@ -144,6 +120,12 @@ variable "project_services" {
     "serviceusage.googleapis.com",
     "stackdriver.googleapis.com"
   ]
+}
+
+variable "region" {
+  description = "Region used for regional resources."
+  type        = string
+  default     = "europe-west1"
 }
 
 variable "service_encryption_keys" { # service encription key
