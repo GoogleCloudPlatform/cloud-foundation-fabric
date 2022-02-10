@@ -56,7 +56,7 @@ locals {
       access_levels = coalesce(
         try(var.vpc_sc_perimeter_access_levels.dev, null), []
       )
-      resources           = local.vpc_sc_perimeter_projects.dev
+      resources           = try(var.vpc_sc_perimeter_projects.dev, [])
       restricted_services = local.vpc_sc_restricted_services
       egress_policies = try(
         local._vpc_sc_perimeter_egress_policies.dev, null
@@ -74,7 +74,7 @@ locals {
       access_levels = coalesce(
         try(var.vpc_sc_perimeter_access_levels.landing, null), []
       )
-      resources           = local.vpc_sc_perimeter_projects.landing
+      resources           = try(var.vpc_sc_perimeter_projects.landing, [])
       restricted_services = local.vpc_sc_restricted_services
       egress_policies = try(
         local._vpc_sc_perimeter_egress_policies.landing, null
@@ -93,7 +93,7 @@ locals {
         try(var.vpc_sc_perimeter_access_levels.prod, null), []
       )
       # combine the security project, and any specified in the variable
-      resources           = local.vpc_sc_perimeter_projects.prod
+      resources           = try(var.vpc_sc_perimeter_projects.prod, [])
       restricted_services = local.vpc_sc_restricted_services
       egress_policies = try(
         local._vpc_sc_perimeter_egress_policies.prod, null
