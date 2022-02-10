@@ -14,27 +14,12 @@
  * limitations under the License.
  */
 
-variable "organization" {
-  type = object({
-    domain = string
-  })
-  default = {
-    domain = "example.com"
-  }
+output "tags" {
+  description = "Policy Tags."
+  value       = { for k, v in google_data_catalog_policy_tag.default : v.id => v.name }
 }
 
-variable "prefix" {
-  type    = string
-  default = "prefix"
-}
-
-variable "project_create" {
-  type = object({
-    billing_account_id = string
-    parent             = string
-  })
-  default = {
-    billing_account_id = "123456-123456-123456"
-    parent             = "folders/12345678"
-  }
+output "taxonomy_id" {
+  description = "Taxonomy id."
+  value       = google_data_catalog_taxonomy.default.id
 }

@@ -17,25 +17,25 @@
 output "bigquery-datasets" {
   description = "BigQuery datasets."
   value = {
-    lnd-bq-0     = module.lnd-bq-0.dataset_id,
-    dtl-0-bq-0   = module.dtl-0-bq-0.dataset_id,
-    dtl-1-bq-0   = module.dtl-1-bq-0.dataset_id,
-    dtl-2-bq-0   = module.dtl-2-bq-0.dataset_id,
-    dtl-plg-bq-0 = module.dtl-plg-bq-0.dataset_id,
+    land-bq-0     = module.land-bq-0.dataset_id,
+    lake-0-bq-0   = module.lake-0-bq-0.dataset_id,
+    lake-1-bq-0   = module.lake-1-bq-0.dataset_id,
+    lake-2-bq-0   = module.lake-2-bq-0.dataset_id,
+    lake-plg-bq-0 = module.lake-plg-bq-0.dataset_id,
   }
 }
 
 output "gcs-buckets" {
   description = "GCS buckets."
   value = {
-    dtl-0-cs-0   = module.dtl-0-cs-0.name,
-    dtl-1-cs-0   = module.dtl-1-cs-0.name,
-    dtl-2-cs-0   = module.dtl-2-cs-0.name,
-    dtl-plg-cs-0 = module.dtl-plg-cs-0.name,
-    lnd-cs-0     = module.lnd-cs-0.name,
-    lod-cs-df    = module.lod-cs-df-0.name,
-    orc-cs-0     = module.orc-cs-0.name,
-    trf-cs-df    = module.trf-cs-df-0.name,
+    lake-0-cs-0   = module.lake-0-cs-0.name,
+    lake-1-cs-0   = module.lake-1-cs-0.name,
+    lake-2-cs-0   = module.lake-2-cs-0.name,
+    lake-plg-cs-0 = module.lake-plg-cs-0.name,
+    land-cs-0     = module.land-cs-0.name,
+    lod-cs-df     = module.load-cs-df-0.name,
+    orch-cs-0     = module.orch-cs-0.name,
+    transf-cs-df  = module.transf-cs-df-0.name,
   }
 }
 
@@ -48,26 +48,26 @@ output "projects" {
   description = "GCP Projects informations."
   value = {
     project_number = {
-      dtl-0-prj   = module.dtl-0-prj.number,
-      dtl-1-prj   = module.dtl-1-prj.number,
-      dtl-2-prj   = module.dtl-2-prj.number,
-      dtl-plg-prj = module.dtl-plg-prj.number,
-      exp-prj     = module.exp-prj.number,
-      lnd-prj     = module.lnd-prj.number,
-      lod-prj     = module.lod-prj.number,
-      orc-prj     = module.orc-prj.number,
-      trf-prj     = module.trf-prj.number,
+      lake-0         = module.lake-0-project.number,
+      lake-1         = module.lake-1-project.number,
+      lake-2         = module.lake-2-project.number,
+      lake-plg       = module.lake-plg-project.number,
+      exposure       = module.exp-project.number,
+      landing        = module.land-project.number,
+      load           = module.load-project.number,
+      orchestration  = module.orch-project.number,
+      transformation = module.transf-project.number,
     }
     project_id = {
-      dtl-0-prj   = module.dtl-0-prj.project_id,
-      dtl-1-prj   = module.dtl-1-prj.project_id,
-      dtl-2-prj   = module.dtl-2-prj.project_id,
-      dtl-plg-prj = module.dtl-plg-prj.project_id,
-      exp-prj     = module.exp-prj.project_id,
-      lnd-prj     = module.lnd-prj.project_id,
-      lod-prj     = module.lod-prj.project_id,
-      orc-prj     = module.orc-prj.project_id,
-      trf-prj     = module.trf-prj.project_id,
+      lake-0         = module.lake-0-project.project_id,
+      lake-1         = module.lake-1-project.project_id,
+      lake-2         = module.lake-2-project.project_id,
+      lake-plg       = module.lake-plg-project.project_id,
+      exposure       = module.exp-project.project_id,
+      landing        = module.land-project.project_id,
+      load           = module.load-project.project_id,
+      orchestration  = module.orch-project.project_id,
+      transformation = module.transf-project.project_id,
     }
   }
 }
@@ -75,30 +75,30 @@ output "projects" {
 output "vpc_network" {
   description = "VPC network."
   value = {
-    lod-vpc = local._networks.load.network
-    orc-vpc = local._networks.orchestration.network
-    trf-vpc = local._networks.transformation.network
+    load           = local.load_vpc
+    orchestration  = local.orch_vpc
+    transformation = local.transf_vpc
   }
 }
 
 output "vpc_subnet" {
   description = "VPC subnetworks."
   value = {
-    lod-vpc = local._networks.load.subnet
-    orc-vpc = local._networks.orchestration.subnet
-    trf-vpc = local._networks.transformation.subnet
+    load           = local.load_subnet
+    orchestration  = local.orch_subnet
+    transformation = local.transf_subnet
   }
 }
 
 output "demo_commands" {
   description = "Demo commands."
   value = {
-    01 = "gsutil -i ${module.lnd-sa-cs-0.email} cp demo/data/*.csv gs://${module.lnd-cs-0.name}"
-    02 = "gsutil -i ${module.orc-sa-cmp-0.email} cp demo/data/*.j* gs://${module.orc-cs-0.name}"
-    03 = "gsutil -i ${module.orc-sa-cmp-0.email} cp demo/*.py ${google_composer_environment.orc-cmp-0.config[0].dag_gcs_prefix}/"
-    04 = "Open ${google_composer_environment.orc-cmp-0.config.0.airflow_uri} and run uploaded DAG."
+    01 = "gsutil -i ${module.land-sa-cs-0.email} cp demo/data/*.csv gs://${module.land-cs-0.name}"
+    02 = "gsutil -i ${module.orch-sa-cmp-0.email} cp demo/data/*.j* gs://${module.orch-cs-0.name}"
+    03 = "gsutil -i ${module.orch-sa-cmp-0.email} cp demo/*.py ${google_composer_environment.orch-cmp-0.config[0].dag_gcs_prefix}/"
+    04 = "Open ${google_composer_environment.orch-cmp-0.config.0.airflow_uri} and run uploaded DAG."
     05 = <<EOT
-           bq query --project_id=${module.dtl-2-prj.project_id} --use_legacy_sql=false 'SELECT * FROM `${module.dtl-2-prj.project_id}.${module.dtl-2-bq-0.dataset_id}.customer_purchase` LIMIT 1000'"
+           bq query --project_id=${module.lake-2-project.project_id} --use_legacy_sql=false 'SELECT * FROM `${module.lake-2-project.project_id}.${module.lake-2-bq-0.dataset_id}.customer_purchase` LIMIT 1000'"
          EOT
   }
 }

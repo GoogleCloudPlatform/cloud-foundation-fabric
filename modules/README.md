@@ -69,6 +69,7 @@ These modules are used in the examples included in this repository. If you are u
 - [Pub/Sub](./pubsub)
 - [Bigtable instance](./bigtable-instance)
 - [Cloud SQL instance](./cloudsql-instance)
+- [Data Catalog Policy Tag](./data-catalog-policy-tag)
 
 ## Development
 

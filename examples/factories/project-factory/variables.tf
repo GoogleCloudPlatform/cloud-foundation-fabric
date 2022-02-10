@@ -130,12 +130,14 @@ variable "services" {
   description = "Services to be enabled for the project."
   type        = list(string)
   default     = []
+  nullable    = false
 }
 
-variable "services_iam" {
-  description = "Custom IAM settings for robot ServiceAccounts in service => [role] format."
+variable "service_identities_iam" {
+  description = "Custom IAM settings for service identities in service => [role] format."
   type        = map(list(string))
   default     = {}
+  nullable    = false
 }
 
 variable "vpc" {

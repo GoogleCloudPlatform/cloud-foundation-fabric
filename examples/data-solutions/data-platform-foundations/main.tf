@@ -15,43 +15,39 @@
 # tfdoc:file:description Core locals.
 
 locals {
-  _networks = {
-    load = {
-      network_name = element(split("/", var.network_config.network_self_link != null ? var.network_config.network_self_link : module.lod-vpc[0].self_link), length(split("/", var.network_config.network_self_link != null ? var.network_config.network_self_link : module.lod-vpc[0].self_link)) - 1)
-      network      = var.network_config.network_self_link != null ? var.network_config.network_self_link : module.lod-vpc[0].self_link
-      subnet       = var.network_config.network_self_link != null ? var.network_config.subnet_self_links.load : module.lod-vpc[0].subnet_self_links["${var.location_config.region}/${local.prefix_lod}-subnet"]
-    }
-    orchestration = {
-      #TODO Fix Network name logic
-      network_name = element(split("/", var.network_config.network_self_link != null ? var.network_config.network_self_link : module.orc-vpc[0].self_link), length(split("/", var.network_config.network_self_link != null ? var.network_config.network_self_link : module.orc-vpc[0].self_link)) - 1)
-      network      = var.network_config.network_self_link != null ? var.network_config.network_self_link : module.orc-vpc[0].self_link
-      subnet       = var.network_config.network_self_link != null ? var.network_config.subnet_self_links.orchestration : module.orc-vpc[0].subnet_self_links["${var.location_config.region}/${local.prefix_orc}-subnet"]
-    }
-    transformation = {
-      #TODO Fix Network name logic
-      network_name = element(split("/", var.network_config.network_self_link != null ? var.network_config.network_self_link : module.trf-vpc[0].self_link), length(split("/", var.network_config.network_self_link != null ? var.network_config.network_self_link : module.trf-vpc[0].self_link)) - 1)
-      network      = var.network_config.network_self_link != null ? var.network_config.network_self_link : module.trf-vpc[0].self_link
-      subnet       = var.network_config.network_self_link != null ? var.network_config.subnet_self_links.transformation : module.trf-vpc[0].subnet_self_links["${var.location_config.region}/${local.prefix_trf}-subnet"]
-    }
+  groups = {
+    for k, v in var.groups : k => "${v}@${var.organization_domain}"
   }
-
-  _shared_vpc_project = try(regex("projects/([a-z0-9-]{6,30})", var.network_config.network_self_link)[0], null)
-  _shared_vpc_service_config = var.network_config.network_self_link != null ? {
-    attach       = true
-    host_project = local._shared_vpc_project
-  } : null
-
-  groups                  = { for k, v in var.groups : k => "${v}@${var.organization.domain}" }
-  groups_iam              = { for k, v in local.groups : k => "group:${v}" }
+  groups_iam = {
+    for k, v in local.groups : k => "group:${v}"
+  }
   service_encryption_keys = var.service_encryption_keys
+  shared_vpc_project      = try(var.network_config.host_project, null)
+  use_shared_vpc          = var.network_config != null
+}
 
-  # Uncomment this section and assigne comment the previous line
-
-  # service_encryption_keys = {
-  #   bq       = module.sec-kms-1.key_ids.bq
-  #   composer = module.sec-kms-2.key_ids.composer
-  #   dataflow = module.sec-kms-2.key_ids.dataflow
-  #   storage  = module.sec-kms-1.key_ids.storage
-  #   pubsub   = module.sec-kms-0.key_ids.pubsub
-  # }
+module "shared-vpc-project" {
+  source         = "../../../modules/project"
+  count          = local.use_shared_vpc ? 1 : 0
+  name           = var.network_config.host_project
+  project_create = false
+  iam_additive = {
+    "roles/compute.networkUser" = [
+      # load Dataflow service agent and worker service account
+      module.load-project.service_accounts.robots.dataflow,
+      module.load-sa-df-0.iam_email,
+      # orchestration Composer service agents
+      module.orch-project.service_accounts.robots.cloudservices,
+      module.orch-project.service_accounts.robots.container-engine,
+      module.orch-project.service_accounts.robots.dataflow,
+    ],
+    "roles/composer.sharedVpcAgent" = [
+      # orchestration Composer service agent
+      module.orch-project.service_accounts.robots.composer
+    ],
+    "roles/container.hostServiceAgentUser" = [
+      # orchestration Composer service agents
+      module.orch-project.service_accounts.robots.dataflow,
+    ]
+  }
 }

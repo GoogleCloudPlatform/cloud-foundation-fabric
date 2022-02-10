@@ -15,12 +15,12 @@
 # tfdoc:file:description Datalake projects.
 
 locals {
-  group_iam_dtl = {
-    "${local.groups.data-engineers}" = [
+  lake_group_iam = {
+    (local.groups.data-engineers) = [
       "roles/bigquery.dataEditor",
       "roles/storage.admin",
     ],
-    "${local.groups.data-analysts}" = [
+    (local.groups.data-analysts) = [
       "roles/bigquery.dataViewer",
       "roles/bigquery.jobUser",
       "roles/bigquery.user",
@@ -29,150 +29,185 @@ locals {
       "roles/storage.objectViewer",
     ]
   }
-  iam_dtl = {
+  lake_iam = {
     "roles/bigquery.dataEditor" = [
-      module.lod-sa-df-0.iam_email,
-      module.trf-sa-df-0.iam_email,
-      module.trf-sa-bq-0.iam_email,
-      module.orc-sa-cmp-0.iam_email,
+      module.load-sa-df-0.iam_email,
+      module.transf-sa-df-0.iam_email,
+      module.transf-sa-bq-0.iam_email,
+      module.orch-sa-cmp-0.iam_email,
     ]
     "roles/bigquery.jobUser" = [
-      module.lod-sa-df-0.iam_email,
-      module.trf-sa-df-0.iam_email,
+      module.load-sa-df-0.iam_email,
+      module.transf-sa-df-0.iam_email,
     ]
     "roles/storage.admin" = [
-      module.lod-sa-df-0.iam_email,
-      module.trf-sa-df-0.iam_email,
+      module.load-sa-df-0.iam_email,
+      module.transf-sa-df-0.iam_email,
     ]
     "roles/storage.objectCreator" = [
-      module.lod-sa-df-0.iam_email,
-      module.trf-sa-df-0.iam_email,
-      module.trf-sa-bq-0.iam_email,
-      module.orc-sa-cmp-0.iam_email,
+      module.load-sa-df-0.iam_email,
+      module.transf-sa-df-0.iam_email,
+      module.transf-sa-bq-0.iam_email,
+      module.orch-sa-cmp-0.iam_email,
     ]
     "roles/storage.objectViewer" = [
-      module.trf-sa-df-0.iam_email,
-      module.trf-sa-bq-0.iam_email,
-      module.orc-sa-cmp-0.iam_email,
+      module.transf-sa-df-0.iam_email,
+      module.transf-sa-bq-0.iam_email,
+      module.orch-sa-cmp-0.iam_email,
     ]
   }
-  prefix_dtl = "${var.prefix}-dtl"
+  lake_services = concat(var.project_services, [
+    "bigquery.googleapis.com",
+    "bigqueryreservation.googleapis.com",
+    "bigquerystorage.googleapis.com",
+    "cloudkms.googleapis.com",
+    "compute.googleapis.com",
+    "dataflow.googleapis.com",
+    "pubsub.googleapis.com",
+    "servicenetworking.googleapis.com",
+    "storage.googleapis.com",
+    "storage-component.googleapis.com"
+  ])
 }
 
 # Project
 
-module "dtl-0-prj" {
+module "lake-0-project" {
   source          = "../../../modules/project"
-  name            = var.project_id["datalake-l0"]
-  parent          = try(var.project_create.parent, null)
-  billing_account = try(var.project_create.billing_account_id, null)
-  project_create  = var.project_create != null
-  prefix          = var.project_create == null ? null : var.prefix
-  # additive IAM bindings avoid disrupting bindings in existing project
-  iam          = var.project_create != null ? local.iam_dtl : {}
-  iam_additive = var.project_create == null ? local.iam_dtl : {}
-  group_iam    = local.group_iam_dtl
-  services = concat(var.project_services, [
-    "bigquery.googleapis.com",
-    "bigqueryreservation.googleapis.com",
-    "bigquerystorage.googleapis.com",
-    "cloudkms.googleapis.com",
-    "compute.googleapis.com",
-    "dataflow.googleapis.com",
-    "pubsub.googleapis.com",
-    "servicenetworking.googleapis.com",
-    "storage.googleapis.com",
-    "storage-component.googleapis.com"
-  ])
+  parent          = var.folder_id
+  billing_account = var.billing_account_id
+  prefix          = var.prefix
+  name            = "dtl-0"
+  group_iam       = local.lake_group_iam
+  iam             = local.lake_iam
+  services        = local.lake_services
   service_encryption_key_ids = {
     bq      = [try(local.service_encryption_keys.bq, null)]
     storage = [try(local.service_encryption_keys.storage, null)]
   }
 }
 
-module "dtl-1-prj" {
+module "lake-1-project" {
   source          = "../../../modules/project"
-  name            = var.project_id["datalake-l1"]
-  parent          = try(var.project_create.parent, null)
-  billing_account = try(var.project_create.billing_account_id, null)
-  project_create  = var.project_create != null
-  prefix          = var.project_create == null ? null : var.prefix
-  # additive IAM bindings avoid disrupting bindings in existing project
-  iam          = var.project_create != null ? local.iam_dtl : {}
-  iam_additive = var.project_create == null ? local.iam_dtl : {}
-  group_iam    = local.group_iam_dtl
-  services = concat(var.project_services, [
-    "bigquery.googleapis.com",
-    "bigqueryreservation.googleapis.com",
-    "bigquerystorage.googleapis.com",
-    "cloudkms.googleapis.com",
-    "compute.googleapis.com",
-    "dataflow.googleapis.com",
-    "pubsub.googleapis.com",
-    "servicenetworking.googleapis.com",
-    "storage.googleapis.com",
-    "storage-component.googleapis.com"
-  ])
+  parent          = var.folder_id
+  billing_account = var.billing_account_id
+  prefix          = var.prefix
+  name            = "dtl-1"
+  group_iam       = local.lake_group_iam
+  iam             = local.lake_iam
+  services        = local.lake_services
   service_encryption_key_ids = {
     bq      = [try(local.service_encryption_keys.bq, null)]
     storage = [try(local.service_encryption_keys.storage, null)]
   }
 }
 
-module "dtl-2-prj" {
+module "lake-2-project" {
   source          = "../../../modules/project"
-  name            = var.project_id["datalake-l2"]
-  parent          = try(var.project_create.parent, null)
-  billing_account = try(var.project_create.billing_account_id, null)
-  project_create  = var.project_create != null
-  prefix          = var.project_create == null ? null : var.prefix
-  # additive IAM bindings avoid disrupting bindings in existing project
-  iam          = var.project_create != null ? local.iam_dtl : {}
-  iam_additive = var.project_create == null ? local.iam_dtl : {}
-  group_iam    = local.group_iam_dtl
-  services = concat(var.project_services, [
-    "bigquery.googleapis.com",
-    "bigqueryreservation.googleapis.com",
-    "bigquerystorage.googleapis.com",
-    "cloudkms.googleapis.com",
-    "compute.googleapis.com",
-    "dataflow.googleapis.com",
-    "pubsub.googleapis.com",
-    "servicenetworking.googleapis.com",
-    "storage.googleapis.com",
-    "storage-component.googleapis.com"
-  ])
+  parent          = var.folder_id
+  billing_account = var.billing_account_id
+  prefix          = var.prefix
+  name            = "dtl-2"
+  group_iam       = local.lake_group_iam
+  iam             = local.lake_iam
+  services        = local.lake_services
   service_encryption_key_ids = {
     bq      = [try(local.service_encryption_keys.bq, null)]
     storage = [try(local.service_encryption_keys.storage, null)]
   }
 }
 
-module "dtl-plg-prj" {
+module "lake-plg-project" {
   source          = "../../../modules/project"
-  name            = var.project_id["datalake-playground"]
-  parent          = try(var.project_create.parent, null)
-  billing_account = try(var.project_create.billing_account_id, null)
-  project_create  = var.project_create != null
-  prefix          = var.project_create == null ? null : var.prefix
-  # additive IAM bindings avoid disrupting bindings in existing project
-  iam          = var.project_create != null ? local.iam_dtl : {}
-  iam_additive = var.project_create == null ? local.iam_dtl : {}
-  group_iam    = local.group_iam_dtl
-  services = concat(var.project_services, [
-    "bigquery.googleapis.com",
-    "bigqueryreservation.googleapis.com",
-    "bigquerystorage.googleapis.com",
-    "cloudkms.googleapis.com",
-    "compute.googleapis.com",
-    "dataflow.googleapis.com",
-    "pubsub.googleapis.com",
-    "servicenetworking.googleapis.com",
-    "storage.googleapis.com",
-    "storage-component.googleapis.com"
-  ])
+  parent          = var.folder_id
+  billing_account = var.billing_account_id
+  prefix          = var.prefix
+  name            = "dtl-plg"
+  group_iam       = local.lake_group_iam
+  iam             = local.lake_iam
+  services        = local.lake_services
   service_encryption_key_ids = {
     bq      = [try(local.service_encryption_keys.bq, null)]
     storage = [try(local.service_encryption_keys.storage, null)]
   }
+}
+
+# Bigquery
+
+module "lake-0-bq-0" {
+  source         = "../../../modules/bigquery-dataset"
+  project_id     = module.lake-0-project.project_id
+  id             = "${replace(var.prefix, "-", "_")}_dtl_0_bq_0"
+  location       = var.region
+  encryption_key = try(local.service_encryption_keys.bq, null)
+}
+
+module "lake-1-bq-0" {
+  source         = "../../../modules/bigquery-dataset"
+  project_id     = module.lake-1-project.project_id
+  id             = "${replace(var.prefix, "-", "_")}_dtl_1_bq_0"
+  location       = var.region
+  encryption_key = try(local.service_encryption_keys.bq, null)
+}
+
+module "lake-2-bq-0" {
+  source         = "../../../modules/bigquery-dataset"
+  project_id     = module.lake-2-project.project_id
+  id             = "${replace(var.prefix, "-", "_")}_dtl_2_bq_0"
+  location       = var.region
+  encryption_key = try(local.service_encryption_keys.bq, null)
+}
+
+module "lake-plg-bq-0" {
+  source         = "../../../modules/bigquery-dataset"
+  project_id     = module.lake-plg-project.project_id
+  id             = "${replace(var.prefix, "-", "_")}_dtl_plg_bq_0"
+  location       = var.region
+  encryption_key = try(local.service_encryption_keys.bq, null)
+}
+
+# Cloud storage
+
+module "lake-0-cs-0" {
+  source         = "../../../modules/gcs"
+  project_id     = module.lake-0-project.project_id
+  prefix         = var.prefix
+  name           = "dtl-0-cs-0"
+  location       = var.region
+  storage_class  = "REGIONAL"
+  encryption_key = try(local.service_encryption_keys.storage, null)
+  force_destroy  = var.data_force_destroy
+}
+
+module "lake-1-cs-0" {
+  source         = "../../../modules/gcs"
+  project_id     = module.lake-1-project.project_id
+  prefix         = var.prefix
+  name           = "dtl-1-cs-0"
+  location       = var.region
+  storage_class  = "REGIONAL"
+  encryption_key = try(local.service_encryption_keys.storage, null)
+  force_destroy  = var.data_force_destroy
+}
+
+module "lake-2-cs-0" {
+  source         = "../../../modules/gcs"
+  project_id     = module.lake-2-project.project_id
+  prefix         = var.prefix
+  name           = "dtl-2-cs-0"
+  location       = var.region
+  storage_class  = "REGIONAL"
+  encryption_key = try(local.service_encryption_keys.storage, null)
+  force_destroy  = var.data_force_destroy
+}
+
+module "lake-plg-cs-0" {
+  source         = "../../../modules/gcs"
+  project_id     = module.lake-plg-project.project_id
+  prefix         = var.prefix
+  name           = "dtl-plg-cs-0"
+  location       = var.region
+  storage_class  = "REGIONAL"
+  encryption_key = try(local.service_encryption_keys.storage, null)
+  force_destroy  = var.data_force_destroy
 }

@@ -15,11 +15,9 @@
  */
 
 module "test" {
-  source       = "../../../../../examples/data-solutions/data-platform-foundations/"
-  organization = { domain : "example.com" }
-  project_create = {
-    billing_account_id = "123456-123456-123456"
-    parent             = "folders/12345678"
-  }
-  prefix = "prefix"
+  source              = "../../../../../examples/data-solutions/data-platform-foundations/"
+  organization_domain = "example.com"
+  billing_account_id  = "123456-123456-123456"
+  folder_id           = "folders/12345678"
+  prefix              = "prefix"
 }

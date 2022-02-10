@@ -55,7 +55,15 @@ We assign roles on resources at project level setting the appropriate role to gr
 
 ### Service accounts
 
-Service Account creation follows the following principles:
+Service account creation follows the least privilege principle, performing a single task which requires access to a defined set of resources. In the table below you can find an high level overview on roles for each service account on each data layer. For semplicy `READ` or `WRITE` roles are used, for detailed roles please refer to the code.
+
+
+|Service Account|Landing|DataLake L0|DataLake L1|DataLake L2|
+|-|:-:|:-:|:-:|:-:|
+|landing-sa|WRITE|-|-|-|
+|load-sa|READ|READ/WRITE|-|-|
+|transformation-sa|-|READ/WRITE|READ/WRITE|READ/WRITE|
+|orchestration-sa|-|-|-|-|
 
 - Each service account perform a single task having access to the minimum number of resources (example: the Cloud Dataflow Service Account has access to the Landing project and the Data Lake L0 project)
 - Each Service Account has the least privilege on each project.
@@ -63,6 +71,24 @@ Service Account creation follows the following principles:
 #### Service Account Keys
 
 The use of SAK within a data pipeline incurs several security risks, as these credentials, that could be leaked without oversight or control. This example relies on Service Account Impersonation to avoid the creation of private keys.
+
+### User groups
+
+User groups are important. They provide a stable frame of reference that allows decoupling the final set of permissions for each group, from the stage where entities and resources are created and their IAM bindings defined.
+
+We use three groups to control access to resources:
+
+- *Data Engineers* They handle and run the Data Hub, with read access to all resources in order to troubleshoot possible issues with pipelines. This team can also impersonate any service account.
+- *Data Analyst*. They perform analysis on datasets, with read access to the data lake L2 project, and BigQuery READ/WRITE access to the playground project. 
+- *Data Security*:. They handle security configurations related to the Data Hub. This team has admin access to the common project to configure Cloud DLP templates or Data Catalog policy tags.
+
+In the table below you can find an high level overview on roles for each group on each project. For semplicy `READ`, `WRITE` and `ADMIN` roles are used, for detailed roles please refer to the code.
+
+|Group|Landing|Load|Transformation|Data Lake L0|Data Lake L1|Data Lake L2|Data Lake Playground|Orchestration|Common|
+|-|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+|Data Engineers|ADMIN|ADMIN|ADMIN|ADMIN|ADMIN|ADMIN|ADMIN|ADMIN|ADMIN|
+|Data Analyst|-|-|-|-|-|READ|READ/WRITE|-|-|
+|Data Security|-|-|-|-|-|-|-|-|ADMIN|
 
 ### Groups
 
@@ -92,25 +118,15 @@ To deploy your Data Platform you need the following ranges:
 
 ### Resource naming convention
 
-Resources use the following acronyms:
-
-- `lnd` for `landing`
-- `lod` for `load`
-- `orc` for `orchestration`
-- `trf` for `transformation`
-- `dtl` for `Data Lake`
-- `cmn` for `common`
-- `plg` for `playground`
-- a 2-letter acronym for GCP products (`bq` for `BigQuery`, `df` for `Cloud Dataflow`, etc.)
-
 Resources follow the naming convention described below.
 
-- `$prefix-$layer` for projects
-- `$prefix-$layer[2]-$product[2]-$counter` for services and service accounts
+- `prefix-layer` for projects
+- `prefix-layer-prduct` for resources
+- `prefix-layer[2]-gcp-product[2]-counter` for services and service accounts
 
 ### Encryption
 
-We suggest a centralized approach to Keys management, to let the Security team be the only team that can access encryption material. Keyrings and Keys belong to a project external to the Data Platform.
+We suggest a centralized approach to key management, where Organization Security is the only team that can access encryption material, and keyrings and keys are managed in a project external to the DP.
 
 ![Centralized Cloud Key Management high-level diagram](./images/kms_diagram.png "Centralized Cloud Key Management high-level diagram")
 
@@ -178,7 +194,14 @@ organization = {
 }
 ```
 
-For a more fine grained configuration, check variables on [`variables.tf`](./variables.tf) and update accordingly to the desired configuration.
+For more fine details check variables on [`variables.tf`](./variables.tf) and update according to the desired configuration. Remember to create team groups described [below](#groups).
+
+Once the configuration is complete, run the project factory by running
+
+```bash
+terraform init
+terraform apply
+```
 
 ## Customizations
 
@@ -210,16 +233,16 @@ Description of commands:
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [organization](variables.tf#L88) | Organization details. | <code title="object&#40;&#123;&#10;  domain &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [prefix](variables.tf#L95) | Unique prefix used for resource names. Not used for projects if 'project_create' is null. | <code>string</code> | ✓ |  |
-| [composer_config](variables.tf#L17) |  | <code title="object&#40;&#123;&#10;  ip_range_cloudsql   &#61; string&#10;  ip_range_gke_master &#61; string&#10;  ip_range_web_server &#61; string&#10;  policy_boolean      &#61; map&#40;bool&#41;&#10;  region              &#61; string&#10;  secondary_ip_range &#61; object&#40;&#123;&#10;    pods     &#61; string&#10;    services &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  ip_range_cloudsql   &#61; &#34;10.20.10.0&#47;24&#34;&#10;  ip_range_gke_master &#61; &#34;10.20.11.0&#47;28&#34;&#10;  ip_range_web_server &#61; &#34;10.20.11.16&#47;28&#34;&#10;  policy_boolean      &#61; null&#10;  region              &#61; &#34;europe-west1&#34;&#10;  secondary_ip_range &#61; &#123;&#10;    pods     &#61; &#34;10.10.8.0&#47;22&#34;&#10;    services &#61; &#34;10.10.12.0&#47;24&#34;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [data_force_destroy](variables.tf#L42) | Flag to set 'force_destroy' on data services like BiguQery or Cloud Storage. | <code>bool</code> |  | <code>false</code> |
-| [groups](variables.tf#L48) | Groups. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  data-analysts  &#61; &#34;gcp-data-analysts&#34;&#10;  data-engineers &#61; &#34;gcp-data-engineers&#34;&#10;  data-security  &#61; &#34;gcp-data-security&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [location_config](variables.tf#L148) | Locations where resources will be deployed. Map to configure region and multiregion specs. | <code title="object&#40;&#123;&#10;  region       &#61; string&#10;  multi_region &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  region       &#61; &#34;europe-west1&#34;&#10;  multi_region &#61; &#34;eu&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [network_config](variables.tf#L58) | Network configurations to use. Specify a shared VPC to use, if null networks will be created in projects. | <code title="object&#40;&#123;&#10;  enable_cloud_nat &#61; bool&#10;  host_project     &#61; string&#10;  network          &#61; string&#10;  vpc_subnet_range &#61; object&#40;&#123;&#10;    load           &#61; string&#10;    transformation &#61; string&#10;    orchestration  &#61; string&#10;  &#125;&#41;&#10;  vpc_subnet_self_link &#61; object&#40;&#123;&#10;    load           &#61; string&#10;    transformation &#61; string&#10;    orchestration  &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  enable_cloud_nat &#61; false&#10;  host_project     &#61; null&#10;  network          &#61; null&#10;  vpc_subnet_range &#61; &#123;&#10;    load           &#61; &#34;10.10.0.0&#47;24&#34;&#10;    transformation &#61; &#34;10.10.0.0&#47;24&#34;&#10;    orchestration  &#61; &#34;10.10.0.0&#47;24&#34;&#10;  &#125;&#10;  vpc_subnet_self_link &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [project_create](variables.tf#L100) | Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [project_id](variables.tf#L109) | Project id, references existing project if `project_create` is null. | <code title="object&#40;&#123;&#10;  landing             &#61; string&#10;  load                &#61; string&#10;  orchestration       &#61; string&#10;  trasformation       &#61; string&#10;  datalake-l0         &#61; string&#10;  datalake-l1         &#61; string&#10;  datalake-l2         &#61; string&#10;  datalake-playground &#61; string&#10;  common              &#61; string&#10;  exposure            &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  landing             &#61; &#34;lnd&#34;&#10;  load                &#61; &#34;lod&#34;&#10;  orchestration       &#61; &#34;orc&#34;&#10;  trasformation       &#61; &#34;trf&#34;&#10;  datalake-l0         &#61; &#34;dtl-0&#34;&#10;  datalake-l1         &#61; &#34;dtl-1&#34;&#10;  datalake-l2         &#61; &#34;dtl-2&#34;&#10;  datalake-playground &#61; &#34;dtl-plg&#34;&#10;  common              &#61; &#34;cmn&#34;&#10;  exposure            &#61; &#34;exp&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [project_services](variables.tf#L137) | List of core services enabled on all projects. | <code>list&#40;string&#41;</code> |  | <code title="&#91;&#10;  &#34;cloudresourcemanager.googleapis.com&#34;,&#10;  &#34;iam.googleapis.com&#34;,&#10;  &#34;serviceusage.googleapis.com&#34;,&#10;  &#34;stackdriver.googleapis.com&#34;&#10;&#93;">&#91;&#8230;&#93;</code> |
+| [billing_account_id](variables.tf#L17) | Billing account id. | <code>string</code> | ✓ |  |
+| [folder_id](variables.tf#L41) | Folder to be used for the networking resources in folders/nnnn format. | <code>string</code> | ✓ |  |
+| [organization_domain](variables.tf#L79) | Organization domain. | <code>string</code> | ✓ |  |
+| [prefix](variables.tf#L84) | Unique prefix used for resource names. | <code>string</code> | ✓ |  |
+| [composer_config](variables.tf#L22) |  | <code title="object&#40;&#123;&#10;  node_count      &#61; number&#10;  airflow_version &#61; string&#10;  env_variables   &#61; map&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  node_count      &#61; 3&#10;  airflow_version &#61; &#34;composer-1.17.5-airflow-2.1.4&#34;&#10;  env_variables   &#61; &#123;&#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [data_force_destroy](variables.tf#L35) | Flag to set 'force_destroy' on data services like BiguQery or Cloud Storage. | <code>bool</code> |  | <code>false</code> |
+| [groups](variables.tf#L46) | Groups. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  data-analysts  &#61; &#34;gcp-data-analysts&#34;&#10;  data-engineers &#61; &#34;gcp-data-engineers&#34;&#10;  data-security  &#61; &#34;gcp-data-security&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [network_config](variables.tf#L56) | Shared VPC network configurations to use. If null networks will be created in projects with preconfigured values. | <code title="object&#40;&#123;&#10;  host_project      &#61; string&#10;  network_self_link &#61; string&#10;  subnet_self_links &#61; object&#40;&#123;&#10;    load           &#61; string&#10;    transformation &#61; string&#10;    orchestration  &#61; string&#10;  &#125;&#41;&#10;  composer_ip_ranges &#61; object&#40;&#123;&#10;    cloudsql   &#61; string&#10;    gke_master &#61; string&#10;    web_server &#61; string&#10;  &#125;&#41;&#10;  composer_secondary_ranges &#61; object&#40;&#123;&#10;    pods     &#61; string&#10;    services &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [project_services](variables.tf#L89) | List of core services enabled on all projects. | <code>list&#40;string&#41;</code> |  | <code title="&#91;&#10;  &#34;cloudresourcemanager.googleapis.com&#34;,&#10;  &#34;iam.googleapis.com&#34;,&#10;  &#34;serviceusage.googleapis.com&#34;,&#10;  &#34;stackdriver.googleapis.com&#34;&#10;&#93;">&#91;&#8230;&#93;</code> |
+| [region](variables.tf#L100) | Region used for regional resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
 
 ## Outputs
 

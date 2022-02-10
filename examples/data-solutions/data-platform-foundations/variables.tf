@@ -14,6 +14,10 @@
 
 # tfdoc:file:description Terraform Variables.
 
+variable "billing_account_id" {
+  description = "Billing account id."
+  type        = string
+}
 
 variable "composer_config" {
   type = object({
@@ -34,6 +38,11 @@ variable "data_force_destroy" {
   default     = false
 }
 
+variable "folder_id" {
+  description = "Folder to be used for the networking resources in folders/nnnn format."
+  type        = string
+}
+
 variable "groups" {
   description = "Groups."
   type        = map(string)
@@ -47,6 +56,7 @@ variable "groups" {
 variable "network_config" {
   description = "Shared VPC network configurations to use. If null networks will be created in projects with preconfigured values."
   type = object({
+    host_project      = string
     network_self_link = string
     subnet_self_links = object({
       load           = string
@@ -63,62 +73,17 @@ variable "network_config" {
       services = string
     })
   })
-
-  default = {
-    network_self_link         = null
-    subnet_self_links         = null
-    composer_ip_ranges        = null
-    composer_secondary_ranges = null
-  }
-}
-
-variable "organization" {
-  description = "Organization details."
-  type = object({
-    domain = string
-  })
-}
-
-variable "prefix" {
-  description = "Unique prefix used for resource names. Not used for projects if 'project_create' is null."
-  type        = string
-}
-
-variable "project_create" {
-  description = "Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format."
-  type = object({
-    billing_account_id = string
-    parent             = string
-  })
   default = null
 }
 
-variable "project_id" {
-  description = "Project id, references existing project if `project_create` is null."
-  type = object({
-    landing             = string
-    load                = string
-    orchestration       = string
-    trasformation       = string
-    datalake-l0         = string
-    datalake-l1         = string
-    datalake-l2         = string
-    datalake-playground = string
-    common              = string
-    exposure            = string
-  })
-  default = {
-    landing             = "lnd"
-    load                = "lod"
-    orchestration       = "orc"
-    trasformation       = "trf"
-    datalake-l0         = "dtl-0"
-    datalake-l1         = "dtl-1"
-    datalake-l2         = "dtl-2"
-    datalake-playground = "dtl-plg"
-    common              = "cmn"
-    exposure            = "exp"
-  }
+variable "organization_domain" {
+  description = "Organization domain."
+  type        = string
+}
+
+variable "prefix" {
+  description = "Unique prefix used for resource names."
+  type        = string
 }
 
 variable "project_services" {
@@ -132,16 +97,10 @@ variable "project_services" {
   ]
 }
 
-variable "location_config" {
-  description = "Locations where resources will be deployed. Map to configure region and multiregion specs."
-  type = object({
-    region       = string
-    multi_region = string
-  })
-  default = {
-    region       = "europe-west1"
-    multi_region = "eu"
-  }
+variable "region" {
+  description = "Region used for regional resources."
+  type        = string
+  default     = "europe-west1"
 }
 
 variable "service_encryption_keys" { # service encription key
