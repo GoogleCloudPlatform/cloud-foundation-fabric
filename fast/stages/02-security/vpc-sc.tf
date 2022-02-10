@@ -34,7 +34,7 @@ locals {
   # compute the number of projects in each perimeter to detect which to create
   vpc_sc_counts = {
     for k in ["dev", "landing", "prod"] : k => length(
-      coalesce(try(var.vpc_sc_perimeter_projects[k], null), [])
+      local.vpc_sc_perimeter_projects[k]
     )
   }
   # define dry run spec at file level for convenience
@@ -42,12 +42,12 @@ locals {
   # compute perimeter bridge resources (projects)
   vpc_sc_p_bridge_resources = {
     landing_to_dev = concat(
-      var.vpc_sc_perimeter_projects.landing,
-      var.vpc_sc_perimeter_projects.dev
+      local.vpc_sc_perimeter_projects.landing,
+      local.vpc_sc_perimeter_projects.dev
     )
     landing_to_prod = concat(
-      var.vpc_sc_perimeter_projects.landing,
-      var.vpc_sc_perimeter_projects.prod
+      local.vpc_sc_perimeter_projects.landing,
+      local.vpc_sc_perimeter_projects.prod
     )
   }
   # computer perimeter regular specs / status
@@ -56,7 +56,7 @@ locals {
       access_levels = coalesce(
         try(var.vpc_sc_perimeter_access_levels.dev, null), []
       )
-      resources           = var.vpc_sc_perimeter_projects.dev
+      resources           = local.vpc_sc_perimeter_projects.dev
       restricted_services = local.vpc_sc_restricted_services
       egress_policies = try(
         local._vpc_sc_perimeter_egress_policies.dev, null
@@ -74,7 +74,7 @@ locals {
       access_levels = coalesce(
         try(var.vpc_sc_perimeter_access_levels.landing, null), []
       )
-      resources           = var.vpc_sc_perimeter_projects.landing
+      resources           = local.vpc_sc_perimeter_projects.landing
       restricted_services = local.vpc_sc_restricted_services
       egress_policies = try(
         local._vpc_sc_perimeter_egress_policies.landing, null
@@ -93,7 +93,7 @@ locals {
         try(var.vpc_sc_perimeter_access_levels.prod, null), []
       )
       # combine the security project, and any specified in the variable
-      resources           = var.vpc_sc_perimeter_projects.prod
+      resources           = local.vpc_sc_perimeter_projects.prod
       restricted_services = local.vpc_sc_restricted_services
       egress_policies = try(
         local._vpc_sc_perimeter_egress_policies.prod, null
@@ -107,6 +107,11 @@ locals {
       #   enable_restriction = true
       # }
     }
+  }
+  # account for null values in variable
+  vpc_sc_perimeter_projects = {
+    for k, v in var.vpc_sc_perimeter_projects :
+    k => v == null ? [] : v
   }
   # get the list of restricted services from the yaml file
   vpc_sc_restricted_services = yamldecode(
