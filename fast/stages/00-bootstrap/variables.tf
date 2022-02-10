@@ -31,9 +31,13 @@ variable "bootstrap_user" {
 variable "custom_role_names" {
   description = "Names of custom roles defined at the org level."
   type = object({
+    organization_iam_admin        = string
+    service_project_network_admin = string
+  })
+  default = {
     organization_iam_admin        = "organizationIamAdmin"
     service_project_network_admin = "serviceProjectNetworkAdmin"
-  })
+  }
 }
 
 variable "groups" {
