@@ -83,8 +83,8 @@ module "land-cs-0" {
   project_id     = module.land-project.project_id
   prefix         = var.prefix
   name           = "lnd-cs-0"
-  location       = var.region
-  storage_class  = "REGIONAL"
+  location       = var.location
+  storage_class  = "MULTI_REGIONAL"
   encryption_key = try(local.service_encryption_keys.storage, null)
   force_destroy  = var.data_force_destroy
   # retention_policy = {
@@ -134,6 +134,6 @@ module "land-bq-0" {
   source         = "../../../modules/bigquery-dataset"
   project_id     = module.land-project.project_id
   id             = "${replace(var.prefix, "-", "_")}lnd_bq_0"
-  location       = var.region
+  location       = var.location
   encryption_key = try(local.service_encryption_keys.bq, null)
 }

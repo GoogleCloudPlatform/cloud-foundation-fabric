@@ -43,6 +43,12 @@ variable "folder_id" {
   type        = string
 }
 
+variable "location" {
+  description = "Location used for multi-regional resources."
+  type        = string
+  default     = "eu"
+}
+
 variable "groups" {
   description = "Groups."
   type        = map(string)

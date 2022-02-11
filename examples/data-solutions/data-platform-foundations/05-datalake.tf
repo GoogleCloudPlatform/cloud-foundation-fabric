@@ -138,7 +138,7 @@ module "lake-0-bq-0" {
   source         = "../../../modules/bigquery-dataset"
   project_id     = module.lake-0-project.project_id
   id             = "${replace(var.prefix, "-", "_")}_dtl_0_bq_0"
-  location       = var.region
+  location       = var.location
   encryption_key = try(local.service_encryption_keys.bq, null)
 }
 
@@ -146,7 +146,7 @@ module "lake-1-bq-0" {
   source         = "../../../modules/bigquery-dataset"
   project_id     = module.lake-1-project.project_id
   id             = "${replace(var.prefix, "-", "_")}_dtl_1_bq_0"
-  location       = var.region
+  location       = var.location
   encryption_key = try(local.service_encryption_keys.bq, null)
 }
 
@@ -154,7 +154,7 @@ module "lake-2-bq-0" {
   source         = "../../../modules/bigquery-dataset"
   project_id     = module.lake-2-project.project_id
   id             = "${replace(var.prefix, "-", "_")}_dtl_2_bq_0"
-  location       = var.region
+  location       = var.location
   encryption_key = try(local.service_encryption_keys.bq, null)
 }
 
@@ -162,7 +162,7 @@ module "lake-plg-bq-0" {
   source         = "../../../modules/bigquery-dataset"
   project_id     = module.lake-plg-project.project_id
   id             = "${replace(var.prefix, "-", "_")}_dtl_plg_bq_0"
-  location       = var.region
+  location       = var.location
   encryption_key = try(local.service_encryption_keys.bq, null)
 }
 
@@ -173,8 +173,8 @@ module "lake-0-cs-0" {
   project_id     = module.lake-0-project.project_id
   prefix         = var.prefix
   name           = "dtl-0-cs-0"
-  location       = var.region
-  storage_class  = "REGIONAL"
+  location       = var.location
+  storage_class  = "MULTI_REGIONAL"
   encryption_key = try(local.service_encryption_keys.storage, null)
   force_destroy  = var.data_force_destroy
 }
@@ -184,8 +184,8 @@ module "lake-1-cs-0" {
   project_id     = module.lake-1-project.project_id
   prefix         = var.prefix
   name           = "dtl-1-cs-0"
-  location       = var.region
-  storage_class  = "REGIONAL"
+  location       = var.location
+  storage_class  = "MULTI_REGIONAL"
   encryption_key = try(local.service_encryption_keys.storage, null)
   force_destroy  = var.data_force_destroy
 }
@@ -195,8 +195,8 @@ module "lake-2-cs-0" {
   project_id     = module.lake-2-project.project_id
   prefix         = var.prefix
   name           = "dtl-2-cs-0"
-  location       = var.region
-  storage_class  = "REGIONAL"
+  location       = var.location
+  storage_class  = "MULTI_REGIONAL"
   encryption_key = try(local.service_encryption_keys.storage, null)
   force_destroy  = var.data_force_destroy
 }
@@ -206,8 +206,8 @@ module "lake-plg-cs-0" {
   project_id     = module.lake-plg-project.project_id
   prefix         = var.prefix
   name           = "dtl-plg-cs-0"
-  location       = var.region
-  storage_class  = "REGIONAL"
+  location       = var.location
+  storage_class  = "MULTI_REGIONAL"
   encryption_key = try(local.service_encryption_keys.storage, null)
   force_destroy  = var.data_force_destroy
 }

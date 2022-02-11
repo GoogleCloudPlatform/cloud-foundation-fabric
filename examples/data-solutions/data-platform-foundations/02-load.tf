@@ -108,8 +108,8 @@ module "load-cs-df-0" {
   project_id     = module.load-project.project_id
   prefix         = var.prefix
   name           = "load-cs-0"
-  storage_class  = "REGIONAL"
-  location       = var.region
+  location       = var.location
+  storage_class  = "MULTI_REGIONAL"
   encryption_key = try(local.service_encryption_keys.storage, null)
 }
 

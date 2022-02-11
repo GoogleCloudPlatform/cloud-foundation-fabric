@@ -65,6 +65,8 @@ Service account creation follows the least privilege principle, performing a sin
 |transformation-sa|-|READ/WRITE|READ/WRITE|READ/WRITE|
 |orchestration-sa|-|-|-|-|
 
+A full reference of IAM roles managed by the DP [is available here](./IAM.md).
+
 Using of service account keys within a data pipeline exposes to several security risks deriving from a credentials leak. This example shows how to leverage impersonation to avoid the need of creating keys.
 
 ### User groups
@@ -132,6 +134,7 @@ service_encryption_keys = {
     dataflow = "KEY_URL_REGIONAL"
     storage  = "KEY_URL_MULTIREGIONAL"
     pubsub   = "KEY_URL_MULTIREGIONAL"
+}
 ```
 
 This step is optional and depends on customer policies and security best practices.
@@ -181,14 +184,10 @@ The DP is meant to be executed by a Service Account (or a regular user) having t
 There are three sets of variables you will need to fill in:
 
 ```hcl
-prefix             = "myco"
-project_create = {
-  parent             = "folders/123456789012"
-  billing_account_id = "111111-222222-333333"
-}
-organization = {
-  domain = "domain.com"
-}
+billing_account_id  = "111111-222222-333333"
+older_id            = "folders/123456789012"
+organization_domain = "domain.com"
+prefix              = "myco"
 ```
 
 For more fine details check variables on [`variables.tf`](./variables.tf) and update according to the desired configuration. Remember to create team groups described [below](#groups).
@@ -232,14 +231,15 @@ Description of commands:
 |---|---|:---:|:---:|:---:|
 | [billing_account_id](variables.tf#L17) | Billing account id. | <code>string</code> | ✓ |  |
 | [folder_id](variables.tf#L41) | Folder to be used for the networking resources in folders/nnnn format. | <code>string</code> | ✓ |  |
-| [organization_domain](variables.tf#L79) | Organization domain. | <code>string</code> | ✓ |  |
-| [prefix](variables.tf#L84) | Unique prefix used for resource names. | <code>string</code> | ✓ |  |
+| [organization_domain](variables.tf#L85) | Organization domain. | <code>string</code> | ✓ |  |
+| [prefix](variables.tf#L90) | Unique prefix used for resource names. | <code>string</code> | ✓ |  |
 | [composer_config](variables.tf#L22) |  | <code title="object&#40;&#123;&#10;  node_count      &#61; number&#10;  airflow_version &#61; string&#10;  env_variables   &#61; map&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  node_count      &#61; 3&#10;  airflow_version &#61; &#34;composer-1.17.5-airflow-2.1.4&#34;&#10;  env_variables   &#61; &#123;&#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [data_force_destroy](variables.tf#L35) | Flag to set 'force_destroy' on data services like BiguQery or Cloud Storage. | <code>bool</code> |  | <code>false</code> |
-| [groups](variables.tf#L46) | Groups. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  data-analysts  &#61; &#34;gcp-data-analysts&#34;&#10;  data-engineers &#61; &#34;gcp-data-engineers&#34;&#10;  data-security  &#61; &#34;gcp-data-security&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [network_config](variables.tf#L56) | Shared VPC network configurations to use. If null networks will be created in projects with preconfigured values. | <code title="object&#40;&#123;&#10;  host_project      &#61; string&#10;  network_self_link &#61; string&#10;  subnet_self_links &#61; object&#40;&#123;&#10;    load           &#61; string&#10;    transformation &#61; string&#10;    orchestration  &#61; string&#10;  &#125;&#41;&#10;  composer_ip_ranges &#61; object&#40;&#123;&#10;    cloudsql   &#61; string&#10;    gke_master &#61; string&#10;    web_server &#61; string&#10;  &#125;&#41;&#10;  composer_secondary_ranges &#61; object&#40;&#123;&#10;    pods     &#61; string&#10;    services &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [project_services](variables.tf#L89) | List of core services enabled on all projects. | <code>list&#40;string&#41;</code> |  | <code title="&#91;&#10;  &#34;cloudresourcemanager.googleapis.com&#34;,&#10;  &#34;iam.googleapis.com&#34;,&#10;  &#34;serviceusage.googleapis.com&#34;,&#10;  &#34;stackdriver.googleapis.com&#34;&#10;&#93;">&#91;&#8230;&#93;</code> |
-| [region](variables.tf#L100) | Region used for regional resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [groups](variables.tf#L52) | Groups. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  data-analysts  &#61; &#34;gcp-data-analysts&#34;&#10;  data-engineers &#61; &#34;gcp-data-engineers&#34;&#10;  data-security  &#61; &#34;gcp-data-security&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [location](variables.tf#L46) | Location used for multi-regional resources. | <code>string</code> |  | <code>&#34;eu&#34;</code> |
+| [network_config](variables.tf#L62) | Shared VPC network configurations to use. If null networks will be created in projects with preconfigured values. | <code title="object&#40;&#123;&#10;  host_project      &#61; string&#10;  network_self_link &#61; string&#10;  subnet_self_links &#61; object&#40;&#123;&#10;    load           &#61; string&#10;    transformation &#61; string&#10;    orchestration  &#61; string&#10;  &#125;&#41;&#10;  composer_ip_ranges &#61; object&#40;&#123;&#10;    cloudsql   &#61; string&#10;    gke_master &#61; string&#10;    web_server &#61; string&#10;  &#125;&#41;&#10;  composer_secondary_ranges &#61; object&#40;&#123;&#10;    pods     &#61; string&#10;    services &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [project_services](variables.tf#L95) | List of core services enabled on all projects. | <code>list&#40;string&#41;</code> |  | <code title="&#91;&#10;  &#34;cloudresourcemanager.googleapis.com&#34;,&#10;  &#34;iam.googleapis.com&#34;,&#10;  &#34;serviceusage.googleapis.com&#34;,&#10;  &#34;stackdriver.googleapis.com&#34;&#10;&#93;">&#91;&#8230;&#93;</code> |
+| [region](variables.tf#L106) | Region used for regional resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
 
 ## Outputs
 
