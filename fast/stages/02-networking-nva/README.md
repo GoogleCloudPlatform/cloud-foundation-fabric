@@ -93,14 +93,13 @@ Spoke VPCs also define and reserve three "special" CIDR ranges, derived from the
 
 - [PSA (Private Service Access)](https://cloud.google.com/vpc/docs/private-services-access):
 
-  + The second-last /24 range is used for PSA (CloudSQL, Postrgres)
+  - The second-last /24 range is used for PSA (CloudSQL, Postrgres)
 
-  + The third-last /24 range is used for PSA (CloudSQL, MySQL)
+  - The third-last /24 range is used for PSA (CloudSQL, MySQL)
 
 - [Internal HTTPs Load Balancers (L7ILB)](https://cloud.google.com/load-balancing/docs/l7-internal):
 
-  + The last /24 range
-
+  - The last /24 range
 
 This is a summary of the subnets allocated by default in this setup:
 
@@ -229,6 +228,7 @@ If you have set a valid value for `outputs_location` in the bootstrap and in the
 ln -s ../../configs/example/02-networking/terraform-bootstrap.auto.tfvars.json
 ln -s ../../configs/example/02-networking/terraform-resman.auto.tfvars.json
 ```
+
 If you want to continue to rely on `outputs_location` logic, create a `terraform.tfvars` file and configure it as described [here](../00-bootstrap/#output-files-and-cross-stage-variables).
 
 Please, refer to the [variables](#variables) table below for a map of the variable origins, and use the sections below to understand how to adapt this stage to your networking configuration.
@@ -284,7 +284,7 @@ DNS queries sent to the on-premise infrastructure come from the `35.199.192.0/19
 
 #### On-premises to cloud
 
-The [Inbound DNS Policy](https://cloud.google.com/dns/docs/server-policies-overview#dns-server-policy-in) defined in the *trusted landing VPC module* ([`vpc-landing.tf`](./vpc-landing.tf)) automatically reserves the first available IP address on each subnet (typically the third one in a CIDR) to expose the Cloud DNS service, so that it can be consumed from outside of GCP.
+The [Inbound DNS Policy](https://cloud.google.com/dns/docs/server-policies-overview#dns-server-policy-in) defined in the *trusted landing VPC module* ([`landing.tf`](./landing.tf)) automatically reserves the first available IP address on each subnet (typically the third one in a CIDR) to expose the Cloud DNS service, so that it can be consumed from outside of GCP.
 
 ### Private Google Access
 
@@ -296,7 +296,7 @@ For PGA to work:
 Subnets created using the `net-vpc` module are PGA-enabled by default.
 
 - 199.36.153.4/30 (`restricted.googleapis.com`) and 199.36.153.8/30 (`private.googleapis.com`) should be routed from on-premises to the trusted landing VPC, and from there to the `default-internet-gateway`. \
-The `vpn_onprem_configs` variable contains the ranges advertised from GCP to on-premises. Furthermore, the trusted landing VPC (e.g. see `landing-trusted-vpc` in [`vpc-landing.tf`](./vpc-landing.tf)) has explicit routes to send traffic destined to restricted and private - googleapis.com to the Internet gateway (which works for Google APIs only, and not for the whole Internet, since Cloud NAT is not configured in the trusted landing VPC).
+The `vpn_onprem_configs` variable contains the ranges advertised from GCP to on-premises. Furthermore, the trusted landing VPC (e.g. see `landing-trusted-vpc` in [`landing.tf`](./landing.tf)) has explicit routes to send traffic destined to restricted and private - googleapis.com to the Internet gateway (which works for Google APIs only, and not for the whole Internet, since Cloud NAT is not configured in the trusted landing VPC).
 
 - On-premises, a private DNS zone for `googleapis.com` should be created and configured per [this article](https://cloud.google.com/vpc/docs/configure-private-google-access-hybrid#config-domain). Its configuration can be copied from the module `googleapis-private-zone` in [`dns.tf`](./dns.tf)
 
@@ -320,9 +320,9 @@ You're now ready to run `terraform init` and `terraform apply`.
 
 To create a new environment (e.g. `staging`), a few changes are required:
 
-Create a `vpc-spoke-staging.tf` file by copying `vpc-spoke-prod.tf` file.
+Create a `spoke-staging.tf` file by copying `spoke-prod.tf` file.
 Adapt the new file by replacing the value "prod" with the value "staging".
-Running `diff vpc-spoke-dev.tf vpc-spoke-prod.tf` can help to see how environment files differ.
+Running `diff spoke-dev.tf spoke-prod.tf` can help to see how environment files differ.
 
 The new VPC requires a set of dedicated CIDRs, one per region, added to variable `custom_adv` (for example as `spoke_staging_ew1` and `spoke_staging_ew4`).
 >`custom_adv` is a map that "resolves" CIDR names to the actual addresses, and will be used later to configure routing.
@@ -348,15 +348,15 @@ Don't forget to add a peering zone in the landing project and point it to the ne
 | [dns-dev.tf](./dns-dev.tf) | Development spoke DNS zones and peerings setup. | <code>dns</code> |  |
 | [dns-landing.tf](./dns-landing.tf) | Landing DNS zones and peerings setup. | <code>dns</code> |  |
 | [dns-prod.tf](./dns-prod.tf) | Production spoke DNS zones and peerings setup. | <code>dns</code> |  |
+| [landing.tf](./landing.tf) | Landing VPC and related resources. | <code>net-cloudnat</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>project</code> |  |
 | [main.tf](./main.tf) | Networking folder and hierarchical policy. | <code>folder</code> |  |
 | [monitoring.tf](./monitoring.tf) | Network monitoring dashboards. |  | <code>google_monitoring_dashboard</code> |
 | [nva.tf](./nva.tf) | None | <code>compute-mig</code> · <code>compute-vm</code> · <code>net-ilb</code> |  |
 | [outputs.tf](./outputs.tf) | Module outputs. |  | <code>local_file</code> |
+| [spoke-dev.tf](./spoke-dev.tf) | Dev spoke VPC and related resources. | <code>net-address</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>net-vpc-peering</code> · <code>project</code> |  |
+| [spoke-prod.tf](./spoke-prod.tf) | Production spoke VPC and related resources. | <code>net-address</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>net-vpc-peering</code> · <code>project</code> |  |
 | [test-resources.tf](./test-resources.tf) | temporary instances for testing | <code>compute-vm</code> |  |
 | [variables.tf](./variables.tf) | Module variables. |  |  |
-| [vpc-landing.tf](./vpc-landing.tf) | Landing VPC and related resources. | <code>net-cloudnat</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>project</code> |  |
-| [vpc-spoke-dev.tf](./vpc-spoke-dev.tf) | Dev spoke VPC and related resources. | <code>net-address</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>net-vpc-peering</code> · <code>project</code> |  |
-| [vpc-spoke-prod.tf](./vpc-spoke-prod.tf) | Production spoke VPC and related resources. | <code>net-address</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> · <code>net-vpc-peering</code> · <code>project</code> |  |
 | [vpn-onprem.tf](./vpn-onprem.tf) | VPN between landing and onprem. | <code>net-vpn-ha</code> |  |
 
 ## Variables
