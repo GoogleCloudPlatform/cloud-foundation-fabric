@@ -57,10 +57,6 @@ module "organization" {
       "roles/accesscontextmanager.policyAdmin" = [
         module.branch-security-sa.iam_email
       ]
-      "roles/billing.costsManager" = concat(
-        local.branch_dataplatform_pf_sa_iam_emails,
-        local.branch_teams_pf_sa_iam_emails
-      ),
       "roles/compute.orgFirewallPolicyAdmin" = [
         module.branch-network-sa.iam_email
       ]
@@ -73,6 +69,7 @@ module "organization" {
       )
     },
     local.billing_org ? {
+      "roles/billing.costsManager" = local.branch_teams_pf_sa_iam_emails
       "roles/billing.user" = concat(
         [
           module.branch-network-sa.iam_email,

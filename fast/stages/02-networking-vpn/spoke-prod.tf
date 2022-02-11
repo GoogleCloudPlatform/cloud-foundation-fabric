@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Dev spoke VPC and related resources.
+# tfdoc:file:description Production spoke VPC and related resources.
 
-module "dev-spoke-project" {
+module "prod-spoke-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account_id
-  name            = "dev-net-spoke-0"
-  parent          = var.folder_ids.networking-dev
+  name            = "prod-net-spoke-0"
+  parent          = var.folder_ids.networking-prod
   prefix          = var.prefix
   service_config = {
     disable_on_destroy         = false
     disable_dependent_services = false
   }
   services = [
-    "container.googleapis.com",
     "compute.googleapis.com",
     "dns.googleapis.com",
     "iap.googleapis.com",
@@ -40,20 +39,20 @@ module "dev-spoke-project" {
   }
   metric_scopes = [module.landing-project.project_id]
   iam = {
-    "roles/dns.admin" = [var.project_factory_sa.dev]
-    (var.custom_roles.serviceProjectNetworkAdmin) = [
+    "roles/dns.admin" = [var.project_factory_sa.prod]
+    (var.custom_roles.service_project_network_admin) = [
       var.project_factory_sa.prod
     ]
   }
 }
 
-module "dev-spoke-vpc" {
+module "prod-spoke-vpc" {
   source        = "../../../modules/net-vpc"
-  project_id    = module.dev-spoke-project.project_id
-  name          = "dev-spoke-0"
+  project_id    = module.prod-spoke-project.project_id
+  name          = "prod-spoke-0"
   mtu           = 1500
-  data_folder   = "${var.data_dir}/subnets/dev"
-  subnets_l7ilb = local.l7ilb_subnets.dev
+  data_folder   = "${var.data_dir}/subnets/prod"
+  subnets_l7ilb = local.l7ilb_subnets.prod
   # set explicit routes for googleapis in case the default route is deleted
   routes = {
     private-googleapis = {
@@ -73,52 +72,52 @@ module "dev-spoke-vpc" {
   }
 }
 
-module "dev-spoke-firewall" {
+module "prod-spoke-firewall" {
   source              = "../../../modules/net-vpc-firewall"
-  project_id          = module.dev-spoke-project.project_id
-  network             = module.dev-spoke-vpc.name
+  project_id          = module.prod-spoke-project.project_id
+  network             = module.prod-spoke-vpc.name
   admin_ranges        = []
   http_source_ranges  = []
   https_source_ranges = []
   ssh_source_ranges   = []
-  data_folder         = "${var.data_dir}/firewall-rules/dev"
+  data_folder         = "${var.data_dir}/firewall-rules/prod"
   cidr_template_file  = "${var.data_dir}/cidrs.yaml"
 }
 
-module "dev-spoke-cloudnat" {
-  for_each       = toset(values(module.dev-spoke-vpc.subnet_regions))
+module "prod-spoke-cloudnat" {
+  for_each       = toset(values(module.prod-spoke-vpc.subnet_regions))
   source         = "../../../modules/net-cloudnat"
-  project_id     = module.dev-spoke-project.project_id
+  project_id     = module.prod-spoke-project.project_id
   region         = each.value
-  name           = "dev-nat-${local.region_trigram[each.value]}"
+  name           = "prod-nat-${local.region_trigram[each.value]}"
   router_create  = true
-  router_network = module.dev-spoke-vpc.name
+  router_network = module.prod-spoke-vpc.name
   router_asn     = 65530
   logging_filter = "ERRORS_ONLY"
 }
 
-module "dev-spoke-psa-addresses" {
+module "prod-spoke-psa-addresses" {
   source     = "../../../modules/net-address"
-  project_id = module.dev-spoke-project.project_id
-  psa_addresses = { for r, v in var.psa_ranges.dev : r => {
+  project_id = module.prod-spoke-project.project_id
+  psa_addresses = { for r, v in var.psa_ranges.prod : r => {
     address       = cidrhost(v, 0)
-    network       = module.dev-spoke-vpc.self_link
+    network       = module.prod-spoke-vpc.self_link
     prefix_length = split("/", v)[1]
     }
   }
 }
 
 # Create delegated grants for stage3 service accounts
-resource "google_project_iam_binding" "dev_spoke_project_iam_delegated" {
-  project = module.dev-spoke-project.project_id
+resource "google_project_iam_binding" "prod_spoke_project_iam_delegated" {
+  project = module.prod-spoke-project.project_id
   role    = "roles/resourcemanager.projectIamAdmin"
   members = [
-    var.data_platform_sa.dev,
-    var.project_factory_sa.dev
+    var.data_platform_sa.prod,
+    var.project_factory_sa.prod
   ]
   condition {
-    title       = "dev_stage3_sa_delegated_grants"
-    description = "Development host project delegated grants."
+    title       = "prod_stage3_sa_delegated_grants"
+    description = "Production host project delegated grants."
     expression = format(
       "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
       join(",", formatlist("'%s'", local.stage3_sas_delegated_grants))

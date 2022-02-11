@@ -28,6 +28,18 @@ variable "bootstrap_user" {
   default     = null
 }
 
+variable "custom_role_names" {
+  description = "Names of custom roles defined at the org level."
+  type = object({
+    organization_iam_admin        = string
+    service_project_network_admin = string
+  })
+  default = {
+    organization_iam_admin        = "organizationIamAdmin"
+    service_project_network_admin = "serviceProjectNetworkAdmin"
+  }
+}
+
 variable "groups" {
   # https://cloud.google.com/docs/enterprise/setup-checklist
   description = "Group names to grant organization-level permissions."
@@ -54,6 +66,8 @@ variable "iam_additive" {
   default     = {}
 }
 
+# See https://cloud.google.com/architecture/exporting-stackdriver-logging-for-security-and-access-analytics
+# for additional logging filter examples
 variable "log_sinks" {
   description = "Org-level log sinks, in name => {type, filter} format."
   type = map(object({

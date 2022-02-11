@@ -147,12 +147,12 @@ module "organization" {
   iam_additive = local.iam_additive
   custom_roles = {
     # this is needed for use in additive IAM bindings, to avoid conflicts
-    "organizationIamAdmin" = [
+    (var.custom_role_names.organization_iam_admin) = [
       "resourcemanager.organizations.get",
       "resourcemanager.organizations.getIamPolicy",
       "resourcemanager.organizations.setIamPolicy"
     ]
-    "serviceProjectNetworkAdmin" = [
+    (var.custom_role_names.service_project_network_admin) = [
       "compute.globalOperations.get",
       "compute.organizations.disableXpnResource",
       "compute.organizations.enableXpnResource",
@@ -182,7 +182,7 @@ module "organization" {
 
 resource "google_organization_iam_binding" "org_admin_delegated" {
   org_id  = var.organization.id
-  role    = module.organization.custom_role_id.organizationIamAdmin
+  role    = module.organization.custom_role_id[var.custom_role_names.organization_iam_admin]
   members = [module.automation-tf-resman-sa.iam_email]
   condition {
     title       = "automation_sa_delegated_grants"
