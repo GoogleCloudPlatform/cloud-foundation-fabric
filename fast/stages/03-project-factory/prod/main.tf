@@ -47,6 +47,7 @@ module "projects" {
   kms_service_agents     = try(each.value.kms, {})
   labels                 = try(each.value.labels, {})
   org_policies           = try(each.value.org_policies, null)
+  prefix                 = var.prefix
   service_accounts       = try(each.value.service_accounts, {})
   services               = try(each.value.services, [])
   service_identities_iam = try(each.value.services_iam, {})
