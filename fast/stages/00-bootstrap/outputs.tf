@@ -68,14 +68,14 @@ locals {
       prefix             = var.prefix
     })
     "03-data-platform-dev" = jsonencode({
-      billing_account_id = var.billing_account.id
-      organization       = var.organization
-      prefix             = var.prefix
+      billing_account_id  = var.billing_account.id
+      organization_domain = var.organization.domain
+      prefix              = var.prefix
     })
     "03-data-platform-prod" = jsonencode({
-      billing_account_id = var.billing_account.id
-      organization       = var.organization
-      prefix             = var.prefix
+      billing_account_id  = var.billing_account.id
+      organization_domain = var.organization.domain
+      prefix              = var.prefix
     })
   }
 }
