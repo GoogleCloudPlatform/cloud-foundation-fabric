@@ -55,6 +55,7 @@ For same-organization billing, we configure a custom organization role that can 
 For details on configuring the different billing account modes, refer to the [How to run this stage](#how-to-run-this-stage) section below.
 
 ### Organization-level logging
+
 We create organization-level log sinks early in the bootstrap process to ensure a proper audit trail is in place from the very beginning.  By default, we provide log filters to capture [Cloud Audit Logs](https://cloud.google.com/logging/docs/audit) and [VPC Service Controls violations](https://cloud.google.com/vpc-service-controls/docs/troubleshooting#vpc-sc-errors) into a Bigquery dataset in the top-level audit project.
 
 The [Customizations](#log-sinks-and-log-destinations) section explains how to change the logs captured and their destination.
@@ -100,12 +101,20 @@ The roles that the Organization Admin used in the first `apply` needs to self-gr
 To quickly self-grant the above roles, run the following code snippet as the initial Organization Admin:
 
 ```bash
-export BOOTSTRAP_ORG_ID=123456
-export BOOTSTRAP_USER=$(gcloud config list --format 'value(core.account)')
-export BOOTSTRAP_ROLES="roles/billing.admin roles/logging.admin roles/iam.organizationRoleAdmin roles/resourcemanager.projectCreator"
-for role in $BOOTSTRAP_ROLES; do
-  gcloud organizations add-iam-policy-binding $BOOTSTRAP_ORG_ID \
-    --member user:$BOOTSTRAP_USER --role $role
+# set variable for current logged in user
+export FAST_BU=$(gcloud config list --format 'value(core.account)')
+
+# find and set your org id
+gcloud organizations list --filter display_name:$partofyourdomain
+export FAST_ORG_ID=123456
+
+# set needed roles
+export FAST_ROLES="roles/billing.admin roles/logging.admin \
+  roles/iam.organizationRoleAdmin roles/resourcemanager.projectCreator"
+
+for role in $FAST_ROLES; do
+  gcloud organizations add-iam-policy-binding $FAST_ORG_ID \
+    --member user:$FAST_BU --role $role
 done
 ```
 
@@ -120,11 +129,11 @@ If that's not the case, an equivalent role needs to exist, or the predefined `re
 The identity applying this stage for the first time also needs two roles in billing organization, they can be removed after the first `apply` completes successfully:
 
 ```bash
-export BILLING_ORG_ID=789012
-export BILLING_ROLES=(roles/billing.admin roles/resourcemanager.organizationAdmin)
-for role in $BILLING_ROLES; do
-  gcloud organizations add-iam-policy-binding $BILLING_ORG_ID \
-    --member user:$BOOTSTRAP_USER --role $role
+export FAST_BILLING_ORG_ID=789012
+export FAST_ROLES=(roles/billing.admin roles/resourcemanager.organizationAdmin)
+for role in $FAST_ROLES; do
+  gcloud organizations add-iam-policy-binding $FAST_BILLING_ORG_ID \
+    --member user:$FAST_BU --role $role
 done
 ```
 
@@ -133,9 +142,9 @@ done
 If you are using a standalone billing account, the identity applying this stage for the first time needs to be a billing account administrator:
 
 ```bash
-export BILLING_ACCOUNT_ID=ABCD-01234-ABCD
-gcloud beta billing accounts add-iam-policy-binding $BILLING_ACCOUNT \
-  --member user:$BOOTSTRAP_USER --role roles/billing.admin
+export FAST_BILLING_ACCOUNT_ID=ABCD-01234-ABCD
+gcloud beta billing accounts add-iam-policy-binding $FAST_BILLING_ACCOUNT_ID \
+  --member user:$FAST_BU --role roles/billing.admin
 ```
 
 #### Groups
@@ -287,10 +296,10 @@ The one exception to this convention is for roles which are part of the delegate
 
 You can customize organization-level logs through the `log_sinks` variable in two ways:
 
-* creating additional log sinks to capture more logs
-* changing the destination of captured logs
+- creating additional log sinks to capture more logs
+- changing the destination of captured logs
 
-By default, all logs are exported to Bigquery, but FAST can create sinks to Cloud Logging Buckets, GCS, or PubSub. 
+By default, all logs are exported to Bigquery, but FAST can create sinks to Cloud Logging Buckets, GCS, or PubSub.
 
 If you need to capture additional logs, please refer to GCP's documentation on [scenarios for exporting logging data](https://cloud.google.com/architecture/exporting-stackdriver-logging-for-security-and-access-analytics), where you can find ready-made filter expressions for different use cases.
 
