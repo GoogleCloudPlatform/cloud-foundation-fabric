@@ -1,0 +1,8 @@
+prefix = "prefix"
+project_create = {
+  parent             = "folders/123456789012"
+  billing_account_id = "111111-222222-333333"
+}
+organization = {
+  domain = "example.com"
+}

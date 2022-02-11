@@ -27,6 +27,30 @@ locals {
       shared_vpc_self_link = module.prod-spoke-vpc.self_link
       vpc_host_project     = module.prod-spoke-project.project_id
     })
+    "03-data-platform-prod" = jsonencode({
+      network_self_link = module.prod-spoke-vpc.self_link
+      subnet_self_links = {
+        load           = module.prod-spoke-vpc.subnets["europe-west1/prod-dp-lod-ew1"].self_link
+        orchestration  = module.prod-spoke-vpc.subnets["europe-west1/prod-dp-orc-ew1"].self_link
+        transformation = module.prod-spoke-vpc.subnets["europe-west1/prod-dp-trf-ew1"].self_link
+      }
+    })
+    "03-data-platform-prod" = jsonencode({
+      network_config = {
+        host_project = module.prod-spoke-project.project_id
+        network      = module.prod-spoke-vpc.self_link
+        vpc_subnet_range = {
+          load           = module.prod-spoke-vpc.subnets["europe-west1/prod-dp-lod-ew1"].ip_cidr_range
+          orchestration  = module.prod-spoke-vpc.subnets["europe-west1/prod-dp-orc-ew1"].ip_cidr_range
+          transformation = module.prod-spoke-vpc.subnets["europe-west1/prod-dp-trf-ew1"].ip_cidr_range
+        }
+        vpc_subnet_self_link = {
+          load           = module.prod-spoke-vpc.subnets["europe-west1/prod-dp-lod-ew1"].self_link
+          orchestration  = module.prod-spoke-vpc.subnets["europe-west1/prod-dp-orc-ew1"].self_link
+          transformation = module.prod-spoke-vpc.subnets["europe-west1/prod-dp-trf-ew1"].self_link
+        }
+      }
+    })
   }
 }
 

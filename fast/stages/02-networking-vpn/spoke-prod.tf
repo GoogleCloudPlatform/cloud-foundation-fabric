@@ -92,7 +92,7 @@ module "prod-spoke-cloudnat" {
   name           = "prod-nat-${local.region_trigram[each.value]}"
   router_create  = true
   router_network = module.prod-spoke-vpc.name
-  router_asn     = 4200001024
+  router_asn     = 65530
   logging_filter = "ERRORS_ONLY"
 }
 
@@ -112,6 +112,7 @@ resource "google_project_iam_binding" "prod_spoke_project_iam_delegated" {
   project = module.prod-spoke-project.project_id
   role    = "roles/resourcemanager.projectIamAdmin"
   members = [
+    var.data_platform_sa.prod,
     var.project_factory_sa.prod
   ]
   condition {

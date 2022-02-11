@@ -27,6 +27,7 @@ module "dev-spoke-project" {
     disable_dependent_services = false
   }
   services = [
+    "container.googleapis.com",
     "compute.googleapis.com",
     "dns.googleapis.com",
     "iap.googleapis.com",
@@ -92,7 +93,7 @@ module "dev-spoke-cloudnat" {
   name           = "dev-nat-${local.region_trigram[each.value]}"
   router_create  = true
   router_network = module.dev-spoke-vpc.name
-  router_asn     = 4200001024
+  router_asn     = 65530
   logging_filter = "ERRORS_ONLY"
 }
 
@@ -112,6 +113,7 @@ resource "google_project_iam_binding" "dev_spoke_project_iam_delegated" {
   project = module.dev-spoke-project.project_id
   role    = "roles/resourcemanager.projectIamAdmin"
   members = [
+    var.data_platform_sa.dev,
     var.project_factory_sa.dev
   ]
   condition {

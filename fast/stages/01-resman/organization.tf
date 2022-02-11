@@ -18,6 +18,11 @@
 
 
 locals {
+  # set to the empty list if you remove the data platform branch
+  branch_dataplatform_pf_sa_iam_emails = [
+    module.branch-dp-dev-sa.iam_email,
+    module.branch-dp-prod-sa.iam_email
+  ]
   # set to the empty list if you remove the teams branch
   branch_teams_pf_sa_iam_emails = [
     module.branch-teams-dev-projectfactory-sa.iam_email,
@@ -58,7 +63,10 @@ module "organization" {
       "roles/compute.xpnAdmin" = [
         module.branch-network-sa.iam_email
       ]
-      "roles/orgpolicy.policyAdmin" = local.branch_teams_pf_sa_iam_emails
+      "roles/orgpolicy.policyAdmin" = concat(
+        local.branch_dataplatform_pf_sa_iam_emails,
+        local.branch_teams_pf_sa_iam_emails
+      )
     },
     local.billing_org ? {
       "roles/billing.costsManager" = local.branch_teams_pf_sa_iam_emails
@@ -71,6 +79,7 @@ module "organization" {
         # [
         #   for k, v in module.branch-teams-team-sa : v.iam_email
         # ],
+        local.branch_dataplatform_pf_sa_iam_emails,
         local.branch_teams_pf_sa_iam_emails
       )
     } : {}
