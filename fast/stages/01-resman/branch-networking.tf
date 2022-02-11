@@ -62,7 +62,7 @@ module "branch-network-gcs" {
 module "branch-network-prod-folder" {
   source = "../../../modules/folder"
   parent = module.branch-network-folder.id
-  name   = "prod"
+  name   = "Production"
   iam = {
     "roles/compute.xpnAdmin" = [
       module.branch-teams-prod-projectfactory-sa.iam_email
@@ -73,7 +73,7 @@ module "branch-network-prod-folder" {
 module "branch-network-dev-folder" {
   source = "../../../modules/folder"
   parent = module.branch-network-folder.id
-  name   = "dev"
+  name   = "Development"
   iam = {
     "roles/compute.xpnAdmin" = [
       module.branch-teams-dev-projectfactory-sa.iam_email
