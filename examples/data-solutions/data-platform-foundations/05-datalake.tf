@@ -140,8 +140,8 @@ module "lake-plg-project" {
   billing_account = var.billing_account_id
   prefix          = var.prefix
   name            = "dtl-plg"
-  group_iam       = local.lake_group_iam
-  iam             = local.lake_iam
+  group_iam       = local.lake_plg_group_iam
+  iam             = {}
   services        = local.lake_services
   service_encryption_key_ids = {
     bq      = [try(local.service_encryption_keys.bq, null)]
