@@ -81,12 +81,11 @@ module "transf-project" {
 # Cloud Storage
 
 module "transf-sa-df-0" {
-  source     = "../../../modules/iam-service-account"
-  project_id = module.transf-project.project_id
-  prefix     = var.prefix
-  name       = "trf-df-0"
-  # TODO: descriptive name
-  display_name = "TODO"
+  source       = "../../../modules/iam-service-account"
+  project_id   = module.transf-project.project_id
+  prefix       = var.prefix
+  name         = "trf-df-0"
+  display_name = "Data platform Dataflow transformation service account"
   iam = {
     "roles/iam.serviceAccountTokenCreator" = [
       local.groups_iam.data-engineers,
@@ -111,12 +110,11 @@ module "transf-cs-df-0" {
 # BigQuery
 
 module "transf-sa-bq-0" {
-  source     = "../../../modules/iam-service-account"
-  project_id = module.transf-project.project_id
-  prefix     = var.prefix
-  name       = "trf-bq-0"
-  # TODO: descriptive name
-  display_name = "TODO"
+  source       = "../../../modules/iam-service-account"
+  project_id   = module.transf-project.project_id
+  prefix       = var.prefix
+  name         = "trf-bq-0"
+  display_name = "Data platform BigQuery transformation service account"
   iam = {
     "roles/iam.serviceAccountTokenCreator" = [
       local.groups_iam.data-engineers,

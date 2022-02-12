@@ -81,12 +81,11 @@ module "load-project" {
 }
 
 module "load-sa-df-0" {
-  source     = "../../../modules/iam-service-account"
-  project_id = module.load-project.project_id
-  prefix     = var.prefix
-  name       = "load-df-0"
-  # TODO: descriptive name
-  display_name = "TODO"
+  source       = "../../../modules/iam-service-account"
+  project_id   = module.load-project.project_id
+  prefix       = var.prefix
+  name         = "load-df-0"
+  display_name = "Data platform Dataflow load service account"
   iam = {
     "roles/iam.serviceAccountTokenCreator" = [local.groups_iam.data-engineers]
     "roles/iam.serviceAccountUser"         = [module.orch-sa-cmp-0.iam_email]

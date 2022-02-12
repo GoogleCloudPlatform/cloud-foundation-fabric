@@ -64,12 +64,11 @@ module "land-project" {
 # Cloud Storage
 
 module "land-sa-cs-0" {
-  source     = "../../../modules/iam-service-account"
-  project_id = module.land-project.project_id
-  prefix     = var.prefix
-  name       = "lnd-cs-0"
-  # TODO: descriptive name
-  display_name = "TODO"
+  source       = "../../../modules/iam-service-account"
+  project_id   = module.land-project.project_id
+  prefix       = var.prefix
+  name         = "lnd-cs-0"
+  display_name = "Data platform GCS landing service account."
   iam = {
     "roles/iam.serviceAccountTokenCreator" = [
       local.groups_iam.data-engineers
@@ -95,12 +94,11 @@ module "land-cs-0" {
 # PubSub
 
 module "land-sa-ps-0" {
-  source     = "../../../modules/iam-service-account"
-  project_id = module.land-project.project_id
-  prefix     = var.prefix
-  name       = "lnd-ps-0"
-  # TODO: descriptive name
-  display_name = "TODO"
+  source       = "../../../modules/iam-service-account"
+  project_id   = module.land-project.project_id
+  prefix       = var.prefix
+  name         = "lnd-ps-0"
+  display_name = "Data platform PubSub landing service account"
   iam = {
     "roles/iam.serviceAccountTokenCreator" = [
       local.groups_iam.data-engineers
@@ -118,12 +116,11 @@ module "land-ps-0" {
 # BigQuery
 
 module "land-sa-bq-0" {
-  source     = "../../../modules/iam-service-account"
-  project_id = module.land-project.project_id
-  prefix     = var.prefix
-  name       = "lnd-bq-0"
-  # TODO: descriptive name
-  display_name = "TODO"
+  source       = "../../../modules/iam-service-account"
+  project_id   = module.land-project.project_id
+  prefix       = var.prefix
+  name         = "lnd-bq-0"
+  display_name = "Data platform BigQuery landing service account"
   iam = {
     "roles/iam.serviceAccountTokenCreator" = [local.groups_iam.data-engineers]
   }
