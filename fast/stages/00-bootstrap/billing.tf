@@ -31,7 +31,7 @@ module "billing-export-project" {
   source          = "../../../modules/project"
   count           = local.billing_org ? 1 : 0
   billing_account = var.billing_account.id
-  name            = "billing-export-0"
+  name            = "billing-exp-0"
   parent          = "organizations/${var.organization.id}"
   prefix          = local.prefix
   iam = {

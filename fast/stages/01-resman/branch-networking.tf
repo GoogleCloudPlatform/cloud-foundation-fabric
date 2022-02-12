@@ -43,7 +43,7 @@ module "branch-network-folder" {
 module "branch-network-sa" {
   source      = "../../../modules/iam-service-account"
   project_id  = var.automation_project_id
-  name        = "resman-networking-0"
+  name        = "resman-net-0"
   description = "Terraform resman networking service account."
   prefix      = local.prefixes.prod
 }
@@ -51,7 +51,7 @@ module "branch-network-sa" {
 module "branch-network-gcs" {
   source     = "../../../modules/gcs"
   project_id = var.automation_project_id
-  name       = "resman-networking-0"
+  name       = "resman-net-0"
   prefix     = local.prefixes.prod
   versioning = true
   iam = {
