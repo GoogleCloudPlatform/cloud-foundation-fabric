@@ -20,6 +20,7 @@ variable "billing_account_id" {
 }
 
 variable "composer_config" {
+  description = "Cloud Composer config."
   type = object({
     node_count      = number
     airflow_version = string
@@ -50,7 +51,7 @@ variable "location" {
 }
 
 variable "groups" {
-  description = "Groups."
+  description = "User groups."
   type        = map(string)
   default = {
     data-analysts  = "gcp-data-analysts"

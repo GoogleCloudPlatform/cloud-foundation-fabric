@@ -163,21 +163,21 @@ To deploy this example on your GCP organization, you will need
 
 The DP is meant to be executed by a Service Account (or a regular user) having this minimal set of permission:
 
-- **Org level**:
-  - `"compute.organizations.enableXpnResource"`
-  - `"compute.organizations.disableXpnResource"`
-  - `"compute.subnetworks.setIamPolicy"`
+- **Billing account**
+  - `"roles/billing.user"`
+- **Org level** (If Shared-VPC in use):
+  - `"roles/orgpolicy.policyAdmin"`
 - **Folder level**:
+  - `"roles/compute.xpnAdmin" (If Shared-VPC in use)
   - `"roles/logging.admin"`
   - `"roles/owner"`
   - `"roles/resourcemanager.folderAdmin"`
   - `"roles/resourcemanager.projectCreator"`
-- **Cloud Key Management Keys** (if Cloud Key Management keys are configured):
+- **Cloud Key Management Keys** (If CMEK encryption in use):
   - `"roles/cloudkms.admin"` or Permissions: `cloudkms.cryptoKeys.getIamPolicy`, `cloudkms.cryptoKeys.list`, `cloudkms.cryptoKeys.setIamPolicy`
-- **On the host project** for the Shared VPC/s
-  - `"roles/browser"`
-  - `"roles/compute.viewer"`
-  - `"roles/dns.admin"`
+- **Shared-VPC host project** (If Shared-VPC in use):
+  - `"roles/compute.xpnAdmin"`
+  - `"roles/resourcemanager.projectIamAdmin"`
 
 ## Variable configuration
 

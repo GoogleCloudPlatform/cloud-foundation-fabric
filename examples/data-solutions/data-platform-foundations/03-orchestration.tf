@@ -42,10 +42,8 @@ module "orch-project" {
       "roles/composer.environmentAndStorageObjectAdmin",
       "roles/iap.httpsResourceAccessor",
       "roles/iam.serviceAccountUser",
-      "roles/compute.networkUser",
       "roles/storage.objectAdmin",
       "roles/storage.admin",
-      "roles/compute.networkUser"
     ]
   }
   iam = {
