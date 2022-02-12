@@ -108,12 +108,12 @@ terraform apply
 | name | description | type | required | default | producer |
 |---|---|:---:|:---:|:---:|:---:|
 | [billing_account_id](variables.tf#L19) | Billing account id. | <code>string</code> | ✓ |  | <code>00-bootstrap</code> |
-| [prefix](variables.tf#L44) | Prefix used for resources that need unique names. | <code>string</code> | ✓ |  | <code>00-bootstrap</code> |
+| [prefix](variables.tf#L44) | Prefix used for resources that need unique names. Use 9 characters or less. | <code>string</code> | ✓ |  | <code>00-bootstrap</code> |
 | [data_dir](variables.tf#L25) | Relative path for the folder storing configuration data. | <code>string</code> |  | <code>&#34;data&#47;projects&#34;</code> |  |
 | [defaults_file](variables.tf#L38) | Relative path for the file storing the project factory configuration. | <code>string</code> |  | <code>&#34;data&#47;defaults.yaml&#34;</code> |  |
 | [environment_dns_zone](variables.tf#L31) | DNS zone suffix for environment. | <code>string</code> |  | <code>null</code> | <code>02-networking</code> |
-| [shared_vpc_self_link](variables.tf#L50) | Self link for the shared VPC. | <code>string</code> |  | <code>null</code> | <code>02-networking</code> |
-| [vpc_host_project](variables.tf#L57) | Host project for the shared VPC. | <code>string</code> |  | <code>null</code> | <code>02-networking</code> |
+| [shared_vpc_self_link](variables.tf#L55) | Self link for the shared VPC. | <code>string</code> |  | <code>null</code> | <code>02-networking</code> |
+| [vpc_host_project](variables.tf#L62) | Host project for the shared VPC. | <code>string</code> |  | <code>null</code> | <code>02-networking</code> |
 
 ## Outputs
 
