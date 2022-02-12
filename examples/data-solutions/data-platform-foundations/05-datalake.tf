@@ -46,13 +46,11 @@ locals {
   lake_0_iam = {
     "roles/bigquery.dataEditor" = [
       module.load-sa-df-0.iam_email,
+      module.transf-sa-df-0.iam_email,
+      module.transf-sa-bq-0.iam_email,
     ]
     "roles/bigquery.jobUser" = [
       module.load-sa-df-0.iam_email,
-    ]
-    "roles/bigquery.dataEditor" = [
-      module.transf-sa-df-0.iam_email,
-      module.transf-sa-bq-0.iam_email,
     ]
     "roles/storage.objectCreator" = [
       module.load-sa-df-0.iam_email,
