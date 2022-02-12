@@ -114,7 +114,6 @@ variable "prefix" {
     error_message = "Use a maximum of 9 characters for prefix."
   }
 }
-}
 
 variable "project_factory_sa" {
   # tfdoc:variable:source 01-resman
