@@ -59,6 +59,7 @@ def get_names(dir_name):
         if name:
           LOGGER.debug(f'module {name} already open ({value})')
         name = value
+        source = None
       elif token_type == MOD.SOURCE:
         source = value.split('/')[-1]
         LOGGER.debug(f'{name} {source}')
