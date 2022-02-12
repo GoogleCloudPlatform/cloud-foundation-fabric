@@ -95,7 +95,7 @@ def main(dirs, prefix_length=None):
         f'[{flag}] {name.source.ljust(source_just)} '
         f'{name.name.ljust(name_just)} '
         f'{name.value.ljust(value_just)} '
-        f'({name.length}+{prefix_length})'
+        f'({name_length})'
     ))
 
 
