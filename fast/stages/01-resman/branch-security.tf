@@ -44,16 +44,16 @@ module "branch-security-folder" {
 module "branch-security-sa" {
   source      = "../../../modules/iam-service-account"
   project_id  = var.automation_project_id
-  name        = "resman-sec-0"
+  name        = "prod-resman-sec-0"
   description = "Terraform resman security service account."
-  prefix      = local.prefixes.prod
+  prefix      = var.prefix
 }
 
 module "branch-security-gcs" {
   source     = "../../../modules/gcs"
   project_id = var.automation_project_id
-  name       = "resman-sec-0"
-  prefix     = local.prefixes.prod
+  name       = "prod-resman-sec-0"
+  prefix     = var.prefix
   versioning = true
   iam = {
     "roles/storage.objectAdmin" = [module.branch-security-sa.iam_email]

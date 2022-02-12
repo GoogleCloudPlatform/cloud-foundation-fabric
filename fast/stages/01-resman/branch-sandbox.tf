@@ -42,8 +42,8 @@ module "branch-sandbox-folder" {
 module "branch-sandbox-gcs" {
   source     = "../../../modules/gcs"
   project_id = var.automation_project_id
-  name       = "resman-sbox-0"
-  prefix     = local.prefixes.dev
+  name       = "dev-resman-sbox-0"
+  prefix     = var.prefix
   versioning = true
   iam = {
     "roles/storage.objectAdmin" = [module.branch-sandbox-sa.iam_email]
@@ -53,7 +53,7 @@ module "branch-sandbox-gcs" {
 module "branch-sandbox-sa" {
   source      = "../../../modules/iam-service-account"
   project_id  = var.automation_project_id
-  name        = "resman-sbox-0"
+  name        = "dev-resman-sbox-0"
   description = "Terraform resman sandbox service account."
-  prefix      = local.prefixes.dev
+  prefix      = var.prefix
 }
