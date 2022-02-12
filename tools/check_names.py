@@ -69,7 +69,7 @@ def get_names(dir_name):
           LOGGER.debug(f'interpolation in {name} ({value}), skipping')
         else:
           yield Name(source, name, value, len(value))
-        module = None
+        name = source = None
 
 
 @click.command()
