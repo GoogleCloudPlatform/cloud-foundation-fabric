@@ -27,9 +27,9 @@ module "branch-teams-folder" {
 module "branch-teams-prod-sa" {
   source      = "../../../modules/iam-service-account"
   project_id  = var.automation_project_id
-  name        = "resman-teams-0"
+  name        = "prod-resman-teams-0"
   description = "Terraform resman production service account."
-  prefix      = local.prefixes.prod
+  prefix      = var.prefix
 }
 
 # Team-level folders, service accounts and buckets for each individual team
@@ -46,9 +46,9 @@ module "branch-teams-team-sa" {
   source      = "../../../modules/iam-service-account"
   for_each    = coalesce(var.team_folders, {})
   project_id  = var.automation_project_id
-  name        = "teams-${each.key}-0"
+  name        = "prod-teams-${each.key}-0"
   description = "Terraform team ${each.key} service account."
-  prefix      = local.prefixes.prod
+  prefix      = var.prefix
   iam = {
     "roles/iam.serviceAccountTokenCreator" = (
       each.value.impersonation_groups == null
@@ -62,8 +62,8 @@ module "branch-teams-team-gcs" {
   source     = "../../../modules/gcs"
   for_each   = coalesce(var.team_folders, {})
   project_id = var.automation_project_id
-  name       = "teams-${each.key}-0"
-  prefix     = local.prefixes.prod
+  name       = "prod-teams-${each.key}-0"
+  prefix     = var.prefix
   versioning = true
   iam = {
     "roles/storage.objectAdmin" = [module.branch-teams-team-sa[each.key].iam_email]
@@ -103,17 +103,17 @@ module "branch-teams-team-dev-folder" {
 module "branch-teams-dev-projectfactory-sa" {
   source     = "../../../modules/iam-service-account"
   project_id = var.automation_project_id
-  name       = "resman-pf-0"
+  name       = "dev-resman-pf-0"
   # naming: environment in description
   description = "Terraform project factory development service account."
-  prefix      = local.prefixes.dev
+  prefix      = var.prefix
 }
 
 module "branch-teams-dev-projectfactory-gcs" {
   source     = "../../../modules/gcs"
   project_id = var.automation_project_id
-  name       = "resman-pf-0"
-  prefix     = local.prefixes.dev
+  name       = "dev-resman-pf-0"
+  prefix     = var.prefix
   versioning = true
   iam = {
     "roles/storage.objectAdmin" = [module.branch-teams-dev-projectfactory-sa.iam_email]
@@ -153,17 +153,17 @@ module "branch-teams-team-prod-folder" {
 module "branch-teams-prod-projectfactory-sa" {
   source     = "../../../modules/iam-service-account"
   project_id = var.automation_project_id
-  name       = "resman-pf-0"
+  name       = "prod-resman-pf-0"
   # naming: environment in description
   description = "Terraform project factory production service account."
-  prefix      = local.prefixes.prod
+  prefix      = var.prefix
 }
 
 module "branch-teams-prod-projectfactory-gcs" {
   source     = "../../../modules/gcs"
   project_id = var.automation_project_id
-  name       = "resman-pf-0"
-  prefix     = local.prefixes.prod
+  name       = "prod-resman-pf-0"
+  prefix     = var.prefix
   versioning = true
   iam = {
     "roles/storage.objectAdmin" = [module.branch-teams-prod-projectfactory-sa.iam_email]
