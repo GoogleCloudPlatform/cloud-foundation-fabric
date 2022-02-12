@@ -29,31 +29,48 @@ locals {
       "roles/storage.objectViewer",
     ]
   }
-  lake_iam = {
+  lake_plg_group_iam = {
+    (local.groups.data-engineers) = [
+      "roles/bigquery.dataEditor",
+      "roles/storage.admin",
+    ],
+    (local.groups.data-analysts) = [
+      "roles/bigquery.dataEditor",
+      "roles/bigquery.jobUser",
+      "roles/bigquery.user",
+      "roles/datacatalog.viewer",
+      "roles/datacatalog.tagTemplateViewer",
+      "roles/storage.objectAdmin",
+    ]
+  }
+  lake_0_iam = {
     "roles/bigquery.dataEditor" = [
       module.load-sa-df-0.iam_email,
-      module.transf-sa-df-0.iam_email,
-      module.transf-sa-bq-0.iam_email,
-      module.orch-sa-cmp-0.iam_email,
     ]
     "roles/bigquery.jobUser" = [
       module.load-sa-df-0.iam_email,
-      module.transf-sa-df-0.iam_email,
     ]
-    "roles/storage.admin" = [
-      module.load-sa-df-0.iam_email,
+    "roles/bigquery.dataEditor" = [
       module.transf-sa-df-0.iam_email,
+      module.transf-sa-bq-0.iam_email,
     ]
     "roles/storage.objectCreator" = [
       module.load-sa-df-0.iam_email,
+    ]
+  }
+  lake_iam = {
+    "roles/bigquery.dataEditor" = [
       module.transf-sa-df-0.iam_email,
       module.transf-sa-bq-0.iam_email,
-      module.orch-sa-cmp-0.iam_email,
+    ]
+    "roles/bigquery.jobUser" = [
+      module.transf-sa-bq-0.iam_email,
+    ]
+    "roles/storage.objectCreator" = [
+      module.transf-sa-df-0.iam_email,
     ]
     "roles/storage.objectViewer" = [
       module.transf-sa-df-0.iam_email,
-      module.transf-sa-bq-0.iam_email,
-      module.orch-sa-cmp-0.iam_email,
     ]
   }
   lake_services = concat(var.project_services, [
@@ -79,7 +96,7 @@ module "lake-0-project" {
   prefix          = var.prefix
   name            = "dtl-0"
   group_iam       = local.lake_group_iam
-  iam             = local.lake_iam
+  iam             = local.lake_0_iam
   services        = local.lake_services
   service_encryption_key_ids = {
     bq      = [try(local.service_encryption_keys.bq, null)]

@@ -31,16 +31,15 @@ module "land-project" {
       "roles/bigquery.dataEditor",
       "roles/pubsub.editor",
       "roles/storage.admin",
-      "roles/storage.objectViewer",
     ]
   }
   iam = {
-    "roles/bigquery.dataEditor"   = [module.land-sa-bq-0.iam_email]
-    "roles/bigquery.dataViewer"   = local.land_orch_service_accounts
-    "roles/bigquery.jobUser"      = [module.orch-sa-cmp-0.iam_email]
-    "roles/bigquery.user"         = [module.load-sa-df-0.iam_email]
-    "roles/pubsub.publisher"      = [module.land-sa-ps-0.iam_email]
-    "roles/pubsub.subscriber"     = local.land_orch_service_accounts
+    "roles/bigquery.dataEditor" = [module.land-sa-bq-0.iam_email]
+    "roles/bigquery.user"       = [module.load-sa-df-0.iam_email]
+    "roles/pubsub.publisher"    = [module.land-sa-ps-0.iam_email]
+    "roles/pubsub.subscriber" = concat(
+      local.land_orch_service_accounts, [module.load-sa-df-0.iam_email]
+    )
     "roles/storage.objectAdmin"   = [module.load-sa-df-0.iam_email]
     "roles/storage.objectCreator" = [module.land-sa-cs-0.iam_email]
     "roles/storage.objectViewer"  = [module.orch-sa-cmp-0.iam_email]

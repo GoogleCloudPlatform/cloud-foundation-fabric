@@ -54,13 +54,6 @@ module "load-project" {
     ]
     "roles/dataflow.worker"     = [module.load-sa-df-0.iam_email]
     "roles/storage.objectAdmin" = local.load_service_accounts
-    # TODO: these are needed on the shared VPC?
-    # "roles/compute.serviceAgent" = [
-    #   "serviceAccount:${module.load-project.service_accounts.robots.compute}"
-    # ]
-    # "roles/dataflow.serviceAgent" = [
-    #   "serviceAccount:${module.load-project.service_accounts.robots.dataflow}"
-    # ]
   }
   services = concat(var.project_services, [
     "bigquery.googleapis.com",
@@ -84,9 +77,6 @@ module "load-project" {
     attach               = true
     host_project         = local.shared_vpc_project
     service_identity_iam = {}
-    # service_identity_iam = {
-    #   "compute.networkUser" = ["dataflow"]
-    # }
   }
 }
 

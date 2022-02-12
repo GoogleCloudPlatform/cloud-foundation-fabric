@@ -52,11 +52,8 @@ module "orch-project" {
     "roles/bigquery.dataEditor" = [
       module.load-sa-df-0.iam_email,
       module.transf-sa-df-0.iam_email,
-      module.orch-sa-cmp-0.iam_email,
     ]
     "roles/bigquery.jobUser" = [
-      module.load-sa-df-0.iam_email,
-      module.transf-sa-df-0.iam_email,
       module.orch-sa-cmp-0.iam_email,
     ]
     "roles/composer.worker" = [
@@ -66,14 +63,10 @@ module "orch-project" {
       module.orch-sa-cmp-0.iam_email
     ]
     "roles/storage.objectAdmin" = [
-      module.load-sa-df-0.iam_email,
       module.orch-sa-cmp-0.iam_email,
       "serviceAccount:${module.orch-project.service_accounts.robots.composer}",
     ]
-    "roles/storage.admin" = [
-      module.load-sa-df-0.iam_email,
-      module.transf-sa-df-0.iam_email
-    ]
+    "roles/storage.objectViewer" = [module.load-sa-df-0.iam_email]
   }
   oslogin = false
   policy_boolean = {
@@ -104,17 +97,6 @@ module "orch-project" {
     attach               = true
     host_project         = local.shared_vpc_project
     service_identity_iam = {}
-    # service_identity_iam = {
-    #   "roles/composer.sharedVpcAgent" = [
-    #     "composer"
-    #   ]
-    #   "roles/compute.networkUser" = [
-    #     "cloudservices", "container-engine", "dataflow"
-    #   ]
-    #   "roles/container.hostServiceAgentUser" = [
-    #     "container-engine"
-    #   ]
-    # }
   }
 }
 

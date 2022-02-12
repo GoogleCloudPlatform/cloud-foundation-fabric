@@ -40,9 +40,6 @@ module "transf-project" {
     ]
   }
   iam = {
-    "roles/bigquery.dataViewer" = [
-      module.orch-sa-cmp-0.iam_email
-    ]
     "roles/bigquery.jobUser" = [
       module.transf-sa-bq-0.iam_email,
     ]
@@ -54,7 +51,6 @@ module "transf-project" {
     ]
     "roles/storage.objectAdmin" = [
       module.transf-sa-df-0.iam_email,
-      module.orch-sa-cmp-0.iam_email,
       "serviceAccount:${module.transf-project.service_accounts.robots.dataflow}"
     ]
   }
