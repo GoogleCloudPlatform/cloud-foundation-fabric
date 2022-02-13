@@ -21,6 +21,7 @@ variable "config_sync_defaults" {
     repository_branch        = string
     repository_source_format = string
     repository_policy_dir    = string
+    repository_secret_type   = string
     workload_identity_sa     = string
     secret_type              = string
   })
@@ -29,6 +30,7 @@ variable "config_sync_defaults" {
     repository_branch        = "main"
     repository_source_format = "hierarchy"
     repository_policy_dir    = "configsync"
+    repository_secret_type   = "gcpserviceaccount"
     workload_identity_sa     = null
     secret_type              = "gcpserviceaccount"
   }
@@ -37,11 +39,13 @@ variable "config_sync_defaults" {
 variable "policy_controller_defaults" {
   description = "Default values for optional config_sync configurations."
   type = object({
+    enabled                 = bool
     enable_template_library = bool
     enable_log_denies       = bool
     exemptable_namespaces   = list(string)
   })
   default = {
+    enabled                 = true
     enable_template_library = true
     enable_log_denies       = true
     exemptable_namespaces   = ["config-management-monitoring", "config-management-system"]
@@ -52,25 +56,23 @@ variable "hub_config" {
   description = ""
   type = object({
     clusters = list(map(string))
+    config_sync = object({
+      repository_branch        = string
+      repository_url           = string
+      repository_source_format = string
+      repository_secret_type   = string
+      repository_policy_dir    = string
+      workload_identity_sa     = string
+    })
     policy_controller = object({
+      enabled                 = bool
       enable_template_library = bool
       enable_log_denies       = bool
       exemptable_namespaces   = list(string)
     })
-    config_sync = object({
-      repository_url           = string
-      repository_branch        = string
-      repository_source_format = string
-      repository_policy_dir    = string
-      workload_identity_sa     = string
-    })
   })
 }
-
-# gcp_service_account_email = string
-# secret_type = string
-
 variable "project_id" {
-  description = "Cluster project id."
+  description = "Cluster project ID."
   type        = string
 }
