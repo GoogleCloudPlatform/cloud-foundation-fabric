@@ -15,7 +15,7 @@ By default, the module is configured to use an existing policy, passed in by nam
 ```hcl
 module "test" {
   source        = "./modules/vpc-sc"
-  access_policy = "accessPolicies/12345678"
+  access_policy = "12345678"
 }
 # tftest modules=0 resources=0
 ```
