@@ -1,6 +1,6 @@
 # Data Platform
 
-This module implements an opinionated Data Platform (DP) Architecture that creates and setup projects and related resources that compose an end-to-end data environment.
+This module implements an opinionated Data Platform Architecture that creates and setup projects and related resources that compose an end-to-end data environment.
 
 The code is intentionally simple, as it's intended to provide a generic initial setup and then allow easy customizations to complete the implementation of the intended design.
 
@@ -25,7 +25,7 @@ The code in this example doesn't address Organization-level configurations (Orga
 
 ### Project structure
 
-The DP is designed to rely on several projects, one project per data stage. The stages identified are:
+The Data Platform is designed to rely on several projects, one project per data stage. The stages identified are:
 
 - landing
 - load
@@ -51,43 +51,43 @@ The script will create the following projects:
 
 ### Roles
 
-We assign roles on resources at the project level, granting the appropriate role via groups for humans and individual principals for service accounts, according to best practices.
+We assign roles on resources at the project level, granting the appropriate roles via groups (humans) and service accounts (services and applications) according to best practices.
 
 ### Service accounts
 
-Service account creation follows the least privilege principle, performing a single task which requires access to a defined set of resources. In the table below you can find an high level overview on roles for each service account on each data layer. For semplicy `READ` or `WRITE` roles are used, for detailed roles please refer to the code.
-
+Service account creation follows the least privilege principle, performing a single task which requires access to a defined set of resources. The table below shows a high level overview of roles for each service account on each data layer, using `READ` or `WRITE` access patterns for simplicity. For detailed roles please refer to the code.
 
 |Service Account|Landing|DataLake L0|DataLake L1|DataLake L2|
 |-|:-:|:-:|:-:|:-:|
-|landing-sa|WRITE|-|-|-|
-|load-sa|READ|READ/WRITE|-|-|
-|transformation-sa|-|READ/WRITE|READ/WRITE|READ/WRITE|
-|orchestration-sa|-|-|-|-|
+|`landing-sa`|`WRITE`|-|-|-|
+|`load-sa`|`READ`|`READ`/`WRITE`|-|-|
+|`transformation-sa`|-|`READ`/`WRITE`|`READ`/`WRITE`|`READ`/`WRITE`|
+|`orchestration-sa`|-|-|-|-|
 
-A full reference of IAM roles managed by the DP [is available here](./IAM.md).
+A full reference of IAM roles managed by the Data Platform [is available here](./IAM.md).
 
 Using of service account keys within a data pipeline exposes to several security risks deriving from a credentials leak. This example shows how to leverage impersonation to avoid the need of creating keys.
 
 ### User groups
 
-User groups are important. They provide a stable frame of reference that allows decoupling the final set of permissions for each group, from the stage where entities and resources are created and their IAM bindings defined.
+User groups provide a stable frame of reference that allows decoupling the final set of permissions from the stage where entities and resources are created, and their IAM bindings defined.
 
 We use three groups to control access to resources:
 
 - *Data Engineers* They handle and run the Data Hub, with read access to all resources in order to troubleshoot possible issues with pipelines. This team can also impersonate any service account.
-- *Data Analyst*. They perform analysis on datasets, with read access to the data lake L2 project, and BigQuery READ/WRITE access to the playground project. 
+- *Data Analysts*. They perform analysis on datasets, with read access to the data lake L2 project, and BigQuery READ/WRITE access to the playground project.
 - *Data Security*:. They handle security configurations related to the Data Hub. This team has admin access to the common project to configure Cloud DLP templates or Data Catalog policy tags.
 
-In the table below you can find an high level overview on roles for each group on each project. For semplicy `READ`, `WRITE` and `ADMIN` roles are used, for detailed roles please refer to the code.
+The table below shows a high level overview of roles for each group on each project, using `READ`, `WRITE` and `ADMIN` access patterns for simplicity. For detailed roles please refer to the code.
 
 |Group|Landing|Load|Transformation|Data Lake L0|Data Lake L1|Data Lake L2|Data Lake Playground|Orchestration|Common|
 |-|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
-|Data Engineers|ADMIN|ADMIN|ADMIN|ADMIN|ADMIN|ADMIN|ADMIN|ADMIN|ADMIN|
-|Data Analyst|-|-|-|-|-|READ|READ/WRITE|-|-|
-|Data Security|-|-|-|-|-|-|-|-|ADMIN|
+|Data Engineers|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|
+|Data Analysts|-|-|-|-|-|`READ`|`READ`/`WRITE`|-|-|
+|Data Security|-|-|-|-|-|-|-|-|`ADMIN`|
 
 You can configure groups via the `groups` variable.
+
 ### Virtual Private Cloud (VPC) design
 
 As is often the case in real-world configurations, this example accepts as input an existing [Shared-VPC](https://cloud.google.com/vpc/docs/shared-vpc) via the `network_config` variable. Make sure that the GKE API (`container.googleapis.com`) is enabled in the VPC host project.
@@ -121,7 +121,7 @@ Resources follow the naming convention described below.
 
 ### Encryption
 
-We suggest a centralized approach to key management, where Organization Security is the only team that can access encryption material, and keyrings and keys are managed in a project external to the DP.
+We suggest a centralized approach to key management, where Organization Security is the only team that can access encryption material, and keyrings and keys are managed in a project external to the Data Platform.
 
 ![Centralized Cloud Key Management high-level diagram](./images/kms_diagram.png "Centralized Cloud Key Management high-level diagram")
 
@@ -161,23 +161,18 @@ To deploy this example on your GCP organization, you will need
 - a folder or organization where new projects will be created
 - a billing account that will be associated with the new projects
 
-The DP is meant to be executed by a Service Account (or a regular user) having this minimal set of permission:
+The Data Platform is meant to be executed by a Service Account (or a regular user) having this minimal set of permission:
 
 - **Billing account**
-  - `"roles/billing.user"`
-- **Org level** (If Shared-VPC in use):
-  - `"roles/orgpolicy.policyAdmin"`
+  - `roles/billing.user`
 - **Folder level**:
-  - `"roles/compute.xpnAdmin" (If Shared-VPC in use)
-  - `"roles/logging.admin"`
-  - `"roles/owner"`
-  - `"roles/resourcemanager.folderAdmin"`
-  - `"roles/resourcemanager.projectCreator"`
-- **Cloud Key Management Keys** (If CMEK encryption in use):
-  - `"roles/cloudkms.admin"` or Permissions: `cloudkms.cryptoKeys.getIamPolicy`, `cloudkms.cryptoKeys.list`, `cloudkms.cryptoKeys.setIamPolicy`
-- **Shared-VPC host project** (If Shared-VPC in use):
-  - `"roles/compute.xpnAdmin"`
-  - `"roles/resourcemanager.projectIamAdmin"`
+  - `roles/resourcemanager.folderAdmin`
+  - `roles/resourcemanager.projectCreator`
+- **KMS Keys** (If CMEK encryption in use):
+  - `roles/cloudkms.admin` or a custom role with `cloudkms.cryptoKeys.getIamPolicy`, `cloudkms.cryptoKeys.list`, `cloudkms.cryptoKeys.setIamPolicy` permissions
+- **Shared VPC host project** (if configured):\
+  - `roles/compute.xpnAdmin` on the host project folder or org
+  - `roles/resourcemanager.projectIamAdmin` on the host project, either with no conditions or with a condition allowing [delegated role grants](https://medium.com/google-cloud/managing-gcp-service-usage-through-delegated-role-grants-a843610f2226#:~:text=Delegated%20role%20grants%20is%20a,setIamPolicy%20permission%20on%20a%20resource.) for `roles/compute.networkUser`, `roles/composer.sharedVpcAgent`, `roles/container.hostServiceAgentUser`
 
 ## Variable configuration
 
@@ -201,9 +196,9 @@ terraform apply
 
 ## Customizations
 
-### Create Cloud Key Management keys as part of the DP
+### Create Cloud Key Management keys as part of the Data Platform
 
-To create Cloud Key Management keys in the DP you can uncomment the Cloud Key Management resources configured in the [`06-common.tf`](./06-common.tf) file and update Cloud Key Management keys pointers on `local.service_encryption_keys.*` to the local resource created.
+To create Cloud Key Management keys in the Data Platform you can uncomment the Cloud Key Management resources configured in the [`06-common.tf`](./06-common.tf) file and update Cloud Key Management keys pointers on `local.service_encryption_keys.*` to the local resource created.
 
 ### Assign roles at BQ Dataset level
 
