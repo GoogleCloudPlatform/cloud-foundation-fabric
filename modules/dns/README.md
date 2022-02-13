@@ -17,7 +17,7 @@ module "private-dns" {
   domain          = "test.example."
   client_networks = [var.vpc.self_link]
   recordsets = {
-    "A localhost" = { type = "A", ttl = 300, records = ["127.0.0.1"] }
+    "A localhost" = { ttl = 300, records = ["127.0.0.1"] }
   }
 }
 # tftest modules=1 resources=2
