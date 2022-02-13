@@ -5,6 +5,28 @@ The given list of clusters will be registered inside the Hub and all the configu
 
 ## Example usage
 
+```hcl
+hub_config = {
+    clusters = [
+      { name = "cluster-1", location = "europe-west1" },
+    ]
+    config_sync = null
+    policy_controller = {
+      enabled                 = true
+      enable_template_library = true
+      enable_log_denies       = false
+      exemptable_namespaces   = ["config-management-monitoring", "config-management-system"]
+    }
+  }
+}
+
+module "gke-hub-configuration" {
+  source     = "./modules/gke-hub"
+  hub_config = local.hub_config
+  project_id = "myproject"
+}
+```
+
 ### Module defaults
 
 ### Internally managed service account
