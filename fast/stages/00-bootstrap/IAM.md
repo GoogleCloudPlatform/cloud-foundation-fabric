@@ -20,7 +20,7 @@ Legend: <code>+</code> additive, <code>•</code> conditional.
 |---|---|
 |<b>prod-bootstrap-0</b><br><small><i>serviceAccount</i></small>|[roles/owner](https://cloud.google.com/iam/docs/understanding-roles#owner) |
 
-## Project <i>prod-billing-export-0</i>
+## Project <i>prod-billing-exp-0</i>
 
 | members | roles |
 |---|---|

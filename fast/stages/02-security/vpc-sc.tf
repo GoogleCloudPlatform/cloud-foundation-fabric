@@ -116,8 +116,11 @@ locals {
       for k in local._perimeter_names : k => []
     }
     : {
-      for k, v in local._perimeter_names :
-      k => v == null ? [] : v
+      for k in local._perimeter_names : k => (
+        var.vpc_sc_perimeter_projects[k] == null
+        ? []
+        : var.vpc_sc_perimeter_projects[k]
+      )
     }
   )
   # get the list of restricted services from the yaml file
