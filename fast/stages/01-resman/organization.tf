@@ -104,15 +104,13 @@ module "organization" {
       local.list_allow, { values = ["in:INTERNAL"] }
     )
     "constraints/compute.vmExternalIpAccess" = local.list_deny
-    "constraints/iam.allowedPolicyMemberDomains" = {
-      inherit_from_parent = false
-      suggested_value     = null
-      status              = true
-      values = concat(
-        [var.organization.customer_id],
-        try(local.policy_configs.allowed_policy_member_domains, [])
-      )
-    }
+    "constraints/iam.allowedPolicyMemberDomains" = merge(
+      local.list_allow, {
+        values = concat(
+          [var.organization.customer_id],
+          try(local.policy_configs.allowed_policy_member_domains, [])
+        )
+    })
     "constraints/run.allowedIngress" = merge(
       local.list_allow, { values = ["is:internal"] }
     )
