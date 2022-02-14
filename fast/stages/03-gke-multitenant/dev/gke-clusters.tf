@@ -30,7 +30,7 @@ module "gke-cluster" {
   project_id               = module.gke-project-0.project_id
   description              = each.value.description
   location                 = each.value.location
-  network                  = each.value.net.vpc
+  network                  = var.shared_vpc_self_link
   subnetwork               = each.value.net.subnet
   secondary_range_pods     = each.value.net.pods
   secondary_range_services = each.value.net.services

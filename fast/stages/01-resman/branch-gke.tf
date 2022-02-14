@@ -35,7 +35,7 @@ module "branch-gke-folder" {
 module "branch-gke-multitenant-prod-folder" {
   source = "../../../modules/folder"
   parent = module.branch-gke-folder.id
-  name   = "prod"
+  name   = "Production"
   iam = {
     "roles/owner" = [
       module.branch-gke-multitenant-prod-sa.iam_email
@@ -52,7 +52,7 @@ module "branch-gke-multitenant-prod-folder" {
 module "branch-gke-multitenant-prod-sa" {
   source      = "../../../modules/iam-service-account"
   project_id  = var.automation_project_id
-  name        = "gke-prod-0"
+  name        = "prod-resman-gke-0"
   description = "Terraform gke multitenant prod service account."
   prefix      = var.prefix
   iam = {
@@ -64,7 +64,7 @@ module "branch-gke-multitenant-prod-sa" {
 module "branch-gke-multitenant-prod-gcs" {
   source     = "../../../modules/gcs"
   project_id = var.automation_project_id
-  name       = "gke-prod-0"
+  name       = "prod-resman-gke-0"
   prefix     = var.prefix
   versioning = true
   iam = {
@@ -76,7 +76,7 @@ module "branch-gke-multitenant-prod-gcs" {
 module "branch-gke-multitenant-dev-folder" {
   source = "../../../modules/folder"
   parent = module.branch-gke-folder.id
-  name   = "dev"
+  name   = "Development"
   iam = {
     "roles/owner" = [
       module.branch-gke-multitenant-dev-sa.iam_email
@@ -93,7 +93,7 @@ module "branch-gke-multitenant-dev-folder" {
 module "branch-gke-multitenant-dev-sa" {
   source      = "../../../modules/iam-service-account"
   project_id  = var.automation_project_id
-  name        = "gke-dev-0"
+  name        = "dev-resman-gke-0"
   description = "Terraform gke multitenant dev service account."
   prefix      = var.prefix
   iam = {
@@ -105,7 +105,7 @@ module "branch-gke-multitenant-dev-sa" {
 module "branch-gke-multitenant-dev-gcs" {
   source     = "../../../modules/gcs"
   project_id = var.automation_project_id
-  name       = "gke-dev-0"
+  name       = "dev-resman-gke-0"
   prefix     = var.prefix
   versioning = true
   iam = {

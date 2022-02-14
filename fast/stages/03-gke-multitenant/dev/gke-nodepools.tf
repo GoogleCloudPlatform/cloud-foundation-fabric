@@ -27,14 +27,14 @@ locals {
   ]...)
 }
 
-module "gke_1_nodepool" {
+module "gke-1-nodepool" {
   source             = "../../../../modules/gke-nodepool"
   for_each           = local.nodepools
   name               = each.value.name
   project_id         = module.gke-project-0.project_id
   cluster_name       = module.gke-cluster[each.value.cluster].name
   location           = module.gke-cluster[each.value.cluster].location
-  initial_node_count = each.value.initial_node_count 
+  initial_node_count = each.value.initial_node_count
   node_machine_type  = each.value.node_type
   # TODO(jccb): can we use spot instances here?
   node_preemptible = each.value.preemptible
