@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-module "test-environment" {
-  source             = "../../../../../examples/data-solutions/data-platform-foundations/01-environment"
-  billing_account_id = var.billing_account
-  root_node          = var.root_node
-}
-
-module "test-resources" {
-  source      = "../../../../../examples/data-solutions/data-platform-foundations/02-resources"
-  project_ids = module.test-environment.project_ids
+module "test" {
+  source              = "../../../../../examples/data-solutions/data-platform-foundations/"
+  organization_domain = "example.com"
+  billing_account_id  = "123456-123456-123456"
+  folder_id           = "folders/12345678"
+  prefix              = "prefix"
 }

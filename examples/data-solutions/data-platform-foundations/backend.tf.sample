@@ -12,18 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# The `impersonate_service_account` option require the identity launching terraform
+# role `roles/iam.serviceAccountTokenCreator` on the Service Account specified.
+
 terraform {
-  required_version = ">= 1.0.0"
-  required_providers {
-    google = {
-      source  = "hashicorp/google"
-      version = ">= 4.0.0"
-    }
-    google-beta = {
-      source  = "hashicorp/google-beta"
-      version = ">= 4.0.0"
-    }
+  backend "gcs" {
+    bucket                      = "BUCKET_NAME"
+    prefix                      = "PREFIX"
+    impersonate_service_account = "SERVICE_ACCOUNT@PROJECT_ID.iam.gserviceaccount.com"
   }
 }
-
-
+provider "google" {
+  impersonate_service_account = "SERVICE_ACCOUNT@PROJECT_ID.iam.gserviceaccount.com"
+}
+provider "google-beta" {
+  impersonate_service_account = "SERVICE_ACCOUNT@PROJECT_ID.iam.gserviceaccount.com"
+}

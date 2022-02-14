@@ -12,18 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-terraform {
-  required_version = ">= 1.0.0"
-  required_providers {
-    google = {
-      source  = "hashicorp/google"
-      version = ">= 4.0.0"
-    }
-    google-beta = {
-      source  = "hashicorp/google-beta"
-      version = ">= 4.0.0"
-    }
-  }
+# tfdoc:file:description common project.
+
+module "exp-project" {
+  source          = "../../../modules/project"
+  parent          = var.folder_id
+  billing_account = var.billing_account_id
+  prefix          = var.prefix
+  name            = "exp"
 }
-
-
