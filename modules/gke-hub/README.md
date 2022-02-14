@@ -80,10 +80,10 @@ MultiClusterServices feature is not yet implemented within the module.
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [google_sourcerepo_repository](outputs.tf#L44) | Service account resource. |  |  |
 | [service_account](outputs.tf#L17) | Service account resource. |  |  |
 | [service_account_email](outputs.tf#L26) | Service account email. |  |  |
 | [service_account_iam_email](outputs.tf#L35) | Service account email. |  |  |
+| [sourcerepo_repository](outputs.tf#L44) | Service account resource. |  |  |
 | [sourcerepo_repository_url](outputs.tf#L53) | Source repository url. |  |  |
 
 <!-- END TFDOC -->
