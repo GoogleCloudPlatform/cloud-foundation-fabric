@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 'Parse names from specific Terraform resources and optionally check length.'
 
 import collections
@@ -23,20 +22,17 @@ import re
 
 import click
 
-
 BASEDIR = pathlib.Path(__file__).resolve().parents[1]
 LOGGER = logging.getLogger()
 MOD_TOKENS = [
     ('NAME', r'\s*module\s*"([^"]+)"\s*\{\s*'),
     ('SOURCE', r'\s*source\s*=\s*"([^"]+)"\s*'),
     ('VALUE', r'\s*name\s*=\s*"([^"]+)"\s*'),
-    ('REST', r'(.*)')
+    ('REST', r'(.*)'),
 ]
 MOD = enum.Enum('MOD', ' '.join(name for name, _ in MOD_TOKENS))
 MOD_RE = re.compile('|'.join(f'(?:{pattern})' for _, pattern in MOD_TOKENS))
-MOD_LIMITS = {
-    'project': 30, 'iam-service-account': 30, 'gcs': 63
-}
+MOD_LIMITS = {'project': 30, 'iam-service-account': 30, 'gcs': 63}
 
 Name = collections.namedtuple('Name', 'source name value length')
 
@@ -91,12 +87,10 @@ def main(dirs, prefix_length=None):
   for name in names:
     name_length = name.length + prefix_length
     flag = '✗' if name_length >= MOD_LIMITS[name.source] else '✓'
-    print((
-        f'[{flag}] {name.source.ljust(source_just)} '
-        f'{name.name.ljust(name_just)} '
-        f'{name.value.ljust(value_just)} '
-        f'({name_length})'
-    ))
+    print(f'[{flag}] {name.source.ljust(source_just)} '
+          f'{name.name.ljust(name_just)} '
+          f'{name.value.ljust(value_just)} '
+          f'({name_length})')
 
 
 if __name__ == '__main__':
