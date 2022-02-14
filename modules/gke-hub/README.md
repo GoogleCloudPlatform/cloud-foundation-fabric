@@ -3,10 +3,11 @@
 This module allows simplified creation and management of GKE Hub object and its feature for a given set of clusters.
 The given list of clusters will be registered inside the Hub and all the configure features will be activated on all the clusters.
 
-## Example usage
+## GKE Hub configuration
 
 ```hcl
-locals {
+module "gke-hub-configuration" {
+  source     = "./modules/gke-hub"
   hub_config = {
     clusters = [
       { name = "cluster-1", location = "europe-west1" },
@@ -19,14 +20,9 @@ locals {
       exemptable_namespaces   = ["config-management-monitoring", "config-management-system"]
     }
   }
-}
-}
-
-module "gke-hub-configuration" {
-  source     = "./modules/gke-hub"
-  hub_config = local.hub_config
   project_id = "myproject"
 }
+# tftest modules=1 resources=3
 ```
 
 ### Module defaults
