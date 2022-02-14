@@ -101,6 +101,23 @@ resource "local_file" "tfvars" {
 
 # outputs
 
+output "dataplatform" {
+  # tfdoc:output:consumers 03-dataplatform
+  description = "Data for the Data Platform stage."
+  value = {
+    dev = {
+      folder          = module.branch-dp-dev-folder.id
+      gcs_bucket      = module.branch-dp-dev-gcs.name
+      service_account = module.branch-dp-dev-sa.email
+    }
+    prod = {
+      folder          = module.branch-dp-prod-folder.id
+      gcs_bucket      = module.branch-dp-prod-gcs.name
+      service_account = module.branch-dp-prod-sa.email
+    }
+  }
+}
+
 output "networking" {
   # tfdoc:output:consumers 02-networking
   description = "Data for the networking stage."
@@ -129,7 +146,7 @@ output "project_factories" {
 # ready to use provider configurations for subsequent stages
 
 output "providers" {
-  # tfdoc:output:consumers 02-networking 02-security xx-sandbox xx-teams
+  # tfdoc:output:consumers 02-networking 02-security 03-dataplatform xx-sandbox xx-teams
   description = "Terraform provider files for this stage and dependent stages."
   sensitive   = true
   value       = local.providers

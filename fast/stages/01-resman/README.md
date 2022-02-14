@@ -158,6 +158,7 @@ Due to its simplicity, this stage lends itself easily to customizations: adding 
 | [main.tf](./main.tf) | Module-level locals and resources. |  |  |
 | [organization.tf](./organization.tf) | Organization policies. | <code>organization</code> |  |
 | [outputs.tf](./outputs.tf) | Module outputs. |  | <code>local_file</code> |
+| [providers.tf](./providers.tf) | Provider configurations. |  |  |
 | [variables.tf](./variables.tf) | Module variables. |  |  |
 
 ## Variables
@@ -178,12 +179,13 @@ Due to its simplicity, this stage lends itself easily to customizations: adding 
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [networking](outputs.tf#L107) | Data for the networking stage. |  | <code>02-networking</code> |
-| [project_factories](outputs.tf#L117) | Data for the project factories stage. |  | <code>xx-teams</code> |
-| [providers](outputs.tf#L134) | Terraform provider files for this stage and dependent stages. | ✓ | <code>02-networking</code> · <code>02-security</code> · <code>xx-sandbox</code> · <code>xx-teams</code> |
-| [sandbox](outputs.tf#L141) | Data for the sandbox stage. |  | <code>xx-sandbox</code> |
-| [security](outputs.tf#L151) | Data for the networking stage. |  | <code>02-security</code> |
-| [teams](outputs.tf#L161) | Data for the teams stage. |  |  |
-| [tfvars](outputs.tf#L174) | Terraform variable files for the following stages. | ✓ |  |
+| [dataplatform](outputs.tf#L104) | Data for the Data Platform stage. |  | <code>02-networking</code> |
+| [networking](outputs.tf#L121) | Data for the networking stage. |  | <code>02-networking</code> |
+| [project_factories](outputs.tf#L131) | Data for the project factories stage. |  | <code>xx-teams</code> |
+| [providers](outputs.tf#L148) | Terraform provider files for this stage and dependent stages. | ✓ | <code>02-networking</code> · <code>02-security</code> · <code>xx-sandbox</code> · <code>xx-teams</code> |
+| [sandbox](outputs.tf#L155) | Data for the sandbox stage. |  | <code>xx-sandbox</code> |
+| [security](outputs.tf#L165) | Data for the networking stage. |  | <code>02-security</code> |
+| [teams](outputs.tf#L175) | Data for the teams stage. |  |  |
+| [tfvars](outputs.tf#L188) | Terraform variable files for the following stages. | ✓ |  |
 
 <!-- END TFDOC -->
