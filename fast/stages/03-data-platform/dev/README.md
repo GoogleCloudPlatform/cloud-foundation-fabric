@@ -8,7 +8,7 @@ The Data Platform (DP) builds on top of your foundations to create and set up pr
 
 ## Design overview and choices
 
-The DP creates projects in a well-defined context, according to your resource management structure. Within the DP folder, resources are organized by environment. 
+The DP creates projects in a well-defined context, according to your resource management structure. Within the DP folder, resources are organized by environment.
 
 Projects for each environment across different data layer are created to separate Service Account and Group roles. Roles are assigned at project level.
 
@@ -24,14 +24,15 @@ The Data Platform takes care of the following activities:
 - Billing setup (billing account attachment and budget configuration)
 - Resource on each project to handle your data platform.
 
-You can find more details on the DP implemented on the DP [README](../../../examples/data-solutions/data-platform-foundations/).
+You can find more details on the DP implemented on the DP [README](../../../../examples/data-solutions/data-platform-foundations/).
 
 ### User Groups
 
-The DP rely on user groups to assign roles. They provide a stable frame of reference that allows decoupling the final set of permissions for each group, from the stage where entities and resources are created and their IAM bindings defined. [Here]((../../../examples/data-solutions/data-platform-foundations/#groups)) you can find more detail on  users groups used by the DP. 
+The DP rely on user groups to assign roles. They provide a stable frame of reference that allows decoupling the final set of permissions for each group, from the stage where entities and resources are created and their IAM bindings defined. [Here](../../../../examples/data-solutions/data-platform-foundations/#groups) you can find more detail on  users groups used by the DP.
+
 ### Network
 
-The DP rely on the shared VPC defined on the `[02-networking](../../../02-network-vpn)` stage. 
+The DP rely on the shared VPC defined on the [`02-networking`](../../02-networking-vpn) stage.
 
 ### Encryption
 
@@ -39,7 +40,7 @@ The DP may rely on Cloud KMS crypto keys created by the `[02-security](../../../
 
 ## How to run this stage
 
-This stage is meant to be executed after "foundational stages" (i.e., stages [`00-bootstrap`](../../00-bootstrap), [`01-resman`](../../01-resman), [`02-networking`](../../02-networking) and [`02-security`](../../02-security)) have been run.
+This stage is meant to be executed after "foundational stages" (i.e., stages [`00-bootstrap`](../../00-bootstrap), [`01-resman`](../../01-resman), [`02-networking`](../../02-networking-vpn) and [`02-security`](../../02-security)) have been run.
 
 It's of course possible to run this stage in isolation, by making sure the architectural prerequisites are satisfied (e.g., networking), and that the Service Account running the stage is granted the roles/permissions below:
 
