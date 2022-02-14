@@ -22,11 +22,8 @@ import sys
 
 import click
 
-
-FIELDS = (
-    'authoritative', 'resource_type', 'resource_id', 'role', 'member_type',
-    'member_id', 'conditions'
-)
+FIELDS = ('authoritative', 'resource_type', 'resource_id', 'role',
+          'member_type', 'member_id', 'conditions')
 ORG_IDS = {}
 RESOURCE_SORT = {'organization': 0, 'folder': 1, 'project': 2}
 RESOURCE_TYPE_RE = re.compile(r'^google_([^_]+)_iam_([^_]+)$')
@@ -111,20 +108,17 @@ def output_principals(bindings):
         if b.role.startswith('organizations/'):
           roles.append(f'{b.role} {additive}{conditions}')
         else:
-          url = (
-              'https://cloud.google.com/iam/docs/understanding-roles#'
-              f'{b.role.replace("roles/", "")}'
-          )
+          url = ('https://cloud.google.com/iam/docs/understanding-roles#'
+                 f'{b.role.replace("roles/", "")}')
           roles.append(f'[{b.role}]({url}) {additive}{conditions}')
-      print((
-          f'|<b>{principal[1]}</b><br><small><i>{principal[0]}</i></small>|'
-          f'{"<br>".join(roles)}|'
-      ))
+      print(f'|<b>{principal[1]}</b><br><small><i>{principal[0]}</i></small>|'
+            f'{"<br>".join(roles)}|')
 
 
 @click.command()
 @click.argument('state-file', type=click.File('r'), default=sys.stdin)
-@click.option('--format', type=click.Choice(['csv', 'principals', 'raw']), default='raw')
+@click.option('--format', type=click.Choice(['csv', 'principals', 'raw']),
+              default='raw')
 @click.option('--prefix', default=None)
 def main(state_file, format, prefix=None):
   'Output IAM bindings parsed from Terraform state file or standard input.'
@@ -133,9 +127,13 @@ def main(state_file, format, prefix=None):
   resources = data.get('resources', [])
   folders = dict(get_folders(resources))
   bindings = get_bindings(resources, prefix=prefix, folders=folders)
-  bindings = sorted(bindings, key=lambda b: (
-      RESOURCE_SORT.get(b.resource_type, 99), b.resource_id,
-      b.member_type, b.member_id))
+  bindings = sorted(
+      bindings, key=lambda b: (
+          RESOURCE_SORT.get(b.resource_type, 99),
+          b.resource_id,
+          b.member_type,
+          b.member_id,
+      ))
   if format == 'raw':
     for b in bindings:
       print(b)

@@ -15,6 +15,10 @@
  */
 
 locals {
+  _custom_roles = {
+    for k, v in var.custom_role_names :
+    k => module.organization.custom_role_id[v]
+  }
   providers = {
     "00-bootstrap" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
       bucket = module.automation-tf-bootstrap-gcs.name
@@ -31,14 +35,14 @@ locals {
     "01-resman" = jsonencode({
       automation_project_id = module.automation-project.project_id
       billing_account       = var.billing_account
-      custom_roles          = module.organization.custom_role_id
+      custom_roles          = local._custom_roles
       groups                = var.groups
       organization          = var.organization
       prefix                = var.prefix
     })
     "02-networking" = jsonencode({
       billing_account_id = var.billing_account.id
-      custom_roles       = module.organization.custom_role_id
+      custom_roles       = local._custom_roles
       organization       = var.organization
       prefix             = var.prefix
     })

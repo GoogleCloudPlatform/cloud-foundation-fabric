@@ -43,16 +43,16 @@ module "branch-network-folder" {
 module "branch-network-sa" {
   source      = "../../../modules/iam-service-account"
   project_id  = var.automation_project_id
-  name        = "resman-networking-0"
+  name        = "prod-resman-net-0"
   description = "Terraform resman networking service account."
-  prefix      = local.prefixes.prod
+  prefix      = var.prefix
 }
 
 module "branch-network-gcs" {
   source     = "../../../modules/gcs"
   project_id = var.automation_project_id
-  name       = "resman-networking-0"
-  prefix     = local.prefixes.prod
+  name       = "prod-resman-net-0"
+  prefix     = var.prefix
   versioning = true
   iam = {
     "roles/storage.objectAdmin" = [module.branch-network-sa.iam_email]
@@ -62,7 +62,7 @@ module "branch-network-gcs" {
 module "branch-network-prod-folder" {
   source = "../../../modules/folder"
   parent = module.branch-network-folder.id
-  name   = "prod"
+  name   = "Production"
   iam = {
     "roles/compute.xpnAdmin" = [
       module.branch-teams-prod-projectfactory-sa.iam_email
@@ -73,7 +73,7 @@ module "branch-network-prod-folder" {
 module "branch-network-dev-folder" {
   source = "../../../modules/folder"
   parent = module.branch-network-folder.id
-  name   = "dev"
+  name   = "Development"
   iam = {
     "roles/compute.xpnAdmin" = [
       module.branch-teams-dev-projectfactory-sa.iam_email

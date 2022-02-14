@@ -31,7 +31,7 @@ module "billing-export-project" {
   source          = "../../../modules/project"
   count           = local.billing_org ? 1 : 0
   billing_account = var.billing_account.id
-  name            = "billing-export-0"
+  name            = "billing-exp-0"
   parent          = "organizations/${var.organization.id}"
   prefix          = local.prefix
   iam = {
@@ -73,7 +73,10 @@ resource "google_organization_iam_binding" "billing_org_ext_admin_delegated" {
   org_id = var.billing_account.organization_id
   # if the billing org does not have our custom role, user the predefined one
   # role = "roles/resourcemanager.organizationAdmin"
-  role    = "organizations/${var.billing_account.organization_id}/roles/organizationIamAdmin"
+  role = join("", [
+    "organizations/${var.billing_account.organization_id}/",
+    "roles/${var.custom_role_names.organization_iam_admin}"
+  ])
   members = [module.automation-tf-resman-sa.iam_email]
   condition {
     title       = "automation_sa_delegated_grants"

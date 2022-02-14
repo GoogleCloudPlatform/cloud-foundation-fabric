@@ -27,9 +27,4 @@ locals {
     for k, v in local.groups :
     k => "group:${v}"
   }
-  # naming: environment names
-  prefixes = {
-    dev  = "${var.prefix}-dev"
-    prod = "${var.prefix}-prod"
-  }
 }

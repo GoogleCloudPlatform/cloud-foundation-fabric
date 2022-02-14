@@ -29,6 +29,8 @@ locals {
     bq                = "bq-%s@bigquery-encryption"
     cloudasset        = "service-%s@gcp-sa-cloudasset"
     cloudbuild        = "service-%s@gcp-sa-cloudbuild"
+    cloudfunctions    = "service-%s@gcf-admin-robot"
+    cloudrun          = "service-%s@serverless-robot-prod"
     composer          = "service-%s@cloudcomposer-accounts"
     compute           = "service-%s@compute-system"
     container-engine  = "service-%s@container-engine-robot"
@@ -36,10 +38,11 @@ locals {
     dataflow          = "service-%s@dataflow-service-producer-prod"
     dataproc          = "service-%s@dataproc-accounts"
     gae-flex          = "service-%s@gae-api-prod"
-    gcf               = "service-%s@gcf-admin-robot"
-    pubsub            = "service-%s@gcp-sa-pubsub"
-    secretmanager     = "service-%s@gcp-sa-secretmanager"
-    storage           = "service-%s@gs-project-accounts"
+    # TODO: deprecate gcf
+    gcf           = "service-%s@gcf-admin-robot"
+    pubsub        = "service-%s@gcp-sa-pubsub"
+    secretmanager = "service-%s@gcp-sa-secretmanager"
+    storage       = "service-%s@gs-project-accounts"
   }
   service_accounts_default = {
     compute = "${local.project.number}-compute@developer.gserviceaccount.com"

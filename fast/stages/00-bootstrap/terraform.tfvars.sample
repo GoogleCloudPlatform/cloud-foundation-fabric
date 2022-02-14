@@ -1,4 +1,5 @@
 # use `gcloud beta billing accounts list`
+# if you have too many accounts, check the Cloud Console :)
 billing_account = {
  id              = "012345-67890A-BCDEF0"
  organization_id = 1234567890

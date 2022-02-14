@@ -41,7 +41,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install -r tools/REQUIREMENTS.txt
+          pip install -r tools/requirements.txt
 
       - name: Boilerplate
         id: boilerplate
@@ -62,3 +62,13 @@ jobs:
         id: documentation-links-fabric
         run: |
           python3 tools/check_links.py .
+
+      - name: Check name length (fast)
+        id: name-length-fast
+        run: |
+          python3 tools/check_names.py --prefix-length=10 fast/stages
+
+      - name: Check python formatting
+        id: yapf
+        run: |
+          yapf --style="{based_on_style: google, indent_width: 2, SPLIT_BEFORE_NAMED_ASSIGNS: false}" -p -d tools/*.py

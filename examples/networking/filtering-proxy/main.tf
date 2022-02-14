@@ -252,8 +252,10 @@ module "project-app" {
   prefix          = var.prefix
   services        = ["compute.googleapis.com"]
   shared_vpc_service_config = {
-    attach       = true
     host_project = module.project-host.project_id
+    service_identity_iam = {
+      "roles/compute.networkUser" = ["cloudservices"]
+    }
   }
 }
 

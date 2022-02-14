@@ -52,9 +52,6 @@ module "organization" {
       "roles/accesscontextmanager.policyAdmin" = [
         module.branch-security-sa.iam_email
       ]
-      "roles/billing.costsManager" = concat(
-        local.branch_teams_pf_sa_iam_emails
-      ),
       "roles/compute.orgFirewallPolicyAdmin" = [
         module.branch-network-sa.iam_email
       ]
@@ -64,6 +61,7 @@ module "organization" {
       "roles/orgpolicy.policyAdmin" = local.branch_teams_pf_sa_iam_emails
     },
     local.billing_org ? {
+      "roles/billing.costsManager" = local.branch_teams_pf_sa_iam_emails
       "roles/billing.user" = concat(
         [
           module.branch-network-sa.iam_email,
@@ -87,6 +85,7 @@ module "organization" {
     "constraints/compute.requireOsLogin"                          = true
     "constraints/compute.restrictXpnProjectLienRemoval"           = true
     "constraints/compute.skipDefaultNetworkCreation"              = true
+    "constraints/compute.setNewProjectDefaultToZonalDNSOnly"      = true
     "constraints/iam.automaticIamGrantsForDefaultServiceAccounts" = true
     "constraints/iam.disableServiceAccountKeyCreation"            = true
     "constraints/iam.disableServiceAccountKeyUpload"              = true
@@ -105,15 +104,13 @@ module "organization" {
       local.list_allow, { values = ["in:INTERNAL"] }
     )
     "constraints/compute.vmExternalIpAccess" = local.list_deny
-    "constraints/iam.allowedPolicyMemberDomains" = {
-      inherit_from_parent = false
-      suggested_value     = null
-      status              = true
-      values = concat(
-        [var.organization.customer_id],
-        try(local.policy_configs.allowed_policy_member_domains, [])
-      )
-    }
+    "constraints/iam.allowedPolicyMemberDomains" = merge(
+      local.list_allow, {
+        values = concat(
+          [var.organization.customer_id],
+          try(local.policy_configs.allowed_policy_member_domains, [])
+        )
+    })
     "constraints/run.allowedIngress" = merge(
       local.list_allow, { values = ["is:internal"] }
     )
