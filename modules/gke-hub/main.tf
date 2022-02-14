@@ -68,17 +68,6 @@ resource "google_gke_hub_feature" "feature" {
 
 # Create a dedicated SA to be used by ConfigSync to pull code from the repo, 
 # it will be used via Workload Identity, created if none is provided
-# module "gke-config-management-wid-sa" {
-#   count        = local.hub_config.config_sync.workload_identity_sa == null ? 1 : 0
-#   source       = "../../modules/iam-service-account"
-#   project_id   = var.project_id
-#   name         = "gke-config-management-wid-sa"
-#   generate_key = false
-#   iam = {
-#     "roles/iam.workloadIdentityUser" = ["serviceAccount:${var.project_id}.svc.id.goog[config-management-system/root-reconciler]"]
-#   }
-# }
-
 resource "google_service_account" "gke-config-management-wid-sa" {
   count        = local.hub_config.config_sync.workload_identity_sa == null ? 1 : 0
   project      = var.project_id
@@ -98,7 +87,6 @@ resource "google_service_account_iam_binding" "gke-config-management-wid-sa-role
   depends_on = [
     google_service_account.gke-config-management-wid-sa
   ]
-
 }
 
 # Create a source repository if none is provided
