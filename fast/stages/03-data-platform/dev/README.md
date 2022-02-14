@@ -74,34 +74,27 @@ The VPC host project, VPC and subnets should already exist.
 
 ### Providers configuration
 
-If you're running this on top of Fast, you should run the following commands to create the providers file, and populate the required variables from the previous stage.
-
-```bash
-# Variable `outputs_location` is set to `../../../config` in stage 01-resman
-$ cd fabric-fast/stages/03-data-platform/dev
-ln -s ../../../config/03-data-platform-dev/providers.tf
-```
+If you're running this as part of a full FAST flow and using output files, the providers configuration with the right bucket and impersionation account is already available, and will be linked in via the same command use for variables and described in the next section.
 
 ### Variable configuration
 
-There are two broad sets of variables you will need to fill in:
+There are two broad sets of variables that can be configured:
 
-- variables shared by other stages (org id, billing account id, etc.), or derived from a resource managed by a different stage (folder id, automation project id, etc.)
+- variables shared by other stages (organization id, billing account id, etc.) or derived from a resource managed by a different stage (folder id, automation project id, etc.)
 - variables specific to resources managed by this stage
 
 To avoid the tedious job of filling in the first group of variables with values derived from other stages' outputs, the same mechanism used above for the provider configuration can be used to leverage pre-configured `.tfvars` files.
 
-If you configured a valid path for `outputs_location` in the bootstrap and networking stage, simply link the relevant `terraform-*.auto.tfvars.json` files from this stage's outputs folder (under the path you specified), where the `*` above is set to the name of the stage that produced it. For this stage, a single `.tfvars` file is available:
+If you configured a valid path for `outputs_location` in the bootstrap security and networking stages, simply link the relevant `terraform-*.auto.tfvars.json` files from this stage's outputs folder under the path you specified. This will also link the providers configuration file:
 
 ```bash
-# Variable `outputs_location` is set to `../../../config` in stages 01-bootstrap and 02-networking
-ln -s ../../../config/03-data-platform-prod/terraform-bootstrap.auto.tfvars.json
-ln -s ../../../config/03-data-platform-prod/terraform-networking.auto.tfvars.json
+# variable `outputs_location` set to `../../../config`
+ln -s ../../../config/03-data-platform-prod/* ./
 ```
 
-If you're not using Fast, refer to the [Variables](#variables) table at the bottom of this document for a full list of variables, their origin (e.g., a stage or specific to this one), and descriptions explaining their meaning.
+If you're not using FAST or its output files, refer to the [Variables](#variables) table at the bottom of this document for a full list of variables, their origin (e.g., a stage or specific to this one), and descriptions explaining their meaning.
 
-Once the configuration is complete, run the project factory by running
+Once the configuration is complete you can apply this stage:
 
 ```bash
 terraform init
