@@ -41,7 +41,7 @@ output "service_account_iam_email" {
 }
 
 
-output "google_sourcerepo_repository" {
+output "sourcerepo_repository" {
   description = "Service account resource."
   value = (
     local.hub_config.config_sync.repository_url == null
