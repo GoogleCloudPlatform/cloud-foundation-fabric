@@ -46,7 +46,7 @@ A Shared VPC is used here, either from one of the FAST networking stages (e.g. [
 
 ### Encryption
 
-Cloud KMS crypto keys are used here by default, wither from the [FAST security stage](../../../02-security) or from an external source.
+Cloud KMS crypto keys are used here by default, wither from the [FAST security stage](../../02-security) or from an external source.
 
 ## How to run this stage
 
