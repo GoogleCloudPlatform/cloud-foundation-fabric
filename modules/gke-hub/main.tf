@@ -19,8 +19,8 @@ locals {
   config_sync_sa_email = (
     local.hub_config.config_sync.workload_identity_sa == null
     ? (
-      length(module.gke-config-management-wid-sa[0]) > 0
-      ? module.gke-config-management-wid-sa[0].email
+      length(google_service_account.gke-config-management-wid-sa[0]) > 0
+      ? google_service_account.gke-config-management-wid-sa[0].email
       : null
     )
     : local.hub_config.config_sync.workload_identity_sa
@@ -28,8 +28,8 @@ locals {
   config_sync_repository_url = (
     local.hub_config.config_sync.repository_url == null
     ? (
-      length(module.gke-config-management-repo[0]) > 0
-      ? module.gke-config-management-repo[0].url
+      length(google_sourcerepo_repository.default[0]) > 0
+      ? google_sourcerepo_repository.default[0].url
       : null
     )
     : local.hub_config.config_sync.repository_url
@@ -68,26 +68,58 @@ resource "google_gke_hub_feature" "feature" {
 
 # Create a dedicated SA to be used by ConfigSync to pull code from the repo, 
 # it will be used via Workload Identity, created if none is provided
-module "gke-config-management-wid-sa" {
+# module "gke-config-management-wid-sa" {
+#   count        = local.hub_config.config_sync.workload_identity_sa == null ? 1 : 0
+#   source       = "../../modules/iam-service-account"
+#   project_id   = var.project_id
+#   name         = "gke-config-management-wid-sa"
+#   generate_key = false
+#   iam = {
+#     "roles/iam.workloadIdentityUser" = ["serviceAccount:${var.project_id}.svc.id.goog[config-management-system/root-reconciler]"]
+#   }
+# }
+
+resource "google_service_account" "gke-config-management-wid-sa" {
   count        = local.hub_config.config_sync.workload_identity_sa == null ? 1 : 0
-  source       = "../../modules/iam-service-account"
-  project_id   = var.project_id
-  name         = "gke-config-management-wid-sa"
-  generate_key = false
-  iam = {
+  project      = var.project_id
+  account_id   = "gke-config-management-wid-sa"
+  display_name = "gke-config-management-wid-sa"
+  description  = "GKE Hub - Config Management - WID SA"
+}
+
+resource "google_service_account_iam_binding" "gke-config-management-wid-sa-roles" {
+  for_each = {
     "roles/iam.workloadIdentityUser" = ["serviceAccount:${var.project_id}.svc.id.goog[config-management-system/root-reconciler]"]
   }
+  service_account_id = google_service_account.gke-config-management-wid-sa[0].name
+  role               = each.key
+  members            = each.value
+
+  depends_on = [
+    google_service_account.gke-config-management-wid-sa
+  ]
+
 }
 
 # Create a source repository if none is provided
-module "gke-config-management-repo" {
-  count      = local.hub_config.config_sync.repository_url == null ? 1 : 0
-  source     = "../../modules/source-repository"
-  project_id = var.project_id
-  name       = "gke-config-management-repo"
-  iam = {
+resource "google_sourcerepo_repository" "default" {
+  count   = local.hub_config.config_sync.repository_url == null ? 1 : 0
+  project = var.project_id
+  name    = "gke-config-management-repo"
+}
+
+resource "google_sourcerepo_repository_iam_binding" "default" {
+  for_each = {
     "roles/source.reader" = ["serviceAccount:${local.config_sync_sa_email}"]
   }
+  project    = var.project_id
+  repository = google_sourcerepo_repository.default[0].name
+  role       = each.key
+  members    = each.value
+
+  depends_on = [
+    google_sourcerepo_repository.default
+  ]
 }
 
 # Configure configmanagement feature for each hub member

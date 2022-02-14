@@ -22,7 +22,7 @@ module "gke-hub-configuration" {
   }
   project_id = "myproject"
 }
-# tftest modules=1 resources=3
+# tftest modules=1 resources=7
 ```
 
 ### Module defaults
