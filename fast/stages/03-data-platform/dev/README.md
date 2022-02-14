@@ -104,7 +104,6 @@ terraform apply
 |---|---|---|---|
 | [main.tf](./main.tf) | Data Platformy. | <code>data-platform-foundations</code> |  |
 | [outputs.tf](./outputs.tf) | Output variables. |  | <code>local_file</code> |
-| [providers.tf](./providers.tf) | Provider configurations. |  |  |
 | [variables.tf](./variables.tf) | Terraform Variables. |  |  |
 
 ## Variables
@@ -112,29 +111,28 @@ terraform apply
 | name | description | type | required | default | producer |
 |---|---|:---:|:---:|:---:|:---:|
 | [billing_account_id](variables.tf#L17) | Billing account id. | <code>string</code> | ✓ |  | <code>00-bootstrap</code> |
-| [folder_id](variables.tf#L66) | Folder to be used for the networking resources in folders/nnnn format. | <code>string</code> | ✓ |  | <code>resman</code> |
-| [network_config](variables.tf#L94) | Network configurations to use. Specify a shared VPC to use, if null networks will be created in projects. | <code title="object&#40;&#123;&#10;  host_project &#61; string&#10;  network      &#61; string&#10;  vpc_subnet_self_link &#61; object&#40;&#123;&#10;    load           &#61; string&#10;    transformation &#61; string&#10;    orchestration  &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |  |
-| [organization](variables.tf#L107) | Organization details. | <code title="object&#40;&#123;&#10;  domain      &#61; string&#10;  id          &#61; number&#10;  customer_id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>00-bootstrap</code> |
-| [prefix](variables.tf#L123) | Unique prefix used for resource names. Not used for projects if 'project_create' is null. | <code>string</code> | ✓ |  | <code>00-bootstrap</code> |
-| [composer_config](variables.tf#L23) |  | <code title="object&#40;&#123;&#10;  node_count             &#61; number&#10;  ip_range_cloudsql      &#61; string&#10;  ip_range_gke_master    &#61; string&#10;  ip_range_web_server    &#61; string&#10;  project_policy_boolean &#61; map&#40;bool&#41;&#10;  region                 &#61; string&#10;  ip_allocation_policy &#61; object&#40;&#123;&#10;    use_ip_aliases                &#61; string&#10;    cluster_secondary_range_name  &#61; string&#10;    services_secondary_range_name &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  node_count          &#61; 3&#10;  ip_range_cloudsql   &#61; &#34;172.18.29.0&#47;24&#34;&#10;  ip_range_gke_master &#61; &#34;172.18.30.0&#47;28&#34;&#10;  ip_range_web_server &#61; &#34;172.18.30.16&#47;28&#34;&#10;  project_policy_boolean &#61; &#123;&#10;    &#34;constraints&#47;compute.requireOsLogin&#34; &#61; true&#10;  &#125;&#10;  region &#61; &#34;europe-west1&#34;&#10;  ip_allocation_policy &#61; &#123;&#10;    use_ip_aliases                &#61; &#34;true&#34;&#10;    cluster_secondary_range_name  &#61; &#34;pods&#34;&#10;    services_secondary_range_name &#61; &#34;services&#34;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
-| [data_force_destroy](variables.tf#L54) | Flag to set 'force_destroy' on data services like BiguQery or Cloud Storage. | <code>bool</code> |  | <code>false</code> |  |
-| [enable_cloud_nat](variables.tf#L60) | Network Cloud NAT flag. | <code>bool</code> |  | <code>false</code> |  |
-| [groups](variables.tf#L72) | Groups. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  data-analysts  &#61; &#34;gcp-data-analysts&#34;&#10;  data-engineers &#61; &#34;gcp-data-engineers&#34;&#10;  data-security  &#61; &#34;gcp-data-security&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
-| [location_config](variables.tf#L82) | Locations where resources will be deployed. Map to configure region and multiregion specs. | <code title="object&#40;&#123;&#10;  region       &#61; string&#10;  multi_region &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  region       &#61; &#34;europe-west1&#34;&#10;  multi_region &#61; &#34;eu&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
-| [outputs_location](variables.tf#L117) | Path where providers, tfvars files, and lists for the following stages are written. Leave empty to disable. | <code>string</code> |  | <code>null</code> |  |
-| [project_id](variables.tf#L129) | Project id, references existing project if `project_create` is null. | <code title="object&#40;&#123;&#10;  landing             &#61; string&#10;  load                &#61; string&#10;  orchestration       &#61; string&#10;  trasformation       &#61; string&#10;  datalake-l0         &#61; string&#10;  datalake-l1         &#61; string&#10;  datalake-l2         &#61; string&#10;  datalake-playground &#61; string&#10;  common              &#61; string&#10;  exposure            &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  landing             &#61; &#34;lnd&#34;&#10;  load                &#61; &#34;lod&#34;&#10;  orchestration       &#61; &#34;orc&#34;&#10;  trasformation       &#61; &#34;trf&#34;&#10;  datalake-l0         &#61; &#34;dtl-0&#34;&#10;  datalake-l1         &#61; &#34;dtl-1&#34;&#10;  datalake-l2         &#61; &#34;dtl-2&#34;&#10;  datalake-playground &#61; &#34;dtl-plg&#34;&#10;  common              &#61; &#34;cmn&#34;&#10;  exposure            &#61; &#34;exp&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
-| [project_services](variables.tf#L157) | List of core services enabled on all projects. | <code>list&#40;string&#41;</code> |  | <code title="&#91;&#10;  &#34;cloudresourcemanager.googleapis.com&#34;,&#10;  &#34;iam.googleapis.com&#34;,&#10;  &#34;serviceusage.googleapis.com&#34;,&#10;  &#34;stackdriver.googleapis.com&#34;&#10;&#93;">&#91;&#8230;&#93;</code> |  |
+| [folder_id](variables.tf#L42) | Folder to be used for the networking resources in folders/nnnn format. | <code>string</code> | ✓ |  | <code>resman</code> |
+| [network_config](variables.tf#L58) | Network configurations to use. Specify a shared VPC to use, if null networks will be created in projects. | <code title="object&#40;&#123;&#10;  host_project      &#61; string&#10;  network_self_link &#61; string&#10;  subnet_self_links &#61; object&#40;&#123;&#10;    load           &#61; string&#10;    transformation &#61; string&#10;    orchestration  &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |  |
+| [organization_domain](variables.tf#L97) | Organization domain. | <code>string</code> | ✓ |  |  |
+| [prefix](variables.tf#L108) | Unique prefix used for resource names. Not used for projects if 'project_create' is null. | <code>string</code> | ✓ |  | <code>00-bootstrap</code> |
+| [composer_config](variables.tf#L23) |  | <code title="object&#40;&#123;&#10;  node_count      &#61; number&#10;  airflow_version &#61; string&#10;  env_variables   &#61; map&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  node_count      &#61; 3&#10;  airflow_version &#61; &#34;composer-1.17.5-airflow-2.1.4&#34;&#10;  env_variables   &#61; &#123;&#125;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
+| [data_force_destroy](variables.tf#L36) | Flag to set 'force_destroy' on data services like BiguQery or Cloud Storage. | <code>bool</code> |  | <code>false</code> |  |
+| [groups](variables.tf#L48) | Groups. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  data-analysts  &#61; &#34;gcp-data-analysts&#34;&#10;  data-engineers &#61; &#34;gcp-data-engineers&#34;&#10;  data-security  &#61; &#34;gcp-data-security&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
+| [network_config_composer](variables.tf#L71) | Network configurations to use for Composer. | <code title="object&#40;&#123;&#10;  composer_ip_ranges &#61; object&#40;&#123;&#10;    cloudsql   &#61; string&#10;    gke_master &#61; string&#10;    web_server &#61; string&#10;  &#125;&#41;&#10;  composer_secondary_ranges &#61; object&#40;&#123;&#10;    pods     &#61; string&#10;    services &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  composer_ip_ranges &#61; &#123;&#10;    cloudsql   &#61; &#34;172.18.29.0&#47;24&#34;&#10;    gke_master &#61; &#34;172.18.30.0&#47;28&#34;&#10;    web_server &#61; &#34;172.18.30.16&#47;28&#34;&#10;  &#125;&#10;  composer_secondary_ranges &#61; &#123;&#10;    pods     &#61; &#34;pods&#34;&#10;    services &#61; &#34;services&#34;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
+| [outputs_location](variables.tf#L102) | Path where providers, tfvars files, and lists for the following stages are written. Leave empty to disable. | <code>string</code> |  | <code>null</code> |  |
+| [project_services](variables.tf#L114) | List of core services enabled on all projects. | <code>list&#40;string&#41;</code> |  | <code title="&#91;&#10;  &#34;cloudresourcemanager.googleapis.com&#34;,&#10;  &#34;iam.googleapis.com&#34;,&#10;  &#34;serviceusage.googleapis.com&#34;,&#10;  &#34;stackdriver.googleapis.com&#34;&#10;&#93;">&#91;&#8230;&#93;</code> |  |
+| [region](variables.tf#L125) | Region used for regional resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |  |
 
 ## Outputs
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [bigquery_datasets](outputs.tf#L35) | BigQuery datasets. |  |  |
-| [demo_commands](outputs.tf#L65) | Demo commands. |  |  |
-| [gcs_buckets](outputs.tf#L40) | GCS buckets. |  |  |
-| [kms_keys](outputs.tf#L45) | Cloud MKS keys. |  |  |
-| [projects](outputs.tf#L50) | GCP Projects informations. |  |  |
-| [vpc_network](outputs.tf#L55) | VPC network. |  |  |
-| [vpc_subnet](outputs.tf#L60) | VPC subnetworks. |  |  |
+| [bigquery_datasets](outputs.tf#L28) | BigQuery datasets. |  |  |
+| [demo_commands](outputs.tf#L58) | Demo commands. |  |  |
+| [gcs_buckets](outputs.tf#L33) | GCS buckets. |  |  |
+| [kms_keys](outputs.tf#L38) | Cloud MKS keys. |  |  |
+| [projects](outputs.tf#L43) | GCP Projects informations. |  |  |
+| [vpc_network](outputs.tf#L48) | VPC network. |  |  |
+| [vpc_subnet](outputs.tf#L53) | VPC subnetworks. |  |  |
 
 <!-- END TFDOC -->
