@@ -30,6 +30,7 @@ from airflow.providers.google.cloud.operators.bigquery import  BigQueryInsertJob
 # --------------------------------------------------------------------------------
 # Set variables
 # ------------------------------------------------------------
+BQ_LOCATION = os.environ.get("BQ_LOCATION")
 DTL_L0_PRJ = os.environ.get("DTL_L0_PRJ")
 DTL_L0_BQ_DATASET = os.environ.get("DTL_L0_BQ_DATASET")
 DTL_L0_GCS = os.environ.get("DTL_L0_GCS")
@@ -61,7 +62,7 @@ TRF_NET_SUBNET = os.environ.get("TRF_NET_SUBNET")
 TRF_SA_DF = os.environ.get("TRF_SA_DF")
 TRF_SA_BQ = os.environ.get("TRF_SA_BQ")
 DF_ZONE = os.environ.get("GCP_REGION") + "-b"
-DF_REGION = BQ_REGION = os.environ.get("GCP_REGION")
+DF_REGION = os.environ.get("GCP_REGION")
 
 # --------------------------------------------------------------------------------
 # Set default arguments
@@ -141,7 +142,7 @@ with models.DAG(
     task_id='bq_join_customer_purchase',
     gcp_conn_id='bigquery_default',
     project_id=TRF_PRJ,
-    location=BQ_REGION,
+    location=BQ_LOCATION,
     configuration={
       'jobType':'QUERY',
       'query':{
@@ -172,7 +173,7 @@ with models.DAG(
     task_id='bq_l2_customer_purchase',
     gcp_conn_id='bigquery_default',
     project_id=TRF_PRJ,
-    location=BQ_REGION,
+    location=BQ_LOCATION,
     configuration={
       'jobType':'QUERY',
       'query':{

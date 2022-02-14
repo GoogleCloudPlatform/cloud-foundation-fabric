@@ -40,9 +40,6 @@ module "transf-project" {
     ]
   }
   iam = {
-    "roles/bigquery.dataViewer" = [
-      module.orch-sa-cmp-0.iam_email
-    ]
     "roles/bigquery.jobUser" = [
       module.transf-sa-bq-0.iam_email,
     ]
@@ -54,7 +51,6 @@ module "transf-project" {
     ]
     "roles/storage.objectAdmin" = [
       module.transf-sa-df-0.iam_email,
-      module.orch-sa-cmp-0.iam_email,
       "serviceAccount:${module.transf-project.service_accounts.robots.dataflow}"
     ]
   }
@@ -85,12 +81,11 @@ module "transf-project" {
 # Cloud Storage
 
 module "transf-sa-df-0" {
-  source     = "../../../modules/iam-service-account"
-  project_id = module.transf-project.project_id
-  prefix     = var.prefix
-  name       = "trf-df-0"
-  # TODO: descriptive name
-  display_name = "TODO"
+  source       = "../../../modules/iam-service-account"
+  project_id   = module.transf-project.project_id
+  prefix       = var.prefix
+  name         = "trf-df-0"
+  display_name = "Data platform Dataflow transformation service account"
   iam = {
     "roles/iam.serviceAccountTokenCreator" = [
       local.groups_iam.data-engineers,
@@ -107,20 +102,19 @@ module "transf-cs-df-0" {
   project_id     = module.transf-project.project_id
   prefix         = var.prefix
   name           = "trf-cs-0"
-  location       = var.region
-  storage_class  = "REGIONAL"
+  location       = var.location
+  storage_class  = "MULTI_REGIONAL"
   encryption_key = try(local.service_encryption_keys.storage, null)
 }
 
 # BigQuery
 
 module "transf-sa-bq-0" {
-  source     = "../../../modules/iam-service-account"
-  project_id = module.transf-project.project_id
-  prefix     = var.prefix
-  name       = "trf-bq-0"
-  # TODO: descriptive name
-  display_name = "TODO"
+  source       = "../../../modules/iam-service-account"
+  project_id   = module.transf-project.project_id
+  prefix       = var.prefix
+  name         = "trf-bq-0"
+  display_name = "Data platform BigQuery transformation service account"
   iam = {
     "roles/iam.serviceAccountTokenCreator" = [
       local.groups_iam.data-engineers,

@@ -46,10 +46,10 @@ module "common-project" {
 
 # module "cmn-kms-0" {
 #   source     = "../../../modules/kms"
-#   project_id = module.cmn-prj.project_id
+#   project_id = module.common-project.project_id
 #   keyring = {
 #     name     = "${var.prefix}-kr-global",
-#     location = var.location_config.region
+#     location = "global"
 #   }
 #   keys = {
 #     pubsub = null
@@ -58,10 +58,10 @@ module "common-project" {
 
 # module "cmn-kms-1" {
 #   source     = "../../../modules/kms"
-#   project_id = module.cmn-prj.project_id
+#   project_id = module.common-project.project_id
 #   keyring = {
 #     name     = "${var.prefix}-kr-mregional",
-#     location = var.location_config.region
+#     location = var.location
 #   }
 #   keys = {
 #     bq      = null
@@ -74,7 +74,7 @@ module "common-project" {
 #   project_id = module.cmn-prj.project_id
 #   keyring = {
 #     name     = "${var.prefix}-kr-regional",
-#     location = var.location_config.region
+#     location = var.region
 #   }
 #   keys = {
 #     composer = null

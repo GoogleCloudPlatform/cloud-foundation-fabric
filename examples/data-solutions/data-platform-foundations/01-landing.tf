@@ -31,16 +31,15 @@ module "land-project" {
       "roles/bigquery.dataEditor",
       "roles/pubsub.editor",
       "roles/storage.admin",
-      "roles/storage.objectViewer",
     ]
   }
   iam = {
-    "roles/bigquery.dataEditor"   = [module.land-sa-bq-0.iam_email]
-    "roles/bigquery.dataViewer"   = local.land_orch_service_accounts
-    "roles/bigquery.jobUser"      = [module.orch-sa-cmp-0.iam_email]
-    "roles/bigquery.user"         = [module.load-sa-df-0.iam_email]
-    "roles/pubsub.publisher"      = [module.land-sa-ps-0.iam_email]
-    "roles/pubsub.subscriber"     = local.land_orch_service_accounts
+    "roles/bigquery.dataEditor" = [module.land-sa-bq-0.iam_email]
+    "roles/bigquery.user"       = [module.load-sa-df-0.iam_email]
+    "roles/pubsub.publisher"    = [module.land-sa-ps-0.iam_email]
+    "roles/pubsub.subscriber" = concat(
+      local.land_orch_service_accounts, [module.load-sa-df-0.iam_email]
+    )
     "roles/storage.objectAdmin"   = [module.load-sa-df-0.iam_email]
     "roles/storage.objectCreator" = [module.land-sa-cs-0.iam_email]
     "roles/storage.objectViewer"  = [module.orch-sa-cmp-0.iam_email]
@@ -65,12 +64,11 @@ module "land-project" {
 # Cloud Storage
 
 module "land-sa-cs-0" {
-  source     = "../../../modules/iam-service-account"
-  project_id = module.land-project.project_id
-  prefix     = var.prefix
-  name       = "lnd-cs-0"
-  # TODO: descriptive name
-  display_name = "TODO"
+  source       = "../../../modules/iam-service-account"
+  project_id   = module.land-project.project_id
+  prefix       = var.prefix
+  name         = "lnd-cs-0"
+  display_name = "Data platform GCS landing service account."
   iam = {
     "roles/iam.serviceAccountTokenCreator" = [
       local.groups_iam.data-engineers
@@ -83,8 +81,8 @@ module "land-cs-0" {
   project_id     = module.land-project.project_id
   prefix         = var.prefix
   name           = "lnd-cs-0"
-  location       = var.region
-  storage_class  = "REGIONAL"
+  location       = var.location
+  storage_class  = "MULTI_REGIONAL"
   encryption_key = try(local.service_encryption_keys.storage, null)
   force_destroy  = var.data_force_destroy
   # retention_policy = {
@@ -96,12 +94,11 @@ module "land-cs-0" {
 # PubSub
 
 module "land-sa-ps-0" {
-  source     = "../../../modules/iam-service-account"
-  project_id = module.land-project.project_id
-  prefix     = var.prefix
-  name       = "lnd-ps-0"
-  # TODO: descriptive name
-  display_name = "TODO"
+  source       = "../../../modules/iam-service-account"
+  project_id   = module.land-project.project_id
+  prefix       = var.prefix
+  name         = "lnd-ps-0"
+  display_name = "Data platform PubSub landing service account"
   iam = {
     "roles/iam.serviceAccountTokenCreator" = [
       local.groups_iam.data-engineers
@@ -119,12 +116,11 @@ module "land-ps-0" {
 # BigQuery
 
 module "land-sa-bq-0" {
-  source     = "../../../modules/iam-service-account"
-  project_id = module.land-project.project_id
-  prefix     = var.prefix
-  name       = "lnd-bq-0"
-  # TODO: descriptive name
-  display_name = "TODO"
+  source       = "../../../modules/iam-service-account"
+  project_id   = module.land-project.project_id
+  prefix       = var.prefix
+  name         = "lnd-bq-0"
+  display_name = "Data platform BigQuery landing service account"
   iam = {
     "roles/iam.serviceAccountTokenCreator" = [local.groups_iam.data-engineers]
   }
@@ -134,6 +130,6 @@ module "land-bq-0" {
   source         = "../../../modules/bigquery-dataset"
   project_id     = module.land-project.project_id
   id             = "${replace(var.prefix, "-", "_")}lnd_bq_0"
-  location       = var.region
+  location       = var.location
   encryption_key = try(local.service_encryption_keys.bq, null)
 }

@@ -54,13 +54,6 @@ module "load-project" {
     ]
     "roles/dataflow.worker"     = [module.load-sa-df-0.iam_email]
     "roles/storage.objectAdmin" = local.load_service_accounts
-    # TODO: these are needed on the shared VPC?
-    # "roles/compute.serviceAgent" = [
-    #   "serviceAccount:${module.load-project.service_accounts.robots.compute}"
-    # ]
-    # "roles/dataflow.serviceAgent" = [
-    #   "serviceAccount:${module.load-project.service_accounts.robots.dataflow}"
-    # ]
   }
   services = concat(var.project_services, [
     "bigquery.googleapis.com",
@@ -84,19 +77,15 @@ module "load-project" {
     attach               = true
     host_project         = local.shared_vpc_project
     service_identity_iam = {}
-    # service_identity_iam = {
-    #   "compute.networkUser" = ["dataflow"]
-    # }
   }
 }
 
 module "load-sa-df-0" {
-  source     = "../../../modules/iam-service-account"
-  project_id = module.load-project.project_id
-  prefix     = var.prefix
-  name       = "load-df-0"
-  # TODO: descriptive name
-  display_name = "TODO"
+  source       = "../../../modules/iam-service-account"
+  project_id   = module.load-project.project_id
+  prefix       = var.prefix
+  name         = "load-df-0"
+  display_name = "Data platform Dataflow load service account"
   iam = {
     "roles/iam.serviceAccountTokenCreator" = [local.groups_iam.data-engineers]
     "roles/iam.serviceAccountUser"         = [module.orch-sa-cmp-0.iam_email]
@@ -108,8 +97,8 @@ module "load-cs-df-0" {
   project_id     = module.load-project.project_id
   prefix         = var.prefix
   name           = "load-cs-0"
-  storage_class  = "REGIONAL"
-  location       = var.region
+  location       = var.location
+  storage_class  = "MULTI_REGIONAL"
   encryption_key = try(local.service_encryption_keys.storage, null)
 }
 

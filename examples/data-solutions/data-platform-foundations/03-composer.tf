@@ -15,12 +15,11 @@
 # tfdoc:file:description Orchestration Cloud Composer definition.
 
 module "orch-sa-cmp-0" {
-  source     = "../../../modules/iam-service-account"
-  project_id = module.orch-project.project_id
-  prefix     = var.prefix
-  name       = "orc-cmp-0"
-  # TODO: descriptive name
-  display_name = "TODO"
+  source       = "../../../modules/iam-service-account"
+  project_id   = module.orch-project.project_id
+  prefix       = var.prefix
+  name         = "orc-cmp-0"
+  display_name = "Data platform Composer service account"
   iam = {
     "roles/iam.serviceAccountTokenCreator" = [local.groups_iam.data-engineers]
     "roles/iam.serviceAccountUser"         = [module.orch-sa-cmp-0.iam_email]
@@ -54,6 +53,7 @@ resource "google_composer_environment" "orch-cmp-0" {
       image_version = var.composer_config.airflow_version
       env_variables = merge(
         var.composer_config.env_variables, {
+          BQ_LOCATION        = var.location
           DTL_L0_PRJ         = module.lake-0-project.project_id
           DTL_L0_BQ_DATASET  = module.lake-0-bq-0.dataset_id
           DTL_L0_GCS         = module.lake-0-cs-0.url
