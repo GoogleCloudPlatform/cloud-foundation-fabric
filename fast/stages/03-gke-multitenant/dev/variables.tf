@@ -77,7 +77,6 @@ variable "clusters" {
       pods         = string
       services     = string
       subnet       = string
-      vpc          = string
     })
     overrides = object({
       cloudrun_config             = bool
@@ -154,6 +153,13 @@ variable "nodepools" {
 variable "prefix" {
   description = "Prefix used for resources that need unique names."
   type        = string
+}
+
+variable "shared_vpc_self_link" {
+  # tfdoc:variable:source 02-networking
+  description = "Self link for the shared VPC."
+  type        = string
+  default     = null
 }
 
 variable "vpc_host_project" {
