@@ -89,5 +89,5 @@ module "landing-nat-ew1" {
   router_create  = true
   router_name    = "prod-nat-ew1"
   router_network = module.landing-vpc.name
-  router_asn     = 65530
+  router_asn     = 4200001024
 }
