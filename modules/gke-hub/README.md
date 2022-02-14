@@ -6,7 +6,8 @@ The given list of clusters will be registered inside the Hub and all the configu
 ## Example usage
 
 ```hcl
-hub_config = {
+locals {
+  hub_config = {
     clusters = [
       { name = "cluster-1", location = "europe-west1" },
     ]
@@ -18,6 +19,7 @@ hub_config = {
       exemptable_namespaces   = ["config-management-monitoring", "config-management-system"]
     }
   }
+}
 }
 
 module "gke-hub-configuration" {
