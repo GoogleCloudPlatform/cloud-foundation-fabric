@@ -20,16 +20,15 @@ locals {
   # used here for convenience, in organization.tf members are explicit
   billing_ext_users = concat(
     [
-      module.branch-dp-dev-sa.iam_email,
-      module.branch-dp-prod-sa.iam_email,
       module.branch-network-sa.iam_email,
       module.branch-security-sa.iam_email,
     ],
+    local.branch_dataplatform_sa_iam_emails,
     # enable if individual teams can create their own projects
     # [
     #   for k, v in module.branch-teams-team-sa : v.iam_email
     # ],
-    local.branch_teams_pf_sa_iam_emails
+    local.branch_teams_pf_sa_iam_emails,
   )
 }
 

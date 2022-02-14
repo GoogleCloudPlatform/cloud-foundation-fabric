@@ -69,7 +69,6 @@ locals {
         networking-prod = module.branch-network-prod-folder.id
       }
       project_factory_sa = local._project_factory_sas
-      data_platform_sa   = local._data_platform_sas
     })
     "02-security" = jsonencode({
       folder_id = module.branch-security-folder.id
@@ -78,12 +77,10 @@ locals {
       }
     })
     "03-data-platform-dev" = jsonencode({
-      folder_id        = module.branch-dp-dev-folder.id
-      date_platform_sa = module.branch-dp-dev-sa.iam_email
+      folder_id = module.branch-dp-dev-folder.id
     })
     "03-data-platform-prod" = jsonencode({
-      folder_id        = module.branch-dp-dev-folder.id
-      date_platform_sa = module.branch-dp-dev-sa.iam_email
+      folder_id = module.branch-dp-dev-folder.id
     })
   }
 }

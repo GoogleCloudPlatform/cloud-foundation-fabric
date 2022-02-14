@@ -21,28 +21,8 @@
 module "branch-dp-folder" {
   source = "../../../modules/folder"
   parent = "organizations/${var.organization.id}"
-  name   = "Dataplatform"
+  name   = "Data Platform"
 }
-
-#TODO check if I can delete those modules, Would you create a data-platform TF to run dev/prod?
-# module "branch-dp-sa" {
-#   source      = "../../../modules/iam-service-account"
-#   project_id  = var.automation_project_id
-#   name        = "resman-dp-0"
-#   description = "Terraform Data Platform production service account."
-#   prefix      = local.prefixes.prod
-# }
-
-# module "branch-dp-gcs" {
-#   source     = "../../../modules/gcs"
-#   project_id = var.automation_project_id
-#   name       = "dp-0"
-#   prefix     = local.prefixes.prod
-#   versioning = true
-#   iam = {
-#     "roles/storage.objectAdmin" = [module.branch-dp-sa.iam_email]
-#   }
-# }
 
 # environment: development folder
 
@@ -50,7 +30,7 @@ module "branch-dp-dev-folder" {
   source = "../../../modules/folder"
   parent = module.branch-dp-folder.id
   # naming: environment descriptive name
-  name = "Data Platform - Development"
+  name = "Development"
   # environment-wide human permissions on the whole Data Platform environment
   group_iam = {}
   iam = {
@@ -67,23 +47,26 @@ module "branch-dp-dev-folder" {
     "roles/resourcemanager.projectCreator" = [
       module.branch-dp-dev-sa.iam_email
     ]
+    "roles/compute.xpnAdmin" = [
+      module.branch-teams-dev-projectfactory-sa.iam_email
+    ]
   }
 }
 
 module "branch-dp-dev-sa" {
   source     = "../../../modules/iam-service-account"
   project_id = var.automation_project_id
-  name       = "resman-dp-dev-0"
+  name       = "dev-resman-dp-0"
   # naming: environment in description
   description = "Terraform Data Platform development service account."
-  prefix      = local.prefixes.dev
+  prefix      = var.prefix
 }
 
 module "branch-dp-dev-gcs" {
   source     = "../../../modules/gcs"
   project_id = var.automation_project_id
-  name       = "resman-dp-0"
-  prefix     = local.prefixes.dev
+  name       = "dev-resman-dp-0"
+  prefix     = var.prefix
   versioning = true
   iam = {
     "roles/storage.objectAdmin" = [module.branch-dp-dev-sa.iam_email]
@@ -96,7 +79,7 @@ module "branch-dp-prod-folder" {
   source = "../../../modules/folder"
   parent = module.branch-dp-folder.id
   # naming: environment descriptive name
-  name = "Data Platform - Production"
+  name = "Production"
   # environment-wide human permissions on the whole Data Platform environment
   group_iam = {}
   iam = {
@@ -113,23 +96,26 @@ module "branch-dp-prod-folder" {
     "roles/resourcemanager.projectCreator" = [
       module.branch-dp-prod-sa.iam_email
     ]
+    "roles/compute.xpnAdmin" = [
+      module.branch-teams-dev-projectfactory-sa.iam_email
+    ]
   }
 }
 
 module "branch-dp-prod-sa" {
   source     = "../../../modules/iam-service-account"
   project_id = var.automation_project_id
-  name       = "resman-dp-0"
+  name       = "prod-resman-dp-0"
   # naming: environment in description
   description = "Terraform Data Platform production service account."
-  prefix      = local.prefixes.prod
+  prefix      = var.prefix
 }
 
 module "branch-dp-prod-gcs" {
   source     = "../../../modules/gcs"
   project_id = var.automation_project_id
-  name       = "resman-dp-0"
-  prefix     = local.prefixes.prod
+  name       = "prod-resman-dp-0"
+  prefix     = var.prefix
   versioning = true
   iam = {
     "roles/storage.objectAdmin" = [module.branch-dp-prod-sa.iam_email]
