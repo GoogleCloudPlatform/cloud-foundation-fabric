@@ -8,6 +8,8 @@ The Data Platform builds on top of your foundations to create and set up project
 
 ## Design overview and choices
 
+> A more comprehensive description of the Data Platform architecture and approach can be found in the [Data Platform module README](../../../../examples/data-solutions/data-platform-foundations/). The module is wrapped and configured here to leverage the FAST flow.
+
 The Data Platform creates projects in a well-defined context, usually an ad-hoc folder  managed by the resource management setup. Resources are organized by environment within this folder.
 
 Across different data layers environment-specific projects are created to separate resources and IAM roles.
@@ -23,8 +25,6 @@ The Data Platform manages:
 - project-level organization policy definitions
 - billing setup (billing account attachment and budget configuration)
 - data-related resources in the managed projects
-
-More details on this architecture and approach are described in the [Data Platform module](../../../../examples/data-solutions/data-platform-foundations/), which is lightly wrapped and leveraged here.
 
 ### User groups
 
