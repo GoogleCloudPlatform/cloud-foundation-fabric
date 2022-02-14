@@ -44,7 +44,9 @@ locals {
   }
 }
 
-# Add each clusters to the GKE Hub by creating membership
+#############################################################################
+# Add each clusters to the GKE Hub by creating the membership/s
+#############################################################################
 resource "google_gke_hub_membership" "membership" {
   provider      = google-beta
   for_each      = { for i, v in local.hub_config.clusters : i => v }
@@ -57,7 +59,9 @@ resource "google_gke_hub_membership" "membership" {
   }
 }
 
-#Enable configmanagement feature on the clusters registered into the hub
+#############################################################################
+# Enable configmanagement feature on the cluster/s registered into the hub
+#############################################################################
 resource "google_gke_hub_feature" "feature" {
   count    = local.hub_config.config_sync == null ? 0 : 1
   provider = google-beta
@@ -66,8 +70,10 @@ resource "google_gke_hub_feature" "feature" {
   location = "global"
 }
 
+#############################################################################
 # Create a dedicated SA to be used by ConfigSync to pull code from the repo, 
 # it will be used via Workload Identity, created if none is provided
+#############################################################################
 resource "google_service_account" "gke-config-management-wid-sa" {
   count        = local.hub_config.config_sync.workload_identity_sa == null ? 1 : 0
   project      = var.project_id
@@ -88,8 +94,11 @@ resource "google_service_account_iam_binding" "gke-config-management-wid-sa-role
     google_service_account.gke-config-management-wid-sa
   ]
 }
+####################################EOF######################################
 
+#############################################################################
 # Create a source repository if none is provided
+#############################################################################
 resource "google_sourcerepo_repository" "default" {
   count   = local.hub_config.config_sync.repository_url == null ? 1 : 0
   project = var.project_id
@@ -109,9 +118,12 @@ resource "google_sourcerepo_repository_iam_binding" "default" {
     google_sourcerepo_repository.default
   ]
 }
+####################################EOF######################################
 
+#############################################################################
 # Configure configmanagement feature for each hub member
 # https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/gke_hub_feature_membership
+#############################################################################
 resource "google_gke_hub_feature_membership" "feature_member" {
   provider = google-beta
   project  = var.project_id
@@ -142,3 +154,4 @@ resource "google_gke_hub_feature_membership" "feature_member" {
     }
   }
 }
+####################################EOF######################################
