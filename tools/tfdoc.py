@@ -13,7 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 '''Generate tables for Terraform root module files, outputs and variables.
 
 This tool generates nicely formatted Markdown tables from Terraform source
@@ -48,12 +47,9 @@ import urllib.parse
 
 import click
 
-
 __version__ = '2.1.0'
 
-
 # TODO(ludomagno): decide if we want to support variables*.tf and outputs*.tf
-
 
 FILE_DESC_DEFAULTS = {
     'main.tf': 'Module-level locals and resources.',
@@ -63,11 +59,8 @@ FILE_DESC_DEFAULTS = {
     'versions.tf': 'Version pins.',
 }
 FILE_RE_MODULES = re.compile(
-    r'(?sm)module\s*"[^"]+"\s*\{[^\}]*?source\s*=\s*"([^"]+)"'
-)
-FILE_RE_RESOURCES = re.compile(
-    r'(?sm)resource\s*"([^"]+)"'
-)
+    r'(?sm)module\s*"[^"]+"\s*\{[^\}]*?source\s*=\s*"([^"]+)"')
+FILE_RE_RESOURCES = re.compile(r'(?sm)resource\s*"([^"]+)"')
 HEREDOC_RE = re.compile(r'(?sm)^<<\-?END(\s*.*?)\s*END$')
 MARK_BEGIN = '<!-- BEGIN TFDOC -->'
 MARK_END = '<!-- END TFDOC -->'
@@ -88,8 +81,7 @@ OUT_RE = re.compile(r'''(?smx)
 OUT_TEMPLATE = ('description', 'value', 'sensitive')
 TAG_RE = re.compile(r'(?sm)^\s*#\stfdoc:([^:]+:\S+)\s+(.*?)\s*$')
 UNESCAPED = string.digits + string.ascii_letters + ' .,;:_-'
-VAR_ENUM = enum.Enum(
-    'V', 'OPEN ATTR ATTR_DATA SKIP CLOSE COMMENT TXT')
+VAR_ENUM = enum.Enum('V', 'OPEN ATTR ATTR_DATA SKIP CLOSE COMMENT TXT')
 VAR_RE = re.compile(r'''(?smx)
     # variable open
     (?:^\s*variable\s*"([^"]+)"\s*\{\s*$) |
@@ -107,13 +99,11 @@ VAR_RE = re.compile(r'''(?smx)
 VAR_RE_TYPE = re.compile(r'([\(\{\}\)])')
 VAR_TEMPLATE = ('default', 'description', 'type', 'nullable')
 
-
 File = collections.namedtuple('File', 'name description modules resources')
 Output = collections.namedtuple('Output',
                                 'name description sensitive consumers line')
 Variable = collections.namedtuple(
     'Variable', 'name description type default required nullable source line')
-
 
 # parsing functions
 
@@ -144,7 +134,7 @@ def _parse(body, enum=VAR_ENUM, re=VAR_RE, template=VAR_TEMPLATE):
     elif token == enum.ATTR_DATA:
       if not item:
         continue
-      context = m.group(m.lastindex-1)
+      context = m.group(m.lastindex - 1)
       item[context].append(data)
     elif token == enum.SKIP:
       context = token
@@ -170,12 +160,11 @@ def parse_files(basepath, exclude_files=None):
     except (IOError, OSError) as e:
       raise SystemExit(f'Cannot read file {name}: {e}')
     tags = _extract_tags(body)
-    description = tags.get(
-        'file:description', FILE_DESC_DEFAULTS.get(shortname))
+    description = tags.get('file:description',
+                           FILE_DESC_DEFAULTS.get(shortname))
     modules = set(
         os.path.basename(urllib.parse.urlparse(m).path)
-        for m in FILE_RE_MODULES.findall(body)
-    )
+        for m in FILE_RE_MODULES.findall(body))
     resources = set(FILE_RE_RESOURCES.findall(body))
     yield File(shortname, description, modules, resources)
 
@@ -188,11 +177,11 @@ def parse_outputs(basepath):
   except (IOError, OSError) as e:
     raise SystemExit(f'No outputs file in {basepath}.')
   for item in _parse(body, enum=OUT_ENUM, re=OUT_RE, template=OUT_TEMPLATE):
-    yield Output(name=item['name'],
-                 description=''.join(item['description']),
-                 sensitive=item['sensitive'] != [],
-                 consumers=item['tags'].get('output:consumers', ''),
-                 line=item['line'])
+    description = ''.join(item['description'])
+    sensitive = item['sensitive'] != []
+    consumers = item['tags'].get('output:consumers', '')
+    yield Output(name=item['name'], description=description,
+                 sensitive=sensitive, consumers=consumers, line=item['line'])
 
 
 def parse_variables(basepath):
@@ -203,20 +192,18 @@ def parse_variables(basepath):
   except (IOError, OSError) as e:
     raise SystemExit(f'No variables file in {basepath}.')
   for item in _parse(body):
+    description = ''.join(item['description'])
+    vtype = '\n'.join(item['type'])
     default = HEREDOC_RE.sub(r'\1', '\n'.join(item['default']))
     required = not item['default']
-    vtype = '\n'.join(item['type'])
     nullable = item.get('nullable') != ['false']
+    source = item['tags'].get('variable:source', '')
     if not required and default != 'null' and vtype == 'string':
       default = f'"{default}"'
-    yield Variable(name=item['name'],
-                   description=''.join(item['description']),
-                   type=vtype,
-                   default=default,
-                   required=required,
-                   source=item['tags'].get('variable:source', ''),
-                   line=item['line'],
-                   nullable=nullable)
+
+    yield Variable(name=item['name'], description=description, type=vtype,
+                   default=default, required=required, source=source,
+                   line=item['line'], nullable=nullable)
 
 
 # formatting functions
@@ -251,25 +238,19 @@ def format_files(items):
   num_resources = sum(len(i.resources) for i in items)
   yield '| name | description |{}{}'.format(
       ' modules |' if num_modules else '',
-      ' resources |' if num_resources else ''
-  )
-  yield '|---|---|{}{}'.format(
-      '---|' if num_modules else '',
-      '---|' if num_resources else ''
-  )
+      ' resources |' if num_resources else '')
+  yield '|---|---|{}{}'.format('---|' if num_modules else '',
+                               '---|' if num_resources else '')
   for i in items:
     modules = resources = ''
     if i.modules:
-      modules = '<code>%s</code>' % '</code> · <code>'.join(
-          sorted(i.modules))
+      modules = '<code>%s</code>' % '</code> · <code>'.join(sorted(i.modules))
     if i.resources:
       resources = '<code>%s</code>' % '</code> · <code>'.join(
           sorted(i.resources))
     yield '| [{}](./{}) | {} |{}{}'.format(
-        i.name, i.name, i.description,
-        f' {modules} |' if num_modules else '',
-        f' {resources} |' if num_resources else ''
-    )
+        i.name, i.name, i.description, f' {modules} |' if num_modules else '',
+        f' {resources} |' if num_resources else '')
 
 
 def format_outputs(items, show_extra=True):
@@ -277,17 +258,13 @@ def format_outputs(items, show_extra=True):
   if not items:
     return
   items.sort(key=lambda i: i.name)
-  yield '| name | description | sensitive |' + (
-      ' consumers |' if show_extra else ''
-  )
-  yield '|---|---|:---:|' + (
-      '---|' if show_extra else ''
-  )
+  yield '| name | description | sensitive |' + (' consumers |'
+                                                if show_extra else '')
+  yield '|---|---|:---:|' + ('---|' if show_extra else '')
   for i in items:
     consumers = i.consumers or ''
     if consumers:
-      consumers = '<code>%s</code>' % '</code> · <code>'.join(
-          consumers.split())
+      consumers = '<code>%s</code>' % '</code> · <code>'.join(consumers.split())
     sensitive = '✓' if i.sensitive else ''
     format = f'| [{i.name}](outputs.tf#L{i.line}) | {i.description or ""} | {sensitive} |'
     format += f' {consumers} |' if show_extra else ''
@@ -301,11 +278,8 @@ def format_variables(items, show_extra=True):
   items.sort(key=lambda i: i.name)
   items.sort(key=lambda i: i.required, reverse=True)
   yield '| name | description | type | required | default |' + (
-      ' producer |' if show_extra else ''
-  )
-  yield '|---|---|:---:|:---:|:---:|' + (
-      ':---:|' if show_extra else ''
-  )
+      ' producer |' if show_extra else '')
+  yield '|---|---|:---:|:---:|:---:|' + (':---:|' if show_extra else '')
   for i in items:
     vars = {
         'default': f'<code>{_escape(i.default)}</code>' if i.default else '',
@@ -326,8 +300,7 @@ def format_variables(items, show_extra=True):
         vars[k] = f'<code title="{_escape(title)}">{_escape(value)}</code>'
     format = (
         f'| [{i.name}](variables.tf#L{i.line}) | {i.description or ""} | {vars["type"]} '
-        f'| {vars["required"]} | {vars["default"]} |'
-    )
+        f'| {vars["required"]} | {vars["default"]} |')
     format += f' {vars["source"]} |' if show_extra else ''
     yield format
 
@@ -396,7 +369,7 @@ def replace_doc(readme_path, doc, readme=None):
         MARK_BEGIN,
         doc,
         MARK_END,
-        readme[result['end']:].lstrip()
+        readme[result['end']:].lstrip(),
     ]))
   except (IOError, OSError) as e:
     raise SystemExit(f'Error replacing README {readme_path}: {e}')
