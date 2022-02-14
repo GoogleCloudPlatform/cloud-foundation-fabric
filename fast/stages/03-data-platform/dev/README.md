@@ -1,6 +1,6 @@
 # Data Platform
 
-The Data Platform (DP) builds on top of your foundations to create and set up projects (and related resources) to be used for your data platform.
+The Data Platform builds on top of your foundations to create and set up projects (and related resources) to be used for your data platform.
 
 <p align="center">
   <img src="diagram.png" alt="Data Platform diagram">
@@ -8,57 +8,69 @@ The Data Platform (DP) builds on top of your foundations to create and set up pr
 
 ## Design overview and choices
 
-The DP creates projects in a well-defined context, according to your resource management structure. Within the DP folder, resources are organized by environment.
+The Data Platform creates projects in a well-defined context, usually an ad-hoc folder  managed by the resource management setup. Resources are organized by environment within this folder.
 
-Projects for each environment across different data layer are created to separate Service Account and Group roles. Roles are assigned at project level.
+Across different data layers environment-specific projects are created to separate resources and IAM roles.
 
-The Data Platform takes care of the following activities:
+The Data Platform manages:
 
-- Project creation
+- project creation
 - API/Services enablement
-- Service accounts creation
-- IAM roles assignment for groups and service accounts
+- service accounts creation
+- IAM role assignment for groups and service accounts
 - KMS keys roles assignment
-- Shared VPC attachment and subnets IAM binding
-- Project-level org policies definition
-- Billing setup (billing account attachment and budget configuration)
-- Resource on each project to handle your data platform.
+- Shared VPC attachment and subnet IAM binding
+- project-level organization policy definitions
+- billing setup (billing account attachment and budget configuration)
+- data-related resources in the managed projects
 
-You can find more details on the DP implemented on the DP [README](../../../../examples/data-solutions/data-platform-foundations/).
+More details on this architecture and approach are described in the [Data Platform module](../../../../examples/data-solutions/data-platform-foundations/), which is lightly wrapped and leveraged here.
 
-### User Groups
+### User groups
 
-The DP rely on user groups to assign roles. They provide a stable frame of reference that allows decoupling the final set of permissions for each group, from the stage where entities and resources are created and their IAM bindings defined. [Here](../../../../examples/data-solutions/data-platform-foundations/#groups) you can find more detail on  users groups used by the DP.
+As per our GCP best practices the Data Platform relies on user groups to assign roles to human identities. These are the specific groups used by the Data Platform and their access patterns, from the [module documentation](../../../../examples/data-solutions/data-platform-foundations/#groups):
+
+- *Data Engineers* They handle and run the Data Hub, with read access to all resources in order to troubleshoot possible issues with pipelines. This team can also impersonate any service account.
+- *Data Analysts*. They perform analysis on datasets, with read access to the data lake L2 project, and BigQuery READ/WRITE access to the playground project.
+- *Data Security*:. They handle security configurations related to the Data Hub. This team has admin access to the common project to configure Cloud DLP templates or Data Catalog policy tags.
+
+|Group|Landing|Load|Transformation|Data Lake L0|Data Lake L1|Data Lake L2|Data Lake Playground|Orchestration|Common|
+|-|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
+|Data Engineers|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|
+|Data Analysts|-|-|-|-|-|`READ`|`READ`/`WRITE`|-|-|
+|Data Security|-|-|-|-|-|-|-|-|`ADMIN`|
 
 ### Network
 
-The DP rely on the shared VPC defined on the [`02-networking`](../../02-networking-vpn) stage.
+A Shared VPC is used here, either from one of the FAST networking stages (e.g. [hub and spoke via VPN](../../02-networking-vpn)) or from an external source.
 
 ### Encryption
 
-The DP may rely on Cloud KMS crypto keys created by the `[02-security](../../../02-security)` stage.
+Cloud KMS crypto keys are used here by default, wither from the [FAST security stage](../../../02-security) or from an external source.
 
 ## How to run this stage
 
-This stage is meant to be executed after "foundational stages" (i.e., stages [`00-bootstrap`](../../00-bootstrap), [`01-resman`](../../01-resman), [`02-networking`](../../02-networking-vpn) and [`02-security`](../../02-security)) have been run.
+This stage can be run in isolation by prviding the necessary variables, but it's really meant to be used as part of the FAST flow after the "foundational stages" ([`00-bootstrap`](../../00-bootstrap), [`01-resman`](../../01-resman), [`02-networking`](../../02-networking-vpn) and [`02-security`](../../02-security)).
 
-It's of course possible to run this stage in isolation, by making sure the architectural prerequisites are satisfied (e.g., networking), and that the Service Account running the stage is granted the roles/permissions below:
+When running in isolation, the following roles are needed on the principal used to apply Terraform:
 
-- One service account per environment, each with appropriate permissions
-  - at the organization level a custom role for networking operations including the following permissions
+- on the organization or network folder level
+  - `roles/xpnAdmin` or a custom role which includes the following permissions
     - `"compute.organizations.enableXpnResource"`,
     - `"compute.organizations.disableXpnResource"`,
     - `"compute.subnetworks.setIamPolicy"`,
-    - and role `"roles/orgpolicy.policyAdmin"`
-  - on each folder where projects are created
-    - `"roles/logging.admin"`
-    - `"roles/owner"`
-    - `"roles/resourcemanager.folderAdmin"`
-    - `"roles/resourcemanager.projectCreator"`
-  - on the host project for the Shared VPC
-    - `"roles/browser"`
-    - `"roles/compute.viewer"`
-- VPC Host projects and their subnets should exist when creating projects
+- on each folder where projects are created
+  - `"roles/logging.admin"`
+  - `"roles/owner"`
+  - `"roles/resourcemanager.folderAdmin"`
+  - `"roles/resourcemanager.projectCreator"`
+- on the host project for the Shared VPC
+  - `"roles/browser"`
+  - `"roles/compute.viewer"`
+- on the organization or billing account
+  - `roles/billing.admin`
+
+The VPC host project, VPC and subnets should already exist.
 
 ### Providers configuration
 
