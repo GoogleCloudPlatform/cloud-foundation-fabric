@@ -13,7 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 '''Check that boilerplate is present in relevant files.
 
 This tools offers a simple way of ensuring that the required boilerplate header
@@ -30,17 +29,12 @@ import os
 import re
 import sys
 
-
 _EXCLUDE_DIRS = ('.git', '.terraform')
 _EXCLUDE_RE = re.compile(r'# skip boilerplate check')
-_MATCH_FILES = (
-    'Dockerfile', '.py', '.sh', '.tf', '.yaml', '.yml'
-)
-_MATCH_STRING = (
-    r'^\s*[#\*]\sCopyright [0-9]{4} Google LLC$\s+[#\*]\s+'
-    r'[#\*]\sLicensed under the Apache License, Version 2.0 '
-    r'\(the "License"\);\s+'
-)
+_MATCH_FILES = ('Dockerfile', '.py', '.sh', '.tf', '.yaml', '.yml')
+_MATCH_STRING = (r'^\s*[#\*]\sCopyright [0-9]{4} Google LLC$\s+[#\*]\s+'
+                 r'[#\*]\sLicensed under the Apache License, Version 2.0 '
+                 r'\(the "License"\);\s+')
 _MATCH_RE = re.compile(_MATCH_STRING, re.M)
 
 
