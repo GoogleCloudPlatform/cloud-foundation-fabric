@@ -25,3 +25,4 @@ fast/stages/**/providers.tf
 fast/stages/**/terraform.tfvars
 fast/stages/**/terraform.tfvars.json
 fast/stages/**/terraform-*.auto.tfvars.json
+fast/stages/**/0*.auto.tfvars*
