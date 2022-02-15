@@ -15,7 +15,7 @@ essential_contacts: ["team-contacts@example.com"]
 
 # [opt] Labels set for all projects
 labels:
-  environment: prod
+  environment: dev
   department: accounting
   application: example-app
   foo: bar
