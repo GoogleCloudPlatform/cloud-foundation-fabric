@@ -38,7 +38,7 @@ locals {
 resource "local_file" "providers" {
   for_each        = var.outputs_location == null ? {} : local.providers
   file_permission = "0644"
-  filename        = "${pathexpand(var.outputs_location)}/${each.key}/providers.tf"
+  filename        = "${pathexpand(var.outputs_location)}/providers/${each.key}-providers.tf"
   content         = each.value
 }
 
