@@ -108,13 +108,13 @@ variable "project_id" {
   type        = string
 }
 
-variable "psn_ranges" {
+variable "psa_ranges" {
   description = "CIDR ranges used for Google services that support Private Service Networking."
   type        = map(string)
   default     = null
   validation {
     condition = alltrue([
-      for k, v in(var.psn_ranges == null ? {} : var.psn_ranges) :
+      for k, v in(var.psa_ranges == null ? {} : var.psa_ranges) :
       can(cidrnetmask(v))
     ])
     error_message = "Specify valid RFC1918 CIDR ranges for Private Service Networking."

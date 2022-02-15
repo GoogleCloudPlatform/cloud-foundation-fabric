@@ -138,7 +138,7 @@ module "vpc" {
       secondary_ip_range = null
     }
   ]
-  psn_ranges = {range-a = "10.10.0.0/16"}
+  psa_ranges = {range-a = "10.10.0.0/16"}
 }
 # tftest modules=1 resources=4
 ```
@@ -220,7 +220,7 @@ flow_logs:                        # enable, set to empty map to use defaults
 | [mtu](variables.tf#L80) | Maximum Transmission Unit in bytes. The minimum value for this field is 1460 and the maximum value is 1500 bytes. | <code></code> |  | <code>null</code> |
 | [peering_config](variables.tf#L90) | VPC peering configuration. | <code title="object&#40;&#123;&#10;  peer_vpc_self_link &#61; string&#10;  export_routes      &#61; bool&#10;  import_routes      &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [peering_create_remote_end](variables.tf#L100) | Skip creation of peering on the remote end when using peering_config. | <code>bool</code> |  | <code>true</code> |
-| [psn_ranges](variables.tf#L111) | CIDR ranges used for Google services that support Private Service Networking. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [psa_ranges](variables.tf#L111) | CIDR ranges used for Google services that support Private Service Networking. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 | [routes](variables.tf#L124) | Network routes, keyed by name. | <code title="map&#40;object&#40;&#123;&#10;  dest_range    &#61; string&#10;  priority      &#61; number&#10;  tags          &#61; list&#40;string&#41;&#10;  next_hop_type &#61; string &#35; gateway, instance, ip, vpn_tunnel, ilb&#10;  next_hop      &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [routing_mode](variables.tf#L136) | The network routing mode (default 'GLOBAL'). | <code>string</code> |  | <code>&#34;GLOBAL&#34;</code> |
 | [shared_vpc_host](variables.tf#L146) | Enable shared VPC for this project. | <code>bool</code> |  | <code>false</code> |
