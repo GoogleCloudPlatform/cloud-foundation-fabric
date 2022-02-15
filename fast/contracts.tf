@@ -47,9 +47,9 @@ variable "f_resman" {
 variable "f_networking" {
   description = "Data coming from the networking stage."
   type = object({
-    shared_vpcs       = map(string)
-    vpc_host_projects = map(string)
-    dns_zones         = map(string)
+    dns_zones     = map(string)
+    host_projects = map(string)
+    vpcs          = map(string)
   })
 }
 
