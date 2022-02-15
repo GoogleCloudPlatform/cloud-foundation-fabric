@@ -49,6 +49,7 @@ variable "f_networking" {
   type = object({
     dns_zones     = map(string)
     host_projects = map(string)
+    subnets       = map(string)
     vpcs          = map(string)
   })
 }
