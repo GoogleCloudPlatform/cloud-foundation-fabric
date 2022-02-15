@@ -323,7 +323,6 @@ Names used in internal references (e.g. `module.foo-prod.id`) are only used by T
 
 | name | description | modules | resources |
 |---|---|---|---|
-| [00-bootstrap-providers.tf](./00-bootstrap-providers.tf) | None |  |  |
 | [automation.tf](./automation.tf) | Automation project and resources. | <code>gcs</code> · <code>iam-service-account</code> · <code>project</code> |  |
 | [billing.tf](./billing.tf) | Billing export project and dataset. | <code>bigquery-dataset</code> · <code>organization</code> · <code>project</code> | <code>google_billing_account_iam_member</code> · <code>google_organization_iam_binding</code> |
 | [log-export.tf](./log-export.tf) | Audit log project and sink. | <code>bigquery-dataset</code> · <code>gcs</code> · <code>logging-bucket</code> · <code>project</code> · <code>pubsub</code> |  |

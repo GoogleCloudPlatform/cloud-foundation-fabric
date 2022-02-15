@@ -149,7 +149,6 @@ Due to its simplicity, this stage lends itself easily to customizations: adding 
 
 | name | description | modules | resources |
 |---|---|---|---|
-| [01-resman-providers.tf](./01-resman-providers.tf) | None |  |  |
 | [billing.tf](./billing.tf) | Billing resources for external billing use cases. | <code>organization</code> | <code>google_billing_account_iam_member</code> |
 | [branch-networking.tf](./branch-networking.tf) | Networking stage resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
 | [branch-sandbox.tf](./branch-sandbox.tf) | Sandbox stage resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
