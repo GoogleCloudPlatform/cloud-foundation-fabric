@@ -81,3 +81,14 @@ output "providers" {
   sensitive   = true
   value       = local.providers
 }
+
+# ready to use variable values for subsequent stages
+
+output "tfvars" {
+  description = "Terraform variable files for the following stages."
+  sensitive   = true
+  value = {
+    automation_project_id = module.automation-project.project_id
+    custom_roles          = local.custom_roles
+  }
+}
