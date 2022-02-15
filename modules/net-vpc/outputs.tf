@@ -27,7 +27,7 @@ output "name" {
     google_compute_network_peering.remote,
     google_compute_shared_vpc_host_project.shared_vpc_host,
     google_compute_shared_vpc_service_project.service_projects,
-    google_service_networking_connection.psn_connection
+    google_service_networking_connection.psa_connection
   ]
 }
 
@@ -39,7 +39,7 @@ output "network" {
     google_compute_network_peering.remote,
     google_compute_shared_vpc_host_project.shared_vpc_host,
     google_compute_shared_vpc_service_project.service_projects,
-    google_service_networking_connection.psn_connection
+    google_service_networking_connection.psa_connection
   ]
 }
 
@@ -52,7 +52,7 @@ output "project_id" {
     google_compute_network_peering.remote,
     google_compute_shared_vpc_host_project.shared_vpc_host,
     google_compute_shared_vpc_service_project.service_projects,
-    google_service_networking_connection.psn_connection
+    google_service_networking_connection.psa_connection
   ]
 }
 
@@ -64,7 +64,7 @@ output "self_link" {
     google_compute_network_peering.remote,
     google_compute_shared_vpc_host_project.shared_vpc_host,
     google_compute_shared_vpc_service_project.service_projects,
-    google_service_networking_connection.psn_connection
+    google_service_networking_connection.psa_connection
   ]
 }
 

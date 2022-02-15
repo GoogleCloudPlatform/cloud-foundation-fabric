@@ -78,11 +78,11 @@ locals {
     ? null
     : element(reverse(split("/", var.peering_config.peer_vpc_self_link)), 0)
   )
-  psn_ranges = {
-    for r in(var.psn_ranges == null ? [] : var.psn_ranges) : r => {
-      address       = split("/", r)[0]
-      name          = replace(split("/", r)[0], ".", "-")
-      prefix_length = split("/", r)[1]
+  psa_ranges = {
+    for k, v in coalesce(var.psa_ranges, {}) : k => {
+      address       = split("/", v)[0]
+      name          = k
+      prefix_length = split("/", v)[1]
     }
   }
   routes = {
@@ -328,10 +328,10 @@ resource "google_dns_policy" "default" {
   }
 }
 
-resource "google_compute_global_address" "psn_ranges" {
-  for_each      = local.psn_ranges
+resource "google_compute_global_address" "psa_ranges" {
+  for_each      = local.psa_ranges
   project       = var.project_id
-  name          = "${var.name}-psn-${each.value.name}"
+  name          = "${var.name}-psa-${each.key}"
   purpose       = "VPC_PEERING"
   address_type  = "INTERNAL"
   address       = each.value.address
@@ -339,11 +339,11 @@ resource "google_compute_global_address" "psn_ranges" {
   network       = local.network.id
 }
 
-resource "google_service_networking_connection" "psn_connection" {
-  for_each = toset(local.psn_ranges == {} ? [] : [""])
+resource "google_service_networking_connection" "psa_connection" {
+  for_each = toset(local.psa_ranges == {} ? [] : [""])
   network  = local.network.id
   service  = "servicenetworking.googleapis.com"
   reserved_peering_ranges = [
-    for k, v in google_compute_global_address.psn_ranges : v.name
+    for k, v in google_compute_global_address.psa_ranges : v.name
   ]
 }
