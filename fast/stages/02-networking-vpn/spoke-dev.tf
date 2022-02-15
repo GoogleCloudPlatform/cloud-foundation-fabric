@@ -18,7 +18,7 @@
 
 module "dev-spoke-project" {
   source          = "../../../modules/project"
-  billing_account = var.billing_account_id
+  billing_account = var.billing_account.id
   name            = "dev-net-spoke-0"
   parent          = var.folder_ids.networking-dev
   prefix          = var.prefix

@@ -41,31 +41,31 @@ locals {
       prefix                = var.prefix
     })
     "02-networking" = jsonencode({
-      billing_account_id = var.billing_account.id
-      custom_roles       = local._custom_roles
-      organization       = var.organization
-      prefix             = var.prefix
+      billing_account = var.billing_account
+      custom_roles    = local._custom_roles
+      organization    = var.organization
+      prefix          = var.prefix
     })
     "02-security" = jsonencode({
-      billing_account_id = var.billing_account.id
-      organization       = var.organization
-      prefix             = var.prefix
+      billing_account = var.billing_account
+      organization    = var.organization
+      prefix          = var.prefix
     })
     "03-gke-multitenant-dev" = jsonencode({
-      billing_account_id = var.billing_account.id
-      prefix             = var.prefix
+      billing_account = var.billing_account
+      prefix          = var.prefix
     })
     "03-gke-multitenant-prod" = jsonencode({
-      billing_account_id = var.billing_account.id
-      prefix             = var.prefix
+      billing_account = var.billing_account
+      prefix          = var.prefix
     })
     "03-project-factory-dev" = jsonencode({
-      billing_account_id = var.billing_account.id
-      prefix             = var.prefix
+      billing_account = var.billing_account
+      prefix          = var.prefix
     })
     "03-project-factory-prod" = jsonencode({
-      billing_account_id = var.billing_account.id
-      prefix             = var.prefix
+      billing_account = var.billing_account
+      prefix          = var.prefix
     })
   }
 }

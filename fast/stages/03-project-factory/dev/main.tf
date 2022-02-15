@@ -20,7 +20,7 @@
 locals {
   _defaults = yamldecode(file(var.defaults_file))
   _defaults_net = {
-    billing_account_id   = var.billing_account_id
+    billing_account_id   = var.billing_account.id
     environment_dns_zone = var.environment_dns_zone
     shared_vpc_self_link = var.shared_vpc_self_link
     vpc_host_project     = var.vpc_host_project
