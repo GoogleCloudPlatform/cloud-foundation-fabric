@@ -15,7 +15,7 @@
  */
 
 variable "f_bootstrap" {
-  description = "Data coming from the boostrap stage"
+  description = "Data coming from the boostrap stage."
   type = object({
     automation_project_id = string
     billing_account = object({
@@ -34,7 +34,7 @@ variable "f_bootstrap" {
 }
 
 variable "f_resman" {
-  description = "Data coming from the resman stage"
+  description = "Data coming from the resman stage."
   type = object({
     folder_ids = map(string)
     automation_resources = map(object({
@@ -45,10 +45,17 @@ variable "f_resman" {
 }
 
 variable "f_networking" {
-  description = "Data coming from the networking stage"
+  description = "Data coming from the networking stage."
   type = object({
     shared_vpcs       = map(string)
     vpc_host_projects = map(string)
     dns_zones         = map(string)
+  })
+}
+
+variable "f_security" {
+  description = "Data coming from the security stage."
+  type = object({
+    kms_keys = map(string)
   })
 }
