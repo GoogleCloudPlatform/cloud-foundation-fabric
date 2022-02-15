@@ -17,19 +17,20 @@ import tftest
 
 def test_single_range(plan_runner):
   "Test single PSN range."
-  _, resources = plan_runner(psn_ranges='["172.16.100.0/24"]')
+  _, resources = plan_runner(psn_ranges='{foobar="172.16.100.0/24"}')
   assert len(resources) == 3
 
 
 def test_multi_range(plan_runner):
   "Test multiple PSN ranges."
-  _, resources = plan_runner(psn_ranges='["172.16.100.0/24", "172.16.101.0/24"]')
+  psn_ranges = '{foobar="172.16.100.0/24", frobniz="172.16.101.0/24"}'
+  _, resources = plan_runner(psn_ranges=psn_ranges)
   assert len(resources) == 4
 
 
 def test_validation(plan_runner):
   "Test PSN variable validation."
   try:
-    plan_runner(psn_ranges='["foobar"]')
+    plan_runner(psn_ranges='{foobar="foobar"}')
   except tftest.TerraformTestError as e:
     assert 'Invalid value for variable' in e.args[0]

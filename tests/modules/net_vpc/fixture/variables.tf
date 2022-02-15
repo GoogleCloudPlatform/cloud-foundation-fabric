@@ -62,7 +62,7 @@ variable "peering_config" {
 }
 
 variable "psn_ranges" {
-  type    = list(string)
+  type    = map(string)
   default = null
 }
 
