@@ -44,7 +44,7 @@ kms_service_agents:
 
 # [opt] Labels for the project - merged with the ones defined in defaults
 labels:
-  environment: prod
+  environment: dev
 
 # [opt] Org policy overrides defined at project level
 org_policies:
@@ -56,7 +56,7 @@ org_policies:
       status: true
       suggested_value: null
       values:
-        - projects/fast-prod-iac-core-0
+        - projects/fast-dev-iac-core-0
 
 # [opt] Service account to create for the project and their roles on the project
 # in name => [roles] format
@@ -90,11 +90,11 @@ vpc:
     enable_security_admin: true
 
   # Host project the project will be service project of
-  host_project: fast-prod-net-spoke-0
+  host_project: fast-dev-net-spoke-0
 
   # [opt] Subnets in the host project where principals will be granted networkUser
   # in region/subnet-name => [principals]
   subnets_iam:
-    europe-west1/prod-default-ew1:
+    europe-west1/dev-default-ew1:
       - user:foobar@example.com
       - serviceAccount:service-account1
