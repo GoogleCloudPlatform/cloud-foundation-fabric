@@ -138,7 +138,7 @@ module "vpc" {
       secondary_ip_range = null
     }
   ]
-  psn_ranges = ["10.10.0.0/16"]
+  psn_ranges = {range-a = "10.10.0.0/16"}
 }
 # tftest modules=1 resources=4
 ```
@@ -171,8 +171,8 @@ module "vpc" {
 ```
 
 ### Subnet Factory
-The `net-vpc` module includes a subnet factory (see [Resource Factories](../../examples/factories/)) for the massive creation of subnets leveraging one configuration file per subnet.
 
+The `net-vpc` module includes a subnet factory (see [Resource Factories](../../examples/factories/)) for the massive creation of subnets leveraging one configuration file per subnet.
 
 ```hcl
 module "vpc" {
