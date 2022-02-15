@@ -74,21 +74,11 @@ module "branch-dp-prod-folder" {
   group_iam = {}
   iam = {
     # remove owner here and at project level if SA does not manage project resources
-    "roles/owner" = [
-      module.branch-dp-prod-sa.iam_email
-    ]
-    "roles/logging.admin" = [
-      module.branch-dp-prod-sa.iam_email
-    ]
-    "roles/resourcemanager.folderAdmin" = [
-      module.branch-dp-prod-sa.iam_email
-    ]
-    "roles/resourcemanager.projectCreator" = [
-      module.branch-dp-prod-sa.iam_email
-    ]
-    "roles/compute.xpnAdmin" = [
-      module.branch-teams-dev-projectfactory-sa.iam_email
-    ]
+    "roles/logging.admin"                  = [module.branch-dp-prod-sa.iam_email]
+    "roles/owner"                          = [module.branch-dp-prod-sa.iam_email]
+    "roles/resourcemanager.folderAdmin"    = [module.branch-dp-prod-sa.iam_email]
+    "roles/resourcemanager.projectCreator" = [module.branch-dp-prod-sa.iam_email]
+    "roles/compute.xpnAdmin"               = [module.branch-dp-prod-sa.iam_email]
   }
 }
 
