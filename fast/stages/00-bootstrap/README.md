@@ -323,6 +323,7 @@ Names used in internal references (e.g. `module.foo-prod.id`) are only used by T
 
 | name | description | modules | resources |
 |---|---|---|---|
+| [00-bootstrap-providers.tf](./00-bootstrap-providers.tf) | None |  |  |
 | [automation.tf](./automation.tf) | Automation project and resources. | <code>gcs</code> · <code>iam-service-account</code> · <code>project</code> |  |
 | [billing.tf](./billing.tf) | Billing export project and dataset. | <code>bigquery-dataset</code> · <code>organization</code> · <code>project</code> | <code>google_billing_account_iam_member</code> · <code>google_organization_iam_binding</code> |
 | [log-export.tf](./log-export.tf) | Audit log project and sink. | <code>bigquery-dataset</code> · <code>gcs</code> · <code>logging-bucket</code> · <code>project</code> · <code>pubsub</code> |  |
@@ -350,9 +351,10 @@ Names used in internal references (e.g. `module.foo-prod.id`) are only used by T
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [billing_dataset](outputs.tf#L89) | BigQuery dataset prepared for billing export. |  |  |
-| [project_ids](outputs.tf#L94) | Projects created by this stage. |  |  |
-| [providers](outputs.tf#L105) | Terraform provider files for this stage and dependent stages. | ✓ | <code>stage-01</code> |
-| [tfvars](outputs.tf#L114) | Terraform variable files for the following stages. | ✓ |  |
+| [billing_dataset](outputs.tf#L57) | BigQuery dataset prepared for billing export. |  |  |
+| [custom_roles](outputs.tf#L62) | Organization-level custom roles. |  |  |
+| [project_ids](outputs.tf#L67) | Projects created by this stage. |  |  |
+| [providers](outputs.tf#L78) | Terraform provider files for this stage and dependent stages. | ✓ | <code>stage-01</code> |
+| [tfvars](outputs.tf#L87) | Terraform variable files for the following stages. | ✓ |  |
 
 <!-- END TFDOC -->

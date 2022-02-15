@@ -149,6 +149,7 @@ Due to its simplicity, this stage lends itself easily to customizations: adding 
 
 | name | description | modules | resources |
 |---|---|---|---|
+| [01-resman-providers.tf](./01-resman-providers.tf) | None |  |  |
 | [billing.tf](./billing.tf) | Billing resources for external billing use cases. | <code>organization</code> | <code>google_billing_account_iam_member</code> |
 | [branch-networking.tf](./branch-networking.tf) | Networking stage resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
 | [branch-sandbox.tf](./branch-sandbox.tf) | Sandbox stage resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
@@ -163,8 +164,8 @@ Due to its simplicity, this stage lends itself easily to customizations: adding 
 
 | name | description | type | required | default | producer |
 |---|---|:---:|:---:|:---:|:---:|
-| [automation_project_id](variables.tf#L29) | Project id for the automation project created by the bootstrap stage. | <code>string</code> | ✓ |  | <code>00-bootstrap</code> |
-| [billing_account](variables.tf#L20) | Billing account id and organization id ('nnnnnnnn' or null). | <code title="object&#40;&#123;&#10;  id              &#61; string&#10;  organization_id &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>00-bootstrap</code> |
+| [automation_project_id](variables.tf#L20) | Project id for the automation project created by the bootstrap stage. | <code>string</code> | ✓ |  | <code>00-bootstrap</code> |
+| [billing_account](variables.tf#L26) | Billing account id and organization id ('nnnnnnnn' or null). | <code title="object&#40;&#123;&#10;  id              &#61; string&#10;  organization_id &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>00-bootstrap</code> |
 | [organization](variables.tf#L57) | Organization details. | <code title="object&#40;&#123;&#10;  domain      &#61; string&#10;  id          &#61; number&#10;  customer_id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>00-bootstrap</code> |
 | [prefix](variables.tf#L81) | Prefix used for resources that need unique names. Use 9 characters or less. | <code>string</code> | ✓ |  | <code>00-bootstrap</code> |
 | [custom_roles](variables.tf#L35) | Custom roles defined at the org level, in key => id format. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> | <code>00-bootstrap</code> |
@@ -177,12 +178,12 @@ Due to its simplicity, this stage lends itself easily to customizations: adding 
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [networking](outputs.tf#L83) | Data for the networking stage. |  | <code>02-networking</code> |
-| [project_factories](outputs.tf#L93) | Data for the project factories stage. |  | <code>xx-teams</code> |
-| [providers](outputs.tf#L110) | Terraform provider files for this stage and dependent stages. | ✓ | <code>02-networking</code> · <code>02-security</code> · <code>xx-sandbox</code> · <code>xx-teams</code> |
-| [sandbox](outputs.tf#L117) | Data for the sandbox stage. |  | <code>xx-sandbox</code> |
-| [security](outputs.tf#L127) | Data for the networking stage. |  | <code>02-security</code> |
-| [teams](outputs.tf#L137) | Data for the teams stage. |  |  |
-| [tfvars](outputs.tf#L150) | Terraform variable files for the following stages. | ✓ |  |
+| [networking](outputs.tf#L98) | Data for the networking stage. |  |  |
+| [project_factories](outputs.tf#L107) | Data for the project factories stage. |  |  |
+| [providers](outputs.tf#L123) | Terraform provider files for this stage and dependent stages. | ✓ | <code>02-networking</code> · <code>02-security</code> · <code>xx-sandbox</code> · <code>xx-teams</code> |
+| [sandbox](outputs.tf#L130) | Data for the sandbox stage. |  | <code>xx-sandbox</code> |
+| [security](outputs.tf#L140) | Data for the networking stage. |  | <code>02-security</code> |
+| [teams](outputs.tf#L150) | Data for the teams stage. |  |  |
+| [tfvars](outputs.tf#L163) | Terraform variable files for the following stages. | ✓ |  |
 
 <!-- END TFDOC -->
