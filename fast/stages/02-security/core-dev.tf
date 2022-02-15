@@ -19,7 +19,7 @@ module "dev-sec-project" {
   name            = "dev-sec-core-0"
   parent          = var.folder_id
   prefix          = var.prefix
-  billing_account = var.billing_account_id
+  billing_account = var.billing_account.id
   iam = {
     "roles/cloudkms.viewer" = try(var.kms_restricted_admins.dev, [])
   }
