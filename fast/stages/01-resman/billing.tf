@@ -38,7 +38,7 @@ locals {
 module "billing-organization-ext" {
   source          = "../../../modules/organization"
   count           = local.billing_org_ext ? 1 : 0
-  organization_id = "organizations/${var.billing_account.organization_id}"
+  organization_id = "organizations/${var.f_bootstrap.billing_account.organization_id}"
   iam_additive = {
     "roles/billing.user" = local.billing_ext_users
   }
@@ -50,7 +50,7 @@ resource "google_billing_account_iam_member" "billing_ext_admin" {
   for_each = toset(
     local.billing_ext ? local.billing_ext_users : []
   )
-  billing_account_id = var.billing_account.id
+  billing_account_id = var.f_bootstrap.billing_account.id
   role               = "roles/billing.user"
   member             = each.key
 }

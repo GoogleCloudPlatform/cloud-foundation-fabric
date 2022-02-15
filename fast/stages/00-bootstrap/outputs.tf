@@ -31,42 +31,13 @@ locals {
       sa     = module.automation-tf-resman-sa.email
     })
   }
-  tfvars = {
-    "01-resman" = jsonencode({
-      automation_project_id = module.automation-project.project_id
-      billing_account       = var.billing_account
-      custom_roles          = local._custom_roles
-      groups                = var.groups
-      organization          = var.organization
-      prefix                = var.prefix
-    })
-    "02-networking" = jsonencode({
-      billing_account_id = var.billing_account.id
-      custom_roles       = local._custom_roles
-      organization       = var.organization
-      prefix             = var.prefix
-    })
-    "02-security" = jsonencode({
-      billing_account_id = var.billing_account.id
-      organization       = var.organization
-      prefix             = var.prefix
-    })
-    "03-gke-multitenant-dev" = jsonencode({
-      billing_account_id = var.billing_account.id
-      prefix             = var.prefix
-    })
-    "03-gke-multitenant-prod" = jsonencode({
-      billing_account_id = var.billing_account.id
-      prefix             = var.prefix
-    })
-    "03-project-factory-dev" = jsonencode({
-      billing_account_id = var.billing_account.id
-      prefix             = var.prefix
-    })
-    "03-project-factory-prod" = jsonencode({
-      billing_account_id = var.billing_account.id
-      prefix             = var.prefix
-    })
+  output_contract = {
+    automation_project_id = module.automation-project.project_id
+    billing_account       = var.billing_account
+    custom_roles          = local._custom_roles
+    groups                = var.groups
+    organization          = var.organization
+    prefix                = var.prefix
   }
 }
 
@@ -78,10 +49,11 @@ resource "local_file" "providers" {
   content  = each.value
 }
 
-resource "local_file" "tfvars" {
-  for_each = var.outputs_location == null ? {} : local.tfvars
-  filename = "${pathexpand(var.outputs_location)}/${each.key}/terraform-bootstrap.auto.tfvars.json"
-  content  = each.value
+resource "local_file" "output_contract" {
+  filename = "${pathexpand(var.outputs_location)}/contracts/terraform-00-bootstrap.auto.tfvars.json"
+  content = jsonencode({
+    f_bootstrap = local.output_contract
+  })
 }
 
 # outputs
@@ -111,8 +83,8 @@ output "providers" {
 
 # ready to use variable values for subsequent stages
 
-output "tfvars" {
+output "output_contract" {
   description = "Terraform variable files for the following stages."
   sensitive   = true
-  value       = local.tfvars
+  value       = local.output_contract
 }

@@ -18,7 +18,7 @@
 
 module "branch-security-folder" {
   source = "../../../modules/folder"
-  parent = "organizations/${var.organization.id}"
+  parent = "organizations/${var.f_bootstrap.organization.id}"
   name   = "Security"
   group_iam = {
     (local.groups.gcp-security-admins) = [
@@ -43,17 +43,17 @@ module "branch-security-folder" {
 
 module "branch-security-sa" {
   source      = "../../../modules/iam-service-account"
-  project_id  = var.automation_project_id
+  project_id  = var.f_bootstrap.automation_project_id
   name        = "prod-resman-sec-0"
   description = "Terraform resman security service account."
-  prefix      = var.prefix
+  prefix      = var.f_bootstrap.prefix
 }
 
 module "branch-security-gcs" {
   source     = "../../../modules/gcs"
-  project_id = var.automation_project_id
+  project_id = var.f_bootstrap.automation_project_id
   name       = "prod-resman-sec-0"
-  prefix     = var.prefix
+  prefix     = var.f_bootstrap.prefix
   versioning = true
   iam = {
     "roles/storage.objectAdmin" = [module.branch-security-sa.iam_email]

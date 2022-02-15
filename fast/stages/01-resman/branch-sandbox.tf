@@ -18,7 +18,7 @@
 
 module "branch-sandbox-folder" {
   source = "../../../modules/folder"
-  parent = "organizations/${var.organization.id}"
+  parent = "organizations/${var.f_bootstrap.organization.id}"
   name   = "Sandbox"
   iam = {
     "roles/logging.admin"                  = [module.branch-sandbox-sa.iam_email]
@@ -41,9 +41,9 @@ module "branch-sandbox-folder" {
 
 module "branch-sandbox-gcs" {
   source     = "../../../modules/gcs"
-  project_id = var.automation_project_id
+  project_id = var.f_bootstrap.automation_project_id
   name       = "dev-resman-sbox-0"
-  prefix     = var.prefix
+  prefix     = var.f_bootstrap.prefix
   versioning = true
   iam = {
     "roles/storage.objectAdmin" = [module.branch-sandbox-sa.iam_email]
@@ -52,8 +52,8 @@ module "branch-sandbox-gcs" {
 
 module "branch-sandbox-sa" {
   source      = "../../../modules/iam-service-account"
-  project_id  = var.automation_project_id
+  project_id  = var.f_bootstrap.automation_project_id
   name        = "dev-resman-sbox-0"
   description = "Terraform resman sandbox service account."
-  prefix      = var.prefix
+  prefix      = var.f_bootstrap.prefix
 }

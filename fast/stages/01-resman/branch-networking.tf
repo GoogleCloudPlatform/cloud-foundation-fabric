@@ -18,7 +18,7 @@
 
 module "branch-network-folder" {
   source = "../../../modules/folder"
-  parent = "organizations/${var.organization.id}"
+  parent = "organizations/${var.f_bootstrap.organization.id}"
   name   = "Networking"
   group_iam = {
     (local.groups.gcp-network-admins) = [
@@ -42,17 +42,17 @@ module "branch-network-folder" {
 
 module "branch-network-sa" {
   source      = "../../../modules/iam-service-account"
-  project_id  = var.automation_project_id
+  project_id  = var.f_bootstrap.automation_project_id
   name        = "prod-resman-net-0"
   description = "Terraform resman networking service account."
-  prefix      = var.prefix
+  prefix      = var.f_bootstrap.prefix
 }
 
 module "branch-network-gcs" {
   source     = "../../../modules/gcs"
-  project_id = var.automation_project_id
+  project_id = var.f_bootstrap.automation_project_id
   name       = "prod-resman-net-0"
-  prefix     = var.prefix
+  prefix     = var.f_bootstrap.prefix
   versioning = true
   iam = {
     "roles/storage.objectAdmin" = [module.branch-network-sa.iam_email]

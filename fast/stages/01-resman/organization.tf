@@ -44,7 +44,7 @@ locals {
 
 module "organization" {
   source          = "../../../modules/organization"
-  organization_id = "organizations/${var.organization.id}"
+  organization_id = "organizations/${var.f_bootstrap.organization.id}"
   # IAM additive bindings, granted via the restricted Organization Admin custom
   # role assigned in stage 00; they need to be additive to avoid conflicts
   iam_additive = merge(
@@ -107,7 +107,7 @@ module "organization" {
     "constraints/iam.allowedPolicyMemberDomains" = merge(
       local.list_allow, {
         values = concat(
-          [var.organization.customer_id],
+          [var.f_bootstrap.organization.customer_id],
           try(local.policy_configs.allowed_policy_member_domains, [])
         )
     })

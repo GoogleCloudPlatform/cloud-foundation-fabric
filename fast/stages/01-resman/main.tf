@@ -16,12 +16,12 @@
 
 locals {
   # convenience flags that express where billing account resides
-  billing_ext     = var.billing_account.organization_id == null
-  billing_org     = var.billing_account.organization_id == var.organization.id
+  billing_ext     = var.f_bootstrap.billing_account.organization_id == null
+  billing_org     = var.f_bootstrap.billing_account.organization_id == var.f_bootstrap.organization.id
   billing_org_ext = !local.billing_ext && !local.billing_org
   groups = {
-    for k, v in var.groups :
-    k => "${v}@${var.organization.domain}"
+    for k, v in var.f_bootstrap.groups :
+    k => "${v}@${var.f_bootstrap.organization.domain}"
   }
   groups_iam = {
     for k, v in local.groups :

@@ -17,52 +17,71 @@
 # defaults for variables marked with global tfdoc annotations, can be set via
 # the tfvars file generated in stage 00 and stored in its outputs
 
-variable "billing_account" {
-  # tfdoc:variable:source 00-bootstrap
-  description = "Billing account id and organization id ('nnnnnnnn' or null)."
+# variable "billing_account" {
+#   # tfdoc:variable:source 00-bootstrap
+#   description = "Billing account id and organization id ('nnnnnnnn' or null)."
+#   type = object({
+#     id              = string
+#     organization_id = number
+#   })
+# }
+
+variable "f_bootstrap" {
+  description = "Data coming from the boostrap stage."
   type = object({
-    id              = string
-    organization_id = number
+    automation_project_id = string
+    billing_account = object({
+      id              = string
+      organization_id = number
+    })
+    custom_roles = map(string)
+    groups       = map(string)
+    organization = object({
+      domain      = string
+      id          = number
+      customer_id = string
+    })
+    prefix = string
   })
 }
 
-variable "automation_project_id" {
-  # tfdoc:variable:source 00-bootstrap
-  description = "Project id for the automation project created by the bootstrap stage."
-  type        = string
-}
+# variable "automation_project_id" {
+#   # tfdoc:variable:source 00-bootstrap
+#   description = "Project id for the automation project created by the bootstrap stage."
+#   type        = string
+# }
 
-variable "custom_roles" {
-  # tfdoc:variable:source 00-bootstrap
-  description = "Custom roles defined at the org level, in key => id format."
-  type        = map(string)
-  default     = {}
-}
+# variable "custom_roles" {
+#   # tfdoc:variable:source 00-bootstrap
+#   description = "Custom roles defined at the org level, in key => id format."
+#   type        = map(string)
+#   default     = {}
+# }
 
-variable "groups" {
-  # tfdoc:variable:source 00-bootstrap
-  description = "Group names to grant organization-level permissions."
-  type        = map(string)
-  # https://cloud.google.com/docs/enterprise/setup-checklist
-  default = {
-    gcp-billing-admins      = "gcp-billing-admins",
-    gcp-devops              = "gcp-devops",
-    gcp-network-admins      = "gcp-network-admins"
-    gcp-organization-admins = "gcp-organization-admins"
-    gcp-security-admins     = "gcp-security-admins"
-    gcp-support             = "gcp-support"
-  }
-}
+# variable "groups" {
+#   # tfdoc:variable:source 00-bootstrap
+#   description = "Group names to grant organization-level permissions."
+#   type        = map(string)
+#   # https://cloud.google.com/docs/enterprise/setup-checklist
+#   default = {
+#     gcp-billing-admins      = "gcp-billing-admins",
+#     gcp-devops              = "gcp-devops",
+#     gcp-network-admins      = "gcp-network-admins"
+#     gcp-organization-admins = "gcp-organization-admins"
+#     gcp-security-admins     = "gcp-security-admins"
+#     gcp-support             = "gcp-support"
+#   }
+# }
 
-variable "organization" {
-  # tfdoc:variable:source 00-bootstrap
-  description = "Organization details."
-  type = object({
-    domain      = string
-    id          = number
-    customer_id = string
-  })
-}
+# variable "organization" {
+#   # tfdoc:variable:source 00-bootstrap
+#   description = "Organization details."
+#   type = object({
+#     domain      = string
+#     id          = number
+#     customer_id = string
+#   })
+# }
 
 variable "organization_policy_configs" {
   description = "Organization policies customization."
@@ -78,16 +97,16 @@ variable "outputs_location" {
   default     = null
 }
 
-variable "prefix" {
-  # tfdoc:variable:source 00-bootstrap
-  description = "Prefix used for resources that need unique names. Use 9 characters or less."
-  type        = string
+# variable "prefix" {
+#   # tfdoc:variable:source 00-bootstrap
+#   description = "Prefix used for resources that need unique names. Use 9 characters or less."
+#   type        = string
 
-  validation {
-    condition     = try(length(var.prefix), 0) < 10
-    error_message = "Use a maximum of 9 characters for prefix."
-  }
-}
+#   validation {
+#     condition     = try(length(var.prefix), 0) < 10
+#     error_message = "Use a maximum of 9 characters for prefix."
+#   }
+# }
 
 variable "team_folders" {
   description = "Team folders to be created. Format is described in a code comment."
