@@ -27,11 +27,9 @@ module "branch-dp-folder" {
 # environment: development folder
 
 module "branch-dp-dev-folder" {
-  source = "../../../modules/folder"
-  parent = module.branch-dp-folder.id
-  # naming: environment descriptive name
-  name = "Development"
-  # environment-wide human permissions on the whole Data Platform environment
+  source    = "../../../modules/folder"
+  parent    = module.branch-dp-folder.id
+  name      = "Development"
   group_iam = {}
   iam = {
     # remove owner here and at project level if SA does not manage project resources
@@ -44,10 +42,9 @@ module "branch-dp-dev-folder" {
 }
 
 module "branch-dp-dev-sa" {
-  source     = "../../../modules/iam-service-account"
-  project_id = var.automation_project_id
-  name       = "dev-resman-dp-0"
-  # naming: environment in description
+  source      = "../../../modules/iam-service-account"
+  project_id  = var.automation_project_id
+  name        = "dev-resman-dp-0"
   description = "Terraform Data Platform development service account."
   prefix      = var.prefix
 }
@@ -66,11 +63,9 @@ module "branch-dp-dev-gcs" {
 # environment: production folder
 
 module "branch-dp-prod-folder" {
-  source = "../../../modules/folder"
-  parent = module.branch-dp-folder.id
-  # naming: environment descriptive name
-  name = "Production"
-  # environment-wide human permissions on the whole Data Platform environment
+  source    = "../../../modules/folder"
+  parent    = module.branch-dp-folder.id
+  name      = "Production"
   group_iam = {}
   iam = {
     # remove owner here and at project level if SA does not manage project resources
@@ -83,10 +78,9 @@ module "branch-dp-prod-folder" {
 }
 
 module "branch-dp-prod-sa" {
-  source     = "../../../modules/iam-service-account"
-  project_id = var.automation_project_id
-  name       = "prod-resman-dp-0"
-  # naming: environment in description
+  source      = "../../../modules/iam-service-account"
+  project_id  = var.automation_project_id
+  name        = "prod-resman-dp-0"
   description = "Terraform Data Platform production service account."
   prefix      = var.prefix
 }
