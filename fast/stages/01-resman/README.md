@@ -191,15 +191,15 @@ Due to its simplicity, this stage lends itself easily to customizations: adding 
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [cicd_repositories](outputs.tf#L177) | WIF configuration for CI/CD repositories. |  |  |
-| [dataplatform](outputs.tf#L189) | Data for the Data Platform stage. |  |  |
-| [gke_multitenant](outputs.tf#L257) | Data for the GKE multitenant stage. |  | <code>03-gke-multitenant</code> |
-| [networking](outputs.tf#L205) | Data for the networking stage. |  |  |
-| [project_factories](outputs.tf#L214) | Data for the project factories stage. |  |  |
-| [providers](outputs.tf#L230) | Terraform provider files for this stage and dependent stages. | ✓ | <code>02-networking</code> · <code>02-security</code> · <code>03-dataplatform</code> · <code>xx-sandbox</code> · <code>xx-teams</code> |
-| [sandbox](outputs.tf#L237) | Data for the sandbox stage. |  | <code>xx-sandbox</code> |
-| [security](outputs.tf#L247) | Data for the networking stage. |  | <code>02-security</code> |
-| [teams](outputs.tf#L274) | Data for the teams stage. |  |  |
-| [tfvars](outputs.tf#L287) | Terraform variable files for the following stages. | ✓ |  |
+| [cicd_repositories](outputs.tf#L171) | WIF configuration for CI/CD repositories. |  |  |
+| [dataplatform](outputs.tf#L183) | Data for the Data Platform stage. |  |  |
+| [gke_multitenant](outputs.tf#L251) | Data for the GKE multitenant stage. |  | <code>03-gke-multitenant</code> |
+| [networking](outputs.tf#L199) | Data for the networking stage. |  |  |
+| [project_factories](outputs.tf#L208) | Data for the project factories stage. |  |  |
+| [providers](outputs.tf#L224) | Terraform provider files for this stage and dependent stages. | ✓ | <code>02-networking</code> · <code>02-security</code> · <code>03-dataplatform</code> · <code>xx-sandbox</code> · <code>xx-teams</code> |
+| [sandbox](outputs.tf#L231) | Data for the sandbox stage. |  | <code>xx-sandbox</code> |
+| [security](outputs.tf#L241) | Data for the networking stage. |  | <code>02-security</code> |
+| [teams](outputs.tf#L268) | Data for the teams stage. |  |  |
+| [tfvars](outputs.tf#L281) | Terraform variable files for the following stages. | ✓ |  |
 
 <!-- END TFDOC -->

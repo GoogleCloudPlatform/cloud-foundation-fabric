@@ -30,7 +30,7 @@ module "gke-cluster" {
   project_id               = module.gke-project-0.project_id
   description              = each.value.description
   location                 = each.value.location
-  network                  = var.shared_vpc_self_link
+  network                  = var.vpc_self_links.dev-spoke-0
   subnetwork               = each.value.net.subnet
   secondary_range_pods     = each.value.net.pods
   secondary_range_services = each.value.net.services
@@ -77,7 +77,7 @@ module "gke-cluster" {
   peering_config = {
     export_routes = true
     import_routes = false
-    project_id    = var.vpc_host_project
+    project_id    = var.host_project_ids.dev-spoke-0
   }
   # resource_usage_export_config = {
   #   enabled = true

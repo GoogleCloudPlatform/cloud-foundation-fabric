@@ -148,8 +148,8 @@ locals {
     {
       data-platform-dev    = module.branch-dp-dev-sa.email
       data-platform-prod   = module.branch-dp-prod-sa.email
-      gke-multitenant-dev  = module.branch-gke-multitenant-dev-sa.iam_email
-      gke-multitenant-prod = module.branch-gke-multitenant-prod-sa.iam_email
+      gke-multitenant-dev  = module.branch-gke-multitenant-dev-sa.email
+      gke-multitenant-prod = module.branch-gke-multitenant-prod-sa.email
       networking           = module.branch-network-sa.email
       project-factory-dev  = module.branch-teams-dev-pf-sa.email
       project-factory-prod = module.branch-teams-prod-pf-sa.email
