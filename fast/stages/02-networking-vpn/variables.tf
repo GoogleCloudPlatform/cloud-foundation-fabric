@@ -157,6 +157,16 @@ variable "router_configs" {
   }
 }
 
+variable "service_accounts" {
+  # tfdoc:variable:source 01-resman
+  description = "Automation service accounts in name => email format."
+  type = object({
+    project-factory-dev  = string
+    project-factory-prod = string
+  })
+  default = null
+}
+
 variable "vpn_onprem_configs" {
   description = "VPN gateway configuration for onprem interconnection."
   type = map(object({
@@ -211,16 +221,6 @@ variable "vpn_onprem_configs" {
       ]
     }
   }
-}
-
-variable "service_accounts" {
-  # tfdoc:variable:source 01-resman
-  description = "Automation service accounts in name => email format."
-  type = object({
-    project-factory-dev  = string
-    project-factory-prod = string
-  })
-  default = null
 }
 
 variable "vpn_spoke_configs" {

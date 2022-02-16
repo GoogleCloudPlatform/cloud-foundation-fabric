@@ -18,7 +18,7 @@
 
 module "landing-project" {
   source          = "../../../modules/project"
-  billing_account = var.billing_account_id
+  billing_account = var.billing_account.id
   name            = "prod-net-landing-0"
   parent          = var.folder_ids.networking-prod
   prefix          = var.prefix
@@ -36,6 +36,13 @@ module "landing-project" {
   shared_vpc_host_config = {
     enabled          = true
     service_projects = []
+  }
+  metric_scopes = [module.landing-project.project_id]
+  iam = {
+    "roles/dns.admin" = [local.service_accounts.project-factory-prod]
+    (local.custom_roles.service_project_network_admin) = [
+      local.service_accounts.project-factory-prod
+    ]
   }
 }
 

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-# optionally generate providers and tfvars files for subsequent stages
 
 locals {
   host_project_ids = {
@@ -72,7 +71,10 @@ output "shared_vpc_self_links" {
 output "vpn_gateway_endpoints" {
   description = "External IP Addresses for the GCP VPN gateways."
   value = {
-    onprem-ew1 = { for v in module.landing-to-onprem-ew1-vpn.gateway.vpn_interfaces : v.id => v.ip_address }
+    onprem-ew1 = {
+      for v in module.landing-to-onprem-ew1-vpn.gateway.vpn_interfaces :
+      v.id => v.ip_address
+    }
   }
 }
 

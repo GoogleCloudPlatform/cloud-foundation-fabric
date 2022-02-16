@@ -14,66 +14,54 @@
  * limitations under the License.
  */
 
-# Optionally, generate providers and tfvars files for subsequent stages
-
 locals {
-  tfvars = {
-    "03-project-factory-dev" = jsonencode({
-      environment_dns_zone = module.dev-dns-private-zone.domain
-      shared_vpc_self_link = module.dev-spoke-vpc.self_link
-      vpc_host_project     = module.dev-spoke-project.project_id
-    })
-    "03-project-factory-prod" = jsonencode({
-      environment_dns_zone = module.prod-dns-private-zone.domain
-      shared_vpc_self_link = module.prod-spoke-vpc.self_link
-      vpc_host_project     = module.prod-spoke-project.project_id
-    })
+  host_project_ids = {
+    "dev:spoke-0"  = module.dev-spoke-project.project_id
+    "prod:landing" = module.landing-project.project_id
+    "prod:spoke-0" = module.prod-spoke-project.project_id
+  }
+  host_project_numbers = {
+    "dev:spoke-0"  = module.dev-spoke-project.number
+    "prod:landing" = module.landing-project.number
+    "prod:spoke-0" = module.prod-spoke-project.number
+  }
+  vpc_self_links = {
+    "prod:landing-trusted"   = module.landing-trusted-vpc.self_link
+    "prod:landing-untrusted" = module.landing-untrusted-vpc.self_link
+    "dev:spoke-0"            = module.dev-spoke-vpc.self_link
+    "prod:spoke-0"           = module.prod-spoke-vpc.self_link
+
   }
 }
+
+# optionally generate tfvars file for subsequent stages
 
 resource "local_file" "tfvars" {
-  for_each = var.outputs_location == null ? {} : local.tfvars
-  filename = "${pathexpand(var.outputs_location)}/${each.key}/terraform-networking.auto.tfvars.json"
-  content  = each.value
+  for_each        = var.outputs_location == null ? {} : { 1 = 1 }
+  file_permission = "0644"
+  filename        = "${pathexpand(var.outputs_location)}/tfvars/02-networking.auto.tfvars.json"
+  content = jsonencode({
+    host_project_ids     = local.host_project_ids
+    host_project_numbers = local.host_project_numbers
+    vpc_self_links       = local.vpc_self_links
+  })
 }
 
-# Outputs
+# outputs
 
-output "project_ids" {
+output "host_project_ids" {
   description = "Network project ids."
-  value = {
-    dev     = module.dev-spoke-project.project_id
-    landing = module.landing-project.project_id
-    prod    = module.prod-spoke-project.project_id
-  }
+  value       = local.host_project_ids
 }
 
-output "project_numbers" {
+output "host_project_numbers" {
   description = "Network project numbers."
-  value = {
-    dev     = "projects/${module.dev-spoke-project.number}"
-    landing = "projects/${module.landing-project.number}"
-    prod    = "projects/${module.prod-spoke-project.number}"
-  }
-}
-
-output "shared_vpc_host_projects" {
-  description = "Shared VPC host projects."
-  value = {
-    dev     = module.dev-spoke-project.project_id
-    landing = module.landing-project.project_id
-    prod    = module.prod-spoke-project.project_id
-  }
+  value       = local.host_project_numbers
 }
 
 output "shared_vpc_self_links" {
   description = "Shared VPC host projects."
-  value = {
-    dev               = module.dev-spoke-vpc.self_link
-    landing-trusted   = module.landing-trusted-vpc.self_link
-    landing-untrusted = module.landing-untrusted-vpc.self_link
-    prod              = module.prod-spoke-vpc.self_link
-  }
+  value       = local.vpc_self_links
 }
 
 output "vpn_gateway_endpoints" {
@@ -91,7 +79,11 @@ output "vpn_gateway_endpoints" {
 }
 
 output "tfvars" {
-  description = "Network-related variables used in other stages."
+  description = "Terraform variables file for the following stages."
   sensitive   = true
-  value       = local.tfvars
+  value = {
+    host_project_ids     = local.host_project_ids
+    host_project_numbers = local.host_project_numbers
+    vpc_self_links       = local.vpc_self_links
+  }
 }

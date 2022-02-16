@@ -37,6 +37,13 @@ module "landing-project" {
     enabled          = true
     service_projects = []
   }
+  metric_scopes = [module.landing-project.project_id]
+  iam = {
+    "roles/dns.admin" = [local.service_accounts.project-factory-prod]
+    (local.custom_roles.service_project_network_admin) = [
+      local.service_accounts.project-factory-prod
+    ]
+  }
 }
 
 module "landing-vpc" {
