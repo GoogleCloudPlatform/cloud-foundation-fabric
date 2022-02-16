@@ -17,10 +17,12 @@
 locals {
   folder_ids = merge(
     {
-      networking = module.branch-network-folder.id
-      sandbox    = module.branch-sandbox-folder.id
-      security   = module.branch-security-folder.id
-      teams      = module.branch-teams-folder.id
+      networking      = module.branch-network-folder.id
+      networking-dev  = module.branch-network-dev-folder.id
+      networking-prod = module.branch-network-prod-folder.id
+      sandbox         = module.branch-sandbox-folder.id
+      security        = module.branch-security-folder.id
+      teams           = module.branch-teams-folder.id
     },
     {
       for k, v in module.branch-teams-team-folder : "team-${k}" => v.id
