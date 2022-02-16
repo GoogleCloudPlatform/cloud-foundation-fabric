@@ -19,7 +19,7 @@ locals {
     flatten([
       for location, mod in module.dev-sec-kms : [
         for name, id in mod.key_ids : {
-          key = "dev:${name}:${location}"
+          key = "dev-${name}:${location}"
           id  = id
         }
       ]
@@ -27,7 +27,7 @@ locals {
     flatten([
       for location, mod in module.prod-sec-kms : [
         for name, id in mod.key_ids : {
-          key = "prod:${name}:${location}"
+          key = "prod-${name}:${location}"
           id  = id
         }
       ]

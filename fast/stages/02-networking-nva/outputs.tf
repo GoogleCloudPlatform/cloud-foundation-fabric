@@ -16,21 +16,20 @@
 
 locals {
   host_project_ids = {
-    "dev:spoke-0"  = module.dev-spoke-project.project_id
-    "prod:landing" = module.landing-project.project_id
-    "prod:spoke-0" = module.prod-spoke-project.project_id
+    dev-spoke-0  = module.dev-spoke-project.project_id
+    prod-landing = module.landing-project.project_id
+    prod-spoke-0 = module.prod-spoke-project.project_id
   }
   host_project_numbers = {
-    "dev:spoke-0"  = module.dev-spoke-project.number
-    "prod:landing" = module.landing-project.number
-    "prod:spoke-0" = module.prod-spoke-project.number
+    dev-spoke-0  = module.dev-spoke-project.number
+    prod-landing = module.landing-project.number
+    prod-spoke-0 = module.prod-spoke-project.number
   }
   vpc_self_links = {
-    "prod:landing-trusted"   = module.landing-trusted-vpc.self_link
-    "prod:landing-untrusted" = module.landing-untrusted-vpc.self_link
-    "dev:spoke-0"            = module.dev-spoke-vpc.self_link
-    "prod:spoke-0"           = module.prod-spoke-vpc.self_link
-
+    prod-landing-trusted   = module.landing-trusted-vpc.self_link
+    prod-landing-untrusted = module.landing-untrusted-vpc.self_link
+    dev-spoke-0            = module.dev-spoke-vpc.self_link
+    prod-spoke-0           = module.prod-spoke-vpc.self_link
   }
 }
 
