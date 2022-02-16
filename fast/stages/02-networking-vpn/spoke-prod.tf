@@ -27,6 +27,7 @@ module "prod-spoke-project" {
     disable_dependent_services = false
   }
   services = [
+    "container.googleapis.com",
     "compute.googleapis.com",
     "dns.googleapis.com",
     "iap.googleapis.com",
@@ -41,6 +42,7 @@ module "prod-spoke-project" {
   iam = {
     "roles/dns.admin" = [var.project_factory_sa.prod]
     (var.custom_roles.service_project_network_admin) = [
+      var.data_platform_sa.prod,
       var.project_factory_sa.prod
     ]
   }
@@ -112,6 +114,7 @@ resource "google_project_iam_binding" "prod_spoke_project_iam_delegated" {
   project = module.prod-spoke-project.project_id
   role    = "roles/resourcemanager.projectIamAdmin"
   members = [
+    var.data_platform_sa.prod,
     var.project_factory_sa.prod
   ]
   condition {

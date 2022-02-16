@@ -30,7 +30,7 @@ locals {
     "03-data-platform-dev" = jsonencode({
       network_config = {
         host_project      = module.dev-spoke-project.project_id
-        network_self_link = module.prod-spoke-vpc.self_link
+        network_self_link = module.dev-spoke-vpc.self_link
         subnet_self_links = {
           load           = module.dev-spoke-vpc.subnets["europe-west1/dev-dp-lod-ew1"].self_link
           orchestration  = module.dev-spoke-vpc.subnets["europe-west1/dev-dp-orc-ew1"].self_link

@@ -110,6 +110,7 @@ terraform apply
 |---|---|---|---|
 | [main.tf](./main.tf) | Data Platformy. | <code>data-platform-foundations</code> |  |
 | [outputs.tf](./outputs.tf) | Output variables. |  | <code>local_file</code> |
+| [providers.tf](./providers.tf) | Provider configurations. |  |  |
 | [variables.tf](./variables.tf) | Terraform Variables. |  |  |
 
 ## Variables
