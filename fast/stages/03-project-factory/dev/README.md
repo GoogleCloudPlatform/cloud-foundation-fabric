@@ -49,7 +49,7 @@ It's of course possible to run this stage in isolation, by making sure the archi
     - `"roles/compute.viewer"`
     - `"roles/dns.admin"`
 - If networking is used (e.g., for VMs, GKE Clusters or AppEngine flex), VPC Host projects and their subnets should exist when creating projects
-- If per-environment DNS sub-zones are required, one "root" zone per environment should exist when creating projects (e.g., prod.gcp.example.com.)
+- If per-environment DNS sub-zones are required, one "root" zone per environment should exist when creating projects (e.g., dev.gcp.example.com.)
 
 ### Providers configuration
 
@@ -57,8 +57,8 @@ If you're running this on top of Fast, you should run the following commands to 
 
 ```bash
 # Variable `outputs_location` is set to `../../../config` in stage 01-resman
-$ cd fabric-fast/stages/03-project-factory/prod
-ln -s ../../../config/03-project-factory-prod/providers.tf
+$ cd fabric-fast/stages/03-project-factory/dev
+ln -s ../../../config/03-project-factory-dev/providers.tf
 ```
 
 ### Variable configuration
@@ -74,16 +74,16 @@ If you configured a valid path for `outputs_location` in the bootstrap and netwo
 
 ```bash
 # Variable `outputs_location` is set to `../../../config` in stages 01-bootstrap and the 02-networking stage in use
-ln -s ../../../config/03-project-factory-prod/terraform-bootstrap.auto.tfvars.json
-ln -s ../../../config/03-project-factory-prod/terraform-networking.auto.tfvars.json
+ln -s ../../../config/03-project-factory-dev/terraform-bootstrap.auto.tfvars.json
+ln -s ../../../config/03-project-factory-dev/terraform-networking.auto.tfvars.json
 ```
 
 If you're not using Fast, refer to the [Variables](#variables) table at the bottom of this document for a full list of variables, their origin (e.g., a stage or specific to this one), and descriptions explaining their meaning.
 
 Besides the values above, a project factory takes 2 additional inputs:
 
-- `data/defaults.yaml`, manually configured by adapting the [`prod/data/defaults.yaml.sample`](./prod/data/defaults.yaml.sample), which defines per-environment default values e.g., for billing alerts and labels.
-- `data/projects/*.yaml`, one file per project (optionally grouped in folders), which configures each project. A [`prod/data/projects/project.yaml.sample`](./prod/data/projects/project.yaml.sample) is provided as reference and documentation for the schema. Projects will be named after the filename, e.g., `fast-prod-lab0.yaml` will create project `fast-prod-lab0`.
+- `data/defaults.yaml`, manually configured by adapting the [`data/defaults.yaml`](./data/defaults.yaml), which defines per-environment default values e.g., for billing alerts and labels.
+- `data/projects/*.yaml`, one file per project (optionally grouped in folders), which configures each project. A [`data/projects/project.yaml`](./data/projects/project.yaml) is provided as reference and documentation for the schema. Projects will be named after the filename, e.g., `fast-dev-lab0.yaml` will create project `fast-dev-lab0`.
 
 Once the configuration is complete, run the project factory by running
 

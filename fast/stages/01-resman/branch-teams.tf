@@ -77,7 +77,7 @@ module "branch-teams-team-dev-folder" {
   for_each = coalesce(var.team_folders, {})
   parent   = module.branch-teams-team-folder[each.key].id
   # naming: environment descriptive name
-  name = "${module.branch-teams-team-folder[each.key].name} - Development"
+  name = "Development"
   # environment-wide human permissions on the whole teams environment
   group_iam = {}
   iam = {
@@ -127,7 +127,7 @@ module "branch-teams-team-prod-folder" {
   for_each = coalesce(var.team_folders, {})
   parent   = module.branch-teams-team-folder[each.key].id
   # naming: environment descriptive name
-  name = "${module.branch-teams-team-folder[each.key].name} - Production"
+  name = "Production"
   # environment-wide human permissions on the whole teams environment
   group_iam = {}
   iam = {
