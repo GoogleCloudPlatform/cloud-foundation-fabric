@@ -15,14 +15,26 @@
  */
 
 locals {
-  _data_platform_sas = {
-    dev  = module.branch-dp-dev-sa.iam_email
-    prod = module.branch-dp-prod-sa.iam_email
-  }
-  _project_factory_sas = {
-    dev  = module.branch-teams-dev-projectfactory-sa.iam_email
-    prod = module.branch-teams-prod-projectfactory-sa.iam_email
-  }
+  folder_ids = merge(
+    {
+      data-platform   = module.branch-dp-dev-folder.id
+      networking      = module.branch-network-folder.id
+      networking-dev  = module.branch-network-dev-folder.id
+      networking-prod = module.branch-network-prod-folder.id
+      sandbox         = module.branch-sandbox-folder.id
+      security        = module.branch-security-folder.id
+      teams           = module.branch-teams-folder.id
+    },
+    {
+      for k, v in module.branch-teams-team-folder : "team-${k}" => v.id
+    },
+    {
+      for k, v in module.branch-teams-team-dev-folder : "team-${k}-dev" => v.id
+    },
+    {
+      for k, v in module.branch-teams-team-prod-folder : "team-${k}-prod" => v.id
+    }
+  )
   providers = {
     "02-networking" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
       bucket = module.branch-network-gcs.name
@@ -60,43 +72,41 @@ locals {
       sa     = module.branch-sandbox-sa.email
     })
   }
+  service_accounts = merge(
+    {
+      data-platform-dev    = module.branch-dp-dev-sa.iam_email
+      data-platform-prod   = module.branch-dp-prod-sa.iam_email
+      networking           = module.branch-network-sa.email
+      project-factory-dev  = module.branch-teams-dev-projectfactory-sa.email
+      project-factory-prod = module.branch-teams-prod-projectfactory-sa.email
+      sandbox              = module.branch-sandbox-sa.email
+      security             = module.branch-security-sa.email
+      teams                = module.branch-teams-prod-sa.email
+    },
+    {
+      for k, v in module.branch-teams-team-sa : "team-${k}" => v.email
+    },
+  )
   tfvars = {
-    "02-networking" = jsonencode({
-      data_platform_sa = local._data_platform_sas
-      folder_ids = {
-        networking      = module.branch-network-folder.id
-        networking-dev  = module.branch-network-dev-folder.id
-        networking-prod = module.branch-network-prod-folder.id
-      }
-      project_factory_sa = local._project_factory_sas
-    })
-    "02-security" = jsonencode({
-      folder_id = module.branch-security-folder.id
-      kms_restricted_admins = {
-        for k, v in local._project_factory_sas : k => [v]
-      }
-    })
-    "03-data-platform-dev" = jsonencode({
-      folder_id = module.branch-dp-dev-folder.id
-    })
-    "03-data-platform-prod" = jsonencode({
-      folder_id = module.branch-dp-dev-folder.id
-    })
+    folder_ids       = local.folder_ids
+    service_accounts = local.service_accounts
   }
 }
 
 # optionally generate providers and tfvars files for subsequent stages
 
 resource "local_file" "providers" {
-  for_each = var.outputs_location == null ? {} : local.providers
-  filename = "${pathexpand(var.outputs_location)}/${each.key}/providers.tf"
-  content  = each.value
+  for_each        = var.outputs_location == null ? {} : local.providers
+  file_permission = "0644"
+  filename        = "${pathexpand(var.outputs_location)}/providers/${each.key}-providers.tf"
+  content         = each.value
 }
 
 resource "local_file" "tfvars" {
-  for_each = var.outputs_location == null ? {} : local.tfvars
-  filename = "${pathexpand(var.outputs_location)}/${each.key}/terraform-resman.auto.tfvars.json"
-  content  = each.value
+  for_each        = var.outputs_location == null ? {} : { 1 = 1 }
+  file_permission = "0644"
+  filename        = "${pathexpand(var.outputs_location)}/tfvars/01-resman.auto.tfvars.json"
+  content         = jsonencode(local.tfvars)
 }
 
 # outputs
@@ -119,7 +129,6 @@ output "dataplatform" {
 }
 
 output "networking" {
-  # tfdoc:output:consumers 02-networking
   description = "Data for the networking stage."
   value = {
     folder          = module.branch-network-folder.id
@@ -129,7 +138,6 @@ output "networking" {
 }
 
 output "project_factories" {
-  # tfdoc:output:consumers xx-teams
   description = "Data for the project factories stage."
   value = {
     dev = {

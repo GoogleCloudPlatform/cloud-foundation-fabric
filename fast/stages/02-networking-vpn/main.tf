@@ -30,6 +30,7 @@ locals {
       route_priority = null
     }
   }
+  custom_roles = coalesce(var.custom_roles, {})
   l7ilb_subnets = {
     for env, v in var.l7ilb_subnets : env => [
       for s in v : merge(s, {
@@ -47,6 +48,9 @@ locals {
     "roles/container.hostServiceAgentUser",
     "roles/vpcaccess.user",
   ]
+  service_accounts = {
+    for k, v in coalesce(var.service_accounts, {}) : k => "serviceAccount:${v}"
+  }
 }
 
 module "folder" {
