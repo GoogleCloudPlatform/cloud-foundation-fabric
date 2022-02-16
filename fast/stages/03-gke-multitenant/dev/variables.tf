@@ -24,10 +24,13 @@
 #   default     = null
 # }
 
-variable "billing_account_id" {
+variable "billing_account" {
   # tfdoc:variable:source 00-bootstrap
-  description = "Billing account id."
-  type        = string
+  description = "Billing account id and organization id ('nnnnnnnn' or null)."
+  type = object({
+    id              = string
+    organization_id = number
+  })
 }
 
 variable "cluster_defaults" {
@@ -97,16 +100,20 @@ variable "dns_domain" {
   default     = null
 }
 
-variable "environment" {
+variable "folder_ids" {
   # tfdoc:variable:source 01-resman
-  description = "Environment abbreviation."
-  type        = string
+  description = "Folders to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created."
+  type = object({
+    gke-multitenant-dev = string
+  })
 }
 
-variable "folder_id" {
-  # tfdoc:variable:source 01-resman
-  description = "Folder to be used for the networking resources in folders/nnnn format."
-  type        = string
+variable "host_project_ids" {
+  # tfdoc:variable:source 02-networking
+  description = "Host project for the shared VPC."
+  type = object({
+    dev-spoke-0 = string
+  })
 }
 
 variable "labels" {
@@ -155,15 +162,10 @@ variable "prefix" {
   type        = string
 }
 
-variable "shared_vpc_self_link" {
+variable "vpc_self_links" {
   # tfdoc:variable:source 02-networking
   description = "Self link for the shared VPC."
-  type        = string
-  default     = null
-}
-
-variable "vpc_host_project" {
-  # tfdoc:variable:source 02-networking
-  description = "Host project for the shared VPC."
-  type        = string
+  type = object({
+    dev-spoke-0 = string
+  })
 }
