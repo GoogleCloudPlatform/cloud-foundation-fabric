@@ -74,8 +74,8 @@ locals {
   }
   service_accounts = merge(
     {
-      data-platform-dev    = module.branch-dp-dev-sa.iam_email
-      data-platform-prod   = module.branch-dp-prod-sa.iam_email
+      data-platform-dev    = module.branch-dp-dev-sa.email
+      data-platform-prod   = module.branch-dp-prod-sa.email
       networking           = module.branch-network-sa.email
       project-factory-dev  = module.branch-teams-dev-projectfactory-sa.email
       project-factory-prod = module.branch-teams-prod-projectfactory-sa.email

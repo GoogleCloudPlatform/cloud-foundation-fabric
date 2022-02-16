@@ -14,10 +14,13 @@
 
 # tfdoc:file:description Terraform Variables.
 
-variable "billing_account_id" {
-  # tfdoc:variable:source 00-bootstrap
-  description = "Billing account id."
-  type        = string
+variable "billing_account" {
+  # tfdoc:variable:source 00-globals
+  description = "Billing account id and organization id ('nnnnnnnn' or null)."
+  type = object({
+    id              = string
+    organization_id = number
+  })
 }
 
 variable "composer_config" {
@@ -34,15 +37,18 @@ variable "composer_config" {
 }
 
 variable "data_force_destroy" {
-  description = "Flag to set 'force_destroy' on data services like BiguQery or Cloud Storage."
+  description = "Flag to set 'force_destroy' on data services like BigQery or Cloud Storage."
   type        = bool
   default     = false
 }
 
-variable "folder_id" {
-  # tfdoc:variable:source resman
+variable "folder_ids" {
+  # tfdoc:variable:source 01-resman
   description = "Folder to be used for the networking resources in folders/nnnn format."
-  type        = string
+  type = object({
+    data-platform = string
+  })
+  default = null
 }
 
 variable "groups" {
@@ -55,48 +61,40 @@ variable "groups" {
   }
 }
 
-variable "network_config" {
-  description = "Network configurations to use. Specify a shared VPC to use, if null networks will be created in projects."
+variable "host_project_ids" {
+  # tfdoc:variable:source 02-networking
+  description = "Shared VPC project ids."
   type = object({
-    host_project      = string
-    network_self_link = string
-    subnet_self_links = object({
-      load           = string
-      transformation = string
-      orchestration  = string
-    })
+    dev-spoke-0 = string
   })
 }
 
 variable "network_config_composer" {
   description = "Network configurations to use for Composer."
   type = object({
-    composer_ip_ranges = object({
-      cloudsql   = string
-      gke_master = string
-      web_server = string
-    })
-    composer_secondary_ranges = object({
-      pods     = string
-      services = string
-    })
+    cloudsql_range    = string
+    gke_master_range  = string
+    gke_pods_name     = string
+    gke_services_name = string
+    web_server_range  = string
   })
   default = {
-    composer_ip_ranges = {
-      cloudsql   = "172.18.29.0/24"
-      gke_master = "172.18.30.0/28"
-      web_server = "172.18.30.16/28"
-    }
-    composer_secondary_ranges = {
-      pods     = "pods"
-      services = "services"
-    }
+    cloudsql_range    = "172.18.29.0/24"
+    gke_master_range  = "172.18.30.0/28"
+    gke_pods_name     = "pods"
+    gke_services_name = "services"
+    web_server_range  = "172.18.30.16/28"
   }
 }
 
-variable "organization_domain" {
-  description = "Organization domain."
-  type        = string
+variable "organization" {
+  # tfdoc:variable:source 00-globals
+  description = "Organization details."
+  type = object({
+    domain      = string
+    id          = number
+    customer_id = string
+  })
 }
 
 variable "outputs_location" {
@@ -106,7 +104,7 @@ variable "outputs_location" {
 }
 
 variable "prefix" {
-  # tfdoc:variable:source 00-bootstrap
+  # tfdoc:variable:source 00-globals
   description = "Unique prefix used for resource names. Not used for projects if 'project_create' is null."
   type        = string
 }
@@ -128,7 +126,7 @@ variable "region" {
   default     = "europe-west1"
 }
 
-variable "service_encryption_keys" { # service encription key
+variable "service_encryption_keys" {
   description = "Cloud KMS to use to encrypt different services. Key location should match service region."
   type = object({
     bq       = string
@@ -136,6 +134,24 @@ variable "service_encryption_keys" { # service encription key
     dataflow = string
     storage  = string
     pubsub   = string
+  })
+  default = null
+}
+
+variable "subnet_self_links" {
+  # tfdoc:variable:source 02-networking
+  description = "Shared VPC subnet self links."
+  type = object({
+    dev-spoke-0 = map(string)
+  })
+  default = null
+}
+
+variable "vpc_self_links" {
+  # tfdoc:variable:source 02-networking
+  description = "Shared VPC self links."
+  type = object({
+    dev-spoke-0 = string
   })
   default = null
 }

@@ -16,22 +16,33 @@
 
 # tfdoc:file:description Data Platformy.
 
-locals {
-  _network_config = merge(
-    var.network_config_composer,
-    var.network_config
-  )
-}
-
 module "data-platform" {
-  source                  = "../../../../examples/data-solutions/data-platform-foundations"
-  billing_account_id      = var.billing_account_id
-  composer_config         = var.composer_config
-  data_force_destroy      = var.data_force_destroy
-  folder_id               = var.folder_id
-  groups                  = var.groups
-  network_config          = local._network_config
-  organization_domain     = var.organization_domain
+  source             = "../../../../examples/data-solutions/data-platform-foundations"
+  billing_account_id = var.billing_account.id
+  composer_config    = var.composer_config
+  data_force_destroy = var.data_force_destroy
+  folder_id          = var.folder_ids.data-platform
+  groups             = var.groups
+  network_config = {
+    host_project      = var.host_project_ids.dev-spoke-0
+    network_self_link = var.vpc_self_links.dev-spoke-0
+    subnet_self_links = {
+      load           = var.subnet_self_links.dev-spoke-0["europe-west1/dev-dataplatform-ew1"]
+      transformation = var.subnet_self_links.dev-spoke-0["europe-west1/dev-dataplatform-ew1"]
+      orchestration  = var.subnet_self_links.dev-spoke-0["europe-west1/dev-dataplatform-ew1"]
+    }
+    # TODO: align example variable
+    composer_ip_ranges = {
+      cloudsql   = var.network_config_composer.cloudsql_range
+      gke_master = var.network_config_composer.gke_master_range
+      web_server = var.network_config_composer.web_server_range
+    }
+    composer_secondary_ranges = {
+      pods     = var.network_config_composer.gke_pods_name
+      services = var.network_config_composer.gke_services_name
+    }
+  }
+  organization_domain     = var.organization.domain
   prefix                  = var.prefix
   project_services        = var.project_services
   region                  = var.region
