@@ -71,7 +71,7 @@ locals {
       teams                = module.branch-teams-prod-sa.email
     },
     {
-      for k, v in module.branch-teams-team-sa : "team-${k}" => v.id
+      for k, v in module.branch-teams-team-sa : "team-${k}" => v.email
     },
   )
   tfvars = {
