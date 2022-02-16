@@ -1,8 +1,0 @@
-# skip boilerplate check
-
-region: europe-west1
-description: Default subnet for prod Data Platform
-ip_cidr_range: 10.64.80.0/24
-secondary_ip_range:
-   pods: 100.64.80.0/20
-   services: 100.255.80.0/24

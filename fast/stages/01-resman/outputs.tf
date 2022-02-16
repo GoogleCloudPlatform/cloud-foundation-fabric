@@ -112,7 +112,6 @@ resource "local_file" "tfvars" {
 # outputs
 
 output "dataplatform" {
-  # tfdoc:output:consumers 03-dataplatform
   description = "Data for the Data Platform stage."
   value = {
     dev = {

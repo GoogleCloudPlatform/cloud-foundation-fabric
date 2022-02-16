@@ -66,10 +66,7 @@ module "organization" {
       "roles/orgpolicy.policyAdmin" = local.branch_teams_pf_sa_iam_emails
     },
     local.billing_org ? {
-      "roles/billing.costsManager" = concat(
-        local.branch_dataplatform_sa_iam_emails,
-        local.branch_teams_pf_sa_iam_emails
-      )
+      "roles/billing.costsManager" = local.branch_teams_pf_sa_iam_emails
       "roles/billing.user" = concat(
         [
           module.branch-network-sa.iam_email,
