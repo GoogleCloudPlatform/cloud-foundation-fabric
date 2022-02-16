@@ -14,17 +14,6 @@
 
 # tfdoc:file:description Output variables.
 
-locals {
-  tfvars = {}
-}
-
-resource "local_file" "tfvars" {
-  for_each = var.outputs_location == null ? {} : local.tfvars
-  filename = "${var.outputs_location}/${each.key}/terraform-dataplatform-dev.auto.tfvars.json"
-  content  = each.value
-}
-
-# outputs
 output "bigquery_datasets" {
   description = "BigQuery datasets."
   value       = module.data-platform.bigquery-datasets

@@ -106,11 +106,11 @@ terraform apply
 
 ## Files
 
-| name | description | modules | resources |
-|---|---|---|---|
-| [main.tf](./main.tf) | Data Platformy. | <code>data-platform-foundations</code> |  |
-| [outputs.tf](./outputs.tf) | Output variables. |  | <code>local_file</code> |
-| [variables.tf](./variables.tf) | Terraform Variables. |  |  |
+| name | description | modules |
+|---|---|---|
+| [main.tf](./main.tf) | Data Platformy. | <code>data-platform-foundations</code> |
+| [outputs.tf](./outputs.tf) | Output variables. |  |
+| [variables.tf](./variables.tf) | Terraform Variables. |  |
 
 ## Variables
 
@@ -136,12 +136,12 @@ terraform apply
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [bigquery_datasets](outputs.tf#L28) | BigQuery datasets. |  |  |
-| [demo_commands](outputs.tf#L58) | Demo commands. |  |  |
-| [gcs_buckets](outputs.tf#L33) | GCS buckets. |  |  |
-| [kms_keys](outputs.tf#L38) | Cloud MKS keys. |  |  |
-| [projects](outputs.tf#L43) | GCP Projects informations. |  |  |
-| [vpc_network](outputs.tf#L48) | VPC network. |  |  |
-| [vpc_subnet](outputs.tf#L53) | VPC subnetworks. |  |  |
+| [bigquery_datasets](outputs.tf#L17) | BigQuery datasets. |  |  |
+| [demo_commands](outputs.tf#L47) | Demo commands. |  |  |
+| [gcs_buckets](outputs.tf#L22) | GCS buckets. |  |  |
+| [kms_keys](outputs.tf#L27) | Cloud MKS keys. |  |  |
+| [projects](outputs.tf#L32) | GCP Projects informations. |  |  |
+| [vpc_network](outputs.tf#L37) | VPC network. |  |  |
+| [vpc_subnet](outputs.tf#L42) | VPC subnetworks. |  |  |
 
 <!-- END TFDOC -->
