@@ -2,7 +2,7 @@
 
 region: europe-west1
 description: Default subnet for dev Data Platform
-ip_cidr_range: 172.18.16.0/24
+ip_cidr_range: 10.128.48.0/24
 secondary_ip_range:
-   pods: 172.18.24.0/22
-   services: 172.18.28.0/24
+   pods: 100.128.48.0/20
+   services: 100.255.48.0/24
