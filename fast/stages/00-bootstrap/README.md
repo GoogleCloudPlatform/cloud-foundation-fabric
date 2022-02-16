@@ -346,10 +346,10 @@ Names used in internal references (e.g. `module.foo-prod.id`) are only used by T
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [billing_dataset](outputs.tf#L57) | BigQuery dataset prepared for billing export. |  |  |
-| [custom_roles](outputs.tf#L62) | Organization-level custom roles. |  |  |
-| [project_ids](outputs.tf#L67) | Projects created by this stage. |  |  |
-| [providers](outputs.tf#L78) | Terraform provider files for this stage and dependent stages. | ✓ | <code>stage-01</code> |
-| [tfvars](outputs.tf#L87) | Terraform variable files for the following stages. | ✓ |  |
+| [billing_dataset](outputs.tf#L58) | BigQuery dataset prepared for billing export. |  |  |
+| [custom_roles](outputs.tf#L63) | Organization-level custom roles. |  |  |
+| [project_ids](outputs.tf#L68) | Projects created by this stage. |  |  |
+| [providers](outputs.tf#L79) | Terraform provider files for this stage and dependent stages. | ✓ | <code>stage-01</code> |
+| [tfvars](outputs.tf#L88) | Terraform variable files for the following stages. | ✓ |  |
 
 <!-- END TFDOC -->

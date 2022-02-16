@@ -383,10 +383,10 @@ Don't forget to add a peering zone in the landing project and point it to the ne
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [host_project_ids](outputs.tf#L51) | Network project ids. |  |  |
-| [host_project_numbers](outputs.tf#L56) | Network project numbers. |  |  |
-| [shared_vpc_self_links](outputs.tf#L61) | Shared VPC host projects. |  |  |
-| [tfvars](outputs.tf#L80) | Terraform variables file for the following stages. | ✓ |  |
-| [vpn_gateway_endpoints](outputs.tf#L66) | External IP Addresses for the GCP VPN gateways. |  |  |
+| [host_project_ids](outputs.tf#L52) | Network project ids. |  |  |
+| [host_project_numbers](outputs.tf#L57) | Network project numbers. |  |  |
+| [shared_vpc_self_links](outputs.tf#L62) | Shared VPC host projects. |  |  |
+| [tfvars](outputs.tf#L81) | Terraform variables file for the following stages. | ✓ |  |
+| [vpn_gateway_endpoints](outputs.tf#L67) | External IP Addresses for the GCP VPN gateways. |  |  |
 
 <!-- END TFDOC -->

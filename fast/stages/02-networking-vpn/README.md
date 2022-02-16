@@ -328,11 +328,11 @@ DNS configurations are centralised in the `dns.tf` file. Spokes delegate DNS res
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [cloud_dns_inbound_policy](outputs.tf#L50) | IP Addresses for Cloud DNS inbound policy. |  |  |
-| [host_project_ids](outputs.tf#L55) | Network project ids. |  |  |
-| [host_project_numbers](outputs.tf#L60) | Network project numbers. |  |  |
-| [shared_vpc_self_links](outputs.tf#L65) | Shared VPC host projects. |  |  |
-| [tfvars](outputs.tf#L80) | Terraform variables file for the following stages. | ✓ |  |
-| [vpn_gateway_endpoints](outputs.tf#L70) | External IP Addresses for the GCP VPN gateways. |  |  |
+| [cloud_dns_inbound_policy](outputs.tf#L51) | IP Addresses for Cloud DNS inbound policy. |  |  |
+| [host_project_ids](outputs.tf#L56) | Network project ids. |  |  |
+| [host_project_numbers](outputs.tf#L61) | Network project numbers. |  |  |
+| [shared_vpc_self_links](outputs.tf#L66) | Shared VPC host projects. |  |  |
+| [tfvars](outputs.tf#L81) | Terraform variables file for the following stages. | ✓ |  |
+| [vpn_gateway_endpoints](outputs.tf#L71) | External IP Addresses for the GCP VPN gateways. |  |  |
 
 <!-- END TFDOC -->

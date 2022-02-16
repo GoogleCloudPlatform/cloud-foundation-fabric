@@ -306,8 +306,8 @@ Some references that might be useful in setting up this stage:
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [kms_keys](outputs.tf#L52) | KMS key ids. |  |  |
-| [stage_perimeter_projects](outputs.tf#L57) | Security project numbers. They can be added to perimeter resources. |  |  |
-| [tfvars](outputs.tf#L67) | Terraform variable files for the following stages. | ✓ |  |
+| [kms_keys](outputs.tf#L53) | KMS key ids. |  |  |
+| [stage_perimeter_projects](outputs.tf#L58) | Security project numbers. They can be added to perimeter resources. |  |  |
+| [tfvars](outputs.tf#L68) | Terraform variable files for the following stages. | ✓ |  |
 
 <!-- END TFDOC -->
