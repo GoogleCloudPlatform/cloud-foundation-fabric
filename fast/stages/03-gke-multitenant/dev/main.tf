@@ -15,7 +15,7 @@
  */
 
 locals {
-  labels = merge(var.labels, { environment = var.environment })
+  labels = merge(var.labels, { environment = "dev" })
 
   _gke_robot_sa      = "serviceAccount:${module.gke-project-0.service_accounts.robots.container-engine}"
   _cloud_services_sa = "serviceAccount:${module.gke-project-0.service_accounts.cloud_services}"
@@ -23,9 +23,9 @@ locals {
 
 module "gke-project-0" {
   source          = "../../../../modules/project"
-  billing_account = var.billing_account_id
-  name            = "${var.environment}-gke-clusters-0"
-  parent          = var.folder_id
+  billing_account = var.billing_account.id
+  name            = "dev-gke-clusters-0"
+  parent          = var.folder_ids.gke-multitenant-dev
   prefix          = var.prefix
   labels          = local.labels
   services = [
@@ -44,7 +44,7 @@ module "gke-project-0" {
   # }
   shared_vpc_service_config = {
     attach       = true
-    host_project = var.vpc_host_project
+    host_project = var.host_project_ids.dev-spoke-0
     service_identity_iam = {
       "roles/compute.networkUser" = [
         "cloudservices", "container-engine"

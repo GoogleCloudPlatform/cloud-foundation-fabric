@@ -81,13 +81,6 @@ variable "folder_ids" {
   })
 }
 
-variable "gke_multitenant_sa" {
-  # tfdoc:variable:source 01-resman
-  description = "IAM emails for GKE multitenant service accounts."
-  type        = map(string)
-  default     = {}
-}
-
 variable "l7ilb_subnets" {
   description = "Subnets used for L7 ILBs."
   type = map(list(object({
@@ -194,6 +187,8 @@ variable "service_accounts" {
   type = object({
     data-platform-dev    = string
     data-platform-prod   = string
+    gke-multitenant-dev  = string
+    gke-multitenant-prod = string
     project-factory-dev  = string
     project-factory-prod = string
   })
