@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
+locals {
+  dev_kms_restricted_admins = [
+    "serviceAccount:${var.service_accounts.project-factory-dev}"
+  ]
+}
+
 module "dev-sec-project" {
   source          = "../../../modules/project"
   name            = "dev-sec-core-0"
-  parent          = var.folder_id
+  parent          = var.folder_ids.security
   prefix          = var.prefix
-  billing_account = var.billing_account_id
+  billing_account = var.billing_account.id
   iam = {
-    "roles/cloudkms.viewer" = try(var.kms_restricted_admins.dev, [])
+    "roles/cloudkms.viewer" = local.dev_kms_restricted_admins
   }
   labels   = { environment = "dev", team = "security" }
   services = local.project_services
@@ -46,7 +52,7 @@ module "dev-sec-kms" {
 # TODO(ludo): grant delegated role at key instead of project level
 
 resource "google_project_iam_member" "dev_key_admin_delegated" {
-  for_each = toset(try(var.kms_restricted_admins.dev, []))
+  for_each = toset(local.dev_kms_restricted_admins)
   project  = module.dev-sec-project.project_id
   role     = "roles/cloudkms.admin"
   member   = each.key

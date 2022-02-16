@@ -17,6 +17,12 @@
 # defaults for variables marked with global tfdoc annotations, can be set via
 # the tfvars file generated in stage 00 and stored in its outputs
 
+variable "automation_project_id" {
+  # tfdoc:variable:source 00-bootstrap
+  description = "Project id for the automation project created by the bootstrap stage."
+  type        = string
+}
+
 variable "billing_account" {
   # tfdoc:variable:source 00-bootstrap
   description = "Billing account id and organization id ('nnnnnnnn' or null)."
@@ -24,12 +30,6 @@ variable "billing_account" {
     id              = string
     organization_id = number
   })
-}
-
-variable "automation_project_id" {
-  # tfdoc:variable:source 00-bootstrap
-  description = "Project id for the automation project created by the bootstrap stage."
-  type        = string
 }
 
 variable "custom_roles" {

@@ -15,7 +15,7 @@
  */
 
 locals {
-  _custom_roles = {
+  custom_roles = {
     for k, v in var.custom_role_names :
     k => module.organization.custom_role_id[v]
   }
@@ -32,56 +32,25 @@ locals {
     })
   }
   tfvars = {
-    "01-resman" = jsonencode({
-      automation_project_id = module.automation-project.project_id
-      billing_account       = var.billing_account
-      custom_roles          = local._custom_roles
-      groups                = var.groups
-      organization          = var.organization
-      prefix                = var.prefix
-    })
-    "02-networking" = jsonencode({
-      billing_account_id = var.billing_account.id
-      custom_roles       = local._custom_roles
-      organization       = var.organization
-      prefix             = var.prefix
-    })
-    "02-security" = jsonencode({
-      billing_account_id = var.billing_account.id
-      organization       = var.organization
-      prefix             = var.prefix
-    })
-    "03-gke-multitenant-dev" = jsonencode({
-      billing_account_id = var.billing_account.id
-      prefix             = var.prefix
-    })
-    "03-gke-multitenant-prod" = jsonencode({
-      billing_account_id = var.billing_account.id
-      prefix             = var.prefix
-    })
-    "03-project-factory-dev" = jsonencode({
-      billing_account_id = var.billing_account.id
-      prefix             = var.prefix
-    })
-    "03-project-factory-prod" = jsonencode({
-      billing_account_id = var.billing_account.id
-      prefix             = var.prefix
-    })
+    automation_project_id = module.automation-project.project_id
+    custom_roles          = local.custom_roles
   }
 }
 
 # optionally generate providers and tfvars files for subsequent stages
 
 resource "local_file" "providers" {
-  for_each = var.outputs_location == null ? {} : local.providers
-  filename = "${pathexpand(var.outputs_location)}/${each.key}/providers.tf"
-  content  = each.value
+  for_each        = var.outputs_location == null ? {} : local.providers
+  file_permission = "0644"
+  filename        = "${pathexpand(var.outputs_location)}/providers/${each.key}-providers.tf"
+  content         = each.value
 }
 
 resource "local_file" "tfvars" {
-  for_each = var.outputs_location == null ? {} : local.tfvars
-  filename = "${pathexpand(var.outputs_location)}/${each.key}/terraform-bootstrap.auto.tfvars.json"
-  content  = each.value
+  for_each        = var.outputs_location == null ? {} : { 1 = 1 }
+  file_permission = "0644"
+  filename        = "${pathexpand(var.outputs_location)}/tfvars/00-bootstrap.auto.tfvars.json"
+  content         = jsonencode(local.tfvars)
 }
 
 # outputs
@@ -89,6 +58,11 @@ resource "local_file" "tfvars" {
 output "billing_dataset" {
   description = "BigQuery dataset prepared for billing export."
   value       = try(module.billing-export-dataset.0.id, null)
+}
+
+output "custom_roles" {
+  description = "Organization-level custom roles."
+  value       = local.custom_roles
 }
 
 output "project_ids" {

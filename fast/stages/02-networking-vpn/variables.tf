@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-variable "billing_account_id" {
+variable "billing_account" {
   # tfdoc:variable:source 00-bootstrap
-  description = "Billing account id."
-  type        = string
+  description = "Billing account id and organization id ('nnnnnnnn' or null)."
+  type = object({
+    id              = string
+    organization_id = number
+  })
 }
 
 variable "custom_adv" {
@@ -40,8 +43,10 @@ variable "custom_adv" {
 variable "custom_roles" {
   # tfdoc:variable:source 00-bootstrap
   description = "Custom roles defined at the org level, in key => id format."
-  type        = map(string)
-  default     = {}
+  type = object({
+    service_project_network_admin = string
+  })
+  default = null
 }
 
 variable "data_dir" {
@@ -61,7 +66,11 @@ variable "dns" {
 variable "folder_ids" {
   # tfdoc:variable:source 01-resman
   description = "Folders to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created."
-  type        = map(string)
+  type = object({
+    networking      = string
+    networking-dev  = string
+    networking-prod = string
+  })
 }
 
 variable "l7ilb_subnets" {
@@ -109,13 +118,6 @@ variable "prefix" {
   }
 }
 
-variable "project_factory_sa" {
-  # tfdoc:variable:source 01-resman
-  description = "IAM emails for project factory service accounts."
-  type        = map(string)
-  default     = {}
-}
-
 variable "psa_ranges" {
   description = "IP ranges used for Private Service Access (e.g. CloudSQL)."
   type        = map(map(string))
@@ -153,6 +155,16 @@ variable "router_configs" {
     spoke-prod-ew1 = { asn = "64514", adv = null }
     spoke-prod-ew4 = { asn = "64514", adv = null }
   }
+}
+
+variable "service_accounts" {
+  # tfdoc:variable:source 01-resman
+  description = "Automation service accounts in name => email format."
+  type = object({
+    project-factory-dev  = string
+    project-factory-prod = string
+  })
+  default = null
 }
 
 variable "vpn_onprem_configs" {

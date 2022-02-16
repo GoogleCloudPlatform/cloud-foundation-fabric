@@ -14,20 +14,25 @@
  * limitations under the License.
  */
 
-variable "billing_account_id" {
-  # tfdoc:variable:source bootstrap
-  description = "Billing account id."
-  type        = string
+variable "billing_account" {
+  # tfdoc:variable:source 00-bootstrap
+  description = "Billing account id and organization id ('nnnnnnnn' or null)."
+  type = object({
+    id              = string
+    organization_id = number
+  })
 }
 
-variable "folder_id" {
-  # tfdoc:variable:source resman
-  description = "Folder to be used for the networking resources in folders/nnnn format."
-  type        = string
+variable "folder_ids" {
+  # tfdoc:variable:source 01-resman
+  description = "Folder name => id mappings, the 'security' folder name must exist."
+  type = object({
+    security = string
+  })
 }
 
 variable "groups" {
-  # tfdoc:variable:source bootstrap
+  # tfdoc:variable:source 00-bootstrap
   description = "Group names to grant organization-level permissions."
   type        = map(string)
   # https://cloud.google.com/docs/enterprise/setup-checklist
@@ -64,14 +69,17 @@ variable "kms_keys" {
   default = {}
 }
 
-variable "kms_restricted_admins" {
-  description = "Map of environment => [identities] who can assign the encrypt/decrypt roles on keys."
-  type        = map(list(string))
-  default     = {}
+variable "service_accounts" {
+  # tfdoc:variable:source 01-resman
+  description = "Automation service accounts that can assign the encrypt/decrypt roles on keys."
+  type = object({
+    project-factory-dev  = string
+    project-factory-prod = string
+  })
 }
 
 variable "organization" {
-  # tfdoc:variable:source bootstrap
+  # tfdoc:variable:source 00-bootstrap
   description = "Organization details."
   type = object({
     domain      = string
