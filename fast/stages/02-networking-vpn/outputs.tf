@@ -25,6 +25,11 @@ locals {
     prod-landing = module.landing-project.number
     prod-spoke-0 = module.prod-spoke-project.number
   }
+  tfvars = {
+    host_project_ids     = local.host_project_ids
+    host_project_numbers = local.host_project_numbers
+    vpc_self_links       = local.vpc_self_links
+  }
   vpc_self_links = {
     prod-landing = module.landing-vpc.self_link
     dev-spoke-0  = module.dev-spoke-vpc.self_link
@@ -38,11 +43,7 @@ resource "local_file" "tfvars" {
   for_each        = var.outputs_location == null ? {} : { 1 = 1 }
   file_permission = "0644"
   filename        = "${pathexpand(var.outputs_location)}/tfvars/02-networking.auto.tfvars.json"
-  content = jsonencode({
-    host_project_ids     = local.host_project_ids
-    host_project_numbers = local.host_project_numbers
-    vpc_self_links       = local.vpc_self_links
-  })
+  content         = jsonencode(loca.tfvars)
 }
 
 # outputs
@@ -80,9 +81,5 @@ output "vpn_gateway_endpoints" {
 output "tfvars" {
   description = "Terraform variables file for the following stages."
   sensitive   = true
-  value = {
-    host_project_ids     = local.host_project_ids
-    host_project_numbers = local.host_project_numbers
-    vpc_self_links       = local.vpc_self_links
-  }
+  value       = local.tfvars
 }

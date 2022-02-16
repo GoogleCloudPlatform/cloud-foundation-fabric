@@ -74,6 +74,10 @@ locals {
       for k, v in module.branch-teams-team-sa : "team-${k}" => v.id
     },
   )
+  tfvars = {
+    folder_ids       = local.folder_ids
+    service_accounts = local.service_accounts
+  }
 }
 
 # optionally generate providers and tfvars files for subsequent stages
@@ -89,10 +93,7 @@ resource "local_file" "tfvars" {
   for_each        = var.outputs_location == null ? {} : { 1 = 1 }
   file_permission = "0644"
   filename        = "${pathexpand(var.outputs_location)}/tfvars/01-resman.auto.tfvars.json"
-  content = jsonencode({
-    folder_ids       = local.folder_ids
-    service_accounts = local.service_accounts
-  })
+  content         = jsonencode(local.tfvars)
 }
 
 # outputs
@@ -165,8 +166,5 @@ output "teams" {
 output "tfvars" {
   description = "Terraform variable files for the following stages."
   sensitive   = true
-  value = {
-    folder_ids       = local.folder_ids
-    service_accounts = local.service_accounts
-  }
+  value       = local.tfvars
 }

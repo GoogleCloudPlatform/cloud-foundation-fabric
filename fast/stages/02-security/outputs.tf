@@ -34,6 +34,9 @@ locals {
     ])
   )
   output_kms_keys = { for k in local._output_kms_keys : k.key => k.id }
+  tfvars = {
+    kms_keys = local.output_kms_keys
+  }
 }
 
 # optionally generate files for subsequent stages
@@ -42,9 +45,7 @@ resource "local_file" "tfvars" {
   for_each        = var.outputs_location == null ? {} : { 1 = 1 }
   file_permission = "0644"
   filename        = "${pathexpand(var.outputs_location)}/tfvars/02-security.auto.tfvars.json"
-  content = jsonencode({
-    kms_keys = local.output_kms_keys
-  })
+  content         = jsonencode(local.tfvars)
 }
 
 # outputs
@@ -67,7 +68,5 @@ output "stage_perimeter_projects" {
 output "tfvars" {
   description = "Terraform variable files for the following stages."
   sensitive   = true
-  value = {
-    kms_keys = local.output_kms_keys
-  }
+  value       = local.tfvars
 }
