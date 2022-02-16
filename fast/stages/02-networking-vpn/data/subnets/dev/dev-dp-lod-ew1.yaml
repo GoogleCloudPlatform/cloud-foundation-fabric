@@ -1,5 +1,0 @@
-# skip boilerplate check
-
-region: europe-west1
-description: Default subnet for dev Data Platform - Load layer Dataflow
-ip_cidr_range: 10.10.0.0/24

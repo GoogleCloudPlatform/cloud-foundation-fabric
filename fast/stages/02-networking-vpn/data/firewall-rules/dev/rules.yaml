@@ -7,7 +7,7 @@ allow-dataflow-load-ingress-traffic:
   sources: []
   ranges:
     - 10.10.0.0/24
-    - 10.10.1.0/24    
+    - 10.10.1.0/24
   targets: []
   use_service_accounts: false
   rules:
@@ -15,19 +15,3 @@ allow-dataflow-load-ingress-traffic:
       ports:
         - 12345
         - 12346
-
-allow-composer-health-checks:
-  description: "Allow Health Checks"
-  direction: INGRESS
-  action: allow
-  sources: []
-  ranges:
-    - 130.211.0.0/22
-    - 35.191.0.0/16    
-  targets: []
-  use_service_accounts: false
-  rules:
-    - protocol: tcp
-      ports:
-        - 80
-        - 443        
