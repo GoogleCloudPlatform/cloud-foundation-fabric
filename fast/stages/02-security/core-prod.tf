@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
+locals {
+  prod_kms_restricted_admins = [
+    "serviceAccount:${var.service_accounts.project-factory-prod}"
+  ]
+}
+
 module "prod-sec-project" {
   source          = "../../../modules/project"
   name            = "prod-sec-core-0"
-  parent          = var.folder_id
+  parent          = var.folder_ids.security
   prefix          = var.prefix
-  billing_account = var.billing_account_id
+  billing_account = var.billing_account.id
   iam = {
-    "roles/cloudkms.viewer" = try(var.kms_restricted_admins.prod, [])
+    "roles/cloudkms.viewer" = local.prod_kms_restricted_admins
   }
   labels   = { environment = "prod", team = "security" }
   services = local.project_services
@@ -45,7 +51,7 @@ module "prod-sec-kms" {
 # TODO(ludo): add support for conditions to Fabric modules
 
 resource "google_project_iam_member" "prod_key_admin_delegated" {
-  for_each = toset(try(var.kms_restricted_admins.prod, []))
+  for_each = toset(local.prod_kms_restricted_admins)
   project  = module.prod-sec-project.project_id
   role     = "roles/cloudkms.admin"
   member   = each.key
