@@ -25,7 +25,7 @@ module "vpc" {
   source     = "./modules/net-vpc"
   project_id = module.project.project_id
   name       = "my-network"
-  psn_ranges = ["10.60.0.0/16"]
+  psa_ranges = {cloudsql-ew1-0="10.60.0.0/16"}
 }
 
 module "db" {

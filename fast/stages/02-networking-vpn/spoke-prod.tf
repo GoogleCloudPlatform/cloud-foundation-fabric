@@ -54,6 +54,7 @@ module "prod-spoke-vpc" {
   name          = "prod-spoke-0"
   mtu           = 1500
   data_folder   = "${var.data_dir}/subnets/prod"
+  psa_ranges    = var.psa_ranges.prod
   subnets_l7ilb = local.l7ilb_subnets.prod
   # set explicit routes for googleapis in case the default route is deleted
   routes = {
@@ -96,17 +97,6 @@ module "prod-spoke-cloudnat" {
   router_network = module.prod-spoke-vpc.name
   router_asn     = 4200001024
   logging_filter = "ERRORS_ONLY"
-}
-
-module "prod-spoke-psa-addresses" {
-  source     = "../../../modules/net-address"
-  project_id = module.prod-spoke-project.project_id
-  psa_addresses = { for r, v in var.psa_ranges.prod : r => {
-    address       = cidrhost(v, 0)
-    network       = module.prod-spoke-vpc.self_link
-    prefix_length = split("/", v)[1]
-    }
-  }
 }
 
 # Create delegated grants for stage3 service accounts

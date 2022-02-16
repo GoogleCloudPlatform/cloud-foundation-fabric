@@ -61,7 +61,7 @@ module "folder" {
     policy_name = null
     rules_file  = "data/rules.yaml"
   }
-  firewall_policy_attachments = {
+  firewall_policy_association = {
     factory-policy = module.folder.firewall_policy_id["factory"]
   }
 }

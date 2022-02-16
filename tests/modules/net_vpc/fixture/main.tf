@@ -30,6 +30,6 @@ module "test" {
   subnet_flow_logs            = var.subnet_flow_logs
   subnet_private_access       = var.subnet_private_access
   auto_create_subnetworks     = var.auto_create_subnetworks
-  psn_ranges                  = var.psn_ranges
+  psa_ranges                  = var.psa_ranges
   data_folder                 = var.data_folder
 }

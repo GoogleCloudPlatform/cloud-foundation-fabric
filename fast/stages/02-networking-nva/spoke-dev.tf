@@ -50,6 +50,7 @@ module "dev-spoke-vpc" {
   mtu                             = 1500
   data_folder                     = "${var.data_dir}/subnets/dev"
   delete_default_routes_on_create = true
+  psa_ranges                      = var.psa_ranges.dev
   subnets_l7ilb                   = local.l7ilb_subnets.dev
   # Set explicit routes for googleapis; send everything else to NVAs
   routes = {
@@ -108,17 +109,6 @@ module "dev-spoke-firewall" {
   ssh_source_ranges   = []
   data_folder         = "${var.data_dir}/firewall-rules/dev"
   cidr_template_file  = "${var.data_dir}/cidrs.yaml"
-}
-
-module "dev-spoke-psa-addresses" {
-  source     = "../../../modules/net-address"
-  project_id = module.dev-spoke-project.project_id
-  psa_addresses = { for r, v in var.psa_ranges.dev : r => {
-    address       = cidrhost(v, 0)
-    network       = module.dev-spoke-vpc.self_link
-    prefix_length = split("/", v)[1]
-    }
-  }
 }
 
 module "peering-dev" {
