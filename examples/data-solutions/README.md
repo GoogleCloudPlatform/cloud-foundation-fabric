@@ -18,6 +18,6 @@ They are meant to be used as minimal but complete starting points to create actu
 
 ### Data Platform Foundations
 
-<a href="./data-platform-foundations/" title="Data Platform Foundations"><img src="./data-platform-foundations/02-resources/diagram.png" align="left" width="280px"></a>
+<a href="./data-platform-foundations/" title="Data Platform Foundations"><img src="./data-platform-foundations/images/overview_diagram.png" align="left" width="280px"></a>
 This [example](./data-platform-foundations/) implements a robust and flexible Data Foundation on GCP that provides opinionated defaults, allowing customers to build and scale out additional data pipelines quickly and reliably.
 <br clear="left">

@@ -13,7 +13,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 '''Validate YaML document against yamale schemas.
 Fast includes YaML driven resource factories, along with their schemas which 
 are available at `fast/assets/schemas`.
@@ -29,12 +28,14 @@ import click
 import yamale
 
 
-@ click.command()
-@ click.argument('schema', type=click.Path(exists=True))
-@ click.option('--directory', multiple=True, type=click.Path(exists=True, file_okay=False, dir_okay=True))
-@ click.option('--file', multiple=True, type=click.Path(exists=True, file_okay=True, dir_okay=False))
-@ click.option('--recursive', is_flag=True, default=False)
-@ click.option('--quiet', is_flag=True, default=False)
+@click.command()
+@click.argument('schema', type=click.Path(exists=True))
+@click.option('--directory', multiple=True,
+              type=click.Path(exists=True, file_okay=False, dir_okay=True))
+@click.option('--file', multiple=True,
+              type=click.Path(exists=True, file_okay=True, dir_okay=False))
+@click.option('--recursive', is_flag=True, default=False)
+@click.option('--quiet', is_flag=True, default=False)
 def main(directory=None, file=None, schema=None, recursive=False, quiet=False):
   'Program entry point.'
 

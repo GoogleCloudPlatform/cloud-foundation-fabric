@@ -18,7 +18,7 @@
 
 module "prod-spoke-project" {
   source          = "../../../modules/project"
-  billing_account = var.billing_account_id
+  billing_account = var.billing_account.id
   name            = "prod-net-spoke-0"
   parent          = var.folder_ids.networking-prod
   prefix          = var.prefix
@@ -39,7 +39,10 @@ module "prod-spoke-project" {
   }
   metric_scopes = [module.landing-project.project_id]
   iam = {
-    "roles/dns.admin" = [var.project_factory_sa.prod]
+    "roles/dns.admin" = [local.service_accounts.project-factory-prod]
+    (local.custom_roles.service_project_network_admin) = [
+      local.service_accounts.project-factory-prod
+    ]
   }
 }
 
@@ -50,6 +53,7 @@ module "prod-spoke-vpc" {
   mtu                             = 1500
   data_folder                     = "${var.data_dir}/subnets/prod"
   delete_default_routes_on_create = true
+  psa_ranges                      = var.psa_ranges.prod
   subnets_l7ilb                   = local.l7ilb_subnets.prod
   # Set explicit routes for googleapis; send everything else to NVAs
   routes = {
@@ -108,17 +112,6 @@ module "prod-spoke-firewall" {
   ssh_source_ranges   = []
   data_folder         = "${var.data_dir}/firewall-rules/prod"
   cidr_template_file  = "${var.data_dir}/cidrs.yaml"
-}
-
-module "prod-spoke-psa-addresses" {
-  source     = "../../../modules/net-address"
-  project_id = module.prod-spoke-project.project_id
-  psa_addresses = { for r, v in var.psa_ranges.prod : r => {
-    address       = cidrhost(v, 0)
-    network       = module.prod-spoke-vpc.self_link
-    prefix_length = split("/", v)[1]
-    }
-  }
 }
 
 module "peering-prod" {

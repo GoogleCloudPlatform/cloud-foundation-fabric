@@ -18,7 +18,7 @@
 
 module "prod-spoke-project" {
   source          = "../../../modules/project"
-  billing_account = var.billing_account_id
+  billing_account = var.billing_account.id
   name            = "prod-net-spoke-0"
   parent          = var.folder_ids.networking-prod
   prefix          = var.prefix
@@ -39,9 +39,9 @@ module "prod-spoke-project" {
   }
   metric_scopes = [module.landing-project.project_id]
   iam = {
-    "roles/dns.admin" = [var.project_factory_sa.prod]
-    (var.custom_roles.service_project_network_admin) = [
-      var.project_factory_sa.prod
+    "roles/dns.admin" = [local.service_accounts.project-factory-prod]
+    (local.custom_roles.service_project_network_admin) = [
+      local.service_accounts.project-factory-prod
     ]
   }
 }
@@ -52,6 +52,7 @@ module "prod-spoke-vpc" {
   name          = "prod-spoke-0"
   mtu           = 1500
   data_folder   = "${var.data_dir}/subnets/prod"
+  psa_ranges    = var.psa_ranges.prod
   subnets_l7ilb = local.l7ilb_subnets.prod
   # set explicit routes for googleapis in case the default route is deleted
   routes = {
@@ -96,23 +97,12 @@ module "prod-spoke-cloudnat" {
   logging_filter = "ERRORS_ONLY"
 }
 
-module "prod-spoke-psa-addresses" {
-  source     = "../../../modules/net-address"
-  project_id = module.prod-spoke-project.project_id
-  psa_addresses = { for r, v in var.psa_ranges.prod : r => {
-    address       = cidrhost(v, 0)
-    network       = module.prod-spoke-vpc.self_link
-    prefix_length = split("/", v)[1]
-    }
-  }
-}
-
 # Create delegated grants for stage3 service accounts
 resource "google_project_iam_binding" "prod_spoke_project_iam_delegated" {
   project = module.prod-spoke-project.project_id
   role    = "roles/resourcemanager.projectIamAdmin"
   members = [
-    var.project_factory_sa.prod
+    local.service_accounts.project-factory-prod
   ]
   condition {
     title       = "prod_stage3_sa_delegated_grants"

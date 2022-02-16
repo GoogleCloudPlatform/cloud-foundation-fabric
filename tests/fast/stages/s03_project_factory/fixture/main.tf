@@ -14,44 +14,15 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Project factory.
-
-
-locals {
-  _defaults = yamldecode(file(var.defaults_file))
-  _defaults_net = {
-    billing_account_id   = var.billing_account_id
-    environment_dns_zone = var.environment_dns_zone
-    shared_vpc_self_link = var.shared_vpc_self_link
-    vpc_host_project     = var.vpc_host_project
-  }
-  defaults = merge(local._defaults, local._defaults_net)
-  projects = {
-    for f in fileset("${var.data_dir}", "**/*.yaml") :
-    trimsuffix(f, ".yaml") => yamldecode(file("${var.data_dir}/${f}"))
-  }
-}
-
 module "projects" {
-  #TODO(sruffilli): Pin to release
-  source             = "../../../../../examples/factories/project-factory"
-  for_each           = local.projects
-  defaults           = local.defaults
-  project_id         = each.key
-  billing_account_id = try(each.value.billing_account_id, null)
-  billing_alert      = try(each.value.billing_alert, null)
-  dns_zones          = try(each.value.dns_zones, [])
-  essential_contacts = try(each.value.essential_contacts, [])
-  folder_id          = each.value.folder_id
-  group_iam          = try(each.value.group_iam, {})
-  iam                = try(each.value.iam, {})
-  kms_service_agents = try(each.value.kms, {})
-  labels             = try(each.value.labels, {})
-  org_policies       = try(each.value.org_policies, null)
-  service_accounts   = try(each.value.service_accounts, {})
-  services           = try(each.value.services, [])
-  services_iam       = try(each.value.services_iam, {})
-  vpc                = try(each.value.vpc, null)
+  source               = "../../../../../fast/stages/03-project-factory/dev"
+  data_dir             = "./data/projects/"
+  defaults_file        = "./data/defaults.yaml"
+  prefix               = "test"
+  billing_account_id   = "12345-67890A-BCDEF0"
+  environment_dns_zone = "dev"
+  shared_vpc_self_link = "fake_link"
+  vpc_host_project     = "host_project"
 }
 
 

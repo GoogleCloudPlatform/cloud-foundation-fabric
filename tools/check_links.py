@@ -13,13 +13,11 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 '''Recursively check link destination validity in Markdown files.
 
 This tool recursively checks that local links in Markdown files point to valid
 destinations. Its main use is in CI pipelines triggered by pull requests.
 '''
-
 
 import collections
 import pathlib
@@ -27,7 +25,6 @@ import urllib.parse
 
 import click
 import marko
-
 
 BASEDIR = pathlib.Path(__file__).resolve().parents[1]
 DOC = collections.namedtuple('DOC', 'path relpath links')
@@ -57,8 +54,8 @@ def check_docs(dir_name):
     yield DOC(readme_path, str(readme_path.relative_to(dir_path)), links)
 
 
-@ click.command()
-@ click.argument('dirs', type=str, nargs=-1)
+@click.command()
+@click.argument('dirs', type=str, nargs=-1)
 def main(dirs):
   'Check links in Markdown files contained in dirs.'
   errors = 0

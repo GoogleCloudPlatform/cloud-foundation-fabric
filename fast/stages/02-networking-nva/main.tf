@@ -17,11 +17,15 @@
 # tfdoc:file:description Networking folder and hierarchical policy.
 
 locals {
+  custom_roles = coalesce(var.custom_roles, {})
   l7ilb_subnets = { for env, v in var.l7ilb_subnets : env => [
     for s in v : merge(s, {
       active = true
       name   = "${env}-l7ilb-${s.region}"
     })]
+  }
+  service_accounts = {
+    for k, v in coalesce(var.service_accounts, {}) : k => "serviceAccount:${v}"
   }
 }
 
