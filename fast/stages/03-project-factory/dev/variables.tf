@@ -16,10 +16,13 @@
 
 #TODO: tfdoc annotations
 
-variable "billing_account_id" {
+variable "billing_account" {
   # tfdoc:variable:source 00-bootstrap
-  description = "Billing account id."
-  type        = string
+  description = "Billing account id and organization id ('nnnnnnnn' or null)."
+  type = object({
+    id              = string
+    organization_id = number
+  })
 }
 
 variable "data_dir" {
@@ -52,16 +55,20 @@ variable "prefix" {
   }
 }
 
-variable "shared_vpc_self_link" {
+variable "shared_vpc_self_links" {
   # tfdoc:variable:source 02-networking
   description = "Self link for the shared VPC."
-  type        = string
-  default     = null
+  type = object({
+    dev-spoke-0 = string
+  })
+  default = null
 }
 
-variable "vpc_host_project" {
+variable "vpc_host_project_ids" {
   # tfdoc:variable:source 02-networking
   description = "Host project for the shared VPC."
-  type        = string
-  default     = null
+  type = object({
+    dev-spoke-0 = string
+  })
+  default = null
 }
