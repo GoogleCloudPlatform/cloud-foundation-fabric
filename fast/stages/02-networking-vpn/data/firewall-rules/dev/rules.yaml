@@ -6,8 +6,7 @@ allow-dataflow-load-ingress-traffic:
   action: allow
   sources: []
   ranges:
-    - 10.10.0.0/24
-    - 10.10.1.0/24
+    - 10.128.48.0/24
   targets: []
   use_service_accounts: false
   rules:
