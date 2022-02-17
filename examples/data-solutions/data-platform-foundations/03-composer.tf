@@ -118,4 +118,7 @@ resource "google_composer_environment" "orch-cmp-0" {
     #   }
     # }
   }
+  depends_on = [
+    google_project_iam_member.shared_vpc,
+  ]
 }

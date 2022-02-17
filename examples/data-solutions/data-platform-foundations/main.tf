@@ -26,7 +26,7 @@ locals {
       "orch-robot-cs"
     ]
     "roles/container.hostServiceAgentUser" = [
-      "orch-robot-df"
+      "orch-robot-df", "orch-robot-gke"
     ]
   }
   groups = {
