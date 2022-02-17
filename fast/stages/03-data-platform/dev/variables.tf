@@ -48,7 +48,6 @@ variable "folder_ids" {
   type = object({
     data-platform = string
   })
-  default = null
 }
 
 variable "groups" {
