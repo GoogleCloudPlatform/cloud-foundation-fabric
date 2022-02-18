@@ -33,11 +33,11 @@ module "branch-dp-dev-folder" {
   group_iam = {}
   iam = {
     # remove owner here and at project level if SA does not manage project resources
+    "roles/compute.xpnAdmin"               = [module.branch-dp-dev-sa.iam_email]
     "roles/logging.admin"                  = [module.branch-dp-dev-sa.iam_email]
     "roles/owner"                          = [module.branch-dp-dev-sa.iam_email]
     "roles/resourcemanager.folderAdmin"    = [module.branch-dp-dev-sa.iam_email]
     "roles/resourcemanager.projectCreator" = [module.branch-dp-dev-sa.iam_email]
-    "roles/compute.xpnAdmin"               = [module.branch-dp-dev-sa.iam_email]
   }
 }
 
