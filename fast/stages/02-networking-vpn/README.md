@@ -289,7 +289,6 @@ DNS configurations are centralised in the `dns.tf` file. Spokes delegate DNS res
 
 | name | description | modules | resources |
 |---|---|---|---|
-| [02-networking-providers.tf](./02-networking-providers.tf) | None |  |  |
 | [dns-dev.tf](./dns-dev.tf) | Development spoke DNS zones and peerings setup. | <code>dns</code> |  |
 | [dns-landing.tf](./dns-landing.tf) | Landing DNS zones and peerings setup. | <code>dns</code> |  |
 | [dns-prod.tf](./dns-prod.tf) | Production spoke DNS zones and peerings setup. | <code>dns</code> |  |

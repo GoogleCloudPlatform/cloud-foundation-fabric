@@ -115,7 +115,6 @@ terraform apply
 
 | name | description | modules |
 |---|---|---|
-| [03-data-platform-dev-providers.tf](./03-data-platform-dev-providers.tf) | None |  |
 | [main.tf](./main.tf) | Data Platformy. | <code>data-platform-foundations</code> |
 | [outputs.tf](./outputs.tf) | Output variables. |  |
 | [variables.tf](./variables.tf) | Terraform Variables. |  |
