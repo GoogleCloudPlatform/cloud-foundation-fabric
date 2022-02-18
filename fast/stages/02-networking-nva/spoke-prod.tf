@@ -120,3 +120,18 @@ module "peering-prod" {
   local_network = module.prod-spoke-vpc.self_link
   peer_network  = module.landing-trusted-vpc.self_link
 }
+
+# Create delegated grants for stage3 service accounts
+resource "google_project_iam_binding" "prod_spoke_project_iam_delegated" {
+  project = module.prod-spoke-project.project_id
+  role    = "roles/resourcemanager.projectIamAdmin"
+  members = values(local.service_accounts)
+  condition {
+    title       = "prod_stage3_sa_delegated_grants"
+    description = "Production host project delegated grants."
+    expression = format(
+      "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
+      join(",", formatlist("'%s'", local.stage3_sas_delegated_grants))
+    )
+  }
+}

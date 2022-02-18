@@ -102,9 +102,7 @@ module "dev-spoke-cloudnat" {
 resource "google_project_iam_binding" "dev_spoke_project_iam_delegated" {
   project = module.dev-spoke-project.project_id
   role    = "roles/resourcemanager.projectIamAdmin"
-  members = [
-    local.service_accounts.project-factory-dev
-  ]
+  members = values(local.service_accounts)
   condition {
     title       = "dev_stage3_sa_delegated_grants"
     description = "Development host project delegated grants."
