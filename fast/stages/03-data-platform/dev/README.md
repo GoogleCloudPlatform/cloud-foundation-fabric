@@ -46,7 +46,14 @@ A Shared VPC is used here, either from one of the FAST networking stages (e.g. [
 
 ### Encryption
 
-Cloud KMS crypto keys are used here by default, wither from the [FAST security stage](../../02-security) or from an external source.
+Cloud KMS crypto keys can be configured wither from the [FAST security stage](../../02-security) or from an external source. This step is optional and depends on customer policies and security best practices.
+
+To configure the use of Cloud KMS on resources, you have to specify the key id on the `service_encryption_keys` variable. Key locations should match resource locations.
+
+### VPC-SC
+As is often the case in real-world configurations, [VPC-SC](https://cloud.google.com/vpc-service-controls) is needed to mitigate data exfiltration. VPC-SC can be configured from the [FAST security stage](../../02-security). This step is optional, but highly recomended, and depends on customer policies and security best practices.
+
+To configure the use of VPC-SC on the data platform, you have to specify the data platform project numbers on the `vpc_sc_perimeter_projects.dev` variable on [FAST security stage](../../02-security#perimeter-resources).
 
 ## How to run this stage
 
