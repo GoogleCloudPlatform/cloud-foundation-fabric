@@ -34,11 +34,12 @@ resource "google_composer_environment" "orch-cmp-0" {
   config {
     node_count = var.composer_config.node_count
     node_config {
-      zone            = "${var.region}-b"
-      service_account = module.orch-sa-cmp-0.email
-      network         = local.orch_vpc
-      subnetwork      = local.orch_subnet
-      tags            = ["composer-worker", "http-server", "https-server"]
+      zone                 = "${var.region}-b"
+      service_account      = module.orch-sa-cmp-0.email
+      network              = local.orch_vpc
+      subnetwork           = local.orch_subnet
+      tags                 = ["composer-worker", "http-server", "https-server"]
+      enable_ip_masq_agent = true
       ip_allocation_policy {
         use_ip_aliases = "true"
         cluster_secondary_range_name = try(
@@ -48,6 +49,18 @@ resource "google_composer_environment" "orch-cmp-0" {
           var.network_config.composer_secondary_ranges.services, "services"
         )
       }
+    }
+    private_environment_config {
+      enable_private_endpoint = "true"
+      cloud_sql_ipv4_cidr_block = try(
+        var.network_config.composer_ip_ranges.cloudsql, "10.20.10.0/24"
+      )
+      master_ipv4_cidr_block = try(
+        var.network_config.composer_ip_ranges.gke_master, "10.20.11.0/28"
+      )
+      web_server_ipv4_cidr_block = try(
+        var.network_config.composer_ip_ranges.web_server, "10.20.11.16/28"
+      )
     }
     software_config {
       image_version = var.composer_config.airflow_version
@@ -87,18 +100,6 @@ resource "google_composer_environment" "orch-cmp-0" {
         }
       )
     }
-    private_environment_config {
-      enable_private_endpoint = "true"
-      cloud_sql_ipv4_cidr_block = try(
-        var.network_config.composer_ip_ranges.cloudsql, "10.20.10.0/24"
-      )
-      master_ipv4_cidr_block = try(
-        var.network_config.composer_ip_ranges.gke_master, "10.20.11.0/28"
-      )
-      web_server_ipv4_cidr_block = try(
-        var.network_config.composer_ip_ranges.web_server, "10.20.11.16/28"
-      )
-    }
 
     dynamic "encryption_config" {
       for_each = (
@@ -111,12 +112,22 @@ resource "google_composer_environment" "orch-cmp-0" {
       }
     }
 
-    # web_server_network_access_control {
-    #   allowed_ip_range {
-    #     value       = "172.16.0.0/12"
-    #     description = "Allowed ip range"
+    # dynamic "web_server_network_access_control" {
+    #   for_each = toset(
+    #     var.network_config.web_server_network_access_control == null
+    #     ? []
+    #     : [var.network_config.web_server_network_access_control]
+    #   )
+    #   content {
+    #     dynamic "allowed_ip_range" {
+    #       for_each = toset(web_server_network_access_control.key)
+    #       content {
+    #         value = allowed_ip_range.key
+    #       }
+    #     }
     #   }
     # }
+
   }
   depends_on = [
     google_project_iam_member.shared_vpc,

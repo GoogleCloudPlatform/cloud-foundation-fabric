@@ -1,6 +1,24 @@
 # skip boilerplate check
 
-allow-dataflow-load-ingress-traffic:
+ingress-allow-composer-nodes:
+  description: "Allow traffic on Cloud Dataflow subnet"
+  direction: INGRESS
+  action: allow
+  sources: []
+  ranges:
+    - 10.128.48.0/24
+  targets:
+    - composer-worker
+  use_service_accounts: false
+  rules:
+    - protocol: tcp
+      ports:
+        - 80
+        - 443
+        - 3306
+        - 3307
+
+ingress-allow-dataflow-load:
   description: "Allow traffic on Cloud Dataflow subnet"
   direction: INGRESS
   action: allow

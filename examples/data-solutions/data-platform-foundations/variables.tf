@@ -79,6 +79,7 @@ variable "network_config" {
       pods     = string
       services = string
     })
+    # web_server_network_access_control = list(string)
   })
   default = null
 }
