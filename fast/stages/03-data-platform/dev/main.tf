@@ -43,8 +43,9 @@ module "data-platform" {
     }
   }
   organization_domain     = var.organization.domain
-  prefix                  = var.prefix
+  prefix                  = "${var.prefix}-dev-data"
   project_services        = var.project_services
+  project_suffix          = "0"
   region                  = var.region
   service_encryption_keys = var.service_encryption_keys
 }
