@@ -78,11 +78,11 @@ variable "network_config_composer" {
     web_server_range  = string
   })
   default = {
-    cloudsql_range    = "172.18.29.0/24"
-    gke_master_range  = "172.18.30.0/28"
+    cloudsql_range    = "192.168.254.0/24"
+    gke_master_range  = "192.168.255.0/28"
     gke_pods_name     = "pods"
     gke_services_name = "services"
-    web_server_range  = "172.18.30.16/28"
+    web_server_range  = "192.168.255.16/28"
   }
 }
 
