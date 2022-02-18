@@ -104,6 +104,12 @@ variable "project_services" {
   ]
 }
 
+variable "project_suffix" {
+  description = "Suffix used only for project ids."
+  type        = string
+  default     = null
+}
+
 variable "region" {
   description = "Region used for regional resources."
   type        = string

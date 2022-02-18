@@ -19,5 +19,5 @@ module "exp-project" {
   parent          = var.folder_id
   billing_account = var.billing_account_id
   prefix          = var.prefix
-  name            = "exp"
+  name            = "exp${local.project_suffix}"
 }

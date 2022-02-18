@@ -92,7 +92,7 @@ module "lake-0-project" {
   parent          = var.folder_id
   billing_account = var.billing_account_id
   prefix          = var.prefix
-  name            = "dtl-0"
+  name            = "dtl-0${local.project_suffix}"
   group_iam       = local.lake_group_iam
   iam             = local.lake_0_iam
   services        = local.lake_services
@@ -107,7 +107,7 @@ module "lake-1-project" {
   parent          = var.folder_id
   billing_account = var.billing_account_id
   prefix          = var.prefix
-  name            = "dtl-1"
+  name            = "dtl-1${local.project_suffix}"
   group_iam       = local.lake_group_iam
   iam             = local.lake_iam
   services        = local.lake_services
@@ -122,7 +122,7 @@ module "lake-2-project" {
   parent          = var.folder_id
   billing_account = var.billing_account_id
   prefix          = var.prefix
-  name            = "dtl-2"
+  name            = "dtl-2${local.project_suffix}"
   group_iam       = local.lake_group_iam
   iam             = local.lake_iam
   services        = local.lake_services
@@ -137,7 +137,7 @@ module "lake-plg-project" {
   parent          = var.folder_id
   billing_account = var.billing_account_id
   prefix          = var.prefix
-  name            = "dtl-plg"
+  name            = "dtl-plg${local.project_suffix}"
   group_iam       = local.lake_plg_group_iam
   iam             = {}
   services        = local.lake_services
