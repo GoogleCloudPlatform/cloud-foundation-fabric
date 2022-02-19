@@ -10,7 +10,7 @@ The resulting `cloud-config` can be customized in a number of ways:
 
 The default instance configuration inserts iptables rules to allow traffic on the DNS TCP and UDP ports, and the 8080 port for the optional HTTP health check that can be enabled via the CoreDNS [health plugin](https://coredns.io/plugins/health/).
 
-Logging and monitoring are enabled via the [Google Cloud Logging driver](https://docs.docker.com/config/containers/logging/gcplogs/) configured for the CoreDNS container, and the [Node Problem Detector](https://cloud.google.com/container-optimized-os/docs/how-to/monitoring) service started by default on boot.
+Logging and monitoring are enabled via the [Google Cloud Logging driver](https://docs.docker.com/config/containers/logging/gcplogs/) configured for the CoreDNS container, and the [Node Problem Detector](https://cloud.google.com/container-optimized-os/docs/how-to/monitoring) service is started by default on boot.
 
 The module renders the generated cloud config in the `cloud_config` output, to be used in instances or instance templates via the `user-data` metadata.
 
