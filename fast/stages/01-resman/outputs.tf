@@ -17,6 +17,7 @@
 locals {
   folder_ids = merge(
     {
+      data-platform   = module.branch-dp-dev-folder.id
       networking      = module.branch-network-folder.id
       networking-dev  = module.branch-network-dev-folder.id
       networking-prod = module.branch-network-prod-folder.id
@@ -45,6 +46,16 @@ locals {
       name   = "security"
       sa     = module.branch-security-sa.email
     })
+    "03-data-platform-dev" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
+      bucket = module.branch-dp-dev-gcs.name
+      name   = "dp-dev"
+      sa     = module.branch-dp-dev-sa.email
+    })
+    "03-data-platform-prod" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
+      bucket = module.branch-dp-prod-gcs.name
+      name   = "dp-prod"
+      sa     = module.branch-dp-prod-sa.email
+    })
     "03-project-factory-dev" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
       bucket = module.branch-teams-dev-projectfactory-gcs.name
       name   = "team-dev"
@@ -63,6 +74,8 @@ locals {
   }
   service_accounts = merge(
     {
+      data-platform-dev    = module.branch-dp-dev-sa.email
+      data-platform-prod   = module.branch-dp-prod-sa.email
       networking           = module.branch-network-sa.email
       project-factory-dev  = module.branch-teams-dev-projectfactory-sa.email
       project-factory-prod = module.branch-teams-prod-projectfactory-sa.email
@@ -98,6 +111,22 @@ resource "local_file" "tfvars" {
 
 # outputs
 
+output "dataplatform" {
+  description = "Data for the Data Platform stage."
+  value = {
+    dev = {
+      folder          = module.branch-dp-dev-folder.id
+      gcs_bucket      = module.branch-dp-dev-gcs.name
+      service_account = module.branch-dp-dev-sa.email
+    }
+    prod = {
+      folder          = module.branch-dp-prod-folder.id
+      gcs_bucket      = module.branch-dp-prod-gcs.name
+      service_account = module.branch-dp-prod-sa.email
+    }
+  }
+}
+
 output "networking" {
   description = "Data for the networking stage."
   value = {
@@ -124,7 +153,7 @@ output "project_factories" {
 # ready to use provider configurations for subsequent stages
 
 output "providers" {
-  # tfdoc:output:consumers 02-networking 02-security xx-sandbox xx-teams
+  # tfdoc:output:consumers 02-networking 02-security 03-dataplatform xx-sandbox xx-teams
   description = "Terraform provider files for this stage and dependent stages."
   sensitive   = true
   value       = local.providers

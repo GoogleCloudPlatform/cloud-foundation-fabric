@@ -25,7 +25,7 @@ module "land-project" {
   parent          = var.folder_id
   billing_account = var.billing_account_id
   prefix          = var.prefix
-  name            = "lnd"
+  name            = "lnd${local.project_suffix}"
   group_iam = {
     (local.groups.data-engineers) = [
       "roles/bigquery.dataEditor",

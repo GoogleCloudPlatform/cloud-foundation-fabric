@@ -226,15 +226,16 @@ Description of commands:
 |---|---|:---:|:---:|:---:|
 | [billing_account_id](variables.tf#L17) | Billing account id. | <code>string</code> | ✓ |  |
 | [folder_id](variables.tf#L42) | Folder to be used for the networking resources in folders/nnnn format. | <code>string</code> | ✓ |  |
-| [organization_domain](variables.tf#L86) | Organization domain. | <code>string</code> | ✓ |  |
-| [prefix](variables.tf#L91) | Unique prefix used for resource names. | <code>string</code> | ✓ |  |
+| [organization_domain](variables.tf#L87) | Organization domain. | <code>string</code> | ✓ |  |
+| [prefix](variables.tf#L92) | Unique prefix used for resource names. | <code>string</code> | ✓ |  |
 | [composer_config](variables.tf#L22) | Cloud Composer config. | <code title="object&#40;&#123;&#10;  node_count      &#61; number&#10;  airflow_version &#61; string&#10;  env_variables   &#61; map&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  node_count      &#61; 3&#10;  airflow_version &#61; &#34;composer-1.17.5-airflow-2.1.4&#34;&#10;  env_variables   &#61; &#123;&#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [data_force_destroy](variables.tf#L36) | Flag to set 'force_destroy' on data services like BiguQery or Cloud Storage. | <code>bool</code> |  | <code>false</code> |
 | [groups](variables.tf#L53) | User groups. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  data-analysts  &#61; &#34;gcp-data-analysts&#34;&#10;  data-engineers &#61; &#34;gcp-data-engineers&#34;&#10;  data-security  &#61; &#34;gcp-data-security&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [location](variables.tf#L47) | Location used for multi-regional resources. | <code>string</code> |  | <code>&#34;eu&#34;</code> |
 | [network_config](variables.tf#L63) | Shared VPC network configurations to use. If null networks will be created in projects with preconfigured values. | <code title="object&#40;&#123;&#10;  host_project      &#61; string&#10;  network_self_link &#61; string&#10;  subnet_self_links &#61; object&#40;&#123;&#10;    load           &#61; string&#10;    transformation &#61; string&#10;    orchestration  &#61; string&#10;  &#125;&#41;&#10;  composer_ip_ranges &#61; object&#40;&#123;&#10;    cloudsql   &#61; string&#10;    gke_master &#61; string&#10;    web_server &#61; string&#10;  &#125;&#41;&#10;  composer_secondary_ranges &#61; object&#40;&#123;&#10;    pods     &#61; string&#10;    services &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [project_services](variables.tf#L96) | List of core services enabled on all projects. | <code>list&#40;string&#41;</code> |  | <code title="&#91;&#10;  &#34;cloudresourcemanager.googleapis.com&#34;,&#10;  &#34;iam.googleapis.com&#34;,&#10;  &#34;serviceusage.googleapis.com&#34;,&#10;  &#34;stackdriver.googleapis.com&#34;&#10;&#93;">&#91;&#8230;&#93;</code> |
-| [region](variables.tf#L107) | Region used for regional resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [project_services](variables.tf#L97) | List of core services enabled on all projects. | <code>list&#40;string&#41;</code> |  | <code title="&#91;&#10;  &#34;cloudresourcemanager.googleapis.com&#34;,&#10;  &#34;iam.googleapis.com&#34;,&#10;  &#34;serviceusage.googleapis.com&#34;,&#10;  &#34;stackdriver.googleapis.com&#34;&#10;&#93;">&#91;&#8230;&#93;</code> |
+| [project_suffix](variables.tf#L108) | Suffix used only for project ids. | <code>string</code> |  | <code>null</code> |
+| [region](variables.tf#L114) | Region used for regional resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
 
 ## Outputs
 

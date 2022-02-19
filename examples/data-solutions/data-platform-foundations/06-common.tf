@@ -19,7 +19,7 @@ module "common-project" {
   parent          = var.folder_id
   billing_account = var.billing_account_id
   prefix          = var.prefix
-  name            = "cmn"
+  name            = "cmn${local.project_suffix}"
   group_iam = {
     (local.groups.data-engineers) = [
       "roles/dlp.reader",

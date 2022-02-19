@@ -38,7 +38,7 @@ module "load-project" {
   parent          = var.folder_id
   billing_account = var.billing_account_id
   prefix          = var.prefix
-  name            = "lod"
+  name            = "lod${local.project_suffix}"
   group_iam = {
     (local.groups.data-engineers) = [
       "roles/compute.viewer",

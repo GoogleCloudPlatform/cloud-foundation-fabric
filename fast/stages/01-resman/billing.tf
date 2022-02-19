@@ -23,11 +23,12 @@ locals {
       module.branch-network-sa.iam_email,
       module.branch-security-sa.iam_email,
     ],
+    local.branch_dataplatform_sa_iam_emails,
     # enable if individual teams can create their own projects
     # [
     #   for k, v in module.branch-teams-team-sa : v.iam_email
     # ],
-    local.branch_teams_pf_sa_iam_emails
+    local.branch_teams_pf_sa_iam_emails,
   )
 }
 
