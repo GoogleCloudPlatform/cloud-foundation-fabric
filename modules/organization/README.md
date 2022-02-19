@@ -220,6 +220,7 @@ module "org" {
 ```
 
 ## Custom Roles
+
 ```hcl
 module "org" {
   source          = "./modules/organization"
@@ -236,6 +237,39 @@ module "org" {
 # tftest modules=1 resources=2
 ```
 
+## Tags
+
+Refer to the [Creating and managing tags](https://cloud.google.com/resource-manager/docs/tags/tags-creating-and-managing) documentation for details on usage.
+
+```hcl
+module "org" {
+  source          = "./modules/organization"
+  organization_id = var.organization_id
+  tags = {
+    environment = {
+      description  = "Environment specification."
+      iam          = {
+        "roles/resourcemanager.tagAdmin" = ["group:admins@example.com"]
+      }
+      values = {
+        dev  = null
+        prod = {
+          description = "Environment: production."
+          iam = {
+            "roles/resourcemanager.tagViewer" = ["user:user1@example.com"]
+          }
+        }
+      }
+    }
+  }
+  tag_bindings = {
+    env-prod = module.org.tag_values["environment/prod"].id
+    foo      = "tagValues/12345678"
+  }
+}
+# tftest modules=1 resources=7
+```
+
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
 
@@ -249,6 +283,7 @@ module "org" {
 | [main.tf](./main.tf) | Module-level locals and resources. | <code>google_essential_contacts_contact</code> |
 | [organization-policies.tf](./organization-policies.tf) | Organization-level organization policies. | <code>google_organization_policy</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |
+| [tags.tf](./tags.tf) | None | <code>google_tags_tag_binding</code> · <code>google_tags_tag_key</code> · <code>google_tags_tag_key_iam_binding</code> · <code>google_tags_tag_value</code> · <code>google_tags_tag_value_iam_binding</code> |
 | [variables.tf](./variables.tf) | Module variables. |  |
 | [versions.tf](./versions.tf) | Version pins. |  |
 
@@ -273,6 +308,8 @@ module "org" {
 | [logging_sinks](variables.tf#L129) | Logging sinks to create for this organization. | <code title="map&#40;object&#40;&#123;&#10;  destination          &#61; string&#10;  type                 &#61; string&#10;  filter               &#61; string&#10;  include_children     &#61; bool&#10;  bq_partitioned_table &#61; bool&#10;  exclusions &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [policy_boolean](variables.tf#L160) | Map of boolean org policies and enforcement value, set value to null for policy restore. | <code>map&#40;bool&#41;</code> |  | <code>&#123;&#125;</code> |
 | [policy_list](variables.tf#L167) | Map of list org policies, status is true for allow, false for deny, null for restore. Values can only be used for allow or deny. | <code title="map&#40;object&#40;&#123;&#10;  inherit_from_parent &#61; bool&#10;  suggested_value     &#61; string&#10;  status              &#61; bool&#10;  values              &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_bindings](variables.tf#L179) | Tag bindings for this organization, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [tags](variables.tf#L185) | Tags by key name. The `iam` attribute behaves like the similarly named one at module level. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; string&#10;  iam         &#61; map&#40;list&#40;string&#41;&#41;&#10;  values &#61; map&#40;object&#40;&#123;&#10;    description &#61; string&#10;    iam         &#61; map&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
@@ -283,6 +320,8 @@ module "org" {
 | [firewall_policies](outputs.tf#L36) | Map of firewall policy resources created in the organization. |  |
 | [firewall_policy_id](outputs.tf#L41) | Map of firewall policy ids created in the organization. |  |
 | [organization_id](outputs.tf#L46) | Organization id dependent on module resources. |  |
-| [sink_writer_identities](outputs.tf#L60) | Writer identities created for each sink. |  |
+| [sink_writer_identities](outputs.tf#L64) | Writer identities created for each sink. |  |
+| [tag_keys](outputs.tf#L72) | Tag key resources. |  |
+| [tag_values](outputs.tf#L79) | Tag value resources. |  |
 
 <!-- END TFDOC -->

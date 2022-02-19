@@ -53,13 +53,32 @@ output "organization_id" {
     google_organization_iam_member.additive,
     google_organization_iam_policy.authoritative,
     google_organization_policy.boolean,
-    google_organization_policy.list
+    google_organization_policy.list,
+    google_tags_tag_key.default,
+    google_tags_tag_key_iam_binding.default,
+    google_tags_tag_value.default,
+    google_tags_tag_value_iam_binding.default,
   ]
 }
 
 output "sink_writer_identities" {
   description = "Writer identities created for each sink."
   value = {
-    for name, sink in google_logging_organization_sink.sink : name => sink.writer_identity
+    for name, sink in google_logging_organization_sink.sink :
+    name => sink.writer_identity
+  }
+}
+
+output "tag_keys" {
+  description = "Tag key resources."
+  value = {
+    for k, v in google_tags_tag_key.default : k => v
+  }
+}
+
+output "tag_values" {
+  description = "Tag value resources."
+  value = {
+    for k, v in google_tags_tag_value.default : k => v
   }
 }
