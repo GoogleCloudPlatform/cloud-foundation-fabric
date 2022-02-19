@@ -143,3 +143,9 @@ variable "policy_list" {
   default  = {}
   nullable = false
 }
+
+variable "tag_bindings" {
+  description = "Tag bindings for this folder, in key => tag value id format."
+  type        = map(string)
+  default     = null
+}
