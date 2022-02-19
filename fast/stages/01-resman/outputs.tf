@@ -57,14 +57,14 @@ locals {
       sa     = module.branch-dp-prod-sa.email
     })
     "03-project-factory-dev" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
-      bucket = module.branch-teams-dev-projectfactory-gcs.name
+      bucket = module.branch-teams-dev-pf-gcs.name
       name   = "team-dev"
-      sa     = module.branch-teams-dev-projectfactory-sa.email
+      sa     = module.branch-teams-dev-pf-sa.email
     })
     "03-project-factory-prod" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
-      bucket = module.branch-teams-prod-projectfactory-gcs.name
+      bucket = module.branch-teams-prod-pf-gcs.name
       name   = "team-prod"
-      sa     = module.branch-teams-prod-projectfactory-sa.email
+      sa     = module.branch-teams-prod-pf-sa.email
     })
     "99-sandbox" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
       bucket = module.branch-sandbox-gcs.name
@@ -77,8 +77,8 @@ locals {
       data-platform-dev    = module.branch-dp-dev-sa.email
       data-platform-prod   = module.branch-dp-prod-sa.email
       networking           = module.branch-network-sa.email
-      project-factory-dev  = module.branch-teams-dev-projectfactory-sa.email
-      project-factory-prod = module.branch-teams-prod-projectfactory-sa.email
+      project-factory-dev  = module.branch-teams-dev-pf-sa.email
+      project-factory-prod = module.branch-teams-prod-pf-sa.email
       sandbox              = module.branch-sandbox-sa.email
       security             = module.branch-security-sa.email
       teams                = module.branch-teams-prod-sa.email
@@ -140,12 +140,12 @@ output "project_factories" {
   description = "Data for the project factories stage."
   value = {
     dev = {
-      bucket = module.branch-teams-dev-projectfactory-gcs.name
-      sa     = module.branch-teams-dev-projectfactory-sa.email
+      bucket = module.branch-teams-dev-pf-gcs.name
+      sa     = module.branch-teams-dev-pf-sa.email
     }
     prod = {
-      bucket = module.branch-teams-prod-projectfactory-gcs.name
-      sa     = module.branch-teams-prod-projectfactory-sa.email
+      bucket = module.branch-teams-prod-pf-gcs.name
+      sa     = module.branch-teams-prod-pf-sa.email
     }
   }
 }

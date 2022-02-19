@@ -25,8 +25,8 @@ locals {
   ]
   # set to the empty list if you remove the teams branch
   branch_teams_pf_sa_iam_emails = [
-    module.branch-teams-dev-projectfactory-sa.iam_email,
-    module.branch-teams-prod-projectfactory-sa.iam_email
+    module.branch-teams-dev-pf-sa.iam_email,
+    module.branch-teams-prod-pf-sa.iam_email
   ]
   list_allow = {
     inherit_from_parent = false
@@ -162,14 +162,14 @@ module "organization" {
   }
 }
 
-# organization policy role assigned with a condition on tags
+# organization policy admin role assigned with a condition on tags
 
 resource "google_organization_iam_member" "org_policy_admin" {
   for_each = {
     data-dev  = ["data", "development", module.branch-dp-dev-sa.iam_email]
-    data-prod = ["data", "production", module.branch-dp-dev-sa.iam_email]
-    pf-dev    = ["teams", "development", module.branch-teams-dev-projectfactory-sa.iam_email]
-    pf-prod   = ["teams", "production", module.branch-teams-dev-projectfactory-sa.iam_email]
+    data-prod = ["data", "production", module.branch-dp-prod-sa.iam_email]
+    pf-dev    = ["teams", "development", module.branch-teams-dev-pf-sa.iam_email]
+    pf-prod   = ["teams", "production", module.branch-teams-prod-pf-sa.iam_email]
   }
   org_id = var.organization.id
   role   = "roles/orgpolicy.policyAdmin"
