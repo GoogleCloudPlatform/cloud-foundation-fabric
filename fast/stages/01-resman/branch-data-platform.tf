@@ -42,6 +42,9 @@ module "branch-dp-dev-folder" {
     "roles/resourcemanager.folderAdmin"    = [module.branch-dp-dev-sa.iam_email]
     "roles/resourcemanager.projectCreator" = [module.branch-dp-dev-sa.iam_email]
   }
+  tag_bindings = {
+    context = module.organization.tag_values["environment/development"].id
+  }
 }
 
 module "branch-dp-dev-sa" {
@@ -77,6 +80,9 @@ module "branch-dp-prod-folder" {
     "roles/resourcemanager.folderAdmin"    = [module.branch-dp-prod-sa.iam_email]
     "roles/resourcemanager.projectCreator" = [module.branch-dp-prod-sa.iam_email]
     "roles/compute.xpnAdmin"               = [module.branch-dp-prod-sa.iam_email]
+  }
+  tag_bindings = {
+    context = module.organization.tag_values["environment/production"].id
   }
 }
 

@@ -72,6 +72,9 @@ module "branch-network-prod-folder" {
       module.branch-teams-prod-projectfactory-sa.iam_email
     ]
   }
+  tag_bindings = {
+    context = module.organization.tag_values["environment/production"].id
+  }
 }
 
 module "branch-network-dev-folder" {
@@ -83,5 +86,8 @@ module "branch-network-dev-folder" {
       module.branch-dp-dev-sa.iam_email,
       module.branch-teams-dev-projectfactory-sa.iam_email
     ]
+  }
+  tag_bindings = {
+    context = module.organization.tag_values["environment/development"].id
   }
 }

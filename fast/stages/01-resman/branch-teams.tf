@@ -101,6 +101,9 @@ module "branch-teams-team-dev-folder" {
       module.branch-teams-dev-projectfactory-sa.iam_email
     ]
   }
+  tag_bindings = {
+    context = module.organization.tag_values["environment/development"].id
+  }
 }
 
 module "branch-teams-dev-projectfactory-sa" {
@@ -150,6 +153,9 @@ module "branch-teams-team-prod-folder" {
     "roles/compute.xpnAdmin" = [
       module.branch-teams-prod-projectfactory-sa.iam_email
     ]
+  }
+  tag_bindings = {
+    context = module.organization.tag_values["environment/production"].id
   }
 }
 
