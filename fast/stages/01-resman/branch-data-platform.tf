@@ -22,6 +22,9 @@ module "branch-dp-folder" {
   source = "../../../modules/folder"
   parent = "organizations/${var.organization.id}"
   name   = "Data Platform"
+  tag_bindings = {
+    context = module.organization.tag_values["context/data"].id
+  }
 }
 
 # environment: development folder

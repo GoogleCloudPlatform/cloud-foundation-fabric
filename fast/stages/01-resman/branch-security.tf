@@ -39,6 +39,9 @@ module "branch-security-folder" {
     "roles/resourcemanager.folderAdmin"    = [module.branch-security-sa.iam_email]
     "roles/resourcemanager.projectCreator" = [module.branch-security-sa.iam_email]
   }
+  tag_bindings = {
+    context = module.organization.tag_values["context/security"].id
+  }
 }
 
 module "branch-security-sa" {

@@ -143,4 +143,26 @@ module "organization" {
     #   values              = local.allowed_regions
     # }
   }
+  tags = {
+    context = {
+      description = "Resource management context."
+      iam         = {}
+      values = {
+        data       = null
+        gke        = null
+        networking = null
+        sandbox    = null
+        security   = null
+        teams      = null
+      }
+    }
+    environment = {
+      description = "Environment definition."
+      iam         = {}
+      values = {
+        development = null
+        production  = null
+      }
+    }
+  }
 }

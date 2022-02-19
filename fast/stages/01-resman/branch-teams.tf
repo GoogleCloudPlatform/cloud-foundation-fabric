@@ -22,6 +22,9 @@ module "branch-teams-folder" {
   source = "../../../modules/folder"
   parent = "organizations/${var.organization.id}"
   name   = "Teams"
+  tag_bindings = {
+    context = module.organization.tag_values["context/teams"].id
+  }
 }
 
 module "branch-teams-prod-sa" {

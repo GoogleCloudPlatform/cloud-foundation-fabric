@@ -38,6 +38,9 @@ module "branch-network-folder" {
     "roles/resourcemanager.projectCreator" = [module.branch-network-sa.iam_email]
     "roles/compute.xpnAdmin"               = [module.branch-network-sa.iam_email]
   }
+  tag_bindings = {
+    context = module.organization.tag_values["context/networking"].id
+  }
 }
 
 module "branch-network-sa" {
