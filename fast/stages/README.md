@@ -37,8 +37,8 @@ Refer to each stage's documentation for a detailed description of its purpose, t
 
 ## Environment-level resources (03)
 
-- [Project Factory](03-project-factory/README.md)  
+- [Project Factory](03-project-factory/dev/)  
   YAML-based fatory to create and configure application or team-level projects. Configuration includes VPC-level settings for Shared VPC, service-level configuration for CMEK encryption via centralized keys, and service account creation for workloads and applications. This stage is meant to be used once per environment.
-- [Data Platform](03-data-platform/README.md)
+- [Data Platform](03-data-platform/dev/)
 - GKE Multitenant (in development)
 - GCE Migration (in development)
