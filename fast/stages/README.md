@@ -39,6 +39,6 @@ Refer to each stage's documentation for a detailed description of its purpose, t
 
 - [Project Factory](03-project-factory/README.md)  
   YAML-based fatory to create and configure application or team-level projects. Configuration includes VPC-level settings for Shared VPC, service-level configuration for CMEK encryption via centralized keys, and service account creation for workloads and applications. This stage is meant to be used once per environment.
-- Data Platform (in development)
+- [Data Platform](03-data-platform/README.md)
 - GKE Multitenant (in development)
 - GCE Migration (in development)
