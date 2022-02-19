@@ -16,6 +16,6 @@
 
 resource "google_tags_tag_binding" "binding" {
   for_each  = coalesce(var.tag_bindings, {})
-  parent    = "//cloudresourcemanager.googleapis.com/${local.project.project_id}"
+  parent    = "//cloudresourcemanager.googleapis.com/projects/${local.project.number}"
   tag_value = each.value
 }
