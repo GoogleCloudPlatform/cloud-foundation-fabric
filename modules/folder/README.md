@@ -216,6 +216,38 @@ module "folder2" {
 # tftest modules=2 resources=6
 ```
 
+## Tags
+
+Refer to the [Creating and managing tags](https://cloud.google.com/resource-manager/docs/tags/tags-creating-and-managing) documentation for details on usage.
+
+```hcl
+module "org" {
+  source          = "./modules/organization"
+  organization_id = var.organization_id
+  tags = {
+    environment = {
+      description  = "Environment specification."
+      iam          = null
+      values = {
+        dev  = null
+        prod = null
+      }
+    }
+  }
+}
+
+module "folder" {
+  source = "./modules/folder"
+  name   = "Test"
+  parent = module.org.organization_id
+  tag_bindings = {
+    env-prod = module.org.tag_values["environment/prod"].id
+    foo      = "tagValues/12345678"
+  }
+}
+# tftest modules=2 resources=6
+```
+
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
 
@@ -229,6 +261,7 @@ module "folder2" {
 | [main.tf](./main.tf) | Module-level locals and resources. | <code>google_essential_contacts_contact</code> · <code>google_folder</code> |
 | [organization-policies.tf](./organization-policies.tf) | Folder-level organization policies. | <code>google_folder_organization_policy</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |
+| [tags.tf](./tags.tf) | None | <code>google_tags_tag_binding</code> |
 | [variables.tf](./variables.tf) | Module variables. |  |
 | [versions.tf](./versions.tf) | Version pins. |  |
 
@@ -250,6 +283,7 @@ module "folder2" {
 | [parent](variables.tf#L118) | Parent in folders/folder_id or organizations/org_id format. | <code>string</code> |  | <code>null</code> |
 | [policy_boolean](variables.tf#L128) | Map of boolean org policies and enforcement value, set value to null for policy restore. | <code>map&#40;bool&#41;</code> |  | <code>&#123;&#125;</code> |
 | [policy_list](variables.tf#L135) | Map of list org policies, status is true for allow, false for deny, null for restore. Values can only be used for allow or deny. | <code title="map&#40;object&#40;&#123;&#10;  inherit_from_parent &#61; bool&#10;  suggested_value     &#61; string&#10;  status              &#61; bool&#10;  values              &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_bindings](variables.tf#L147) | Tag bindings for this folder, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

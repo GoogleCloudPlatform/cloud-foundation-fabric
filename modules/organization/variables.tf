@@ -175,3 +175,22 @@ variable "policy_list" {
   default  = {}
   nullable = false
 }
+
+variable "tag_bindings" {
+  description = "Tag bindings for this organization, in key => tag value id format."
+  type        = map(string)
+  default     = null
+}
+
+variable "tags" {
+  description = "Tags by key name. The `iam` attribute behaves like the similarly named one at module level."
+  type = map(object({
+    description = string
+    iam         = map(list(string))
+    values = map(object({
+      description = string
+      iam         = map(list(string))
+    }))
+  }))
+  default = null
+}
