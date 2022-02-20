@@ -158,7 +158,7 @@ Due to its simplicity, this stage lends itself easily to customizations: adding 
 | [branch-security.tf](./branch-security.tf) | Security stage resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
 | [branch-teams.tf](./branch-teams.tf) | Team stages resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
 | [main.tf](./main.tf) | Module-level locals and resources. |  |  |
-| [organization.tf](./organization.tf) | Organization policies. | <code>organization</code> |  |
+| [organization.tf](./organization.tf) | Organization policies. | <code>organization</code> | <code>google_organization_iam_member</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  | <code>local_file</code> |
 | [variables.tf](./variables.tf) | Module variables. |  |  |
 
