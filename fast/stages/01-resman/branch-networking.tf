@@ -38,6 +38,9 @@ module "branch-network-folder" {
     "roles/resourcemanager.projectCreator" = [module.branch-network-sa.iam_email]
     "roles/compute.xpnAdmin"               = [module.branch-network-sa.iam_email]
   }
+  tag_bindings = {
+    context = module.organization.tag_values["context/networking"].id
+  }
 }
 
 module "branch-network-sa" {
@@ -66,8 +69,11 @@ module "branch-network-prod-folder" {
   iam = {
     "roles/compute.xpnAdmin" = [
       module.branch-dp-prod-sa.iam_email,
-      module.branch-teams-prod-projectfactory-sa.iam_email
+      module.branch-teams-prod-pf-sa.iam_email
     ]
+  }
+  tag_bindings = {
+    context = module.organization.tag_values["environment/production"].id
   }
 }
 
@@ -78,7 +84,10 @@ module "branch-network-dev-folder" {
   iam = {
     "roles/compute.xpnAdmin" = [
       module.branch-dp-dev-sa.iam_email,
-      module.branch-teams-dev-projectfactory-sa.iam_email
+      module.branch-teams-dev-pf-sa.iam_email
     ]
+  }
+  tag_bindings = {
+    context = module.organization.tag_values["environment/development"].id
   }
 }

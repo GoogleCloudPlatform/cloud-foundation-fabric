@@ -41,6 +41,12 @@ locals {
       [module.automation-tf-bootstrap-sa.iam_email],
       local._iam_bootstrap_user
     )
+    "roles/resourcemanager.tagAdmin" = [
+      module.automation-tf-resman-sa.iam_email
+    ]
+    "roles/resourcemanager.tagUser" = [
+      module.automation-tf-resman-sa.iam_email
+    ]
   }
   # organization additive IAM bindings, in an easy to edit format before
   # they are combined with var.iam_additive a bit further in locals
