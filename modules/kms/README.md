@@ -95,6 +95,7 @@ module "kms" {
 | [key_purpose_defaults](variables.tf#L53) | Defaults used for key purpose when not defined at the key level. If purpose is not `ENCRYPT_DECRYPT` (the default), `version_template.algorithm` is required. | <code title="object&#40;&#123;&#10;  purpose &#61; string&#10;  version_template &#61; object&#40;&#123;&#10;    algorithm        &#61; string&#10;    protection_level &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  purpose          &#61; null&#10;  version_template &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [keyring_create](variables.tf#L78) | Set to false to manage keys and IAM bindings in an existing keyring. | <code>bool</code> |  | <code>true</code> |
 | [keys](variables.tf#L84) | Key names and base attributes. Set attributes to null if not needed. | <code title="map&#40;object&#40;&#123;&#10;  rotation_period &#61; string&#10;  labels          &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_bindings](variables.tf#L98) | Tag bindings for this keyring, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
