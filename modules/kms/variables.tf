@@ -94,3 +94,9 @@ variable "project_id" {
   description = "Project id where the keyring will be created."
   type        = string
 }
+
+variable "tag_bindings" {
+  description = "Tag bindings for this keyring, in key => tag value id format."
+  type        = map(string)
+  default     = null
+}
