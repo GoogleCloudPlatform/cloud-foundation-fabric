@@ -73,7 +73,7 @@ module "branch-network-prod-folder" {
     ]
   }
   tag_bindings = {
-    context = module.organization.tag_values["environment/production"].id
+    environment = module.organization.tag_values["environment/production"].id
   }
 }
 
@@ -88,6 +88,6 @@ module "branch-network-dev-folder" {
     ]
   }
   tag_bindings = {
-    context = module.organization.tag_values["environment/development"].id
+    environment = module.organization.tag_values["environment/development"].id
   }
 }

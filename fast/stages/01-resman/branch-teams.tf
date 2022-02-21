@@ -102,7 +102,7 @@ module "branch-teams-team-dev-folder" {
     ]
   }
   tag_bindings = {
-    context = module.organization.tag_values["environment/development"].id
+    environment = module.organization.tag_values["environment/development"].id
   }
 }
 
@@ -165,7 +165,7 @@ module "branch-teams-team-prod-folder" {
     ]
   }
   tag_bindings = {
-    context = module.organization.tag_values["environment/production"].id
+    environment = module.organization.tag_values["environment/production"].id
   }
 }
 
