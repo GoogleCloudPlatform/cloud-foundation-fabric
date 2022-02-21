@@ -32,9 +32,9 @@ The service account used in the [Resource Management stage](../01-resman) needs 
 
 In order to be able to assign those roles without having the full authority of the Organization Admin role, this stage defines a custom role that only allows setting IAM policies on the organization, and grants it via a [delegated role grant](https://cloud.google.com/iam/docs/setting-limits-on-granting-roles) that only allows it to be used to grant a limited subset of roles.
 
-In this way, the Resource Management service account can effectively act as an Organization Admin, but only to grant the roles it effectively needs to control.
+In this way, the Resource Management service account can effectively act as an Organization Admin, but only to grant the specific roles it needs to control.
 
-One consequence of the above setup, is the need to configure IAM bindings as non-authoritative for the roles included in the IAM condition, since those same roles are effectively under the control of two stages: this one and Resource Management. Using authoritative bindings for these roles (instead of non-authoritative ones) would generate potential conflicts, where each stage could try to overwrite and negate the bindings applied by the other at each `apply` cycle.
+One consequence of the above setup is the need to configure IAM bindings that can be assigned via the condition as non-authoritative, since those same roles are effectively under the control of two stages: this one and Resource Management. Using authoritative bindings for these roles (instead of non-authoritative ones) would generate potential conflicts, where each stage could try to overwrite and negate the bindings applied by the other at each `apply` cycle.
 
 A full reference of IAM roles managed by this stage [is available here](./IAM.md).
 
@@ -287,6 +287,8 @@ This makes it easy to tweak user roles by adding mappings to the `iam_groups` va
 In those cases where roles need to be assigned to end-user service accounts (e.g. an application or pipeline service account), we offer a stage-level `iam` variable that allows pinpointing individual role/members pairs, without having to touch the code internals, to avoid the risk of breaking a critical role for a robot account. The variable can also be used to assign roles to specific users or to groups external to the organization, e.g. to support external suppliers.
 
 The one exception to this convention is for roles which are part of the delegated grant condition described above, and which can then be assigned from other stages. In this case, use the `iam_additive` variable as they are implemented with non-authoritative resources. Using non-authoritative bindings ensure that re-executing this stage will not override any bindings set in downstream stages.
+
+A full reference of IAM roles managed by this stage [is available here](./IAM.md).
 
 ### Log sinks and log destinations
 
