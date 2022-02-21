@@ -118,6 +118,8 @@ for role in $FAST_ROLES; do
 done
 ```
 
+Then make sure the same user is also part of the `gcp-organization-admins` group so that impersonating the automation service account later on will be possible.
+
 #### Billing account in a different organization
 
 If you are using a billing account belonging to a different organization (e.g. in multiple organization setups), some initial configurations are needed to ensure the identities running this stage can assign billing-related roles.
@@ -233,7 +235,7 @@ terraform apply \
   -var bootstrap_user=$(gcloud config list --format 'value(core.account)')
 ```
 
-Once the initial `apply` completes successfully, configure a remote backend using the new GCS bucket, and impersonation on the automation service account for this stage. To do this, you can use the generated `providers.tf` file if you have configured output files as described above, or extract its contents from Terraform's output, then migrate state with `terraform init`:
+Once the initial `apply` completes successfully, configure a remote backend using the new GCS bucket, and impersonation on the automation service account for this stage. To do this you can use the generated `providers.tf` file if you have configured output files as described above, or extract its contents from Terraform's output, then migrate state with `terraform init`:
 
 ```bash
 # if using output files via the outputs_location and set to `../../config`
@@ -246,6 +248,8 @@ terraform init -migrate-state
 # run terraform apply to remove the bootstrap_user iam binding 
 terraform apply
 ```
+
+Make sure the user you're logged in with is a member of the `gcp-organization-admins` group or impersonation will not be possible.
 
 ## Customizations
 
