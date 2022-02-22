@@ -86,7 +86,7 @@ resource "google_project_service" "service" {
 }
 
 resource "google_api_gateway_api_iam_binding" "api_iam_bindings" {
-  for_each = var.iam == null ? {} : var.iam
+  for_each = coalesce(var.iam, {})
   provider = google-beta
   project  = google_api_gateway_api.api.project
   api      = google_api_gateway_api.api.api_id
@@ -95,7 +95,7 @@ resource "google_api_gateway_api_iam_binding" "api_iam_bindings" {
 }
 
 resource "google_api_gateway_api_config_iam_binding" "api_config_iam_bindings" {
-  for_each   = var.iam == null ? {} : var.iam
+  for_each   = coalesce(var.iam, {})
   provider   = google-beta
   project    = google_api_gateway_api_config.api_config.project
   api        = google_api_gateway_api.api.api_id
