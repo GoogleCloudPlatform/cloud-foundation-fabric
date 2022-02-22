@@ -15,6 +15,15 @@
  */
 
 locals {
+  gke_hub_services = (var.enable_required_api
+    ? [
+      "gkehub.googleapis.com",
+      "anthosconfigmanagement.googleapis.com",
+      "multiclusteringress.googleapis.com",
+      "multiclusterservicediscovery.googleapis.com",
+    ]
+    : []
+  )
   feature_binauthz = (var.member_features["configmanagement"]["binauthz"] == null
     ?
     {
@@ -56,6 +65,15 @@ locals {
   )
 }
 
+resource "google_project_service" "project_services" {
+  provider                   = google-beta
+  for_each                   = toset(local.gke_hub_services)
+  project                    = var.project_id
+  service                    = each.value
+  disable_on_destroy         = true
+  disable_dependent_services = true
+}
+
 resource "google_gke_hub_membership" "membership" {
   provider      = google-beta
   for_each      = { for i, v in var.member_clusters : i => v }
@@ -69,17 +87,16 @@ resource "google_gke_hub_membership" "membership" {
 }
 
 resource "google_gke_hub_feature" "feature-configmanagement" {
-  count    = var.features["configmanagement"] ? 1 : 0
   provider = google-beta
+  count    = var.features["configmanagement"] ? 1 : 0
   project  = var.project_id
   name     = "configmanagement"
   location = "global"
 }
 
 resource "google_gke_hub_feature" "feature-mci" {
-  # count    = var.features["multiclusteringress"] ? 1 : 0
-  for_each = { for i, v in var.member_clusters : i => v }
   provider = google-beta
+  for_each = { for i, v in var.member_clusters : i => v }
   project  = var.project_id
   name     = "multiclusteringress"
   location = "global"
@@ -88,11 +105,14 @@ resource "google_gke_hub_feature" "feature-mci" {
       config_membership = google_gke_hub_membership.membership[each.key].id
     }
   }
+  depends_on = [
+    google_project_service.project_services
+  ]
 }
 
 resource "google_gke_hub_feature" "feature-mcs" {
-  count    = var.features["multiclusterservicediscovery"] ? 1 : 0
   provider = google-beta
+  count    = var.features["multiclusterservicediscovery"] ? 1 : 0
   project  = var.project_id
   name     = "multiclusterservicediscovery"
   location = "global"
@@ -122,22 +142,22 @@ resource "google_gke_hub_feature_membership" "feature_member" {
       source_format = local.feature_config_sync.source_format
     }
 
-    policy_controller {
-      enabled                    = local.feature_policy_controller.enabled
-      exemptable_namespaces      = local.feature_policy_controller.exemptable_namespaces
-      log_denies_enabled         = local.feature_policy_controller.log_denies_enabled
-      referential_rules_enabled  = local.feature_policy_controller.referential_rules_enabled
-      template_library_installed = local.feature_policy_controller.template_library_installed
-    }
+    # policy_controller {
+    #   enabled                    = local.feature_policy_controller.enabled
+    #   exemptable_namespaces      = local.feature_policy_controller.exemptable_namespaces
+    #   log_denies_enabled         = local.feature_policy_controller.log_denies_enabled
+    #   referential_rules_enabled  = local.feature_policy_controller.referential_rules_enabled
+    #   template_library_installed = local.feature_policy_controller.template_library_installed
+    # }
 
     binauthz {
       enabled = local.feature_binauthz.enabled
     }
 
-    hierarchy_controller {
-      enabled                            = local.feature_hierarchy_controller.enabled
-      enable_pod_tree_labels             = local.feature_hierarchy_controller.enable_pod_tree_labels
-      enable_hierarchical_resource_quota = local.feature_hierarchy_controller.enable_hierarchical_resource_quota
-    }
+    # hierarchy_controller {
+    #   enabled                            = local.feature_hierarchy_controller.enabled
+    #   enable_pod_tree_labels             = local.feature_hierarchy_controller.enable_pod_tree_labels
+    #   enable_hierarchical_resource_quota = local.feature_hierarchy_controller.enable_hierarchical_resource_quota
+    # }
   }
 }

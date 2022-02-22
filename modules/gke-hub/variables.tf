@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-# optional enabling the api
-
 variable "features" {
   description = "value"
   type        = map(bool)
@@ -72,4 +70,9 @@ variable "member_features" {
 variable "project_id" {
   description = "Cluster project ID."
   type        = string
+}
+
+variable "enable_required_api" {
+  description = "Enable GKE HUB required APIs"
+  type        = bool
 }
