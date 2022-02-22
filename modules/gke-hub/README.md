@@ -61,28 +61,16 @@ When a service account is created by the module, the service account resource an
 To have the module auto-create a source repository for config_sync, set the `repository_url` variable to `null`. 
 When a Google Source Repository is created by the module, the sourcerepo resource and uurl are then available in outputs.
 
-
-### TODO
-MultiClusterServices feature is not yet implemented within the module.
 <!-- BEGIN TFDOC -->
 
 ## Variables
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [hub_config](variables.tf#L55) |  | <code title="object&#40;&#123;&#10;  clusters &#61; list&#40;map&#40;string&#41;&#41;&#10;  config_sync &#61; object&#40;&#123;&#10;    repository_branch        &#61; string&#10;    repository_url           &#61; string&#10;    repository_source_format &#61; string&#10;    repository_secret_type   &#61; string&#10;    repository_policy_dir    &#61; string&#10;    workload_identity_sa     &#61; string&#10;  &#125;&#41;&#10;  policy_controller &#61; object&#40;&#123;&#10;    enabled                 &#61; bool&#10;    enable_template_library &#61; bool&#10;    enable_log_denies       &#61; bool&#10;    exemptable_namespaces   &#61; list&#40;string&#41;&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
-| [project_id](variables.tf#L75) | Cluster project ID. | <code>string</code> | ✓ |  |
-| [config_sync_defaults](variables.tf#L17) | Default values for optional config_sync configurations. | <code title="object&#40;&#123;&#10;  repository_url           &#61; string&#10;  repository_branch        &#61; string&#10;  repository_source_format &#61; string&#10;  repository_policy_dir    &#61; string&#10;  repository_secret_type   &#61; string&#10;  workload_identity_sa     &#61; string&#10;  secret_type              &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  repository_url           &#61; null&#10;  repository_branch        &#61; &#34;main&#34;&#10;  repository_source_format &#61; &#34;hierarchy&#34;&#10;  repository_policy_dir    &#61; &#34;configsync&#34;&#10;  repository_secret_type   &#61; &#34;gcpserviceaccount&#34;&#10;  workload_identity_sa     &#61; null&#10;  secret_type              &#61; &#34;gcpserviceaccount&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [policy_controller_defaults](variables.tf#L39) | Default values for optional config_sync configurations. | <code title="object&#40;&#123;&#10;  enabled                 &#61; bool&#10;  enable_template_library &#61; bool&#10;  enable_log_denies       &#61; bool&#10;  exemptable_namespaces   &#61; list&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  enabled                 &#61; true&#10;  enable_template_library &#61; true&#10;  enable_log_denies       &#61; true&#10;  exemptable_namespaces   &#61; &#91;&#34;config-management-monitoring&#34;, &#34;config-management-system&#34;&#93;&#10;&#125;">&#123;&#8230;&#125;</code> |
-
-## Outputs
-
-| name | description | sensitive |
-|---|---|:---:|
-| [service_account](outputs.tf#L17) | Service account resource. |  |
-| [service_account_email](outputs.tf#L26) | Service account email. |  |
-| [service_account_iam_email](outputs.tf#L35) | Service account email. |  |
-| [sourcerepo_repository](outputs.tf#L44) | Service account resource. |  |
-| [sourcerepo_repository_url](outputs.tf#L53) | Source repository url. |  |
+| [enable_required_api](variables.tf#L75) | Enable GKE HUB required APIs | <code>bool</code> | ✓ |  |
+| [project_id](variables.tf#L70) | Cluster project ID. | <code>string</code> | ✓ |  |
+| [features](variables.tf#L17) | value | <code>map&#40;bool&#41;</code> |  | <code title="&#123;&#10;  configmanagement             &#61; true&#10;  multiclusteringress          &#61; false&#10;  multiclusterservicediscovery &#61; false&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [member_clusters](variables.tf#L27) | value | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [member_features](variables.tf#L33) |  | <code title="object&#40;&#123;&#10;  configmanagement &#61; object&#40;&#123;&#10;    version &#61; string&#10;    config_sync &#61; object&#40;&#123;&#10;      https_proxy               &#61; string&#10;      sync_repo                 &#61; string&#10;      sync_branch               &#61; string&#10;      sync_rev                  &#61; string&#10;      secret_type               &#61; string&#10;      gcp_service_account_email &#61; string&#10;      policy_dir                &#61; string&#10;      source_format             &#61; string&#10;    &#125;&#41;&#10;    policy_controller &#61; object&#40;&#123;&#10;      enabled                    &#61; bool&#10;      log_denies_enabled         &#61; bool&#10;      referential_rules_enabled  &#61; bool&#10;      exemptable_namespaces      &#61; list&#40;string&#41;&#10;      template_library_installed &#61; bool&#10;    &#125;&#41;&#10;    binauthz &#61; object&#40;&#123;&#10;      enabled &#61; bool&#10;    &#125;&#41;&#10;    hierarchy_controller &#61; object&#40;&#123;&#10;      enabled                            &#61; bool&#10;      enable_pod_tree_labels             &#61; bool&#10;      enable_hierarchical_resource_quota &#61; bool&#10;    &#125;&#41;&#10;  &#125;&#41;&#10;  multiclusteringress          &#61; bool&#10;  multiclusterservicediscovery &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 <!-- END TFDOC -->
