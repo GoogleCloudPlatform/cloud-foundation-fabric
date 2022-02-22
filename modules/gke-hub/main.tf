@@ -14,6 +14,48 @@
  * limitations under the License.
  */
 
+locals {
+  feature_binauthz = (var.member_features["configmanagement"]["binauthz"] == null
+    ?
+    {
+      enabled = null
+    }
+    : var.member_features["configmanagement"]["binauthz"]
+  )
+  feature_config_sync = (var.member_features["configmanagement"]["config_sync"] == null
+    ?
+    {
+      https_proxy               = null
+      sync_repo                 = null
+      sync_branch               = null
+      sync_rev                  = null
+      secret_type               = null
+      gcp_service_account_email = null
+      policy_dir                = null
+      source_format             = null
+    }
+    : var.member_features["configmanagement"]["config_sync"]
+  )
+  feature_hierarchy_controller = (var.member_features["configmanagement"]["hierarchy_controller"] == null
+    ? {
+      enabled                            = null
+      enable_pod_tree_labels             = null
+      enable_hierarchical_resource_quota = null
+    }
+    : var.member_features["configmanagement"]["hierarchy_controller"]
+  )
+  feature_policy_controller = (var.member_features["configmanagement"]["policy_controller"] == null
+    ? {
+      enabled                    = null
+      exemptable_namespaces      = null
+      log_denies_enabled         = null
+      referential_rules_enabled  = null
+      template_library_installed = null
+    }
+    : var.member_features["configmanagement"]["policy_controller"]
+  )
+}
+
 resource "google_gke_hub_membership" "membership" {
   provider      = google-beta
   for_each      = { for i, v in var.member_clusters : i => v }
@@ -69,32 +111,33 @@ resource "google_gke_hub_feature_membership" "feature_member" {
 
     config_sync {
       git {
-        https_proxy               = var.member_features["configmanagement"]["config_sync"].http_proxy
-        sync_repo                 = var.member_features["configmanagement"]["config_sync"].sync_repo
-        sync_branch               = var.member_features["configmanagement"]["config_sync"].sync_branch
-        sync_rev                  = var.member_features["configmanagement"]["config_sync"].sync_rev
-        secret_type               = var.member_features["configmanagement"]["config_sync"].secret_type
-        gcp_service_account_email = var.member_features["configmanagement"]["config_sync"].gcp_service_account_email
-        policy_dir                = var.member_features["configmanagement"]["config_sync"].policy_dir
+        https_proxy               = local.feature_config_sync.https_proxy
+        sync_repo                 = local.feature_config_sync.sync_repo
+        sync_branch               = local.feature_config_sync.sync_branch
+        sync_rev                  = local.feature_config_sync.sync_rev
+        secret_type               = local.feature_config_sync.secret_type
+        gcp_service_account_email = local.feature_config_sync.gcp_service_account_email
+        policy_dir                = local.feature_config_sync.policy_dir
       }
-      source_format = var.member_features["configmanagement"]["config_sync"].source_format
+      source_format = local.feature_config_sync.source_format
     }
 
     policy_controller {
-      enabled                    = var.member_features["configmanagement"]["policy_controller"].enabled
-      exemptable_namespaces      = var.member_features["configmanagement"]["policy_controller"].exemptable_namespaces
-      log_denies_enabled         = var.member_features["configmanagement"]["policy_controller"].log_denies_enabled
-      referential_rules_enabled  = var.member_features["configmanagement"]["policy_controller"].referential_rules_enabled
-      template_library_installed = var.member_features["configmanagement"]["policy_controller"].template_library_installed # https://cloud.google.com/anthos-config-management/docs/reference/constraint-template-library
+      enabled                    = local.feature_policy_controller.enabled
+      exemptable_namespaces      = local.feature_policy_controller.exemptable_namespaces
+      log_denies_enabled         = local.feature_policy_controller.log_denies_enabled
+      referential_rules_enabled  = local.feature_policy_controller.referential_rules_enabled
+      template_library_installed = local.feature_policy_controller.template_library_installed
     }
 
     binauthz {
-      enabled = var.member_features["configmanagement"]["binauthz"].enabled
+      enabled = local.feature_binauthz.enabled
     }
+
     hierarchy_controller {
-      enabled                            = var.member_features["configmanagement"]["hierarchy_controller"].enabled
-      enable_pod_tree_labels             = var.member_features["configmanagement"]["hierarchy_controller"].enable_pod_tree_labels
-      enable_hierarchical_resource_quota = var.member_features["configmanagement"]["hierarchy_controller"].enable_hierarchical_resource_quota
+      enabled                            = local.feature_hierarchy_controller.enabled
+      enable_pod_tree_labels             = local.feature_hierarchy_controller.enable_pod_tree_labels
+      enable_hierarchical_resource_quota = local.feature_hierarchy_controller.enable_hierarchical_resource_quota
     }
   }
 }

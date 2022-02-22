@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-
-# project_id
-
-# variables "features" map(bool)
-# variables member_clusters map(string)
-# variables member_features map(objects) #key is the same used in member clusters
 # optional enabling the api
 
 variable "features" {
@@ -44,7 +38,7 @@ variable "member_features" {
     configmanagement = object({
       version = string
       config_sync = object({
-        http_proxy                = string
+        https_proxy               = string
         sync_repo                 = string
         sync_branch               = string
         sync_rev                  = string
