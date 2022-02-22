@@ -16,11 +16,11 @@ These modules are used in the examples included in this repository. If you are u
     - Evolve the existing modules.
     - Create your own modules.
     - Sync from the upstream repository to get all the updates.
-- Use GitHub sources with refs to reference the modules in your fork. See an example below:
-
+ 
+- Use GitHub sources with refs to reference the modules. See an example below:
     ```
     module "project" {
-        source              = "github.com/my-fork/cloud-foundation-fabric.git//modules/project?ref=v12.0.0"
+        source              = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/project?ref=v13.0.0"
         name                = "my-project"
         billing_account     = "123456-123456-123456"
         parent              = "organizations/123456"
