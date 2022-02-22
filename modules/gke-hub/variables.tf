@@ -14,64 +14,67 @@
  * limitations under the License.
  */
 
-variable "config_sync_defaults" {
-  description = "Default values for optional config_sync configurations."
-  type = object({
-    repository_url           = string
-    repository_branch        = string
-    repository_source_format = string
-    repository_policy_dir    = string
-    repository_secret_type   = string
-    workload_identity_sa     = string
-    secret_type              = string
-  })
+
+# project_id
+
+# variables "features" map(bool)
+# variables member_clusters map(string)
+# variables member_features map(objects) #key is the same used in member clusters
+# optional enabling the api
+
+variable "features" {
+  description = "value"
+  type        = map(bool)
   default = {
-    repository_url           = null
-    repository_branch        = "main"
-    repository_source_format = "hierarchy"
-    repository_policy_dir    = "configsync"
-    repository_secret_type   = "gcpserviceaccount"
-    workload_identity_sa     = null
-    secret_type              = "gcpserviceaccount"
+    configmanagement             = true
+    multiclusteringress          = false
+    multiclusterservicediscovery = false
   }
 }
 
-variable "policy_controller_defaults" {
-  description = "Default values for optional config_sync configurations."
-  type = object({
-    enabled                 = bool
-    enable_template_library = bool
-    enable_log_denies       = bool
-    exemptable_namespaces   = list(string)
-  })
-  default = {
-    enabled                 = true
-    enable_template_library = true
-    enable_log_denies       = true
-    exemptable_namespaces   = ["config-management-monitoring", "config-management-system"]
-  }
+variable "member_clusters" {
+  description = "value"
+  type        = map(string)
+  default     = {}
 }
 
-variable "hub_config" {
+variable "member_features" {
   description = ""
   type = object({
-    clusters = list(map(string))
-    config_sync = object({
-      repository_branch        = string
-      repository_url           = string
-      repository_source_format = string
-      repository_secret_type   = string
-      repository_policy_dir    = string
-      workload_identity_sa     = string
+    configmanagement = object({
+      version = string
+      config_sync = object({
+        http_proxy                = string
+        sync_repo                 = string
+        sync_branch               = string
+        sync_rev                  = string
+        secret_type               = string
+        gcp_service_account_email = string
+        policy_dir                = string
+        source_format             = string
+      })
+      policy_controller = object({
+        enabled                    = bool
+        log_denies_enabled         = bool
+        referential_rules_enabled  = bool
+        exemptable_namespaces      = list(string)
+        template_library_installed = bool
+      })
+      binauthz = object({
+        enabled = bool
+      })
+      hierarchy_controller = object({
+        enabled                            = bool
+        enable_pod_tree_labels             = bool
+        enable_hierarchical_resource_quota = bool
+      })
     })
-    policy_controller = object({
-      enabled                 = bool
-      enable_template_library = bool
-      enable_log_denies       = bool
-      exemptable_namespaces   = list(string)
-    })
+    multiclusteringress          = bool
+    multiclusterservicediscovery = bool
   })
+  default = null
 }
+
 variable "project_id" {
   description = "Cluster project ID."
   type        = string
