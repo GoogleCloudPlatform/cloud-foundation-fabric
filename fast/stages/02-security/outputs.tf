@@ -14,25 +14,46 @@
  * limitations under the License.
  */
 
-# optionally generate files for subsequent stages
-
-resource "local_file" "dev_sec_kms" {
-  for_each = var.outputs_location == null ? {} : { 1 = 1 }
-  filename = "${pathexpand(var.outputs_location)}/yamls/02-security-kms-dev-keys.yaml"
-  content = yamlencode({
-    for k, m in module.dev-sec-kms : k => m.key_ids
-  })
+locals {
+  _output_kms_keys = concat(
+    flatten([
+      for location, mod in module.dev-sec-kms : [
+        for name, id in mod.key_ids : {
+          key = "dev-${name}:${location}"
+          id  = id
+        }
+      ]
+    ]),
+    flatten([
+      for location, mod in module.prod-sec-kms : [
+        for name, id in mod.key_ids : {
+          key = "prod-${name}:${location}"
+          id  = id
+        }
+      ]
+    ])
+  )
+  output_kms_keys = { for k in local._output_kms_keys : k.key => k.id }
+  tfvars = {
+    kms_keys = local.output_kms_keys
+  }
 }
 
-resource "local_file" "prod_sec_kms" {
-  for_each = var.outputs_location == null ? {} : { 1 = 1 }
-  filename = "${pathexpand(var.outputs_location)}/yamls/02-security-kms-prod-keys.yaml"
-  content = yamlencode({
-    for k, m in module.prod-sec-kms : k => m.key_ids
-  })
+# optionally generate files for subsequent stages
+
+resource "local_file" "tfvars" {
+  for_each        = var.outputs_location == null ? {} : { 1 = 1 }
+  file_permission = "0644"
+  filename        = "${pathexpand(var.outputs_location)}/tfvars/02-security.auto.tfvars.json"
+  content         = jsonencode(local.tfvars)
 }
 
 # outputs
+
+output "kms_keys" {
+  description = "KMS key ids."
+  value       = local.output_kms_keys
+}
 
 output "stage_perimeter_projects" {
   description = "Security project numbers. They can be added to perimeter resources."
@@ -40,4 +61,12 @@ output "stage_perimeter_projects" {
     dev  = ["projects/${module.dev-sec-project.number}"]
     prod = ["projects/${module.prod-sec-project.number}"]
   }
+}
+
+# ready to use variable values for subsequent stages
+
+output "tfvars" {
+  description = "Terraform variable files for the following stages."
+  sensitive   = true
+  value       = local.tfvars
 }

@@ -37,6 +37,9 @@ module "branch-sandbox-folder" {
       values              = []
     }
   }
+  tag_bindings = {
+    context = module.organization.tag_values["context/sandbox"].id
+  }
 }
 
 module "branch-sandbox-gcs" {

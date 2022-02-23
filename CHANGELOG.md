@@ -13,6 +13,8 @@ All notable changes to this project will be documented in this file.
 - the `net-vpc` and `project` modules now use the beta provider for shared VPC-related resources
 - add `data-catalog-policy-tag` module
 - **incompatible change** the `psn_ranges` variable has been renamed to `psa_ranges` in the `net-vpc` module and its type changed from `list(string)` to `map(string)`
+- new [workload identity federetion example](examples/cloud-operations/workload-identity-federation)
+- new api-gateway [module](/modules/api-gateway) and [example](examples/serverless/api-gateway).
 
 ## [13.0.0] - 2022-01-27
 

@@ -18,7 +18,7 @@
 
 module "prod-spoke-project" {
   source          = "../../../modules/project"
-  billing_account = var.billing_account_id
+  billing_account = var.billing_account.id
   name            = "prod-net-spoke-0"
   parent          = var.folder_ids.networking-prod
   prefix          = var.prefix
@@ -27,6 +27,7 @@ module "prod-spoke-project" {
     disable_dependent_services = false
   }
   services = [
+    "container.googleapis.com",
     "compute.googleapis.com",
     "dns.googleapis.com",
     "iap.googleapis.com",
@@ -39,10 +40,10 @@ module "prod-spoke-project" {
   }
   metric_scopes = [module.landing-project.project_id]
   iam = {
-    "roles/dns.admin" = [var.project_factory_sa.prod]
-    (var.custom_roles.service_project_network_admin) = [
-      var.project_factory_sa.prod
-    ]
+    "roles/dns.admin" = [local.service_accounts.project-factory-prod]
+    (local.custom_roles.service_project_network_admin) = values(
+      local.service_accounts
+    )
   }
 }
 
@@ -102,7 +103,8 @@ resource "google_project_iam_binding" "prod_spoke_project_iam_delegated" {
   project = module.prod-spoke-project.project_id
   role    = "roles/resourcemanager.projectIamAdmin"
   members = [
-    var.project_factory_sa.prod
+    local.service_accounts.data-platform-prod,
+    local.service_accounts.project-factory-prod,
   ]
   condition {
     title       = "prod_stage3_sa_delegated_grants"

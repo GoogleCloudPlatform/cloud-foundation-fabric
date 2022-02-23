@@ -32,7 +32,7 @@ module "transf-project" {
   parent          = var.folder_id
   billing_account = var.billing_account_id
   prefix          = var.prefix
-  name            = "trf"
+  name            = "trf${local.project_suffix}"
   group_iam = {
     (local.groups.data-engineers) = [
       "roles/bigquery.jobUser",

@@ -251,3 +251,9 @@ variable "skip_delete" {
   type        = bool
   default     = false
 }
+
+variable "tag_bindings" {
+  description = "Tag bindings for this project, in key => tag value id format."
+  type        = map(string)
+  default     = null
+}

@@ -61,8 +61,9 @@ TRF_NET_VPC = os.environ.get("TRF_NET_VPC")
 TRF_NET_SUBNET = os.environ.get("TRF_NET_SUBNET")
 TRF_SA_DF = os.environ.get("TRF_SA_DF")
 TRF_SA_BQ = os.environ.get("TRF_SA_BQ")
-DF_ZONE = os.environ.get("GCP_REGION") + "-b"
+DF_KMS_KEY = os.environ.get("DF_KMS_KEY", "")
 DF_REGION = os.environ.get("GCP_REGION")
+DF_ZONE = os.environ.get("GCP_REGION") + "-b"
 
 # --------------------------------------------------------------------------------
 # Set default arguments
@@ -90,7 +91,8 @@ default_args = {
     'tempLocation': LOD_GCS_STAGING + "/tmp",
     'serviceAccountEmail': LOD_SA_DF,
     'subnetwork': LOD_NET_SUBNET,
-    'ipConfiguration': "WORKER_IP_PRIVATE"
+    'ipConfiguration': "WORKER_IP_PRIVATE",
+    'kmsKeyName' : DF_KMS_KEY
   },
 }
 

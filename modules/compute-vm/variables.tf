@@ -245,8 +245,14 @@ variable "shielded_config" {
   default = null
 }
 
+variable "tag_bindings" {
+  description = "Tag bindings for this instance, in key => tag value id format."
+  type        = map(string)
+  default     = null
+}
+
 variable "tags" {
-  description = "Instance tags."
+  description = "Instance network tags for firewall rule targets."
   type        = list(string)
   default     = []
 }

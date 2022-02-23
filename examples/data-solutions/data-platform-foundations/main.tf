@@ -26,7 +26,7 @@ locals {
       "orch-robot-cs"
     ]
     "roles/container.hostServiceAgentUser" = [
-      "orch-robot-df"
+      "orch-robot-df", "orch-robot-gke"
     ]
   }
   groups = {
@@ -35,17 +35,18 @@ locals {
   groups_iam = {
     for k, v in local.groups : k => "group:${v}"
   }
+  project_suffix          = var.project_suffix == null ? "" : "-${var.project_suffix}"
   service_encryption_keys = var.service_encryption_keys
   shared_vpc_project      = try(var.network_config.host_project, null)
   # this is needed so that for_each only uses static values
   shared_vpc_role_members = {
-    load-robot-df       = module.load-project.service_accounts.robots.dataflow
+    load-robot-df       = "serviceAccount:${module.load-project.service_accounts.robots.dataflow}"
     load-sa-df-worker   = module.load-sa-df-0.iam_email
-    orch-cloudservices  = module.orch-project.service_accounts.cloud_services
-    orch-robot-cs       = module.orch-project.service_accounts.robots.composer
-    orch-robot-df       = module.orch-project.service_accounts.robots.dataflow
-    orch-robot-gke      = module.orch-project.service_accounts.robots.container-engine
-    transf-robot-df     = module.transf-project.service_accounts.robots.dataflow
+    orch-cloudservices  = "serviceAccount:${module.orch-project.service_accounts.cloud_services}"
+    orch-robot-cs       = "serviceAccount:${module.orch-project.service_accounts.robots.composer}"
+    orch-robot-df       = "serviceAccount:${module.orch-project.service_accounts.robots.dataflow}"
+    orch-robot-gke      = "serviceAccount:${module.orch-project.service_accounts.robots.container-engine}"
+    transf-robot-df     = "serviceAccount:${module.transf-project.service_accounts.robots.dataflow}"
     transf-sa-df-worker = module.transf-sa-df-0.iam_email
   }
   # reassemble in a format suitable for for_each

@@ -18,10 +18,15 @@
 
 
 locals {
+  # set to the empty list if you remove the data platform branch
+  branch_dataplatform_sa_iam_emails = [
+    module.branch-dp-dev-sa.iam_email,
+    module.branch-dp-prod-sa.iam_email
+  ]
   # set to the empty list if you remove the teams branch
   branch_teams_pf_sa_iam_emails = [
-    module.branch-teams-dev-projectfactory-sa.iam_email,
-    module.branch-teams-prod-projectfactory-sa.iam_email
+    module.branch-teams-dev-pf-sa.iam_email,
+    module.branch-teams-prod-pf-sa.iam_email
   ]
   list_allow = {
     inherit_from_parent = false
@@ -58,7 +63,6 @@ module "organization" {
       "roles/compute.xpnAdmin" = [
         module.branch-network-sa.iam_email
       ]
-      "roles/orgpolicy.policyAdmin" = local.branch_teams_pf_sa_iam_emails
     },
     local.billing_org ? {
       "roles/billing.costsManager" = local.branch_teams_pf_sa_iam_emails
@@ -67,6 +71,7 @@ module "organization" {
           module.branch-network-sa.iam_email,
           module.branch-security-sa.iam_email,
         ],
+        local.branch_dataplatform_sa_iam_emails,
         # enable if individual teams can create their own projects
         # [
         #   for k, v in module.branch-teams-team-sa : v.iam_email
@@ -133,4 +138,50 @@ module "organization" {
     #   values              = local.allowed_regions
     # }
   }
+  tags = {
+    context = {
+      description = "Resource management context."
+      iam         = {}
+      values = {
+        data       = null
+        gke        = null
+        networking = null
+        sandbox    = null
+        security   = null
+        teams      = null
+      }
+    }
+    environment = {
+      description = "Environment definition."
+      iam         = {}
+      values = {
+        development = null
+        production  = null
+      }
+    }
+  }
 }
+
+# organization policy admin role assigned with a condition on tags
+
+resource "google_organization_iam_member" "org_policy_admin" {
+  for_each = {
+    data-dev  = ["data", "development", module.branch-dp-dev-sa.iam_email]
+    data-prod = ["data", "production", module.branch-dp-prod-sa.iam_email]
+    pf-dev    = ["teams", "development", module.branch-teams-dev-pf-sa.iam_email]
+    pf-prod   = ["teams", "production", module.branch-teams-prod-pf-sa.iam_email]
+  }
+  org_id = var.organization.id
+  role   = "roles/orgpolicy.policyAdmin"
+  member = each.value.2
+  condition {
+    title       = "org_policy_tag_scoped"
+    description = "Org policy tag scoped grant for ${each.value.0}/${each.value.1}."
+    expression  = <<-END
+    resource.matchTag('${var.organization.id}/context', '${each.value.0}')
+    &&
+    resource.matchTag('${var.organization.id}/environment', '${each.value.1}')
+    END
+  }
+}
+

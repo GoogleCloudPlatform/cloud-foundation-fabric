@@ -79,6 +79,7 @@ variable "network_config" {
       pods     = string
       services = string
     })
+    # web_server_network_access_control = list(string)
   })
   default = null
 }
@@ -102,6 +103,12 @@ variable "project_services" {
     "serviceusage.googleapis.com",
     "stackdriver.googleapis.com"
   ]
+}
+
+variable "project_suffix" {
+  description = "Suffix used only for project ids."
+  type        = string
+  default     = null
 }
 
 variable "region" {
