@@ -58,19 +58,19 @@ locals {
 
 resource "google_gke_hub_membership" "membership" {
   provider      = google-beta
-  for_each      = { for i, v in var.member_clusters : i => v }
+  for_each      = toset(var.member_clusters)
   membership_id = each.key
   project       = var.project_id #hub project id
   endpoint {
     gke_cluster {
-      resource_link = "//container.googleapis.com/projects/${var.project_id}/locations/${each.value}/clusters/${each.key}"
+      resource_link = "//container.googleapis.com/${each.value}"
     }
   }
 }
 
 resource "google_gke_hub_feature" "feature-configmanagement" {
   provider = google-beta
-  count    = var.features["configmanagement"] ? 1 : 0
+  count    = var.features.configmanagement ? 1 : 0
   project  = var.project_id
   name     = "configmanagement"
   location = "global"
@@ -78,7 +78,7 @@ resource "google_gke_hub_feature" "feature-configmanagement" {
 
 resource "google_gke_hub_feature" "feature-mci" {
   provider = google-beta
-  for_each = { for i, v in var.member_clusters : i => v }
+  for_each = toset(var.member_clusters)
   project  = var.project_id
   name     = "multiclusteringress"
   location = "global"
@@ -94,22 +94,21 @@ resource "google_gke_hub_feature" "feature-mci" {
 
 resource "google_gke_hub_feature" "feature-mcs" {
   provider = google-beta
-  count    = var.features["multiclusterservicediscovery"] ? 1 : 0
+  count    = var.features.multiclusterservicediscovery ? 1 : 0
   project  = var.project_id
   name     = "multiclusterservicediscovery"
   location = "global"
 }
 
 resource "google_gke_hub_feature_membership" "feature_member" {
-  provider = google-beta
-  project  = var.project_id
-
-  for_each   = { for i, v in var.member_clusters : i => v }
+  provider   = google-beta
+  for_each   = toset(var.member_clusters)
+  project    = var.project_id
   location   = "global"
   feature    = google_gke_hub_feature.feature-configmanagement[0].name
   membership = google_gke_hub_membership.membership[each.key].membership_id
   configmanagement {
-    version = var.member_features["configmanagement"].version
+    version = var.member_features.configmanagement.version
 
     config_sync {
       git {

@@ -15,8 +15,12 @@
  */
 
 variable "features" {
-  description = "value"
-  type        = map(bool)
+  description = "GKE hub features to enable."
+  type = object({
+    configmanagement             = bool
+    multiclusteringress          = bool
+    multiclusterservicediscovery = bool
+  })
   default = {
     configmanagement             = true
     multiclusteringress          = false
@@ -25,13 +29,13 @@ variable "features" {
 }
 
 variable "member_clusters" {
-  description = "value"
-  type        = map(string)
-  default     = {}
+  description = "List for member cluster self links."
+  type        = list(string)
+  default     = []
 }
 
 variable "member_features" {
-  description = ""
+  description = "Member features for each cluster"
   type = object({
     configmanagement = object({
       version = string
@@ -68,6 +72,6 @@ variable "member_features" {
 }
 
 variable "project_id" {
-  description = "Cluster project ID."
+  description = "GKE hub project ID."
   type        = string
 }
