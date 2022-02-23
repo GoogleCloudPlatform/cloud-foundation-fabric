@@ -78,6 +78,7 @@ These modules are used in the examples included in this repository. If you are u
 - [Source Repository](./source-repository)
 - [Apigee Organization](./apigee-organization)
 - [Apigee X Instance](./apigee-x-instance)
+- [API Gateway](./api-gateway)
 
 ## Security
 
