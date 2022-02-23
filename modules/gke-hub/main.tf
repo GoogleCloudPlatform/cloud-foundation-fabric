@@ -58,12 +58,12 @@ locals {
 
 resource "google_gke_hub_membership" "membership" {
   provider      = google-beta
-  for_each      = toset(var.member_clusters)
+  for_each      = { for i, v in var.member_clusters : i => v }
   membership_id = each.key
   project       = var.project_id #hub project id
   endpoint {
     gke_cluster {
-      resource_link = "//container.googleapis.com/${each.value}"
+      resource_link = "//container.googleapis.com/projects/${var.project_id}/locations/${each.value}/clusters/${each.key}"
     }
   }
 }
@@ -78,7 +78,7 @@ resource "google_gke_hub_feature" "feature-configmanagement" {
 
 resource "google_gke_hub_feature" "feature-mci" {
   provider = google-beta
-  for_each = toset(var.member_clusters)
+  for_each = { for i, v in var.member_clusters : i => v }
   project  = var.project_id
   name     = "multiclusteringress"
   location = "global"
@@ -87,9 +87,6 @@ resource "google_gke_hub_feature" "feature-mci" {
       config_membership = google_gke_hub_membership.membership[each.key].id
     }
   }
-  depends_on = [
-    google_project_service.project_services
-  ]
 }
 
 resource "google_gke_hub_feature" "feature-mcs" {
@@ -102,7 +99,7 @@ resource "google_gke_hub_feature" "feature-mcs" {
 
 resource "google_gke_hub_feature_membership" "feature_member" {
   provider   = google-beta
-  for_each   = toset(var.member_clusters)
+  for_each   = { for i, v in var.member_clusters : i => v }
   project    = var.project_id
   location   = "global"
   feature    = google_gke_hub_feature.feature-configmanagement[0].name
@@ -123,22 +120,22 @@ resource "google_gke_hub_feature_membership" "feature_member" {
       source_format = local.feature_config_sync.source_format
     }
 
-    # policy_controller {
-    #   enabled                    = local.feature_policy_controller.enabled
-    #   exemptable_namespaces      = local.feature_policy_controller.exemptable_namespaces
-    #   log_denies_enabled         = local.feature_policy_controller.log_denies_enabled
-    #   referential_rules_enabled  = local.feature_policy_controller.referential_rules_enabled
-    #   template_library_installed = local.feature_policy_controller.template_library_installed
-    # }
+    policy_controller {
+      enabled                    = local.feature_policy_controller.enabled
+      exemptable_namespaces      = local.feature_policy_controller.exemptable_namespaces
+      log_denies_enabled         = local.feature_policy_controller.log_denies_enabled
+      referential_rules_enabled  = local.feature_policy_controller.referential_rules_enabled
+      template_library_installed = local.feature_policy_controller.template_library_installed
+    }
 
     binauthz {
       enabled = local.feature_binauthz.enabled
     }
 
-    # hierarchy_controller {
-    #   enabled                            = local.feature_hierarchy_controller.enabled
-    #   enable_pod_tree_labels             = local.feature_hierarchy_controller.enable_pod_tree_labels
-    #   enable_hierarchical_resource_quota = local.feature_hierarchy_controller.enable_hierarchical_resource_quota
-    # }
+    hierarchy_controller {
+      enabled                            = local.feature_hierarchy_controller.enabled
+      enable_pod_tree_labels             = local.feature_hierarchy_controller.enable_pod_tree_labels
+      enable_hierarchical_resource_quota = local.feature_hierarchy_controller.enable_hierarchical_resource_quota
+    }
   }
 }
