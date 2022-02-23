@@ -44,7 +44,7 @@ module "gke-hub-configuration" {
     }
   }
 }
-# tftest modules=1 resources=5
+# tftest modules=1 resources=4
 ```
 
 ### Module required APIs
