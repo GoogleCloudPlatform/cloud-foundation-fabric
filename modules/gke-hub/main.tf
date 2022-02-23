@@ -15,25 +15,14 @@
  */
 
 locals {
-  gke_hub_services = (var.enable_required_api
-    ? [
-      "gkehub.googleapis.com",
-      "anthosconfigmanagement.googleapis.com",
-      "multiclusteringress.googleapis.com",
-      "multiclusterservicediscovery.googleapis.com",
-    ]
-    : []
-  )
-  feature_binauthz = (var.member_features["configmanagement"]["binauthz"] == null
-    ?
-    {
-      enabled = null
-    }
+  feature_binauthz = (
+    var.member_features["configmanagement"]["binauthz"] == null
+    ? { enabled = null }
     : var.member_features["configmanagement"]["binauthz"]
   )
-  feature_config_sync = (var.member_features["configmanagement"]["config_sync"] == null
-    ?
-    {
+  feature_config_sync = (
+    var.member_features["configmanagement"]["config_sync"] == null
+    ? {
       https_proxy               = null
       sync_repo                 = null
       sync_branch               = null
@@ -45,7 +34,8 @@ locals {
     }
     : var.member_features["configmanagement"]["config_sync"]
   )
-  feature_hierarchy_controller = (var.member_features["configmanagement"]["hierarchy_controller"] == null
+  feature_hierarchy_controller = (
+    var.member_features["configmanagement"]["hierarchy_controller"] == null
     ? {
       enabled                            = null
       enable_pod_tree_labels             = null
@@ -53,7 +43,8 @@ locals {
     }
     : var.member_features["configmanagement"]["hierarchy_controller"]
   )
-  feature_policy_controller = (var.member_features["configmanagement"]["policy_controller"] == null
+  feature_policy_controller = (
+    var.member_features["configmanagement"]["policy_controller"] == null
     ? {
       enabled                    = null
       exemptable_namespaces      = null
@@ -62,6 +53,15 @@ locals {
       template_library_installed = null
     }
     : var.member_features["configmanagement"]["policy_controller"]
+  )
+  gke_hub_services = (var.enable_required_api
+    ? [
+      "gkehub.googleapis.com",
+      "anthosconfigmanagement.googleapis.com",
+      "multiclusteringress.googleapis.com",
+      "multiclusterservicediscovery.googleapis.com",
+    ]
+    : []
   )
 }
 
