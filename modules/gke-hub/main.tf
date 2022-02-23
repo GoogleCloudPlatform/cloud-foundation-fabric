@@ -54,24 +54,6 @@ locals {
     }
     : var.member_features["configmanagement"]["policy_controller"]
   )
-  gke_hub_services = (var.enable_required_api
-    ? [
-      "gkehub.googleapis.com",
-      "anthosconfigmanagement.googleapis.com",
-      "multiclusteringress.googleapis.com",
-      "multiclusterservicediscovery.googleapis.com",
-    ]
-    : []
-  )
-}
-
-resource "google_project_service" "project_services" {
-  provider                   = google-beta
-  for_each                   = toset(local.gke_hub_services)
-  project                    = var.project_id
-  service                    = each.value
-  disable_on_destroy         = true
-  disable_dependent_services = true
 }
 
 resource "google_gke_hub_membership" "membership" {

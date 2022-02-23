@@ -71,8 +71,3 @@ variable "project_id" {
   description = "Cluster project ID."
   type        = string
 }
-
-variable "enable_required_api" {
-  description = "Enable GKE HUB required APIs"
-  type        = bool
-}
