@@ -8,58 +8,57 @@ The given list of clusters will be registered inside the Hub and all the configu
 ```hcl
 module "gke-hub-configuration" {
   source     = "./modules/gke-hub"
-  hub_config = {
-    clusters = [
-      { name = "cluster-1", location = "europe-west1" },
-    ]
-    config_sync = null
-    policy_controller = {
-      enabled                 = true
-      enable_template_library = true
-      enable_log_denies       = false
-      exemptable_namespaces   = ["config-management-monitoring", "config-management-system"]
+  project_id = "myproject"
+  features        = {
+    configmanagement             = true
+    multiclusteringress          = false
+    multiclusterservicediscovery = false
+  }
+  member_clusters = {
+    "cluster-1" = "europe-west1"
+  }
+  member_features = {
+    multiclusteringress          = false
+    multiclusterservicediscovery = false
+    configmanagement = {
+      version = "1.10.0"
+      config_sync = {
+        https_proxy               = ""
+        sync_repo                 = "https://github.com/danielmarzini/configsync-platform-example"
+        sync_branch               = "main"
+        sync_rev                  = ""
+        secret_type               = "none"
+        gcp_service_account_email = ""
+        policy_dir                = "configsync"
+        source_format             = "hierarchy"
+      }
+      policy_controller = {
+        enabled                    = true
+        template_library_installed = true
+        log_denies_enabled         = false
+        referential_rules_enabled  = false
+        exemptable_namespaces      = ["config-management-monitoring", "config-management-system"]
+      }
+      binauthz             = null
+      hierarchy_controller = null
     }
   }
-  project_id = "myproject"
 }
-# tftest modules=1 resources=7
+# tftest modules=1 resources=5
 ```
 
-### Module defaults
-The attributes config_sync and policy_controller are implemented with an overrides logic. 
-
-If null is specified, the default values are:
+### Module required APIs
+The module does not enable the required APIs for the target cloud services.
+The required APIs should be enabled on the parent project on a need basis and are:
 ```
-config_sync = {
-  repository_url           = null
-  repository_branch        = "main"
-  repository_source_format = "hierarchy"
-  repository_policy_dir    = "configsync"
-  repository_secret_type   = "gcpserviceaccount"
-  workload_identity_sa     = null
-  secret_type              = "gcpserviceaccount"
-}
+# GKE Hub and Configmanagement
+"gkehub.googleapis.com"
+"gkeconnect.googleapis.com"
+"anthosconfigmanagement.googleapis.com"
+"multiclusteringress.googleapis.com"
+"multiclusterservicediscovery.googleapis.com"
 ```
-The config_sync default settings will let the module create a new dedicated service account and a google source repository. 
-The SA will be used trough Workload Identity, in the GKE cluster/s, to download configurations from the repository.
 
-```
-policy_controller = {
-  enabled                 = true
-  enable_template_library = true
-  enable_log_denies       = true
-  exemptable_namespaces   = ["config-management-monitoring", "config-management-system"]
-}
-```
-The policy_controller default settings will let the module to enable the policy_controller with the default template_library and log_denies enabled, 
-config-management-monitoring and config-management-system namespaces will be excluded from the policies enforcement.
-
-### Internally managed service account
-To have the module auto-create a service account for config_sync, set the `workload_identity_sa` variable to `null`. 
-When a service account is created by the module, the service account resource and email (in both plain and IAM formats) are then available in outputs to assign IAM roles from your own code.
-
-To have the module auto-create a source repository for config_sync, set the `repository_url` variable to `null`. 
-When a Google Source Repository is created by the module, the sourcerepo resource and uurl are then available in outputs.
 <!-- BEGIN TFDOC -->
 
 ## Variables
