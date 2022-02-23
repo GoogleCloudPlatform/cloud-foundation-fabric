@@ -17,7 +17,7 @@
 locals {
   feature_binauthz = (
     var.member_features["configmanagement"]["binauthz"] == null
-    ? { enabled = null }
+    ? { enabled = false }
     : var.member_features["configmanagement"]["binauthz"]
   )
   feature_config_sync = (
@@ -37,7 +37,7 @@ locals {
   feature_hierarchy_controller = (
     var.member_features["configmanagement"]["hierarchy_controller"] == null
     ? {
-      enabled                            = null
+      enabled                            = false
       enable_pod_tree_labels             = null
       enable_hierarchical_resource_quota = null
     }
@@ -46,7 +46,7 @@ locals {
   feature_policy_controller = (
     var.member_features["configmanagement"]["policy_controller"] == null
     ? {
-      enabled                    = null
+      enabled                    = false
       exemptable_namespaces      = null
       log_denies_enabled         = null
       referential_rules_enabled  = null
@@ -105,7 +105,7 @@ resource "google_gke_hub_feature_membership" "feature_member" {
   feature    = google_gke_hub_feature.feature-configmanagement[0].name
   membership = google_gke_hub_membership.membership[each.key].membership_id
   configmanagement {
-    version = var.member_features.configmanagement.version
+    version = try(var.member_features.configmanagement.version, null)
 
     config_sync {
       git {
