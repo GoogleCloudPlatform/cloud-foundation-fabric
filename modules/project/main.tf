@@ -93,3 +93,6 @@ resource "google_monitoring_monitored_project" "primary" {
   metrics_scope = each.value
   name          = local.project.project_id
 }
+
+
+# delete me
