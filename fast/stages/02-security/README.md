@@ -57,8 +57,8 @@ To simplify setup, the previous stage pre-configures a valid providers file in i
 If you have set a valid value for `outputs_location` in the resource management stage, simply link the relevant `providers.tf` file from this stage's folder in the path you specified:
 
 ```bash
-# `outputs_location` is set to `../../config`
-ln -s ../../config/02-security/providers.tf
+# `outputs_location` is set to `~/fast-config`
+ln -s ~/fast-config/providers/02-security-providers.tf .
 ```
 
 If you have not configured `outputs_location` in resource management, you can derive the providers file from that stage's outputs:
@@ -68,8 +68,6 @@ cd ../01-resman
 terraform output -json providers | jq -r '.["02-security"]' \
   > ../02-security/providers.tf
 ```
-
-If you want to continue to rely on `outputs_location` logic, create a `terraform.tfvars` file and configure it as deacribed [here](../00-bootstrap/#output-files-and-cross-stage-variables).
 
 ### Variable configuration
 
@@ -83,12 +81,14 @@ To avoid the tedious job of filling in the first group of variables with values 
 If you configured a valid path for `outputs_location` in the previous stages, simply link the relevant `terraform-*.auto.tfvars.json` files from this stage's output folder (under the path you specified), where the `*` above is set to the name of the stage that produced it. For this stage, two `.tfvars` files are available:
 
 ```bash
-# `outputs_location` is set to `../../config`
-ln -s ../../config/02-security/terraform-bootstrap.auto.tfvars.json
-ln -s ../../config/02-security/terraform-resman.auto.tfvars.json
+# `outputs_location` is set to `~/fast-config`
+ln -s ~/fast-config/tfvars/00-bootstrap.auto.tfvars.json .
+ln -s ~/fast-config/tfvars/01-resman.auto.tfvars.json .
+# also copy the tfvars file used for the bootstrap stage
+cp ../00-bootstrap/terraform.tfvars .
 ```
 
-A second set of optional variables is specific to this stage. If you need to customize them, create an extra `terraform.tfvars` file.
+A second set of optional variables is specific to this stage. If you need to customize them add them to the file copied from bootstrap.
 
 Refer to the [Variables](#variables) table at the bottom of this document, for a full list of variables, their origin (e.g., a stage or specific to this one), and descriptions explaining their meaning. The sections below also describe some of the possible customizations.
 
