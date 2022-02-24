@@ -15,23 +15,20 @@
  */
 
 module "stage" {
-  source             = "../../../../../fast/stages/02-security"
-  billing_account_id = "000000-111111-222222"
-  folder_id          = "folders/12345678"
+  source = "../../../../../fast/stages/02-security"
+  billing_account = {
+    id              = "000000-111111-222222"
+    organization_id = 123456789012
+  }
+  folder_ids = {
+    security = null
+  }
   organization = {
     domain      = "gcp-pso-italy.net"
     id          = 856933387836
     customer_id = "C01lmug8b"
   }
   prefix = "fast"
-  kms_restricted_admins = {
-    "dev" : [
-      "serviceAccount:fast-dev-resman-pf-0@fast-prod-iac-core-0.iam.gserviceaccount.com"
-    ],
-    "prod" : [
-      "serviceAccount:fast-prod-resman-pf-0@fast-prod-iac-core-0.iam.gserviceaccount.com"
-    ]
-  }
   kms_keys = {
     compute = {
       iam = {
@@ -41,6 +38,11 @@ module "stage" {
       locations       = null
       rotation_period = null
     }
+  }
+  service_accounts = {
+    security             = "foobar@iam.gserviceaccount.com"
+    project-factory-dev  = "foobar@iam.gserviceaccount.com"
+    project-factory-prod = "foobar@iam.gserviceaccount.com"
   }
   vpc_sc_ingress_policies = {
     iac = {
