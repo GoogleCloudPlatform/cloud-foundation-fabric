@@ -17,7 +17,6 @@
 locals {
   _member_features          = coalesce(var.member_features, null)
   _feature_configmanagement = coalesce(local._member_features.configmanagement, null)
-  # _feature_configmanagement_binauthz = coalesce(local._feature_configmanagement.binauthz, null)
 
   _cluster_names = {
     for v in var.member_clusters :
@@ -30,7 +29,7 @@ locals {
     : local._member_features.configmanagement.binauthz
   )
   feature_config_sync = (
-    var.member_features.configmanagement.config_sync == null
+    local._member_features.configmanagement.config_sync == null
     ? {
       https_proxy               = null
       sync_repo                 = null
@@ -41,19 +40,19 @@ locals {
       policy_dir                = null
       source_format             = null
     }
-    : var.member_features.configmanagement.config_sync
+    : local._member_features.configmanagement.config_sync
   )
   feature_hierarchy_controller = (
-    var.member_features.configmanagement.hierarchy_controller == null
+    local._member_features.configmanagement.hierarchy_controller == null
     ? {
       enabled                            = false
       enable_pod_tree_labels             = null
       enable_hierarchical_resource_quota = null
     }
-    : var.member_features.configmanagement.hierarchy_controller
+    : local._member_features.configmanagement.hierarchy_controller
   )
   feature_policy_controller = (
-    var.member_features.configmanagement.policy_controller == null
+    local._member_features.configmanagement.policy_controller == null
     ? {
       enabled                    = false
       exemptable_namespaces      = null
@@ -61,7 +60,7 @@ locals {
       referential_rules_enabled  = null
       template_library_installed = null
     }
-    : var.member_features.configmanagement.policy_controller
+    : local._member_features.configmanagement.policy_controller
   )
 }
 
