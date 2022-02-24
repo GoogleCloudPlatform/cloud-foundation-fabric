@@ -27,6 +27,12 @@ locals {
   service_accounts = {
     for k, v in coalesce(var.service_accounts, {}) : k => "serviceAccount:${v}"
   }
+  stage3_sas_delegated_grants = [
+    "roles/composer.sharedVpcAgent",
+    "roles/compute.networkUser",
+    "roles/container.hostServiceAgentUser",
+    "roles/vpcaccess.user",
+  ]
 }
 
 module "folder" {

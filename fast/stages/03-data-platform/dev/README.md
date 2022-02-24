@@ -51,6 +51,7 @@ Cloud KMS crypto keys can be configured wither from the [FAST security stage](..
 To configure the use of Cloud KMS on resources, you have to specify the key id on the `service_encryption_keys` variable. Key locations should match resource locations.
 
 ### VPC-SC
+
 As is often the case in real-world configurations, [VPC-SC](https://cloud.google.com/vpc-service-controls) is needed to mitigate data exfiltration. VPC-SC can be configured from the [FAST security stage](../../02-security). This step is optional, but highly recomended, and depends on customer policies and security best practices.
 
 To configure the use of VPC-SC on the data platform, you have to specify the data platform project numbers on the `vpc_sc_perimeter_projects.dev` variable on [FAST security stage](../../02-security#perimeter-resources).
@@ -81,7 +82,12 @@ The VPC host project, VPC and subnets should already exist.
 
 ### Providers configuration
 
-If you're running this as part of a full FAST flow and using output files, the providers configuration with the right bucket and impersionation account is already available, and will be linked in via the same command use for variables and described in the next section.
+If you're running this on top of Fast, you should run the following commands to create the providers file, and populate the required variables from the previous stage.
+
+```bash
+# Variable `outputs_location` is set to `~/fast-config` in stage 01-resman
+ln -s ~/fast-config/providers/03-data-platform-dev-providers.tf .
+```
 
 ### Variable configuration
 
@@ -95,8 +101,10 @@ To avoid the tedious job of filling in the first group of variables with values 
 If you configured a valid path for `outputs_location` in the bootstrap security and networking stages, simply link the relevant `terraform-*.auto.tfvars.json` files from this stage's outputs folder under the path you specified. This will also link the providers configuration file:
 
 ```bash
-# variable `outputs_location` set to `../../../config`
-ln -s ../../../config/03-data-platform-prod/* ./
+# Variable `outputs_location` is set to `~/fast-config`
+ln -s ~/fast-config/tfvars/00-bootstrap.auto.tfvars.json .
+ln -s ~/fast-config/tfvars/01-resman.auto.tfvars.json . 
+ln -s ~/fast-config/tfvars/02-networking.auto.tfvars.json .
 ```
 
 If you're not using FAST or its output files, refer to the [Variables](#variables) table at the bottom of this document for a full list of variables, their origin (e.g., a stage or specific to this one), and descriptions explaining their meaning.
