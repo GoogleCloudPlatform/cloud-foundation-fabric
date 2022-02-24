@@ -17,21 +17,22 @@
 variable "features" {
   description = "GKE hub features to enable."
   type = object({
-    configmanagement             = bool
-    multiclusteringress          = bool
-    multiclusterservicediscovery = bool
+    configmanagement    = bool
+    mc-ingress          = bool
+    mc-servicediscovery = bool
   })
   default = {
-    configmanagement             = true
-    multiclusteringress          = false
-    multiclusterservicediscovery = false
+    configmanagement    = true
+    mc-ingress          = false
+    mc-servicediscovery = false
   }
 }
 
 variable "member_clusters" {
   description = "List for member cluster self links."
-  type        = map(string)
-  default     = {}
+  type        = list(string)
+  default     = []
+  nullable    = false
 }
 
 variable "member_features" {
@@ -65,8 +66,8 @@ variable "member_features" {
         enable_hierarchical_resource_quota = bool
       })
     })
-    multiclusteringress          = bool
-    multiclusterservicediscovery = bool
+    mc-ingress          = bool
+    mc-servicediscovery = bool
   })
   default = null
 }

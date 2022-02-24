@@ -10,9 +10,9 @@ module "gke-hub-configuration" {
   source     = "./modules/gke-hub"
   project_id = "myproject"
   features        = {
-    configmanagement             = true
-    multiclusteringress          = false
-    multiclusterservicediscovery = false
+    configmanagement    = true
+    mc-ingress          = false
+    mc-servicediscovery = false
   }
   member_clusters = {
     "cluster-1" = "europe-west1"

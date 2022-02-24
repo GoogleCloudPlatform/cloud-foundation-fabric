@@ -15,13 +15,22 @@
  */
 
 locals {
+  _member_features          = coalesce(var.member_features, null)
+  _feature_configmanagement = coalesce(local._member_features.configmanagement, null)
+  # _feature_configmanagement_binauthz = coalesce(local._feature_configmanagement.binauthz, null)
+
+  _cluster_names = {
+    for v in var.member_clusters :
+    v => element(split("/", v), length(split("/", v)) - 1)
+  }
+
   feature_binauthz = (
-    var.member_features["configmanagement"]["binauthz"] == null
+    local._member_features.configmanagement.binauthz == null
     ? { enabled = false }
-    : var.member_features["configmanagement"]["binauthz"]
+    : local._member_features.configmanagement.binauthz
   )
   feature_config_sync = (
-    var.member_features["configmanagement"]["config_sync"] == null
+    var.member_features.configmanagement.config_sync == null
     ? {
       https_proxy               = null
       sync_repo                 = null
@@ -32,19 +41,19 @@ locals {
       policy_dir                = null
       source_format             = null
     }
-    : var.member_features["configmanagement"]["config_sync"]
+    : var.member_features.configmanagement.config_sync
   )
   feature_hierarchy_controller = (
-    var.member_features["configmanagement"]["hierarchy_controller"] == null
+    var.member_features.configmanagement.hierarchy_controller == null
     ? {
       enabled                            = false
       enable_pod_tree_labels             = null
       enable_hierarchical_resource_quota = null
     }
-    : var.member_features["configmanagement"]["hierarchy_controller"]
+    : var.member_features.configmanagement.hierarchy_controller
   )
   feature_policy_controller = (
-    var.member_features["configmanagement"]["policy_controller"] == null
+    var.member_features.configmanagement.policy_controller == null
     ? {
       enabled                    = false
       exemptable_namespaces      = null
@@ -52,22 +61,23 @@ locals {
       referential_rules_enabled  = null
       template_library_installed = null
     }
-    : var.member_features["configmanagement"]["policy_controller"]
+    : var.member_features.configmanagement.policy_controller
   )
 }
-
+# ok
 resource "google_gke_hub_membership" "membership" {
   provider      = google-beta
-  for_each      = { for i, v in var.member_clusters : i => v }
+  for_each      = toset(var.member_clusters)
   membership_id = each.key
-  project       = var.project_id #hub project id
+  project       = var.project_id
   endpoint {
     gke_cluster {
-      resource_link = "//container.googleapis.com/projects/${var.project_id}/locations/${each.value}/clusters/${each.key}"
+      # resource_link = "//container.googleapis.com/projects/${var.project_id}/locations/${each.value}/clusters/${each.key}"
+      resource_link = "//container.googleapis.com/${each.value}"
     }
   }
 }
-
+#ok
 resource "google_gke_hub_feature" "feature-configmanagement" {
   provider = google-beta
   count    = var.features.configmanagement ? 1 : 0
@@ -78,20 +88,20 @@ resource "google_gke_hub_feature" "feature-configmanagement" {
 
 resource "google_gke_hub_feature" "feature-mci" {
   provider = google-beta
-  for_each = { for i, v in var.member_clusters : i => v }
+  for_each = toset(var.member_clusters)
   project  = var.project_id
   name     = "multiclusteringress"
   location = "global"
   spec {
     multiclusteringress {
-      config_membership = google_gke_hub_membership.membership[each.key].id
+      config_membership = google_gke_hub_membership.membership[local._cluster_names[each.value]].id
     }
   }
 }
 
 resource "google_gke_hub_feature" "feature-mcs" {
   provider = google-beta
-  count    = var.features.multiclusterservicediscovery ? 1 : 0
+  count    = var.features.mc-servicediscovery ? 1 : 0
   project  = var.project_id
   name     = "multiclusterservicediscovery"
   location = "global"
@@ -99,11 +109,11 @@ resource "google_gke_hub_feature" "feature-mcs" {
 
 resource "google_gke_hub_feature_membership" "feature_member" {
   provider   = google-beta
-  for_each   = { for i, v in var.member_clusters : i => v }
+  for_each   = toset(var.member_clusters)
   project    = var.project_id
   location   = "global"
   feature    = google_gke_hub_feature.feature-configmanagement[0].name
-  membership = google_gke_hub_membership.membership[each.key].membership_id
+  membership = google_gke_hub_membership.membership[local._cluster_names[each.key]].membership_id
   configmanagement {
     version = try(var.member_features.configmanagement.version, null)
 
