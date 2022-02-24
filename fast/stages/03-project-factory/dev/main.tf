@@ -22,8 +22,8 @@ locals {
   _defaults_net = {
     billing_account_id   = var.billing_account.id
     environment_dns_zone = var.environment_dns_zone
-    shared_vpc_self_link = try(var.shared_vpc_self_links["dev:spoke-0"], null)
-    vpc_host_project     = try(var.vpc_host_project_ids["dev:spoke-0"], null)
+    shared_vpc_self_link = try(var.shared_vpc_self_links["dev-spoke-0"], null)
+    vpc_host_project     = try(var.vpc_host_project_ids["dev-spoke-0"], null)
   }
   defaults = merge(local._defaults, local._defaults_net)
   projects = {

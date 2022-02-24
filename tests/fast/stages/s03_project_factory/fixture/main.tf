@@ -19,10 +19,14 @@ module "projects" {
   data_dir             = "./data/projects/"
   defaults_file        = "./data/defaults.yaml"
   prefix               = "test"
-  billing_account_id   = "12345-67890A-BCDEF0"
   environment_dns_zone = "dev"
-  shared_vpc_self_link = "fake_link"
-  vpc_host_project     = "host_project"
+  billing_account = {
+    id              = "000000-111111-222222"
+    organization_id = 123456789012
+  }
+  shared_vpc_self_links = {
+    dev-spoke-0 = "link"
+  }
 }
 
 
