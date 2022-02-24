@@ -64,7 +64,7 @@ locals {
     : var.member_features.configmanagement.policy_controller
   )
 }
-# ok
+
 resource "google_gke_hub_membership" "membership" {
   provider      = google-beta
   for_each      = toset(var.member_clusters)
@@ -72,12 +72,11 @@ resource "google_gke_hub_membership" "membership" {
   project       = var.project_id
   endpoint {
     gke_cluster {
-      # resource_link = "//container.googleapis.com/projects/${var.project_id}/locations/${each.value}/clusters/${each.key}"
       resource_link = "//container.googleapis.com/${each.value}"
     }
   }
 }
-#ok
+
 resource "google_gke_hub_feature" "feature-configmanagement" {
   provider = google-beta
   count    = var.features.configmanagement ? 1 : 0

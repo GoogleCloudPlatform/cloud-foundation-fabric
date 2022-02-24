@@ -14,12 +14,12 @@ module "gke-hub-configuration" {
     mc-ingress          = false
     mc-servicediscovery = false
   }
-  member_clusters = {
-    "cluster-1" = "europe-west1"
-  }
+  member_clusters = [
+    "projects/myproject/locations/europe-west1/clusters/cluster-1"
+  ]
   member_features = {
-    multiclusteringress          = false
-    multiclusterservicediscovery = false
+    mc-ingress          = false
+    mc-servicediscovery = false
     configmanagement = {
       version = "1.10.0"
       config_sync = {
