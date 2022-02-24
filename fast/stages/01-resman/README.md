@@ -53,8 +53,8 @@ To simplify setup, the previous stage pre-configures a valid providers file in i
 If you have set a valid value for `outputs_location` in the bootstrap stage (see the [bootstrap stage README](../00-bootstrap/#output-files-and-cross-stage-variables) for more details), simply link the relevant `providers.tf` file from this stage's folder in the path you specified:
 
 ```bash
-# `outputs_location` is set to `~/config`
-ln -s ~/config/providers/01-resman* ./
+# `outputs_location` is set to `~/fast-config`
+ln -s ~/fast-config/providers/01-resman* ./
 ```
 
 If you have not configured `outputs_location` in bootstrap, you can derive the providers file from that stage's outputs:
