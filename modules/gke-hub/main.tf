@@ -24,12 +24,12 @@ locals {
   }
 
   feature_binauthz = (
-    local._member_features.configmanagement.binauthz == null
+    local._feature_configmanagement.binauthz == null
     ? { enabled = false }
-    : local._member_features.configmanagement.binauthz
+    : local._feature_configmanagement.binauthz
   )
   feature_config_sync = (
-    local._member_features.configmanagement.config_sync == null
+    local._feature_configmanagement.config_sync == null
     ? {
       https_proxy               = null
       sync_repo                 = null
@@ -40,19 +40,19 @@ locals {
       policy_dir                = null
       source_format             = null
     }
-    : local._member_features.configmanagement.config_sync
+    : local._feature_configmanagement.config_sync
   )
   feature_hierarchy_controller = (
-    local._member_features.configmanagement.hierarchy_controller == null
+    local._feature_configmanagement.hierarchy_controller == null
     ? {
       enabled                            = false
       enable_pod_tree_labels             = null
       enable_hierarchical_resource_quota = null
     }
-    : local._member_features.configmanagement.hierarchy_controller
+    : local._feature_configmanagement.hierarchy_controller
   )
   feature_policy_controller = (
-    local._member_features.configmanagement.policy_controller == null
+    local._feature_configmanagement.policy_controller == null
     ? {
       enabled                    = false
       exemptable_namespaces      = null
@@ -60,7 +60,7 @@ locals {
       referential_rules_enabled  = null
       template_library_installed = null
     }
-    : local._member_features.configmanagement.policy_controller
+    : local._feature_configmanagement.policy_controller
   )
 }
 
