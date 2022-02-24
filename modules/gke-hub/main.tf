@@ -68,7 +68,7 @@ locals {
 resource "google_gke_hub_membership" "membership" {
   provider      = google-beta
   for_each      = toset(var.member_clusters)
-  membership_id = each.key
+  membership_id = local._cluster_names[each.key]
   project       = var.project_id
   endpoint {
     gke_cluster {
@@ -94,7 +94,7 @@ resource "google_gke_hub_feature" "feature-mci" {
   location = "global"
   spec {
     multiclusteringress {
-      config_membership = google_gke_hub_membership.membership[local._cluster_names[each.value]].id
+      config_membership = google_gke_hub_membership.membership[each.key].id
     }
   }
 }
@@ -113,7 +113,7 @@ resource "google_gke_hub_feature_membership" "feature_member" {
   project    = var.project_id
   location   = "global"
   feature    = google_gke_hub_feature.feature-configmanagement[0].name
-  membership = google_gke_hub_membership.membership[local._cluster_names[each.key]].membership_id
+  membership = google_gke_hub_membership.membership[each.key].membership_id
   configmanagement {
     version = try(var.member_features.configmanagement.version, null)
 
