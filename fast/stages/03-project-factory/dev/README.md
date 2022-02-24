@@ -56,9 +56,9 @@ It's of course possible to run this stage in isolation, by making sure the archi
 If you're running this on top of Fast, you should run the following commands to create the providers file, and populate the required variables from the previous stage.
 
 ```bash
-# Variable `outputs_location` is set to `../../../config` in stage 01-resman
+# Variable `outputs_location` is set to `~/fast-config` in stage 01-resman
 $ cd fabric-fast/stages/03-project-factory/dev
-ln -s ../../../config/03-project-factory-dev/providers.tf
+ln -s ~/fast-config/providers/03-project-factory-dev-providers.tf .
 ```
 
 ### Variable configuration
@@ -73,9 +73,10 @@ To avoid the tedious job of filling in the first group of variables with values 
 If you configured a valid path for `outputs_location` in the bootstrap and networking stage, simply link the relevant `terraform-*.auto.tfvars.json` files from this stage's outputs folder (under the path you specified), where the `*` above is set to the name of the stage that produced it. For this stage, a single `.tfvars` file is available:
 
 ```bash
-# Variable `outputs_location` is set to `../../../config` in stages 01-bootstrap and the 02-networking stage in use
-ln -s ../../../config/03-project-factory-dev/terraform-bootstrap.auto.tfvars.json
-ln -s ../../../config/03-project-factory-dev/terraform-networking.auto.tfvars.json
+# Variable `outputs_location` is set to `~/fast-config`
+ln -s ~/fast-config/tfvars/00-bootstrap.auto.tfvars.json .
+ln -s ~/fast-config/tfvars/01-resman.auto.tfvars.json . 
+ln -s ~/fast-config/tfvars/02-networking.auto.tfvars.json .
 ```
 
 If you're not using Fast, refer to the [Variables](#variables) table at the bottom of this document for a full list of variables, their origin (e.g., a stage or specific to this one), and descriptions explaining their meaning.

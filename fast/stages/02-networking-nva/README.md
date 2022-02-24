@@ -200,14 +200,14 @@ To simplify the setup, the previous stage pre-configures a valid providers file 
 If you have set a valid value for `outputs_location` in the bootstrap stage, simply link the relevant `providers.tf` file from this stage folder in the path you selected:
 
 ```bash
-# `outputs_location` is set to `../../configs/example`
-ln -s ../../configs/example/02-networking/providers.tf
+# `outputs_location` is set to `~/fast-config`
+ln -s ~/fast-config/providers/02-networking-providers.tf .
 ```
 
 If you have not configured `outputs_location` in bootstrap, you can derive the providers file from that stage outputs:
 
 ```bash
-cd ../00-bootstrap
+cd ../01-resman
 terraform output -json providers | jq -r '.["02-networking"]' \
   > ../02-networking-nva/providers.tf
 ```
@@ -224,12 +224,14 @@ To avoid the tedious job of filling in the first group of variables with values 
 If you have set a valid value for `outputs_location` in the bootstrap and in the resman stage, simply link the relevant `terraform-*.auto.tfvars.json` files from this stage's folder in the path you specified, where the `*` above is set to the name of the stage that produced it. For this stage, a single `.tfvars` file is available:
 
 ```bash
-# `outputs_location` is set to `../../configs/example`
+# `outputs_location` is set to `~/fast-config`
 ln -s ../../configs/example/02-networking/terraform-bootstrap.auto.tfvars.json
 ln -s ../../configs/example/02-networking/terraform-resman.auto.tfvars.json
+# also copy the tfvars file used for the bootstrap stage
+cp ../00-bootstrap/terraform.tfvars .
 ```
 
-If you want to continue to rely on `outputs_location` logic, create a `terraform.tfvars` file and configure it as described [here](../00-bootstrap/#output-files-and-cross-stage-variables).
+A second set of variables is specific to this stage, they are all optional so if you need to customize them, add them to the file copied from bootstrap.
 
 Please, refer to the [variables](#variables) table below for a map of the variable origins, and use the sections below to understand how to adapt this stage to your networking configuration.
 
