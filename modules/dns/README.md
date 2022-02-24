@@ -2,7 +2,7 @@
 
 This module allows simple management of Google Cloud DNS zones and records. It supports creating public, private, forwarding, peering and service directory based zones.
 
-For DNSSEC configuration, refer to the [`dns_managed_zone` documentation](https://www.terraform.io/docs/providers/google/r/dns_managed_zone.html#dnssec_config).
+For DNSSEC configuration, refer to the [`dns_managed_zone` documentation](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/dns_managed_zone#dnssec_config).
 
 ## Examples
 
