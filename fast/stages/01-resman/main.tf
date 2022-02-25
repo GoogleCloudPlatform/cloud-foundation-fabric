@@ -19,6 +19,7 @@ locals {
   billing_ext     = var.billing_account.organization_id == null
   billing_org     = var.billing_account.organization_id == var.organization.id
   billing_org_ext = !local.billing_ext && !local.billing_org
+  custom_roles    = coalesce(var.custom_roles, {})
   groups = {
     for k, v in var.groups :
     k => "${v}@${var.organization.domain}"
