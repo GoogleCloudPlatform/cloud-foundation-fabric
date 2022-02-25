@@ -22,8 +22,8 @@ module "stage" {
     organization_id = 123456789012
   }
   custom_roles = {
-    "organizationIamAdmin" : "organizations/123456789012/roles/organizationIamAdmin",
-    "xpnServiceAdmin" : "organizations/123456789012/roles/xpnServiceAdmin"
+    # organization_iam_admin = "organizations/123456789012/roles/organizationIamAdmin",
+    service_project_network_admin = "organizations/123456789012/roles/xpnServiceAdmin"
   }
   groups = {
     gcp-billing-admins      = "gcp-billing-admins",

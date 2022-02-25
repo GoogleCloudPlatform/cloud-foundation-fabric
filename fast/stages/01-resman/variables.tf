@@ -35,8 +35,10 @@ variable "billing_account" {
 variable "custom_roles" {
   # tfdoc:variable:source 00-bootstrap
   description = "Custom roles defined at the org level, in key => id format."
-  type        = map(string)
-  default     = {}
+  type = object({
+    service_project_network_admin = string
+  })
+  default = null
 }
 
 variable "groups" {

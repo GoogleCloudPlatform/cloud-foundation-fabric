@@ -82,7 +82,7 @@ module "branch-network-dev-folder" {
   parent = module.branch-network-folder.id
   name   = "Development"
   iam = {
-    "roles/compute.xpnAdmin" = [
+    (local.custom_roles.service_project_network_admin) = [
       module.branch-dp-dev-sa.iam_email,
       module.branch-teams-dev-pf-sa.iam_email
     ]

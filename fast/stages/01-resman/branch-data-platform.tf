@@ -35,10 +35,10 @@ module "branch-dp-dev-folder" {
   name      = "Development"
   group_iam = {}
   iam = {
+    (local.custom_roles.service_project_network_admin) = [module.branch-dp-dev-sa.iam_email]
     # remove owner here and at project level if SA does not manage project resources
-    "roles/compute.xpnAdmin"               = [module.branch-dp-dev-sa.iam_email]
-    "roles/logging.admin"                  = [module.branch-dp-dev-sa.iam_email]
     "roles/owner"                          = [module.branch-dp-dev-sa.iam_email]
+    "roles/logging.admin"                  = [module.branch-dp-dev-sa.iam_email]
     "roles/resourcemanager.folderAdmin"    = [module.branch-dp-dev-sa.iam_email]
     "roles/resourcemanager.projectCreator" = [module.branch-dp-dev-sa.iam_email]
   }
@@ -74,12 +74,12 @@ module "branch-dp-prod-folder" {
   name      = "Production"
   group_iam = {}
   iam = {
+    (local.custom_roles.service_project_network_admin) = [module.branch-dp-prod-sa.iam_email]
     # remove owner here and at project level if SA does not manage project resources
-    "roles/logging.admin"                  = [module.branch-dp-prod-sa.iam_email]
     "roles/owner"                          = [module.branch-dp-prod-sa.iam_email]
+    "roles/logging.admin"                  = [module.branch-dp-prod-sa.iam_email]
     "roles/resourcemanager.folderAdmin"    = [module.branch-dp-prod-sa.iam_email]
     "roles/resourcemanager.projectCreator" = [module.branch-dp-prod-sa.iam_email]
-    "roles/compute.xpnAdmin"               = [module.branch-dp-prod-sa.iam_email]
   }
   tag_bindings = {
     context = module.organization.tag_values["environment/production"].id
