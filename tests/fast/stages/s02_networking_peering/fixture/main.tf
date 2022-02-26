@@ -15,8 +15,8 @@
  */
 
 module "stage" {
-  source   = "../../../../../fast/stages/02-networking-vpn"
-  data_dir = "../../../../../fast/stages/02-networking-vpn/data/"
+  source   = "../../../../../fast/stages/02-networking-peering"
+  data_dir = "../../../../../fast/stages/02-networking-peering/data/"
   billing_account = {
     id              = "000000-111111-222222"
     organization_id = 123456789012
