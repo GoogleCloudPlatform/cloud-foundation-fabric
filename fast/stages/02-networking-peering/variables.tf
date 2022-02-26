@@ -148,8 +148,8 @@ variable "router_configs" {
       adv = null
       # adv = { default = false, custom = [] }
     }
-    landing-ew1    = { asn = "64512", adv = null }
-    landing-ew4    = { asn = "64512", adv = null }
+    landing-ew1 = { asn = "64512", adv = null }
+    landing-ew4 = { asn = "64512", adv = null }
   }
 }
 
