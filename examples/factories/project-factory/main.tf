@@ -139,7 +139,7 @@ module "billing-alert" {
 module "dns" {
   source          = "../../../modules/dns"
   for_each        = toset(var.dns_zones)
-  project_id      = module.project.project_id
+  project_id      = coalesce(local.vpc.host_project, module.project.project_id)
   type            = "private"
   name            = each.value
   domain          = "${each.value}.${var.defaults.environment_dns_zone}"
