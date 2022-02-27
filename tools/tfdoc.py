@@ -151,6 +151,8 @@ def parse_files(basepath, exclude_files=None):
   'Return a list of File named tuples in root module at basepath.'
   exclude_files = exclude_files or []
   for name in glob.glob(os.path.join(basepath, '*tf')):
+    if os.path.islink(name):
+      continue
     shortname = os.path.basename(name)
     if shortname in exclude_files:
       continue
