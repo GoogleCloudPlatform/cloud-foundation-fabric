@@ -39,7 +39,7 @@ module "landing-to-onprem-ew1-vpn" {
   name                  = "vpn-to-onprem-ew1"
   router_create         = true
   router_name           = "landing-onprem-vpn-ew1"
-  router_asn            = var.router_configs.landing-ew1.asn
+  router_asn            = var.router_onprem_configs.landing-ew1.asn
   peer_external_gateway = var.vpn_onprem_configs.landing-ew1.peer_external_gateway
   tunnels = {
     for t in var.vpn_onprem_configs.landing-ew1.tunnels :

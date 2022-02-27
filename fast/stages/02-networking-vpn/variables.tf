@@ -133,8 +133,8 @@ variable "psa_ranges" {
   }
 }
 
-variable "router_configs" {
-  description = "Configurations for CRs and onprem routers."
+variable "router_onprem_configs" {
+  description = "Configurations for routers used for onprem connectivity."
   type = map(object({
     adv = object({
       custom  = list(string)
@@ -143,17 +143,11 @@ variable "router_configs" {
     asn = number
   }))
   default = {
-    onprem-ew1 = {
-      asn = "65534"
+    landing-ew1 = {
+      asn = "65533"
       adv = null
       # adv = { default = false, custom = [] }
     }
-    landing-ew1    = { asn = "64512", adv = null }
-    landing-ew4    = { asn = "64512", adv = null }
-    spoke-dev-ew1  = { asn = "64513", adv = null }
-    spoke-dev-ew4  = { asn = "64513", adv = null }
-    spoke-prod-ew1 = { asn = "64514", adv = null }
-    spoke-prod-ew4 = { asn = "64514", adv = null }
   }
 }
 
@@ -221,59 +215,6 @@ variable "vpn_onprem_configs" {
           vpn_gateway_interface           = 1
         }
       ]
-    }
-  }
-}
-
-variable "vpn_spoke_configs" {
-  description = "VPN gateway configuration for spokes."
-  type = map(object({
-    adv = object({
-      default = bool
-      custom  = list(string)
-    })
-    session_range = string
-  }))
-  default = {
-    landing-ew1 = {
-      adv = {
-        default = false
-        custom  = ["rfc_1918_10", "rfc_1918_172", "rfc_1918_192"]
-      }
-      # values for the landing router are pulled from the spoke range
-      session_range = null
-    }
-    landing-ew4 = {
-      adv = {
-        default = false
-        custom  = ["rfc_1918_10", "rfc_1918_172", "rfc_1918_192"]
-      }
-      # values for the landing router are pulled from the spoke range
-      session_range = null
-    }
-    dev-ew1 = {
-      adv = {
-        default = false
-        custom  = ["gcp_dev"]
-      }
-      # resize according to required number of tunnels
-      session_range = "169.254.0.0/27"
-    }
-    prod-ew1 = {
-      adv = {
-        default = false
-        custom  = ["gcp_prod"]
-      }
-      # resize according to required number of tunnels
-      session_range = "169.254.0.64/27"
-    }
-    prod-ew4 = {
-      adv = {
-        default = false
-        custom  = ["gcp_prod"]
-      }
-      # resize according to required number of tunnels
-      session_range = "169.254.0.96/27"
     }
   }
 }

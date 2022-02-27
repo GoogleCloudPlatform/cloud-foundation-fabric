@@ -133,8 +133,8 @@ variable "psa_ranges" {
   }
 }
 
-variable "router_configs" {
-  description = "Configurations for CRs and onprem routers."
+variable "router_onprem_configs" {
+  description = "Configurations for routers used for onprem connectivity."
   type = map(object({
     adv = object({
       custom  = list(string)
@@ -143,13 +143,11 @@ variable "router_configs" {
     asn = number
   }))
   default = {
-    onprem-ew1 = {
-      asn = "65534"
+    landing-ew1 = {
+      asn = "65533"
       adv = null
       # adv = { default = false, custom = [] }
     }
-    landing-ew1 = { asn = "64512", adv = null }
-    landing-ew4 = { asn = "64512", adv = null }
   }
 }
 

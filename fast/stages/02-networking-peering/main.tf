@@ -17,7 +17,6 @@
 # tfdoc:file:description Networking folder and hierarchical policy.
 
 locals {
-  # define the structures used for BGP peers in the VPN resources
   custom_roles = coalesce(var.custom_roles, {})
   l7ilb_subnets = {
     for env, v in var.l7ilb_subnets : env => [

@@ -95,13 +95,6 @@ module "prod-spoke-cloudnat" {
   logging_filter = "ERRORS_ONLY"
 }
 
-module "peering-prod" {
-  source        = "../../../modules/net-vpc-peering"
-  prefix        = "prod-peering-0"
-  local_network = module.prod-spoke-vpc.self_link
-  peer_network  = module.landing-vpc.self_link
-}
-
 # Create delegated grants for stage3 service accounts
 resource "google_project_iam_binding" "prod_spoke_project_iam_delegated" {
   project = module.prod-spoke-project.project_id

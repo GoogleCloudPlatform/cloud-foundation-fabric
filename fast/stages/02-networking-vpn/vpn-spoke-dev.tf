@@ -16,6 +16,24 @@
 
 # tfdoc:file:description VPN between landing and development spoke.
 
+locals {
+  # define the structures used for BGP peers in the VPN resources
+  vpn_spoke_bgp_peer_options = {
+    for k, v in var.vpn_spoke_configs :
+    k => v.adv == null ? null : {
+      advertise_groups = []
+      advertise_ip_ranges = {
+        for adv in(v.adv == null ? [] : v.adv.custom) :
+        var.custom_adv[adv] => adv
+      }
+      advertise_mode = try(v.adv.default, false) ? "DEFAULT" : "CUSTOM"
+      route_priority = null
+    }
+  }
+}
+
+# development spoke
+
 module "landing-to-dev-ew1-vpn" {
   source     = "../../../modules/net-vpn-ha"
   project_id = module.landing-project.project_id
@@ -25,15 +43,17 @@ module "landing-to-dev-ew1-vpn" {
   # The router used for this VPN is managed in vpn-prod.tf
   router_create    = false
   router_name      = "landing-vpn-ew1"
-  router_asn       = var.router_configs.landing-ew1.asn
+  router_asn       = var.router_spoke_configs.landing-ew1.asn
   peer_gcp_gateway = module.dev-to-landing-ew1-vpn.self_link
   tunnels = { for t in range(2) : "tunnel-${t}" => {
     bgp_peer = {
       address = cidrhost(var.vpn_spoke_configs.dev-ew1.session_range, 1 + (t * 4))
-      asn     = var.router_configs.spoke-dev-ew1.asn
+      asn     = var.router_spoke_configs.spoke-dev-ew1.asn
     }
-    bgp_peer_options                = local.bgp_peer_options["landing-ew1"]
-    bgp_session_range               = "${cidrhost(var.vpn_spoke_configs.dev-ew1.session_range, 2 + (t * 4))}/30"
+    bgp_peer_options = local.vpn_spoke_bgp_peer_options.landing-ew1
+    bgp_session_range = "${cidrhost(
+      var.vpn_spoke_configs.dev-ew1.session_range, 2 + (t * 4)
+    )}/30"
     ike_version                     = 2
     peer_external_gateway_interface = null
     router                          = null
@@ -54,15 +74,17 @@ module "dev-to-landing-ew1-vpn" {
   name             = "vpn-to-landing-ew1"
   router_create    = true
   router_name      = "dev-spoke-vpn-ew1"
-  router_asn       = var.router_configs.spoke-dev-ew1.asn
+  router_asn       = var.router_spoke_configs.spoke-dev-ew1.asn
   peer_gcp_gateway = module.landing-to-dev-ew1-vpn.self_link
   tunnels = { for t in range(2) : "tunnel-${t}" => {
     bgp_peer = {
       address = cidrhost(var.vpn_spoke_configs.dev-ew1.session_range, 2 + (t * 4))
-      asn     = var.router_configs.landing-ew1.asn
+      asn     = var.router_spoke_configs.landing-ew1.asn
     }
-    bgp_peer_options                = local.bgp_peer_options["dev-ew1"]
-    bgp_session_range               = "${cidrhost(var.vpn_spoke_configs.dev-ew1.session_range, 1 + (t * 4))}/30"
+    bgp_peer_options = local.vpn_spoke_bgp_peer_options.dev-ew1
+    bgp_session_range = "${cidrhost(
+      var.vpn_spoke_configs.dev-ew1.session_range, 1 + (t * 4)
+    )}/30"
     ike_version                     = 2
     peer_external_gateway_interface = null
     router                          = null
