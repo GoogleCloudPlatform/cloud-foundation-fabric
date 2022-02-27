@@ -20,7 +20,7 @@
 
 module "dev-dns-private-zone" {
   source          = "../../../modules/dns"
-  project_id      = module.landing-project.project_id
+  project_id      = module.dev-spoke-project.project_id
   type            = "private"
   name            = "dev-gcp-example-com"
   domain          = "dev.gcp.example.com."
