@@ -54,6 +54,13 @@ module "nva-template-ew1" {
     size  = 10
   }
   create_template = true
+  instance_type   = "f1-micro"
+  options = {
+    allow_stopping_for_update = true
+    deletion_protection       = false
+    # Creates preemptible instances, cheaper than regular one. Only suitable for testing.
+    preemptible = true
+  }
   metadata = {
     startup-script = templatefile(
       "${path.module}/data/nva-startup-script.tftpl",
