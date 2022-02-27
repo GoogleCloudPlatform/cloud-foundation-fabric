@@ -54,6 +54,13 @@ module "nva-template-ew1" {
     size  = 10
   }
   create_template = true
+  instance_type   = "f1-micro"
+  options = {
+    allow_stopping_for_update = true
+    deletion_protection       = false
+    # Creates preemptible instances, cheaper than regular one. Only suitable for testing.
+    preemptible = true
+  }
   metadata = {
     startup-script = templatefile(
       "${path.module}/data/nva-startup-script.tftpl",
@@ -77,8 +84,18 @@ module "nva-mig-ew1" {
   project_id  = module.landing-project.project_id
   regional    = true
   location    = "europe-west1"
-  name        = "nva"
+  name        = "nva-ew1"
   target_size = 2
+  auto_healing_policies = {
+    health_check      = module.nva-mig-ew1.health_check.self_link
+    initial_delay_sec = 30
+  }
+  health_check_config = {
+    type    = "tcp"
+    check   = { port = 22 }
+    config  = {}
+    logging = true
+  }
   default_version = {
     instance_template = module.nva-template-ew1.template.self_link
     name              = "default"
@@ -175,8 +192,18 @@ module "nva-mig-ew4" {
   project_id  = module.landing-project.project_id
   regional    = true
   location    = "europe-west4"
-  name        = "nva"
+  name        = "nva-ew4"
   target_size = 2
+  auto_healing_policies = {
+    health_check      = module.nva-mig-ew4.health_check.self_link
+    initial_delay_sec = 30
+  }
+  health_check_config = {
+    type    = "tcp"
+    check   = { port = 22 }
+    config  = {}
+    logging = true
+  }
   default_version = {
     instance_template = module.nva-template-ew4.template.self_link
     name              = "default"
