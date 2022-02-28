@@ -130,33 +130,33 @@
 
 # Dev spoke
 
-# module "test-vm-dev-ew1-0" {
-#   source     = "../../../modules/compute-vm"
-#   project_id = module.dev-spoke-project.project_id
-#   zone       = "europe-west1-b"
-#   name       = "test-vm-dev-ew1-0"
-#   network_interfaces = [{
-#     network = module.dev-spoke-vpc.self_link
-#     # change the subnet name to match the values you are actually using
-#     subnetwork = module.dev-spoke-vpc.subnet_self_links["europe-west1/dev-default-ew1"]
-#     alias_ips  = {}
-#     nat        = false
-#     addresses  = null
-#   }]
-#   tags                   = ["ew1", "ssh"]
-#   service_account_create = true
-#   boot_disk = {
-#     image = "projects/debian-cloud/global/images/family/debian-10"
-#     type  = "pd-balanced"
-#     size  = 10
-#   }
-#   metadata = {
-#     startup-script = <<EOF
-#       apt update
-#       apt install iputils-ping bind9-dnsutils
-#     EOF
-#   }
-# }
+module "test-vm-dev-ew1-0" {
+  source     = "../../../modules/compute-vm"
+  project_id = module.dev-spoke-project.project_id
+  zone       = "europe-west1-b"
+  name       = "test-vm-dev-ew1-0"
+  network_interfaces = [{
+    network = module.dev-spoke-vpc.self_link
+    # change the subnet name to match the values you are actually using
+    subnetwork = module.dev-spoke-vpc.subnet_self_links["europe-west1/dev-default-ew1"]
+    alias_ips  = {}
+    nat        = false
+    addresses  = null
+  }]
+  tags                   = ["ew1", "ssh"]
+  service_account_create = true
+  boot_disk = {
+    image = "projects/debian-cloud/global/images/family/debian-10"
+    type  = "pd-balanced"
+    size  = 10
+  }
+  metadata = {
+    startup-script = <<EOF
+      apt update
+      apt install iputils-ping bind9-dnsutils
+    EOF
+  }
+}
 
 # module "test-vm-dev-ew4-0" {
 #   source     = "../../../modules/compute-vm"

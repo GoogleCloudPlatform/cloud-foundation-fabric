@@ -50,28 +50,6 @@ module "gcp-example-dns-private-zone" {
   }
 }
 
-# GCP-specific DNS zones peered to the environment spoke that holds the config
-
-module "prod-gcp-example-dns-peering" {
-  source          = "../../../modules/dns"
-  project_id      = module.landing-project.project_id
-  type            = "peering"
-  name            = "prod-root-dns-peering"
-  domain          = "prod.gcp.example.com."
-  client_networks = [module.landing-vpc.self_link]
-  peer_network    = module.prod-spoke-vpc.self_link
-}
-
-module "dev-gcp-example-dns-peering" {
-  source          = "../../../modules/dns"
-  project_id      = module.landing-project.project_id
-  type            = "peering"
-  name            = "dev-root-dns-peering"
-  domain          = "dev.gcp.example.com."
-  client_networks = [module.landing-vpc.self_link]
-  peer_network    = module.dev-spoke-vpc.self_link
-}
-
 # Google API zone to trigger Private Access
 
 module "googleapis-private-zone" {
