@@ -55,7 +55,7 @@ variable "prefix" {
   }
 }
 
-variable "shared_vpc_self_links" {
+variable "vpc_self_links" {
   # tfdoc:variable:source 02-networking
   description = "Self link for the shared VPC."
   type = object({
@@ -64,7 +64,7 @@ variable "shared_vpc_self_links" {
   default = null
 }
 
-variable "vpc_host_project_ids" {
+variable "host_project_ids" {
   # tfdoc:variable:source 02-networking
   description = "Host project for the shared VPC."
   type = object({
