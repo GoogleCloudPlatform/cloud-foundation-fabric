@@ -124,14 +124,22 @@ resource "google_compute_firewall" "allow-tag-https" {
 
 resource "google_compute_firewall" "custom-rules" {
   # provider                = "google-beta"
-  for_each                = local.custom_rules
-  name                    = each.key
-  description             = each.value.description
-  direction               = each.value.direction
-  network                 = var.network
-  project                 = var.project_id
-  source_ranges           = each.value.direction == "INGRESS" ? each.value.ranges : null
-  destination_ranges      = each.value.direction == "EGRESS" ? each.value.ranges : null
+  for_each    = local.custom_rules
+  name        = each.key
+  description = each.value.description
+  direction   = each.value.direction
+  network     = var.network
+  project     = var.project_id
+  source_ranges = (
+    each.value.direction == "INGRESS"
+    ? coalesce(each.value.ranges, []) == [] ? ["0.0.0.0/0"] : each.value.ranges
+    : null
+  )
+  destination_ranges = (
+    each.value.direction == "EGRESS"
+    ? coalesce(each.value.ranges, []) == [] ? ["0.0.0.0/0"] : each.value.ranges
+    : null
+  )
   source_tags             = each.value.use_service_accounts || each.value.direction == "EGRESS" ? null : each.value.sources
   source_service_accounts = each.value.use_service_accounts && each.value.direction == "INGRESS" ? each.value.sources : null
   target_tags             = each.value.use_service_accounts ? null : each.value.targets

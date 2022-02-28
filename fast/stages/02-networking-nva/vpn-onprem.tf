@@ -17,7 +17,8 @@
 # tfdoc:file:description VPN between landing and onprem.
 
 locals {
-  bgp_peer_options_onprem = {
+  enable_onprem_vpn = var.vpn_onprem_configs != null
+  bgp_peer_options_onprem = local.enable_onprem_vpn == false ? null : {
     for k, v in var.vpn_onprem_configs :
     k => v.adv == null ? null : {
       advertise_groups = []
@@ -32,6 +33,7 @@ locals {
 }
 
 module "landing-to-onprem-ew1-vpn" {
+  count                 = local.enable_onprem_vpn ? 1 : 0
   source                = "../../../modules/net-vpn-ha"
   project_id            = module.landing-project.project_id
   network               = module.landing-trusted-vpc.self_link
@@ -60,6 +62,7 @@ module "landing-to-onprem-ew1-vpn" {
 }
 
 module "landing-to-onprem-ew4-vpn" {
+  count                 = local.enable_onprem_vpn ? 1 : 0
   source                = "../../../modules/net-vpn-ha"
   project_id            = module.landing-project.project_id
   network               = module.landing-trusted-vpc.self_link

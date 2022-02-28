@@ -20,11 +20,11 @@
 
 module "dev-dns-private-zone" {
   source          = "../../../modules/dns"
-  project_id      = module.landing-project.project_id
+  project_id      = module.dev-spoke-project.project_id
   type            = "private"
   name            = "dev-gcp-example-com"
   domain          = "dev.gcp.example.com."
-  client_networks = [module.dev-spoke-vpc.self_link]
+  client_networks = [module.landing-trusted-vpc.self_link, module.landing-untrusted-vpc.self_link]
   recordsets = {
     "A localhost" = { type = "A", ttl = 300, records = ["127.0.0.1"] }
   }
