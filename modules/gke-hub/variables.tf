@@ -30,8 +30,8 @@ variable "features" {
 
 variable "member_clusters" {
   description = "List for member cluster self links."
-  type        = list(string)
-  default     = []
+  type        = map(string)
+  default     = {}
   nullable    = false
 }
 

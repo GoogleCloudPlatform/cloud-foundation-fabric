@@ -16,8 +16,8 @@
 
 resource "google_gke_hub_membership" "membership" {
   provider      = google-beta
-  for_each      = toset(var.member_clusters)
-  membership_id = join("-", regex("projects/(.*)/locations/(.*)/clusters/(.*)", each.key))
+  for_each      = var.member_clusters
+  membership_id = each.key
   project       = var.project_id
   endpoint {
     gke_cluster {
@@ -57,7 +57,7 @@ resource "google_gke_hub_feature" "feature-mcs" {
 
 resource "google_gke_hub_feature_membership" "feature_member" {
   provider   = google-beta
-  for_each   = toset(var.member_clusters)
+  for_each   = var.member_clusters
   project    = var.project_id
   location   = "global"
   feature    = google_gke_hub_feature.feature-configmanagement["1"].name
