@@ -100,10 +100,11 @@ VAR_RE_TYPE = re.compile(r'([\(\{\}\)])')
 VAR_TEMPLATE = ('default', 'description', 'type', 'nullable')
 
 File = collections.namedtuple('File', 'name description modules resources')
-Output = collections.namedtuple('Output',
-                                'name description sensitive consumers line')
+Output = collections.namedtuple(
+    'Output', 'name description sensitive consumers file line')
 Variable = collections.namedtuple(
-    'Variable', 'name description type default required nullable source line')
+    'Variable',
+    'name description type default required nullable source file line')
 
 # parsing functions
 
@@ -171,41 +172,52 @@ def parse_files(basepath, exclude_files=None):
     yield File(shortname, description, modules, resources)
 
 
-def parse_outputs(basepath):
-  'Return a list of Output named tuples for root module outputs.tf.'
-  try:
-    with open(os.path.join(basepath, 'outputs.tf')) as file:
-      body = file.read()
-  except (IOError, OSError) as e:
-    raise SystemExit(f'No outputs file in {basepath}.')
-  for item in _parse(body, enum=OUT_ENUM, re=OUT_RE, template=OUT_TEMPLATE):
-    description = ''.join(item['description'])
-    sensitive = item['sensitive'] != []
-    consumers = item['tags'].get('output:consumers', '')
-    yield Output(name=item['name'], description=description,
-                 sensitive=sensitive, consumers=consumers, line=item['line'])
+def parse_outputs(basepath, exclude_files=None):
+  'Return a list of Output named tuples for root module outputs*.tf.'
+  exclude_files = exclude_files or []
+  for name in glob.glob(os.path.join(basepath, 'outputs*tf')):
+    shortname = os.path.basename(name)
+    if shortname in exclude_files:
+      continue
+    try:
+      with open(name) as file:
+        body = file.read()
+    except (IOError, OSError) as e:
+      raise SystemExit(f'Cannot open outputs file {shortname}.')
+    for item in _parse(body, enum=OUT_ENUM, re=OUT_RE, template=OUT_TEMPLATE):
+      description = ''.join(item['description'])
+      sensitive = item['sensitive'] != []
+      consumers = item['tags'].get('output:consumers', '')
+      yield Output(name=item['name'], description=description,
+                   sensitive=sensitive, consumers=consumers, file=shortname,
+                   line=item['line'])
 
 
-def parse_variables(basepath):
-  'Return a list of Output named tuples for root module variables.tf.'
-  try:
-    with open(os.path.join(basepath, 'variables.tf')) as file:
-      body = file.read()
-  except (IOError, OSError) as e:
-    raise SystemExit(f'No variables file in {basepath}.')
-  for item in _parse(body):
-    description = ''.join(item['description'])
-    vtype = '\n'.join(item['type'])
-    default = HEREDOC_RE.sub(r'\1', '\n'.join(item['default']))
-    required = not item['default']
-    nullable = item.get('nullable') != ['false']
-    source = item['tags'].get('variable:source', '')
-    if not required and default != 'null' and vtype == 'string':
-      default = f'"{default}"'
+def parse_variables(basepath, exclude_files=None):
+  'Return a list of Variable named tuples for root module variables*.tf.'
+  exclude_files = exclude_files or []
+  for name in glob.glob(os.path.join(basepath, 'variables*tf')):
+    shortname = os.path.basename(name)
+    if shortname in exclude_files:
+      continue
+    try:
+      with open(name) as file:
+        body = file.read()
+    except (IOError, OSError) as e:
+      raise SystemExit(f'Cannot open variables file {shortname}.')
+    for item in _parse(body):
+      description = ''.join(item['description'])
+      vtype = '\n'.join(item['type'])
+      default = HEREDOC_RE.sub(r'\1', '\n'.join(item['default']))
+      required = not item['default']
+      nullable = item.get('nullable') != ['false']
+      source = item['tags'].get('variable:source', '')
+      if not required and default != 'null' and vtype == 'string':
+        default = f'"{default}"'
 
-    yield Variable(name=item['name'], description=description, type=vtype,
-                   default=default, required=required, source=source,
-                   line=item['line'], nullable=nullable)
+      yield Variable(name=item['name'], description=description, type=vtype,
+                     default=default, required=required, source=source,
+                     file=shortname, line=item['line'], nullable=nullable)
 
 
 # formatting functions
@@ -268,7 +280,7 @@ def format_outputs(items, show_extra=True):
     if consumers:
       consumers = '<code>%s</code>' % '</code> · <code>'.join(consumers.split())
     sensitive = '✓' if i.sensitive else ''
-    format = f'| [{i.name}](outputs.tf#L{i.line}) | {i.description or ""} | {sensitive} |'
+    format = f'| [{i.name}]({i.file}#L{i.line}) | {i.description or ""} | {sensitive} |'
     format += f' {consumers} |' if show_extra else ''
     yield format
 
@@ -301,7 +313,7 @@ def format_variables(items, show_extra=True):
           value = f'{value[0]}…{value[-1].strip()}'
         vars[k] = f'<code title="{_escape(title)}">{_escape(value)}</code>'
     format = (
-        f'| [{i.name}](variables.tf#L{i.line}) | {i.description or ""} | {vars["type"]} '
+        f'| [{i.name}]({i.file}#L{i.line}) | {i.description or ""} | {vars["type"]} '
         f'| {vars["required"]} | {vars["default"]} |')
     format += f' {vars["source"]} |' if show_extra else ''
     yield format
@@ -342,8 +354,8 @@ def create_doc(module_path, files=False, show_extra=False, exclude_files=None,
     show_extra = opts.get('show_extra', show_extra)
   try:
     mod_files = list(parse_files(module_path, exclude_files)) if files else []
-    mod_variables = list(parse_variables(module_path))
-    mod_outputs = list(parse_outputs(module_path))
+    mod_variables = list(parse_variables(module_path, exclude_files))
+    mod_outputs = list(parse_outputs(module_path, exclude_files))
   except (IOError, OSError) as e:
     raise SystemExit(e)
   return format_doc(mod_outputs, mod_variables, mod_files, show_extra)

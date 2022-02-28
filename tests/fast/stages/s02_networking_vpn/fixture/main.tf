@@ -14,22 +14,6 @@
  * limitations under the License.
  */
 
-# module "stage" {
-#   source             = "../../../../../fast/stages/02-networking-vpn"
-#   billing_account_id = "000000-111111-222222"
-#   organization = {
-#     domain      = "gcp-pso-italy.net"
-#     id          = 856933387836
-#     customer_id = "C01lmug8b"
-#   }
-#   prefix = "fast"
-#   project_factory_sa = {
-#     dev  = "foo@iam"
-#     prod = "bar@iam"
-#   }
-#   data_dir = "../../../../../fast/stages/02-networking-vpn/data/"
-# }
-
 module "stage" {
   source   = "../../../../../fast/stages/02-networking-vpn"
   data_dir = "../../../../../fast/stages/02-networking-vpn/data/"
