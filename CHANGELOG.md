@@ -3,6 +3,8 @@
 All notable changes to this project will be documented in this file.
 
 ## Unreleased
+- new [gke-hub](modules/gke-hub) module
+
 **FAST**
 - new [02-networking-peering](fast/stages/02-networking-peering) networking stage
 
