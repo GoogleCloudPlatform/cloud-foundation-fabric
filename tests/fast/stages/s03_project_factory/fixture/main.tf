@@ -24,7 +24,7 @@ module "projects" {
     id              = "000000-111111-222222"
     organization_id = 123456789012
   }
-  shared_vpc_self_links = {
+  vpc_self_links = {
     dev-spoke-0 = "link"
   }
 }
