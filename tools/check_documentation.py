@@ -79,11 +79,13 @@ def main(dirs, exclude_file=None, files=False, show_diffs=False,
     for mod_name, state, diff in _check_dir(dir_name, exclude_file, files,
                                             show_extra):
       if state == State.FAIL:
-        errors.append(diff)
+        errors.append((mod_name, diff))
       print(f'[{state_labels[state]}] {mod_name}')
   if errors:
     if show_diffs:
-      print('\n'.join(errors))
+      print('\n'.join([e[1] for e in errors]))
+    else:
+      print('\n'.join([e[0] for e in errors]))
     raise SystemExit('Errors found.')
 
 
