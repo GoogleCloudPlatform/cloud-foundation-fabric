@@ -14,71 +14,21 @@
  * limitations under the License.
  */
 
-locals {
-  _member_features          = coalesce(var.member_features, null)
-  _feature_configmanagement = coalesce(local._member_features.configmanagement, null)
-
-  _cluster_names = {
-    for v in var.member_clusters :
-    v => element(split("/", v), length(split("/", v)) - 1)
-  }
-
-  feature_binauthz = (
-    local._feature_configmanagement.binauthz == null
-    ? { enabled = false }
-    : local._feature_configmanagement.binauthz
-  )
-  feature_config_sync = (
-    local._feature_configmanagement.config_sync == null
-    ? {
-      https_proxy               = null
-      sync_repo                 = null
-      sync_branch               = null
-      sync_rev                  = null
-      secret_type               = null
-      gcp_service_account_email = null
-      policy_dir                = null
-      source_format             = null
-    }
-    : local._feature_configmanagement.config_sync
-  )
-  feature_hierarchy_controller = (
-    local._feature_configmanagement.hierarchy_controller == null
-    ? {
-      enabled                            = false
-      enable_pod_tree_labels             = null
-      enable_hierarchical_resource_quota = null
-    }
-    : local._feature_configmanagement.hierarchy_controller
-  )
-  feature_policy_controller = (
-    local._feature_configmanagement.policy_controller == null
-    ? {
-      enabled                    = false
-      exemptable_namespaces      = null
-      log_denies_enabled         = null
-      referential_rules_enabled  = null
-      template_library_installed = null
-    }
-    : local._feature_configmanagement.policy_controller
-  )
-}
-
 resource "google_gke_hub_membership" "membership" {
   provider      = google-beta
   for_each      = toset(var.member_clusters)
-  membership_id = local._cluster_names[each.key]
+  membership_id = join("-", regex("projects/(.*)/locations/(.*)/clusters/(.*)", each.key))
   project       = var.project_id
   endpoint {
     gke_cluster {
-      resource_link = "//container.googleapis.com/${each.value}"
+      resource_link = each.value
     }
   }
 }
 
 resource "google_gke_hub_feature" "feature-configmanagement" {
   provider = google-beta
-  count    = var.features.configmanagement ? 1 : 0
+  for_each = var.features.configmanagement ? { 1 = 1 } : {}
   project  = var.project_id
   name     = "configmanagement"
   location = "global"
@@ -86,7 +36,7 @@ resource "google_gke_hub_feature" "feature-configmanagement" {
 
 resource "google_gke_hub_feature" "feature-mci" {
   provider = google-beta
-  for_each = toset(var.member_clusters)
+  for_each = var.features.mc_ingress ? { 1 = 1 } : {}
   project  = var.project_id
   name     = "multiclusteringress"
   location = "global"
@@ -99,7 +49,7 @@ resource "google_gke_hub_feature" "feature-mci" {
 
 resource "google_gke_hub_feature" "feature-mcs" {
   provider = google-beta
-  count    = var.features.mc-servicediscovery ? 1 : 0
+  for_each = var.features.mc_servicediscovery ? { 1 = 1 } : {}
   project  = var.project_id
   name     = "multiclusterservicediscovery"
   location = "global"
@@ -110,40 +60,81 @@ resource "google_gke_hub_feature_membership" "feature_member" {
   for_each   = toset(var.member_clusters)
   project    = var.project_id
   location   = "global"
-  feature    = google_gke_hub_feature.feature-configmanagement[0].name
+  feature    = google_gke_hub_feature.feature-configmanagement["1"].name
   membership = google_gke_hub_membership.membership[each.key].membership_id
-  configmanagement {
-    version = try(var.member_features.configmanagement.version, null)
 
-    config_sync {
-      git {
-        https_proxy               = local.feature_config_sync.https_proxy
-        sync_repo                 = local.feature_config_sync.sync_repo
-        sync_branch               = local.feature_config_sync.sync_branch
-        sync_rev                  = local.feature_config_sync.sync_rev
-        secret_type               = local.feature_config_sync.secret_type
-        gcp_service_account_email = local.feature_config_sync.gcp_service_account_email
-        policy_dir                = local.feature_config_sync.policy_dir
+  dynamic "configmanagement" {
+    for_each = (
+      try(var.member_features.configmanagement, null) != null
+      ? [var.member_features.configmanagement]
+      : []
+    )
+    iterator = configmanagement
+
+    content {
+      version = try(configmanagement.value.version, null)
+
+      dynamic "config_sync" {
+        for_each = (
+          try(configmanagement.value.config_sync, null) != null
+          ? [configmanagement.value.config_sync]
+          : []
+        )
+        iterator = config_sync
+        content {
+          git {
+            https_proxy               = try(config_sync.value.https_proxy, null)
+            sync_repo                 = try(config_sync.value.sync_repo, null)
+            sync_branch               = try(config_sync.value.sync_branch, null)
+            sync_rev                  = try(config_sync.value.sync_rev, null)
+            secret_type               = try(config_sync.value.secret_type, null)
+            gcp_service_account_email = try(config_sync.value.gcp_service_account_email, null)
+            policy_dir                = try(config_sync.value.policy_dir, null)
+          }
+          source_format = try(config_sync.value.source_format, null)
+        }
       }
-      source_format = local.feature_config_sync.source_format
-    }
 
-    policy_controller {
-      enabled                    = local.feature_policy_controller.enabled
-      exemptable_namespaces      = local.feature_policy_controller.exemptable_namespaces
-      log_denies_enabled         = local.feature_policy_controller.log_denies_enabled
-      referential_rules_enabled  = local.feature_policy_controller.referential_rules_enabled
-      template_library_installed = local.feature_policy_controller.template_library_installed
-    }
+      dynamic "policy_controller" {
+        for_each = (
+          try(configmanagement.value.policy_controller, null) != null
+          ? [configmanagement.value.policy_controller]
+          : []
+        )
+        iterator = policy_controller
+        content {
+          enabled                    = true
+          exemptable_namespaces      = try(policy_controller.value.exemptable_namespaces, null)
+          log_denies_enabled         = try(policy_controller.value.log_denies_enabled, null)
+          referential_rules_enabled  = try(policy_controller.value.referential_rules_enabled, null)
+          template_library_installed = try(policy_controller.value.template_library_installed, null)
+        }
+      }
 
-    binauthz {
-      enabled = local.feature_binauthz.enabled
-    }
+      dynamic "binauthz" {
+        for_each = (
+          try(configmanagement.value.binauthz, false)
+          ? [1]
+          : []
+        )
+        content {
+          enabled = true
+        }
+      }
 
-    hierarchy_controller {
-      enabled                            = local.feature_hierarchy_controller.enabled
-      enable_pod_tree_labels             = local.feature_hierarchy_controller.enable_pod_tree_labels
-      enable_hierarchical_resource_quota = local.feature_hierarchy_controller.enable_hierarchical_resource_quota
+      dynamic "hierarchy_controller" {
+        for_each = (
+          try(var.member_features.hierarchy_controller, null) != null
+          ? [var.member_features.hierarchy_controller]
+          : []
+        )
+        iterator = hierarchy_controller
+        content {
+          enabled                            = true
+          enable_pod_tree_labels             = try(hierarchy_controller.value.enable_pod_tree_labels)
+          enable_hierarchical_resource_quota = try(hierarchy_controller.value.enable_hierarchical_resource_quota)
+        }
+      }
     }
   }
 }

@@ -18,13 +18,13 @@ variable "features" {
   description = "GKE hub features to enable."
   type = object({
     configmanagement    = bool
-    mc-ingress          = bool
-    mc-servicediscovery = bool
+    mc_ingress          = bool
+    mc_servicediscovery = bool
   })
   default = {
     configmanagement    = true
-    mc-ingress          = false
-    mc-servicediscovery = false
+    mc_ingress          = false
+    mc_servicediscovery = false
   }
 }
 
@@ -39,35 +39,31 @@ variable "member_features" {
   description = "Member features for each cluster"
   type = object({
     configmanagement = object({
-      version = string
+      binauthz = bool
       config_sync = object({
-        https_proxy               = string
-        sync_repo                 = string
-        sync_branch               = string
-        sync_rev                  = string
-        secret_type               = string
         gcp_service_account_email = string
+        https_proxy               = string
         policy_dir                = string
+        secret_type               = string
         source_format             = string
-      })
-      policy_controller = object({
-        enabled                    = bool
-        log_denies_enabled         = bool
-        referential_rules_enabled  = bool
-        exemptable_namespaces      = list(string)
-        template_library_installed = bool
-      })
-      binauthz = object({
-        enabled = bool
+        sync_branch               = string
+        sync_repo                 = string
+        sync_rev                  = string
       })
       hierarchy_controller = object({
-        enabled                            = bool
-        enable_pod_tree_labels             = bool
         enable_hierarchical_resource_quota = bool
+        enable_pod_tree_labels             = bool
       })
+      policy_controller = object({
+        exemptable_namespaces      = list(string)
+        log_denies_enabled         = bool
+        referential_rules_enabled  = bool
+        template_library_installed = bool
+      })
+      version = string
     })
-    mc-ingress          = bool
-    mc-servicediscovery = bool
+    # mc-ingress          = bool
+    # mc-servicediscovery = bool
   })
   default = null
 }
