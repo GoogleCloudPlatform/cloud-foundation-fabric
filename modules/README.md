@@ -50,7 +50,7 @@ These modules are used in the examples included in this repository. If you are u
 - [VPC peering](./net-vpc-peering)
 - [VPN static](./net-vpn-static)
 - [VPN dynamic](./net-vpn-dynamic)
-- [VPN HA](./net-vpn-ha)
+- [HA VPN](./net-vpn-ha)
 - [ ] TODO: xLB modules
 
 ## Compute/Container
@@ -58,6 +58,7 @@ These modules are used in the examples included in this repository. If you are u
 - [COS container](./cloud-config-container/onprem/) (coredns, mysql, onprem, squid)
 - [GKE cluster](./gke-cluster)
 - [GKE nodepool](./gke-nodepool)
+- [GKE hub](./gke-hub)
 - [Managed Instance Group](./compute-mig)
 - [VM/VM group](./compute-vm)
 
