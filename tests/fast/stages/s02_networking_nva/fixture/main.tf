@@ -15,17 +15,30 @@
  */
 
 module "stage" {
-  source             = "../../../../../fast/stages/02-networking-nva"
-  billing_account_id = "000000-111111-222222"
-  organization = {
-    domain      = "gcp-pso-italy.net"
-    id          = 856933387836
-    customer_id = "C01lmug8b"
-  }
-  prefix = "fast"
-  project_factory_sa = {
-    dev  = "foo@iam"
-    prod = "bar@iam"
-  }
+  source   = "../../../../../fast/stages/02-networking-nva"
   data_dir = "../../../../../fast/stages/02-networking-nva/data/"
+  billing_account = {
+    id              = "000000-111111-222222"
+    organization_id = 123456789012
+  }
+  custom_roles = {
+    service_project_network_admin = "organizations/123456789012/roles/foo"
+  }
+  folder_ids = {
+    networking      = null
+    networking-dev  = null
+    networking-prod = null
+  }
+  service_accounts = {
+    data-platform-dev    = "string"
+    data-platform-prod   = "string"
+    project-factory-dev  = "string"
+    project-factory-prod = "string"
+  }
+  organization = {
+    domain      = "fast.example.com"
+    id          = 123456789012
+    customer_id = "C00000000"
+  }
+  prefix = "fast2"
 }

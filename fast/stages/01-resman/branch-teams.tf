@@ -84,22 +84,12 @@ module "branch-teams-team-dev-folder" {
   # environment-wide human permissions on the whole teams environment
   group_iam = {}
   iam = {
+    (local.custom_roles.service_project_network_admin) = [module.branch-teams-dev-pf-sa.iam_email]
     # remove owner here and at project level if SA does not manage project resources
-    "roles/owner" = [
-      module.branch-teams-dev-pf-sa.iam_email
-    ]
-    "roles/logging.admin" = [
-      module.branch-teams-dev-pf-sa.iam_email
-    ]
-    "roles/resourcemanager.folderAdmin" = [
-      module.branch-teams-dev-pf-sa.iam_email
-    ]
-    "roles/resourcemanager.projectCreator" = [
-      module.branch-teams-dev-pf-sa.iam_email
-    ]
-    "roles/compute.xpnAdmin" = [
-      module.branch-teams-dev-pf-sa.iam_email
-    ]
+    "roles/owner"                          = [module.branch-teams-dev-pf-sa.iam_email]
+    "roles/logging.admin"                  = [module.branch-teams-dev-pf-sa.iam_email]
+    "roles/resourcemanager.folderAdmin"    = [module.branch-teams-dev-pf-sa.iam_email]
+    "roles/resourcemanager.projectCreator" = [module.branch-teams-dev-pf-sa.iam_email]
   }
   tag_bindings = {
     environment = module.organization.tag_values["environment/development"].id
@@ -147,22 +137,12 @@ module "branch-teams-team-prod-folder" {
   # environment-wide human permissions on the whole teams environment
   group_iam = {}
   iam = {
+    (local.custom_roles.service_project_network_admin) = [module.branch-teams-prod-pf-sa.iam_email]
     # remove owner here and at project level if SA does not manage project resources
-    "roles/owner" = [
-      module.branch-teams-prod-pf-sa.iam_email
-    ]
-    "roles/logging.admin" = [
-      module.branch-teams-prod-pf-sa.iam_email
-    ]
-    "roles/resourcemanager.folderAdmin" = [
-      module.branch-teams-prod-pf-sa.iam_email
-    ]
-    "roles/resourcemanager.projectCreator" = [
-      module.branch-teams-prod-pf-sa.iam_email
-    ]
-    "roles/compute.xpnAdmin" = [
-      module.branch-teams-prod-pf-sa.iam_email
-    ]
+    "roles/owner"                          = [module.branch-teams-prod-pf-sa.iam_email]
+    "roles/logging.admin"                  = [module.branch-teams-prod-pf-sa.iam_email]
+    "roles/resourcemanager.folderAdmin"    = [module.branch-teams-prod-pf-sa.iam_email]
+    "roles/resourcemanager.projectCreator" = [module.branch-teams-prod-pf-sa.iam_email]
   }
   tag_bindings = {
     environment = module.organization.tag_values["environment/production"].id

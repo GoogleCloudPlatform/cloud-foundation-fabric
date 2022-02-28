@@ -4,17 +4,35 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
--  **incompatible change** removed `iam` key from logging sink configuration in the `project` and `organization` modules
+## [14.0.0] - 2022-02-25
+
+- **incompatible change** removed `iam` key from logging sink configuration in the `project` and `organization` modules
 - remove GCS to BQ with Dataflow example, replace by GCS to BQ with least privileges
 - the `net-vpc` and `project` modules now use the beta provider for shared VPC-related resources
-- new `iot-core` module
+- new [iot-core](modules/iot-core) module
 - **incompatible change** the variables for host and service Shared VPCs have changed in the project module
 - **incompatible change** the variable for service identities IAM has changed in the project factory
-- the `net-vpc` and `project` modules now use the beta provider for shared VPC-related resources
 - add `data-catalog-policy-tag` module
-- **incompatible change** the `psn_ranges` variable has been renamed to `psa_ranges` in the `net-vpc` module and its type changed from `list(string)` to `map(string)`
 - new [workload identity federetion example](examples/cloud-operations/workload-identity-federation)
-- new api-gateway [module](/modules/api-gateway) and [example](examples/serverless/api-gateway).
+- new `api-gateway` [module](/modules/api-gateway) and [example](examples/serverless/api-gateway).
+- **incompatible change** the `psn_ranges` variable has been renamed to `psa_ranges` in the `net-vpc` module and its type changed from `list(string)` to `map(string)`
+- **incompatible change** removed `iam` flag for organization and folder level sinks
+- **incompatible change** removed `ingress_settings` configuration option in the `cloud-functions` module.
+- new [m4ce VM example](examples/cloud-operations/vm-migration/)
+- Support for resource management tags in the `organization`, `folder`, `project`, `compute-vm`, and `kms` modules
+
+**FAST**
+- new [data platform](fast/stages/03-data-platform) stage 3
+- new [02-networking-nva](fast/stages/02-networking-nva) networking stage
+- allow customizing the names of custom roles
+- added `environment` and `context` resource management tags
+- use resource management tags to restrict scope of roles/orgpolicy.policyAdmin
+- use `xpnServiceAdmin` (custom role) for stage 3 service accounts that need to attach to a shared VPC
+- simplify and standarize ourputs from each stage
+- standarize names of projects, service accounts and buckets
+- swtich to folder-level `xpnAdmin` and `xpnServiceAdmin`
+- moved networking projects to folder matching their enviroments
+
 
 ## [13.0.0] - 2022-01-27
 
@@ -449,7 +467,8 @@ All notable changes to this project will be documented in this file.
 - merge development branch with suite of new modules and end-to-end examples
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v13.0.0...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v14.0.0...HEAD
+[14.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v13.0.0...v14.0.0
 [13.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v12.0.0...v13.0.0
 [12.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v11.2.0...v12.0.0
 [11.2.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v11.1.0...v11.2.0

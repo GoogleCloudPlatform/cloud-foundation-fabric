@@ -41,9 +41,6 @@ module "prod-spoke-project" {
   metric_scopes = [module.landing-project.project_id]
   iam = {
     "roles/dns.admin" = [local.service_accounts.project-factory-prod]
-    (local.custom_roles.service_project_network_admin) = values(
-      local.service_accounts
-    )
   }
 }
 
