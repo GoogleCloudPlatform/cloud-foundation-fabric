@@ -1,4 +1,4 @@
-# Networking
+# Networking with VPC Peering
 
 This stage sets up the shared network infrastructure for the whole organization. It adopts the common “hub and spoke” reference design, which is well suited to multiple scenarios, and offers several advantages versus other designs:
 
