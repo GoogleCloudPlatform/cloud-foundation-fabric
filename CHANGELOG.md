@@ -3,9 +3,12 @@
 All notable changes to this project will be documented in this file.
 
 ## Unreleased
+
+- fix permadiff in `net-vpc-firewall` module rules
 - new [gke-hub](modules/gke-hub) module
 
 **FAST**
+
 - new [02-networking-peering](fast/stages/02-networking-peering) networking stage
 
 ## [14.0.0] - 2022-02-25
