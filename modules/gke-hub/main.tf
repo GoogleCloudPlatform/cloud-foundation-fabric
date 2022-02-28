@@ -26,7 +26,7 @@ resource "google_gke_hub_membership" "membership" {
   }
 }
 
-resource "google_gke_hub_feature" "feature-configmanagement" {
+resource "google_gke_hub_feature" "configmanagement" {
   provider = google-beta
   for_each = var.features.configmanagement ? { 1 = 1 } : {}
   project  = var.project_id
@@ -34,9 +34,9 @@ resource "google_gke_hub_feature" "feature-configmanagement" {
   location = "global"
 }
 
-resource "google_gke_hub_feature" "feature-mci" {
+resource "google_gke_hub_feature" "mci" {
   provider = google-beta
-  for_each = var.features.mc_ingress ? { 1 = 1 } : {}
+  for_each = var.features.mc_ingress ? var.member_clusters : {}
   project  = var.project_id
   name     = "multiclusteringress"
   location = "global"
@@ -47,7 +47,7 @@ resource "google_gke_hub_feature" "feature-mci" {
   }
 }
 
-resource "google_gke_hub_feature" "feature-mcs" {
+resource "google_gke_hub_feature" "mcs" {
   provider = google-beta
   for_each = var.features.mc_servicediscovery ? { 1 = 1 } : {}
   project  = var.project_id
@@ -60,7 +60,7 @@ resource "google_gke_hub_feature_membership" "feature_member" {
   for_each   = var.member_clusters
   project    = var.project_id
   location   = "global"
-  feature    = google_gke_hub_feature.feature-configmanagement["1"].name
+  feature    = google_gke_hub_feature.configmanagement["1"].name
   membership = google_gke_hub_membership.membership[each.key].membership_id
 
   dynamic "configmanagement" {

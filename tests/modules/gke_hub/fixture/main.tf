@@ -18,6 +18,11 @@ module "hub" {
   source          = "../../../../modules/gke-hub"
   project_id      = var.project_id
   member_clusters = var.member_clusters
+  features = {
+    configmanagement    = true
+    mc_ingress          = true
+    mc_servicediscovery = true
+  }
   member_features = {
     configmanagement = {
       binauthz = true

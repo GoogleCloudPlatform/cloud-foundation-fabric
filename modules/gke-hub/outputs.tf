@@ -13,3 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+output "cluster_ids" {
+  value = var.member_clusters
+  depends_on = [
+    google_gke_hub_membership.membership,
+    google_gke_hub_feature.configmanagement,
+    google_gke_hub_feature.mci,
+    google_gke_hub_feature.mcs,
+    google_gke_hub_feature_membership.feature_member,
+  ]
+}

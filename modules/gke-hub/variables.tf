@@ -26,6 +26,7 @@ variable "features" {
     mc_ingress          = false
     mc_servicediscovery = false
   }
+  nullable = false
 }
 
 variable "member_clusters" {
@@ -65,7 +66,10 @@ variable "member_features" {
     # mc-ingress          = bool
     # mc-servicediscovery = bool
   })
-  default = null
+  default = {
+    configmanagement = null
+  }
+  nullable = false
 }
 
 variable "project_id" {
