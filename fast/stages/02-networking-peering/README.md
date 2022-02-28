@@ -12,8 +12,7 @@ Connectivity between hub and spokes is established here via [VPC Peering](https:
 The following diagram illustrates the high-level design, and should be used as a reference for the following sections. The final number of subnets, and their IP addressing design will of course depend on customer-specific requirements, and can be easily changed via variables or external data files without having to edit the actual code.
 
 <p align="center">
-  <img src="diagram.png" alt="Networking diagram">
-  <!-- #TODO: create diagram.svg -->
+  <img src="diagram.svg" alt="Networking diagram">
 </p>
 
 ## Design overview and choices

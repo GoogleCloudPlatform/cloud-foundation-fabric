@@ -76,7 +76,7 @@ output "shared_vpc_self_links" {
 
 output "vpn_gateway_endpoints" {
   description = "External IP Addresses for the GCP VPN gateways."
-  value = {
+  value = local.enable_onprem_vpn == false ? null : {
     onprem-ew1 = {
       for v in module.landing-to-onprem-ew1-vpn.gateway.vpn_interfaces :
       v.id => v.ip_address
