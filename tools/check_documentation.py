@@ -83,8 +83,10 @@ def main(dirs, exclude_file=None, files=False, show_diffs=False,
       print(f'[{state_labels[state]}] {mod_name}')
   if errors:
     if show_diffs:
+      print('Errored diffs:')
       print('\n'.join([e[1] for e in errors]))
     else:
+      print('Errored modules:')
       print('\n'.join([e[0] for e in errors]))
     raise SystemExit('Errors found.')
 
