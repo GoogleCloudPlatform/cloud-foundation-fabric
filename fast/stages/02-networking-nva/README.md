@@ -250,7 +250,7 @@ Subnets for [L7 ILBs](https://cloud.google.com/load-balancing/docs/l7-internal/p
 
 ### VPNs
 
-The connectivity between on-premises and GCP (the trusted landing VPC) is implemented with Cloud HA VPN ([`net-vpn`](../../../modules/net-vpn)) and defined in [`vpn-onprem.tf`](./vpn-onprem.tf). The file implements a single logical connection between on-premises and the trusted landing VPC, both in `europe-west1` and `europe-west4`. The relevant parameters for its configuration are found in the variable `vpn_onprem_configs`.
+The connectivity between on-premises and GCP (the trusted landing VPC) is implemented with Cloud HA VPN ([`net-vpn`](../../../modules/net-vpn-ha)) and defined in [`vpn-onprem.tf`](./vpn-onprem.tf). The file implements a single logical connection between on-premises and the trusted landing VPC, both in `europe-west1` and `europe-west4`. The relevant parameters for its configuration are found in the variable `vpn_onprem_configs`.
 
 ### Routing and BGP
 
