@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import hashlib
+
 from pathlib import Path
 
 from deepdiff import DeepDiff
@@ -19,6 +21,10 @@ from deepdiff import DeepDiff
 BASEDIR = Path(__file__).parent
 FIXTURE_PEERING = BASEDIR / 'fixture'
 FIXTURE_VPN = BASEDIR.parent / 's02_networking_vpn/fixture'
+
+STAGES = Path(__file__).parents[4] / 'fast/stages'
+STAGE_PEERING = STAGES / '02-networking-peering'
+STAGE_VPN = STAGES / '02-networking-vpn'
 
 
 def test_counts(fast_e2e_plan_runner):
@@ -45,3 +51,26 @@ def test_vpn_peering_parity(e2e_plan_runner):
       'google_compute_router_interface', 'google_compute_router_peer',
       'google_compute_vpn_tunnel', 'random_id'
   }
+
+
+def compute_md5(filename):
+  with open(filename, "rb") as f:
+    md5hash = hashlib.md5()
+    while chunk := f.read(8192):
+      md5hash.update(chunk)
+  return md5hash.hexdigest()
+
+
+def test_vpn_peering_checksums(e2e_plan_runner):
+  '''Compare MD5 sums of common files in the vpn and peering
+  networking stages'''
+  peering_files = {
+      x.name for x in STAGE_PEERING.glob("*.tf") if not x.is_symlink()
+  }
+  vpn_files = {x.name for x in STAGE_VPN.glob("*.tf") if not x.is_symlink()}
+  common_files = peering_files & vpn_files
+
+  for filename in common_files:
+    md5_vpn = compute_md5(STAGE_VPN / filename)
+    md5_peering = compute_md5(STAGE_PEERING / filename)
+    assert md5_vpn == md5_peering
