@@ -54,8 +54,6 @@ module "bigquery-dataset" {
 # tftest modules=1 resources=2
 ```
 
-roles/bigquery.dataOwner
-
 ### Dataset options
 
 Dataset options are set via the `options` variable. all options must be specified, but a `null` value can be set to options that need to use defaults.
