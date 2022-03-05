@@ -19,7 +19,7 @@ locals {
     "${path.module}/cloud-config.yaml", var.gitlab_config
   )
   vm_roles = ["roles/logging.logWriter", "roles/monitoring.metricWriter"]
-  zones    = { for z in var.zones : z => "${var.region}-${z}" }
+  zones    = { for z in var.gce_config.zones : z => "${var.region}-${z}" }
 }
 
 resource "google_service_account" "default" {
@@ -62,7 +62,7 @@ resource "google_compute_health_check" "ssh" {
 resource "google_compute_region_disk" "data" {
   project       = var.project_id
   name          = "${var.prefix}-data"
-  type          = "pd-balanced"
+  type          = var.gce_config.disk_type
   region        = var.region
   replica_zones = values(local.zones)
   size          = var.gce_config.disk_size

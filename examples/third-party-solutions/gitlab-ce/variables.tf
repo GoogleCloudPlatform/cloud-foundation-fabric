@@ -17,11 +17,15 @@
 variable "gce_config" {
   type = object({
     disk_size    = number
+    disk_type    = string
     machine_type = string
+    zones        = list(string)
   })
   default = {
     disk_size    = 20
+    disk_type    = "pd-balanced"
     machine_type = "e2-standard-2"
+    zones        = ["b", "c"]
   }
   nullable = false
 }
@@ -62,9 +66,4 @@ variable "subnet_self_link" {
 variable "tags" {
   type    = list(string)
   default = ["gitlab", "http-server", "https-server", "ssh"]
-}
-
-variable "zones" {
-  type    = list(string)
-  default = ["b", "c"]
 }
