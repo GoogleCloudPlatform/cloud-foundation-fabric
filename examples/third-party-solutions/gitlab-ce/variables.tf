@@ -14,17 +14,31 @@
  * limitations under the License.
  */
 
-variable "config" {
+variable "gce_config" {
   type = object({
     disk_size    = number
-    image        = string
     machine_type = string
   })
   default = {
     disk_size    = 20
-    image        = "gitlab/gitlab-ce:latest"
     machine_type = "e2-standard-2"
   }
+  nullable = false
+}
+
+variable "gitlab_config" {
+  type = object({
+    env   = map(string)
+    image = string
+  })
+  default = {
+    env = {
+      foo = "bar"
+      bar = "baz"
+    }
+    image = "gitlab/gitlab-ce:latest"
+  }
+  nullable = false
 }
 
 variable "prefix" {

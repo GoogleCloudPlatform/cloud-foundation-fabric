@@ -57,6 +57,17 @@ write_files:
       ExecStart=/sbin/resize2fs /dev/disk/by-id/google-data
       RemainAfterExit=true
 
+%{~ if length(env) > 0 }
+  # gitlab environment variables file
+  - path: /run/gitlab-env.list
+    permissions: 0644
+    owner: root
+    content: |
+      %{~ for k, v in env ~}
+      ${k} = "${v}"
+      %{~ endfor ~}
+%{ endif ~}
+
   # gitlab ce container service
   - path: /etc/systemd/system/gitlab.service
     permissions: 0644
@@ -74,7 +85,10 @@ write_files:
         -v /mnt/disks/gitlab-data/config:/etc/gitlab \
         -v /mnt/disks/gitlab-data/logs:/var/log/gitlab \
         -v /mnt/disks/gitlab-data/data:/var/opt/gitlab \
-          ${image}
+%{~ if length(env) > 0 }
+        --env-file /run/gitlab-env.list \
+%{ endif ~}
+        ${image}
       ExecStop=/usr/bin/docker stop gitlab-ce
 
 bootcmd:

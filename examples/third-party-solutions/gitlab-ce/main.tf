@@ -15,9 +15,9 @@
  */
 
 locals {
-  cloud_config = templatefile("${path.module}/cloud-config.yaml", {
-    image = var.config.image
-  })
+  cloud_config = templatefile(
+    "${path.module}/cloud-config.yaml", var.gitlab_config
+  )
   vm_roles = ["roles/logging.logWriter", "roles/monitoring.metricWriter"]
   zones    = { for z in var.zones : z => "${var.region}-${z}" }
 }
@@ -65,13 +65,13 @@ resource "google_compute_region_disk" "data" {
   type          = "pd-balanced"
   region        = var.region
   replica_zones = values(local.zones)
-  size          = var.config.disk_size
+  size          = var.gce_config.disk_size
 }
 
 resource "google_compute_instance_template" "default" {
   project      = var.project_id
   name_prefix  = "${var.prefix}-"
-  machine_type = var.config.machine_type
+  machine_type = var.gce_config.machine_type
 
   disk {
     source_image = "cos-cloud/cos-stable"
