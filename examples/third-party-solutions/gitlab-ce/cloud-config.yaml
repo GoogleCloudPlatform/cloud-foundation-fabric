@@ -64,7 +64,7 @@ write_files:
     owner: root
     content: |
       %{~ for k, v in env ~}
-      ${k} = "${v}"
+      ${k}="${v}"
       %{~ endfor ~}
 %{ endif ~}
 
