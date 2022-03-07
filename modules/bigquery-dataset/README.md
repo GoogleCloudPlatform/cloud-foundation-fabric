@@ -180,7 +180,7 @@ module "bigquery-dataset" {
 | [id](variables.tf#L69) | Dataset id. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L100) | Id of the project where datasets will be created. | <code>string</code> | ✓ |  |
 | [access](variables.tf#L17) | Map of access rules with role and identity type. Keys are arbitrary and must match those in the `access_identities` variable, types are `domain`, `group`, `special_group`, `user`, `view`. | <code title="map&#40;object&#40;&#123;&#10;  role &#61; string&#10;  type &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [access_identities](variables.tf#L33) | Map of access identities used for basic access roles. View identities have the format 'project_id\|dataset_id\|table_id'. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [access_identities](variables.tf#L33) | Map of access identities used for basic access roles. View identities have the format 'project_id|dataset_id|table_id'. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [dataset_access](variables.tf#L39) | Set access in the dataset resource instead of using separate resources. | <code>bool</code> |  | <code>false</code> |
 | [description](variables.tf#L45) | Optional description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
 | [encryption_key](variables.tf#L51) | Self link of the KMS key that will be used to protect destination table. | <code>string</code> |  | <code>null</code> |
