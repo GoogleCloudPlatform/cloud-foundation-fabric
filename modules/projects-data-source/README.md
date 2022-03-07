@@ -15,7 +15,7 @@ module "my-org" {
 }
 
 output "projects" {
-  value = module.my_org.projects
+  value = module.my-org.projects
 }
 
 output "folders" {
