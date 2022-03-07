@@ -33,6 +33,7 @@ module "dev-spoke-project" {
     "iap.googleapis.com",
     "networkmanagement.googleapis.com",
     "servicenetworking.googleapis.com",
+    "stackdriver.googleapis.com",
   ]
   shared_vpc_host_config = {
     enabled          = true
