@@ -24,6 +24,10 @@ resource "google_gke_hub_membership" "membership" {
       resource_link = each.value
     }
   }
+  # TODO(jccb): allow cluster member without WIF
+  authority {
+    issuer = "https://container.googleapis.com/v1/${each.value}"
+  }
 }
 
 resource "google_gke_hub_feature" "configmanagement" {
