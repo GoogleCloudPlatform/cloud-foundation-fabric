@@ -35,6 +35,7 @@ _VAR_ROUTER_CONFIG = (
     'asn=65003, '
     'advertise_config= {'
     '   mode="CUSTOM", '
+    '   keepalive_interval= 20, '
     '   groups=["ALL_SUBNETS"], '
     '   ip_ranges = {'
     '   "199.36.153.8/30" = "custom" }, '
