@@ -72,6 +72,6 @@ module "gke-project-0" {
 module "gke-dataset-resource-usage" {
   source        = "../../../../modules/bigquery-dataset"
   project_id    = module.gke-project-0.project_id
-  id            = "resource_usage"
+  id            = "gke_resource_usage"
   friendly_name = "GKE resource usage."
 }

@@ -79,10 +79,10 @@ module "gke-cluster" {
     import_routes = false
     project_id    = var.host_project_ids.dev-spoke-0
   }
-  # resource_usage_export_config = {
-  #   enabled = true
-  #   dataset = module.gke-dataset-resource-usage.id
-  # }
+  resource_usage_export_config = {
+    enabled = true
+    dataset = module.gke-dataset-resource-usage.dataset_id
+  }
   # TODO: the attributes below are "primed" from project-level defaults
   #       in locals, merge defaults with cluster-level stuff
   # TODO(jccb): change fabric module
