@@ -1,0 +1,8 @@
+regex
+google-api-python-client
+google-auth
+google-auth-httplib2
+google-cloud-logging
+google-cloud-monitoring
+oauth2client 
+google-api-core
