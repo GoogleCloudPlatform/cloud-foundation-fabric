@@ -31,5 +31,7 @@ module "test" {
   subnet_private_access       = var.subnet_private_access
   auto_create_subnetworks     = var.auto_create_subnetworks
   psa_ranges                  = var.psa_ranges
+  psa_export_custom_routes    = var.psa_export_custom_routes
+  psa_import_custom_routes    = var.psa_import_custom_routes
   data_folder                 = var.data_folder
 }

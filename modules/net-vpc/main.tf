@@ -347,3 +347,17 @@ resource "google_service_networking_connection" "psa_connection" {
     for k, v in google_compute_global_address.psa_ranges : v.name
   ]
 }
+
+resource "google_compute_network_peering_routes_config" "psa_routes" {
+  count = (
+    length(local.psa_ranges) > 0
+    && var.psa_export_custom_routes
+    || var.psa_import_custom_routes
+    ? 1 : 0
+  )
+  project              = var.project_id
+  peering              = google_service_networking_connection.psa_connection[""].peering
+  network              = local.network.id
+  export_custom_routes = var.psa_export_custom_routes
+  import_custom_routes = var.psa_import_custom_routes
+}

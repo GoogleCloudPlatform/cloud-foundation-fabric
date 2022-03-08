@@ -28,6 +28,28 @@ def test_multi_range(plan_runner):
   assert len(resources) == 4
 
 
+def test_routes_export(plan_runner):
+  "Test routes export."
+  _, resources = plan_runner(psa_ranges='{foobar="172.16.100.0/24"}',
+                             psa_export_custom_routes='true')
+  assert len(resources) == 4
+
+
+def test_routes_import(plan_runner):
+  "Test routes import."
+  _, resources = plan_runner(psa_ranges='{foobar="172.16.100.0/24"}',
+                             psa_import_custom_routes='true')
+  assert len(resources) == 4
+
+
+def test_routes_export_import(plan_runner):
+  "Test routes export and import."
+  _, resources = plan_runner(psa_ranges='{foobar="172.16.100.0/24"}',
+                             psa_export_custom_routes='true',
+                             psa_import_custom_routes='true')
+  assert len(resources) == 4
+
+
 def test_validation(plan_runner):
   "Test PSA variable validation."
   try:

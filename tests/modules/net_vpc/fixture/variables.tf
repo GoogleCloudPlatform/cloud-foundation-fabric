@@ -66,6 +66,18 @@ variable "psa_ranges" {
   default = null
 }
 
+variable "psa_export_custom_routes" {
+  description = "Whether to export custom routes through PSA VPC peering."
+  type        = bool
+  default     = false
+}
+
+variable "psa_import_custom_routes" {
+  description = "Whether to import custom routes through PSA VPC peering."
+  type        = bool
+  default     = false
+}
+
 variable "routes" {
   type = map(object({
     dest_range    = string
