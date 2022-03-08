@@ -29,13 +29,12 @@ module "gke-project-0" {
   prefix          = var.prefix
   labels          = local.labels
   services = [
-    "container.googleapis.com",
-    "dns.googleapis.com",
+    "anthosconfigmanagement.googleapis.com",
+    "anthos.googleapis.com", "dns.googleapis.com",
+    "gkeconnect.googleapis.com",
+    "gkehub.googleapis.com",
     "stackdriver.googleapis.com",
-    # uncomment if you need Multi-cluster Ingress / Gateway API
-    # "gkehub.googleapis.com",
-    # "multiclusterservicediscovery.googleapis.com",
-    # "multiclusteringress.googleapis.com",
+    "container.googleapis.com",
     # "trafficdirector.googleapis.com"
   ]
   # add here any other service ids and keys for robot accounts which are needed
