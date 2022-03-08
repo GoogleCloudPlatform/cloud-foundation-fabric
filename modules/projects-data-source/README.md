@@ -21,6 +21,8 @@ output "projects" {
 output "folders" {
   value = module.my-org.folders
 }
+
+# tftest skip
 ```
 
 ### My dev projects based on parent and label
@@ -39,6 +41,8 @@ output "dev-projects" {
 output "dev-folders" {
   value = module.my-dev.folders
 }
+
+# tftest skip
 ```
 <!-- BEGIN TFDOC -->
 
