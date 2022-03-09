@@ -1,4 +1,18 @@
-# Creating test infrastructure
+/**
+ * Copyright 2022 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 resource "google_folder" "test-net-dash" {
   display_name = "test-net-dash"
@@ -8,7 +22,7 @@ resource "google_folder" "test-net-dash" {
 ##### Creating host projects, VPCs, service projects #####
 
 module "project-hub" {
-  source          = "github.com/GoogleCloudPlatform/cloud-foundation-fabric///modules/project"
+  source          = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/project?ref=v14.0.0"
   name            = "test-host-hub"
   parent          = google_folder.test-net-dash.name
   prefix          = var.prefix
@@ -22,7 +36,7 @@ module "project-hub" {
 }
 
 module "vpc-hub" {
-  source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric///modules/net-vpc"
+  source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/net-vpc?ref=v14.0.0"
   project_id = module.project-hub.project_id
   name       = "vpc-hub"
   subnets = [
@@ -36,7 +50,7 @@ module "vpc-hub" {
 }
 
 module "project-svc-hub" {
-  source          = "github.com/GoogleCloudPlatform/cloud-foundation-fabric///modules/project"
+  source          = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/project?ref=v14.0.0"
   parent          = google_folder.test-net-dash.name
   billing_account = var.billing_account
   prefix          = var.prefix
@@ -50,7 +64,7 @@ module "project-svc-hub" {
 }
 
 module "project-prod" {
-  source          = "github.com/GoogleCloudPlatform/cloud-foundation-fabric///modules/project"
+  source          = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/project?ref=v14.0.0"
   name            = "test-host-prod"
   parent          = google_folder.test-net-dash.name
   prefix          = var.prefix
@@ -64,7 +78,7 @@ module "project-prod" {
 }
 
 module "vpc-prod" {
-  source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric///modules/net-vpc"
+  source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/net-vpc?ref=v14.0.0"
   project_id = module.project-prod.project_id
   name       = "vpc-prod"
   subnets = [
@@ -78,7 +92,7 @@ module "vpc-prod" {
 }
 
 module "project-svc-prod" {
-  source          = "github.com/GoogleCloudPlatform/cloud-foundation-fabric///modules/project"
+  source          = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/project?ref=v14.0.0"
   parent          = google_folder.test-net-dash.name
   billing_account = var.billing_account
   prefix          = var.prefix
@@ -92,7 +106,7 @@ module "project-svc-prod" {
 }
 
 module "project-dev" {
-  source          = "github.com/GoogleCloudPlatform/cloud-foundation-fabric///modules/project"
+  source          = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/project?ref=v14.0.0"
   name            = "test-host-dev"
   parent          = google_folder.test-net-dash.name
   prefix          = var.prefix
@@ -106,7 +120,7 @@ module "project-dev" {
 }
 
 module "vpc-dev" {
-  source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric///modules/net-vpc"
+  source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/net-vpc?ref=v14.0.0"
   project_id = module.project-dev.project_id
   name       = "vpc-dev"
   subnets = [
@@ -120,7 +134,7 @@ module "vpc-dev" {
 }
 
 module "project-svc-dev" {
-  source          = "github.com/GoogleCloudPlatform/cloud-foundation-fabric///modules/project"
+  source          = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/project?ref=v14.0.0"
   parent          = google_folder.test-net-dash.name
   billing_account = var.billing_account
   prefix          = var.prefix
@@ -136,26 +150,26 @@ module "project-svc-dev" {
 ##### Creating VPC peerings #####
 
 module "hub-to-prod-peering" {
-  source        = "github.com/GoogleCloudPlatform/cloud-foundation-fabric///modules/net-vpc-peering"
+  source        = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/net-vpc?ref=v14.0.0-peering"
   local_network = module.vpc-hub.self_link
   peer_network  = module.vpc-prod.self_link
 }
 
 module "prod-to-hub-peering" {
-  source        = "github.com/GoogleCloudPlatform/cloud-foundation-fabric///modules/net-vpc-peering"
+  source        = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/net-vpc?ref=v14.0.0-peering"
   local_network = module.vpc-prod.self_link
   peer_network  = module.vpc-hub.self_link
   depends_on    = [module.hub-to-prod-peering]
 }
 
 module "hub-to-dev-peering" {
-  source        = "github.com/GoogleCloudPlatform/cloud-foundation-fabric///modules/net-vpc-peering"
+  source        = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/net-vpc?ref=v14.0.0-peering"
   local_network = module.vpc-hub.self_link
   peer_network  = module.vpc-dev.self_link
 }
 
 module "dev-to-hub-peering" {
-  source        = "github.com/GoogleCloudPlatform/cloud-foundation-fabric///modules/net-vpc-peering"
+  source        = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/net-vpc?ref=v14.0.0-peering"
   local_network = module.vpc-dev.self_link
   peer_network  = module.vpc-hub.self_link
   depends_on    = [module.hub-to-dev-peering]

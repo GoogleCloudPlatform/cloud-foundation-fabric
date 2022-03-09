@@ -41,7 +41,7 @@ locals {
 ################################################
 
 module "project-monitoring" {
-  source          = "github.com/GoogleCloudPlatform/cloud-foundation-fabric///modules/project"
+  source          = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/project?ref=v14.0.0"
   name            = "monitoring"
   parent          = "organizations/${var.organization_id}"
   prefix          = var.prefix
@@ -54,7 +54,7 @@ module "project-monitoring" {
 ################################################
 
 module "service-account-function" {
-  source       = "github.com/GoogleCloudPlatform/cloud-foundation-fabric///modules/iam-service-account"
+  source       = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/iam-service-account?ref=v14.0.0"
   project_id   = module.project-monitoring.project_id
   name         = "sa-dash"
   generate_key = false
