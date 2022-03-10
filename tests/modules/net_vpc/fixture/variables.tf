@@ -61,21 +61,16 @@ variable "peering_config" {
   default = null
 }
 
-variable "psa_ranges" {
-  type    = map(string)
+variable "psa_config" {
+  description = "The Private Service Access configuration."
+  type = map(object({
+    ranges = list(string)
+    routes = object({
+      export = bool
+      import = bool
+    })
+  }))
   default = null
-}
-
-variable "psa_export_custom_routes" {
-  description = "Whether to export custom routes through PSA VPC peering."
-  type        = bool
-  default     = false
-}
-
-variable "psa_import_custom_routes" {
-  description = "Whether to import custom routes through PSA VPC peering."
-  type        = bool
-  default     = false
 }
 
 variable "routes" {

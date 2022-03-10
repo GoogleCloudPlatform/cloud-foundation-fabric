@@ -138,7 +138,14 @@ module "vpc" {
       secondary_ip_range = null
     }
   ]
-  psa_ranges = {range-a = "10.10.0.0/16"}
+  psa_config = {
+    my_service = {
+      ranges = [
+        "10.0.1.0/24"
+      ],
+      routes = null
+    }
+  }
 }
 # tftest modules=1 resources=4
 ```
@@ -158,9 +165,17 @@ module "vpc" {
       secondary_ip_range = null
     }
   ]
-  psa_ranges               = {range-a = "10.10.0.0/16"}
-  psa_export_custom_routes = true
-  psa_import_custom_routes = true
+  psa_config = {
+    my_service = {
+      ranges = [
+        "10.0.1.0/24"
+      ],
+      routes = {
+        export=true,
+        import=true
+      }
+    }
+  }
 }
 # tftest modules=1 resources=5
 ```
@@ -225,52 +240,59 @@ flow_logs:                        # enable, set to empty map to use defaults
 ```
 <!-- BEGIN TFDOC -->
 
+## Files
+
+| name | description | resources |
+|---|---|---|
+| [main.tf](./main.tf) | Module-level locals and resources. | <code>google_compute_global_address</code> · <code>google_compute_network</code> · <code>google_compute_network_peering</code> · <code>google_compute_network_peering_routes_config</code> · <code>google_compute_route</code> · <code>google_compute_shared_vpc_host_project</code> · <code>google_compute_shared_vpc_service_project</code> · <code>google_compute_subnetwork</code> · <code>google_compute_subnetwork_iam_binding</code> · <code>google_dns_policy</code> · <code>google_service_networking_connection</code> |
+| [outputs.tf](./outputs.tf) | Module outputs. |  |
+| [variables.tf](./variables.tf) | Module variables. |  |
+| [versions.tf](./versions.tf) | Version pins. |  |
+
 ## Variables
 
-| name | description | type | required | default |
-|---|---|:---:|:---:|:---:|
-| [name](variables.tf#L85) | The name of the network being created. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L106) | The ID of the project where this VPC will be created. | <code>string</code> | ✓ |  |
-| [auto_create_subnetworks](variables.tf#L17) | Set to true to create an auto mode subnet, defaults to custom mode. | <code>bool</code> |  | <code>false</code> |
-| [data_folder](variables.tf#L23) | An optional folder containing the subnet configurations in YaML format. | <code>string</code> |  | <code>null</code> |
-| [delete_default_routes_on_create](variables.tf#L29) | Set to true to delete the default routes at creation time. | <code>bool</code> |  | <code>false</code> |
-| [description](variables.tf#L35) | An optional description of this resource (triggers recreation on change). | <code>string</code> |  | <code>&#34;Terraform-managed.&#34;</code> |
-| [dns_policy](variables.tf#L41) | DNS policy setup for the VPC. | <code title="object&#40;&#123;&#10;  inbound &#61; bool&#10;  logging &#61; bool&#10;  outbound &#61; object&#40;&#123;&#10;    private_ns &#61; list&#40;string&#41;&#10;    public_ns  &#61; list&#40;string&#41;&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [iam](variables.tf#L54) | Subnet IAM bindings in {REGION/NAME => {ROLE => [MEMBERS]} format. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [log_config_defaults](variables.tf#L60) | Default configuration for flow logs when enabled. | <code title="object&#40;&#123;&#10;  aggregation_interval &#61; string&#10;  flow_sampling        &#61; number&#10;  metadata             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  aggregation_interval &#61; &#34;INTERVAL_5_SEC&#34;&#10;  flow_sampling        &#61; 0.5&#10;  metadata             &#61; &#34;INCLUDE_ALL_METADATA&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [log_configs](variables.tf#L74) | Map keyed by subnet 'region/name' of optional configurations for flow logs when enabled. | <code>map&#40;map&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [mtu](variables.tf#L80) | Maximum Transmission Unit in bytes. The minimum value for this field is 1460 and the maximum value is 1500 bytes. | <code></code> |  | <code>null</code> |
-| [peering_config](variables.tf#L90) | VPC peering configuration. | <code title="object&#40;&#123;&#10;  peer_vpc_self_link &#61; string&#10;  export_routes      &#61; bool&#10;  import_routes      &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [peering_create_remote_end](variables.tf#L100) | Skip creation of peering on the remote end when using peering_config. | <code>bool</code> |  | <code>true</code> |
-| [psa_export_custom_routes](variables.tf#L124) | Whether to export custom routes through PSA VPC peering. | <code>bool</code> |  | <code>false</code> |
-| [psa_import_custom_routes](variables.tf#L130) | Whether to import custom routes through PSA VPC peering. | <code>bool</code> |  | <code>false</code> |
-| [psa_ranges](variables.tf#L111) | CIDR ranges used for Google services that support Private Service Networking. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
-| [routes](variables.tf#L136) | Network routes, keyed by name. | <code title="map&#40;object&#40;&#123;&#10;  dest_range    &#61; string&#10;  priority      &#61; number&#10;  tags          &#61; list&#40;string&#41;&#10;  next_hop_type &#61; string &#35; gateway, instance, ip, vpn_tunnel, ilb&#10;  next_hop      &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [routing_mode](variables.tf#L148) | The network routing mode (default 'GLOBAL'). | <code>string</code> |  | <code>&#34;GLOBAL&#34;</code> |
-| [shared_vpc_host](variables.tf#L158) | Enable shared VPC for this project. | <code>bool</code> |  | <code>false</code> |
-| [shared_vpc_service_projects](variables.tf#L164) | Shared VPC service projects to register with this host. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [subnet_descriptions](variables.tf#L170) | Optional map of subnet descriptions, keyed by subnet 'region/name'. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [subnet_flow_logs](variables.tf#L176) | Optional map of boolean to control flow logs (default is disabled), keyed by subnet 'region/name'. | <code>map&#40;bool&#41;</code> |  | <code>&#123;&#125;</code> |
-| [subnet_private_access](variables.tf#L182) | Optional map of boolean to control private Google access (default is enabled), keyed by subnet 'region/name'. | <code>map&#40;bool&#41;</code> |  | <code>&#123;&#125;</code> |
-| [subnets](variables.tf#L188) | List of subnets being created. | <code title="list&#40;object&#40;&#123;&#10;  name               &#61; string&#10;  ip_cidr_range      &#61; string&#10;  region             &#61; string&#10;  secondary_ip_range &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
-| [subnets_l7ilb](variables.tf#L199) | List of subnets for private HTTPS load balancer. | <code title="list&#40;object&#40;&#123;&#10;  active        &#61; bool&#10;  name          &#61; string&#10;  ip_cidr_range &#61; string&#10;  region        &#61; string&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
-| [vpc_create](variables.tf#L210) | Create VPC. When set to false, uses a data source to reference existing VPC. | <code>bool</code> |  | <code>true</code> |
+| name | description | type | required | default | producer |
+|---|---|:---:|:---:|:---:|:---:|
+| [name](variables.tf#L85) | The name of the network being created. | <code>string</code> | ✓ |  |  |
+| [project_id](variables.tf#L106) | The ID of the project where this VPC will be created. | <code>string</code> | ✓ |  |  |
+| [auto_create_subnetworks](variables.tf#L17) | Set to true to create an auto mode subnet, defaults to custom mode. | <code>bool</code> |  | <code>false</code> |  |
+| [data_folder](variables.tf#L23) | An optional folder containing the subnet configurations in YaML format. | <code>string</code> |  | <code>null</code> |  |
+| [delete_default_routes_on_create](variables.tf#L29) | Set to true to delete the default routes at creation time. | <code>bool</code> |  | <code>false</code> |  |
+| [description](variables.tf#L35) | An optional description of this resource (triggers recreation on change). | <code>string</code> |  | <code>&#34;Terraform-managed.&#34;</code> |  |
+| [dns_policy](variables.tf#L41) | DNS policy setup for the VPC. | <code title="object&#40;&#123;&#10;  inbound &#61; bool&#10;  logging &#61; bool&#10;  outbound &#61; object&#40;&#123;&#10;    private_ns &#61; list&#40;string&#41;&#10;    public_ns  &#61; list&#40;string&#41;&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |  |
+| [iam](variables.tf#L54) | Subnet IAM bindings in {REGION/NAME => {ROLE => [MEMBERS]} format. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [log_config_defaults](variables.tf#L60) | Default configuration for flow logs when enabled. | <code title="object&#40;&#123;&#10;  aggregation_interval &#61; string&#10;  flow_sampling        &#61; number&#10;  metadata             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  aggregation_interval &#61; &#34;INTERVAL_5_SEC&#34;&#10;  flow_sampling        &#61; 0.5&#10;  metadata             &#61; &#34;INCLUDE_ALL_METADATA&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
+| [log_configs](variables.tf#L74) | Map keyed by subnet 'region/name' of optional configurations for flow logs when enabled. | <code>map&#40;map&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [mtu](variables.tf#L80) | Maximum Transmission Unit in bytes. The minimum value for this field is 1460 and the maximum value is 1500 bytes. | <code></code> |  | <code>null</code> |  |
+| [peering_config](variables.tf#L90) | VPC peering configuration. | <code title="object&#40;&#123;&#10;  peer_vpc_self_link &#61; string&#10;  export_routes      &#61; bool&#10;  import_routes      &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |  |
+| [peering_create_remote_end](variables.tf#L100) | Skip creation of peering on the remote end when using peering_config. | <code>bool</code> |  | <code>true</code> |  |
+| [psa_config](variables.tf#L111) | The Private Service Access configuration. | <code title="map&#40;object&#40;&#123;&#10;  ranges &#61; list&#40;string&#41; &#35; CIDRs in the format x.x.x.x&#47;yy&#10;  routes &#61; object&#40;&#123;&#10;    export &#61; bool&#10;    import &#61; bool&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |  |
+| [routes](variables.tf#L123) | Network routes, keyed by name. | <code title="map&#40;object&#40;&#123;&#10;  dest_range    &#61; string&#10;  priority      &#61; number&#10;  tags          &#61; list&#40;string&#41;&#10;  next_hop_type &#61; string &#35; gateway, instance, ip, vpn_tunnel, ilb&#10;  next_hop      &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [routing_mode](variables.tf#L135) | The network routing mode (default 'GLOBAL'). | <code>string</code> |  | <code>&#34;GLOBAL&#34;</code> |  |
+| [shared_vpc_host](variables.tf#L145) | Enable shared VPC for this project. | <code>bool</code> |  | <code>false</code> |  |
+| [shared_vpc_service_projects](variables.tf#L151) | Shared VPC service projects to register with this host. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |  |
+| [subnet_descriptions](variables.tf#L157) | Optional map of subnet descriptions, keyed by subnet 'region/name'. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [subnet_flow_logs](variables.tf#L163) | Optional map of boolean to control flow logs (default is disabled), keyed by subnet 'region/name'. | <code>map&#40;bool&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [subnet_private_access](variables.tf#L169) | Optional map of boolean to control private Google access (default is enabled), keyed by subnet 'region/name'. | <code>map&#40;bool&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [subnets](variables.tf#L175) | List of subnets being created. | <code title="list&#40;object&#40;&#123;&#10;  name               &#61; string&#10;  ip_cidr_range      &#61; string&#10;  region             &#61; string&#10;  secondary_ip_range &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |  |
+| [subnets_l7ilb](variables.tf#L186) | List of subnets for private HTTPS load balancer. | <code title="list&#40;object&#40;&#123;&#10;  active        &#61; bool&#10;  name          &#61; string&#10;  ip_cidr_range &#61; string&#10;  region        &#61; string&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |  |
+| [vpc_create](variables.tf#L197) | Create VPC. When set to false, uses a data source to reference existing VPC. | <code>bool</code> |  | <code>true</code> |  |
 
 ## Outputs
 
-| name | description | sensitive |
-|---|---|:---:|
-| [bindings](outputs.tf#L17) | Subnet IAM bindings. |  |
-| [name](outputs.tf#L22) | The name of the VPC being created. |  |
-| [network](outputs.tf#L34) | Network resource. |  |
-| [project_id](outputs.tf#L46) | Project ID containing the network. Use this when you need to create resources *after* the VPC is fully set up (e.g. subnets created, shared VPC service projects attached, Private Service Networking configured). |  |
-| [self_link](outputs.tf#L59) | The URI of the VPC being created. |  |
-| [subnet_ips](outputs.tf#L71) | Map of subnet address ranges keyed by name. |  |
-| [subnet_regions](outputs.tf#L78) | Map of subnet regions keyed by name. |  |
-| [subnet_secondary_ranges](outputs.tf#L85) | Map of subnet secondary ranges keyed by name. |  |
-| [subnet_self_links](outputs.tf#L96) | Map of subnet self links keyed by name. |  |
-| [subnets](outputs.tf#L102) | Subnet resources. |  |
-| [subnets_l7ilb](outputs.tf#L107) | L7 ILB subnet resources. |  |
+| name | description | sensitive | consumers |
+|---|---|:---:|---|
+| [bindings](outputs.tf#L17) | Subnet IAM bindings. |  |  |
+| [name](outputs.tf#L22) | The name of the VPC being created. |  |  |
+| [network](outputs.tf#L34) | Network resource. |  |  |
+| [project_id](outputs.tf#L46) | Project ID containing the network. Use this when you need to create resources *after* the VPC is fully set up (e.g. subnets created, shared VPC service projects attached, Private Service Networking configured). |  |  |
+| [self_link](outputs.tf#L59) | The URI of the VPC being created. |  |  |
+| [subnet_ips](outputs.tf#L71) | Map of subnet address ranges keyed by name. |  |  |
+| [subnet_regions](outputs.tf#L78) | Map of subnet regions keyed by name. |  |  |
+| [subnet_secondary_ranges](outputs.tf#L85) | Map of subnet secondary ranges keyed by name. |  |  |
+| [subnet_self_links](outputs.tf#L96) | Map of subnet self links keyed by name. |  |  |
+| [subnets](outputs.tf#L102) | Subnet resources. |  |  |
+| [subnets_l7ilb](outputs.tf#L107) | L7 ILB subnet resources. |  |  |
 
 <!-- END TFDOC -->
 The key format is `subnet_region/subnet_name`. For example `europe-west1/my_subnet`.
