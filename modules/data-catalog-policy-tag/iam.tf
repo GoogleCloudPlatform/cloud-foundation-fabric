@@ -45,11 +45,11 @@ locals {
     "${pair.role}-${pair.member}" => pair
   }
   tags_iam = flatten([
-    for k, v in var.tags_iam : [
-      for x, y in v : {
-        tag     = k
-        role    = x
-        members = y
+    for tag, roles in var.tags_iam : [
+      for role, members in roles : {
+        tag     = tag
+        role    = role
+        members = members
       }
     ]
   ])
