@@ -33,7 +33,7 @@ resource "google_data_catalog_taxonomy" "default" {
 }
 
 resource "google_data_catalog_policy_tag" "default" {
-  for_each     = toset(var.tags)
+  for_each     = toset(keys(var.tags))
   provider     = google-beta
   taxonomy     = google_data_catalog_taxonomy.default.id
   display_name = each.key

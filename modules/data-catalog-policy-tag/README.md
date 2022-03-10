@@ -12,7 +12,9 @@ module "cmn-dc" {
   source     = "./modules/data-catalog-policy-tag"
   name       = "my-datacatalog-policy-tags"
   project_id = "my-project"
-  tags       = ["low", "medium", "high"]
+  tags       = {
+    low = null, medium = null, high = null
+  }
 }
 # tftest modules=1 resources=4
 ```
@@ -24,29 +26,16 @@ module "cmn-dc" {
   source     = "./modules/data-catalog-policy-tag"
   name       = "my-datacatalog-policy-tags"
   project_id = "my-project"
-  tags       = ["low", "medium", "high"]
+  tags       = { 
+    low = null
+    medium = null
+    high = {"roles/datacatalog.categoryAdmin" = ["group:GROUP_NAME@example.com"]}
+  }
   iam = {
     "roles/datacatalog.categoryAdmin" = ["group:GROUP_NAME@example.com"]
   }
 }
-# tftest modules=1 resources=5
-```
-
-### Taxonomy with Tag level IAM binding
-
-```hcl
-module "cmn-dc" {
-  source     = "./modules/data-catalog-policy-tag"
-  name       = "my-datacatalog-policy-tags"
-  project_id = "my-project"
-  tags       = ["low", "medium", "high"]
-  tags_iam = {
-    low = {
-      "roles/datacatalog.categoryFineGrainedReader" = ["user:admin@caggioland.com"]
-    }
-  }
-}
-# tftest modules=1 resources=5
+# tftest modules=1 resources=6
 ```
 <!-- BEGIN TFDOC -->
 
@@ -64,8 +53,7 @@ module "cmn-dc" {
 | [iam_additive_members](variables.tf#L47) | IAM additive bindings in {MEMBERS => [ROLE]} format. This might break if members are dynamic values. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [location](variables.tf#L53) | Data Catalog Taxonomy location. | <code>string</code> |  | <code>&#34;eu&#34;</code> |
 | [prefix](variables.tf#L64) | Prefix used to generate project id and name. | <code>string</code> |  | <code>null</code> |
-| [tags](variables.tf#L74) | List of Data Catalog Policy tags to be created. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [tags_iam](variables.tf#L80) | Map of IAM bindings for each tag in {tag => {ROLE => [MEMBERS]}} format. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tags](variables.tf#L74) | List of Data Catalog Policy tags to be created with optional IAM binging in {tag => {ROLE => [MEMBERS]}} format. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 

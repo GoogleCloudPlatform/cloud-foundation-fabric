@@ -72,13 +72,7 @@ variable "project_id" {
 }
 
 variable "tags" {
-  description = "List of Data Catalog Policy tags to be created."
-  type        = list(string)
-  default     = []
-}
-
-variable "tags_iam" {
-  description = "Map of IAM bindings for each tag in {tag => {ROLE => [MEMBERS]}} format."
+  description = "List of Data Catalog Policy tags to be created with optional IAM binging configuration in {tag => {ROLE => [MEMBERS]}} format."
   type        = map(map(list(string)))
   default     = {}
 }
