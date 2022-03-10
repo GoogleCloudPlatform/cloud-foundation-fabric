@@ -33,6 +33,7 @@ _VAR_ROUTER_CONFIG = (
     '{'
     'description="", '
     'asn=65003, '
+    'keepalive_interval=20, '
     'advertise_config= {'
     '   mode="CUSTOM", '
     '   groups=["ALL_SUBNETS"], '
@@ -79,6 +80,7 @@ def test_vlanattachment(plan_runner):
         'advertised_groups': ['ALL_SUBNETS'],
         'advertised_ip_ranges': [{'description': 'custom', 'range': '199.36.153.8/30'}],
         'asn': 65003,
+        'keepalive_interval': 20,
     }]
 
   def test_router_peer(plan_runner):
