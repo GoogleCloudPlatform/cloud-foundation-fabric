@@ -39,5 +39,3 @@ resource "google_data_catalog_policy_tag" "default" {
   display_name = each.key
   description  = "${each.key} - Terraform managed.  "
 }
-
-#TODO Add IAM at tag level

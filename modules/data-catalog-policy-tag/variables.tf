@@ -76,3 +76,9 @@ variable "tags" {
   type        = list(string)
   default     = []
 }
+
+variable "tags_iam" {
+  description = "Map of IAM bindings for each tag in {tag => {ROLE => [MEMBERS]}} format."
+  type        = map(map(list(string)))
+  default     = {}
+}

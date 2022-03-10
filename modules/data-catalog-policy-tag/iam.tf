@@ -44,6 +44,15 @@ locals {
     for pair in concat(local._iam_additive_pairs, local._iam_additive_member_pairs) :
     "${pair.role}-${pair.member}" => pair
   }
+  tags_iam = flatten([
+    for k, v in var.tags_iam : [
+      for x, y in v : {
+        tag     = k
+        role    = x
+        members = y
+      }
+    ]
+  ])
 }
 
 resource "google_data_catalog_taxonomy_iam_binding" "authoritative" {
@@ -64,4 +73,15 @@ resource "google_data_catalog_taxonomy_iam_member" "additive" {
   role     = each.value.role
   member   = each.value.member
   taxonomy = google_data_catalog_taxonomy.default.id
+}
+
+resource "google_data_catalog_policy_tag_iam_binding" "authoritative" {
+  provider = google-beta
+  for_each = {
+    for v in local.tags_iam : "${v.tag}.${v.role}" => v
+  }
+
+  policy_tag = google_data_catalog_policy_tag.default[each.value.tag].name
+  role       = each.value.role
+  members    = each.value.members
 }
