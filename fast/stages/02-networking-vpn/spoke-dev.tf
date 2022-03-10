@@ -51,7 +51,7 @@ module "dev-spoke-vpc" {
   name          = "dev-spoke-0"
   mtu           = 1500
   data_folder   = "${var.data_dir}/subnets/dev"
-  psa_config    = {dev = {ranges = values(var.psa_ranges.dev), routes = null}}
+  psa_config    = { dev = { ranges = values(var.psa_ranges.dev), routes = null } }
   subnets_l7ilb = local.l7ilb_subnets.dev
   # set explicit routes for googleapis in case the default route is deleted
   routes = {
