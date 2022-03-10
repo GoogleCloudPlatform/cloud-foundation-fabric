@@ -17,7 +17,7 @@ module "cmn-dc" {
 # tftest modules=1 resources=4
 ```
 
-### Simple Taxonomy with IAM binding
+### Taxonomy with IAM binding
 
 ```hcl
 module "cmn-dc" {
