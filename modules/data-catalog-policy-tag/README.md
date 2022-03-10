@@ -29,7 +29,7 @@ module "cmn-dc" {
   tags       = { 
     low = null
     medium = null
-    high = {"roles/datacatalog.categoryAdmin" = ["group:GROUP_NAME@example.com"]}
+    high = {"roles/datacatalog.categoryFineGrainedReader" = ["group:GROUP_NAME@example.com"]}
   }
   iam = {
     "roles/datacatalog.categoryAdmin" = ["group:GROUP_NAME@example.com"]
