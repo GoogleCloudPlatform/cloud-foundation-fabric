@@ -53,7 +53,7 @@ module "cmn-dc" {
 | [iam_additive_members](variables.tf#L47) | IAM additive bindings in {MEMBERS => [ROLE]} format. This might break if members are dynamic values. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [location](variables.tf#L53) | Data Catalog Taxonomy location. | <code>string</code> |  | <code>&#34;eu&#34;</code> |
 | [prefix](variables.tf#L64) | Prefix used to generate project id and name. | <code>string</code> |  | <code>null</code> |
-| [tags](variables.tf#L74) | List of Data Catalog Policy tags to be created with optional IAM binging in {tag => {ROLE => [MEMBERS]}} format. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tags](variables.tf#L74) | List of Data Catalog Policy tags to be created with optional IAM binging configuration in {tag => {ROLE => [MEMBERS]}} format. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
