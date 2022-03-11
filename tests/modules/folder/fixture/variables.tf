@@ -14,59 +14,52 @@
  * limitations under the License.
  */
 
+variable "group_iam" {
+  type    = any
+  default = {}
+}
+
 variable "iam" {
-  type    = map(list(string))
+  type    = any
+  default = {}
+}
+
+variable "iam_additive" {
+  type    = any
+  default = {}
+}
+
+variable "iam_additive_members" {
+  type    = any
   default = {}
 }
 
 variable "policy_boolean" {
-  type    = map(bool)
+  type    = any
   default = {}
 }
 
 variable "policy_list" {
-  type = map(object({
-    inherit_from_parent = bool
-    suggested_value     = string
-    status              = bool
-    values              = list(string)
-  }))
+  type    = any
   default = {}
 }
 
 variable "firewall_policies" {
-  type = map(map(object({
-    description             = string
-    direction               = string
-    action                  = string
-    priority                = number
-    ranges                  = list(string)
-    ports                   = map(list(string))
-    target_service_accounts = list(string)
-    target_resources        = list(string)
-    logging                 = bool
-  })))
+  type    = any
   default = {}
 }
 
 variable "firewall_policy_association" {
-  type    = map(string)
+  type    = any
   default = {}
 }
 
 variable "logging_sinks" {
-  type = map(object({
-    destination      = string
-    type             = string
-    filter           = string
-    iam              = bool
-    include_children = bool
-    exclusions       = map(string)
-  }))
+  type    = any
   default = {}
 }
 
 variable "logging_exclusions" {
-  type    = map(string)
+  type    = any
   default = {}
 }
