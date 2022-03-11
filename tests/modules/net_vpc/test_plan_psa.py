@@ -17,20 +17,85 @@ import tftest
 
 def test_single_range(plan_runner):
   "Test single PSA range."
-  _, resources = plan_runner(psa_ranges='{foobar="172.16.100.0/24"}')
+  psa_config = '''{
+    foobar = {
+      ranges = [
+        "172.16.100.0/24"
+      ],
+      routes = null
+    }
+  }'''
+  _, resources = plan_runner(psa_config=psa_config)
   assert len(resources) == 3
 
 
 def test_multi_range(plan_runner):
   "Test multiple PSA ranges."
-  psa_ranges = '{foobar="172.16.100.0/24", frobniz="172.16.101.0/24"}'
-  _, resources = plan_runner(psa_ranges=psa_ranges)
+  psa_config = '''{
+    foobar = {
+      ranges = [
+        "172.16.100.0/24",
+        "172.16.101.0/24"
+      ],
+      routes = null
+    },
+    frobniz = {
+      ranges = [
+        "172.16.102.0/24"
+      ],
+      routes = null
+    }
+  }'''
+  _, resources = plan_runner(psa_config=psa_config)
+  assert len(resources) == 6
+
+
+def test_routes_export(plan_runner):
+  "Test routes export."
+  psa_config = '''{
+    foobar = {
+      ranges = [
+        "172.16.100.0/24"
+      ],
+      routes = {
+        export = true
+        import = false
+      }
+    }
+  }'''
+  _, resources = plan_runner(psa_config=psa_config)
   assert len(resources) == 4
 
 
-def test_validation(plan_runner):
-  "Test PSA variable validation."
-  try:
-    plan_runner(psa_ranges='{foobar="foobar"}')
-  except tftest.TerraformTestError as e:
-    assert 'Invalid value for variable' in e.args[0]
+def test_routes_import(plan_runner):
+  "Test routes import."
+  psa_config = '''{
+    foobar = {
+      ranges = [
+        "172.16.100.0/24"
+      ],
+      routes = {
+        export = false
+        import = true
+      }
+    }
+  }'''
+  _, resources = plan_runner(psa_config=psa_config)
+  assert len(resources) == 4
+
+
+def test_routes_export_import(plan_runner):
+  "Test routes export and import."
+  psa_config = '''{
+    foobar = {
+      ranges = [
+        "172.16.100.0/24"
+      ],
+      routes = {
+        export = true
+        import = true
+      }
+    }
+  }'''
+  _, resources = plan_runner(psa_config=psa_config)
+  assert len(resources) == 4
