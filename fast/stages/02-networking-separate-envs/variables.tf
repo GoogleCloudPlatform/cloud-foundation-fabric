@@ -142,8 +142,13 @@ variable "router_onprem_configs" {
     asn = number
   }))
   default = {
-    landing-ew1 = {
+    prod-ew1 = {
       asn = "65533"
+      adv = null
+      # adv = { default = false, custom = [] }
+    }
+    dev-ew1 = {
+      asn = "65534"
       adv = null
       # adv = { default = false, custom = [] }
     }
