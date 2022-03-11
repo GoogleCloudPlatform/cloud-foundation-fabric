@@ -75,6 +75,20 @@ variable "iam" {
   nullable    = false
 }
 
+variable "iam_additive" {
+  description = "Non authoritative IAM bindings, in {ROLE => [MEMBERS]} format."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+}
+
+variable "iam_additive_members" {
+  description = "IAM additive bindings in {MEMBERS => [ROLE]} format. This might break if members are dynamic values."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+}
+
 variable "id" {
   description = "Folder ID in case you use folder_create=false."
   type        = string
