@@ -1,6 +1,12 @@
 # Networking
 
-TODO
+This stage sets up the shared network infrastructure for the whole organization. It implements a single shared VPC per environment, where each environment is independently connected to the on-premise environment, to maintain a fully separated routing domain on GCP.
+
+While no communication between environment is implemented on this design, that could be achieved with a number of different options:
+
+- [VPC Peering](https://cloud.google.com/vpc/docs/vpc-peering) - which is not recommended as it would effectively create a full line of sight between workloads belonging to different environments
+- [VPN HA](https://cloud.google.com/network-connectivity/docs/vpn/concepts/topologies) tunnels between environments, exchanging a subset of well-defined routes. 
+- [Multi-NIC appliances](https://cloud.google.com/architecture/best-practices-vpc-design#multi-nic) connecting the different environments, allowing the use of NVAs to enforce networking policies. This design would require the usage of a "decoupling" VPC peered to one of the environments. 
 
 <p align="center">
   <img src="diagram.svg" alt="Networking diagram">
