@@ -69,6 +69,11 @@ module "dev-vpc" {
       next_hop      = "default-internet-gateway"
     }
   }
+  dns_policy = {
+    inbound  = true
+    logging  = false
+    outbound = null
+  }
 }
 
 module "dev-firewall" {

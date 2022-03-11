@@ -58,7 +58,8 @@ variable "dns" {
   description = "Onprem DNS resolvers."
   type        = map(list(string))
   default = {
-    onprem = ["10.0.200.3"]
+    prod = ["10.0.1.1"]
+    dev  = ["10.0.2.1"]
   }
 }
 

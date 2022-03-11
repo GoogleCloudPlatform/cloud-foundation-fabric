@@ -211,7 +211,7 @@ To add a new firewall rule, create a new file or edit an existing one in the `da
 
 ### DNS architecture
 
-The DNS ([`dns`](../../../modules/dns)) infrastructure is defined in the respective `vpc-xxx.tf` files.
+The DNS ([`dns`](../../../modules/dns)) infrastructure is defined in the respective `dns-xxx.tf` files.
 
 Cloud DNS manages onprem forwarding, the main GCP zone (in this example `gcp.example.com`) and is peered to environment-specific zones (i.e. `dev.gcp.example.com` and `prod.gcp.example.com`).
 

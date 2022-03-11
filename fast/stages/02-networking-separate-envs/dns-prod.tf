@@ -37,7 +37,7 @@ module "prod-onprem-example-dns-forwarding" {
   name            = "example-com"
   domain          = "onprem.example.com."
   client_networks = [module.prod-vpc.self_link]
-  forwarders      = { for ip in var.dns.onprem : ip => null }
+  forwarders      = { for ip in var.dns.prod : ip => null }
 }
 
 module "prod-reverse-10-dns-forwarding" {
@@ -47,5 +47,24 @@ module "prod-reverse-10-dns-forwarding" {
   name            = "root-reverse-10"
   domain          = "10.in-addr.arpa."
   client_networks = [module.prod-vpc.self_link]
-  forwarders      = { for ip in var.dns.onprem : ip => null }
+  forwarders      = { for ip in var.dns.prod : ip => null }
+}
+
+
+module "prod-googleapis-private-zone" {
+  source          = "../../../modules/dns"
+  project_id      = module.prod-project.project_id
+  type            = "private"
+  name            = "googleapis-com"
+  domain          = "googleapis.com."
+  client_networks = [module.prod-vpc.self_link]
+  recordsets = {
+    "A private" = { type = "A", ttl = 300, records = [
+      "199.36.153.8", "199.36.153.9", "199.36.153.10", "199.36.153.11"
+    ] }
+    "A restricted" = { type = "A", ttl = 300, records = [
+      "199.36.153.4", "199.36.153.5", "199.36.153.6", "199.36.153.7"
+    ] }
+    "CNAME *" = { type = "CNAME", ttl = 300, records = ["private.googleapis.com."] }
+  }
 }

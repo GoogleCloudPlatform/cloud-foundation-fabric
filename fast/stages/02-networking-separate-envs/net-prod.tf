@@ -69,6 +69,13 @@ module "prod-vpc" {
       next_hop      = "default-internet-gateway"
     }
   }
+  #TODO: consider implementing a design that creates an ad-hoc VPC where to 
+  # enable the inbound policy. This saves from creating one ip per subnet.
+  dns_policy = {
+    inbound  = true
+    logging  = false
+    outbound = null
+  }
 }
 
 module "prod-firewall" {
