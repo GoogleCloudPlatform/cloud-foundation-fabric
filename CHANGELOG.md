@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 - fix permadiff in `net-vpc-firewall` module rules
 - new [gke-hub](modules/gke-hub) module
+- add support for IAM to `data-catalog-policy-tag` module
 - add support for IAM additive to `folder` module, fixes #580
 
 **FAST**
