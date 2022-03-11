@@ -1,4 +1,4 @@
-# Cloud VPN HA Module
+# Cloud HA VPN Module
 This module makes it easy to deploy either GCP-to-GCP or GCP-to-On-prem [Cloud HA VPN](https://cloud.google.com/vpn/docs/concepts/overview#ha-vpn).
 
 ## Examples
@@ -89,6 +89,8 @@ module "vpn_ha-2" {
 }
 # tftest modules=2 resources=18
 ```
+
+Note: When using the `for_each` meta-argument you might experience a Cycle Error due to the multiple `net-vpn-ha` modules referencing each other. To fix this you can create the [google_compute_ha_vpn_gateway](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_ha_vpn_gateway) resources separately and reference them in the `net-vpn-ha` module via the `vpn_gateway` and `peer_gcp_gateway` variables.
 
 ### GCP to on-prem
 
