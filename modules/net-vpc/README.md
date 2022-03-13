@@ -138,9 +138,46 @@ module "vpc" {
       secondary_ip_range = null
     }
   ]
-  psa_ranges = {range-a = "10.10.0.0/16"}
+  psa_config = {
+    my_service = {
+      ranges = [
+        "10.0.1.0/24"
+      ],
+      routes = null
+    }
+  }
 }
 # tftest modules=1 resources=4
+```
+
+Custom routes can be optionally exported/imported through the peering formed with the Google managed PSA VPC.
+
+```hcl
+module "vpc" {
+  source     = "./modules/net-vpc"
+  project_id = "my-project"
+  name       = "my-network"
+  subnets = [
+    {
+      ip_cidr_range      = "10.0.0.0/24"
+      name               = "production"
+      region             = "europe-west1"
+      secondary_ip_range = null
+    }
+  ]
+  psa_config = {
+    my_service = {
+      ranges = [
+        "10.0.1.0/24"
+      ],
+      routes = {
+        export=true,
+        import=true
+      }
+    }
+  }
+}
+# tftest modules=1 resources=5
 ```
 
 ### DNS Policies
@@ -220,17 +257,17 @@ flow_logs:                        # enable, set to empty map to use defaults
 | [mtu](variables.tf#L80) | Maximum Transmission Unit in bytes. The minimum value for this field is 1460 and the maximum value is 1500 bytes. | <code></code> |  | <code>null</code> |
 | [peering_config](variables.tf#L90) | VPC peering configuration. | <code title="object&#40;&#123;&#10;  peer_vpc_self_link &#61; string&#10;  export_routes      &#61; bool&#10;  import_routes      &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [peering_create_remote_end](variables.tf#L100) | Skip creation of peering on the remote end when using peering_config. | <code>bool</code> |  | <code>true</code> |
-| [psa_ranges](variables.tf#L111) | CIDR ranges used for Google services that support Private Service Networking. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
-| [routes](variables.tf#L124) | Network routes, keyed by name. | <code title="map&#40;object&#40;&#123;&#10;  dest_range    &#61; string&#10;  priority      &#61; number&#10;  tags          &#61; list&#40;string&#41;&#10;  next_hop_type &#61; string &#35; gateway, instance, ip, vpn_tunnel, ilb&#10;  next_hop      &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [routing_mode](variables.tf#L136) | The network routing mode (default 'GLOBAL'). | <code>string</code> |  | <code>&#34;GLOBAL&#34;</code> |
-| [shared_vpc_host](variables.tf#L146) | Enable shared VPC for this project. | <code>bool</code> |  | <code>false</code> |
-| [shared_vpc_service_projects](variables.tf#L152) | Shared VPC service projects to register with this host. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [subnet_descriptions](variables.tf#L158) | Optional map of subnet descriptions, keyed by subnet 'region/name'. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [subnet_flow_logs](variables.tf#L164) | Optional map of boolean to control flow logs (default is disabled), keyed by subnet 'region/name'. | <code>map&#40;bool&#41;</code> |  | <code>&#123;&#125;</code> |
-| [subnet_private_access](variables.tf#L170) | Optional map of boolean to control private Google access (default is enabled), keyed by subnet 'region/name'. | <code>map&#40;bool&#41;</code> |  | <code>&#123;&#125;</code> |
-| [subnets](variables.tf#L176) | List of subnets being created. | <code title="list&#40;object&#40;&#123;&#10;  name               &#61; string&#10;  ip_cidr_range      &#61; string&#10;  region             &#61; string&#10;  secondary_ip_range &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
-| [subnets_l7ilb](variables.tf#L187) | List of subnets for private HTTPS load balancer. | <code title="list&#40;object&#40;&#123;&#10;  active        &#61; bool&#10;  name          &#61; string&#10;  ip_cidr_range &#61; string&#10;  region        &#61; string&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
-| [vpc_create](variables.tf#L198) | Create VPC. When set to false, uses a data source to reference existing VPC. | <code>bool</code> |  | <code>true</code> |
+| [psa_config](variables.tf#L111) | The Private Service Access configuration. | <code title="map&#40;object&#40;&#123;&#10;  ranges &#61; list&#40;string&#41; &#35; CIDRs in the format x.x.x.x&#47;yy&#10;  routes &#61; object&#40;&#123;&#10;    export &#61; bool&#10;    import &#61; bool&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
+| [routes](variables.tf#L123) | Network routes, keyed by name. | <code title="map&#40;object&#40;&#123;&#10;  dest_range    &#61; string&#10;  priority      &#61; number&#10;  tags          &#61; list&#40;string&#41;&#10;  next_hop_type &#61; string &#35; gateway, instance, ip, vpn_tunnel, ilb&#10;  next_hop      &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [routing_mode](variables.tf#L135) | The network routing mode (default 'GLOBAL'). | <code>string</code> |  | <code>&#34;GLOBAL&#34;</code> |
+| [shared_vpc_host](variables.tf#L145) | Enable shared VPC for this project. | <code>bool</code> |  | <code>false</code> |
+| [shared_vpc_service_projects](variables.tf#L151) | Shared VPC service projects to register with this host. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [subnet_descriptions](variables.tf#L157) | Optional map of subnet descriptions, keyed by subnet 'region/name'. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [subnet_flow_logs](variables.tf#L163) | Optional map of boolean to control flow logs (default is disabled), keyed by subnet 'region/name'. | <code>map&#40;bool&#41;</code> |  | <code>&#123;&#125;</code> |
+| [subnet_private_access](variables.tf#L169) | Optional map of boolean to control private Google access (default is enabled), keyed by subnet 'region/name'. | <code>map&#40;bool&#41;</code> |  | <code>&#123;&#125;</code> |
+| [subnets](variables.tf#L175) | List of subnets being created. | <code title="list&#40;object&#40;&#123;&#10;  name               &#61; string&#10;  ip_cidr_range      &#61; string&#10;  region             &#61; string&#10;  secondary_ip_range &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
+| [subnets_l7ilb](variables.tf#L186) | List of subnets for private HTTPS load balancer. | <code title="list&#40;object&#40;&#123;&#10;  active        &#61; bool&#10;  name          &#61; string&#10;  ip_cidr_range &#61; string&#10;  region        &#61; string&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
+| [vpc_create](variables.tf#L197) | Create VPC. When set to false, uses a data source to reference existing VPC. | <code>bool</code> |  | <code>true</code> |
 
 ## Outputs
 
