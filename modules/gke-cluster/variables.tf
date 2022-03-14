@@ -27,6 +27,7 @@ variable "addons" {
     })
     network_policy_config                 = bool
     gce_persistent_disk_csi_driver_config = bool
+    gcp_filestore_csi_driver_config       = bool
     config_connector_config               = bool
     kalm_config                           = bool
   })
@@ -41,6 +42,7 @@ variable "addons" {
     }
     network_policy_config                 = false
     gce_persistent_disk_csi_driver_config = false
+    gcp_filestore_csi_driver_config       = false
     config_connector_config               = false
     kalm_config                           = false
   }
