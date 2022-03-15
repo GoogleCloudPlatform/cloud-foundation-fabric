@@ -87,6 +87,9 @@ resource "google_container_cluster" "cluster" {
     gce_persistent_disk_csi_driver_config {
       enabled = var.addons.gce_persistent_disk_csi_driver_config
     }
+    gcp_filestore_csi_driver_config {
+      enabled = var.addons.gcp_filestore_csi_driver_config
+    }
     kalm_config {
       enabled = var.addons.kalm_config
     }
