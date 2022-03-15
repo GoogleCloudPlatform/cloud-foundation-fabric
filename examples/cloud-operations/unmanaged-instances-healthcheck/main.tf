@@ -119,7 +119,7 @@ module "cf-restarter" {
     lifecycle_delete_age = null
   }
   bundle_config = {
-    source_dir  = "function/restarter"
+    source_dir  = "${path.module}/function/restarter"
     output_path = "restarter.zip"
     excludes    = []
   }
@@ -150,7 +150,7 @@ module "cf-healthchecker" {
   bucket_name = module.cf-restarter.bucket_name
 
   bundle_config = {
-    source_dir  = "function/healthchecker"
+    source_dir  = "${path.module}/function/healthchecker"
     output_path = "healthchecker.zip"
     excludes    = []
   }
