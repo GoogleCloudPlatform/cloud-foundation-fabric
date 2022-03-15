@@ -29,19 +29,19 @@ import (
 
 // HealthChecker
 type HealthChecker struct {
-	ctx    context.Context
-	config *Configuration
+	ctx            context.Context
+	config         *Configuration
 	computeService *compute.Service
-    pubsubTopic *pubsub.Topic
+	pubsubTopic    *pubsub.Topic
 }
 
 // NewHealthChecker creates new HealthChecker
 func NewHealthChecker(context context.Context, config *Configuration, computeService *compute.Service, pubsubTopic *pubsub.Topic) *HealthChecker {
 	return &HealthChecker{
-		ctx:    context,
-		config: config,
+		ctx:            context,
+		config:         config,
 		computeService: computeService,
-		pubsubTopic: pubsubTopic,
+		pubsubTopic:    pubsubTopic,
 	}
 }
 
@@ -107,7 +107,7 @@ func (hc *HealthChecker) Start() error {
 
 // sendRestartTask sends a PubSub message with compute instance metadata as message data.
 func (hc *HealthChecker) sendRestartTask(instance compute.Instance) error {
-	
+
 	instanceData, err := json.Marshal(instance)
 	if err != nil {
 		fmt.Printf("MarshalInstanceObject: %v", err)
@@ -115,10 +115,10 @@ func (hc *HealthChecker) sendRestartTask(instance compute.Instance) error {
 	}
 
 	message := &pubsub.Message{
-		Data: instanceData,
+		Data:       instanceData,
 		Attributes: map[string]string{},
 	}
-	
+
 	id, err := hc.pubsubTopic.Publish(hc.ctx, message).Get(hc.ctx)
 	if err != nil {
 		fmt.Printf("PublishPubsubMessage: %v", err)
@@ -169,7 +169,6 @@ func HealthCheck(w http.ResponseWriter, r *http.Request) {
 
 	}
 	pubsubTopic := pubsubClient.Topic(config.pubsub_topic)
-
 
 	computeService, err := compute.NewService(ctx)
 	if err != nil {
