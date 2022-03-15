@@ -43,9 +43,10 @@ locals {
 }
 
 resource "google_compute_shared_vpc_host_project" "shared_vpc_host" {
-  provider = google-beta
-  count    = local.svpc_host_config.enabled ? 1 : 0
-  project  = local.project.project_id
+  provider   = google-beta
+  count      = local.svpc_host_config.enabled ? 1 : 0
+  project    = local.project.project_id
+  depends_on = [google_project_service.project_services]
 }
 
 resource "google_compute_shared_vpc_service_project" "service_projects" {
