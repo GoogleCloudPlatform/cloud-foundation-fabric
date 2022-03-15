@@ -76,8 +76,7 @@ gcloud functions logs read cf-restarter --region=europe-west1
 
 Verify that `nginx` service is running again and uptime shows that instance has been reset
 ```bash
-gcloud compute ssh --zone europe-west1-b  nginx-test -- 'sudo systemctl status ngi
-nx'
+gcloud compute ssh --zone europe-west1-b  nginx-test -- 'sudo systemctl status nginx'
 gcloud compute ssh --zone europe-west1-b  nginx-test -- 'uptime'
 ```
 <!-- BEGIN TFDOC -->
