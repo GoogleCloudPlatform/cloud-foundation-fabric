@@ -94,7 +94,7 @@ func (hc *HealthChecker) Start() error {
 						return
 					}
 
-					fmt.Printf("Instanse restart task has been sent for instance %s\n", instance.Name)
+					fmt.Printf("Instance restart task has been sent for instance %s\n", instance.Name)
 				}
 			}
 			<-guard

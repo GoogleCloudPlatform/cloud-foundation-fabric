@@ -17,6 +17,19 @@ The resources created in this example are shown in the high level diagram below:
 
 <img src="diagram.png" width="640px">
 
+### Healthchecker configuration
+Healthchecker cloud function has the following configuration options:
+
+- `FILTER` to filter list of GCE instances the health check will be targeted to. For instance `(name = nginx-*) AND (labels.env = dev)`
+- `GRACE_PERIOD` time period to prevent instance check of newly created instanced allowing services to start on the instance. 
+- `MAX_PARALLELISM` - max amount of healthchecks performed in parallel, be aware that every check requires an open TCP connection which is limited.
+- `PUBSUB_TOPIC` topic to publish the message with instance metadata. 
+- `RECHECK_INTERVAL` time period for performing recheck, when a check is failed it will be rechecked before marking as unhealthy. 
+- `TCP_PORT` port used for health checking
+- `TIMEOUT` the timeout time of a TCP probe.
+
+**_NOTE:_** In the current example `healthchecker` is used along with the `restarter` cloud function, but restarter can be replaced with another function like [Pubsub2Mailbox](https://github.com/GoogleCloudPlatform/professional-services/tree/main/tools/pubsub2inbox) for email notifications.
+
 
 ## Running the example
 
@@ -56,7 +69,7 @@ Wait a few minutes to allow scheduler to execute another healthcheck and examine
 ```bash
 gcloud functions logs read cf-healthchecker --region=europe-west1
 
-#cf-healthchecker  ywn0bmojtrji  2022-03-15 21:59:21.202  Instanse restart task has been sent for instance nginx-test
+#cf-healthchecker  ywn0bmojtrji  2022-03-15 21:59:21.202  Instance restart task has been sent for instance nginx-test
 #cf-healthchecker  ywn0bmojtrji  2022-03-15 21:59:21.201  Restart message published with id=4211063168407327
 #cf-healthchecker  ywn0bmojtrji  2022-03-15 21:59:20.919  Healthcheck failed for instance nginx-test
 #cf-healthchecker  ywn0bmojtrji  2022-03-15 21:59:10.914  Instance nginx-test is not responding, will recheck.
