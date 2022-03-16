@@ -48,7 +48,7 @@ variable "root_node" {
 }
 
 variable "schedule" {
-  description = "Cron schedule for executing compute instances healthckeck."
+  description = "Cron schedule for executing compute instances healthcheck."
   type        = string
   default     = "*/5 * * * *" # every five minutes
 }

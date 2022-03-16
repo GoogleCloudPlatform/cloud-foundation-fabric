@@ -1,6 +1,6 @@
 # TCP healthcheck and restart for unmanaged GCE instances
 
-This example shows how to leverage [Serverless VPC Access](https://cloud.google.com/vpc/docs/configure-serverless-vpc-access) and Cloud Functions to organize a highly performant TCP healtheck for unmanaged GCE instances. Healthchecker Cloud Function uses [goroutines](https://gobyexample.com/goroutines) to achieve parallel healthchecking for multiple instances and handles up to 1 thousand VMs checked in less than a second execution time.
+This example shows how to leverage [Serverless VPC Access](https://cloud.google.com/vpc/docs/configure-serverless-vpc-access) and Cloud Functions to organize a highly performant TCP healthcheck for unmanaged GCE instances. Healthchecker Cloud Function uses [goroutines](https://gobyexample.com/goroutines) to achieve parallel healthchecking for multiple instances and handles up to 1 thousand VMs checked in less than a second execution time.
 
 **_NOTE:_** [Managed Instance Groups](https://cloud.google.com/compute/docs/instance-groups/autohealing-instances-in-migs) has autohealing functionality out of the box, current example is more applicable for standalone VMs or VMs in an unmanaged instance group.
 
@@ -28,7 +28,7 @@ Healthchecker cloud function has the following configuration options:
 - `TCP_PORT` port used for health checking
 - `TIMEOUT` the timeout time of a TCP probe.
 
-**_NOTE:_** In the current example `healthchecker` is used along with the `restarter` cloud function, but restarter can be replaced with another function like [Pubsub2Mailbox](https://github.com/GoogleCloudPlatform/professional-services/tree/main/tools/pubsub2inbox) for email notifications.
+**_NOTE:_** In the current example `healthchecker` is used along with the `restarter` cloud function, but restarter can be replaced with another function like [Pubsub2Inbox](https://github.com/GoogleCloudPlatform/professional-services/tree/main/tools/pubsub2inbox) for email notifications.
 
 
 ## Running the example
@@ -105,7 +105,7 @@ gcloud compute ssh --zone europe-west1-b  nginx-test -- 'uptime'
 | [project_create](variables.tf#L27) | Create project instead of using an existing one. | <code>bool</code> |  | <code>false</code> |
 | [region](variables.tf#L38) | Compute region used in the example. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
 | [root_node](variables.tf#L44) | The resource name of the parent folder or organization for project creation, in 'folders/folder_id' or 'organizations/org_id' format. | <code>string</code> |  | <code>null</code> |
-| [schedule](variables.tf#L50) | Cron schedule for executing compute instances healthckeck. | <code>string</code> |  | <code>&#34;&#42;&#47;5 &#42; &#42; &#42; &#42;&#34; &#35; every five minutes&#34;</code> |
+| [schedule](variables.tf#L50) | Cron schedule for executing compute instances healthcheck. | <code>string</code> |  | <code>&#34;&#42;&#47;5 &#42; &#42; &#42; &#42;&#34; &#35; every five minutes&#34;</code> |
 | [tcp_port](variables.tf#L62) | TCP port to run healthcheck against. | <code>string</code> |  | <code>&#34;80&#34; &#35;http&#34;</code> |
 | [timeout](variables.tf#L68) | TCP probe timeout. | <code>string</code> |  | <code>&#34;1000ms&#34;</code> |
 

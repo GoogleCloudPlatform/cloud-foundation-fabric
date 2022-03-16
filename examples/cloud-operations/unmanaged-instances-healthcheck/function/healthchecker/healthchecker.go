@@ -63,7 +63,7 @@ func (hc *HealthChecker) Start() error {
 
 	wg := sync.WaitGroup{}
 
-	// Limit max parraller goroutines to prevent exosting socket connections
+	// Limit max parallel goroutines to prevent exhausting socket connections limit
 	guard := make(chan struct{}, hc.config.max_parallelism)
 
 	instances, err := hc.getInstances()
