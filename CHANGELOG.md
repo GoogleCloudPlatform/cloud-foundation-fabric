@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 - fix permadiff in `net-vpc-firewall` module rules
 - new [gke-hub](modules/gke-hub) module
+- new [unmanaged-instances-healthcheck](examples/cloud-operations/unmanaged-instances-healthcheck) example
 - add support for IAM to `data-catalog-policy-tag` module
 - add support for IAM additive to `folder` module, fixes #580
 
