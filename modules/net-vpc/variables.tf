@@ -109,14 +109,14 @@ variable "project_id" {
 }
 
 variable "psa_config" {
-  description = "The Private Service Access configuration."
-  type = map(object({
-    ranges = list(string) # CIDRs in the format x.x.x.x/yy
+  description = "The Private Service Access configuration for Service Networking."
+  type = object({
+    ranges = map(string)
     routes = object({
       export = bool
       import = bool
     })
-  }))
+  })
   default = null
 }
 

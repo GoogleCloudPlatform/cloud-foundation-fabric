@@ -134,57 +134,39 @@ variable "prefix" {
 variable "psa_ranges" {
   description = "IP ranges used for Private Service Access (e.g. CloudSQL)."
   type = object({
-    dev = map(object({
-      ranges = list(string)
+    dev = object({
+      ranges = map(string)
       routes = object({
         export = bool
         import = bool
       })
-    }))
-    prod = map(object({
-      ranges = list(string)
+    })
+    prod = object({
+      ranges = map(string)
       routes = object({
         export = bool
         import = bool
       })
-    }))
+    })
   })
   default = {
     dev = {
-      cloudsql-mysql-ew1 = {
-        ranges = ["10.128.157.0/24"]
-        routes = null
+      ranges = {
+        cloudsql-mysql-ew1     = "10.128.157.0/24"
+        cloudsql-mysql-ew4     = "10.128.189.0/24"
+        cloudsql-sqlserver-ew1 = "10.128.158.0/24"
+        cloudsql-sqlserver-ew4 = "10.128.190.0/24"
       }
-      cloudsql-mysql-ew4 = {
-        ranges = ["10.128.189.0/24"]
-        routes = null
-      }
-      cloudsql-sqlserver-ew1 = {
-        ranges = ["10.128.158.0/24"]
-        routes = null
-      }
-      cloudsql-sqlserver-ew4 = {
-        ranges = ["10.128.190.0/24"]
-        routes = null
-      }
+      routes = null
     }
     prod = {
-      cloudsql-mysql-ew1 = {
-        ranges = ["10.128.221.0/24"]
-        routes = null
+      ranges = {
+        cloudsql-mysql-ew1     = "10.128.221.0/24"
+        cloudsql-mysql-ew4     = "10.128.253.0/24"
+        cloudsql-sqlserver-ew1 = "10.128.222.0/24"
+        cloudsql-sqlserver-ew4 = "10.128.254.0/24"
       }
-      cloudsql-mysql-ew4 = {
-        ranges = ["10.128.253.0/24"]
-        routes = null
-      }
-      cloudsql-sqlserver-ew1 = {
-        ranges = ["10.128.222.0/24"]
-        routes = null
-      }
-      cloudsql-sqlserver-ew4 = {
-        ranges = ["10.128.254.0/24"]
-        routes = null
-      }
+      routes = null
     }
   }
 }
