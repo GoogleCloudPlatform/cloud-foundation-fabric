@@ -137,16 +137,6 @@ variable "psa_ranges" {
     }))
   })
   default = {
-    prod = {
-      cloudsql-mysql = {
-        ranges = ["10.128.94.0/24"]
-        routes = null
-      }
-      cloudsql-sqlserver = {
-        ranges = ["10.128.95.0/24"]
-        routes = null
-      }
-    }
     dev = {
       cloudsql-mysql = {
         ranges = ["10.128.62.0/24"]
@@ -154,6 +144,16 @@ variable "psa_ranges" {
       }
       cloudsql-sqlserver = {
         ranges = ["10.128.63.0/24"]
+        routes = null
+      }
+    }
+    prod = {
+      cloudsql-mysql = {
+        ranges = ["10.128.94.0/24"]
+        routes = null
+      }
+      cloudsql-sqlserver = {
+        ranges = ["10.128.95.0/24"]
         routes = null
       }
     }
