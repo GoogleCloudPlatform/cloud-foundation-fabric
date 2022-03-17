@@ -80,57 +80,62 @@ module "service-account-function" {
 # Cloud Function configuration (& Scheduler)   #
 ################################################
 
-# Create an app engine application (required for Cloud Scheduler)
-resource "google_app_engine_application" "scheduler_app" {
-  project = module.project-monitoring.project_id
-  # "europe-west1" is called "europe-west" and "us-central1" is "us-central" for App Engine, see https://cloud.google.com/appengine/docs/locations
-  location_id = var.region == "europe-west1" || var.region == "us-central1" ? substr(var.region, 0, length(var.region) - 1) : var.region
+module "pubsub" {
+  source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/pubsub?ref=v14.0.0"
+  project_id = module.project-monitoring.project_id
+  name       = "network-dashboard-pubsub"
+  subscriptions = {
+    "network-dashboard-pubsub-default" = null
+  }
+  # the Cloud Scheduler robot service account already has pubsub.topics.publish
+  # at the project level via roles/cloudscheduler.serviceAgent
 }
 
-# Create a storage bucket for the Cloud Function's code
-resource "google_storage_bucket" "bucket" {
-  name     = "net-quotas-bucket"
-  location = "EU"
-  project  = module.project-monitoring.project_id
+resource "google_cloud_scheduler_job" "job" {
+  project   = module.project-monitoring.project_id
+  region    = var.region
+  name      = "network-dashboard-scheduler"
+  schedule  = var.schedule_cron
+  time_zone = "UTC"
 
+  pubsub_target {
+    topic_name = module.pubsub.topic.id
+    data = base64encode("test")
+  }
 }
 
-data "archive_file" "file" {
-  type        = "zip"
-  source_dir  = "cloud-function"
-  output_path = "cloud-function.zip"
-  depends_on  = [google_storage_bucket.bucket]
+# Random ID to re-deploy the Cloud Function  with every Terraform run
+resource "random_pet" "random" {
+  length = 1
 }
 
-resource "google_storage_bucket_object" "archive" {
-  # md5 hash in the bucket object name to redeploy the Cloud Function when the code is modified
-  name       = format("cloud-function#%s", data.archive_file.file.output_md5)
-  bucket     = google_storage_bucket.bucket.name
-  source     = "cloud-function.zip"
-  depends_on = [data.archive_file.file]
-}
+module "cloud-function" {
+  source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/cloud-function?ref=v14.0.0"
+  project_id  = module.project-monitoring.project_id
+  name        = "network-dashboard-cloud-function"
+  bucket_name = "network-dashboard-bucket-${random_pet.random.id}"
+  bucket_config = {
+    location             = var.region
+    lifecycle_delete_age = null
+  }
 
-resource "google_cloudfunctions_function" "function_quotas" {
-  name        = "function-quotas"
-  project     = module.project-monitoring.project_id
-  region      = var.region
-  description = "Function which creates metric to show number, limit and utlizitation."
-  runtime     = "python39"
+  bundle_config = {
+    source_dir  = "cloud-function"
+    output_path = "cloud-function.zip"
+    excludes    = null
+  }
 
-  available_memory_mb   = 512
-  source_archive_bucket = google_storage_bucket.bucket.name
-  source_archive_object = google_storage_bucket_object.archive.name
-  service_account_email = module.service-account-function.email
-
-  timeout      = 180
-  entry_point  = "quotas"
-  trigger_http = true
-
+  function_config = {
+    timeout  = 180
+    entry_point = "main"
+    runtime    = "python39"
+    instances = 1
+    memory = 256
+  }
 
   environment_variables = {
     monitored_projects_list = local.projects
     monitoring_project_id   = module.project-monitoring.project_id
-
     LIMIT_SUBNETS       = local.limit_subnets
     LIMIT_INSTANCES     = local.limit_instances
     LIMIT_INSTANCES_PPG = local.limit_instances_ppg
@@ -140,24 +145,13 @@ resource "google_cloudfunctions_function" "function_quotas" {
     LIMIT_L4_PPG        = local.limit_l4_ppg
     LIMIT_L7_PPG        = local.limit_l7_ppg
   }
-}
 
-resource "google_cloud_scheduler_job" "job" {
-  name        = "scheduler-net-dash"
-  project     = module.project-monitoring.project_id
-  region      = var.region
-  description = "Cloud Scheduler job to trigger the Networking Dashboard Cloud Function"
-  schedule    = var.schedule_cron
+  service_account = module.service-account-function.email
 
-  retry_config {
-    retry_count = 1
-  }
-
-  http_target {
-    http_method = "POST"
-    uri         = google_cloudfunctions_function.function_quotas.https_trigger_url
-    # We could pass useful data in the body later
-    body = base64encode("{\"foo\":\"bar\"}")
+  trigger_config = {
+    event    = "google.pubsub.topic.publish"
+    resource = module.pubsub.topic.id
+    retry    = null
   }
 }
 
@@ -167,7 +161,7 @@ resource "google_cloud_scheduler_job" "job" {
 resource "google_cloudfunctions_function_iam_member" "invoker" {
   project        = module.project-monitoring.project_id
   region         = var.region
-  cloud_function = google_cloudfunctions_function.function_quotas.name
+  cloud_function = module.cloud-function.function_name
 
   role   = "roles/cloudfunctions.invoker"
   member = "allUsers"
