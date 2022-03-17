@@ -22,8 +22,8 @@ import os
 import google.api_core
 import re
 import random
+import yaml
 
-# 
 monitored_projects_list = os.environ.get("monitored_projects_list").split(",")  # list of projects from which function will get quotas information
 monitoring_project_id = os.environ.get("monitoring_project_id")  # project where the metrics and dahsboards will be created
 monitoring_project_link = f"projects/{monitoring_project_id}"
@@ -39,54 +39,49 @@ limit_subnets = os.environ.get("LIMIT_SUBNETS").split(",")
 limit_l4_ppg = os.environ.get("LIMIT_L4_PPG").split(",")
 limit_l7_ppg = os.environ.get("LIMIT_L7_PPG").split(",")
 
-def quotas(request):
+def main(event, context):
   '''
     Cloud Function Entry point, called by the scheduler.
 
       Parameters:
-        request: for now, the Cloud Function is triggered by an HTTP trigger and this request correspond to the HTTP triggering request.
+        event: Not used for now (Pubsub trigger)
+        context: Not used for now (Pubsub trigger)
       Returns:
         'Function executed successfully'
   '''
   global client, interval
   client, interval = create_client()
 
-  instance_metric = create_gce_instances_metrics()
-  get_gce_instances_data(instance_metric)
+  metrics_dict = create_metrics()
 
-  vpc_peering_active_metric, vpc_peering_metric = create_vpc_peering_metrics()
-  get_vpc_peering_data(vpc_peering_active_metric, vpc_peering_metric)
-
-  forwarding_rules_metric = create_l4_forwarding_rules_metric()
-  get_l4_forwarding_rules_data(forwarding_rules_metric)
+  # Per Network metrics
+  get_gce_instances_data(metrics_dict)
+  get_vpc_peering_data(metrics_dict)
+  get_l4_forwarding_rules_data(metrics_dict)
 
   # Existing GCP Monitoring metrics for L4 Forwarding Rules per Network
   l4_forwarding_rules_usage = "compute.googleapis.com/quota/internal_lb_forwarding_rules_per_vpc_network/usage"
   l4_forwarding_rules_limit = "compute.googleapis.com/quota/internal_lb_forwarding_rules_per_vpc_network/limit"
 
-  l4_forwarding_rules_ppg_metric = create_l4_forwarding_rules_ppg_metric()
-  get_pgg_data(l4_forwarding_rules_ppg_metric, l4_forwarding_rules_usage, l4_forwarding_rules_limit, limit_l4_ppg)
+  get_pgg_data(metrics_dict["metrics_per_peering_group"]["l4_forwarding_rules_per_peering_group"], l4_forwarding_rules_usage, l4_forwarding_rules_limit, limit_l4_ppg)
 
   # Existing GCP Monitoring metrics for L7 Forwarding Rules per Network
   l7_forwarding_rules_usage = "compute.googleapis.com/quota/internal_managed_forwarding_rules_per_vpc_network/usage"
   l7_forwarding_rules_limit = "compute.googleapis.com/quota/internal_managed_forwarding_rules_per_vpc_network/limit"
 
-  l7_forwarding_rules_ppg_metric = create_l7_forwarding_rules_ppg_metric()
-  get_pgg_data(l7_forwarding_rules_ppg_metric, l7_forwarding_rules_usage, l7_forwarding_rules_limit, limit_l7_ppg)
+  get_pgg_data(metrics_dict["metrics_per_peering_group"]["l7_forwarding_rules_per_peering_group"], l7_forwarding_rules_usage, l7_forwarding_rules_limit, limit_l7_ppg)
 
   # Existing GCP Monitoring metrics for Subnet Ranges per Network
   subnet_ranges_usage = "compute.googleapis.com/quota/subnet_ranges_per_vpc_network/usage"
   subnet_ranges_limit = "compute.googleapis.com/quota/subnet_ranges_per_vpc_network/limit"
 
-  subnet_ranges_ppg_metric = create_subnet_ranges_ppg_metric()
-  get_pgg_data(subnet_ranges_ppg_metric, subnet_ranges_usage, subnet_ranges_limit, limit_subnets)
+  get_pgg_data(metrics_dict["metrics_per_peering_group"]["subnet_ranges_per_peering_group"], subnet_ranges_usage, subnet_ranges_limit, limit_subnets)
 
   # Existing GCP Monitoring metrics for GCE per Network
   gce_instances_usage = "compute.googleapis.com/quota/instances_per_vpc_network/usage"
   gce_instances_limit = "compute.googleapis.com/quota/instances_per_vpc_network/limit"
 
-  gce_instances_metric = create_gce_instances_ppg_metric()
-  get_pgg_data(gce_instances_metric, gce_instances_usage, gce_instances_limit, limit_instances_ppg)
+  get_pgg_data(metrics_dict["metrics_per_peering_group"]["instance_per_peering_group"], gce_instances_usage, gce_instances_limit, limit_instances_ppg)
 
   return 'Function executed successfully'
 
@@ -114,29 +109,19 @@ def create_client():
   except Exception as e:
     raise Exception("Error occurred creating the client: {}".format(e))
 
-def create_gce_instances_metrics():
-  '''
-    Creates a dictionary with the name and description of 3 metrics for GCE instances per VPC network: usage, limit and utilization.
+def create_metrics():
+  with open("metrics.yaml", 'r') as stream:
+    try:
+        metrics_dict = yaml.safe_load(stream)
 
-      Parameters:
-        None
-      Returns:
-        instance_metric (dictionary of string: string): A dictionary with the metric names and description, that will be used later on to create the metrics in create_metric(metric_name, description)
-  '''
-  instance_metric = {}
-  instance_metric["usage_name"] = "number_of_instances_usage"
-  instance_metric["limit_name"] = "number_of_instances_limit"
-  instance_metric["utilization_name"] = "number_of_instances_utilization"
+        for metric_list in metrics_dict.values():
+          for metric in metric_list.values():
+            for sub_metric in metric.values():
+              create_metric(sub_metric["name"], sub_metric["description"])
 
-  instance_metric["usage_description"] = "Number of instances per VPC network - usage."
-  instance_metric["limit_description"] = "Number of instances per VPC network - effective limit."
-  instance_metric["utilization_description"] = "Number of instances per VPC network - utilization."
-
-  create_metric(instance_metric["usage_name"], instance_metric["usage_description"])
-  create_metric(instance_metric["limit_name"], instance_metric["limit_description"])
-  create_metric(instance_metric["utilization_name"], instance_metric["utilization_description"])
-
-  return instance_metric
+        return metrics_dict
+    except yaml.YAMLError as exc:
+        print(exc)
 
 def create_metric(metric_name, description):
   '''
@@ -165,12 +150,12 @@ def create_metric(metric_name, description):
     descriptor = client.create_metric_descriptor(name=monitoring_project_link, metric_descriptor=descriptor)
     print("Created {}.".format(descriptor.name))
 
-def get_gce_instances_data(instance_metric):
+def get_gce_instances_data(metrics_dict):
   '''
     Gets the data for GCE instances per VPC Network and writes it to the metric defined in instance_metric.
 
       Parameters:
-        instance_metric (dictionary of string: string): metrics name and description for GCE instances per VPC Network
+        metrics_dict (dictionary of dictionary of string: string): metrics names and descriptions
       Returns:
         None
   '''
@@ -189,72 +174,34 @@ def get_gce_instances_data(instance_metric):
 
     for net in network_dict:
       set_usage_limits(net, current_quota_usage_view, current_quota_limit_view, limit_instances)
-      write_data_to_metric(project, net['usage'], instance_metric["usage_name"], net['network name'])
-      write_data_to_metric(project, net['limit'], instance_metric["limit_name"], net['network name'])
-      write_data_to_metric(project, net['usage']/ net['limit'], instance_metric["utilization_name"], net['network name'])
+      write_data_to_metric(project, net['usage'], metrics_dict["metrics_per_network"]["instance_per_network"]["usage"]["name"], net['network name'])
+      write_data_to_metric(project, net['limit'], metrics_dict["metrics_per_network"]["instance_per_network"]["limit"]["name"], net['network name'])
+      write_data_to_metric(project, net['usage']/ net['limit'], metrics_dict["metrics_per_network"]["instance_per_network"]["utilization"]["name"], net['network name'])
 
     print(f"Wrote number of instances to metric for projects/{project}")
 
 
-def create_vpc_peering_metrics():
+def get_vpc_peering_data(metrics_dict):
   '''
-    Creates 2 dictionaries with the name and description of 3 metrics for Active VPC peering and All VPC peerings: usage, limit and utilization.
+    Gets the data for VPC peerings (active or not) and writes it to the metric defined (vpc_peering_active_metric and vpc_peering_metric).
 
       Parameters:
-        None
-      Returns:
-        vpc_peering_active_metric (dictionary of string: string): A dictionary with the metric names and description, that will be used later on to create the metrics in create_metric(metric_name, description)
-        vpc_peering_metric (dictionary of string: string): A dictionary with the metric names and description, that will be used later on to create the metrics in create_metric(metric_name, description)
-  '''  
-  vpc_peering_active_metric = {}
-  vpc_peering_active_metric["usage_name"] = "number_of_active_vpc_peerings_usage"
-  vpc_peering_active_metric["limit_name"] = "number_of_active_vpc_peerings_limit"
-  vpc_peering_active_metric["utilization_name"] = "number_of_active_vpc_peerings_utilization"
-
-  vpc_peering_active_metric["usage_description"] = "Number of active VPC Peerings per VPC - usage."
-  vpc_peering_active_metric["limit_description"] = "Number of active VPC Peerings per VPC - effective limit."
-  vpc_peering_active_metric["utilization_description"] = "Number of active VPC Peerings per VPC - utilization."
-
-  vpc_peering_metric = {}
-  vpc_peering_metric["usage_name"] = "number_of_vpc_peerings_usage"
-  vpc_peering_metric["limit_name"] = "number_of_vpc_peerings_limit"
-  vpc_peering_metric["utilization_name"] = "number_of_vpc_peerings_utilization"
-
-  vpc_peering_metric["usage_description"] = "Number of VPC Peerings per VPC - usage."
-  vpc_peering_metric["limit_description"] = "Number of VPC Peerings per VPC - effective limit."
-  vpc_peering_metric["utilization_description"] = "Number of VPC Peerings per VPC - utilization."
-
-  create_metric(vpc_peering_active_metric["usage_name"], vpc_peering_active_metric["usage_description"])
-  create_metric(vpc_peering_active_metric["limit_name"], vpc_peering_active_metric["limit_description"])
-  create_metric(vpc_peering_active_metric["utilization_name"], vpc_peering_active_metric["utilization_description"])
-
-  create_metric(vpc_peering_metric["usage_name"], vpc_peering_metric["usage_description"])
-  create_metric(vpc_peering_metric["limit_name"], vpc_peering_metric["limit_description"])
-  create_metric(vpc_peering_metric["utilization_name"], vpc_peering_metric["utilization_description"])
-
-  return vpc_peering_active_metric, vpc_peering_metric
-
-def get_vpc_peering_data(vpc_peering_active_metric, vpc_peering_metric):
-  '''
-    Gets the data for VPC peerings (active or not) and writes it to the metric defined in vpc_peering_active_metric and vpc_peering_metric.
-
-      Parameters:
-        vpc_peering_active_metric (dictionary of string: string): 
+        metrics_dict (dictionary of dictionary of string: string): metrics names and descriptions
       Returns:
         None
   '''
   for project in monitored_projects_list:
     active_vpc_peerings, vpc_peerings = gather_vpc_peerings_data(project, limit_vpc_peer) 
     for peering in active_vpc_peerings:
-      write_data_to_metric(project, peering['active_peerings'], vpc_peering_active_metric["usage_name"], peering['network_name'])
-      write_data_to_metric(project, peering['network_limit'], vpc_peering_active_metric["limit_name"], peering['network_name'])
-      write_data_to_metric(project, peering['active_peerings'] / peering['network_limit'], vpc_peering_active_metric["utilization_name"], peering['network_name'])
+      write_data_to_metric(project, peering['active_peerings'], metrics_dict["metrics_per_network"]["vpc_peering_active_per_network"]["usage"]["name"], peering['network_name'])
+      write_data_to_metric(project, peering['network_limit'], metrics_dict["metrics_per_network"]["vpc_peering_active_per_network"]["limit"]["name"], peering['network_name'])
+      write_data_to_metric(project, peering['active_peerings'] / peering['network_limit'], metrics_dict["metrics_per_network"]["vpc_peering_active_per_network"]["utilization"]["name"], peering['network_name'])
     print("Wrote number of active VPC peerings to custom metric for project:", project)
 
     for peering in vpc_peerings:
-      write_data_to_metric(project, peering['peerings'], vpc_peering_metric["usage_name"], peering['network_name'])
-      write_data_to_metric(project, peering['network_limit'], vpc_peering_metric["limit_name"], peering['network_name'])
-      write_data_to_metric(project, peering['peerings'] / peering['network_limit'], vpc_peering_metric["utilization_name"], peering['network_name'])
+      write_data_to_metric(project, peering['peerings'], metrics_dict["metrics_per_network"]["vpc_peering_per_network"]["usage"]["name"], peering['network_name'])
+      write_data_to_metric(project, peering['network_limit'], metrics_dict["metrics_per_network"]["vpc_peering_per_network"]["limit"]["name"], peering['network_name'])
+      write_data_to_metric(project, peering['peerings'] / peering['network_limit'], metrics_dict["metrics_per_network"]["vpc_peering_per_network"]["utilization"]["name"], peering['network_name'])
     print("Wrote number of VPC peerings to custom metric for project:", project)
 
 def gather_vpc_peerings_data(project_id, limit_list):
@@ -311,36 +258,12 @@ def get_limit(network_name, limit_list):
     else:
       return 0
 
-def create_l4_forwarding_rules_metric():
-  '''
-    Creates a dictionary with the name and description of 3 metrics for L4 Internal Forwarding Rules per VPC network: usage, limit and utilization.
-
-      Parameters:
-        None
-      Returns:
-        forwarding_rules_metric (dictionary of string: string): A dictionary with the metric names and description, that will be used later on to create the metrics in create_metric(metric_name, description)
-  '''
-  forwarding_rules_metric = {}
-  forwarding_rules_metric["usage_name"] = "internal_forwarding_rules_l4_usage"
-  forwarding_rules_metric["limit_name"] = "internal_forwarding_rules_l4_limit"
-  forwarding_rules_metric["utilization_name"] = "internal_forwarding_rules_l4_utilization"
-
-  forwarding_rules_metric["usage_description"] = "Number of Internal Forwarding Rules for Internal L4 Load Balancers - usage."
-  forwarding_rules_metric["limit_description"] = "Number of Internal Forwarding Rules for Internal L4 Load Balancers - effective limit."
-  forwarding_rules_metric["utilization_description"] = "Number of Internal Forwarding Rules for Internal L4 Load Balancers - utilization."
-
-  create_metric(forwarding_rules_metric["usage_name"], forwarding_rules_metric["usage_description"])
-  create_metric(forwarding_rules_metric["limit_name"], forwarding_rules_metric["limit_description"])
-  create_metric(forwarding_rules_metric["utilization_name"], forwarding_rules_metric["utilization_description"])
-
-  return forwarding_rules_metric
-
-def get_l4_forwarding_rules_data(forwarding_rules_metric):
+def get_l4_forwarding_rules_data(metrics_dict):
   '''
     Gets the data for L4 Internal Forwarding Rules per VPC Network and writes it to the metric defined in forwarding_rules_metric.
 
       Parameters:
-        forwarding_rules_metric (dictionary of string: string): metrics name and description for L4 Internal Forwarding Rules per VPC Network.
+        metrics_dict (dictionary of dictionary of string: string): metrics names and descriptions
       Returns:
         None
   '''
@@ -359,109 +282,11 @@ def get_l4_forwarding_rules_data(forwarding_rules_metric):
 
     for net in network_dict:
       set_usage_limits(net, current_quota_usage_view, current_quota_limit_view, limit_l4)
-      write_data_to_metric(project, net['usage'], forwarding_rules_metric["usage_name"], net['network name'])
-      write_data_to_metric(project, net['limit'], forwarding_rules_metric["limit_name"], net['network name'])
-      write_data_to_metric(project, net['usage']/ net['limit'], forwarding_rules_metric["utilization_name"], net['network name'])
+      write_data_to_metric(project, net['usage'], metrics_dict["metrics_per_network"]["l4_forwarding_rules_per_network"]["usage"]["name"], net['network name'])
+      write_data_to_metric(project, net['limit'], metrics_dict["metrics_per_network"]["l4_forwarding_rules_per_network"]["limit"]["name"], net['network name'])
+      write_data_to_metric(project, net['usage']/ net['limit'], metrics_dict["metrics_per_network"]["l4_forwarding_rules_per_network"]["utilization"]["name"], net['network name'])
 
     print(f"Wrote number of L4 forwarding rules to metric for projects/{project}")
-
-def create_l4_forwarding_rules_ppg_metric():
-  '''
-    Creates a dictionary with the name and description of 3 metrics for L4 Internal Forwarding Rules per VPC Peering Group: usage, limit and utilization.
-
-      Parameters:
-        None
-      Returns:
-        forwarding_rules_metric (dictionary of string: string): A dictionary with the metric names and description, that will be used later on to create the metrics in create_metric(metric_name, description)
-  '''
-  forwarding_rules_metric = {}
-  forwarding_rules_metric["usage_name"] = "internal_forwarding_rules_l4_ppg_usage"
-  forwarding_rules_metric["limit_name"] = "internal_forwarding_rules_l4_ppg_limit"
-  forwarding_rules_metric["utilization_name"] = "internal_forwarding_rules_l4_ppg_utilization"
-
-  forwarding_rules_metric["usage_description"] = "Number of Internal Forwarding Rules for Internal l4 Load Balancers per peering group - usage."
-  forwarding_rules_metric["limit_description"] = "Number of Internal Forwarding Rules for Internal l4 Load Balancers per peering group - effective limit."
-  forwarding_rules_metric["utilization_description"] = "Number of Internal Forwarding Rules for Internal l4 Load Balancers per peering group - utilization."
-
-  create_metric(forwarding_rules_metric["usage_name"], forwarding_rules_metric["usage_description"])
-  create_metric(forwarding_rules_metric["limit_name"], forwarding_rules_metric["limit_description"])
-  create_metric(forwarding_rules_metric["utilization_name"], forwarding_rules_metric["utilization_description"])
-
-  return forwarding_rules_metric
-
-def create_l7_forwarding_rules_ppg_metric():
-  '''
-    Creates a dictionary with the name and description of 3 metrics for L7 Internal Forwarding Rules per VPC Peering Group: usage, limit and utilization.
-
-      Parameters:
-        None
-      Returns:
-        forwarding_rules_metric (dictionary of string: string): A dictionary with the metric names and description, that will be used later on to create the metrics in create_metric(metric_name, description)
-  '''
-  forwarding_rules_metric = {}
-  forwarding_rules_metric["usage_name"] = "internal_forwarding_rules_l7_ppg_usage"
-  forwarding_rules_metric["limit_name"] = "internal_forwarding_rules_l7_ppg_limit"
-  forwarding_rules_metric["utilization_name"] = "internal_forwarding_rules_l7_ppg_utilization"
-
-  forwarding_rules_metric["usage_description"] = "Number of Internal Forwarding Rules for Internal l7 Load Balancers per peering group - usage."
-  forwarding_rules_metric["limit_description"] = "Number of Internal Forwarding Rules for Internal l7 Load Balancers per peering group - effective limit."
-  forwarding_rules_metric["utilization_description"] = "Number of Internal Forwarding Rules for Internal l7 Load Balancers per peering group - utilization."
-
-  create_metric(forwarding_rules_metric["usage_name"], forwarding_rules_metric["usage_description"])
-  create_metric(forwarding_rules_metric["limit_name"], forwarding_rules_metric["limit_description"])
-  create_metric(forwarding_rules_metric["utilization_name"], forwarding_rules_metric["utilization_description"])
-
-  return forwarding_rules_metric
-
-def create_subnet_ranges_ppg_metric():
-  '''
-    Creates a dictionary with the name and description of 3 metrics for Subnet Ranges per VPC Peering Group: usage, limit and utilization.
-
-      Parameters:
-        None
-      Returns:
-        metric (dictionary of string: string): A dictionary with the metric names and description, that will be used later on to create the metrics in create_metric(metric_name, description)
-  '''
-  metric = {}
-
-  metric["usage_name"] = "number_of_subnet_IP_ranges_usage"
-  metric["limit_name"] = "number_of_subnet_IP_ranges_effective_limit"
-  metric["utilization_name"] = "number_of_subnet_IP_ranges_utilization"
-
-  metric["usage_description"] = "Number of Subnet Ranges per peering group - usage."
-  metric["limit_description"] = "Number of Subnet Ranges per peering group - effective limit."
-  metric["utilization_description"] = "Number of Subnet Ranges per peering group - utilization."
-
-  create_metric(metric["usage_name"], metric["usage_description"])
-  create_metric(metric["limit_name"], metric["limit_description"])
-  create_metric(metric["utilization_name"], metric["utilization_description"])
-
-  return metric
-
-def create_gce_instances_ppg_metric():
-  '''
-    Creates a dictionary with the name and description of 3 metrics for GCE Instances per VPC Peering Group: usage, limit and utilization.
-
-      Parameters:
-        None
-      Returns:
-        metric (dictionary of string: string): A dictionary with the metric names and description, that will be used later on to create the metrics in create_metric(metric_name, description)
-  '''
-  metric = {}
-
-  metric["usage_name"] = "number_of_instances_ppg_usage"
-  metric["limit_name"] = "number_of_instances_ppg_limit"
-  metric["utilization_name"] = "number_of_instances_ppg_utilization"
-
-  metric["usage_description"] = "Number of instances per peering group - usage."
-  metric["limit_description"] = "Number of instances per peering group - effective limit."
-  metric["utilization_description"] = "Number of instances per peering group - utilization."
-
-  create_metric(metric["usage_name"], metric["usage_description"])
-  create_metric(metric["limit_name"], metric["limit_description"])
-  create_metric(metric["utilization_name"], metric["utilization_description"])
-
-  return metric
 
 def get_pgg_data(metric_dict, usage_metric, limit_metric, limit_ppg):
   '''
@@ -506,8 +331,8 @@ def get_pgg_data(metric_dict, usage_metric, limit_metric, limit_ppg):
         peered_network["usage"] = usage
         peered_network["limit"] = limit
 
-      count_effective_limit(project, network_dict, metric_dict["usage_name"], metric_dict["limit_name"], metric_dict["utilization_name"], limit_ppg)
-      print(f"Wrote {metric_dict['usage_name']} to metric for peering group {network_dict['network_name']} in {project}")
+      count_effective_limit(project, network_dict, metric_dict["usage"]["name"], metric_dict["limit"]["name"], metric_dict["utilization"]["name"], limit_ppg)
+      print(f"Wrote {metric_dict['usage']['name']} to metric for peering group {network_dict['network_name']} in {project}")
 
 def count_effective_limit(project_id, network_dict, usage_metric_name, limit_metric_name, utilization_metric_name, limit_ppg):
   '''

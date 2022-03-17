@@ -1,0 +1,93 @@
+---
+metrics_per_network:
+  instance_per_network:
+    usage:
+      name: number_of_instances_usage
+      description: Number of instances per VPC network - usage.
+    limit:
+      name: number_of_instances_limit
+      description: Number of instances per VPC network - limit.
+    utilization:
+      name: number_of_instances_utilization
+      description: Number of instances per VPC network - utilization.
+  vpc_peering_active_per_network:
+    usage:
+      name: number_of_active_vpc_peerings_usage
+      description: Number of active VPC Peerings per VPC - usage.
+    limit:
+      name: number_of_active_vpc_peerings_limit
+      description: Number of active VPC Peerings per VPC - limit.
+    utilization:
+      name: number_of_active_vpc_peerings_utilization
+      description: Number of active VPC Peerings per VPC - utilization.
+  vpc_peering_per_network:
+    usage:
+      name: number_of_vpc_peerings_usage
+      description: Number of VPC Peerings per VPC - usage.
+    limit:
+      name: number_of_vpc_peerings_limit
+      description: Number of VPC Peerings per VPC - limit.
+    utilization:
+      name: number_of_vpc_peerings_utilization
+      description: Number of VPC Peerings per VPC - utilization.
+  l4_forwarding_rules_per_network:
+    usage:
+      name: internal_forwarding_rules_l4_usage
+      description: Number of Internal Forwarding Rules for Internal L4 Load Balancers - usage.
+    limit:
+      name: internal_forwarding_rules_l4_limit
+      description: Number of Internal Forwarding Rules for Internal L4 Load Balancers - limit.
+    utilization:
+      name: internal_forwarding_rules_l4_utilization
+      description: Number of Internal Forwarding Rules for Internal L4 Load Balancers - utilization.
+  l7_forwarding_rules_per_network:
+    usage:
+      name: internal_forwarding_rules_l7_usage
+      description: Number of Internal Forwarding Rules for Internal L7 Load Balancers per network - usage.
+    limit:
+      name: internal_forwarding_rules_l7_limit
+      description: Number of Internal Forwarding Rules for Internal L7 Load Balancers per network - effective limit.
+    utilization:
+      name: internal_forwarding_rules_l7_utilization
+      description: Number of Internal Forwarding Rules for Internal L7 Load Balancers per Vnetwork - utilization.
+metrics_per_peering_group:
+  l4_forwarding_rules_per_peering_group:
+    usage:
+      name: internal_forwarding_rules_l4_ppg_usage
+      description: Number of Internal Forwarding Rules for Internal L4 Load Balancers per VPC peering group - usage.
+    limit:
+      name: internal_forwarding_rules_l4_ppg_limit
+      description: Number of Internal Forwarding Rules for Internal L4 Load Balancers per VPC peering group - effective limit.
+    utilization:
+      name: internal_forwarding_rules_l4_ppg_utilization
+      description: Number of Internal Forwarding Rules for Internal L4 Load Balancers per VPC peering group - utilization.
+  l7_forwarding_rules_per_peering_group:
+    usage:
+      name: internal_forwarding_rules_l7_ppg_usage
+      description: Number of Internal Forwarding Rules for Internal L7 Load Balancers per VPC peering group - usage.
+    limit:
+      name: internal_forwarding_rules_l7_ppg_limit
+      description: Number of Internal Forwarding Rules for Internal L7 Load Balancers per VPC peering group - effective limit.
+    utilization:
+      name: internal_forwarding_rules_l7_ppg_utilization
+      description: Number of Internal Forwarding Rules for Internal L7 Load Balancers per VPC peering group - utilization.
+  subnet_ranges_per_peering_group:
+    usage:
+      name: number_of_subnet_IP_ranges_usage
+      description: Number of Subnet Ranges per peering group - usage.
+    limit:
+      name: number_of_subnet_IP_ranges_limit
+      description: Number of Subnet Ranges per peering group - effective limit.
+    utilization:
+      name: number_of_subnet_IP_ranges_utilization
+      description: Number of Subnet Ranges per peering group - utilization.
+  instance_per_peering_group:
+    usage:
+      name: number_of_instances_ppg_usage
+      description: Number of instances per peering group - usage.
+    limit:
+      name: number_of_instances_ppg_limit
+      description: Number of instances per peering group - limit.
+    utilization:
+      name: number_of_instances_ppg_utilization
+      description: Number of instances per peering group - utilization.
