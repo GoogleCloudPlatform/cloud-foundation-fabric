@@ -18,7 +18,10 @@ module "test" {
   source                      = "../../../../modules/folder"
   parent                      = "organizations/12345678"
   name                        = "folder-a"
+  group_iam                   = var.group_iam
   iam                         = var.iam
+  iam_additive                = var.iam_additive
+  iam_additive_members        = var.iam_additive_members
   policy_boolean              = var.policy_boolean
   policy_list                 = var.policy_list
   firewall_policies           = var.firewall_policies

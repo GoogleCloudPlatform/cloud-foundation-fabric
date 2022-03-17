@@ -35,16 +35,12 @@ variable "iam" {
 }
 
 variable "log_configs" {
-  type    = map(map(string))
+  type    = any
   default = null
 }
 
 variable "log_config_defaults" {
-  type = object({
-    aggregation_interval = string
-    flow_sampling        = number
-    metadata             = string
-  })
+  type = any
   default = {
     aggregation_interval = "INTERVAL_5_SEC"
     flow_sampling        = 0.5
@@ -61,19 +57,14 @@ variable "peering_config" {
   default = null
 }
 
-variable "psa_ranges" {
-  type    = map(string)
-  default = null
+variable "psa_config" {
+  description = "The Private Service Access configuration."
+  type        = any
+  default     = null
 }
 
 variable "routes" {
-  type = map(object({
-    dest_range    = string
-    priority      = number
-    tags          = list(string)
-    next_hop_type = string # gateway, instance, ip, vpn_tunnel, ilb
-    next_hop      = string
-  }))
+  type    = any
   default = null
 }
 
@@ -97,14 +88,8 @@ variable "shared_vpc_service_projects" {
 
 variable "subnets" {
   description = "The list of subnets being created."
-  type = list(object({
-    name               = string
-    ip_cidr_range      = string
-    name               = string
-    region             = string
-    secondary_ip_range = map(string)
-  }))
-  default = []
+  type        = any
+  default     = []
 }
 
 variable "subnet_descriptions" {

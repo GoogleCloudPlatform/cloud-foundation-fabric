@@ -25,7 +25,10 @@ module "vpc" {
   source     = "./modules/net-vpc"
   project_id = module.project.project_id
   name       = "my-network"
-  psa_ranges = {cloudsql-ew1-0="10.60.0.0/16"}
+  psa_config = {
+    ranges = { cloud-sql = "10.60.0.0/16" }
+    routes = null
+  }
 }
 
 module "db" {
@@ -37,7 +40,7 @@ module "db" {
   database_version = "POSTGRES_13"
   tier             = "db-g1-small"
 }
-# tftest modules=3 resources=6
+# tftest modules=3 resources=9
 ```
 
 ## Cross-regional read replica
