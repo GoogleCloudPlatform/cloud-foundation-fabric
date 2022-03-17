@@ -24,20 +24,22 @@ import re
 import random
 import yaml
 
-monitored_projects_list = os.environ.get("monitored_projects_list").split(",")  # list of projects from which function will get quotas information
-monitoring_project_id = os.environ.get("monitoring_project_id")  # project where the metrics and dahsboards will be created
-monitoring_project_link = f"projects/{monitoring_project_id}"
+# list of projects from which function will get quotas information
+MONITORED_PROJECTS_LIST = os.environ.get("MONITORED_PROJECTS_LIST").split(",")
+# project where the metrics and dahsboards will be created
+MONITORING_PROJECT_ID = os.environ.get("MONITORING_PROJECT_ID")  
+MONITORING_PROJECT_LINK = f"projects/{MONITORING_PROJECT_ID}"
 service = discovery.build('compute', 'v1')
 
 # DEFAULT LIMITS:
-limit_vpc_peer = os.environ.get("LIMIT_VPC_PEER").split(",")
-limit_l4 = os.environ.get("LIMIT_L4").split(",")
-limit_l7 = os.environ.get("LIMIT_L7").split(",")
-limit_instances = os.environ.get("LIMIT_INSTANCES").split(",")
-limit_instances_ppg = os.environ.get("LIMIT_INSTANCES_PPG").split(",")
-limit_subnets = os.environ.get("LIMIT_SUBNETS").split(",")
-limit_l4_ppg = os.environ.get("LIMIT_L4_PPG").split(",")
-limit_l7_ppg = os.environ.get("LIMIT_L7_PPG").split(",")
+LIMIT_VPC_PEER = os.environ.get("LIMIT_VPC_PEER").split(",")
+LIMIT_L4 = os.environ.get("LIMIT_L4").split(",")
+LIMIT_L7 = os.environ.get("LIMIT_L7").split(",")
+LIMIT_INSTANCES = os.environ.get("LIMIT_INSTANCES").split(",")
+LIMIT_INSTANCES_PPG = os.environ.get("LIMIT_INSTANCES_PPG").split(",")
+LIMIT_SUBNETS = os.environ.get("LIMIT_SUBNETS").split(",")
+LIMIT_L4_PPG = os.environ.get("LIMIT_L4_PPG").split(",")
+LIMIT_L7_PPG = os.environ.get("LIMIT_L7_PPG").split(",")
 
 def main(event, context):
   '''
@@ -61,25 +63,25 @@ def main(event, context):
   l4_forwarding_rules_usage = "compute.googleapis.com/quota/internal_lb_forwarding_rules_per_vpc_network/usage"
   l4_forwarding_rules_limit = "compute.googleapis.com/quota/internal_lb_forwarding_rules_per_vpc_network/limit"
 
-  get_pgg_data(metrics_dict["metrics_per_peering_group"]["l4_forwarding_rules_per_peering_group"], l4_forwarding_rules_usage, l4_forwarding_rules_limit, limit_l4_ppg)
+  get_pgg_data(metrics_dict["metrics_per_peering_group"]["l4_forwarding_rules_per_peering_group"], l4_forwarding_rules_usage, l4_forwarding_rules_limit, LIMIT_L4_PPG)
 
   # Existing GCP Monitoring metrics for L7 Forwarding Rules per Network
   l7_forwarding_rules_usage = "compute.googleapis.com/quota/internal_managed_forwarding_rules_per_vpc_network/usage"
   l7_forwarding_rules_limit = "compute.googleapis.com/quota/internal_managed_forwarding_rules_per_vpc_network/limit"
 
-  get_pgg_data(metrics_dict["metrics_per_peering_group"]["l7_forwarding_rules_per_peering_group"], l7_forwarding_rules_usage, l7_forwarding_rules_limit, limit_l7_ppg)
+  get_pgg_data(metrics_dict["metrics_per_peering_group"]["l7_forwarding_rules_per_peering_group"], l7_forwarding_rules_usage, l7_forwarding_rules_limit, LIMIT_L7_PPG)
 
   # Existing GCP Monitoring metrics for Subnet Ranges per Network
   subnet_ranges_usage = "compute.googleapis.com/quota/subnet_ranges_per_vpc_network/usage"
   subnet_ranges_limit = "compute.googleapis.com/quota/subnet_ranges_per_vpc_network/limit"
 
-  get_pgg_data(metrics_dict["metrics_per_peering_group"]["subnet_ranges_per_peering_group"], subnet_ranges_usage, subnet_ranges_limit, limit_subnets)
+  get_pgg_data(metrics_dict["metrics_per_peering_group"]["subnet_ranges_per_peering_group"], subnet_ranges_usage, subnet_ranges_limit, LIMIT_SUBNETS)
 
   # Existing GCP Monitoring metrics for GCE per Network
   gce_instances_usage = "compute.googleapis.com/quota/instances_per_vpc_network/usage"
   gce_instances_limit = "compute.googleapis.com/quota/instances_per_vpc_network/limit"
 
-  get_pgg_data(metrics_dict["metrics_per_peering_group"]["instance_per_peering_group"], gce_instances_usage, gce_instances_limit, limit_instances_ppg)
+  get_pgg_data(metrics_dict["metrics_per_peering_group"]["instance_per_peering_group"], gce_instances_usage, gce_instances_limit, LIMIT_INSTANCES_PPG)
 
   return 'Function executed successfully'
 
@@ -136,7 +138,7 @@ def create_metric(metric_name, description):
 
   metric_link = f"custom.googleapis.com/{metric_name}"
   types = []
-  for desc in client.list_metric_descriptors(name=monitoring_project_link):
+  for desc in client.list_metric_descriptors(name=MONITORING_PROJECT_LINK):
     types.append(desc.type)
 
   if metric_link not in types: # If the metric doesn't exist yet, then we create it
@@ -145,7 +147,7 @@ def create_metric(metric_name, description):
     descriptor.metric_kind = ga_metric.MetricDescriptor.MetricKind.GAUGE
     descriptor.value_type = ga_metric.MetricDescriptor.ValueType.DOUBLE
     descriptor.description = description
-    descriptor = client.create_metric_descriptor(name=monitoring_project_link, metric_descriptor=descriptor)
+    descriptor = client.create_metric_descriptor(name=MONITORING_PROJECT_LINK, metric_descriptor=descriptor)
     print("Created {}.".format(descriptor.name))
 
 def get_gce_instances_data(metrics_dict):
@@ -161,7 +163,7 @@ def get_gce_instances_data(metrics_dict):
   metric_instances_usage = "compute.googleapis.com/quota/instances_per_vpc_network/usage"
   metric_instances_limit = "compute.googleapis.com/quota/instances_per_vpc_network/limit"
 
-  for project in monitored_projects_list:
+  for project in MONITORED_PROJECTS_LIST:
     network_dict = get_networks(project)
 
     current_quota_usage = get_quota_current_usage(f"projects/{project}", metric_instances_usage)
@@ -171,7 +173,7 @@ def get_gce_instances_data(metrics_dict):
     current_quota_limit_view = customize_quota_view(current_quota_limit)
 
     for net in network_dict:
-      set_usage_limits(net, current_quota_usage_view, current_quota_limit_view, limit_instances)
+      set_usage_limits(net, current_quota_usage_view, current_quota_limit_view, LIMIT_INSTANCES)
       write_data_to_metric(project, net['usage'], metrics_dict["metrics_per_network"]["instance_per_network"]["usage"]["name"], net['network name'])
       write_data_to_metric(project, net['limit'], metrics_dict["metrics_per_network"]["instance_per_network"]["limit"]["name"], net['network name'])
       write_data_to_metric(project, net['usage']/ net['limit'], metrics_dict["metrics_per_network"]["instance_per_network"]["utilization"]["name"], net['network name'])
@@ -188,8 +190,8 @@ def get_vpc_peering_data(metrics_dict):
       Returns:
         None
   '''
-  for project in monitored_projects_list:
-    active_vpc_peerings, vpc_peerings = gather_vpc_peerings_data(project, limit_vpc_peer) 
+  for project in MONITORED_PROJECTS_LIST:
+    active_vpc_peerings, vpc_peerings = gather_vpc_peerings_data(project, LIMIT_VPC_PEER) 
     for peering in active_vpc_peerings:
       write_data_to_metric(project, peering['active_peerings'], metrics_dict["metrics_per_network"]["vpc_peering_active_per_network"]["usage"]["name"], peering['network_name'])
       write_data_to_metric(project, peering['network_limit'], metrics_dict["metrics_per_network"]["vpc_peering_active_per_network"]["limit"]["name"], peering['network_name'])
@@ -269,7 +271,7 @@ def get_l4_forwarding_rules_data(metrics_dict):
   l4_forwarding_rules_usage = "compute.googleapis.com/quota/internal_lb_forwarding_rules_per_vpc_network/usage"
   l4_forwarding_rules_limit = "compute.googleapis.com/quota/internal_lb_forwarding_rules_per_vpc_network/limit"
 
-  for project in monitored_projects_list:
+  for project in MONITORED_PROJECTS_LIST:
     network_dict = get_networks(project)
 
     current_quota_usage = get_quota_current_usage(f"projects/{project}", l4_forwarding_rules_usage)
@@ -279,7 +281,7 @@ def get_l4_forwarding_rules_data(metrics_dict):
     current_quota_limit_view = customize_quota_view(current_quota_limit)
 
     for net in network_dict:
-      set_usage_limits(net, current_quota_usage_view, current_quota_limit_view, limit_l4)
+      set_usage_limits(net, current_quota_usage_view, current_quota_limit_view, LIMIT_L4)
       write_data_to_metric(project, net['usage'], metrics_dict["metrics_per_network"]["l4_forwarding_rules_per_network"]["usage"]["name"], net['network name'])
       write_data_to_metric(project, net['limit'], metrics_dict["metrics_per_network"]["l4_forwarding_rules_per_network"]["limit"]["name"], net['network name'])
       write_data_to_metric(project, net['usage']/ net['limit'], metrics_dict["metrics_per_network"]["l4_forwarding_rules_per_network"]["utilization"]["name"], net['network name'])
@@ -291,14 +293,14 @@ def get_pgg_data(metric_dict, usage_metric, limit_metric, limit_ppg):
     This function gets the usage, limit and utilization per VPC peering group for a specific metric for all projects to be monitored.
 
       Parameters:
-        metric_dict (dictionary of string: string): A dictionary with the metric names and description, that will be used later on to create the metrics in create_metric(metric_name, description)
+        metric_dict (dictionary of string: string): A dictionary with the metric names and description, that will be used to populate the metrics
         usage_metric (string): Name of the existing GCP metric for usage per VPC network.
         limit_metric (string): Name of the existing GCP metric for limit per VPC network.
         limit_ppg (list of string): List containing the limit per peering group (either VPC specific or default limit).
       Returns:
         None
   '''
-  for project in monitored_projects_list:
+  for project in MONITORED_PROJECTS_LIST:
     network_dict_list = gather_peering_data(project)
     # Network dict list is a list of dictionary (one for each network)
     # For each network, this dictionary contains:
@@ -617,4 +619,4 @@ def write_data_to_metric(monitored_project_id, value, metric_name, network_name)
   point = monitoring_v3.Point({"interval": interval, "value": {"double_value": value}})
   series.points = [point]
 
-  client.create_time_series(name=monitoring_project_link, time_series=[series])
+  client.create_time_series(name=MONITORING_PROJECT_LINK, time_series=[series])

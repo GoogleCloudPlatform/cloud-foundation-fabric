@@ -134,8 +134,8 @@ module "cloud-function" {
   }
 
   environment_variables = {
-    monitored_projects_list = local.projects
-    monitoring_project_id   = module.project-monitoring.project_id
+    MONITORED_PROJECTS_LIST = local.projects
+    MONITORING_PROJECT_ID   = module.project-monitoring.project_id
     LIMIT_SUBNETS           = local.limit_subnets
     LIMIT_INSTANCES         = local.limit_instances
     LIMIT_INSTANCES_PPG     = local.limit_instances_ppg
