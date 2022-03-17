@@ -57,3 +57,8 @@ This [example](./onprem-sa-key-management) shows how to manage IAM Service Accou
 <a href="./vm-migration" title="Packer image builder"><img src="./vm-migration/host-target-projects/diagram.png" align="left" width="280px"></a> This set of [examples](./vm-migration) shows how to deploy Migrate for Compute Engine (v5) on top of existing Cloud Foundations on different scenarios. An example on how to deploy the M4CE connector on VMWare ESXi is also part of the examples.
 
 <br clear="left">
+
+## TCP healthcheck for unmanaged GCE instances
+<a href="./unmanaged-instances-healthcheck" title="Unmanaged GCE Instance healthchecker"><img src="./unmanaged-instances-healthcheck/diagram.png" align="left" width="280px"></a> This [example](./unmanaged-instances-healthcheck) shows how to leverage [Serverless VPC Access](https://cloud.google.com/vpc/docs/configure-serverless-vpc-access) and Cloud Functions to organize a highly performant TCP healtheck for unmanaged GCE instances.
+
+<br clear="left">

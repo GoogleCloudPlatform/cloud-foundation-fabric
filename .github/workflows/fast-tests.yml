@@ -19,10 +19,10 @@ on:
       - fast-dev
       - fast-dev-gke
       - master
-    paths:
-      - 'modules/**'
-      - 'fast/stages/**'
-      - 'tests/fast/**'
+    # paths:
+    #   - 'modules/**'
+    #   - 'fast/stages/**'
+    #   - 'tests/fast/**'
     tags:
       - ci
       - test
@@ -53,4 +53,3 @@ jobs:
           mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
           pip install -r tests/requirements.txt
           pytest -vv tests/fast
-
