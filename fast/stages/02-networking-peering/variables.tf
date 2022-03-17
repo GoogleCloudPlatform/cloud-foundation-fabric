@@ -136,22 +136,23 @@ variable "psa_ranges" {
       })
     })
   })
-  default = {
-    dev = {
-      ranges = {
-        cloudsql-mysql     = "10.128.62.0/24"
-        cloudsql-sqlserver = "10.128.63.0/24"
-      }
-      routes = null
-    }
-    prod = {
-      ranges = {
-        cloudsql-mysql     = "10.128.94.0/24"
-        cloudsql-sqlserver = "10.128.95.0/24"
-      }
-      routes = null
-    }
-  }
+  default = null
+  # default = {
+  #   dev = {
+  #     ranges = {
+  #       cloudsql-mysql     = "10.128.62.0/24"
+  #       cloudsql-sqlserver = "10.128.63.0/24"
+  #     }
+  #     routes = null
+  #   }
+  #   prod = {
+  #     ranges = {
+  #       cloudsql-mysql     = "10.128.94.0/24"
+  #       cloudsql-sqlserver = "10.128.95.0/24"
+  #     }
+  #     routes = null
+  #   }
+  # }
 }
 
 variable "router_onprem_configs" {
