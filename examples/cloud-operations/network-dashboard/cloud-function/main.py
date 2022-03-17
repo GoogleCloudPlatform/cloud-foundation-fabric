@@ -49,8 +49,6 @@ def main(event, context):
       Returns:
         'Function executed successfully'
   '''
-  global client, interval
-  client, interval = create_client()
 
   metrics_dict = create_metrics()
 
@@ -462,6 +460,8 @@ def get_quota_current_usage(project_link, metric_name):
       Returns:
         results_list (list of string): Current usage.
   '''
+  client, interval = create_client()
+
   results = client.list_time_series(request={
     "name": project_link,
     "filter": f'metric.type = "{metric_name}"',
@@ -481,6 +481,8 @@ def get_quota_current_limit(project_link, metric_name):
       Returns:
         results_list (list of string): Current limit.
   '''
+  client, interval = create_client()
+
   results = client.list_time_series(request={
     "name": project_link,
     "filter": f'metric.type = "{metric_name}"',
@@ -600,6 +602,8 @@ def write_data_to_metric(monitored_project_id, value, metric_name, network_name)
         usage (int): Current usage for that network.
         limit (int): Current usage for that network.
   '''
+  client = monitoring_v3.MetricServiceClient()
+
   series = monitoring_v3.TimeSeries()
   series.metric.type = f"custom.googleapis.com/{metric_name}"
   series.resource.type = "global" 
