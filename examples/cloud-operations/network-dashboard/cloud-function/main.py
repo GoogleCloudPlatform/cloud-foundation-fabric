@@ -14,12 +14,12 @@
 # limitations under the License.
 #
 
-import time
 import os
+import time
 import yaml
+from google.api import metric_pb2 as ga_metric
 from google.cloud import monitoring_v3
 from googleapiclient import discovery
-from google.api import metric_pb2 as ga_metric
 
 # list of projects from which function will get quotas information
 MONITORED_PROJECTS_LIST = os.environ.get("MONITORED_PROJECTS_LIST").split(",")
@@ -29,24 +29,24 @@ MONITORING_PROJECT_LINK = f"projects/{MONITORING_PROJECT_ID}"
 service = discovery.build('compute', 'v1')
 
 # DEFAULT LIMITS:
-LIMIT_VPC_PEER = os.environ.get("LIMIT_VPC_PEER").split(",")
-LIMIT_L4 = os.environ.get("LIMIT_L4").split(",")
-LIMIT_L7 = os.environ.get("LIMIT_L7").split(",")
 LIMIT_INSTANCES = os.environ.get("LIMIT_INSTANCES").split(",")
 LIMIT_INSTANCES_PPG = os.environ.get("LIMIT_INSTANCES_PPG").split(",")
-LIMIT_SUBNETS = os.environ.get("LIMIT_SUBNETS").split(",")
+LIMIT_L4 = os.environ.get("LIMIT_L4").split(",")
 LIMIT_L4_PPG = os.environ.get("LIMIT_L4_PPG").split(",")
+LIMIT_L7 = os.environ.get("LIMIT_L7").split(",")
 LIMIT_L7_PPG = os.environ.get("LIMIT_L7_PPG").split(",")
+LIMIT_SUBNETS = os.environ.get("LIMIT_SUBNETS").split(",")
+LIMIT_VPC_PEER = os.environ.get("LIMIT_VPC_PEER").split(",")
 
 # Existing GCP metrics per network
-L4_FORWARDING_RULES_USAGE_METRIC = "compute.googleapis.com/quota/internal_lb_forwarding_rules_per_vpc_network/usage"
-L4_FORWARDING_RULES_LIMIT_METRIC = "compute.googleapis.com/quota/internal_lb_forwarding_rules_per_vpc_network/limit"
-L7_FORWARDING_RULES_USAGE_METRIC = "compute.googleapis.com/quota/internal_managed_forwarding_rules_per_vpc_network/usage"
-L7_FORWARDING_RULES_LIMIT_METRIC = "compute.googleapis.com/quota/internal_managed_forwarding_rules_per_vpc_network/limit"
-SUBNET_RANGES_USAGE_METRIC = "compute.googleapis.com/quota/subnet_ranges_per_vpc_network/usage"
-SUBNET_RANGES_LIMIT_METRIC = "compute.googleapis.com/quota/subnet_ranges_per_vpc_network/limit"
-GCE_INSTANCES_USAGE_METRIC = "compute.googleapis.com/quota/instances_per_vpc_network/usage"
 GCE_INSTANCES_LIMIT_METRIC = "compute.googleapis.com/quota/instances_per_vpc_network/limit"
+GCE_INSTANCES_USAGE_METRIC = "compute.googleapis.com/quota/instances_per_vpc_network/usage"
+L4_FORWARDING_RULES_LIMIT_METRIC = "compute.googleapis.com/quota/internal_lb_forwarding_rules_per_vpc_network/limit"
+L4_FORWARDING_RULES_USAGE_METRIC = "compute.googleapis.com/quota/internal_lb_forwarding_rules_per_vpc_network/usage"
+L7_FORWARDING_RULES_LIMIT_METRIC = "compute.googleapis.com/quota/internal_managed_forwarding_rules_per_vpc_network/limit"
+L7_FORWARDING_RULES_USAGE_METRIC = "compute.googleapis.com/quota/internal_managed_forwarding_rules_per_vpc_network/usage"
+SUBNET_RANGES_LIMIT_METRIC = "compute.googleapis.com/quota/subnet_ranges_per_vpc_network/limit"
+SUBNET_RANGES_USAGE_METRIC = "compute.googleapis.com/quota/subnet_ranges_per_vpc_network/usage"
 
 
 def main(event, context):
@@ -64,8 +64,13 @@ def main(event, context):
 
   # Per Network metrics
   get_gce_instances_data(metrics_dict)
-  get_vpc_peering_data(metrics_dict)
   get_l4_forwarding_rules_data(metrics_dict)
+  get_vpc_peering_data(metrics_dict)
+
+  get_pgg_data(
+      metrics_dict["metrics_per_peering_group"]["instance_per_peering_group"],
+      GCE_INSTANCES_USAGE_METRIC, GCE_INSTANCES_LIMIT_METRIC,
+      LIMIT_INSTANCES_PPG)
 
   get_pgg_data(
       metrics_dict["metrics_per_peering_group"]
@@ -83,11 +88,6 @@ def main(event, context):
       metrics_dict["metrics_per_peering_group"]
       ["subnet_ranges_per_peering_group"], SUBNET_RANGES_USAGE_METRIC,
       SUBNET_RANGES_LIMIT_METRIC, LIMIT_SUBNETS)
-
-  get_pgg_data(
-      metrics_dict["metrics_per_peering_group"]["instance_per_peering_group"],
-      GCE_INSTANCES_USAGE_METRIC, GCE_INSTANCES_LIMIT_METRIC,
-      LIMIT_INSTANCES_PPG)
 
   return 'Function executed successfully'
 
