@@ -250,7 +250,7 @@ module "project" {
 | [main.tf](./main.tf) | Module-level locals and resources. | <code>google_compute_project_metadata_item</code> · <code>google_essential_contacts_contact</code> · <code>google_monitoring_monitored_project</code> · <code>google_project</code> · <code>google_project_service</code> · <code>google_resource_manager_lien</code> |
 | [organization-policies.tf](./organization-policies.tf) | Project-level organization policies. | <code>google_project_organization_policy</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |
-| [service-accounts.tf](./service-accounts.tf) | Service identities and supporting resources. | <code>google_kms_crypto_key_iam_member</code> · <code>google_project_service_identity</code> |
+| [service-accounts.tf](./service-accounts.tf) | Service identities and supporting resources. | <code>google_kms_crypto_key_iam_member</code> · <code>google_project_iam_member</code> · <code>google_project_service_identity</code> |
 | [shared-vpc.tf](./shared-vpc.tf) | Shared VPC project-level configuration. | <code>google_compute_shared_vpc_host_project</code> · <code>google_compute_shared_vpc_service_project</code> · <code>google_project_iam_member</code> |
 | [tags.tf](./tags.tf) | None | <code>google_tags_tag_binding</code> |
 | [variables.tf](./variables.tf) | Module variables. |  |
@@ -302,7 +302,7 @@ module "project" {
 | [name](outputs.tf#L25) | Project name. |  |
 | [number](outputs.tf#L38) | Project number. |  |
 | [project_id](outputs.tf#L51) | Project id. |  |
-| [service_accounts](outputs.tf#L66) | Product robot service accounts in project. |  |
-| [sink_writer_identities](outputs.tf#L82) | Writer identities created for each sink. |  |
+| [service_accounts](outputs.tf#L68) | Product robot service accounts in project. |  |
+| [sink_writer_identities](outputs.tf#L84) | Writer identities created for each sink. |  |
 
 <!-- END TFDOC -->

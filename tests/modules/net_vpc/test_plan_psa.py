@@ -12,90 +12,74 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import tftest
-
 
 def test_single_range(plan_runner):
   "Test single PSA range."
   psa_config = '''{
-    foobar = {
-      ranges = [
-        "172.16.100.0/24"
-      ],
-      routes = null
-    }
-  }'''
-  _, resources = plan_runner(psa_config=psa_config)
-  assert len(resources) == 3
-
-
-def test_multi_range(plan_runner):
-  "Test multiple PSA ranges."
-  psa_config = '''{
-    foobar = {
-      ranges = [
-        "172.16.100.0/24",
-        "172.16.101.0/24"
-      ],
-      routes = null
+    ranges = {
+      bar = "172.16.100.0/24"
+      foo = "172.16.101.0/24"
     },
-    frobniz = {
-      ranges = [
-        "172.16.102.0/24"
-      ],
-      routes = null
-    }
+    routes = null
   }'''
   _, resources = plan_runner(psa_config=psa_config)
-  assert len(resources) == 6
+  assert len(resources) == 5
+  for r in resources:
+    if r['type'] == 'google_compute_network_peering_routes_config':
+      assert not r['values']['export_custom_routes']
+      assert not r['values']['import_custom_routes']
 
 
 def test_routes_export(plan_runner):
   "Test routes export."
   psa_config = '''{
-    foobar = {
-      ranges = [
-        "172.16.100.0/24"
-      ],
-      routes = {
-        export = true
-        import = false
-      }
+    ranges = {
+      bar = "172.16.100.0/24"
+    },
+    routes = {
+      export = true
+      import = false
     }
   }'''
   _, resources = plan_runner(psa_config=psa_config)
   assert len(resources) == 4
+  for r in resources:
+    if r['type'] == 'google_compute_network_peering_routes_config':
+      assert r['values']['export_custom_routes']
+      assert not r['values']['import_custom_routes']
 
 
 def test_routes_import(plan_runner):
   "Test routes import."
   psa_config = '''{
-    foobar = {
-      ranges = [
-        "172.16.100.0/24"
-      ],
-      routes = {
-        export = false
-        import = true
-      }
+    ranges = {
+      bar = "172.16.100.0/24"
+    },
+    routes = {
+      export = false
+      import = true
     }
   }'''
   _, resources = plan_runner(psa_config=psa_config)
-  assert len(resources) == 4
+  for r in resources:
+    if r['type'] == 'google_compute_network_peering_routes_config':
+      assert not r['values']['export_custom_routes']
+      assert r['values']['import_custom_routes']
 
 
 def test_routes_export_import(plan_runner):
   "Test routes export and import."
   psa_config = '''{
-    foobar = {
-      ranges = [
-        "172.16.100.0/24"
-      ],
-      routes = {
-        export = true
-        import = true
-      }
+    ranges = {
+      bar = "172.16.100.0/24"
+    },
+    routes = {
+      export = true
+      import = true
     }
   }'''
   _, resources = plan_runner(psa_config=psa_config)
-  assert len(resources) == 4
+  for r in resources:
+    if r['type'] == 'google_compute_network_peering_routes_config':
+      assert r['values']['export_custom_routes']
+      assert r['values']['import_custom_routes']

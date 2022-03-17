@@ -52,17 +52,7 @@ locals {
       secondary_ip_range = try(v.secondary_ip_range, {})
     }
   }
-  _iam = var.iam == null ? {} : var.iam
-  _psa_ranges = flatten([
-    for k, v in coalesce(var.psa_config, {}) : [
-      for r in v.ranges : {
-        key           = "${k}:${index(v.ranges, r)}"
-        name          = "${k}-${index(v.ranges, r)}"
-        address       = try(split("/", r)[0], null)
-        prefix_length = try(split("/", r)[1], null)
-      }
-    ]
-  ])
+  _iam    = var.iam == null ? {} : var.iam
   _routes = var.routes == null ? {} : var.routes
   _subnet_flow_logs = {
     for k, v in var.subnet_flow_logs : k => merge(
@@ -88,7 +78,11 @@ locals {
     ? null
     : element(reverse(split("/", var.peering_config.peer_vpc_self_link)), 0)
   )
-  psa_ranges = { for e in local._psa_ranges : e.key => e }
+  psa_config = (
+    var.psa_config == null
+    ? { ranges = {}, routes = null }
+    : var.psa_config
+  )
   routes = {
     gateway    = { for k, v in local._routes : k => v if v.next_hop_type == "gateway" }
     ilb        = { for k, v in local._routes : k => v if v.next_hop_type == "ilb" }
@@ -333,31 +327,30 @@ resource "google_dns_policy" "default" {
 }
 
 resource "google_compute_global_address" "psa_ranges" {
-  for_each      = local.psa_ranges
+  for_each      = local.psa_config.ranges
   project       = var.project_id
-  name          = each.value.name
+  name          = each.key
   purpose       = "VPC_PEERING"
   address_type  = "INTERNAL"
-  address       = each.value.address
-  prefix_length = each.value.prefix_length
+  address       = split("/", each.value)[0]
+  prefix_length = split("/", each.value)[1]
   network       = local.network.id
 }
 
 resource "google_service_networking_connection" "psa_connection" {
-  for_each = coalesce(var.psa_config, {})
+  for_each = var.psa_config == null ? {} : { 1 = 1 }
   network  = local.network.id
   service  = "servicenetworking.googleapis.com"
   reserved_peering_ranges = [
-    for k, v in google_compute_global_address.psa_ranges :
-    v.name if try(split(":", k)[0], null) == each.key
+    for k, v in google_compute_global_address.psa_ranges : v.name
   ]
 }
 
 resource "google_compute_network_peering_routes_config" "psa_routes" {
-  for_each             = { for k, v in coalesce(var.psa_config, {}) : k => v if try(v.routes) != null }
+  for_each             = var.psa_config == null ? {} : { 1 = 1 }
   project              = var.project_id
-  peering              = google_service_networking_connection.psa_connection[each.key].peering
+  peering              = google_service_networking_connection.psa_connection["1"].peering
   network              = local.network.id
-  export_custom_routes = coalesce(each.value.routes.export, false)
-  import_custom_routes = coalesce(each.value.routes.import, false)
+  export_custom_routes = try(var.psa_config.routes.export, false)
+  import_custom_routes = try(var.psa_config.routes.import, false)
 }
