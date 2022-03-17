@@ -155,18 +155,6 @@ module "cloud-function" {
   }
 }
 
-# TODO: How to secure Cloud Function invokation? Not   member = "allUsers" but specific Scheduler service Account?
-# Maybe "service-YOUR_PROJECT_NUMBER@gcp-sa-cloudscheduler.iam.gserviceaccount.com"?
-
-resource "google_cloudfunctions_function_iam_member" "invoker" {
-  project        = module.project-monitoring.project_id
-  region         = var.region
-  cloud_function = module.cloud-function.function_name
-
-  role   = "roles/cloudfunctions.invoker"
-  member = "allUsers"
-}
-
 ################################################
 # Cloud Monitoring Dashboard creation          #
 ################################################
