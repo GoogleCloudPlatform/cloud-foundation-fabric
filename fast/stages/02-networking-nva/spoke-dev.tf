@@ -51,7 +51,7 @@ module "dev-spoke-vpc" {
   mtu                             = 1500
   data_folder                     = "${var.data_dir}/subnets/dev"
   delete_default_routes_on_create = true
-  psa_config                      = { dev = { ranges = values(var.psa_ranges.dev), routes = null } }
+  psa_config                      = var.psa_ranges.dev
   subnets_l7ilb                   = local.l7ilb_subnets.dev
   # Set explicit routes for googleapis; send everything else to NVAs
   routes = {

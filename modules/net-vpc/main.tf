@@ -56,6 +56,7 @@ locals {
   _psa_ranges = flatten([
     for k, v in coalesce(var.psa_config, {}) : [
       for r in v.ranges : {
+        key           = "${k}:${index(v.ranges, r)}"
         name          = "${var.name}-psa-${k}-${index(v.ranges, r)}"
         address       = try(split("/", r)[0], null)
         prefix_length = try(split("/", r)[1], null)
@@ -87,7 +88,7 @@ locals {
     ? null
     : element(reverse(split("/", var.peering_config.peer_vpc_self_link)), 0)
   )
-  psa_ranges = { for e in local._psa_ranges : e.name => e }
+  psa_ranges = { for e in local._psa_ranges : e.key => e }
   routes = {
     gateway    = { for k, v in local._routes : k => v if v.next_hop_type == "gateway" }
     ilb        = { for k, v in local._routes : k => v if v.next_hop_type == "ilb" }
@@ -348,7 +349,7 @@ resource "google_service_networking_connection" "psa_connection" {
   service  = "servicenetworking.googleapis.com"
   reserved_peering_ranges = [
     for k, v in google_compute_global_address.psa_ranges :
-    v.name if try(split("-", v.name)[2], null) == k
+    v.name if try(split(":", k)[0], null) == each.key
   ]
 }
 
