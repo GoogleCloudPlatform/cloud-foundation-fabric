@@ -139,16 +139,14 @@ module "vpc" {
     }
   ]
   psa_config = {
-    my_service = {
-      ranges = [
-        "10.0.1.0/24"
-      ],
-      routes = null
-    }
+    ranges = { myrange = "10.0.1.0/24" }
+    routes = null
   }
 }
-# tftest modules=1 resources=4
+# tftest modules=1 resources=5
 ```
+
+### Private Service Networking with peering routes
 
 Custom routes can be optionally exported/imported through the peering formed with the Google managed PSA VPC.
 
@@ -166,15 +164,8 @@ module "vpc" {
     }
   ]
   psa_config = {
-    my_service = {
-      ranges = [
-        "10.0.1.0/24"
-      ],
-      routes = {
-        export=true,
-        import=true
-      }
-    }
+    ranges = { myrange = "10.0.1.0/24" }
+    routes = { export=true, import=true }
   }
 }
 # tftest modules=1 resources=5
