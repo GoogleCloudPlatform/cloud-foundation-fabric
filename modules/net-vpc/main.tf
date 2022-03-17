@@ -15,44 +15,6 @@
  */
 
 locals {
-  _factory_data = var.data_folder == null ? tomap({}) : {
-    for f in fileset(var.data_folder, "**/*.yaml") :
-    trimsuffix(basename(f), ".yaml") => yamldecode(file("${var.data_folder}/${f}"))
-  }
-  _factory_descriptions = {
-    for k, v in local._factory_data :
-    "${v.region}/${k}" => try(v.description, null)
-  }
-  _factory_iam_members = [
-    for k, v in local._factory_subnets : {
-      subnet = k
-      role   = "roles/compute.networkUser"
-      members = concat(
-        formatlist("group:%s", try(v.iam_groups, [])),
-        formatlist("user:%s", try(v.iam_users, [])),
-        formatlist("serviceAccount:%s", try(v.iam_service_accounts, []))
-      )
-    }
-  ]
-  _factory_flow_logs = {
-    for k, v in local._factory_data : "${v.region}/${k}" => merge(
-      var.log_config_defaults, try(v.flow_logs, {})
-    ) if try(v.flow_logs, false)
-  }
-  _factory_private_access = {
-    for k, v in local._factory_data : "${v.region}/${k}" => try(
-      v.private_ip_google_access, true
-    )
-  }
-  _factory_subnets = {
-    for k, v in local._factory_data : "${v.region}/${k}" => {
-      ip_cidr_range      = v.ip_cidr_range
-      name               = k
-      region             = v.region
-      secondary_ip_range = try(v.secondary_ip_range, {})
-    }
-  }
-  _iam = var.iam == null ? {} : var.iam
   network = (
     var.vpc_create
     ? try(google_compute_network.network.0, null)
