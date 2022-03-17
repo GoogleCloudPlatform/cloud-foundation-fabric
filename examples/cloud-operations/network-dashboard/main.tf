@@ -100,7 +100,7 @@ resource "google_cloud_scheduler_job" "job" {
 
   pubsub_target {
     topic_name = module.pubsub.topic.id
-    data = base64encode("test")
+    data       = base64encode("test")
   }
 }
 
@@ -110,7 +110,7 @@ resource "random_pet" "random" {
 }
 
 module "cloud-function" {
-  source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/cloud-function?ref=v14.0.0"
+  source      = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/cloud-function?ref=v14.0.0"
   project_id  = module.project-monitoring.project_id
   name        = "network-dashboard-cloud-function"
   bucket_name = "network-dashboard-bucket-${random_pet.random.id}"
@@ -126,24 +126,24 @@ module "cloud-function" {
   }
 
   function_config = {
-    timeout  = 180
+    timeout     = 180
     entry_point = "main"
-    runtime    = "python39"
-    instances = 1
-    memory = 256
+    runtime     = "python39"
+    instances   = 1
+    memory      = 256
   }
 
   environment_variables = {
     monitored_projects_list = local.projects
     monitoring_project_id   = module.project-monitoring.project_id
-    LIMIT_SUBNETS       = local.limit_subnets
-    LIMIT_INSTANCES     = local.limit_instances
-    LIMIT_INSTANCES_PPG = local.limit_instances_ppg
-    LIMIT_VPC_PEER      = local.limit_vpc_peer
-    LIMIT_L4            = local.limit_l4
-    LIMIT_L7            = local.limit_l7
-    LIMIT_L4_PPG        = local.limit_l4_ppg
-    LIMIT_L7_PPG        = local.limit_l7_ppg
+    LIMIT_SUBNETS           = local.limit_subnets
+    LIMIT_INSTANCES         = local.limit_instances
+    LIMIT_INSTANCES_PPG     = local.limit_instances_ppg
+    LIMIT_VPC_PEER          = local.limit_vpc_peer
+    LIMIT_L4                = local.limit_l4
+    LIMIT_L7                = local.limit_l7
+    LIMIT_L4_PPG            = local.limit_l4_ppg
+    LIMIT_L7_PPG            = local.limit_l7_ppg
   }
 
   service_account = module.service-account-function.email
