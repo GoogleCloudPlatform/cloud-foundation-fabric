@@ -9,10 +9,12 @@ All notable changes to this project will be documented in this file.
 - new [unmanaged-instances-healthcheck](examples/cloud-operations/unmanaged-instances-healthcheck) example
 - add support for IAM to `data-catalog-policy-tag` module
 - add support for IAM additive to `folder` module, fixes #580
+- **incompatible change** the variable for PSA ranges in the `net-vpc` module has changed to support configuring peering routes
 
 **FAST**
 
 - new [02-networking-peering](fast/stages/02-networking-peering) networking stage
+- **incompatible change** the variable for PSA ranges in networking stages have changed
 
 ## [14.0.0] - 2022-02-25
 
