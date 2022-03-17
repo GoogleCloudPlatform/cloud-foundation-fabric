@@ -57,7 +57,7 @@ locals {
     for k, v in coalesce(var.psa_config, {}) : [
       for r in v.ranges : {
         key           = "${k}:${index(v.ranges, r)}"
-        name          = "${var.name}-psa-${k}-${index(v.ranges, r)}"
+        name          = "${k}-${index(v.ranges, r)}"
         address       = try(split("/", r)[0], null)
         prefix_length = try(split("/", r)[1], null)
       }
