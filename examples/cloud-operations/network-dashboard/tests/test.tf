@@ -272,7 +272,8 @@ resource "google_compute_instance" "test-vm-hub1" {
 # Forwarding Rules
 
 resource "google_compute_forwarding_rule" "forwarding-rule-dev" {
-  name       = "forwarding-rule-dev"
+  count      = 10
+  name       = "forwarding-rule-dev${count.index}"
   project    = module.project-svc-dev.project_id
   network    = module.vpc-dev.self_link
   subnetwork = module.vpc-dev.subnet_self_links["${var.region}/subnet-dev-1"]
