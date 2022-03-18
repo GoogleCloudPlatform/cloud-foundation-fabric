@@ -22,7 +22,7 @@ resource "google_folder" "test-net-dash" {
 ##### Creating host projects, VPCs, service projects #####
 
 module "project-hub" {
-  source          = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/project?ref=v14.0.0"
+  source          = "../../../../modules/project"
   name            = "test-host-hub"
   parent          = google_folder.test-net-dash.name
   prefix          = var.prefix
@@ -36,7 +36,7 @@ module "project-hub" {
 }
 
 module "vpc-hub" {
-  source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/net-vpc?ref=v14.0.0"
+  source     = "../../../../modules/net-vpc"
   project_id = module.project-hub.project_id
   name       = "vpc-hub"
   subnets = [
@@ -50,7 +50,7 @@ module "vpc-hub" {
 }
 
 module "project-svc-hub" {
-  source          = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/project?ref=v14.0.0"
+  source          = "../../../../modules/project"
   parent          = google_folder.test-net-dash.name
   billing_account = var.billing_account
   prefix          = var.prefix
@@ -60,11 +60,12 @@ module "project-svc-hub" {
   shared_vpc_service_config = {
     attach       = true
     host_project = module.project-hub.project_id
+    service_identity_iam = {}
   }
 }
 
 module "project-prod" {
-  source          = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/project?ref=v14.0.0"
+  source          = "../../../../modules/project"
   name            = "test-host-prod"
   parent          = google_folder.test-net-dash.name
   prefix          = var.prefix
@@ -78,7 +79,7 @@ module "project-prod" {
 }
 
 module "vpc-prod" {
-  source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/net-vpc?ref=v14.0.0"
+  source     = "../../../../modules/net-vpc"
   project_id = module.project-prod.project_id
   name       = "vpc-prod"
   subnets = [
@@ -92,7 +93,7 @@ module "vpc-prod" {
 }
 
 module "project-svc-prod" {
-  source          = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/project?ref=v14.0.0"
+  source          = "../../../../modules/project"
   parent          = google_folder.test-net-dash.name
   billing_account = var.billing_account
   prefix          = var.prefix
@@ -102,11 +103,12 @@ module "project-svc-prod" {
   shared_vpc_service_config = {
     attach       = true
     host_project = module.project-prod.project_id
+    service_identity_iam = {}
   }
 }
 
 module "project-dev" {
-  source          = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/project?ref=v14.0.0"
+  source          = "../../../../modules/project"
   name            = "test-host-dev"
   parent          = google_folder.test-net-dash.name
   prefix          = var.prefix
@@ -120,7 +122,7 @@ module "project-dev" {
 }
 
 module "vpc-dev" {
-  source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/net-vpc?ref=v14.0.0"
+  source     = "../../../../modules/net-vpc"
   project_id = module.project-dev.project_id
   name       = "vpc-dev"
   subnets = [
@@ -134,7 +136,7 @@ module "vpc-dev" {
 }
 
 module "project-svc-dev" {
-  source          = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/project?ref=v14.0.0"
+  source          = "../../../../modules/project"
   parent          = google_folder.test-net-dash.name
   billing_account = var.billing_account
   prefix          = var.prefix
@@ -144,32 +146,33 @@ module "project-svc-dev" {
   shared_vpc_service_config = {
     attach       = true
     host_project = module.project-dev.project_id
+    service_identity_iam = {}
   }
 }
 
 ##### Creating VPC peerings #####
 
 module "hub-to-prod-peering" {
-  source        = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/net-vpc?ref=v14.0.0-peering"
+  source        = "../../../../modules/net-vpc-peering"
   local_network = module.vpc-hub.self_link
   peer_network  = module.vpc-prod.self_link
 }
 
 module "prod-to-hub-peering" {
-  source        = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/net-vpc?ref=v14.0.0-peering"
+  source        = "../../../../modules/net-vpc-peering"
   local_network = module.vpc-prod.self_link
   peer_network  = module.vpc-hub.self_link
   depends_on    = [module.hub-to-prod-peering]
 }
 
 module "hub-to-dev-peering" {
-  source        = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/net-vpc?ref=v14.0.0-peering"
+  source        = "../../../../modules/net-vpc-peering"
   local_network = module.vpc-hub.self_link
   peer_network  = module.vpc-dev.self_link
 }
 
 module "dev-to-hub-peering" {
-  source        = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/net-vpc?ref=v14.0.0-peering"
+  source        = "../../../../modules/net-vpc-peering"
   local_network = module.vpc-dev.self_link
   peer_network  = module.vpc-hub.self_link
   depends_on    = [module.hub-to-dev-peering]
@@ -205,7 +208,7 @@ resource "google_compute_instance" "test-vm-prod2" {
   machine_type = "f1-micro"
   zone         = var.zone
 
-  tags = ["${var.region}"]
+  tags = [var.region]
 
   boot_disk {
     initialize_params {

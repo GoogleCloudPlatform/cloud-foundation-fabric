@@ -155,7 +155,8 @@ def create_metric(metric_name, description):
   for desc in client.list_metric_descriptors(name=MONITORING_PROJECT_LINK):
     types.append(desc.type)
 
-  if metric_link not in types:  # If the metric doesn't exist yet, then we create it
+  # If the metric doesn't exist yet, then we create it
+  if metric_link not in types:
     descriptor = ga_metric.MetricDescriptor()
     descriptor.type = f"custom.googleapis.com/{metric_name}"
     descriptor.metric_kind = ga_metric.MetricDescriptor.MetricKind.GAUGE
