@@ -3,6 +3,10 @@
 This repository provides an end-to-end solution to gather some GCP Networking quotas and limits (that cannot be seen in the GCP console today) and display them in a dashboard.
 The goal is to allow for better visibility of these limits, facilitating capacity planning and avoiding hitting these limits.
 
+Here is an example of dashboard you can get with this solution:
+
+<img src="metric.png" width="640px">
+
 ## Usage
 
 Clone this repository, then go through the following steps to create resources:
@@ -17,8 +21,9 @@ Clone this repository, then go through the following steps to create resources:
 Once the resources are deployed, go to the following page to see the dashboard: https://console.cloud.google.com/monitoring/dashboards?project=<YOUR-MONITORING-PROJECT>.
 A dashboard called "quotas-utilization" should be created.
 
-The Cloud Function runs every 5 minutes by default so you should start getting some data points after a few minutes. 
+The Cloud Function runs every 5 minutes by default so you should start getting some data points after a few minutes.
 You can change this frequency by modifying the "schedule_cron" variable in variables.tf.
+Note that we are using Google defined metrics that are populated only once a day so you might need to wait up to one day for some metrics.
 
 Once done testing, you can clean up resources by running `terraform destroy`.
 
