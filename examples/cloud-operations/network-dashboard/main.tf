@@ -41,7 +41,7 @@ locals {
 ################################################
 
 module "project-monitoring" {
-  source          = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/project?ref=v14.0.0"
+  source          = "../../../modules/project"
   name            = "monitoring"
   parent          = "organizations/${var.organization_id}"
   prefix          = var.prefix
@@ -54,7 +54,7 @@ module "project-monitoring" {
 ################################################
 
 module "service-account-function" {
-  source       = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/iam-service-account?ref=v14.0.0"
+  source       = "../../../modules/iam-service-account"
   project_id   = module.project-monitoring.project_id
   name         = "sa-dash"
   generate_key = false
@@ -81,7 +81,7 @@ module "service-account-function" {
 ################################################
 
 module "pubsub" {
-  source     = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/pubsub?ref=v14.0.0"
+  source     = "../../../modules/pubsub"
   project_id = module.project-monitoring.project_id
   name       = "network-dashboard-pubsub"
   subscriptions = {
@@ -104,16 +104,11 @@ resource "google_cloud_scheduler_job" "job" {
   }
 }
 
-# Random ID to re-deploy the Cloud Function  with every Terraform run
-resource "random_pet" "random" {
-  length = 1
-}
-
 module "cloud-function" {
-  source      = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/cloud-function?ref=v14.0.0"
+  source      = "../../../modules/cloud-function"
   project_id  = module.project-monitoring.project_id
   name        = "network-dashboard-cloud-function"
-  bucket_name = "network-dashboard-bucket-${random_pet.random.id}"
+  bucket_name = "network-dashboard-bucket"
   bucket_config = {
     location             = var.region
     lifecycle_delete_age = null

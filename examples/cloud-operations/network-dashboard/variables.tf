@@ -24,13 +24,6 @@ variable "billing_account" {
 
 variable "prefix" {
   description = "Customer name to use as prefix for resources' naming"
-  default     = "net-dash"
-}
-
-# Not used for now as I am creating the monitoring project in my main.tf file
-variable "monitoring_project_id" {
-  type        = string
-  description = "ID of the monitoring project, where the Cloud Function and dashboards will be deployed."
 }
 
 # TODO: support folder instead of a list of projects?

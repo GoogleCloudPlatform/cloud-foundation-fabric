@@ -24,7 +24,6 @@ variable "billing_account" {
 
 variable "prefix" {
   description = "Customer name to use as prefix for resources' naming"
-  default     = "net-dash"
 }
 
 variable "project_vm_services" {
