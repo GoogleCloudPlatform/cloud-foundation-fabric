@@ -8,6 +8,7 @@ Here is an example of dashboard you can get with this solution:
 <img src="metric.png" width="640px">
 
 Here you see utilization (usage compared to the limit) for a specific metric (number of instances per VPC) for multiple VPCs and projects.
+
 3 metrics are created: Usage, limit and utilization. You can follow each of these and create alerting policies if a threshold is reached.
 
 ## Usage
