@@ -120,17 +120,39 @@ variable "prefix" {
 
 variable "psa_ranges" {
   description = "IP ranges used for Private Service Access (e.g. CloudSQL)."
-  type        = map(map(string))
-  default = {
-    prod = {
-      cloudsql-mysql     = "10.128.94.0/24"
-      cloudsql-sqlserver = "10.128.95.0/24"
-    }
-    dev = {
-      cloudsql-mysql     = "10.128.62.0/24"
-      cloudsql-sqlserver = "10.128.63.0/24"
-    }
-  }
+  type = object({
+    dev = object({
+      ranges = map(string)
+      routes = object({
+        export = bool
+        import = bool
+      })
+    })
+    prod = object({
+      ranges = map(string)
+      routes = object({
+        export = bool
+        import = bool
+      })
+    })
+  })
+  default = null
+  # default = {
+  #   dev = {
+  #     ranges = {
+  #       cloudsql-mysql     = "10.128.62.0/24"
+  #       cloudsql-sqlserver = "10.128.63.0/24"
+  #     }
+  #     routes = null
+  #   }
+  #   prod = {
+  #     ranges = {
+  #       cloudsql-mysql     = "10.128.94.0/24"
+  #       cloudsql-sqlserver = "10.128.95.0/24"
+  #     }
+  #     routes = null
+  #   }
+  # }
 }
 
 variable "router_onprem_configs" {
