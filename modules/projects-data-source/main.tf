@@ -84,6 +84,11 @@ locals {
     for _, v in data.google_projects.projects :
     { for item in v.projects : item.project_id => item }
   ]...)
+
+  ignore_patterns = [for item in var.ignore_projects: "^${replace(item, "*", ".*")}$"]
+  ignore_regexp = join("|", local.ignore_patterns)
+
+  projects_after_ignore = {for k, v in local.projects: k => v if length(try(regex(local.ignore_regexp, v.project_id), [])) == 0}
 }
 
 # 10 datasources are used to cover 10 possible nested layers in GCP organization hirerarcy. 

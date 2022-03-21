@@ -21,10 +21,10 @@ output "folders" {
 
 output "projects" {
   description = "Map of projects attributes keyed by projects id."
-  value       = local.projects
+  value       = local.projects_after_ignore
 }
 
 output "project_numbers" {
   description = "List of project numbers."
-  value       = [for _, v in local.projects : v.number]
+  value       = [for _, v in local.projects_after_ignore : v.number]
 }

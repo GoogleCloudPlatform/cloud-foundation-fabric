@@ -28,3 +28,16 @@ variable "filter" {
   type        = string
   default     = "lifecycleState:ACTIVE"
 }
+
+variable "ignore_projects" {
+  description = "A list of project IDs or prefixes to exclude matching projects from the module output"
+  type           = list(string)
+  default        = []
+  # example
+  #ignore_projects = [
+  #  "dev-proj-1",
+  #  "uat-proj-2",
+  #  "prd-proj-*"
+  #]
+}
+
