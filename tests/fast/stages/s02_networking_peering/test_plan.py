@@ -73,4 +73,4 @@ def test_vpn_peering_checksums(e2e_plan_runner):
   for filename in common_files:
     md5_vpn = compute_md5(STAGE_VPN / filename)
     md5_peering = compute_md5(STAGE_PEERING / filename)
-    assert md5_vpn == md5_peering
+    assert md5_vpn == md5_peering, filename

@@ -33,6 +33,7 @@ module "dev-spoke-project" {
     "iap.googleapis.com",
     "networkmanagement.googleapis.com",
     "servicenetworking.googleapis.com",
+    "stackdriver.googleapis.com",
   ]
   shared_vpc_host_config = {
     enabled          = true
@@ -50,7 +51,7 @@ module "dev-spoke-vpc" {
   name          = "dev-spoke-0"
   mtu           = 1500
   data_folder   = "${var.data_dir}/subnets/dev"
-  psa_ranges    = var.psa_ranges.dev
+  psa_config    = try(var.psa_ranges.dev, null)
   subnets_l7ilb = local.l7ilb_subnets.dev
   # set explicit routes for googleapis in case the default route is deleted
   routes = {

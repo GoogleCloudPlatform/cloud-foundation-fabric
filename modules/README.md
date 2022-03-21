@@ -35,6 +35,7 @@ These modules are used in the examples included in this repository. If you are u
 - [naming convention](./naming-convention)
 - [organization](./organization)
 - [project](./project)
+- [projects-data-source](./projects-data-source)
 - [service account](./iam-service-account)
 
 ## Networking modules
