@@ -77,19 +77,21 @@ write_files:
       %{~ for s in create_sources ~}
       ExecStartPre=/bin/mkdir -p ${s}
       %{~ endfor ~}
-      ExecStart=/usr/bin/docker run --rm --name=gitlab-ce  \
-        --log-driver=gcplogs --network host \
-        %{~ if hostname != null }--hostname gitlab.example.com \%{ endif ~}
-        %{~ for mount in mounts ~}
-        -v ${mount.source}:${mount.mountpoint} \
-        %{~ endfor ~}
-        --shm-size 256m \
+      ExecStart=/usr/bin/docker run --rm \
         %{~ for k, v in env ~}
-        -e ${k}="${v}" \
+        --env ${k}="${v}" \
         %{~ endfor ~}
         %{~ if env_file != null ~}
         --env-file /run/gitlab-env.list \
         %{~ endif ~}
+        %{~ if hostname != null }--hostname gitlab.example.com \%{ endif ~}
+        --log-driver=gcplogs \
+        --name=gitlab-ce \
+        --network host \
+        --shm-size 256m \
+        %{~ for mount in mounts ~}
+        --volume ${mount.source}:${mount.mountpoint} \
+        %{~ endfor ~}
         ${image}
       ExecStop=/usr/bin/docker stop gitlab-ce
 

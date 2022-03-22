@@ -20,8 +20,14 @@ def test_defaults(apply_runner):
   "Test defalt configuration."
   _, output = apply_runner()
   cloud_config = output['cloud_config']
-  yaml.safe_load(cloud_config)
   assert cloud_config.startswith('#cloud-config')
+  data = yaml.safe_load(cloud_config)
+  files = {f['path']: f['content'] for f in data['write_files']}
+  assert list(files.keys()) == [
+      '/var/lib/docker/daemon.json', '/etc/systemd/system/gitlab.service'
+  ]
+  gitlab_unit = files['/etc/systemd/system/gitlab.service']
+  assert len(re.findall('ExecStartPre', gitlab_unit)) == 3
 
 
 def test_mounts(apply_runner):
@@ -33,6 +39,14 @@ def test_mounts(apply_runner):
   }'''
   _, output = apply_runner(mounts=mounts)
   cloud_config = output['cloud_config']
-  yaml.safe_load(cloud_config)
   assert cloud_config.startswith('#cloud-config')
-  print(cloud_config)
+  data = yaml.safe_load(cloud_config)
+  files = {f['path']: f['content'] for f in data['write_files']}
+  assert list(files.keys()) == [
+      '/var/lib/docker/daemon.json',
+      '/etc/systemd/system/gitlab-disk-config.service',
+      '/etc/systemd/system/gitlab-disk-data.service',
+      '/etc/systemd/system/gitlab.service'
+  ]
+  gitlab_unit = files['/etc/systemd/system/gitlab.service']
+  assert len(re.findall('ExecStartPre', gitlab_unit)) == 1

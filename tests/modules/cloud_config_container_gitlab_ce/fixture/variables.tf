@@ -47,8 +47,8 @@ variable "image" {
 variable "mounts" {
   type = any
   default = {
-    config = { device_name = "data", fs_path = "config" }
-    data   = { device_name = "data", fs_path = "data" }
-    logs   = { device_name = "data", fs_path = "logs" }
+    config = { device_name = null, fs_path = "config" }
+    data   = { device_name = null, fs_path = "data" }
+    logs   = { device_name = null, fs_path = "logs" }
   }
 }
