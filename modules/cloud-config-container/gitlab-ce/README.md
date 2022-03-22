@@ -1,29 +1,72 @@
 # Containerized Gitlab CE on Container Optimized OS
 
+This module manages a `cloud-config` configuration that starts a containerized [Gitlab CE](https://docs.gitlab.com/ee/install/docker.html) service on Container Optimized OS, using the [official image](https://hub.docker.com/r/gitlab/gitlab-ce/).
+
+The module supports a few out of the box options for configuring the installation:
+
+- `env` and `env_file` variables to set the container environment (see below for ways to use them to configure Gitlab)
+- `hostname` variable to set the container hostname
+- `image` to change or pin the container image
+- `mounts` to define optional disks and mountpoints for the container volumes used for Gitlab config, data and logs (defaults to boot disk filesystem)
+
+The module also allows replacing the cloud config template with a custom one, and specifying arbitrary template values via the `cloud_config` and `config_variables` variables.
+
+The default cloud config also
+
+- adds iptables rules to allow traffic on ports 80 and 443
+- enables logging via the [Google Cloud Logging driver](https://docs.docker.com/config/containers/logging/gcplogs/)
+- starts the [Node Problem Detector](https://cloud.google.com/container-optimized-os/docs/how-to/monitoring) service for monitoring
+
+The module renders the generated cloud config in the `cloud_config` output, to be used in instances or instance templates via the `user-data` metadata.
+
+## Gitlab configuration
+
+For details on configuring Gitlab options you can refer to these sections in the official documentation:
+
+- [Pre-configure Docker container](https://docs.gitlab.com/ee/install/docker.html#pre-configure-docker-container)
+- [Environment variables](https://docs.gitlab.com/ee/administration/environment_variables.html)
+- [Setting custom environment variables](https://docs.gitlab.com/omnibus/settings/environment-variables.html)
+- [Configuration settings](https://gitlab.com/gitlab-org/omnibus-gitlab/blob/master/files/gitlab-config-template/gitlab.rb.template) which can be specified in the `GITLAB_OMNIBUS_CONFIG` variable
+
 ## Examples
 
 ### Local Filesystems
 
+The default value of the `mounts` variable sets the `device_name` attributes to to `null`, which results in using local folders under `/run/gitlab` for Gitlab config, data and logs.
+
 ```hcl
 module "gitlab-ce" {
-  source           = "./modules/cloud-config-container/gitlab-cd"
+  source   = "./modules/cloud-config-container/gitlab-ce"
+  hostname = "gitlab.example.com"
 }
 ```
 
-### Nginx instance
-
-This example shows how to create the single instance optionally managed by the module, providing all required attributes in the `test_instance` variable. The instance is purposefully kept simple and should only be used in development, or when designing infrastructures.
+Local paths under `/run/gitlab` can be changed via the `fs_path` attribute:
 
 ```hcl
-module "cos-nginx" {
-  source           = "./modules/cloud-config-container/nginx"
-  test_instance = {
-    project_id = "my-project"
-    zone       = "europe-west1-b"
-    name       = "cos-nginx"
-    type       = "f1-micro"
-    network    = "default"
-    subnetwork = "https://www.googleapis.com/compute/v1/projects/my-project/regions/europe-west1/subnetworks/my-subnet"
+module "gitlab-ce" {
+  source   = "./modules/cloud-config-container/gitlab-ce"
+  hostname = "gitlab.example.com"
+  mounts   = {
+    config = { device_name = null, fs_path = "my-config" }
+    data   = { device_name = null, fs_path = "my-data" }
+    logs   = { device_name = null, fs_path = "logs" }
+  }
+}
+```
+
+### Additional disks
+
+Additional disks can be specified in the `mounts` variable by setting device names (the last part of a device `/dev/disk/by-id/google-[name]` file) in the `device_name` attributes. The `fs_path` attributes define the actual paths within the device filesystems that are passed to the container volumes.
+
+```hcl
+module "gitlab-ce" {
+  source   = "./modules/cloud-config-container/gitlab-ce"
+  hostname = "gitlab.example.com"
+  mounts   = {
+    config = { device_name = "data", fs_path = "config" }
+    data   = { device_name = "data", fs_path = "data" }
+    logs   = { device_name = "logs", fs_path = null }
   }
 }
 ```
@@ -33,20 +76,18 @@ module "cos-nginx" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [cloud_config](variables.tf#L17) | Cloud config template path. If null default will be used. | <code>string</code> |  | <code>null</code> |
-| [config_variables](variables.tf#L23) | Additional variables used to render the cloud-config and Nginx templates. | <code>map&#40;any&#41;</code> |  | <code>&#123;&#125;</code> |
-| [file_defaults](variables.tf#L41) | Default owner and permissions for files. | <code title="object&#40;&#123;&#10;  owner       &#61; string&#10;  permissions &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  owner       &#61; &#34;root&#34;&#10;  permissions &#61; &#34;0644&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [files](variables.tf#L53) | Map of extra files to create on the instance, path as key. Owner and permissions will use defaults if null. | <code title="map&#40;object&#40;&#123;&#10;  content     &#61; string&#10;  owner       &#61; string&#10;  permissions &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [image](variables.tf#L29) | Nginx container image. | <code>string</code> |  | <code>&#34;nginxdemos&#47;hello:plain-text&#34;</code> |
-| [nginx_config](variables.tf#L35) | Nginx configuration path, if null container default will be used. | <code>string</code> |  | <code>null</code> |
-| [test_instance](variables-instance.tf#L17) | Test/development instance attributes, leave null to skip creation. | <code title="object&#40;&#123;&#10;  project_id &#61; string&#10;  zone       &#61; string&#10;  name       &#61; string&#10;  type       &#61; string&#10;  network    &#61; string&#10;  subnetwork &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [test_instance_defaults](variables-instance.tf#L30) | Test/development instance defaults used for optional configuration. If image is null, COS stable will be used. | <code title="object&#40;&#123;&#10;  disks &#61; map&#40;object&#40;&#123;&#10;    read_only &#61; bool&#10;    size      &#61; number&#10;  &#125;&#41;&#41;&#10;  image                 &#61; string&#10;  metadata              &#61; map&#40;string&#41;&#10;  nat                   &#61; bool&#10;  service_account_roles &#61; list&#40;string&#41;&#10;  tags                  &#61; list&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  disks    &#61; &#123;&#125;&#10;  image    &#61; null&#10;  metadata &#61; &#123;&#125;&#10;  nat      &#61; false&#10;  service_account_roles &#61; &#91;&#10;    &#34;roles&#47;logging.logWriter&#34;,&#10;    &#34;roles&#47;monitoring.metricWriter&#34;&#10;  &#93;&#10;  tags &#61; &#91;&#34;ssh&#34;&#93;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [cloud_config](variables.tf#L17) | Cloud-config template path. If null default will be used. | <code>string</code> |  | <code>null</code> |
+| [config_variables](variables.tf#L23) | Additional template variables passed to the cloud-config template. | <code>map&#40;any&#41;</code> |  | <code>&#123;&#125;</code> |
+| [env](variables.tf#L29) | Environment variables for the gitlab-ce container. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [env_file](variables.tf#L36) | Environment variables file for the gitlab-ce container. | <code>string</code> |  | <code>null</code> |
+| [hostname](variables.tf#L42) | Hostname passed to the gitlab-ce container. | <code>string</code> |  | <code>null</code> |
+| [image](variables.tf#L48) | Gitlab-ce container image. | <code>string</code> |  | <code>&#34;gitlab&#47;gitlab-ce:latest&#34;</code> |
+| [mounts](variables.tf#L54) | Disk device names and paths in the disk filesystem for the gitlab-ce container paths. | <code title="object&#40;&#123;&#10;  config &#61; object&#40;&#123;&#10;    device_name &#61; string&#10;    fs_path     &#61; string&#10;  &#125;&#41;&#10;  data &#61; object&#40;&#123;&#10;    device_name &#61; string&#10;    fs_path     &#61; string&#10;  &#125;&#41;&#10;  logs &#61; object&#40;&#123;&#10;    device_name &#61; string&#10;    fs_path     &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  config &#61; &#123; device_name &#61; null, fs_path &#61; &#34;config&#34; &#125;&#10;  data   &#61; &#123; device_name &#61; null, fs_path &#61; &#34;data&#34; &#125;&#10;  logs   &#61; &#123; device_name &#61; null, fs_path &#61; &#34;logs&#34; &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
 | [cloud_config](outputs.tf#L17) | Rendered cloud-config file to be passed as user-data instance metadata. |  |
-| [test_instance](outputs-instance.tf#L17) | Optional test instance name and address. |  |
 
 <!-- END TFDOC -->
