@@ -14,6 +14,18 @@
  * limitations under the License.
  */
 
+variable "dns_config" {
+  type = object({
+    create_zone = bool
+    zone_name   = string
+  })
+  default = {
+    create_zone = false
+    zone_name   = null
+  }
+  nullable = false
+}
+
 variable "gce_config" {
   type = object({
     disk_size    = number
@@ -32,16 +44,23 @@ variable "gce_config" {
 
 variable "gitlab_config" {
   type = object({
-    env   = map(string)
-    image = string
+    env      = map(string)
+    hostname = string
+    image    = string
   })
   default = {
-    env = {
-      foo = "bar"
-      bar = "baz"
-    }
-    image = "gitlab/gitlab-ce:latest"
+    env      = {}
+    hostname = "gitlab.example.com"
+    image    = "gitlab/gitlab-ce:latest"
   }
+  nullable = false
+}
+
+variable "network_config" {
+  type = object({
+    subnet_self_link = string
+    vpc_self_link    = string
+  })
   nullable = false
 }
 
@@ -57,10 +76,6 @@ variable "project_id" {
 variable "region" {
   type    = string
   default = "europe-west1"
-}
-
-variable "subnet_self_link" {
-  type = string
 }
 
 variable "tags" {

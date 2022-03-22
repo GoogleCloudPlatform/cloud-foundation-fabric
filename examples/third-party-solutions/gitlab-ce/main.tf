@@ -18,14 +18,24 @@ locals {
   cloud_config = templatefile(
     "${path.module}/cloud-config.yaml", var.gitlab_config
   )
+  dns_enabled = var.gitlab_config.hostname != null
+  network_project_id = regex(
+    "^.*?projects/([^/]+)/.*?$", var.network_config.vpc_self_link
+  )[0]
   vm_roles = ["roles/logging.logWriter", "roles/monitoring.metricWriter"]
   zones    = { for z in var.gce_config.zones : z => "${var.region}-${z}" }
 }
 
-resource "google_service_account" "default" {
-  project      = var.project_id
-  account_id   = "${var.prefix}-gitlab"
-  display_name = "Gitlab VM service account."
+module "cloud-config" {
+  source   = "../../../modules/cloud-config-container/gitlab-ce"
+  env      = var.gitlab_config.env
+  hostname = var.gitlab_config.hostname
+  image    = var.gitlab_config.image
+  mounts = {
+    config = { device_name = "data", fs_path = "config" }
+    data   = { device_name = "data", fs_path = "data" }
+    logs   = { device_name = "data", fs_path = "logs" }
+  }
 }
 
 resource "google_project_iam_member" "default" {
@@ -35,105 +45,37 @@ resource "google_project_iam_member" "default" {
   member   = "serviceAccount:${google_service_account.default.email}"
 }
 
-resource "google_compute_health_check" "http" {
+resource "google_dns_managed_zone" "default" {
+  for_each = local.dns_enabled && var.dns_config.create_zone ? { 1 = 1 } : {}
   provider = google-beta
-  project  = var.project_id
-  name     = "${var.prefix}-http"
-  http_health_check {
-    request_path = "/"
-  }
-  log_config {
-    enable = true
+  project  = local.network_project_id
+  name     = coalesce(var.dns_config.zone_name, var.prefix)
+  dns_name = join("", [
+    regex("^[^\\.]+\\.(.*?)$", var.gitlab_config.hostname)[0],
+    "."
+  ])
+  description = "Gitlab zone."
+  visibility  = "private"
+
+  private_visibility_config {
+    networks {
+      network_url = var.network_config.vpc_self_link
+    }
   }
 }
 
-resource "google_compute_health_check" "ssh" {
-  provider = google-beta
-  project  = var.project_id
-  name     = "${var.prefix}-ssh"
-  tcp_health_check {
-    port = 22
-  }
-  log_config {
-    enable = true
-  }
-}
-
-resource "google_compute_region_disk" "data" {
-  project       = var.project_id
-  name          = "${var.prefix}-data"
-  type          = var.gce_config.disk_type
-  region        = var.region
-  replica_zones = values(local.zones)
-  size          = var.gce_config.disk_size
-}
-
-resource "google_compute_instance_template" "default" {
-  project      = var.project_id
-  name_prefix  = "${var.prefix}-"
-  machine_type = var.gce_config.machine_type
-
-  disk {
-    source_image = "cos-cloud/cos-stable"
-    auto_delete  = true
-    boot         = true
-    device_name  = "boot"
-    disk_type    = "pd-balanced"
-  }
-  disk {
-    source      = google_compute_region_disk.data.self_link
-    auto_delete = false
-    boot        = false
-    device_name = "data"
-  }
-  metadata = {
-    user-data = local.cloud_config
-  }
-  network_interface {
-    subnetwork = var.subnet_self_link
-  }
-  service_account {
-    email = google_service_account.default.email
-    scopes = [
-      "https://www.googleapis.com/auth/cloud-platform",
-      "https://www.googleapis.com/auth/userinfo.email",
-    ]
-  }
-  tags = ["http-server", "ssh", var.prefix]
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
-resource "google_compute_instance_group_manager" "default" {
-  provider           = google-beta
-  for_each           = local.zones
-  project            = var.project_id
-  zone               = each.value
-  name               = "${var.prefix}-${each.key}"
-  base_instance_name = var.prefix
-  target_size        = null
-  auto_healing_policies {
-    health_check      = google_compute_health_check.ssh.self_link
-    initial_delay_sec = 60
-  }
-  named_port {
-    name = "http"
-    port = 80
-  }
-  named_port {
-    name = "https"
-    port = 443
-  }
-  update_policy {
-    max_surge_fixed       = 0
-    max_unavailable_fixed = 1
-    minimal_action        = "RESTART"
-    replacement_method    = "RECREATE"
-    type                  = "OPPORTUNISTIC"
-  }
-  version {
-    instance_template = google_compute_instance_template.default.self_link
-    name              = "default"
-  }
+resource "google_dns_record_set" "default" {
+  for_each = local.dns_enabled ? { 1 = 1 } : {}
+  project  = local.network_project_id
+  managed_zone = (
+    var.dns_config.create_zone
+    ? google_dns_managed_zone.default["1"].name
+    : var.dns_config.zone_name
+  )
+  name = "${var.gitlab_config.hostname}."
+  type = "A"
+  ttl  = 300
+  rrdatas = [
+    google_compute_forwarding_rule.ilb.ip_address
+  ]
 }
