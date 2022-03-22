@@ -84,7 +84,9 @@ write_files:
         %{~ if env_file != null ~}
         --env-file /run/gitlab-env.list \
         %{~ endif ~}
-        %{~ if hostname != null }--hostname gitlab.example.com \%{ endif ~}
+        %{~ if hostname != null ~}
+        --hostname gitlab.example.com \
+        %{~ endif ~}
         --log-driver=gcplogs \
         --name=gitlab-ce \
         --network host \
