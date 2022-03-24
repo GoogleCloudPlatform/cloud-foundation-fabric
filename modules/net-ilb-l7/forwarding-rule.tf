@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Global address and forwarding rule.
+# tfdoc:file:description IP Address and forwarding rule.
 
 locals {
   ip_address = (

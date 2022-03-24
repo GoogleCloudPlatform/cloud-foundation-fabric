@@ -49,7 +49,7 @@ output "target_proxy" {
   )
 }
 
-output "global_forwarding_rule" {
-  description = "The global forwarding rule."
+output "forwarding_rule" {
+  description = "The forwarding rule."
   value       = google_compute_forwarding_rule.forwarding_rule
 }
