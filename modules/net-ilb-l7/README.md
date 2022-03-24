@@ -357,7 +357,7 @@ An Internal HTTP Load Balancer is made of multiple components, that change depen
 | name | description | resources |
 |---|---|---|
 | [backend-services.tf](./backend-services.tf) | Bucket and group backend services. | <code>google_compute_region_backend_service</code> |
-| [forwarding-rule.tf](./forwarding-rule.tf) | Global address and forwarding rule. | <code>google_compute_address</code> · <code>google_compute_forwarding_rule</code> |
+| [forwarding-rule.tf](./forwarding-rule.tf) | IP Address and forwarding rule. | <code>google_compute_address</code> · <code>google_compute_forwarding_rule</code> |
 | [health-checks.tf](./health-checks.tf) | Health checks. | <code>google_compute_region_health_check</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |
 | [ssl-certificates.tf](./ssl-certificates.tf) | SSL certificates. | <code>google_compute_ssl_certificate</code> |
@@ -388,7 +388,7 @@ An Internal HTTP Load Balancer is made of multiple components, that change depen
 | name | description | sensitive |
 |---|---|:---:|
 | [backend_services](outputs.tf#L22) | Backend service resources. |  |
-| [global_forwarding_rule](outputs.tf#L52) | The global forwarding rule. |  |
+| [forwarding_rule](outputs.tf#L52) | The forwarding rule. |  |
 | [health_checks](outputs.tf#L17) | Health-check resources. |  |
 | [ip_address](outputs.tf#L39) | The reserved IP address. |  |
 | [ssl_certificates](outputs.tf#L34) | The SSL certificate. |  |
