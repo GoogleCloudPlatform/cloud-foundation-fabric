@@ -96,11 +96,6 @@ module "branch-teams-team-dev-folder" {
   }
 }
 
-moved {
-  from = module.branch-teams-dev-projectfactory-sa
-  to   = module.branch-teams-dev-pf-sa
-}
-
 module "branch-teams-dev-pf-sa" {
   source     = "../../../modules/iam-service-account"
   project_id = var.automation_project_id
@@ -108,11 +103,6 @@ module "branch-teams-dev-pf-sa" {
   # naming: environment in description
   description = "Terraform project factory development service account."
   prefix      = var.prefix
-}
-
-moved {
-  from = module.branch-teams-dev-projectfactory-gcs
-  to   = module.branch-teams-dev-pf-gcs
 }
 
 module "branch-teams-dev-pf-gcs" {
@@ -149,11 +139,6 @@ module "branch-teams-team-prod-folder" {
   }
 }
 
-moved {
-  from = module.branch-teams-prod-projectfactory-sa
-  to   = module.branch-teams-prod-pf-sa
-}
-
 module "branch-teams-prod-pf-sa" {
   source     = "../../../modules/iam-service-account"
   project_id = var.automation_project_id
@@ -161,11 +146,6 @@ module "branch-teams-prod-pf-sa" {
   # naming: environment in description
   description = "Terraform project factory production service account."
   prefix      = var.prefix
-}
-
-moved {
-  from = module.branch-teams-prod-projectfactory-gcs
-  to   = module.branch-teams-prod-pf-gcs
 }
 
 module "branch-teams-prod-pf-gcs" {
