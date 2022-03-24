@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+- new [net-ilb-l7](modules/net-ilb-l7) module
 - fix permadiff in `net-vpc-firewall` module rules
 - new [gke-hub](modules/gke-hub) module
 - new [unmanaged-instances-healthcheck](examples/cloud-operations/unmanaged-instances-healthcheck) example
