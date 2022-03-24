@@ -66,6 +66,7 @@ module "service-account-function" {
     "${var.organization_id}" = [
       "roles/compute.networkViewer",
       "roles/monitoring.viewer",
+      "roles/cloudasset.viewer"
     ]
   }
 
@@ -139,6 +140,7 @@ module "cloud-function" {
     LIMIT_VPC_PEER          = local.limit_vpc_peer
     MONITORED_PROJECTS_LIST = local.projects
     MONITORING_PROJECT_ID   = module.project-monitoring.project_id
+    ORGANIZATION_ID         = var.organization_id
   }
 
   service_account = module.service-account-function.email

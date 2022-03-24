@@ -27,7 +27,6 @@ A dashboard called "quotas-utilization" should be created.
 
 The Cloud Function runs every 5 minutes by default so you should start getting some data points after a few minutes.
 You can change this frequency by modifying the "schedule_cron" variable in variables.tf.
-Note that we are using Google defined metrics that are populated only once a day so you might need to wait up to one day for some metrics.
 
 Once done testing, you can clean up resources by running `terraform destroy`.
 
