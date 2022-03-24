@@ -60,7 +60,7 @@ write_files:
       ExecStart=/usr/bin/docker run --rm --name=coredns  \
         %{~ if docker_logging ~}
         --log-driver=gcplogs \
-        {%~ endif ~}
+        %{~ endif ~}
         --network host \
         -v /etc/coredns:/etc/coredns \
         coredns/coredns -conf /etc/coredns/Corefile

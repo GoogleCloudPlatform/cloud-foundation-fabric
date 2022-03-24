@@ -55,7 +55,7 @@ write_files:
       ExecStart=/usr/bin/docker run --rm --name=nginx  \
         %{~ if docker_logging ~}
         --log-driver=gcplogs \
-        {%~ endif ~}
+        %{~ endif ~}
         --network host \
         %{~ if etc_mount ~}
         -v /etc/nginx/conf.d:/etc/nginx/conf.d \

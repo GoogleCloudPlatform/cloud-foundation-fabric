@@ -98,7 +98,7 @@ write_files:
         --user 2000:2000 \
         %{~ if docker_logging ~}
         --log-driver=gcplogs \
-        {%~ endif ~}
+        %{~ endif ~}
         --network host \
         -e MYSQL_ROOT_PASSWORD_FILE=/etc/secrets/mysql-passwd.txt \
         -v /run/mysql/secrets:/etc/secrets \

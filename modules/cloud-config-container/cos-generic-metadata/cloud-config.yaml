@@ -54,10 +54,10 @@ write_files:
         %{ endif ~}
         %{~ if docker_logging ~}
         --log-driver=gcplogs \
-        {%~ endif ~}
-        %{ if docker_args != null ~}
+        %{~ endif ~}
+        %{~ if docker_args != null ~}
         ${docker_args} \
-        %{ endif ~}
+        %{~ endif ~}
         %{ for volume in container_volumes ~}
         -v ${volume.host}:${volume.container} \
         %{ endfor ~}

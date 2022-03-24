@@ -73,7 +73,7 @@ write_files:
       ExecStart=/usr/bin/docker run --rm --name=squid  \
         %{~ if docker_logging ~}
         --log-driver=gcplogs \
-        {%~ endif ~}
+        %{~ endif ~}
         --network host \
         -v /etc/squid:/etc/squid \
         gcr.io/pso-cft-fabric/squid:0.10
