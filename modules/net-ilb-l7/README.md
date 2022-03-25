@@ -46,7 +46,7 @@ Alternatively, one or more health checks can be either contextually created or a
 For example, to contextually create a health check and attach it to the backend service:
 
 ```hcl
-module "glb" {
+module "ilb" {
   source     = "./modules/net-ilb-l7"
   name       = "ilb-test"
   project_id = var.project_id
@@ -86,6 +86,9 @@ module "glb" {
 
 ### Network Endpoint Groups and Serverless Backends
 
+Network Endpoint Groups (NEGs) and Serverless backends for HTTP ILB will be supported soon.
+
+<!--
 Network Endpoint Groups (including for serverless backends) can also be used, as shown in the example below.
 
 ```hcl
@@ -127,6 +130,7 @@ resource "google_compute_region_network_endpoint_group" "serverless-neg" {
 }
 # tftest modules=1 resources=4
 ```
+-->
 
 ### Url-map
 

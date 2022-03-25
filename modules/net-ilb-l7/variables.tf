@@ -41,7 +41,7 @@ variable "backend_services_config" {
     })
 
     backends = list(object({
-      group = string # IG or NEG FQDN address
+      group = string # IG FQDN address
       options = object({
         balancing_mode               = string # Can be UTILIZATION, RATE, CONNECTION
         capacity_scaler              = number # Valid range is [0.0,1.0]
