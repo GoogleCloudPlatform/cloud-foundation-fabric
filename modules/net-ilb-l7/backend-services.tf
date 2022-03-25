@@ -22,7 +22,6 @@ resource "google_compute_region_backend_service" "backend_service" {
   project                         = var.project_id
   description                     = "Terraform managed."
   affinity_cookie_ttl_sec         = try(each.value.group_config.options.affinity_cookie_ttl_sec, null)
-  enable_cdn                      = try(each.value.enable_cdn, null)
   connection_draining_timeout_sec = try(each.value.group_config.options.connection_draining_timeout_sec, null)
   load_balancing_scheme           = "INTERNAL_MANAGED"
   locality_lb_policy              = try(each.value.group_config.options.locality_lb_policy, null)
@@ -101,36 +100,6 @@ resource "google_compute_region_backend_service" "backend_service" {
               nanos   = try(ttl.value.nanos, null)   # Must be from 0 to 999,999,999 inclusive
             }
           }
-        }
-      }
-    }
-  }
-
-  dynamic "cdn_policy" {
-    for_each = (
-      try(each.value.cdn_policy, null) == null
-      ? []
-      : [each.value.cdn_policy]
-    )
-    iterator = cdn_policy
-    content {
-      signed_url_cache_max_age_sec = try(cdn_policy.value.signed_url_cache_max_age_sec, null)
-      default_ttl                  = try(cdn_policy.value.default_ttl, null)
-      max_ttl                      = try(cdn_policy.value.max_ttl, null)
-      client_ttl                   = try(cdn_policy.value.client_ttl, null)
-      negative_caching             = try(cdn_policy.value.negative_caching, null)
-      cache_mode                   = try(cdn_policy.value.cache_mode, null)
-      serve_while_stale            = try(cdn_policy.value.serve_while_stale, null)
-
-      dynamic "negative_caching_policy" {
-        for_each = (
-          try(cdn_policy.value.negative_caching_policy, null) == null
-          ? []
-          : [cdn_policy.value.negative_caching_policy]
-        )
-        iterator = ncp
-        content {
-          code = try(ncp.value.code, null)
         }
       }
     }

@@ -14,8 +14,6 @@
 
 _BACKEND_SVC_CONFIG = '''{
   my-group = {
-    enable_cdn    = false,
-    cdn_config    = null,
     backends = [
       {
         group   = "my_group",
@@ -30,8 +28,6 @@ _BACKEND_SVC_CONFIG = '''{
 
 _BACKEND_SVC_CONFIG_HC = '''{
   my-group = {
-    enable_cdn    = false,
-    cdn_config    = null,
     backends = [
       {
         group   = "my_group",

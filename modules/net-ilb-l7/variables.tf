@@ -27,19 +27,6 @@ variable "project_id" {
 variable "backend_services_config" {
   description = "The backends services configuration."
   type = map(object({
-    enable_cdn = bool
-
-    cdn_config = object({
-      cache_mode                   = string
-      client_ttl                   = number
-      default_ttl                  = number
-      max_ttl                      = number
-      negative_caching             = bool
-      negative_caching_policy      = map(number)
-      serve_while_stale            = bool
-      signed_url_cache_max_age_sec = string
-    })
-
     backends = list(object({
       group = string # IG FQDN address
       options = object({
