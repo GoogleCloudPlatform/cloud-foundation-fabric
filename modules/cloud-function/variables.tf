@@ -74,7 +74,7 @@ variable "iam" {
 }
 
 variable "ingress_settings" {
-  description = "Control traffic that reaches the cloud function. Allowed values are ALLOW_ALL and ALLOW_INTERNAL_ONLY."
+  description = "Control traffic that reaches the cloud function. Allowed values are ALLOW_ALL, ALLOW_INTERNAL_AND_GCLB and ALLOW_INTERNAL_ONLY ."
   type        = string
   default     = null
 }
