@@ -118,7 +118,10 @@ resource "google_storage_bucket" "bucket" {
     for_each = var.bucket_config.lifecycle_delete_age == null ? [] : [""]
     content {
       action { type = "Delete" }
-      condition { age = var.bucket_config.lifecycle_delete_age }
+      condition {
+        age        = var.bucket_config.lifecycle_delete_age
+        with_state = "ARCHIVED"
+      }
     }
   }
 
