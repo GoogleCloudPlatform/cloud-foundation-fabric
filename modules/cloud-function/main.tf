@@ -121,6 +121,13 @@ resource "google_storage_bucket" "bucket" {
       condition { age = var.bucket_config.lifecycle_delete_age }
     }
   }
+
+  dynamic "versioning" {
+    for_each = var.bucket_config.lifecycle_delete_age == null ? [] : [""]
+    content {
+      enabled = true
+    }
+  }
 }
 
 resource "google_storage_bucket_object" "bundle" {
