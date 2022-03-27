@@ -103,9 +103,10 @@ resource "google_cloudfunctions_function_iam_binding" "default" {
 }
 
 resource "google_storage_bucket" "bucket" {
-  count   = var.bucket_config == null ? 0 : 1
-  project = var.project_id
-  name    = "${local.prefix}${var.bucket_name}"
+  count                       = var.bucket_config == null ? 0 : 1
+  project                     = var.project_id
+  name                        = "${local.prefix}${var.bucket_name}"
+  uniform_bucket_level_access = true
   location = (
     var.bucket_config.location == null
     ? var.region
