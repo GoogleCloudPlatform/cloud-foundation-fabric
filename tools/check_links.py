@@ -27,7 +27,6 @@ import urllib.parse
 import click
 import marko
 
-BAD_STATUS_CODES = [401, 401, 403, 404, 500]
 BASEDIR = pathlib.Path(__file__).resolve().parents[1]
 DOC = collections.namedtuple('DOC', 'path relpath links')
 LINK = collections.namedtuple('LINK', 'dest valid')
