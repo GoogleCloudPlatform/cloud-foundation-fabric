@@ -29,8 +29,6 @@ import marko
 BASEDIR = pathlib.Path(__file__).resolve().parents[1]
 DOC = collections.namedtuple('DOC', 'path relpath links')
 LINK = collections.namedtuple('LINK', 'dest valid')
-OBJS_EXPAND = (marko.block.List, marko.block.ListItem, marko.block.Paragraph)
-OBJS_LINK = marko.inline.Link
 
 
 def check_link(link, readme_path):
@@ -45,39 +43,25 @@ def check_link(link, readme_path):
   return LINK(link.dest, link_valid)
 
 
-def check_elements(elements, readme_path):
-  'Recursively finds and checks links in a list of elements.'
-  if len(elements) == 0:
-    return []
-
-  el = elements[0]
-
-  # If there is one element, check the link,
-  # expand it (if possible), return [] otherwise
-  if len(elements) == 1:
-    if isinstance(el, OBJS_LINK):
-      return [check_link(el, readme_path)]
-    if isinstance(el, OBJS_EXPAND):
-      return check_elements(el.children, readme_path)
-    return []
-
-  # If there is more than one element call recursively:
-  # concatenate call on the first element and call on all other elements
-  if len(elements) > 1:
-    link_in_first_element = check_elements([el], readme_path)
-    link_in_other_elements = check_elements(elements[1:len(elements)],
-                                            readme_path)
-    return link_in_first_element + link_in_other_elements
-
-
 def check_docs(dir_name):
   'Traverses dir_name and checks for all Markdown files.'
   dir_path = BASEDIR / dir_name
+  parser = marko.parser.Parser()
   for readme_path in sorted(dir_path.glob('**/*.md')):
     if '.terraform' in str(readme_path) or '.pytest' in str(readme_path):
       continue
-    els = marko.parser.Parser().parse(readme_path.read_text()).children
-    links = check_elements(els, readme_path)
+
+    root = parser.parse(readme_path.read_text())
+    elements = collections.deque([root])
+    links = []
+    while elements:
+      el = elements.popleft()
+      if isinstance(el, marko.inline.Link):
+        links.append(check_link(el, readme_path))
+      else:
+        if hasattr(el, 'children'):
+          elements.extend(el.children)
+
     yield DOC(readme_path, str(readme_path.relative_to(dir_path)), links)
 
 
