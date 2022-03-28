@@ -29,35 +29,61 @@ import marko
 BASEDIR = pathlib.Path(__file__).resolve().parents[1]
 DOC = collections.namedtuple('DOC', 'path relpath links')
 LINK = collections.namedtuple('LINK', 'dest valid')
+OBJS_EXPAND = (marko.block.List, marko.block.ListItem, marko.block.Paragraph)
+OBJS_LINK = marko.inline.Link
+
+
+def check_link(link, readme_path):
+  'Checks if a link element has a valid destination.'
+  link_valid = None
+  url = urllib.parse.urlparse(link.dest)
+  if url.scheme:
+    # TODO: worth checking if the call returns 404, 403, 500
+    link_valid = True
+  else:
+    link_valid = (readme_path.parent / url.path).exists()
+  return LINK(link.dest, link_valid)
+
+
+def check_elements(elements, readme_path):
+  'Recursively finds and checks links in a list of elements.'
+  if len(elements) == 0:
+    return []
+
+  el = elements[0]
+
+  # If there is one element, check the link,
+  # expand it (if possible), return [] otherwise
+  if len(elements) == 1:
+    if isinstance(el, OBJS_LINK):
+      return [check_link(el, readme_path)]
+    if isinstance(el, OBJS_EXPAND):
+      return check_elements(el.children, readme_path)
+    return []
+
+  # If there is more than one element call recursively:
+  # concatenate call on the first element and call on all other elements
+  if len(elements) > 1:
+    link_in_first_element = check_elements([el], readme_path)
+    link_in_other_elements = check_elements(elements[1:len(elements)], readme_path)
+    return link_in_first_element + link_in_other_elements
 
 
 def check_docs(dir_name):
-  'Traverse dir_name and check links in Markdown files.'
+  'Traverses dir_name and checks for all Markdown files.'
   dir_path = BASEDIR / dir_name
   for readme_path in sorted(dir_path.glob('**/*.md')):
     if '.terraform' in str(readme_path) or '.pytest' in str(readme_path):
       continue
-    links = []
-    for el in marko.parser.Parser().parse(readme_path.read_text()).children:
-      if not isinstance(el, marko.block.Paragraph):
-        continue
-      for subel in el.children:
-        if not isinstance(subel, marko.inline.Link):
-          continue
-        link_valid = None
-        url = urllib.parse.urlparse(subel.dest)
-        if url.scheme:
-          link_valid = True
-        else:
-          link_valid = (readme_path.parent / url.path).exists()
-        links.append(LINK(subel.dest, link_valid))
+    els = marko.parser.Parser().parse(readme_path.read_text()).children
+    links = check_elements(els, readme_path)
     yield DOC(readme_path, str(readme_path.relative_to(dir_path)), links)
 
 
 @click.command()
 @click.argument('dirs', type=str, nargs=-1)
 def main(dirs):
-  'Check links in Markdown files contained in dirs.'
+  'Checks links in Markdown files contained in dirs.'
   errors = 0
   for dir_name in dirs:
     print(f'----- {dir_name} -----')
