@@ -39,7 +39,6 @@ def check_link(link, readme_path, external):
   url = urllib.parse.urlparse(link.dest)
   # If the link is public, say the link is anyway valid
   # if --external is not set; check the link otherwise
-  print(link.dest)
   if url.scheme:
     link_valid = True
     if external:
@@ -56,7 +55,7 @@ def check_link(link, readme_path, external):
   return LINK(link.dest, link_valid)
 
 
-def check_docs(dir_name, external):
+def check_docs(dir_name, external=False):
   'Traverses dir_name and checks for all Markdown files.'
   dir_path = BASEDIR / dir_name
   parser = marko.parser.Parser()
