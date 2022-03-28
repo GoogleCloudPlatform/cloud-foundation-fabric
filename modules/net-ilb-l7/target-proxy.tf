@@ -22,7 +22,7 @@ locals {
   ssl_certificates = [
     for cert in try(var.target_proxy_https_config.ssl_certificates, []) :
     try(
-      google_compute_ssl_certificate.certificates[cert].certificate_id,
+      google_compute_region_ssl_certificate.certificates[cert].self_link,
       cert
     )
   ]
@@ -33,6 +33,7 @@ resource "google_compute_region_target_http_proxy" "http" {
   name        = var.name
   project     = var.project_id
   description = "Terraform managed."
+  region      = var.region
   url_map     = google_compute_region_url_map.url_map.id
 }
 
@@ -41,6 +42,7 @@ resource "google_compute_region_target_https_proxy" "https" {
   name             = var.name
   project          = var.project_id
   description      = "Terraform managed."
+  region           = var.region
   url_map          = google_compute_region_url_map.url_map.id
   ssl_certificates = local.ssl_certificates
 }

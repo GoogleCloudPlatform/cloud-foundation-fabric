@@ -103,11 +103,11 @@ def test_group_no_hc(plan_runner):
   resources = dict((r['type'], r['values']) for r in resources)
 
   assert 'google_compute_region_backend_service' in resources
-  assert 'google_compute_forwarding_rule' in resources
   assert 'google_compute_region_health_check' not in resources
   assert 'google_compute_region_target_http_proxy' in resources
   assert 'google_compute_region_target_https_proxy' not in resources
   assert 'google_compute_region_url_map' in resources
+  assert 'google_compute_forwarding_rule' in resources
 
 
 def test_group_existing_hc(plan_runner):
@@ -117,11 +117,11 @@ def test_group_existing_hc(plan_runner):
   resources = dict((r['type'], r['values']) for r in resources)
 
   assert 'google_compute_region_backend_service' in resources
-  assert 'google_compute_forwarding_rule' in resources
   assert 'google_compute_region_health_check' not in resources
   assert 'google_compute_region_target_http_proxy' in resources
   assert 'google_compute_region_target_https_proxy' not in resources
   assert 'google_compute_region_url_map' in resources
+  assert 'google_compute_forwarding_rule' in resources
 
 
 def test_reserved_ip(plan_runner):
@@ -134,11 +134,11 @@ def test_reserved_ip(plan_runner):
   resources = dict((r['type'], r['values']) for r in resources)
 
   assert 'google_compute_region_backend_service' in resources
-  assert 'google_compute_address' in resources
-  assert 'google_compute_forwarding_rule' in resources
   assert 'google_compute_region_target_http_proxy' in resources
   assert 'google_compute_region_target_https_proxy' not in resources
   assert 'google_compute_region_url_map' in resources
+  assert 'google_compute_address' in resources
+  assert 'google_compute_forwarding_rule' in resources
 
 
 def test_ssl(plan_runner):
@@ -156,11 +156,11 @@ def test_ssl(plan_runner):
   assert fwd_rule['port_range'] == '443'
 
   assert 'google_compute_region_backend_service' in resources
-  assert 'google_compute_forwarding_rule' in resources
-  assert 'google_compute_ssl_certificate' in resources
+  assert 'google_compute_region_ssl_certificate' in resources
   assert 'google_compute_region_target_http_proxy' not in resources
   assert 'google_compute_region_target_https_proxy' in resources
   assert 'google_compute_region_url_map' in resources
+  assert 'google_compute_forwarding_rule' in resources
 
 
 def test_ssl_existing_cert(plan_runner):
@@ -177,8 +177,8 @@ def test_ssl_existing_cert(plan_runner):
   assert fwd_rule['port_range'] == '443'
 
   assert 'google_compute_region_backend_service' in resources
-  assert 'google_compute_forwarding_rule' in resources
-  assert 'google_compute_ssl_certificate' not in resources
+  assert 'google_compute_region_ssl_certificate' not in resources
   assert 'google_compute_region_target_http_proxy' not in resources
   assert 'google_compute_region_target_https_proxy' in resources
   assert 'google_compute_region_url_map' in resources
+  assert 'google_compute_forwarding_rule' in resources

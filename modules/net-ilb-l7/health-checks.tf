@@ -52,6 +52,7 @@ resource "google_compute_region_health_check" "health_check" {
   description         = "Terraform managed."
   check_interval_sec  = try(each.value.options.check_interval_sec, null)
   healthy_threshold   = try(each.value.options.healthy_threshold, null)
+  region              = var.region
   timeout_sec         = try(each.value.options.timeout_sec, null)
   unhealthy_threshold = try(each.value.options.unhealthy_threshold, null)
 

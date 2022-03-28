@@ -27,6 +27,7 @@ resource "google_compute_region_backend_service" "backend_service" {
   locality_lb_policy              = try(each.value.group_config.options.locality_lb_policy, null)
   port_name                       = try(each.value.group_config.options.port_name, null)
   protocol                        = try(each.value.group_config.options.protocol, null)
+  region                          = var.region
   session_affinity                = try(each.value.group_config.options.session_affinity, null)
   timeout_sec                     = try(each.value.group_config.options.timeout_sec, null)
 
@@ -48,8 +49,8 @@ resource "google_compute_region_backend_service" "backend_service" {
   dynamic "backend" {
     for_each = try(each.value.backends, [])
     content {
-      balancing_mode               = try(backend.value.options.balancing_mode, null)
-      capacity_scaler              = try(backend.value.options.capacity_scaler, null)
+      balancing_mode               = try(backend.value.options.balancing_mode, "UTILIZATION")
+      capacity_scaler              = try(backend.value.options.capacity_scaler, 1)
       group                        = try(backend.value.group, null)
       max_connections              = try(backend.value.options.max_connections, null)
       max_connections_per_instance = try(backend.value.options.max_connections_per_instance, null)

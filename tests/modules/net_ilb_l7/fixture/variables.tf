@@ -18,9 +18,9 @@ variable "backend_services_config" {
   description = "The backends services configuration."
   type = map(object({
     backends = list(object({
-      group = string # IG or NEG FQDN address
+      group = string # IG FQDN address
       options = object({
-        balancing_mode               = string # Can be UTILIZATION, RATE, CONNECTION
+        balancing_mode               = string # Can be UTILIZATION, RATE
         capacity_scaler              = number # Valid range is [0.0,1.0]
         max_connections              = number
         max_connections_per_instance = number
@@ -88,10 +88,9 @@ variable "backend_services_config" {
 variable "forwarding_rule_config" {
   description = "Forwarding rule configurations."
   type = object({
-    allow_global_access = bool
-    ip_version          = string
-    network_tier        = string
-    port_range          = string
+    ip_version   = string
+    network_tier = string
+    port_range   = string
   })
   default = {
     allow_global_access = true

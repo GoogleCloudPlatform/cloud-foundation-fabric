@@ -46,7 +46,9 @@ resource "google_compute_region_url_map" "url_map" {
   name            = var.name
   description     = "Terraform managed."
   project         = var.project_id
+  region          = var.region
   default_service = local.default_service
+
 
   dynamic "host_rule" {
     for_each = (

@@ -53,7 +53,6 @@ resource "google_compute_forwarding_rule" "forwarding_rule" {
   name                  = var.name
   project               = var.project_id
   description           = "Terraform managed."
-  allow_global_access   = var.forwarding_rule_config.allow_global_access
   ip_address            = local.ip_address
   ip_protocol           = "TCP"
   load_balancing_scheme = "INTERNAL_MANAGED"

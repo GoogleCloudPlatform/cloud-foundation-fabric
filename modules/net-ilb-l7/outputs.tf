@@ -33,7 +33,7 @@ output "url_map" {
 
 output "ssl_certificates" {
   description = "The SSL certificate."
-  value       = try(google_compute_ssl_certificate.certificates, null)
+  value       = try(google_compute_region_ssl_certificate.certificates, null)
 }
 
 output "ip_address" {
