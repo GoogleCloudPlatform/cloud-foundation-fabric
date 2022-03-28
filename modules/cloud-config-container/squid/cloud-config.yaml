@@ -71,7 +71,10 @@ write_files:
       Environment="HOME=/home/squid"
       ExecStartPre=/usr/bin/docker-credential-gcr configure-docker
       ExecStart=/usr/bin/docker run --rm --name=squid  \
-        --log-driver=gcplogs --network host \
+        %{~ if docker_logging ~}
+        --log-driver=gcplogs \
+        %{~ endif ~}
+        --network host \
         -v /etc/squid:/etc/squid \
         gcr.io/pso-cft-fabric/squid:0.10
       ExecStop=/usr/bin/docker stop squid

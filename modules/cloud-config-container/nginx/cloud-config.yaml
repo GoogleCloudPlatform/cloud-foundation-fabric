@@ -53,7 +53,10 @@ write_files:
       Wants=gcr-online.target docker.socket docker-events-collector.service
       [Service]
       ExecStart=/usr/bin/docker run --rm --name=nginx  \
-        --log-driver=gcplogs --network host \
+        %{~ if docker_logging ~}
+        --log-driver=gcplogs \
+        %{~ endif ~}
+        --network host \
         %{~ if etc_mount ~}
         -v /etc/nginx/conf.d:/etc/nginx/conf.d \
         %{~ endif ~}
