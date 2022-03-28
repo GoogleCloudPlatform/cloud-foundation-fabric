@@ -17,23 +17,6 @@
 locals {
   project_id_list = toset(var.monitored_projects_list)
   projects        = join(",", local.project_id_list)
-
-  limit_instances          = join(",", local.limit_instances_list)
-  limit_instances_list     = tolist(var.limit_instances)
-  limit_instances_ppg      = join(",", local.limit_instances_ppg_list)
-  limit_instances_ppg_list = tolist(var.limit_instances_ppg)
-  limit_l4                 = join(",", local.limit_l4_list)
-  limit_l4_list            = tolist(var.limit_l4)
-  limit_l4_ppg             = join(",", local.limit_l4_ppg_list)
-  limit_l4_ppg_list        = tolist(var.limit_l4_ppg)
-  limit_l7                 = join(",", local.limit_l7_list)
-  limit_l7_list            = tolist(var.limit_l7)
-  limit_l7_ppg             = join(",", local.limit_l7_ppg_list)
-  limit_l7_ppg_list        = tolist(var.limit_l7_ppg)
-  limit_subnets            = join(",", local.limit_subnets_list)
-  limit_subnets_list       = tolist(var.limit_subnets)
-  limit_vpc_peer           = join(",", local.limit_vpc_peer_list)
-  limit_vpc_peer_list      = tolist(var.limit_vpc_peer)
 }
 
 ################################################
@@ -130,14 +113,6 @@ module "cloud-function" {
   }
 
   environment_variables = {
-    LIMIT_INSTANCES         = local.limit_instances
-    LIMIT_INSTANCES_PPG     = local.limit_instances_ppg
-    LIMIT_L4                = local.limit_l4
-    LIMIT_L4_PPG            = local.limit_l4_ppg
-    LIMIT_L7                = local.limit_l7
-    LIMIT_L7_PPG            = local.limit_l7_ppg
-    LIMIT_SUBNETS           = local.limit_subnets
-    LIMIT_VPC_PEER          = local.limit_vpc_peer
     MONITORED_PROJECTS_LIST = local.projects
     MONITORING_PROJECT_ID   = module.project-monitoring.project_id
     ORGANIZATION_ID         = var.organization_id

@@ -43,3 +43,12 @@ The Cloud Function currently tracks usage, limit and utilization of:
 - internal forwarding rules for internal L7 load balancers per VPC peering group
 
 It writes this values to custom metrics in Cloud Monitoring and creates a dashboard to visualize the current utilization of these metrics in Cloud Monitoring.
+
+## Next steps and ideas
+In a future release, we could support:
+- Static routes per VPC / per VPC peering group
+- Dynamic routes per VPC / per VPC peering group
+- Google managed VPCs that are peered with PSA (such as Cloud SQL or Memorystore)
+- Subnet IP ranges utilization
+
+If you are interested in this and/or would like to contribute, please contact legranda@google.com.
