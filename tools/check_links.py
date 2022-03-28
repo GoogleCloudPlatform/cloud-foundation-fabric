@@ -58,9 +58,8 @@ def check_docs(dir_name):
       el = elements.popleft()
       if isinstance(el, marko.inline.Link):
         links.append(check_link(el, readme_path))
-      else:
-        if hasattr(el, 'children'):
-          elements.extend(el.children)
+      elif hasattr(el, 'children'):
+        elements.extend(el.children)
 
     yield DOC(readme_path, str(readme_path.relative_to(dir_path)), links)
 
