@@ -42,12 +42,10 @@ def check_link(link, readme_path, external):
   if url.scheme:
     link_valid = True
     if external:
-      user_agent = {'User-Agent': 'Chrome/51.0.2704.64'}
       try:
-        status_code = requests.get(link.dest, headers=user_agent).status_code
-        if status_code in BAD_STATUS_CODES:
-          link_valid = False
-      except requests.exceptions.ConnectionError:
+        response = requests.get(link.dest)
+        link_valid = response.ok
+      except requests.exceptions.RequestException:
         link_valid = False
   # The link is private
   else:
