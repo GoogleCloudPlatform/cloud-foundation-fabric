@@ -65,7 +65,8 @@ def check_elements(elements, readme_path):
   # concatenate call on the first element and call on all other elements
   if len(elements) > 1:
     link_in_first_element = check_elements([el], readme_path)
-    link_in_other_elements = check_elements(elements[1:len(elements)], readme_path)
+    link_in_other_elements = check_elements(elements[1:len(elements)],
+                                            readme_path)
     return link_in_first_element + link_in_other_elements
 
 
