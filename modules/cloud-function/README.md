@@ -169,7 +169,7 @@ module "cf-http" {
 | [environment_variables](variables.tf#L46) | Cloud function environment variables. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [function_config](variables.tf#L52) | Cloud function configuration. | <code title="object&#40;&#123;&#10;  entry_point &#61; string&#10;  instances   &#61; number&#10;  memory      &#61; number&#10;  runtime     &#61; string&#10;  timeout     &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  entry_point &#61; &#34;main&#34;&#10;  instances   &#61; 1&#10;  memory      &#61; 256&#10;  runtime     &#61; &#34;python37&#34;&#10;  timeout     &#61; 180&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [iam](variables.tf#L70) | IAM bindings for topic in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [ingress_settings](variables.tf#L76) | Control traffic that reaches the cloud function. Allowed values are ALLOW_ALL and ALLOW_INTERNAL_ONLY. | <code>string</code> |  | <code>null</code> |
+| [ingress_settings](variables.tf#L76) | Control traffic that reaches the cloud function. Allowed values are ALLOW_ALL, ALLOW_INTERNAL_AND_GCLB and ALLOW_INTERNAL_ONLY . | <code>string</code> |  | <code>null</code> |
 | [labels](variables.tf#L82) | Resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [prefix](variables.tf#L93) | Optional prefix used for resource names. | <code>string</code> |  | <code>null</code> |
 | [region](variables.tf#L104) | Region used for all resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |

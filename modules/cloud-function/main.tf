@@ -103,9 +103,10 @@ resource "google_cloudfunctions_function_iam_binding" "default" {
 }
 
 resource "google_storage_bucket" "bucket" {
-  count   = var.bucket_config == null ? 0 : 1
-  project = var.project_id
-  name    = "${local.prefix}${var.bucket_name}"
+  count                       = var.bucket_config == null ? 0 : 1
+  project                     = var.project_id
+  name                        = "${local.prefix}${var.bucket_name}"
+  uniform_bucket_level_access = true
   location = (
     var.bucket_config.location == null
     ? var.region
@@ -117,7 +118,17 @@ resource "google_storage_bucket" "bucket" {
     for_each = var.bucket_config.lifecycle_delete_age == null ? [] : [""]
     content {
       action { type = "Delete" }
-      condition { age = var.bucket_config.lifecycle_delete_age }
+      condition {
+        age        = var.bucket_config.lifecycle_delete_age
+        with_state = "ARCHIVED"
+      }
+    }
+  }
+
+  dynamic "versioning" {
+    for_each = var.bucket_config.lifecycle_delete_age == null ? [] : [""]
+    content {
+      enabled = true
     }
   }
 }
