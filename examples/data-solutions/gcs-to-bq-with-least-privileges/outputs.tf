@@ -51,7 +51,7 @@ output "command_02_dataflow" {
     sa_orch_email    = module.service-account-orch.email
     project_id       = module.project.project_id
     region           = var.region
-    subnet           = module.vpc.subnets["${var.region}/subnet"].self_link
+    subnet           = local.network_subnet_selflink
     gcs_df_stg       = format("%s/%s", module.gcs-df-tmp.url, "stg")
     sa_df_email      = module.service-account-df.email
     cmek_encryption  = var.cmek_encryption
