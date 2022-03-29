@@ -42,6 +42,21 @@ module "common-project" {
   ])
 }
 
+# Data Catalog Policy tag
+
+module "common-datacatalog" {
+  count      = var.data_catalog_tags != null ? 1 : 0
+  source     = "../../../modules/data-catalog-policy-tag"
+  name       = "${var.prefix}-datacatalog-policy-tags"
+  project_id = module.common-project.project_id
+  location   = var.location
+  tags       = var.data_catalog_tags
+  iam = {
+    "roles/datacatalog.categoryAdmin"             = [local.groups_iam.data-security]
+    "roles/datacatalog.categoryFineGrainedReader" = [local.groups_iam.data-analysts]
+  }
+}
+
 # To create KMS keys in the common projet: uncomment this section and assigne key links accondingly in local.service_encryption_keys variable
 
 # module "cmn-kms-0" {

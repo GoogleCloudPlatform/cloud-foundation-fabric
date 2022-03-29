@@ -33,6 +33,17 @@ variable "composer_config" {
   }
 }
 
+variable "data_catalog_tags" {
+  description = "List of Data Catalog Policy tags to be created with optional IAM binging configuration in {tag => {ROLE => [MEMBERS]}} format."
+  type        = map(map(list(string)))
+  nullable    = false
+  default = {
+    high   = null
+    medium = null
+    low    = null
+  }
+}
+
 variable "data_force_destroy" {
   description = "Flag to set 'force_destroy' on data services like BiguQery or Cloud Storage."
   type        = bool
