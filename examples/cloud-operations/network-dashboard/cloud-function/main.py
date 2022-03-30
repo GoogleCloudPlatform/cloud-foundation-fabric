@@ -684,15 +684,15 @@ def get_networks(project_id):
       network_dict.append(d)
   return network_dict
 
-
 def get_dynamic_routes(metrics_dict, limits_dict):
   '''
     Writes all dynamic routes per VPC to custom metrics.
 
       Parameters:
         metrics_dict (dictionary of dictionary of string: string): metrics names and descriptions.
+        limits_dict (dictionary of string: int): key is network link (or 'default_value') and value is the limit for that network
       Returns:
-        network_dict (dictionary of string: string): Contains the project_id, network_name(s) and network_id(s).
+        None
   '''
   routers_dict = get_routers()
 
