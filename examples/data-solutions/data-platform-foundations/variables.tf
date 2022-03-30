@@ -38,9 +38,9 @@ variable "data_catalog_tags" {
   type        = map(map(list(string)))
   nullable    = false
   default = {
-    high   = null
-    medium = null
-    low    = null
+    "3_Confidential" = null
+    "2_Private"      = null
+    "1_Sensitive"    = null
   }
 }
 
