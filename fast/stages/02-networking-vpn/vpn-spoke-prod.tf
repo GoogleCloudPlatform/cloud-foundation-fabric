@@ -82,7 +82,7 @@ module "landing-to-prod-ew4-vpn" {
   source           = "../../../modules/net-vpn-ha"
   project_id       = module.landing-project.project_id
   network          = module.landing-vpc.self_link
-  region           = "europe-west1"
+  region           = "europe-west4"
   name             = "vpn-to-prod-ew4"
   router_create    = true
   router_name      = "landing-vpn-ew4"
@@ -112,7 +112,7 @@ module "prod-to-landing-ew4-vpn" {
   source           = "../../../modules/net-vpn-ha"
   project_id       = module.prod-spoke-project.project_id
   network          = module.prod-spoke-vpc.self_link
-  region           = "europe-west1"
+  region           = "europe-west4"
   name             = "vpn-to-landing-ew4"
   router_create    = true
   router_name      = "prod-spoke-vpn-ew4"
