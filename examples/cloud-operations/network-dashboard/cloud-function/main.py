@@ -66,7 +66,10 @@ def main(event, context):
       limits_dict['internal_forwarding_rules_l4_limit'])
   get_vpc_peering_data(metrics_dict,
                        limits_dict['number_of_vpc_peerings_limit'])
+  get_dynamic_routes(metrics_dict,
+                     limits_dict['dynamic_routes_per_network_limit'])
 
+  # Per VPC peering group metrics
   get_pgg_data(
       metrics_dict["metrics_per_peering_group"]["instance_per_peering_group"],
       gce_instance_dict, GCE_INSTANCES_LIMIT_METRIC,
@@ -88,7 +91,7 @@ def main(event, context):
       metrics_dict["metrics_per_peering_group"]
       ["subnet_ranges_per_peering_group"], subnet_range_dict,
       SUBNET_RANGES_LIMIT_METRIC,
-      limits_dict['number_of_subnet_IP_ranges_limit'])
+      limits_dict['number_of_subnet_IP_ranges_ppg_limit'])
 
   return 'Function executed successfully'
 
@@ -361,11 +364,9 @@ def get_gce_instances_data(metrics_dict, gce_instance_dict, limit_dict):
     for net in network_dict:
       set_limits(net, current_quota_limit_view, limit_dict)
 
-      network_link = f"https://www.googleapis.com/compute/v1/projects/{project}/global/networks/{net['network_name']}"
-
       usage = 0
-      if network_link in gce_instance_dict:
-        usage = gce_instance_dict[network_link]
+      if net['self_link'] in gce_instance_dict:
+        usage = gce_instance_dict[net['self_link']]
 
       write_data_to_metric(
           project, usage, metrics_dict["metrics_per_network"]
@@ -516,11 +517,9 @@ def get_l4_forwarding_rules_data(metrics_dict, forwarding_rules_dict,
     for net in network_dict:
       set_limits(net, current_quota_limit_view, limit_dict)
 
-      network_link = f"https://www.googleapis.com/compute/v1/projects/{project}/global/networks/{net['network_name']}"
-
       usage = 0
-      if network_link in forwarding_rules_dict:
-        usage = forwarding_rules_dict[network_link]
+      if net['self_link'] in forwarding_rules_dict:
+        usage = forwarding_rules_dict[net['self_link']]
 
       write_data_to_metric(
           project, usage, metrics_dict["metrics_per_network"]
@@ -599,7 +598,7 @@ def get_pgg_data(metric_dict, usage_dict, limit_metric, limit_dict):
                             metric_dict["limit"]["name"],
                             metric_dict["utilization"]["name"], limit_dict)
       print(
-          f"Wrote {metric_dict['usage']['name']} to metric for peering group {network_dict['network_name']} in {project}"
+          f"Wrote {metric_dict['usage']['name']} for peering group {network_dict['network_name']} in {project}"
       )
 
 
@@ -675,39 +674,153 @@ def get_networks(project_id):
     for network in response['items']:
       network_name = network['name']
       network_id = network['id']
+      self_link = network['selfLink']
       d = {
           'project_id': project_id,
           'network_name': network_name,
-          'network_id': network_id
+          'network_id': network_id,
+          'self_link': self_link
       }
       network_dict.append(d)
   return network_dict
 
 
-# TODO: list all routers (https://cloud.google.com/compute/docs/reference/rest/v1/routers/list) then https://cloud.google.com/compute/docs/reference/rest/v1/routers/getRouterStatus
-def get_routes(project_id):
+def get_dynamic_routes(metrics_dict, limits_dict):
   '''
-    Returns a dictionary of all dynamic routes in a project.
+    Writes all dynamic routes per VPC to custom metrics.
 
       Parameters:
-        project_id (string): Project ID for the project containing the networks.
+        metrics_dict (dictionary of dictionary of string: string): metrics names and descriptions.
       Returns:
-        network_dict (dictionary of string: string): Contains the project_id, network_name(s) and network_id(s)
+        network_dict (dictionary of string: string): Contains the project_id, network_name(s) and network_id(s).
   '''
-  request = service.routers().list(project=project_id)
+  routers_dict = get_routers()
+
+  for project_id in MONITORED_PROJECTS_LIST:
+    network_dict = get_networks(project_id)
+
+    for network in network_dict:
+      sum_routes = get_routes_for_network(network['self_link'], project_id,
+                                          routers_dict)
+
+      if network['self_link'] in limits_dict:
+        limit = limits_dict[network['self_link']]
+      else:
+        if 'default_value' in limits_dict:
+          limit = limits_dict['default_value']
+        else:
+          print("Error: couldn't find limit for dynamic routes.")
+          break
+
+      utilization = sum_routes / limit
+
+      write_data_to_metric(
+          project_id, sum_routes, metrics_dict["metrics_per_network"]
+          ["dynamic_routes_per_network"]["usage"]["name"],
+          network['network_name'])
+      write_data_to_metric(
+          project_id, limit, metrics_dict["metrics_per_network"]
+          ["dynamic_routes_per_network"]["limit"]["name"],
+          network['network_name'])
+      write_data_to_metric(
+          project_id, utilization, metrics_dict["metrics_per_network"]
+          ["dynamic_routes_per_network"]["utilization"]["name"],
+          network['network_name'])
+
+    print("Wrote metrics for dynamic routes for VPCs in project", project_id)
+
+
+def get_routes_for_network(network_link, project_id, routers_dict):
+  '''
+    Returns a the number of dynamic routes for a given network
+
+      Parameters:
+        network_link (string): Network self link.
+        project_id (string): Project ID containing the network.
+        routers_dict (dictionary of string: list of string): Dictionary with key as network link and value as list of router links.
+      Returns:
+        sum_routes (int): Number of routes in that network.
+  '''
+  sum_routes = 0
+
+  if network_link in routers_dict:
+    for router_link in routers_dict[network_link]:
+      # Router link is using the following format:
+      # 'https://www.googleapis.com/compute/v1/projects/PROJECT_ID/regions/REGION/routers/ROUTER_NAME'
+      start = router_link.find("/regions/") + len("/regions/")
+      end = router_link.find("/routers/")
+      router_region = router_link[start:end]
+      router_name = router_link.split('/routers/')[1]
+      routes = get_routes_for_router(project_id, router_region, router_name)
+
+      sum_routes += routes
+
+  return sum_routes
+
+
+def get_routes_for_router(project_id, router_region, router_name):
+  '''
+    Returns the same of dynamic routes learned by a specific Cloud Router instance
+
+      Parameters:
+        project_id (string): Project ID for the project containing the Cloud Router.
+        router_region (string): GCP region for the Cloud Router.
+        router_name (string): Cloud Router name.
+      Returns:
+        sum_routes (int): Number of dynamic routes learned by the Cloud Router.
+  '''
+  request = service.routers().getRouterStatus(project=project_id,
+                                              region=router_region,
+                                              router=router_name)
   response = request.execute()
-  network_dict = []
-  if 'items' in response:
-    for router in response['items']:
-      network_name = router['name']
-      network_id = router['id']
-      d = {
-          'project_id': project_id,
-          'network name': network_name,
-          'network id': network_id
-      }
-      network_dict.append(d)
-  return network_dict
+
+  sum_routes = 0
+
+  if 'result' in response:
+    for peer in response['result']['bgpPeerStatus']:
+      sum_routes += peer['numLearnedRoutes']
+
+  return sum_routes
+
+
+def get_routers():
+  '''
+    Returns a dictionary of all Cloud Routers in the GCP organization.
+
+      Parameters:
+        None
+      Returns:
+        routers_dict (dictionary of string: list of string): Key is the network link and value is a list of router links.
+  '''
+  client = asset_v1.AssetServiceClient()
+
+  read_mask = field_mask_pb2.FieldMask()
+  read_mask.FromJsonString('name,versionedResources')
+
+  routers_dict = {}
+
+  response = client.search_all_resources(
+      request={
+          "scope": f"organizations/{ORGANIZATION_ID}",
+          "asset_types": ["compute.googleapis.com/Router"],
+          "read_mask": read_mask,
+      })
+  for resource in response:
+    network_link = None
+    router_link = None
+    for versioned in resource.versioned_resources:
+      for field_name, field_value in versioned.resource.items():
+        if field_name == "network":
+          network_link = field_value
+        if field_name == "selfLink":
+          router_link = field_value
+
+    if network_link in routers_dict:
+      routers_dict[network_link].append(router_link)
+    else:
+      routers_dict[network_link] = [router_link]
+
+  return routers_dict
 
 
 def gather_peering_data(project_id):
