@@ -196,7 +196,7 @@
       {
         "height": 4,
         "widget": {
-          "title": "number_of_subnet_IP_ranges_utilization",
+          "title": "number_of_subnet_IP_ranges_ppg_utilization",
           "xyChart": {
             "chartOptions": {
               "mode": "COLOR"
@@ -212,7 +212,7 @@
                       "alignmentPeriod": "3600s",
                       "perSeriesAligner": "ALIGN_NEXT_OLDER"
                     },
-                    "filter": "metric.type=\"custom.googleapis.com/number_of_subnet_IP_ranges_utilization\" resource.type=\"global\"",
+                    "filter": "metric.type=\"custom.googleapis.com/number_of_subnet_IP_ranges_ppg_utilization\" resource.type=\"global\"",
                     "secondaryAggregation": {
                       "alignmentPeriod": "3600s",
                       "perSeriesAligner": "ALIGN_MEAN"
