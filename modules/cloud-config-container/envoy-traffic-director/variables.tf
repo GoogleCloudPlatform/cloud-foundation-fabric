@@ -20,8 +20,8 @@ variable "envoy_image" {
   default     = "envoyproxy/envoy:v1.14.1"
 }
 
-variable "gcp_logging" {
-  description = "Should container logs be sent to Google Cloud Logging."
+variable "docker_logging" {
+  description = "Log via the Docker gcplogs driver. Disable if you use the legacy Logging Agent instead."
   type        = bool
   default     = true
 }
