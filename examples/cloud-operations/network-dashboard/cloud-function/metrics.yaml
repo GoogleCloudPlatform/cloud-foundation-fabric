@@ -76,6 +76,18 @@ metrics_per_network:
     utilization:
       name: internal_forwarding_rules_l7_utilization
       description: Number of Internal Forwarding Rules for Internal L7 Load Balancers per Vnetwork - utilization.
+  dynamic_routes_per_network:
+    usage:
+      name: dynamic_routes_per_network_usage
+      description: Number of Dynamic routes per network - usage.
+    limit:
+      name: dynamic_routes_per_network_limit
+      description: Number of Dynamic routes per network - limit.
+      values:
+        default_value: 100
+    utilization:
+      name: dynamic_routes_per_network_utilization
+      description: Number of Dynamic routes per network - utilization.
 metrics_per_peering_group:
   l4_forwarding_rules_per_peering_group:
     usage:
