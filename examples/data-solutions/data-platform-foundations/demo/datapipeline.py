@@ -19,6 +19,7 @@
 import csv
 import datetime
 import io
+import json
 import logging
 import os
 
@@ -31,6 +32,7 @@ from airflow.providers.google.cloud.operators.bigquery import  BigQueryInsertJob
 # Set variables - Needed for the DEMO
 # --------------------------------------------------------------------------------
 BQ_LOCATION = os.environ.get("BQ_LOCATION")
+DATA_CAT_TAGS = json.loads(os.environ.get("DATA_CAT_TAGS"))
 DTL_L0_PRJ = os.environ.get("DTL_L0_PRJ")
 DTL_L0_BQ_DATASET = os.environ.get("DTL_L0_BQ_DATASET")
 DTL_L0_GCS = os.environ.get("DTL_L0_GCS")
