@@ -56,8 +56,10 @@ resource "google_compute_forwarding_rule" "forwarding_rule" {
   ip_address            = local.ip_address
   ip_protocol           = "TCP"
   load_balancing_scheme = "INTERNAL_MANAGED"
+  network               = var.forwarding_rule_config.network
   network_tier          = var.forwarding_rule_config.network_tier
   port_range            = local.port_range
   region                = try(var.region, null)
+  subnetwork            = var.forwarding_rule_config.subnetwork
   target                = local.target
 }

@@ -21,27 +21,27 @@ resource "google_compute_region_backend_service" "backend_service" {
   name                            = "${var.name}-${each.key}"
   project                         = var.project_id
   description                     = "Terraform managed."
-  affinity_cookie_ttl_sec         = try(each.value.group_config.options.affinity_cookie_ttl_sec, null)
-  connection_draining_timeout_sec = try(each.value.group_config.options.connection_draining_timeout_sec, null)
+  affinity_cookie_ttl_sec         = try(each.value.options.affinity_cookie_ttl_sec, null)
+  connection_draining_timeout_sec = try(each.value.options.connection_draining_timeout_sec, null)
   load_balancing_scheme           = "INTERNAL_MANAGED"
-  locality_lb_policy              = try(each.value.group_config.options.locality_lb_policy, null)
-  port_name                       = try(each.value.group_config.options.port_name, null)
-  protocol                        = try(each.value.group_config.options.protocol, null)
+  locality_lb_policy              = try(each.value.options.locality_lb_policy, null)
+  port_name                       = try(each.value.options.port_name, null)
+  protocol                        = try(each.value.options.protocol, null)
   region                          = var.region
-  session_affinity                = try(each.value.group_config.options.session_affinity, null)
-  timeout_sec                     = try(each.value.group_config.options.timeout_sec, null)
+  session_affinity                = try(each.value.options.session_affinity, null)
+  timeout_sec                     = try(each.value.options.timeout_sec, null)
 
   # If no health checks are defined, use the default one.
   # Otherwise, look in the health_checks_config map.
   # Otherwise, use the health_check id as is (already existing).
   health_checks = (
-    try(length(each.value.group_config.health_checks), 0) == 0
+    try(length(each.value.health_checks), 0) == 0
     ? try(
       [google_compute_region_health_check.health_check["default"].id],
       null
     )
     : [
-      for hc in each.value.group_config.health_checks :
+      for hc in each.value.health_checks :
       try(google_compute_region_health_check.health_check[hc].id, hc)
     ]
   )
@@ -64,9 +64,9 @@ resource "google_compute_region_backend_service" "backend_service" {
 
   dynamic "circuit_breakers" {
     for_each = (
-      try(each.value.group_config.options.circuit_breakers, null) == null
+      try(each.value.options.circuit_breakers, null) == null
       ? []
-      : [each.value.group_config.options.circuit_breakers]
+      : [each.value.options.circuit_breakers]
     )
     iterator = cb
     content {
@@ -80,9 +80,9 @@ resource "google_compute_region_backend_service" "backend_service" {
 
   dynamic "consistent_hash" {
     for_each = (
-      try(each.value.group_config.options.consistent_hash, null) == null
+      try(each.value.options.consistent_hash, null) == null
       ? []
-      : [each.value.group_config.options.consistent_hash]
+      : [each.value.options.consistent_hash]
     )
     content {
       http_header_name  = try(consistent_hash.value.http_header_name, null)
@@ -108,9 +108,9 @@ resource "google_compute_region_backend_service" "backend_service" {
 
   dynamic "iap" {
     for_each = (
-      try(each.value.group_config.options.iap, null) == null
+      try(each.value.options.iap, null) == null
       ? []
-      : [each.value.group_config.options.iap]
+      : [each.value.options.iap]
     )
     content {
       oauth2_client_id            = try(iap.value.oauth2_client_id, null)
@@ -121,9 +121,9 @@ resource "google_compute_region_backend_service" "backend_service" {
 
   dynamic "log_config" {
     for_each = (
-      try(each.value.group_config.log_config, null) == null
+      try(each.value.log_config, null) == null
       ? []
-      : [each.value.group_config.log_config]
+      : [each.value.log_config]
     )
     content {
       enable      = try(log_config.value.enable, null)
