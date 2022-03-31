@@ -14,6 +14,7 @@
 
 module "vpc" {
   source     = "../../../modules/net-vpc"
+  count      = local.use_shared_vpc ? 0 : 1
   project_id = module.project.project_id
   name       = "${var.prefix}-vpc"
   subnets = [
@@ -28,15 +29,17 @@ module "vpc" {
 
 module "vpc-firewall" {
   source       = "../../../modules/net-vpc-firewall"
+  count        = local.use_shared_vpc ? 0 : 1
   project_id   = module.project.project_id
-  network      = module.vpc.name
+  network      = module.vpc[0].name
   admin_ranges = [var.vpc_subnet_range]
 }
 
 module "nat" {
   source         = "../../../modules/net-cloudnat"
+  count          = local.use_shared_vpc ? 0 : 1
   project_id     = module.project.project_id
   region         = var.region
   name           = "${var.prefix}-default"
-  router_network = module.vpc.name
+  router_network = module.vpc[0].name
 }
