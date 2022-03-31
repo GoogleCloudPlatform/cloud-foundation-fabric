@@ -27,7 +27,6 @@ A dashboard called "quotas-utilization" should be created.
 
 The Cloud Function runs every 5 minutes by default so you should start getting some data points after a few minutes.
 You can change this frequency by modifying the "schedule_cron" variable in variables.tf.
-Note that we are using Google defined metrics that are populated only once a day so you might need to wait up to one day for some metrics.
 
 Once done testing, you can clean up resources by running `terraform destroy`.
 
@@ -42,5 +41,19 @@ The Cloud Function currently tracks usage, limit and utilization of:
 - internal forwarding rules for internal L7 load balancers per VPC
 - internal forwarding rules for internal L4 load balancers per VPC peering group
 - internal forwarding rules for internal L7 load balancers per VPC peering group
+- Dynamic routes per VPC
 
 It writes this values to custom metrics in Cloud Monitoring and creates a dashboard to visualize the current utilization of these metrics in Cloud Monitoring.
+
+Note that metrics are created in the cloud-function/metrics.yaml file.
+
+You can also edit default limits for a specific network in that file. See the example for `vpc_peering_per_network`.
+
+## Next steps and ideas
+In a future release, we could support:
+- Static routes per VPC / per VPC peering group
+- Dynamic routes per VPC peering group
+- Google managed VPCs that are peered with PSA (such as Cloud SQL or Memorystore)
+- Subnet IP ranges utilization
+
+If you are interested in this and/or would like to contribute, please contact legranda@google.com.

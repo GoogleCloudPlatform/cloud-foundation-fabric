@@ -72,4 +72,8 @@ variable "runtime_type" {
   }
 }
 
-
+variable "billing_type" {
+  description = "Billing type of the Apigee organization."
+  type        = string
+  default     = null
+}
