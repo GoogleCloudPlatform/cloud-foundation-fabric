@@ -110,8 +110,8 @@ variable "forwarding_rule_config" {
     network             = null
     network_tier        = "PREMIUM"
     # If not specified, 443 if var.https = true; 80 otherwise
-    port_range          = null
-    subnetwork          = null
+    port_range = null
+    subnetwork = null
   }
 }
 
