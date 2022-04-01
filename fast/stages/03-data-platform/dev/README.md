@@ -50,6 +50,19 @@ Cloud KMS crypto keys can be configured wither from the [FAST security stage](..
 
 To configure the use of Cloud KMS on resources, you have to specify the key id on the `service_encryption_keys` variable. Key locations should match resource locations.
 
+## Data Catalog
+
+[Data Catalog](https://cloud.google.com/data-catalog) helps you to document your data entry at scale. Data Catalog relies on [tags](https://cloud.google.com/data-catalog/docs/tags-and-tag-templates#tags) and [tag template](https://cloud.google.com/data-catalog/docs/tags-and-tag-templates#tag-templates) to manage metadata for all data entries in a unified and centralized service. To implement [column-level security](https://cloud.google.com/bigquery/docs/column-level-security-intro) on BigQuery, we suggest to use `Tags` and `Tag templates`.
+
+The default configuration will implement 3 tags:
+ - `3_Confidential`: policy tag for columns that include very sensitive information, such as credit card numbers.
+ - `2_Private`: policy tag for columns that include sensitive personal identifiable information (PII) information, such as a person's first name.
+ - `1_Sensitive`: policy tag for columns that include data that cannot be made public, such as the credit limit.
+
+Anything that is not tagged is available to all users who have access to the data warehouse.
+
+You can configure your tags and roles associated by configuring the `data_catalog_tags` variable. We suggest useing the "[Best practices for using policy tags in BigQuery](https://cloud.google.com/bigquery/docs/best-practices-policy-tags)" article as a guide to designing your tags structure and access pattern. By default, no groups has access to tagged data. 
+
 ### VPC-SC
 
 As is often the case in real-world configurations, [VPC-SC](https://cloud.google.com/vpc-service-controls) is needed to mitigate data exfiltration. VPC-SC can be configured from the [FAST security stage](../../02-security). This step is optional, but highly recomended, and depends on customer policies and security best practices.
