@@ -31,6 +31,7 @@ resource "google_apigee_organization" "apigee_org" {
   display_name                         = var.display_name
   description                          = var.description
   runtime_type                         = var.runtime_type
+  billing_type                         = var.billing_type
   authorized_network                   = var.authorized_network
   runtime_database_encryption_key_name = var.database_encryption_key
 }

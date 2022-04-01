@@ -41,13 +41,18 @@ The Cloud Function currently tracks usage, limit and utilization of:
 - internal forwarding rules for internal L7 load balancers per VPC
 - internal forwarding rules for internal L4 load balancers per VPC peering group
 - internal forwarding rules for internal L7 load balancers per VPC peering group
+- Dynamic routes per VPC
 
 It writes this values to custom metrics in Cloud Monitoring and creates a dashboard to visualize the current utilization of these metrics in Cloud Monitoring.
+
+Note that metrics are created in the cloud-function/metrics.yaml file.
+
+You can also edit default limits for a specific network in that file. See the example for `vpc_peering_per_network`.
 
 ## Next steps and ideas
 In a future release, we could support:
 - Static routes per VPC / per VPC peering group
-- Dynamic routes per VPC / per VPC peering group
+- Dynamic routes per VPC peering group
 - Google managed VPCs that are peered with PSA (such as Cloud SQL or Memorystore)
 - Subnet IP ranges utilization
 

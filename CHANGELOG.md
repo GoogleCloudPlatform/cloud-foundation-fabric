@@ -11,6 +11,8 @@ All notable changes to this project will be documented in this file.
 - add support for IAM additive to `folder` module, fixes #580
 - **incompatible change** the variable for PSA ranges in the `net-vpc` module has changed to support configuring peering routes
 - optionally turn off gcplogs driver in COS modules
+- fix `tag` output on `data-catalog-policy-tag` module
+- add shared-vpc support on `gcs-to-bq-with-least-privileges`
 
 **FAST**
 

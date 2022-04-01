@@ -110,6 +110,7 @@ module "apigee-organization" {
 | [apigee_envgroups](variables.tf#L22) | Apigee Environment Groups. | <code title="map&#40;object&#40;&#123;&#10;  environments &#61; list&#40;string&#41;&#10;  hostnames    &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [apigee_environments](variables.tf#L31) | Apigee Environment Names. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 | [authorized_network](variables.tf#L37) | VPC network self link (requires service network peering enabled (Used in Apigee X only). | <code>string</code> |  | <code>null</code> |
+| [billing_type](variables.tf#L75) | Billing type of the Apigee organization. | <code>string</code> |  | <code>null</code> |
 | [database_encryption_key](variables.tf#L43) | Cloud KMS key self link (e.g. `projects/foo/locations/us/keyRings/bar/cryptoKeys/baz`) used for encrypting the data that is stored and replicated across runtime instances (immutable, used in Apigee X only). | <code>string</code> |  | <code>null</code> |
 | [description](variables.tf#L49) | Description of the Apigee Organization. | <code>string</code> |  | <code>&#34;Apigee Organization created by tf module&#34;</code> |
 | [display_name](variables.tf#L55) | Display Name of the Apigee Organization. | <code>string</code> |  | <code>null</code> |
