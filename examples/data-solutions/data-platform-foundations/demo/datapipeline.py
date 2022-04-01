@@ -24,9 +24,10 @@ import logging
 import os
 
 from airflow import models
-from airflow.contrib.operators.dataflow_operator import DataflowTemplateOperator
+from airflow.providers.google.cloud.operators.dataflow import DataflowTemplatedJobStartOperator
 from airflow.operators import dummy
-from airflow.providers.google.cloud.operators.bigquery import  BigQueryInsertJobOperator, BigQueryUpsertTableOperator
+from airflow.providers.google.cloud.operators.bigquery import  BigQueryInsertJobOperator, BigQueryUpsertTableOperator, BigQueryUpdateTableSchemaOperator
+from airflow.utils.task_group import TaskGroup
 
 # --------------------------------------------------------------------------------
 # Set variables - Needed for the DEMO
@@ -86,7 +87,6 @@ default_args = {
   'retries': 1,
   'retry_delay': datetime.timedelta(minutes=5),
   'dataflow_default_options': {
-    'project': LOD_PRJ,
     'location': DF_REGION,
     'zone': DF_ZONE,
     'stagingLocation': LOD_GCS_STAGING,
@@ -116,43 +116,120 @@ with models.DAG(
     trigger_rule='all_success'
   )
 
-  upsert_table_customers = BigQueryUpsertTableOperator(
+  with TaskGroup('upsert_table') as upsert_table:  
+    upsert_table_customers = BigQueryUpsertTableOperator(
       task_id="upsert_table_customers",
       project_id=DTL_L0_PRJ,
       dataset_id=DTL_L0_BQ_DATASET,
       impersonation_chain=[TRF_SA_DF],
       table_resource={
         "tableReference": {"tableId": "customers"},
-        "schema": {
-          "field": [
-            { "mode": "REQUIRED", "name": "id", "type": "INTEGER", "description": "ID" },
-            { "mode": "REQUIRED", "name": "name", "type": "STRING", "description": "Name" }, #, "policyTags": { "names": [] } },
-            { "mode": "REQUIRED", "name": "surname", "type": "STRING", "description": "Surname" },
-            { "mode": "REQUIRED", "name": "timestamp", "type": "TIMESTAMP", "description": "Timestamp" }
-          ]
-        },
       },
-  )  
+    )  
 
-  upsert_table_purchasess = BigQueryUpsertTableOperator(
-      task_id="upsert_table_purchasess",
+    upsert_table_purchases = BigQueryUpsertTableOperator(
+      task_id="upsert_table_purchases",
       project_id=DTL_L0_PRJ,
       dataset_id=DTL_L0_BQ_DATASET,
+      impersonation_chain=[TRF_SA_BQ],      
       table_resource={
-        "tableReference": {"tableId": "purchases"},
-        "schema": [
-          {  "mode": "REQUIRED", "name": "id", "type": "INTEGER", "description": "ID" },
-          {  "mode": "REQUIRED", "name": "customer_id", "type": "INTEGER", "description": "ID" },
-          {  "mode": "REQUIRED", "name": "item", "type": "STRING", "description": "Item Name" },
-          {  "mode": "REQUIRED", "name": "price", "type": "FLOAT", "description": "Item Price" },
-          {  "mode": "REQUIRED", "name": "timestamp", "type": "TIMESTAMP", "description": "Timestamp" }
-        ]
+        "tableReference": {"tableId": "purchases"}
       },
-  )   
+    )   
 
-  customers_import = DataflowTemplateOperator(
-    task_id="dataflow_customer_import",
+    upsert_table_customer_purchase_l1 = BigQueryUpsertTableOperator(
+      task_id="upsert_table_customer_purchase_l1",
+      project_id=DTL_L1_PRJ,
+      dataset_id=DTL_L1_BQ_DATASET,
+      impersonation_chain=[TRF_SA_BQ],
+      table_resource={
+        "tableReference": {"tableId": "customer_purchase"}
+      },
+    )   
+
+    upsert_table_customer_purchase_l2 = BigQueryUpsertTableOperator(
+      task_id="upsert_table_customer_purchase_l2",
+      project_id=DTL_L2_PRJ,
+      dataset_id=DTL_L2_BQ_DATASET,
+      impersonation_chain=[TRF_SA_BQ],
+      table_resource={
+        "tableReference": {"tableId": "customer_purchase"}
+      },
+    )       
+
+  with TaskGroup('update_schema_table') as update_schema_table:  
+    update_table_schema_customers = BigQueryUpdateTableSchemaOperator(
+      task_id="update_table_schema_customers",
+      project_id=DTL_L0_PRJ,
+      dataset_id=DTL_L0_BQ_DATASET,
+      table_id="customers",
+      impersonation_chain=[TRF_SA_BQ],
+      include_policy_tags=True,
+      schema_fields_updates=[
+        { "mode": "REQUIRED", "name": "id", "type": "INTEGER", "description": "ID" },
+        { "mode": "REQUIRED", "name": "name", "type": "STRING", "description": "Name", "policyTags": { "names": [DATA_CAT_TAGS.get('2_Private', None)]}},
+        { "mode": "REQUIRED", "name": "surname", "type": "STRING", "description": "Surname", "policyTags": { "names": [DATA_CAT_TAGS.get('2_Private', None)]} },
+        { "mode": "REQUIRED", "name": "timestamp", "type": "TIMESTAMP", "description": "Timestamp" }
+      ]
+    )  
+
+    update_table_schema_customers = BigQueryUpdateTableSchemaOperator(
+      task_id="update_table_schema_purchases",
+      project_id=DTL_L0_PRJ,
+      dataset_id=DTL_L0_BQ_DATASET,
+      table_id="purchases",
+      impersonation_chain=[TRF_SA_BQ],
+      include_policy_tags=True,
+      schema_fields_updates=[ 
+        {  "mode": "REQUIRED",  "name": "id",  "type": "INTEGER",  "description": "ID" }, 
+        {  "mode": "REQUIRED",  "name": "customer_id",  "type": "INTEGER",  "description": "ID" }, 
+        {  "mode": "REQUIRED",  "name": "item",  "type": "STRING",  "description": "Item Name" }, 
+        {  "mode": "REQUIRED",  "name": "price",  "type": "FLOAT",  "description": "Item Price" }, 
+        {  "mode": "REQUIRED",  "name": "timestamp",  "type": "TIMESTAMP",  "description": "Timestamp" }
+      ]
+    )    
+
+    update_table_schema_customer_purchase_l1 = BigQueryUpdateTableSchemaOperator(
+      task_id="update_table_schema_customer_purchase_l1",
+      project_id=DTL_L1_PRJ,
+      dataset_id=DTL_L1_BQ_DATASET,
+      table_id="customer_purchase",
+      impersonation_chain=[TRF_SA_BQ],
+      include_policy_tags=True,
+      schema_fields_updates=[
+        { "mode": "REQUIRED", "name": "customer_id", "type": "INTEGER", "description": "ID" },
+        { "mode": "REQUIRED", "name": "purchase_id", "type": "INTEGER", "description": "ID" },
+        { "mode": "REQUIRED", "name": "name", "type": "STRING", "description": "Name", "policyTags": { "names": [DATA_CAT_TAGS.get('2_Private', None)]}},
+        { "mode": "REQUIRED", "name": "surname", "type": "STRING", "description": "Surname", "policyTags": { "names": [DATA_CAT_TAGS.get('2_Private', None)]} },
+        { "mode": "REQUIRED", "name": "item", "type": "STRING", "description": "Item Name" },
+        { "mode": "REQUIRED", "name": "price", "type": "FLOAT", "description": "Item Price" },
+        { "mode": "REQUIRED", "name": "timestamp", "type": "TIMESTAMP", "description": "Timestamp" }
+      ]
+    )
+
+    update_table_schema_customer_purchase_l2 = BigQueryUpdateTableSchemaOperator(
+      task_id="update_table_schema_customer_purchase_l2",
+      project_id=DTL_L2_PRJ,
+      dataset_id=DTL_L2_BQ_DATASET,
+      table_id="customer_purchase",
+      impersonation_chain=[TRF_SA_BQ],
+      include_policy_tags=True,
+      schema_fields_updates=[
+        { "mode": "REQUIRED", "name": "customer_id", "type": "INTEGER", "description": "ID" },
+        { "mode": "REQUIRED", "name": "purchase_id", "type": "INTEGER", "description": "ID" },
+        { "mode": "REQUIRED", "name": "name", "type": "STRING", "description": "Name", "policyTags": { "names": [DATA_CAT_TAGS.get('2_Private', None)]}},
+        { "mode": "REQUIRED", "name": "surname", "type": "STRING", "description": "Surname", "policyTags": { "names": [DATA_CAT_TAGS.get('2_Private', None)]} },
+        { "mode": "REQUIRED", "name": "item", "type": "STRING", "description": "Item Name" },
+        { "mode": "REQUIRED", "name": "price", "type": "FLOAT", "description": "Item Price" },
+        { "mode": "REQUIRED", "name": "timestamp", "type": "TIMESTAMP", "description": "Timestamp" }
+      ]
+    )
+
+  customers_import = DataflowTemplatedJobStartOperator(
+    task_id="dataflow_customers_import",
     template="gs://dataflow-templates/latest/GCS_Text_to_BigQuery",
+    project_id=LOD_PRJ,
+    location=DF_REGION,
     parameters={
       "javascriptTextTransformFunctionName": "transform",
       "JSONPath": ORC_GCS + "/customers_schema.json",
@@ -163,9 +240,11 @@ with models.DAG(
     },
   )
 
-  purchases_import = DataflowTemplateOperator(
+  purchases_import = DataflowTemplatedJobStartOperator(
     task_id="dataflow_purchases_import",
     template="gs://dataflow-templates/latest/GCS_Text_to_BigQuery",
+    project_id=LOD_PRJ,
+    location=DF_REGION,
     parameters={
       "javascriptTextTransformFunctionName": "transform",
       "JSONPath": ORC_GCS + "/purchases_schema.json",
@@ -216,13 +295,13 @@ with models.DAG(
       'jobType':'QUERY',
       'query':{
         'query':"""SELECT
-                     customer_id,
-                     purchase_id,
-                     name,
-                     surname,
-                     item,
-                     price,
-                     timestamp
+                    customer_id,
+                    purchase_id,
+                    name,
+                    surname,
+                    item,
+                    price,
+                    timestamp
                 FROM `{dtl_1_prj}.{dtl_1_dataset}.customer_purchase`
               """.format(dtl_1_prj=DTL_L1_PRJ, dtl_1_dataset=DTL_L1_BQ_DATASET, ),
         'destinationTable':{
@@ -236,5 +315,4 @@ with models.DAG(
     },
     impersonation_chain=[TRF_SA_BQ]
   )
-  start >> upsert_table_customers >> end
-  # start >> [customers_import, purchases_import] >> join_customer_purchase >> l2_customer_purchase >> end
+  start >> upsert_table >> update_schema_table >> [customers_import, purchases_import] >> join_customer_purchase >> l2_customer_purchase >> end  

@@ -21,6 +21,9 @@ module "common-project" {
   prefix          = var.prefix
   name            = "cmn${local.project_suffix}"
   group_iam = {
+    (local.groups.data-analysts) = [
+      "roles/datacatalog.viewer",
+    ]
     (local.groups.data-engineers) = [
       "roles/dlp.reader",
       "roles/dlp.user",
@@ -28,12 +31,24 @@ module "common-project" {
     ]
     (local.groups.data-security) = [
       "roles/dlp.admin",
+      "roles/datacatalog.admin"
     ]
   }
   iam = {
     "roles/dlp.user" = [
       module.load-sa-df-0.iam_email,
       module.transf-sa-df-0.iam_email
+    ]
+    "roles/datacatalog.viewer" = [
+      module.load-sa-df-0.iam_email,
+      module.transf-sa-df-0.iam_email,
+      module.transf-sa-bq-0.iam_email
+    ]
+    "roles/datacatalog.categoryFineGrainedReader" = [
+      module.transf-sa-df-0.iam_email,
+      module.transf-sa-bq-0.iam_email,
+      # Uncomment if you want to grant access to `data-analyst` to all columns tagged.
+      # local.groups_iam.data-analysts
     ]
   }
   services = concat(var.project_services, [
@@ -51,10 +66,6 @@ module "common-datacatalog" {
   project_id = module.common-project.project_id
   location   = var.location
   tags       = var.data_catalog_tags
-  iam = {
-    "roles/datacatalog.categoryAdmin"             = [local.groups_iam.data-security]
-    "roles/datacatalog.categoryFineGrainedReader" = [local.groups_iam.data-analysts]
-  }
 }
 
 # To create KMS keys in the common projet: uncomment this section and assigne key links accondingly in local.service_encryption_keys variable
