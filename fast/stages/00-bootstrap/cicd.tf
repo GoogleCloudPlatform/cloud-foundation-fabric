@@ -83,6 +83,9 @@ resource "google_iam_workload_identity_pool_provider" "gitlab" {
   }
 }
 
+# TODO: create a dedicated SA used to impersonate the resman one, so we don't
+#       have to change providers and can identify CI/CD impersonation
+
 resource "google_service_account_iam_member" "cicd-resman" {
   provider           = google-beta
   count              = local.cicd_enabled ? 1 : 0
