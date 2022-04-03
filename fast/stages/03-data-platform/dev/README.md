@@ -129,6 +129,12 @@ terraform init
 terraform apply
 ```
 
+## Demo pipeline
+
+The application layer is out of scope of this script. As a demo purpuse only, several Cloud Composer DAGs are provided. Demos will import data from the `landing` area to the `DataLake L2` dataset suing different features. 
+
+You can find examples in the `[demo](../../../../examples/data-solutions/data-platform-foundations/demo)` folder.
+
 <!-- TFDOC OPTS files:1 show_extra:1 -->
 <!-- BEGIN TFDOC -->
 

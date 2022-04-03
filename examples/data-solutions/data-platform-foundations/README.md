@@ -220,17 +220,10 @@ To do this, you need to remove IAM binging at project-level for the `data-analys
 
 ## Demo pipeline
 
-The application layer is out of scope of this script, but as a demo, it is provided with a Cloud Composer DAG to mode data from the `landing` area to the `DataLake L2` dataset.
+The application layer is out of scope of this script. As a demo purpuse only, several Cloud Composer DAGs are provided. Demos will import data from the `landing` area to the `DataLake L2` dataset suing different features. 
 
-Just follow the commands you find in the `demo_commands` Terraform output, go in the Cloud Composer UI and run the `data_pipeline_dag`.
+You can find examples in the `[demo](./demo)` folder.
 
-Description of commands:
-
-- 01: copy sample data to a `landing` Cloud Storage bucket impersonating the `load` service account.
-- 02: copy sample data structure definition in the `orchestration` Cloud Storage bucket impersonating the `orchestration` service account.
-- 03: copy the Cloud Composer DAG to the Cloud Composer Storage bucket impersonating the `orchestration` service account.
-- 04: Open the Cloud Composer Airflow UI and run the imported DAG.
-- 05: Run the BigQuery query to see results.
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -268,8 +261,6 @@ Description of commands:
 
 Features to add in future releases:
 
-- Add support for Column level access on BigQuery
-- Add example templates for Data Catalog
 - Add example on how to use Cloud Data Loss Prevention
 - Add solution to handle Tables, Views, and Authorized Views lifecycle
 - Add solution to handle Metadata lifecycle

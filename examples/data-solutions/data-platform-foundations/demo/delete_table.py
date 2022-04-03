@@ -26,7 +26,7 @@ import os
 from airflow import models
 from airflow.providers.google.cloud.operators.dataflow import DataflowTemplatedJobStartOperator
 from airflow.operators import dummy
-from airflow.providers.google.cloud.operators.bigquery import  BigQueryInsertJobOperator, BigQueryUpsertTableOperator, BigQueryUpdateTableSchemaOperator
+from airflow.providers.google.cloud.operators.bigquery import  BigQueryDeleteTableOperator
 from airflow.utils.task_group import TaskGroup
 
 # --------------------------------------------------------------------------------
@@ -103,7 +103,7 @@ default_args = {
 # --------------------------------------------------------------------------------
 
 with models.DAG(
-    'data_pipeline_dag',
+    'delete_tables_dag',
     default_args=default_args,
     schedule_interval=None) as dag:
   start = dummy.DummyOperator(
@@ -116,97 +116,31 @@ with models.DAG(
     trigger_rule='all_success'
   )
 
-  # Bigquery Tables automatically created for demo porpuse. 
+  # Bigquery Tables deleted here for demo porpuse. 
   # Consider a dedicated pipeline or tool for a real life scenario.
-  customers_import = DataflowTemplatedJobStartOperator(
-    task_id="dataflow_customers_import",
-    template="gs://dataflow-templates/latest/GCS_Text_to_BigQuery",
-    project_id=LOD_PRJ,
-    location=DF_REGION,
-    parameters={
-      "javascriptTextTransformFunctionName": "transform",
-      "JSONPath": ORC_GCS + "/customers_schema.json",
-      "javascriptTextTransformGcsPath": ORC_GCS + "/customers_udf.js",
-      "inputFilePattern": LND_GCS + "/customers.csv",
-      "outputTable": DTL_L0_PRJ + ":"+DTL_L0_BQ_DATASET+".customers",
-      "bigQueryLoadingTemporaryDirectory": LOD_GCS_STAGING + "/tmp/bq/",
-    },
-  )
+  with TaskGroup('delete_table') as delte_table:  
+    delete_table_customers = BigQueryDeleteTableOperator(
+      task_id="delete_table_customers",
+      deletion_dataset_table=DTL_L0_PRJ+"."+DTL_L0_BQ_DATASET+".customers",
+      impersonation_chain=[TRF_SA_DF]
+    )  
 
-  purchases_import = DataflowTemplatedJobStartOperator(
-    task_id="dataflow_purchases_import",
-    template="gs://dataflow-templates/latest/GCS_Text_to_BigQuery",
-    project_id=LOD_PRJ,
-    location=DF_REGION,
-    parameters={
-      "javascriptTextTransformFunctionName": "transform",
-      "JSONPath": ORC_GCS + "/purchases_schema.json",
-      "javascriptTextTransformGcsPath": ORC_GCS + "/purchases_udf.js",
-      "inputFilePattern": LND_GCS + "/purchases.csv",
-      "outputTable": DTL_L0_PRJ + ":"+DTL_L0_BQ_DATASET+".purchases",
-      "bigQueryLoadingTemporaryDirectory": LOD_GCS_STAGING + "/tmp/bq/",
-    },
-  )
+    delete_table_purchases = BigQueryDeleteTableOperator(
+      task_id="delete_table_purchases",
+      deletion_dataset_table=DTL_L0_PRJ+"."+DTL_L0_BQ_DATASET+".purchases",
+      impersonation_chain=[TRF_SA_DF]
+    )   
 
-  join_customer_purchase = BigQueryInsertJobOperator(
-    task_id='bq_join_customer_purchase',
-    gcp_conn_id='bigquery_default',
-    project_id=TRF_PRJ,
-    location=BQ_LOCATION,
-    configuration={
-      'jobType':'QUERY',
-      'query':{
-        'query':"""SELECT
-                  c.id as customer_id,
-                  p.id as purchase_id,
-                  c.name as name,
-                  c.surname as surname,
-                  p.item as item,
-                  p.price as price,
-                  p.timestamp as timestamp
-                FROM `{dtl_0_prj}.{dtl_0_dataset}.customers` c
-                JOIN `{dtl_0_prj}.{dtl_0_dataset}.purchases` p ON c.id = p.customer_id
-              """.format(dtl_0_prj=DTL_L0_PRJ, dtl_0_dataset=DTL_L0_BQ_DATASET, ),
-        'destinationTable':{
-          'projectId': DTL_L1_PRJ,
-          'datasetId': DTL_L1_BQ_DATASET,
-          'tableId': 'customer_purchase'
-        },
-        'writeDisposition':'WRITE_TRUNCATE',
-        "useLegacySql": False
-      }
-    },
-    impersonation_chain=[TRF_SA_BQ]
-  )
+    delete_table_customer_purchase_l1 = BigQueryDeleteTableOperator(
+      task_id="delete_table_customer_purchase_l1",
+      deletion_dataset_table=DTL_L1_PRJ+"."+DTL_L1_BQ_DATASET+".customer_purchase",
+      impersonation_chain=[TRF_SA_DF]
+    )   
 
-  l2_customer_purchase = BigQueryInsertJobOperator(
-    task_id='bq_l2_customer_purchase',
-    gcp_conn_id='bigquery_default',
-    project_id=TRF_PRJ,
-    location=BQ_LOCATION,
-    configuration={
-      'jobType':'QUERY',
-      'query':{
-        'query':"""SELECT
-                    customer_id,
-                    purchase_id,
-                    name,
-                    surname,
-                    item,
-                    price,
-                    timestamp
-                FROM `{dtl_1_prj}.{dtl_1_dataset}.customer_purchase`
-              """.format(dtl_1_prj=DTL_L1_PRJ, dtl_1_dataset=DTL_L1_BQ_DATASET, ),
-        'destinationTable':{
-          'projectId': DTL_L2_PRJ,
-          'datasetId': DTL_L2_BQ_DATASET,
-          'tableId': 'customer_purchase'
-        },
-        'writeDisposition':'WRITE_TRUNCATE',
-        "useLegacySql": False
-      }
-    },
-    impersonation_chain=[TRF_SA_BQ]
-  )
+    delete_table_customer_purchase_l2 = BigQueryDeleteTableOperator(
+      task_id="delete_table_customer_purchase_l2",
+      deletion_dataset_table=DTL_L2_PRJ+"."+DTL_L2_BQ_DATASET+".customer_purchase",
+      impersonation_chain=[TRF_SA_DF]
+    )       
 
-  start >> [customers_import, purchases_import] >> join_customer_purchase >> l2_customer_purchase >> end
+  start >> delte_table >> end  
