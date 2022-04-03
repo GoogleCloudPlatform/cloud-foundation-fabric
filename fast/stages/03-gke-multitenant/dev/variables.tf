@@ -18,11 +18,11 @@
 # 1 project, m clusters
 # cloud dns for gke?
 
-# variable "authenticator_security_group" {
-#   description = "Optional group used for Groups for GKE."
-#   type        = string
-#   default     = null
-# }
+variable "authenticator_security_group" {
+  description = "Optional group used for Groups for GKE."
+  type        = string
+  default     = null
+}
 
 variable "billing_account" {
   # tfdoc:variable:source 00-bootstrap
@@ -36,14 +36,15 @@ variable "billing_account" {
 variable "cluster_defaults" {
   description = "Default values for optional cluster configurations."
   type = object({
-    cloudrun_config             = bool
-    database_encryption_key     = string
-    enable_binary_authorization = bool
-    master_authorized_ranges    = map(string)
-    max_pods_per_node           = number
-    pod_security_policy         = bool
-    release_channel             = string
-    vertical_pod_autoscaling    = bool
+    cloudrun_config                 = bool
+    database_encryption_key         = string
+    enable_binary_authorization     = bool
+    master_authorized_ranges        = map(string)
+    max_pods_per_node               = number
+    pod_security_policy             = bool
+    release_channel                 = string
+    vertical_pod_autoscaling        = bool
+    gcp_filestore_csi_driver_config = bool
   })
   default = {
     # TODO: review defaults
@@ -55,10 +56,11 @@ variable "cluster_defaults" {
       rfc1918_2 = "172.16.0.0/12"
       rfc1918_3 = "192.168.0.0/16"
     }
-    max_pods_per_node        = 110
-    pod_security_policy      = false
-    release_channel          = "STABLE"
-    vertical_pod_autoscaling = false
+    max_pods_per_node               = 110
+    pod_security_policy             = false
+    release_channel                 = "STABLE"
+    vertical_pod_autoscaling        = false
+    gcp_filestore_csi_driver_config = false
   }
 }
 
@@ -82,16 +84,23 @@ variable "clusters" {
       subnet       = string
     })
     overrides = object({
-      cloudrun_config             = bool
-      database_encryption_key     = string
-      enable_binary_authorization = bool
-      master_authorized_ranges    = map(string)
-      max_pods_per_node           = number
-      pod_security_policy         = bool
-      release_channel             = string
-      vertical_pod_autoscaling    = bool
+      cloudrun_config                 = bool
+      database_encryption_key         = string
+      enable_binary_authorization     = bool
+      master_authorized_ranges        = map(string)
+      max_pods_per_node               = number
+      pod_security_policy             = bool
+      release_channel                 = string
+      vertical_pod_autoscaling        = bool
+      gcp_filestore_csi_driver_config = bool
     })
   }))
+}
+
+variable "cluster_viewer_users" {
+  description = "list of users to be granted as container.clusterViewer"
+  type        = list(any)
+  default     = []
 }
 
 variable "dns_domain" {

@@ -35,7 +35,9 @@ module "gke-project-0" {
     "gkehub.googleapis.com",
     "stackdriver.googleapis.com",
     "container.googleapis.com",
-    # "trafficdirector.googleapis.com"
+    "multiclusterservicediscovery.googleapis.com",
+    "multiclusteringress.googleapis.com",
+    "trafficdirector.googleapis.com"
   ]
   # add here any other service ids and keys for robot accounts which are needed
   # service_encryption_key_ids = {
@@ -66,6 +68,9 @@ module "gke-project-0" {
   #     values              = ["projects/fl01-prod-iac-core-0"]
   #   }
   # }
+  iam = {
+    "roles/container.clusterViewer" = var.cluster_viewer_users
+  }
 }
 
 module "gke-dataset-resource-usage" {
