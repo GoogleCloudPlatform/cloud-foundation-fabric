@@ -358,11 +358,11 @@ Names used in internal references (e.g. `module.foo-prod.id`) are only used by T
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [billing_dataset](outputs.tf#L70) | BigQuery dataset prepared for billing export. |  |  |
-| [custom_roles](outputs.tf#L75) | Organization-level custom roles. |  |  |
-| [outputs_bucket](outputs.tf#L80) | GCS bucket where generated output files are stored. |  |  |
-| [project_ids](outputs.tf#L85) | Projects created by this stage. |  |  |
-| [providers](outputs.tf#L96) | Terraform provider files for this stage and dependent stages. | ✓ | <code>stage-01</code> |
-| [tfvars](outputs.tf#L105) | Terraform variable files for the following stages. | ✓ |  |
+| [billing_dataset](outputs.tf#L68) | BigQuery dataset prepared for billing export. |  |  |
+| [custom_roles](outputs.tf#L73) | Organization-level custom roles. |  |  |
+| [outputs_bucket](outputs.tf#L78) | GCS bucket where generated output files are stored. |  |  |
+| [project_ids](outputs.tf#L83) | Projects created by this stage. |  |  |
+| [providers](outputs.tf#L94) | Terraform provider files for this stage and dependent stages. | ✓ | <code>stage-01</code> |
+| [tfvars](outputs.tf#L103) | Terraform variable files for the following stages. | ✓ |  |
 
 <!-- END TFDOC -->
