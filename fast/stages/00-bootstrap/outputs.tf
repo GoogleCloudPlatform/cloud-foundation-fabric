@@ -32,13 +32,20 @@ locals {
     })
   }
   tfvars = {
-    automation_project_id = module.automation-project.project_id
-    custom_roles          = local.custom_roles
-    wif_pool = (
-      local.cicd_enabled
-      ? google_iam_workload_identity_pool.default.0.name
-      : null
+    automation = {
+      project_id     = module.automation-project.project_id
+      outputs_bucket = module.automation-tf-output-gcs.name
+    }
+    cicd = (
+      !local.cicd_enabled
+      ? {
+        wif_pool = null
+      }
+      : {
+        wif_pool = google_iam_workload_identity_pool.default.0.name
+      }
     )
+    custom_roles = local.custom_roles
   }
 }
 
@@ -68,6 +75,11 @@ output "billing_dataset" {
 output "custom_roles" {
   description = "Organization-level custom roles."
   value       = local.custom_roles
+}
+
+output "outputs_bucket" {
+  description = "GCS bucket where generated output files are stored."
+  value       = module.automation-tf-output-gcs.name
 }
 
 output "project_ids" {

@@ -329,7 +329,7 @@ Names used in internal references (e.g. `module.foo-prod.id`) are only used by T
 
 | name | description | modules | resources |
 |---|---|---|---|
-| [automation.tf](./automation.tf) | Automation project and resources. | <code>gcs</code> · <code>iam-service-account</code> · <code>project</code> |  |
+| [automation.tf](./automation.tf) | Automation project and resources. | <code>gcs</code> · <code>iam-service-account</code> · <code>project</code> | <code>google_storage_bucket_object</code> |
 | [billing.tf](./billing.tf) | Billing export project and dataset. | <code>bigquery-dataset</code> · <code>organization</code> · <code>project</code> | <code>google_billing_account_iam_member</code> · <code>google_organization_iam_binding</code> |
 | [cicd.tf](./cicd.tf) | None | <code>iam-service-account</code> | <code>google_iam_workload_identity_pool</code> · <code>google_iam_workload_identity_pool_provider</code> |
 | [log-export.tf](./log-export.tf) | Audit log project and sink. | <code>bigquery-dataset</code> · <code>gcs</code> · <code>logging-bucket</code> · <code>project</code> · <code>pubsub</code> |  |
@@ -358,10 +358,11 @@ Names used in internal references (e.g. `module.foo-prod.id`) are only used by T
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [billing_dataset](outputs.tf#L63) | BigQuery dataset prepared for billing export. |  |  |
-| [custom_roles](outputs.tf#L68) | Organization-level custom roles. |  |  |
-| [project_ids](outputs.tf#L73) | Projects created by this stage. |  |  |
-| [providers](outputs.tf#L84) | Terraform provider files for this stage and dependent stages. | ✓ | <code>stage-01</code> |
-| [tfvars](outputs.tf#L93) | Terraform variable files for the following stages. | ✓ |  |
+| [billing_dataset](outputs.tf#L70) | BigQuery dataset prepared for billing export. |  |  |
+| [custom_roles](outputs.tf#L75) | Organization-level custom roles. |  |  |
+| [outputs_bucket](outputs.tf#L80) | GCS bucket where generated output files are stored. |  |  |
+| [project_ids](outputs.tf#L85) | Projects created by this stage. |  |  |
+| [providers](outputs.tf#L96) | Terraform provider files for this stage and dependent stages. | ✓ | <code>stage-01</code> |
+| [tfvars](outputs.tf#L105) | Terraform variable files for the following stages. | ✓ |  |
 
 <!-- END TFDOC -->

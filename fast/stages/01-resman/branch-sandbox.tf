@@ -44,7 +44,7 @@ module "branch-sandbox-folder" {
 
 module "branch-sandbox-gcs" {
   source     = "../../../modules/gcs"
-  project_id = var.automation_project_id
+  project_id = var.automation.project_id
   name       = "dev-resman-sbox-0"
   prefix     = var.prefix
   versioning = true
@@ -55,7 +55,7 @@ module "branch-sandbox-gcs" {
 
 module "branch-sandbox-sa" {
   source      = "../../../modules/iam-service-account"
-  project_id  = var.automation_project_id
+  project_id  = var.automation.project_id
   name        = "dev-resman-sbox-0"
   description = "Terraform resman sandbox service account."
   prefix      = var.prefix

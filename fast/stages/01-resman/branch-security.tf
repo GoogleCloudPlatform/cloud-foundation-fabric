@@ -46,7 +46,7 @@ module "branch-security-folder" {
 
 module "branch-security-sa" {
   source      = "../../../modules/iam-service-account"
-  project_id  = var.automation_project_id
+  project_id  = var.automation.project_id
   name        = "prod-resman-sec-0"
   description = "Terraform resman security service account."
   prefix      = var.prefix
@@ -54,7 +54,7 @@ module "branch-security-sa" {
 
 module "branch-security-gcs" {
   source     = "../../../modules/gcs"
-  project_id = var.automation_project_id
+  project_id = var.automation.project_id
   name       = "prod-resman-sec-0"
   prefix     = var.prefix
   versioning = true

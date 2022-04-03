@@ -49,7 +49,7 @@ module "branch-dp-dev-folder" {
 
 module "branch-dp-dev-sa" {
   source      = "../../../modules/iam-service-account"
-  project_id  = var.automation_project_id
+  project_id  = var.automation.project_id
   name        = "dev-resman-dp-0"
   description = "Terraform Data Platform development service account."
   prefix      = var.prefix
@@ -57,7 +57,7 @@ module "branch-dp-dev-sa" {
 
 module "branch-dp-dev-gcs" {
   source     = "../../../modules/gcs"
-  project_id = var.automation_project_id
+  project_id = var.automation.project_id
   name       = "dev-resman-dp-0"
   prefix     = var.prefix
   versioning = true
@@ -88,7 +88,7 @@ module "branch-dp-prod-folder" {
 
 module "branch-dp-prod-sa" {
   source      = "../../../modules/iam-service-account"
-  project_id  = var.automation_project_id
+  project_id  = var.automation.project_id
   name        = "prod-resman-dp-0"
   description = "Terraform Data Platform production service account."
   prefix      = var.prefix
@@ -96,7 +96,7 @@ module "branch-dp-prod-sa" {
 
 module "branch-dp-prod-gcs" {
   source     = "../../../modules/gcs"
-  project_id = var.automation_project_id
+  project_id = var.automation.project_id
   name       = "prod-resman-dp-0"
   prefix     = var.prefix
   versioning = true
