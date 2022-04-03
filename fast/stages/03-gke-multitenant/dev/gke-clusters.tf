@@ -43,6 +43,7 @@ module "gke-cluster" {
     horizontal_pod_autoscaling            = true
     config_connector_config               = true
     kalm_config                           = false
+    gcp_filestore_csi_driver_config       = false
     # enable only if enable_dataplane_v2 is changed to false below
     network_policy_config = false
     istio_config = {
@@ -51,15 +52,15 @@ module "gke-cluster" {
     }
   }
   # change these here for all clusters if absolutely needed
-  # authenticator_security_group = var.authenticator_security_group
-  enable_dataplane_v2         = true
-  enable_l4_ilb_subsetting    = false
-  enable_intranode_visibility = true
-  enable_shielded_nodes       = true
-  workload_identity           = true
+  authenticator_security_group = var.authenticator_security_group
+  enable_dataplane_v2          = true
+  enable_l4_ilb_subsetting     = false
+  enable_intranode_visibility  = true
+  enable_shielded_nodes        = true
+  workload_identity            = true
   private_cluster_config = {
     enable_private_nodes    = true
-    enable_private_endpoint = true
+    enable_private_endpoint = false
     master_ipv4_cidr_block  = each.value.net.master_range
     master_global_access    = true
   }

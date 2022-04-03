@@ -1,0 +1,54 @@
+# Copyright 2022 Google LLC
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+
+#      http://www.apache.org/licenses/LICENSE-2.0
+
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: fluentd-gcp-config-cos-auditd
+  namespace: cos-auditd
+  annotations:
+    kubernetes.io/description: 'ConfigMap for Linux auditd logging daemonset on COS nodes.'
+data:
+  google-fluentd.conf: |-
+    <source>
+      @type systemd
+      filters [{ "SYSLOG_IDENTIFIER": "audit" }]
+      pos_file /var/log/gcp-journald-audit.pos
+      read_from_head true
+      tag linux-auditd
+    </source>
+
+    # Do not collect fluentd's own logs to avoid infinite loops.
+    <match fluent.**>
+      @type null
+    </match>
+
+    <match **>
+      @type google_cloud
+
+      enable_monitoring false
+      split_logs_by_tag false
+      detect_subservice false
+      buffer_type file
+      buffer_path /var/log/fluentd-buffers/system.audit.buffer
+      buffer_queue_full_action block
+      buffer_chunk_limit 512k
+      buffer_queue_limit 2
+      flush_interval 5s
+      max_retry_wait 30
+      disable_retry_limit
+      num_threads 2
+      use_grpc true
+    </match>
