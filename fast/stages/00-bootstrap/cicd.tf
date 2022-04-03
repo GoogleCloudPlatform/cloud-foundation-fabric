@@ -26,14 +26,17 @@ locals {
 
     ])
   }
-  cicd_enabled  = local.cicd_provider != null
-  cicd_provider = try(var.cicd_config.provider, null)
+  cicd_enabled = local.cicd_provider != null
   cicd_principal = !local.cicd_enabled ? null : join("/", [
     "principal://iam.googleapis.com",
     google_iam_workload_identity_pool.default.0.name,
     "subject",
     lookup(local._cicd_subject, local.cicd_provider, "")
   ])
+  cicd_provider = try(var.cicd_config.provider, null)
+  cicd_sa = !local.cicd_enabled ? [] : [
+    module.automation-tf-resman-sa-cicd.0.iam_email
+  ]
 }
 
 # TODO: check in resman for the relevant org policy
@@ -50,10 +53,12 @@ resource "google_iam_workload_identity_pool" "default" {
 }
 
 resource "google_iam_workload_identity_pool_provider" "github" {
-  provider                           = google-beta
-  count                              = local.cicd_provider == "GITHUB" ? 1 : 0
-  project                            = module.automation-project.project_id
-  workload_identity_pool_id          = google_iam_workload_identity_pool.default.0.workload_identity_pool_id
+  provider = google-beta
+  count    = local.cicd_provider == "GITHUB" ? 1 : 0
+  project  = module.automation-project.project_id
+  workload_identity_pool_id = (
+    google_iam_workload_identity_pool.default.0.workload_identity_pool_id
+  )
   workload_identity_pool_provider_id = "${var.prefix}-default-github"
   # TODO: limit via attribute_condition?
   attribute_mapping = {
@@ -67,10 +72,12 @@ resource "google_iam_workload_identity_pool_provider" "github" {
 }
 
 resource "google_iam_workload_identity_pool_provider" "gitlab" {
-  provider                           = google-beta
-  count                              = local.cicd_provider == "GITLAB" ? 1 : 0
-  project                            = module.automation-project.project_id
-  workload_identity_pool_id          = google_iam_workload_identity_pool.default.0.workload_identity_pool_id
+  provider = google-beta
+  count    = local.cicd_provider == "GITLAB" ? 1 : 0
+  project  = module.automation-project.project_id
+  workload_identity_pool_id = (
+    google_iam_workload_identity_pool.default.0.workload_identity_pool_id
+  )
   workload_identity_pool_provider_id = "${var.prefix}-default-gitlab"
   # TODO: limit via attribute_condition?
   attribute_mapping = {
@@ -83,13 +90,14 @@ resource "google_iam_workload_identity_pool_provider" "gitlab" {
   }
 }
 
-# TODO: create a dedicated SA used to impersonate the resman one, so we don't
-#       have to change providers and can identify CI/CD impersonation
-
-resource "google_service_account_iam_member" "cicd-resman" {
-  provider           = google-beta
-  count              = local.cicd_enabled ? 1 : 0
-  service_account_id = module.automation-tf-resman-sa.service_account.id
-  role               = "roles/iam.workloadIdentityUser"
-  member             = local.cicd_principal
+module "automation-tf-resman-sa-cicd" {
+  source      = "../../../modules/iam-service-account"
+  count       = local.cicd_enabled ? 1 : 0
+  project_id  = module.automation-project.project_id
+  name        = "resman-1"
+  description = "Terraform CI/CD stage 1 resman service account."
+  prefix      = local.prefix
+  iam = {
+    "roles/iam.workloadIdentityUser" = [local.cicd_principal]
+  }
 }

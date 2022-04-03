@@ -108,6 +108,9 @@ module "automation-tf-resman-sa" {
   source      = "../../../modules/iam-service-account"
   project_id  = module.automation-project.project_id
   name        = "resman-0"
-  description = "Terraform organization bootstrap service account."
+  description = "Terraform stage 1 resman service account."
   prefix      = local.prefix
+  iam = {
+    "roles/iam.serviceAccountTokenCreator" = local.cicd_sa
+  }
 }

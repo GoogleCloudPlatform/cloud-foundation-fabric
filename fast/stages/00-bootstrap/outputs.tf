@@ -34,6 +34,11 @@ locals {
   tfvars = {
     automation_project_id = module.automation-project.project_id
     custom_roles          = local.custom_roles
+    wif_pool = (
+      local.cicd_enabled
+      ? google_iam_workload_identity_pool.default.0.name
+      : null
+    )
   }
 }
 
