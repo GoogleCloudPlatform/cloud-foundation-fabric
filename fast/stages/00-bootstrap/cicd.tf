@@ -20,10 +20,13 @@ locals {
       "repo",
       var.cicd_config.repositories.resman.name,
       "ref",
-      var.cicd_config.repositories.resman.branch
+      "refs/heads/${var.cicd_config.repositories.resman.branch}"
     ])
     GITLAB = local.cicd_provider != "GITHUB" ? null : join(":", [
-
+      "project_path",
+      var.cicd_config.repositories.resman.name,
+      "ref_type:branch:ref",
+      var.cicd_config.repositories.resman.branch
     ])
   }
   cicd_enabled = local.cicd_provider != null
