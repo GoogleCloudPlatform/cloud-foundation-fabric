@@ -19,6 +19,7 @@ module "stage" {
   automation = {
     project_id     = "fast-prod-automation"
     outputs_bucket = null
+    wif_pool       = null
   }
   billing_account = {
     id              = "000000-111111-222222"

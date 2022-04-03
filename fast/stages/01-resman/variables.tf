@@ -23,6 +23,7 @@ variable "automation" {
   type = object({
     project_id     = string
     outputs_bucket = string
+    wif_pool       = string
   })
 }
 

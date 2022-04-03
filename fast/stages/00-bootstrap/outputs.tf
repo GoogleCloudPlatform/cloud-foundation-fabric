@@ -35,8 +35,6 @@ locals {
     automation = {
       outputs_bucket = module.automation-tf-output-gcs.name
       project_id     = module.automation-project.project_id
-    }
-    cicd = {
       wif_pool = (
         local.cicd_enabled
         ? google_iam_workload_identity_pool.default.0.name
