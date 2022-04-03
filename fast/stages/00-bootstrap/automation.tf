@@ -40,6 +40,9 @@ module "automation-project" {
     "roles/iam.serviceAccountAdmin" = [
       module.automation-tf-resman-sa.iam_email
     ]
+    "roles/iam.workloadIdentityPoolAdmin" = [
+      module.automation-tf-resman-sa.iam_email
+    ]
     "roles/storage.admin" = [
       module.automation-tf-resman-sa.iam_email
     ]
@@ -57,12 +60,14 @@ module "automation-project" {
     "compute.googleapis.com",
     "essentialcontacts.googleapis.com",
     "iam.googleapis.com",
+    "iamcredentials.googleapis.com",
     "pubsub.googleapis.com",
     "servicenetworking.googleapis.com",
     "serviceusage.googleapis.com",
     "stackdriver.googleapis.com",
     "storage-component.googleapis.com",
     "storage.googleapis.com",
+    "sts.googleapis.com"
   ]
 }
 

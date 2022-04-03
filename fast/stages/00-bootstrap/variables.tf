@@ -28,6 +28,28 @@ variable "bootstrap_user" {
   default     = null
 }
 
+variable "cicd_config" {
+  description = "CD configuration. Leave null to disable."
+  type = object({
+    provider = string
+    repositories = object({
+      resman = object({
+        name   = string
+        branch = string
+      })
+    })
+  })
+  default = null
+  validation {
+    condition = (
+      var.cicd_config == null
+      ? true
+      : contains(["GITHUB", "GITLAB"], var.cicd_config.provider)
+    )
+    error_message = "Supported CI/CD providers: 'GITHUB', 'GITLAB'."
+  }
+}
+
 variable "custom_role_names" {
   description = "Names of custom roles defined at the org level."
   type = object({
