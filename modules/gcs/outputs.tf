@@ -21,7 +21,11 @@ output "bucket" {
 
 output "name" {
   description = "Bucket name."
-  value       = google_storage_bucket.bucket.name
+  value       = "${local.prefix}${lower(var.name)}"
+  depends_on = [
+    google_storage_bucket.bucket,
+    google_storage_bucket_iam_binding.bindings
+  ]
 }
 output "notification" {
   description = "GCS Notification self link."
