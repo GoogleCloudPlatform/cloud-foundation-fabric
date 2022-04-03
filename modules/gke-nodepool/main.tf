@@ -84,7 +84,7 @@ resource "google_container_node_pool" "nodepool" {
   location = var.location
   name     = var.name
 
-  initial_node_count = var.initial_node_count
+  initial_node_count = var.node_count == null ? var.initial_node_count : null // (dmarzi) TOFIX
   max_pods_per_node  = var.max_pods_per_node
   node_count         = var.autoscaling_config == null ? var.node_count : null
   node_locations     = var.node_locations

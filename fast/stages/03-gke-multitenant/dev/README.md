@@ -63,6 +63,9 @@ everything else is in RBAC (second part of this stage)
 
 ## Addresses for ILBs
 
+### Private Cluster
+WARNING: do not use run this stage with GKE-HUB and private clusters enabled from a machine outside the clusters network
+
 ## Filestore
 
 - later
