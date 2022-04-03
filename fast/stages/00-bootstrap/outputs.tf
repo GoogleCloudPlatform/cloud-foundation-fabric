@@ -33,18 +33,16 @@ locals {
   }
   tfvars = {
     automation = {
-      project_id     = module.automation-project.project_id
       outputs_bucket = module.automation-tf-output-gcs.name
+      project_id     = module.automation-project.project_id
     }
-    cicd = (
-      !local.cicd_enabled
-      ? {
-        wif_pool = null
-      }
-      : {
-        wif_pool = google_iam_workload_identity_pool.default.0.name
-      }
-    )
+    cicd = {
+      wif_pool = (
+        local.cicd_enabled
+        ? google_iam_workload_identity_pool.default.0.name
+        : null
+      )
+    }
     custom_roles = local.custom_roles
   }
 }
