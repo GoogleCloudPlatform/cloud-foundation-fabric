@@ -65,7 +65,7 @@ def get_bindings(resources, prefix=None, folders=None):
         member_type, _, member_id = member.partition(':')
         if member_type == 'user':
           continue
-        member_id,member_domain = member_id.split('@',1)
+        member_id, member_domain = member_id.split('@', 1)
         # Handle Cloud Services Service Account
         if member_domain == 'cloudservices.gserviceaccount.com':
           member_id = "PROJECT_CLOUD_SERVICES"
@@ -75,7 +75,7 @@ def get_bindings(resources, prefix=None, folders=None):
         # Handle BQ Cloud Service Identity Service Acocunt
         if re.match("^bq-\d{8}", member_id):
           member_id = "IDENTITY_" + member_domain.split(".", 1)[0]
-          resource_type_output = "Service Identity - " + resource_type          
+          resource_type_output = "Service Identity - " + resource_type
         else:
           resource_type_output = resource_type
         if prefix and member_id.startswith(prefix):
