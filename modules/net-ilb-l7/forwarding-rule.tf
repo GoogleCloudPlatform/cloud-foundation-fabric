@@ -45,7 +45,7 @@ resource "google_compute_address" "static_ip" {
   address      = try(var.static_ip_config.options.address, null)
   purpose      = "GCE_ENDPOINT"
   region       = try(var.region, null)
-  subnetwork   = try(var.static_ip_config.options.subnet, null)
+  subnetwork   = try(var.static_ip_config.options.subnet, var.subnetwork, null)
 }
 
 resource "google_compute_forwarding_rule" "forwarding_rule" {
@@ -56,10 +56,10 @@ resource "google_compute_forwarding_rule" "forwarding_rule" {
   ip_address            = local.ip_address
   ip_protocol           = "TCP"
   load_balancing_scheme = "INTERNAL_MANAGED"
-  network               = var.forwarding_rule_config.network
+  network               = try(var.forwarding_rule_config.network, null)
   network_tier          = var.forwarding_rule_config.network_tier
   port_range            = local.port_range
   region                = try(var.region, null)
-  subnetwork            = var.forwarding_rule_config.subnetwork
+  subnetwork            = try(var.subnetwork, null)
   target                = local.target
 }

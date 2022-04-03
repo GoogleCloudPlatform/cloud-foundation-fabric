@@ -28,7 +28,7 @@ variable "backend_services_config" {
   description = "The backends services configuration."
   type = map(object({
     backends = list(object({
-      group = string # IG FQDN address
+      group = string # The instance group link id
       options = object({
         balancing_mode               = string # Can be UTILIZATION, RATE
         capacity_scaler              = number # Valid range is [0.0,1.0]
@@ -99,19 +99,15 @@ variable "forwarding_rule_config" {
   description = "Forwarding rule configurations."
   type = object({
     ip_version   = string
-    network      = string
     network_tier = string
     port_range   = string
-    subnetwork   = string
   })
   default = {
     allow_global_access = true
     ip_version          = "IPV4"
-    network             = null
     network_tier        = "PREMIUM"
     # If not specified, 443 if var.https = true; 80 otherwise
     port_range = null
-    subnetwork = null
   }
 }
 
@@ -150,6 +146,12 @@ variable "https" {
   default     = false
 }
 
+variable "network" {
+  description = "The network where the ILB is created."
+  type        = string
+  default     = "default"
+}
+
 variable "region" {
   description = "The region where to allocate the ILB resources."
   type        = string
@@ -178,6 +180,11 @@ variable "static_ip_config" {
     reserve = false
     options = null
   }
+}
+
+variable "subnetwork" {
+  description = "The subnetwork where the ILB VIP is allocated."
+  type        = string
 }
 
 variable "target_proxy_https_config" {

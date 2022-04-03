@@ -15,12 +15,42 @@ module "ilb" {
   name       = "ilb-test"
   project_id = var.project_id
   region     = "europe-west1"
+  network    = "my-vpc"
+  subnetwork = "my-subnet"
 
   backend_services_config = {
     my-backend-svc = {
       backends = [
         {
-          group   = "my_test_mig"
+          group   = "projects/my-project/zones/europe-west1-a/instanceGroups/my-ig"
+          options = null
+        }
+      ]
+      health_checks = []
+      log_config = null
+      options = null
+    }
+  }
+}
+# tftest modules=1 resources=5
+```
+
+Network and subnetwork can be entered using their name (if present in the same project) or leveraging their link id. The latter is mandatory if you're trying to deploy an ILB in a shared VPC environment.
+
+```hcl
+module "ilb" {
+  source     = "./modules/net-ilb-l7"
+  name       = "ilb-test"
+  project_id = var.project_id
+  region     = "europe-west1"
+  network    = "projects/my-host-project/global/networks/my-shared-vpc"
+  subnetwork = "projects/my-host-project/regions/europe-west1/subnetworks/my-shared-subnet"
+
+  backend_services_config = {
+    my-backend-svc = {
+      backends = [
+        {
+          group   = "projects/my-project/zones/europe-west1-a/instanceGroups/my-ig"
           options = null
         }
       ]
@@ -49,27 +79,29 @@ module "ilb" {
   name       = "ilb-test"
   project_id = var.project_id
   region     = "europe-west1"
+  network    = "my-vpc"
+  subnetwork = "my-subnet"
 
   backend_services_config = {
     my-backend-svc = {
       backends = [
         {
-          group   = "my_test_group"
+          group   = "projects/my-project/zones/europe-west1-a/instanceGroups/my-ig"
           options = null
         }
       ],
-      health_checks = ["hc_1"]
+      health_checks = ["hc-1"]
       log_config = null
       options = null
     }
   }
 
   health_checks_config = {
-    hc_1 = {
+    hc-1 = {
       type    = "http"
       logging = true
       options = {
-        timeout_sec = 40
+        timeout_sec = 5
       }
       check = {
         port_specification = "USE_SERVING_PORT"
@@ -143,6 +175,8 @@ module "ilb" {
   name       = "ilb-test"
   project_id = var.project_id
   region     = "europe-west1"
+  network    = "my-vpc"
+  subnetwork = "my-subnet"
 
   url_map_config = {
     default_service      = "my-backend-svc"
@@ -166,7 +200,7 @@ module "ilb" {
     my-backend-svc = {
       backends = [
         {
-          group   = "my_test_group"
+          group   = "projects/my-project/zones/europe-west1-a/instanceGroups/my-ig"
           options = null
         }
       ],
@@ -177,7 +211,7 @@ module "ilb" {
     my-example-page = {
       backends = [
         {
-          group   = "my_other_test_group"
+          group   = "projects/my-project/zones/europe-west1-a/instanceGroups/another-ig"
           options = null
         }
       ],
@@ -200,6 +234,8 @@ module "ilb" {
   name       = "ilb-test"
   project_id = var.project_id
   region     = "europe-west1"
+  network    = "my-vpc"
+  subnetwork = "my-subnet"
 
   static_ip_config = {
     reserve = true
@@ -210,7 +246,7 @@ module "ilb" {
     my-backend-svc = {
       backends = [
         {
-          group   = "my_test_group"
+          group   = "projects/my-project/zones/europe-west1-a/instanceGroups/my-ig"
           options = null
         }
       ],
@@ -235,6 +271,8 @@ module "ilb" {
   name       = "ilb-test"
   project_id = var.project_id
   region     = "europe-west1"
+  network    = "my-vpc"
+  subnetwork = "my-subnet"
 
   https = true
 
@@ -248,7 +286,7 @@ module "ilb" {
     my-backend-svc = {
       backends = [
         {
-          group   = "my_test_group"
+          group   = "projects/my-project/zones/europe-west1-a/instanceGroups/my-ig"
           options = null
         }
       ]
@@ -269,6 +307,8 @@ module "ilb" {
   name       = "ilb-test"
   project_id = var.project_id
   region     = "europe-west1"
+  network    = "my-vpc"
+  subnetwork = "my-subnet"
 
   https = true
 
@@ -292,7 +332,7 @@ module "ilb" {
     my-backend-svc = {
       backends = [
         {
-          group   = "my_test_group"
+          group   = "projects/my-project/zones/europe-west1-a/instanceGroups/my-ig"
           options = null
         }
       ],
@@ -360,16 +400,18 @@ An Internal HTTP Load Balancer is made of multiple components, that change depen
 |---|---|:---:|:---:|:---:|
 | [name](variables.tf#L17) | Load balancer name. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L22) | Project id. | <code>string</code> | ✓ |  |
-| [region](variables.tf#L153) | The region where to allocate the ILB resources. | <code>string</code> | ✓ |  |
-| [backend_services_config](variables.tf#L27) | The backends services configuration. | <code title="map&#40;object&#40;&#123;&#10;  backends &#61; list&#40;object&#40;&#123;&#10;    group &#61; string &#35; IG FQDN address&#10;    options &#61; object&#40;&#123;&#10;      balancing_mode               &#61; string &#35; Can be UTILIZATION, RATE&#10;      capacity_scaler              &#61; number &#35; Valid range is &#91;0.0,1.0&#93;&#10;      max_connections              &#61; number&#10;      max_connections_per_instance &#61; number&#10;      max_connections_per_endpoint &#61; number&#10;      max_rate                     &#61; number&#10;      max_rate_per_instance        &#61; number&#10;      max_rate_per_endpoint        &#61; number&#10;      max_utilization              &#61; number&#10;    &#125;&#41;&#10;  &#125;&#41;&#41;&#10;  health_checks &#61; list&#40;string&#41;&#10;&#10;&#10;  log_config &#61; object&#40;&#123;&#10;    enable      &#61; bool&#10;    sample_rate &#61; number &#35; must be in &#91;0, 1&#93;&#10;  &#125;&#41;&#10;&#10;&#10;  options &#61; object&#40;&#123;&#10;    affinity_cookie_ttl_sec         &#61; number&#10;    custom_request_headers          &#61; list&#40;string&#41;&#10;    custom_response_headers         &#61; list&#40;string&#41;&#10;    connection_draining_timeout_sec &#61; number&#10;    locality_lb_policy              &#61; string&#10;    port_name                       &#61; string&#10;    protocol                        &#61; string&#10;    session_affinity                &#61; string&#10;    timeout_sec                     &#61; number&#10;&#10;&#10;    circuits_breakers &#61; object&#40;&#123;&#10;      max_requests_per_connection &#61; number &#35; Set to 1 to disable keep-alive&#10;      max_connections             &#61; number &#35; Defaults to 1024&#10;      max_pending_requests        &#61; number &#35; Defaults to 1024&#10;      max_requests                &#61; number &#35; Defaults to 1024&#10;      max_retries                 &#61; number &#35; Defaults to 3&#10;    &#125;&#41;&#10;&#10;&#10;    consistent_hash &#61; object&#40;&#123;&#10;      http_header_name  &#61; string&#10;      minimum_ring_size &#61; string&#10;      http_cookie &#61; object&#40;&#123;&#10;        name &#61; string&#10;        path &#61; string&#10;        ttl &#61; object&#40;&#123;&#10;          seconds &#61; number&#10;          nanos   &#61; number&#10;        &#125;&#41;&#10;      &#125;&#41;&#10;    &#125;&#41;&#10;&#10;&#10;    iap &#61; object&#40;&#123;&#10;      oauth2_client_id            &#61; string&#10;      oauth2_client_secret        &#61; string&#10;      oauth2_client_secret_sha256 &#61; string&#10;    &#125;&#41;&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [forwarding_rule_config](variables.tf#L98) | Forwarding rule configurations. | <code title="object&#40;&#123;&#10;  ip_version   &#61; string&#10;  network      &#61; string&#10;  network_tier &#61; string&#10;  port_range   &#61; string&#10;  subnetwork   &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  allow_global_access &#61; true&#10;  ip_version          &#61; &#34;IPV4&#34;&#10;  network             &#61; null&#10;  network_tier        &#61; &#34;PREMIUM&#34;&#10;  port_range &#61; null&#10;  subnetwork &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [health_checks_config](variables.tf#L118) | Custom health checks configuration. | <code title="map&#40;object&#40;&#123;&#10;  type    &#61; string      &#35; http https tcp ssl http2&#10;  check   &#61; map&#40;any&#41;    &#35; actual health check block attributes&#10;  options &#61; map&#40;number&#41; &#35; interval, thresholds, timeout&#10;  logging &#61; bool&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [health_checks_config_defaults](variables.tf#L129) | Auto-created health check default configuration. | <code title="object&#40;&#123;&#10;  check   &#61; map&#40;any&#41; &#35; actual health check block attributes&#10;  logging &#61; bool&#10;  options &#61; map&#40;number&#41; &#35; interval, thresholds, timeout&#10;  type    &#61; string      &#35; http https tcp ssl http2&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  type    &#61; &#34;http&#34;&#10;  logging &#61; false&#10;  options &#61; &#123;&#125;&#10;  check &#61; &#123;&#10;    port_specification &#61; &#34;USE_SERVING_PORT&#34;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [https](variables.tf#L147) | Whether to enable HTTPS. | <code>bool</code> |  | <code>false</code> |
-| [ssl_certificates_config](variables.tf#L158) | The SSL certificate configuration. | <code title="map&#40;object&#40;&#123;&#10;  domains              &#61; list&#40;string&#41;&#10;  tls_private_key      &#61; string&#10;  tls_self_signed_cert &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [static_ip_config](variables.tf#L168) | Static IP address configuration. | <code title="object&#40;&#123;&#10;  reserve &#61; bool&#10;  options &#61; object&#40;&#123;&#10;    address    &#61; string&#10;    subnetwork &#61; string &#35; The subnet id&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  reserve &#61; false&#10;  options &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [target_proxy_https_config](variables.tf#L183) | The HTTPS target proxy configuration. | <code title="object&#40;&#123;&#10;  ssl_certificates &#61; list&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [url_map_config](variables.tf#L191) | The url-map configuration. | <code title="object&#40;&#123;&#10;  default_service      &#61; string&#10;  default_url_redirect &#61; map&#40;any&#41;&#10;  host_rules           &#61; list&#40;any&#41;&#10;  path_matchers        &#61; list&#40;any&#41;&#10;  tests                &#61; list&#40;map&#40;string&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [region](variables.tf#L155) | The region where to allocate the ILB resources. | <code>string</code> | ✓ |  |
+| [subnetwork](variables.tf#L185) | The subnetwork where the ILB VIP is allocated. | <code>string</code> | ✓ |  |
+| [backend_services_config](variables.tf#L27) | The backends services configuration. | <code title="map&#40;object&#40;&#123;&#10;  backends &#61; list&#40;object&#40;&#123;&#10;    group &#61; string &#35; The instance group link id&#10;    options &#61; object&#40;&#123;&#10;      balancing_mode               &#61; string &#35; Can be UTILIZATION, RATE&#10;      capacity_scaler              &#61; number &#35; Valid range is &#91;0.0,1.0&#93;&#10;      max_connections              &#61; number&#10;      max_connections_per_instance &#61; number&#10;      max_connections_per_endpoint &#61; number&#10;      max_rate                     &#61; number&#10;      max_rate_per_instance        &#61; number&#10;      max_rate_per_endpoint        &#61; number&#10;      max_utilization              &#61; number&#10;    &#125;&#41;&#10;  &#125;&#41;&#41;&#10;  health_checks &#61; list&#40;string&#41;&#10;&#10;&#10;  log_config &#61; object&#40;&#123;&#10;    enable      &#61; bool&#10;    sample_rate &#61; number &#35; must be in &#91;0, 1&#93;&#10;  &#125;&#41;&#10;&#10;&#10;  options &#61; object&#40;&#123;&#10;    affinity_cookie_ttl_sec         &#61; number&#10;    custom_request_headers          &#61; list&#40;string&#41;&#10;    custom_response_headers         &#61; list&#40;string&#41;&#10;    connection_draining_timeout_sec &#61; number&#10;    locality_lb_policy              &#61; string&#10;    port_name                       &#61; string&#10;    protocol                        &#61; string&#10;    session_affinity                &#61; string&#10;    timeout_sec                     &#61; number&#10;&#10;&#10;    circuits_breakers &#61; object&#40;&#123;&#10;      max_requests_per_connection &#61; number &#35; Set to 1 to disable keep-alive&#10;      max_connections             &#61; number &#35; Defaults to 1024&#10;      max_pending_requests        &#61; number &#35; Defaults to 1024&#10;      max_requests                &#61; number &#35; Defaults to 1024&#10;      max_retries                 &#61; number &#35; Defaults to 3&#10;    &#125;&#41;&#10;&#10;&#10;    consistent_hash &#61; object&#40;&#123;&#10;      http_header_name  &#61; string&#10;      minimum_ring_size &#61; string&#10;      http_cookie &#61; object&#40;&#123;&#10;        name &#61; string&#10;        path &#61; string&#10;        ttl &#61; object&#40;&#123;&#10;          seconds &#61; number&#10;          nanos   &#61; number&#10;        &#125;&#41;&#10;      &#125;&#41;&#10;    &#125;&#41;&#10;&#10;&#10;    iap &#61; object&#40;&#123;&#10;      oauth2_client_id            &#61; string&#10;      oauth2_client_secret        &#61; string&#10;      oauth2_client_secret_sha256 &#61; string&#10;    &#125;&#41;&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [forwarding_rule_config](variables.tf#L98) | Forwarding rule configurations. | <code title="object&#40;&#123;&#10;  ip_version   &#61; string&#10;  network_tier &#61; string&#10;  port_range   &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  allow_global_access &#61; true&#10;  ip_version          &#61; &#34;IPV4&#34;&#10;  network_tier        &#61; &#34;PREMIUM&#34;&#10;  port_range &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [health_checks_config](variables.tf#L114) | Custom health checks configuration. | <code title="map&#40;object&#40;&#123;&#10;  type    &#61; string      &#35; http https tcp ssl http2&#10;  check   &#61; map&#40;any&#41;    &#35; actual health check block attributes&#10;  options &#61; map&#40;number&#41; &#35; interval, thresholds, timeout&#10;  logging &#61; bool&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [health_checks_config_defaults](variables.tf#L125) | Auto-created health check default configuration. | <code title="object&#40;&#123;&#10;  check   &#61; map&#40;any&#41; &#35; actual health check block attributes&#10;  logging &#61; bool&#10;  options &#61; map&#40;number&#41; &#35; interval, thresholds, timeout&#10;  type    &#61; string      &#35; http https tcp ssl http2&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  type    &#61; &#34;http&#34;&#10;  logging &#61; false&#10;  options &#61; &#123;&#125;&#10;  check &#61; &#123;&#10;    port_specification &#61; &#34;USE_SERVING_PORT&#34;&#10;  &#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [https](variables.tf#L143) | Whether to enable HTTPS. | <code>bool</code> |  | <code>false</code> |
+| [network](variables.tf#L149) | The network where the ILB is created. | <code>string</code> |  | <code>&#34;default&#34;</code> |
+| [ssl_certificates_config](variables.tf#L160) | The SSL certificate configuration. | <code title="map&#40;object&#40;&#123;&#10;  domains              &#61; list&#40;string&#41;&#10;  tls_private_key      &#61; string&#10;  tls_self_signed_cert &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [static_ip_config](variables.tf#L170) | Static IP address configuration. | <code title="object&#40;&#123;&#10;  reserve &#61; bool&#10;  options &#61; object&#40;&#123;&#10;    address    &#61; string&#10;    subnetwork &#61; string &#35; The subnet id&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  reserve &#61; false&#10;  options &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [target_proxy_https_config](variables.tf#L190) | The HTTPS target proxy configuration. | <code title="object&#40;&#123;&#10;  ssl_certificates &#61; list&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [url_map_config](variables.tf#L198) | The url-map configuration. | <code title="object&#40;&#123;&#10;  default_service      &#61; string&#10;  default_url_redirect &#61; map&#40;any&#41;&#10;  host_rules           &#61; list&#40;any&#41;&#10;  path_matchers        &#61; list&#40;any&#41;&#10;  tests                &#61; list&#40;map&#40;string&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

@@ -19,6 +19,8 @@ module "test" {
   project_id                    = "my-project"
   name                          = "ilb-l7-test"
   region                        = "europe-west1"
+  network                       = "projects/my-project/global/networks/default"
+  subnetwork                    = "projects/my-project/regions/europe-west1/subnetworks/default"
   backend_services_config       = var.backend_services_config
   forwarding_rule_config        = var.forwarding_rule_config
   health_checks_config          = var.health_checks_config
