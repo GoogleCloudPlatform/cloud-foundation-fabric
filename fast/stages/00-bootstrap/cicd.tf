@@ -15,14 +15,24 @@
  */
 
 locals {
-  cicd_enabled  = var.cicd_config != null
-  cicd_provider = local.cicd_enabled ? var.cicd_config.provider : null
-  # TODO: make it work for GITLAB too
-  cicd_resman_principal = local.cicd_enabled ? null : join("/", [
+  _cicd_subject = {
+    GITHUB = local.cicd_provider != "GITHUB" ? null : join(":", [
+      "repo",
+      var.cicd_config.repositories.resman.name,
+      "ref",
+      var.cicd_config.repositories.resman.branch
+    ])
+    GITLAB = local.cicd_provider != "GITHUB" ? null : join(":", [
+
+    ])
+  }
+  cicd_enabled  = local.cicd_provider != null
+  cicd_provider = try(var.cicd_config.provider, null)
+  cicd_principal = !local.cicd_enabled ? null : join("/", [
     "principal://iam.googleapis.com",
     google_iam_workload_identity_pool.default.0.name,
     "subject",
-    "repo:${var.cicd_config.repositories.resman.name}:ref:${var.cicd_config.repositories.resman.branch}",
+    lookup(local._cicd_subject, local.cicd_provider, "")
   ])
 }
 
@@ -71,4 +81,12 @@ resource "google_iam_workload_identity_pool_provider" "gitlab" {
     allowed_audiences = ["https://gitlab.com"]
     issuer_uri        = "https://gitlab.com"
   }
+}
+
+resource "google_service_account_iam_member" "cicd-resman" {
+  provider           = google-beta
+  count              = local.cicd_enabled ? 1 : 0
+  service_account_id = module.automation-tf-resman-sa.service_account.id
+  role               = "roles/iam.workloadIdentityUser"
+  member             = local.cicd_principal
 }

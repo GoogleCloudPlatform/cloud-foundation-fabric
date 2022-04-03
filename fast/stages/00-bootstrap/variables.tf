@@ -34,8 +34,8 @@ variable "cicd_config" {
     provider = string
     repositories = object({
       resman = object({
-        name   = string
-        branch = string
+        name   = string # Fabric-team/ludo-0-resman
+        branch = string # refs/heads/main
       })
     })
   })
@@ -47,6 +47,14 @@ variable "cicd_config" {
       : contains(["GITHUB", "GITLAB"], var.cicd_config.provider)
     )
     error_message = "Supported CI/CD providers: 'GITHUB', 'GITLAB'."
+  }
+  validation {
+    condition = (
+      var.cicd_config == null
+      ? true
+      : var.cicd_config.repositories != null
+    )
+    error_message = "Repositories must be set if CI/CD configuration is not null."
   }
 }
 
