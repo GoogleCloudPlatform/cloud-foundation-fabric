@@ -23,6 +23,7 @@ locals {
     (local.groups.data-analysts) = [
       "roles/bigquery.dataViewer",
       "roles/bigquery.jobUser",
+      "roles/bigquery.metadataViewer",
       "roles/bigquery.user",
       "roles/datacatalog.viewer",
       "roles/datacatalog.tagTemplateViewer",
@@ -37,6 +38,7 @@ locals {
     (local.groups.data-analysts) = [
       "roles/bigquery.dataEditor",
       "roles/bigquery.jobUser",
+      "roles/bigquery.metadataViewer",
       "roles/bigquery.user",
       "roles/datacatalog.viewer",
       "roles/datacatalog.tagTemplateViewer",
@@ -44,25 +46,31 @@ locals {
     ]
   }
   lake_0_iam = {
-    "roles/bigquery.dataEditor" = [
+    "roles/bigquery.dataOwner" = [
       module.load-sa-df-0.iam_email,
       module.transf-sa-df-0.iam_email,
       module.transf-sa-bq-0.iam_email,
     ]
     "roles/bigquery.jobUser" = [
       module.load-sa-df-0.iam_email,
+    ]
+    "roles/datacatalog.categoryAdmin" = [
+      module.transf-sa-bq-0.iam_email
     ]
     "roles/storage.objectCreator" = [
       module.load-sa-df-0.iam_email,
     ]
   }
   lake_iam = {
-    "roles/bigquery.dataEditor" = [
+    "roles/bigquery.dataOwner" = [
       module.transf-sa-df-0.iam_email,
       module.transf-sa-bq-0.iam_email,
     ]
     "roles/bigquery.jobUser" = [
       module.transf-sa-bq-0.iam_email,
+    ]
+    "roles/datacatalog.categoryAdmin" = [
+      module.load-sa-df-0.iam_email
     ]
     "roles/storage.objectCreator" = [
       module.transf-sa-df-0.iam_email,

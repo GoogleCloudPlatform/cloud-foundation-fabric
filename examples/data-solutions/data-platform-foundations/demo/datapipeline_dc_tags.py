@@ -103,7 +103,7 @@ default_args = {
 # --------------------------------------------------------------------------------
 
 with models.DAG(
-    'data_pipeline_dag',
+    'data_pipeline_dc_tags_dag',
     default_args=default_args,
     schedule_interval=None) as dag:
   start = dummy.DummyOperator(
@@ -116,8 +116,119 @@ with models.DAG(
     trigger_rule='all_success'
   )
 
-  # Bigquery Tables automatically created for demo porpuse. 
+  # Bigquery Tables created here for demo porpuse. 
   # Consider a dedicated pipeline or tool for a real life scenario.
+  with TaskGroup('upsert_table') as upsert_table:  
+    upsert_table_customers = BigQueryUpsertTableOperator(
+      task_id="upsert_table_customers",
+      project_id=DTL_L0_PRJ,
+      dataset_id=DTL_L0_BQ_DATASET,
+      impersonation_chain=[TRF_SA_DF],
+      table_resource={
+        "tableReference": {"tableId": "customers"},
+      },
+    )  
+
+    upsert_table_purchases = BigQueryUpsertTableOperator(
+      task_id="upsert_table_purchases",
+      project_id=DTL_L0_PRJ,
+      dataset_id=DTL_L0_BQ_DATASET,
+      impersonation_chain=[TRF_SA_BQ],      
+      table_resource={
+        "tableReference": {"tableId": "purchases"}
+      },
+    )   
+
+    upsert_table_customer_purchase_l1 = BigQueryUpsertTableOperator(
+      task_id="upsert_table_customer_purchase_l1",
+      project_id=DTL_L1_PRJ,
+      dataset_id=DTL_L1_BQ_DATASET,
+      impersonation_chain=[TRF_SA_BQ],
+      table_resource={
+        "tableReference": {"tableId": "customer_purchase"}
+      },
+    )   
+
+    upsert_table_customer_purchase_l2 = BigQueryUpsertTableOperator(
+      task_id="upsert_table_customer_purchase_l2",
+      project_id=DTL_L2_PRJ,
+      dataset_id=DTL_L2_BQ_DATASET,
+      impersonation_chain=[TRF_SA_BQ],
+      table_resource={
+        "tableReference": {"tableId": "customer_purchase"}
+      },
+    )       
+
+  # Bigquery Tables schema defined here for demo porpuse. 
+  # Consider a dedicated pipeline or tool for a real life scenario.
+  with TaskGroup('update_schema_table') as update_schema_table:  
+    update_table_schema_customers = BigQueryUpdateTableSchemaOperator(
+      task_id="update_table_schema_customers",
+      project_id=DTL_L0_PRJ,
+      dataset_id=DTL_L0_BQ_DATASET,
+      table_id="customers",
+      impersonation_chain=[TRF_SA_BQ],
+      include_policy_tags=True,
+      schema_fields_updates=[
+        { "mode": "REQUIRED", "name": "id", "type": "INTEGER", "description": "ID" },
+        { "mode": "REQUIRED", "name": "name", "type": "STRING", "description": "Name", "policyTags": { "names": [DATA_CAT_TAGS.get('2_Private', None)]}},
+        { "mode": "REQUIRED", "name": "surname", "type": "STRING", "description": "Surname", "policyTags": { "names": [DATA_CAT_TAGS.get('2_Private', None)]} },
+        { "mode": "REQUIRED", "name": "timestamp", "type": "TIMESTAMP", "description": "Timestamp" }
+      ]
+    )  
+
+    update_table_schema_customers = BigQueryUpdateTableSchemaOperator(
+      task_id="update_table_schema_purchases",
+      project_id=DTL_L0_PRJ,
+      dataset_id=DTL_L0_BQ_DATASET,
+      table_id="purchases",
+      impersonation_chain=[TRF_SA_BQ],
+      include_policy_tags=True,
+      schema_fields_updates=[ 
+        {  "mode": "REQUIRED",  "name": "id",  "type": "INTEGER",  "description": "ID" }, 
+        {  "mode": "REQUIRED",  "name": "customer_id",  "type": "INTEGER",  "description": "ID" }, 
+        {  "mode": "REQUIRED",  "name": "item",  "type": "STRING",  "description": "Item Name" }, 
+        {  "mode": "REQUIRED",  "name": "price",  "type": "FLOAT",  "description": "Item Price" }, 
+        {  "mode": "REQUIRED",  "name": "timestamp",  "type": "TIMESTAMP",  "description": "Timestamp" }
+      ]
+    )    
+
+    update_table_schema_customer_purchase_l1 = BigQueryUpdateTableSchemaOperator(
+      task_id="update_table_schema_customer_purchase_l1",
+      project_id=DTL_L1_PRJ,
+      dataset_id=DTL_L1_BQ_DATASET,
+      table_id="customer_purchase",
+      impersonation_chain=[TRF_SA_BQ],
+      include_policy_tags=True,
+      schema_fields_updates=[
+        { "mode": "REQUIRED", "name": "customer_id", "type": "INTEGER", "description": "ID" },
+        { "mode": "REQUIRED", "name": "purchase_id", "type": "INTEGER", "description": "ID" },
+        { "mode": "REQUIRED", "name": "name", "type": "STRING", "description": "Name", "policyTags": { "names": [DATA_CAT_TAGS.get('2_Private', None)]}},
+        { "mode": "REQUIRED", "name": "surname", "type": "STRING", "description": "Surname", "policyTags": { "names": [DATA_CAT_TAGS.get('2_Private', None)]} },
+        { "mode": "REQUIRED", "name": "item", "type": "STRING", "description": "Item Name" },
+        { "mode": "REQUIRED", "name": "price", "type": "FLOAT", "description": "Item Price" },
+        { "mode": "REQUIRED", "name": "timestamp", "type": "TIMESTAMP", "description": "Timestamp" }
+      ]
+    )
+
+    update_table_schema_customer_purchase_l2 = BigQueryUpdateTableSchemaOperator(
+      task_id="update_table_schema_customer_purchase_l2",
+      project_id=DTL_L2_PRJ,
+      dataset_id=DTL_L2_BQ_DATASET,
+      table_id="customer_purchase",
+      impersonation_chain=[TRF_SA_BQ],
+      include_policy_tags=True,
+      schema_fields_updates=[
+        { "mode": "REQUIRED", "name": "customer_id", "type": "INTEGER", "description": "ID" },
+        { "mode": "REQUIRED", "name": "purchase_id", "type": "INTEGER", "description": "ID" },
+        { "mode": "REQUIRED", "name": "name", "type": "STRING", "description": "Name", "policyTags": { "names": [DATA_CAT_TAGS.get('2_Private', None)]}},
+        { "mode": "REQUIRED", "name": "surname", "type": "STRING", "description": "Surname", "policyTags": { "names": [DATA_CAT_TAGS.get('2_Private', None)]} },
+        { "mode": "REQUIRED", "name": "item", "type": "STRING", "description": "Item Name" },
+        { "mode": "REQUIRED", "name": "price", "type": "FLOAT", "description": "Item Price" },
+        { "mode": "REQUIRED", "name": "timestamp", "type": "TIMESTAMP", "description": "Timestamp" }
+      ]
+    )
+
   customers_import = DataflowTemplatedJobStartOperator(
     task_id="dataflow_customers_import",
     template="gs://dataflow-templates/latest/GCS_Text_to_BigQuery",
@@ -208,5 +319,4 @@ with models.DAG(
     },
     impersonation_chain=[TRF_SA_BQ]
   )
-
-  start >> [customers_import, purchases_import] >> join_customer_purchase >> l2_customer_purchase >> end
+  start >> upsert_table >> update_schema_table >> [customers_import, purchases_import] >> join_customer_purchase >> l2_customer_purchase >> end  
