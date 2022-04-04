@@ -264,8 +264,3 @@ Features to add in future releases:
 - Add example on how to use Cloud Data Loss Prevention
 - Add solution to handle Tables, Views, and Authorized Views lifecycle
 - Add solution to handle Metadata lifecycle
-
-## To Test/Fix
-
-- Composer require "Require OS Login" not enforced
-- External Shared-VPC
