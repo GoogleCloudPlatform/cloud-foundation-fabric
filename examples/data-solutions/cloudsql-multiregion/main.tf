@@ -43,7 +43,7 @@ module "db" {
   name             = "db"
   region           = var.regions.primary
   database_version = "POSTGRES_13"
-  tier             = "db-g1-small"
+  tier             = var.tier
 
   replicas = {
     for name, region in var.regions :

@@ -47,3 +47,9 @@ variable "regions" {
     error_message = "Regions map must contain `primary` as a key."
   }
 }
+
+variable "tier" {
+  description = "The machine type to use for the instances. See See https://cloud.google.com/sql/docs/postgres/create-instance#machine-types."
+  type        = string
+  default     = "db-g1-small"
+}
