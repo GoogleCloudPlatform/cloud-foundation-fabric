@@ -99,12 +99,14 @@ variable "forwarding_rule_config" {
   description = "Forwarding rule configurations."
   type = object({
     ip_version   = string
+    labels       = map(string)
     network_tier = string
     port_range   = string
   })
   default = {
     allow_global_access = true
     ip_version          = "IPV4"
+    labels              = {}
     network_tier        = "PREMIUM"
     # If not specified, 443 if var.https = true; 80 otherwise
     port_range = null
@@ -158,7 +160,7 @@ variable "region" {
 }
 
 variable "ssl_certificates_config" {
-  description = "The SSL certificate configuration."
+  description = "The SSL certificates configuration."
   type = map(object({
     domains              = list(string)
     tls_private_key      = string

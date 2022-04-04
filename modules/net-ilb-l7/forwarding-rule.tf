@@ -55,10 +55,12 @@ resource "google_compute_forwarding_rule" "forwarding_rule" {
   description           = "Terraform managed."
   ip_address            = local.ip_address
   ip_protocol           = "TCP"
+  labels                = try(var.forwarding_rule_config.labels, {})
   load_balancing_scheme = "INTERNAL_MANAGED"
   network               = try(var.forwarding_rule_config.network, null)
   network_tier          = var.forwarding_rule_config.network_tier
   port_range            = local.port_range
+  ports                 = []
   region                = try(var.region, null)
   subnetwork            = try(var.subnetwork, null)
   target                = local.target

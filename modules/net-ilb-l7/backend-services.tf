@@ -37,12 +37,12 @@ resource "google_compute_region_backend_service" "backend_service" {
   health_checks = (
     try(length(each.value.health_checks), 0) == 0
     ? try(
-      [google_compute_region_health_check.health_check["default"].id],
+      [google_compute_region_health_check.health_check["default"].self_link],
       null
     )
     : [
       for hc in each.value.health_checks :
-      try(google_compute_region_health_check.health_check[hc].id, hc)
+      try(google_compute_region_health_check.health_check[hc].self_link, hc)
     ]
   )
 
@@ -50,7 +50,7 @@ resource "google_compute_region_backend_service" "backend_service" {
     for_each = try(each.value.backends, [])
     content {
       balancing_mode               = try(backend.value.options.balancing_mode, "UTILIZATION")
-      capacity_scaler              = try(backend.value.options.capacity_scaler, 1)
+      capacity_scaler              = try(backend.value.options.capacity_scaler, 1.0)
       group                        = try(backend.value.group, null)
       max_connections              = try(backend.value.options.max_connections, null)
       max_connections_per_instance = try(backend.value.options.max_connections_per_instance, null)

@@ -28,28 +28,31 @@ output "backend_services" {
 
 output "url_map" {
   description = "The url-map."
-  value       = google_compute_region_url_map.url_map
+  value       = try(google_compute_region_url_map.url_map, null)
 }
 
-output "ssl_certificates" {
+output "ssl_certificate_link_ids" {
   description = "The SSL certificate."
-  value       = try(google_compute_region_ssl_certificate.certificates, null)
+  value = {
+    for k, v in google_compute_region_ssl_certificate.certificates : k => v.self_link
+  }
 }
 
 output "ip_address" {
   description = "The reserved IP address."
-  value       = try(google_compute_address.static_ip, null)
+  value       = try(google_compute_forwarding_rule.forwarding_rule.ip_address, null)
 }
 
 output "target_proxy" {
   description = "The target proxy."
   value = try(
-    google_compute_region_target_https_proxy.https,
-    google_compute_region_target_http_proxy.http
+    google_compute_region_target_https_proxy.https.0,
+    google_compute_region_target_http_proxy.http.0,
+    []
   )
 }
 
 output "forwarding_rule" {
   description = "The forwarding rule."
-  value       = google_compute_forwarding_rule.forwarding_rule
+  value       = try(google_compute_forwarding_rule.forwarding_rule, null)
 }

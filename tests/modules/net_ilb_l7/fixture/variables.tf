@@ -89,12 +89,14 @@ variable "forwarding_rule_config" {
   description = "Forwarding rule configurations."
   type = object({
     ip_version   = string
+    labels       = map(string)
     network_tier = string
     port_range   = string
   })
   default = {
     allow_global_access = true
     ip_version          = "IPV4"
+    labels              = {}
     network_tier        = "PREMIUM"
     # If not specified, 443 if var.https = true; 80 otherwise
     port_range = null
