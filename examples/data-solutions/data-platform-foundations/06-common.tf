@@ -60,10 +60,9 @@ module "common-project" {
 # Data Catalog Policy tag
 
 module "common-datacatalog" {
-  count      = var.data_catalog_tags != null ? 1 : 0
   source     = "../../../modules/data-catalog-policy-tag"
-  name       = "${var.prefix}-datacatalog-policy-tags"
   project_id = module.common-project.project_id
+  name       = "${var.prefix}-datacatalog-policy-tags"
   location   = var.location
   tags       = var.data_catalog_tags
 }

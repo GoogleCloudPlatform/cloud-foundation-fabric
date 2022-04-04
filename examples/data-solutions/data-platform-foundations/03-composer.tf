@@ -67,7 +67,7 @@ resource "google_composer_environment" "orch-cmp-0" {
       env_variables = merge(
         var.composer_config.env_variables, {
           BQ_LOCATION        = var.location
-          DATA_CAT_TAGS      = try(jsonencode(module.common-datacatalog[0].tags), "{}")
+          DATA_CAT_TAGS      = try(jsonencode(module.common-datacatalog.tags), "{}")
           DF_KMS_KEY         = try(var.service_encryption_keys.dataflow, "")
           DTL_L0_PRJ         = module.lake-0-project.project_id
           DTL_L0_BQ_DATASET  = module.lake-0-bq-0.dataset_id
