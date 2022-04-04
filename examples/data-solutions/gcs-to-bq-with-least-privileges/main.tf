@@ -44,6 +44,7 @@ locals {
       module.service-account-df.iam_email
     ]
     # common roles
+    "roles/logging.admin" = var.data_eng_principals
     "roles/logging.logWriter" = [
       module.service-account-bq.iam_email,
       module.service-account-landing.iam_email,
