@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+variable "cloudsql_psa_range" {
+  description = "Range used for the Private Service Access."
+  type        = string
+  default     = "10.60.0.0/16"
+}
+
 variable "prefix" {
   description = "Unique prefix used for resource names. Not used for project if 'project_create' is null."
   type        = string

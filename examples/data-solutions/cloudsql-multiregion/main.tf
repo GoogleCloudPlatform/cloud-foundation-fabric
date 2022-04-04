@@ -24,7 +24,6 @@ module "project" {
   services = [
     "servicenetworking.googleapis.com",
   ]
-
 }
 
 module "vpc" {
@@ -32,7 +31,7 @@ module "vpc" {
   project_id = module.project.project_id
   name       = "vpc"
   psa_config = {
-    ranges = { cloud-sql = "10.60.0.0/16" }
+    ranges = { cloud-sql = var.cloudsql_psa_range }
     routes = null
   }
 }
