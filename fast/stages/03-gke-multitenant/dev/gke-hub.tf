@@ -17,11 +17,6 @@
 module "gke-hub" {
   source     = "../../../../modules/gke-hub"
   project_id = module.gke-project-0.project_id
-  features = {
-    configmanagement    = true
-    mc_ingress          = true
-    mc_servicediscovery = true
-  }
   member_clusters = {
     for cluster_id in keys(var.clusters) :
     cluster_id => module.gke-cluster[cluster_id].id
