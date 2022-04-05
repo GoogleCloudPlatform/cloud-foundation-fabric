@@ -24,7 +24,7 @@ locals {
   }
   _group_iam_bindings = distinct(flatten(values(var.group_iam)))
   # internal structures for project service accounts IAM bindings
-  _project_id = coalesce(var.prefix, "") == "" ? var.project_id : "${var.prefix}-${var.project_id}"
+  _project_id = var.prefix == null || var.prefix == "" ? var.project_id : "${var.prefix}-${var.project_id}"
   _service_accounts_iam = {
     for r in local._service_accounts_iam_bindings : r => [
       for k, v in var.service_accounts :
