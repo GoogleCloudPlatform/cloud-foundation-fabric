@@ -98,7 +98,7 @@ output "demo_commands" {
     03 = "gsutil -i ${module.orch-sa-cmp-0.email} cp demo/*.py ${google_composer_environment.orch-cmp-0.config[0].dag_gcs_prefix}/"
     04 = "Open ${google_composer_environment.orch-cmp-0.config.0.airflow_uri} and run uploaded DAG."
     05 = <<EOT
-           bq query --project_id=${module.lake-2-project.project_id} --use_legacy_sql=false 'SELECT * FROM `${module.lake-2-project.project_id}.${module.lake-2-bq-0.dataset_id}.customer_purchase` LIMIT 1000'"
+           bq query --project_id=${module.lake-2-project.project_id} --use_legacy_sql=false 'SELECT * EXCEPT (name, surname) FROM `${module.lake-2-project.project_id}.${module.lake-2-bq-0.dataset_id}.customer_purchase` LIMIT 1000'"
          EOT
   }
 }
