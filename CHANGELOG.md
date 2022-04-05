@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 - optionally turn off gcplogs driver in COS modules
 - fix `tag` output on `data-catalog-policy-tag` module
 - add shared-vpc support on `gcs-to-bq-with-least-privileges`
+- new `net-ilb-l7` module
 
 **FAST**
 
