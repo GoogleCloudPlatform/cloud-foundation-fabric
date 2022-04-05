@@ -19,6 +19,17 @@ locals {
 
   _gke_robot_sa      = "serviceAccount:${module.gke-project-0.service_accounts.robots.container-engine}"
   _cloud_services_sa = "serviceAccount:${module.gke-project-0.service_accounts.cloud_services}"
+
+  logging_sinks = {
+    for team, value in var.namespace_sinks : team => {
+      type          = "logging"
+      destination   = "projects/${value.project}/locations/global/buckets/${value.bucket}"
+      filter        = "resource.labels.namespace_name=${team}"
+      iam           = false
+      unique_writer = true
+      exclusions    = {}
+    }
+  }
 }
 
 module "gke-project-0" {
@@ -30,14 +41,12 @@ module "gke-project-0" {
   labels          = local.labels
   services = [
     "anthosconfigmanagement.googleapis.com",
-    "anthos.googleapis.com", "dns.googleapis.com",
+    "anthos.googleapis.com",
+    "dns.googleapis.com",
     "gkeconnect.googleapis.com",
     "gkehub.googleapis.com",
     "stackdriver.googleapis.com",
-    "container.googleapis.com",
-    "multiclusterservicediscovery.googleapis.com",
-    "multiclusteringress.googleapis.com",
-    "trafficdirector.googleapis.com"
+    "container.googleapis.com"
   ]
   # add here any other service ids and keys for robot accounts which are needed
   # service_encryption_key_ids = {
@@ -69,7 +78,29 @@ module "gke-project-0" {
   #   }
   # }
   iam = {
-    "roles/container.clusterViewer" = var.cluster_viewer_users
+    "roles/container.clusterViewer" = var.cluster_viewers
+  }
+
+  # namespace_sinks
+  logging_sinks = local.logging_sinks
+}
+
+# (dmarzi, jccb) to understand SA vs Scopes
+# GKE Service Accounts - used in gke.tf file
+module "gke-nodepool-sa" {
+  source       = "git::https://github.com/terraform-google-modules/cloud-foundation-fabric//modules/iam-service-account?ref=v14.0.0"
+  project_id   = module.gke-project-0.project_id
+  name         = "gke-nodepool-sa"
+  generate_key = false
+
+  iam_project_roles = {
+    "${module.gke-project-0.project_id}" = [
+      "roles/logging.logWriter",
+      "roles/monitoring.metricWriter",
+      "roles/stackdriver.resourceMetadata.writer",
+      "roles/monitoring.viewer",
+      "roles/storage.objectViewer"
+    ]
   }
 }
 
