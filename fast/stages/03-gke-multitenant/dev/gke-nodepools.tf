@@ -63,5 +63,6 @@ module "gke-1-nodepool" {
     auto_upgrade = true
   }
 
-  node_service_account_create = true
+  node_service_account_create = false
+  node_service_account        = module.gke-nodepool-sa.email
 }

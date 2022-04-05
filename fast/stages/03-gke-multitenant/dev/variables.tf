@@ -97,10 +97,16 @@ variable "clusters" {
   }))
 }
 
-variable "cluster_viewer_users" {
-  description = "list of users to be granted as container.clusterViewer"
+variable "cluster_viewers" {
+  description = "List of identities to be granted as container.clusterViewer."
   type        = list(any)
   default     = []
+}
+
+variable "namespace_sinks" {
+  description = "Map of namespaces to sink to other projects."
+  type        = map(any)
+  default     = {}
 }
 
 variable "dns_domain" {

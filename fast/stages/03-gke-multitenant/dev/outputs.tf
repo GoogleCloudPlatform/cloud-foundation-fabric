@@ -13,3 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+
+output "logging_writer_identities" {
+  description = "List of the Unique Writer identified to the namespace projects."
+  value       = module.gke-project-0.sink_writer_identities
+}
