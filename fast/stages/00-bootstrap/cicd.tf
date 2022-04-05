@@ -113,8 +113,7 @@ module "automation-tf-cicd-sa" {
         each.value.branch == null
         ? format(
           local.cicd_tpl_subject_repo[each.value.provider],
-          each.value.name,
-          each.value.branch
+          each.value.name
         )
         : format(
           local.cicd_tpl_subject_branch[each.value.provider],
