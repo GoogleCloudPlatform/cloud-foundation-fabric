@@ -15,31 +15,36 @@
  */
 
 locals {
-  _cicd_subject = {
-    GITHUB = local.cicd_provider != "GITHUB" ? null : join(":", [
-      "repo",
-      var.cicd_config.repositories.resman.name,
-      "ref",
-      "refs/heads/${var.cicd_config.repositories.resman.branch}"
-    ])
-    GITLAB = local.cicd_provider != "GITHUB" ? null : join(":", [
-      "project_path",
-      var.cicd_config.repositories.resman.name,
-      "ref_type:branch:ref",
-      var.cicd_config.repositories.resman.branch
-    ])
+  _cicd_config = coalesce(var.cicd_config, {
+    providers    = null
+    repositories = null
+  })
+  cicd_providers = distinct(concat(
+    [
+      for k in coalesce(local._cicd_config.providers, []) :
+      k
+    ],
+    [
+      for k, v in coalesce(local._cicd_config.repositories, {}) :
+      v.provider if v != null
+    ]
+  ))
+  cicd_repositories = {
+    for k, v in coalesce(local._cicd_config.repositories, {}) :
+    k => v if v != null
   }
-  cicd_enabled = local.cicd_provider != null
-  cicd_principal = !local.cicd_enabled ? null : join("/", [
-    "principal://iam.googleapis.com",
-    google_iam_workload_identity_pool.default.0.name,
-    "subject",
-    lookup(local._cicd_subject, local.cicd_provider, "")
-  ])
-  cicd_provider = try(var.cicd_config.provider, null)
-  cicd_sa = !local.cicd_enabled ? [] : [
-    module.automation-tf-resman-sa-cicd.0.iam_email
-  ]
+  cicd_service_accounts = {
+    for k, v in module.automation-tf-cicd-sa : k => v.iam_email
+  }
+  cicd_tpl_principal = "principal://iam.googleapis.com/%s/subject/%s"
+  cicd_tpl_subject_branch = {
+    GITHUB = "repo:%s:ref:refs/heads/%s"
+    GITLAB = "project_path:%s:ref_type:branch:ref:%s"
+  }
+  cicd_tpl_subject_repo = {
+    GITHUB = "repo:%s"
+    GITLAB = "project_path:%s"
+  }
 }
 
 # TODO: check in resman for the relevant org policy
@@ -50,14 +55,14 @@ locals {
 
 resource "google_iam_workload_identity_pool" "default" {
   provider                  = google-beta
-  count                     = local.cicd_enabled ? 1 : 0
+  count                     = length(local.cicd_providers) > 0 ? 1 : 0
   project                   = module.automation-project.project_id
   workload_identity_pool_id = "${var.prefix}-default"
 }
 
 resource "google_iam_workload_identity_pool_provider" "github" {
   provider = google-beta
-  count    = local.cicd_provider == "GITHUB" ? 1 : 0
+  count    = contains(local.cicd_providers, "GITHUB") ? 1 : 0
   project  = module.automation-project.project_id
   workload_identity_pool_id = (
     google_iam_workload_identity_pool.default.0.workload_identity_pool_id
@@ -76,7 +81,7 @@ resource "google_iam_workload_identity_pool_provider" "github" {
 
 resource "google_iam_workload_identity_pool_provider" "gitlab" {
   provider = google-beta
-  count    = local.cicd_provider == "GITLAB" ? 1 : 0
+  count    = contains(local.cicd_providers, "GITLAB") ? 1 : 0
   project  = module.automation-project.project_id
   workload_identity_pool_id = (
     google_iam_workload_identity_pool.default.0.workload_identity_pool_id
@@ -93,14 +98,30 @@ resource "google_iam_workload_identity_pool_provider" "gitlab" {
   }
 }
 
-module "automation-tf-resman-sa-cicd" {
+module "automation-tf-cicd-sa" {
   source      = "../../../modules/iam-service-account"
-  count       = local.cicd_enabled ? 1 : 0
+  for_each    = local.cicd_repositories
   project_id  = module.automation-project.project_id
-  name        = "resman-1"
-  description = "Terraform CI/CD stage 1 resman service account."
+  name        = "${each.key}-1"
+  description = "Terraform CI/CD stage 1 ${each.key} service account."
   prefix      = local.prefix
   iam = {
-    "roles/iam.workloadIdentityUser" = [local.cicd_principal]
+    "roles/iam.workloadIdentityUser" = [
+      format(
+        local.cicd_tpl_principal,
+        google_iam_workload_identity_pool.default.0.name,
+        each.value.branch == null
+        ? format(
+          local.cicd_tpl_subject_repo[each.value.provider],
+          each.value.name,
+          each.value.branch
+        )
+        : format(
+          local.cicd_tpl_subject_branch[each.value.provider],
+          each.value.name,
+          each.value.branch
+        )
+      )
+    ]
   }
 }

@@ -35,11 +35,14 @@ locals {
     automation = {
       outputs_bucket = module.automation-tf-output-gcs.name
       project_id     = module.automation-project.project_id
-      wif_pool = (
-        local.cicd_enabled
-        ? google_iam_workload_identity_pool.default.0.name
-        : null
-      )
+    }
+    cicd = {
+      pool = try(google_iam_workload_identity_pool.default.0.name, null)
+      providers = {
+        github = try(google_iam_workload_identity_pool_provider.github.0.name, null)
+        gitlab = try(google_iam_workload_identity_pool_provider.gitlab.0.name, null)
+      }
+      service_accounts = local.cicd_service_accounts
     }
     custom_roles = local.custom_roles
   }

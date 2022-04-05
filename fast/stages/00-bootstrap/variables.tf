@@ -29,32 +29,42 @@ variable "bootstrap_user" {
 }
 
 variable "cicd_config" {
-  description = "CD configuration. Leave null to disable."
+  description = "CI/CD configuration. Top-level providers can be created for subsequent stages. Set to null to disable, or set individual repositories to null if not needed."
   type = object({
-    provider = string
+    providers = list(string)
     repositories = object({
+      bootstrap = object({
+        branch   = string
+        name     = string
+        provider = string
+      })
       resman = object({
-        name   = string # Fabric-team/ludo-0-resman
-        branch = string # refs/heads/main
+        branch   = string
+        name     = string
+        provider = string
       })
     })
   })
   default = null
+  # validate top-level providers
   validation {
-    condition = (
-      var.cicd_config == null
-      ? true
-      : contains(["GITHUB", "GITLAB"], var.cicd_config.provider)
-    )
+    condition = var.cicd_config == null ? true : alltrue([
+      for p in coalesce(var.cicd_config.providers, []) :
+      contains(["GITHUB", "GITLAB"], p)
+    ])
     error_message = "Supported CI/CD providers: 'GITHUB', 'GITLAB'."
   }
+  # validate repositories
   validation {
-    condition = (
-      var.cicd_config == null
-      ? true
-      : var.cicd_config.repositories != null
-    )
-    error_message = "Repositories must be set if CI/CD configuration is not null."
+    condition = var.cicd_config == null ? true : alltrue([
+      for k, v in coalesce(var.cicd_config.repositories, {}) :
+      v == null || (
+        try(v.name, null) != null
+        &&
+        contains(["GITHUB", "GITLAB"], try(v.provider, "GITHUB"))
+      )
+    ])
+    error_message = "Non-null repositories need a valid name and provider."
   }
 }
 

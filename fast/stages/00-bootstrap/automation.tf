@@ -88,6 +88,11 @@ module "automation-tf-bootstrap-sa" {
   name        = "bootstrap-0"
   description = "Terraform organization bootstrap service account."
   prefix      = local.prefix
+  iam = {
+    "roles/iam.serviceAccountTokenCreator" = compact([
+      try(local.cicd_service_accounts.bootstrap, null)
+    ])
+  }
   iam_storage_roles = {
     (module.automation-tf-output-gcs.name) = ["roles/storage.admin"]
   }
@@ -114,7 +119,9 @@ module "automation-tf-resman-sa" {
   description = "Terraform stage 1 resman service account."
   prefix      = local.prefix
   iam = {
-    "roles/iam.serviceAccountTokenCreator" = local.cicd_sa
+    "roles/iam.serviceAccountTokenCreator" = compact([
+      try(local.cicd_service_accounts.resman, null)
+    ])
   }
   iam_storage_roles = {
     (module.automation-tf-output-gcs.name) = ["roles/storage.admin"]
