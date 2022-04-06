@@ -12,16 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
+apiVersion: v1
+kind: ServiceAccount
 metadata:
-  name: gmp-test:prometheus-test
-  namespace: team-b
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: gmp-test:prometheus-test
-subjects:
-- kind: ServiceAccount
-  namespace: team-b
-  name: default
+  name: prometheus-robot
+  annotations:
+    iam.gke.io/gcp-service-account: gke-gmp-team-a-sa@dcx0-dev-gke-clusters-0.iam.gserviceaccount.com

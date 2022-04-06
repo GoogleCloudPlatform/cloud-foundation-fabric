@@ -35,6 +35,7 @@ metadata:
   labels:
     prometheus: test
 spec:
+  serviceAccount: prometheus-robot
   replicas: 1
   selector:
     matchLabels:
@@ -47,10 +48,12 @@ spec:
         app: prometheus
         prometheus: test
     spec:
+      serviceAccount: prometheus-robot
       containers:
       - name: prometheus
         image: gke.gcr.io/prometheus-engine/prometheus:v2.28.1-gmp.5-gke.0
         args:
+        - --export.label.project-id=dcx0-fast-dev-team-b-lab0
         - --config.file=/prometheus/config_out/config.yaml
         - --storage.tsdb.path=/prometheus/data
         - --storage.tsdb.retention.time=24h
@@ -110,13 +113,16 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  namespace: gmp-test
   name: prometheus-test
   labels:
     prometheus: test
 data:
   config.yaml: |
     global:
+      external_labels:
+        project_id: dcx0-fast-dev-team-b-lab0
+        location: europe-west1
+        namespace: team-b
       scrape_interval: 30s
 
     scrape_configs:
