@@ -38,13 +38,13 @@ variable "billing_account" {
 variable "cicd" {
   # tfdoc:variable:source 00-bootstrap
   description = "CI/CD Workload Identity Federation pool and providers."
-  type = {
+  type = object({
     pool = string
-    providers = {
+    providers = object({
       github = string
       gitlab = string
-    }
-  }
+    })
+  })
   default = null
 }
 
