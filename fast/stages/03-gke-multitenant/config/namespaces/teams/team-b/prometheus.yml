@@ -1,0 +1,146 @@
+# Copyright 2021 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https:#www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus-test
+  labels:
+    prometheus: test
+spec:
+  type: ClusterIP
+  selector:
+    app: prometheus
+    prometheus: test
+  ports:
+  - name: web
+    port: 9090
+    targetPort: web
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: prometheus-test
+  labels:
+    prometheus: test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+      prometheus: test
+  serviceName: prometheus-test
+  template:
+    metadata:
+      labels:
+        app: prometheus
+        prometheus: test
+    spec:
+      containers:
+      - name: prometheus
+        image: gke.gcr.io/prometheus-engine/prometheus:v2.28.1-gmp.5-gke.0
+        args:
+        - --config.file=/prometheus/config_out/config.yaml
+        - --storage.tsdb.path=/prometheus/data
+        - --storage.tsdb.retention.time=24h
+        - --web.enable-lifecycle
+        - --storage.tsdb.no-lockfile
+        - --web.route-prefix=/
+        ports:
+        - name: web
+          containerPort: 9090
+        readinessProbe:
+          httpGet:
+            path: /-/ready
+            port: web
+            scheme: HTTP
+        resources:
+          requests:
+            memory: 400Mi
+        volumeMounts:
+        - name: config-out
+          mountPath: /prometheus/config_out
+          readOnly: true
+        - name: prometheus-db
+          mountPath: /prometheus/data
+      - name: config-reloader
+        image: gke.gcr.io/prometheus-engine/config-reloader:v0.3.1-gke.0
+        args:
+        - --config-file=/prometheus/config/config.yaml
+        - --config-file-output=/prometheus/config_out/config.yaml
+        - --reload-url=http://localhost:9090/-/reload
+        - --listen-address=:19091
+        ports:
+        - name: reloader-web
+          containerPort: 8080
+        resources:
+          limits:
+            cpu: 100m
+            memory: 50Mi
+          requests:
+            cpu: 100m
+            memory: 50Mi
+        volumeMounts:
+        - name: config
+          mountPath: /prometheus/config
+        - name: config-out
+          mountPath: /prometheus/config_out
+      terminationGracePeriodSeconds: 600
+      volumes:
+      - name: prometheus-db
+        emptyDir: {}
+      - name: config
+        configMap:
+          name: prometheus-test
+          defaultMode: 420
+      - name: config-out
+        emptyDir: {}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: gmp-test
+  name: prometheus-test
+  labels:
+    prometheus: test
+data:
+  config.yaml: |
+    global:
+      scrape_interval: 30s
+
+    scrape_configs:
+    # Let Prometheus scrape itself.
+    - job_name: prometheus
+      static_configs:
+      - targets: ['localhost:9090']
+
+    # Scrape pods with label app=prom-example across all namespaces
+    # on the port named 'metrics'.
+    - job_name: prom-example
+      kubernetes_sd_configs:
+      - role: pod
+      relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_label_app]
+        regex: prom-example
+        action: keep
+      - source_labels: [__meta_kubernetes_namespace]
+        target_label: namespace
+      - source_labels: [__meta_kubernetes_pod_name, __meta_kubernetes_pod_container_port_name]
+        regex: (.+);(.+)
+        target_label: instance
+        replacement: $1:$2
+        action: replace
+      - source_labels: [__meta_kubernetes_pod_container_port_name]
+        regex: metrics
+        action: keep
