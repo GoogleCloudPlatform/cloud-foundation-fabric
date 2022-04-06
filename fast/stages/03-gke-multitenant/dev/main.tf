@@ -104,6 +104,19 @@ module "gke-nodepool-sa" {
   }
 }
 
+# Google Managed Prometheus 
+module "gke-gmp-sa" {
+  source       = "git::https://github.com/terraform-google-modules/cloud-foundation-fabric//modules/iam-service-account?ref=v14.0.0"
+  project_id   = module.gke-project-0.project_id
+  for_each     = var.namespace_sinks
+  name         = "gke-gmp-${each.key}-sa"
+  generate_key = false
+
+  iam = {
+    "roles/iam.workloadIdentityUser" = ["serviceAccount:${module.gke-project-0.project_id}.svc.id.goog[${each.key}/default]"]
+  }
+}
+
 module "gke-dataset-resource-usage" {
   source        = "../../../../modules/bigquery-dataset"
   project_id    = module.gke-project-0.project_id
