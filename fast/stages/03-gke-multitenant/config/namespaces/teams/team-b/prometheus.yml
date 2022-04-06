@@ -116,6 +116,10 @@ metadata:
 data:
   config.yaml: |
     global:
+      external_labels:
+      project_id: dcx0-fast-dev-team-a-lab0
+      location: europe-west1
+      namespace: team-b
       scrape_interval: 30s
 
     scrape_configs:
