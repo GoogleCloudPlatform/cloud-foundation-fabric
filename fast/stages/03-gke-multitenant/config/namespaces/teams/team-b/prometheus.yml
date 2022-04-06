@@ -110,7 +110,6 @@ spec:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  namespace: gmp-test
   name: prometheus-test
   labels:
     prometheus: test
