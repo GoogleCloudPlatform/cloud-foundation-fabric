@@ -42,12 +42,10 @@ locals {
         github = try(google_iam_workload_identity_pool_provider.github.0.name, null)
         gitlab = try(google_iam_workload_identity_pool_provider.gitlab.0.name, null)
       }
-      # TODO: this cannot be here or each stage will need to override it
-      #       use this data to create dedicated workflow output files per stage
-      service_accounts = local.cicd_service_accounts
     }
     custom_roles = local.custom_roles
   }
+  # TODO: add cicd_config
   tfvars_globals = {
     billing_account = var.billing_account
     groups          = var.groups
@@ -82,7 +80,7 @@ resource "google_storage_bucket_object" "tfvars" {
 
 resource "google_storage_bucket_object" "tfvars_globals" {
   bucket  = module.automation-tf-output-gcs.name
-  name    = "tfvars/globals.tfvars.json"
+  name    = "tfvars/globals.auto.tfvars.json"
   content = jsonencode(local.tfvars_globals)
 }
 
@@ -105,7 +103,7 @@ resource "local_file" "tfvars" {
 resource "local_file" "tfvars_globals" {
   for_each        = var.outputs_location == null ? {} : { 1 = 1 }
   file_permission = "0644"
-  filename        = "${pathexpand(var.outputs_location)}/tfvars/globals.tfvars.json"
+  filename        = "${pathexpand(var.outputs_location)}/tfvars/globals.auto.tfvars.json"
   content         = jsonencode(local.tfvars_globals)
 }
 
