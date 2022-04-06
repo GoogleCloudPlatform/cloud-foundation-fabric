@@ -21,9 +21,8 @@ variable "automation" {
   # tfdoc:variable:source 00-bootstrap
   description = "Automation resources created by the bootstrap stage."
   type = object({
-    project_id     = string
     outputs_bucket = string
-    wif_pool       = string
+    project_id     = string
   })
 }
 
@@ -34,6 +33,19 @@ variable "billing_account" {
     id              = string
     organization_id = number
   })
+}
+
+variable "cicd" {
+  # tfdoc:variable:source 00-bootstrap
+  description = "CI/CD Workload Identity Federation pool and providers."
+  type = {
+    pool = string
+    providers = {
+      github = string
+      gitlab = string
+    }
+  }
+  default = null
 }
 
 variable "custom_roles" {
