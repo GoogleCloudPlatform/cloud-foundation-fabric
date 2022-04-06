@@ -20,12 +20,12 @@ locals {
     k => module.organization.custom_role_id[v]
   }
   providers = {
-    "00-bootstrap" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
+    "00-bootstrap" = templatefile("${path.module}/providers.tpl", {
       bucket = module.automation-tf-bootstrap-gcs.name
       name   = "bootstrap"
       sa     = module.automation-tf-bootstrap-sa.email
     })
-    "01-resman" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
+    "01-resman" = templatefile("${path.module}/providers.tpl", {
       bucket = module.automation-tf-resman-gcs.name
       name   = "resman"
       sa     = module.automation-tf-resman-sa.email
