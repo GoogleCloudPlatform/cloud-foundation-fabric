@@ -30,7 +30,7 @@ module "gke-hub" {
         policy_dir                = "fast/stages/03-gke-multitenant/config"
         secret_type               = "none"
         source_format             = "hierarchy"
-        sync_branch               = "fast-dev-gke-marzi"
+        sync_branch               = "fast-dev-gke-marzi-rebase"
         sync_repo                 = "https://github.com/GoogleCloudPlatform/cloud-foundation-fabric"
         sync_rev                  = null
       }
