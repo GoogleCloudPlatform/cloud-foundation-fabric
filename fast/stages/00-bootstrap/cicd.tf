@@ -36,14 +36,17 @@ locals {
   cicd_service_accounts = {
     for k, v in module.automation-tf-cicd-sa : k => v.iam_email
   }
-  cicd_tpl_principal = "principal://iam.googleapis.com/%s/subject/%s"
-  cicd_tpl_subject_branch = {
+  cicd_subs = {
     GITHUB = "repo:%s:ref:refs/heads/%s"
     GITLAB = "project_path:%s:ref_type:branch:ref:%s"
   }
-  cicd_tpl_subject_repo = {
-    GITHUB = "repo:%s"
-    GITLAB = "project_path:%s"
+  # principalSet://iam.googleapis.com/projects/PROJECT_NUMBER/locations/global/workloadIdentityPools/POOL_ID/attribute.ATTRIBUTE_NAME/ATTRIBUTE_VALUE
+  cicd_tpl_principalset = (
+    "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
+  )
+  cicd_tpl_principal = {
+    GITHUB = "principal://iam.googleapis.com/%s/subject/repo:%s:ref:refs/heads/%s"
+    GITLAB = "principal://iam.googleapis.com/%s/subject/project_path:%s:ref_type:branch:ref:%s"
   }
 }
 
@@ -60,6 +63,8 @@ resource "google_iam_workload_identity_pool" "default" {
   workload_identity_pool_id = "${var.prefix}-default"
 }
 
+# TODO: use for_each on a single resource and locals for specific attributes
+
 resource "google_iam_workload_identity_pool_provider" "github" {
   provider = google-beta
   count    = contains(local.cicd_providers, "GITHUB") ? 1 : 0
@@ -70,9 +75,11 @@ resource "google_iam_workload_identity_pool_provider" "github" {
   workload_identity_pool_provider_id = "${var.prefix}-default-github"
   # TODO: limit via attribute_condition?
   attribute_mapping = {
-    "google.subject"  = "assertion.sub"
-    "attribute.sub"   = "assertion.sub"
-    "attribute.actor" = "assertion.actor"
+    "google.subject"       = "assertion.sub"
+    "attribute.sub"        = "assertion.sub"
+    "attribute.actor"      = "assertion.actor"
+    "attribute.repository" = "assertion.repository"
+    "attribute.ref"        = "assertion.ref"
   }
   oidc {
     issuer_uri = "https://token.actions.githubusercontent.com"
@@ -89,8 +96,10 @@ resource "google_iam_workload_identity_pool_provider" "gitlab" {
   workload_identity_pool_provider_id = "${var.prefix}-default-gitlab"
   # TODO: limit via attribute_condition?
   attribute_mapping = {
-    "google.subject" = "assertion.sub"
-    "attribute.sub"  = "assertion.sub"
+    "google.subject"       = "assertion.sub"
+    "attribute.sub"        = "assertion.sub"
+    "attribute.repository" = "assertion.project_path"
+    "attribute.ref"        = "assertion.ref"
   }
   oidc {
     allowed_audiences = ["https://gitlab.com"]
@@ -107,20 +116,20 @@ module "automation-tf-cicd-sa" {
   prefix      = local.prefix
   iam = {
     "roles/iam.workloadIdentityUser" = [
-      format(
-        local.cicd_tpl_principal,
+      each.value.branch == null
+      ? format(
+        local.cicd_tpl_principalset,
         google_iam_workload_identity_pool.default.0.name,
-        each.value.branch == null
-        ? format(
-          local.cicd_tpl_subject_repo[each.value.provider],
-          each.value.name
-        )
-        : format(
-          local.cicd_tpl_subject_branch[each.value.provider],
-          each.value.name,
-          each.value.branch
-        )
+        each.value.name
+      )
+      : format(
+        local.cicd_tpl_principal[each.value.provider],
+        each.value.name,
+        each.value.branch
       )
     ]
+  }
+  iam_storage_roles = {
+    (module.automation-tf-output-gcs.name) = ["roles/storage.objectViewer"]
   }
 }

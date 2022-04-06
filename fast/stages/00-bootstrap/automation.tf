@@ -90,7 +90,7 @@ module "automation-tf-bootstrap-sa" {
   prefix      = local.prefix
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
-      try(local.cicd_service_accounts.bootstrap, null)
+      try(module.automation-tf-cicd-sa["bootstrap"].iam_email, null)
     ])
   }
   iam_storage_roles = {
@@ -120,34 +120,10 @@ module "automation-tf-resman-sa" {
   prefix      = local.prefix
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
-      try(local.cicd_service_accounts.resman, null)
+      try(module.automation-tf-cicd-sa["resman"].iam_email, null)
     ])
   }
   iam_storage_roles = {
     (module.automation-tf-output-gcs.name) = ["roles/storage.admin"]
   }
-}
-
-# output files bucket
-
-module "automation-tf-output-gcs" {
-  source     = "../../../modules/gcs"
-  project_id = module.automation-project.project_id
-  name       = "iac-core-outputs-0"
-  prefix     = local.prefix
-  versioning = true
-  depends_on = [module.organization]
-}
-
-resource "google_storage_bucket_object" "providers" {
-  for_each = local.providers
-  bucket   = module.automation-tf-output-gcs.name
-  name     = "providers/${each.key}-providers.tf"
-  content  = each.value
-}
-
-resource "google_storage_bucket_object" "tfvars" {
-  bucket  = module.automation-tf-output-gcs.name
-  name    = "tfvars/00-bootstrap.auto.tfvars.json"
-  content = jsonencode(local.tfvars)
 }
