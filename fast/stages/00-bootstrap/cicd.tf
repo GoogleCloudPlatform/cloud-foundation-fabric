@@ -52,8 +52,6 @@ locals {
 
 # TODO: check in resman for the relevant org policy
 #       constraints/iam.workloadIdentityPoolProviders
-# TODO: optionally create and configure repositories
-# TODO: use a GCS bucket for output files
 # TODO: include pipeline configuration files in output files
 
 resource "google_iam_workload_identity_pool" "default" {
@@ -62,8 +60,6 @@ resource "google_iam_workload_identity_pool" "default" {
   project                   = module.automation-project.project_id
   workload_identity_pool_id = "${var.prefix}-default"
 }
-
-# TODO: use for_each on a single resource and locals for specific attributes
 
 resource "google_iam_workload_identity_pool_provider" "github" {
   provider = google-beta

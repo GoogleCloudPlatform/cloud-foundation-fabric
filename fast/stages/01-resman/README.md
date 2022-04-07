@@ -181,13 +181,13 @@ Due to its simplicity, this stage lends itself easily to customizations: adding 
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [dataplatform](outputs.tf#L114) | Data for the Data Platform stage. |  |  |
-| [networking](outputs.tf#L130) | Data for the networking stage. |  |  |
-| [project_factories](outputs.tf#L139) | Data for the project factories stage. |  |  |
-| [providers](outputs.tf#L155) | Terraform provider files for this stage and dependent stages. | ✓ | <code>02-networking</code> · <code>02-security</code> · <code>03-dataplatform</code> · <code>xx-sandbox</code> · <code>xx-teams</code> |
-| [sandbox](outputs.tf#L162) | Data for the sandbox stage. |  | <code>xx-sandbox</code> |
-| [security](outputs.tf#L172) | Data for the networking stage. |  | <code>02-security</code> |
-| [teams](outputs.tf#L182) | Data for the teams stage. |  |  |
-| [tfvars](outputs.tf#L195) | Terraform variable files for the following stages. | ✓ |  |
+| [dataplatform](outputs.tf#L117) | Data for the Data Platform stage. |  |  |
+| [networking](outputs.tf#L133) | Data for the networking stage. |  |  |
+| [project_factories](outputs.tf#L142) | Data for the project factories stage. |  |  |
+| [providers](outputs.tf#L158) | Terraform provider files for this stage and dependent stages. | ✓ | <code>02-networking</code> · <code>02-security</code> · <code>03-dataplatform</code> · <code>xx-sandbox</code> · <code>xx-teams</code> |
+| [sandbox](outputs.tf#L165) | Data for the sandbox stage. |  | <code>xx-sandbox</code> |
+| [security](outputs.tf#L175) | Data for the networking stage. |  | <code>02-security</code> |
+| [teams](outputs.tf#L185) | Data for the teams stage. |  |  |
+| [tfvars](outputs.tf#L198) | Terraform variable files for the following stages. | ✓ |  |
 
 <!-- END TFDOC -->
