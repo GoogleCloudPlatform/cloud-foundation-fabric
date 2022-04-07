@@ -91,12 +91,9 @@ variable "organization_policy_configs" {
 }
 
 variable "outputs_location" {
-  description = "Enable writing provider, tfvars and CI/CD workflow files to local filesystem."
-  type = object({
-    enabled = bool
-    path    = string
-  })
-  default = null
+  description = "Enable writing provider, tfvars and CI/CD workflow files to local filesystem. Leave null to disable"
+  type        = string
+  default     = null
 }
 
 variable "prefix" {

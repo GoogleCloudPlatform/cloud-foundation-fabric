@@ -35,10 +35,6 @@ locals {
       for k, v in module.branch-teams-team-prod-folder : "team-${k}-prod" => v.id
     }
   )
-  outputs_location = coalesce(var.outputs.location, {
-    enabled = false
-    path    = ""
-  })
   providers = {
     "02-networking" = templatefile("${path.module}/providers.tpl", {
       bucket = module.branch-network-gcs.name
@@ -100,16 +96,16 @@ locals {
 # optionally generate providers and tfvars files for subsequent stages
 
 resource "local_file" "providers" {
-  for_each        = local.outputs_location.enabled ? {} : local.providers
+  for_each        = var.outputs_location == null ? {} : local.providers
   file_permission = "0644"
-  filename        = "${pathexpand(local.outputs_location.path)}/providers/${each.key}-providers.tf"
+  filename        = "${pathexpand(var.outputs_location)}/providers/${each.key}-providers.tf"
   content         = each.value
 }
 
 resource "local_file" "tfvars" {
-  for_each        = local.outputs_location.enabled ? {} : { 1 = 1 }
+  for_each        = var.outputs_location == null ? {} : { 1 = 1 }
   file_permission = "0644"
-  filename        = "${pathexpand(local.outputs_location.path)}/tfvars/01-resman.auto.tfvars.json"
+  filename        = "${pathexpand(var.outputs_location)}/tfvars/01-resman.auto.tfvars.json"
   content         = jsonencode(local.tfvars)
 }
 

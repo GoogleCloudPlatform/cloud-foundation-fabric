@@ -19,10 +19,6 @@ locals {
     for k, v in var.custom_role_names :
     k => module.organization.custom_role_id[v]
   }
-  outputs_location = coalesce(var.outputs.location, {
-    enabled = false
-    path    = ""
-  })
   providers = {
     "00-bootstrap" = templatefile("${path.module}/providers.tpl", {
       bucket = module.automation-tf-bootstrap-gcs.name
@@ -91,23 +87,23 @@ resource "google_storage_bucket_object" "tfvars_globals" {
 # optionally generate providers and tfvars files for subsequent stages
 
 resource "local_file" "providers" {
-  for_each        = local.outputs_location.enabled ? {} : local.providers
+  for_each        = var.outputs_location == null ? {} : local.providers
   file_permission = "0644"
-  filename        = "${pathexpand(local.outputs_location.path)}/providers/${each.key}-providers.tf"
+  filename        = "${pathexpand(var.outputs_location)}/providers/${each.key}-providers.tf"
   content         = each.value
 }
 
 resource "local_file" "tfvars" {
-  for_each        = local.outputs_location.enabled ? {} : { 1 = 1 }
+  for_each        = var.outputs_location == null ? {} : { 1 = 1 }
   file_permission = "0644"
-  filename        = "${pathexpand(local.outputs_location.path)}/tfvars/00-bootstrap.auto.tfvars.json"
+  filename        = "${pathexpand(var.outputs_location)}/tfvars/00-bootstrap.auto.tfvars.json"
   content         = jsonencode(local.tfvars)
 }
 
 resource "local_file" "tfvars_globals" {
-  for_each        = local.outputs_location.enabled ? {} : { 1 = 1 }
+  for_each        = var.outputs_location == null ? {} : { 1 = 1 }
   file_permission = "0644"
-  filename        = "${pathexpand(local.outputs_location.path)}/tfvars/globals.auto.tfvars.json"
+  filename        = "${pathexpand(var.outputs_location)}/tfvars/globals.auto.tfvars.json"
   content         = jsonencode(local.tfvars_globals)
 }
 

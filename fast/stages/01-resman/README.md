@@ -169,25 +169,25 @@ Due to its simplicity, this stage lends itself easily to customizations: adding 
 | [automation](variables.tf#L20) | Automation resources created by the bootstrap stage. | <code title="object&#40;&#123;&#10;  outputs_bucket &#61; string&#10;  project_id     &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>00-bootstrap</code> |
 | [billing_account](variables.tf#L29) | Billing account id and organization id ('nnnnnnnn' or null). | <code title="object&#40;&#123;&#10;  id              &#61; string&#10;  organization_id &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>00-bootstrap</code> |
 | [organization](variables.tf#L75) | Organization details. | <code title="object&#40;&#123;&#10;  domain      &#61; string&#10;  id          &#61; number&#10;  customer_id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>00-bootstrap</code> |
-| [prefix](variables.tf#L102) | Prefix used for resources that need unique names. Use 9 characters or less. | <code>string</code> | ✓ |  | <code>00-bootstrap</code> |
+| [prefix](variables.tf#L99) | Prefix used for resources that need unique names. Use 9 characters or less. | <code>string</code> | ✓ |  | <code>00-bootstrap</code> |
 | [cicd](variables.tf#L38) | CI/CD Workload Identity Federation pool and providers. | <code title="object&#40;&#123;&#10;  pool &#61; string&#10;  providers &#61; object&#40;&#123;&#10;    github &#61; string&#10;    gitlab &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> | <code>00-bootstrap</code> |
 | [custom_roles](variables.tf#L51) | Custom roles defined at the org level, in key => id format. | <code title="object&#40;&#123;&#10;  service_project_network_admin &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> | <code>00-bootstrap</code> |
 | [groups](variables.tf#L60) | Group names to grant organization-level permissions. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  gcp-billing-admins      &#61; &#34;gcp-billing-admins&#34;,&#10;  gcp-devops              &#61; &#34;gcp-devops&#34;,&#10;  gcp-network-admins      &#61; &#34;gcp-network-admins&#34;&#10;  gcp-organization-admins &#61; &#34;gcp-organization-admins&#34;&#10;  gcp-security-admins     &#61; &#34;gcp-security-admins&#34;&#10;  gcp-support             &#61; &#34;gcp-support&#34;&#10;&#125;">&#123;&#8230;&#125;</code> | <code>00-bootstrap</code> |
 | [organization_policy_configs](variables.tf#L85) | Organization policies customization. | <code title="object&#40;&#123;&#10;  allowed_policy_member_domains &#61; list&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |  |
-| [outputs_location](variables.tf#L93) | Enable writing provider, tfvars and CI/CD workflow files to local filesystem. | <code title="object&#40;&#123;&#10;  enabled &#61; bool&#10;  path    &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |  |
-| [team_folders](variables.tf#L113) | Team folders to be created. Format is described in a code comment. | <code title="map&#40;object&#40;&#123;&#10;  descriptive_name     &#61; string&#10;  group_iam            &#61; map&#40;list&#40;string&#41;&#41;&#10;  impersonation_groups &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |  |
+| [outputs_location](variables.tf#L93) | Enable writing provider, tfvars and CI/CD workflow files to local filesystem. Leave null to disable | <code>string</code> |  | <code>null</code> |  |
+| [team_folders](variables.tf#L110) | Team folders to be created. Format is described in a code comment. | <code title="map&#40;object&#40;&#123;&#10;  descriptive_name     &#61; string&#10;  group_iam            &#61; map&#40;list&#40;string&#41;&#41;&#10;  impersonation_groups &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |  |
 
 ## Outputs
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [dataplatform](outputs.tf#L118) | Data for the Data Platform stage. |  |  |
-| [networking](outputs.tf#L134) | Data for the networking stage. |  |  |
-| [project_factories](outputs.tf#L143) | Data for the project factories stage. |  |  |
-| [providers](outputs.tf#L159) | Terraform provider files for this stage and dependent stages. | ✓ | <code>02-networking</code> · <code>02-security</code> · <code>03-dataplatform</code> · <code>xx-sandbox</code> · <code>xx-teams</code> |
-| [sandbox](outputs.tf#L166) | Data for the sandbox stage. |  | <code>xx-sandbox</code> |
-| [security](outputs.tf#L176) | Data for the networking stage. |  | <code>02-security</code> |
-| [teams](outputs.tf#L186) | Data for the teams stage. |  |  |
-| [tfvars](outputs.tf#L199) | Terraform variable files for the following stages. | ✓ |  |
+| [dataplatform](outputs.tf#L114) | Data for the Data Platform stage. |  |  |
+| [networking](outputs.tf#L130) | Data for the networking stage. |  |  |
+| [project_factories](outputs.tf#L139) | Data for the project factories stage. |  |  |
+| [providers](outputs.tf#L155) | Terraform provider files for this stage and dependent stages. | ✓ | <code>02-networking</code> · <code>02-security</code> · <code>03-dataplatform</code> · <code>xx-sandbox</code> · <code>xx-teams</code> |
+| [sandbox](outputs.tf#L162) | Data for the sandbox stage. |  | <code>xx-sandbox</code> |
+| [security](outputs.tf#L172) | Data for the networking stage. |  | <code>02-security</code> |
+| [teams](outputs.tf#L182) | Data for the teams stage. |  |  |
+| [tfvars](outputs.tf#L195) | Terraform variable files for the following stages. | ✓ |  |
 
 <!-- END TFDOC -->
