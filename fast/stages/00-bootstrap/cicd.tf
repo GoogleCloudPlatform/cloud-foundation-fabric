@@ -21,8 +21,7 @@ locals {
   })
   cicd_providers = distinct(concat(
     [
-      for k in coalesce(local._cicd_config.providers, []) :
-      k
+      for k in coalesce(local._cicd_config.providers, []) : k
     ],
     [
       for k, v in coalesce(local._cicd_config.repositories, {}) :
@@ -36,18 +35,13 @@ locals {
   cicd_service_accounts = {
     for k, v in module.automation-tf-cicd-sa : k => v.iam_email
   }
-  cicd_subs = {
-    GITHUB = "repo:%s:ref:refs/heads/%s"
-    GITLAB = "project_path:%s:ref_type:branch:ref:%s"
-  }
-  # principalSet://iam.googleapis.com/projects/PROJECT_NUMBER/locations/global/workloadIdentityPools/POOL_ID/attribute.ATTRIBUTE_NAME/ATTRIBUTE_VALUE
-  cicd_tpl_principalset = (
-    "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
-  )
   cicd_tpl_principal = {
     GITHUB = "principal://iam.googleapis.com/%s/subject/repo:%s:ref:refs/heads/%s"
     GITLAB = "principal://iam.googleapis.com/%s/subject/project_path:%s:ref_type:branch:ref:%s"
   }
+  cicd_tpl_principalset = (
+    "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
+  )
 }
 
 # TODO: check in resman for the relevant org policy
