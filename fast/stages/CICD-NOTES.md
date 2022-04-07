@@ -4,9 +4,14 @@
 
 - check out the repository and enter the folder
 - copy files from the `01-resman` stage
-- copy your tfvars file for stage 01 if any exists
+- create or copy tfvars file for stage 01 variables setting `outputs_location` to `null`
 - copy the workflow file from output files
-- set the `outputs_location` variable to `null` and apply locally
+
+## Module sources
+
+regexp find `source\s*= "../../../modules/([^"]+)"`
+
+regexp replace `source = "git@github.com:ludomagno/fast-0-modules.git//$1?ref=v1.0"`
 
 ## Modules repository authentication
 
