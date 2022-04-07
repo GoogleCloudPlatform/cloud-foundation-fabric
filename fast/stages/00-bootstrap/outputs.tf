@@ -20,7 +20,7 @@ locals {
     k => module.organization.custom_role_id[v]
   }
   outputs_location = (
-    var.outputs.location != null && var.outputs_location != ""
+    var.outputs_location != null && var.outputs_location != ""
   )
   providers = {
     "00-bootstrap" = templatefile("${path.module}/providers.tpl", {

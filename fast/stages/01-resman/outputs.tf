@@ -36,7 +36,7 @@ locals {
     }
   )
   outputs_location = (
-    var.outputs.location != null && var.outputs_location != ""
+    var.outputs_location != null && var.outputs_location != ""
   )
   providers = {
     "02-networking" = templatefile("${path.module}/providers.tpl", {
