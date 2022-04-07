@@ -108,8 +108,7 @@ resource "google_project_iam_member" "project-roles" {
   member  = local.resource_iam_email
 }
 
-resource "google_service_account_iam_member" "cicd-resman" {
-  provider = google-beta
+resource "google_service_account_iam_member" "additive" {
   for_each = {
     for pair in local.iam_sa_pairs :
     "${pair.entity}-${pair.role}" => pair
