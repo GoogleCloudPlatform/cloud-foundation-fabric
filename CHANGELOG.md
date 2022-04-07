@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+- SQL Server AlwaysOn availability groups example
+
 ## [15.0.0] - 2022-04-05
 
 - **incompatible change** the variable for PSA ranges in the `net-vpc` module has changed to support configuring peering routes
