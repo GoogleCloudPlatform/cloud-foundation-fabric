@@ -4,6 +4,7 @@
 
 - check out the repository and enter the folder
 - copy files from the `01-resman` stage
+- copy your tfvars file for stage 01 if any exists
 - copy the workflow file from output files
 - set the `outputs_location` variable to `null` and apply locally
 
