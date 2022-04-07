@@ -15,6 +15,29 @@
  */
 
 locals {
+  _provider_names = {
+    github = try(google_iam_workload_identity_pool_provider.github.0.name, null)
+    gitlab = try(google_iam_workload_identity_pool_provider.gitlab.0.name, null)
+  }
+
+  cicd_actions = {
+    "bootstrap" = templatefile("${path.module}/github_action.tpl", {
+      outputs_bucket    = module.automation-tf-output-gcs.name
+      service_account   = module.automation-tf-bootstrap-sa.email
+      stage_name        = "bootstrap"
+      tf_providers_file = "00-bootstrap-providers.tf"
+      tf_var_files      = []
+      wif_provider      = local._provider_names[lower(local.cicd_repositories["bootstrap"].provider)]
+    })
+    "resman" = templatefile("${path.module}/github_action.tpl", {
+      outputs_bucket    = module.automation-tf-output-gcs.name
+      service_account   = module.automation-tf-resman-sa.email
+      stage_name        = "resman"
+      tf_providers_file = "01-resman-providers.tf"
+      tf_var_files      = ["00-bootstrap.auto.tfvars.json", "globals.auto.tfvars.json"]
+      wif_provider      = local._provider_names[lower(local.cicd_repositories["resman"].provider)]
+    })
+  }
   custom_roles = {
     for k, v in var.custom_role_names :
     k => module.organization.custom_role_id[v]
@@ -37,11 +60,8 @@ locals {
       project_id     = module.automation-project.project_id
     }
     cicd = {
-      pool = try(google_iam_workload_identity_pool.default.0.name, null)
-      providers = {
-        github = try(google_iam_workload_identity_pool_provider.github.0.name, null)
-        gitlab = try(google_iam_workload_identity_pool_provider.gitlab.0.name, null)
-      }
+      pool      = try(google_iam_workload_identity_pool.default.0.name, null)
+      providers = local._provider_names
     }
     custom_roles = local.custom_roles
   }
@@ -68,17 +88,9 @@ output "cicd_repositories" {
   description = "WIF configuration for CI/CD repositories."
   value = {
     for k, v in local.cicd_repositories : k => {
-      branch = v.branch
-      name   = v.name
-      provider = (
-        v.provider == "GITHUB"
-        ? google_iam_workload_identity_pool_provider.github.0.name
-        : (
-          v.provider == "GITLAB"
-          ? google_iam_workload_identity_pool_provider.gitlab.0.name
-          : null
-        )
-      )
+      branch          = v.branch
+      name            = v.name
+      provider        = local._provider_names[lower(v.provider)]
       service_account = module.automation-tf-cicd-sa[k].email
     }
   }

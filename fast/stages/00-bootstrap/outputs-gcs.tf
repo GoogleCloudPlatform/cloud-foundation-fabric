@@ -23,11 +23,20 @@ module "automation-tf-output-gcs" {
   depends_on = [module.organization]
 }
 
+resource "google_storage_bucket_object" "actions" {
+  for_each = local.cicd_actions
+  bucket   = module.automation-tf-output-gcs.name
+  # FIXME(jccb) do we need the action suffix?
+  name    = "actions/${each.key}-action.yml"
+  content = each.value
+}
+
 resource "google_storage_bucket_object" "providers" {
   for_each = local.providers
   bucket   = module.automation-tf-output-gcs.name
-  name     = "providers/${each.key}-providers.tf"
-  content  = each.value
+  # FIXME(jccb) do we need the providers suffix?
+  name    = "providers/${each.key}-providers.tf"
+  content = each.value
 }
 
 resource "google_storage_bucket_object" "tfvars" {
