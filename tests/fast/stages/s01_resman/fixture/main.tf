@@ -18,8 +18,7 @@ module "stage" {
   source = "../../../../../fast/stages/01-resman"
   automation = {
     project_id     = "fast-prod-automation"
-    outputs_bucket = null
-    wif_pool       = null
+    outputs_bucket = "test"
   }
   billing_account = {
     id              = "000000-111111-222222"
