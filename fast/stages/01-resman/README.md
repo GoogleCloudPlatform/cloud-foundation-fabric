@@ -159,7 +159,9 @@ Due to its simplicity, this stage lends itself easily to customizations: adding 
 | [branch-teams.tf](./branch-teams.tf) | Team stages resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
 | [main.tf](./main.tf) | Module-level locals and resources. |  |  |
 | [organization.tf](./organization.tf) | Organization policies. | <code>organization</code> | <code>google_organization_iam_member</code> |
-| [outputs.tf](./outputs.tf) | Module outputs. |  | <code>local_file</code> |
+| [outputs-files.tf](./outputs-files.tf) | None |  | <code>local_file</code> |
+| [outputs-gcs.tf](./outputs-gcs.tf) | None |  | <code>google_storage_bucket_object</code> |
+| [outputs.tf](./outputs.tf) | Module outputs. |  |  |
 | [variables.tf](./variables.tf) | Module variables. |  |  |
 
 ## Variables
@@ -181,13 +183,13 @@ Due to its simplicity, this stage lends itself easily to customizations: adding 
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [dataplatform](outputs.tf#L114) | Data for the Data Platform stage. |  |  |
-| [networking](outputs.tf#L130) | Data for the networking stage. |  |  |
-| [project_factories](outputs.tf#L139) | Data for the project factories stage. |  |  |
-| [providers](outputs.tf#L155) | Terraform provider files for this stage and dependent stages. | ✓ | <code>02-networking</code> · <code>02-security</code> · <code>03-dataplatform</code> · <code>xx-sandbox</code> · <code>xx-teams</code> |
-| [sandbox](outputs.tf#L162) | Data for the sandbox stage. |  | <code>xx-sandbox</code> |
-| [security](outputs.tf#L172) | Data for the networking stage. |  | <code>02-security</code> |
-| [teams](outputs.tf#L182) | Data for the teams stage. |  |  |
-| [tfvars](outputs.tf#L195) | Terraform variable files for the following stages. | ✓ |  |
+| [dataplatform](outputs.tf#L96) | Data for the Data Platform stage. |  |  |
+| [networking](outputs.tf#L112) | Data for the networking stage. |  |  |
+| [project_factories](outputs.tf#L121) | Data for the project factories stage. |  |  |
+| [providers](outputs.tf#L137) | Terraform provider files for this stage and dependent stages. | ✓ | <code>02-networking</code> · <code>02-security</code> · <code>03-dataplatform</code> · <code>xx-sandbox</code> · <code>xx-teams</code> |
+| [sandbox](outputs.tf#L144) | Data for the sandbox stage. |  | <code>xx-sandbox</code> |
+| [security](outputs.tf#L154) | Data for the networking stage. |  | <code>02-security</code> |
+| [teams](outputs.tf#L164) | Data for the teams stage. |  |  |
+| [tfvars](outputs.tf#L177) | Terraform variable files for the following stages. | ✓ |  |
 
 <!-- END TFDOC -->
