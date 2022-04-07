@@ -20,7 +20,7 @@ locals {
     gitlab = try(google_iam_workload_identity_pool_provider.gitlab.0.name, null)
   }
 
-  cicd_actions = {
+  cicd_actions = local.cicd_repositories == {} ? {} : {
     "bootstrap" = templatefile("${path.module}/github_action.tpl", {
       outputs_bucket    = module.automation-tf-output-gcs.name
       service_account   = module.automation-tf-bootstrap-sa.email
