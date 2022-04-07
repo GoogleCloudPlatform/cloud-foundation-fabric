@@ -54,61 +54,6 @@ locals {
   }
 }
 
-# output files bucket
-
-module "automation-tf-output-gcs" {
-  source     = "../../../modules/gcs"
-  project_id = module.automation-project.project_id
-  name       = "iac-core-outputs-0"
-  prefix     = local.prefix
-  versioning = true
-  depends_on = [module.organization]
-}
-
-resource "google_storage_bucket_object" "providers" {
-  for_each = local.providers
-  bucket   = module.automation-tf-output-gcs.name
-  name     = "providers/${each.key}-providers.tf"
-  content  = each.value
-}
-
-resource "google_storage_bucket_object" "tfvars" {
-  bucket  = module.automation-tf-output-gcs.name
-  name    = "tfvars/00-bootstrap.auto.tfvars.json"
-  content = jsonencode(local.tfvars)
-}
-
-resource "google_storage_bucket_object" "tfvars_globals" {
-  bucket  = module.automation-tf-output-gcs.name
-  name    = "tfvars/globals.auto.tfvars.json"
-  content = jsonencode(local.tfvars_globals)
-}
-
-# optionally generate providers and tfvars files for subsequent stages
-
-resource "local_file" "providers" {
-  for_each        = var.outputs_location == null ? {} : local.providers
-  file_permission = "0644"
-  filename        = "${pathexpand(var.outputs_location)}/providers/${each.key}-providers.tf"
-  content         = each.value
-}
-
-resource "local_file" "tfvars" {
-  for_each        = var.outputs_location == null ? {} : { 1 = 1 }
-  file_permission = "0644"
-  filename        = "${pathexpand(var.outputs_location)}/tfvars/00-bootstrap.auto.tfvars.json"
-  content         = jsonencode(local.tfvars)
-}
-
-resource "local_file" "tfvars_globals" {
-  for_each        = var.outputs_location == null ? {} : { 1 = 1 }
-  file_permission = "0644"
-  filename        = "${pathexpand(var.outputs_location)}/tfvars/globals.auto.tfvars.json"
-  content         = jsonencode(local.tfvars_globals)
-}
-
-# outputs
-
 output "automation" {
   description = "Automation resources."
   value       = local.tfvars.automation
