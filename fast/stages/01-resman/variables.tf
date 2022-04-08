@@ -23,6 +23,11 @@ variable "automation" {
   type = object({
     outputs_bucket = string
     project_id     = string
+    wif_pool       = string
+    wif_providers = object({
+      github = string
+      gitlab = string
+    })
   })
 }
 
@@ -35,18 +40,33 @@ variable "billing_account" {
   })
 }
 
-variable "cicd" {
-  # tfdoc:variable:source 00-bootstrap
-  description = "CI/CD Workload Identity Federation pool and providers."
+variable "cicd_config" {
+  description = "CI/CD configuration. Providers map to those set in the `automation` variable. Set to null to disable, or set individual repositories to null if not needed."
   type = object({
-    pool = string
-    providers = object({
-      github = string
-      # TODO: bring back gitlab once we have proper support for it
-      # gitlab = string
-    })
+    repositories = map(object({
+      branch   = string
+      name     = string
+      provider = string
+    }))
   })
   default = null
+  # validate repositories
+  validation {
+    condition = var.cicd_config == null ? true : alltrue([
+      for k, v in coalesce(var.cicd_config.repositories, {}) :
+      v == null || try(v.name, null) != null
+    ])
+    error_message = "Non-null repositories need a non-null name."
+  }
+  validation {
+    condition = var.cicd_config == null ? true : alltrue([
+      for k, v in coalesce(var.cicd_config.repositories, {}) :
+      # TODO: bring back gitlab once we have proper support for it
+      # contains(["github", "gitlab"], try(v.provider, ""))
+      v == null || try(v.provider, "") == "github"
+    ])
+    error_message = "Non-null repositories need a valid provider. Supported CI/CD providers: 'github'."
+  }
 }
 
 variable "custom_roles" {

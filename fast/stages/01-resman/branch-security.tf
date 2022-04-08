@@ -16,6 +16,14 @@
 
 # tfdoc:file:description Security stage resources.
 
+locals {
+  cicd_security = (
+    contains(keys(var.cicd_config.repositories), "security")
+    ? var.cicd_config.repositories.security
+    : null
+  )
+}
+
 module "branch-security-folder" {
   source = "../../../modules/folder"
   parent = "organizations/${var.organization.id}"
@@ -44,12 +52,19 @@ module "branch-security-folder" {
   }
 }
 
+# automation service account and bucket
+
 module "branch-security-sa" {
   source      = "../../../modules/iam-service-account"
   project_id  = var.automation.project_id
   name        = "prod-resman-sec-0"
   description = "Terraform resman security service account."
   prefix      = var.prefix
+  iam = {
+    "roles/iam.serviceAccountTokenCreator" = compact([
+      try(module.branch-security-sa-cicd.0.iam_email, null)
+    ])
+  }
   iam_storage_roles = {
     (var.automation.outputs_bucket) = ["roles/storage.admin"]
   }
@@ -63,5 +78,34 @@ module "branch-security-gcs" {
   versioning = true
   iam = {
     "roles/storage.objectAdmin" = [module.branch-security-sa.iam_email]
+  }
+}
+
+# ci/cd service account
+
+module "branch-security-sa-cicd" {
+  source      = "../../../modules/iam-service-account"
+  count       = local.cicd_security == null ? 0 : 1
+  project_id  = var.automation.project_id
+  name        = "prod-resman-sec-1"
+  description = "Terraform CI/CD stage 2 security service account."
+  prefix      = var.prefix
+  iam = {
+    "roles/iam.workloadIdentityUser" = [
+      local.cicd_security.branch == null
+      ? format(
+        local.cicd_tpl_principalset,
+        var.automation.wif_pool,
+        local.cicd_security.name
+      )
+      : format(
+        local.cicd_tpl_principal[local.cicd_security.provider],
+        local.cicd_security.name,
+        local.cicd_security.branch
+      )
+    ]
+  }
+  iam_storage_roles = {
+    (var.automation.outputs_bucket) = ["roles/storage.objectViewer"]
   }
 }

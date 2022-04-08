@@ -16,7 +16,18 @@
 
 # tfdoc:file:description Data Platform stages resources.
 
-# top-level Data Platform folder and service account
+locals {
+  cicd_dp_prod = (
+    contains(keys(var.cicd_config.repositories), "data_platform_prod")
+    ? var.cicd_config.repositories.networking
+    : null
+  )
+  cicd_dp_dev = (
+    contains(keys(var.cicd_config.repositories), "data_platform_dev")
+    ? var.cicd_config.repositories.networking
+    : null
+  )
+}
 
 module "branch-dp-folder" {
   source = "../../../modules/folder"
@@ -26,8 +37,6 @@ module "branch-dp-folder" {
     context = module.organization.tag_values["context/data"].id
   }
 }
-
-# environment: development folder
 
 module "branch-dp-dev-folder" {
   source    = "../../../modules/folder"
@@ -47,27 +56,6 @@ module "branch-dp-dev-folder" {
   }
 }
 
-module "branch-dp-dev-sa" {
-  source      = "../../../modules/iam-service-account"
-  project_id  = var.automation.project_id
-  name        = "dev-resman-dp-0"
-  description = "Terraform Data Platform development service account."
-  prefix      = var.prefix
-}
-
-module "branch-dp-dev-gcs" {
-  source     = "../../../modules/gcs"
-  project_id = var.automation.project_id
-  name       = "dev-resman-dp-0"
-  prefix     = var.prefix
-  versioning = true
-  iam = {
-    "roles/storage.objectAdmin" = [module.branch-dp-dev-sa.iam_email]
-  }
-}
-
-# environment: production folder
-
 module "branch-dp-prod-folder" {
   source    = "../../../modules/folder"
   parent    = module.branch-dp-folder.id
@@ -86,12 +74,49 @@ module "branch-dp-prod-folder" {
   }
 }
 
+# automation service accounts and buckets
+
+module "branch-dp-dev-sa" {
+  source      = "../../../modules/iam-service-account"
+  project_id  = var.automation.project_id
+  name        = "dev-resman-dp-0"
+  description = "Terraform Data Platform development service account."
+  prefix      = var.prefix
+  iam = {
+    "roles/iam.serviceAccountTokenCreator" = compact([
+      try(module.branch-dp-dev-sa-cicd.0.iam_email, null)
+    ])
+  }
+  iam_storage_roles = {
+    (var.automation.outputs_bucket) = ["roles/storage.admin"]
+  }
+}
+
 module "branch-dp-prod-sa" {
   source      = "../../../modules/iam-service-account"
   project_id  = var.automation.project_id
   name        = "prod-resman-dp-0"
   description = "Terraform Data Platform production service account."
   prefix      = var.prefix
+  iam = {
+    "roles/iam.serviceAccountTokenCreator" = compact([
+      try(module.branch-dp-prod-sa-cicd.0.iam_email, null)
+    ])
+  }
+  iam_storage_roles = {
+    (var.automation.outputs_bucket) = ["roles/storage.admin"]
+  }
+}
+
+module "branch-dp-dev-gcs" {
+  source     = "../../../modules/gcs"
+  project_id = var.automation.project_id
+  name       = "dev-resman-dp-0"
+  prefix     = var.prefix
+  versioning = true
+  iam = {
+    "roles/storage.objectAdmin" = [module.branch-dp-dev-sa.iam_email]
+  }
 }
 
 module "branch-dp-prod-gcs" {
@@ -102,5 +127,61 @@ module "branch-dp-prod-gcs" {
   versioning = true
   iam = {
     "roles/storage.objectAdmin" = [module.branch-dp-prod-sa.iam_email]
+  }
+}
+
+# ci/cd service accounts
+
+module "branch-dp-dev-sa-cicd" {
+  source      = "../../../modules/iam-service-account"
+  count       = local.cicd_dp_dev == null ? 0 : 1
+  project_id  = var.automation.project_id
+  name        = "dev-resman-dp-1"
+  description = "Terraform CI/CD Data Platform development service account."
+  prefix      = var.prefix
+  iam = {
+    "roles/iam.workloadIdentityUser" = [
+      local.cicd_dp_dev.branch == null
+      ? format(
+        local.cicd_tpl_principalset,
+        var.automation.wif_pool,
+        local.cicd_dp_dev.name
+      )
+      : format(
+        local.cicd_tpl_principal[local.cicd_dp_dev.provider],
+        local.cicd_dp_dev.name,
+        local.cicd_dp_dev.branch
+      )
+    ]
+  }
+  iam_storage_roles = {
+    (var.automation.outputs_bucket) = ["roles/storage.objectViewer"]
+  }
+}
+
+module "branch-dp-prod-sa-cicd" {
+  source      = "../../../modules/iam-service-account"
+  count       = local.cicd_dp_prod == null ? 0 : 1
+  project_id  = var.automation.project_id
+  name        = "prod-resman-dp-1"
+  description = "Terraform CI/CD Data Platform production service account."
+  prefix      = var.prefix
+  iam = {
+    "roles/iam.workloadIdentityUser" = [
+      local.cicd_dp_prod.branch == null
+      ? format(
+        local.cicd_tpl_principalset,
+        var.automation.wif_pool,
+        local.cicd_dp_prod.name
+      )
+      : format(
+        local.cicd_tpl_principal[local.cicd_dp_prod.provider],
+        local.cicd_dp_prod.name,
+        local.cicd_dp_prod.branch
+      )
+    ]
+  }
+  iam_storage_roles = {
+    (var.automation.outputs_bucket) = ["roles/storage.objectViewer"]
   }
 }

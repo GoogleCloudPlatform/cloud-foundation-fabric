@@ -37,10 +37,6 @@ locals {
     for k, v in var.custom_role_names :
     k => module.organization.custom_role_id[v]
   }
-  provider_names = {
-    github = try(google_iam_workload_identity_pool_provider.github.0.name, null)
-    gitlab = try(google_iam_workload_identity_pool_provider.gitlab.0.name, null)
-  }
   providers = {
     "00-bootstrap" = templatefile(local._tpl_providers, {
       bucket = module.automation-tf-bootstrap-gcs.name
@@ -57,10 +53,8 @@ locals {
     automation = {
       outputs_bucket = module.automation-tf-output-gcs.name
       project_id     = module.automation-project.project_id
-    }
-    cicd = {
-      pool      = try(google_iam_workload_identity_pool.default.0.name, null)
-      providers = local.provider_names
+      wif_pool       = try(google_iam_workload_identity_pool.default.0.name, null)
+      wif_providers  = local.wif_providers
     }
     custom_roles = local.custom_roles
   }
@@ -71,12 +65,16 @@ locals {
     organization    = var.organization
     prefix          = var.prefix
   }
+  wif_providers = {
+    github = try(google_iam_workload_identity_pool_provider.github.0.name, null)
+    gitlab = try(google_iam_workload_identity_pool_provider.gitlab.0.name, null)
+  }
   workflows = {
     for k, v in local.cicd_repositories : k => templatefile(
       "${path.module}/templates/workflow-${v.provider}.yaml",
       merge(local._workflow_attrs[k], {
         stage_name   = k
-        wif_provider = local.provider_names[v["provider"]]
+        wif_provider = local.wif_providers[v["provider"]]
       })
     )
   }
@@ -98,7 +96,7 @@ output "cicd_repositories" {
     for k, v in local.cicd_repositories : k => {
       branch          = v.branch
       name            = v.name
-      provider        = local.provider_names[v.provider]
+      provider        = local.wif_providers[v.provider]
       service_account = module.automation-tf-cicd-sa[k].email
     }
   }

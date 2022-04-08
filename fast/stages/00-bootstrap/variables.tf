@@ -61,15 +61,18 @@ variable "cicd_config" {
   validation {
     condition = var.cicd_config == null ? true : alltrue([
       for k, v in coalesce(var.cicd_config.repositories, {}) :
-      v == null || (
-        try(v.name, null) != null
-        &&
-        # TODO: bring back gitlab once we have proper support for it
-        # contains(["github", "gitlab"], try(v.provider, "github"))
-        v.provider == "github"
-      )
+      v == null || try(v.name, null) != null
     ])
-    error_message = "Non-null repositories need a valid name and provider."
+    error_message = "Non-null repositories need a non-null name."
+  }
+  validation {
+    condition = var.cicd_config == null ? true : alltrue([
+      for k, v in coalesce(var.cicd_config.repositories, {}) :
+      # TODO: bring back gitlab once we have proper support for it
+      # contains(["github", "gitlab"], try(v.provider, ""))
+      v == null || try(v.provider, "") == "github"
+    ])
+    error_message = "Non-null repositories need a valid provider. Supported CI/CD providers: 'github'."
   }
 }
 
