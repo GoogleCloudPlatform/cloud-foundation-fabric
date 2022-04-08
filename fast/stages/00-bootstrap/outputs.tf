@@ -73,10 +73,10 @@ locals {
   }
   workflows = {
     for k, v in local.cicd_repositories : k => templatefile(
-      "${path.module}/templates/workflow-${lower(v.provider)}.yaml",
+      "${path.module}/templates/workflow-${v.provider}.yaml",
       merge(local._workflow_attrs[k], {
         stage_name   = k
-        wif_provider = local.provider_names[lower(v["provider"])]
+        wif_provider = local.provider_names[v["provider"]]
       })
     )
   }
@@ -98,7 +98,7 @@ output "cicd_repositories" {
     for k, v in local.cicd_repositories : k => {
       branch          = v.branch
       name            = v.name
-      provider        = local.provider_names[lower(v.provider)]
+      provider        = local.provider_names[v.provider]
       service_account = module.automation-tf-cicd-sa[k].email
     }
   }

@@ -42,7 +42,8 @@ variable "cicd" {
     pool = string
     providers = object({
       github = string
-      gitlab = string
+      # TODO: bring back gitlab once we have proper support for it
+      # gitlab = string
     })
   })
   default = null

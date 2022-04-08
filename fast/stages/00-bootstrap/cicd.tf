@@ -36,8 +36,8 @@ locals {
     for k, v in module.automation-tf-cicd-sa : k => v.iam_email
   }
   cicd_tpl_principal = {
-    GITHUB = "principal://iam.googleapis.com/%s/subject/repo:%s:ref:refs/heads/%s"
-    GITLAB = "principal://iam.googleapis.com/%s/subject/project_path:%s:ref_type:branch:ref:%s"
+    github = "principal://iam.googleapis.com/%s/subject/repo:%s:ref:refs/heads/%s"
+    gitlab = "principal://iam.googleapis.com/%s/subject/project_path:%s:ref_type:branch:ref:%s"
   }
   cicd_tpl_principalset = (
     "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
@@ -56,7 +56,7 @@ resource "google_iam_workload_identity_pool" "default" {
 
 resource "google_iam_workload_identity_pool_provider" "github" {
   provider = google-beta
-  count    = contains(local.cicd_providers, "GITHUB") ? 1 : 0
+  count    = contains(local.cicd_providers, "github") ? 1 : 0
   project  = module.automation-project.project_id
   workload_identity_pool_id = (
     google_iam_workload_identity_pool.default.0.workload_identity_pool_id
@@ -77,7 +77,7 @@ resource "google_iam_workload_identity_pool_provider" "github" {
 
 resource "google_iam_workload_identity_pool_provider" "gitlab" {
   provider = google-beta
-  count    = contains(local.cicd_providers, "GITLAB") ? 1 : 0
+  count    = contains(local.cicd_providers, "gitlab") ? 1 : 0
   project  = module.automation-project.project_id
   workload_identity_pool_id = (
     google_iam_workload_identity_pool.default.0.workload_identity_pool_id

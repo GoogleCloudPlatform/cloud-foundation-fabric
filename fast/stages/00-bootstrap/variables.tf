@@ -50,9 +50,12 @@ variable "cicd_config" {
   validation {
     condition = var.cicd_config == null ? true : alltrue([
       for p in coalesce(var.cicd_config.providers, []) :
-      contains(["GITHUB", "GITLAB"], p)
+      # TODO: bring back gitlab once we have proper support for it
+      # contains(["github", "gitlab"], p)
+      p == "github"
     ])
-    error_message = "Supported CI/CD providers: 'GITHUB', 'GITLAB'."
+    # error_message = "Supported CI/CD providers: 'github', 'gitlab'."
+    error_message = "Supported CI/CD providers: 'github'."
   }
   # validate repositories
   validation {
@@ -61,7 +64,9 @@ variable "cicd_config" {
       v == null || (
         try(v.name, null) != null
         &&
-        contains(["GITHUB", "GITLAB"], try(v.provider, "GITHUB"))
+        # TODO: bring back gitlab once we have proper support for it
+        # contains(["github", "gitlab"], try(v.provider, "github"))
+        v.provider == "github"
       )
     ])
     error_message = "Non-null repositories need a valid name and provider."
