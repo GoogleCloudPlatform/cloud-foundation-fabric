@@ -335,8 +335,8 @@ Names used in internal references (e.g. `module.foo-prod.id`) are only used by T
 | [log-export.tf](./log-export.tf) | Audit log project and sink. | <code>bigquery-dataset</code> · <code>gcs</code> · <code>logging-bucket</code> · <code>project</code> · <code>pubsub</code> |  |
 | [main.tf](./main.tf) | Module-level locals and resources. |  |  |
 | [organization.tf](./organization.tf) | Organization-level IAM. | <code>organization</code> | <code>google_organization_iam_binding</code> |
-| [outputs-files.tf](./outputs-files.tf) | None |  | <code>local_file</code> |
-| [outputs-gcs.tf](./outputs-gcs.tf) | None | <code>gcs</code> | <code>google_storage_bucket_object</code> |
+| [outputs-files.tf](./outputs-files.tf) | Output files persistence to local filesystem. |  | <code>local_file</code> |
+| [outputs-gcs.tf](./outputs-gcs.tf) | Output files persistence to automation GCS bucket. |  | <code>google_storage_bucket_object</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |  |
 | [variables.tf](./variables.tf) | Module variables. |  |  |
 
@@ -360,14 +360,14 @@ Names used in internal references (e.g. `module.foo-prod.id`) are only used by T
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [automation](outputs.tf#L81) | Automation resources. |  |  |
-| [billing_dataset](outputs.tf#L86) | BigQuery dataset prepared for billing export. |  |  |
-| [cicd_repositories](outputs.tf#L91) | WIF configuration for CI/CD repositories. |  |  |
-| [custom_roles](outputs.tf#L103) | Organization-level custom roles. |  |  |
-| [outputs_bucket](outputs.tf#L108) | GCS bucket where generated output files are stored. |  |  |
-| [project_ids](outputs.tf#L113) | Projects created by this stage. |  |  |
-| [providers](outputs.tf#L132) | Terraform provider files for this stage and dependent stages. | ✓ | <code>stage-01</code> |
-| [service_accounts](outputs.tf#L122) | Automation service accounts created by this stage. |  |  |
-| [tfvars](outputs.tf#L141) | Terraform variable files for the following stages. | ✓ |  |
+| [automation](outputs.tf#L85) | Automation resources. |  |  |
+| [billing_dataset](outputs.tf#L90) | BigQuery dataset prepared for billing export. |  |  |
+| [cicd_repositories](outputs.tf#L95) | WIF configuration for CI/CD repositories. |  |  |
+| [custom_roles](outputs.tf#L107) | Organization-level custom roles. |  |  |
+| [outputs_bucket](outputs.tf#L112) | GCS bucket where generated output files are stored. |  |  |
+| [project_ids](outputs.tf#L117) | Projects created by this stage. |  |  |
+| [providers](outputs.tf#L136) | Terraform provider files for this stage and dependent stages. | ✓ | <code>stage-01</code> |
+| [service_accounts](outputs.tf#L126) | Automation service accounts created by this stage. |  |  |
+| [tfvars](outputs.tf#L145) | Terraform variable files for the following stages. | ✓ |  |
 
 <!-- END TFDOC -->

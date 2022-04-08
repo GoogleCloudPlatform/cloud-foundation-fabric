@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-resource "google_storage_bucket_object" "workflows" {
-  for_each = local.workflows
-  bucket   = module.automation-tf-output-gcs.name
-  name     = "workflows/${each.key}.yml"
-  content  = each.value
-}
+# tfdoc:file:description Output files persistence to automation GCS bucket.
 
 resource "google_storage_bucket_object" "providers" {
   for_each = local.providers
@@ -39,4 +34,11 @@ resource "google_storage_bucket_object" "tfvars_globals" {
   bucket  = module.automation-tf-output-gcs.name
   name    = "tfvars/globals.auto.tfvars.json"
   content = jsonencode(local.tfvars_globals)
+}
+
+resource "google_storage_bucket_object" "workflows" {
+  for_each = local.workflows
+  bucket   = module.automation-tf-output-gcs.name
+  name     = "workflows/${each.key}.yml"
+  content  = each.value
 }

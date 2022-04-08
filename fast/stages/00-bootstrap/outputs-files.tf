@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description Output files persistence to local filesystem.
+
 resource "local_file" "providers" {
   for_each        = var.outputs_location == null ? {} : local.providers
   file_permission = "0644"
@@ -33,4 +35,11 @@ resource "local_file" "tfvars_globals" {
   file_permission = "0644"
   filename        = "${pathexpand(var.outputs_location)}/tfvars/globals.auto.tfvars.json"
   content         = jsonencode(local.tfvars_globals)
+}
+
+resource "local_file" "workflows" {
+  for_each        = local.workflows
+  file_permission = "0644"
+  filename        = "${pathexpand(var.outputs_location)}/workflows/${each.key}.yml"
+  content         = each.value
 }

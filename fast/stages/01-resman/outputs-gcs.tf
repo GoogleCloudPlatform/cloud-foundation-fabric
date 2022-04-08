@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description Output files persistence to automation GCS bucket.
+
 resource "google_storage_bucket_object" "providers" {
   for_each = local.providers
   bucket   = var.automation.outputs_bucket

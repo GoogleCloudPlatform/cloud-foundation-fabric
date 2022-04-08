@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description Output files persistence to local filesystem.
+
 resource "local_file" "providers" {
   for_each        = var.outputs_location == null ? {} : local.providers
   file_permission = "0644"
