@@ -50,6 +50,9 @@ module "branch-security-sa" {
   name        = "prod-resman-sec-0"
   description = "Terraform resman security service account."
   prefix      = var.prefix
+  iam_storage_roles = {
+    (var.automation.outputs_bucket) = ["roles/storage.admin"]
+  }
 }
 
 module "branch-security-gcs" {

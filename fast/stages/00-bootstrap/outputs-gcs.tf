@@ -14,15 +14,6 @@
  * limitations under the License.
  */
 
-module "automation-tf-output-gcs" {
-  source     = "../../../modules/gcs"
-  project_id = module.automation-project.project_id
-  name       = "iac-core-outputs-0"
-  prefix     = local.prefix
-  versioning = true
-  depends_on = [module.organization]
-}
-
 resource "google_storage_bucket_object" "workflows" {
   for_each = local.workflows
   bucket   = module.automation-tf-output-gcs.name

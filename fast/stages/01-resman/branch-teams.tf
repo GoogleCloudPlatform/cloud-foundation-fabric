@@ -103,6 +103,9 @@ module "branch-teams-dev-pf-sa" {
   # naming: environment in description
   description = "Terraform project factory development service account."
   prefix      = var.prefix
+  iam_storage_roles = {
+    (var.automation.outputs_bucket) = ["roles/storage.admin"]
+  }
 }
 
 module "branch-teams-dev-pf-gcs" {
@@ -146,6 +149,9 @@ module "branch-teams-prod-pf-sa" {
   # naming: environment in description
   description = "Terraform project factory production service account."
   prefix      = var.prefix
+  iam_storage_roles = {
+    (var.automation.outputs_bucket) = ["roles/storage.admin"]
+  }
 }
 
 module "branch-teams-prod-pf-gcs" {

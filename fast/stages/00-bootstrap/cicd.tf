@@ -46,7 +46,6 @@ locals {
 
 # TODO: check in resman for the relevant org policy
 #       constraints/iam.workloadIdentityPoolProviders
-# TODO: include pipeline configuration files in output files
 
 resource "google_iam_workload_identity_pool" "default" {
   provider                  = google-beta

@@ -15,6 +15,7 @@
  */
 
 locals {
+  _tpl_providers = "${path.module}/templates/providers.tf"
   _workflow_attrs = {
     bootstrap = {
       outputs_bucket    = module.automation-tf-output-gcs.name
@@ -26,7 +27,10 @@ locals {
       outputs_bucket    = module.automation-tf-output-gcs.name
       service_account   = module.automation-tf-resman-sa.email
       tf_providers_file = "01-resman-providers.tf"
-      tf_var_files      = ["00-bootstrap.auto.tfvars.json", "globals.auto.tfvars.json"]
+      tf_var_files = [
+        "00-bootstrap.auto.tfvars.json",
+        "globals.auto.tfvars.json"
+      ]
     }
   }
   custom_roles = {
@@ -38,12 +42,12 @@ locals {
     gitlab = try(google_iam_workload_identity_pool_provider.gitlab.0.name, null)
   }
   providers = {
-    "00-bootstrap" = templatefile("${path.module}/templates/providers.tpl", {
+    "00-bootstrap" = templatefile(local._tpl_providers, {
       bucket = module.automation-tf-bootstrap-gcs.name
       name   = "bootstrap"
       sa     = module.automation-tf-bootstrap-sa.email
     })
-    "01-resman" = templatefile("${path.module}/templates/providers.tpl", {
+    "01-resman" = templatefile(local._tpl_providers, {
       bucket = module.automation-tf-resman-gcs.name
       name   = "resman"
       sa     = module.automation-tf-resman-sa.email

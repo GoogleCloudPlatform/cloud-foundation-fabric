@@ -49,6 +49,9 @@ module "branch-network-sa" {
   name        = "prod-resman-net-0"
   description = "Terraform resman networking service account."
   prefix      = var.prefix
+  iam_storage_roles = {
+    (var.automation.outputs_bucket) = ["roles/storage.admin"]
+  }
 }
 
 module "branch-network-gcs" {
