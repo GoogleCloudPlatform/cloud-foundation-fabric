@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-variable "name" {
-  type    = string
-  default = "my-test-instance"
-}
-
-variable "region" {
-  type    = string
-  default = "europe-west1"
-}
-
-variable "ip_range" {
-  type    = string
-  default = "10.0.0.0/22,10.1.0.0/28"
+module "test" {
+  source             = "../../../../../examples/data-solutions/sqlserver-alwayson/"
+  project_create     = var.project_create
+  project_id         = var.project_id
+  prefix             = var.prefix
+  network            = "example-network"
+  subnetwork         = "example-subnetwork"
+  sql_admin_password = "password"
+  ad_domain_fqdn     = "ad.example.com"
+  ad_domain_netbios  = "ad"
 }
