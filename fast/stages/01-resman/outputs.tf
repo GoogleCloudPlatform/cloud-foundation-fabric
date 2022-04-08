@@ -15,7 +15,7 @@
  */
 
 locals {
-  _tpl_providers = "${path.module}/templates/providers.tf"
+  _tpl_providers = "${path.module}/templates/providers.tf.tpl"
   cicd_repositories = {
     for k, v in local.cicd_config.repositories : k => v if v != null
   }

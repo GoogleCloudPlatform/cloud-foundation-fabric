@@ -15,7 +15,7 @@
  */
 
 locals {
-  _tpl_providers = "${path.module}/templates/providers.tf"
+  _tpl_providers = "${path.module}/templates/providers.tf.tpl"
   _workflow_attrs = {
     bootstrap = {
       service_account   = module.automation-tf-bootstrap-sa.email

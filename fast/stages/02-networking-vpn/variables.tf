@@ -19,7 +19,6 @@ variable "automation" {
   description = "Automation resources created by the bootstrap stage."
   type = object({
     outputs_bucket = string
-    project_id     = string
   })
 }
 
