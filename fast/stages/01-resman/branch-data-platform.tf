@@ -18,14 +18,14 @@
 
 locals {
   cicd_dp_prod = (
-    contains(keys(var.cicd_config.repositories), "data_platform_prod")
-    ? var.cicd_config.repositories.networking
-    : null
+    contains(keys(local.cicd_config.repositories), "data_platform_prod")
+    ? var.cicd_config.repositories.data_platform_prod
+    : { branch = null, name = null }
   )
   cicd_dp_dev = (
-    contains(keys(var.cicd_config.repositories), "data_platform_dev")
-    ? var.cicd_config.repositories.networking
-    : null
+    contains(keys(local.cicd_config.repositories), "data_platform_dev")
+    ? var.cicd_config.repositories.data_platform_dev
+    : { branch = null, name = null }
   )
 }
 
@@ -80,7 +80,7 @@ module "branch-dp-dev-sa" {
   source      = "../../../modules/iam-service-account"
   project_id  = var.automation.project_id
   name        = "dev-resman-dp-0"
-  description = "Terraform Data Platform development service account."
+  description = "Terraform data platform development service account."
   prefix      = var.prefix
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
@@ -96,7 +96,7 @@ module "branch-dp-prod-sa" {
   source      = "../../../modules/iam-service-account"
   project_id  = var.automation.project_id
   name        = "prod-resman-dp-0"
-  description = "Terraform Data Platform production service account."
+  description = "Terraform data platform production service account."
   prefix      = var.prefix
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
@@ -134,10 +134,10 @@ module "branch-dp-prod-gcs" {
 
 module "branch-dp-dev-sa-cicd" {
   source      = "../../../modules/iam-service-account"
-  count       = local.cicd_dp_dev == null ? 0 : 1
+  count       = local.cicd_dp_dev.name == null ? 0 : 1
   project_id  = var.automation.project_id
   name        = "dev-resman-dp-1"
-  description = "Terraform CI/CD Data Platform development service account."
+  description = "Terraform CI/CD data platform development service account."
   prefix      = var.prefix
   iam = {
     "roles/iam.workloadIdentityUser" = [
@@ -161,10 +161,10 @@ module "branch-dp-dev-sa-cicd" {
 
 module "branch-dp-prod-sa-cicd" {
   source      = "../../../modules/iam-service-account"
-  count       = local.cicd_dp_prod == null ? 0 : 1
+  count       = local.cicd_dp_prod.name == null ? 0 : 1
   project_id  = var.automation.project_id
   name        = "prod-resman-dp-1"
-  description = "Terraform CI/CD Data Platform production service account."
+  description = "Terraform CI/CD data platform production service account."
   prefix      = var.prefix
   iam = {
     "roles/iam.workloadIdentityUser" = [

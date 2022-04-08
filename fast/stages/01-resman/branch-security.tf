@@ -18,9 +18,9 @@
 
 locals {
   cicd_security = (
-    contains(keys(var.cicd_config.repositories), "security")
+    contains(keys(local.cicd_config.repositories), "security")
     ? var.cicd_config.repositories.security
-    : null
+    : { branch = null, name = null }
   )
 }
 
@@ -85,7 +85,7 @@ module "branch-security-gcs" {
 
 module "branch-security-sa-cicd" {
   source      = "../../../modules/iam-service-account"
-  count       = local.cicd_security == null ? 0 : 1
+  count       = local.cicd_security.name == null ? 0 : 1
   project_id  = var.automation.project_id
   name        = "prod-resman-sec-1"
   description = "Terraform CI/CD stage 2 security service account."

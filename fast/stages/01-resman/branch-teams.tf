@@ -14,9 +14,20 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Team stages resources.
+# tfdoc:file:description Team stage resources.
 
-# top-level teams folder and service account
+locals {
+  cicd_pf_prod = (
+    contains(keys(local.cicd_config.repositories), "project_factory_prod")
+    ? var.cicd_config.repositories.project_factory_prod
+    : { branch = null, name = null }
+  )
+  cicd_pf_dev = (
+    contains(keys(local.cicd_config.repositories), "project_factory_dev")
+    ? var.cicd_config.repositories.project_factory_dev
+    : { branch = null, name = null }
+  )
+}
 
 module "branch-teams-folder" {
   source = "../../../modules/folder"
@@ -73,7 +84,7 @@ module "branch-teams-team-gcs" {
   }
 }
 
-# environment: development folder and project factory automation resources
+# project factory per-team environment folders
 
 module "branch-teams-team-dev-folder" {
   source   = "../../../modules/folder"
@@ -96,31 +107,6 @@ module "branch-teams-team-dev-folder" {
   }
 }
 
-module "branch-teams-dev-pf-sa" {
-  source     = "../../../modules/iam-service-account"
-  project_id = var.automation.project_id
-  name       = "dev-resman-pf-0"
-  # naming: environment in description
-  description = "Terraform project factory development service account."
-  prefix      = var.prefix
-  iam_storage_roles = {
-    (var.automation.outputs_bucket) = ["roles/storage.admin"]
-  }
-}
-
-module "branch-teams-dev-pf-gcs" {
-  source     = "../../../modules/gcs"
-  project_id = var.automation.project_id
-  name       = "dev-resman-pf-0"
-  prefix     = var.prefix
-  versioning = true
-  iam = {
-    "roles/storage.objectAdmin" = [module.branch-teams-dev-pf-sa.iam_email]
-  }
-}
-
-# environment: production folder and project factory automation resources
-
 module "branch-teams-team-prod-folder" {
   source   = "../../../modules/folder"
   for_each = coalesce(var.team_folders, {})
@@ -142,6 +128,25 @@ module "branch-teams-team-prod-folder" {
   }
 }
 
+# project factory per-team environment service accounts
+
+module "branch-teams-dev-pf-sa" {
+  source     = "../../../modules/iam-service-account"
+  project_id = var.automation.project_id
+  name       = "dev-resman-pf-0"
+  # naming: environment in description
+  description = "Terraform project factory development service account."
+  prefix      = var.prefix
+  iam = {
+    "roles/iam.serviceAccountTokenCreator" = compact([
+      try(module.branch-pf-dev-sa-cicd.0.iam_email, null)
+    ])
+  }
+  iam_storage_roles = {
+    (var.automation.outputs_bucket) = ["roles/storage.admin"]
+  }
+}
+
 module "branch-teams-prod-pf-sa" {
   source     = "../../../modules/iam-service-account"
   project_id = var.automation.project_id
@@ -149,8 +154,26 @@ module "branch-teams-prod-pf-sa" {
   # naming: environment in description
   description = "Terraform project factory production service account."
   prefix      = var.prefix
+  iam = {
+    "roles/iam.serviceAccountTokenCreator" = compact([
+      try(module.branch-pf-prod-sa-cicd.0.iam_email, null)
+    ])
+  }
   iam_storage_roles = {
     (var.automation.outputs_bucket) = ["roles/storage.admin"]
+  }
+}
+
+# project factory per-team environment GCS buckets
+
+module "branch-teams-dev-pf-gcs" {
+  source     = "../../../modules/gcs"
+  project_id = var.automation.project_id
+  name       = "dev-resman-pf-0"
+  prefix     = var.prefix
+  versioning = true
+  iam = {
+    "roles/storage.objectAdmin" = [module.branch-teams-dev-pf-sa.iam_email]
   }
 }
 
@@ -162,5 +185,61 @@ module "branch-teams-prod-pf-gcs" {
   versioning = true
   iam = {
     "roles/storage.objectAdmin" = [module.branch-teams-prod-pf-sa.iam_email]
+  }
+}
+
+# project factory per-team environment CI/CD service accounts
+
+module "branch-pf-dev-sa-cicd" {
+  source      = "../../../modules/iam-service-account"
+  count       = local.cicd_pf_dev.name == null ? 0 : 1
+  project_id  = var.automation.project_id
+  name        = "dev-resman-pf-1"
+  description = "Terraform CI/CD project factory development service account."
+  prefix      = var.prefix
+  iam = {
+    "roles/iam.workloadIdentityUser" = [
+      local.cicd_pf_dev.branch == null
+      ? format(
+        local.cicd_tpl_principalset,
+        var.automation.wif_pool,
+        local.cicd_pf_dev.name
+      )
+      : format(
+        local.cicd_tpl_principal[local.cicd_pf_dev.provider],
+        local.cicd_pf_dev.name,
+        local.cicd_pf_dev.branch
+      )
+    ]
+  }
+  iam_storage_roles = {
+    (var.automation.outputs_bucket) = ["roles/storage.objectViewer"]
+  }
+}
+
+module "branch-pf-prod-sa-cicd" {
+  source      = "../../../modules/iam-service-account"
+  count       = local.cicd_pf_prod.name == null ? 0 : 1
+  project_id  = var.automation.project_id
+  name        = "prod-resman-pf-1"
+  description = "Terraform CI/CD project factory production service account."
+  prefix      = var.prefix
+  iam = {
+    "roles/iam.workloadIdentityUser" = [
+      local.cicd_pf_prod.branch == null
+      ? format(
+        local.cicd_tpl_principalset,
+        var.automation.wif_pool,
+        local.cicd_pf_prod.name
+      )
+      : format(
+        local.cicd_tpl_principal[local.cicd_pf_prod.provider],
+        local.cicd_pf_prod.name,
+        local.cicd_pf_prod.branch
+      )
+    ]
+  }
+  iam_storage_roles = {
+    (var.automation.outputs_bucket) = ["roles/storage.objectViewer"]
   }
 }

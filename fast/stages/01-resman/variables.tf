@@ -43,11 +43,38 @@ variable "billing_account" {
 variable "cicd_config" {
   description = "CI/CD configuration. Providers map to those set in the `automation` variable. Set to null to disable, or set individual repositories to null if not needed."
   type = object({
-    repositories = map(object({
-      branch   = string
-      name     = string
-      provider = string
-    }))
+    repositories = object({
+      data_platform_dev = object({
+        branch   = string
+        name     = string
+        provider = string
+      })
+      data_platform_prod = object({
+        branch   = string
+        name     = string
+        provider = string
+      })
+      networking = object({
+        branch   = string
+        name     = string
+        provider = string
+      })
+      project_factory_dev = object({
+        branch   = string
+        name     = string
+        provider = string
+      })
+      project_factory_prod = object({
+        branch   = string
+        name     = string
+        provider = string
+      })
+      security = object({
+        branch   = string
+        name     = string
+        provider = string
+      })
+    })
   })
   default = null
   # validate repositories

@@ -18,9 +18,9 @@
 
 locals {
   cicd_networking = (
-    contains(keys(var.cicd_config.repositories), "networking")
+    contains(keys(local.cicd_config.repositories), "networking")
     ? var.cicd_config.repositories.networking
-    : null
+    : { branch = null, name = null }
   )
 }
 
@@ -114,7 +114,7 @@ module "branch-network-gcs" {
 
 module "branch-network-sa-cicd" {
   source      = "../../../modules/iam-service-account"
-  count       = local.cicd_networking == null ? 0 : 1
+  count       = local.cicd_networking.name == null ? 0 : 1
   project_id  = var.automation.project_id
   name        = "prod-resman-net-1"
   description = "Terraform CI/CD stage 2 networking service account."
