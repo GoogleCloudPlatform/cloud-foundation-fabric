@@ -20,7 +20,7 @@ locals {
   cicd_security = (
     contains(keys(local.cicd_config.repositories), "security")
     ? var.cicd_config.repositories.security
-    : { branch = null, name = null }
+    : null
   )
 }
 
@@ -85,23 +85,23 @@ module "branch-security-gcs" {
 
 module "branch-security-sa-cicd" {
   source      = "../../../modules/iam-service-account"
-  count       = local.cicd_security.name == null ? 0 : 1
+  for_each    = local.cicd_security == null ? {} : { 0 = local.cicd_security }
   project_id  = var.automation.project_id
   name        = "prod-resman-sec-1"
   description = "Terraform CI/CD stage 2 security service account."
   prefix      = var.prefix
   iam = {
     "roles/iam.workloadIdentityUser" = [
-      local.cicd_security.branch == null
+      each.value.branch == null
       ? format(
         local.cicd_tpl_principalset,
         var.automation.wif_pool,
-        local.cicd_security.name
+        each.value.name
       )
       : format(
-        local.cicd_tpl_principal[local.cicd_security.provider],
-        local.cicd_security.name,
-        local.cicd_security.branch
+        local.cicd_tpl_principal[each.value.provider],
+        each.value.name,
+        each.value.branch
       )
     ]
   }

@@ -20,7 +20,7 @@ locals {
   cicd_networking = (
     contains(keys(local.cicd_config.repositories), "networking")
     ? var.cicd_config.repositories.networking
-    : { branch = null, name = null }
+    : null
   )
 }
 
@@ -114,23 +114,23 @@ module "branch-network-gcs" {
 
 module "branch-network-sa-cicd" {
   source      = "../../../modules/iam-service-account"
-  count       = local.cicd_networking.name == null ? 0 : 1
+  for_each    = local.cicd_networking == null ? {} : { 0 = local.cicd_networking }
   project_id  = var.automation.project_id
   name        = "prod-resman-net-1"
   description = "Terraform CI/CD stage 2 networking service account."
   prefix      = var.prefix
   iam = {
     "roles/iam.workloadIdentityUser" = [
-      local.cicd_networking.branch == null
+      each.value.branch == null
       ? format(
         local.cicd_tpl_principalset,
         var.automation.wif_pool,
-        local.cicd_networking.name
+        each.value.name
       )
       : format(
-        local.cicd_tpl_principal[local.cicd_networking.provider],
-        local.cicd_networking.name,
-        local.cicd_networking.branch
+        local.cicd_tpl_principal[each.value.provider],
+        each.value.name,
+        each.value.branch
       )
     ]
   }

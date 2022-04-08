@@ -29,3 +29,10 @@ resource "local_file" "tfvars" {
   filename        = "${pathexpand(var.outputs_location)}/tfvars/01-resman.auto.tfvars.json"
   content         = jsonencode(local.tfvars)
 }
+
+resource "local_file" "workflows" {
+  for_each        = local.workflows
+  file_permission = "0644"
+  filename        = "${pathexpand(var.outputs_location)}/workflows/${replace(each.key, "_", "-")}-workflow.yaml"
+  content         = each.value
+}

@@ -20,12 +20,12 @@ locals {
   cicd_dp_prod = (
     contains(keys(local.cicd_config.repositories), "data_platform_prod")
     ? var.cicd_config.repositories.data_platform_prod
-    : { branch = null, name = null }
+    : null
   )
   cicd_dp_dev = (
     contains(keys(local.cicd_config.repositories), "data_platform_dev")
     ? var.cicd_config.repositories.data_platform_dev
-    : { branch = null, name = null }
+    : null
   )
 }
 
@@ -134,23 +134,23 @@ module "branch-dp-prod-gcs" {
 
 module "branch-dp-dev-sa-cicd" {
   source      = "../../../modules/iam-service-account"
-  count       = local.cicd_dp_dev.name == null ? 0 : 1
+  for_each    = local.cicd_dp_dev == null ? {} : { 0 = local.cicd_dp_dev }
   project_id  = var.automation.project_id
   name        = "dev-resman-dp-1"
   description = "Terraform CI/CD data platform development service account."
   prefix      = var.prefix
   iam = {
     "roles/iam.workloadIdentityUser" = [
-      local.cicd_dp_dev.branch == null
+      each.value.branch == null
       ? format(
         local.cicd_tpl_principalset,
         var.automation.wif_pool,
-        local.cicd_dp_dev.name
+        each.value.name
       )
       : format(
-        local.cicd_tpl_principal[local.cicd_dp_dev.provider],
-        local.cicd_dp_dev.name,
-        local.cicd_dp_dev.branch
+        local.cicd_tpl_principal[each.value.provider],
+        each.value.name,
+        each.value.branch
       )
     ]
   }
@@ -161,23 +161,23 @@ module "branch-dp-dev-sa-cicd" {
 
 module "branch-dp-prod-sa-cicd" {
   source      = "../../../modules/iam-service-account"
-  count       = local.cicd_dp_prod.name == null ? 0 : 1
+  for_each    = local.cicd_dp_prod == null ? {} : { 0 = local.cicd_dp_prod }
   project_id  = var.automation.project_id
   name        = "prod-resman-dp-1"
   description = "Terraform CI/CD data platform production service account."
   prefix      = var.prefix
   iam = {
     "roles/iam.workloadIdentityUser" = [
-      local.cicd_dp_prod.branch == null
+      each.value.branch == null
       ? format(
         local.cicd_tpl_principalset,
         var.automation.wif_pool,
-        local.cicd_dp_prod.name
+        each.value.name
       )
       : format(
-        local.cicd_tpl_principal[local.cicd_dp_prod.provider],
-        local.cicd_dp_prod.name,
-        local.cicd_dp_prod.branch
+        local.cicd_tpl_principal[each.value.provider],
+        each.value.name,
+        each.value.branch
       )
     ]
   }

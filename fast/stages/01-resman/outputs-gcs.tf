@@ -28,3 +28,10 @@ resource "google_storage_bucket_object" "tfvars" {
   name    = "tfvars/01-resman.auto.tfvars.json"
   content = jsonencode(local.tfvars)
 }
+
+resource "google_storage_bucket_object" "workflows" {
+  for_each = local.workflows
+  bucket   = var.automation.outputs_bucket
+  name     = "workflows/${replace(each.key, "_", "-")}-workflow.yaml"
+  content  = each.value
+}

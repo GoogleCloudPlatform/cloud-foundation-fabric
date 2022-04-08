@@ -16,6 +16,9 @@
 
 locals {
   _tpl_providers = "${path.module}/templates/providers.tf"
+  cicd_repositories = {
+    for k, v in local.cicd_config.repositories : k => v if v != null
+  }
   folder_ids = merge(
     {
       data-platform   = module.branch-dp-dev-folder.id
@@ -91,6 +94,65 @@ locals {
   tfvars = {
     folder_ids       = local.folder_ids
     service_accounts = local.service_accounts
+  }
+  workflows = {
+    for k, v in local.cicd_repositories : k => templatefile(
+      "${path.module}/templates/workflow-${v.provider}.yaml",
+      merge(local.workflow_attrs[k], {
+        outputs_bucket = var.automation.outputs_bucket
+        stage_name     = k
+        tf_var_files = concat(
+          [
+            "00-bootstrap.auto.tfvars.json",
+            "01-resman.auto.tfvars.json",
+            "globals.auto.tfvars.json"
+          ],
+          k == "networking" || k == "security" ? [] : [
+            "02-networking.auto.tfvars.json",
+            "02-security.auto.tfvars.json"
+          ]
+        )
+        wif_provider = var.automation.wif_providers[v["provider"]]
+      })
+    )
+  }
+  workflow_attrs = {
+    data_platform_dev = {
+      service_account   = try(module.branch-dp-dev-sa-cicd.0.email, null)
+      tf_providers_file = "03-data-platform-dev-providers.tf"
+    }
+    data_platform_prod = {
+      service_account   = try(module.branch-dp-prod-sa-cicd.0.email, null)
+      tf_providers_file = "03-data-platform-prod-providers.tf"
+    }
+    networking = {
+      service_account   = try(module.branch-network-sa-cicd.0.email, null)
+      tf_providers_file = "02-networking-providers.tf"
+    }
+    project_factory_dev = {
+      service_account   = try(module.branch-pf-dev-sa-cicd.0.email, null)
+      tf_providers_file = "03-project-factory-dev-providers.tf"
+    }
+    project_factory_prod = {
+      service_account   = try(module.branch-pf-prod-sa-cicd.0.email, null)
+      tf_providers_file = "03-project-factory-prod-providers.tf"
+    }
+    security = {
+      service_account   = try(module.branch-security-sa-cicd.0.email, null)
+      tf_providers_file = "02-security-providers.tf"
+    }
+  }
+}
+
+output "cicd_repositories" {
+  description = "WIF configuration for CI/CD repositories."
+  value = {
+    for k, v in local.cicd_repositories : k => {
+      branch          = v.branch
+      name            = v.name
+      provider        = var.automation.wif_providers[v.provider]
+      service_account = local.workflow_attrs[k].service_account
+    } if v != null
   }
 }
 

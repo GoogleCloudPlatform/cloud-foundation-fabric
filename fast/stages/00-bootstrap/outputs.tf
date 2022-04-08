@@ -18,13 +18,11 @@ locals {
   _tpl_providers = "${path.module}/templates/providers.tf"
   _workflow_attrs = {
     bootstrap = {
-      outputs_bucket    = module.automation-tf-output-gcs.name
       service_account   = module.automation-tf-bootstrap-sa.email
       tf_providers_file = "00-bootstrap-providers.tf"
       tf_var_files      = []
     }
     resman = {
-      outputs_bucket    = module.automation-tf-output-gcs.name
       service_account   = module.automation-tf-resman-sa.email
       tf_providers_file = "01-resman-providers.tf"
       tf_var_files = [
@@ -73,8 +71,9 @@ locals {
     for k, v in local.cicd_repositories : k => templatefile(
       "${path.module}/templates/workflow-${v.provider}.yaml",
       merge(local._workflow_attrs[k], {
-        stage_name   = k
-        wif_provider = local.wif_providers[v["provider"]]
+        outputs_bucket = module.automation-tf-output-gcs.name
+        stage_name     = k
+        wif_provider   = local.wif_providers[v["provider"]]
       })
     )
   }
