@@ -23,18 +23,17 @@ module "automation-tf-output-gcs" {
   depends_on = [module.organization]
 }
 
-resource "google_storage_bucket_object" "actions" {
-  for_each = local.cicd_actions
+resource "google_storage_bucket_object" "workflows" {
+  for_each = local.workflows
   bucket   = module.automation-tf-output-gcs.name
-  # FIXME(jccb) do we need the action suffix?
-  name    = "actions/${each.key}-action.yml"
-  content = each.value
+  name     = "workflows/${each.key}.yml"
+  content  = each.value
 }
 
 resource "google_storage_bucket_object" "providers" {
   for_each = local.providers
   bucket   = module.automation-tf-output-gcs.name
-  # FIXME(jccb) do we need the providers suffix?
+  # provider suffix allows excluding via .gitignore when linked from stages
   name    = "providers/${each.key}-providers.tf"
   content = each.value
 }

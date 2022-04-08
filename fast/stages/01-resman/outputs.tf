@@ -36,37 +36,37 @@ locals {
     }
   )
   providers = {
-    "02-networking" = templatefile("${path.module}/providers.tpl", {
+    "02-networking" = templatefile("${path.module}/templates/providers.tpl", {
       bucket = module.branch-network-gcs.name
       name   = "networking"
       sa     = module.branch-network-sa.email
     })
-    "02-security" = templatefile("${path.module}/providers.tpl", {
+    "02-security" = templatefile("${path.module}/templates/providers.tpl", {
       bucket = module.branch-security-gcs.name
       name   = "security"
       sa     = module.branch-security-sa.email
     })
-    "03-data-platform-dev" = templatefile("${path.module}/providers.tpl", {
+    "03-data-platform-dev" = templatefile("${path.module}/templates/providers.tpl", {
       bucket = module.branch-dp-dev-gcs.name
       name   = "dp-dev"
       sa     = module.branch-dp-dev-sa.email
     })
-    "03-data-platform-prod" = templatefile("${path.module}/providers.tpl", {
+    "03-data-platform-prod" = templatefile("${path.module}/templates/providers.tpl", {
       bucket = module.branch-dp-prod-gcs.name
       name   = "dp-prod"
       sa     = module.branch-dp-prod-sa.email
     })
-    "03-project-factory-dev" = templatefile("${path.module}/providers.tpl", {
+    "03-project-factory-dev" = templatefile("${path.module}/templates/providers.tpl", {
       bucket = module.branch-teams-dev-pf-gcs.name
       name   = "team-dev"
       sa     = module.branch-teams-dev-pf-sa.email
     })
-    "03-project-factory-prod" = templatefile("${path.module}/providers.tpl", {
+    "03-project-factory-prod" = templatefile("${path.module}/templates/providers.tpl", {
       bucket = module.branch-teams-prod-pf-gcs.name
       name   = "team-prod"
       sa     = module.branch-teams-prod-pf-sa.email
     })
-    "99-sandbox" = templatefile("${path.module}/providers.tpl", {
+    "99-sandbox" = templatefile("${path.module}/templates/providers.tpl", {
       bucket = module.branch-sandbox-gcs.name
       name   = "sandbox"
       sa     = module.branch-sandbox-sa.email

@@ -15,40 +15,35 @@
  */
 
 locals {
-  _provider_names = {
-    github = try(google_iam_workload_identity_pool_provider.github.0.name, null)
-    gitlab = try(google_iam_workload_identity_pool_provider.gitlab.0.name, null)
-  }
-
-  cicd_actions = local.cicd_repositories == {} ? {} : {
-    "bootstrap" = templatefile("${path.module}/github_action.tpl", {
+  _workflow_attrs = {
+    bootstrap = {
       outputs_bucket    = module.automation-tf-output-gcs.name
       service_account   = module.automation-tf-bootstrap-sa.email
-      stage_name        = "bootstrap"
       tf_providers_file = "00-bootstrap-providers.tf"
       tf_var_files      = []
-      wif_provider      = local._provider_names[lower(local.cicd_repositories["bootstrap"].provider)]
-    })
-    "resman" = templatefile("${path.module}/github_action.tpl", {
+    }
+    resman = {
       outputs_bucket    = module.automation-tf-output-gcs.name
       service_account   = module.automation-tf-resman-sa.email
-      stage_name        = "resman"
       tf_providers_file = "01-resman-providers.tf"
       tf_var_files      = ["00-bootstrap.auto.tfvars.json", "globals.auto.tfvars.json"]
-      wif_provider      = local._provider_names[lower(local.cicd_repositories["resman"].provider)]
-    })
+    }
   }
   custom_roles = {
     for k, v in var.custom_role_names :
     k => module.organization.custom_role_id[v]
   }
+  provider_names = {
+    github = try(google_iam_workload_identity_pool_provider.github.0.name, null)
+    gitlab = try(google_iam_workload_identity_pool_provider.gitlab.0.name, null)
+  }
   providers = {
-    "00-bootstrap" = templatefile("${path.module}/providers.tpl", {
+    "00-bootstrap" = templatefile("${path.module}/templates/providers.tpl", {
       bucket = module.automation-tf-bootstrap-gcs.name
       name   = "bootstrap"
       sa     = module.automation-tf-bootstrap-sa.email
     })
-    "01-resman" = templatefile("${path.module}/providers.tpl", {
+    "01-resman" = templatefile("${path.module}/templates/providers.tpl", {
       bucket = module.automation-tf-resman-gcs.name
       name   = "resman"
       sa     = module.automation-tf-resman-sa.email
@@ -61,7 +56,7 @@ locals {
     }
     cicd = {
       pool      = try(google_iam_workload_identity_pool.default.0.name, null)
-      providers = local._provider_names
+      providers = local.provider_names
     }
     custom_roles = local.custom_roles
   }
@@ -71,6 +66,15 @@ locals {
     groups          = var.groups
     organization    = var.organization
     prefix          = var.prefix
+  }
+  workflows = {
+    for k, v in local.cicd_repositories : k => templatefile(
+      "${path.module}/templates/workflow-${lower(v.provider)}.yaml",
+      merge(local._workflow_attrs[k], {
+        stage_name   = k
+        wif_provider = local.provider_names[lower(v["provider"])]
+      })
+    )
   }
 }
 
@@ -90,7 +94,7 @@ output "cicd_repositories" {
     for k, v in local.cicd_repositories : k => {
       branch          = v.branch
       name            = v.name
-      provider        = local._provider_names[lower(v.provider)]
+      provider        = local.provider_names[lower(v.provider)]
       service_account = module.automation-tf-cicd-sa[k].email
     }
   }
