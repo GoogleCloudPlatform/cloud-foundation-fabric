@@ -360,14 +360,14 @@ Names used in internal references (e.g. `module.foo-prod.id`) are only used by T
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [automation](outputs.tf#L83) | Automation resources. |  |  |
-| [billing_dataset](outputs.tf#L88) | BigQuery dataset prepared for billing export. |  |  |
-| [cicd_repositories](outputs.tf#L93) | WIF configuration for CI/CD repositories. |  |  |
-| [custom_roles](outputs.tf#L105) | Organization-level custom roles. |  |  |
-| [outputs_bucket](outputs.tf#L110) | GCS bucket where generated output files are stored. |  |  |
-| [project_ids](outputs.tf#L115) | Projects created by this stage. |  |  |
-| [providers](outputs.tf#L134) | Terraform provider files for this stage and dependent stages. | ✓ | <code>stage-01</code> |
-| [service_accounts](outputs.tf#L124) | Automation service accounts created by this stage. |  |  |
-| [tfvars](outputs.tf#L143) | Terraform variable files for the following stages. | ✓ |  |
+| [automation](outputs.tf#L82) | Automation resources. |  |  |
+| [billing_dataset](outputs.tf#L87) | BigQuery dataset prepared for billing export. |  |  |
+| [cicd_repositories](outputs.tf#L92) | WIF configuration for CI/CD repositories. |  |  |
+| [custom_roles](outputs.tf#L104) | Organization-level custom roles. |  |  |
+| [outputs_bucket](outputs.tf#L109) | GCS bucket where generated output files are stored. |  |  |
+| [project_ids](outputs.tf#L114) | Projects created by this stage. |  |  |
+| [providers](outputs.tf#L133) | Terraform provider files for this stage and dependent stages. | ✓ | <code>stage-01</code> |
+| [service_accounts](outputs.tf#L123) | Automation service accounts created by this stage. |  |  |
+| [tfvars](outputs.tf#L142) | Terraform variable files for the following stages. | ✓ |  |
 
 <!-- END TFDOC -->
