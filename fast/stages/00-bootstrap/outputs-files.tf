@@ -40,6 +40,6 @@ resource "local_file" "tfvars_globals" {
 resource "local_file" "workflows" {
   for_each        = local.workflows
   file_permission = "0644"
-  filename        = "${pathexpand(var.outputs_location)}/workflows/${each.key}.yml"
+  filename        = "${pathexpand(var.outputs_location)}/workflows/${each.key}-workflow.yaml"
   content         = each.value
 }
