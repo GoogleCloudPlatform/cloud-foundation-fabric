@@ -30,6 +30,10 @@ variable "bootstrap_user" {
 
 variable "cicd_config" {
   description = "CI/CD configuration. Top-level providers can be created for subsequent stages. Set to null to disable, or set individual repositories to null if not needed."
+  # TODO: use a type similar to the ones used in the vpc sc module, changing
+  #       providers to a map with user-defined keys and issuer/conditions
+  #       then reference providers by key in the repositories
+  #       stages 0 and 1 should be able to define providers
   type = object({
     providers = list(string)
     repositories = object({

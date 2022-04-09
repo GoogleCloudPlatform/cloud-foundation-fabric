@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description Workload Identity Federation configurations for CI/CD.
+
 locals {
   _cicd_config = coalesce(var.cicd_config, {
     providers    = null
@@ -54,6 +56,9 @@ resource "google_iam_workload_identity_pool" "default" {
   workload_identity_pool_id = "${var.prefix}-default"
 }
 
+# https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-google-cloud-platform
+# https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect#configuring-the-oidc-trust-with-the-cloud
+
 resource "google_iam_workload_identity_pool_provider" "github" {
   provider = google-beta
   count    = contains(local.cicd_providers, "github") ? 1 : 0
@@ -62,7 +67,8 @@ resource "google_iam_workload_identity_pool_provider" "github" {
     google_iam_workload_identity_pool.default.0.workload_identity_pool_id
   )
   workload_identity_pool_provider_id = "${var.prefix}-default-github"
-  # TODO: limit via attribute_condition?
+  # TODO: limit via attribute_condition e.g. on repository_owner
+  # attribute_condition = "attribute.repository_owner==\"ludomagno\""
   attribute_mapping = {
     "google.subject"       = "assertion.sub"
     "attribute.sub"        = "assertion.sub"
