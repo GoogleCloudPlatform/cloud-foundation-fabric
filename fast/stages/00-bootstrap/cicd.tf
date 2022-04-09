@@ -21,29 +21,24 @@ locals {
     providers    = null
     repositories = null
   })
-  cicd_providers = distinct(concat(
-    [
-      for k in coalesce(local._cicd_config.providers, []) : k
-    ],
-    [
-      for k, v in coalesce(local._cicd_config.repositories, {}) :
-      v.provider if v != null
-    ]
-  ))
+  cicd_providers = {
+    for k, v in coalesce(local._cicd_config.providers, {}) :
+    k => merge(
+      lookup(local.cicd_provider_defs, v.issuer, {}),
+      { attribute_condition = v.attribute_condition, issuer = v.issuer }
+    )
+    if contains(keys(local.cicd_provider_defs), v.issuer)
+  }
   cicd_repositories = {
-    for k, v in coalesce(local._cicd_config.repositories, {}) :
-    k => v if v != null
+    for k, v in coalesce(local._cicd_config.repositories, {}) : k => merge(
+      v, { issuer = try(local.cicd_providers[v.provider].issuer, null) }
+    )
+    if v != null && contains(keys(local.cicd_providers), v.provider)
   }
   cicd_service_accounts = {
-    for k, v in module.automation-tf-cicd-sa : k => v.iam_email
+    for k, v in module.automation-tf-cicd-sa :
+    k => v.iam_email
   }
-  cicd_tpl_principal = {
-    github = "principal://iam.googleapis.com/%s/subject/repo:%s:ref:refs/heads/%s"
-    gitlab = "principal://iam.googleapis.com/%s/subject/project_path:%s:ref_type:branch:ref:%s"
-  }
-  cicd_tpl_principalset = (
-    "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
-  )
 }
 
 # TODO: check in resman for the relevant org policy
@@ -53,52 +48,24 @@ resource "google_iam_workload_identity_pool" "default" {
   provider                  = google-beta
   count                     = length(local.cicd_providers) > 0 ? 1 : 0
   project                   = module.automation-project.project_id
-  workload_identity_pool_id = "${var.prefix}-default"
+  workload_identity_pool_id = "${var.prefix}-bootstrap"
 }
 
 # https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-google-cloud-platform
 # https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect#configuring-the-oidc-trust-with-the-cloud
 
-resource "google_iam_workload_identity_pool_provider" "github" {
+resource "google_iam_workload_identity_pool_provider" "default" {
   provider = google-beta
-  count    = contains(local.cicd_providers, "github") ? 1 : 0
+  for_each = local.cicd_providers
   project  = module.automation-project.project_id
   workload_identity_pool_id = (
     google_iam_workload_identity_pool.default.0.workload_identity_pool_id
   )
-  workload_identity_pool_provider_id = "${var.prefix}-default-github"
-  # TODO: limit via attribute_condition e.g. on repository_owner
-  # attribute_condition = "attribute.repository_owner==\"ludomagno\""
-  attribute_mapping = {
-    "google.subject"       = "assertion.sub"
-    "attribute.sub"        = "assertion.sub"
-    "attribute.actor"      = "assertion.actor"
-    "attribute.repository" = "assertion.repository"
-    "attribute.ref"        = "assertion.ref"
-  }
+  workload_identity_pool_provider_id = "${var.prefix}-bootstrap-${each.key}"
+  attribute_condition                = each.value.attribute_condition
+  attribute_mapping                  = each.value.attribute_mapping
   oidc {
-    issuer_uri = "https://token.actions.githubusercontent.com"
-  }
-}
-
-resource "google_iam_workload_identity_pool_provider" "gitlab" {
-  provider = google-beta
-  count    = contains(local.cicd_providers, "gitlab") ? 1 : 0
-  project  = module.automation-project.project_id
-  workload_identity_pool_id = (
-    google_iam_workload_identity_pool.default.0.workload_identity_pool_id
-  )
-  workload_identity_pool_provider_id = "${var.prefix}-default-gitlab"
-  # TODO: limit via attribute_condition?
-  attribute_mapping = {
-    "google.subject"       = "assertion.sub"
-    "attribute.sub"        = "assertion.sub"
-    "attribute.repository" = "assertion.project_path"
-    "attribute.ref"        = "assertion.ref"
-  }
-  oidc {
-    allowed_audiences = ["https://gitlab.com"]
-    issuer_uri        = "https://gitlab.com"
+    issuer_uri = each.value.issuer_uri
   }
 }
 
@@ -113,12 +80,12 @@ module "automation-tf-cicd-sa" {
     "roles/iam.workloadIdentityUser" = [
       each.value.branch == null
       ? format(
-        local.cicd_tpl_principalset,
+        local.cicd_providers[each.value.provider].principalset_tpl,
         google_iam_workload_identity_pool.default.0.name,
         each.value.name
       )
       : format(
-        local.cicd_tpl_principal[each.value.provider],
+        local.cicd_providers[each.value.provider].principal_tpl,
         each.value.name,
         each.value.branch
       )

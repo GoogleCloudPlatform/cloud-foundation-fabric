@@ -64,12 +64,12 @@ locals {
     prefix          = var.prefix
   }
   wif_providers = {
-    github = try(google_iam_workload_identity_pool_provider.github.0.name, null)
-    gitlab = try(google_iam_workload_identity_pool_provider.gitlab.0.name, null)
+    for k, v in google_iam_workload_identity_pool_provider.default :
+    k => v.name
   }
   workflows = {
     for k, v in local.cicd_repositories : k => templatefile(
-      "${path.module}/templates/workflow-${v.provider}.yaml",
+      "${path.module}/templates/workflow-${v.issuer}.yaml",
       merge(local._workflow_attrs[k], {
         outputs_bucket = module.automation-tf-output-gcs.name
         stage_name     = k

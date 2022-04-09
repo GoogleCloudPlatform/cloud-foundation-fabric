@@ -30,12 +30,11 @@ variable "bootstrap_user" {
 
 variable "cicd_config" {
   description = "CI/CD configuration. Top-level providers can be created for subsequent stages. Set to null to disable, or set individual repositories to null if not needed."
-  # TODO: use a type similar to the ones used in the vpc sc module, changing
-  #       providers to a map with user-defined keys and issuer/conditions
-  #       then reference providers by key in the repositories
-  #       stages 0 and 1 should be able to define providers
   type = object({
-    providers = list(string)
+    providers = map(object({
+      attribute_condition = string
+      issuer              = string
+    }))
     repositories = object({
       bootstrap = object({
         branch   = string
@@ -50,33 +49,23 @@ variable "cicd_config" {
     })
   })
   default = null
-  # validate top-level providers
   validation {
     condition = var.cicd_config == null ? true : alltrue([
-      for p in coalesce(var.cicd_config.providers, []) :
-      # TODO: bring back gitlab once we have proper support for it
-      # contains(["github", "gitlab"], p)
-      p == "github"
+      for k, v in coalesce(var.cicd_config.providers, {}) :
+      contains(["github"], v.issuer)
     ])
-    # error_message = "Supported CI/CD providers: 'github', 'gitlab'."
     error_message = "Supported CI/CD providers: 'github'."
   }
-  # validate repositories
   validation {
     condition = var.cicd_config == null ? true : alltrue([
       for k, v in coalesce(var.cicd_config.repositories, {}) :
-      v == null || try(v.name, null) != null
+      v == null || (
+        try(v.name, null) != null
+        &&
+        try(v.provider, null) != null
+      )
     ])
-    error_message = "Non-null repositories need a non-null name."
-  }
-  validation {
-    condition = var.cicd_config == null ? true : alltrue([
-      for k, v in coalesce(var.cicd_config.repositories, {}) :
-      # TODO: bring back gitlab once we have proper support for it
-      # contains(["github", "gitlab"], try(v.provider, ""))
-      v == null || try(v.provider, "") == "github"
-    ])
-    error_message = "Non-null repositories need a valid provider. Supported CI/CD providers: 'github'."
+    error_message = "Non-null repositories need non-null name and providers."
   }
 }
 
