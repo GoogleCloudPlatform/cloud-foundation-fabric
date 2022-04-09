@@ -18,3 +18,29 @@ regexp replace `source = "git@github.com:ludomagno/fast-0-modules.git//$1?ref=v1
 - create a SSH key pair
 - create a [deploy key](https://docs.github.com/en/developers/overview/managing-deploy-keys#deploy-keys) in the modules repository
 - set up a secret in the stage repository named `CICD_MODULES_KEY` with the private key
+
+## Variable syntax
+
+```hcl
+cicd_config = {
+  providers = {
+    github-ludomagno = {
+      attribute_condition = "attribute.repository_owner==\"ludomagno\""
+      issuer              = "github"
+    }
+  }
+  repositories = {
+    bootstrap = null
+    bootstrap = {
+      name     = "ludomagno/fast-0-00-bootstrap"
+      branch   = null
+      provider = "github-ludomagno"
+    }
+    resman = {
+      name     = "ludomagno/fast-0-01-resman"
+      branch   = null
+      provider = "github-ludomagno"
+    }
+  }
+}
+```

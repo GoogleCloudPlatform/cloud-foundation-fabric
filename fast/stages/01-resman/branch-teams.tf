@@ -19,12 +19,12 @@
 locals {
   cicd_pf_prod = (
     contains(keys(local.cicd_config.repositories), "project_factory_prod")
-    ? var.cicd_config.repositories.project_factory_prod
+    ? local.cicd_config.repositories.project_factory_prod
     : null
   )
   cicd_pf_dev = (
     contains(keys(local.cicd_config.repositories), "project_factory_dev")
-    ? var.cicd_config.repositories.project_factory_dev
+    ? local.cicd_config.repositories.project_factory_dev
     : null
   )
 }
@@ -201,12 +201,12 @@ module "branch-pf-dev-sa-cicd" {
     "roles/iam.workloadIdentityUser" = [
       each.value.branch == null
       ? format(
-        local.cicd_tpl_principalset,
+        local.cicd_providers[each.value.provider].principalset_tpl,
         var.automation.wif_pool,
         each.value.name
       )
       : format(
-        local.cicd_tpl_principal[each.value.provider],
+        local.cicd_providers[each.value.provider].principal_tpl,
         each.value.name,
         each.value.branch
       )
@@ -228,12 +228,12 @@ module "branch-pf-prod-sa-cicd" {
     "roles/iam.workloadIdentityUser" = [
       each.value.branch == null
       ? format(
-        local.cicd_tpl_principalset,
+        local.cicd_providers[each.value.provider].principalset_tpl,
         var.automation.wif_pool,
         each.value.name
       )
       : format(
-        local.cicd_tpl_principal[each.value.provider],
+        local.cicd_providers[each.value.provider].principal_tpl,
         each.value.name,
         each.value.branch
       )

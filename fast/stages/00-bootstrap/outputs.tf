@@ -65,7 +65,12 @@ locals {
   }
   wif_providers = {
     for k, v in google_iam_workload_identity_pool_provider.default :
-    k => v.name
+    k => {
+      issuer           = local.cicd_providers[k].issuer
+      name             = v.name
+      principal_tpl    = local.cicd_providers[k].principal_tpl
+      principalset_tpl = local.cicd_providers[k].principalset_tpl
+    }
   }
   workflows = {
     for k, v in local.cicd_repositories : k => templatefile(
@@ -73,7 +78,7 @@ locals {
       merge(local._workflow_attrs[k], {
         outputs_bucket = module.automation-tf-output-gcs.name
         stage_name     = k
-        wif_provider   = local.wif_providers[v["provider"]]
+        wif_provider   = local.wif_providers[v["provider"]].name
       })
     )
   }
@@ -95,7 +100,7 @@ output "cicd_repositories" {
     for k, v in local.cicd_repositories : k => {
       branch          = v.branch
       name            = v.name
-      provider        = local.wif_providers[v.provider]
+      provider        = local.wif_providers[v.provider].name
       service_account = module.automation-tf-cicd-sa[k].email
     }
   }

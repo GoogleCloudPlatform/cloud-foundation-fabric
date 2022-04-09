@@ -19,7 +19,7 @@
 locals {
   cicd_security = (
     contains(keys(local.cicd_config.repositories), "security")
-    ? var.cicd_config.repositories.security
+    ? local.cicd_config.repositories.security
     : null
   )
 }
@@ -94,12 +94,12 @@ module "branch-security-sa-cicd" {
     "roles/iam.workloadIdentityUser" = [
       each.value.branch == null
       ? format(
-        local.cicd_tpl_principalset,
+        local.cicd_providers[each.value.provider].principalset_tpl,
         var.automation.wif_pool,
         each.value.name
       )
       : format(
-        local.cicd_tpl_principal[each.value.provider],
+        local.cicd_providers[each.value.provider].principal_tpl,
         each.value.name,
         each.value.branch
       )

@@ -19,12 +19,12 @@
 locals {
   cicd_dp_prod = (
     contains(keys(local.cicd_config.repositories), "data_platform_prod")
-    ? var.cicd_config.repositories.data_platform_prod
+    ? local.cicd_config.repositories.data_platform_prod
     : null
   )
   cicd_dp_dev = (
     contains(keys(local.cicd_config.repositories), "data_platform_dev")
-    ? var.cicd_config.repositories.data_platform_dev
+    ? local.cicd_config.repositories.data_platform_dev
     : null
   )
 }
@@ -143,12 +143,12 @@ module "branch-dp-dev-sa-cicd" {
     "roles/iam.workloadIdentityUser" = [
       each.value.branch == null
       ? format(
-        local.cicd_tpl_principalset,
+        local.cicd_providers[each.value.provider].principalset_tpl,
         var.automation.wif_pool,
         each.value.name
       )
       : format(
-        local.cicd_tpl_principal[each.value.provider],
+        local.cicd_providers[each.value.provider].principal_tpl,
         each.value.name,
         each.value.branch
       )
@@ -170,12 +170,12 @@ module "branch-dp-prod-sa-cicd" {
     "roles/iam.workloadIdentityUser" = [
       each.value.branch == null
       ? format(
-        local.cicd_tpl_principalset,
+        local.cicd_providers[each.value.provider].principalset_tpl,
         var.automation.wif_pool,
         each.value.name
       )
       : format(
-        local.cicd_tpl_principal[each.value.provider],
+        local.cicd_providers[each.value.provider].principal_tpl,
         each.value.name,
         each.value.branch
       )

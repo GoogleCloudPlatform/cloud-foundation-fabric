@@ -29,7 +29,7 @@ variable "bootstrap_user" {
 }
 
 variable "cicd_config" {
-  description = "CI/CD configuration. Top-level providers can be created for subsequent stages. Set to null to disable, or set individual repositories to null if not needed."
+  description = "CI/CD configuration. Repository providers reference provider keys. Set to null to disable, or set individual repositories to null if not needed."
   type = object({
     providers = map(object({
       attribute_condition = string

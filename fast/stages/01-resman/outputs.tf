@@ -16,9 +16,6 @@
 
 locals {
   _tpl_providers = "${path.module}/templates/providers.tf.tpl"
-  cicd_repositories = {
-    for k, v in local.cicd_config.repositories : k => v if v != null
-  }
   folder_ids = merge(
     {
       data-platform   = module.branch-dp-dev-folder.id
@@ -97,7 +94,7 @@ locals {
   }
   workflows = {
     for k, v in local.cicd_repositories : k => templatefile(
-      "${path.module}/templates/workflow-${v.provider}.yaml",
+      "${path.module}/templates/workflow-${local.cicd_providers[v.provider].issuer}.yaml",
       merge(local.workflow_attrs[k], {
         outputs_bucket = var.automation.outputs_bucket
         stage_name     = k
@@ -112,7 +109,7 @@ locals {
             "02-security.auto.tfvars.json"
           ]
         )
-        wif_provider = var.automation.wif_providers[v["provider"]]
+        wif_provider = local.cicd_providers[v.provider].name
       })
     )
   }
@@ -150,7 +147,7 @@ output "cicd_repositories" {
     for k, v in local.cicd_repositories : k => {
       branch          = v.branch
       name            = v.name
-      provider        = var.automation.wif_providers[v.provider]
+      provider        = local.cicd_providers[v.provider].name
       service_account = local.workflow_attrs[k].service_account
     } if v != null
   }

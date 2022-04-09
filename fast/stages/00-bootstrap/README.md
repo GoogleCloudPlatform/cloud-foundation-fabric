@@ -349,7 +349,7 @@ Names used in internal references (e.g. `module.foo-prod.id`) are only used by T
 | [organization](variables.tf#L137) | Organization details. | <code title="object&#40;&#123;&#10;  domain      &#61; string&#10;  id          &#61; number&#10;  customer_id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |  |
 | [prefix](variables.tf#L152) | Prefix used for resources that need unique names. Use 9 characters or less. | <code>string</code> | ✓ |  |  |
 | [bootstrap_user](variables.tf#L25) | Email of the nominal user running this stage for the first time. | <code>string</code> |  | <code>null</code> |  |
-| [cicd_config](variables.tf#L31) | CI/CD configuration. Top-level providers can be created for subsequent stages. Set to null to disable, or set individual repositories to null if not needed. | <code title="object&#40;&#123;&#10;  providers &#61; map&#40;object&#40;&#123;&#10;    attribute_condition &#61; string&#10;    issuer              &#61; string&#10;  &#125;&#41;&#41;&#10;  repositories &#61; object&#40;&#123;&#10;    bootstrap &#61; object&#40;&#123;&#10;      branch   &#61; string&#10;      name     &#61; string&#10;      provider &#61; string&#10;    &#125;&#41;&#10;    resman &#61; object&#40;&#123;&#10;      branch   &#61; string&#10;      name     &#61; string&#10;      provider &#61; string&#10;    &#125;&#41;&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |  |
+| [cicd_config](variables.tf#L31) | CI/CD configuration. Repository providers reference provider keys. Set to null to disable, or set individual repositories to null if not needed. | <code title="object&#40;&#123;&#10;  providers &#61; map&#40;object&#40;&#123;&#10;    attribute_condition &#61; string&#10;    issuer              &#61; string&#10;  &#125;&#41;&#41;&#10;  repositories &#61; object&#40;&#123;&#10;    bootstrap &#61; object&#40;&#123;&#10;      branch   &#61; string&#10;      name     &#61; string&#10;      provider &#61; string&#10;    &#125;&#41;&#10;    resman &#61; object&#40;&#123;&#10;      branch   &#61; string&#10;      name     &#61; string&#10;      provider &#61; string&#10;    &#125;&#41;&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |  |
 | [custom_role_names](variables.tf#L72) | Names of custom roles defined at the org level. | <code title="object&#40;&#123;&#10;  organization_iam_admin        &#61; string&#10;  service_project_network_admin &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  organization_iam_admin        &#61; &#34;organizationIamAdmin&#34;&#10;  service_project_network_admin &#61; &#34;serviceProjectNetworkAdmin&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
 | [groups](variables.tf#L84) | Group names to grant organization-level permissions. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  gcp-billing-admins      &#61; &#34;gcp-billing-admins&#34;,&#10;  gcp-devops              &#61; &#34;gcp-devops&#34;,&#10;  gcp-network-admins      &#61; &#34;gcp-network-admins&#34;&#10;  gcp-organization-admins &#61; &#34;gcp-organization-admins&#34;&#10;  gcp-security-admins     &#61; &#34;gcp-security-admins&#34;&#10;  gcp-support             &#61; &#34;gcp-support&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
 | [iam](variables.tf#L98) | Organization-level custom IAM settings in role => [principal] format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
@@ -361,14 +361,14 @@ Names used in internal references (e.g. `module.foo-prod.id`) are only used by T
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [automation](outputs.tf#L82) | Automation resources. |  |  |
-| [billing_dataset](outputs.tf#L87) | BigQuery dataset prepared for billing export. |  |  |
-| [cicd_repositories](outputs.tf#L92) | WIF configuration for CI/CD repositories. |  |  |
-| [custom_roles](outputs.tf#L104) | Organization-level custom roles. |  |  |
-| [outputs_bucket](outputs.tf#L109) | GCS bucket where generated output files are stored. |  |  |
-| [project_ids](outputs.tf#L114) | Projects created by this stage. |  |  |
-| [providers](outputs.tf#L133) | Terraform provider files for this stage and dependent stages. | ✓ | <code>stage-01</code> |
-| [service_accounts](outputs.tf#L123) | Automation service accounts created by this stage. |  |  |
-| [tfvars](outputs.tf#L142) | Terraform variable files for the following stages. | ✓ |  |
+| [automation](outputs.tf#L87) | Automation resources. |  |  |
+| [billing_dataset](outputs.tf#L92) | BigQuery dataset prepared for billing export. |  |  |
+| [cicd_repositories](outputs.tf#L97) | WIF configuration for CI/CD repositories. |  |  |
+| [custom_roles](outputs.tf#L109) | Organization-level custom roles. |  |  |
+| [outputs_bucket](outputs.tf#L114) | GCS bucket where generated output files are stored. |  |  |
+| [project_ids](outputs.tf#L119) | Projects created by this stage. |  |  |
+| [providers](outputs.tf#L138) | Terraform provider files for this stage and dependent stages. | ✓ | <code>stage-01</code> |
+| [service_accounts](outputs.tf#L128) | Automation service accounts created by this stage. |  |  |
+| [tfvars](outputs.tf#L147) | Terraform variable files for the following stages. | ✓ |  |
 
 <!-- END TFDOC -->

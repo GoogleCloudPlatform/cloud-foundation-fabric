@@ -24,10 +24,12 @@ variable "automation" {
     outputs_bucket = string
     project_id     = string
     wif_pool       = string
-    wif_providers = object({
-      github = string
-      gitlab = string
-    })
+    wif_providers = map(object({
+      issuer           = string
+      name             = string
+      principal_tpl    = string
+      principalset_tpl = string
+    }))
   })
 }
 
@@ -41,7 +43,7 @@ variable "billing_account" {
 }
 
 variable "cicd_config" {
-  description = "CI/CD configuration. Providers map to those set in the `automation` variable. Set to null to disable, or set individual repositories to null if not needed."
+  description = "CI/CD configuration. Repository providers reference provider keys defined here or passed in via the `automation` variable. Set to null to disable, or set individual repositories to null if not needed."
   type = object({
     repositories = object({
       data_platform_dev = object({
@@ -77,22 +79,16 @@ variable "cicd_config" {
     })
   })
   default = null
-  # validate repositories
   validation {
     condition = var.cicd_config == null ? true : alltrue([
       for k, v in coalesce(var.cicd_config.repositories, {}) :
-      v == null || try(v.name, null) != null
+      v == null || (
+        try(v.name, null) != null
+        &&
+        try(v.provider, null) != null
+      )
     ])
-    error_message = "Non-null repositories need a non-null name."
-  }
-  validation {
-    condition = var.cicd_config == null ? true : alltrue([
-      for k, v in coalesce(var.cicd_config.repositories, {}) :
-      # TODO: bring back gitlab once we have proper support for it
-      # contains(["github", "gitlab"], try(v.provider, ""))
-      v == null || try(v.provider, "") == "github"
-    ])
-    error_message = "Non-null repositories need a valid provider. Supported CI/CD providers: 'github'."
+    error_message = "Non-null repositories need non-null name and providers."
   }
 }
 

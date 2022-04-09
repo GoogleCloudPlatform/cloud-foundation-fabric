@@ -20,13 +20,11 @@ locals {
   billing_org     = var.billing_account.organization_id == var.organization.id
   billing_org_ext = !local.billing_ext && !local.billing_org
   cicd_config     = coalesce(var.cicd_config, { repositories = {} })
-  cicd_tpl_principal = {
-    github = "principal://iam.googleapis.com/%s/subject/repo:%s:ref:refs/heads/%s"
-    gitlab = "principal://iam.googleapis.com/%s/subject/project_path:%s:ref_type:branch:ref:%s"
+  cicd_providers  = try(var.automation.wif_providers, {})
+  cicd_repositories = {
+    for k, v in local.cicd_config.repositories : k => v
+    if contains(keys(local.cicd_providers), try(v.provider, ""))
   }
-  cicd_tpl_principalset = (
-    "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
-  )
   custom_roles = coalesce(var.custom_roles, {})
   groups = {
     for k, v in var.groups :
