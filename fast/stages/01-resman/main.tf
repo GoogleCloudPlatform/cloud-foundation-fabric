@@ -20,7 +20,7 @@ locals {
   billing_org     = var.billing_account.organization_id == var.organization.id
   billing_org_ext = !local.billing_ext && !local.billing_org
   cicd_config     = coalesce(var.cicd_config, { repositories = {} })
-  cicd_providers  = try(var.automation.wif_providers, {})
+  cicd_providers  = coalesce(try(var.automation.wif_providers, null), {})
   cicd_repositories = {
     for k, v in local.cicd_config.repositories : k => v
     if contains(keys(local.cicd_providers), try(v.provider, ""))
