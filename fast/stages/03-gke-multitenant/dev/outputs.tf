@@ -19,3 +19,9 @@ output "logging_writer_identities" {
   description = "List of the Unique Writer identified to the namespace projects."
   value       = module.gke-project-0.sink_writer_identities
 }
+
+# (dmarzi) TO COMPLETE
+output "monitoring_metric_writer_identities" {
+  description = "List of the Unique Writer identified to the namespace projects."
+  value       = module.gke-project-0.sink_writer_identities
+}
