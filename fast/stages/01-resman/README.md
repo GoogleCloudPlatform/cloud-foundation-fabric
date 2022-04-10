@@ -36,6 +36,12 @@ Additionally, a few critical benefits are directly provided by this design:
 
 For a discussion on naming, please refer to the [Bootstrap stage documentation](../00-bootstrap/README.md#naming), as the same approach is shared by all stages.
 
+### Workload Identity Federation and CI/CD
+
+This stage also implements optional support for CI/CD, much in the same way as the bootstrap stage. The only difference is on Workload Identity Federation, which is only configured in bootstrap and made available here via stage interface variables (the automatically generated `.tfvars` files).
+
+For details on how to configure CI/CD please refer to the [relevant section in the bootstrap stage documentation](../00-bootstrap/README.md#cicd).
+
 ## How to run this stage
 
 This stage is meant to be executed after the [bootstrap](../00-bootstrap) stage has run, as it leverages the automation service account and bucket created there. The relevant user groups must also exist, but that's one of the requirements for the previous stage too, so if you ran that successfully, you're good to go.
