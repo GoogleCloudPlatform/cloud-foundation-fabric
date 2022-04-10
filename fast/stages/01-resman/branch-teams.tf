@@ -16,19 +16,6 @@
 
 # tfdoc:file:description Team stage resources.
 
-locals {
-  cicd_pf_prod = (
-    contains(keys(local.cicd_config.repositories), "project_factory_prod")
-    ? local.cicd_config.repositories.project_factory_prod
-    : null
-  )
-  cicd_pf_dev = (
-    contains(keys(local.cicd_config.repositories), "project_factory_dev")
-    ? local.cicd_config.repositories.project_factory_dev
-    : null
-  )
-}
-
 module "branch-teams-folder" {
   source = "../../../modules/folder"
   parent = "organizations/${var.organization.id}"
@@ -191,8 +178,12 @@ module "branch-teams-prod-pf-gcs" {
 # project factory per-team environment CI/CD service accounts
 
 module "branch-pf-dev-sa-cicd" {
-  source      = "../../../modules/iam-service-account"
-  for_each    = local.cicd_pf_dev == null ? {} : { 0 = local.cicd_pf_dev }
+  source = "../../../modules/iam-service-account"
+  for_each = (
+    lookup(local.cicd_repositories, "pf_dev", null) == null
+    ? {}
+    : { 0 = local.cicd_repositories.pf_dev }
+  )
   project_id  = var.automation.project_id
   name        = "dev-resman-pf-1"
   description = "Terraform CI/CD project factory development service account."
@@ -201,12 +192,11 @@ module "branch-pf-dev-sa-cicd" {
     "roles/iam.workloadIdentityUser" = [
       each.value.branch == null
       ? format(
-        local.cicd_providers[each.value.provider].principalset_tpl,
-        var.automation.wif_pool,
+        local.identity_providers[each.value.identity_provider].principalset_tpl,
         each.value.name
       )
       : format(
-        local.cicd_providers[each.value.provider].principal_tpl,
+        local.identity_providers[each.value.identity_provider].principal_tpl,
         each.value.name,
         each.value.branch
       )
@@ -218,8 +208,12 @@ module "branch-pf-dev-sa-cicd" {
 }
 
 module "branch-pf-prod-sa-cicd" {
-  source      = "../../../modules/iam-service-account"
-  for_each    = local.cicd_pf_prod == null ? {} : { 0 = local.cicd_pf_prod }
+  source = "../../../modules/iam-service-account"
+  for_each = (
+    lookup(local.cicd_repositories, "pf_prod", null) == null
+    ? {}
+    : { 0 = local.cicd_repositories.pf_prod }
+  )
   project_id  = var.automation.project_id
   name        = "prod-resman-pf-1"
   description = "Terraform CI/CD project factory production service account."
@@ -228,12 +222,13 @@ module "branch-pf-prod-sa-cicd" {
     "roles/iam.workloadIdentityUser" = [
       each.value.branch == null
       ? format(
-        local.cicd_providers[each.value.provider].principalset_tpl,
-        var.automation.wif_pool,
+        local.identity_providers[each.value.identity_provider].principalset_tpl,
+        var.automation.federated_identity_pool,
         each.value.name
       )
       : format(
-        local.cicd_providers[each.value.provider].principal_tpl,
+        local.identity_providers[each.value.identity_provider].principal_tpl,
+        var.automation.federated_identity_pool,
         each.value.name,
         each.value.branch
       )

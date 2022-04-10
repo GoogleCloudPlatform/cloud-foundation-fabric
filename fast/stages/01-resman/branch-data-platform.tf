@@ -16,19 +16,6 @@
 
 # tfdoc:file:description Data Platform stages resources.
 
-locals {
-  cicd_dp_prod = (
-    contains(keys(local.cicd_config.repositories), "data_platform_prod")
-    ? local.cicd_config.repositories.data_platform_prod
-    : null
-  )
-  cicd_dp_dev = (
-    contains(keys(local.cicd_config.repositories), "data_platform_dev")
-    ? local.cicd_config.repositories.data_platform_dev
-    : null
-  )
-}
-
 module "branch-dp-folder" {
   source = "../../../modules/folder"
   parent = "organizations/${var.organization.id}"
@@ -133,8 +120,12 @@ module "branch-dp-prod-gcs" {
 # ci/cd service accounts
 
 module "branch-dp-dev-sa-cicd" {
-  source      = "../../../modules/iam-service-account"
-  for_each    = local.cicd_dp_dev == null ? {} : { 0 = local.cicd_dp_dev }
+  source = "../../../modules/iam-service-account"
+  for_each = (
+    lookup(local.cicd_repositories, "dp_dev", null) == null
+    ? {}
+    : { 0 = local.cicd_repositories.dp_dev }
+  )
   project_id  = var.automation.project_id
   name        = "dev-resman-dp-1"
   description = "Terraform CI/CD data platform development service account."
@@ -143,12 +134,11 @@ module "branch-dp-dev-sa-cicd" {
     "roles/iam.workloadIdentityUser" = [
       each.value.branch == null
       ? format(
-        local.cicd_providers[each.value.provider].principalset_tpl,
-        var.automation.wif_pool,
+        local.identity_providers[each.value.identity_provider].principalset_tpl,
         each.value.name
       )
       : format(
-        local.cicd_providers[each.value.provider].principal_tpl,
+        local.identity_providers[each.value.identity_provider].principal_tpl,
         each.value.name,
         each.value.branch
       )
@@ -160,8 +150,12 @@ module "branch-dp-dev-sa-cicd" {
 }
 
 module "branch-dp-prod-sa-cicd" {
-  source      = "../../../modules/iam-service-account"
-  for_each    = local.cicd_dp_prod == null ? {} : { 0 = local.cicd_dp_prod }
+  source = "../../../modules/iam-service-account"
+  for_each = (
+    lookup(local.cicd_repositories, "dp_prod", null) == null
+    ? {}
+    : { 0 = local.cicd_repositories.dp_prod }
+  )
   project_id  = var.automation.project_id
   name        = "prod-resman-dp-1"
   description = "Terraform CI/CD data platform production service account."
@@ -170,12 +164,13 @@ module "branch-dp-prod-sa-cicd" {
     "roles/iam.workloadIdentityUser" = [
       each.value.branch == null
       ? format(
-        local.cicd_providers[each.value.provider].principalset_tpl,
-        var.automation.wif_pool,
+        local.identity_providers[each.value.identity_provider].principalset_tpl,
+        var.automation.federated_identity_pool,
         each.value.name
       )
       : format(
-        local.cicd_providers[each.value.provider].principal_tpl,
+        local.identity_providers[each.value.identity_provider].principal_tpl,
+        var.automation.federated_identity_pool,
         each.value.name,
         each.value.branch
       )

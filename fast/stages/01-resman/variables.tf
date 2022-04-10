@@ -21,10 +21,10 @@ variable "automation" {
   # tfdoc:variable:source 00-bootstrap
   description = "Automation resources created by the bootstrap stage."
   type = object({
-    outputs_bucket = string
-    project_id     = string
-    wif_pool       = string
-    wif_providers = map(object({
+    outputs_bucket          = string
+    project_id              = string
+    federated_identity_pool = string
+    federated_identity_providers = map(object({
       issuer           = string
       issuer_uri       = string
       name             = string
@@ -43,53 +43,66 @@ variable "billing_account" {
   })
 }
 
-variable "cicd_config" {
-  description = "CI/CD configuration. Repository providers reference provider keys defined here or passed in via the `automation` variable. Set to null to disable, or set individual repositories to null if not needed."
+variable "cicd_repositories" {
+  description = "CI/CD repository configuration. Identity providers reference keys in the `automation.federated_identity_providers` variable. Set to null to disable, or set individual repositories to null if not needed."
   type = object({
-    repositories = object({
-      data_platform_dev = object({
-        branch   = string
-        name     = string
-        provider = string
-      })
-      data_platform_prod = object({
-        branch   = string
-        name     = string
-        provider = string
-      })
-      networking = object({
-        branch   = string
-        name     = string
-        provider = string
-      })
-      project_factory_dev = object({
-        branch   = string
-        name     = string
-        provider = string
-      })
-      project_factory_prod = object({
-        branch   = string
-        name     = string
-        provider = string
-      })
-      security = object({
-        branch   = string
-        name     = string
-        provider = string
-      })
+    data_platform_dev = object({
+      branch            = string
+      identity_provider = string
+      name              = string
+      type              = string
+    })
+    data_platform_prod = object({
+      branch            = string
+      identity_provider = string
+      name              = string
+      type              = string
+    })
+    networking = object({
+      branch            = string
+      identity_provider = string
+      name              = string
+      type              = string
+    })
+    project_factory_dev = object({
+      branch            = string
+      identity_provider = string
+      name              = string
+      type              = string
+    })
+    project_factory_prod = object({
+      branch            = string
+      identity_provider = string
+      name              = string
+      type              = string
+    })
+    security = object({
+      branch            = string
+      identity_provider = string
+      name              = string
+      type              = string
     })
   })
   default = null
   validation {
-    condition = var.cicd_config == null ? true : alltrue([
-      for k, v in coalesce(var.cicd_config.repositories, {}) :
+    condition = var.cicd_repositories == null ? true : alltrue([
+      for k, v in coalesce(var.cicd_repositories, {}) :
       v == null || (
         try(v.name, null) != null
         &&
-        try(v.provider, null) != null
+        try(v.identity_provider, null) != null
       )
     ])
     error_message = "Non-null repositories need non-null name and providers."
+  }
+  validation {
+    condition = var.cicd_repositories == null ? true : alltrue([
+      for k, v in coalesce(var.cicd_repositories, {}) :
+      v == null || (
+        contains(["github"], coalesce(try(v.type, null), "null"))
+      )
+    ])
+    error_message = "Invalid repository type, supported types: 'github'."
   }
 }
 

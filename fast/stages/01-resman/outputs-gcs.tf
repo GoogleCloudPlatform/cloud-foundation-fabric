@@ -30,7 +30,7 @@ resource "google_storage_bucket_object" "tfvars" {
 }
 
 resource "google_storage_bucket_object" "workflows" {
-  for_each = local.workflows
+  for_each = local.cicd_workflows
   bucket   = var.automation.outputs_bucket
   name     = "workflows/${replace(each.key, "_", "-")}-workflow.yaml"
   content  = each.value

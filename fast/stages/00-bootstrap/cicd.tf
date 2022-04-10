@@ -51,6 +51,7 @@ module "automation-tf-cicd-sa" {
       )
       : format(
         local.identity_providers_defs[each.value.type].principal_tpl,
+        google_iam_workload_identity_pool.default.0.name,
         each.value.name,
         each.value.branch
       )

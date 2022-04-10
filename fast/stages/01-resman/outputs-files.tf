@@ -31,7 +31,7 @@ resource "local_file" "tfvars" {
 }
 
 resource "local_file" "workflows" {
-  for_each        = local.workflows
+  for_each        = local.cicd_workflows
   file_permission = "0644"
   filename        = "${pathexpand(var.outputs_location)}/workflows/${replace(each.key, "_", "-")}-workflow.yaml"
   content         = each.value

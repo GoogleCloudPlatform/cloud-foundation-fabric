@@ -16,14 +16,6 @@
 
 # tfdoc:file:description Security stage resources.
 
-locals {
-  cicd_security = (
-    contains(keys(local.cicd_config.repositories), "security")
-    ? local.cicd_config.repositories.security
-    : null
-  )
-}
-
 module "branch-security-folder" {
   source = "../../../modules/folder"
   parent = "organizations/${var.organization.id}"
@@ -84,8 +76,12 @@ module "branch-security-gcs" {
 # ci/cd service account
 
 module "branch-security-sa-cicd" {
-  source      = "../../../modules/iam-service-account"
-  for_each    = local.cicd_security == null ? {} : { 0 = local.cicd_security }
+  source = "../../../modules/iam-service-account"
+  for_each = (
+    lookup(local.cicd_repositories, "security", null) == null
+    ? {}
+    : { 0 = local.cicd_repositories.security }
+  )
   project_id  = var.automation.project_id
   name        = "prod-resman-sec-1"
   description = "Terraform CI/CD stage 2 security service account."
@@ -94,12 +90,13 @@ module "branch-security-sa-cicd" {
     "roles/iam.workloadIdentityUser" = [
       each.value.branch == null
       ? format(
-        local.cicd_providers[each.value.provider].principalset_tpl,
-        var.automation.wif_pool,
+        local.identity_providers[each.value.identity_provider].principalset_tpl,
+        var.automation.federated_identity_pool,
         each.value.name
       )
       : format(
-        local.cicd_providers[each.value.provider].principal_tpl,
+        local.identity_providers[each.value.identity_provider].principal_tpl,
+        var.automation.federated_identity_pool,
         each.value.name,
         each.value.branch
       )

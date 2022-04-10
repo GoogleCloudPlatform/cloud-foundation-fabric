@@ -19,11 +19,15 @@ locals {
   billing_ext     = var.billing_account.organization_id == null
   billing_org     = var.billing_account.organization_id == var.organization.id
   billing_org_ext = !local.billing_ext && !local.billing_org
-  cicd_config     = coalesce(var.cicd_config, { repositories = {} })
-  cicd_providers  = coalesce(try(var.automation.wif_providers, null), {})
   cicd_repositories = {
-    for k, v in local.cicd_config.repositories : k => v
-    if contains(keys(local.cicd_providers), try(v.provider, ""))
+    for k, v in coalesce(var.cicd_repositories, {}) : k => v
+    if(
+      v != null
+      &&
+      contains(keys(local.identity_providers), try(v.identity_provider, ""))
+      &&
+      fileexists("${path.module}/templates/workflow-${try(v.type, "")}.yaml")
+    )
   }
   custom_roles = coalesce(var.custom_roles, {})
   groups = {
@@ -34,4 +38,7 @@ locals {
     for k, v in local.groups :
     k => "group:${v}"
   }
+  identity_providers = coalesce(
+    try(var.automation.federated_identity_providers, null), {}
+  )
 }

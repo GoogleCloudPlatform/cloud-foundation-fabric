@@ -140,7 +140,8 @@ module "organization" {
     # https://cloud.google.com/iam/docs/manage-workload-identity-pools-providers#restrict
     # "constraints/iam.workloadIdentityPoolProviders" = merge(
     #   local.list_allow, { values = [
-    #     for k, v in coalesce(var.automation.wif_providers, {}) : v.issuer_uri
+    #     for k, v in coalesce(var.automation.federated_identity_providers, {}) :
+    #     v.issuer_uri
     #   ] }
     # )
     # "constraints/iam.workloadIdentityPoolAwsAccounts" = merge(

@@ -16,6 +16,53 @@
 
 locals {
   _tpl_providers = "${path.module}/templates/providers.tf.tpl"
+  cicd_workflow_attrs = {
+    data_platform_dev = {
+      service_account   = try(module.branch-dp-dev-sa-cicd.0.email, null)
+      tf_providers_file = "03-data-platform-dev-providers.tf"
+    }
+    data_platform_prod = {
+      service_account   = try(module.branch-dp-prod-sa-cicd.0.email, null)
+      tf_providers_file = "03-data-platform-prod-providers.tf"
+    }
+    networking = {
+      service_account   = try(module.branch-network-sa-cicd.0.email, null)
+      tf_providers_file = "02-networking-providers.tf"
+    }
+    project_factory_dev = {
+      service_account   = try(module.branch-pf-dev-sa-cicd.0.email, null)
+      tf_providers_file = "03-project-factory-dev-providers.tf"
+    }
+    project_factory_prod = {
+      service_account   = try(module.branch-pf-prod-sa-cicd.0.email, null)
+      tf_providers_file = "03-project-factory-prod-providers.tf"
+    }
+    security = {
+      service_account   = try(module.branch-security-sa-cicd.0.email, null)
+      tf_providers_file = "02-security-providers.tf"
+    }
+  }
+  cicd_workflows = {
+    for k, v in local.cicd_repositories : k => templatefile(
+      "${path.module}/templates/workflow-${v.type}.yaml",
+      merge(local.cicd_workflow_attrs[k], {
+        identity_provider = local.identity_providers[v.identity_provider].name
+        outputs_bucket    = var.automation.outputs_bucket
+        stage_name        = k
+        tf_var_files = concat(
+          [
+            "00-bootstrap.auto.tfvars.json",
+            "01-resman.auto.tfvars.json",
+            "globals.auto.tfvars.json"
+          ],
+          k == "networking" || k == "security" ? [] : [
+            "02-networking.auto.tfvars.json",
+            "02-security.auto.tfvars.json"
+          ]
+        )
+      })
+    )
+  }
   folder_ids = merge(
     {
       data-platform   = module.branch-dp-dev-folder.id
@@ -27,13 +74,16 @@ locals {
       teams           = module.branch-teams-folder.id
     },
     {
-      for k, v in module.branch-teams-team-folder : "team-${k}" => v.id
+      for k, v in module.branch-teams-team-folder :
+      "team-${k}" => v.id
     },
     {
-      for k, v in module.branch-teams-team-dev-folder : "team-${k}-dev" => v.id
+      for k, v in module.branch-teams-team-dev-folder :
+      "team-${k}-dev" => v.id
     },
     {
-      for k, v in module.branch-teams-team-prod-folder : "team-${k}-prod" => v.id
+      for k, v in module.branch-teams-team-prod-folder :
+      "team-${k}-prod" => v.id
     }
   )
   providers = {
@@ -92,53 +142,6 @@ locals {
     folder_ids       = local.folder_ids
     service_accounts = local.service_accounts
   }
-  workflows = {
-    for k, v in local.cicd_repositories : k => templatefile(
-      "${path.module}/templates/workflow-${local.cicd_providers[v.provider].issuer}.yaml",
-      merge(local.workflow_attrs[k], {
-        outputs_bucket = var.automation.outputs_bucket
-        stage_name     = k
-        tf_var_files = concat(
-          [
-            "00-bootstrap.auto.tfvars.json",
-            "01-resman.auto.tfvars.json",
-            "globals.auto.tfvars.json"
-          ],
-          k == "networking" || k == "security" ? [] : [
-            "02-networking.auto.tfvars.json",
-            "02-security.auto.tfvars.json"
-          ]
-        )
-        wif_provider = local.cicd_providers[v.provider].name
-      })
-    )
-  }
-  workflow_attrs = {
-    data_platform_dev = {
-      service_account   = try(module.branch-dp-dev-sa-cicd.0.email, null)
-      tf_providers_file = "03-data-platform-dev-providers.tf"
-    }
-    data_platform_prod = {
-      service_account   = try(module.branch-dp-prod-sa-cicd.0.email, null)
-      tf_providers_file = "03-data-platform-prod-providers.tf"
-    }
-    networking = {
-      service_account   = try(module.branch-network-sa-cicd.0.email, null)
-      tf_providers_file = "02-networking-providers.tf"
-    }
-    project_factory_dev = {
-      service_account   = try(module.branch-pf-dev-sa-cicd.0.email, null)
-      tf_providers_file = "03-project-factory-dev-providers.tf"
-    }
-    project_factory_prod = {
-      service_account   = try(module.branch-pf-prod-sa-cicd.0.email, null)
-      tf_providers_file = "03-project-factory-prod-providers.tf"
-    }
-    security = {
-      service_account   = try(module.branch-security-sa-cicd.0.email, null)
-      tf_providers_file = "02-security-providers.tf"
-    }
-  }
 }
 
 output "cicd_repositories" {
@@ -147,8 +150,8 @@ output "cicd_repositories" {
     for k, v in local.cicd_repositories : k => {
       branch          = v.branch
       name            = v.name
-      provider        = local.cicd_providers[v.provider].name
-      service_account = local.workflow_attrs[k].service_account
+      provider        = local.identity_providers[v.identity_provider].name
+      service_account = local.cicd_workflow_attrs[k].service_account
     } if v != null
   }
 }

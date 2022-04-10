@@ -16,14 +16,6 @@
 
 # tfdoc:file:description Networking stage resources.
 
-locals {
-  cicd_networking = (
-    contains(keys(local.cicd_config.repositories), "networking")
-    ? local.cicd_config.repositories.networking
-    : null
-  )
-}
-
 module "branch-network-folder" {
   source = "../../../modules/folder"
   parent = "organizations/${var.organization.id}"
@@ -113,8 +105,12 @@ module "branch-network-gcs" {
 # ci/cd service account
 
 module "branch-network-sa-cicd" {
-  source      = "../../../modules/iam-service-account"
-  for_each    = local.cicd_networking == null ? {} : { 0 = local.cicd_networking }
+  source = "../../../modules/iam-service-account"
+  for_each = (
+    lookup(local.cicd_repositories, "networking", null) == null
+    ? {}
+    : { 0 = local.cicd_repositories.networking }
+  )
   project_id  = var.automation.project_id
   name        = "prod-resman-net-1"
   description = "Terraform CI/CD stage 2 networking service account."
@@ -123,12 +119,13 @@ module "branch-network-sa-cicd" {
     "roles/iam.workloadIdentityUser" = [
       each.value.branch == null
       ? format(
-        local.cicd_providers[each.value.provider].principalset_tpl,
-        var.automation.wif_pool,
+        local.identity_providers[each.value.identity_provider].principalset_tpl,
+        var.automation.federated_identity_pool,
         each.value.name
       )
       : format(
-        local.cicd_providers[each.value.provider].principal_tpl,
+        local.identity_providers[each.value.identity_provider].principal_tpl,
+        var.automation.federated_identity_pool,
         each.value.name,
         each.value.branch
       )

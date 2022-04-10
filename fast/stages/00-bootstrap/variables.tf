@@ -34,14 +34,14 @@ variable "cicd_repositories" {
   type = object({
     bootstrap = object({
       branch            = string
-      name              = string
       identity_provider = string
+      name              = string
       type              = string
     })
     resman = object({
       branch            = string
-      name              = string
       identity_provider = string
+      name              = string
       type              = string
     })
   })
