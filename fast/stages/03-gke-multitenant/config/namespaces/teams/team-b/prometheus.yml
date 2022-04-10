@@ -134,6 +134,9 @@ data:
     # on the port named 'metrics'.
     - job_name: prom-example
       kubernetes_sd_configs:
+      - namespaces:
+              names:
+              - team-b
       - role: pod
       relabel_configs:
       - source_labels: [__meta_kubernetes_pod_label_app]
