@@ -40,7 +40,7 @@ For a discussion on naming, please refer to the [Bootstrap stage documentation](
 
 This stage also implements optional support for CI/CD, much in the same way as the bootstrap stage. The only difference is on Workload Identity Federation, which is only configured in bootstrap and made available here via stage interface variables (the automatically generated `.tfvars` files).
 
-For details on how to configure CI/CD please refer to the [relevant section in the bootstrap stage documentation](../00-bootstrap/README.md#cicd).
+For details on how to configure CI/CD please refer to the [relevant section in the bootstrap stage documentation](../00-bootstrap/README.md#cicd-repositories).
 
 ## How to run this stage
 
