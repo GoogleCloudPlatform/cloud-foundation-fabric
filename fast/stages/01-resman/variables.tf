@@ -26,6 +26,7 @@ variable "automation" {
     wif_pool       = string
     wif_providers = map(object({
       issuer           = string
+      issuer_uri       = string
       name             = string
       principal_tpl    = string
       principalset_tpl = string

@@ -22,10 +22,8 @@ locals {
     repositories = null
   })
   cicd_providers = {
-    for k, v in coalesce(local._cicd_config.providers, {}) :
-    k => merge(
-      lookup(local.cicd_provider_defs, v.issuer, {}),
-      { attribute_condition = v.attribute_condition, issuer = v.issuer }
+    for k, v in coalesce(local._cicd_config.providers, {}) : k => merge(
+      v, lookup(local.cicd_provider_defs, v.issuer, {})
     )
     if contains(keys(local.cicd_provider_defs), v.issuer)
   }

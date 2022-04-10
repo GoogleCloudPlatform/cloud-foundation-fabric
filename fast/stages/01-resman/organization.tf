@@ -137,6 +137,17 @@ module "organization" {
     #   status              = true
     #   values              = local.allowed_regions
     # }
+    # https://cloud.google.com/iam/docs/manage-workload-identity-pools-providers#restrict
+    # "constraints/iam.workloadIdentityPoolProviders" = merge(
+    #   local.list_allow, { values = [
+    #     for k, v in coalesce(var.automation.wif_providers, {}) : v.issuer_uri
+    #   ] }
+    # )
+    # "constraints/iam.workloadIdentityPoolAwsAccounts" = merge(
+    #   local.list_allow, { values = [
+    #
+    #   ] }
+    # )
   }
   tags = {
     context = {
