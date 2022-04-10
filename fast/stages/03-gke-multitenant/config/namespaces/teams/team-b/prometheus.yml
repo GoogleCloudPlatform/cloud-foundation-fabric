@@ -51,6 +51,7 @@ spec:
       - name: prometheus
         image: gke.gcr.io/prometheus-engine/prometheus:v2.28.1-gmp.5-gke.0
         args:
+        - --export.label.project-id=dcx0-fast-dev-team-a-lab0
         - --config.file=/prometheus/config_out/config.yaml
         - --storage.tsdb.path=/prometheus/data
         - --storage.tsdb.retention.time=24h
@@ -77,7 +78,6 @@ spec:
       - name: config-reloader
         image: gke.gcr.io/prometheus-engine/config-reloader:v0.3.1-gke.0
         args:
-        - --export.label.project-id=dcx0-fast-dev-team-a-lab0
         - --config-file=/prometheus/config/config.yaml
         - --config-file-output=/prometheus/config_out/config.yaml
         - --reload-url=http://localhost:9090/-/reload
