@@ -51,7 +51,7 @@ spec:
       - name: prometheus
         image: gke.gcr.io/prometheus-engine/prometheus:v2.28.1-gmp.5-gke.0
         args:
-        - --export.label.project-id=dcx0-fast-dev-team-a-lab0
+        - --export.label.project-id=dcx0-fast-dev-team-b-lab0
         - --config.file=/prometheus/config_out/config.yaml
         - --storage.tsdb.path=/prometheus/data
         - --storage.tsdb.retention.time=24h
@@ -118,7 +118,7 @@ data:
   config.yaml: |
     global:
       external_labels:
-        project_id: dcx0-fast-dev-team-a-lab0
+        project_id: dcx0-fast-dev-team-b-lab0
         location: europe-west1
         namespace: team-b
       scrape_interval: 30s
