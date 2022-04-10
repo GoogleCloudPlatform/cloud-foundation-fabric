@@ -113,7 +113,7 @@ module "gke-gmp-sa" {
   generate_key = false
 
   iam = {
-    "roles/iam.workloadIdentityUser" = ["serviceAccount:${module.gke-project-0.project_id}.svc.id.goog[${each.key}/default]"]
+    "roles/iam.workloadIdentityUser" = ["serviceAccount:${module.gke-project-0.project_id}.svc.id.goog[${each.key}/prometheus-robot]"]
   }
 }
 
