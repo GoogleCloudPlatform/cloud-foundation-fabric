@@ -66,8 +66,6 @@ variable "cicd_repositories" {
     ])
     error_message = "Invalid repository type, supported types: 'github'."
   }
-
-
 }
 
 variable "custom_role_names" {

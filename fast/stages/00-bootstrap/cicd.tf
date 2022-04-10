@@ -25,7 +25,7 @@ locals {
       &&
       contains(keys(local.identity_providers), v.identity_provider)
       &&
-      contains(keys(local.identity_providers_defs), v.type)
+      fileexists("${path.module}/templates/workflow-${v.type}.yaml")
     )
   }
   cicd_service_accounts = {
