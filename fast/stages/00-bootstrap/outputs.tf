@@ -33,7 +33,7 @@ locals {
   _tpl_providers = "${path.module}/templates/providers.tf.tpl"
   cicd_workflows = {
     for k, v in local.cicd_repositories : k => templatefile(
-      "${path.module}/templates/workflow-${v.issuer}.yaml",
+      "${path.module}/templates/workflow-${v.type}.yaml",
       merge(local._cicd_workflow_attrs[k], {
         identity_provider = local.wif_providers[v["identity_provider"]].name
         outputs_bucket    = module.automation-tf-output-gcs.name

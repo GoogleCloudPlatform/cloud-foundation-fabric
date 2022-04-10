@@ -19,18 +19,14 @@
 locals {
   # TODO: map null provider to Cloud Build once we add support for it
   cicd_repositories = {
-    for k, v in coalesce(var.cicd_repositories, {}) : k => merge(v, {
-      issuer = try(
-        local.identity_providers[v.identity_provider].issuer, null
-      )
-      principal_tpl = try(
-        local.identity_providers[v.identity_provider].principal_tpl, null
-      )
-      principalset_tpl = try(
-        local.identity_providers[v.identity_provider].principalset_tpl, null
-      )
-    })
-    if v != null && contains(keys(local.identity_providers), v.identity_provider)
+    for k, v in coalesce(var.cicd_repositories, {}) : k => v
+    if(
+      v != null
+      &&
+      contains(keys(local.identity_providers), v.identity_provider)
+      &&
+      contains(keys(local.identity_providers_defs), v.type)
+    )
   }
   cicd_service_accounts = {
     for k, v in module.automation-tf-cicd-sa :
@@ -49,12 +45,12 @@ module "automation-tf-cicd-sa" {
     "roles/iam.workloadIdentityUser" = [
       each.value.branch == null
       ? format(
-        each.value.principalset_tpl,
+        local.identity_providers_defs[each.value.type].principalset_tpl,
         google_iam_workload_identity_pool.default.0.name,
         each.value.name
       )
       : format(
-        each.value.principal_tpl,
+        local.identity_providers_defs[each.value.type].principal_tpl,
         each.value.name,
         each.value.branch
       )

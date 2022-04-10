@@ -30,17 +30,19 @@ variable "bootstrap_user" {
 
 variable "cicd_repositories" {
   # TODO: edit description once we add support for Cloud Build (null provider)
-  description = "CI/CD reporitory configuration. Identity providers reference keys in the `federated_identity_providers` variable. Set to null to disable, or set individual repositories to null if not needed."
+  description = "CI/CD repository configuration. Identity providers reference keys in the `federated_identity_providers` variable. Set to null to disable, or set individual repositories to null if not needed."
   type = object({
     bootstrap = object({
       branch            = string
       name              = string
       identity_provider = string
+      type              = string
     })
     resman = object({
       branch            = string
       name              = string
       identity_provider = string
+      type              = string
     })
   })
   default = null
@@ -55,6 +57,17 @@ variable "cicd_repositories" {
     ])
     error_message = "Non-null repositories need non-null name and providers."
   }
+  validation {
+    condition = var.cicd_repositories == null ? true : alltrue([
+      for k, v in coalesce(var.cicd_repositories, {}) :
+      v == null || (
+        contains(["github"], coalesce(try(v.type, null), "null"))
+      )
+    ])
+    error_message = "Invalid repository type, supported types: 'github'."
+  }
+
+
 }
 
 variable "custom_role_names" {
