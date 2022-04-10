@@ -40,7 +40,7 @@ variable "backup_configuration" {
     enabled            = false
     binary_log_enabled = false
     start_time         = "23:00"
-    location           = "EU"
+    location           = null
     log_retention_days = 7
     retention_count    = 7
   }
