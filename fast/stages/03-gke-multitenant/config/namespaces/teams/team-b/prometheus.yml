@@ -35,7 +35,6 @@ metadata:
   labels:
     prometheus: test
 spec:
-  serviceAccount: prometheus-robot
   replicas: 1
   selector:
     matchLabels:
@@ -48,6 +47,7 @@ spec:
         app: prometheus
         prometheus: test
     spec:
+      serviceAccount: prometheus-robot
       containers:
       - name: prometheus
         image: gke.gcr.io/prometheus-engine/prometheus:v2.28.1-gmp.5-gke.0
