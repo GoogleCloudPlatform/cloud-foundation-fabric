@@ -17,10 +17,10 @@
 module "stage" {
   source = "../../../../../fast/stages/01-resman"
   automation = {
-    project_id     = "fast-prod-automation"
-    outputs_bucket = "test"
-    wif_pool       = null
-    wif_providers  = null
+    federated_identity_pool      = null
+    federated_identity_providers = null
+    project_id                   = "fast-prod-automation"
+    outputs_bucket               = "test"
   }
   billing_account = {
     id              = "000000-111111-222222"
