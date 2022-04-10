@@ -15,13 +15,13 @@
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: gmp-test:prometheus-test
-  namespace: team-b
+  name: gmp-sa:prometheus-sa
+  namespace: team-a
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: gmp-test:prometheus-test
+  name: gmp-sa:prometheus-sa
 subjects:
 - kind: ServiceAccount
-  namespace: team-b
-  name: default
+  namespace: team-a
+  name: prometheus-robot
