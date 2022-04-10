@@ -37,7 +37,7 @@ resource "google_storage_bucket_object" "tfvars_globals" {
 }
 
 resource "google_storage_bucket_object" "workflows" {
-  for_each = local.workflows
+  for_each = local.cicd_workflows
   bucket   = module.automation-tf-output-gcs.name
   name     = "workflows/${each.key}-workflow.yaml"
   content  = each.value

@@ -25,7 +25,7 @@ on:
 env:
   FAST_OUTPUTS_BUCKET: ${outputs_bucket}
   FAST_SERVICE_ACCOUNT: ${service_account}
-  FAST_WIF_PROVIDER: ${wif_provider}
+  FAST_WIF_PROVIDER: ${identity_provider}
   SSH_AUTH_SOCK: /tmp/ssh_agent.sock
   TF_PROVIDERS_FILE: ${tf_providers_file}
   TF_VAR_FILES: ${tf_var_files == [] ? "''" : join("\n    ", tf_var_files)}

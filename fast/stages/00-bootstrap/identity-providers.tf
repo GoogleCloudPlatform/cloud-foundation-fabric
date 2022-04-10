@@ -17,7 +17,12 @@
 # tfdoc:file:description Workload Identity Federation provider definitions.
 
 locals {
-  cicd_provider_defs = {
+  identity_providers = {
+    for k, v in var.federated_identity_providers : k => merge(
+      v, lookup(local.identity_providers_defs, v.issuer, {})
+    )
+  }
+  identity_providers_defs = {
     github = {
       attribute_mapping = {
         "google.subject"       = "assertion.sub"
@@ -42,5 +47,27 @@ locals {
       principal_tpl    = "principal://iam.googleapis.com/%s/subject/project_path:%s:ref_type:branch:ref:%s"
       principalset_tpl = "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
     }
+  }
+}
+
+resource "google_iam_workload_identity_pool" "default" {
+  provider                  = google-beta
+  count                     = length(local.identity_providers) > 0 ? 1 : 0
+  project                   = module.automation-project.project_id
+  workload_identity_pool_id = "${var.prefix}-bootstrap"
+}
+
+resource "google_iam_workload_identity_pool_provider" "default" {
+  provider = google-beta
+  for_each = local.identity_providers
+  project  = module.automation-project.project_id
+  workload_identity_pool_id = (
+    google_iam_workload_identity_pool.default.0.workload_identity_pool_id
+  )
+  workload_identity_pool_provider_id = "${var.prefix}-bootstrap-${each.key}"
+  attribute_condition                = each.value.attribute_condition
+  attribute_mapping                  = each.value.attribute_mapping
+  oidc {
+    issuer_uri = each.value.issuer_uri
   }
 }

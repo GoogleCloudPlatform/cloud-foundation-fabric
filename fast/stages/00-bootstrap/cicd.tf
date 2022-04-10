@@ -17,53 +17,24 @@
 # tfdoc:file:description Workload Identity Federation configurations for CI/CD.
 
 locals {
-  _cicd_config = coalesce(var.cicd_config, {
-    providers    = null
-    repositories = null
-  })
-  cicd_providers = {
-    for k, v in coalesce(local._cicd_config.providers, {}) : k => merge(
-      v, lookup(local.cicd_provider_defs, v.issuer, {})
-    )
-    if contains(keys(local.cicd_provider_defs), v.issuer)
-  }
+  # TODO: map null provider to Cloud Build once we add support for it
   cicd_repositories = {
-    for k, v in coalesce(local._cicd_config.repositories, {}) : k => merge(
-      v, { issuer = try(local.cicd_providers[v.provider].issuer, null) }
-    )
-    if v != null && contains(keys(local.cicd_providers), v.provider)
+    for k, v in coalesce(var.cicd_repositories, {}) : k => merge(v, {
+      issuer = try(
+        local.identity_providers[v.identity_provider].issuer, null
+      )
+      principal_tpl = try(
+        local.identity_providers[v.identity_provider].principal_tpl, null
+      )
+      principalset_tpl = try(
+        local.identity_providers[v.identity_provider].principalset_tpl, null
+      )
+    })
+    if v != null && contains(keys(local.identity_providers), v.identity_provider)
   }
   cicd_service_accounts = {
     for k, v in module.automation-tf-cicd-sa :
     k => v.iam_email
-  }
-}
-
-# TODO: check in resman for the relevant org policy
-#       constraints/iam.workloadIdentityPoolProviders
-
-resource "google_iam_workload_identity_pool" "default" {
-  provider                  = google-beta
-  count                     = length(local.cicd_providers) > 0 ? 1 : 0
-  project                   = module.automation-project.project_id
-  workload_identity_pool_id = "${var.prefix}-bootstrap"
-}
-
-# https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-google-cloud-platform
-# https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect#configuring-the-oidc-trust-with-the-cloud
-
-resource "google_iam_workload_identity_pool_provider" "default" {
-  provider = google-beta
-  for_each = local.cicd_providers
-  project  = module.automation-project.project_id
-  workload_identity_pool_id = (
-    google_iam_workload_identity_pool.default.0.workload_identity_pool_id
-  )
-  workload_identity_pool_provider_id = "${var.prefix}-bootstrap-${each.key}"
-  attribute_condition                = each.value.attribute_condition
-  attribute_mapping                  = each.value.attribute_mapping
-  oidc {
-    issuer_uri = each.value.issuer_uri
   }
 }
 
@@ -78,12 +49,12 @@ module "automation-tf-cicd-sa" {
     "roles/iam.workloadIdentityUser" = [
       each.value.branch == null
       ? format(
-        local.cicd_providers[each.value.provider].principalset_tpl,
+        each.value.principalset_tpl,
         google_iam_workload_identity_pool.default.0.name,
         each.value.name
       )
       : format(
-        local.cicd_providers[each.value.provider].principal_tpl,
+        each.value.principal_tpl,
         each.value.name,
         each.value.branch
       )

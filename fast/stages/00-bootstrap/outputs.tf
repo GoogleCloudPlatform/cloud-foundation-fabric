@@ -15,8 +15,7 @@
  */
 
 locals {
-  _tpl_providers = "${path.module}/templates/providers.tf.tpl"
-  _workflow_attrs = {
+  _cicd_workflow_attrs = {
     bootstrap = {
       service_account   = module.automation-tf-bootstrap-sa.email
       tf_providers_file = "00-bootstrap-providers.tf"
@@ -30,6 +29,17 @@ locals {
         "globals.auto.tfvars.json"
       ]
     }
+  }
+  _tpl_providers = "${path.module}/templates/providers.tf.tpl"
+  cicd_workflows = {
+    for k, v in local.cicd_repositories : k => templatefile(
+      "${path.module}/templates/workflow-${v.issuer}.yaml",
+      merge(local._cicd_workflow_attrs[k], {
+        identity_provider = local.wif_providers[v["identity_provider"]].name
+        outputs_bucket    = module.automation-tf-output-gcs.name
+        stage_name        = k
+      })
+    )
   }
   custom_roles = {
     for k, v in var.custom_role_names :
@@ -49,14 +59,15 @@ locals {
   }
   tfvars = {
     automation = {
-      outputs_bucket = module.automation-tf-output-gcs.name
-      project_id     = module.automation-project.project_id
-      wif_pool       = try(google_iam_workload_identity_pool.default.0.name, null)
-      wif_providers  = local.wif_providers
+      federated_identity_pool = try(
+        google_iam_workload_identity_pool.default.0.name, null
+      )
+      federated_identity_providers = local.wif_providers
+      outputs_bucket               = module.automation-tf-output-gcs.name
+      project_id                   = module.automation-project.project_id
     }
     custom_roles = local.custom_roles
   }
-  # TODO: add cicd_config
   tfvars_globals = {
     billing_account = var.billing_account
     groups          = var.groups
@@ -66,22 +77,12 @@ locals {
   wif_providers = {
     for k, v in google_iam_workload_identity_pool_provider.default :
     k => {
-      issuer           = local.cicd_providers[k].issuer
-      issuer_uri       = local.cicd_providers[k].issuer_uri
+      issuer           = local.identity_providers[k].issuer
+      issuer_uri       = local.identity_providers[k].issuer_uri
       name             = v.name
-      principal_tpl    = local.cicd_providers[k].principal_tpl
-      principalset_tpl = local.cicd_providers[k].principalset_tpl
+      principal_tpl    = local.identity_providers[k].principal_tpl
+      principalset_tpl = local.identity_providers[k].principalset_tpl
     }
-  }
-  workflows = {
-    for k, v in local.cicd_repositories : k => templatefile(
-      "${path.module}/templates/workflow-${v.issuer}.yaml",
-      merge(local._workflow_attrs[k], {
-        outputs_bucket = module.automation-tf-output-gcs.name
-        stage_name     = k
-        wif_provider   = local.wif_providers[v["provider"]].name
-      })
-    )
   }
 }
 
@@ -101,7 +102,7 @@ output "cicd_repositories" {
     for k, v in local.cicd_repositories : k => {
       branch          = v.branch
       name            = v.name
-      provider        = local.wif_providers[v.provider].name
+      provider        = local.wif_providers[v.identity_provider].name
       service_account = module.automation-tf-cicd-sa[k].email
     }
   }
@@ -110,6 +111,16 @@ output "cicd_repositories" {
 output "custom_roles" {
   description = "Organization-level custom roles."
   value       = local.custom_roles
+}
+
+output "federated_identity" {
+  description = "Workload Identity Federation pool and providers."
+  value = {
+    pool = try(
+      google_iam_workload_identity_pool.default.0.name, null
+    )
+    providers = local.wif_providers
+  }
 }
 
 output "outputs_bucket" {
