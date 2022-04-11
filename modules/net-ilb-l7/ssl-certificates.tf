@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-variable "name" {
-  type    = string
-  default = "my-test-instance"
-}
+# tfdoc:file:description SSL certificates.
 
-variable "region" {
-  type    = string
-  default = "europe-west1"
-}
-
-variable "ip_range" {
-  type    = string
-  default = "10.0.0.0/22,10.1.0.0/28"
+resource "google_compute_region_ssl_certificate" "certificates" {
+  for_each    = var.ssl_certificates_config
+  project     = var.project_id
+  name        = "${var.name}-${each.key}"
+  certificate = try(each.value.tls_self_signed_cert, null)
+  private_key = try(each.value.tls_private_key, null)
+  region      = var.region
 }

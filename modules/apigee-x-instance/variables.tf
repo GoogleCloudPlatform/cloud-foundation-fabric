@@ -35,12 +35,9 @@ variable "apigee_org_id" {
 }
 
 variable "ip_range" {
-  description = "Customer-provided CIDR block of length 22 for the Apigee instance."
+  description = "Customer-provided CIDR blocks of length 22 and 28 for the Apigee instance (e.g. `10.0.0.0/22,10.1.0.0/28`)."
   type        = string
-  validation {
-    condition     = try(cidrnetmask(var.ip_range), null) == "255.255.252.0"
-    error_message = "Invalid CIDR block provided; Allowed pattern for ip_range: X.X.X.X/22."
-  }
+  default     = null
 }
 
 variable "disk_encryption_key" {
