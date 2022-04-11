@@ -448,7 +448,7 @@ The remaining configuration is manual, as it regards the repositories themselves
 |---|---|:---:|---|
 | [automation](outputs.tf#L89) | Automation resources. |  |  |
 | [billing_dataset](outputs.tf#L94) | BigQuery dataset prepared for billing export. |  |  |
-| [cicd_repositories](outputs.tf#L99) | WIF configuration for CI/CD repositories. |  |  |
+| [cicd_repositories](outputs.tf#L99) | CI/CD repository configurations. |  |  |
 | [custom_roles](outputs.tf#L111) | Organization-level custom roles. |  |  |
 | [federated_identity](outputs.tf#L116) | Workload Identity Federation pool and providers. |  |  |
 | [outputs_bucket](outputs.tf#L126) | GCS bucket where generated output files are stored. |  |  |

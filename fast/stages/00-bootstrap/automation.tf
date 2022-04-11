@@ -30,6 +30,7 @@ module "automation-project" {
     ]
     (local.groups.gcp-organization-admins) = [
       "roles/iam.serviceAccountTokenCreator",
+      "roles/iam.workloadIdentityPoolAdmin"
     ]
   }
   # machine (service accounts) IAM bindings

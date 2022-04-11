@@ -97,7 +97,7 @@ output "billing_dataset" {
 }
 
 output "cicd_repositories" {
-  description = "WIF configuration for CI/CD repositories."
+  description = "CI/CD repository configurations."
   value = {
     for k, v in local.cicd_repositories : k => {
       branch          = v.branch

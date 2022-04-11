@@ -85,7 +85,7 @@ variable "cicd_repositories" {
   })
   default = null
   validation {
-    condition = var.cicd_repositories == null ? true : alltrue([
+    condition = alltrue([
       for k, v in coalesce(var.cicd_repositories, {}) :
       v == null || (
         try(v.name, null) != null
@@ -96,7 +96,7 @@ variable "cicd_repositories" {
     error_message = "Non-null repositories need non-null name and providers."
   }
   validation {
-    condition = var.cicd_repositories == null ? true : alltrue([
+    condition = alltrue([
       for k, v in coalesce(var.cicd_repositories, {}) :
       v == null || (
         contains(["github"], coalesce(try(v.type, null), "null"))
