@@ -40,7 +40,7 @@ module "branch-security-folder" {
     "roles/resourcemanager.projectCreator" = [module.branch-security-sa.iam_email]
   }
   tag_bindings = {
-    context = module.organization.tag_values["context/security"].id
+    context = try(module.organization.tag_values["context/security"].id, null)
   }
 }
 
