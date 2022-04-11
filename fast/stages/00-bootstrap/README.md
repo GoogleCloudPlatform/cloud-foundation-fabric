@@ -403,6 +403,8 @@ The remaining configuration is manual, as it regards the repositories themselves
       - search for `source\s*= "../../../modules/([^"]+)"`
       - replace with `source = "git@github.com:my-org/fast-modules.git//$1?ref=v1.0"`
   - copy the generated workflow file for the stage from the GCS output files bucket or from the local clone if enabled
+    - for GitHub, place it in a `.github/workflows` folder in the repository root
+    - for Gitlab, rename it to `.gitlab-ci.yml` and place it in the repository root
 
 <!-- TFDOC OPTS files:1 show_extra:1 -->
 <!-- BEGIN TFDOC -->
