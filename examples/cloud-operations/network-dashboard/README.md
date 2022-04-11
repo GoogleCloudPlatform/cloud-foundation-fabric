@@ -42,6 +42,7 @@ The Cloud Function currently tracks usage, limit and utilization of:
 - internal forwarding rules for internal L4 load balancers per VPC peering group
 - internal forwarding rules for internal L7 load balancers per VPC peering group
 - Dynamic routes per VPC
+- Dynamic routes per VPC peering group
 
 It writes this values to custom metrics in Cloud Monitoring and creates a dashboard to visualize the current utilization of these metrics in Cloud Monitoring.
 
