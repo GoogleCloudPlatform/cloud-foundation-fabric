@@ -20,6 +20,12 @@ variable "cloudsql_psa_range" {
   default     = "10.60.0.0/16"
 }
 
+variable "database_version" {
+  description = "Database type and version to create."
+  type        = string
+  default     = "POSTGRES_13"
+}
+
 variable "prefix" {
   description = "Unique prefix used for resource names. Not used for project if 'project_create' is null."
   type        = string
@@ -45,6 +51,10 @@ variable "regions" {
   validation {
     condition     = contains(keys(var.regions), "primary")
     error_message = "Regions map must contain `primary` as a key."
+  }
+  default = {
+    primary = "europe-west1"
+    replica = "europe-west3"
   }
 }
 

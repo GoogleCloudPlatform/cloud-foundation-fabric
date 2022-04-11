@@ -40,9 +40,9 @@ module "db" {
   source           = "../../../modules/cloudsql-instance"
   project_id       = module.project.project_id
   network          = module.vpc.self_link
-  name             = "db"
+  name             = "${var.prefix}-db"
   region           = var.regions.primary
-  database_version = "POSTGRES_13"
+  database_version = var.database_version
   tier             = var.tier
 
   replicas = {
