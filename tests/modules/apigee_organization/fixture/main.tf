@@ -19,6 +19,7 @@ module "test" {
   project_id         = "my-project"
   analytics_region   = var.analytics_region
   runtime_type       = "CLOUD"
+  billing_type       = "EVALUATION"
   authorized_network = var.network
   apigee_environments = [
     "eval1",

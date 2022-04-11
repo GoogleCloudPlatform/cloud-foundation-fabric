@@ -19,18 +19,21 @@
 import csv
 import datetime
 import io
+import json
 import logging
 import os
 
 from airflow import models
-from airflow.contrib.operators.dataflow_operator import DataflowTemplateOperator
+from airflow.providers.google.cloud.operators.dataflow import DataflowTemplatedJobStartOperator
 from airflow.operators import dummy
-from airflow.providers.google.cloud.operators.bigquery import  BigQueryInsertJobOperator
+from airflow.providers.google.cloud.operators.bigquery import  BigQueryInsertJobOperator, BigQueryUpsertTableOperator, BigQueryUpdateTableSchemaOperator
+from airflow.utils.task_group import TaskGroup
 
 # --------------------------------------------------------------------------------
-# Set variables
-# ------------------------------------------------------------
+# Set variables - Needed for the DEMO
+# --------------------------------------------------------------------------------
 BQ_LOCATION = os.environ.get("BQ_LOCATION")
+DATA_CAT_TAGS = json.loads(os.environ.get("DATA_CAT_TAGS"))
 DTL_L0_PRJ = os.environ.get("DTL_L0_PRJ")
 DTL_L0_BQ_DATASET = os.environ.get("DTL_L0_BQ_DATASET")
 DTL_L0_GCS = os.environ.get("DTL_L0_GCS")
@@ -84,7 +87,6 @@ default_args = {
   'retries': 1,
   'retry_delay': datetime.timedelta(minutes=5),
   'dataflow_default_options': {
-    'project': LOD_PRJ,
     'location': DF_REGION,
     'zone': DF_ZONE,
     'stagingLocation': LOD_GCS_STAGING,
@@ -114,9 +116,13 @@ with models.DAG(
     trigger_rule='all_success'
   )
 
-  customers_import = DataflowTemplateOperator(
-    task_id="dataflow_customer_import",
+  # Bigquery Tables automatically created for demo porpuse. 
+  # Consider a dedicated pipeline or tool for a real life scenario.
+  customers_import = DataflowTemplatedJobStartOperator(
+    task_id="dataflow_customers_import",
     template="gs://dataflow-templates/latest/GCS_Text_to_BigQuery",
+    project_id=LOD_PRJ,
+    location=DF_REGION,
     parameters={
       "javascriptTextTransformFunctionName": "transform",
       "JSONPath": ORC_GCS + "/customers_schema.json",
@@ -127,9 +133,11 @@ with models.DAG(
     },
   )
 
-  purchases_import = DataflowTemplateOperator(
+  purchases_import = DataflowTemplatedJobStartOperator(
     task_id="dataflow_purchases_import",
     template="gs://dataflow-templates/latest/GCS_Text_to_BigQuery",
+    project_id=LOD_PRJ,
+    location=DF_REGION,
     parameters={
       "javascriptTextTransformFunctionName": "transform",
       "JSONPath": ORC_GCS + "/purchases_schema.json",
@@ -180,13 +188,13 @@ with models.DAG(
       'jobType':'QUERY',
       'query':{
         'query':"""SELECT
-                     customer_id,
-                     purchase_id,
-                     name,
-                     surname,
-                     item,
-                     price,
-                     timestamp
+                    customer_id,
+                    purchase_id,
+                    name,
+                    surname,
+                    item,
+                    price,
+                    timestamp
                 FROM `{dtl_1_prj}.{dtl_1_dataset}.customer_purchase`
               """.format(dtl_1_prj=DTL_L1_PRJ, dtl_1_dataset=DTL_L1_BQ_DATASET, ),
         'destinationTable':{

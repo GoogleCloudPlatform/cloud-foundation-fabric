@@ -26,5 +26,5 @@ variable "region" {
 
 variable "ip_range" {
   type    = string
-  default = "10.0.0.0/22"
+  default = "10.0.0.0/22,10.1.0.0/28"
 }

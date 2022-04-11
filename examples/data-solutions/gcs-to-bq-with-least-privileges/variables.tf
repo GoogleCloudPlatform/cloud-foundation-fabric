@@ -23,6 +23,16 @@ variable "data_eng_principals" {
   type        = list(string)
   default     = []
 }
+
+variable "network_config" {
+  description = "Shared VPC network configurations to use. If null networks will be created in projects with preconfigured values."
+  type = object({
+    host_project     = string
+    subnet_self_link = string
+  })
+  default = null
+}
+
 variable "prefix" {
   description = "Unique prefix used for resource names. Not used for project if 'project_create' is null."
   type        = string

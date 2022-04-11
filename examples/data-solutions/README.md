@@ -21,3 +21,9 @@ They are meant to be used as minimal but complete starting points to create actu
 <a href="./data-platform-foundations/" title="Data Platform Foundations"><img src="./data-platform-foundations/images/overview_diagram.png" align="left" width="280px"></a>
 This [example](./data-platform-foundations/) implements a robust and flexible Data Foundation on GCP that provides opinionated defaults, allowing customers to build and scale out additional data pipelines quickly and reliably.
 <br clear="left">
+
+### SQL Server Always On Availability Groups
+
+<a href="./sqlserver-alwayson/" title="Data Platform Foundations"><img src="https://cloud.google.com/compute/images/sqlserver-ag-architecture.svg" align="left" width="280px"></a>
+This [example](./data-platform-foundations/) implements SQL Server Always On Availability Groups using Fabric modules. It builds a two node cluster with a fileshare witness instance in an existing VPC and adds the necessary firewalling. The actual setup process (apart from Active Directory operations) has been scripted, so that least amount of manual works needs to performed.
+<br clear="left">

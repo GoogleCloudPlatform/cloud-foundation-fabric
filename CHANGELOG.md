@@ -4,13 +4,20 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+- SQL Server AlwaysOn availability groups example
+
+## [15.0.0] - 2022-04-05
+
+- **incompatible change** the variable for PSA ranges in the `net-vpc` module has changed to support configuring peering routes
 - fix permadiff in `net-vpc-firewall` module rules
 - new [gke-hub](modules/gke-hub) module
 - new [unmanaged-instances-healthcheck](examples/cloud-operations/unmanaged-instances-healthcheck) example
 - add support for IAM to `data-catalog-policy-tag` module
 - add support for IAM additive to `folder` module, fixes #580
-- **incompatible change** the variable for PSA ranges in the `net-vpc` module has changed to support configuring peering routes
 - optionally turn off gcplogs driver in COS modules
+- fix `tag` output on `data-catalog-policy-tag` module
+- add shared-vpc support on `gcs-to-bq-with-least-privileges`
+- new `net-ilb-l7` module
 
 **FAST**
 
@@ -27,7 +34,7 @@ All notable changes to this project will be documented in this file.
 - **incompatible change** the variable for service identities IAM has changed in the project factory
 - add `data-catalog-policy-tag` module
 - new [workload identity federetion example](examples/cloud-operations/workload-identity-federation)
-- new `api-gateway` [module](/modules/api-gateway) and [example](examples/serverless/api-gateway).
+- new `api-gateway` [module](./modules/api-gateway) and [example](examples/serverless/api-gateway).
 - **incompatible change** the `psn_ranges` variable has been renamed to `psa_ranges` in the `net-vpc` module and its type changed from `list(string)` to `map(string)`
 - **incompatible change** removed `iam` flag for organization and folder level sinks
 - **incompatible change** removed `ingress_settings` configuration option in the `cloud-functions` module.
@@ -480,7 +487,8 @@ All notable changes to this project will be documented in this file.
 - merge development branch with suite of new modules and end-to-end examples
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v14.0.0...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v15.0.0...HEAD
+[15.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v14.0.0...v15.0.0
 [14.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v13.0.0...v14.0.0
 [13.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v12.0.0...v13.0.0
 [12.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v11.2.0...v12.0.0
