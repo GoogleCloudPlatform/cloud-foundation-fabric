@@ -43,9 +43,10 @@ locals {
         "attribute.repository" = "assertion.repository"
         "attribute.ref"        = "assertion.ref"
       }
-      issuer_uri       = "https://token.actions.githubusercontent.com"
-      principal_tpl    = "principal://iam.googleapis.com/%s/subject/project_path:%s:ref_type:branch:ref:%s"
-      principalset_tpl = "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
+      allowed_audiences = ["https://gitlab.com"]
+      issuer_uri        = "https://gitlab.com"
+      principal_tpl     = "principal://iam.googleapis.com/%s/subject/project_path:%s:ref_type:branch:ref:%s"
+      principalset_tpl  = "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
     }
   }
 }
@@ -68,6 +69,7 @@ resource "google_iam_workload_identity_pool_provider" "default" {
   attribute_condition                = each.value.attribute_condition
   attribute_mapping                  = each.value.attribute_mapping
   oidc {
+    allowed_audiences = try(each.value.allowed_audiences, [])
     issuer_uri = each.value.issuer_uri
   }
 }
