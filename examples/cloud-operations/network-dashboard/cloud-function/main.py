@@ -68,8 +68,8 @@ def main(event, context):
       limits_dict['internal_forwarding_rules_l4_limit'])
   get_vpc_peering_data(metrics_dict,
                        limits_dict['number_of_vpc_peerings_limit'])
-  dynamic_routes_dict = get_dynamic_routes(metrics_dict,
-                     limits_dict['dynamic_routes_per_network_limit'])
+  dynamic_routes_dict = get_dynamic_routes(
+      metrics_dict, limits_dict['dynamic_routes_per_network_limit'])
 
   # Per VPC peering group metrics
   get_pgg_data(
@@ -95,7 +95,8 @@ def main(event, context):
       SUBNET_RANGES_LIMIT_METRIC,
       limits_dict['number_of_subnet_IP_ranges_ppg_limit'])
 
-  get_dynamic_routes_ppg(metrics_dict["metrics_per_peering_group"]
+  get_dynamic_routes_ppg(
+      metrics_dict["metrics_per_peering_group"]
       ["dynamic_routes_per_peering_group"], dynamic_routes_dict,
       limits_dict['number_of_subnet_IP_ranges_ppg_limit'])
 
@@ -543,6 +544,7 @@ def get_l4_forwarding_rules_data(metrics_dict, forwarding_rules_dict,
     print(
         f"Wrote number of L4 forwarding rules to metric for projects/{project}")
 
+
 def get_pgg_data(metric_dict, usage_dict, limit_metric, limit_dict):
   '''
     This function gets the usage, limit and utilization per VPC peering group for a specific metric for all projects to be monitored.
@@ -606,6 +608,7 @@ def get_pgg_data(metric_dict, usage_dict, limit_metric, limit_dict):
           f"Wrote {metric_dict['usage']['name']} for peering group {network_dict['network_name']} in {project}"
       )
 
+
 def get_dynamic_routes_ppg(metric_dict, usage_dict, limit_dict):
   '''
     This function gets the usage, limit and utilization for the dynamic routes per VPC peering group.
@@ -652,6 +655,7 @@ def get_dynamic_routes_ppg(metric_dict, usage_dict, limit_dict):
       print(
           f"Wrote {metric_dict['usage']['name']} for peering group {network_dict['network_name']} in {project}"
       )
+
 
 def count_effective_limit(project_id, network_dict, usage_metric_name,
                           limit_metric_name, utilization_metric_name,
@@ -708,6 +712,7 @@ def count_effective_limit(project_id, network_dict, usage_metric_name,
   write_data_to_metric(project_id, utilization, utilization_metric_name,
                        network_dict['network_name'])
 
+
 def get_networks(project_id):
   '''
     Returns a dictionary of all networks in a project.
@@ -733,6 +738,7 @@ def get_networks(project_id):
       }
       network_dict.append(d)
   return network_dict
+
 
 def get_dynamic_routes(metrics_dict, limits_dict):
   '''
