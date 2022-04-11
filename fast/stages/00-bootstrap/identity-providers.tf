@@ -69,7 +69,7 @@ resource "google_iam_workload_identity_pool_provider" "default" {
   attribute_condition                = each.value.attribute_condition
   attribute_mapping                  = each.value.attribute_mapping
   oidc {
-    allowed_audiences = try(each.value.allowed_audiences, [])
+    allowed_audiences = try(each.value.allowed_audiences, null)
     issuer_uri        = each.value.issuer_uri
   }
 }
