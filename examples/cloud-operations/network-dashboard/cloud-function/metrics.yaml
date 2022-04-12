@@ -137,3 +137,15 @@ metrics_per_peering_group:
     utilization:
       name: number_of_instances_ppg_utilization
       description: Number of instances per peering group - utilization.
+  dynamic_routes_per_peering_group:
+    usage:
+      name: dynamic_routes_per_peering_group_usage
+      description: Number of Dynamic routes per peering group - usage.
+    limit:
+      name: dynamic_routes_per_peering_group_limit
+      description: Number of Dynamic routes per peering group - limit.
+      values:
+        default_value: 300
+    utilization:
+      name: dynamic_routes_per_peering_group_utilization
+      description: Number of Dynamic routes per peering group - utilization.
