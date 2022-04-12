@@ -93,6 +93,59 @@ module "db" {
 }
 # tftest modules=1 resources=6
 ```
+
+### CMEK encryption pippo
+```hcl
+
+module "project" {
+  source          = "./modules/project"
+  billing_account = var.billing_account_id
+  parent          = var.organization_id
+  name            = "my-db-project"
+  services = [
+    "servicenetworking.googleapis.com"
+  ]
+}
+
+resource "google_project_service_identity" "jit_si" {
+  provider   = google-beta
+  project    = module.project.project_id
+  service    = "sqladmin.googleapis.com"
+}
+
+module "kms" {
+  source     = "./modules/kms"
+  project_id = module.project.project_id
+  keyring = {
+    name     = "keyring"
+    location = var.region
+  }
+  keys = {
+    key-sql = null
+  }
+  key_iam = {
+    key-sql = {
+      "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
+        "serviceAccount:${google_project_service_identity.jit_si.email}"
+      ]
+    }
+  }
+}
+
+module "db" {
+  source              = "./modules/cloudsql-instance"
+  project_id          = module.project.project_id
+  encryption_key_name = module.kms.keys["key-sql"].id
+  network             = var.vpc.self_link
+  name                = "db"
+  region              = var.region
+  database_version    = "POSTGRES_13"
+  tier                = "db-g1-small"
+}
+
+# tftest modules=3 resources=8
+```
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
