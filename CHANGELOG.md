@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 ## Unreleased
 
 - SQL Server AlwaysOn availability groups example
+- CloudSQ: fixed Terraform change detection when backup is disabled
+- Allow multiple CIDR blocks in the ip_range for Apigee Instance
+- Add prefix to project factory SA bindings 
+
+**FAST**
+
+- Add support for Workload Identity Federation and CI/CD repositories
 
 ## [15.0.0] - 2022-04-05
 
