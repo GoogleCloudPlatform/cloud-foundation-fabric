@@ -21,7 +21,7 @@ module "branch-teams-folder" {
   parent = "organizations/${var.organization.id}"
   name   = "Teams"
   tag_bindings = {
-    context = module.organization.tag_values["context/teams"].id
+    context = try(module.organization.tag_values["context/teams"].id, null)
   }
 }
 
@@ -90,7 +90,7 @@ module "branch-teams-team-dev-folder" {
     "roles/resourcemanager.projectCreator" = [module.branch-teams-dev-pf-sa.iam_email]
   }
   tag_bindings = {
-    environment = module.organization.tag_values["environment/development"].id
+    environment = try(module.organization.tag_values["environment/development"].id, null)
   }
 }
 
@@ -111,7 +111,7 @@ module "branch-teams-team-prod-folder" {
     "roles/resourcemanager.projectCreator" = [module.branch-teams-prod-pf-sa.iam_email]
   }
   tag_bindings = {
-    environment = module.organization.tag_values["environment/production"].id
+    environment = try(module.organization.tag_values["environment/production"].id, null)
   }
 }
 

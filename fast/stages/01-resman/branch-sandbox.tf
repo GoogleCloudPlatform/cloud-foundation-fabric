@@ -38,7 +38,7 @@ module "branch-sandbox-folder" {
     }
   }
   tag_bindings = {
-    context = module.organization.tag_values["context/sandbox"].id
+    context = try(module.organization.tag_values["context/sandbox"].id, null)
   }
 }
 

@@ -43,7 +43,7 @@ locals {
   }
   custom_roles = {
     for k, v in var.custom_role_names :
-    k => module.organization.custom_role_id[v]
+    k => try(module.organization.custom_role_id[v], null)
   }
   providers = {
     "00-bootstrap" = templatefile(local._tpl_providers, {
