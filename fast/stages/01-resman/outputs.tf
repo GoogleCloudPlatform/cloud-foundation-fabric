@@ -15,6 +15,63 @@
  */
 
 locals {
+  _cicd_tf_var_files = {
+    stage_2 = [
+      "00-bootstrap.auto.tfvars.json",
+      "01-resman.auto.tfvars.json",
+      "globals.auto.tfvars.json"
+    ]
+    stage_3 = [
+      "00-bootstrap.auto.tfvars.json",
+      "01-resman.auto.tfvars.json",
+      "globals.auto.tfvars.json",
+      "02-networking.auto.tfvars.json",
+      "02-security.auto.tfvars.json"
+    ]
+  }
+  _tpl_providers = "${path.module}/templates/providers.tf.tpl"
+  cicd_workflow_attrs = {
+    data_platform_dev = {
+      service_account   = try(module.branch-dp-dev-sa-cicd.0.email, null)
+      tf_providers_file = "03-data-platform-dev-providers.tf"
+      tf_var_files      = local._cicd_tf_var_files.stage_3
+    }
+    data_platform_prod = {
+      service_account   = try(module.branch-dp-prod-sa-cicd.0.email, null)
+      tf_providers_file = "03-data-platform-prod-providers.tf"
+      tf_var_files      = local._cicd_tf_var_files.stage_3
+    }
+    networking = {
+      service_account   = try(module.branch-network-sa-cicd.0.email, null)
+      tf_providers_file = "02-networking-providers.tf"
+      tf_var_files      = local._cicd_tf_var_files.stage_2
+    }
+    project_factory_dev = {
+      service_account   = try(module.branch-pf-dev-sa-cicd.0.email, null)
+      tf_providers_file = "03-project-factory-dev-providers.tf"
+      tf_var_files      = local._cicd_tf_var_files.stage_3
+    }
+    project_factory_prod = {
+      service_account   = try(module.branch-pf-prod-sa-cicd.0.email, null)
+      tf_providers_file = "03-project-factory-prod-providers.tf"
+      tf_var_files      = local._cicd_tf_var_files.stage_3
+    }
+    security = {
+      service_account   = try(module.branch-security-sa-cicd.0.email, null)
+      tf_providers_file = "02-security-providers.tf"
+      tf_var_files      = local._cicd_tf_var_files.stage_2
+    }
+  }
+  cicd_workflows = {
+    for k, v in local.cicd_repositories : k => templatefile(
+      "${path.module}/templates/workflow-${v.type}.yaml",
+      merge(local.cicd_workflow_attrs[k], {
+        identity_provider = local.identity_providers[v.identity_provider].name
+        outputs_bucket    = var.automation.outputs_bucket
+        stage_name        = k
+      })
+    )
+  }
   folder_ids = merge(
     {
       data-platform   = module.branch-dp-dev-folder.id
@@ -26,47 +83,50 @@ locals {
       teams           = module.branch-teams-folder.id
     },
     {
-      for k, v in module.branch-teams-team-folder : "team-${k}" => v.id
+      for k, v in module.branch-teams-team-folder :
+      "team-${k}" => v.id
     },
     {
-      for k, v in module.branch-teams-team-dev-folder : "team-${k}-dev" => v.id
+      for k, v in module.branch-teams-team-dev-folder :
+      "team-${k}-dev" => v.id
     },
     {
-      for k, v in module.branch-teams-team-prod-folder : "team-${k}-prod" => v.id
+      for k, v in module.branch-teams-team-prod-folder :
+      "team-${k}-prod" => v.id
     }
   )
   providers = {
-    "02-networking" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
+    "02-networking" = templatefile(local._tpl_providers, {
       bucket = module.branch-network-gcs.name
       name   = "networking"
       sa     = module.branch-network-sa.email
     })
-    "02-security" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
+    "02-security" = templatefile(local._tpl_providers, {
       bucket = module.branch-security-gcs.name
       name   = "security"
       sa     = module.branch-security-sa.email
     })
-    "03-data-platform-dev" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
+    "03-data-platform-dev" = templatefile(local._tpl_providers, {
       bucket = module.branch-dp-dev-gcs.name
       name   = "dp-dev"
       sa     = module.branch-dp-dev-sa.email
     })
-    "03-data-platform-prod" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
+    "03-data-platform-prod" = templatefile(local._tpl_providers, {
       bucket = module.branch-dp-prod-gcs.name
       name   = "dp-prod"
       sa     = module.branch-dp-prod-sa.email
     })
-    "03-project-factory-dev" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
+    "03-project-factory-dev" = templatefile(local._tpl_providers, {
       bucket = module.branch-teams-dev-pf-gcs.name
       name   = "team-dev"
       sa     = module.branch-teams-dev-pf-sa.email
     })
-    "03-project-factory-prod" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
+    "03-project-factory-prod" = templatefile(local._tpl_providers, {
       bucket = module.branch-teams-prod-pf-gcs.name
       name   = "team-prod"
       sa     = module.branch-teams-prod-pf-sa.email
     })
-    "99-sandbox" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
+    "99-sandbox" = templatefile(local._tpl_providers, {
       bucket = module.branch-sandbox-gcs.name
       name   = "sandbox"
       sa     = module.branch-sandbox-sa.email
@@ -93,23 +153,17 @@ locals {
   }
 }
 
-# optionally generate providers and tfvars files for subsequent stages
-
-resource "local_file" "providers" {
-  for_each        = var.outputs_location == null ? {} : local.providers
-  file_permission = "0644"
-  filename        = "${pathexpand(var.outputs_location)}/providers/${each.key}-providers.tf"
-  content         = each.value
+output "cicd_repositories" {
+  description = "WIF configuration for CI/CD repositories."
+  value = {
+    for k, v in local.cicd_repositories : k => {
+      branch          = v.branch
+      name            = v.name
+      provider        = local.identity_providers[v.identity_provider].name
+      service_account = local.cicd_workflow_attrs[k].service_account
+    } if v != null
+  }
 }
-
-resource "local_file" "tfvars" {
-  for_each        = var.outputs_location == null ? {} : { 1 = 1 }
-  file_permission = "0644"
-  filename        = "${pathexpand(var.outputs_location)}/tfvars/01-resman.auto.tfvars.json"
-  content         = jsonencode(local.tfvars)
-}
-
-# outputs
 
 output "dataplatform" {
   description = "Data for the Data Platform stage."

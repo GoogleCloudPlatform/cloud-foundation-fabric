@@ -15,54 +15,117 @@
  */
 
 locals {
+  _cicd_workflow_attrs = {
+    bootstrap = {
+      service_account   = module.automation-tf-bootstrap-sa.email
+      tf_providers_file = "00-bootstrap-providers.tf"
+      tf_var_files      = []
+    }
+    resman = {
+      service_account   = module.automation-tf-resman-sa.email
+      tf_providers_file = "01-resman-providers.tf"
+      tf_var_files = [
+        "00-bootstrap.auto.tfvars.json",
+        "globals.auto.tfvars.json"
+      ]
+    }
+  }
+  _tpl_providers = "${path.module}/templates/providers.tf.tpl"
+  cicd_workflows = {
+    for k, v in local.cicd_repositories : k => templatefile(
+      "${path.module}/templates/workflow-${v.type}.yaml",
+      merge(local._cicd_workflow_attrs[k], {
+        identity_provider = local.wif_providers[v["identity_provider"]].name
+        outputs_bucket    = module.automation-tf-output-gcs.name
+        stage_name        = k
+      })
+    )
+  }
   custom_roles = {
     for k, v in var.custom_role_names :
-    k => module.organization.custom_role_id[v]
+    k => try(module.organization.custom_role_id[v], null)
   }
   providers = {
-    "00-bootstrap" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
+    "00-bootstrap" = templatefile(local._tpl_providers, {
       bucket = module.automation-tf-bootstrap-gcs.name
       name   = "bootstrap"
       sa     = module.automation-tf-bootstrap-sa.email
     })
-    "01-resman" = templatefile("${path.module}/../../assets/templates/providers.tpl", {
+    "01-resman" = templatefile(local._tpl_providers, {
       bucket = module.automation-tf-resman-gcs.name
       name   = "resman"
       sa     = module.automation-tf-resman-sa.email
     })
   }
   tfvars = {
-    automation_project_id = module.automation-project.project_id
-    custom_roles          = local.custom_roles
+    automation = {
+      federated_identity_pool = try(
+        google_iam_workload_identity_pool.default.0.name, null
+      )
+      federated_identity_providers = local.wif_providers
+      outputs_bucket               = module.automation-tf-output-gcs.name
+      project_id                   = module.automation-project.project_id
+    }
+    custom_roles = local.custom_roles
+  }
+  tfvars_globals = {
+    billing_account = var.billing_account
+    groups          = var.groups
+    organization    = var.organization
+    prefix          = var.prefix
+  }
+  wif_providers = {
+    for k, v in google_iam_workload_identity_pool_provider.default :
+    k => {
+      issuer           = local.identity_providers[k].issuer
+      issuer_uri       = local.identity_providers[k].issuer_uri
+      name             = v.name
+      principal_tpl    = local.identity_providers[k].principal_tpl
+      principalset_tpl = local.identity_providers[k].principalset_tpl
+    }
   }
 }
 
-# optionally generate providers and tfvars files for subsequent stages
-
-resource "local_file" "providers" {
-  for_each        = var.outputs_location == null ? {} : local.providers
-  file_permission = "0644"
-  filename        = "${pathexpand(var.outputs_location)}/providers/${each.key}-providers.tf"
-  content         = each.value
+output "automation" {
+  description = "Automation resources."
+  value       = local.tfvars.automation
 }
-
-resource "local_file" "tfvars" {
-  for_each        = var.outputs_location == null ? {} : { 1 = 1 }
-  file_permission = "0644"
-  filename        = "${pathexpand(var.outputs_location)}/tfvars/00-bootstrap.auto.tfvars.json"
-  content         = jsonencode(local.tfvars)
-}
-
-# outputs
 
 output "billing_dataset" {
   description = "BigQuery dataset prepared for billing export."
   value       = try(module.billing-export-dataset.0.id, null)
 }
 
+output "cicd_repositories" {
+  description = "CI/CD repository configurations."
+  value = {
+    for k, v in local.cicd_repositories : k => {
+      branch          = v.branch
+      name            = v.name
+      provider        = local.wif_providers[v.identity_provider].name
+      service_account = module.automation-tf-cicd-sa[k].email
+    }
+  }
+}
+
 output "custom_roles" {
   description = "Organization-level custom roles."
   value       = local.custom_roles
+}
+
+output "federated_identity" {
+  description = "Workload Identity Federation pool and providers."
+  value = {
+    pool = try(
+      google_iam_workload_identity_pool.default.0.name, null
+    )
+    providers = local.wif_providers
+  }
+}
+
+output "outputs_bucket" {
+  description = "GCS bucket where generated output files are stored."
+  value       = module.automation-tf-output-gcs.name
 }
 
 output "project_ids" {
@@ -71,6 +134,14 @@ output "project_ids" {
     automation     = module.automation-project.project_id
     billing-export = try(module.billing-export-project.0.project_id, null)
     log-export     = module.log-export-project.project_id
+  }
+}
+
+output "service_accounts" {
+  description = "Automation service accounts created by this stage."
+  value = {
+    bootstrap = module.automation-tf-bootstrap-sa.email
+    resman    = module.automation-tf-resman-sa.email
   }
 }
 

@@ -28,6 +28,46 @@ variable "bootstrap_user" {
   default     = null
 }
 
+variable "cicd_repositories" {
+  # TODO: edit description once we add support for Cloud Build (null provider)
+  description = "CI/CD repository configuration. Identity providers reference keys in the `federated_identity_providers` variable. Set to null to disable, or set individual repositories to null if not needed."
+  type = object({
+    bootstrap = object({
+      branch            = string
+      identity_provider = string
+      name              = string
+      type              = string
+    })
+    resman = object({
+      branch            = string
+      identity_provider = string
+      name              = string
+      type              = string
+    })
+  })
+  default = null
+  validation {
+    condition = alltrue([
+      for k, v in coalesce(var.cicd_repositories, {}) :
+      v == null || (
+        try(v.name, null) != null
+        &&
+        try(v.identity_provider, null) != null
+      )
+    ])
+    error_message = "Non-null repositories need non-null name and providers."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in coalesce(var.cicd_repositories, {}) :
+      v == null || (
+        contains(["github"], coalesce(try(v.type, null), "null"))
+      )
+    ])
+    error_message = "Invalid repository type, supported types: 'github'."
+  }
+}
+
 variable "custom_role_names" {
   description = "Names of custom roles defined at the org level."
   type = object({
@@ -38,6 +78,16 @@ variable "custom_role_names" {
     organization_iam_admin        = "organizationIamAdmin"
     service_project_network_admin = "serviceProjectNetworkAdmin"
   }
+}
+
+variable "federated_identity_providers" {
+  description = "Workload Identity Federation pools. The `cicd_repositories` variable references keys here."
+  type = map(object({
+    attribute_condition = string
+    issuer              = string
+  }))
+  default  = {}
+  nullable = false
 }
 
 variable "groups" {
@@ -103,7 +153,7 @@ variable "organization" {
 }
 
 variable "outputs_location" {
-  description = "Path where providers and tfvars files for the following stages are written. Leave empty to disable."
+  description = "Enable writing provider, tfvars and CI/CD workflow files to local filesystem. Leave null to disable"
   type        = string
   default     = null
 }

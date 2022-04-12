@@ -17,10 +17,21 @@
 # defaults for variables marked with global tfdoc annotations, can be set via
 # the tfvars file generated in stage 00 and stored in its outputs
 
-variable "automation_project_id" {
+variable "automation" {
   # tfdoc:variable:source 00-bootstrap
-  description = "Project id for the automation project created by the bootstrap stage."
-  type        = string
+  description = "Automation resources created by the bootstrap stage."
+  type = object({
+    outputs_bucket          = string
+    project_id              = string
+    federated_identity_pool = string
+    federated_identity_providers = map(object({
+      issuer           = string
+      issuer_uri       = string
+      name             = string
+      principal_tpl    = string
+      principalset_tpl = string
+    }))
+  })
 }
 
 variable "billing_account" {
@@ -30,6 +41,69 @@ variable "billing_account" {
     id              = string
     organization_id = number
   })
+}
+
+variable "cicd_repositories" {
+  description = "CI/CD repository configuration. Identity providers reference keys in the `automation.federated_identity_providers` variable. Set to null to disable, or set individual repositories to null if not needed."
+  type = object({
+    data_platform_dev = object({
+      branch            = string
+      identity_provider = string
+      name              = string
+      type              = string
+    })
+    data_platform_prod = object({
+      branch            = string
+      identity_provider = string
+      name              = string
+      type              = string
+    })
+    networking = object({
+      branch            = string
+      identity_provider = string
+      name              = string
+      type              = string
+    })
+    project_factory_dev = object({
+      branch            = string
+      identity_provider = string
+      name              = string
+      type              = string
+    })
+    project_factory_prod = object({
+      branch            = string
+      identity_provider = string
+      name              = string
+      type              = string
+    })
+    security = object({
+      branch            = string
+      identity_provider = string
+      name              = string
+      type              = string
+    })
+  })
+  default = null
+  validation {
+    condition = alltrue([
+      for k, v in coalesce(var.cicd_repositories, {}) :
+      v == null || (
+        try(v.name, null) != null
+        &&
+        try(v.identity_provider, null) != null
+      )
+    ])
+    error_message = "Non-null repositories need non-null name and providers."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in coalesce(var.cicd_repositories, {}) :
+      v == null || (
+        contains(["github"], coalesce(try(v.type, null), "null"))
+      )
+    ])
+    error_message = "Invalid repository type, supported types: 'github'."
+  }
 }
 
 variable "custom_roles" {
@@ -75,7 +149,7 @@ variable "organization_policy_configs" {
 }
 
 variable "outputs_location" {
-  description = "Path where providers and tfvars files for the following stages are written. Leave empty to disable."
+  description = "Enable writing provider, tfvars and CI/CD workflow files to local filesystem. Leave null to disable"
   type        = string
   default     = null
 }
