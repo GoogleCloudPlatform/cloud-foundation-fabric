@@ -65,7 +65,13 @@ def get_bindings(resources, prefix=None, folders=None):
         member_type, _, member_id = member.partition(':')
         if member_type == 'user':
           continue
-        member_id, member_domain = member_id.split('@', 1)
+        try:
+          member_id, member_domain = member_id.split('@', 1)
+        except ValueError:
+          if member_type == 'domain':
+            member_id = 'GCP organization domain'
+          member_domain = ''
+          # raise SystemExit(f'Cannot parse binding {member_id}')
         # Handle Cloud Services Service Account
         if member_domain == 'cloudservices.gserviceaccount.com':
           member_id = "PROJECT_CLOUD_SERVICES"

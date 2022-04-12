@@ -36,6 +36,11 @@ output "key" {
   value       = local.key
 }
 
+output "name" {
+  description = "Service account id."
+  value       = local.service_account.name
+}
+
 output "service_account" {
   description = "Service account resource."
   value       = local.service_account
