@@ -18,13 +18,14 @@ from code import interact
 import os
 from pickletools import int4
 import time
+import http
 import yaml
 from collections import defaultdict
 from google.api import metric_pb2 as ga_metric
-from google.api_core import protobuf_helpers
+from google.api_core import exceptions, protobuf_helpers
 from google.cloud import monitoring_v3, asset_v1
 from google.protobuf import field_mask_pb2
-from googleapiclient import discovery
+from googleapiclient import discovery, errors
 
 # Organization ID containing the projects to be monitored
 ORGANIZATION_ID = os.environ.get("ORGANIZATION_ID")
@@ -366,6 +367,9 @@ def get_gce_instances_data(metrics_dict, gce_instance_dict, limit_dict):
 
     current_quota_limit = get_quota_current_limit(f"projects/{project}",
                                                   metric_instances_limit)
+    if current_quota_limit is None:
+      print(f"Could not write number of instances for projects/{project} due to missing quotas")
+
     current_quota_limit_view = customize_quota_view(current_quota_limit)
 
     for net in network_dict:
@@ -519,6 +523,10 @@ def get_l4_forwarding_rules_data(metrics_dict, forwarding_rules_dict,
     current_quota_limit = get_quota_current_limit(
         f"projects/{project}", L4_FORWARDING_RULES_LIMIT_METRIC)
 
+    if current_quota_limit is None:
+      print(f"Could not write L4 forwarding rules to metric for projects/{project} due to missing quotas")
+      continue
+
     current_quota_limit_view = customize_quota_view(current_quota_limit)
 
     for net in network_dict:
@@ -564,9 +572,21 @@ def get_pgg_data(metric_dict, usage_dict, limit_metric, limit_dict):
     #   project_id, network_name, network_id, usage, limit, peerings (list of peered networks)
     #   peerings is a list of dictionary (one for each peered network) and contains:
     #     project_id, network_name, network_id
+    current_quota_limit = get_quota_current_limit(f"projects/{project}",
+                                                  limit_metric)
+    if current_quota_limit is None:
+      print(f"Could not write number of L7 forwarding rules to metric for projects/{project} due to missing quotas")
+      continue
+
+    current_quota_limit_view = customize_quota_view(current_quota_limit)
 
     # For each network in this GCP project
     for network_dict in network_dict_list:
+      if network_dict['network_id'] == 0:
+        print(
+            f"Could not write {metric_dict['usage']['name']} for peering group {network_dict['network_name']} in {project} due to missing permissions."
+        )
+        continue
       network_link = f"https://www.googleapis.com/compute/v1/projects/{project}/global/networks/{network_dict['network_name']}"
 
       current_quota_limit = get_quota_current_limit(f"projects/{project}",
@@ -590,9 +610,13 @@ def get_pgg_data(metric_dict, usage_dict, limit_metric, limit_dict):
         if peered_network_link in usage_dict:
           peered_usage = usage_dict[peered_network_link]
 
-        peering_project_limit = customize_quota_view(
-            get_quota_current_limit(
-                f"projects/{peered_network_dict['project_id']}", limit_metric))
+        current_peered_quota_limit = get_quota_current_limit(
+            f"projects/{peered_network_dict['project_id']}", limit_metric)
+        if current_peered_quota_limit is None:
+          print(f"Could not write metrics for peering to projects/{peered_network_dict['project_id']} due to missing quotas")
+          continue
+
+        peering_project_limit = customize_quota_view(current_peered_quota_limit)
 
         peered_limit = get_limit_network(peered_network_dict,
                                          peered_network_link,
@@ -681,6 +705,9 @@ def count_effective_limit(project_id, network_dict, usage_metric_name,
   # Get usage: Sums usage for current network + all peered networks
   peering_group_usage = network_dict['usage']
   for peered_network in network_dict['peerings']:
+    if 'usage' not in peered_network:
+      print(f"Can not add metrics for peered network in projects/{project_id} as no usage metrics exist due to missing permissions")
+      continue
     peering_group_usage += peered_network['usage']
 
   network_link = f"https://www.googleapis.com/compute/v1/projects/{project_id}/global/networks/{network_dict['network_name']}"
@@ -694,12 +721,18 @@ def count_effective_limit(project_id, network_dict, usage_metric_name,
   for peered_network in network_dict['peerings']:
     peered_network_link = f"https://www.googleapis.com/compute/v1/projects/{peered_network['project_id']}/global/networks/{peered_network['network_name']}"
 
-    limit_step2.append(
-        max(peered_network['limit'],
-            get_limit_ppg(peered_network_link, limit_dict)))
+    if 'limit' in peered_network:
+      limit_step2.append(
+          max(peered_network['limit'],
+              get_limit_ppg(peered_network_link, limit_dict)))
+    else:
+      print(f"Ignoring projects/{peered_network['project_id']} for limits in peering group of project {project_id} as no limits are available." +
+            "This can happen due to the project belonging to a different organization")
 
   # Calculates effective limit: Step 3: Find minimum from the list created by Step 2
-  limit_step3 = min(limit_step2)
+  limit_step3 = 0
+  if len(limit_step2) > 0:
+    limit_step3 = min(limit_step2)
 
   # Calculates effective limit: Step 4: Find maximum from step 1 and step 3
   effective_limit = max(limit_step1, limit_step3)
@@ -837,8 +870,9 @@ def get_routes_for_router(project_id, router_region, router_name):
   sum_routes = 0
 
   if 'result' in response:
-    for peer in response['result']['bgpPeerStatus']:
-      sum_routes += peer['numLearnedRoutes']
+    if 'bgpPeerStatus' in response['result']:
+      for peer in response['result']['bgpPeerStatus']:
+        sum_routes += peer['numLearnedRoutes']
 
   return sum_routes
 
@@ -939,7 +973,17 @@ def get_network_id(project_id, network_name):
         network_id (int): Network ID.
   '''
   request = service.networks().list(project=project_id)
-  response = request.execute()
+  try:
+    response = request.execute()
+  except errors.HttpError as err:
+    # TODO: log proper warning
+    if err.resp.status == http.HTTPStatus.FORBIDDEN:
+      print(f"Warning: error reading networks for {project_id}. " +
+            f"This can happen if this project is not belonging to you organization")
+    else:
+      print(f"Warning: error reading networks for {project_id}: {err}")
+    return 0
+
 
   network_id = 0
 
@@ -967,16 +1011,20 @@ def get_quota_current_limit(project_link, metric_name):
   '''
   client, interval = create_client()
 
-  results = client.list_time_series(
-      request={
-          "name": project_link,
-          "filter": f'metric.type = "{metric_name}"',
-          "interval": interval,
-          "view": monitoring_v3.ListTimeSeriesRequest.TimeSeriesView.FULL
-      })
-  results_list = list(results)
-  return results_list
-
+  try:
+    results = client.list_time_series(
+        request={
+            "name": project_link,
+            "filter": f'metric.type = "{metric_name}"',
+            "interval": interval,
+            "view": monitoring_v3.ListTimeSeriesRequest.TimeSeriesView.FULL
+        })
+    results_list = list(results)
+    return results_list
+  except exceptions.PermissionDenied as err:
+    print(f"Warning: error reading quotas for {project_link}. " +
+          f"This can happen if this project is not belonging to you organization: {err}")
+  return None
 
 def customize_quota_view(quota_results):
   '''
