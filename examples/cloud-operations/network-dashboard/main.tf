@@ -17,7 +17,7 @@
 locals {
   project_id_list    = toset(var.monitored_projects_list)
   projects           = join(",", local.project_id_list)
-  monitoring_project = var.monitoring_project_id == "" ? module.project-monitoring.project_id : var.monitoring_project_id
+  monitoring_project = var.monitoring_project_id == "" ? module.project-monitoring[0].project_id : var.monitoring_project_id
 }
 
 ################################################

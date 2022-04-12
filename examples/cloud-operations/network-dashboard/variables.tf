@@ -46,6 +46,7 @@ variable "schedule_cron" {
 variable "project_monitoring_services" {
   description = "Service APIs enabled in the monitoring project if it will be created."
   default = [
+    "cloudasset.googleapis.com",
     "cloudbilling.googleapis.com",
     "cloudbuild.googleapis.com",
     "cloudresourcemanager.googleapis.com",
@@ -56,8 +57,6 @@ variable "project_monitoring_services" {
     "iamcredentials.googleapis.com",
     "logging.googleapis.com",
     "monitoring.googleapis.com",
-    "oslogin.googleapis.com",
-    "servicenetworking.googleapis.com",
     "serviceusage.googleapis.com",
   ]
 }

@@ -571,7 +571,7 @@ def get_l7_forwarding_rules_data(metrics_dict, forwarding_rules_dict,
     network_dict = get_networks(project)
 
     current_quota_limit = get_quota_current_limit(
-        f"projects/{project}", L4_FORWARDING_RULES_LIMIT_METRIC)
+        f"projects/{project}", L7_FORWARDING_RULES_LIMIT_METRIC)
     if current_quota_limit is None:
       print(f"Could not write number of L7 forwarding rules to metric for projects/{project} due to missing quotas")
       continue
@@ -774,7 +774,7 @@ def count_effective_limit(project_id, network_dict, usage_metric_name,
               get_limit_ppg(peered_network_link, limit_dict)))
     else:
       print(f"Ignoring projects/{peered_network['project_id']} for limits in peering group of project {project_id} as no limits are available." +
-            "This can happen due to the project belonging to a different organization")
+            "This can happen if you don't have permissions on the project, for example if the project is in another organization or a Google managed project")
 
   # Calculates effective limit: Step 3: Find minimum from the list created by Step 2
   limit_step3 = 0
@@ -1026,7 +1026,7 @@ def get_network_id(project_id, network_name):
     # TODO: log proper warning
     if err.resp.status == http.HTTPStatus.FORBIDDEN:
       print(f"Warning: error reading networks for {project_id}. " +
-            f"This can happen if this project is not belonging to you organization")
+            f"This can happen if you don't have permissions on the project, for example if the project is in another organization or a Google managed project")
     else:
       print(f"Warning: error reading networks for {project_id}: {err}")
     return 0
@@ -1070,7 +1070,7 @@ def get_quota_current_limit(project_link, metric_name):
     return results_list
   except exceptions.PermissionDenied as err:
     print(f"Warning: error reading quotas for {project_link}. " +
-          f"This can happen if this project is not belonging to you organization: {err}")
+          f"This can happen if you don't have permissions on the project, for example if the project is in another organization or a Google managed project")
   return None
 
 def customize_quota_view(quota_results):
