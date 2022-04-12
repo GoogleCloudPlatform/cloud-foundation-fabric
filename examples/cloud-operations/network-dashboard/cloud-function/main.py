@@ -14,7 +14,9 @@
 # limitations under the License.
 #
 
+from code import interact
 import os
+from pickletools import int4
 import time
 import yaml
 from collections import defaultdict
@@ -66,8 +68,8 @@ def main(event, context):
       limits_dict['internal_forwarding_rules_l4_limit'])
   get_vpc_peering_data(metrics_dict,
                        limits_dict['number_of_vpc_peerings_limit'])
-  get_dynamic_routes(metrics_dict,
-                     limits_dict['dynamic_routes_per_network_limit'])
+  dynamic_routes_dict = get_dynamic_routes(
+      metrics_dict, limits_dict['dynamic_routes_per_network_limit'])
 
   # Per VPC peering group metrics
   get_pgg_data(
@@ -91,6 +93,11 @@ def main(event, context):
       metrics_dict["metrics_per_peering_group"]
       ["subnet_ranges_per_peering_group"], subnet_range_dict,
       SUBNET_RANGES_LIMIT_METRIC,
+      limits_dict['number_of_subnet_IP_ranges_ppg_limit'])
+
+  get_dynamic_routes_ppg(
+      metrics_dict["metrics_per_peering_group"]
+      ["dynamic_routes_per_peering_group"], dynamic_routes_dict,
       limits_dict['number_of_subnet_IP_ranges_ppg_limit'])
 
   return 'Function executed successfully'
@@ -544,8 +551,8 @@ def get_pgg_data(metric_dict, usage_dict, limit_metric, limit_dict):
 
       Parameters:
         metric_dict (dictionary of string: string): Dictionary with the metric names and description, that will be used to populate the metrics
-        usage_metric (string): Name of the existing GCP metric for usage per VPC network.
         usage_dict (dictionnary of string:int): Dictionary with the network link as key and the number of resources as value
+        limit_metric (string): Name of the existing GCP metric for limit per VPC network
         limit_dict (dictionary of string:int): Dictionary with the network link as key and the limit as value
       Returns:
         None
@@ -590,6 +597,54 @@ def get_pgg_data(metric_dict, usage_dict, limit_metric, limit_dict):
         peered_limit = get_limit_network(peered_network_dict,
                                          peered_network_link,
                                          peering_project_limit, limit_dict)
+        # Here we add usage and limit to the peered network dictionary
+        peered_network_dict["usage"] = peered_usage
+        peered_network_dict["limit"] = peered_limit
+
+      count_effective_limit(project, network_dict, metric_dict["usage"]["name"],
+                            metric_dict["limit"]["name"],
+                            metric_dict["utilization"]["name"], limit_dict)
+      print(
+          f"Wrote {metric_dict['usage']['name']} for peering group {network_dict['network_name']} in {project}"
+      )
+
+
+def get_dynamic_routes_ppg(metric_dict, usage_dict, limit_dict):
+  '''
+    This function gets the usage, limit and utilization for the dynamic routes per VPC peering group.
+
+      Parameters:
+        metric_dict (dictionary of string: string): Dictionary with the metric names and description, that will be used to populate the metrics
+        usage_dict (dictionnary of string:int): Dictionary with the network link as key and the number of resources as value
+        limit_dict (dictionary of string:int): Dictionary with the network link as key and the limit as value
+      Returns:
+        None
+  '''
+  for project in MONITORED_PROJECTS_LIST:
+    network_dict_list = gather_peering_data(project)
+
+    for network_dict in network_dict_list:
+      network_link = f"https://www.googleapis.com/compute/v1/projects/{project}/global/networks/{network_dict['network_name']}"
+
+      limit = get_limit_ppg(network_link, limit_dict)
+
+      usage = 0
+      if network_link in usage_dict:
+        usage = usage_dict[network_link]
+
+      # Here we add usage and limit to the network dictionary
+      network_dict["usage"] = usage
+      network_dict["limit"] = limit
+
+      # For every peered network, get usage and limits
+      for peered_network_dict in network_dict['peerings']:
+        peered_network_link = f"https://www.googleapis.com/compute/v1/projects/{peered_network_dict['project_id']}/global/networks/{peered_network_dict['network_name']}"
+        peered_usage = 0
+        if peered_network_link in usage_dict:
+          peered_usage = usage_dict[peered_network_link]
+
+        peered_limit = get_limit_ppg(peered_network_link, limit_dict)
+
         # Here we add usage and limit to the peered network dictionary
         peered_network_dict["usage"] = peered_usage
         peered_network_dict["limit"] = peered_limit
@@ -684,6 +739,7 @@ def get_networks(project_id):
       network_dict.append(d)
   return network_dict
 
+
 def get_dynamic_routes(metrics_dict, limits_dict):
   '''
     Writes all dynamic routes per VPC to custom metrics.
@@ -692,9 +748,10 @@ def get_dynamic_routes(metrics_dict, limits_dict):
         metrics_dict (dictionary of dictionary of string: string): metrics names and descriptions.
         limits_dict (dictionary of string: int): key is network link (or 'default_value') and value is the limit for that network
       Returns:
-        None
+        dynamic_routes_dict (dictionary of string: int): key is network link and value is the number of dynamic routes for that network
   '''
   routers_dict = get_routers()
+  dynamic_routes_dict = defaultdict(int)
 
   for project_id in MONITORED_PROJECTS_LIST:
     network_dict = get_networks(project_id)
@@ -702,6 +759,7 @@ def get_dynamic_routes(metrics_dict, limits_dict):
     for network in network_dict:
       sum_routes = get_routes_for_network(network['self_link'], project_id,
                                           routers_dict)
+      dynamic_routes_dict[network['self_link']] = sum_routes
 
       if network['self_link'] in limits_dict:
         limit = limits_dict[network['self_link']]
@@ -728,6 +786,8 @@ def get_dynamic_routes(metrics_dict, limits_dict):
           network['network_name'])
 
     print("Wrote metrics for dynamic routes for VPCs in project", project_id)
+
+    return dynamic_routes_dict
 
 
 def get_routes_for_network(network_link, project_id, routers_dict):
