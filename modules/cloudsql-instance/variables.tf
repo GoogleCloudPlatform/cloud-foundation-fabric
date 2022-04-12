@@ -77,7 +77,7 @@ variable "disk_type" {
 }
 
 variable "encryption_key_name" {
-  description = "The full path to the encryption key used for the CMEK disk encryption."
+  description = "The full path to the encryption key used for the CMEK disk encryption of the primary instance."
   type        = string
   default     = null
 }
@@ -95,7 +95,7 @@ variable "labels" {
 }
 
 variable "name" {
-  description = "Name of primary replica."
+  description = "Name of primary instance."
   type        = string
 }
 
@@ -116,7 +116,7 @@ variable "project_id" {
 }
 
 variable "region" {
-  description = "Region of the primary replica."
+  description = "Region of the primary instance."
   type        = string
 }
 
