@@ -39,7 +39,6 @@ TBC
 This implementation is intentionally minimal and easy to read. A real world use case should consider:
  - Using a Shared VPC
  - Using VPC-SC to mitigate data exfiltration
-
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -48,11 +47,11 @@ This implementation is intentionally minimal and easy to read. A real world use 
 |---|---|:---:|:---:|:---:|
 | [prefix](variables.tf#L29) | Unique prefix used for resource names. Not used for project if 'project_create' is null. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L43) | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
-| [regions](variables.tf#L48) | Map of instance_name => location where instances will be deployed. | <code>map&#40;string&#41;</code> | ✓ |  |
 | [cloudsql_psa_range](variables.tf#L17) | Range used for the Private Service Access. | <code>string</code> |  | <code>&#34;10.60.0.0&#47;16&#34;</code> |
 | [database_version](variables.tf#L23) | Database type and version to create. | <code>string</code> |  | <code>&#34;POSTGRES_13&#34;</code> |
 | [project_create](variables.tf#L34) | Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [tier](variables.tf#L57) | The machine type to use for the instances. See See https://cloud.google.com/sql/docs/postgres/create-instance#machine-types. | <code>string</code> |  | <code>&#34;db-g1-small&#34;</code> |
+| [regions](variables.tf#L48) | Map of instance_name => location where instances will be deployed. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  primary &#61; &#34;europe-west1&#34;&#10;  replica &#61; &#34;europe-west3&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [tier](variables.tf#L61) | The machine type to use for the instances. See See https://cloud.google.com/sql/docs/postgres/create-instance#machine-types. | <code>string</code> |  | <code>&#34;db-g1-small&#34;</code> |
 
 ## Outputs
 
