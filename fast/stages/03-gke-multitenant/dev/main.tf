@@ -21,7 +21,7 @@ locals {
   _cloud_services_sa = "serviceAccount:${module.gke-project-0.service_accounts.cloud_services}"
 
   logging_sinks = {
-    for team, value in var.namespace_sinks : team => {
+    for team, value in var.namespaces : team => {
       type          = "logging"
       destination   = "projects/${value.project}/locations/global/buckets/${value.bucket}"
       filter        = "resource.labels.namespace_name=${team}"
@@ -108,7 +108,7 @@ module "gke-nodepool-sa" {
 module "gke-gmp-sa" {
   source       = "git::https://github.com/terraform-google-modules/cloud-foundation-fabric//modules/iam-service-account?ref=v14.0.0"
   project_id   = module.gke-project-0.project_id
-  for_each     = var.namespace_sinks
+  for_each     = var.namespace
   name         = "gke-gmp-${each.key}-sa"
   generate_key = false
 

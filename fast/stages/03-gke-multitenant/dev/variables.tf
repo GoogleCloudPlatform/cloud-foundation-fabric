@@ -103,8 +103,8 @@ variable "cluster_viewers" {
   default     = []
 }
 
-variable "namespace_sinks" {
-  description = "Map of namespaces to sink to other projects."
+variable "namespaces" {
+  description = "Map of namespaces inside the clusters."
   type        = map(any)
   default     = {}
 }
