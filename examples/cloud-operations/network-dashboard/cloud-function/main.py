@@ -67,6 +67,9 @@ def main(event, context):
   get_l4_forwarding_rules_data(
       metrics_dict, l4_forwarding_rules_dict,
       limits_dict['internal_forwarding_rules_l4_limit'])
+  get_l7_forwarding_rules_data(
+      metrics_dict, l7_forwarding_rules_dict,
+      limits_dict['internal_forwarding_rules_l7_limit'])
   get_vpc_peering_data(metrics_dict,
                        limits_dict['number_of_vpc_peerings_limit'])
   dynamic_routes_dict = get_dynamic_routes(
@@ -552,6 +555,53 @@ def get_l4_forwarding_rules_data(metrics_dict, forwarding_rules_dict,
     print(
         f"Wrote number of L4 forwarding rules to metric for projects/{project}")
 
+def get_l7_forwarding_rules_data(metrics_dict, forwarding_rules_dict,
+                                 limit_dict):
+  '''
+    Gets the data for L7 Internal Forwarding Rules per VPC Network and writes it to the metric defined in forwarding_rules_metric.
+
+      Parameters:
+        metrics_dict (dictionary of dictionary of string: string): metrics names and descriptions.
+        forwarding_rules_dict (dictionary of string: int): Keys are the network links and values are the number of Forwarding Rules per network.
+        limit_dict (dictionary of string:int): Dictionary with the network link as key and the limit as value.
+      Returns:
+        None
+  '''
+  for project in MONITORED_PROJECTS_LIST:
+    network_dict = get_networks(project)
+
+    current_quota_limit = get_quota_current_limit(
+        f"projects/{project}", L4_FORWARDING_RULES_LIMIT_METRIC)
+    if current_quota_limit is None:
+      print(f"Could not write number of L7 forwarding rules to metric for projects/{project} due to missing quotas")
+      continue
+
+
+    current_quota_limit_view = customize_quota_view(current_quota_limit)
+
+    for net in network_dict:
+      set_limits(net, current_quota_limit_view, limit_dict)
+
+      usage = 0
+      if net['self_link'] in forwarding_rules_dict:
+        usage = forwarding_rules_dict[net['self_link']]
+
+      write_data_to_metric(
+          project, usage, metrics_dict["metrics_per_network"]
+          ["l7_forwarding_rules_per_network"]["usage"]["name"],
+          net['network_name'])
+      write_data_to_metric(
+          project, net['limit'], metrics_dict["metrics_per_network"]
+          ["l7_forwarding_rules_per_network"]["limit"]["name"],
+          net['network_name'])
+      write_data_to_metric(
+          project, usage / net['limit'], metrics_dict["metrics_per_network"]
+          ["l7_forwarding_rules_per_network"]["utilization"]["name"],
+          net['network_name'])
+
+    print(
+        f"Wrote number of L7 forwarding rules to metric for projects/{project}")
+
 
 def get_pgg_data(metric_dict, usage_dict, limit_metric, limit_dict):
   '''
@@ -589,9 +639,6 @@ def get_pgg_data(metric_dict, usage_dict, limit_metric, limit_dict):
         continue
       network_link = f"https://www.googleapis.com/compute/v1/projects/{project}/global/networks/{network_dict['network_name']}"
 
-      current_quota_limit = get_quota_current_limit(f"projects/{project}",
-                                                    limit_metric)
-      current_quota_limit_view = customize_quota_view(current_quota_limit)
       limit = get_limit_network(network_dict, network_link,
                                 current_quota_limit_view, limit_dict)
 
