@@ -1,2 +1,2 @@
-project_id          = "datalake-001"
-prefix              = "prefix"
+project_id = "datalake-001"
+prefix     = "prefix"

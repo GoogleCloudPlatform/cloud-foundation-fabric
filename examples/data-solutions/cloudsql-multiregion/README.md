@@ -1,49 +1,45 @@
 # Cloud SQL instance with multi-region read replicas
 
-This example creates the [Cloud SQL instance](https://cloud.google.com/sql) with multi-reagion read replica solution described in the [`Cloud SQL for PostgreSQL disaster recovery`](https://cloud.google.com/architecture/cloud-sql-postgres-disaster-recovery-complete-failover-fallback) article. 
+This example creates a [Cloud SQL instance](https://cloud.google.com/sql) with multi-region read replicas as described in the [Cloud SQL for PostgreSQL disaster recovery](https://cloud.google.com/architecture/cloud-sql-postgres-disaster-recovery-complete-failover-fallback) article.
 
-The solution is resiliant to a regional outage. To get familiar with the procedure needed in the unfortunate case of a disaster recovery, we suggest to follow steps described in the [`Simulating a disaster (region outage)`](https://cloud.google.com/architecture/cloud-sql-postgres-disaster-recovery-complete-failover-fallback#phase-2) article.
+The solution is resilient to a regional outage. To get familiar with the procedure needed in the unfortunate case of a disaster recovery, please follow steps described in [part two](https://cloud.google.com/architecture/cloud-sql-postgres-disaster-recovery-complete-failover-fallback#phase-2) of the aforementioned article.
 
 The solution will use:
-- Postgre SQL instance with Private IP
+- A VPC with Private Service Access to deploy the instances
+- Postgre SQL instanced with Private IP
 
 This is the high level diagram:
 
 ![Cloud SQL multi-region.](diagram.png "Cloud SQL multi-region")
 
-## Move to real use case consideration
-In the example we implemented some compromise to keep the example minimal and easy to read. On a real word use case, you may evaluate the option to:
- - Configure a Shared-VPC
- - Use VPC-SC to mitigate data exfiltration
+# Requirements
 
-## Deploy your enviroment
+This example will deploy all its resources into the project defined by the `project_id` variable. Please note that we assume this project already exists. However, if you provide the appropriate values to the `project_create` variable, the project will be created as part of the deployment.
 
-We assume the identiy running the following steps has the following role:
- - `resourcemanager.projectCreator` in case a new project will be created.
- - `owner` on the project in case you use an existing project. 
+If `project_create` is left to `null`, the identity performing the deployment needs the `owner` role on the project defined by the `project_id` variable. Otherwise, the identity performing the deployment needs `resourcemanager.projectCreator` on the resource hierarchy node specified by `project_create.parent` and `billing.user` on the billing account specified by `project_create.billing_account_id`.
+
+
+## Deployment
+
+Configure the Terraform variables in your `terraform.tfvars` file. You need to specify at least the `project_id` and `prefix` variables. See  [`terraform.tfvars.sample`](terraform.tfvars.sample) as starting point.
 
 Run Terraform init:
 
 ```
 $ terraform init
-```
-
-Configure the Terraform variable in your `terraform.tfvars` file. You need to spefify at least the following variables:
-
-```
-data_eng_principals = ["user:data-eng@domain.com"]
-project_id      = "datalake-001"
-prefix          = "prefix"
-```
-
-You can run now:
-
-```
 $ terraform apply
 ```
 
-You should see the output of the Terraform script with resources created and some command pre-created for you to run the example following steps below.
+You should see the output of the Terraform script with resources created and some commands that you'll need in the following steps below.
+
 TBC
+
+## Move to real use case consideration
+
+This implementation is intentionally minimal and easy to read. A real world use case should consider:
+ - Using a Shared VPC
+ - Using VPC-SC to mitigate data exfiltration
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
