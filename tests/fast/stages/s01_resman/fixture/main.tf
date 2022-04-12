@@ -15,8 +15,13 @@
  */
 
 module "stage" {
-  source                = "../../../../../fast/stages/01-resman"
-  automation_project_id = "fast-prod-automation"
+  source = "../../../../../fast/stages/01-resman"
+  automation = {
+    federated_identity_pool      = null
+    federated_identity_providers = null
+    project_id                   = "fast-prod-automation"
+    outputs_bucket               = "test"
+  }
   billing_account = {
     id              = "000000-111111-222222"
     organization_id = 123456789012

@@ -21,7 +21,7 @@ bundle.zip
 **/*.pkrvars.hcl
 fixture_*
 fast/configs
-fast/stages/**/*providers.tf
+fast/stages/**/[0-9]*providers.tf
 fast/stages/**/terraform.tfvars
 fast/stages/**/terraform.tfvars.json
 fast/stages/**/terraform-*.auto.tfvars.json

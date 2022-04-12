@@ -79,19 +79,21 @@ def check_docs(dir_name, external=False):
               help='Whether to test external links.')
 def main(dirs, external):
   'Checks links in Markdown files contained in dirs.'
-  errors = 0
+  errors = []
   for dir_name in dirs:
     print(f'----- {dir_name} -----')
     for doc in check_docs(dir_name, external):
       state = '✓' if all(l.valid for l in doc.links) else '✗'
       print(f'[{state}] {doc.relpath} ({len(doc.links)})')
       if state == '✗':
-        errors += 1
+        error = [f'{dir_name}{doc.relpath}']
         for l in doc.links:
           if not l.valid:
+            error.append(f'  - {l.dest}')
             print(f'  {l.dest}')
+        errors.append('\n'.join(error))
   if errors:
-    raise SystemExit('Errors found.')
+    raise SystemExit('Errors found:\n{}'.format('\n'.join(errors)))
 
 
 if __name__ == '__main__':

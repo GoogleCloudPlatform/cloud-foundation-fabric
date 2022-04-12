@@ -45,6 +45,13 @@ locals {
       ]
     ]
   ])
+  iam_sa_pairs = flatten([
+    for entity, roles in var.iam_sa_roles : [
+      for role in roles : [
+        { entity = entity, role = role }
+      ]
+    ]
+  ])
   iam_storage_pairs = flatten([
     for entity, roles in var.iam_storage_roles : [
       for role in roles : [
@@ -99,6 +106,16 @@ resource "google_project_iam_member" "project-roles" {
   project = each.value.entity
   role    = each.value.role
   member  = local.resource_iam_email
+}
+
+resource "google_service_account_iam_member" "additive" {
+  for_each = {
+    for pair in local.iam_sa_pairs :
+    "${pair.entity}-${pair.role}" => pair
+  }
+  service_account_id = each.value.entity
+  role               = each.value.role
+  member             = local.resource_iam_email
 }
 
 resource "google_storage_bucket_iam_member" "bucket-roles" {

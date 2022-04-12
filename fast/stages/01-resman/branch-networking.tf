@@ -43,25 +43,6 @@ module "branch-network-folder" {
   }
 }
 
-module "branch-network-sa" {
-  source      = "../../../modules/iam-service-account"
-  project_id  = var.automation_project_id
-  name        = "prod-resman-net-0"
-  description = "Terraform resman networking service account."
-  prefix      = var.prefix
-}
-
-module "branch-network-gcs" {
-  source     = "../../../modules/gcs"
-  project_id = var.automation_project_id
-  name       = "prod-resman-net-0"
-  prefix     = var.prefix
-  versioning = true
-  iam = {
-    "roles/storage.objectAdmin" = [module.branch-network-sa.iam_email]
-  }
-}
-
 module "branch-network-prod-folder" {
   source = "../../../modules/folder"
   parent = module.branch-network-folder.id
@@ -89,5 +70,68 @@ module "branch-network-dev-folder" {
   }
   tag_bindings = {
     environment = try(module.organization.tag_values["environment/development"].id, null)
+  }
+}
+
+# automation service account and bucket
+
+module "branch-network-sa" {
+  source      = "../../../modules/iam-service-account"
+  project_id  = var.automation.project_id
+  name        = "prod-resman-net-0"
+  description = "Terraform resman networking service account."
+  prefix      = var.prefix
+  iam = {
+    "roles/iam.serviceAccountTokenCreator" = compact([
+      try(module.branch-network-sa-cicd.0.iam_email, null)
+    ])
+  }
+  iam_storage_roles = {
+    (var.automation.outputs_bucket) = ["roles/storage.admin"]
+  }
+}
+
+module "branch-network-gcs" {
+  source     = "../../../modules/gcs"
+  project_id = var.automation.project_id
+  name       = "prod-resman-net-0"
+  prefix     = var.prefix
+  versioning = true
+  iam = {
+    "roles/storage.objectAdmin" = [module.branch-network-sa.iam_email]
+  }
+}
+
+# ci/cd service account
+
+module "branch-network-sa-cicd" {
+  source = "../../../modules/iam-service-account"
+  for_each = (
+    lookup(local.cicd_repositories, "networking", null) == null
+    ? {}
+    : { 0 = local.cicd_repositories.networking }
+  )
+  project_id  = var.automation.project_id
+  name        = "prod-resman-net-1"
+  description = "Terraform CI/CD stage 2 networking service account."
+  prefix      = var.prefix
+  iam = {
+    "roles/iam.workloadIdentityUser" = [
+      each.value.branch == null
+      ? format(
+        local.identity_providers[each.value.identity_provider].principalset_tpl,
+        var.automation.federated_identity_pool,
+        each.value.name
+      )
+      : format(
+        local.identity_providers[each.value.identity_provider].principal_tpl,
+        var.automation.federated_identity_pool,
+        each.value.name,
+        each.value.branch
+      )
+    ]
+  }
+  iam_storage_roles = {
+    (var.automation.outputs_bucket) = ["roles/storage.objectViewer"]
   }
 }

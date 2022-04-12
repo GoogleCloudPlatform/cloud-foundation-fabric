@@ -30,6 +30,7 @@ module "automation-project" {
     ]
     (local.groups.gcp-organization-admins) = [
       "roles/iam.serviceAccountTokenCreator",
+      "roles/iam.workloadIdentityPoolAdmin"
     ]
   }
   # machine (service accounts) IAM bindings
@@ -38,6 +39,9 @@ module "automation-project" {
       module.automation-tf-bootstrap-sa.iam_email
     ]
     "roles/iam.serviceAccountAdmin" = [
+      module.automation-tf-resman-sa.iam_email
+    ]
+    "roles/iam.workloadIdentityPoolAdmin" = [
       module.automation-tf-resman-sa.iam_email
     ]
     "roles/storage.admin" = [
@@ -57,13 +61,26 @@ module "automation-project" {
     "compute.googleapis.com",
     "essentialcontacts.googleapis.com",
     "iam.googleapis.com",
+    "iamcredentials.googleapis.com",
     "pubsub.googleapis.com",
     "servicenetworking.googleapis.com",
     "serviceusage.googleapis.com",
     "stackdriver.googleapis.com",
     "storage-component.googleapis.com",
     "storage.googleapis.com",
+    "sts.googleapis.com"
   ]
+}
+
+# outputt files bucket
+
+module "automation-tf-output-gcs" {
+  source     = "../../../modules/gcs"
+  project_id = module.automation-project.project_id
+  name       = "iac-core-outputs-0"
+  prefix     = local.prefix
+  versioning = true
+  depends_on = [module.organization]
 }
 
 # this stage's bucket and service account
@@ -83,6 +100,14 @@ module "automation-tf-bootstrap-sa" {
   name        = "bootstrap-0"
   description = "Terraform organization bootstrap service account."
   prefix      = local.prefix
+  iam = {
+    "roles/iam.serviceAccountTokenCreator" = compact([
+      try(module.automation-tf-cicd-sa["bootstrap"].iam_email, null)
+    ])
+  }
+  iam_storage_roles = {
+    (module.automation-tf-output-gcs.name) = ["roles/storage.admin"]
+  }
 }
 
 # resource hierarchy stage's bucket and service account
@@ -103,6 +128,14 @@ module "automation-tf-resman-sa" {
   source      = "../../../modules/iam-service-account"
   project_id  = module.automation-project.project_id
   name        = "resman-0"
-  description = "Terraform organization bootstrap service account."
+  description = "Terraform stage 1 resman service account."
   prefix      = local.prefix
+  iam = {
+    "roles/iam.serviceAccountTokenCreator" = compact([
+      try(module.automation-tf-cicd-sa["resman"].iam_email, null)
+    ])
+  }
+  iam_storage_roles = {
+    (module.automation-tf-output-gcs.name) = ["roles/storage.admin"]
+  }
 }

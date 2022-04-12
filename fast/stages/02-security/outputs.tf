@@ -39,13 +39,19 @@ locals {
   }
 }
 
-# optionally generate files for subsequent stages
+# generate files for subsequent stages
 
 resource "local_file" "tfvars" {
   for_each        = var.outputs_location == null ? {} : { 1 = 1 }
   file_permission = "0644"
   filename        = "${pathexpand(var.outputs_location)}/tfvars/02-security.auto.tfvars.json"
   content         = jsonencode(local.tfvars)
+}
+
+resource "google_storage_bucket_object" "tfvars" {
+  bucket  = var.automation.outputs_bucket
+  name    = "tfvars/02-security.auto.tfvars.json"
+  content = jsonencode(local.tfvars)
 }
 
 # outputs

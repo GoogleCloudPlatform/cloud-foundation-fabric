@@ -136,8 +136,8 @@ module "bucket-gcs-notification" {
 |---|---|:---:|
 | [bucket](outputs.tf#L17) | Bucket resource. |  |
 | [name](outputs.tf#L22) | Bucket name. |  |
-| [notification](outputs.tf#L26) | GCS Notification self link. |  |
-| [topic](outputs.tf#L30) | Topic ID used by GCS. |  |
-| [url](outputs.tf#L34) | Bucket URL. |  |
+| [notification](outputs.tf#L30) | GCS Notification self link. |  |
+| [topic](outputs.tf#L34) | Topic ID used by GCS. |  |
+| [url](outputs.tf#L38) | Bucket URL. |  |
 
 <!-- END TFDOC -->
