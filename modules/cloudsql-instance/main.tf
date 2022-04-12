@@ -39,10 +39,12 @@ locals {
 }
 
 resource "google_sql_database_instance" "primary" {
-  project          = var.project_id
-  name             = "${local.prefix}${var.name}"
-  region           = var.region
-  database_version = var.database_version
+  provider            = google-beta
+  project             = var.project_id
+  name                = "${local.prefix}${var.name}"
+  region              = var.region
+  database_version    = var.database_version
+  encryption_key_name = var.encryption_key_name
 
   settings {
     tier              = var.tier
@@ -99,11 +101,13 @@ resource "google_sql_database_instance" "primary" {
 }
 
 resource "google_sql_database_instance" "replicas" {
-  for_each             = local.has_replicas ? var.replicas : {}
+  provider             = google-beta
+  for_each             = length(var.replicas) > 0 ? var.replicas : {}
   project              = var.project_id
   name                 = "${local.prefix}${each.key}"
-  region               = each.value
+  region               = each.value.region
   database_version     = var.database_version
+  encryption_key_name  = each.value.encryption_key_name
   master_instance_name = google_sql_database_instance.primary.name
 
   settings {
