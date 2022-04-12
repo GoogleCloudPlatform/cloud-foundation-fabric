@@ -194,6 +194,27 @@ variable "subnets_l7ilb" {
   default = []
 }
 
+variable "subnets_l7rlb" {
+  description = "List of proxy-only subnets for HTTPS regional load balancers. Note: Only one proxy-only subnet for each VPC network in each region can be active."
+  type = list(object({
+    active        = bool
+    name          = string
+    ip_cidr_range = string
+    region        = string
+  }))
+  default = []
+}
+
+variable "subnets_psc" {
+  description = "List of subnets for Private Service Connect service producers."
+  type = list(object({
+    name          = string
+    ip_cidr_range = string
+    region        = string
+  }))
+  default = []
+}
+
 variable "vpc_create" {
   description = "Create VPC. When set to false, uses a data source to reference existing VPC."
   type        = bool

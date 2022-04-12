@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 - CloudSQ: fixed Terraform change detection when backup is disabled
 - Allow multiple CIDR blocks in the ip_range for Apigee Instance
 - Add prefix to project factory SA bindings 
+- Add support for Private Service Connect and Reginal Managed Proxy subnets for `net-vpc` module
 
 **FAST**
 
