@@ -5,8 +5,10 @@ This example creates a [Cloud SQL instance](https://cloud.google.com/sql) with m
 The solution is resilient to a regional outage. To get familiar with the procedure needed in the unfortunate case of a disaster recovery, please follow steps described in [part two](https://cloud.google.com/architecture/cloud-sql-postgres-disaster-recovery-complete-failover-fallback#phase-2) of the aforementioned article.
 
 The solution will use:
-- A VPC with Private Service Access to deploy the instances
-- Postgre SQL instanced with Private IP
+- VPC with Private Service Access to deploy the instances and VM
+- Cloud SQL - Postgre SQL instanced with Private IP
+- Goocle Cloud Storage bucket to handle database import/export
+- Google Cloud Engine instance to connect to the Posgre SQL instance
 
 This is the high level diagram:
 
