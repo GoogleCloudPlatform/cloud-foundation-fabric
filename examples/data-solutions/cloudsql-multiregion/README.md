@@ -32,13 +32,30 @@ $ terraform apply
 
 You should see the output of the Terraform script with resources created and some commands that you'll need in the following steps below.
 
-TBC
-
 ## Move to real use case consideration
 
 This implementation is intentionally minimal and easy to read. A real world use case should consider:
  - Using a Shared VPC
  - Using VPC-SC to mitigate data exfiltration
+
+## Test your environment
+We assume all those steps are run using a user listed on `data_eng_principals`. You can authenticate as the user using the following command:
+
+```
+$ gcloud init
+$ gcloud auth application-default login
+```
+
+Below you can find commands to connect to the VM instance and Cloud SQL instance.
+
+```
+  $ gcloud compute ssh sql-test --project PROJECT_ID --zone ZONE
+  sql-test:~$ cloud_sql_proxy -instances=CLOUDSQL_INSTANCE=tcp:5432
+  sql-test:~$ psql 'host=127.0.0.1 port=5432 sslmode=disable dbname=DATABASE user=USER'
+```
+
+You can find computed commands on the Terraform `demo_commands` output.
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
