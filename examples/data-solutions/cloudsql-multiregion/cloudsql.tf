@@ -18,7 +18,7 @@ module "db" {
   availability_type   = var.sql_configuration.availability_type
   encryption_key_name = var.cmek_encryption ? module.kms[var.regions.primary].keys.key.id : null
   network             = module.vpc.self_link
-  name                = "${var.prefix}-db-04"
+  name                = "${var.prefix}-db"
   region              = var.regions.primary
   database_version    = var.sql_configuration.database_version
   tier                = var.sql_configuration.tier
