@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
-variable "cloudsql_psa_range" {
-  description = "Range used for the Private Service Access."
-  type        = string
-  default     = "10.60.0.0/16"
+variable "cmek_encryption" {
+  description = "Flag to enable CMEK on GCP resources created."
+  type        = bool
+  default     = false
 }
 
-variable "database_version" {
-  description = "Database type and version to create."
-  type        = string
-  default     = "POSTGRES_13"
+variable "data_eng_principals" {
+  description = "Groups with Service Account Token creator role on service accounts in IAM format, only user supported on CloudSQL, eg 'user@domain.com'."
+  type        = list(string)
+  default     = []
 }
 
+variable "postgres_user_password" {
+  description = "`postgres` user password."
+  type        = string
+}
 variable "prefix" {
   description = "Unique prefix used for resource names. Not used for project if 'project_create' is null."
   type        = string
@@ -58,8 +62,19 @@ variable "regions" {
   }
 }
 
-variable "tier" {
-  description = "The machine type to use for the instances. See See https://cloud.google.com/sql/docs/postgres/create-instance#machine-types."
-  type        = string
-  default     = "db-g1-small"
+
+variable "sql_configuration" {
+  description = "Cloud SQL configuration"
+  type = object({
+    availability_type = string
+    database_version  = string
+    psa_range         = string
+    tier              = string
+  })
+  default = {
+    availability_type = "REGIONAL"
+    database_version  = "POSTGRES_13"
+    psa_range         = "10.60.0.0/16"
+    tier              = "db-g1-small"
+  }
 }
