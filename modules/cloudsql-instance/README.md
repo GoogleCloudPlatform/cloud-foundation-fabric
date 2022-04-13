@@ -94,7 +94,7 @@ module "db" {
 # tftest modules=1 resources=6
 ```
 
-### CMEK encryption pippo
+### CMEK encryption
 ```hcl
 
 module "project" {
