@@ -36,6 +36,11 @@ locals {
       local.data_eng_principals_iam,
       [module.service-account-sql.iam_email]
     )
+    # compute engeneering 
+    "roles/compute.instanceAdmin.v1"   = local.data_eng_principals_iam
+    "roles/compute.osLogin"            = local.data_eng_principals_iam
+    "roles/compute.viewer"             = local.data_eng_principals_iam
+    "roles/iap.tunnelResourceAccessor" = local.data_eng_principals_iam
     # common roles
     "roles/logging.admin" = local.data_eng_principals_iam
     "roles/iam.serviceAccountUser" = concat(
