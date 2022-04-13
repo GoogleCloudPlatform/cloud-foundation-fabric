@@ -150,6 +150,7 @@ locals {
   tfvars = {
     folder_ids       = local.folder_ids
     service_accounts = local.service_accounts
+    tag_names        = var.tag_names
   }
 }
 

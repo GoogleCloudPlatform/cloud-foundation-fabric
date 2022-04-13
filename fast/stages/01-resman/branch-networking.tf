@@ -39,7 +39,9 @@ module "branch-network-folder" {
     "roles/compute.xpnAdmin"               = [module.branch-network-sa.iam_email]
   }
   tag_bindings = {
-    context = try(module.organization.tag_values["context/networking"].id, null)
+    context = try(
+      module.organization.tag_values["${var.tag_names.context}/networking"].id, null
+    )
   }
 }
 
@@ -54,7 +56,9 @@ module "branch-network-prod-folder" {
     ]
   }
   tag_bindings = {
-    environment = try(module.organization.tag_values["environment/production"].id, null)
+    environment = try(
+      module.organization.tag_values["${var.tag_names.environment}/production"].id, null
+    )
   }
 }
 
@@ -69,7 +73,9 @@ module "branch-network-dev-folder" {
     ]
   }
   tag_bindings = {
-    environment = try(module.organization.tag_values["environment/development"].id, null)
+    environment = try(
+      module.organization.tag_values["${var.tag_names.environment}/development"].id, null
+    )
   }
 }
 
