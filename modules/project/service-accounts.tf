@@ -42,7 +42,9 @@ locals {
     gcf           = "service-%s@gcf-admin-robot"
     pubsub        = "service-%s@gcp-sa-pubsub"
     secretmanager = "service-%s@gcp-sa-secretmanager"
+    sql           = "service-%s@gcp-sa-cloud-sql"
     storage       = "service-%s@gs-project-accounts"
+    sqladmin      = "service-%s@gcp-sa-cloud-sql"
   }
   service_accounts_default = {
     compute = "${local.project.number}-compute@developer.gserviceaccount.com"
@@ -56,9 +58,10 @@ locals {
     k => "${format(v, local.project.number)}.iam.gserviceaccount.com"
   }
   service_accounts_jit_services = [
-    "secretmanager.googleapis.com",
+    "cloudasset.googleapis.com",
     "pubsub.googleapis.com",
-    "cloudasset.googleapis.com"
+    "secretmanager.googleapis.com",
+    "sqladmin.googleapis.com"
   ]
   service_accounts_cmek_service_keys = distinct(flatten([
     for s in keys(var.service_encryption_key_ids) : [

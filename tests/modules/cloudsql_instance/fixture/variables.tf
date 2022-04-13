@@ -94,7 +94,7 @@ variable "region" {
 }
 
 variable "replicas" {
-  type    = map(any)
+  type    = any
   default = null
 }
 
