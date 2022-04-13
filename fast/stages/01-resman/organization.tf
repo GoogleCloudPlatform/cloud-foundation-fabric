@@ -151,7 +151,7 @@ module "organization" {
     # )
   }
   tags = {
-    context = {
+    (var.tag_names.context) = {
       description = "Resource management context."
       iam         = {}
       values = {
@@ -163,7 +163,7 @@ module "organization" {
         teams      = null
       }
     }
-    environment = {
+    (var.tag_names.environment) = {
       description = "Environment definition."
       iam         = {}
       values = {
@@ -190,9 +190,9 @@ resource "google_organization_iam_member" "org_policy_admin" {
     title       = "org_policy_tag_scoped"
     description = "Org policy tag scoped grant for ${each.value.0}/${each.value.1}."
     expression  = <<-END
-    resource.matchTag('${var.organization.id}/context', '${each.value.0}')
+    resource.matchTag('${var.organization.id}/${var.tag_names.context}', '${each.value.0}')
     &&
-    resource.matchTag('${var.organization.id}/environment', '${each.value.1}')
+    resource.matchTag('${var.organization.id}/${var.tag_names.environment}', '${each.value.1}')
     END
   }
 }
