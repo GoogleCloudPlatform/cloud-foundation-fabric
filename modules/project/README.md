@@ -4,7 +4,7 @@ This module implements the creation and management of one GCP project including 
 
 ## IAM Examples
 
-IAM is controlled via several variables that implement different levels of control:
+IAM is managed via several variables that implement different levels of control:
 
 - `group_iam` and `iam` configure authoritative bindings that manage individual roles exclusively, mapping to the [`google_project_iam_binding`](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_iam#google_project_iam_binding) resource
 - `iam_additive` and `iam_additive_members` configure additive bindings that only manage individual role/member pairs, mapping to the [`google_project_iam_member`](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_iam#google_project_iam_member) resource
