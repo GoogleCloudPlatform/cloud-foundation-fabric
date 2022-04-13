@@ -171,6 +171,38 @@ module "vpc" {
 # tftest modules=1 resources=5
 ```
 
+### Subnets for Private Service Connect, Proxy-only subnets
+
+Along with common private subnets module supports creation more service specific subnets for the following purposes:
+
+ - [Proxy-only subnets](https://cloud.google.com/load-balancing/docs/proxy-only-subnets) for Regional HTTPS Internal HTTPS Load Balancers
+ - [Private Service Connect](https://cloud.google.com/vpc/docs/private-service-connect#psc-subnets) subnets
+
+```hcl
+module "vpc" {
+  source     = "./modules/net-vpc"
+  project_id = "my-project"
+  name       = "my-network"
+
+  subnets_proxy_only = [
+    {
+      ip_cidr_range = "10.0.1.0/24"
+      name          = "regional-proxy"
+      region        = "europe-west1"
+      active        = true
+    }
+  ]
+  subnets_psc = [
+    {
+      ip_cidr_range = "10.0.3.0/24"
+      name          = "psc"
+      region        = "europe-west1"
+    }
+  ]
+}
+# tftest modules=1 resources=3
+```
+
 ### DNS Policies
 
 ```hcl
@@ -257,10 +289,9 @@ flow_logs:                        # enable, set to empty map to use defaults
 | [subnet_flow_logs](variables.tf#L163) | Optional map of boolean to control flow logs (default is disabled), keyed by subnet 'region/name'. | <code>map&#40;bool&#41;</code> |  | <code>&#123;&#125;</code> |
 | [subnet_private_access](variables.tf#L169) | Optional map of boolean to control private Google access (default is enabled), keyed by subnet 'region/name'. | <code>map&#40;bool&#41;</code> |  | <code>&#123;&#125;</code> |
 | [subnets](variables.tf#L175) | List of subnets being created. | <code title="list&#40;object&#40;&#123;&#10;  name               &#61; string&#10;  ip_cidr_range      &#61; string&#10;  region             &#61; string&#10;  secondary_ip_range &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
-| [subnets_l7ilb](variables.tf#L186) | List of subnets for private HTTPS load balancer. | <code title="list&#40;object&#40;&#123;&#10;  active        &#61; bool&#10;  name          &#61; string&#10;  ip_cidr_range &#61; string&#10;  region        &#61; string&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
-| [subnets_l7rlb](variables.tf#L197) | List of proxy-only subnets for HTTPS regional load balancers. Note: Only one proxy-only subnet for each VPC network in each region can be active. | <code title="list&#40;object&#40;&#123;&#10;  active        &#61; bool&#10;  name          &#61; string&#10;  ip_cidr_range &#61; string&#10;  region        &#61; string&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
-| [subnets_psc](variables.tf#L208) | List of subnets for Private Service Connect service producers. | <code title="list&#40;object&#40;&#123;&#10;  name          &#61; string&#10;  ip_cidr_range &#61; string&#10;  region        &#61; string&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
-| [vpc_create](variables.tf#L218) | Create VPC. When set to false, uses a data source to reference existing VPC. | <code>bool</code> |  | <code>true</code> |
+| [subnets_proxy_only](variables.tf#L186) | List of proxy-only subnets for Regional HTTPS  or Internal HTTPS load balancers. Note: Only one proxy-only subnet for each VPC network in each region can be active. | <code title="list&#40;object&#40;&#123;&#10;  active        &#61; bool&#10;  name          &#61; string&#10;  ip_cidr_range &#61; string&#10;  region        &#61; string&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
+| [subnets_psc](variables.tf#L197) | List of subnets for Private Service Connect service producers. | <code title="list&#40;object&#40;&#123;&#10;  name          &#61; string&#10;  ip_cidr_range &#61; string&#10;  region        &#61; string&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
+| [vpc_create](variables.tf#L207) | Create VPC. When set to false, uses a data source to reference existing VPC. | <code>bool</code> |  | <code>true</code> |
 
 ## Outputs
 
@@ -276,7 +307,8 @@ flow_logs:                        # enable, set to empty map to use defaults
 | [subnet_secondary_ranges](outputs.tf#L85) | Map of subnet secondary ranges keyed by name. |  |
 | [subnet_self_links](outputs.tf#L96) | Map of subnet self links keyed by name. |  |
 | [subnets](outputs.tf#L102) | Subnet resources. |  |
-| [subnets_l7ilb](outputs.tf#L107) | L7 ILB subnet resources. |  |
+| [subnets_proxy_only](outputs.tf#L107) | L7 ILB or L7 Regional LB subnet resources. |  |
+| [subnets_psc](outputs.tf#L112) | Private Service Connect subnet resources. |  |
 
 <!-- END TFDOC -->
 The key format is `subnet_region/subnet_name`. For example `europe-west1/my_subnet`.

@@ -85,12 +85,8 @@ locals {
     { for subnet in var.subnets : "${subnet.region}/${subnet.name}" => subnet },
     local._factory_subnets
   )
-  subnets_l7ilb = {
-    for subnet in var.subnets_l7ilb :
-    "${subnet.region}/${subnet.name}" => subnet
-  }
-  subnets_l7rlb = {
-    for subnet in var.subnets_l7rlb :
+  subnets_proxy_only = {
+    for subnet in var.subnets_proxy_only :
     "${subnet.region}/${subnet.name}" => subnet
   }
   subnets_psc = {
@@ -131,28 +127,8 @@ resource "google_compute_subnetwork" "subnetwork" {
   }
 }
 
-resource "google_compute_subnetwork" "l7ilb" {
-  provider      = google-beta
-  for_each      = local.subnets_l7ilb
-  project       = var.project_id
-  network       = local.network.name
-  region        = each.value.region
-  name          = each.value.name
-  ip_cidr_range = each.value.ip_cidr_range
-  purpose       = "INTERNAL_HTTPS_LOAD_BALANCER"
-  role = (
-    each.value.active || each.value.active == null ? "ACTIVE" : "BACKUP"
-  )
-  description = lookup(
-    local.subnet_descriptions,
-    "${each.value.region}/${each.value.name}",
-    "Terraform-managed."
-  )
-}
-
-resource "google_compute_subnetwork" "l7rlb" {
-  provider      = google-beta
-  for_each      = local.subnets_l7rlb
+resource "google_compute_subnetwork" "proxy_only" {
+  for_each      = local.subnets_proxy_only
   project       = var.project_id
   network       = local.network.name
   region        = each.value.region
@@ -165,12 +141,11 @@ resource "google_compute_subnetwork" "l7rlb" {
   description = lookup(
     local.subnet_descriptions,
     "${each.value.region}/${each.value.name}",
-    "Terraform-managed."
+    "Terraform-managed proxy-only subnet for Regional HTTPS or Internal HTTPS LB."
   )
 }
 
 resource "google_compute_subnetwork" "psc" {
-  provider      = google-beta
   for_each      = local.subnets_psc
   project       = var.project_id
   network       = local.network.name
@@ -181,7 +156,7 @@ resource "google_compute_subnetwork" "psc" {
   description = lookup(
     local.subnet_descriptions,
     "${each.value.region}/${each.value.name}",
-    "Terraform-managed."
+    "Terraform-managed subnet for Private Service Connect (PSC NAT)."
   )
 }
 

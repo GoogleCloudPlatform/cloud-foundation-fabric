@@ -7,8 +7,9 @@ All notable changes to this project will be documented in this file.
 - SQL Server AlwaysOn availability groups example
 - CloudSQ: fixed Terraform change detection when backup is disabled
 - Allow multiple CIDR blocks in the ip_range for Apigee Instance
-- Add prefix to project factory SA bindings 
-- Add support for Private Service Connect and Reginal Managed Proxy subnets for `net-vpc` module
+- Add prefix to project factory SA bindings
+- **incompatible change** `subnets_l7ilb` variable is deprecated in the `net-vpc` module, instead `subnets_proxy_only` variable [should be used](https://cloud.google.com/load-balancing/docs/proxy-only-subnets#proxy_only_subnet_create)
+- Add support for [Private Service Connect](https://cloud.google.com/vpc/docs/private-service-connect#psc-subnets) and [Proxy-only](https://cloud.google.com/load-balancing/docs/proxy-only-subnets) subnets to `net-vpc` module
 
 **FAST**
 
