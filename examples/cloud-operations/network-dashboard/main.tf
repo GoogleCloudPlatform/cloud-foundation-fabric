@@ -15,8 +15,9 @@
  */
 
 locals {
-  project_id_list = toset(var.monitored_projects_list)
-  projects        = join(",", local.project_id_list)
+  project_id_list    = toset(var.monitored_projects_list)
+  projects           = join(",", local.project_id_list)
+  monitoring_project = var.monitoring_project_id == "" ? module.project-monitoring[0].project_id : var.monitoring_project_id
 }
 
 ################################################
@@ -24,6 +25,7 @@ locals {
 ################################################
 
 module "project-monitoring" {
+  count           = var.monitoring_project_id == "" ? 1 : 0
   source          = "../../../modules/project"
   name            = "monitoring"
   parent          = "organizations/${var.organization_id}"
@@ -38,7 +40,7 @@ module "project-monitoring" {
 
 module "service-account-function" {
   source       = "../../../modules/iam-service-account"
-  project_id   = module.project-monitoring.project_id
+  project_id   = local.monitoring_project
   name         = "sa-dash"
   generate_key = false
 
@@ -54,7 +56,7 @@ module "service-account-function" {
   }
 
   iam_project_roles = {
-    "${module.project-monitoring.project_id}" = [
+    "${local.monitoring_project}" = [
       "roles/monitoring.metricWriter"
     ]
   }
@@ -66,7 +68,7 @@ module "service-account-function" {
 
 module "pubsub" {
   source     = "../../../modules/pubsub"
-  project_id = module.project-monitoring.project_id
+  project_id = local.monitoring_project
   name       = "network-dashboard-pubsub"
   subscriptions = {
     "network-dashboard-pubsub-default" = null
@@ -76,7 +78,7 @@ module "pubsub" {
 }
 
 resource "google_cloud_scheduler_job" "job" {
-  project   = module.project-monitoring.project_id
+  project   = local.monitoring_project
   region    = var.region
   name      = "network-dashboard-scheduler"
   schedule  = var.schedule_cron
@@ -90,9 +92,9 @@ resource "google_cloud_scheduler_job" "job" {
 
 module "cloud-function" {
   source      = "../../../modules/cloud-function"
-  project_id  = module.project-monitoring.project_id
+  project_id  = local.monitoring_project
   name        = "network-dashboard-cloud-function"
-  bucket_name = "network-dashboard-bucket"
+  bucket_name = "${local.monitoring_project}-network-dashboard-bucket"
   bucket_config = {
     location             = var.region
     lifecycle_delete_age = null
@@ -114,7 +116,7 @@ module "cloud-function" {
 
   environment_variables = {
     MONITORED_PROJECTS_LIST = local.projects
-    MONITORING_PROJECT_ID   = module.project-monitoring.project_id
+    MONITORING_PROJECT_ID   = local.monitoring_project
     ORGANIZATION_ID         = var.organization_id
   }
 
@@ -133,5 +135,5 @@ module "cloud-function" {
 
 resource "google_monitoring_dashboard" "dashboard" {
   dashboard_json = file("${path.module}/dashboards/quotas-utilization.json")
-  project        = module.project-monitoring.project_id
+  project        = local.monitoring_project
 }
