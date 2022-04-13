@@ -35,8 +35,8 @@ def test_prefix(plan_runner):
   assert r['values']['name'] == 'prefix-db'
 
   replicas = """{
-    replica1 = "europe-west3"
-    replica2 = "us-central1"
+    replica1 = { region = "europe-west3", encryption_key_name = null }
+    replica2 = { region = "us-central1", encryption_key_name = null }
   }"""
 
   _, resources = plan_runner(prefix="prefix")
@@ -49,8 +49,8 @@ def test_replicas(plan_runner):
   "Test replicated instance."
 
   replicas = """{
-    replica1 = "europe-west3"
-    replica2 = "us-central1"
+    replica1 = { region = "europe-west3", encryption_key_name = null }
+    replica2 = { region = "us-central1", encryption_key_name = null }
   }"""
 
   _, resources = plan_runner(replicas=replicas, prefix="prefix")
@@ -80,10 +80,9 @@ def test_mysql_replicas_enables_backup(plan_runner):
   "Test MySQL backup setup with replicas."
 
   replicas = """{
-    replica1 = "europe-west3"
+    replica1 = { region = "europe-west3", encryption_key_name = null }
   }"""
-  _, resources = plan_runner(replicas=replicas,
-                             database_version="MYSQL_8_0")
+  _, resources = plan_runner(replicas=replicas, database_version="MYSQL_8_0")
   assert len(resources) == 2
   primary = [r for r in resources if r['name'] == 'primary'][0]
   backup_config = primary['values']['settings'][0]['backup_configuration'][0]

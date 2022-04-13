@@ -66,6 +66,19 @@ output "ips" {
   }
 }
 
+output "name" {
+  description = "Name of the primary instance."
+  value       = google_sql_database_instance.primary.name
+}
+
+output "names" {
+  description = "Names of all instances."
+  value = {
+    for id, instance in local._all_intances :
+    id => instance.name
+  }
+}
+
 output "self_link" {
   description = "Self link of the primary instance."
   value       = google_sql_database_instance.primary.self_link
