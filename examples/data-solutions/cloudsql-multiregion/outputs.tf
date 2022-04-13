@@ -28,3 +28,12 @@ output "project_id" {
   description = "ID of the project containing all the instances."
   value       = module.project.project_id
 }
+
+output "demo_commands" {
+  description = "Demo commands."
+  value = {
+    01 = "gcloud compute ssh ${module.test-vm.instance.name} --project ${module.project.name} --zone ${var.regions.primary}-b"
+    02 = "cloud_sql_proxy -instances=${module.db.connection_name}=tcp:5432 &"
+    03 = "psql 'host=127.0.0.1 port=5432 sslmode=disable dbname=${var.postgres_database} user=postgres'"
+  }
+}
