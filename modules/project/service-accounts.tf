@@ -44,6 +44,7 @@ locals {
     secretmanager = "service-%s@gcp-sa-secretmanager"
     sql           = "service-%s@gcp-sa-cloud-sql"
     storage       = "service-%s@gs-project-accounts"
+    sqladmin      = "service-%s@gcp-sa-cloud-sql"
   }
   service_accounts_default = {
     compute = "${local.project.number}-compute@developer.gserviceaccount.com"

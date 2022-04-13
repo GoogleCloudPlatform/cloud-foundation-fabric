@@ -102,7 +102,7 @@ resource "google_sql_database_instance" "primary" {
 
 resource "google_sql_database_instance" "replicas" {
   provider             = google-beta
-  for_each             = length(var.replicas) > 0 ? var.replicas : {}
+  for_each             = local.has_replicas ? var.replicas : {}
   project              = var.project_id
   name                 = "${local.prefix}${each.key}"
   region               = each.value.region
