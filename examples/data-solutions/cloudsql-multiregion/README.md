@@ -55,7 +55,6 @@ Below you can find commands to connect to the VM instance and Cloud SQL instance
 ```
 
 You can find computed commands on the Terraform `demo_commands` output.
-
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -67,7 +66,7 @@ You can find computed commands on the Terraform `demo_commands` output.
 | [project_id](variables.tf#L54) | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
 | [cmek_encryption](variables.tf#L17) | Flag to enable CMEK on GCP resources created. | <code>bool</code> |  | <code>false</code> |
 | [data_eng_principals](variables.tf#L23) | Groups with Service Account Token creator role on service accounts in IAM format, only user supported on CloudSQL, eg 'user@domain.com'. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [postgres_databases](variables.tf#L34) | `postgres` databases. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;guestbook&#34;&#93;</code> |
+| [postgres_database](variables.tf#L34) | `postgres` database. | <code>string</code> |  | <code>&#34;guestbook&#34;</code> |
 | [project_create](variables.tf#L45) | Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [regions](variables.tf#L59) | Map of instance_name => location where instances will be deployed. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  primary &#61; &#34;europe-west1&#34;&#10;  replica &#61; &#34;europe-west3&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [sql_configuration](variables.tf#L73) | Cloud SQL configuration | <code title="object&#40;&#123;&#10;  availability_type &#61; string&#10;  database_version  &#61; string&#10;  psa_range         &#61; string&#10;  tier              &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  availability_type &#61; &#34;REGIONAL&#34;&#10;  database_version  &#61; &#34;POSTGRES_13&#34;&#10;  psa_range         &#61; &#34;10.60.0.0&#47;16&#34;&#10;  tier              &#61; &#34;db-g1-small&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
@@ -77,6 +76,7 @@ You can find computed commands on the Terraform `demo_commands` output.
 | name | description | sensitive |
 |---|---|:---:|
 | [connection_names](outputs.tf#L17) | Connection name of each instance. |  |
+| [demo_commands](outputs.tf#L32) | Demo commands. |  |
 | [ips](outputs.tf#L22) | IP address of each instance. |  |
 | [project_id](outputs.tf#L27) | ID of the project containing all the instances. |  |
 
