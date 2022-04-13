@@ -1,6 +1,6 @@
 # Project Module
 
-This module implements creation of management of one GCP project including IAM, organization policies, Shared VPC host or service attachment, service API activation, and tag attachment. It also offers a convenient way to refer to managed service identities (aka robot service accounts) for APIs.
+This module implements the creation and management of one GCP project including IAM, organization policies, Shared VPC host or service attachment, service API activation, and tag attachment. It also offers a convenient way to refer to managed service identities (aka robot service accounts) for APIs.
 
 ## IAM Examples
 
@@ -9,7 +9,7 @@ IAM is controlled via several variables that implement different levels of contr
 - `group_iam` and `iam` configure authoritative bindings that manage individual roles exclusively, mapping to the [`google_project_iam_binding`](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_iam#google_project_iam_binding) resource
 - `iam_additive` and `iam_additive_members` configure additive bindings that only manage individual role/member pairs, mapping to the [`google_project_iam_member`](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_iam#google_project_iam_member) resource
 
-Be mindful about the service identity roles when using authoritative IAM, as you might inadvertently remove a role from a [service identity](https://cloud.google.com/iam/docs/service-accounts#google-managed) or default service account, for example `roles/editor` for the Cloud Services identity. A simple workaround for these scenarios is described below.
+Be mindful about the service identity roles when using authoritative IAM, as you might end up inadvertently removing a role from a [service identity](https://cloud.google.com/iam/docs/service-accounts#google-managed) or default service account. For example, using `roles/editor` with `iam` or `group_iam` will remove the default permissions for the Cloud Services identity. A simple workaround for these scenarios is described below.
 
 ### Authoritative IAM
 
@@ -39,7 +39,7 @@ module "project" {
 # tftest modules=1 resources=4
 ```
 
-The `group_iam` variable is based on group email address keys and is a convenient way to assign roles to humans following our best practice, and to produce readable code that also serves as documentation.
+The `group_iam` variable uses group email addresses as keys and is a convenient way to assign roles to humans following Google's best practices. The end result is readable code that also serves as documentation.
 
 ```hcl
 module "project" {
@@ -58,7 +58,7 @@ module "project" {
       "roles/cloudsupport.techSupportEditor",
       "roles/iam.securityReviewer",
       "roles/logging.admin",
-    ]    
+    ]
   }
 }
 # tftest modules=1 resources=7
@@ -66,7 +66,7 @@ module "project" {
 
 ### Additive IAM
 
-Additive IAM is typically used where bindings for specific roles are controlled by different modules or in different Terraform setups. One example is when the project is created by one team but a different team manages service account creation for the project, and some of the project-level roles overlap in the two configuration.
+Additive IAM is typically used where bindings for specific roles are controlled by different modules or in different Terraform stages. One example is when the project is created by one team but a different team manages service account creation for the project, and some of the project-level roles overlap in the two configurations.
 
 ```hcl
 module "project" {
@@ -263,7 +263,7 @@ module "project-host" {
 
 ## Cloud KMS encryption keys
 
-The module offers a simple centralized way to assign `roles/cloudkms.cryptoKeyEncrypterDecrypter` to service identities.
+The module offers a simple, centralized way to assign `roles/cloudkms.cryptoKeyEncrypterDecrypter` to service identities.
 
 ```hcl
 module "project" {
@@ -323,7 +323,7 @@ module "project" {
 
 Most of this module's outputs depend on its resources, to allow Terraform to compute all dependencies required for the project to be correctly configured. This allows you to reference outputs like `project_id` in other modules or resources without having to worry about setting `depends_on` blocks manually.
 
-One non-obvious output is `service_accounts`, which offers simple discovery of service identities and default service accounts, and guarantees that service identities that require an API call to trigger creation (like GCS or BigQuery) exist before use.
+One non-obvious output is `service_accounts`, which offers simple way to discover service identities and default service accounts, and guarantees that service identities that require an API call to trigger creation (like GCS or BigQuery) exist before use.
 
 ```hcl
 module "project" {
