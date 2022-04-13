@@ -45,13 +45,15 @@ This implementation is intentionally minimal and easy to read. A real world use 
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [prefix](variables.tf#L29) | Unique prefix used for resource names. Not used for project if 'project_create' is null. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L43) | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
-| [cloudsql_psa_range](variables.tf#L17) | Range used for the Private Service Access. | <code>string</code> |  | <code>&#34;10.60.0.0&#47;16&#34;</code> |
-| [database_version](variables.tf#L23) | Database type and version to create. | <code>string</code> |  | <code>&#34;POSTGRES_13&#34;</code> |
-| [project_create](variables.tf#L34) | Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [regions](variables.tf#L48) | Map of instance_name => location where instances will be deployed. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  primary &#61; &#34;europe-west1&#34;&#10;  replica &#61; &#34;europe-west3&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [tier](variables.tf#L61) | The machine type to use for the instances. See See https://cloud.google.com/sql/docs/postgres/create-instance#machine-types. | <code>string</code> |  | <code>&#34;db-g1-small&#34;</code> |
+| [postgres_user_password](variables.tf#L29) | `postgres` user password. | <code>string</code> | ✓ |  |
+| [prefix](variables.tf#L40) | Unique prefix used for resource names. Not used for project if 'project_create' is null. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L54) | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
+| [cmek_encryption](variables.tf#L17) | Flag to enable CMEK on GCP resources created. | <code>bool</code> |  | <code>false</code> |
+| [data_eng_principals](variables.tf#L23) | Groups with Service Account Token creator role on service accounts in IAM format, only user supported on CloudSQL, eg 'user@domain.com'. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [postgres_databases](variables.tf#L34) | `postgres` databases. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;guestbook&#34;&#93;</code> |
+| [project_create](variables.tf#L45) | Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [regions](variables.tf#L59) | Map of instance_name => location where instances will be deployed. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  primary &#61; &#34;europe-west1&#34;&#10;  replica &#61; &#34;europe-west3&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [sql_configuration](variables.tf#L73) | Cloud SQL configuration | <code title="object&#40;&#123;&#10;  availability_type &#61; string&#10;  database_version  &#61; string&#10;  psa_range         &#61; string&#10;  tier              &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  availability_type &#61; &#34;REGIONAL&#34;&#10;  database_version  &#61; &#34;POSTGRES_13&#34;&#10;  psa_range         &#61; &#34;10.60.0.0&#47;16&#34;&#10;  tier              &#61; &#34;db-g1-small&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
 
 ## Outputs
 

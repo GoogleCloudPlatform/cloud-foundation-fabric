@@ -123,6 +123,7 @@ module "db" {
       encryption_key_name = var.cmek_encryption ? module.kms[v].keys.key.id : null
     } if k != "primary"
   }
+  databases = var.postgres_databases
   users = {
     postgres = var.postgres_user_password
   }

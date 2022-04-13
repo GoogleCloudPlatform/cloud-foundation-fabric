@@ -30,6 +30,13 @@ variable "postgres_user_password" {
   description = "`postgres` user password."
   type        = string
 }
+
+variable "postgres_databases" {
+  description = "`postgres` databases."
+  type        = list(string)
+  default     = ["guestbook"]
+}
+
 variable "prefix" {
   description = "Unique prefix used for resource names. Not used for project if 'project_create' is null."
   type        = string
