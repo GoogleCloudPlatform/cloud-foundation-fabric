@@ -31,10 +31,10 @@ variable "postgres_user_password" {
   type        = string
 }
 
-variable "postgres_databases" {
-  description = "`postgres` databases."
-  type        = list(string)
-  default     = ["guestbook"]
+variable "postgres_database" {
+  description = "`postgres` database."
+  type        = string
+  default     = "guestbook"
 }
 
 variable "prefix" {

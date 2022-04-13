@@ -1,5 +1,3 @@
-
-
 # Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -30,6 +28,7 @@ module "kms" {
   key_iam = {
     key = {
       "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
+        "serviceAccount:${module.project.service_accounts.robots.compute}",
         "serviceAccount:${module.project.service_accounts.robots.sql}",
         "serviceAccount:${module.project.service_accounts.robots.storage}"
       ]

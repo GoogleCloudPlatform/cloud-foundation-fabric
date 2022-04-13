@@ -26,7 +26,12 @@ locals {
       "serviceAccount:${module.project.service_accounts.robots.sql}",
       module.service-account-gcs.iam_email,
     ]
-    # CloudSQL 
+    # CloudSQL
+    "roles/cloudsql.admin" = local.data_eng_principals_iam
+    "roles/cloudsql.client" = concat(
+      local.data_eng_principals_iam,
+      [module.service-account-sql.iam_email]
+    )
     "roles/cloudsql.instanceUser" = concat(
       local.data_eng_principals_iam,
       [module.service-account-sql.iam_email]
@@ -82,6 +87,10 @@ module "project" {
   iam_additive    = var.project_create == null ? local.iam : {}
   services = [
     "cloudkms.googleapis.com",
+    "iap.googleapis.com",
+    "logging.googleapis.com",
+    "monitoring.googleapis.com",
+    "networkmanagement.googleapis.com",
     "servicenetworking.googleapis.com",
     "sqladmin.googleapis.com",
     "sql-component.googleapis.com",
@@ -97,74 +106,32 @@ module "vpc" {
   source     = "../../../modules/net-vpc"
   project_id = module.project.project_id
   name       = "vpc"
+  subnets = [
+    {
+      ip_cidr_range      = "10.0.0.0/20"
+      name               = "subnet"
+      region             = var.regions.primary
+      secondary_ip_range = {}
+    }
+  ]
+
   psa_config = {
     ranges = { cloud-sql = var.sql_configuration.psa_range }
     routes = null
   }
 }
 
-module "db" {
-  source              = "../../../modules/cloudsql-instance"
-  project_id          = module.project.project_id
-  availability_type   = var.sql_configuration.availability_type
-  encryption_key_name = var.cmek_encryption ? module.kms[var.regions.primary].keys.key.id : null
-  network             = module.vpc.self_link
-  name                = "${var.prefix}-db-04"
-  region              = var.regions.primary
-  database_version    = var.sql_configuration.database_version
-  tier                = var.sql_configuration.tier
-  flags = {
-    "cloudsql.iam_authentication" = "on"
-  }
-  replicas = {
-    for k, v in var.regions :
-    k => {
-      region              = v,
-      encryption_key_name = var.cmek_encryption ? module.kms[v].keys.key.id : null
-    } if k != "primary"
-  }
-  databases = var.postgres_databases
-  users = {
-    postgres = var.postgres_user_password
-  }
+module "firewall" {
+  source       = "../../../modules/net-vpc-firewall"
+  project_id   = module.project.project_id
+  network      = module.vpc.name
+  admin_ranges = ["10.0.0.0/20"]
 }
 
-resource "google_sql_user" "users" {
-  for_each = toset(var.data_eng_principals)
-  project  = module.project.project_id
-  name     = each.value
-  instance = module.db.name
-  type     = "CLOUD_IAM_USER"
-}
-
-resource "google_sql_user" "service-account" {
-  for_each = toset(var.data_eng_principals)
-  project  = module.project.project_id
-  # Omit the .gserviceaccount.com suffix in the email
-  name     = regex("(.+)(gserviceaccount)", module.service-account-sql.email)[0]
-  instance = module.db.name
-  type     = "CLOUD_IAM_SERVICE_ACCOUNT"
-}
-
-module "gcs" {
-  source         = "../../../modules/gcs"
+module "nat" {
+  source         = "../../../modules/net-cloudnat"
   project_id     = module.project.project_id
-  prefix         = var.prefix
-  name           = "data"
-  location       = var.regions.primary
-  storage_class  = "REGIONAL"
-  encryption_key = var.cmek_encryption ? module.kms[var.regions.primary].keys["key"].id : null
-  force_destroy  = true
-}
-
-module "service-account-gcs" {
-  source     = "../../../modules/iam-service-account"
-  project_id = module.project.project_id
-  name       = "${var.prefix}-gcs"
-}
-
-module "service-account-sql" {
-  source     = "../../../modules/iam-service-account"
-  project_id = module.project.project_id
-  name       = "${var.prefix}-sql"
+  region         = var.regions.primary
+  name           = "${var.prefix}-default"
+  router_network = module.vpc.name
 }
