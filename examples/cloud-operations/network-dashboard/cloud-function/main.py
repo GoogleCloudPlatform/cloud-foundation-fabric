@@ -371,7 +371,9 @@ def get_gce_instances_data(metrics_dict, gce_instance_dict, limit_dict):
     current_quota_limit = get_quota_current_limit(f"projects/{project}",
                                                   metric_instances_limit)
     if current_quota_limit is None:
-      print(f"Could not write number of instances for projects/{project} due to missing quotas")
+      print(
+          f"Could not write number of instances for projects/{project} due to missing quotas"
+      )
 
     current_quota_limit_view = customize_quota_view(current_quota_limit)
 
@@ -527,7 +529,9 @@ def get_l4_forwarding_rules_data(metrics_dict, forwarding_rules_dict,
         f"projects/{project}", L4_FORWARDING_RULES_LIMIT_METRIC)
 
     if current_quota_limit is None:
-      print(f"Could not write L4 forwarding rules to metric for projects/{project} due to missing quotas")
+      print(
+          f"Could not write L4 forwarding rules to metric for projects/{project} due to missing quotas"
+      )
       continue
 
     current_quota_limit_view = customize_quota_view(current_quota_limit)
@@ -555,6 +559,7 @@ def get_l4_forwarding_rules_data(metrics_dict, forwarding_rules_dict,
     print(
         f"Wrote number of L4 forwarding rules to metric for projects/{project}")
 
+
 def get_l7_forwarding_rules_data(metrics_dict, forwarding_rules_dict,
                                  limit_dict):
   '''
@@ -573,9 +578,10 @@ def get_l7_forwarding_rules_data(metrics_dict, forwarding_rules_dict,
     current_quota_limit = get_quota_current_limit(
         f"projects/{project}", L7_FORWARDING_RULES_LIMIT_METRIC)
     if current_quota_limit is None:
-      print(f"Could not write number of L7 forwarding rules to metric for projects/{project} due to missing quotas")
+      print(
+          f"Could not write number of L7 forwarding rules to metric for projects/{project} due to missing quotas"
+      )
       continue
-
 
     current_quota_limit_view = customize_quota_view(current_quota_limit)
 
@@ -625,7 +631,9 @@ def get_pgg_data(metric_dict, usage_dict, limit_metric, limit_dict):
     current_quota_limit = get_quota_current_limit(f"projects/{project}",
                                                   limit_metric)
     if current_quota_limit is None:
-      print(f"Could not write number of L7 forwarding rules to metric for projects/{project} due to missing quotas")
+      print(
+          f"Could not write number of L7 forwarding rules to metric for projects/{project} due to missing quotas"
+      )
       continue
 
     current_quota_limit_view = customize_quota_view(current_quota_limit)
@@ -660,7 +668,9 @@ def get_pgg_data(metric_dict, usage_dict, limit_metric, limit_dict):
         current_peered_quota_limit = get_quota_current_limit(
             f"projects/{peered_network_dict['project_id']}", limit_metric)
         if current_peered_quota_limit is None:
-          print(f"Could not write metrics for peering to projects/{peered_network_dict['project_id']} due to missing quotas")
+          print(
+              f"Could not write metrics for peering to projects/{peered_network_dict['project_id']} due to missing quotas"
+          )
           continue
 
         peering_project_limit = customize_quota_view(current_peered_quota_limit)
@@ -753,7 +763,9 @@ def count_effective_limit(project_id, network_dict, usage_metric_name,
   peering_group_usage = network_dict['usage']
   for peered_network in network_dict['peerings']:
     if 'usage' not in peered_network:
-      print(f"Can not add metrics for peered network in projects/{project_id} as no usage metrics exist due to missing permissions")
+      print(
+          f"Can not add metrics for peered network in projects/{project_id} as no usage metrics exist due to missing permissions"
+      )
       continue
     peering_group_usage += peered_network['usage']
 
@@ -773,8 +785,11 @@ def count_effective_limit(project_id, network_dict, usage_metric_name,
           max(peered_network['limit'],
               get_limit_ppg(peered_network_link, limit_dict)))
     else:
-      print(f"Ignoring projects/{peered_network['project_id']} for limits in peering group of project {project_id} as no limits are available." +
-            "This can happen if you don't have permissions on the project, for example if the project is in another organization or a Google managed project")
+      print(
+          f"Ignoring projects/{peered_network['project_id']} for limits in peering group of project {project_id} as no limits are available."
+          +
+          "This can happen if you don't have permissions on the project, for example if the project is in another organization or a Google managed project"
+      )
 
   # Calculates effective limit: Step 3: Find minimum from the list created by Step 2
   limit_step3 = 0
@@ -1025,12 +1040,13 @@ def get_network_id(project_id, network_name):
   except errors.HttpError as err:
     # TODO: log proper warning
     if err.resp.status == http.HTTPStatus.FORBIDDEN:
-      print(f"Warning: error reading networks for {project_id}. " +
-            f"This can happen if you don't have permissions on the project, for example if the project is in another organization or a Google managed project")
+      print(
+          f"Warning: error reading networks for {project_id}. " +
+          f"This can happen if you don't have permissions on the project, for example if the project is in another organization or a Google managed project"
+      )
     else:
       print(f"Warning: error reading networks for {project_id}: {err}")
     return 0
-
 
   network_id = 0
 
@@ -1069,9 +1085,12 @@ def get_quota_current_limit(project_link, metric_name):
     results_list = list(results)
     return results_list
   except exceptions.PermissionDenied as err:
-    print(f"Warning: error reading quotas for {project_link}. " +
-          f"This can happen if you don't have permissions on the project, for example if the project is in another organization or a Google managed project")
+    print(
+        f"Warning: error reading quotas for {project_link}. " +
+        f"This can happen if you don't have permissions on the project, for example if the project is in another organization or a Google managed project"
+    )
   return None
+
 
 def customize_quota_view(quota_results):
   '''
