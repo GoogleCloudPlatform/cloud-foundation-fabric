@@ -165,6 +165,23 @@ variable "prefix" {
   }
 }
 
+variable "tag_names" {
+  description = "Customized names for resource management tags."
+  type = object({
+    context     = string
+    environment = string
+  })
+  default = {
+    context     = "context"
+    environment = "environment"
+  }
+  nullable = false
+  validation {
+    condition     = alltrue([for k, v in var.tag_names : v != null])
+    error_message = "Tag names cannot be null."
+  }
+}
+
 variable "team_folders" {
   description = "Team folders to be created. Format is described in a code comment."
   type = map(object({
