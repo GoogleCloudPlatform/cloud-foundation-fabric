@@ -82,29 +82,29 @@ module "organization" {
   )
   # sample subset of useful organization policies, edit to suit requirements
   policy_boolean = {
-    "constraints/cloudfunctions.requireVPCConnector"              = true
-    "constraints/compute.disableGuestAttributesAccess"            = true
-    "constraints/compute.disableInternetNetworkEndpointGroup"     = true
-    "constraints/compute.disableNestedVirtualization"             = true
-    "constraints/compute.disableSerialPortAccess"                 = true
-    "constraints/compute.requireOsLogin"                          = true
-    "constraints/compute.restrictXpnProjectLienRemoval"           = true
-    "constraints/compute.skipDefaultNetworkCreation"              = true
-    "constraints/compute.setNewProjectDefaultToZonalDNSOnly"      = true
+    # "constraints/cloudfunctions.requireVPCConnector"              = true
+    # "constraints/compute.disableGuestAttributesAccess" = true
+    # "constraints/compute.disableInternetNetworkEndpointGroup"     = true
+    # "constraints/compute.disableNestedVirtualization"             = true
+    # "constraints/compute.disableSerialPortAccess"                 = true
+    "constraints/compute.requireOsLogin" = true
+    # "constraints/compute.restrictXpnProjectLienRemoval"           = true
+    "constraints/compute.skipDefaultNetworkCreation" = true
+    # "constraints/compute.setNewProjectDefaultToZonalDNSOnly"      = true
     "constraints/iam.automaticIamGrantsForDefaultServiceAccounts" = true
     "constraints/iam.disableServiceAccountKeyCreation"            = true
-    "constraints/iam.disableServiceAccountKeyUpload"              = true
-    "constraints/sql.restrictPublicIp"                            = true
-    "constraints/sql.restrictAuthorizedNetworks"                  = true
-    "constraints/storage.uniformBucketLevelAccess"                = true
+    # "constraints/iam.disableServiceAccountKeyUpload"              = true
+    "constraints/sql.restrictPublicIp"             = true
+    "constraints/sql.restrictAuthorizedNetworks"   = true
+    "constraints/storage.uniformBucketLevelAccess" = true
   }
   policy_list = {
-    "constraints/cloudfunctions.allowedIngressSettings" = merge(
-      local.list_allow, { values = ["is:ALLOW_INTERNAL_ONLY"] }
-    )
-    "constraints/cloudfunctions.allowedVpcConnectorEgressSettings" = merge(
-      local.list_allow, { values = ["is:PRIVATE_RANGES_ONLY"] }
-    )
+    # "constraints/cloudfunctions.allowedIngressSettings" = merge(
+    #   local.list_allow, { values = ["is:ALLOW_INTERNAL_ONLY"] }
+    # )
+    # "constraints/cloudfunctions.allowedVpcConnectorEgressSettings" = merge(
+    #   local.list_allow, { values = ["is:PRIVATE_RANGES_ONLY"] }
+    # )
     "constraints/compute.restrictLoadBalancerCreationForTypes" = merge(
       local.list_allow, { values = ["in:INTERNAL"] }
     )
@@ -119,9 +119,9 @@ module "organization" {
     "constraints/run.allowedIngress" = merge(
       local.list_allow, { values = ["is:internal"] }
     )
-    "constraints/run.allowedVPCEgress" = merge(
-      local.list_allow, { values = ["is:private-ranges-only"] }
-    )
+    # "constraints/run.allowedVPCEgress" = merge(
+    #   local.list_allow, { values = ["is:private-ranges-only"] }
+    # )
     # "constraints/compute.restrictCloudNATUsage"                      = local.list_deny
     # "constraints/compute.restrictDedicatedInterconnectUsage"         = local.list_deny
     # "constraints/compute.restrictPartnerInterconnectUsage"           = local.list_deny
