@@ -50,11 +50,11 @@ module "test-vm" {
     type  = "pd-ssd"
     size  = 10
   }
-  encryption = {
+  encryption = var.cmek_encryption ? {
     encrypt_boot            = true
     disk_encryption_key_raw = null
     kms_key_self_link       = var.cmek_encryption ? module.kms[var.regions.primary].keys["key"].id : null
-  }
+  } : null
   metadata = { startup-script = local.startup-script }
   tags     = ["ssh"]
 }

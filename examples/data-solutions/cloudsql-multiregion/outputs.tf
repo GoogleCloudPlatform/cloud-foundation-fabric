@@ -19,6 +19,11 @@ output "connection_names" {
   value       = module.db.connection_names
 }
 
+output "bucket" {
+  description = "Cloud storage bucket to import/export data from Cloud SQL."
+  value       = module.gcs.name
+}
+
 output "ips" {
   description = "IP address of each instance."
   value       = module.db.ips
@@ -35,5 +40,13 @@ output "demo_commands" {
     "01_ssh"             = "gcloud compute ssh ${module.test-vm.instance.name} --project ${module.project.name} --zone ${var.regions.primary}-b"
     "02_cloud_sql_proxy" = "cloud_sql_proxy -instances=${module.db.connection_name}=tcp:5432 &"
     "03_psql"            = "psql 'host=127.0.0.1 port=5432 sslmode=disable dbname=${var.postgres_database} user=postgres'"
+  }
+}
+
+output "service_accounts" {
+  description = "Service Accounts."
+  value = {
+    "gcs" = module.service-account-gcs.email
+    "sql" = module.service-account-sql.email
   }
 }
