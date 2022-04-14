@@ -9,6 +9,7 @@ The solution will use:
 - Cloud SQL - Postgre SQL instanced with Private IP
 - Goocle Cloud Storage bucket to handle database import/export
 - Google Cloud Engine instance to connect to the Posgre SQL instance
+- Google Cloud NAT to access internet resources
 
 This is the high level diagram:
 
