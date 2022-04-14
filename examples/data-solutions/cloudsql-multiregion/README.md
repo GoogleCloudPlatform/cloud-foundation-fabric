@@ -77,9 +77,11 @@ You can find computed commands on the Terraform `demo_commands` output.
 
 | name | description | sensitive |
 |---|---|:---:|
+| [bucket](outputs.tf#L22) | Cloud storage bucket to import/export data from Cloud SQL. |  |
 | [connection_names](outputs.tf#L17) | Connection name of each instance. |  |
-| [demo_commands](outputs.tf#L32) | Demo commands. |  |
-| [ips](outputs.tf#L22) | IP address of each instance. |  |
-| [project_id](outputs.tf#L27) | ID of the project containing all the instances. |  |
+| [demo_commands](outputs.tf#L37) | Demo commands. |  |
+| [ips](outputs.tf#L27) | IP address of each instance. |  |
+| [project_id](outputs.tf#L32) | ID of the project containing all the instances. |  |
+| [service_accounts](outputs.tf#L46) | Service Accounts. |  |
 
 <!-- END TFDOC -->
