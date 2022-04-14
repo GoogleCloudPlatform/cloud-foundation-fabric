@@ -76,6 +76,12 @@ variable "disk_type" {
   default     = "PD_SSD"
 }
 
+variable "encryption_key_name" {
+  description = "The full path to the encryption key used for the CMEK disk encryption of the primary instance."
+  type        = string
+  default     = null
+}
+
 variable "flags" {
   description = "Map FLAG_NAME=>VALUE for database-specific tuning."
   type        = map(string)
@@ -89,7 +95,7 @@ variable "labels" {
 }
 
 variable "name" {
-  description = "Name of primary replica."
+  description = "Name of primary instance."
   type        = string
 }
 
@@ -110,14 +116,17 @@ variable "project_id" {
 }
 
 variable "region" {
-  description = "Region of the primary replica."
+  description = "Region of the primary instance."
   type        = string
 }
 
 variable "replicas" {
-  description = "Map of NAME=>REGION for additional read replicas. Set to null to disable replica creation."
-  type        = map(any)
-  default     = null
+  description = "Map of NAME=> {REGION, KMS_KEY} for additional read replicas. Set to null to disable replica creation."
+  type = map(object({
+    region              = string
+    encryption_key_name = string
+  }))
+  default = {}
 }
 
 variable "tier" {

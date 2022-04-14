@@ -21,7 +21,9 @@ module "branch-dp-folder" {
   parent = "organizations/${var.organization.id}"
   name   = "Data Platform"
   tag_bindings = {
-    context = try(module.organization.tag_values["context/data"].id, null)
+    context = try(
+      module.organization.tag_values["${var.tag_names.context}/data"].id, null
+    )
   }
 }
 
@@ -39,7 +41,9 @@ module "branch-dp-dev-folder" {
     "roles/resourcemanager.projectCreator" = [module.branch-dp-dev-sa.iam_email]
   }
   tag_bindings = {
-    context = try(module.organization.tag_values["environment/development"].id, null)
+    context = try(
+      module.organization.tag_values["${var.tag_names.environment}/development"].id, null
+    )
   }
 }
 
@@ -57,7 +61,9 @@ module "branch-dp-prod-folder" {
     "roles/resourcemanager.projectCreator" = [module.branch-dp-prod-sa.iam_email]
   }
   tag_bindings = {
-    context = try(module.organization.tag_values["environment/production"].id, null)
+    context = try(
+      module.organization.tag_values["${var.tag_names.environment}/production"].id, null
+    )
   }
 }
 

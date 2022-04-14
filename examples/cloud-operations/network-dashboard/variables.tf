@@ -22,8 +22,14 @@ variable "billing_account" {
   description = "The ID of the billing account to associate this project with"
 }
 
+variable "monitoring_project_id" {
+  description = "Monitoring project where the dashboard will be created and the solution deployed; a project will be created if set to empty string"
+  default     = ""
+}
+
 variable "prefix" {
-  description = "Customer name to use as prefix for resources' naming"
+  description = "Customer name to use as prefix for monitoring project"
+  default     = ""
 }
 
 # TODO: support folder instead of a list of projects?
@@ -38,8 +44,9 @@ variable "schedule_cron" {
 }
 
 variable "project_monitoring_services" {
-  description = "Service APIs enabled by default in new projects."
+  description = "Service APIs enabled in the monitoring project if it will be created."
   default = [
+    "cloudasset.googleapis.com",
     "cloudbilling.googleapis.com",
     "cloudbuild.googleapis.com",
     "cloudresourcemanager.googleapis.com",
@@ -50,29 +57,11 @@ variable "project_monitoring_services" {
     "iamcredentials.googleapis.com",
     "logging.googleapis.com",
     "monitoring.googleapis.com",
-    "oslogin.googleapis.com",
-    "servicenetworking.googleapis.com",
     "serviceusage.googleapis.com",
   ]
 }
 
-variable "project_vm_services" {
-  description = "Service APIs enabled by default in new projects."
-  default = [
-    "cloudbilling.googleapis.com",
-    "compute.googleapis.com",
-    "logging.googleapis.com",
-    "monitoring.googleapis.com",
-    "servicenetworking.googleapis.com",
-  ]
-}
-
 variable "region" {
-  description = "Region used to deploy subnets"
+  description = "Region used to deploy the cloud functions and scheduler"
   default     = "europe-west1"
-}
-
-variable "zone" {
-  description = "Zone used to deploy vms"
-  default     = "europe-west1-b"
 }
