@@ -46,13 +46,13 @@ module "dev-spoke-project" {
 }
 
 module "dev-spoke-vpc" {
-  source        = "../../../modules/net-vpc"
-  project_id    = module.dev-spoke-project.project_id
-  name          = "dev-spoke-0"
-  mtu           = 1500
-  data_folder   = "${var.data_dir}/subnets/dev"
-  psa_config    = try(var.psa_ranges.dev, null)
-  subnets_l7ilb = local.l7ilb_subnets.dev
+  source             = "../../../modules/net-vpc"
+  project_id         = module.dev-spoke-project.project_id
+  name               = "dev-spoke-0"
+  mtu                = 1500
+  data_folder        = "${var.data_dir}/subnets/dev"
+  psa_config         = try(var.psa_ranges.dev, null)
+  subnets_proxy_only = local.l7ilb_subnets.dev
   # set explicit routes for googleapis in case the default route is deleted
   routes = {
     private-googleapis = {

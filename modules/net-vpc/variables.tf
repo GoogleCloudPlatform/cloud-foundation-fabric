@@ -183,10 +183,20 @@ variable "subnets" {
   default = []
 }
 
-variable "subnets_l7ilb" {
-  description = "List of subnets for private HTTPS load balancer."
+variable "subnets_proxy_only" {
+  description = "List of proxy-only subnets for Regional HTTPS  or Internal HTTPS load balancers. Note: Only one proxy-only subnet for each VPC network in each region can be active."
   type = list(object({
     active        = bool
+    name          = string
+    ip_cidr_range = string
+    region        = string
+  }))
+  default = []
+}
+
+variable "subnets_psc" {
+  description = "List of subnets for Private Service Connect service producers."
+  type = list(object({
     name          = string
     ip_cidr_range = string
     region        = string
