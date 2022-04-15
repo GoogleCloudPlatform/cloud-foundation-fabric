@@ -85,8 +85,12 @@ locals {
     { for subnet in var.subnets : "${subnet.region}/${subnet.name}" => subnet },
     local._factory_subnets
   )
-  subnets_l7ilb = {
-    for subnet in var.subnets_l7ilb :
+  subnets_proxy_only = {
+    for subnet in var.subnets_proxy_only :
+    "${subnet.region}/${subnet.name}" => subnet
+  }
+  subnets_psc = {
+    for subnet in var.subnets_psc :
     "${subnet.region}/${subnet.name}" => subnet
   }
 }
@@ -123,22 +127,36 @@ resource "google_compute_subnetwork" "subnetwork" {
   }
 }
 
-resource "google_compute_subnetwork" "l7ilb" {
-  provider      = google-beta
-  for_each      = local.subnets_l7ilb
+resource "google_compute_subnetwork" "proxy_only" {
+  for_each      = local.subnets_proxy_only
   project       = var.project_id
   network       = local.network.name
   region        = each.value.region
   name          = each.value.name
   ip_cidr_range = each.value.ip_cidr_range
-  purpose       = "INTERNAL_HTTPS_LOAD_BALANCER"
+  purpose       = "REGIONAL_MANAGED_PROXY"
   role = (
     each.value.active || each.value.active == null ? "ACTIVE" : "BACKUP"
   )
   description = lookup(
     local.subnet_descriptions,
     "${each.value.region}/${each.value.name}",
-    "Terraform-managed."
+    "Terraform-managed proxy-only subnet for Regional HTTPS or Internal HTTPS LB."
+  )
+}
+
+resource "google_compute_subnetwork" "psc" {
+  for_each      = local.subnets_psc
+  project       = var.project_id
+  network       = local.network.name
+  region        = each.value.region
+  name          = each.value.name
+  ip_cidr_range = each.value.ip_cidr_range
+  purpose       = "PRIVATE_SERVICE_CONNECT"
+  description = lookup(
+    local.subnet_descriptions,
+    "${each.value.region}/${each.value.name}",
+    "Terraform-managed subnet for Private Service Connect (PSC NAT)."
   )
 }
 

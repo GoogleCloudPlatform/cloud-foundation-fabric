@@ -39,12 +39,13 @@ locals {
     dataproc          = "service-%s@dataproc-accounts"
     gae-flex          = "service-%s@gae-api-prod"
     # TODO: deprecate gcf
-    gcf           = "service-%s@gcf-admin-robot"
-    pubsub        = "service-%s@gcp-sa-pubsub"
-    secretmanager = "service-%s@gcp-sa-secretmanager"
-    sql           = "service-%s@gcp-sa-cloud-sql"
-    storage       = "service-%s@gs-project-accounts"
-    sqladmin      = "service-%s@gcp-sa-cloud-sql"
+    gcf                      = "service-%s@gcf-admin-robot"
+    monitoring-notifications = "service-%s@gcp-sa-monitoring-notification"
+    pubsub                   = "service-%s@gcp-sa-pubsub"
+    secretmanager            = "service-%s@gcp-sa-secretmanager"
+    sql                      = "service-%s@gcp-sa-cloud-sql"
+    sqladmin                 = "service-%s@gcp-sa-cloud-sql"
+    storage                  = "service-%s@gs-project-accounts"
   }
   service_accounts_default = {
     compute = "${local.project.number}-compute@developer.gserviceaccount.com"
