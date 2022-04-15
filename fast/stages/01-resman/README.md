@@ -183,20 +183,21 @@ Due to its simplicity, this stage lends itself easily to customizations: adding 
 | [groups](variables.tf#L118) | Group names to grant organization-level permissions. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  gcp-billing-admins      &#61; &#34;gcp-billing-admins&#34;,&#10;  gcp-devops              &#61; &#34;gcp-devops&#34;,&#10;  gcp-network-admins      &#61; &#34;gcp-network-admins&#34;&#10;  gcp-organization-admins &#61; &#34;gcp-organization-admins&#34;&#10;  gcp-security-admins     &#61; &#34;gcp-security-admins&#34;&#10;  gcp-support             &#61; &#34;gcp-support&#34;&#10;&#125;">&#123;&#8230;&#125;</code> | <code>00-bootstrap</code> |
 | [organization_policy_configs](variables.tf#L143) | Organization policies customization. | <code title="object&#40;&#123;&#10;  allowed_policy_member_domains &#61; list&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |  |
 | [outputs_location](variables.tf#L151) | Enable writing provider, tfvars and CI/CD workflow files to local filesystem. Leave null to disable | <code>string</code> |  | <code>null</code> |  |
-| [team_folders](variables.tf#L168) | Team folders to be created. Format is described in a code comment. | <code title="map&#40;object&#40;&#123;&#10;  descriptive_name     &#61; string&#10;  group_iam            &#61; map&#40;list&#40;string&#41;&#41;&#10;  impersonation_groups &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |  |
+| [tag_names](variables.tf#L168) | Customized names for resource management tags. | <code title="object&#40;&#123;&#10;  context     &#61; string&#10;  environment &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  context     &#61; &#34;context&#34;&#10;  environment &#61; &#34;environment&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
+| [team_folders](variables.tf#L185) | Team folders to be created. Format is described in a code comment. | <code title="map&#40;object&#40;&#123;&#10;  descriptive_name     &#61; string&#10;  group_iam            &#61; map&#40;list&#40;string&#41;&#41;&#10;  impersonation_groups &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |  |
 
 ## Outputs
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [cicd_repositories](outputs.tf#L156) | WIF configuration for CI/CD repositories. |  |  |
-| [dataplatform](outputs.tf#L168) | Data for the Data Platform stage. |  |  |
-| [networking](outputs.tf#L184) | Data for the networking stage. |  |  |
-| [project_factories](outputs.tf#L193) | Data for the project factories stage. |  |  |
-| [providers](outputs.tf#L209) | Terraform provider files for this stage and dependent stages. | ✓ | <code>02-networking</code> · <code>02-security</code> · <code>03-dataplatform</code> · <code>xx-sandbox</code> · <code>xx-teams</code> |
-| [sandbox](outputs.tf#L216) | Data for the sandbox stage. |  | <code>xx-sandbox</code> |
-| [security](outputs.tf#L226) | Data for the networking stage. |  | <code>02-security</code> |
-| [teams](outputs.tf#L236) | Data for the teams stage. |  |  |
-| [tfvars](outputs.tf#L249) | Terraform variable files for the following stages. | ✓ |  |
+| [cicd_repositories](outputs.tf#L157) | WIF configuration for CI/CD repositories. |  |  |
+| [dataplatform](outputs.tf#L169) | Data for the Data Platform stage. |  |  |
+| [networking](outputs.tf#L185) | Data for the networking stage. |  |  |
+| [project_factories](outputs.tf#L194) | Data for the project factories stage. |  |  |
+| [providers](outputs.tf#L210) | Terraform provider files for this stage and dependent stages. | ✓ | <code>02-networking</code> · <code>02-security</code> · <code>03-dataplatform</code> · <code>xx-sandbox</code> · <code>xx-teams</code> |
+| [sandbox](outputs.tf#L217) | Data for the sandbox stage. |  | <code>xx-sandbox</code> |
+| [security](outputs.tf#L227) | Data for the networking stage. |  | <code>02-security</code> |
+| [teams](outputs.tf#L237) | Data for the teams stage. |  |  |
+| [tfvars](outputs.tf#L250) | Terraform variable files for the following stages. | ✓ |  |
 
 <!-- END TFDOC -->
