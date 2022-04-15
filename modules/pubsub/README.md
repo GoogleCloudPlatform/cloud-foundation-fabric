@@ -38,6 +38,7 @@ module "pubsub" {
         message_retention_duration = null
         retain_acked_messages      = true
         expiration_policy_ttl      = null
+        filter                     = null
       }
     }
   }
