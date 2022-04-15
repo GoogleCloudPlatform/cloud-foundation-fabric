@@ -17,12 +17,16 @@
 locals {
   _cicd_workflow_attrs = {
     bootstrap = {
-      service_account   = module.automation-tf-cicd-sa["bootstrap"].email
+      service_account = try(
+        module.automation-tf-cicd-sa["bootstrap"].email, null
+      )
       tf_providers_file = "00-bootstrap-providers.tf"
       tf_var_files      = []
     }
     resman = {
-      service_account   = module.automation-tf-cicd-sa["resman"].email
+      service_account = try(
+        module.automation-tf-cicd-sa["resman"].email, null
+      )
       tf_providers_file = "01-resman-providers.tf"
       tf_var_files = [
         "00-bootstrap.auto.tfvars.json",
