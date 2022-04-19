@@ -40,12 +40,12 @@ locals {
         "google.subject"       = "assertion.sub"
         "attribute.sub"        = "assertion.sub"
         "attribute.actor"      = "assertion.actor"
-        "attribute.repository" = "assertion.repository"
+        "attribute.repository" = "assertion.project_path"
         "attribute.ref"        = "assertion.ref"
       }
       allowed_audiences = ["https://gitlab.com"]
       issuer_uri        = "https://gitlab.com"
-      principal_tpl     = "principal://iam.googleapis.com/%s/subject/project_path:%s:ref_type:branch:ref:%s"
+      principal_tpl     = "principalSet://iam.googleapis.com/%s/attribute.sub/project_path:%s:ref_type:branch:ref:%s"
       principalset_tpl  = "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
     }
   }
