@@ -5,11 +5,13 @@ All notable changes to this project will be documented in this file.
 ## Unreleased
 
 - SQL Server AlwaysOn availability groups example
-- CloudSQ: fixed Terraform change detection when backup is disabled
-- Allow multiple CIDR blocks in the ip_range for Apigee Instance
-- Add prefix to project factory SA bindings
+- fixed Terraform change detection in CloudSQL when backup is disabled
+- allow multiple CIDR blocks in the ip_range for Apigee Instance
+- add prefix to project factory SA bindings
 - **incompatible change** `subnets_l7ilb` variable is deprecated in the `net-vpc` module, instead `subnets_proxy_only` variable [should be used](https://cloud.google.com/load-balancing/docs/proxy-only-subnets#proxy_only_subnet_create)
-- Add support for [Private Service Connect](https://cloud.google.com/vpc/docs/private-service-connect#psc-subnets) and [Proxy-only](https://cloud.google.com/load-balancing/docs/proxy-only-subnets) subnets to `net-vpc` module
+- add support for [Private Service Connect](https://cloud.google.com/vpc/docs/private-service-connect#psc-subnets) and [Proxy-only](https://cloud.google.com/load-balancing/docs/proxy-only-subnets) subnets to `net-vpc` module
+- bump Google provider versions to `>= 4.17.0`
+- bump Terraform version to `>= 1.1.0`
 
 **FAST**
 
@@ -51,6 +53,7 @@ All notable changes to this project will be documented in this file.
 - Support for resource management tags in the `organization`, `folder`, `project`, `compute-vm`, and `kms` modules
 
 **FAST**
+
 - new [data platform](fast/stages/03-data-platform) stage 3
 - new [02-networking-nva](fast/stages/02-networking-nva) networking stage
 - allow customizing the names of custom roles
@@ -61,7 +64,6 @@ All notable changes to this project will be documented in this file.
 - standarize names of projects, service accounts and buckets
 - swtich to folder-level `xpnAdmin` and `xpnServiceAdmin`
 - moved networking projects to folder matching their enviroments
-
 
 ## [13.0.0] - 2022-01-27
 
@@ -119,7 +121,7 @@ All notable changes to this project will be documented in this file.
 - added gVNIC support to `compute-vm` module
 - added a rule factory to `net-vpc-firewall` module
 - added a subnet factory to `net-vpc` module
-- **incompatible change** added support for partitioned tables to `organization` module sinks 
+- **incompatible change** added support for partitioned tables to `organization` module sinks
 - **incompatible change** renamed `private_service_networking_range` variable to `psc_ranges` in `net-vpc`module, and changed its type to `list(string)`
 - added a firewall policy factory to `organization` and `firewall` module
 - refactored `tfdoc`
@@ -150,11 +152,10 @@ All notable changes to this project will be documented in this file.
 - **incompatible change** changed maintenance window definition from `maintenance_start_time` to `maintenance_config` in `gke-cluster`
 - added `monitoring_config`,`logging_config`, `dns_config` and `enable_l4_ilb_subsetting` to `gke-cluster`
 
-
 ## [6.0.0] - 2021-10-04
 
 - new `apigee-organization` and `apigee-x-instance`
-- generate `email` and `iam_email` statically in the `iam-service-account` module 
+- generate `email` and `iam_email` statically in the `iam-service-account` module
 - new `billing-budget` module
 - fix `scheduled-asset-inventory-export-bq` module
 - output custom role information from the `organization` module
@@ -452,7 +453,6 @@ All notable changes to this project will be documented in this file.
 - new `cos-generic-metadata` module in the `cloud-config-container` suite
 - new `envoy-traffic-director` module in the `cloud-config-container` suite
 - new `pubsub` module
-
 
 ## [1.4.1] - 2020-05-02
 
