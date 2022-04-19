@@ -64,7 +64,7 @@ variable "cicd_repositories" {
         contains(["gitlab", "github"], coalesce(try(v.type, null), "null"))
       )
     ])
-    error_message = "Invalid repository type, supported types: 'github'."
+    error_message = "Invalid repository type, supported types: 'github' or 'gitlab'."
   }
 }
 
