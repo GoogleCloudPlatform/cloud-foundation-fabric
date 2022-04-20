@@ -105,11 +105,7 @@ variable "dns_config" {
     cluster_dns_scope  = string
     cluster_dns_domain = string
   })
-  default = {
-    cluster_dns        = "PROVIDER_UNSPECIFIED"
-    cluster_dns_scope  = "DNS_SCOPE_UNSPECIFIED"
-    cluster_dns_domain = ""
-  }
+  default = null
 }
 
 variable "enable_autopilot" {
