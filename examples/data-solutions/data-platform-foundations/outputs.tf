@@ -17,25 +17,25 @@
 output "bigquery-datasets" {
   description = "BigQuery datasets."
   value = {
-    land-bq-0     = module.land-bq-0.dataset_id,
-    lake-0-bq-0   = module.lake-0-bq-0.dataset_id,
-    lake-1-bq-0   = module.lake-1-bq-0.dataset_id,
-    lake-2-bq-0   = module.lake-2-bq-0.dataset_id,
-    lake-plg-bq-0 = module.lake-plg-bq-0.dataset_id,
+    drop-bq-0             = module.drop-bq-0.dataset_id,
+    dwh-landing-bq-0      = module.dwh-lnd-bq-0.dataset_id,
+    dwh-curated-bq-0      = module.dwh-cur-bq-0.dataset_id,
+    dwh-confidential-bq-0 = module.dwh-conf-bq-0.dataset_id,
+    dwh-plg-bq-0          = module.dwh-plg-bq-0.dataset_id,
   }
 }
 
 output "gcs-buckets" {
   description = "GCS buckets."
   value = {
-    lake-0-cs-0   = module.lake-0-cs-0.name,
-    lake-1-cs-0   = module.lake-1-cs-0.name,
-    lake-2-cs-0   = module.lake-2-cs-0.name,
-    lake-plg-cs-0 = module.lake-plg-cs-0.name,
-    land-cs-0     = module.land-cs-0.name,
-    lod-cs-df     = module.load-cs-df-0.name,
-    orch-cs-0     = module.orch-cs-0.name,
-    transf-cs-df  = module.transf-cs-df-0.name,
+    dwh-landing-cs-0      = module.dwh-lnd-cs-0.name,
+    dwh-curated-cs-0      = module.dwh-cur-cs-0.name,
+    dwh-confidential-cs-0 = module.dwh-conf-cs-0.name,
+    dwh-plg-cs-0          = module.dwh-plg-cs-0.name,
+    drop-cs-0             = module.drop-cs-0.name,
+    lod-cs-df             = module.load-cs-df-0.name,
+    orch-cs-0             = module.orch-cs-0.name,
+    transf-cs-df          = module.transf-cs-df-0.name,
   }
 }
 
@@ -48,26 +48,26 @@ output "projects" {
   description = "GCP Projects informations."
   value = {
     project_number = {
-      lake-0         = module.lake-0-project.number,
-      lake-1         = module.lake-1-project.number,
-      lake-2         = module.lake-2-project.number,
-      lake-plg       = module.lake-plg-project.number,
-      exposure       = module.exp-project.number,
-      landing        = module.land-project.number,
-      load           = module.load-project.number,
-      orchestration  = module.orch-project.number,
-      transformation = module.transf-project.number,
+      dwh-landing      = module.dwh-lnd-project.number,
+      dwh-curated      = module.dwh-cur-project.number,
+      dwh-confidential = module.dwh-conf-project.number,
+      dwh-plg          = module.dwh-plg-project.number,
+      exposure         = module.exp-project.number,
+      dropoff          = module.drop-project.number,
+      load             = module.load-project.number,
+      orchestration    = module.orch-project.number,
+      transformation   = module.transf-project.number,
     }
     project_id = {
-      lake-0         = module.lake-0-project.project_id,
-      lake-1         = module.lake-1-project.project_id,
-      lake-2         = module.lake-2-project.project_id,
-      lake-plg       = module.lake-plg-project.project_id,
-      exposure       = module.exp-project.project_id,
-      landing        = module.land-project.project_id,
-      load           = module.load-project.project_id,
-      orchestration  = module.orch-project.project_id,
-      transformation = module.transf-project.project_id,
+      dwh-landing      = module.dwh-lnd-project.project_id,
+      dwh-curated      = module.dwh-cur-project.project_id,
+      dwh-confidential = module.dwh-conf-project.project_id,
+      dwh-plg          = module.dwh-plg-project.project_id,
+      exposure         = module.exp-project.project_id,
+      dropoff          = module.drop-project.project_id,
+      load             = module.load-project.project_id,
+      orchestration    = module.orch-project.project_id,
+      transformation   = module.transf-project.project_id,
     }
   }
 }
@@ -93,12 +93,12 @@ output "vpc_subnet" {
 output "demo_commands" {
   description = "Demo commands."
   value = {
-    01 = "gsutil -i ${module.land-sa-cs-0.email} cp demo/data/*.csv gs://${module.land-cs-0.name}"
+    01 = "gsutil -i ${module.drop-sa-cs-0.email} cp demo/data/*.csv gs://${module.drop-cs-0.name}"
     02 = "gsutil -i ${module.orch-sa-cmp-0.email} cp demo/data/*.j* gs://${module.orch-cs-0.name}"
     03 = "gsutil -i ${module.orch-sa-cmp-0.email} cp demo/*.py ${google_composer_environment.orch-cmp-0.config[0].dag_gcs_prefix}/"
     04 = "Open ${google_composer_environment.orch-cmp-0.config.0.airflow_uri} and run uploaded DAG."
     05 = <<EOT
-           bq query --project_id=${module.lake-2-project.project_id} --use_legacy_sql=false 'SELECT * EXCEPT (name, surname) FROM `${module.lake-2-project.project_id}.${module.lake-2-bq-0.dataset_id}.customer_purchase` LIMIT 1000'"
+           bq query --project_id=${module.dwh-conf-project.project_id} --use_legacy_sql=false 'SELECT * EXCEPT (name, surname) FROM `${module.dwh-conf-project.project_id}.${module.dwh-conf-bq-0.dataset_id}.customer_purchase` LIMIT 1000'"
          EOT
   }
 }

@@ -12,20 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# tfdoc:file:description land project and resources.
+# tfdoc:file:description drop off project and resources.
 
 locals {
-  land_orch_service_accounts = [
+  drop_orch_service_accounts = [
     module.load-sa-df-0.iam_email, module.orch-sa-cmp-0.iam_email
   ]
 }
 
-module "land-project" {
+module "drop-project" {
   source          = "../../../modules/project"
   parent          = var.folder_id
   billing_account = var.billing_account_id
   prefix          = var.prefix
-  name            = "lnd${local.project_suffix}"
+  name            = "drp${local.project_suffix}"
   group_iam = {
     (local.groups.data-engineers) = [
       "roles/bigquery.dataEditor",
@@ -34,14 +34,14 @@ module "land-project" {
     ]
   }
   iam = {
-    "roles/bigquery.dataEditor" = [module.land-sa-bq-0.iam_email]
+    "roles/bigquery.dataEditor" = [module.drop-sa-bq-0.iam_email]
     "roles/bigquery.user"       = [module.load-sa-df-0.iam_email]
-    "roles/pubsub.publisher"    = [module.land-sa-ps-0.iam_email]
+    "roles/pubsub.publisher"    = [module.drop-sa-ps-0.iam_email]
     "roles/pubsub.subscriber" = concat(
-      local.land_orch_service_accounts, [module.load-sa-df-0.iam_email]
+      local.drop_orch_service_accounts, [module.load-sa-df-0.iam_email]
     )
     "roles/storage.objectAdmin"   = [module.load-sa-df-0.iam_email]
-    "roles/storage.objectCreator" = [module.land-sa-cs-0.iam_email]
+    "roles/storage.objectCreator" = [module.drop-sa-cs-0.iam_email]
     "roles/storage.objectViewer"  = [module.orch-sa-cmp-0.iam_email]
     "roles/storage.admin"         = [module.load-sa-df-0.iam_email]
   }
@@ -63,12 +63,12 @@ module "land-project" {
 
 # Cloud Storage
 
-module "land-sa-cs-0" {
+module "drop-sa-cs-0" {
   source       = "../../../modules/iam-service-account"
-  project_id   = module.land-project.project_id
+  project_id   = module.drop-project.project_id
   prefix       = var.prefix
-  name         = "lnd-cs-0"
-  display_name = "Data platform GCS landing service account."
+  name         = "drp-cs-0"
+  display_name = "Data platform GCS drop off service account."
   iam = {
     "roles/iam.serviceAccountTokenCreator" = [
       local.groups_iam.data-engineers
@@ -76,11 +76,11 @@ module "land-sa-cs-0" {
   }
 }
 
-module "land-cs-0" {
+module "drop-cs-0" {
   source         = "../../../modules/gcs"
-  project_id     = module.land-project.project_id
+  project_id     = module.drop-project.project_id
   prefix         = var.prefix
-  name           = "lnd-cs-0"
+  name           = "drp-cs-0"
   location       = var.location
   storage_class  = "MULTI_REGIONAL"
   encryption_key = try(local.service_encryption_keys.storage, null)
@@ -93,12 +93,12 @@ module "land-cs-0" {
 
 # PubSub
 
-module "land-sa-ps-0" {
+module "drop-sa-ps-0" {
   source       = "../../../modules/iam-service-account"
-  project_id   = module.land-project.project_id
+  project_id   = module.drop-project.project_id
   prefix       = var.prefix
-  name         = "lnd-ps-0"
-  display_name = "Data platform PubSub landing service account"
+  name         = "drp-ps-0"
+  display_name = "Data platform PubSub drop off service account"
   iam = {
     "roles/iam.serviceAccountTokenCreator" = [
       local.groups_iam.data-engineers
@@ -106,30 +106,30 @@ module "land-sa-ps-0" {
   }
 }
 
-module "land-ps-0" {
+module "drop-ps-0" {
   source     = "../../../modules/pubsub"
-  project_id = module.land-project.project_id
-  name       = "${var.prefix}-lnd-ps-0"
+  project_id = module.drop-project.project_id
+  name       = "${var.prefix}-drp-ps-0"
   kms_key    = try(local.service_encryption_keys.pubsub, null)
 }
 
 # BigQuery
 
-module "land-sa-bq-0" {
+module "drop-sa-bq-0" {
   source       = "../../../modules/iam-service-account"
-  project_id   = module.land-project.project_id
+  project_id   = module.drop-project.project_id
   prefix       = var.prefix
-  name         = "lnd-bq-0"
-  display_name = "Data platform BigQuery landing service account"
+  name         = "drp-bq-0"
+  display_name = "Data platform BigQuery drop off service account"
   iam = {
     "roles/iam.serviceAccountTokenCreator" = [local.groups_iam.data-engineers]
   }
 }
 
-module "land-bq-0" {
+module "drop-bq-0" {
   source         = "../../../modules/bigquery-dataset"
-  project_id     = module.land-project.project_id
-  id             = "${replace(var.prefix, "-", "_")}lnd_bq_0"
+  project_id     = module.drop-project.project_id
+  id             = "${replace(var.prefix, "-", "_")}drp_bq_0"
   location       = var.location
   encryption_key = try(local.service_encryption_keys.bq, null)
 }
