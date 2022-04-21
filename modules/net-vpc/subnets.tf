@@ -134,7 +134,7 @@ resource "google_compute_subnetwork" "proxy_only" {
   region        = each.value.region
   name          = each.value.name
   ip_cidr_range = each.value.ip_cidr_range
-  purpose       = "REGIONAL_MANAGED_PROXY"
+  purpose       = each.value.purpose
   role = (
     each.value.active || each.value.active == null ? "ACTIVE" : "BACKUP"
   )

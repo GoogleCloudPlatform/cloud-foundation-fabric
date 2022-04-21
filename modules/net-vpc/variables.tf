@@ -189,6 +189,7 @@ variable "subnets_proxy_only" {
     active        = bool
     name          = string
     ip_cidr_range = string
+    purpose       = string # Can be GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY
     region        = string
   }))
   default = []
