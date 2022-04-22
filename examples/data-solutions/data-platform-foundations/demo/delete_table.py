@@ -34,23 +34,23 @@ from airflow.utils.task_group import TaskGroup
 # --------------------------------------------------------------------------------
 BQ_LOCATION = os.environ.get("BQ_LOCATION")
 DATA_CAT_TAGS = json.loads(os.environ.get("DATA_CAT_TAGS"))
-DTL_L0_PRJ = os.environ.get("DTL_L0_PRJ")
-DTL_L0_BQ_DATASET = os.environ.get("DTL_L0_BQ_DATASET")
-DTL_L0_GCS = os.environ.get("DTL_L0_GCS")
-DTL_L1_PRJ = os.environ.get("DTL_L1_PRJ")
-DTL_L1_BQ_DATASET = os.environ.get("DTL_L1_BQ_DATASET")
-DTL_L1_GCS = os.environ.get("DTL_L1_GCS")
-DTL_L2_PRJ = os.environ.get("DTL_L2_PRJ")
-DTL_L2_BQ_DATASET = os.environ.get("DTL_L2_BQ_DATASET")
-DTL_L2_GCS = os.environ.get("DTL_L2_GCS")
-DTL_PLG_PRJ = os.environ.get("DTL_PLG_PRJ")
-DTL_PLG_BQ_DATASET = os.environ.get("DTL_PLG_BQ_DATASET")
-DTL_PLG_GCS = os.environ.get("DTL_PLG_GCS")
+DWH_LAND_PRJ = os.environ.get("DWH_LAND_PRJ")
+DWH_LAND_BQ_DATASET = os.environ.get("DWH_LAND_BQ_DATASET")
+DWH_LAND_GCS = os.environ.get("DWH_LAND_GCS")
+DWH_CURATED_PRJ = os.environ.get("DWH_CURATED_PRJ")
+DWH_CURATED_BQ_DATASET = os.environ.get("DWH_CURATED_BQ_DATASET")
+DWH_CURATED_GCS = os.environ.get("DWH_CURATED_GCS")
+DWH_CONFIDENTIAL_PRJ = os.environ.get("DWH_CONFIDENTIAL_PRJ")
+DWH_CONFIDENTIAL_BQ_DATASET = os.environ.get("DWH_CONFIDENTIAL_BQ_DATASET")
+DWH_CONFIDENTIAL_GCS = os.environ.get("DWH_CONFIDENTIAL_GCS")
+DWH_PLG_PRJ = os.environ.get("DWH_PLG_PRJ")
+DWH_PLG_BQ_DATASET = os.environ.get("DWH_PLG_BQ_DATASET")
+DWH_PLG_GCS = os.environ.get("DWH_PLG_GCS")
 GCP_REGION = os.environ.get("GCP_REGION")
-LND_PRJ = os.environ.get("LND_PRJ")
-LND_BQ = os.environ.get("LND_BQ")
-LND_GCS = os.environ.get("LND_GCS")
-LND_PS = os.environ.get("LND_PS")
+DRP_PRJ = os.environ.get("DRP_PRJ")
+DRP_BQ = os.environ.get("DRP_BQ")
+DRP_GCS = os.environ.get("DRP_GCS")
+DRP_PS = os.environ.get("DRP_PS")
 LOD_PRJ = os.environ.get("LOD_PRJ")
 LOD_GCS_STAGING = os.environ.get("LOD_GCS_STAGING")
 LOD_NET_VPC = os.environ.get("LOD_NET_VPC")
@@ -121,25 +121,25 @@ with models.DAG(
   with TaskGroup('delete_table') as delte_table:  
     delete_table_customers = BigQueryDeleteTableOperator(
       task_id="delete_table_customers",
-      deletion_dataset_table=DTL_L0_PRJ+"."+DTL_L0_BQ_DATASET+".customers",
+      deletion_dataset_table=DWH_LAND_PRJ+"."+DWH_LAND_BQ_DATASET+".customers",
       impersonation_chain=[TRF_SA_DF]
     )  
 
     delete_table_purchases = BigQueryDeleteTableOperator(
       task_id="delete_table_purchases",
-      deletion_dataset_table=DTL_L0_PRJ+"."+DTL_L0_BQ_DATASET+".purchases",
+      deletion_dataset_table=DWH_LAND_PRJ+"."+DWH_LAND_BQ_DATASET+".purchases",
       impersonation_chain=[TRF_SA_DF]
     )   
 
-    delete_table_customer_purchase_l1 = BigQueryDeleteTableOperator(
-      task_id="delete_table_customer_purchase_l1",
-      deletion_dataset_table=DTL_L1_PRJ+"."+DTL_L1_BQ_DATASET+".customer_purchase",
+    delete_table_customer_purchase_curated = BigQueryDeleteTableOperator(
+      task_id="delete_table_customer_purchase_curated",
+      deletion_dataset_table=DWH_CURATED_PRJ+"."+DWH_CURATED_BQ_DATASET+".customer_purchase",
       impersonation_chain=[TRF_SA_DF]
     )   
 
-    delete_table_customer_purchase_l2 = BigQueryDeleteTableOperator(
-      task_id="delete_table_customer_purchase_l2",
-      deletion_dataset_table=DTL_L2_PRJ+"."+DTL_L2_BQ_DATASET+".customer_purchase",
+    delete_table_customer_purchase_confidential = BigQueryDeleteTableOperator(
+      task_id="delete_table_customer_purchase_confidential",
+      deletion_dataset_table=DWH_CONFIDENTIAL_PRJ+"."+DWH_CONFIDENTIAL_BQ_DATASET+".customer_purchase",
       impersonation_chain=[TRF_SA_DF]
     )       
 

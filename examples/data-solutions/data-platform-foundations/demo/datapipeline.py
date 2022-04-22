@@ -34,23 +34,23 @@ from airflow.utils.task_group import TaskGroup
 # --------------------------------------------------------------------------------
 BQ_LOCATION = os.environ.get("BQ_LOCATION")
 DATA_CAT_TAGS = json.loads(os.environ.get("DATA_CAT_TAGS"))
-DTL_L0_PRJ = os.environ.get("DTL_L0_PRJ")
-DTL_L0_BQ_DATASET = os.environ.get("DTL_L0_BQ_DATASET")
-DTL_L0_GCS = os.environ.get("DTL_L0_GCS")
-DTL_L1_PRJ = os.environ.get("DTL_L1_PRJ")
-DTL_L1_BQ_DATASET = os.environ.get("DTL_L1_BQ_DATASET")
-DTL_L1_GCS = os.environ.get("DTL_L1_GCS")
-DTL_L2_PRJ = os.environ.get("DTL_L2_PRJ")
-DTL_L2_BQ_DATASET = os.environ.get("DTL_L2_BQ_DATASET")
-DTL_L2_GCS = os.environ.get("DTL_L2_GCS")
-DTL_PLG_PRJ = os.environ.get("DTL_PLG_PRJ")
-DTL_PLG_BQ_DATASET = os.environ.get("DTL_PLG_BQ_DATASET")
-DTL_PLG_GCS = os.environ.get("DTL_PLG_GCS")
+DWH_LAND_PRJ = os.environ.get("DWH_LAND_PRJ")
+DWH_LAND_BQ_DATASET = os.environ.get("DWH_LAND_BQ_DATASET")
+DWH_LAND_GCS = os.environ.get("DWH_LAND_GCS")
+DWH_CURATED_PRJ = os.environ.get("DWH_CURATED_PRJ")
+DWH_CURATED_BQ_DATASET = os.environ.get("DWH_CURATED_BQ_DATASET")
+DWH_CURATED_GCS = os.environ.get("DWH_CURATED_GCS")
+DWH_CONFIDENTIAL_PRJ = os.environ.get("DWH_CONFIDENTIAL_PRJ")
+DWH_CONFIDENTIAL_BQ_DATASET = os.environ.get("DWH_CONFIDENTIAL_BQ_DATASET")
+DWH_CONFIDENTIAL_GCS = os.environ.get("DWH_CONFIDENTIAL_GCS")
+DWH_PLG_PRJ = os.environ.get("DWH_PLG_PRJ")
+DWH_PLG_BQ_DATASET = os.environ.get("DWH_PLG_BQ_DATASET")
+DWH_PLG_GCS = os.environ.get("DWH_PLG_GCS")
 GCP_REGION = os.environ.get("GCP_REGION")
-LND_PRJ = os.environ.get("LND_PRJ")
-LND_BQ = os.environ.get("LND_BQ")
-LND_GCS = os.environ.get("LND_GCS")
-LND_PS = os.environ.get("LND_PS")
+DRP_PRJ = os.environ.get("DRP_PRJ")
+DRP_BQ = os.environ.get("DRP_BQ")
+DRP_GCS = os.environ.get("DRP_GCS")
+DRP_PS = os.environ.get("DRP_PS")
 LOD_PRJ = os.environ.get("LOD_PRJ")
 LOD_GCS_STAGING = os.environ.get("LOD_GCS_STAGING")
 LOD_NET_VPC = os.environ.get("LOD_NET_VPC")
@@ -127,8 +127,8 @@ with models.DAG(
       "javascriptTextTransformFunctionName": "transform",
       "JSONPath": ORC_GCS + "/customers_schema.json",
       "javascriptTextTransformGcsPath": ORC_GCS + "/customers_udf.js",
-      "inputFilePattern": LND_GCS + "/customers.csv",
-      "outputTable": DTL_L0_PRJ + ":"+DTL_L0_BQ_DATASET+".customers",
+      "inputFilePattern": DRP_GCS + "/customers.csv",
+      "outputTable": DWH_LAND_PRJ + ":" + DWH_LAND_BQ_DATASET + ".customers",
       "bigQueryLoadingTemporaryDirectory": LOD_GCS_STAGING + "/tmp/bq/",
     },
   )
@@ -142,8 +142,8 @@ with models.DAG(
       "javascriptTextTransformFunctionName": "transform",
       "JSONPath": ORC_GCS + "/purchases_schema.json",
       "javascriptTextTransformGcsPath": ORC_GCS + "/purchases_udf.js",
-      "inputFilePattern": LND_GCS + "/purchases.csv",
-      "outputTable": DTL_L0_PRJ + ":"+DTL_L0_BQ_DATASET+".purchases",
+      "inputFilePattern": DRP_GCS + "/purchases.csv",
+      "outputTable": DWH_LAND_PRJ + ":" + DWH_LAND_BQ_DATASET + ".purchases",
       "bigQueryLoadingTemporaryDirectory": LOD_GCS_STAGING + "/tmp/bq/",
     },
   )
@@ -159,17 +159,15 @@ with models.DAG(
         'query':"""SELECT
                   c.id as customer_id,
                   p.id as purchase_id,
-                  c.name as name,
-                  c.surname as surname,
                   p.item as item,
                   p.price as price,
                   p.timestamp as timestamp
-                FROM `{dtl_0_prj}.{dtl_0_dataset}.customers` c
-                JOIN `{dtl_0_prj}.{dtl_0_dataset}.purchases` p ON c.id = p.customer_id
-              """.format(dtl_0_prj=DTL_L0_PRJ, dtl_0_dataset=DTL_L0_BQ_DATASET, ),
+                FROM `{dwh_0_prj}.{dwh_0_dataset}.customers` c
+                JOIN `{dwh_0_prj}.{dwh_0_dataset}.purchases` p ON c.id = p.customer_id
+              """.format(dwh_0_prj=DWH_LAND_PRJ, dwh_0_dataset=DWH_LAND_BQ_DATASET, ),
         'destinationTable':{
-          'projectId': DTL_L1_PRJ,
-          'datasetId': DTL_L1_BQ_DATASET,
+          'projectId': DWH_CURATED_PRJ,
+          'datasetId': DWH_CURATED_BQ_DATASET,
           'tableId': 'customer_purchase'
         },
         'writeDisposition':'WRITE_TRUNCATE',
@@ -179,8 +177,8 @@ with models.DAG(
     impersonation_chain=[TRF_SA_BQ]
   )
 
-  l2_customer_purchase = BigQueryInsertJobOperator(
-    task_id='bq_l2_customer_purchase',
+  confidential_customer_purchase = BigQueryInsertJobOperator(
+    task_id='bq_confidential_customer_purchase',
     gcp_conn_id='bigquery_default',
     project_id=TRF_PRJ,
     location=BQ_LOCATION,
@@ -188,18 +186,19 @@ with models.DAG(
       'jobType':'QUERY',
       'query':{
         'query':"""SELECT
-                    customer_id,
-                    purchase_id,
-                    name,
-                    surname,
-                    item,
-                    price,
-                    timestamp
-                FROM `{dtl_1_prj}.{dtl_1_dataset}.customer_purchase`
-              """.format(dtl_1_prj=DTL_L1_PRJ, dtl_1_dataset=DTL_L1_BQ_DATASET, ),
+                  c.id as customer_id,
+                  p.id as purchase_id,
+                  c.name as name,
+                  c.surname as surname,
+                  p.item as item,
+                  p.price as price,
+                  p.timestamp as timestamp
+                FROM `{dwh_0_prj}.{dwh_0_dataset}.customers` c
+                JOIN `{dwh_0_prj}.{dwh_0_dataset}.purchases` p ON c.id = p.customer_id
+              """.format(dwh_0_prj=DWH_LAND_PRJ, dwh_0_dataset=DWH_LAND_BQ_DATASET, ),
         'destinationTable':{
-          'projectId': DTL_L2_PRJ,
-          'datasetId': DTL_L2_BQ_DATASET,
+          'projectId': DWH_CONFIDENTIAL_PRJ,
+          'datasetId': DWH_CONFIDENTIAL_BQ_DATASET,
           'tableId': 'customer_purchase'
         },
         'writeDisposition':'WRITE_TRUNCATE',
@@ -209,4 +208,4 @@ with models.DAG(
     impersonation_chain=[TRF_SA_BQ]
   )
 
-  start >> [customers_import, purchases_import] >> join_customer_purchase >> l2_customer_purchase >> end
+  start >> [customers_import, purchases_import] >> join_customer_purchase >> confidential_customer_purchase >> end
