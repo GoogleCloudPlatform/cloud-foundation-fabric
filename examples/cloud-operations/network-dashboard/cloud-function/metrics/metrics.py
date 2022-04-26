@@ -1,3 +1,4 @@
+import time
 import yaml
 from google.api import metric_pb2 as ga_metric
 from google.cloud import monitoring_v3
@@ -64,3 +65,49 @@ def create_metric(metric_name, description, monitoring_project):
                                                metric_descriptor=descriptor)
   print("Created {}.".format(descriptor.name))
 
+
+def write_data_to_metric(config, monitored_project_id, value, metric_name,
+                         network_name):
+  '''
+    Writes data to Cloud Monitoring custom metrics.
+
+      Parameters:
+        monitored_project_id: ID of the project where the resource lives (will be added as a label)
+        value (int): Value for the data point of the metric.
+        metric_name (string): Name of the metric
+        network_name (string): Name of the network (will be added as a label)
+      Returns:
+        usage (int): Current usage for that network.
+        limit (int): Current usage for that network.
+  '''
+  client = monitoring_v3.MetricServiceClient()
+
+  series = monitoring_v3.TimeSeries()
+  series.metric.type = f"custom.googleapis.com/{metric_name}"
+  series.resource.type = "global"
+  series.metric.labels["network_name"] = network_name
+  series.metric.labels["project"] = monitored_project_id
+
+  now = time.time()
+  seconds = int(now)
+  nanos = int((now - seconds) * 10**9)
+  interval = monitoring_v3.TimeInterval(
+      {"end_time": {
+          "seconds": seconds,
+          "nanos": nanos
+      }})
+  point = monitoring_v3.Point({
+      "interval": interval,
+      "value": {
+          "double_value": value
+      }
+  })
+  series.points = [point]
+
+  # TODO: sometimes this cashes with 'DeadlineExceeded: 504 Deadline expired before operation could complete' error
+  # Implement exponential backoff retries?
+  try:
+    client.create_time_series(name=config["monitoring_project_link"],
+                              time_series=[series])
+  except Exception as e:
+    print(e)

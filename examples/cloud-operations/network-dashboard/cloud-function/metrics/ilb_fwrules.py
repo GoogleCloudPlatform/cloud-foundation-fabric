@@ -2,7 +2,8 @@ from code import interact
 from collections import defaultdict
 from google.protobuf import field_mask_pb2
 from google.cloud import asset_v1
-import main as networks
+from . import metrics, networks
+import main as main
 
 def get_forwarding_rules_dict(config, layer: str):
   '''
@@ -59,10 +60,10 @@ def get_forwarding_rules_data(config, metrics_dict, forwarding_rules_dict,
         None
   '''
   for project in config["monitored_projects"]:
-    network_dict = networks.get_networks(project)
+    network_dict = networks.get_networks(config, project)
 
     #TODO Workaround
-    current_quota_limit = networks.get_quota_current_limit(
+    current_quota_limit = main.get_quota_current_limit(
         f"projects/{project}", config["limit_names"][layer])
 
     if current_quota_limit is None:
@@ -72,28 +73,25 @@ def get_forwarding_rules_data(config, metrics_dict, forwarding_rules_dict,
       continue
 
     #TODO Workaround
-    current_quota_limit_view = networks.customize_quota_view(current_quota_limit)
+    current_quota_limit_view = main.customize_quota_view(current_quota_limit)
 
     for net in network_dict:
       #TODO Workaround
-      networks.set_limits(net, current_quota_limit_view, limit_dict)
+      main.set_limits(net, current_quota_limit_view, limit_dict)
 
       usage = 0
       if net['self_link'] in forwarding_rules_dict:
         usage = forwarding_rules_dict[net['self_link']]
-      #TODO Workaround
-      networks.write_data_to_metric(
-          project, usage, metrics_dict["metrics_per_network"]
+      metrics.write_data_to_metric(
+          config, project, usage, metrics_dict["metrics_per_network"]
           [f"{layer.lower()}_forwarding_rules_per_network"]["usage"]["name"],
           net['network_name'])
-      #TODO Workaround
-      networks.write_data_to_metric(
-          project, net['limit'], metrics_dict["metrics_per_network"]
+      metrics.write_data_to_metric(
+          config, project, net['limit'], metrics_dict["metrics_per_network"]
           [f"{layer.lower()}_forwarding_rules_per_network"]["limit"]["name"],
           net['network_name'])
-      #TODO Workaround
-      networks.write_data_to_metric(
-          project, usage / net['limit'], metrics_dict["metrics_per_network"]
+      metrics.write_data_to_metric(
+          config, project, usage / net['limit'], metrics_dict["metrics_per_network"]
           [f"{layer.lower()}_forwarding_rules_per_network"]["utilization"]["name"],
           net['network_name'])
 

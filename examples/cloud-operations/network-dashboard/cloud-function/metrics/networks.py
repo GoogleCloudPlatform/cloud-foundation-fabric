@@ -1,7 +1,8 @@
 from code import interact
 from collections import defaultdict
 from google.protobuf import field_mask_pb2
-from google.cloud import asset_v1
+from googleapiclient import errors
+import http
 
 def get_subnet_ranges_dict(config: dict):
   '''
@@ -43,3 +44,93 @@ def get_subnet_ranges_dict(config: dict):
       subnet_range_dict[network_link] = ranges
 
   return subnet_range_dict
+
+def get_networks(config ,project_id):
+  '''
+    Returns a dictionary of all networks in a project.
+
+      Parameters:
+        project_id (string): Project ID for the project containing the networks.
+      Returns:
+        network_dict (dictionary of string: string): Contains the project_id, network_name(s) and network_id(s)
+  '''
+  request = config["clients"]["discovery_client"].networks().list(project=project_id)
+  response = request.execute()
+  network_dict = []
+  if 'items' in response:
+    for network in response['items']:
+      network_name = network['name']
+      network_id = network['id']
+      self_link = network['selfLink']
+      d = {
+          'project_id': project_id,
+          'network_name': network_name,
+          'network_id': network_id,
+          'self_link': self_link
+      }
+      network_dict.append(d)
+  return network_dict
+
+def get_network_id(config, project_id, network_name):
+  '''
+    Returns the network_id for a specific project / network name.
+
+      Parameters:
+        project_id (string): Project ID for the project containing the networks.
+        network_name (string): Name of the network
+      Returns:
+        network_id (int): Network ID.
+  '''
+  request = config["clients"]["discovery_client"].networks().list(project=project_id)
+  try:
+    response = request.execute()
+  except errors.HttpError as err:
+    # TODO: log proper warning
+    if err.resp.status == http.HTTPStatus.FORBIDDEN:
+      print(
+          f"Warning: error reading networks for {project_id}. " +
+          f"This can happen if you don't have permissions on the project, for example if the project is in another organization or a Google managed project"
+      )
+    else:
+      print(f"Warning: error reading networks for {project_id}: {err}")
+    return 0
+
+  network_id = 0
+
+  if 'items' in response:
+    for network in response['items']:
+      if network['name'] == network_name:
+        network_id = network['id']
+        break
+
+  if network_id == 0:
+    print(f"Error: network_id not found for {network_name} in {project_id}")
+
+  return network_id
+
+def get_limit_network(network_dict, network_link, quota_limit, limit_dict):
+  '''
+    Returns limit for a specific network and metric, using the GCP quota metrics or the values in the yaml file if not found.
+
+      Parameters:
+        network_dict (dictionary of string: string): Contains network information.
+        network_link (string): Contains network link
+        quota_limit (list of dictionaries of string: string): Current quota limit for all networks in that project.
+        limit_dict (dictionary of string:int): Dictionary with the network link as key and the limit as value
+      Returns:
+        limit (int): Current limit for that network.
+  '''
+  if quota_limit:
+    for net in quota_limit:
+      if net['network_id'] == network_dict['network_id']:
+        return net['value']
+
+  if network_link in limit_dict:
+    return limit_dict[network_link]
+  else:
+    if 'default_value' in limit_dict:
+      return limit_dict['default_value']
+    else:
+      print(f"Error: Couldn't find limit for {network_link}")
+
+  return 0
