@@ -25,7 +25,7 @@ from google.api_core import exceptions
 from google.cloud import monitoring_v3, asset_v1
 from google.protobuf import field_mask_pb2
 from googleapiclient import discovery
-from metrics import ilb_fwrules, instances, networks, metrics, limits
+from metrics import ilb_fwrules, instances, networks, metrics, limits, peerings
 
 config = {
   # Organization ID containing the projects to be monitored
@@ -78,7 +78,7 @@ def main(event, context):
   ilb_fwrules.get_forwarding_rules_data(
     config, metrics_dict, l7_forwarding_rules_dict,
       limits_dict['internal_forwarding_rules_l7_limit'], "L7")
-  get_vpc_peering_data(metrics_dict,
+  peerings.get_vpc_peering_data(config, metrics_dict,
                        limits_dict['number_of_vpc_peerings_limit'])
   dynamic_routes_dict = get_dynamic_routes(
       metrics_dict, limits_dict['dynamic_routes_per_network_limit'])
@@ -145,103 +145,6 @@ def create_client():
   except Exception as e:
     raise Exception("Error occurred creating the client: {}".format(e))
 
-
-def get_vpc_peering_data(metrics_dict, limit_dict):
-  '''
-    Gets the data for VPC peerings (active or not) and writes it to the metric defined (vpc_peering_active_metric and vpc_peering_metric).
-
-      Parameters:
-        metrics_dict (dictionary of dictionary of string: string): metrics names and descriptions
-        limit_dict (dictionary of string:int): Dictionary with the network link as key and the limit as value
-      Returns:
-        None
-  '''
-  for project in config["monitored_projects"]:
-    active_vpc_peerings, vpc_peerings = gather_vpc_peerings_data(
-        project, limit_dict)
-    for peering in active_vpc_peerings:
-      metrics.write_data_to_metric(
-          config, project, peering['active_peerings'],
-          metrics_dict["metrics_per_network"]["vpc_peering_active_per_network"]
-          ["usage"]["name"], peering['network_name'])
-      metrics.write_data_to_metric(
-          config, project, peering['network_limit'], metrics_dict["metrics_per_network"]
-          ["vpc_peering_active_per_network"]["limit"]["name"],
-          peering['network_name'])
-      metrics.write_data_to_metric(
-          config, project, peering['active_peerings'] / peering['network_limit'],
-          metrics_dict["metrics_per_network"]["vpc_peering_active_per_network"]
-          ["utilization"]["name"], peering['network_name'])
-    print("Wrote number of active VPC peerings to custom metric for project:",
-          project)
-
-    for peering in vpc_peerings:
-      metrics.write_data_to_metric(
-          config, project, peering['peerings'], metrics_dict["metrics_per_network"]
-          ["vpc_peering_per_network"]["usage"]["name"], peering['network_name'])
-      metrics.write_data_to_metric(
-          config, project, peering['network_limit'], metrics_dict["metrics_per_network"]
-          ["vpc_peering_per_network"]["limit"]["name"], peering['network_name'])
-      metrics.write_data_to_metric(
-          config, project, peering['peerings'] / peering['network_limit'],
-          metrics_dict["metrics_per_network"]["vpc_peering_per_network"]
-          ["utilization"]["name"], peering['network_name'])
-    print("Wrote number of VPC peerings to custom metric for project:", project)
-
-
-def gather_vpc_peerings_data(project_id, limit_dict):
-  '''
-    Gets the data for all VPC peerings (active or not) in project_id and writes it to the metric defined in vpc_peering_active_metric and vpc_peering_metric.
-
-      Parameters:
-        project_id (string): We will take all VPCs in that project_id and look for all peerings to these VPCs.
-        limit_dict (dictionary of string:int): Dictionary with the network link as key and the limit as value
-      Returns:
-        active_peerings_dict (dictionary of string: string): Contains project_id, network_name, network_limit for each active VPC peering.
-        peerings_dict (dictionary of string: string): Contains project_id, network_name, network_limit for each VPC peering.
-  '''
-  active_peerings_dict = []
-  peerings_dict = []
-  request = config["clients"]["discovery_client"].networks().list(project=project_id)
-  response = request.execute()
-  if 'items' in response:
-    for network in response['items']:
-      if 'peerings' in network:
-        STATE = network['peerings'][0]['state']
-        if STATE == "ACTIVE":
-          active_peerings_count = len(network['peerings'])
-        else:
-          active_peerings_count = 0
-
-        peerings_count = len(network['peerings'])
-      else:
-        peerings_count = 0
-        active_peerings_count = 0
-
-      network_link = f"https://www.googleapis.com/compute/v1/projects/{project_id}/global/networks/{network['name']}"
-      network_limit = limits.get_ppg(network_link, limit_dict)
-
-      active_d = {
-          'project_id': project_id,
-          'network_name': network['name'],
-          'active_peerings': active_peerings_count,
-          'network_limit': network_limit
-      }
-      active_peerings_dict.append(active_d)
-      d = {
-          'project_id': project_id,
-          'network_name': network['name'],
-          'peerings': peerings_count,
-          'network_limit': network_limit
-      }
-      peerings_dict.append(d)
-
-  return active_peerings_dict, peerings_dict
-
-
-
-
-
 def get_pgg_data(metric_dict, usage_dict, limit_metric, limit_dict):
   '''
     This function gets the usage, limit and utilization per VPC peering group for a specific metric for all projects to be monitored.
@@ -255,7 +158,7 @@ def get_pgg_data(metric_dict, usage_dict, limit_metric, limit_dict):
         None
   '''
   for project in config["monitored_projects"]:
-    network_dict_list = gather_peering_data(project)
+    network_dict_list = peerings.gather_peering_data(config, project)
     # Network dict list is a list of dictionary (one for each network)
     # For each network, this dictionary contains:
     #   project_id, network_name, network_id, usage, limit, peerings (list of peered networks)
@@ -335,7 +238,7 @@ def get_dynamic_routes_ppg(metric_dict, usage_dict, limit_dict):
         None
   '''
   for project in config["monitored_projects"]:
-    network_dict_list = gather_peering_data(project)
+    network_dict_list = peerings.gather_peering_data(config, project)
 
     for network_dict in network_dict_list:
       network_link = f"https://www.googleapis.com/compute/v1/projects/{project}/global/networks/{network_dict['network_name']}"
@@ -585,51 +488,6 @@ def get_routers():
       routers_dict[network_link] = [router_link]
 
   return routers_dict
-
-
-def gather_peering_data(project_id):
-  '''
-    Returns a dictionary of all peerings for all networks in a project.
-
-      Parameters:
-        project_id (string): Project ID for the project containing the networks.
-      Returns:
-        network_list (dictionary of string: string): Contains the project_id, network_name(s) and network_id(s) of peered networks.
-  '''
-  request = config["clients"]["discovery_client"].networks().list(project=project_id)
-  response = request.execute()
-
-  network_list = []
-  if 'items' in response:
-    for network in response['items']:
-      net = {
-          'project_id': project_id,
-          'network_name': network['name'],
-          'network_id': network['id'],
-          'peerings': []
-      }
-      if 'peerings' in network:
-        STATE = network['peerings'][0]['state']
-        if STATE == "ACTIVE":
-          for peered_network in network[
-              'peerings']:  # "projects/{project_name}/global/networks/{network_name}"
-            start = peered_network['network'].find("projects/") + len(
-                'projects/')
-            end = peered_network['network'].find("/global")
-            peered_project = peered_network['network'][start:end]
-            peered_network_name = peered_network['network'].split(
-                "networks/")[1]
-            peered_net = {
-                'project_id':
-                    peered_project,
-                'network_name':
-                    peered_network_name,
-                'network_id':
-                    networks.get_network_id(config, peered_project, peered_network_name)
-            }
-            net["peerings"].append(peered_net)
-      network_list.append(net)
-  return network_list
 
 def get_quota_current_limit(project_link, metric_name):
   '''
