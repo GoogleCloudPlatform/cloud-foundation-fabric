@@ -19,9 +19,7 @@ from distutils.command.config import config
 import os
 from pickletools import int4
 import time
-import http
 from collections import defaultdict
-from google.api_core import exceptions
 from google.cloud import monitoring_v3, asset_v1
 from google.protobuf import field_mask_pb2
 from googleapiclient import discovery
@@ -164,7 +162,7 @@ def get_pgg_data(metric_dict, usage_dict, limit_metric, limit_dict):
     #   project_id, network_name, network_id, usage, limit, peerings (list of peered networks)
     #   peerings is a list of dictionary (one for each peered network) and contains:
     #     project_id, network_name, network_id
-    current_quota_limit = get_quota_current_limit(f"projects/{project}",
+    current_quota_limit = limits.get_quota_current_limit(f"projects/{project}",
                                                   limit_metric)
     if current_quota_limit is None:
       print(
@@ -218,7 +216,7 @@ def get_pgg_data(metric_dict, usage_dict, limit_metric, limit_dict):
         peered_network_dict["usage"] = peered_usage
         peered_network_dict["limit"] = peered_limit
 
-      count_effective_limit(project, network_dict, metric_dict["usage"]["name"],
+      limits.count_effective_limit(config, project, network_dict, metric_dict["usage"]["name"],
                             metric_dict["limit"]["name"],
                             metric_dict["utilization"]["name"], limit_dict)
       print(
@@ -266,84 +264,12 @@ def get_dynamic_routes_ppg(metric_dict, usage_dict, limit_dict):
         peered_network_dict["usage"] = peered_usage
         peered_network_dict["limit"] = peered_limit
 
-      count_effective_limit(project, network_dict, metric_dict["usage"]["name"],
+      limits.count_effective_limit(config, project, network_dict, metric_dict["usage"]["name"],
                             metric_dict["limit"]["name"],
                             metric_dict["utilization"]["name"], limit_dict)
       print(
           f"Wrote {metric_dict['usage']['name']} for peering group {network_dict['network_name']} in {project}"
       )
-
-
-def count_effective_limit(project_id, network_dict, usage_metric_name,
-                          limit_metric_name, utilization_metric_name,
-                          limit_dict):
-  '''
-    Calculates the effective limits (using algorithm in the link below) for peering groups and writes data (usage, limit, utilization) to the custom metrics.
-    Source: https://cloud.google.com/vpc/docs/quota#vpc-peering-effective-limit
-
-      Parameters:
-        project_id (string): Project ID for the project to be analyzed.
-        network_dict (dictionary of string: string): Contains all required information about the network to get the usage, limit and utilization.
-        usage_metric_name (string): Name of the custom metric to be populated for usage per VPC peering group.
-        limit_metric_name (string): Name of the custom metric to be populated for limit per VPC peering group.
-        utilization_metric_name (string): Name of the custom metric to be populated for utilization per VPC peering group.
-        limit_dict (dictionary of string:int): Dictionary containing the limit per peering group (either VPC specific or default limit).
-      Returns:
-        None
-  '''
-
-  if network_dict['peerings'] == []:
-    return
-
-  # Get usage: Sums usage for current network + all peered networks
-  peering_group_usage = network_dict['usage']
-  for peered_network in network_dict['peerings']:
-    if 'usage' not in peered_network:
-      print(
-          f"Can not add metrics for peered network in projects/{project_id} as no usage metrics exist due to missing permissions"
-      )
-      continue
-    peering_group_usage += peered_network['usage']
-
-  network_link = f"https://www.googleapis.com/compute/v1/projects/{project_id}/global/networks/{network_dict['network_name']}"
-
-  # Calculates effective limit: Step 1: max(per network limit, per network_peering_group limit)
-  limit_step1 = max(network_dict['limit'],
-                    limits.get_ppg(network_link, limit_dict))
-
-  # Calculates effective limit: Step 2: List of max(per network limit, per network_peering_group limit) for each peered network
-  limit_step2 = []
-  for peered_network in network_dict['peerings']:
-    peered_network_link = f"https://www.googleapis.com/compute/v1/projects/{peered_network['project_id']}/global/networks/{peered_network['network_name']}"
-
-    if 'limit' in peered_network:
-      limit_step2.append(
-          max(peered_network['limit'],
-              limits.get_ppg(peered_network_link, limit_dict)))
-    else:
-      print(
-          f"Ignoring projects/{peered_network['project_id']} for limits in peering group of project {project_id} as no limits are available."
-          +
-          "This can happen if you don't have permissions on the project, for example if the project is in another organization or a Google managed project"
-      )
-
-  # Calculates effective limit: Step 3: Find minimum from the list created by Step 2
-  limit_step3 = 0
-  if len(limit_step2) > 0:
-    limit_step3 = min(limit_step2)
-
-  # Calculates effective limit: Step 4: Find maximum from step 1 and step 3
-  effective_limit = max(limit_step1, limit_step3)
-  utilization = peering_group_usage / effective_limit
-
-  metrics.write_data_to_metric(config, project_id, peering_group_usage, usage_metric_name,
-                       network_dict['network_name'])
-  metrics.write_data_to_metric(config, project_id, effective_limit, limit_metric_name,
-                       network_dict['network_name'])
-  metrics.write_data_to_metric(config, project_id, utilization, utilization_metric_name,
-                       network_dict['network_name'])
-
-
 
 
 def get_dynamic_routes(metrics_dict, limits_dict):
@@ -489,36 +415,6 @@ def get_routers():
 
   return routers_dict
 
-def get_quota_current_limit(project_link, metric_name):
-  '''
-    Retrieves limit for a specific metric.
-
-      Parameters:
-        project_link (string): Project link.
-        metric_name (string): Name of the metric.
-      Returns:
-        results_list (list of string): Current limit.
-  '''
-  client, interval = create_client()
-
-  try:
-    results = client.list_time_series(
-        request={
-            "name": project_link,
-            "filter": f'metric.type = "{metric_name}"',
-            "interval": interval,
-            "view": monitoring_v3.ListTimeSeriesRequest.TimeSeriesView.FULL
-        })
-    results_list = list(results)
-    return results_list
-  except exceptions.PermissionDenied as err:
-    print(
-        f"Warning: error reading quotas for {project_link}. " +
-        f"This can happen if you don't have permissions on the project, for example if the project is in another organization or a Google managed project"
-    )
-  return None
-
-
 def customize_quota_view(quota_results):
   '''
     Customize the quota output for an easier parsable output.
@@ -537,42 +433,6 @@ def customize_quota_view(quota_results):
       quotaViewJson.update({'value': val.value.int64_value})
     quotaViewList.append(quotaViewJson)
   return quotaViewList
-
-
-def set_limits(network_dict, quota_limit, limit_dict):
-  '''
-    Updates the network dictionary with quota limit values.
-
-      Parameters:
-        network_dict (dictionary of string: string): Contains network information.
-        quota_limit (list of dictionaries of string: string): Current quota limit.
-        limit_dict (dictionary of string:int): Dictionary with the network link as key and the limit as value
-      Returns:
-        None
-  '''
-
-  network_dict['limit'] = None
-
-  if quota_limit:
-    for net in quota_limit:
-      if net['network_id'] == network_dict['network_id']:
-        network_dict['limit'] = net['value']
-        return
-
-  network_link = f"https://www.googleapis.com/compute/v1/projects/{network_dict['project_id']}/global/networks/{network_dict['network_name']}"
-
-  if network_link in limit_dict:
-    network_dict['limit'] = limit_dict[network_link]
-  else:
-    if 'default_value' in limit_dict:
-      network_dict['limit'] = limit_dict['default_value']
-    else:
-      print(f"Error: Couldn't find limit for {network_link}")
-      network_dict['limit'] = 0
-
-
-
-
 
 
 if __name__ == "__main__":

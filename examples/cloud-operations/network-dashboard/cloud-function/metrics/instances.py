@@ -4,7 +4,7 @@ from google.protobuf import field_mask_pb2
 from google.cloud import asset_v1
 #TODO: Workaround
 import main as main
-from . import metrics, networks
+from . import metrics, networks, limits
 
 def get_gce_instance_dict(config: dict):
   '''
@@ -55,7 +55,7 @@ def get_gce_instances_data(config, metrics_dict, gce_instance_dict, limit_dict):
     network_dict = networks.get_networks(config, project)
 
     #TODO
-    current_quota_limit = main.get_quota_current_limit(f"projects/{project}",
+    current_quota_limit = limits.get_quota_current_limit(f"projects/{project}",
                                                   metric_instances_limit)
     if current_quota_limit is None:
       print(
@@ -66,8 +66,7 @@ def get_gce_instances_data(config, metrics_dict, gce_instance_dict, limit_dict):
     current_quota_limit_view = main.customize_quota_view(current_quota_limit)
 
     for net in network_dict:
-      # TODO: workaround
-      main.set_limits(net, current_quota_limit_view, limit_dict)
+      limits.set_limits(net, current_quota_limit_view, limit_dict)
 
       usage = 0
       if net['self_link'] in gce_instance_dict:
