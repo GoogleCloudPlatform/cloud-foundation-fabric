@@ -15,33 +15,39 @@
 #
 
 from code import interact
+from distutils.command.config import config
 import os
 from pickletools import int4
 import time
 import http
-import yaml
 from collections import defaultdict
-from google.api import metric_pb2 as ga_metric
-from google.api_core import exceptions, protobuf_helpers
+from google.api_core import exceptions
 from google.cloud import monitoring_v3, asset_v1
 from google.protobuf import field_mask_pb2
 from googleapiclient import discovery, errors
+from metrics import ilb_fwrules, instances, networks, metrics
 
-# Organization ID containing the projects to be monitored
-ORGANIZATION_ID = os.environ.get("ORGANIZATION_ID")
-# list of projects from which function will get quotas information
-MONITORED_PROJECTS_LIST = os.environ.get("MONITORED_PROJECTS_LIST").split(",")
-# project where the metrics and dahsboards will be created
-MONITORING_PROJECT_ID = os.environ.get("MONITORING_PROJECT_ID")
-MONITORING_PROJECT_LINK = f"projects/{MONITORING_PROJECT_ID}"
-service = discovery.build('compute', 'v1')
-
-# Existing GCP metrics per network
-GCE_INSTANCES_LIMIT_METRIC = "compute.googleapis.com/quota/instances_per_vpc_network/limit"
-L4_FORWARDING_RULES_LIMIT_METRIC = "compute.googleapis.com/quota/internal_lb_forwarding_rules_per_vpc_network/limit"
-L7_FORWARDING_RULES_LIMIT_METRIC = "compute.googleapis.com/quota/internal_managed_forwarding_rules_per_vpc_network/limit"
-SUBNET_RANGES_LIMIT_METRIC = "compute.googleapis.com/quota/subnet_ranges_per_vpc_network/limit"
-
+config = {
+  # Organization ID containing the projects to be monitored
+  "organization": os.environ.get("ORGANIZATION_ID"),
+  # list of projects from which function will get quotas information
+  "monitored_projects": os.environ.get("MONITORED_PROJECTS_LIST").split(","),
+  "monitoring_project_link":f"projects/{os.environ.get('MONITORING_PROJECT_ID')}",
+  "limit_names": {
+      "GCE_INSTANCES": "compute.googleapis.com/quota/instances_per_vpc_network/limit",
+      "L4": "compute.googleapis.com/quota/internal_lb_forwarding_rules_per_vpc_network/limit",
+      "L7": "compute.googleapis.com/quota/internal_managed_forwarding_rules_per_vpc_network/limit",
+      "SUBNET_RANGES": "compute.googleapis.com/quota/subnet_ranges_per_vpc_network/limit"
+  },
+  "lb_scheme": {
+    "L7": "INTERNAL_MANAGED",
+    "L4": "INTERNAL"
+  },
+  "clients": {
+    "discovery_client": discovery.build('compute', 'v1'),
+    "asset_client":  asset_v1.AssetServiceClient()
+  }
+}
 
 def main(event, context):
   '''
@@ -53,23 +59,24 @@ def main(event, context):
       Returns:
         'Function executed successfully'
   '''
-  metrics_dict, limits_dict = create_metrics()
+
+  metrics_dict, limits_dict = metrics.create_metrics(config["monitoring_project_link"])
 
   # Asset inventory queries
-  gce_instance_dict = get_gce_instance_dict()
-  l4_forwarding_rules_dict = get_l4_forwarding_rules_dict()
-  l7_forwarding_rules_dict = get_l7_forwarding_rules_dict()
-  subnet_range_dict = get_subnet_ranges_dict()
+  gce_instance_dict = instances.get_gce_instance_dict(config)
+  l4_forwarding_rules_dict = ilb_fwrules.get_forwarding_rules_dict(config, "L4")
+  l7_forwarding_rules_dict = ilb_fwrules.get_forwarding_rules_dict(config, "L7")
+  subnet_range_dict = networks.get_subnet_ranges_dict(config)
 
   # Per Network metrics
-  get_gce_instances_data(metrics_dict, gce_instance_dict,
-                         limits_dict['number_of_instances_limit'])
-  get_l4_forwarding_rules_data(
-      metrics_dict, l4_forwarding_rules_dict,
-      limits_dict['internal_forwarding_rules_l4_limit'])
-  get_l7_forwarding_rules_data(
-      metrics_dict, l7_forwarding_rules_dict,
-      limits_dict['internal_forwarding_rules_l7_limit'])
+  instances.get_gce_instances_data(metrics_dict, gce_instance_dict,
+                         limits_dict['number_of_instances_limit'], config["monitored_projects"])
+  ilb_fwrules.get_forwarding_rules_data(
+      config, metrics_dict, l4_forwarding_rules_dict,
+      limits_dict['internal_forwarding_rules_l4_limit'], "L4")
+  ilb_fwrules.get_forwarding_rules_data(
+    config, metrics_dict, l7_forwarding_rules_dict,
+      limits_dict['internal_forwarding_rules_l7_limit'], "L7")
   get_vpc_peering_data(metrics_dict,
                        limits_dict['number_of_vpc_peerings_limit'])
   dynamic_routes_dict = get_dynamic_routes(
@@ -78,25 +85,25 @@ def main(event, context):
   # Per VPC peering group metrics
   get_pgg_data(
       metrics_dict["metrics_per_peering_group"]["instance_per_peering_group"],
-      gce_instance_dict, GCE_INSTANCES_LIMIT_METRIC,
+      gce_instance_dict, config["limit_names"]["GCE_INSTANCES"],
       limits_dict['number_of_instances_ppg_limit'])
 
   get_pgg_data(
       metrics_dict["metrics_per_peering_group"]
       ["l4_forwarding_rules_per_peering_group"], l4_forwarding_rules_dict,
-      L4_FORWARDING_RULES_LIMIT_METRIC,
+      config["limit_names"]["L4"],
       limits_dict['internal_forwarding_rules_l4_ppg_limit'])
 
   get_pgg_data(
       metrics_dict["metrics_per_peering_group"]
       ["l7_forwarding_rules_per_peering_group"], l7_forwarding_rules_dict,
-      L7_FORWARDING_RULES_LIMIT_METRIC,
+      config["limit_names"]["L7"],
       limits_dict['internal_forwarding_rules_l7_ppg_limit'])
 
   get_pgg_data(
       metrics_dict["metrics_per_peering_group"]
       ["subnet_ranges_per_peering_group"], subnet_range_dict,
-      SUBNET_RANGES_LIMIT_METRIC,
+      config["limit_names"]["SUBNET_RANGES"],
       limits_dict['number_of_subnet_IP_ranges_ppg_limit'])
 
   get_dynamic_routes_ppg(
@@ -106,156 +113,6 @@ def main(event, context):
 
   return 'Function executed successfully'
 
-
-def get_l4_forwarding_rules_dict():
-  '''
-    Calls the Asset Inventory API to get all L4 Forwarding Rules under the GCP organization.
-
-      Parameters:
-        None
-      Returns:
-        forwarding_rules_dict (dictionary of string: int): Keys are the network links and values are the number of Forwarding Rules per network.
-  '''
-  client = asset_v1.AssetServiceClient()
-
-  read_mask = field_mask_pb2.FieldMask()
-  read_mask.FromJsonString('name,versionedResources')
-
-  forwarding_rules_dict = defaultdict(int)
-
-  response = client.search_all_resources(
-      request={
-          "scope": f"organizations/{ORGANIZATION_ID}",
-          "asset_types": ["compute.googleapis.com/ForwardingRule"],
-          "read_mask": read_mask,
-      })
-  for resource in response:
-    internal = False
-    network_link = ""
-    for versioned in resource.versioned_resources:
-      for field_name, field_value in versioned.resource.items():
-        if field_name == "loadBalancingScheme":
-          internal = (field_value == "INTERNAL")
-        if field_name == "network":
-          network_link = field_value
-    if internal:
-      if network_link in forwarding_rules_dict:
-        forwarding_rules_dict[network_link] += 1
-      else:
-        forwarding_rules_dict[network_link] = 1
-
-  return forwarding_rules_dict
-
-
-def get_l7_forwarding_rules_dict():
-  '''
-    Calls the Asset Inventory API to get all L7 Forwarding Rules under the GCP organization.
-
-      Parameters:
-        None
-      Returns:
-        forwarding_rules_dict (dictionary of string: int): Keys are the network links and values are the number of Forwarding Rules per network.
-  '''
-  client = asset_v1.AssetServiceClient()
-
-  read_mask = field_mask_pb2.FieldMask()
-  read_mask.FromJsonString('name,versionedResources')
-
-  forwarding_rules_dict = defaultdict(int)
-
-  response = client.search_all_resources(
-      request={
-          "scope": f"organizations/{ORGANIZATION_ID}",
-          "asset_types": ["compute.googleapis.com/ForwardingRule"],
-          "read_mask": read_mask,
-      })
-  for resource in response:
-    internal = False
-    network_link = ""
-    for versioned in resource.versioned_resources:
-      for field_name, field_value in versioned.resource.items():
-        if field_name == "loadBalancingScheme":
-          internal = (field_value == "INTERNAL_MANAGED")
-        if field_name == "network":
-          network_link = field_value
-    if internal:
-      if network_link in forwarding_rules_dict:
-        forwarding_rules_dict[network_link] += 1
-      else:
-        forwarding_rules_dict[network_link] = 1
-
-  return forwarding_rules_dict
-
-
-def get_gce_instance_dict():
-  '''
-    Calls the Asset Inventory API to get all GCE instances under the GCP organization.
-
-      Parameters:
-        None
-      Returns:
-        gce_instance_dict (dictionary of string: int): Keys are the network links and values are the number of GCE Instances per network.
-  '''
-  client = asset_v1.AssetServiceClient()
-
-  gce_instance_dict = defaultdict(int)
-
-  response = client.search_all_resources(
-      request={
-          "scope": f"organizations/{ORGANIZATION_ID}",
-          "asset_types": ["compute.googleapis.com/Instance"],
-      })
-  for resource in response:
-    for field_name, field_value in resource.additional_attributes.items():
-      if field_name == "networkInterfaceNetworks":
-        for network in field_value:
-          if network in gce_instance_dict:
-            gce_instance_dict[network] += 1
-          else:
-            gce_instance_dict[network] = 1
-
-  return gce_instance_dict
-
-
-def get_subnet_ranges_dict():
-  '''
-    Calls the Asset Inventory API to get all Subnet ranges under the GCP organization.
-
-      Parameters:
-        None
-      Returns:
-        subnet_range_dict (dictionary of string: int): Keys are the network links and values are the number of subnet ranges per network.
-  '''
-  client = asset_v1.AssetServiceClient()
-  subnet_range_dict = defaultdict(int)
-  read_mask = field_mask_pb2.FieldMask()
-  read_mask.FromJsonString('name,versionedResources')
-
-  response = client.search_all_resources(
-      request={
-          "scope": f"organizations/{ORGANIZATION_ID}",
-          "asset_types": ["compute.googleapis.com/Subnetwork"],
-          "read_mask": read_mask,
-      })
-  for resource in response:
-    ranges = 0
-    network_link = None
-
-    for versioned in resource.versioned_resources:
-      for field_name, field_value in versioned.resource.items():
-        if field_name == "network":
-          network_link = field_value
-          ranges += 1
-        if field_name == "secondaryIpRanges":
-          for range in field_value:
-            ranges += 1
-
-    if network_link in subnet_range_dict:
-      subnet_range_dict[network_link] += ranges
-    else:
-      subnet_range_dict[network_link] = ranges
-
-  return subnet_range_dict
 
 
 def create_client():
@@ -288,115 +145,6 @@ def create_client():
     raise Exception("Error occurred creating the client: {}".format(e))
 
 
-def create_metrics():
-  '''
-    Creates all Cloud Monitoring custom metrics based on the metric.yaml file
-
-      Parameters:
-        None
-
-      Returns:
-        metrics_dict (dictionary of dictionary of string: string): metrics names and descriptions
-        limits_dict (dictionary of dictionary of string: int): limits_dict[metric_name]: dict[network_name] = limit_value
-  '''
-  client = monitoring_v3.MetricServiceClient()
-  existing_metrics = []
-  for desc in client.list_metric_descriptors(name=MONITORING_PROJECT_LINK):
-    existing_metrics.append(desc.type)
-  limits_dict = {}
-
-  with open("metrics.yaml", 'r') as stream:
-    try:
-      metrics_dict = yaml.safe_load(stream)
-
-      for metric_list in metrics_dict.values():
-        for metric in metric_list.values():
-          for sub_metric_key, sub_metric in metric.items():
-            metric_link = f"custom.googleapis.com/{sub_metric['name']}"
-            # If the metric doesn't exist yet, then we create it
-            if metric_link not in existing_metrics:
-              create_metric(sub_metric["name"], sub_metric["description"])
-            # Parse limits (both default values and network specific ones)
-            if sub_metric_key == "limit":
-              limits_dict_for_metric = {}
-              for network_link, limit_value in sub_metric["values"].items():
-                limits_dict_for_metric[network_link] = limit_value
-              limits_dict[sub_metric["name"]] = limits_dict_for_metric
-
-      return metrics_dict, limits_dict
-    except yaml.YAMLError as exc:
-      print(exc)
-
-
-def create_metric(metric_name, description):
-  '''
-    Creates a Cloud Monitoring metric based on the parameter given if the metric is not already existing
-
-      Parameters:
-        metric_name (string): Name of the metric to be created
-        description (string): Description of the metric to be created
-
-      Returns:
-        None
-  '''
-  client = monitoring_v3.MetricServiceClient()
-
-  descriptor = ga_metric.MetricDescriptor()
-  descriptor.type = f"custom.googleapis.com/{metric_name}"
-  descriptor.metric_kind = ga_metric.MetricDescriptor.MetricKind.GAUGE
-  descriptor.value_type = ga_metric.MetricDescriptor.ValueType.DOUBLE
-  descriptor.description = description
-  descriptor = client.create_metric_descriptor(name=MONITORING_PROJECT_LINK,
-                                               metric_descriptor=descriptor)
-  print("Created {}.".format(descriptor.name))
-
-
-def get_gce_instances_data(metrics_dict, gce_instance_dict, limit_dict):
-  '''
-    Gets the data for GCE instances per VPC Network and writes it to the metric defined in instance_metric.
-
-      Parameters:
-        metrics_dict (dictionary of dictionary of string: string): metrics names and descriptions
-        gce_instance_dict (dictionary of string: int): Keys are the network links and values are the number of GCE Instances per network.
-        limit_dict (dictionary of string:int): Dictionary with the network link as key and the limit as value
-      Returns:
-        gce_instance_dict
-  '''
-  # Existing GCP Monitoring metrics for GCE instances
-  metric_instances_limit = "compute.googleapis.com/quota/instances_per_vpc_network/limit"
-
-  for project in MONITORED_PROJECTS_LIST:
-    network_dict = get_networks(project)
-
-    current_quota_limit = get_quota_current_limit(f"projects/{project}",
-                                                  metric_instances_limit)
-    if current_quota_limit is None:
-      print(
-          f"Could not write number of instances for projects/{project} due to missing quotas"
-      )
-
-    current_quota_limit_view = customize_quota_view(current_quota_limit)
-
-    for net in network_dict:
-      set_limits(net, current_quota_limit_view, limit_dict)
-
-      usage = 0
-      if net['self_link'] in gce_instance_dict:
-        usage = gce_instance_dict[net['self_link']]
-
-      write_data_to_metric(
-          project, usage, metrics_dict["metrics_per_network"]
-          ["instance_per_network"]["usage"]["name"], net['network_name'])
-      write_data_to_metric(
-          project, net['limit'], metrics_dict["metrics_per_network"]
-          ["instance_per_network"]["limit"]["name"], net['network_name'])
-      write_data_to_metric(
-          project, usage / net['limit'], metrics_dict["metrics_per_network"]
-          ["instance_per_network"]["utilization"]["name"], net['network_name'])
-
-    print(f"Wrote number of instances to metric for projects/{project}")
-
-
 def get_vpc_peering_data(metrics_dict, limit_dict):
   '''
     Gets the data for VPC peerings (active or not) and writes it to the metric defined (vpc_peering_active_metric and vpc_peering_metric).
@@ -407,7 +155,7 @@ def get_vpc_peering_data(metrics_dict, limit_dict):
       Returns:
         None
   '''
-  for project in MONITORED_PROJECTS_LIST:
+  for project in config["monitored_projects"]:
     active_vpc_peerings, vpc_peerings = gather_vpc_peerings_data(
         project, limit_dict)
     for peering in active_vpc_peerings:
@@ -453,7 +201,7 @@ def gather_vpc_peerings_data(project_id, limit_dict):
   '''
   active_peerings_dict = []
   peerings_dict = []
-  request = service.networks().list(project=project_id)
+  request = config["clients"]["discovery_client"].networks().list(project=project_id)
   response = request.execute()
   if 'items' in response:
     for network in response['items']:
@@ -510,105 +258,6 @@ def get_limit_ppg(network_link, limit_dict):
       return 0
 
 
-def get_l4_forwarding_rules_data(metrics_dict, forwarding_rules_dict,
-                                 limit_dict):
-  '''
-    Gets the data for L4 Internal Forwarding Rules per VPC Network and writes it to the metric defined in forwarding_rules_metric.
-
-      Parameters:
-        metrics_dict (dictionary of dictionary of string: string): metrics names and descriptions.
-        forwarding_rules_dict (dictionary of string: int): Keys are the network links and values are the number of Forwarding Rules per network.
-        limit_dict (dictionary of string:int): Dictionary with the network link as key and the limit as value.
-      Returns:
-        None
-  '''
-  for project in MONITORED_PROJECTS_LIST:
-    network_dict = get_networks(project)
-
-    current_quota_limit = get_quota_current_limit(
-        f"projects/{project}", L4_FORWARDING_RULES_LIMIT_METRIC)
-
-    if current_quota_limit is None:
-      print(
-          f"Could not write L4 forwarding rules to metric for projects/{project} due to missing quotas"
-      )
-      continue
-
-    current_quota_limit_view = customize_quota_view(current_quota_limit)
-
-    for net in network_dict:
-      set_limits(net, current_quota_limit_view, limit_dict)
-
-      usage = 0
-      if net['self_link'] in forwarding_rules_dict:
-        usage = forwarding_rules_dict[net['self_link']]
-
-      write_data_to_metric(
-          project, usage, metrics_dict["metrics_per_network"]
-          ["l4_forwarding_rules_per_network"]["usage"]["name"],
-          net['network_name'])
-      write_data_to_metric(
-          project, net['limit'], metrics_dict["metrics_per_network"]
-          ["l4_forwarding_rules_per_network"]["limit"]["name"],
-          net['network_name'])
-      write_data_to_metric(
-          project, usage / net['limit'], metrics_dict["metrics_per_network"]
-          ["l4_forwarding_rules_per_network"]["utilization"]["name"],
-          net['network_name'])
-
-    print(
-        f"Wrote number of L4 forwarding rules to metric for projects/{project}")
-
-
-def get_l7_forwarding_rules_data(metrics_dict, forwarding_rules_dict,
-                                 limit_dict):
-  '''
-    Gets the data for L7 Internal Forwarding Rules per VPC Network and writes it to the metric defined in forwarding_rules_metric.
-
-      Parameters:
-        metrics_dict (dictionary of dictionary of string: string): metrics names and descriptions.
-        forwarding_rules_dict (dictionary of string: int): Keys are the network links and values are the number of Forwarding Rules per network.
-        limit_dict (dictionary of string:int): Dictionary with the network link as key and the limit as value.
-      Returns:
-        None
-  '''
-  for project in MONITORED_PROJECTS_LIST:
-    network_dict = get_networks(project)
-
-    current_quota_limit = get_quota_current_limit(
-        f"projects/{project}", L7_FORWARDING_RULES_LIMIT_METRIC)
-    if current_quota_limit is None:
-      print(
-          f"Could not write number of L7 forwarding rules to metric for projects/{project} due to missing quotas"
-      )
-      continue
-
-    current_quota_limit_view = customize_quota_view(current_quota_limit)
-
-    for net in network_dict:
-      set_limits(net, current_quota_limit_view, limit_dict)
-
-      usage = 0
-      if net['self_link'] in forwarding_rules_dict:
-        usage = forwarding_rules_dict[net['self_link']]
-
-      write_data_to_metric(
-          project, usage, metrics_dict["metrics_per_network"]
-          ["l7_forwarding_rules_per_network"]["usage"]["name"],
-          net['network_name'])
-      write_data_to_metric(
-          project, net['limit'], metrics_dict["metrics_per_network"]
-          ["l7_forwarding_rules_per_network"]["limit"]["name"],
-          net['network_name'])
-      write_data_to_metric(
-          project, usage / net['limit'], metrics_dict["metrics_per_network"]
-          ["l7_forwarding_rules_per_network"]["utilization"]["name"],
-          net['network_name'])
-
-    print(
-        f"Wrote number of L7 forwarding rules to metric for projects/{project}")
-
-
 def get_pgg_data(metric_dict, usage_dict, limit_metric, limit_dict):
   '''
     This function gets the usage, limit and utilization per VPC peering group for a specific metric for all projects to be monitored.
@@ -621,7 +270,7 @@ def get_pgg_data(metric_dict, usage_dict, limit_metric, limit_dict):
       Returns:
         None
   '''
-  for project in MONITORED_PROJECTS_LIST:
+  for project in config["monitored_projects"]:
     network_dict_list = gather_peering_data(project)
     # Network dict list is a list of dictionary (one for each network)
     # For each network, this dictionary contains:
@@ -701,7 +350,7 @@ def get_dynamic_routes_ppg(metric_dict, usage_dict, limit_dict):
       Returns:
         None
   '''
-  for project in MONITORED_PROJECTS_LIST:
+  for project in config["monitored_projects"]:
     network_dict_list = gather_peering_data(project)
 
     for network_dict in network_dict_list:
@@ -817,7 +466,7 @@ def get_networks(project_id):
       Returns:
         network_dict (dictionary of string: string): Contains the project_id, network_name(s) and network_id(s)
   '''
-  request = service.networks().list(project=project_id)
+  request = config["clients"]["discovery_client"].networks().list(project=project_id)
   response = request.execute()
   network_dict = []
   if 'items' in response:
@@ -848,7 +497,7 @@ def get_dynamic_routes(metrics_dict, limits_dict):
   routers_dict = get_routers()
   dynamic_routes_dict = defaultdict(int)
 
-  for project_id in MONITORED_PROJECTS_LIST:
+  for project_id in config["monitored_projects"]:
     network_dict = get_networks(project_id)
 
     for network in network_dict:
@@ -924,7 +573,7 @@ def get_routes_for_router(project_id, router_region, router_name):
       Returns:
         sum_routes (int): Number of dynamic routes learned by the Cloud Router.
   '''
-  request = service.routers().getRouterStatus(project=project_id,
+  request = config["clients"]["discovery_client"].routers().getRouterStatus(project=project_id,
                                               region=router_region,
                                               router=router_name)
   response = request.execute()
@@ -957,7 +606,7 @@ def get_routers():
 
   response = client.search_all_resources(
       request={
-          "scope": f"organizations/{ORGANIZATION_ID}",
+          "scope": f"organizations/{config['organization']}",
           "asset_types": ["compute.googleapis.com/Router"],
           "read_mask": read_mask,
       })
@@ -988,7 +637,7 @@ def gather_peering_data(project_id):
       Returns:
         network_list (dictionary of string: string): Contains the project_id, network_name(s) and network_id(s) of peered networks.
   '''
-  request = service.networks().list(project=project_id)
+  request = config["clients"]["discovery_client"].networks().list(project=project_id)
   response = request.execute()
 
   network_list = []
@@ -1034,7 +683,7 @@ def get_network_id(project_id, network_name):
       Returns:
         network_id (int): Network ID.
   '''
-  request = service.networks().list(project=project_id)
+  request = config["clients"]["discovery_client"].networks().list(project=project_id)
   try:
     response = request.execute()
   except errors.HttpError as err:
@@ -1114,7 +763,7 @@ def customize_quota_view(quota_results):
 
 def set_limits(network_dict, quota_limit, limit_dict):
   '''
-    Updates the network dictionary with quota limit values. 
+    Updates the network dictionary with quota limit values.
 
       Parameters:
         network_dict (dictionary of string: string): Contains network information.
@@ -1213,7 +862,10 @@ def write_data_to_metric(monitored_project_id, value, metric_name,
   # TODO: sometimes this cashes with 'DeadlineExceeded: 504 Deadline expired before operation could complete' error
   # Implement exponential backoff retries?
   try:
-    client.create_time_series(name=MONITORING_PROJECT_LINK,
+    client.create_time_series(name=config["monitoring_project_link"],
                               time_series=[series])
   except Exception as e:
     print(e)
+
+if __name__ == "__main__":
+  main(None, None)
