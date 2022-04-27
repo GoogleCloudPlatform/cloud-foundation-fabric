@@ -1,7 +1,7 @@
 #TODO remove
 import main
 from collections import defaultdict
-from . import metrics, networks, limits, peerings
+from . import metrics, networks, limits, peerings, routers
 
 def get_routes_for_router(config, project_id, router_region, router_name):
   '''
@@ -65,7 +65,7 @@ def get_dynamic_routes(config, metrics_dict, limits_dict):
       Returns:
         dynamic_routes_dict (dictionary of string: int): key is network link and value is the number of dynamic routes for that network
   '''
-  routers_dict = main.get_routers()
+  routers_dict = routers.get_routers(config)
   dynamic_routes_dict = defaultdict(int)
 
   for project_id in config["monitored_projects"]:
