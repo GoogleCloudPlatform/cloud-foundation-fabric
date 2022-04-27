@@ -1,4 +1,3 @@
-import main
 from google.api_core import exceptions
 from google.cloud import monitoring_v3
 from . import metrics

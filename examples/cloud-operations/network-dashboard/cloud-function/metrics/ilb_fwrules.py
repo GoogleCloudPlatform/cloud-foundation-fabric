@@ -1,8 +1,6 @@
-from code import interact
 from collections import defaultdict
 from google.protobuf import field_mask_pb2
 from . import metrics, networks, limits
-import main as main
 
 def get_forwarding_rules_dict(config, layer: str):
   '''
@@ -70,8 +68,7 @@ def get_forwarding_rules_data(config, metrics_dict, forwarding_rules_dict,
       )
       continue
 
-    #TODO Workaround
-    current_quota_limit_view = main.customize_quota_view(current_quota_limit)
+    current_quota_limit_view = metrics.customize_quota_view(current_quota_limit)
 
     for net in network_dict:
       limits.set_limits(net, current_quota_limit_view, limit_dict)

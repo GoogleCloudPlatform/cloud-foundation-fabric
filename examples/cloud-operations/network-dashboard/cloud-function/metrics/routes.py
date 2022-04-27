@@ -1,5 +1,3 @@
-#TODO remove
-import main
 from collections import defaultdict
 from . import metrics, networks, limits, peerings, routers
 

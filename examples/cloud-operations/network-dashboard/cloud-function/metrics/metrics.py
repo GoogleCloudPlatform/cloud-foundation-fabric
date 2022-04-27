@@ -2,6 +2,7 @@ import time
 import yaml
 from google.api import metric_pb2 as ga_metric
 from google.cloud import monitoring_v3
+from . import peerings, limits, networks
 
 def create_metrics(monitoring_project):
   '''
@@ -111,3 +112,102 @@ def write_data_to_metric(config, monitored_project_id, value, metric_name,
                               time_series=[series])
   except Exception as e:
     print(e)
+
+def get_pgg_data(config, metric_dict, usage_dict, limit_metric, limit_dict):
+  '''
+    This function gets the usage, limit and utilization per VPC peering group for a specific metric for all projects to be monitored.
+
+      Parameters:
+        metric_dict (dictionary of string: string): Dictionary with the metric names and description, that will be used to populate the metrics
+        usage_dict (dictionnary of string:int): Dictionary with the network link as key and the number of resources as value
+        limit_metric (string): Name of the existing GCP metric for limit per VPC network
+        limit_dict (dictionary of string:int): Dictionary with the network link as key and the limit as value
+      Returns:
+        None
+  '''
+  for project in config["monitored_projects"]:
+    network_dict_list = peerings.gather_peering_data(config, project)
+    # Network dict list is a list of dictionary (one for each network)
+    # For each network, this dictionary contains:
+    #   project_id, network_name, network_id, usage, limit, peerings (list of peered networks)
+    #   peerings is a list of dictionary (one for each peered network) and contains:
+    #     project_id, network_name, network_id
+    current_quota_limit = limits.get_quota_current_limit(config, f"projects/{project}",
+                                                  limit_metric)
+    if current_quota_limit is None:
+      print(
+          f"Could not write number of L7 forwarding rules to metric for projects/{project} due to missing quotas"
+      )
+      continue
+
+    current_quota_limit_view = customize_quota_view(current_quota_limit)
+
+    # For each network in this GCP project
+    for network_dict in network_dict_list:
+      if network_dict['network_id'] == 0:
+        print(
+            f"Could not write {metric_dict['usage']['name']} for peering group {network_dict['network_name']} in {project} due to missing permissions."
+        )
+        continue
+      network_link = f"https://www.googleapis.com/compute/v1/projects/{project}/global/networks/{network_dict['network_name']}"
+
+      limit = networks.get_limit_network(network_dict, network_link,
+                                current_quota_limit_view, limit_dict)
+
+      usage = 0
+      if network_link in usage_dict:
+        usage = usage_dict[network_link]
+
+      # Here we add usage and limit to the network dictionary
+      network_dict["usage"] = usage
+      network_dict["limit"] = limit
+
+      # For every peered network, get usage and limits
+      for peered_network_dict in network_dict['peerings']:
+        peered_network_link = f"https://www.googleapis.com/compute/v1/projects/{peered_network_dict['project_id']}/global/networks/{peered_network_dict['network_name']}"
+        peered_usage = 0
+        if peered_network_link in usage_dict:
+          peered_usage = usage_dict[peered_network_link]
+
+        current_peered_quota_limit = limits.get_quota_current_limit(
+            config, f"projects/{peered_network_dict['project_id']}", limit_metric)
+        if current_peered_quota_limit is None:
+          print(
+              f"Could not write metrics for peering to projects/{peered_network_dict['project_id']} due to missing quotas"
+          )
+          continue
+
+        peering_project_limit = customize_quota_view(current_peered_quota_limit)
+
+        peered_limit = networks.get_limit_network(peered_network_dict,
+                                         peered_network_link,
+                                         peering_project_limit, limit_dict)
+        # Here we add usage and limit to the peered network dictionary
+        peered_network_dict["usage"] = peered_usage
+        peered_network_dict["limit"] = peered_limit
+
+      limits.count_effective_limit(config, project, network_dict, metric_dict["usage"]["name"],
+                            metric_dict["limit"]["name"],
+                            metric_dict["utilization"]["name"], limit_dict)
+      print(
+          f"Wrote {metric_dict['usage']['name']} for peering group {network_dict['network_name']} in {project}"
+      )
+
+def customize_quota_view(quota_results):
+  '''
+    Customize the quota output for an easier parsable output.
+
+      Parameters:
+        quota_results (string): Input from get_quota_current_usage or get_quota_current_limit. Contains the Current usage or limit for all networks in that project.
+      Returns:
+        quotaViewList (list of dictionaries of string: string): Current quota usage or limit.
+  '''
+  quotaViewList = []
+  for result in quota_results:
+    quotaViewJson = {}
+    quotaViewJson.update(dict(result.resource.labels))
+    quotaViewJson.update(dict(result.metric.labels))
+    for val in result.points:
+      quotaViewJson.update({'value': val.value.int64_value})
+    quotaViewList.append(quotaViewJson)
+  return quotaViewList
