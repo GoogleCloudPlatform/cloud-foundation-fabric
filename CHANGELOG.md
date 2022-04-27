@@ -12,6 +12,7 @@ All notable changes to this project will be documented in this file.
 - add support for [Private Service Connect](https://cloud.google.com/vpc/docs/private-service-connect#psc-subnets) and [Proxy-only](https://cloud.google.com/load-balancing/docs/proxy-only-subnets) subnets to `net-vpc` module
 - bump Google provider versions to `>= 4.17.0`
 - bump Terraform version to `>= 1.1.0`
+- add `shielded_instance_config` support for instance template on `compute-vm` module
 
 **FAST**
 
