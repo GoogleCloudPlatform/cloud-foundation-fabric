@@ -1,16 +1,32 @@
+#
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 import time
 import yaml
 from google.api import metric_pb2 as ga_metric
 from google.cloud import monitoring_v3
 from . import peerings, limits, networks
 
+
 def create_metrics(monitoring_project):
   '''
     Creates all Cloud Monitoring custom metrics based on the metric.yaml file
 
       Parameters:
-        None
-
+        monitoring_project (string): the project where the metrics are written to
       Returns:
         metrics_dict (dictionary of dictionary of string: string): metrics names and descriptions
         limits_dict (dictionary of dictionary of string: int): limits_dict[metric_name]: dict[network_name] = limit_value
@@ -31,7 +47,8 @@ def create_metrics(monitoring_project):
             metric_link = f"custom.googleapis.com/{sub_metric['name']}"
             # If the metric doesn't exist yet, then we create it
             if metric_link not in existing_metrics:
-              create_metric(sub_metric["name"], sub_metric["description"], monitoring_project)
+              create_metric(sub_metric["name"], sub_metric["description"],
+                            monitoring_project)
             # Parse limits (both default values and network specific ones)
             if sub_metric_key == "limit":
               limits_dict_for_metric = {}
@@ -51,7 +68,7 @@ def create_metric(metric_name, description, monitoring_project):
       Parameters:
         metric_name (string): Name of the metric to be created
         description (string): Description of the metric to be created
-
+        monitoring_project (string): the project where the metrics are written to
       Returns:
         None
   '''
@@ -73,6 +90,7 @@ def write_data_to_metric(config, monitored_project_id, value, metric_name,
     Writes data to Cloud Monitoring custom metrics.
 
       Parameters:
+        config (dict): The dict containing config like clients and limits
         monitored_project_id: ID of the project where the resource lives (will be added as a label)
         value (int): Value for the data point of the metric.
         metric_name (string): Name of the metric
@@ -113,11 +131,13 @@ def write_data_to_metric(config, monitored_project_id, value, metric_name,
   except Exception as e:
     print(e)
 
+
 def get_pgg_data(config, metric_dict, usage_dict, limit_metric, limit_dict):
   '''
     This function gets the usage, limit and utilization per VPC peering group for a specific metric for all projects to be monitored.
 
       Parameters:
+        config (dict): The dict containing config like clients and limits
         metric_dict (dictionary of string: string): Dictionary with the metric names and description, that will be used to populate the metrics
         usage_dict (dictionnary of string:int): Dictionary with the network link as key and the number of resources as value
         limit_metric (string): Name of the existing GCP metric for limit per VPC network
@@ -132,8 +152,8 @@ def get_pgg_data(config, metric_dict, usage_dict, limit_metric, limit_dict):
     #   project_id, network_name, network_id, usage, limit, peerings (list of peered networks)
     #   peerings is a list of dictionary (one for each peered network) and contains:
     #     project_id, network_name, network_id
-    current_quota_limit = limits.get_quota_current_limit(config, f"projects/{project}",
-                                                  limit_metric)
+    current_quota_limit = limits.get_quota_current_limit(
+        config, f"projects/{project}", limit_metric)
     if current_quota_limit is None:
       print(
           f"Could not write number of L7 forwarding rules to metric for projects/{project} due to missing quotas"
@@ -152,7 +172,7 @@ def get_pgg_data(config, metric_dict, usage_dict, limit_metric, limit_dict):
       network_link = f"https://www.googleapis.com/compute/v1/projects/{project}/global/networks/{network_dict['network_name']}"
 
       limit = networks.get_limit_network(network_dict, network_link,
-                                current_quota_limit_view, limit_dict)
+                                         current_quota_limit_view, limit_dict)
 
       usage = 0
       if network_link in usage_dict:
@@ -170,7 +190,8 @@ def get_pgg_data(config, metric_dict, usage_dict, limit_metric, limit_dict):
           peered_usage = usage_dict[peered_network_link]
 
         current_peered_quota_limit = limits.get_quota_current_limit(
-            config, f"projects/{peered_network_dict['project_id']}", limit_metric)
+            config, f"projects/{peered_network_dict['project_id']}",
+            limit_metric)
         if current_peered_quota_limit is None:
           print(
               f"Could not write metrics for peering to projects/{peered_network_dict['project_id']} due to missing quotas"
@@ -180,18 +201,22 @@ def get_pgg_data(config, metric_dict, usage_dict, limit_metric, limit_dict):
         peering_project_limit = customize_quota_view(current_peered_quota_limit)
 
         peered_limit = networks.get_limit_network(peered_network_dict,
-                                         peered_network_link,
-                                         peering_project_limit, limit_dict)
+                                                  peered_network_link,
+                                                  peering_project_limit,
+                                                  limit_dict)
         # Here we add usage and limit to the peered network dictionary
         peered_network_dict["usage"] = peered_usage
         peered_network_dict["limit"] = peered_limit
 
-      limits.count_effective_limit(config, project, network_dict, metric_dict["usage"]["name"],
-                            metric_dict["limit"]["name"],
-                            metric_dict["utilization"]["name"], limit_dict)
+      limits.count_effective_limit(config, project, network_dict,
+                                   metric_dict["usage"]["name"],
+                                   metric_dict["limit"]["name"],
+                                   metric_dict["utilization"]["name"],
+                                   limit_dict)
       print(
           f"Wrote {metric_dict['usage']['name']} for peering group {network_dict['network_name']} in {project}"
       )
+
 
 def customize_quota_view(quota_results):
   '''

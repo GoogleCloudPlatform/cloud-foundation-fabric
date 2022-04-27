@@ -1,6 +1,23 @@
+#
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 from google.api_core import exceptions
 from google.cloud import monitoring_v3
 from . import metrics
+
 
 def get_ppg(network_link, limit_dict):
   '''
@@ -20,6 +37,7 @@ def get_ppg(network_link, limit_dict):
     else:
       print(f"Error: limit not found for {network_link}")
       return 0
+
 
 def set_limits(network_dict, quota_limit, limit_dict):
   '''
@@ -51,6 +69,7 @@ def set_limits(network_dict, quota_limit, limit_dict):
     else:
       print(f"Error: Couldn't find limit for {network_link}")
       network_dict['limit'] = 0
+
 
 def get_quota_current_limit(config, project_link, metric_name):
   '''
@@ -89,6 +108,7 @@ def count_effective_limit(config, project_id, network_dict, usage_metric_name,
     Source: https://cloud.google.com/vpc/docs/quota#vpc-peering-effective-limit
 
       Parameters:
+        config (dict): The dict containing config like clients and limits
         project_id (string): Project ID for the project to be analyzed.
         network_dict (dictionary of string: string): Contains all required information about the network to get the usage, limit and utilization.
         usage_metric_name (string): Name of the custom metric to be populated for usage per VPC peering group.
@@ -115,8 +135,7 @@ def count_effective_limit(config, project_id, network_dict, usage_metric_name,
   network_link = f"https://www.googleapis.com/compute/v1/projects/{project_id}/global/networks/{network_dict['network_name']}"
 
   # Calculates effective limit: Step 1: max(per network limit, per network_peering_group limit)
-  limit_step1 = max(network_dict['limit'],
-                    get_ppg(network_link, limit_dict))
+  limit_step1 = max(network_dict['limit'], get_ppg(network_link, limit_dict))
 
   # Calculates effective limit: Step 2: List of max(per network limit, per network_peering_group limit) for each peered network
   limit_step2 = []
@@ -125,8 +144,8 @@ def count_effective_limit(config, project_id, network_dict, usage_metric_name,
 
     if 'limit' in peered_network:
       limit_step2.append(
-          max(peered_network['limit'],
-              get_ppg(peered_network_link, limit_dict)))
+          max(peered_network['limit'], get_ppg(peered_network_link,
+                                               limit_dict)))
     else:
       print(
           f"Ignoring projects/{peered_network['project_id']} for limits in peering group of project {project_id} as no limits are available."
@@ -143,9 +162,10 @@ def count_effective_limit(config, project_id, network_dict, usage_metric_name,
   effective_limit = max(limit_step1, limit_step3)
   utilization = peering_group_usage / effective_limit
 
-  metrics.write_data_to_metric(config, project_id, peering_group_usage, usage_metric_name,
-                       network_dict['network_name'])
-  metrics.write_data_to_metric(config, project_id, effective_limit, limit_metric_name,
-                       network_dict['network_name'])
-  metrics.write_data_to_metric(config, project_id, utilization, utilization_metric_name,
-                       network_dict['network_name'])
+  metrics.write_data_to_metric(config, project_id, peering_group_usage,
+                               usage_metric_name, network_dict['network_name'])
+  metrics.write_data_to_metric(config, project_id, effective_limit,
+                               limit_metric_name, network_dict['network_name'])
+  metrics.write_data_to_metric(config, project_id, utilization,
+                               utilization_metric_name,
+                               network_dict['network_name'])

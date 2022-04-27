@@ -1,15 +1,31 @@
+#
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 from collections import defaultdict
 from google.protobuf import field_mask_pb2
 from . import metrics, networks, limits
+
 
 def get_forwarding_rules_dict(config, layer: str):
   '''
     Calls the Asset Inventory API to get all L4 Forwarding Rules under the GCP organization.
 
     Parameters:
-      client (asset_v1.AssetServiceClient): assets client
-      organizationID (string): Organization ID
-
+      config (dict): The dict containing config like clients and limits
+      layer (string): the Layer to get Forwarding rules (L4/L7)
     Returns:
       forwarding_rules_dict (dictionary of string: int): Keys are the network links and values are the number of Forwarding Rules per network.
   '''
@@ -44,15 +60,18 @@ def get_forwarding_rules_dict(config, layer: str):
 
   return forwarding_rules_dict
 
+
 def get_forwarding_rules_data(config, metrics_dict, forwarding_rules_dict,
-                                 limit_dict, layer):
+                              limit_dict, layer):
   '''
     Gets the data for L4 Internal Forwarding Rules per VPC Network and writes it to the metric defined in forwarding_rules_metric.
 
       Parameters:
+        config (dict): The dict containing config like clients and limits
         metrics_dict (dictionary of dictionary of string: string): metrics names and descriptions.
         forwarding_rules_dict (dictionary of string: int): Keys are the network links and values are the number of Forwarding Rules per network.
         limit_dict (dictionary of string:int): Dictionary with the network link as key and the limit as value.
+        layer (string): the Layer to get Forwarding rules (L4/L7)
       Returns:
         None
   '''
@@ -85,9 +104,11 @@ def get_forwarding_rules_data(config, metrics_dict, forwarding_rules_dict,
           [f"{layer.lower()}_forwarding_rules_per_network"]["limit"]["name"],
           net['network_name'])
       metrics.write_data_to_metric(
-          config, project, usage / net['limit'], metrics_dict["metrics_per_network"]
-          [f"{layer.lower()}_forwarding_rules_per_network"]["utilization"]["name"],
-          net['network_name'])
+          config, project, usage / net['limit'],
+          metrics_dict["metrics_per_network"]
+          [f"{layer.lower()}_forwarding_rules_per_network"]["utilization"]
+          ["name"], net['network_name'])
 
     print(
-        f"Wrote number of {layer} forwarding rules to metric for projects/{project}")
+        f"Wrote number of {layer} forwarding rules to metric for projects/{project}"
+    )

@@ -1,16 +1,32 @@
+#
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 from code import interact
 from collections import defaultdict
 from google.protobuf import field_mask_pb2
 from googleapiclient import errors
 import http
 
+
 def get_subnet_ranges_dict(config: dict):
   '''
     Calls the Asset Inventory API to get all Subnet ranges under the GCP organization.
 
       Parameters:
-        client (asset_v1.AssetServiceClient): assets client
-        organizationID (_type_): Organization ID
+        config (dict): The dict containing config like clients and limits
       Returns:
         subnet_range_dict (dictionary of string: int): Keys are the network links and values are the number of subnet ranges per network.
   '''
@@ -45,16 +61,19 @@ def get_subnet_ranges_dict(config: dict):
 
   return subnet_range_dict
 
-def get_networks(config ,project_id):
+
+def get_networks(config, project_id):
   '''
     Returns a dictionary of all networks in a project.
 
       Parameters:
+        config (dict): The dict containing config like clients and limits
         project_id (string): Project ID for the project containing the networks.
       Returns:
         network_dict (dictionary of string: string): Contains the project_id, network_name(s) and network_id(s)
   '''
-  request = config["clients"]["discovery_client"].networks().list(project=project_id)
+  request = config["clients"]["discovery_client"].networks().list(
+      project=project_id)
   response = request.execute()
   network_dict = []
   if 'items' in response:
@@ -71,17 +90,20 @@ def get_networks(config ,project_id):
       network_dict.append(d)
   return network_dict
 
+
 def get_network_id(config, project_id, network_name):
   '''
     Returns the network_id for a specific project / network name.
 
       Parameters:
+        config (dict): The dict containing config like clients and limits
         project_id (string): Project ID for the project containing the networks.
         network_name (string): Name of the network
       Returns:
         network_id (int): Network ID.
   '''
-  request = config["clients"]["discovery_client"].networks().list(project=project_id)
+  request = config["clients"]["discovery_client"].networks().list(
+      project=project_id)
   try:
     response = request.execute()
   except errors.HttpError as err:
@@ -107,6 +129,7 @@ def get_network_id(config, project_id, network_name):
     print(f"Error: network_id not found for {network_name} in {project_id}")
 
   return network_id
+
 
 def get_limit_network(network_dict, network_link, quota_limit, limit_dict):
   '''

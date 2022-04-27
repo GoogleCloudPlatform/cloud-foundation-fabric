@@ -1,10 +1,28 @@
+#
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
 from . import metrics, networks, limits
+
 
 def get_vpc_peering_data(config, metrics_dict, limit_dict):
   '''
     Gets the data for VPC peerings (active or not) and writes it to the metric defined (vpc_peering_active_metric and vpc_peering_metric).
 
       Parameters:
+        config (dict): The dict containing config like clients and limits
         metrics_dict (dictionary of dictionary of string: string): metrics names and descriptions
         limit_dict (dictionary of string:int): Dictionary with the network link as key and the limit as value
       Returns:
@@ -19,11 +37,12 @@ def get_vpc_peering_data(config, metrics_dict, limit_dict):
           metrics_dict["metrics_per_network"]["vpc_peering_active_per_network"]
           ["usage"]["name"], peering['network_name'])
       metrics.write_data_to_metric(
-          config, project, peering['network_limit'], metrics_dict["metrics_per_network"]
-          ["vpc_peering_active_per_network"]["limit"]["name"],
-          peering['network_name'])
+          config, project, peering['network_limit'],
+          metrics_dict["metrics_per_network"]["vpc_peering_active_per_network"]
+          ["limit"]["name"], peering['network_name'])
       metrics.write_data_to_metric(
-          config, project, peering['active_peerings'] / peering['network_limit'],
+          config, project,
+          peering['active_peerings'] / peering['network_limit'],
           metrics_dict["metrics_per_network"]["vpc_peering_active_per_network"]
           ["utilization"]["name"], peering['network_name'])
     print("Wrote number of active VPC peerings to custom metric for project:",
@@ -31,27 +50,32 @@ def get_vpc_peering_data(config, metrics_dict, limit_dict):
 
     for peering in vpc_peerings:
       metrics.write_data_to_metric(
-          config, project, peering['peerings'], metrics_dict["metrics_per_network"]
-          ["vpc_peering_per_network"]["usage"]["name"], peering['network_name'])
+          config, project, peering['peerings'],
+          metrics_dict["metrics_per_network"]["vpc_peering_per_network"]
+          ["usage"]["name"], peering['network_name'])
       metrics.write_data_to_metric(
-          config, project, peering['network_limit'], metrics_dict["metrics_per_network"]
-          ["vpc_peering_per_network"]["limit"]["name"], peering['network_name'])
+          config, project, peering['network_limit'],
+          metrics_dict["metrics_per_network"]["vpc_peering_per_network"]
+          ["limit"]["name"], peering['network_name'])
       metrics.write_data_to_metric(
           config, project, peering['peerings'] / peering['network_limit'],
           metrics_dict["metrics_per_network"]["vpc_peering_per_network"]
           ["utilization"]["name"], peering['network_name'])
     print("Wrote number of VPC peerings to custom metric for project:", project)
 
+
 def gather_peering_data(config, project_id):
   '''
     Returns a dictionary of all peerings for all networks in a project.
 
       Parameters:
+        config (dict): The dict containing config like clients and limits
         project_id (string): Project ID for the project containing the networks.
       Returns:
         network_list (dictionary of string: string): Contains the project_id, network_name(s) and network_id(s) of peered networks.
   '''
-  request = config["clients"]["discovery_client"].networks().list(project=project_id)
+  request = config["clients"]["discovery_client"].networks().list(
+      project=project_id)
   response = request.execute()
 
   network_list = []
@@ -80,17 +104,20 @@ def gather_peering_data(config, project_id):
                 'network_name':
                     peered_network_name,
                 'network_id':
-                    networks.get_network_id(config, peered_project, peered_network_name)
+                    networks.get_network_id(config, peered_project,
+                                            peered_network_name)
             }
             net["peerings"].append(peered_net)
       network_list.append(net)
   return network_list
+
 
 def gather_vpc_peerings_data(config, project_id, limit_dict):
   '''
     Gets the data for all VPC peerings (active or not) in project_id and writes it to the metric defined in vpc_peering_active_metric and vpc_peering_metric.
 
       Parameters:
+        config (dict): The dict containing config like clients and limits
         project_id (string): We will take all VPCs in that project_id and look for all peerings to these VPCs.
         limit_dict (dictionary of string:int): Dictionary with the network link as key and the limit as value
       Returns:
@@ -99,7 +126,8 @@ def gather_vpc_peerings_data(config, project_id, limit_dict):
   '''
   active_peerings_dict = []
   peerings_dict = []
-  request = config["clients"]["discovery_client"].networks().list(project=project_id)
+  request = config["clients"]["discovery_client"].networks().list(
+      project=project_id)
   response = request.execute()
   if 'items' in response:
     for network in response['items']:
