@@ -53,7 +53,7 @@ def set_limits(network_dict, quota_limit, limit_dict):
       print(f"Error: Couldn't find limit for {network_link}")
       network_dict['limit'] = 0
 
-def get_quota_current_limit(project_link, metric_name):
+def get_quota_current_limit(config, project_link, metric_name):
   '''
     Retrieves limit for a specific metric.
 
@@ -63,14 +63,13 @@ def get_quota_current_limit(project_link, metric_name):
       Returns:
         results_list (list of string): Current limit.
   '''
-  client, interval = main.create_client()
 
   try:
-    results = client.list_time_series(
+    results = config["clients"]["monitoring_client"].list_time_series(
         request={
             "name": project_link,
             "filter": f'metric.type = "{metric_name}"',
-            "interval": interval,
+            "interval": config["monitoring_interval"],
             "view": monitoring_v3.ListTimeSeriesRequest.TimeSeriesView.FULL
         })
     results_list = list(results)

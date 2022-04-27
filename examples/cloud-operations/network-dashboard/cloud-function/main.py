@@ -24,6 +24,21 @@ from google.protobuf import field_mask_pb2
 from googleapiclient import discovery
 from metrics import ilb_fwrules, instances, networks, metrics, limits, peerings, routes
 
+def monitoring_interval():
+  now = time.time()
+  seconds = int(now)
+  nanos = int((now - seconds) * 10**9)
+  return monitoring_v3.TimeInterval({
+      "end_time": {
+          "seconds": seconds,
+          "nanos": nanos
+      },
+      "start_time": {
+          "seconds": (seconds - 86400),
+          "nanos": nanos
+      },
+  })
+
 config = {
   # Organization ID containing the projects to be monitored
   "organization": os.environ.get("ORGANIZATION_ID"),
@@ -43,8 +58,10 @@ config = {
   },
   "clients": {
     "discovery_client": discovery.build('compute', 'v1'),
-    "asset_client":  asset_v1.AssetServiceClient()
-  }
+    "asset_client":  asset_v1.AssetServiceClient(),
+    "monitoring_client": monitoring_v3.MetricServiceClient()
+  },
+  "monitoring_interval": monitoring_interval()
 }
 
 def main(event, context):
@@ -57,6 +74,9 @@ def main(event, context):
       Returns:
         'Function executed successfully'
   '''
+
+  # Keep the monitoring interval up2date during each run
+  config["monitoring_interval"] = monitoring_interval()
 
   metrics_dict, limits_dict = metrics.create_metrics(config["monitoring_project_link"])
 
@@ -113,35 +133,6 @@ def main(event, context):
 
 #########################################################
 
-def create_client():
-  '''
-    Creates the monitoring API client, that will be used to create, read and update custom metrics.
-
-      Parameters:
-        None
-      Returns:
-        client (monitoring_v3.MetricServiceClient): Monitoring API client
-        interval (monitoring_v3.TimeInterval): Interval for the metric data points (24 hours)
-  '''
-  try:
-    client = monitoring_v3.MetricServiceClient()
-    now = time.time()
-    seconds = int(now)
-    nanos = int((now - seconds) * 10**9)
-    interval = monitoring_v3.TimeInterval({
-        "end_time": {
-            "seconds": seconds,
-            "nanos": nanos
-        },
-        "start_time": {
-            "seconds": (seconds - 86400),
-            "nanos": nanos
-        },
-    })
-    return (client, interval)
-  except Exception as e:
-    raise Exception("Error occurred creating the client: {}".format(e))
-
 def get_pgg_data(metric_dict, usage_dict, limit_metric, limit_dict):
   '''
     This function gets the usage, limit and utilization per VPC peering group for a specific metric for all projects to be monitored.
@@ -161,7 +152,7 @@ def get_pgg_data(metric_dict, usage_dict, limit_metric, limit_dict):
     #   project_id, network_name, network_id, usage, limit, peerings (list of peered networks)
     #   peerings is a list of dictionary (one for each peered network) and contains:
     #     project_id, network_name, network_id
-    current_quota_limit = limits.get_quota_current_limit(f"projects/{project}",
+    current_quota_limit = limits.get_quota_current_limit(config, f"projects/{project}",
                                                   limit_metric)
     if current_quota_limit is None:
       print(
@@ -199,7 +190,7 @@ def get_pgg_data(metric_dict, usage_dict, limit_metric, limit_dict):
           peered_usage = usage_dict[peered_network_link]
 
         current_peered_quota_limit = limits.get_quota_current_limit(
-            f"projects/{peered_network_dict['project_id']}", limit_metric)
+            config, f"projects/{peered_network_dict['project_id']}", limit_metric)
         if current_peered_quota_limit is None:
           print(
               f"Could not write metrics for peering to projects/{peered_network_dict['project_id']} due to missing quotas"

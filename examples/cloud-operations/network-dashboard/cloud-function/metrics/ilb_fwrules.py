@@ -62,7 +62,7 @@ def get_forwarding_rules_data(config, metrics_dict, forwarding_rules_dict,
     network_dict = networks.get_networks(config, project)
 
     current_quota_limit = limits.get_quota_current_limit(
-        f"projects/{project}", config["limit_names"][layer])
+        config, f"projects/{project}", config["limit_names"][layer])
 
     if current_quota_limit is None:
       print(
