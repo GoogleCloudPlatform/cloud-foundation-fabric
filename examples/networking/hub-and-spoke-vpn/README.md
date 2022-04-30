@@ -57,7 +57,7 @@ module "project" {
 Once the example is up, you can quickly test features by logging in to one of the test VMs:
 
 ```bash
-gcloud compute ssh hs-ha-land-test-r1
+gcloud compute ssh hs-ha-lnd-test-r1
 # test DNS resolution of the landing zone
 ping test-r1.example.com
 # test DNS resolution of the prod zone, and prod reachability
