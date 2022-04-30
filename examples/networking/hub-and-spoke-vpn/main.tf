@@ -19,9 +19,11 @@ locals {
 # enable services in the project used
 
 module "project" {
-  source         = "../../..//modules/project"
-  name           = var.project_id
-  project_create = false
+  source          = "../../..//modules/project"
+  name            = var.project_id
+  parent          = try(var.project_create_config.parent, null)
+  billing_account = try(var.project_create_config.billing_account_id, null)
+  project_create  = try(var.project_create_config.billing_account_id, null) != null
   services = [
     "compute.googleapis.com",
     "dns.googleapis.com"

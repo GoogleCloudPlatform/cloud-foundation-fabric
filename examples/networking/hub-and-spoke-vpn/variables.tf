@@ -37,6 +37,15 @@ variable "prefix" {
   default     = null
 }
 
+variable "project_create_config" {
+  description = "Populate with billing account id to trigger project creation."
+  type = object({
+    billing_account_id = string
+    parent_id          = string
+  })
+  default = null
+}
+
 variable "project_id" {
   description = "Project id for all resources."
   type        = string
