@@ -66,6 +66,7 @@ resource "google_pubsub_subscription" "default" {
   ack_deadline_seconds       = each.value.options.ack_deadline_seconds
   message_retention_duration = each.value.options.message_retention_duration
   retain_acked_messages      = each.value.options.retain_acked_messages
+  filter                     = each.value.options.filter
 
   dynamic "expiration_policy" {
     for_each = each.value.options.expiration_policy_ttl == null ? [] : [""]
