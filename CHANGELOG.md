@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 - bump Google provider versions to `>= 4.17.0`
 - bump Terraform version to `>= 1.1.0`
 - add `shielded_instance_config` support for instance template on `compute-vm` module
+- add support for `gke_backup_agent_config` to GKE module addons
 
 **FAST**
 
