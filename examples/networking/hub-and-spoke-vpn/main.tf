@@ -37,11 +37,11 @@ module "project" {
 module "landing-r1-vm" {
   source     = "../../../modules/compute-vm"
   project_id = var.project_id
-  name       = "${local.prefix}land-test-r1"
+  name       = "${local.prefix}lnd-test-r1"
   zone       = "${var.regions.r1}-b"
   network_interfaces = [{
     network    = module.landing-vpc.self_link
-    subnetwork = module.landing-vpc.subnet_self_links["${var.regions.r1}/${local.prefix}land-0"]
+    subnetwork = module.landing-vpc.subnet_self_links["${var.regions.r1}/${local.prefix}lnd-0"]
     nat        = false
     addresses  = null
   }]
