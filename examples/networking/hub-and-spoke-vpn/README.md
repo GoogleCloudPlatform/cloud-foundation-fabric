@@ -65,7 +65,23 @@ ping test-r1.prod.example.com
 # test DNS resolution of the dev zone, and dev reachability via global routing
 ping test-r2.dev.example.com
 ```
+
+<!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
+
+## Files
+
+| name | description | modules |
+|---|---|---|
+| [main.tf](./main.tf) | Module-level locals and resources. | <code>compute-vm</code> · <code>project</code> |
+| [net-dev.tf](./net-dev.tf) | Development spoke VPC. | <code>dns</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> |
+| [net-landing.tf](./net-landing.tf) | Landing hub VPC. | <code>dns</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> |
+| [net-prod.tf](./net-prod.tf) | Production spoke VPC. | <code>dns</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> |
+| [outputs.tf](./outputs.tf) | Module outputs. |  |
+| [variables.tf](./variables.tf) | Module variables. |  |
+| [versions.tf](./versions.tf) | Version pins. |  |
+| [vpn-dev-r1.tf](./vpn-dev-r1.tf) | Landing to Development VPN for region 1. | <code>net-vpn-ha</code> |
+| [vpn-prod-r1.tf](./vpn-prod-r1.tf) | Landing to Production VPN for region 1. | <code>net-vpn-ha</code> |
 
 ## Variables
 
