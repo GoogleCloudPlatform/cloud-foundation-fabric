@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file.
 - bump Terraform version to `>= 1.1.0`
 - add `shielded_instance_config` support for instance template on `compute-vm` module
 - add support for `gke_backup_agent_config` to GKE module addons
+- add support for subscription filters to PubSub module
 
 **FAST**
 
