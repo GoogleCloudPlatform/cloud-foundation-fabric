@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-output "vms" {
-  description = "GCE VMs."
-  value = {
-    for instance in [module.vm-spoke-1.instance, module.vm-spoke-2.instance] :
-    instance.name => instance.network_interface.0.network_ip
-  }
-}
+# output "vms" {
+#   description = "GCE VMs."
+#   value = {
+#     for instance in [module.vm-spoke-1.instance, module.vm-spoke-2.instance] :
+#     instance.name => instance.network_interface.0.network_ip
+#   }
+# }
