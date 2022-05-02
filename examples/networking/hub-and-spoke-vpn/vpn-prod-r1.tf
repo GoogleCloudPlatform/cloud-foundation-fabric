@@ -72,6 +72,7 @@ module "prod-to-landing-vpn-r1" {
   router_create = true
   router_name   = "${local.prefix}prd-vpn-r1"
   router_asn    = var.vpn_configs.prod-r1.asn
+  # the router is managed here but shared with the dev VPN
   router_advertise_config = (
     var.vpn_configs.prod-r1.custom_ranges == null
     ? null
@@ -88,6 +89,7 @@ module "prod-to-landing-vpn-r1" {
         address = "169.254.0.1"
         asn     = var.vpn_configs.land-r1.asn
       }
+      # use this attribute to configure different advertisements for prod
       bgp_peer_options                = null
       bgp_session_range               = "169.254.0.2/30"
       ike_version                     = 2
@@ -101,6 +103,7 @@ module "prod-to-landing-vpn-r1" {
         address = "169.254.0.5"
         asn     = var.vpn_configs.land-r1.asn
       }
+      # use this attribute to configure different advertisements for prod
       bgp_peer_options                = null
       bgp_session_range               = "169.254.0.6/30"
       ike_version                     = 2

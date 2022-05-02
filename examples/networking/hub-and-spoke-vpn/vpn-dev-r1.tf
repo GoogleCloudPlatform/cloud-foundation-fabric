@@ -15,13 +15,15 @@
 # tfdoc:file:description Landing to Development VPN for region 1.
 
 module "landing-to-dev-vpn-r1" {
-  source           = "../../../modules/net-vpn-ha"
-  project_id       = var.project_id
-  network          = module.landing-vpc.self_link
-  region           = var.regions.r1
-  name             = "${local.prefix}lnd-to-dev-r1"
-  router_create    = false
-  router_name      = "${local.prefix}lnd-vpn-r1"
+  source        = "../../../modules/net-vpn-ha"
+  project_id    = var.project_id
+  network       = module.landing-vpc.self_link
+  region        = var.regions.r1
+  name          = "${local.prefix}lnd-to-dev-r1"
+  router_create = false
+  router_name   = "${local.prefix}lnd-vpn-r1"
+  # router is created and managed by the production VPN module
+  # so we don't configure advertisements here
   peer_gcp_gateway = module.dev-to-landing-vpn-r1.self_link
   tunnels = {
     0 = {
@@ -29,6 +31,7 @@ module "landing-to-dev-vpn-r1" {
         address = "169.254.2.2"
         asn     = var.vpn_configs.dev-r1.asn
       }
+      # use this attribute to configure different advertisements for dev
       bgp_peer_options                = null
       bgp_session_range               = "169.254.2.1/30"
       ike_version                     = 2
@@ -42,6 +45,7 @@ module "landing-to-dev-vpn-r1" {
         address = "169.254.2.6"
         asn     = var.vpn_configs.dev-r1.asn
       }
+      # use this attribute to configure different advertisements for dev
       bgp_peer_options                = null
       bgp_session_range               = "169.254.2.5/30"
       ike_version                     = 2
