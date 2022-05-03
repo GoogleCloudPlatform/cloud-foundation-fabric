@@ -30,12 +30,14 @@ variable "defaults" {
     message_retention_duration = string
     retain_acked_messages      = bool
     expiration_policy_ttl      = string
+    filter                     = string
   })
   default = {
     ack_deadline_seconds       = null
     message_retention_duration = null
     retain_acked_messages      = null
     expiration_policy_ttl      = null
+    filter                     = null
   }
 }
 
@@ -101,6 +103,7 @@ variable "subscriptions" {
       message_retention_duration = string
       retain_acked_messages      = bool
       expiration_policy_ttl      = string
+      filter                     = string
     })
   }))
   default = {}

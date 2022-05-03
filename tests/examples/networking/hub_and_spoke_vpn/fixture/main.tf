@@ -15,6 +15,10 @@
  */
 
 module "test" {
-  source     = "../../../../../examples/networking/hub-and-spoke-vpn"
-  project_id = var.project_id
+  source = "../../../../../examples/networking/hub-and-spoke-vpn"
+  project_create_config = {
+    billing_account_id = "ABCDE-123456-ABCDE"
+    parent_id          = null
+  }
+  project_id = "test-1"
 }
