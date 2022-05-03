@@ -60,7 +60,7 @@ metrics_per_network:
       name: internal_forwarding_rules_l4_limit
       description: Number of Internal Forwarding Rules for Internal L4 Load Balancers - limit.
       values:
-        default_value: 75
+        default_value: 300
     utilization:
       name: internal_forwarding_rules_l4_utilization
       description: Number of Internal Forwarding Rules for Internal L4 Load Balancers - utilization.
@@ -97,7 +97,7 @@ metrics_per_peering_group:
       name: internal_forwarding_rules_l4_ppg_limit
       description: Number of Internal Forwarding Rules for Internal L4 Load Balancers per VPC peering group - effective limit.
       values:
-        default_value: 175
+        default_value: 300
     utilization:
       name: internal_forwarding_rules_l4_ppg_utilization
       description: Number of Internal Forwarding Rules for Internal L4 Load Balancers per VPC peering group - utilization.

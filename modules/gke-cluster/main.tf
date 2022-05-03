@@ -96,6 +96,9 @@ resource "google_container_cluster" "cluster" {
     config_connector_config {
       enabled = var.addons.config_connector_config
     }
+    gke_backup_agent_config {
+      enabled = var.addons.gke_backup_agent_config
+    }
   }
 
   # TODO(ludomagno): support setting address ranges instead of range names
@@ -278,12 +281,11 @@ resource "google_container_cluster" "cluster" {
   }
 
   dynamic "dns_config" {
-    for_each = var.dns_config != null ? [var.dns_config] : []
-    iterator = config
+    for_each = var.dns_config != null ? [""] : []
     content {
-      cluster_dns        = config.value.cluster_dns
-      cluster_dns_scope  = config.value.cluster_dns_scope
-      cluster_dns_domain = config.value.cluster_dns_domain
+      cluster_dns        = var.dns_config.cluster_dns
+      cluster_dns_scope  = var.dns_config.cluster_dns_scope
+      cluster_dns_domain = var.dns_config.cluster_dns_domain
     }
   }
 

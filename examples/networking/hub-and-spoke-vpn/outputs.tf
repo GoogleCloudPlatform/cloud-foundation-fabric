@@ -12,10 +12,34 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+output "subnets" {
+  description = "Subnet details."
+  value = {
+    dev = {
+      for k, v in module.dev-vpc.subnets : k => {
+        id            = v.id
+        ip_cidr_range = v.ip_cidr_range
+      }
+    }
+    landing = {
+      for k, v in module.landing-vpc.subnets : k => {
+        id            = v.id
+        ip_cidr_range = v.ip_cidr_range
+      }
+    }
+    prod = {
+      for k, v in module.prod-vpc.subnets : k => {
+        id            = v.id
+        ip_cidr_range = v.ip_cidr_range
+      }
+    }
+  }
+}
+
 output "vms" {
   description = "GCE VMs."
   value = {
-    for instance in [module.vm-spoke-1.instance, module.vm-spoke-2.instance] :
-    instance.name => instance.network_interface.0.network_ip
+    for mod in [module.landing-r1-vm, module.dev-r2-vm, module.prod-r1-vm] :
+    mod.instance.name => mod.internal_ip
   }
 }
