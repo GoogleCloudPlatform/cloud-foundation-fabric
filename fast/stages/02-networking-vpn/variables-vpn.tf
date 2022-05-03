@@ -37,52 +37,29 @@ variable "router_spoke_configs" {
 variable "vpn_spoke_configs" {
   description = "VPN gateway configuration for spokes."
   type = map(object({
-    adv = object({
-      default = bool
-      custom  = list(string)
-    })
-    session_range = string
+    default = bool
+    custom  = list(string)
   }))
   default = {
     landing-ew1 = {
-      adv = {
-        default = false
-        custom  = ["rfc_1918_10", "rfc_1918_172", "rfc_1918_192"]
-      }
-      # values for the landing router are pulled from the spoke range
-      session_range = null
+      default = false
+      custom  = ["rfc_1918_10", "rfc_1918_172", "rfc_1918_192"]
     }
     landing-ew4 = {
-      adv = {
-        default = false
-        custom  = ["rfc_1918_10", "rfc_1918_172", "rfc_1918_192"]
-      }
-      # values for the landing router are pulled from the spoke range
-      session_range = null
+      default = false
+      custom  = ["rfc_1918_10", "rfc_1918_172", "rfc_1918_192"]
     }
     dev-ew1 = {
-      adv = {
-        default = false
-        custom  = ["gcp_dev"]
-      }
-      # resize according to required number of tunnels
-      session_range = "169.254.0.0/27"
+      default = false
+      custom  = ["gcp_dev"]
     }
     prod-ew1 = {
-      adv = {
-        default = false
-        custom  = ["gcp_prod"]
-      }
-      # resize according to required number of tunnels
-      session_range = "169.254.0.64/27"
+      default = false
+      custom  = ["gcp_prod"]
     }
     prod-ew4 = {
-      adv = {
-        default = false
-        custom  = ["gcp_prod"]
-      }
-      # resize according to required number of tunnels
-      session_range = "169.254.0.96/27"
+      default = false
+      custom  = ["gcp_prod"]
     }
   }
 }
