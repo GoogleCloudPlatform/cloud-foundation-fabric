@@ -305,7 +305,8 @@ DNS configurations are centralised in the `dns-*.tf` files. Spokes delegate DNS 
 | [variables.tf](./variables.tf) | Module variables. |  |  |
 | [vpn-onprem.tf](./vpn-onprem.tf) | VPN between landing and onprem. | <code>net-vpn-ha</code> |  |
 | [vpn-spoke-dev.tf](./vpn-spoke-dev.tf) | VPN between landing and development spoke. | <code>net-vpn-ha</code> |  |
-| [vpn-spoke-prod.tf](./vpn-spoke-prod.tf) | VPN between landing and production spoke. | <code>net-vpn-ha</code> |  |
+| [vpn-spoke-prod-ew1.tf](./vpn-spoke-prod-ew1.tf) | VPN between landing and production spoke in ew1. | <code>net-vpn-ha</code> |  |
+| [vpn-spoke-prod-ew4.tf](./vpn-spoke-prod-ew4.tf) | VPN between landing and production spoke in ew4. | <code>net-vpn-ha</code> |  |
 
 ## Variables
 
