@@ -33,3 +33,8 @@ output "port" {
   description = "Port number of the internal endpoint of the Apigee instance."
   value       = google_apigee_instance.apigee_instance.port
 }
+
+output "service_attachment" {
+  description = "Resource name of the service attachment created for this Apigee instance."
+  value       = google_apigee_instance.apigee_instance.service_attachment
+}
