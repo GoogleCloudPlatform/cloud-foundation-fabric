@@ -12,10 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# tfdoc:file:description Datalake projects.
+# tfdoc:file:description Data Warehouse projects.
 
 locals {
-  lake_group_iam = {
+  dwh_group_iam = {
     (local.groups.data-engineers) = [
       "roles/bigquery.dataEditor",
       "roles/storage.admin",
@@ -30,7 +30,7 @@ locals {
       "roles/storage.objectViewer",
     ]
   }
-  lake_plg_group_iam = {
+  dwh_plg_group_iam = {
     (local.groups.data-engineers) = [
       "roles/bigquery.dataEditor",
       "roles/storage.admin",
@@ -45,7 +45,7 @@ locals {
       "roles/storage.objectAdmin",
     ]
   }
-  lake_0_iam = {
+  dwh_lnd_iam = {
     "roles/bigquery.dataOwner" = [
       module.load-sa-df-0.iam_email,
       module.transf-sa-df-0.iam_email,
@@ -61,7 +61,7 @@ locals {
       module.load-sa-df-0.iam_email,
     ]
   }
-  lake_iam = {
+  dwh_iam = {
     "roles/bigquery.dataOwner" = [
       module.transf-sa-df-0.iam_email,
       module.transf-sa-bq-0.iam_email,
@@ -79,7 +79,7 @@ locals {
       module.transf-sa-df-0.iam_email,
     ]
   }
-  lake_services = concat(var.project_services, [
+  dwh_services = concat(var.project_services, [
     "bigquery.googleapis.com",
     "bigqueryreservation.googleapis.com",
     "bigquerystorage.googleapis.com",
@@ -95,60 +95,60 @@ locals {
 
 # Project
 
-module "lake-0-project" {
+module "dwh-lnd-project" {
   source          = "../../../modules/project"
   parent          = var.folder_id
   billing_account = var.billing_account_id
   prefix          = var.prefix
-  name            = "dtl-0${local.project_suffix}"
-  group_iam       = local.lake_group_iam
-  iam             = local.lake_0_iam
-  services        = local.lake_services
+  name            = "dwh-lnd${local.project_suffix}"
+  group_iam       = local.dwh_group_iam
+  iam             = local.dwh_lnd_iam
+  services        = local.dwh_services
   service_encryption_key_ids = {
     bq      = [try(local.service_encryption_keys.bq, null)]
     storage = [try(local.service_encryption_keys.storage, null)]
   }
 }
 
-module "lake-1-project" {
+module "dwh-cur-project" {
   source          = "../../../modules/project"
   parent          = var.folder_id
   billing_account = var.billing_account_id
   prefix          = var.prefix
-  name            = "dtl-1${local.project_suffix}"
-  group_iam       = local.lake_group_iam
-  iam             = local.lake_iam
-  services        = local.lake_services
+  name            = "dwh-cur${local.project_suffix}"
+  group_iam       = local.dwh_group_iam
+  iam             = local.dwh_iam
+  services        = local.dwh_services
   service_encryption_key_ids = {
     bq      = [try(local.service_encryption_keys.bq, null)]
     storage = [try(local.service_encryption_keys.storage, null)]
   }
 }
 
-module "lake-2-project" {
+module "dwh-conf-project" {
   source          = "../../../modules/project"
   parent          = var.folder_id
   billing_account = var.billing_account_id
   prefix          = var.prefix
-  name            = "dtl-2${local.project_suffix}"
-  group_iam       = local.lake_group_iam
-  iam             = local.lake_iam
-  services        = local.lake_services
+  name            = "dwh-conf${local.project_suffix}"
+  group_iam       = local.dwh_group_iam
+  iam             = local.dwh_iam
+  services        = local.dwh_services
   service_encryption_key_ids = {
     bq      = [try(local.service_encryption_keys.bq, null)]
     storage = [try(local.service_encryption_keys.storage, null)]
   }
 }
 
-module "lake-plg-project" {
+module "dwh-plg-project" {
   source          = "../../../modules/project"
   parent          = var.folder_id
   billing_account = var.billing_account_id
   prefix          = var.prefix
-  name            = "dtl-plg${local.project_suffix}"
-  group_iam       = local.lake_plg_group_iam
+  name            = "dwh-plg${local.project_suffix}"
+  group_iam       = local.dwh_plg_group_iam
   iam             = {}
-  services        = local.lake_services
+  services        = local.dwh_services
   service_encryption_key_ids = {
     bq      = [try(local.service_encryption_keys.bq, null)]
     storage = [try(local.service_encryption_keys.storage, null)]
@@ -157,78 +157,78 @@ module "lake-plg-project" {
 
 # Bigquery
 
-module "lake-0-bq-0" {
+module "dwh-lnd-bq-0" {
   source         = "../../../modules/bigquery-dataset"
-  project_id     = module.lake-0-project.project_id
-  id             = "${replace(var.prefix, "-", "_")}_dtl_0_bq_0"
+  project_id     = module.dwh-lnd-project.project_id
+  id             = "${replace(var.prefix, "-", "_")}_dwh_lnd_bq_0"
   location       = var.location
   encryption_key = try(local.service_encryption_keys.bq, null)
 }
 
-module "lake-1-bq-0" {
+module "dwh-cur-bq-0" {
   source         = "../../../modules/bigquery-dataset"
-  project_id     = module.lake-1-project.project_id
-  id             = "${replace(var.prefix, "-", "_")}_dtl_1_bq_0"
+  project_id     = module.dwh-cur-project.project_id
+  id             = "${replace(var.prefix, "-", "_")}_dwh_lnd_bq_0"
   location       = var.location
   encryption_key = try(local.service_encryption_keys.bq, null)
 }
 
-module "lake-2-bq-0" {
+module "dwh-conf-bq-0" {
   source         = "../../../modules/bigquery-dataset"
-  project_id     = module.lake-2-project.project_id
-  id             = "${replace(var.prefix, "-", "_")}_dtl_2_bq_0"
+  project_id     = module.dwh-conf-project.project_id
+  id             = "${replace(var.prefix, "-", "_")}_dwh_conf_bq_0"
   location       = var.location
   encryption_key = try(local.service_encryption_keys.bq, null)
 }
 
-module "lake-plg-bq-0" {
+module "dwh-plg-bq-0" {
   source         = "../../../modules/bigquery-dataset"
-  project_id     = module.lake-plg-project.project_id
-  id             = "${replace(var.prefix, "-", "_")}_dtl_plg_bq_0"
+  project_id     = module.dwh-plg-project.project_id
+  id             = "${replace(var.prefix, "-", "_")}_dwh_plg_bq_0"
   location       = var.location
   encryption_key = try(local.service_encryption_keys.bq, null)
 }
 
 # Cloud storage
 
-module "lake-0-cs-0" {
+module "dwh-lnd-cs-0" {
   source         = "../../../modules/gcs"
-  project_id     = module.lake-0-project.project_id
+  project_id     = module.dwh-lnd-project.project_id
   prefix         = var.prefix
-  name           = "dtl-0-cs-0"
+  name           = "dwh-lnd-cs-0"
   location       = var.location
   storage_class  = "MULTI_REGIONAL"
   encryption_key = try(local.service_encryption_keys.storage, null)
   force_destroy  = var.data_force_destroy
 }
 
-module "lake-1-cs-0" {
+module "dwh-cur-cs-0" {
   source         = "../../../modules/gcs"
-  project_id     = module.lake-1-project.project_id
+  project_id     = module.dwh-cur-project.project_id
   prefix         = var.prefix
-  name           = "dtl-1-cs-0"
+  name           = "dwh-cur-cs-0"
   location       = var.location
   storage_class  = "MULTI_REGIONAL"
   encryption_key = try(local.service_encryption_keys.storage, null)
   force_destroy  = var.data_force_destroy
 }
 
-module "lake-2-cs-0" {
+module "dwh-conf-cs-0" {
   source         = "../../../modules/gcs"
-  project_id     = module.lake-2-project.project_id
+  project_id     = module.dwh-conf-project.project_id
   prefix         = var.prefix
-  name           = "dtl-2-cs-0"
+  name           = "dwh-conf-cs-0"
   location       = var.location
   storage_class  = "MULTI_REGIONAL"
   encryption_key = try(local.service_encryption_keys.storage, null)
   force_destroy  = var.data_force_destroy
 }
 
-module "lake-plg-cs-0" {
+module "dwh-plg-cs-0" {
   source         = "../../../modules/gcs"
-  project_id     = module.lake-plg-project.project_id
+  project_id     = module.dwh-plg-project.project_id
   prefix         = var.prefix
-  name           = "dtl-plg-cs-0"
+  name           = "dwh-plg-cs-0"
   location       = var.location
   storage_class  = "MULTI_REGIONAL"
   encryption_key = try(local.service_encryption_keys.storage, null)

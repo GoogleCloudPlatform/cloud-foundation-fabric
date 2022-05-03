@@ -12,8 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 def test_resources(e2e_plan_runner):
   "Test that plan works and the numbers of resources is as expected."
   modules, resources = e2e_plan_runner()
-  assert len(modules) == 17
-  assert len(resources) == 71
+  assert len(modules) == 19
+  assert len(resources) == 73

@@ -348,6 +348,16 @@ resource "google_compute_instance_template" "default" {
     scopes = local.service_account_scopes
   }
 
+  dynamic "shielded_instance_config" {
+    for_each = var.shielded_config != null ? [var.shielded_config] : []
+    iterator = config
+    content {
+      enable_secure_boot          = config.value.enable_secure_boot
+      enable_vtpm                 = config.value.enable_vtpm
+      enable_integrity_monitoring = config.value.enable_integrity_monitoring
+    }
+  }
+
   lifecycle {
     create_before_destroy = true
   }
