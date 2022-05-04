@@ -19,6 +19,10 @@ locals {
   is_mysql     = can(regex("^MYSQL", var.database_version))
   has_replicas = try(length(var.replicas) > 0, false)
 
+  // Enable backup if the user asks for it or if the user is deploying
+  // MySQL with replicas
+  enable_backup = var.backup_configuration.enabled || (local.is_mysql && local.has_replicas)
+
   users = {
     for user, password in coalesce(var.users, {}) :
     (user) => (
@@ -67,24 +71,25 @@ resource "google_sql_database_instance" "primary" {
       }
     }
 
-    backup_configuration {
-      // Enable backup if the user asks for it or if the user is
-      // deploying MySQL with replicas
-      enabled = var.backup_configuration.enabled || (local.is_mysql && local.has_replicas)
+    dynamic "backup_configuration" {
+      for_each = local.enable_backup ? { 1 = 1 } : {}
+      content {
+        enabled = true
 
-      // enable binary log if the user asks for it or we have replicas,
-      // but only form MySQL
-      binary_log_enabled = (
-        local.is_mysql
-        ? var.backup_configuration.binary_log_enabled || local.has_replicas
-        : null
-      )
-      start_time                     = var.backup_configuration.start_time
-      location                       = var.backup_configuration.location
-      transaction_log_retention_days = var.backup_configuration.log_retention_days
-      backup_retention_settings {
-        retained_backups = var.backup_configuration.retention_count
-        retention_unit   = "COUNT"
+        // enable binary log if the user asks for it or we have replicas,
+        // but only for MySQL
+        binary_log_enabled = (
+          local.is_mysql
+          ? var.backup_configuration.binary_log_enabled || local.has_replicas
+          : null
+        )
+        start_time                     = var.backup_configuration.start_time
+        location                       = var.backup_configuration.location
+        transaction_log_retention_days = var.backup_configuration.log_retention_days
+        backup_retention_settings {
+          retained_backups = var.backup_configuration.retention_count
+          retention_unit   = "COUNT"
+        }
       }
     }
 
