@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+- **incompatible change** add support for [Spot VMs](https://cloud.google.com/compute/docs/instances/spot) to `compute_vm` module
 - SQL Server AlwaysOn availability groups example
 - fixed Terraform change detection in CloudSQL when backup is disabled
 - allow multiple CIDR blocks in the ip_range for Apigee Instance
