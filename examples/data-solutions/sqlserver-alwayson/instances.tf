@@ -14,16 +14,22 @@
 
 # tfdoc:file:description Creates SQL Server instances and witness.
 locals {
-  secret_parts = split("/", module.secret-manager.secrets[local.ad_user_password_secret].id)
-  user_name    = format("%ssqlserver", local.prefix)
-  template_vars = {
+  _functions = templatefile("${path.module}/scripts/functions.ps1", local._template_vars0)
+  _scripts = [
+    "specialize-node",
+    "specialize-witness",
+    "windows-startup-node",
+    "windows-startup-witness"
+  ]
+  _secret_parts = split("/", module.secret-manager.secrets[local.ad_user_password_secret].id)
+  _template_vars0 = {
     prefix                    = var.prefix
     ad_domain                 = var.ad_domain_fqdn
     ad_netbios                = var.ad_domain_netbios
     managed_ad_dn             = var.managed_ad_dn
     managed_ad_dn_path        = var.managed_ad_dn != "" ? format("-Path \"%s\"", var.managed_ad_dn) : ""
     health_check_port         = var.health_check_port
-    sql_admin_password_secret = local.secret_parts[length(local.secret_parts) - 1]
+    sql_admin_password_secret = local._secret_parts[length(local._secret_parts) - 1]
     cluster_ip                = module.ip-addresses.internal_addresses[format("%scluster", local.prefix)].address
     loadbalancer_ips          = jsonencode({ for aog in var.always_on_groups : aog => module.ip-addresses.internal_addresses[format("%slb-%s", local.prefix, aog)].address })
     sql_cluster_name          = local.cluster_netbios_name
@@ -32,37 +38,18 @@ locals {
     node_netbios_2            = local.node_netbios_names[1]
     witness_netbios           = local.witness_netbios_name
     always_on_groups          = join(",", var.always_on_groups)
-    sql_user_name             = length(local.user_name) > 20 ? substr(local.user_name, 0, 20) : local.user_name
+    sql_user_name             = length(local._user_name) > 20 ? substr(local._user_name, 0, 20) : local._user_name
+  }
+  _template_vars = merge(local._template_vars0, {
+    functions = local._functions
+  })
+  _user_name = format("%ssqlserver", local.prefix)
+  scripts = {
+    for script in local._scripts :
+    script => templatefile("${path.module}/scripts/${script}.ps1", local._template_vars)
   }
 }
 
-# Common Powershell functions
-data "template_file" "functions-script" {
-  template = file(format("%s/scripts/functions.ps1", path.module))
-  vars     = local.template_vars
-}
-
-# Specialization scripts
-data "template_file" "specialize-node-script" {
-  template = file(format("%s/scripts/specialize-node.ps1", path.module))
-  vars     = merge(local.template_vars, { functions = data.template_file.functions-script.rendered })
-}
-
-data "template_file" "specialize-witness-script" {
-  template = file(format("%s/scripts/specialize-witness.ps1", path.module))
-  vars     = merge(local.template_vars, { functions = data.template_file.functions-script.rendered })
-}
-
-# Startup scripts
-data "template_file" "startup-node-script" {
-  template = file(format("%s/scripts/windows-startup-node.ps1", path.module))
-  vars     = merge(local.template_vars, { functions = data.template_file.functions-script.rendered })
-}
-
-data "template_file" "startup-witness-script" {
-  template = file(format("%s/scripts/windows-startup-witness.ps1", path.module))
-  vars     = merge(local.template_vars, { functions = data.template_file.functions-script.rendered })
-}
 
 # Nodes
 module "nodes" {
@@ -92,7 +79,7 @@ module "nodes" {
   }
 
   attached_disks = [{
-    name        = format("%s-datadisk", each.value)
+    name        = "${each.value}-datadisk"
     size        = var.data_disk_size
     source_type = null
     source      = null
@@ -103,8 +90,8 @@ module "nodes" {
   service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
   metadata = {
     enable-wsfc                   = "true"
-    sysprep-specialize-script-ps1 = data.template_file.specialize-node-script.rendered
-    windows-startup-script-ps1    = data.template_file.startup-node-script.rendered
+    sysprep-specialize-script-ps1 = local.scripts["specialize-node"]
+    windows-startup-script-ps1    = local.scripts["windows-startup-node"]
   }
 
   group = {
@@ -146,8 +133,8 @@ module "witness" {
   service_account        = module.witness-service-account.email
   service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
   metadata = {
-    sysprep-specialize-script-ps1 = data.template_file.specialize-witness-script.rendered
-    windows-startup-script-ps1    = data.template_file.startup-witness-script.rendered
+    sysprep-specialize-script-ps1 = local.scripts["specialize-witness"]
+    windows-startup-script-ps1    = local.scripts["windows-startup-witness"]
   }
 
   service_account_create = false
