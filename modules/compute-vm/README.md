@@ -44,7 +44,6 @@ module "spot-vm-example" {
   options = {
     allow_stopping_for_update = true
     deletion_protection       = false
-    preemptible               = true
     spot                      = true
   }
   network_interfaces = [{
@@ -328,8 +327,8 @@ module "instance-group" {
 |---|---|:---:|:---:|:---:|
 | [name](variables.tf#L160) | Instance name. | <code>string</code> | ✓ |  |
 | [network_interfaces](variables.tf#L174) | Network interfaces configuration. Use self links for Shared VPC, set addresses to null if not needed. | <code title="list&#40;object&#40;&#123;&#10;  nat        &#61; bool&#10;  network    &#61; string&#10;  subnetwork &#61; string&#10;  addresses &#61; object&#40;&#123;&#10;    internal &#61; string&#10;    external &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> | ✓ |  |
-| [project_id](variables.tf#L207) | Project id. | <code>string</code> | ✓ |  |
-| [zone](variables.tf#L266) | Compute zone. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L201) | Project id. | <code>string</code> | ✓ |  |
+| [zone](variables.tf#L260) | Compute zone. | <code>string</code> | ✓ |  |
 | [attached_disk_defaults](variables.tf#L17) | Defaults for attached disks options. | <code title="object&#40;&#123;&#10;  mode         &#61; string&#10;  replica_zone &#61; string&#10;  type         &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  auto_delete  &#61; true&#10;  mode         &#61; &#34;READ_WRITE&#34;&#10;  replica_zone &#61; null&#10;  type         &#61; &#34;pd-balanced&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [attached_disks](variables.tf#L32) | Additional disks, if options is null defaults will be used in its place. Source type is one of 'image' (zonal disks in vms and template), 'snapshot' (vm), 'existing', and null. | <code title="list&#40;object&#40;&#123;&#10;  name        &#61; string&#10;  size        &#61; string&#10;  source      &#61; string&#10;  source_type &#61; string&#10;  options &#61; object&#40;&#123;&#10;    mode         &#61; string&#10;    replica_zone &#61; string&#10;    type         &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#91;&#93;</code> |
 | [boot_disk](variables.tf#L58) | Boot disk properties. | <code title="object&#40;&#123;&#10;  image &#61; string&#10;  size  &#61; number&#10;  type  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  image &#61; &#34;projects&#47;debian-cloud&#47;global&#47;images&#47;family&#47;debian-11&#34;&#10;  type  &#61; &#34;pd-balanced&#34;&#10;  size  &#61; 10&#10;&#125;">&#123;&#8230;&#125;</code> |
@@ -348,14 +347,14 @@ module "instance-group" {
 | [metadata](variables.tf#L148) | Instance metadata. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [min_cpu_platform](variables.tf#L154) | Minimum CPU platform. | <code>string</code> |  | <code>null</code> |
 | [network_interface_options](variables.tf#L165) | Network interfaces extended options. The key is the index of the inteface to configure. The value is an object with alias_ips and nic_type. Set alias_ips or nic_type to null if you need only one of them. | <code title="map&#40;object&#40;&#123;&#10;  alias_ips &#61; map&#40;string&#41;&#10;  nic_type  &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [options](variables.tf#L187) | Instance options. | <code title="object&#40;&#123;&#10;  allow_stopping_for_update &#61; bool&#10;  deletion_protection       &#61; bool&#10;  preemptible               &#61; bool&#10;  spot                      &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  allow_stopping_for_update &#61; true&#10;  deletion_protection       &#61; false&#10;  preemptible               &#61; false&#10;  spot                      &#61; false&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [scratch_disks](variables.tf#L212) | Scratch disks configuration. | <code title="object&#40;&#123;&#10;  count     &#61; number&#10;  interface &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  count     &#61; 0&#10;  interface &#61; &#34;NVME&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [service_account](variables.tf#L224) | Service account email. Unused if service account is auto-created. | <code>string</code> |  | <code>null</code> |
-| [service_account_create](variables.tf#L230) | Auto-create service account. | <code>bool</code> |  | <code>false</code> |
-| [service_account_scopes](variables.tf#L238) | Scopes applied to service account. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [shielded_config](variables.tf#L244) | Shielded VM configuration of the instances. | <code title="object&#40;&#123;&#10;  enable_secure_boot          &#61; bool&#10;  enable_vtpm                 &#61; bool&#10;  enable_integrity_monitoring &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [tag_bindings](variables.tf#L254) | Tag bindings for this instance, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
-| [tags](variables.tf#L260) | Instance network tags for firewall rule targets. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [options](variables.tf#L187) | Instance options. | <code title="object&#40;&#123;&#10;  allow_stopping_for_update &#61; bool&#10;  deletion_protection       &#61; bool&#10;  spot                      &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  allow_stopping_for_update &#61; true&#10;  deletion_protection       &#61; false&#10;  spot                      &#61; false&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [scratch_disks](variables.tf#L206) | Scratch disks configuration. | <code title="object&#40;&#123;&#10;  count     &#61; number&#10;  interface &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  count     &#61; 0&#10;  interface &#61; &#34;NVME&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [service_account](variables.tf#L218) | Service account email. Unused if service account is auto-created. | <code>string</code> |  | <code>null</code> |
+| [service_account_create](variables.tf#L224) | Auto-create service account. | <code>bool</code> |  | <code>false</code> |
+| [service_account_scopes](variables.tf#L232) | Scopes applied to service account. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [shielded_config](variables.tf#L238) | Shielded VM configuration of the instances. | <code title="object&#40;&#123;&#10;  enable_secure_boot          &#61; bool&#10;  enable_vtpm                 &#61; bool&#10;  enable_integrity_monitoring &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [tag_bindings](variables.tf#L248) | Tag bindings for this instance, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [tags](variables.tf#L254) | Instance network tags for firewall rule targets. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 
 ## Outputs
 

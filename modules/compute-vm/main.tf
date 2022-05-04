@@ -30,7 +30,7 @@ locals {
     k => v if try(v.options.replica_zone, null) == null
   }
   on_host_maintenance = (
-    var.options.preemptible || var.confidential_compute
+    var.options.spot || var.confidential_compute
     ? "TERMINATE"
     : "MIGRATE"
   )
@@ -212,10 +212,10 @@ resource "google_compute_instance" "default" {
   }
 
   scheduling {
-    automatic_restart   = !var.options.preemptible
+    automatic_restart   = !var.options.spot
     on_host_maintenance = local.on_host_maintenance
-    preemptible         = var.options.preemptible
-    provisioning_model  = var.options.spot ? "SPOT" : null
+    preemptible         = var.options.spot
+    provisioning_model  = var.options.spot ? "SPOT" : "STANDARD"
   }
 
   dynamic "scratch_disk" {
@@ -339,10 +339,10 @@ resource "google_compute_instance_template" "default" {
   }
 
   scheduling {
-    automatic_restart   = !var.options.preemptible
+    automatic_restart   = !var.options.spot
     on_host_maintenance = local.on_host_maintenance
-    preemptible         = var.options.preemptible
-    provisioning_model  = var.options.spot ? "SPOT" : null
+    preemptible         = var.options.spot
+    provisioning_model  = var.options.spot ? "SPOT" : "STANDARD"
   }
 
   service_account {
