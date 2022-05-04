@@ -200,7 +200,7 @@ variable "options" {
   }
   validation {
     condition     = !var.options.spot || (var.options.spot && var.options.preemptible)
-    error_message = "Variable var.option.preemptible should be `true` when var.options.spot is set to `true`."
+    error_message = "Variable var.option.preemptible must be `true` when var.options.spot is set to `true`."
   }
 }
 
