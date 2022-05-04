@@ -24,6 +24,12 @@ This [example](./data-platform-foundations/) implements a robust and flexible Da
 
 ### SQL Server Always On Availability Groups
 
-<a href="./sqlserver-alwayson/" title="Data Platform Foundations"><img src="https://cloud.google.com/compute/images/sqlserver-ag-architecture.svg" align="left" width="280px"></a>
+<a href="./sqlserver-alwayson/" title="SQL Server Always On Availability Groups"><img src="https://cloud.google.com/compute/images/sqlserver-ag-architecture.svg" align="left" width="280px"></a>
 This [example](./data-platform-foundations/) implements SQL Server Always On Availability Groups using Fabric modules. It builds a two node cluster with a fileshare witness instance in an existing VPC and adds the necessary firewalling. The actual setup process (apart from Active Directory operations) has been scripted, so that least amount of manual works needs to performed.
+<br clear="left">
+
+### Cloud SQL instance with multi-region read replicas
+
+<a href="./cloudsql-multiregion/" title="Cloud SQL instance with multi-region read replicas"><img src="./cloudsql-multiregion/diagram.png" align="left" width="280px"></a>
+This [example](./cloudsql-multiregion/) creates a [Cloud SQL instance](https://cloud.google.com/sql) with multi-region read replicas as described in the [Cloud SQL for PostgreSQL disaster recovery](https://cloud.google.com/architecture/cloud-sql-postgres-disaster-recovery-complete-failover-fallback) article.
 <br clear="left">
