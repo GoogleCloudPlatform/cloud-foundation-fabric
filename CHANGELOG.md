@@ -20,6 +20,7 @@ All notable changes to this project will be documented in this file.
 **FAST**
 
 - Add support for Workload Identity Federation and CI/CD repositories
+- Simplify VPN tunnel configuration in the Hub and Spoke VPN network stage
 
 ## [15.0.0] - 2022-04-05
 
