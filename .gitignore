@@ -28,3 +28,4 @@ fast/stages/**/terraform-*.auto.tfvars.json
 fast/stages/**/0*.auto.tfvars*
 **/node_modules
 fast/stages/**/globals.auto.tfvars.json
+cloud_sql_proxy
