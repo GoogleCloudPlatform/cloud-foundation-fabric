@@ -190,11 +190,17 @@ variable "options" {
     allow_stopping_for_update = bool
     deletion_protection       = bool
     preemptible               = bool
+    spot                      = bool
   })
   default = {
     allow_stopping_for_update = true
     deletion_protection       = false
     preemptible               = false
+    spot                      = false
+  }
+  validation {
+    condition     = !var.options.spot || (var.options.spot && var.options.preemptible)
+    error_message = "Variable var.option.preemptible should be `true` when var.options.spot is set to `true`."
   }
 }
 

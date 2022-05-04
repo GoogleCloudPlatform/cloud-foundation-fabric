@@ -215,6 +215,7 @@ resource "google_compute_instance" "default" {
     automatic_restart   = !var.options.preemptible
     on_host_maintenance = local.on_host_maintenance
     preemptible         = var.options.preemptible
+    provisioning_model  = var.options.spot ? "SPOT" : null
   }
 
   dynamic "scratch_disk" {
@@ -341,6 +342,7 @@ resource "google_compute_instance_template" "default" {
     automatic_restart   = !var.options.preemptible
     on_host_maintenance = local.on_host_maintenance
     preemptible         = var.options.preemptible
+    provisioning_model  = var.options.spot ? "SPOT" : null
   }
 
   service_account {
