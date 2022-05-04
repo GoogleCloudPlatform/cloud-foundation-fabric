@@ -64,5 +64,6 @@ module "apigee-x-instance" {
 | [id](outputs.tf#L22) | Apigee instance ID. |  |
 | [instance](outputs.tf#L27) | Apigee instance. |  |
 | [port](outputs.tf#L32) | Port number of the internal endpoint of the Apigee instance. |  |
+| [service_attachment](outputs.tf#L37) | Resource name of the service attachment created for this Apigee instance. |  |
 
 <!-- END TFDOC -->
