@@ -70,7 +70,7 @@ OUT_RE = re.compile(r'''(?smx)
     # output open
     (?:^\s*output\s*"([^"]+)"\s*\{\s*$) |
     # attribute
-    (?:^\s{2}([a-z]+)\s*=\s*"?(.*?)"?\s*$) |
+    (?:^\n?\s{2}([a-z]+)\s*=\s*"?(.*?)"?\s*$) |
     # output close
     (?:^\s?(\})\s*$) |
     # comment
@@ -278,7 +278,8 @@ def format_outputs(items, show_extra=True):
   for i in items:
     consumers = i.consumers or ''
     if consumers:
-      consumers = '<code>%s</code>' % '</code> · <code>'.join(consumers.split())
+      consumers = '<code>%s</code>' % '</code> · <code>'.join(
+          consumers.split())
     sensitive = '✓' if i.sensitive else ''
     format = f'| [{i.name}]({i.file}#L{i.line}) | {i.description or ""} | {sensitive} |'
     format += f' {consumers} |' if show_extra else ''

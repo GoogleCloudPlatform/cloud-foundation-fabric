@@ -144,12 +144,11 @@ healthchecks:
 
 | name | description | sensitive |
 |---|---|:---:|
-| [admin_ranges](outputs.tf#L17) | Admin ranges data.
-  value = {    enabled = length(var.admin_ranges) > 0    ranges  = join(",", var.admin_ranges)  } |  |
-| [custom_egress_allow_rules](outputs.tf#L26) | Custom egress rules with allow blocks. |  |
-| [custom_egress_deny_rules](outputs.tf#L34) | Custom egress rules with allow blocks. |  |
-| [custom_ingress_allow_rules](outputs.tf#L42) | Custom ingress rules with allow blocks. |  |
-| [custom_ingress_deny_rules](outputs.tf#L50) | Custom ingress rules with deny blocks. |  |
-| [rules](outputs.tf#L58) | All google_compute_firewall resources created. |  |
+| [admin_ranges](outputs.tf#L17) | Admin ranges data. |  |
+| [custom_egress_allow_rules](outputs.tf#L25) | Custom egress rules with allow blocks. |  |
+| [custom_egress_deny_rules](outputs.tf#L33) | Custom egress rules with allow blocks. |  |
+| [custom_ingress_allow_rules](outputs.tf#L41) | Custom ingress rules with allow blocks. |  |
+| [custom_ingress_deny_rules](outputs.tf#L49) | Custom ingress rules with deny blocks. |  |
+| [rules](outputs.tf#L57) | All google_compute_firewall resources created. |  |
 
 <!-- END TFDOC -->
