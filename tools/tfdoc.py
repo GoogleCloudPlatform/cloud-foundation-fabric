@@ -278,8 +278,7 @@ def format_outputs(items, show_extra=True):
   for i in items:
     consumers = i.consumers or ''
     if consumers:
-      consumers = '<code>%s</code>' % '</code> · <code>'.join(
-          consumers.split())
+      consumers = '<code>%s</code>' % '</code> · <code>'.join(consumers.split())
     sensitive = '✓' if i.sensitive else ''
     format = f'| [{i.name}]({i.file}#L{i.line}) | {i.description or ""} | {sensitive} |'
     format += f' {consumers} |' if show_extra else ''
