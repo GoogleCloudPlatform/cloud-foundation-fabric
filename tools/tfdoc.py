@@ -70,7 +70,7 @@ OUT_RE = re.compile(r'''(?smx)
     # output open
     (?:^\s*output\s*"([^"]+)"\s*\{\s*$) |
     # attribute
-    (?:^\s{2}([a-z]+)\s*=\s*"?(.*?)"?\s*$) |
+    (?:^\n?\s{2}([a-z]+)\s*=\s*"?(.*?)"?\s*$) |
     # output close
     (?:^\s?(\})\s*$) |
     # comment
