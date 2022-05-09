@@ -19,11 +19,13 @@ All notable changes to this project will be documented in this file.
 - add support for subscription filters to PubSub module
 - refactor Hub and Spoke with VPN example
 - fix tfdoc parsing on newllines in outputs
+- fix subnet factory example in vpc module README
 
 **FAST**
 
-- Add support for Workload Identity Federation and CI/CD repositories
-- Simplify VPN tunnel configuration in the Hub and Spoke VPN network stage
+- add support for Workload Identity Federation and CI/CD repositories
+- simplify VPN tunnel configuration in the Hub and Spoke VPN network stage
+- fix subnet YAML schema
 
 ## [15.0.0] - 2022-04-05
 
