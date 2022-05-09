@@ -175,8 +175,8 @@ module "vpc" {
 
 Along with common private subnets module supports creation more service specific subnets for the following purposes:
 
- - [Proxy-only subnets](https://cloud.google.com/load-balancing/docs/proxy-only-subnets) for Regional HTTPS Internal HTTPS Load Balancers
- - [Private Service Connect](https://cloud.google.com/vpc/docs/private-service-connect#psc-subnets) subnets
+- [Proxy-only subnets](https://cloud.google.com/load-balancing/docs/proxy-only-subnets) for Regional HTTPS Internal HTTPS Load Balancers
+- [Private Service Connect](https://cloud.google.com/vpc/docs/private-service-connect#psc-subnets) subnets
 
 ```hcl
 module "vpc" {
@@ -254,7 +254,7 @@ private_ip_google_access: false   # defaults to true
 iam_users: ["foobar@example.com"] # grant compute/networkUser to users
 iam_groups: ["lorem@example.com"] # grant compute/networkUser to groups
 iam_service_accounts: ["fbz@prj.iam.gserviceaccount.com"]
-secondary_ip_ranges:              # map of secondary ip ranges
+secondary_ip_range:              # map of secondary ip ranges
   secondary-range-a: 192.168.0.0/24
 flow_logs:                        # enable, set to empty map to use defaults
   - aggregation_interval: "INTERVAL_5_SEC"
