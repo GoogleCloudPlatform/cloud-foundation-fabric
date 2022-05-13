@@ -31,6 +31,33 @@ module "simple-vm-example" {
 
 ```
 
+### Spot VM
+
+[Spot VMs](https://cloud.google.com/compute/docs/instances/spot) are ephemeral compute instances suitable for batch jobs and fault-tolerant workloads. Spot VMs provide new features that [preemptible instances](https://cloud.google.com/compute/docs/instances/preemptible) do not support, such as the absence of a maximum runtime.
+
+```hcl
+module "spot-vm-example" {
+  source     = "./modules/compute-vm"
+  project_id = var.project_id
+  zone     = "europe-west1-b"
+  name       = "test"
+  options = {
+    allow_stopping_for_update = true
+    deletion_protection       = false
+    spot                      = true
+  }
+  network_interfaces = [{
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+    nat        = false
+    addresses  = null
+  }]
+  service_account_create = true
+}
+# tftest modules=1 resources=2
+
+```
+
 ### Disk sources
 
 Attached disks can be created and optionally initialized from a pre-existing source, or attached to VMs when pre-existing. The `source` and `source_type` attributes of the `attached_disks` variable allows several modes of operation:
@@ -320,7 +347,7 @@ module "instance-group" {
 | [metadata](variables.tf#L148) | Instance metadata. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [min_cpu_platform](variables.tf#L154) | Minimum CPU platform. | <code>string</code> |  | <code>null</code> |
 | [network_interface_options](variables.tf#L165) | Network interfaces extended options. The key is the index of the inteface to configure. The value is an object with alias_ips and nic_type. Set alias_ips or nic_type to null if you need only one of them. | <code title="map&#40;object&#40;&#123;&#10;  alias_ips &#61; map&#40;string&#41;&#10;  nic_type  &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [options](variables.tf#L187) | Instance options. | <code title="object&#40;&#123;&#10;  allow_stopping_for_update &#61; bool&#10;  deletion_protection       &#61; bool&#10;  preemptible               &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  allow_stopping_for_update &#61; true&#10;  deletion_protection       &#61; false&#10;  preemptible               &#61; false&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [options](variables.tf#L187) | Instance options. | <code title="object&#40;&#123;&#10;  allow_stopping_for_update &#61; bool&#10;  deletion_protection       &#61; bool&#10;  spot                      &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  allow_stopping_for_update &#61; true&#10;  deletion_protection       &#61; false&#10;  spot                      &#61; false&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [scratch_disks](variables.tf#L206) | Scratch disks configuration. | <code title="object&#40;&#123;&#10;  count     &#61; number&#10;  interface &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  count     &#61; 0&#10;  interface &#61; &#34;NVME&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [service_account](variables.tf#L218) | Service account email. Unused if service account is auto-created. | <code>string</code> |  | <code>null</code> |
 | [service_account_create](variables.tf#L224) | Auto-create service account. | <code>bool</code> |  | <code>false</code> |

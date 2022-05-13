@@ -96,6 +96,9 @@ resource "google_container_cluster" "cluster" {
     config_connector_config {
       enabled = var.addons.config_connector_config
     }
+    gke_backup_agent_config {
+      enabled = var.addons.gke_backup_agent_config
+    }
   }
 
   # TODO(ludomagno): support setting address ranges instead of range names

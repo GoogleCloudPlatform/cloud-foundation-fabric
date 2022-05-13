@@ -30,6 +30,7 @@ variable "addons" {
     gcp_filestore_csi_driver_config       = bool
     config_connector_config               = bool
     kalm_config                           = bool
+    gke_backup_agent_config               = bool
   })
   default = {
     cloudrun_config            = false
@@ -45,6 +46,7 @@ variable "addons" {
     gcp_filestore_csi_driver_config       = false
     config_connector_config               = false
     kalm_config                           = false
+    gke_backup_agent_config               = false
   }
 }
 

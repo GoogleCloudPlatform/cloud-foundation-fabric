@@ -194,6 +194,12 @@ variable "node_shielded_instance_config" {
   default = null
 }
 
+variable "node_spot" {
+  description = "Use Spot VMs for nodes."
+  type        = bool
+  default     = null
+}
+
 variable "node_tags" {
   description = "Network tags applied to nodes."
   type        = list(string)

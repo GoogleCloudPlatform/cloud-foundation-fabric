@@ -105,6 +105,7 @@ resource "google_container_node_pool" "nodepool" {
     service_account   = local.service_account_email
     tags              = var.node_tags
     boot_disk_kms_key = var.node_boot_disk_kms_key
+    spot              = var.node_spot
 
     dynamic "guest_accelerator" {
       for_each = var.node_guest_accelerator

@@ -12,45 +12,38 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-variable "bgp_asn" {
-  description = "BGP ASNs."
-  type        = map(number)
-  default = {
-    hub     = 64513
-    spoke-1 = 64514
-    spoke-2 = 64515
-  }
-}
-
-variable "bgp_custom_advertisements" {
-  description = "BGP custom advertisement IP CIDR ranges."
-  type        = map(string)
-  default = {
-    hub-to-spoke-1 = "10.0.32.0/20"
-    hub-to-spoke-2 = "10.0.16.0/20"
-  }
-}
-
-variable "bgp_interface_ranges" {
-  description = "BGP interface IP CIDR ranges."
-  type        = map(string)
-  default = {
-    spoke-1 = "169.254.1.0/30"
-    spoke-2 = "169.254.1.4/30"
-  }
-}
-
 variable "ip_ranges" {
-  description = "IP CIDR ranges."
+  description = "Subnet IP CIDR ranges."
   type        = map(string)
   default = {
-    hub-a     = "10.0.0.0/24"
-    hub-b     = "10.0.8.0/24"
-    spoke-1-a = "10.0.16.0/24"
-    spoke-1-b = "10.0.24.0/24"
-    spoke-2-a = "10.0.32.0/24"
-    spoke-2-b = "10.0.40.0/24"
+    land-0-r1 = "10.0.0.0/24"
+    land-0-r2 = "10.0.8.0/24"
+    dev-0-r1  = "10.0.16.0/24"
+    dev-0-r2  = "10.0.24.0/24"
+    prod-0-r1 = "10.0.32.0/24"
+    prod-0-r2 = "10.0.40.0/24"
   }
+}
+
+variable "ip_secondary_ranges" {
+  description = "Subnet secondary ranges."
+  type        = map(map(string))
+  default     = {}
+}
+
+variable "prefix" {
+  description = "Prefix used in resource names."
+  type        = string
+  default     = null
+}
+
+variable "project_create_config" {
+  description = "Populate with billing account id to trigger project creation."
+  type = object({
+    billing_account_id = string
+    parent_id          = string
+  })
+  default = null
 }
 
 variable "project_id" {
@@ -62,7 +55,31 @@ variable "regions" {
   description = "VPC regions."
   type        = map(string)
   default = {
-    a = "europe-west1"
-    b = "europe-west2"
+    r1 = "europe-west1"
+    r2 = "europe-west4"
+  }
+}
+
+variable "vpn_configs" {
+  description = "VPN configurations."
+  type = map(object({
+    asn           = number
+    custom_ranges = map(string)
+  }))
+  default = {
+    land-r1 = {
+      asn = 64513
+      custom_ranges = {
+        "10.0.0.0/8" = "internal default"
+      }
+    }
+    dev-r1 = {
+      asn           = 64514
+      custom_ranges = null
+    }
+    prod-r1 = {
+      asn           = 64515
+      custom_ranges = null
+    }
   }
 }

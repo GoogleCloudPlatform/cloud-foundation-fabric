@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+- add support for [Spot VMs](https://cloud.google.com/compute/docs/instances/spot) to `gke-nodepool` module
+- **incompatible change** add support for [Spot VMs](https://cloud.google.com/compute/docs/instances/spot) to `compute-vm` module
 - SQL Server AlwaysOn availability groups example
 - fixed Terraform change detection in CloudSQL when backup is disabled
 - allow multiple CIDR blocks in the ip_range for Apigee Instance
@@ -12,10 +14,18 @@ All notable changes to this project will be documented in this file.
 - add support for [Private Service Connect](https://cloud.google.com/vpc/docs/private-service-connect#psc-subnets) and [Proxy-only](https://cloud.google.com/load-balancing/docs/proxy-only-subnets) subnets to `net-vpc` module
 - bump Google provider versions to `>= 4.17.0`
 - bump Terraform version to `>= 1.1.0`
+- add `shielded_instance_config` support for instance template on `compute-vm` module
+- add support for `gke_backup_agent_config` to GKE module addons
+- add support for subscription filters to PubSub module
+- refactor Hub and Spoke with VPN example
+- fix tfdoc parsing on newllines in outputs
+- fix subnet factory example in vpc module README
 
 **FAST**
 
-- Add support for Workload Identity Federation and CI/CD repositories
+- add support for Workload Identity Federation and CI/CD repositories
+- simplify VPN tunnel configuration in the Hub and Spoke VPN network stage
+- fix subnet YAML schema
 
 ## [15.0.0] - 2022-04-05
 

@@ -20,7 +20,7 @@ private_ip_google_access: bool(required=False) # defaults to true
 iam_users: list(str(), required=False)
 iam_groups: list(str(), required=False)
 iam_service_accounts: list(str(), required=False)
-secondary_ip_ranges: list(map(str()), key=str(), required=False)
+secondary_ip_range: map(str(), key=str(), required=False)
 flow_logs: any(include('flow_logs'), required=False)
 ---
 flow_logs:

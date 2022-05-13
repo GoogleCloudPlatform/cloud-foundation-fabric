@@ -189,12 +189,12 @@ variable "options" {
   type = object({
     allow_stopping_for_update = bool
     deletion_protection       = bool
-    preemptible               = bool
+    spot                      = bool
   })
   default = {
     allow_stopping_for_update = true
     deletion_protection       = false
-    preemptible               = false
+    spot                      = false
   }
 }
 

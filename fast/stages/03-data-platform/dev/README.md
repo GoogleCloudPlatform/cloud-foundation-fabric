@@ -31,10 +31,10 @@ The Data Platform manages:
 As per our GCP best practices the Data Platform relies on user groups to assign roles to human identities. These are the specific groups used by the Data Platform and their access patterns, from the [module documentation](../../../../examples/data-solutions/data-platform-foundations/#groups):
 
 - *Data Engineers* They handle and run the Data Hub, with read access to all resources in order to troubleshoot possible issues with pipelines. This team can also impersonate any service account.
-- *Data Analysts*. They perform analysis on datasets, with read access to the data lake L2 project, and BigQuery READ/WRITE access to the playground project.
+- *Data Analysts*. They perform analysis on datasets, with read access to the data warehouse Curated or Confidential projects depending on their privileges, and BigQuery READ/WRITE access to the playground project.
 - *Data Security*:. They handle security configurations related to the Data Hub. This team has admin access to the common project to configure Cloud DLP templates or Data Catalog policy tags.
 
-|Group|Landing|Load|Transformation|Data Lake L0|Data Lake L1|Data Lake L2|Data Lake Playground|Orchestration|Common|
+|Group|Landing|Load|Transformation|Data Warehouse Landing|Data Warehouse Curated|Data Warehouse Confidential|Data Warehouse Playground|Orchestration|Common|
 |-|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
 |Data Engineers|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|
 |Data Analysts|-|-|-|-|-|`READ`|`READ`/`WRITE`|-|-|
@@ -68,6 +68,12 @@ You can configure your tags and roles associated by configuring the `data_catalo
 As is often the case in real-world configurations, [VPC-SC](https://cloud.google.com/vpc-service-controls) is needed to mitigate data exfiltration. VPC-SC can be configured from the [FAST security stage](../../02-security). This step is optional, but highly recomended, and depends on customer policies and security best practices.
 
 To configure the use of VPC-SC on the data platform, you have to specify the data platform project numbers on the `vpc_sc_perimeter_projects.dev` variable on [FAST security stage](../../02-security#perimeter-resources).
+
+In the case your Data Warehouse need to handle confidential data and you have the requirement to separate them deeply from other data and IAM is not enough, the suggested configuration is to keep the confidential project in a separate VPC-SC perimeter with the adequate ingress/egress rules needed for the load and tranformation service account. Below you can find an high level diagram describing the configuration.
+
+<p align="center">
+  <img src="diagram_vpcsc.png" alt="Data Platform VPC-SC diagram">
+</p>
 
 ## How to run this stage
 
@@ -131,7 +137,7 @@ terraform apply
 
 ## Demo pipeline
 
-The application layer is out of scope of this script. As a demo purpuse only, several Cloud Composer DAGs are provided. Demos will import data from the `landing` area to the `DataLake L2` dataset suing different features. 
+The application layer is out of scope of this script. As a demo purpuse only, several Cloud Composer DAGs are provided. Demos will import data from the `landing` area to the `DataWarehouse Confidential` dataset suing different features. 
 
 You can find examples in the `[demo](../../../../examples/data-solutions/data-platform-foundations/demo)` folder.
 

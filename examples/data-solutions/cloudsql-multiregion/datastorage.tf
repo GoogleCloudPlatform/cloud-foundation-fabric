@@ -12,7 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-variable "project_id" {
-  type    = string
-  default = "project-1"
+module "gcs" {
+  source         = "../../../modules/gcs"
+  project_id     = module.project.project_id
+  prefix         = var.prefix
+  name           = "data"
+  location       = var.regions.primary
+  storage_class  = "REGIONAL"
+  encryption_key = var.cmek_encryption ? module.kms[var.regions.primary].keys["key"].id : null
+  force_destroy  = true
+}
+
+module "service-account-gcs" {
+  source     = "../../../modules/iam-service-account"
+  project_id = module.project.project_id
+  name       = "${var.prefix}-gcs"
 }
