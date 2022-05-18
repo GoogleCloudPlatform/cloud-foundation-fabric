@@ -39,7 +39,7 @@ locals {
   _factory_flow_logs = {
     for k, v in local._factory_data : "${v.region}/${k}" => merge(
       var.log_config_defaults, try(v.flow_logs, {})
-    ) if try(v.flow_logs, false)
+    ) if try(v.flow_logs, null) != null
   }
   _factory_private_access = {
     for k, v in local._factory_data : "${v.region}/${k}" => try(
