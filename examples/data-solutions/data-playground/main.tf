@@ -18,12 +18,12 @@
 
 module "project" {
   source          = "../../../modules/project"
-  billing_account = var.billing_account 
-  name            = var.project_name 
-  parent          = var.root_node 
+  billing_account = var.billing_account
+  name            = var.project_name
+  parent          = var.root_node
   prefix          = "data-playground"
 
-  services        = [
+  services = [
     "stackdriver.googleapis.com",
     "compute.googleapis.com",
     "storage-component.googleapis.com",
@@ -68,10 +68,10 @@ module "vpc-firewall" {
 ###############################################################################
 
 module "base-gcs-bucket" {
-  source         = "../../../modules/gcs"
-  project_id     = module.project.project_id
-  prefix         = module.project.project_id
-  name           = "base"
+  source     = "../../../modules/gcs"
+  project_id = module.project.project_id
+  prefix     = module.project.project_id
+  name       = "base"
 }
 
 ###############################################################################
@@ -79,23 +79,23 @@ module "base-gcs-bucket" {
 ###############################################################################
 
 resource "google_notebooks_instance" "playground" {
-  name              = "data-play-notebook"
-  location          = format("%s-%s", var.region, var.zone)
-  machine_type      = "e2-medium"
-  project           = module.project.project_id
+  name         = "data-play-notebook"
+  location     = format("%s-%s", var.region, var.zone)
+  machine_type = "e2-medium"
+  project      = module.project.project_id
 
   container_image {
     repository = "gcr.io/deeplearning-platform-release/base-cpu"
-    tag = "latest"
+    tag        = "latest"
   }
 
   install_gpu_driver = true
-  boot_disk_type = "PD_SSD"
-  boot_disk_size_gb = 110
+  boot_disk_type     = "PD_SSD"
+  boot_disk_size_gb  = 110
 
-  no_public_ip = false
+  no_public_ip    = false
   no_proxy_access = false
 
   network = module.vpc.network.id
-  subnet = module.vpc.subnets[format("%s/%s", var.region, var.vpc_subnet_name)].id
+  subnet  = module.vpc.subnets[format("%s/%s", var.region, var.vpc_subnet_name)].id
 }
