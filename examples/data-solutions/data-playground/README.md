@@ -1,6 +1,6 @@
 # Data Playground
 
-This example creates a minimum viable template for a project with the needed APIs, basic VPC and Firewall set in place for starting a data project via Terraform.
+This example creates a minimum viable template for a data experimentation project with the needed APIs enabled, basic VPC and Firewall set in place, GCS bucket and an AI notebook to get started.
 
 ## Managed resources and services
 
@@ -33,7 +33,7 @@ This sample creates several distinct groups of resources:
 | vpc\_subnet\_name      | Name of the subnet created in the project                                                                                | string |          | default-subnet      |
 
 
-## Variables
+## Outputs
 | Name                                                                                                                                                  | Description             |
 | ----------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------- |
 | bucket  | GCS Bucket URL.         |

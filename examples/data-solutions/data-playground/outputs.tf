@@ -17,7 +17,7 @@ output "bucket" {
   value       = module.base-gcs-bucket.url
 }
 
-output "projects" {
+output "project" {
   description = "Project id"
   value = module.project.project_id
 }
