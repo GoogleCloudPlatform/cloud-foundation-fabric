@@ -43,7 +43,7 @@ output "ssl_certificates" {
 
 output "ip_address" {
   description = "The reserved global IP address."
-  value       = try(google_compute_global_address.static_ip, null)
+  value       = google_compute_global_forwarding_rule.forwarding_rule.ip_address
 }
 
 output "target_proxy" {
