@@ -35,6 +35,8 @@ module "stage" {
   service_accounts = {
     data-platform-dev    = "string"
     data-platform-prod   = "string"
+    gke-multitenant-dev  = "string"
+    gke-multitenant-prod = "string"
     project-factory-dev  = "string"
     project-factory-prod = "string"
   }

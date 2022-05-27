@@ -44,6 +44,7 @@ module "gke-cluster" {
     config_connector_config               = true
     kalm_config                           = false
     gcp_filestore_csi_driver_config       = false
+    gke_backup_agent_config               = false
     # enable only if enable_dataplane_v2 is changed to false below
     network_policy_config = false
     istio_config = {

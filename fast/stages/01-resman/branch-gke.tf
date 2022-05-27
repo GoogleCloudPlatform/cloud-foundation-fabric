@@ -51,7 +51,7 @@ module "branch-gke-multitenant-prod-folder" {
 
 module "branch-gke-multitenant-prod-sa" {
   source      = "../../../modules/iam-service-account"
-  project_id  = var.automation_project_id
+  project_id  = var.automation.project_id
   name        = "prod-resman-gke-0"
   description = "Terraform gke multitenant prod service account."
   prefix      = var.prefix
@@ -63,7 +63,7 @@ module "branch-gke-multitenant-prod-sa" {
 
 module "branch-gke-multitenant-prod-gcs" {
   source     = "../../../modules/gcs"
-  project_id = var.automation_project_id
+  project_id = var.automation.project_id
   name       = "prod-resman-gke-0"
   prefix     = var.prefix
   versioning = true
@@ -92,7 +92,7 @@ module "branch-gke-multitenant-dev-folder" {
 
 module "branch-gke-multitenant-dev-sa" {
   source      = "../../../modules/iam-service-account"
-  project_id  = var.automation_project_id
+  project_id  = var.automation.project_id
   name        = "dev-resman-gke-0"
   description = "Terraform gke multitenant dev service account."
   prefix      = var.prefix
@@ -104,7 +104,7 @@ module "branch-gke-multitenant-dev-sa" {
 
 module "branch-gke-multitenant-dev-gcs" {
   source     = "../../../modules/gcs"
-  project_id = var.automation_project_id
+  project_id = var.automation.project_id
   name       = "dev-resman-gke-0"
   prefix     = var.prefix
   versioning = true
