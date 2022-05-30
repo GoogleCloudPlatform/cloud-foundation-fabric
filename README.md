@@ -1,5 +1,8 @@
 <p align="center">
-  <img src="assets/logos/fabric-logo-colors-800.png?raw=true" alt="Cloud Foundation Fabric">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/logos/fabric-logo-colors-gray-800.png?raw=true">
+    <img src="assets/logos/fabric-logo-colors-800.png?raw=true" alt="Cloud Foundation Fabric">
+  </picture>
 </p>
 
 # Terraform Examples and Modules for Google Cloud
