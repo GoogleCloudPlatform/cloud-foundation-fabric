@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="assets/logos/fabric-logo-colors-gray-800.png?raw=true">
-    <img src="assets/logos/fabric-logo-colors-800.png?raw=true" alt="Cloud Foundation Fabric">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Cyclenerd/cloud-foundation-fabric/dark/assets/logos/fabric-logo-colors-gray-800.png?v1">
+    <img src="https://raw.githubusercontent.com/Cyclenerd/cloud-foundation-fabric/dark/assets/logos/fabric-logo-colors-800.png?v1" alt="Cloud Foundation Fabric">
   </picture>
 </p>
 
