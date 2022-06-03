@@ -11,10 +11,12 @@ terraform destroy
 ```
 
 ## Stage 3 (GKE)
+Terraform refuses to delete empty GCS buckets and/or BigQuery datasets, so they need to be removed manually from tf state
 
 ```bash
 cd $FAST_PWD/03-project-factory/prod/
 
+# remove BQ dataset manually
 for x in $(terraform state list | grep google_bigquery_dataset); do  
   terraform state rm "$x"; 
 done
@@ -66,7 +68,7 @@ rm 00-bootstrap-providers.tf
 # migrate to local state
 terraform init -migrate-state
 
-# remove buckets and BQ dataset manually
+# remove GCS buckets and BQ dataset manually
 for x in $(terraform state list | grep google_storage_bucket.bucket); do  
   terraform state rm "$x"; 
 done
