@@ -53,7 +53,7 @@ terraform destroy
 ```
 
 ## Stage 0 (Bootstrap)
-***You should follow these steps carefully because we can end up destroying our own permissions. As we will be removing gcp-admins group roles, where your user belongs, you will be required to grant organization admin role again ***
+**You should follow these steps carefully because we can end up destroying our own permissions. As we will be removing gcp-admins group roles, where your user belongs, you will be required to grant organization admin role again**
 
 We also have to remove several resources (GCS buckets and BQ datasets) manually.
 
