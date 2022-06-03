@@ -50,7 +50,55 @@ for x in $(terraform state list | grep google_storage_bucket.bucket); do
 done
 
 terraform destroy
-
 ```
 
+# Stage 0 (Bootstrap)
+You should follow these steps carefully because we can end up destroying our own permissions. We also have to remove several resources (GCS buckets and BQ datasets) manually.
 
+```bash
+cd $FAST_PWD/00-bootstrap/
+
+# remove provider config to execute without SA impersonation
+rm 00-bootstrap-providers.tf
+
+# migrate to local state
+terraform init -migrate-state
+
+# remove buckets and BQ dataset manually
+for x in $(terraform state list | grep google_storage_bucket.bucket); do  
+  terraform state rm "$x"; 
+done
+
+for x in $(terraform state list | grep google_bigquery_dataset); do  
+  terraform state rm "$x"; 
+done
+
+terraform destroy
+
+# when this fails continue with the steps below
+# make your user (the one you are using to execute this step) org admin again, as we will remove organization-admins group roles
+
+# Add the Organization Admin role to $BU_USER in the GCP Console
+
+# grant yourself this permission so you can finish the destruction
+export FAST_DESTROY_ROLES="roles/billing.admin roles/logging.admin \
+  roles/iam.organizationRoleAdmin roles/resourcemanager.projectDeleter \
+  roles/resourcemanager.folderAdmin roles/owner"
+
+export FAST_BU=$(gcloud config list --format 'value(core.account)')
+
+# find your org id
+gcloud organizations list --filter display_name:[part of your domain]
+
+# set your org id
+export FAST_ORG_ID=XXXX
+
+for role in $FAST_DESTROY_ROLES; do
+  gcloud organizations add-iam-policy-binding $FAST_ORG_ID \
+    --member user:$FAST_BU --role $role
+done
+
+terraform destroy
+rm -i terraform.tfstate*
+
+```
