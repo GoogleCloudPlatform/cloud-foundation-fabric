@@ -97,16 +97,13 @@ module "project" {
   source          = "./modules/project"
   name            = "project-example"
   group_iam = {
-    "bar@example.org" = [
-      "roles/owner"
-    ]
     "foo@example.com" = [
       "roles/editor"
     ]
   }
   iam = {
     "roles/editor" = [      
-      "user:user1@example.org"
+      "serviceAccount:${module.project.service_accounts.cloud_services}"
     ]
   }
 }
