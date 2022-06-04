@@ -4,17 +4,17 @@ Contributors are the engine that keeps Fabric alive so if you were or are planni
 
 ## Table of Contents
 
-[I just found a bug / have a feature request!](#aaa)
+[I just found a bug / have a feature request!](#i-just-found-a-bug--have-a-feature-request)
 
-[Quick developer workflow](#aaa)
+[Quick developer workflow](#quick-developer-workflow)
 
-[Developer's Handbook](#a)
+[Developer's Handbook](#developers-handbook)
 
-- [The Zen of Fabric](#aaa)
-- [Design principles in action](#aaa)
-- [FAST stage design](#aaa)
-- [Style guide reference](#aaa)
-- [Interacting with checks, tests and tools](#testing)
+- [The Zen of Fabric](#the-zen-of-fabric)
+- [Design principles in action](#design-principles-in-action)
+- [FAST stage design](#fast-stage-design)
+- [Style guide reference](#style-guide-reference)
+- [Checks, tests and tools](#checks-tests-and-tools)
 
 ## I just found a bug / have a feature request
 
