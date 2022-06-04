@@ -106,39 +106,44 @@ This is probably our oldest and most important design principle. When designing 
 
 It's a radically different approach from designing by product or feature, where boundaries are drawn around a single GCP functionality.
 
-Taking IAM as an example, we do not offer a single module to centrally manage role bindings but implement it instead in each module since:
+Our modules -- and in a much broader sense our FAST stages -- are all designed to encapsulate a set of functionally related resources and their configurations, so that from the outside (when using the module) they can be read as a single block, and referenced as a single unit trusting that they will be fully operational.
 
-- users typically understand IAM as an integral part of each resource, having bindings in the same context improves readability and speeds up changes
-- resources are typically not fully usable before their relevant IAM bindings have been applied, encapsulating those allows referencing fully configured resources from the outside
+Taking IAM as an example, we do not offer a single module to centrally manage role bindings (product/feature based approach) but implement it instead in each module since:
+
+- users understand IAM as an integral part of each resource, having bindings in the same context improves readability and speeds up changes
+- resources are not fully usable before their relevant IAM bindings have been applied, encapsulating those allows referencing fully configured resources from the outside
 - managing resources and their bindings in a single module makes code more portable with less dependencies
 
-Our modules -- and in a much broader sense our FAST stages -- are all designed encapsulate a set of functionally related resources and their configurations, so that from the outside (when using the module) they can be read as a single block, and referenced as a single unit trusting that they will be fully operational.
-
 The most extensive examples of this approach are our resource management modules. The `project` modules for example encapsulates resources for project, project services, logging sinks, project-level IAM bindings, Shared VPC enablement and attachment, metrics scope, budget alerts, organization policies, and several other functionality in a single place.
+
+A typical project module code block is easy to read as it centralizes all the information in one place, and allows consumers referencing it to trust that it will behave as a fully configured unit.
 
 ```hcl
 module "project" {
   source          = "./modules/project"
-  billing_account = "123456-123456-123456"
-  name            = "project-example"
   parent          = "folders/1234567890"
-  prefix          = "foo"
+  name            = "project-example"
+  billing_account = local.billing_account
   services        = [
     "container.googleapis.com",
-    "stackdriver.googleapis.com"
+    "stackdriver.googleapis.com",
+    "storage.googleapis.com",
   ]
+  iam = {
+    "roles/viewer" = ["user1:one@example.org"]
+  }
   policy_boolean = {
     "constraints/compute.disableGuestAttributesAccess" = true
     "constraints/compute.skipDefaultNetworkCreation" = true
   }
   service_encryption_key_ids = {
-    compute = [
-      local.kms.europe-west1.compute,
-      local.kms.europe-west3.compute,
-    ]
-    storage = [
-      local.kms.europe.gcs,
-    ]
+    compute = [local.kms.europe-west1.compute]
+    storage = [local.kms.europe.gcs]
+  }
+  shared_vpc_service_config = {
+    attach               = true
+    host_project         = "project-host"
+    service_identity_iam = {}
   }
 }
 ```
@@ -173,11 +178,17 @@ module "pubsub" {
 
 We have several such interfaces defined for IAM, log sinks, organizational policies, etc. and always reuse them across modules.
 
-#### Model interfaces on actual use
+#### Design interfaces to support actual usage
 
-One other important way in which we try to reduce cognitive fatigue and increase legibility is by implementing the same functionality via different interfaces.
+Variables should not simply map to the underlying resource attributes, but their **interfaces should be designed to match common use cases** to reduce friction and offer the highest possible degree of legibility.
 
-The best example of this approach is IAM: given its importance we implement both a role-based interface and a group-based interface, which is less verbose and makes it easy to understand at a glance the roles assigned to a specific group. Both interfaces provide data that is then internally combined to drive the same IAM binding resource, and are available for authoritative and additive roles.
+This translates into different practical approaches:
+
+- multiple sets of interfaces that support the same feature which are then internally combined into the same resources (e.g. IAM groups below)
+- functional interfaces that don't map 1:1 to resources (e.g. project service identities below)
+- crossing the project boundary to configure resources which support key logical functionality (e.g shared VPC below)
+
+The most pervasive example of the first practical approach above is IAM: given its importance we implement both a role-based interface and a group-based interface, which is less verbose and makes it easy to understand at a glance the roles assigned to a specific group. Both interfaces provide data that is then internally combined to drive the same IAM binding resource, and are available for authoritative and additive roles.
 
 ```hcl
 module "project" {
@@ -196,7 +207,36 @@ module "project" {
 }
 ```
 
-Host-based management, typically used where absolute control over service project attachment is needed:
+One other practical consequence of this design principle is supporting common use cases via interfaces that don't directly map to a resource. The example below shows support for enabling service identities access to KMS keys used for CMEK encryption in the `project` module: there's no specific resource for service identities, but it's such a frequent use case that we support them directly in the module.
+
+```hcl
+module "project" {
+  source          = "./modules/project"
+  name            = "project-example"
+  service_encryption_key_ids = {
+    compute = [local.kms.europe-west1.compute]
+    storage = [local.kms.europe.gcs]
+  }
+}
+```
+
+The principle also applies to output interfaces: it's often useful to assemble specific pieces of information in the module itself, as this improves overall code legibility. For example, we also support service identities in the `project` module's outputs (used here self-referentially).
+
+```hcl
+module "project" {
+  source          = "./modules/project"
+  name            = "project-example"
+  iam = {
+    "roles/editor" = [      
+      "serviceAccount:${module.project.service_accounts.cloud_services}"
+    ]
+  }
+}
+```
+
+And the last practical application of the principle which we show here is crossing project boundaries to support specific functionality, as in the two examples below that support Shared VPC in the `project` module.
+
+Host-based management, typically used where absolute control over service project attachment is required:
 
 ```hcl
 module "project" {
@@ -211,7 +251,7 @@ module "project" {
 }
 ```
 
-Service-based attachment, more common and typically used to delegate service project attachment at project creation, possibly from a project factory (we use this in FAST).
+Service-based attachment, more common and typically used to delegate service project attachment at project creation, possibly from a project factory.
 
 ```hcl
 module "project" {
@@ -225,21 +265,122 @@ module "project" {
 }
 ```
 
-Mention outputs and use project service accounts as an example
-
 #### Design compact variable spaces
 
-Aaa
+Designing variable spaces is one of the most complex operations to get right, as they are the main entrypoint through which users consume modules, examples and FAST stages. We always strive to **design small variable spaces by leveraging objects and implementing defaults** so that users can quickly produce highly legible code.
+
+One of many examples of this approach comes from disk support in the `compute-vm` module, where preset defaults allow quick VM management with very few lines of code, and optional variables allow progressively complicating code when more control is needed.
+
+This brings up an instance with a 10GB PD baanced boot disk using a Debian 11 image, and is generally a good default when a quick VM is needed for experimantation.
+
+```hcl
+module "simple-vm-example" {
+  source     = "./modules/compute-vm"
+  project_id = var.project_id
+  zone     = "europe-west1-b"
+  name       = "test"
+}
+```
+
+Changing boot disks defaults is of course possible, and adds some verbosity to the simple example above as you need to specify all of them.
+
+```hcl
+module "simple-vm-example" {
+  source     = "./modules/compute-vm"
+  project_id = var.project_id
+  zone     = "europe-west1-b"
+  name       = "test"
+  boot_disk = {
+    image = "projects/debian-cloud/global/images/family/cos-97-lts"
+    type = "pd-balanced"
+    size = 10
+  }
+}
+```
+
+Where this results in objets with too many attributes, we usually split in required and optional by adding a second level, as in this example adding extra disks to the VM where `attached_disks[].options` is an object type and can be set to null if not needed.
+
+```hcl
+module "simple-vm-example" {
+  source     = "./modules/compute-vm"
+  project_id = var.project_id
+  zone     = "europe-west1-b"
+  name       = "test"
+  attached_disks = [
+    { name="data", size =10, source=null, source_type=null, options = null }
+  ]
+}
+```
+
+Whenever options are not passed like in the example above, we typically infer their values from a defaults variable which can be customized when using defaults across several items. In the following example instead of specifying regional PD options for both disks, we set their options to `null` and change the defaults used for all disks.
+
+```hcl
+module "simple-vm-example" {
+  source     = "./modules/compute-vm"
+  project_id = var.project_id
+  zone     = "europe-west1-b"
+  name       = "test"
+  attached_disk_defaults = {
+    auto_delete = false
+    mode = "READ_WRITE"
+    replica_zone = "europe-west1-c"
+    type = "pd-balanced"
+  }
+  attached_disks = [
+    { name="data1", size =10, source=null, source_type=null, options = null },
+    { name="data2", size =10, source=null, source_type=null, options = null }
+  ]
+}
+```
 
 #### Depend outputs on internal resources
 
-One important consequence of this approach is a much reduced need for explicit dependency declarations when combining modules, as modules' outputs already have dependencies in place on relevant internal resources.
+We mentioned this principle when discussing encapsulation above but it's worth repating it explicitly: **set explicit dependencies in outputs so consumers will wait for full resource configuration**.
 
-As an example, users can safely reference the project module's `project_id` output from other modules, knowing that the dependency tree for project configurations (service activation, IAM, etc.) has already been defined inside the module itself.
+As an example, users can safely reference the project module's `project_id` output from other modules, knowing that the dependency tree for project configurations (service activation, IAM, etc.) has already been defined inside the module itself. In this particular example the output is also interpolated instead of derived from the resource, so as to avoid issues when used in `for_each` keys.
+
+```hcl
+output "project_id" {
+  description = "Project id."
+  value       = "${local.prefix}${var.name}"
+  depends_on = [
+    google_project.project,
+    data.google_project.project,
+    google_project_organization_policy.boolean,
+    google_project_organization_policy.list,
+    google_project_service.project_services,
+    google_compute_shared_vpc_service_project.service_projects,
+    google_project_iam_member.shared_vpc_host_robots,
+    google_kms_crypto_key_iam_member.service_identity_cmek,
+    google_project_service_identity.servicenetworking,
+    google_project_iam_member.servicenetworking
+  ]
+}
+```
 
 #### Why we don't use random strings in names
 
-Mention prefix
+This is more a convention than a design principle, but it's still important enough to be mentioned here: we **never use random resources for naming** and instead rely on an optional `prefix` variable which is implemented in most modules.
+
+This matches actual use where naming is a key requirement that needs to integrate with company-wide CMDBs and naming schemes used on-prem or in other clouds, and usually is formed by concatenating progressively more specific tokens (something like `myco-gcp-dev-net-hub-0`).
+
+Our approach supports easy implementation of company-specific policies and good readability, while still allowing a fairly compact way of ensuring unique resources have unique names.
+
+```hcl
+# prefix = "foo-gcp-dev"
+
+module "project" {
+  source = "./modules/project"
+  name   = "net-host-0"
+  prefix = var.prefix
+}
+
+module "project" {
+  source = "./modules/project"
+  name   = "net-svc-0"
+  prefix = var.prefix
+}
+```
 
 ### FAST stage design
 
