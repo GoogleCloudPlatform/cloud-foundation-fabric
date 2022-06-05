@@ -535,8 +535,65 @@ locals {
 
 ### Interacting with checks, tests and tools
 
+Our modules are designed for composition and live in a monorepo together with several end-to-end examples, so it was inevitable that over time we found ways of ensuring that a change does not break consumers.
+
+Our tests exercise most the code in the repo including documentation examples, and leverages the [tftest Python library](https://pypi.org/project/tftest/) we developed and independently published on PyPi.
+
+Automated workflows run checks on PRs to ensure all tests pass, together with a few other controls that ensure code is linted, documentation reflects variables and outputs files, etc.
+
+The following sections describe how interact with the above, and how to leverage some of the small utilities contained in this repo.
+
 #### Python environment setup
 
+All our tests and tools use Python, this section show you how to bring up an environment with the correct dependencies installed.
+
+First, follow the [official guide](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/) so that you have a working virtual environment and `pip` installed.
+
+Once you have created and activated a virtual environment, install the dependencies we use for testing and tools.
+
+```bash
+pip install -r tests/requirements.txt
+pip install -r tools/requirements.txt
+```
+
 #### Automated checks on PRs
+
+We run two GitHub workflows on PRs:
+
+- `.github/workflows/linting.yml`
+- `.github/workflows/tests.yml`
+
+The linting workflow tests:
+
+- that the correct copyright boilerplate is present in all files, using `tools/check_boilerplate.py`
+- that all Teraform code is linted via `terraform fmt`
+- that all README files have up to date outputs, variables, and files (where relevant) tables, via `tools/check_documentation.py`
+- that all links in README files are syntactically correct and valid if internal, via `tools/check_links.py`
+- that resource names used in FAST stages stay within a length limit, via `tools/check_names.py`
+- that all Python code has been formatted with the correct `yapf` style
+
+You can run those checks individually on your code to address any error before sending a PR, all you need to do is run the same command used in the workflow file from within your virtual environment. To run documentation tests for example if you changed the `project` module:
+
+```bash
+./tools/check_documentation.py modules/project
+```
+
+Our tools generally support a `--help` switch, so you can also use them for other purposes:
+
+```bash
+/tools/check_documentation.py --help
+Usage: check_documentation.py [OPTIONS] [DIRS]...
+
+  Cycle through modules and ensure READMEs are up-to-date.
+
+Options:
+  -x, --exclude-file TEXT
+  --files / --no-files
+  --show-diffs / --no-show-diffs
+  --show-extra / --no-show-extra
+  --help                          Show this message and exit.
+```
+
+The test workflow runs test suites in parallel. Refer to the next section for more details on runing and writing tests.
 
 #### Using and writing tests
