@@ -597,3 +597,63 @@ Options:
 The test workflow runs test suites in parallel. Refer to the next section for more details on runing and writing tests.
 
 #### Using and writing tests
+
+Our testing approach follows a simple philosophy: we mainly test to ensure code works, and it does not break due to changes to dependencies (modules) or provider resources.
+
+This makes testing very simple, as most of the times a successful `terraform plan` run in a test case is enough. We only write more specialized tests when we need to check the output of complex transformations in `for` loops.
+
+As our testing needs are very simple, we also wanted to reduce the friction required to write new tests as much as possible: our tests are written and Python, and use `pytest` which is a de-facto standard and allows writing simple functions as test units, and leveraging simple pytest fixtures to reduce verbosity.
+
+The last piece of our testing framework is our `tftest` library, which wraps the Terraform executable and returns familiar data structures for most commands.
+
+##### Testing end to end examples
+
+Putting it all together, here is how an end-to-end example test works.
+
+Each example is a Python module in its own directory, and a Terraform fixture that calls the example as a module:
+
+```bash
+tests/examples/cloud_operations/iam_delegated_role_grants/
+├── fixture
+│   ├── main.tf
+│   └── variables.tf
+├── __init__.py
+└── test_plan.py
+```
+
+One point of note is that the folder contains a Python module, so any dash needs to be replaced with underscores to make it importable. The actual test in the `test_plan.py` file looks like this:
+
+```python
+def test_resources(e2e_plan_runner):
+  "Test that plan works and the numbers of resources is as expected."
+  modules, resources = e2e_plan_runner()
+  assert len(modules) == 6
+  assert len(resources) == 18
+```
+
+It uses the pytest `e2e_plan_runner` fixture, which assumes a Terraform test setup is present in the `fixture` folder alongside the test file, runs `plan` on it, and returns the number of modules and resources.
+
+The Terraform fixture is a single block that runs the whole example as a module, and a handful of variables that can be used to test different configurations (not used above so they could be replaced with static strings).
+
+```hcl
+module "test" {
+  source         = "../../../../../examples/cloud-operations/asset-inventory-feed-remediation"
+  project_create = var.project_create
+  project_id     = var.project_id
+}
+```
+
+You can run this test as part of or entire suite of tests, the examples suite, or individually:
+
+```bash
+# run all tests
+pytest
+# only run example tests
+pytest tests/examples
+# only run this example tests
+pytest tests/examples/cloud_operations/iam_delegated_role_grants/
+# only run a single unit
+pytest tests/examples/cloud_operations/iam_delegated_role_grants/test_plan.py::test_resources
+```
+
+##### Testing modules
