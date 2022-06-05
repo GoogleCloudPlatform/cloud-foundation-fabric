@@ -631,7 +631,7 @@ def test_resources(e2e_plan_runner):
   assert len(resources) == 18
 ```
 
-It uses the pytest `e2e_plan_runner` fixture, which assumes a Terraform test setup is present in the `fixture` folder alongside the test file, runs `plan` on it, and returns the number of modules and resources.
+It uses our pytest `e2e_plan_runner` fixture, which assumes a Terraform test setup is present in the `fixture` folder alongside the test file, runs `plan` on it, and returns the number of modules and resources.
 
 The Terraform fixture is a single block that runs the whole example as a module, and a handful of variables that can be used to test different configurations (not used above so they could be replaced with static strings).
 
@@ -657,3 +657,65 @@ pytest tests/examples/cloud_operations/iam_delegated_role_grants/test_plan.py::t
 ```
 
 ##### Testing modules
+
+The same approach used above can also be used for modules testing when a simple plan is enough to validate code. When specific features need to be tested though, the `plan_runner` pytest fixture can be used so that plan resources are returned for inspection.
+
+The following example from the `project` module leverages variables in the Terraform fixture to define which module resources are returned from plan.
+
+```python
+def test_iam(plan_runner):
+  "Test IAM bindings."
+  iam = (
+      '{"roles/owner" = ["user:one@example.org"],'
+      '"roles/viewer" = ["user:two@example.org", "user:three@example.org"]}'
+  )
+  _, resources = plan_runner(iam=iam)
+  roles = dict((r['values']['role'], r['values']['members'])
+               for r in resources if r['type'] == 'google_project_iam_binding')
+  assert roles == {
+      'roles/owner': ['user:one@example.org'],
+      'roles/viewer': ['user:three@example.org', 'user:two@example.org']}
+```
+
+#### Testing documentation examples
+
+Most of our documentation examples are also tested via the `doc_examples` test suite. To enable an example for testing just use the special `tftest` comment as the last line in the test, listing the number of modules and resources tested.
+
+A few preset variables are available for use, as you can see in this example from the `dns` module documentation.
+
+```hcl
+module "private-dns" {
+  source          = "./modules/dns"
+  project_id      = "myproject"
+  type            = "private"
+  name            = "test-example"
+  domain          = "test.example."
+  client_networks = [var.vpc.self_link]
+  recordsets = {
+    "A localhost" = { ttl = 300, records = ["127.0.0.1"] }
+  }
+}
+# tftest modules=1 resources=2
+```
+
+#### Fabric tools
+
+The main tool you will interact with in development is `tfdoc`, used to generate file, output and variable tables in README documents.
+
+By default, `tfdoc` expects the path to a folder as its argument, and will parse variables and outputs files contained in it and embed generated tables in its README file.
+
+Embedding uses two special HTML comments to mark the place where tables will be inserted, and one optional HTML comment to enable optional features like file table generation or extra labels for variables, so that workflow checks will compare with a properly generated version:
+
+```html
+<!-- the following comment turns on optional features -->
+<!-- TFDOC OPTS files:1 show_extra:1 -->
+<!-- BEGIN TFDOC -->
+<!-- everyting between the two tags will be replaced -->
+<!-- END TFDOC -->
+```
+
+When generating the files table, a special annotation can be used to fill in the file description in Terraform files:
+
+```hcl
+# tfdoc:file:description Networking stage resources.
+```
