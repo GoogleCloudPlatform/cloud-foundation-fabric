@@ -189,7 +189,7 @@ vpc_sc_access_levels = {
   onprem = {
     combining_function = null,
     conditions = [{
-      ip_subnetworks = ["10.0.0.0/24", "10.0.0.1/24"],
+      ip_subnetworks = ["101.101.101.0/24"],
       members = null, negate = null,
       regions = null, required_access_levels = null
     }]
