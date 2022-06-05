@@ -288,9 +288,9 @@ Changing boot disks defaults is of course possible, and adds some verbosity to t
 module "simple-vm-example" {
   source     = "./modules/compute-vm"
   project_id = var.project_id
-  zone     = "europe-west1-b"
+  zone       = "europe-west1-b"
   name       = "test"
-  boot_disk = {
+  boot_disk  = {
     image = "projects/debian-cloud/global/images/family/cos-97-lts"
     type = "pd-balanced"
     size = 10
@@ -298,16 +298,16 @@ module "simple-vm-example" {
 }
 ```
 
-Where this results in objets with too many attributes, we usually split in required and optional by adding a second level, as in this example adding extra disks to the VM where `attached_disks[].options` is an object type and can be set to null if not needed.
+Where this results in objects with too many attributes, we usually split attributes between required and optional by adding a second level, as in this example where VM `attached_disks[].options` contains less used attributes and can be set to null if not needed.
 
 ```hcl
 module "simple-vm-example" {
   source     = "./modules/compute-vm"
   project_id = var.project_id
-  zone     = "europe-west1-b"
+  zone       = "europe-west1-b"
   name       = "test"
   attached_disks = [
-    { name="data", size =10, source=null, source_type=null, options = null }
+    { name="data", size=10, source=null, source_type=null, options=null }
   ]
 }
 ```
@@ -318,7 +318,7 @@ Whenever options are not passed like in the example above, we typically infer th
 module "simple-vm-example" {
   source     = "./modules/compute-vm"
   project_id = var.project_id
-  zone     = "europe-west1-b"
+  zone       = "europe-west1-b"
   name       = "test"
   attached_disk_defaults = {
     auto_delete = false
@@ -327,8 +327,8 @@ module "simple-vm-example" {
     type = "pd-balanced"
   }
   attached_disks = [
-    { name="data1", size =10, source=null, source_type=null, options = null },
-    { name="data2", size =10, source=null, source_type=null, options = null }
+    { name="data1", size=10, source=null, source_type=null, options=null },
+    { name="data2", size=10, source=null, source_type=null, options=null }
   ]
 }
 ```
@@ -384,17 +384,154 @@ module "project" {
 
 ### FAST stage design
 
+Due to their increased complexity and larger scope, FAST stages have some additional design considerations. Please refer to the [FAST documentation](./fast/) for additional context.
+
+#### Standalone usage
+
+Each FAST stage should be designed so that it can optionally be used in isolation, with no dependencies on anything other than its variables.
+
+#### Stage interfaces
+
+Stages are designeded based on the concept of ["contracts" or interfaces](./fast/README.md#contracts-and-stages), which define what information is produced by one stage via outputs, which is then consumed by a following stage via variables.
+
+Interfaces are compact in size (few variables) but broad in scope (variables typically leverage maps), so that consumers can declare in variable types only the bits of information they are interested in.
+
+Resource management stages for example only export three map variables: `folder_ids`, `service_accounts`, `tag_names`. Those variables contain values for all the relevant created resources, but consumers are only interested in some of them and only need to declare those: networking stages for example only declare the folder and service account names they need.
+
+```hcl
+variable "folder_ids" {
+  # tfdoc:variable:source 01-resman
+  description = "Folders to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created."
+  type = object({
+    networking      = string
+    networking-dev  = string
+    networking-prod = string
+  })
+}
+```
+
+When creating a new stage or adding a feature to an existing one, always try to leverage the existing interfaces when some of the information you produce needs to cross the stage boundary, so as to minimize impact on producers and consumers lofically dependent on your stage.
+
+#### Output files
+
+FAST stages rely on generated provider and tfvars files, as an easy convenience that allows automated setup and passing of contract values between stages.
+
+Files are written to a special GCS bucket in order to be leveraged by both humans and CI/CD workflows, and optionally also written to local storage if needed.
+
+When editing or adding a stage, you are expected to maintain the output files system so any new contact output is also present in files.
+
 ### Style guide reference
 
 Similarly to our design principles above, we evolved a set of style conventions that we try to standardize on to make code more legible and uniform. This reduces friction when coding, and ideally moves us closer to the goal of using IaC as live documentation.
 
 #### Group logical resources or modules in separate files
 
+Over time and as our codebase got larger, we switched away from the canonical `main.tf`/`outputs.tf`/`variables.tf` triplet of file names and now tend to prefer descriptive file names that refer to the logical entities (resources or modules) they contain.
+
+We still use traditional names for variables and outputs, but tend to use main only for top-level locals or resources (e.g. the project resource in the `project` module), or for those resources that would end up in very small files.
+
+While some older modules and examples are still using three files, we are slowly bringing all code up to date and any new development should use descriptive file names.
+
+Our `tfdoc` tool has a way of generating a documentation table that maps file names with descriptions and the actual resources and modules they contain, refer to the last section for details on how to activate the mode in your code.
+
 #### Enforce line lengths
+
+We enforce line length for legibility, and adopted the 79 characters convention from other languages for simplicity.
+
+This convention is relaxed for long resource attribute names (even though in some cases you might want to alias them to short local names), and for variable and output descriptions.
+
+In most other cases you should break long lines, especially in `for` and `for_each` loops. Some of the conventions we adopted:
+
+- break after opening and before closing braces/parenthesis
+- break after a colon in `for` loops
+- add extra parenthesis and breaks to split long ternary operators
+- break right before the `:` and `?` in long ternary operators
+
+This is one of many examples.
+
+```hcl
+locals {
+  sink_bindings = {
+    for type in ["bigquery", "pubsub", "logging", "storage"] :
+    type => {
+      for name, sink in var.logging_sinks :
+      name => sink if sink.iam && sink.type == type
+    }
+  }
+}
+```
 
 #### Use alphabetical order for locals, outputs, variables
 
+We enforce alphabetical ordering for locals, outputs and variables and have a check that prevents PRs using the wrong order to be merged.
+
+Additionally, we adopt a convention similar to the one used in Python for private class members, so that locals only referenced from inside the same locals block are prefixed by `_`, as in the example shown in the next section.
+
+```hcl
+locals {
+  # compute the host project IAM bindings for this project's service identities
+  _svpc_service_iam = flatten([
+    for role, services in local._svpc_service_identity_iam : [
+      for service in services : { role = role, service = service }
+    ]
+  ])
+  _svpc_service_identity_iam = coalesce(
+    local.svpc_service_config.service_identity_iam, {}
+  )
+  svpc_host_config = {
+    enabled = coalesce(
+      try(var.shared_vpc_host_config.enabled, null), false
+    )
+    service_projects = coalesce(
+      try(var.shared_vpc_host_config.service_projects, null), []
+    )
+  }
+  svpc_service_config = coalesce(var.shared_vpc_service_config, {
+    host_project = null, service_identity_iam = {}
+  })
+  svpc_service_iam = {
+    for b in local._svpc_service_iam : "${b.role}:${b.service}" => b
+  }
+}
+```
+
 #### Move complex transformations to locals
+
+When data needs to be transformed in a `for` or `for_each` loop, we prefer moving the relevant code to `locals` so that module or resource attribute values have as little line noise as possible. This is especially relevant for complex transformations, which should be split in multiple smaller stages with descriptive names.
+
+This is an example from the `project` module. Notice how we're breaking two of the rules above: line length in the last local so as to use the same formatting as the previous one, and alphabetical ordering so the order follows the transformation steps. Our rules are meant to improve legibility, so when they don't feel free to ignore them (and sometimes we'll push back anyway).
+
+```hcl
+locals {
+  _group_iam_roles = distinct(flatten(values(var.group_iam)))
+  _group_iam = {
+    for r in local._group_iam_roles : r => [
+      for k, v in var.group_iam : "group:${k}" if try(index(v, r), null) != null
+    ]
+  }
+  _iam_additive_pairs = flatten([
+    for role, members in var.iam_additive : [
+      for member in members : { role = role, member = member }
+    ]
+  ])
+  _iam_additive_member_pairs = flatten([
+    for member, roles in var.iam_additive_members : [
+      for role in roles : { role = role, member = member }
+    ]
+  ])
+  iam = {
+    for role in distinct(concat(keys(var.iam), keys(local._group_iam))) :
+    role => concat(
+      try(var.iam[role], []),
+      try(local._group_iam[role], [])
+    )
+  }
+  iam_additive = {
+    for pair in concat(local._iam_additive_pairs, local._iam_additive_member_pairs) :
+    "${pair.role}-${pair.member}" => pair
+  }
+}
+```
 
 ### Interacting with checks, tests and tools
 
