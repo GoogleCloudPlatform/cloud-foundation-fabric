@@ -1,6 +1,6 @@
 # Contributing
 
-Contributors are the engine that keeps Fabric alive so if you were or are planning to be active in this repo, a huge thanks from all of us for dedicating your time!!!
+Contributors are the engine that keeps Fabric alive so if you were or are planning to be active in this repo, a huge thanks from all of us for dedicating your time!!! If you have free time and are looking for suggestions on what to work on, our issue tracker generally has a few pending feature requests: you are welcome to send a PR for any of them.
 
 ## Table of Contents
 
@@ -106,15 +106,15 @@ This is probably our oldest and most important design principle. When designing 
 
 It's a radically different approach from designing by product or feature, where boundaries are drawn around a single GCP functionality.
 
-Our modules -- and in a much broader sense our FAST stages -- are all designed to encapsulate a set of functionally related resources and their configurations, so that from the outside (when using the module) they can be read as a single block, and referenced as a single unit trusting that they will be fully operational.
+Our modules -- and in a much broader sense our FAST stages -- are all designed to encapsulate a set of functionally related resources and their configurations. This achieves two main goals: dramatically improve readabiity by using a single block of code -- a module declaration -- for a logical component; and allowing consumers to consume outputs without having to worry about the dependency chain, as all related resources and configurations are managed internally.
 
-Taking IAM as an example, we do not offer a single module to centrally manage role bindings (product/feature based approach) but implement it instead in each module since:
+Taking IAM as an example, we do not offer a single module to centrally manage role bindings (the product/feature based approach) but implement it instead in each module (the logical component approach) since:
 
 - users understand IAM as an integral part of each resource, having bindings in the same context improves readability and speeds up changes
 - resources are not fully usable before their relevant IAM bindings have been applied, encapsulating those allows referencing fully configured resources from the outside
-- managing resources and their bindings in a single module makes code more portable with less dependencies
+- managing resources and their bindings in a single module makes code more portable with fewer dependencies
 
-The most extensive examples of this approach are our resource management modules. The `project` modules for example encapsulates resources for project, project services, logging sinks, project-level IAM bindings, Shared VPC enablement and attachment, metrics scope, budget alerts, organization policies, and several other functionality in a single place.
+The most extensive examples of this approach are our resource management modules. For instance, the `project` module encapsulates resources for project, project services, logging sinks, project-level IAM bindings, Shared VPC enablement and attachment, metrics scope, budget alerts, organization policies, and several other functionalities in a single place.
 
 A typical project module code block is easy to read as it centralizes all the information in one place, and allows consumers referencing it to trust that it will behave as a fully configured unit.
 
@@ -207,7 +207,7 @@ module "project" {
 }
 ```
 
-One other practical consequence of this design principle is supporting common use cases via interfaces that don't directly map to a resource. The example below shows support for enabling service identities access to KMS keys used for CMEK encryption in the `project` module: there's no specific resource for service identities, but it's such a frequent use case that we support them directly in the module.
+Another practical consequence of this design principle is supporting common use cases via interfaces that don't directly map to a resource. The example below shows support for enabling service identities access to KMS keys used for CMEK encryption in the `project` module: there's no specific resource for service identities, but it's such a frequent use case that we support them directly in the module.
 
 ```hcl
 module "project" {
@@ -267,11 +267,11 @@ module "project" {
 
 #### Design compact variable spaces
 
-Designing variable spaces is one of the most complex operations to get right, as they are the main entrypoint through which users consume modules, examples and FAST stages. We always strive to **design small variable spaces by leveraging objects and implementing defaults** so that users can quickly produce highly legible code.
+Designing variable spaces is one of the most complex aspects to get right, as they are the main entry point through which users consume modules, examples and FAST stages. We always strive to **design small variable spaces by leveraging objects and implementing defaults** so that users can quickly produce highly readable code.
 
-One of many examples of this approach comes from disk support in the `compute-vm` module, where preset defaults allow quick VM management with very few lines of code, and optional variables allow progressively complicating code when more control is needed.
+One of many examples of this approach comes from disk support in the `compute-vm` module, where preset defaults allow quick VM management with very few lines of code, and optional variables allow progressively expanding the code when more control is needed.
 
-This brings up an instance with a 10GB PD baanced boot disk using a Debian 11 image, and is generally a good default when a quick VM is needed for experimantation.
+This brings up an instance with a 10GB PD balanced boot disk using a Debian 11 image, and is generally a good default when a quick VM is needed for experimentation.
 
 ```hcl
 module "simple-vm-example" {
@@ -360,7 +360,7 @@ output "project_id" {
 
 #### Why we don't use random strings in names
 
-This is more a convention than a design principle, but it's still important enough to be mentioned here: we **never use random resources for naming** and instead rely on an optional `prefix` variable which is implemented in most modules.
+This is more a convention than a design principle, but it's still important enough to be mentioned here: we **never use random strings for resource naming** and instead rely on an optional `prefix` variable which is implemented in most modules.
 
 This matches actual use where naming is a key requirement that needs to integrate with company-wide CMDBs and naming schemes used on-prem or in other clouds, and usually is formed by concatenating progressively more specific tokens (something like `myco-gcp-dev-net-hub-0`).
 
@@ -396,7 +396,7 @@ Stages are designed based on the concept of ["contracts" or interfaces](./fast/R
 
 Interfaces are compact in size (few variables) but broad in scope (variables typically leverage maps), so that consumers can declare in variable types only the bits of information they are interested in.
 
-Resource management stages for example only export three map variables: `folder_ids`, `service_accounts`, `tag_names`. Those variables contain values for all the relevant created resources, but consumers are only interested in some of them and only need to declare those: networking stages for example only declare the folder and service account names they need.
+For example, resource management stages only export three map variables: `folder_ids`, `service_accounts`, `tag_names`. Those variables contain values for all the relevant resources created, but consumers are only interested in some of them and only need to declare those: networking stages for example only declare the folder and service account names they need.
 
 ```hcl
 variable "folder_ids" {
@@ -461,9 +461,9 @@ locals {
 }
 ```
 
-#### Use alphabetical order for locals, outputs, variables
+#### Use alphabetical order for outputs and variables
 
-We enforce alphabetical ordering for locals, outputs and variables and have a check that prevents PRs using the wrong order to be merged.
+We enforce alphabetical ordering for outputs and variables and have a check that prevents PRs using the wrong order to be merged. We also tend to prefer alphabetical ordering in locals when there's no implied logical grouping (e.g. for successive data transformations).
 
 Additionally, we adopt a convention similar to the one used in Python for private class members, so that locals only referenced from inside the same locals block are prefixed by `_`, as in the example shown in the next section.
 
@@ -537,7 +537,7 @@ locals {
 
 Our modules are designed for composition and live in a monorepo together with several end-to-end examples, so it was inevitable that over time we found ways of ensuring that a change does not break consumers.
 
-Our tests exercise most the code in the repo including documentation examples, and leverages the [tftest Python library](https://pypi.org/project/tftest/) we developed and independently published on PyPi.
+Our tests exercise most of the code in the repo including documentation examples, and leverages the [tftest Python library](https://pypi.org/project/tftest/) we developed and independently published on PyPi.
 
 Automated workflows run checks on PRs to ensure all tests pass, together with a few other controls that ensure code is linted, documentation reflects variables and outputs files, etc.
 
@@ -545,7 +545,7 @@ The following sections describe how interact with the above, and how to leverage
 
 #### Python environment setup
 
-All our tests and tools use Python, this section show you how to bring up an environment with the correct dependencies installed.
+All our tests and tools use Python, this section shows you how to bring up an environment with the correct dependencies installed.
 
 First, follow the [official guide](https://packaging.python.org/en/latest/guides/installing-using-pip-and-virtual-environments/) so that you have a working virtual environment and `pip` installed.
 
@@ -594,13 +594,13 @@ Options:
   --help                          Show this message and exit.
 ```
 
-The test workflow runs test suites in parallel. Refer to the next section for more details on runing and writing tests.
+The test workflow runs test suites in parallel. Refer to the next section for more details on running and writing tests.
 
 #### Using and writing tests
 
 Our testing approach follows a simple philosophy: we mainly test to ensure code works, and it does not break due to changes to dependencies (modules) or provider resources.
 
-This makes testing very simple, as most of the times a successful `terraform plan` run in a test case is enough. We only write more specialized tests when we need to check the output of complex transformations in `for` loops.
+This makes testing very simple, as a successful `terraform plan` run in a test case is often enough. We only write more specialized tests when we need to check the output of complex transformations in `for` loops.
 
 As our testing needs are very simple, we also wanted to reduce the friction required to write new tests as much as possible: our tests are written in Python, and use `pytest` which is a the-facto standard. We adopted this approach instead of others (Inspec/Kitchen, Terratest) as it allows writing simple functions as test units using Python which is simple and widely known.
 
@@ -704,14 +704,19 @@ The main tool you will interact with in development is `tfdoc`, used to generate
 
 By default, `tfdoc` expects the path to a folder as its argument, and will parse variables and outputs files contained in it and embed generated tables in its README file.
 
-Embedding uses two special HTML comments to mark the place where tables will be inserted, and one optional HTML comment to enable optional features like file table generation or extra labels for variables, so that workflow checks will compare with a properly generated version:
+You decide where the generated tables will be placed (or replaced if they already exist) via two special HTML comment tags, that mark the beginning and end of the space that will be managed by `tfdoc`.
 
 ```html
-<!-- the following comment turns on optional features -->
-<!-- TFDOC OPTS files:1 show_extra:1 -->
 <!-- BEGIN TFDOC -->
-<!-- everyting between the two tags will be replaced -->
+<!-- everything between these two tags will be managed by tfdoc -->
 <!-- END TFDOC -->
+```
+
+You can also set `tfdoc` options directly in a README file, so that a) you don't need to remember to pass the right options when running the tool, and b)  our automated workflow checks will know how to generate the right output.
+
+```html
+<!-- the following comment configures tfdoc options -->
+<!-- TFDOC OPTS files:1 show_extra:1 -->
 ```
 
 When generating the files table, a special annotation can be used to fill in the file description in Terraform files:
@@ -719,3 +724,5 @@ When generating the files table, a special annotation can be used to fill in the
 ```hcl
 # tfdoc:file:description Networking stage resources.
 ```
+
+The tool can also be run so that it prints the generated output on standard output instead of replacing in files. Run `tfdoc --help` to see all available options.
