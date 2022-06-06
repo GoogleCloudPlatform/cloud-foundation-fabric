@@ -392,7 +392,7 @@ Each FAST stage should be designed so that it can optionally be used in isolatio
 
 #### Stage interfaces
 
-Stages are designed based on the concept of ["contracts" or interfaces](./fast/README.md#contracts-and-stages), which define what information is produced by one stage via outputs, which is then consumed by a following stage via variables.
+Stages are designed based on the concept of ["contracts" or interfaces](./fast/README.md#contracts-and-stages), which define what information is produced by one stage via outputs, which is then consumed by subsequent stages via variables.
 
 Interfaces are compact in size (few variables) but broad in scope (variables typically leverage maps), so that consumers can declare in variable types only the bits of information they are interested in.
 
