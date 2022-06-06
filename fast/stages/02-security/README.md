@@ -186,18 +186,19 @@ Below an example for an access level that allows unconditional ingress from a se
 # terraform.tfvars
 
 vpc_sc_access_levels = {
-  on-prem = {
+  onprem = {
+    combining_function = null,
     conditions = [{
-      ip_subnetworks = ["10.0.0.0/24", "10.0.0.1/24"],
-      combining_function = null, members = null, negate = null,
+      ip_subnetworks = ["101.101.101.0/24"],
+      members = null, negate = null,
       regions = null, required_access_levels = null
     }]
   }
 }
 vpc_sc_perimeter_access_levels = {
   dev     = null
-  landing = ["on-prem"]
-  prod    = ["on-prem"]
+  landing = ["onprem"]
+  prod    = ["onprem"]
 }
 ```
 
