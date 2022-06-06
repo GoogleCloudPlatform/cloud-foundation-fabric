@@ -20,6 +20,9 @@ All notable changes to this project will be documented in this file.
 - refactor Hub and Spoke with VPN example
 - fix tfdoc parsing on newllines in outputs
 - fix subnet factory example in vpc module README
+- fix condition in subnet factory flow logs
+- added new example on GLB and Cloud Armor
+- revamped and expanded Contributing Guide
 
 **FAST**
 
