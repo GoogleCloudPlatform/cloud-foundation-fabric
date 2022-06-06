@@ -1,10 +1,10 @@
 # Changelog
 
-## [16.0.0] - 2022-06-06
+## Unreleased
 
 All notable changes to this project will be documented in this file.
 
-## Unreleased
+## [16.0.0] - 2022-06-06
 
 - add support for [Spot VMs](https://cloud.google.com/compute/docs/instances/spot) to `gke-nodepool` module
 - **incompatible change** add support for [Spot VMs](https://cloud.google.com/compute/docs/instances/spot) to `compute-vm` module
