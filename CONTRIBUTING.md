@@ -24,7 +24,7 @@ If you feel like tackling it directly via a PR check out the quick developer wor
 
 ## Quick developer workflow
 
-For small or first time issues the simplest way is to fork our repo, but if you are a regular contributor or are developing a large addition, ask us to be added directly to repo so you can work on local branches, it makes life easier for both of us!
+For small or first time issues the simplest way is to fork our repo, but if you are a regular contributor or are developing a large addition, ask us to be added directly to the repo so you can work on local branches, it makes life easier for both of us!
 
 Fork or clone and go through the usual edit/add/commit cycle until your code is ready.
 
@@ -36,7 +36,7 @@ git add -A
 git commit -m "changed ham so that spam and eggs"
 ```
 
-Once you are satisfied, make sure Terraform linting is ok. If you changed Python code you need to conform to our standard linting, see the last section for details on how to configure it.
+Once you are satisfied with your changes, make sure Terraform linting is ok. If you changed Python code you need to conform to our standard linting, see the last section for details on how to configure it.
 
 ```bash
 terraform fmt -recursive
@@ -75,7 +75,7 @@ Once everything looks good, add/commit any pending changes then push and open a 
 
 Over the years we have assembled a specific set of design principles and style conventions that allow for better readability and make understanding and changing code more predictable.
 
-We expect your code to conform to those princinples in both design and style, so that it integrates well with the rest of Fabric/FAST without having to go through long and painful PR cycles before it can be merged.
+We expect your code to conform to those principles in both design and style, so that it integrates well with the rest of Fabric/FAST without having to go through long and painful PR cycles before it can be merged.
 
 The sections below describe our design approach and style conventions, with specific mentions of FAST stages where their larger scope requires additional rules.
 
@@ -392,7 +392,7 @@ Each FAST stage should be designed so that it can optionally be used in isolatio
 
 #### Stage interfaces
 
-Stages are designeded based on the concept of ["contracts" or interfaces](./fast/README.md#contracts-and-stages), which define what information is produced by one stage via outputs, which is then consumed by a following stage via variables.
+Stages are designed based on the concept of ["contracts" or interfaces](./fast/README.md#contracts-and-stages), which define what information is produced by one stage via outputs, which is then consumed by a following stage via variables.
 
 Interfaces are compact in size (few variables) but broad in scope (variables typically leverage maps), so that consumers can declare in variable types only the bits of information they are interested in.
 
@@ -602,7 +602,7 @@ Our testing approach follows a simple philosophy: we mainly test to ensure code 
 
 This makes testing very simple, as most of the times a successful `terraform plan` run in a test case is enough. We only write more specialized tests when we need to check the output of complex transformations in `for` loops.
 
-As our testing needs are very simple, we also wanted to reduce the friction required to write new tests as much as possible: our tests are written and Python, and use `pytest` which is a de-facto standard and allows writing simple functions as test units, and leveraging simple pytest fixtures to reduce verbosity.
+As our testing needs are very simple, we also wanted to reduce the friction required to write new tests as much as possible: our tests are written in Python, and use `pytest` which is a the-facto standard. We adopted this approach instead of others (Inspec/Kitchen, Terratest) as it allows writing simple functions as test units using Python which is simple and widely known.
 
 The last piece of our testing framework is our `tftest` library, which wraps the Terraform executable and returns familiar data structures for most commands.
 
@@ -658,7 +658,7 @@ pytest tests/examples/cloud_operations/iam_delegated_role_grants/test_plan.py::t
 
 ##### Testing modules
 
-The same approach used above can also be used for modules testing when a simple plan is enough to validate code. When specific features need to be tested though, the `plan_runner` pytest fixture can be used so that plan resources are returned for inspection.
+The same approach used above can also be used for testing modules when a simple plan is enough to validate code. When specific features need to be tested though, the `plan_runner` pytest fixture can be used so that plan resources are returned for inspection.
 
 The following example from the `project` module leverages variables in the Terraform fixture to define which module resources are returned from plan.
 
@@ -679,9 +679,9 @@ def test_iam(plan_runner):
 
 #### Testing documentation examples
 
-Most of our documentation examples are also tested via the `doc_examples` test suite. To enable an example for testing just use the special `tftest` comment as the last line in the test, listing the number of modules and resources tested.
+Most of our documentation examples are also tested via the `doc_examples` test suite. To enable an example for testing just use the special `tftest` comment as the last line in the example, listing the number of modules and resources tested.
 
-A few preset variables are available for use, as you can see in this example from the `dns` module documentation.
+A few preset variables are available for use, as shown in this example from the `dns` module documentation.
 
 ```hcl
 module "private-dns" {
