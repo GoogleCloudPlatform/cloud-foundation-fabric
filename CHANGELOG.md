@@ -1,5 +1,7 @@
 # Changelog
 
+## [16.0.0] - 2022-06-06
+
 All notable changes to this project will be documented in this file.
 
 ## Unreleased
@@ -509,7 +511,8 @@ All notable changes to this project will be documented in this file.
 - merge development branch with suite of new modules and end-to-end examples
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v15.0.0...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v16.0.0...HEAD
+[16.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v15.0.0...v16.0.0
 [15.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v14.0.0...v15.0.0
 [14.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v13.0.0...v14.0.0
 [13.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v12.0.0...v13.0.0
