@@ -602,9 +602,9 @@ Our testing approach follows a simple philosophy: we mainly test to ensure code 
 
 This makes testing very simple, as a successful `terraform plan` run in a test case is often enough. We only write more specialized tests when we need to check the output of complex transformations in `for` loops.
 
-As our testing needs are very simple, we also wanted to reduce the friction required to write new tests as much as possible: our tests are written in Python, and use `pytest` which is a the-facto standard. We adopted this approach instead of others (Inspec/Kitchen, Terratest) as it allows writing simple functions as test units using Python which is simple and widely known.
+As our testing needs are very simple, we also wanted to reduce the friction required to write new tests as much as possible: our tests are written in Python, and use `pytest` which is the standard for the language. We adopted this approach instead of others (Inspec/Kitchen, Terratest) as it allows writing simple functions as test units using Python which is simple and widely known.
 
-The last piece of our testing framework is our `tftest` library, which wraps the Terraform executable and returns familiar data structures for most commands.
+The last piece of our testing framework is our [`tftest`](https://pypi.org/project/tftest/) library, which wraps the Terraform executable and returns familiar data structures for most commands.
 
 ##### Testing end to end examples
 
