@@ -106,7 +106,7 @@ This is probably our oldest and most important design principle. When designing 
 
 It's a radically different approach from designing by product or feature, where boundaries are drawn around a single GCP functionality.
 
-Our modules -- and in a much broader sense our FAST stages -- are all designed to encapsulate a set of functionally related resources and their configurations. This achieves two main goals: to dramatically improve readabiity by using a single block of code -- a module declaration -- for a logical component; and to allow consumers to rely outputs without having to worry about the dependency chain, as all related resources and configurations are managed internally.
+Our modules -- and in a much broader sense our FAST stages -- are all designed to encapsulate a set of functionally related resources and their configurations. This achieves two main goals: to dramatically improve readabiity by using a single block of code -- a module declaration -- for a logical component; and to allow consumers to rely on outputs without having to worry about the dependency chain, as all related resources and configurations are managed internally in the module or stage.
 
 Taking IAM as an example, we do not offer a single module to centrally manage role bindings (the product/feature based approach) but implement it instead in each module (the logical component approach) since:
 
