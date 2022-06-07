@@ -44,7 +44,7 @@ locals {
   }
 }
 
-# source repositories
+# source repo
 
 resource "google_sourcerepo_repository" "default" {
   for_each = {
@@ -53,6 +53,8 @@ resource "google_sourcerepo_repository" "default" {
   project = module.automation-project.project_id
   name    = each.value.name
 }
+
+# source repo trigger
 
 resource "google_cloudbuild_trigger" "bootstrap" {
   for_each = {
@@ -71,6 +73,8 @@ resource "google_cloudbuild_trigger" "bootstrap" {
   filename        = ".cloudbuild/workflow.yaml"
 }
 
+# source repo role to allow control to whoever can impersonate the automation SA
+
 resource "google_sourcerepo_repository_iam_member" "admin" {
   for_each = {
     for k, v in google_sourcerepo_repository.default : k => v.name
@@ -85,6 +89,8 @@ resource "google_sourcerepo_repository_iam_member" "admin" {
   )
 }
 
+# source repo role to allow read access to the CI/CD SA
+
 resource "google_sourcerepo_repository_iam_member" "reader" {
   for_each = {
     for k, v in google_sourcerepo_repository.default : k => v.name
@@ -95,7 +101,7 @@ resource "google_sourcerepo_repository_iam_member" "reader" {
   member     = module.automation-tf-cicd-sa[each.key].iam_email
 }
 
-# SAs used via workload identity federation to impersonate automation SAs
+# SAs used by CI/CD workflows to impersonate automation SAs
 
 module "automation-tf-cicd-sa" {
   source      = "../../../modules/iam-service-account"
@@ -106,7 +112,9 @@ module "automation-tf-cicd-sa" {
   prefix      = local.prefix
   iam = (
     each.value.type == "sourcerepo"
+    # used directly from the cloud build trigger for source repos
     ? {}
+    # impersonated via workload identity federation for external repos
     : {
       "roles/iam.workloadIdentityUser" = [
         each.value.branch == null
