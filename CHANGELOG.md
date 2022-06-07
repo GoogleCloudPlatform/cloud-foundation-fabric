@@ -1,8 +1,10 @@
 # Changelog
 
+## Unreleased
+
 All notable changes to this project will be documented in this file.
 
-## Unreleased
+## [16.0.0] - 2022-06-06
 
 - add support for [Spot VMs](https://cloud.google.com/compute/docs/instances/spot) to `gke-nodepool` module
 - **incompatible change** add support for [Spot VMs](https://cloud.google.com/compute/docs/instances/spot) to `compute-vm` module
@@ -20,6 +22,9 @@ All notable changes to this project will be documented in this file.
 - refactor Hub and Spoke with VPN example
 - fix tfdoc parsing on newllines in outputs
 - fix subnet factory example in vpc module README
+- fix condition in subnet factory flow logs
+- added new example on GLB and Cloud Armor
+- revamped and expanded Contributing Guide
 
 **FAST**
 
@@ -506,7 +511,8 @@ All notable changes to this project will be documented in this file.
 - merge development branch with suite of new modules and end-to-end examples
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v15.0.0...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v16.0.0...HEAD
+[16.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v15.0.0...v16.0.0
 [15.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v14.0.0...v15.0.0
 [14.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v13.0.0...v14.0.0
 [13.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v12.0.0...v13.0.0

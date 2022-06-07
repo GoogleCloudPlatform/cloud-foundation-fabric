@@ -63,13 +63,15 @@ locals {
       ]
       # use additive to support cross-org roles for billing
       "roles/iam.organizationRoleAdmin" = [
+        # uncomment if roles/owner is removed to organization admins
+        # local.groups.gcp-organization-admins,
         local.groups_iam.gcp-security-admins,
         module.automation-tf-bootstrap-sa.iam_email
       ]
       "roles/orgpolicy.policyAdmin" = [
-        module.automation-tf-resman-sa.iam_email,
+        local.groups_iam.gcp-organization-admins,
         local.groups_iam.gcp-security-admins,
-        local.groups_iam.gcp-organization-admins
+        module.automation-tf-resman-sa.iam_email
       ]
     },
     local.billing_org ? {
@@ -126,6 +128,9 @@ module "organization" {
       "roles/compute.osAdminLogin",
       "roles/compute.osLoginExternalUser",
       "roles/owner",
+      # granted via additive roles
+      # roles/iam.organizationRoleAdmin
+      # roles/orgpolicy.policyAdmin
       "roles/resourcemanager.folderAdmin",
       "roles/resourcemanager.organizationAdmin",
       "roles/resourcemanager.projectCreator",
