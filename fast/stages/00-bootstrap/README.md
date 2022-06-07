@@ -385,6 +385,8 @@ cicd_repositories = {
 }
 ```
 
+The `type` attribute can be set to one of the supported repository types: `github`, `gitlab`, or `sourcerepo`.
+
 Once the stage is applied the generated output files will contain pre-configured workflow files for each repository, that will use Workload Identity Federation via a dedicated service account for each repository to impersonate the automation service account for the stage.
 
 The remaining configuration is manual, as it regards the repositories themselves:
@@ -396,6 +398,10 @@ The remaining configuration is manual, as it regards the repositories themselves
       - create a key pair
       - create a [deploy key](https://docs.github.com/en/developers/overview/managing-deploy-keys#deploy-keys) in the modules repository with the public key
       - create a `CICD_MODULES_KEY` secret with the private key in each of the repositories that need to access modules
+    - for Gitlab
+      - TODO
+    - for Source Repositories
+      - assign the reader role to the CI/CD service accounts
 - create one repository for each stage
   - clone and populate them with the stage source
   - edit the modules source to match your modules repository
@@ -405,6 +411,7 @@ The remaining configuration is manual, as it regards the repositories themselves
   - copy the generated workflow file for the stage from the GCS output files bucket or from the local clone if enabled
     - for GitHub, place it in a `.github/workflows` folder in the repository root
     - for Gitlab, rename it to `.gitlab-ci.yml` and place it in the repository root
+    - for Source Repositories, place it in `.cloudbuild/workflow.yaml`
 
 <!-- TFDOC OPTS files:1 show_extra:1 -->
 <!-- BEGIN TFDOC -->

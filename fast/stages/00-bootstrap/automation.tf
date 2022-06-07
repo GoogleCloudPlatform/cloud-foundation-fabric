@@ -44,6 +44,7 @@ module "automation-project" {
     "roles/iam.workloadIdentityPoolAdmin" = [
       module.automation-tf-resman-sa.iam_email
     ]
+    # allow SAs used in Cloud Build triggers to log
     "roles/logging.logWriter" = [
       for k, v in module.automation-tf-cicd-sa : v.iam_email
     ]
@@ -105,6 +106,7 @@ module "automation-tf-bootstrap-sa" {
   name        = "bootstrap-0"
   description = "Terraform organization bootstrap service account."
   prefix      = local.prefix
+  # allow SA used by CI/CD workflow to impersonate this SA
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
       try(module.automation-tf-cicd-sa["bootstrap"].iam_email, null)
@@ -135,6 +137,7 @@ module "automation-tf-resman-sa" {
   name        = "resman-0"
   description = "Terraform stage 1 resman service account."
   prefix      = local.prefix
+  # allow SA used by CI/CD workflow to impersonate this SA
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
       try(module.automation-tf-cicd-sa["resman"].iam_email, null)

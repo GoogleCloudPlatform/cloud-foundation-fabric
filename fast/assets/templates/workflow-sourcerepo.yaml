@@ -14,48 +14,82 @@
 
 steps:
   - name: alpine:3
-    id: tf-prepare
+    id: tf-download
     entrypoint: sh
     args:
-      - -c
-      - |
-        mkdir -p /builder/home/.local/bin &&
-        wget https://releases.hashicorp.com/terraform/$${_TF_VERSION}/terraform_$${_TF_VERSION}_linux_amd64.zip &&
-        unzip terraform_$${_TF_VERSION}_linux_amd64.zip -d /builder/home/.local/bin &&
-        rm terraform_$${_TF_VERSION}_linux_amd64.zip &&
-        chmod 755 /builder/home/.local/bin/terraform
+    - -eEuo
+    - pipefail
+    - -c
+    - |-
+      mkdir -p /builder/home/.local/bin
+      wget https://releases.hashicorp.com/terraform/$${_TF_VERSION}/terraform_$${_TF_VERSION}_linux_amd64.zip
+      unzip terraform_$${_TF_VERSION}_linux_amd64.zip -d /builder/home/.local/bin
+      rm terraform_$${_TF_VERSION}_linux_amd64.zip
+      chmod 755 /builder/home/.local/bin/terraform
   - name: alpine:3
     id: tf-check-format
     entrypoint: sh
     args:
-      - -c
-      - |
-        terraform fmt -recursive -check /workspace/
-    env:
-      - PATH=/usr/local/bin:/usr/bin:/bin:/builder/home/.local/bin
+    - -eEuo
+    - pipefail
+    - -c
+    - |-
+      terraform fmt -recursive -check /workspace/
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk:alpine
-    id: tf-config
+    id: tf-files
     entrypoint: bash
     args:
-      - -c
-      - |
-        gsutil cp \
-          gs://$${_FAST_OUTPUTS_BUCKET}/providers/$${_TF_PROVIDERS_FILE} ./ &&
-        gsutil cp -r \
-          gs://$${_FAST_OUTPUTS_BUCKET}/tfvars ./ &&
-        for f in $${_TF_VAR_FILES}; do
-          ln -s tfvars/$f ./
-        done
+    - -eEuo
+    - pipefail
+    - -c
+    - |-
+      /google-cloud-sdk/bin/gsutil cp \
+        gs://$${_FAST_OUTPUTS_BUCKET}/providers/$${_TF_PROVIDERS_FILE} ./
+      /google-cloud-sdk/bin/gsutil cp -r \
+        gs://$${_FAST_OUTPUTS_BUCKET}/tfvars ./
+      for f in $${_TF_VAR_FILES}; do
+        ln -s tfvars/$f ./
+      done
   - name: alpine:3
     id: tf-init
     entrypoint: sh
     args:
-      - -c
-      - |
-        terraform init -no-color
-    env:
-      - PATH=/usr/local/bin:/usr/bin:/bin:/builder/home/.local/bin
+    - -eEuo
+    - pipefail
+    - -c
+    - |-
+      terraform init -no-color
+  - name: alpine:3
+    id: tf-check-validate
+    entrypoint: sh
+    args:
+    - -eEuo
+    - pipefail
+    - -c
+    - |-
+      terraform validate -no-color
+  - name: alpine:3
+    id: tf-plan
+    entrypoint: sh
+    args:
+    - -eEuo
+    - pipefail
+    - -c
+    - |-
+      terraform plan -no-color -input=false -out plan.out
+    # store artifact and ask for approval here if needed
+  - name: alpine:3
+    id: tf-apply
+    entrypoint: sh
+    args:
+    - -eEuo
+    - pipefail
+    - -c
+    - |-
+      terraform apply -no-color -input=false -auto-approve plan.out
 options:
+  env:
+    - PATH=/usr/local/bin:/usr/bin:/bin:/builder/home/.local/bin
   logging: CLOUD_LOGGING_ONLY
 substitutions:
   _FAST_OUTPUTS_BUCKET: ${outputs_bucket}
