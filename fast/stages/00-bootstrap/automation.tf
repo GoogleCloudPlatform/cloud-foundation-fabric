@@ -44,6 +44,9 @@ module "automation-project" {
     "roles/iam.workloadIdentityPoolAdmin" = [
       module.automation-tf-resman-sa.iam_email
     ]
+    "roles/logging.logWriter" = [
+      for k, v in module.automation-tf-cicd-sa : v.iam_email
+    ]
     "roles/storage.admin" = [
       module.automation-tf-resman-sa.iam_email
     ]
@@ -55,6 +58,7 @@ module "automation-project" {
     "bigquerystorage.googleapis.com",
     "billingbudgets.googleapis.com",
     "cloudbilling.googleapis.com",
+    "cloudbuild.googleapis.com",
     "cloudkms.googleapis.com",
     "cloudresourcemanager.googleapis.com",
     "container.googleapis.com",
@@ -65,6 +69,7 @@ module "automation-project" {
     "pubsub.googleapis.com",
     "servicenetworking.googleapis.com",
     "serviceusage.googleapis.com",
+    "sourcerepo.googleapis.com",
     "stackdriver.googleapis.com",
     "storage-component.googleapis.com",
     "storage.googleapis.com",
@@ -72,7 +77,7 @@ module "automation-project" {
   ]
 }
 
-# outputt files bucket
+# output files bucket
 
 module "automation-tf-output-gcs" {
   source     = "../../../modules/gcs"

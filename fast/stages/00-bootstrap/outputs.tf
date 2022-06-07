@@ -15,34 +15,22 @@
  */
 
 locals {
-  _cicd_workflow_attrs = {
-    bootstrap = {
-      service_account = try(
-        module.automation-tf-cicd-sa["bootstrap"].email, null
-      )
-      tf_providers_file = "00-bootstrap-providers.tf"
-      tf_var_files      = []
-    }
-    resman = {
-      service_account = try(
-        module.automation-tf-cicd-sa["resman"].email, null
-      )
-      tf_providers_file = "01-resman-providers.tf"
-      tf_var_files = [
-        "00-bootstrap.auto.tfvars.json",
-        "globals.auto.tfvars.json"
-      ]
-    }
-  }
   _tpl_providers = "${path.module}/templates/providers.tf.tpl"
+  # render CI/CD workflow templates
   cicd_workflows = {
     for k, v in local.cicd_repositories : k => templatefile(
-      "${path.module}/templates/workflow-${v.type}.yaml",
-      merge(local._cicd_workflow_attrs[k], {
-        identity_provider = local.wif_providers[v["identity_provider"]].name
-        outputs_bucket    = module.automation-tf-output-gcs.name
+      "${path.module}/templates/workflow-${v.type}.yaml", {
+        identity_provider = try(
+          local.wif_providers[v["identity_provider"]].name, ""
+        )
+        outputs_bucket = module.automation-tf-output-gcs.name
+        service_account = try(
+          module.automation-tf-cicd-sa[k].email, ""
+        )
         stage_name        = k
-      })
+        tf_providers_file = local.cicd_workflow_providers[k]
+        tf_var_files      = local.cicd_workflow_var_files[k]
+      }
     )
   }
   custom_roles = {
@@ -106,8 +94,8 @@ output "cicd_repositories" {
     for k, v in local.cicd_repositories : k => {
       branch          = v.branch
       name            = v.name
-      provider        = local.wif_providers[v.identity_provider].name
-      service_account = module.automation-tf-cicd-sa[k].email
+      provider        = try(local.wif_providers[v.identity_provider].name, null)
+      service_account = try(module.automation-tf-cicd-sa[k].email, null)
     }
   }
 }
