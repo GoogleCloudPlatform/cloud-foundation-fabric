@@ -31,16 +31,16 @@ locals {
       fileexists("${path.module}/templates/workflow-${v.type}.yaml")
     )
   }
+  cicd_workflow_providers = {
+    bootstrap = "00-bootstrap-providers.tf"
+    resman    = "01-resman-providers.tf"
+  }
   cicd_workflow_var_files = {
     bootstrap = []
     resman = [
       "00-bootstrap.auto.tfvars.json",
       "globals.auto.tfvars.json"
     ]
-  }
-  cicd_workflow_providers = {
-    bootstrap = "00-bootstrap-providers.tf"
-    resman    = "01-resman-providers.tf"
   }
 }
 
@@ -132,6 +132,9 @@ module "automation-tf-cicd-sa" {
       ]
     }
   )
+  iam_project_roles = {
+    (module.automation-project.project_id) = ["roles/logging.logWriter"]
+  }
   iam_storage_roles = {
     (module.automation-tf-output-gcs.name) = ["roles/storage.objectViewer"]
   }

@@ -44,10 +44,6 @@ module "automation-project" {
     "roles/iam.workloadIdentityPoolAdmin" = [
       module.automation-tf-resman-sa.iam_email
     ]
-    # allow SAs used in Cloud Build triggers to log
-    "roles/logging.logWriter" = [
-      for k, v in module.automation-tf-cicd-sa : v.iam_email
-    ]
     "roles/storage.admin" = [
       module.automation-tf-resman-sa.iam_email
     ]

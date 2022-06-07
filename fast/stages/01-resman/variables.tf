@@ -87,22 +87,29 @@ variable "cicd_repositories" {
   validation {
     condition = alltrue([
       for k, v in coalesce(var.cicd_repositories, {}) :
-      v == null || (
-        try(v.name, null) != null
-        &&
-        try(v.identity_provider, null) != null
-      )
+      v == null || try(v.name, null) != null
     ])
-    error_message = "Non-null repositories need non-null name and providers."
+    error_message = "Non-null repositories need a non-null name."
   }
   validation {
     condition = alltrue([
       for k, v in coalesce(var.cicd_repositories, {}) :
       v == null || (
-        contains(["gitlab", "github"], coalesce(try(v.type, null), "null"))
+        try(v.identity_provider, null) != null
+        ||
+        try(v.type, null) == "sourcerepo"
       )
     ])
-    error_message = "Invalid repository type, supported types: 'github' or 'gitlab'."
+    error_message = "Non-null repositories need a non-null provider unless type is 'sourcerepo'."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in coalesce(var.cicd_repositories, {}) :
+      v == null || (
+        contains(["github", "gitlab", "sourcerepo"], coalesce(try(v.type, null), "null"))
+      )
+    ])
+    error_message = "Invalid repository type, supported types: 'github' 'gitlab' or 'sourcerepo'."
   }
 }
 

@@ -29,7 +29,6 @@ variable "bootstrap_user" {
 }
 
 variable "cicd_repositories" {
-  # TODO: edit description once we add support for Cloud Build (null provider)
   description = "CI/CD repository configuration. Identity providers reference keys in the `federated_identity_providers` variable. Set to null to disable, or set individual repositories to null if not needed."
   type = object({
     bootstrap = object({
