@@ -14,68 +14,45 @@
  * limitations under the License.
  */
 
-# source repo
+# source repository
 
-resource "google_sourcerepo_repository" "networking" {
+module "branch-network-cicd-repo" {
+  source = "../../../modules/source-repository"
   for_each = (
     try(local.cicd_repositories.networking.type, null) == "sourcerepo"
-    ? { 0 = 0 }
+    ? { 0 = local.cicd_repositories.networking }
     : {}
   )
-  project = var.automation.project_id
-  name    = local.cicd_repositories.networking.name
+  project_id = var.automation.project_id
+  name       = each.value.name
+  iam = {
+    "roles/source.admin"  = [module.branch-network-sa.iam_email]
+    "roles/source.reader" = [module.branch-network-sa-cicd.0.iam_email]
+  }
+  triggers = {
+    fast-02-networking = {
+      filename        = ".cloudbuild/workflow.yaml"
+      included_files  = ["**/*tf", ".cloudbuild/workflow.yaml"]
+      service_account = module.branch-network-sa.id
+      substitutions   = {}
+      template = {
+        project_id  = null
+        branch_name = each.value.branch
+        repo_name   = each.value.name
+        tag_name    = null
+      }
+    }
+  }
 }
 
-# source repo trigger
-
-resource "google_cloudbuild_trigger" "networking" {
-  for_each = {
-    for k, v in google_sourcerepo_repository.networking : k => v.name
-  }
-  project        = var.automation.project_id
-  name           = "fast-02-networking"
-  included_files = ["**/*tf", "**/*yaml", "**/*json", ".cloudbuild/workflow.yaml"]
-  trigger_template {
-    project_id  = var.automation.project_id
-    branch_name = local.cicd_repositories.networking.branch
-    repo_name   = each.value.name
-  }
-  service_account = module.branch-network-sa-cicd.0.id
-  filename        = ".cloudbuild/workflow.yaml"
-}
-
-# source repo role to allow control to whoever can impersonate the automation SA
-
-resource "google_sourcerepo_repository_iam_member" "networking_admin" {
-  for_each = {
-    for k, v in google_sourcerepo_repository.networking : k => v.name
-  }
-  project    = var.automation.project_id
-  repository = each.value
-  role       = "roles/source.admin"
-  member     = module.branch-network-sa.iam_email
-}
-
-# source repo role to allow read access to the CI/CD SA
-
-resource "google_sourcerepo_repository_iam_member" "networking_reader" {
-  for_each = {
-    for k, v in google_sourcerepo_repository.networking : k => v.name
-  }
-  project    = var.automation.project_id
-  repository = each.value
-  role       = "roles/source.reader"
-  member     = module.branch-network-sa-cicd.0.iam_email
-}
-
-# SAs used by CI/CD workflows to impersonate automation SAs
+# SA used by CI/CD workflows to impersonate automation SAs
 
 module "branch-network-sa-cicd" {
   source = "../../../modules/iam-service-account"
   for_each = (
-    lookup(local.cicd_repositories, "networking", null) == null
-    ? {}
-    : { 0 = local.cicd_repositories.networking }
+    try(local.cicd_repositories.networking.name, null) != null
+    ? { 0 = local.cicd_repositories.networking }
+    : {}
   )
   project_id  = var.automation.project_id
   name        = "prod-resman-net-1"

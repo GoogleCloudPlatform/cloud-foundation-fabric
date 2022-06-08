@@ -46,7 +46,7 @@ locals {
 
 # source repository
 
-module "source_repository" {
+module "automation-tf-cicd-repo" {
   source = "../../../modules/source-repository"
   for_each = {
     for k, v in local.cicd_repositories : k => v if v.type == "sourcerepo"

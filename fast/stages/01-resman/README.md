@@ -158,15 +158,15 @@ Due to its simplicity, this stage lends itself easily to customizations: adding 
 | name | description | modules | resources |
 |---|---|---|---|
 | [billing.tf](./billing.tf) | Billing resources for external billing use cases. | <code>organization</code> | <code>google_billing_account_iam_member</code> |
-| [branch-data-platform-cicd.tf](./branch-data-platform-cicd.tf) | None | <code>iam-service-account</code> | <code>google_cloudbuild_trigger</code> · <code>google_sourcerepo_repository</code> · <code>google_sourcerepo_repository_iam_member</code> |
 | [branch-data-platform.tf](./branch-data-platform.tf) | Data Platform stages resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
-| [branch-networking-cicd.tf](./branch-networking-cicd.tf) | None | <code>iam-service-account</code> | <code>google_cloudbuild_trigger</code> · <code>google_sourcerepo_repository</code> · <code>google_sourcerepo_repository_iam_member</code> |
 | [branch-networking.tf](./branch-networking.tf) | Networking stage resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
 | [branch-sandbox.tf](./branch-sandbox.tf) | Sandbox stage resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
-| [branch-security-cicd.tf](./branch-security-cicd.tf) | None | <code>iam-service-account</code> | <code>google_cloudbuild_trigger</code> · <code>google_sourcerepo_repository</code> · <code>google_sourcerepo_repository_iam_member</code> |
 | [branch-security.tf](./branch-security.tf) | Security stage resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
-| [branch-teams-cicd.tf](./branch-teams-cicd.tf) | None | <code>iam-service-account</code> | <code>google_cloudbuild_trigger</code> · <code>google_sourcerepo_repository</code> · <code>google_sourcerepo_repository_iam_member</code> |
 | [branch-teams.tf](./branch-teams.tf) | Team stage resources. | <code>folder</code> · <code>gcs</code> · <code>iam-service-account</code> |  |
+| [cicd-data-platform.tf](./cicd-data-platform.tf) | None | <code>iam-service-account</code> · <code>source-repository</code> |  |
+| [cicd-networking.tf](./cicd-networking.tf) | None | <code>iam-service-account</code> · <code>source-repository</code> |  |
+| [cicd-security.tf](./cicd-security.tf) | None | <code>iam-service-account</code> · <code>source-repository</code> |  |
+| [cicd-teams.tf](./cicd-teams.tf) | None | <code>iam-service-account</code> · <code>source-repository</code> |  |
 | [main.tf](./main.tf) | Module-level locals and resources. |  |  |
 | [organization.tf](./organization.tf) | Organization policies. | <code>organization</code> | <code>google_organization_iam_member</code> |
 | [outputs-files.tf](./outputs-files.tf) | Output files persistence to local filesystem. |  | <code>local_file</code> |
