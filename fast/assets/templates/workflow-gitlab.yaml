@@ -14,7 +14,7 @@
 
 default:
   image:
-    name: registry.gitlab.com/gitlab-org/terraform-images/releases/1.1 
+    name: registry.gitlab.com/gitlab-org/terraform-images/releases/1.1
 
 variables:
   FAST_OUTPUTS_BUCKET: ${outputs_bucket}
@@ -116,7 +116,7 @@ tf-init:
     - gcp-auth
 
 # Terraform Validate
-tf-validate: 
+tf-validate:
   stage: tf-validate
   script:
     - |
@@ -134,17 +134,17 @@ tf-validate:
 # Terraform Plan
 tf-plan:
   stage: tf-plan
-    script:
-    - |
-      ssh-agent -a $SSH_AUTH_SOCK > /dev/null
-      echo "$CICD_MODULES_KEY" | tr -d '\r' | ssh-add - > /dev/null
-      mkdir -p ~/.ssh
-      ssh-keyscan -H 'gitlab.com' >> ~/.ssh/known_hosts
-      ssh-keyscan gitlab.com | sort -u - ~/.ssh/known_hosts -o ~/.ssh/known_hosts
-      cd "$${TF_ROOT}"
-      cp -R .tf-setup/. .
-      gitlab-terraform plan
-      gitlab-terraform plan-json
+  script:
+  - |
+    ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+    echo "$CICD_MODULES_KEY" | tr -d '\r' | ssh-add - > /dev/null
+    mkdir -p ~/.ssh
+    ssh-keyscan -H 'gitlab.com' >> ~/.ssh/known_hosts
+    ssh-keyscan gitlab.com | sort -u - ~/.ssh/known_hosts -o ~/.ssh/known_hosts
+    cd "$${TF_ROOT}"
+    cp -R .tf-setup/. .
+    gitlab-terraform plan
+    gitlab-terraform plan-json
   dependencies:
     - gcp-auth
   artifacts:

@@ -24,11 +24,33 @@ locals {
     if(
       v != null
       &&
-      contains(keys(local.identity_providers), try(v.identity_provider, ""))
+      (
+        try(v.type, null) == "sourcerepo"
+        ||
+        contains(
+          keys(local.identity_providers),
+          coalesce(try(v.identity_provider, null), ":")
+        )
+      )
       &&
       fileexists("${path.module}/templates/workflow-${try(v.type, "")}.yaml")
     )
   }
+  cicd_workflow_var_files = {
+    stage_2 = [
+      "00-bootstrap.auto.tfvars.json",
+      "01-resman.auto.tfvars.json",
+      "globals.auto.tfvars.json"
+    ]
+    stage_3 = [
+      "00-bootstrap.auto.tfvars.json",
+      "01-resman.auto.tfvars.json",
+      "globals.auto.tfvars.json",
+      "02-networking.auto.tfvars.json",
+      "02-security.auto.tfvars.json"
+    ]
+  }
+
   custom_roles = coalesce(var.custom_roles, {})
   groups = {
     for k, v in var.groups :

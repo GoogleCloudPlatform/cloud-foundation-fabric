@@ -98,7 +98,7 @@ jobs:
         name: Terraform plan
         continue-on-error: true
         run: |
-          terraform plan -out ../plan.out -no-color
+          terraform plan -input=false -out ../plan.out -no-color
 
       - id: tf-apply
         if: github.event.pull_request.merged == true

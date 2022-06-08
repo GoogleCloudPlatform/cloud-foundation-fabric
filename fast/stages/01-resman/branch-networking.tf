@@ -107,37 +107,3 @@ module "branch-network-gcs" {
     "roles/storage.objectAdmin" = [module.branch-network-sa.iam_email]
   }
 }
-
-# ci/cd service account
-
-module "branch-network-sa-cicd" {
-  source = "../../../modules/iam-service-account"
-  for_each = (
-    lookup(local.cicd_repositories, "networking", null) == null
-    ? {}
-    : { 0 = local.cicd_repositories.networking }
-  )
-  project_id  = var.automation.project_id
-  name        = "prod-resman-net-1"
-  description = "Terraform CI/CD stage 2 networking service account."
-  prefix      = var.prefix
-  iam = {
-    "roles/iam.workloadIdentityUser" = [
-      each.value.branch == null
-      ? format(
-        local.identity_providers[each.value.identity_provider].principalset_tpl,
-        var.automation.federated_identity_pool,
-        each.value.name
-      )
-      : format(
-        local.identity_providers[each.value.identity_provider].principal_tpl,
-        var.automation.federated_identity_pool,
-        each.value.name,
-        each.value.branch
-      )
-    ]
-  }
-  iam_storage_roles = {
-    (var.automation.outputs_bucket) = ["roles/storage.objectViewer"]
-  }
-}

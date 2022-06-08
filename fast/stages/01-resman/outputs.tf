@@ -15,51 +15,37 @@
  */
 
 locals {
-  _cicd_tf_var_files = {
-    stage_2 = [
-      "00-bootstrap.auto.tfvars.json",
-      "01-resman.auto.tfvars.json",
-      "globals.auto.tfvars.json"
-    ]
-    stage_3 = [
-      "00-bootstrap.auto.tfvars.json",
-      "01-resman.auto.tfvars.json",
-      "globals.auto.tfvars.json",
-      "02-networking.auto.tfvars.json",
-      "02-security.auto.tfvars.json"
-    ]
-  }
   _tpl_providers = "${path.module}/templates/providers.tf.tpl"
   cicd_workflow_attrs = {
     data_platform_dev = {
       service_account   = try(module.branch-dp-dev-sa-cicd.0.email, null)
       tf_providers_file = "03-data-platform-dev-providers.tf"
-      tf_var_files      = local._cicd_tf_var_files.stage_3
+      tf_var_files      = local.cicd_workflow_var_files.stage_3
     }
     data_platform_prod = {
       service_account   = try(module.branch-dp-prod-sa-cicd.0.email, null)
       tf_providers_file = "03-data-platform-prod-providers.tf"
-      tf_var_files      = local._cicd_tf_var_files.stage_3
+      tf_var_files      = local.cicd_workflow_var_files.stage_3
     }
     networking = {
       service_account   = try(module.branch-network-sa-cicd.0.email, null)
       tf_providers_file = "02-networking-providers.tf"
-      tf_var_files      = local._cicd_tf_var_files.stage_2
+      tf_var_files      = local.cicd_workflow_var_files.stage_2
     }
     project_factory_dev = {
-      service_account   = try(module.branch-pf-dev-sa-cicd.0.email, null)
+      service_account   = try(module.branch-teams-dev-pf-sa-cicd.0.email, null)
       tf_providers_file = "03-project-factory-dev-providers.tf"
-      tf_var_files      = local._cicd_tf_var_files.stage_3
+      tf_var_files      = local.cicd_workflow_var_files.stage_3
     }
     project_factory_prod = {
-      service_account   = try(module.branch-pf-prod-sa-cicd.0.email, null)
+      service_account   = try(module.branch-teams-prod-pf-sa-cicd.0.email, null)
       tf_providers_file = "03-project-factory-prod-providers.tf"
-      tf_var_files      = local._cicd_tf_var_files.stage_3
+      tf_var_files      = local.cicd_workflow_var_files.stage_3
     }
     security = {
       service_account   = try(module.branch-security-sa-cicd.0.email, null)
       tf_providers_file = "02-security-providers.tf"
-      tf_var_files      = local._cicd_tf_var_files.stage_2
+      tf_var_files      = local.cicd_workflow_var_files.stage_2
     }
   }
   cicd_workflows = {

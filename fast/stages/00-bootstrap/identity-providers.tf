@@ -35,6 +35,7 @@ locals {
       principal_tpl    = "principal://iam.googleapis.com/%s/subject/repo:%s:ref:refs/heads/%s"
       principalset_tpl = "principalSet://iam.googleapis.com/%s/attribute.repository/%s"
     }
+    # https://docs.gitlab.com/ee/ci/cloud_services/index.html#how-it-works
     gitlab = {
       attribute_mapping = {
         "google.subject"       = "assertion.sub"
