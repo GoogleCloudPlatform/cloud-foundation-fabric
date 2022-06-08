@@ -44,61 +44,39 @@ locals {
   }
 }
 
-# source repo
+# source repository
 
-resource "google_sourcerepo_repository" "default" {
+module "source_repository" {
+  source = "../../../modules/source-repository"
   for_each = {
     for k, v in local.cicd_repositories : k => v if v.type == "sourcerepo"
   }
-  project = module.automation-project.project_id
-  name    = each.value.name
-}
-
-# source repo trigger
-
-resource "google_cloudbuild_trigger" "bootstrap" {
-  for_each = {
-    for k, v in google_sourcerepo_repository.default : k => v.name
-    if k == "bootstrap"
+  project_id = module.automation-project.project_id
+  name       = each.value.name
+  iam = {
+    "roles/source.admin" = [
+      each.key == "bootstrap"
+      ? module.automation-tf-bootstrap-sa.iam_email
+      : module.automation-tf-resman-sa.iam_email
+    ]
+    "roles/source.reader" = [
+      module.automation-tf-cicd-sa[each.key].iam_email
+    ]
   }
-  project        = module.automation-project.project_id
-  name           = "fast-00-bootstrap"
-  included_files = ["**/*tf", ".cloudbuild/workflow.yaml"]
-  trigger_template {
-    project_id  = module.automation-project.project_id
-    branch_name = local.cicd_repositories["bootstrap"].branch
-    repo_name   = each.value
+  triggers = {
+    "fast-00-${each.key}" = {
+      filename        = ".cloudbuild/workflow.yaml"
+      included_files  = ["**/*tf", ".cloudbuild/workflow.yaml"]
+      service_account = module.automation-tf-cicd-sa[each.key].id
+      substitutions   = {}
+      template = {
+        project_id  = null
+        branch_name = each.value.branch
+        repo_name   = each.value.name
+        tag_name    = null
+      }
+    }
   }
-  service_account = module.automation-tf-cicd-sa[each.key].id
-  filename        = ".cloudbuild/workflow.yaml"
-}
-
-# source repo role to allow control to whoever can impersonate the automation SA
-
-resource "google_sourcerepo_repository_iam_member" "admin" {
-  for_each = {
-    for k, v in google_sourcerepo_repository.default : k => v.name
-  }
-  project    = module.automation-project.project_id
-  repository = each.value
-  role       = "roles/source.admin"
-  member = (
-    each.key == "bootstrap"
-    ? module.automation-tf-bootstrap-sa.iam_email
-    : module.automation-tf-resman-sa.iam_email
-  )
-}
-
-# source repo role to allow read access to the CI/CD SA
-
-resource "google_sourcerepo_repository_iam_member" "reader" {
-  for_each = {
-    for k, v in google_sourcerepo_repository.default : k => v.name
-  }
-  project    = module.automation-project.project_id
-  repository = each.value
-  role       = "roles/source.reader"
-  member     = module.automation-tf-cicd-sa[each.key].iam_email
 }
 
 # SAs used by CI/CD workflows to impersonate automation SAs
