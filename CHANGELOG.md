@@ -1,8 +1,16 @@
 # Changelog
 
+All notable changes to this project will be documented in this file.
+
 ## Unreleased
 
-All notable changes to this project will be documented in this file.
+- add support for IAM and Cloud Build triggers to source repository module
+- add `id` output to service account module
+
+**FAST**
+
+- add support for Cloud Source Repositories in stage 0 and 1 CI/CD
+- fix Gitlab workflow indentation
 
 ## [16.0.0] - 2022-06-06
 
