@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description CI/CD resources for the data platform branch.
+
 # source repositories
 
 module "branch-dp-dev-cicd-repo" {

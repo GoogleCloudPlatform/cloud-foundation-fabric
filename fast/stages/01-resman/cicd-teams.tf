@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description CI/CD resources for the teams branch.
+
 # source repositories
 
 module "branch-teams-dev-pf-cicd-repo" {

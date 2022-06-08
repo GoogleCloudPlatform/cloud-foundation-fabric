@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description CI/CD resources for the security branch.
+
 # source repository
 
 module "branch-security-cicd-repo" {
