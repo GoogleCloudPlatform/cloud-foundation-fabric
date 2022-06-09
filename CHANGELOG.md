@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 
 - add support for Cloud Source Repositories in stage 0 and 1 CI/CD
 - fix Gitlab workflow indentation
+- remove unsupported attributes and add supported ones to the Gitlab mapping used for Workload Identity Federation pools
 
 ## [16.0.0] - 2022-06-06
 
