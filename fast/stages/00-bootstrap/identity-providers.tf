@@ -38,11 +38,20 @@ locals {
     # https://docs.gitlab.com/ee/ci/cloud_services/index.html#how-it-works
     gitlab = {
       attribute_mapping = {
-        "google.subject"       = "assertion.sub"
-        "attribute.sub"        = "assertion.sub"
-        "attribute.actor"      = "assertion.actor"
-        "attribute.repository" = "assertion.project_path"
-        "attribute.ref"        = "assertion.ref"
+        "google.subject"                  = "assertion.sub"
+        "attribute.sub"                   = "assertion.sub"
+        "attribute.environment"           = "assertion.environment"
+        "attribute.environment_protected" = "assertion.environment_protected"
+        "attribute.namespace_id"          = "assertion.namespace_id"
+        "attribute.namespace_path"        = "assertion.namespace_path"
+        "attribute.pipeline_id"           = "assertion.pipeline_id"
+        "attribute.pipeline_source"       = "assertion.pipeline_source"
+        "attribute.project_id"            = "assertion.project_id"
+        "attribute.project_path"          = "assertion.project_path"
+        "attribute.repository"            = "assertion.project_path"
+        "attribute.ref"                   = "assertion.ref"
+        "attribute.ref_protected"         = "assertion.ref_protected"
+        "attribute.ref_type"              = "assertion.ref_type"
       }
       allowed_audiences = ["https://gitlab.com"]
       issuer_uri        = "https://gitlab.com"

@@ -349,13 +349,17 @@ The variable maps each provider's `issuer` attribute with the definitions in the
 
 Provider key names are used by the `cicd_repositories` variable to configure authentication for CI/CD repositories, and generally from your Terraform code whenever you need to configure IAM access or impersonation for federated identities.
 
-This is a sample configuration of a GitHub provider, the `attribute_condition` attribute can be set to null if needed:
+This is a sample configuration of a GitHub and a Gitlab provider, `attribute_condition` attribute can use any of the mapped attribute for the provider (refer to the `identity-providers.tf` file for the full list) or set to `null` if needed:
 
 ```hcl
 federated_identity_providers = {
   github-sample = {
     attribute_condition = "attribute.repository_owner==\"my-github-org\""
     issuer              = "github"
+  }
+  gitlab-sample = {
+    attribute_condition = "attribute.namespace_path==\"my-gitlab-org\""
+    issuer              = "gitlab"
   }
 }
 ```
