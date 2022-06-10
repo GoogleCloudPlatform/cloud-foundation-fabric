@@ -110,8 +110,8 @@ locals {
     { for k, v in var.log_sinks : k => module.log-export-gcs.0 if v.type == "storage" },
     # use separate pubsub topics and logging buckets for sinks with
     # destination `pubsub` and `logging`
-    { for k, v in module.log-export-pubsub : k => v },
-    { for k, v in module.log-export-logbucket : k => v }
+    module.log-export-pubsub,
+    module.log-export-logbucket
   )
 }
 
