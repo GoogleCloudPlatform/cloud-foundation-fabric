@@ -1,4 +1,4 @@
-# FAST deployment clean up
+# a FAST deployment clean up
 In case you require destroying FAST deployment in your organization, follow these steps. 
 
 Destruction goes in reverse order, from stage 3 to stage 0:
@@ -11,7 +11,7 @@ terraform destroy
 ```
 
 ## Stage 3 (GKE)
-Terraform refuses to delete empty GCS buckets and/or BigQuery datasets, so they need to be removed manually from tf state
+Terraform refuses to delete non empty GCS buckets and/or BigQuery datasets, so they need to be removed manually from tf state
 
 ```bash
 cd $FAST_PWD/03-project-factory/prod/
@@ -37,7 +37,7 @@ cd $FAST_PWD/02-networking-XXX/
 terraform destroy
 ```
 
-There's a minor glitch that can surface running terraform destroy, where the service project attachments to the Shared VPC will not get destroyed even with the relevant API call succeeding. We are investigating the issue, in the meantime just manually remove the attachment in the Cloud console or via the gcloud beta compute shared-vpc associated-projects remove command when terraform destroy fails, and then relaunch the command.
+There's a minor glitch that can surface running terraform destroy, where the service project attachments to the Shared VPC will not get destroyed even with the relevant API call succeeding. We are investigating the issue, in the meantime just manually remove the attachment in the Cloud console or via the ```gcloud beta compute shared-vpc associated-projects remove``` command when terraform destroy fails, and then relaunch the command.
 
 ## Stage 1 (Resource Management)
 Stage 1 is a little more complicated because of the GCS Buckets. By default terraform refuses to delete non-empty buckets, which is a good thing for your terraform state. However, it makes destruction a bit harder
