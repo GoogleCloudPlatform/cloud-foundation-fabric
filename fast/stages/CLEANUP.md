@@ -106,5 +106,5 @@ rm -i terraform.tfstate*
 ```
 
 In case you are willing to deploy FAST stages again, the following changes shall be done before:
-* Modify the [prefix](/00-bootstrap/variables.tf) variable to allow the deployment of resources that need unique names (eg, projects).
+* Modify the [prefix](00-bootstrap/variables.tf) variable to allow the deployment of resources that need unique names (eg, projects).
 * Modify the [custom_roles](00-bootstrap/variables.tf) variable to allow recently deleted custom roles to be created again.
