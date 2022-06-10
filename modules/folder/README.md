@@ -141,7 +141,7 @@ module "folder-sink" {
   logging_sinks = {
     warnings = {
       type             = "storage"
-      destination      = module.gcs.name
+      destination      = module.gcs.id
       filter           = "severity=WARNING"
       include_children = true
       exclusions       = {}

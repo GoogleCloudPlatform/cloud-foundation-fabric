@@ -132,7 +132,7 @@ module "branch-teams-dev-pf-sa" {
   prefix      = var.prefix
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
-      try(module.branch-pf-dev-sa-cicd.0.iam_email, null)
+      try(module.branch-teams-dev-pf-sa-cicd.0.iam_email, null)
     ])
   }
   iam_storage_roles = {
@@ -149,7 +149,7 @@ module "branch-teams-prod-pf-sa" {
   prefix      = var.prefix
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
-      try(module.branch-pf-prod-sa-cicd.0.iam_email, null)
+      try(module.branch-teams-prod-pf-sa-cicd.0.iam_email, null)
     ])
   }
   iam_storage_roles = {
@@ -178,69 +178,5 @@ module "branch-teams-prod-pf-gcs" {
   versioning = true
   iam = {
     "roles/storage.objectAdmin" = [module.branch-teams-prod-pf-sa.iam_email]
-  }
-}
-
-# project factory per-team environment CI/CD service accounts
-
-module "branch-pf-dev-sa-cicd" {
-  source = "../../../modules/iam-service-account"
-  for_each = (
-    lookup(local.cicd_repositories, "pf_dev", null) == null
-    ? {}
-    : { 0 = local.cicd_repositories.pf_dev }
-  )
-  project_id  = var.automation.project_id
-  name        = "dev-resman-pf-1"
-  description = "Terraform CI/CD project factory development service account."
-  prefix      = var.prefix
-  iam = {
-    "roles/iam.workloadIdentityUser" = [
-      each.value.branch == null
-      ? format(
-        local.identity_providers[each.value.identity_provider].principalset_tpl,
-        each.value.name
-      )
-      : format(
-        local.identity_providers[each.value.identity_provider].principal_tpl,
-        each.value.name,
-        each.value.branch
-      )
-    ]
-  }
-  iam_storage_roles = {
-    (var.automation.outputs_bucket) = ["roles/storage.objectViewer"]
-  }
-}
-
-module "branch-pf-prod-sa-cicd" {
-  source = "../../../modules/iam-service-account"
-  for_each = (
-    lookup(local.cicd_repositories, "pf_prod", null) == null
-    ? {}
-    : { 0 = local.cicd_repositories.pf_prod }
-  )
-  project_id  = var.automation.project_id
-  name        = "prod-resman-pf-1"
-  description = "Terraform CI/CD project factory production service account."
-  prefix      = var.prefix
-  iam = {
-    "roles/iam.workloadIdentityUser" = [
-      each.value.branch == null
-      ? format(
-        local.identity_providers[each.value.identity_provider].principalset_tpl,
-        var.automation.federated_identity_pool,
-        each.value.name
-      )
-      : format(
-        local.identity_providers[each.value.identity_provider].principal_tpl,
-        var.automation.federated_identity_pool,
-        each.value.name,
-        each.value.branch
-      )
-    ]
-  }
-  iam_storage_roles = {
-    (var.automation.outputs_bucket) = ["roles/storage.objectViewer"]
   }
 }

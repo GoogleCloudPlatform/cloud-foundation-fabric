@@ -30,6 +30,11 @@ output "iam_email" {
   ]
 }
 
+output "id" {
+  description = "Service account id."
+  value       = local.service_account.id
+}
+
 output "key" {
   description = "Service account key."
   sensitive   = true
@@ -37,7 +42,7 @@ output "key" {
 }
 
 output "name" {
-  description = "Service account id."
+  description = "Service account name."
   value       = local.service_account.name
 }
 
