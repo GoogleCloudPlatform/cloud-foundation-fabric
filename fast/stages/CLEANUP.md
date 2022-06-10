@@ -1,7 +1,7 @@
 # FAST deployment clean up
-In case you require destroying a FAST deployment in your organization, follow these steps. 
+In case you require destroying a previous FAST deployment in your organization, follow these steps. 
 
-Destruction goes in reverse order, from stage 3 to stage 0:
+Destruction must be done in reverse order, from stage 3 to stage 0:
 
 ## Stage 3 (Project Factory)
 
@@ -11,7 +11,7 @@ terraform destroy
 ```
 
 ## Stage 3 (GKE)
-Terraform refuses to delete non empty GCS buckets and/or BigQuery datasets, so they need to be removed manually from tf state
+Terraform refuses to delete non-empty GCS buckets and/or BigQuery datasets, so they need to be removed manually from tf state
 
 ```bash
 cd $FAST_PWD/03-project-factory/prod/
@@ -42,7 +42,6 @@ There's a minor glitch that can surface running terraform destroy, where the ser
 ## Stage 1 (Resource Management)
 Stage 1 is a little more complicated because of the GCS Buckets. By default terraform refuses to delete non-empty buckets, which is a good thing for your terraform state. However, it makes destruction a bit harder
 
-
 ```bash
 cd $FAST_PWD/01-resman/
 
@@ -55,7 +54,7 @@ terraform destroy
 ```
 
 ## Stage 0 (Bootstrap)
-**You should follow these steps carefully because we can end up destroying our own permissions. As we will be removing gcp-admins group roles, where your user belongs, you will be required to grant organization admin role again**
+**You should follow these steps carefully because we can end up destroying our own permissions. As we will be removing gcp-admins group roles, where your user belongs to, you will be required to grant organization admin role again**
 
 We also have to remove several resources (GCS buckets and BQ datasets) manually.
 
@@ -106,6 +105,6 @@ terraform destroy
 rm -i terraform.tfstate*
 ```
 
-In case you are willing to deploy again FAST stages, the following changes shall be done before:
-* Modify [prefix](/00-bootstrap/variables.tf#L167) variable to allow deployment of resources that need unique names (eg, projects)
-* Modify [custom_roles](00-bootstrap/variables.tf#L77) variable to allow recently deleted custom roles to be created again
+In case you are willing to deploy FAST stages again, the following changes shall be done before:
+* Modify the [prefix](/00-bootstrap/variables.tf) variable to allow the deployment of resources that need unique names (eg, projects).
+* Modify the [custom_roles](00-bootstrap/variables.tf) variable to allow recently deleted custom roles to be created again.
