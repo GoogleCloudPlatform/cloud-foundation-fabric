@@ -197,13 +197,4 @@ variable "team_folders" {
     impersonation_groups = list(string)
   }))
   default = null
-  # default = {
-  #   team-a = {
-  #     descriptive_name = "Team A"
-  #     group_iam = {
-  #       team-a-group@example.com = ["roles/owner", "roles/resourcemanager.projectCreator"]
-  #     }
-  #     impersonation_groups = ["team-a-admins@example.com"]
-  #   }
-  # }
 }
