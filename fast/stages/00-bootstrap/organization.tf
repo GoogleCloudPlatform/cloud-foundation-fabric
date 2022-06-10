@@ -85,11 +85,6 @@ locals {
   _iam_bootstrap_user = (
     var.bootstrap_user == null ? [] : ["user:${var.bootstrap_user}"]
   )
-  _log_sink_destinations = {
-    bigquery = try(module.log-export-dataset.0.id, null),
-    logging  = try(module.log-export-logbucket.0.id, null),
-    storage  = try(module.log-export-gcs.0.name, null)
-  }
   iam = {
     for role in local.iam_roles : role => distinct(concat(
       try(sort(local._iam[role]), []),
@@ -108,13 +103,16 @@ locals {
   iam_roles_additive = distinct(concat(
     keys(local._iam_additive), keys(var.iam_additive)
   ))
-  log_sink_destinations = {
-    for k, v in var.log_sinks : k => (
-      v.type == "pubsub"
-      ? module.log-export-pubsub[k]
-      : local._log_sink_destinations[v.type]
-    )
-  }
+  log_sink_destinations = merge(
+    # use the same dataset for all sinks with `bigquery` as  destination
+    { for k, v in var.log_sinks : k => module.log-export-dataset.0 if v.type == "bigquery" },
+    # use the same gcs bucket for all sinks with `storage` as destination
+    { for k, v in var.log_sinks : k => module.log-export-gcs.0 if v.type == "storage" },
+    # use separate pubsub topics and logging buckets for sinks with
+    # destination `pubsub` and `logging`
+    { for k, v in module.log-export-pubsub : k => v },
+    { for k, v in module.log-export-logbucket : k => v }
+  )
 }
 
 module "organization" {
@@ -177,7 +175,7 @@ module "organization" {
   logging_sinks = {
     for name, attrs in var.log_sinks : name => {
       bq_partitioned_table = attrs.type == "bigquery"
-      destination          = local.log_sink_destinations[name]
+      destination          = local.log_sink_destinations[name].id
       exclusions           = {}
       filter               = attrs.filter
       iam                  = true

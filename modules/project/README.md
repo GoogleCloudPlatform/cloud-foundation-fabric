@@ -221,7 +221,7 @@ module "project-host" {
   logging_sinks = {
     warnings = {
       type          = "storage"
-      destination   = module.gcs.name
+      destination   = module.gcs.id
       filter        = "severity=WARNING"
       iam           = false
       unique_writer = false
