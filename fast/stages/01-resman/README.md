@@ -108,7 +108,7 @@ terraform apply
 
 This stage provides a single built-in customization that offers a minimal (but usable) implementation of the "application" or "business" grouping for resources discussed above. The `team_folders` variable allows you to specify a map of team name and groups, that will result in folders, automation service accounts, and IAM policies applied.
 
-Consider the following example
+Consider the following example in a `tfvars` file:
 
 ```hcl
 team_folders = {
