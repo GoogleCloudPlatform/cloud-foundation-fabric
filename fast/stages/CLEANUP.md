@@ -1,5 +1,5 @@
-# a FAST deployment clean up
-In case you require destroying FAST deployment in your organization, follow these steps. 
+# FAST deployment clean up
+In case you require destroying a FAST deployment in your organization, follow these steps. 
 
 Destruction goes in reverse order, from stage 3 to stage 0:
 
