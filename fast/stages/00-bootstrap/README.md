@@ -177,6 +177,8 @@ Before the first run, the following IAM groups must exist to allow IAM bindings 
 - gcp-security-admins
 - gcp-support
 
+![fast-create-groups](https://user-images.githubusercontent.com/94000358/173353329-282960b7-3d04-4945-a051-f3baf15037ca.gif)
+
 #### Configure variables
 
 Then make sure you have configured the correct values for the following variables by providing a `terraform.tfvars` file:
