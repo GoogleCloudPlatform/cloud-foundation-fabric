@@ -32,3 +32,5 @@ cloud_sql_proxy
 examples/cloud-operations/binauthz/tenant-setup.yaml
 examples/cloud-operations/binauthz/app/app.yaml
 env/
+examples/cloud-operations/adfs/ansible/vars/vars.yaml
+examples/cloud-operations/adfs/ansible/gssh.sh
