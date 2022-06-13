@@ -29,3 +29,5 @@ fast/stages/**/0*.auto.tfvars*
 **/node_modules
 fast/stages/**/globals.auto.tfvars.json
 cloud_sql_proxy
+examples/cloud-operations/binauthz/tenant-setup.yaml
+examples/cloud-operations/binauthz/app/app.yaml
