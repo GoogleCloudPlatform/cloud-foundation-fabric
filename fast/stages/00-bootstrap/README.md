@@ -177,7 +177,7 @@ Before the first run, the following IAM groups must exist to allow IAM bindings 
 - gcp-security-admins
 - gcp-support
 
-![fast-create-groups](https://user-images.githubusercontent.com/94000358/173353329-282960b7-3d04-4945-a051-f3baf15037ca.gif)
+![fast-create-groups-v1](https://user-images.githubusercontent.com/94000358/173355158-e6019d48-831b-4f4f-a470-38e2894cd2c8.gif)
 
 #### Configure variables
 
