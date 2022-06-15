@@ -32,6 +32,8 @@ Fork or clone and go through the usual edit/add/commit cycle until your code is 
 git checkout master
 git pull
 git checkout -b username/my-feature
+# Initialise pre-commit hook
+make init
 git add -A
 git commit -m "changed ham so that spam and eggs"
 ```
@@ -39,7 +41,7 @@ git commit -m "changed ham so that spam and eggs"
 Once you are satisfied with your changes, make sure Terraform linting is ok. If you changed Python code you need to conform to our standard linting, see the last section for details on how to configure it.
 
 ```bash
-terraform fmt -recursive
+make pre-commit
 ```
 
 If you changed variables or outputs you need to regenerate the relevant tables in the documentation via our `tfdoc` tool. For help installing Python requirements and setting up virtualenv see the last section.
@@ -59,7 +61,7 @@ If the folder contains files which won't be pushed to the repository, for exampl
 Run tests to make sure your changes work and you didn't accidentally break their consumers. Again, if you need help setting up the Python virtualenv and requirements or want to run specific test subsets see the last section.
 
 ```bash
-pytest tests
+make test
 ```
 
 Keep in mind we also test documentation examples so even if your PR only changes README files, you need to run a subset of tests.
@@ -570,7 +572,20 @@ The linting workflow tests:
 - that all README files have up to date outputs, variables, and files (where relevant) tables, via `tools/check_documentation.py`
 - that all links in README files are syntactically correct and valid if internal, via `tools/check_links.py`
 - that resource names used in FAST stages stay within a length limit, via `tools/check_names.py`
-- that all Python code has been formatted with the correct `yapf` style
+- that all Python code has been formatted with the correct `black` + `flake8` code style
+
+To run the full suite of checks, a helper Make target exists:
+
+```bash
+# Lints Python, checks documentation, links, naming and runs pytest
+make qa
+
+# Or individually:
+make lint
+make checks
+make test
+# Note, make test can take a LONG time to complete
+```
 
 You can run those checks individually on your code to address any error before sending a PR, all you need to do is run the same command used in the workflow file from within your virtual environment. To run documentation tests for example if you changed the `project` module:
 
@@ -654,6 +669,8 @@ pytest tests/examples
 pytest tests/examples/cloud_operations/iam_delegated_role_grants/
 # only run a single unit
 pytest tests/examples/cloud_operations/iam_delegated_role_grants/test_plan.py::test_resources
+# or via Make
+make test
 ```
 
 ##### Testing modules
