@@ -38,7 +38,7 @@ An `action.yml` is provided for this validator to be used as a GitHub action.
 Example of being used in a pipeline:
 
 ```yaml
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Get changed files
       if: ${{ github.event_name == 'pull_request' }}

@@ -27,7 +27,7 @@ jobs:
   linting:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Set up Python
         uses: actions/setup-python@v2
@@ -46,29 +46,29 @@ jobs:
       - name: Boilerplate
         id: boilerplate
         run: |
-          python3 tools/check_boilerplate.py $GITHUB_WORKSPACE
+          make check-boilerplate
 
       - name: Terraform Linting Check
         id: fmt
         run: |
-          terraform fmt -recursive -check -diff $GITHUB_WORKSPACE
+          make terraform-fmt
 
       - name: Check documentation (fabric)
         id: documentation-fabric
         run: |
-          python3 tools/check_documentation.py examples modules fast
+          make check-documentation
 
       - name: Check documentation links (fabric)
         id: documentation-links-fabric
         run: |
-          python3 tools/check_links.py .
+          make check-links
 
       - name: Check name length (fast)
         id: name-length-fast
         run: |
-          python3 tools/check_names.py --prefix-length=10 fast/stages
+          make check-names
 
-      - name: Check python formatting
-        id: yapf
+      - name: Check Python formatting
+        id: lint
         run: |
-          yapf --style="{based_on_style: google, indent_width: 2, SPLIT_BEFORE_NAMED_ASSIGNS: false}" -p -d tools/*.py
+          make lint
