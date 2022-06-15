@@ -1,6 +1,7 @@
 click
 deepdiff
+flake8
+isort
 marko
 requests
 yamale
-yapf
