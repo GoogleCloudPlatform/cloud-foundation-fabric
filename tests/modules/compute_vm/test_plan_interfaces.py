@@ -12,31 +12,32 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 def test_address(plan_runner):
-  nics = '''[{
+    nics = """[{
     network    = "https://www.googleapis.com/compute/v1/projects/my-project/global/networks/default",
     subnetwork = "https://www.googleapis.com/compute/v1/projects/my-project/regions/europe-west1/subnetworks/default-default",
     nat        = false,
     addresses  = {external=null, internal="10.0.0.2"}
   }]
-  '''
-  _, resources = plan_runner(network_interfaces=nics)
-  assert len(resources) == 1
-  n = resources[0]['values']['network_interface'][0]
-  assert n['network_ip'] == "10.0.0.2"
-  assert n['access_config'] == []
+  """
+    _, resources = plan_runner(network_interfaces=nics)
+    assert len(resources) == 1
+    n = resources[0]["values"]["network_interface"][0]
+    assert n["network_ip"] == "10.0.0.2"
+    assert n["access_config"] == []
 
 
 def test_nat_address(plan_runner):
-  nics = '''[{
+    nics = """[{
     network    = "https://www.googleapis.com/compute/v1/projects/my-project/global/networks/default",
     subnetwork = "https://www.googleapis.com/compute/v1/projects/my-project/regions/europe-west1/subnetworks/default-default",
     nat        = true,
     addresses  = {external="8.8.8.8", internal=null}
   }]
-  '''
-  _, resources = plan_runner(network_interfaces=nics)
-  assert len(resources) == 1
-  n = resources[0]['values']['network_interface'][0]
-  assert 'network_ip' not in n
-  assert n['access_config'][0]['nat_ip'] == '8.8.8.8'
+  """
+    _, resources = plan_runner(network_interfaces=nics)
+    assert len(resources) == 1
+    n = resources[0]["values"]["network_interface"][0]
+    assert "network_ip" not in n
+    assert n["access_config"][0]["nat_ip"] == "8.8.8.8"

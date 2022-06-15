@@ -13,16 +13,19 @@
 # limitations under the License.
 
 import re
+
 import yaml
 
 
 def test_defaults(apply_runner):
-  "Test defalt configuration."
-  _, output = apply_runner()
-  cloud_config = output['cloud_config']
-  yaml.safe_load(cloud_config)
-  assert cloud_config.startswith('#cloud-config')
-  assert re.findall(r'(?m)^\s+\-\s*path:\s*(\S+)', cloud_config) == [
-      '/var/lib/docker/daemon.json', '/etc/systemd/resolved.conf',
-      '/etc/coredns/Corefile', '/etc/systemd/system/coredns.service'
-  ]
+    "Test defalt configuration."
+    _, output = apply_runner()
+    cloud_config = output["cloud_config"]
+    yaml.safe_load(cloud_config)
+    assert cloud_config.startswith("#cloud-config")
+    assert re.findall(r"(?m)^\s+\-\s*path:\s*(\S+)", cloud_config) == [
+        "/var/lib/docker/daemon.json",
+        "/etc/systemd/resolved.conf",
+        "/etc/coredns/Corefile",
+        "/etc/systemd/system/coredns.service",
+    ]

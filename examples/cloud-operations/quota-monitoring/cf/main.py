@@ -28,174 +28,180 @@ import os
 import warnings
 
 import click
-
+import googleapiclient.discovery
+import googleapiclient.errors
 from google.api_core.exceptions import GoogleAPIError
 from google.cloud import monitoring_v3
 
-import googleapiclient.discovery
-import googleapiclient.errors
-
-
 _BATCH_SIZE = 5
 _METRIC_KIND = monitoring_v3.enums.MetricDescriptor.MetricKind.GAUGE
-_METRIC_TYPE = 'custom.googleapis.com/quota/gce'
+_METRIC_TYPE = "custom.googleapis.com/quota/gce"
 
 
 def _add_series(project_id, series, client=None):
-  """Write metrics series to Stackdriver.
+    """Write metrics series to Stackdriver.
 
-  Args:
-    project_id: series will be written to this project id's account
-    series: the time series to be written, as a list of
-        monitoring_v3.types.TimeSeries instances
-    client: optional monitoring_v3.MetricServiceClient will be used
-        instead of obtaining a new one
-  """
-  client = client or monitoring_v3.MetricServiceClient()
-  project_name = client.project_path(project_id)
-  if isinstance(series, monitoring_v3.types.TimeSeries):
-    series = [series]
-  try:
-    client.create_time_series(project_name, series)
-  except GoogleAPIError as e:
-    raise RuntimeError('Error from monitoring API: %s' % e)
+    Args:
+      project_id: series will be written to this project id's account
+      series: the time series to be written, as a list of
+          monitoring_v3.types.TimeSeries instances
+      client: optional monitoring_v3.MetricServiceClient will be used
+          instead of obtaining a new one
+    """
+    client = client or monitoring_v3.MetricServiceClient()
+    project_name = client.project_path(project_id)
+    if isinstance(series, monitoring_v3.types.TimeSeries):
+        series = [series]
+    try:
+        client.create_time_series(project_name, series)
+    except GoogleAPIError as e:
+        raise RuntimeError("Error from monitoring API: %s" % e)
 
 
 def _configure_logging(verbose=True):
-  """Basic logging configuration.
+    """Basic logging configuration.
 
-  Args:
-    verbose: enable verbose logging
-  """
-  level = logging.DEBUG if verbose else logging.INFO
-  logging.basicConfig(level=level)
-  warnings.filterwarnings('ignore', r'.*end user credentials.*', UserWarning)
+    Args:
+      verbose: enable verbose logging
+    """
+    level = logging.DEBUG if verbose else logging.INFO
+    logging.basicConfig(level=level)
+    warnings.filterwarnings("ignore", r".*end user credentials.*", UserWarning)
 
 
-def _fetch_quotas(project, region='global', compute=None):
-  """Fetch GCE per - project or per - region quotas from the API.
+def _fetch_quotas(project, region="global", compute=None):
+    """Fetch GCE per - project or per - region quotas from the API.
 
-  Args:
-    project: fetch global or regional quotas for this project id
-    region: which quotas to fetch, 'global' or region name
-    compute: optional instance of googleapiclient.discovery.build will be used
-        instead of obtaining a new one
-  """
-  compute = compute or googleapiclient.discovery.build('compute', 'v1')
-  try:
-    if region != 'global':
-      req = compute.regions().get(project=project, region=region)
-    else:
-      req = compute.projects().get(project=project)
-    resp = req.execute()
-    return resp['quotas']
-  except (GoogleAPIError, googleapiclient.errors.HttpError) as e:
-    logging.debug('API Error: %s', e, exc_info=True)
-    raise RuntimeError('Error fetching quota (project: %s, region: %s)' %
-                       (project, region))
+    Args:
+      project: fetch global or regional quotas for this project id
+      region: which quotas to fetch, 'global' or region name
+      compute: optional instance of googleapiclient.discovery.build will be used
+          instead of obtaining a new one
+    """
+    compute = compute or googleapiclient.discovery.build("compute", "v1")
+    try:
+        if region != "global":
+            req = compute.regions().get(project=project, region=region)
+        else:
+            req = compute.projects().get(project=project)
+        resp = req.execute()
+        return resp["quotas"]
+    except (GoogleAPIError, googleapiclient.errors.HttpError) as e:
+        logging.debug("API Error: %s", e, exc_info=True)
+        raise RuntimeError(
+            "Error fetching quota (project: %s, region: %s)" % (project, region)
+        )
 
 
 def _get_series(metric_labels, value, metric_type=_METRIC_TYPE, dt=None):
-  """Create a Stackdriver monitoring time series from value and labels.
+    """Create a Stackdriver monitoring time series from value and labels.
 
-  Args:
-    metric_labels: dict with labels that will be used in the time series
-    value: time series value
-    metric_type: which metric is this series for
-    dt: datetime.datetime instance used for the series end time
-  """
-  series = monitoring_v3.types.TimeSeries()
-  series.metric.type = metric_type
-  series.resource.type = 'global'
-  for label in metric_labels:
-    series.metric.labels[label] = metric_labels[label]
-  point = series.points.add()
-  point.value.double_value = value
-  point.interval.end_time.FromDatetime(dt or datetime.datetime.utcnow())
-  return series
+    Args:
+      metric_labels: dict with labels that will be used in the time series
+      value: time series value
+      metric_type: which metric is this series for
+      dt: datetime.datetime instance used for the series end time
+    """
+    series = monitoring_v3.types.TimeSeries()
+    series.metric.type = metric_type
+    series.resource.type = "global"
+    for label in metric_labels:
+        series.metric.labels[label] = metric_labels[label]
+    point = series.points.add()
+    point.value.double_value = value
+    point.interval.end_time.FromDatetime(dt or datetime.datetime.utcnow())
+    return series
 
 
 def _quota_to_series(project, region, quota):
-  """Convert API quota objects to Stackdriver monitoring time series.
+    """Convert API quota objects to Stackdriver monitoring time series.
 
-  Args:
-    project: set in converted time series labels
-    region: set in converted time series labels
-    quota: quota object received from the GCE API
-  """
-  labels = dict((k, str(v)) for k, v in quota.items())
-  labels['project'] = project
-  labels['region'] = region
-  try:
-    value = quota['usage'] / float(quota['limit'])
-  except ZeroDivisionError:
-    value = 0
-  return _get_series(labels, value)
+    Args:
+      project: set in converted time series labels
+      region: set in converted time series labels
+      quota: quota object received from the GCE API
+    """
+    labels = dict((k, str(v)) for k, v in quota.items())
+    labels["project"] = project
+    labels["region"] = region
+    try:
+        value = quota["usage"] / float(quota["limit"])
+    except ZeroDivisionError:
+        value = 0
+    return _get_series(labels, value)
 
 
 @click.command()
-@click.option('--monitoring-project', required=True,
-              help='monitoring project id')
-@click.option('--gce-project', multiple=True,
-              help='project ids (multiple), defaults to monitoring project')
-@click.option('--gce-region', multiple=True,
-              help='regions (multiple), defaults to "global"')
-@click.option('--verbose', is_flag=True, help='Verbose output')
-@click.argument('keywords', nargs=-1)
-def main_cli(monitoring_project=None, gce_project=None, gce_region=None,
-             verbose=False, keywords=None):
-  """Fetch GCE quotas and writes them as custom metrics to Stackdriver.
+@click.option("--monitoring-project", required=True, help="monitoring project id")
+@click.option(
+    "--gce-project",
+    multiple=True,
+    help="project ids (multiple), defaults to monitoring project",
+)
+@click.option(
+    "--gce-region", multiple=True, help='regions (multiple), defaults to "global"'
+)
+@click.option("--verbose", is_flag=True, help="Verbose output")
+@click.argument("keywords", nargs=-1)
+def main_cli(
+    monitoring_project=None,
+    gce_project=None,
+    gce_region=None,
+    verbose=False,
+    keywords=None,
+):
+    """Fetch GCE quotas and writes them as custom metrics to Stackdriver.
 
-  If KEYWORDS are specified as arguments, only quotas matching one of the
-  keywords will be stored in Stackdriver.
-  """
-  try:
-    _main(monitoring_project, gce_project, gce_region, verbose, keywords)
-  except RuntimeError:
-    logging.exception('exception raised')
+    If KEYWORDS are specified as arguments, only quotas matching one of the
+    keywords will be stored in Stackdriver.
+    """
+    try:
+        _main(monitoring_project, gce_project, gce_region, verbose, keywords)
+    except RuntimeError:
+        logging.exception("exception raised")
 
 
 def main(event, context):
-  """Cloud Function entry point."""
-  try:
-    data = json.loads(base64.b64decode(event['data']).decode('utf-8'))
-    _main(os.environ.get('GCP_PROJECT'), **data)
-  # uncomment once https://issuetracker.google.com/issues/155215191 is fixed
-  # except RuntimeError:
-  #  raise
-  except Exception:
-    logging.exception('exception in cloud function entry point')
+    """Cloud Function entry point."""
+    try:
+        data = json.loads(base64.b64decode(event["data"]).decode("utf-8"))
+        _main(os.environ.get("GCP_PROJECT"), **data)
+    # uncomment once https://issuetracker.google.com/issues/155215191 is fixed
+    # except RuntimeError:
+    #  raise
+    except Exception:
+        logging.exception("exception in cloud function entry point")
 
 
-def _main(monitoring_project, gce_project=None, gce_region=None, verbose=False,
-          keywords=None):
-  """Module entry point used by cli and cloud function wrappers."""
-  _configure_logging(verbose=verbose)
-  gce_projects = gce_project or [monitoring_project]
-  gce_regions = gce_region or ['global']
-  keywords = set(keywords or [])
-  logging.debug('monitoring project %s', monitoring_project)
-  logging.debug('projects %s regions %s', gce_projects, gce_regions)
-  logging.debug('keywords %s', keywords)
-  quotas = []
-  compute = googleapiclient.discovery.build(
-      'compute', 'v1', cache_discovery=False)
-  for project in gce_projects:
-    logging.debug('project %s', project)
-    for region in gce_regions:
-      logging.debug('region %s', region)
-      for quota in _fetch_quotas(project, region, compute=compute):
-        if keywords and not any(k in quota['metric'] for k in keywords):
-          # logging.debug('skipping %s', quota)
-          continue
-        logging.debug('quota %s', quota)
-        quotas.append((project, region, quota))
-  client, i = monitoring_v3.MetricServiceClient(), 0
-  while i < len(quotas):
-    series = [_quota_to_series(*q) for q in quotas[i:i + _BATCH_SIZE]]
-    _add_series(monitoring_project, series, client)
-    i += _BATCH_SIZE
+def _main(
+    monitoring_project, gce_project=None, gce_region=None, verbose=False, keywords=None
+):
+    """Module entry point used by cli and cloud function wrappers."""
+    _configure_logging(verbose=verbose)
+    gce_projects = gce_project or [monitoring_project]
+    gce_regions = gce_region or ["global"]
+    keywords = set(keywords or [])
+    logging.debug("monitoring project %s", monitoring_project)
+    logging.debug("projects %s regions %s", gce_projects, gce_regions)
+    logging.debug("keywords %s", keywords)
+    quotas = []
+    compute = googleapiclient.discovery.build("compute", "v1", cache_discovery=False)
+    for project in gce_projects:
+        logging.debug("project %s", project)
+        for region in gce_regions:
+            logging.debug("region %s", region)
+            for quota in _fetch_quotas(project, region, compute=compute):
+                if keywords and not any(k in quota["metric"] for k in keywords):
+                    # logging.debug('skipping %s', quota)
+                    continue
+                logging.debug("quota %s", quota)
+                quotas.append((project, region, quota))
+    client, i = monitoring_v3.MetricServiceClient(), 0
+    while i < len(quotas):
+        series = [_quota_to_series(*q) for q in quotas[i : i + _BATCH_SIZE]]
+        _add_series(monitoring_project, series, client)
+        i += _BATCH_SIZE
 
 
-if __name__ == '__main__':
-  main_cli()
+if __name__ == "__main__":
+    main_cli()

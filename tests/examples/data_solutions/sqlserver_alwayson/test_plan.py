@@ -13,9 +13,8 @@
 # limitations under the License.
 
 import os
-import pytest
 
-FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
+FIXTURES_DIR = os.path.join(os.path.dirname(__file__), "fixture")
 
 
 def test_resources(e2e_plan_runner):

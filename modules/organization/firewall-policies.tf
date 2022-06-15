@@ -98,4 +98,3 @@ resource "google_compute_firewall_policy_association" "association" {
   attachment_target = var.organization_id
   firewall_policy   = try(google_compute_firewall_policy.policy[each.value].id, each.value)
 }
-

@@ -27,7 +27,7 @@
 
 
 def test_counts(fast_e2e_plan_runner):
-  "Test stage."
-  # TODO: to re-enable per-module resource count check print _, then test
-  num_modules, num_resources, _ = fast_e2e_plan_runner()
-  assert num_modules > 0 and num_resources > 0
+    "Test stage."
+    # TODO: to re-enable per-module resource count check print _, then test
+    num_modules, num_resources, _ = fast_e2e_plan_runner()
+    assert num_modules > 0 and num_resources > 0

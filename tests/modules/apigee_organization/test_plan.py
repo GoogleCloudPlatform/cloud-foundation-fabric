@@ -17,28 +17,32 @@ import pytest
 
 @pytest.fixture
 def resources(plan_runner):
-  _, resources = plan_runner()
-  return resources
+    _, resources = plan_runner()
+    return resources
 
 
 def test_resource_count(resources):
-  "Test number of resources created."
-  assert len(resources) == 6
+    "Test number of resources created."
+    assert len(resources) == 6
 
 
 def test_envgroup_attachment(resources):
-  "Test Apigee Envgroup Attachments."
-  attachments = [r['values'] for r in resources if r['type']
-                 == 'google_apigee_envgroup_attachment']
-  assert len(attachments) == 2
-  assert set(a['environment'] for a in attachments) == set(['eval1', 'eval2'])
+    "Test Apigee Envgroup Attachments."
+    attachments = [
+        r["values"]
+        for r in resources
+        if r["type"] == "google_apigee_envgroup_attachment"
+    ]
+    assert len(attachments) == 2
+    assert set(a["environment"] for a in attachments) == set(["eval1", "eval2"])
 
 
 def test_envgroup(resources):
-  "Test env group."
-  envgroups = [r['values'] for r in resources if r['type']
-               == 'google_apigee_envgroup']
-  assert len(envgroups) == 1
-  assert envgroups[0]['name'] == 'eval'
-  assert len(envgroups[0]['hostnames']) == 1
-  assert envgroups[0]['hostnames'][0] == 'eval.api.example.com'
+    "Test env group."
+    envgroups = [
+        r["values"] for r in resources if r["type"] == "google_apigee_envgroup"
+    ]
+    assert len(envgroups) == 1
+    assert envgroups[0]["name"] == "eval"
+    assert len(envgroups[0]["hostnames"]) == 1
+    assert envgroups[0]["hostnames"][0] == "eval.api.example.com"

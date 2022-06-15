@@ -220,7 +220,7 @@ To do this, you need to remove IAM binging at project-level for the `data-analys
 
 ## Demo pipeline
 
-The application layer is out of scope of this script. As a demo purpuse only, several Cloud Composer DAGs are provided. Demos will import data from the `drop off` area to the `Data Warehouse Confidential` dataset suing different features. 
+The application layer is out of scope of this script. As a demo purpuse only, several Cloud Composer DAGs are provided. Demos will import data from the `drop off` area to the `Data Warehouse Confidential` dataset suing different features.
 
 You can find examples in the `[demo](./demo)` folder.
 

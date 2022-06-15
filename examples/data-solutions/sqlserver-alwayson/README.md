@@ -1,15 +1,15 @@
 ## SQL Server Always On Groups example
 
-This is an example of building [SQL Server Always On Availability Groups](https://cloud.google.com/compute/docs/instances/sql-server/configure-availability) 
-using Fabric modules. It builds a two node cluster with a fileshare witness instance in an existing VPC and adds the necessary firewalling. 
+This is an example of building [SQL Server Always On Availability Groups](https://cloud.google.com/compute/docs/instances/sql-server/configure-availability)
+using Fabric modules. It builds a two node cluster with a fileshare witness instance in an existing VPC and adds the necessary firewalling.
 
 ![Architecture diagram](https://cloud.google.com/compute/images/sqlserver-ag-architecture.svg)
 
-The actual setup process (apart from Active Directory operations) has been scripted, so that least amount of 
-manual works needs to performed: 
+The actual setup process (apart from Active Directory operations) has been scripted, so that least amount of
+manual works needs to performed:
 
-  - Joining the domain using appropriate credentials 
-  - Running an automatically generated initialization script (`C:\InitializeCluster.ps1`) 
+  - Joining the domain using appropriate credentials
+  - Running an automatically generated initialization script (`C:\InitializeCluster.ps1`)
   - Creating the [Availability Groups using the wizard](https://cloud.google.com/compute/docs/instances/sql-server/configure-availability#creating_an_availability_group)
     (please note that healthchecks are automatically configured when the appropriate AGs are created)
 

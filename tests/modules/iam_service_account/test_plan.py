@@ -12,31 +12,31 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-def test_resources(plan_runner):
-  "Test service account resource."
-  _, resources = plan_runner()
-  assert len(resources) == 1
-  resource = resources[0]
-  assert resource['type'] == 'google_service_account'
-  assert resource['values']['account_id'] == 'sa-one'
 
-  _, resources = plan_runner(prefix='foo')
-  assert len(resources) == 1
-  resource = resources[0]
-  assert resource['values']['account_id'] == 'foo-sa-one'
+def test_resources(plan_runner):
+    "Test service account resource."
+    _, resources = plan_runner()
+    assert len(resources) == 1
+    resource = resources[0]
+    assert resource["type"] == "google_service_account"
+    assert resource["values"]["account_id"] == "sa-one"
+
+    _, resources = plan_runner(prefix="foo")
+    assert len(resources) == 1
+    resource = resources[0]
+    assert resource["values"]["account_id"] == "foo-sa-one"
 
 
 def test_iam_roles(plan_runner):
-  "Test iam roles with one member."
-  iam = ('{"roles/iam.serviceAccountUser" = ["user:a@b.com"]}')
-  _, resources = plan_runner(iam=iam)
-  assert len(resources) == 2
-  iam_resources = [r for r in resources
-                   if r['type'] != 'google_service_account']
-  assert len(iam_resources) == 1
+    "Test iam roles with one member."
+    iam = '{"roles/iam.serviceAccountUser" = ["user:a@b.com"]}'
+    _, resources = plan_runner(iam=iam)
+    assert len(resources) == 2
+    iam_resources = [r for r in resources if r["type"] != "google_service_account"]
+    assert len(iam_resources) == 1
 
-  iam_resource = iam_resources[0]
-  assert iam_resource['type'] == 'google_service_account_iam_binding'
-  assert iam_resource['index'] == 'roles/iam.serviceAccountUser'
-  assert iam_resource['values']['role'] == 'roles/iam.serviceAccountUser'
-  assert iam_resource['values']['members'] == ["user:a@b.com"]
+    iam_resource = iam_resources[0]
+    assert iam_resource["type"] == "google_service_account_iam_binding"
+    assert iam_resource["index"] == "roles/iam.serviceAccountUser"
+    assert iam_resource["values"]["role"] == "roles/iam.serviceAccountUser"
+    assert iam_resource["values"]["members"] == ["user:a@b.com"]

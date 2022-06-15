@@ -26,7 +26,7 @@ module "cmn-dc" {
   source     = "./modules/data-catalog-policy-tag"
   name       = "my-datacatalog-policy-tags"
   project_id = "my-project"
-  tags       = { 
+  tags       = {
     low = null
     medium = null
     high = {"roles/datacatalog.categoryFineGrainedReader" = ["group:GROUP_NAME@example.com"]}

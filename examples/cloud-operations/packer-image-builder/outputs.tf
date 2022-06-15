@@ -33,4 +33,3 @@ output "compute_zone" {
   description = "Name of a compute engine zone for Packer's temporary VM."
   value       = local.compute_zone
 }
-

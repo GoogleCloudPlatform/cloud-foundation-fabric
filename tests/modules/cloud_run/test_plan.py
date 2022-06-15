@@ -17,32 +17,41 @@ import pytest
 
 @pytest.fixture
 def resources(plan_runner):
-  _, resources = plan_runner()
-  return resources
+    _, resources = plan_runner()
+    return resources
 
 
 def test_resource_count(resources):
-  "Test number of resources created."
-  assert len(resources) == 5
+    "Test number of resources created."
+    assert len(resources) == 5
 
 
 def test_iam(resources):
-  "Test IAM binding resources."
-  bindings = [r['values'] for r in resources if r['type']
-              == 'google_cloud_run_service_iam_binding']
-  assert len(bindings) == 1
-  assert bindings[0]['role'] == 'roles/run.invoker'
+    "Test IAM binding resources."
+    bindings = [
+        r["values"]
+        for r in resources
+        if r["type"] == "google_cloud_run_service_iam_binding"
+    ]
+    assert len(bindings) == 1
+    assert bindings[0]["role"] == "roles/run.invoker"
 
 
 def test_audit_log_triggers(resources):
-  "Test audit logs Eventarc trigger resources."
-  audit_log_triggers = [r['values'] for r in resources if r['type']
-                        == 'google_eventarc_trigger' and r['name'] == 'audit_log_triggers']
-  assert len(audit_log_triggers) == 1
+    "Test audit logs Eventarc trigger resources."
+    audit_log_triggers = [
+        r["values"]
+        for r in resources
+        if r["type"] == "google_eventarc_trigger" and r["name"] == "audit_log_triggers"
+    ]
+    assert len(audit_log_triggers) == 1
 
 
 def test_pubsub_triggers(resources):
-  "Test Pub/Sub Eventarc trigger resources."
-  pubsub_triggers = [r['values'] for r in resources if r['type']
-                     == 'google_eventarc_trigger' and r['name'] == 'pubsub_triggers']
-  assert len(pubsub_triggers) == 2
+    "Test Pub/Sub Eventarc trigger resources."
+    pubsub_triggers = [
+        r["values"]
+        for r in resources
+        if r["type"] == "google_eventarc_trigger" and r["name"] == "pubsub_triggers"
+    ]
+    assert len(pubsub_triggers) == 2

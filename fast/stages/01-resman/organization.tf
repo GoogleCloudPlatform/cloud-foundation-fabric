@@ -196,4 +196,3 @@ resource "google_organization_iam_member" "org_policy_admin" {
     END
   }
 }
-

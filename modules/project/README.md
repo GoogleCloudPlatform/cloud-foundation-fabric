@@ -102,7 +102,7 @@ module "project" {
     ]
   }
   iam = {
-    "roles/editor" = [      
+    "roles/editor" = [
       "serviceAccount:${module.project.service_accounts.cloud_services}"
     ]
   }

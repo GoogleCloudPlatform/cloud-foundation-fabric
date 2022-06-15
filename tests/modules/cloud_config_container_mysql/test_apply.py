@@ -13,37 +13,37 @@
 # limitations under the License.
 
 import re
+
 import yaml
 
 
 def test_defaults(apply_runner):
-  "Test defalt configuration."
-  _, output = apply_runner(mysql_password='foo')
-  cloud_config = output['cloud_config']
-  yaml.safe_load(cloud_config)
-  assert cloud_config.startswith('#cloud-config')
-  assert re.findall(r'(?m)^\s+\-\s*path:\s*(\S+)', cloud_config) == [
-      '/var/lib/docker/daemon.json',
-      '/run/mysql/secrets/mysql-passwd.txt',
-      '/etc/systemd/system/mysql.service'
-  ]
-  assert 'gcloud' not in cloud_config
+    "Test defalt configuration."
+    _, output = apply_runner(mysql_password="foo")
+    cloud_config = output["cloud_config"]
+    yaml.safe_load(cloud_config)
+    assert cloud_config.startswith("#cloud-config")
+    assert re.findall(r"(?m)^\s+\-\s*path:\s*(\S+)", cloud_config) == [
+        "/var/lib/docker/daemon.json",
+        "/run/mysql/secrets/mysql-passwd.txt",
+        "/etc/systemd/system/mysql.service",
+    ]
+    assert "gcloud" not in cloud_config
 
 
 def test_kms(apply_runner):
-  "Test KMS configuration."
-  kms_config = (
-      '{project_id="my-project", keyring="my-keyring", location="eu", key="foo"}'
-  )
-  _, output = apply_runner(mysql_password='foo',
-                           kms_config=kms_config)
-  cloud_config = output['cloud_config']
-  yaml.safe_load(cloud_config)
-  assert cloud_config.startswith('#cloud-config')
-  assert re.findall(r'(?m)^\s+\-\s*path:\s*(\S+)', cloud_config) == [
-      '/var/lib/docker/daemon.json',
-      '/run/mysql/secrets/mysql-passwd-cipher.txt',
-      '/run/mysql/passwd.sh',
-      '/etc/systemd/system/mysql.service'
-  ]
-  assert 'gcloud' in cloud_config
+    "Test KMS configuration."
+    kms_config = (
+        '{project_id="my-project", keyring="my-keyring", location="eu", key="foo"}'
+    )
+    _, output = apply_runner(mysql_password="foo", kms_config=kms_config)
+    cloud_config = output["cloud_config"]
+    yaml.safe_load(cloud_config)
+    assert cloud_config.startswith("#cloud-config")
+    assert re.findall(r"(?m)^\s+\-\s*path:\s*(\S+)", cloud_config) == [
+        "/var/lib/docker/daemon.json",
+        "/run/mysql/secrets/mysql-passwd-cipher.txt",
+        "/run/mysql/passwd.sh",
+        "/etc/systemd/system/mysql.service",
+    ]
+    assert "gcloud" in cloud_config

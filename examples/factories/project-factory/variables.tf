@@ -152,6 +152,3 @@ variable "vpc" {
   })
   default = null
 }
-
-
-

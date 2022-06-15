@@ -1,6 +1,6 @@
 # Google Cloud VPC Firewall Factory
 
-This module allows creation and management of different types of firewall rules by defining them in well formatted `yaml` files. 
+This module allows creation and management of different types of firewall rules by defining them in well formatted `yaml` files.
 
 Yaml abstraction for FW rules can simplify users onboarding and also makes rules definition simpler and clearer comparing to HCL.
 
@@ -13,7 +13,7 @@ Nested folder structure for yaml configurations is optionally supported, which a
 ```hcl
 module "prod-firewall" {
   source = "./modules/net-vpc-firewall-yaml"
-  
+
   project_id         = "my-prod-project"
   network            = "my-prod-network"
   config_directories = [
@@ -28,7 +28,7 @@ module "prod-firewall" {
 
 module "dev-firewall" {
   source = "./modules/net-vpc-firewall-yaml"
-  
+
   project_id         = "my-dev-project"
   network            = "my-dev-network"
   config_directories = [

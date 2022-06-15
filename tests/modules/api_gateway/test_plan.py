@@ -17,10 +17,10 @@ import pytest
 
 @pytest.fixture
 def resources(plan_runner):
-  _, resources = plan_runner()
-  return resources
+    _, resources = plan_runner()
+    return resources
 
 
 def test_resource_count(resources):
-  "Test number of resources created."
-  assert len(resources) == 5
+    "Test number of resources created."
+    assert len(resources) == 5

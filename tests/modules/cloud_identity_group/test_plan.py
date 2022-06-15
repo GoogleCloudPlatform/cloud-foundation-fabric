@@ -16,27 +16,27 @@ from collections import Counter
 
 
 def test_group(plan_runner):
-  "Test group."
-  _, resources = plan_runner()
-  assert len(resources) == 1
-  r = resources[0]
-  assert r['type'] == 'google_cloud_identity_group'
-  assert r['values']['display_name'] == 'display name'
-  assert r['values']['group_key'][0]['id'] == 'my-group@example.com'
-  assert r['values']['parent'] == 'customers/C01234567'
+    "Test group."
+    _, resources = plan_runner()
+    assert len(resources) == 1
+    r = resources[0]
+    assert r["type"] == "google_cloud_identity_group"
+    assert r["values"]["display_name"] == "display name"
+    assert r["values"]["group_key"][0]["id"] == "my-group@example.com"
+    assert r["values"]["parent"] == "customers/C01234567"
 
 
 def test_members(plan_runner):
-  "Test group members."
-  members = '["member@example.com"]'
-  _, resources = plan_runner(members=members)
+    "Test group members."
+    members = '["member@example.com"]'
+    _, resources = plan_runner(members=members)
 
-  resource_types = Counter([r['type'] for r in resources])
-  assert resource_types == {
-      'google_cloud_identity_group': 1,
-      'google_cloud_identity_group_membership': 1,
-  }
+    resource_types = Counter([r["type"] for r in resources])
+    assert resource_types == {
+        "google_cloud_identity_group": 1,
+        "google_cloud_identity_group_membership": 1,
+    }
 
-  values = next(r['values'] for r in resources if r['name'] == 'members')
-  assert values['preferred_member_key'][0]['id'] == 'member@example.com'
-  assert [role['name'] for role in values['roles']] == ['MEMBER']
+    values = next(r["values"] for r in resources if r["name"] == "members")
+    assert values["preferred_member_key"][0]["id"] == "member@example.com"
+    assert [role["name"] for role in values["roles"]] == ["MEMBER"]

@@ -1,7 +1,7 @@
 # Decentralized firewall validator
 
 The decentralized firewall validator is a Python scripts that utilizes [Yamale](https://github.com/23andMe/Yamale) schema
-validation library to validate the configured firewall rules. 
+validation library to validate the configured firewall rules.
 
 ## Configuring schemas
 
@@ -9,7 +9,7 @@ There are three configuration files:
 - [firewallSchema.yaml](firewallSchema.yaml), where the basic validation schema is configured
 - [firewallSchemaAutoApprove.yaml](firewallSchemaAutoApprove.yaml), where the a different schema for auto-approval
   can be configured (in case more validation is required than what is available in the schema settings)
-- [firewallSchemaSettings.yaml](firewallSchemaSettings.yaml), configures list of allowed and approved 
+- [firewallSchemaSettings.yaml](firewallSchemaSettings.yaml), configures list of allowed and approved
   source and destination ranges, ports, network tags and service accounts.
 
 ## Building the container
@@ -18,7 +18,7 @@ You can build the container like this:
 
 ```sh
 docker build -t eu.gcr.io/YOUR-PROJECT/firewall-validator:latest .
-docker push eu.gcr.io/YOUR-PROJECT/firewall-validator:latest 
+docker push eu.gcr.io/YOUR-PROJECT/firewall-validator:latest
 ```
 
 ## Running the validator
@@ -55,7 +55,7 @@ Example of being used in a pipeline:
       if: ${{ github.event_name == 'pull_request' && steps.validation.outputs.ok != 'true' }}
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        script: |          
+        script: |
           var comments = [];
           var errors = JSON.parse(process.env.ERRORS);
           for (const filename in errors) {

@@ -28,5 +28,3 @@ module "projects" {
     dev-spoke-0 = "link"
   }
 }
-
-

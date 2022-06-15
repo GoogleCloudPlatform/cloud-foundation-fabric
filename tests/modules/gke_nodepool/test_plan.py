@@ -12,46 +12,47 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-OAUTH_SCOPE = ['https://www.googleapis.com/auth/cloud-platform']
+OAUTH_SCOPE = ["https://www.googleapis.com/auth/cloud-platform"]
 OAUTH_SCOPES = [
-    'https://www.googleapis.com/auth/devstorage.read_only',
-    'https://www.googleapis.com/auth/logging.write',
-    'https://www.googleapis.com/auth/monitoring',
-    'https://www.googleapis.com/auth/monitoring.write']
+    "https://www.googleapis.com/auth/devstorage.read_only",
+    "https://www.googleapis.com/auth/logging.write",
+    "https://www.googleapis.com/auth/monitoring",
+    "https://www.googleapis.com/auth/monitoring.write",
+]
 
 
 def test_defaults(plan_runner):
-  "Test resources created with variable defaults."
-  _, resources = plan_runner()
-  assert len(resources) == 1
-  node_config = resources[0]['values']['node_config'][0]
-  assert node_config['oauth_scopes'] == OAUTH_SCOPES
-  assert 'service_account' not in node_config
+    "Test resources created with variable defaults."
+    _, resources = plan_runner()
+    assert len(resources) == 1
+    node_config = resources[0]["values"]["node_config"][0]
+    assert node_config["oauth_scopes"] == OAUTH_SCOPES
+    assert "service_account" not in node_config
 
 
 def test_external_sa(plan_runner):
-  "Test resources created with externally managed sa."
-  _, resources = plan_runner(node_service_account='foo@example.org')
-  assert len(resources) == 1
-  node_config = resources[0]['values']['node_config'][0]
-  assert node_config['oauth_scopes'] == OAUTH_SCOPES
-  assert node_config['service_account'] == 'foo@example.org'
+    "Test resources created with externally managed sa."
+    _, resources = plan_runner(node_service_account="foo@example.org")
+    assert len(resources) == 1
+    node_config = resources[0]["values"]["node_config"][0]
+    assert node_config["oauth_scopes"] == OAUTH_SCOPES
+    assert node_config["service_account"] == "foo@example.org"
 
 
 def test_external_scopes(plan_runner):
-  "Test resources created with externally defined scopes."
-  oauth_scopes = '["https://www.googleapis.com/auth/cloud-platform"]'
-  _, resources = plan_runner(node_service_account_scopes=oauth_scopes)
-  assert len(resources) == 1
-  node_config = resources[0]['values']['node_config'][0]
-  assert node_config['oauth_scopes'] == OAUTH_SCOPE
-  assert 'service_account' not in node_config
+    "Test resources created with externally defined scopes."
+    oauth_scopes = '["https://www.googleapis.com/auth/cloud-platform"]'
+    _, resources = plan_runner(node_service_account_scopes=oauth_scopes)
+    assert len(resources) == 1
+    node_config = resources[0]["values"]["node_config"][0]
+    assert node_config["oauth_scopes"] == OAUTH_SCOPE
+    assert "service_account" not in node_config
 
 
 def test_internal_sa(plan_runner):
-  "Test resources created with internally managed sa."
-  _, resources = plan_runner(node_service_account_create='true')
-  assert len(resources) == 2
-  node_config = resources[0]['values']['node_config'][0]
-  assert node_config['oauth_scopes'] == OAUTH_SCOPE
-  assert 'service_account' not in node_config
+    "Test resources created with internally managed sa."
+    _, resources = plan_runner(node_service_account_create="true")
+    assert len(resources) == 2
+    node_config = resources[0]["values"]["node_config"][0]
+    assert node_config["oauth_scopes"] == OAUTH_SCOPE
+    assert "service_account" not in node_config

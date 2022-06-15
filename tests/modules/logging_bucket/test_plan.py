@@ -12,68 +12,64 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-def test_project_logging_bucket(plan_runner):
-  "Test project logging bucket."
-  _, resources = plan_runner(parent_type="project",
-                             parent="myproject")
-  assert len(resources) == 1
 
-  resource = resources[0]
-  assert resource["type"] == "google_logging_project_bucket_config"
-  assert resource["values"] == {
-      "bucket_id": "mybucket",
-      "project": "myproject",
-      "location": "global",
-      "retention_days": 30,
-  }
+def test_project_logging_bucket(plan_runner):
+    "Test project logging bucket."
+    _, resources = plan_runner(parent_type="project", parent="myproject")
+    assert len(resources) == 1
+
+    resource = resources[0]
+    assert resource["type"] == "google_logging_project_bucket_config"
+    assert resource["values"] == {
+        "bucket_id": "mybucket",
+        "project": "myproject",
+        "location": "global",
+        "retention_days": 30,
+    }
 
 
 def test_folder_logging_bucket(plan_runner):
-  "Test project logging bucket."
-  _, resources = plan_runner(
-      parent_type="folder", parent="folders/0123456789"
-  )
-  assert len(resources) == 1
+    "Test project logging bucket."
+    _, resources = plan_runner(parent_type="folder", parent="folders/0123456789")
+    assert len(resources) == 1
 
-  resource = resources[0]
-  assert resource["type"] == "google_logging_folder_bucket_config"
-  assert resource["values"] == {
-      "bucket_id": "mybucket",
-      "folder": "folders/0123456789",
-      "location": "global",
-      "retention_days": 30,
-  }
+    resource = resources[0]
+    assert resource["type"] == "google_logging_folder_bucket_config"
+    assert resource["values"] == {
+        "bucket_id": "mybucket",
+        "folder": "folders/0123456789",
+        "location": "global",
+        "retention_days": 30,
+    }
 
 
 def test_organization_logging_bucket(plan_runner):
-  "Test project logging bucket."
-  _, resources = plan_runner(
-      parent_type="organization", parent="organizations/0123456789"
-  )
-  assert len(resources) == 1
+    "Test project logging bucket."
+    _, resources = plan_runner(
+        parent_type="organization", parent="organizations/0123456789"
+    )
+    assert len(resources) == 1
 
-  resource = resources[0]
-  assert resource["type"] == "google_logging_organization_bucket_config"
-  assert resource["values"] == {
-      "bucket_id": "mybucket",
-      "organization": "organizations/0123456789",
-      "location": "global",
-      "retention_days": 30,
-  }
+    resource = resources[0]
+    assert resource["type"] == "google_logging_organization_bucket_config"
+    assert resource["values"] == {
+        "bucket_id": "mybucket",
+        "organization": "organizations/0123456789",
+        "location": "global",
+        "retention_days": 30,
+    }
 
 
 def test_billing_account_logging_bucket(plan_runner):
-  "Test project logging bucket."
-  _, resources = plan_runner(
-      parent_type="billing_account", parent="0123456789"
-  )
-  assert len(resources) == 1
+    "Test project logging bucket."
+    _, resources = plan_runner(parent_type="billing_account", parent="0123456789")
+    assert len(resources) == 1
 
-  resource = resources[0]
-  assert resource["type"] == "google_logging_billing_account_bucket_config"
-  assert resource["values"] == {
-      "bucket_id": "mybucket",
-      "billing_account": "0123456789",
-      "location": "global",
-      "retention_days": 30,
-  }
+    resource = resources[0]
+    assert resource["type"] == "google_logging_billing_account_bucket_config"
+    assert resource["values"] == {
+        "bucket_id": "mybucket",
+        "billing_account": "0123456789",
+        "location": "global",
+        "retention_days": 30,
+    }

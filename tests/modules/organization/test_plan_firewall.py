@@ -12,14 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-_FACTORY = '''
+_FACTORY = """
 {
   cidr_file = "data/firewall-cidrs.yaml"
   policy_name = "factory-1"
   rules_file = "data/firewall-rules.yaml"
 }
-'''
-_POLICIES = '''
+"""
+_POLICIES = """
 {
   policy1 = {
     allow-ingress = {
@@ -65,66 +65,57 @@ _POLICIES = '''
     }
   }
   }
-'''
+"""
 
 
 def test_custom(plan_runner):
-  'Test custom firewall policies.'
-  _, resources = plan_runner(firewall_policies=_POLICIES)
-  assert len(resources) == 5
-  policies = [r for r in resources
-              if r['type'] == 'google_compute_firewall_policy']
-  rules = [r for r in resources
-           if r['type'] == 'google_compute_firewall_policy_rule']
-  assert set(r['index'] for r in policies) == set([
-      'policy1', 'policy2'
-  ])
-  assert set(r['index'] for r in rules) == set([
-      'policy1-deny-egress', 'policy2-allow-ingress', 'policy1-allow-ingress'
-  ])
+    "Test custom firewall policies."
+    _, resources = plan_runner(firewall_policies=_POLICIES)
+    assert len(resources) == 5
+    policies = [r for r in resources if r["type"] == "google_compute_firewall_policy"]
+    rules = [r for r in resources if r["type"] == "google_compute_firewall_policy_rule"]
+    assert set(r["index"] for r in policies) == set(["policy1", "policy2"])
+    assert set(r["index"] for r in rules) == set(
+        ["policy1-deny-egress", "policy2-allow-ingress", "policy1-allow-ingress"]
+    )
 
 
 def test_factory(plan_runner):
-  'Test firewall policy factory.'
-  _, resources = plan_runner(firewall_policy_factory=_FACTORY)
-  assert len(resources) == 3
-  policies = [r for r in resources
-              if r['type'] == 'google_compute_firewall_policy']
-  rules = [r for r in resources
-           if r['type'] == 'google_compute_firewall_policy_rule']
-  assert set(r['index'] for r in policies) == set([
-      'factory-1'
-  ])
-  assert set(r['index'] for r in rules) == set([
-      'factory-1-allow-admins', 'factory-1-allow-ssh-from-iap'
-  ])
+    "Test firewall policy factory."
+    _, resources = plan_runner(firewall_policy_factory=_FACTORY)
+    assert len(resources) == 3
+    policies = [r for r in resources if r["type"] == "google_compute_firewall_policy"]
+    rules = [r for r in resources if r["type"] == "google_compute_firewall_policy_rule"]
+    assert set(r["index"] for r in policies) == set(["factory-1"])
+    assert set(r["index"] for r in rules) == set(
+        ["factory-1-allow-admins", "factory-1-allow-ssh-from-iap"]
+    )
 
 
 def test_factory_name(plan_runner):
-  'Test firewall policy factory default name.'
-  factory = _FACTORY.replace('"factory-1"', 'null')
-  _, resources = plan_runner(firewall_policy_factory=factory)
-  assert len(resources) == 3
-  policies = [r for r in resources
-              if r['type'] == 'google_compute_firewall_policy']
-  assert set(r['index'] for r in policies) == set([
-      'factory'
-  ])
+    "Test firewall policy factory default name."
+    factory = _FACTORY.replace('"factory-1"', "null")
+    _, resources = plan_runner(firewall_policy_factory=factory)
+    assert len(resources) == 3
+    policies = [r for r in resources if r["type"] == "google_compute_firewall_policy"]
+    assert set(r["index"] for r in policies) == set(["factory"])
 
 
 def test_combined(plan_runner):
-  'Test combined rules.'
-  _, resources = plan_runner(firewall_policies=_POLICIES,
-                             firewall_policy_factory=_FACTORY)
-  assert len(resources) == 8
-  policies = [r for r in resources
-              if r['type'] == 'google_compute_firewall_policy']
-  rules = [r for r in resources
-           if r['type'] == 'google_compute_firewall_policy_rule']
-  assert set(r['index'] for r in policies) == set([
-      'factory-1', 'policy1', 'policy2'
-  ])
-  assert set(r['index'] for r in rules) == set([
-      'factory-1-allow-admins', 'factory-1-allow-ssh-from-iap',
-      'policy1-deny-egress', 'policy2-allow-ingress', 'policy1-allow-ingress'
-  ])
+    "Test combined rules."
+    _, resources = plan_runner(
+        firewall_policies=_POLICIES, firewall_policy_factory=_FACTORY
+    )
+    assert len(resources) == 8
+    policies = [r for r in resources if r["type"] == "google_compute_firewall_policy"]
+    rules = [r for r in resources if r["type"] == "google_compute_firewall_policy_rule"]
+    assert set(r["index"] for r in policies) == set(["factory-1", "policy1", "policy2"])
+    assert set(r["index"] for r in rules) == set(
+        [
+            "factory-1-allow-admins",
+            "factory-1-allow-ssh-from-iap",
+            "policy1-deny-egress",
+            "policy2-allow-ingress",
+            "policy1-allow-ingress",
+        ]
+    )

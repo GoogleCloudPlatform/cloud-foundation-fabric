@@ -38,7 +38,7 @@ Once resources are created, you can run queries on the data you exported on Bigq
 
 You can also create a dashboard connecting [Datalab](https://datastudio.google.com/) or any other BI tools of your choice to your Bigquery dataset.
 
-## File exporter for JSON, CSV (optional). 
+## File exporter for JSON, CSV (optional).
 
 This is an optional part.
 

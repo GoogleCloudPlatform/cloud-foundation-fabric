@@ -22,7 +22,7 @@ output "instructions" {
 
         Add-Computer -Domain ${var.ad_domain_fqdn} -Restart
 
-        On the first instance and the second instance, as Domain Administrator, please run the following 
+        On the first instance and the second instance, as Domain Administrator, please run the following
         PowerShell script: C:\InitializeCluster.ps1
 
         Follow the instructions from here: https://cloud.google.com/compute/docs/instances/sql-server/configure-availability#creating_an_availability_group

@@ -17,28 +17,32 @@ import pytest
 
 @pytest.fixture
 def resources(plan_runner):
-  _, resources = plan_runner()
-  return resources
+    _, resources = plan_runner()
+    return resources
 
 
 def test_resource_count(resources):
-  "Test number of resources created."
-  assert len(resources) == 3
+    "Test number of resources created."
+    assert len(resources) == 3
 
 
 def test_instance_attachment(resources):
-  "Test Apigee Instance Attachments."
-  attachments = [r['values'] for r in resources if r['type']
-                 == 'google_apigee_instance_attachment']
-  assert len(attachments) == 2
-  assert set(a['environment'] for a in attachments) == set(['eval1', 'eval2'])
+    "Test Apigee Instance Attachments."
+    attachments = [
+        r["values"]
+        for r in resources
+        if r["type"] == "google_apigee_instance_attachment"
+    ]
+    assert len(attachments) == 2
+    assert set(a["environment"] for a in attachments) == set(["eval1", "eval2"])
 
 
 def test_instance(resources):
-  "Test Instance."
-  instances = [r['values'] for r in resources if r['type']
-               == 'google_apigee_instance']
-  assert len(instances) == 1
-  assert instances[0]['ip_range'] == '10.0.0.0/22,10.1.0.0/28'
-  assert instances[0]['name'] == 'my-test-instance'
-  assert instances[0]['location'] == 'europe-west1'
+    "Test Instance."
+    instances = [
+        r["values"] for r in resources if r["type"] == "google_apigee_instance"
+    ]
+    assert len(instances) == 1
+    assert instances[0]["ip_range"] == "10.0.0.0/22,10.1.0.0/28"
+    assert instances[0]["name"] == "my-test-instance"
+    assert instances[0]["location"] == "europe-west1"

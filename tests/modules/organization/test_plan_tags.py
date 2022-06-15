@@ -14,8 +14,8 @@
 
 
 def test_keys(plan_runner):
-  'Test tag keys.'
-  tags = '''{
+    "Test tag keys."
+    tags = """{
     foo = null
     bar = {
       description = null
@@ -52,26 +52,25 @@ def test_keys(plan_runner):
         }
       }
     }
-  }'''
-  _, resources = plan_runner(tags=tags)
-  assert len(resources) == 10
-  resource_values = {}
-  for r in resources:
-    resource_values.setdefault(r['type'], []).append(r['values'])
-  assert len(resource_values['google_tags_tag_key']) == 3
-  assert len(resource_values['google_tags_tag_value']) == 3
-  result = [
-      r['role'] for r in resource_values['google_tags_tag_value_iam_binding']
-  ]
-  expected = [
-      'roles/resourcemanager.tagAdmin', 'roles/resourcemanager.tagViewer',
-      'roles/resourcemanager.tagViewer'
-  ]
-  assert result == expected
+  }"""
+    _, resources = plan_runner(tags=tags)
+    assert len(resources) == 10
+    resource_values = {}
+    for r in resources:
+        resource_values.setdefault(r["type"], []).append(r["values"])
+    assert len(resource_values["google_tags_tag_key"]) == 3
+    assert len(resource_values["google_tags_tag_value"]) == 3
+    result = [r["role"] for r in resource_values["google_tags_tag_value_iam_binding"]]
+    expected = [
+        "roles/resourcemanager.tagAdmin",
+        "roles/resourcemanager.tagViewer",
+        "roles/resourcemanager.tagViewer",
+    ]
+    assert result == expected
 
 
 def test_bindings(plan_runner):
-  'Test tag bindings.'
-  tag_bindings = '{foo = "tagValues/123456789012"}'
-  _, resources = plan_runner(tag_bindings=tag_bindings)
-  assert len(resources) == 1
+    "Test tag bindings."
+    tag_bindings = '{foo = "tagValues/123456789012"}'
+    _, resources = plan_runner(tag_bindings=tag_bindings)
+    assert len(resources) == 1

@@ -14,9 +14,10 @@
 
 from collections import Counter
 
+
 def test_sinks(plan_runner):
-  "Test folder-level sinks."
-  logging_sinks = """ {
+    "Test folder-level sinks."
+    logging_sinks = """ {
     warning = {
       type             = "storage"
       destination      = "mybucket"
@@ -54,110 +55,110 @@ def test_sinks(plan_runner):
     }
   }
   """
-  _, resources = plan_runner(logging_sinks=logging_sinks)
-  assert len(resources) == 9
+    _, resources = plan_runner(logging_sinks=logging_sinks)
+    assert len(resources) == 9
 
-  resource_types = Counter([r["type"] for r in resources])
-  assert resource_types == {
-      "google_logging_folder_sink": 4,
-      "google_folder": 1,
-      "google_bigquery_dataset_iam_member": 1,
-      "google_project_iam_member": 1,
-      "google_pubsub_topic_iam_member": 1,
-      "google_storage_bucket_iam_member": 1,
-  }
+    resource_types = Counter([r["type"] for r in resources])
+    assert resource_types == {
+        "google_logging_folder_sink": 4,
+        "google_folder": 1,
+        "google_bigquery_dataset_iam_member": 1,
+        "google_project_iam_member": 1,
+        "google_pubsub_topic_iam_member": 1,
+        "google_storage_bucket_iam_member": 1,
+    }
 
-  sinks = [r for r in resources if r["type"] == "google_logging_folder_sink"]
-  assert sorted([r["index"] for r in sinks]) == [
-      "debug",
-      "info",
-      "notice",
-      "warning",
-  ]
-  values = [
-      (
-          r["index"],
-          r["values"]["filter"],
-          r["values"]["destination"],
-          r["values"]["include_children"],
-      )
-      for r in sinks
-  ]
-  assert sorted(values) == [
-      (
-          "debug",
-          "severity=DEBUG",
-          "logging.googleapis.com/projects/myproject/locations/global/buckets/mybucket",
-          False,
-      ),
-      (
-          "info",
-          "severity=INFO",
-          "bigquery.googleapis.com/projects/myproject/datasets/mydataset",
-          True,
-      ),
-      (
-          "notice",
-          "severity=NOTICE",
-          "pubsub.googleapis.com/projects/myproject/topics/mytopic",
-          False,
-      ),
-      ("warning", "severity=WARNING", "storage.googleapis.com/mybucket", True),
-  ]
+    sinks = [r for r in resources if r["type"] == "google_logging_folder_sink"]
+    assert sorted([r["index"] for r in sinks]) == [
+        "debug",
+        "info",
+        "notice",
+        "warning",
+    ]
+    values = [
+        (
+            r["index"],
+            r["values"]["filter"],
+            r["values"]["destination"],
+            r["values"]["include_children"],
+        )
+        for r in sinks
+    ]
+    assert sorted(values) == [
+        (
+            "debug",
+            "severity=DEBUG",
+            "logging.googleapis.com/projects/myproject/locations/global/buckets/mybucket",
+            False,
+        ),
+        (
+            "info",
+            "severity=INFO",
+            "bigquery.googleapis.com/projects/myproject/datasets/mydataset",
+            True,
+        ),
+        (
+            "notice",
+            "severity=NOTICE",
+            "pubsub.googleapis.com/projects/myproject/topics/mytopic",
+            False,
+        ),
+        ("warning", "severity=WARNING", "storage.googleapis.com/mybucket", True),
+    ]
 
-  bindings = [r for r in resources if "member" in r["type"]]
-  values = [(r["index"], r["type"], r["values"]["role"]) for r in bindings]
-  assert sorted(values) == [
-      ("debug", "google_project_iam_member", "roles/logging.bucketWriter"),
-      ("info", "google_bigquery_dataset_iam_member", "roles/bigquery.dataEditor"),
-      ("notice", "google_pubsub_topic_iam_member", "roles/pubsub.publisher"),
-      ("warning", "google_storage_bucket_iam_member", "roles/storage.objectCreator"),
-  ]
+    bindings = [r for r in resources if "member" in r["type"]]
+    values = [(r["index"], r["type"], r["values"]["role"]) for r in bindings]
+    assert sorted(values) == [
+        ("debug", "google_project_iam_member", "roles/logging.bucketWriter"),
+        ("info", "google_bigquery_dataset_iam_member", "roles/bigquery.dataEditor"),
+        ("notice", "google_pubsub_topic_iam_member", "roles/pubsub.publisher"),
+        ("warning", "google_storage_bucket_iam_member", "roles/storage.objectCreator"),
+    ]
 
-  exclusions = [(r["index"], r["values"]["exclusions"]) for r in sinks]
-  assert sorted(exclusions) == [
-      (
-          "debug",
-          [
-              {
-                  "description": None,
-                  "disabled": False,
-                  "filter": "logName:compute",
-                  "name": "no-compute",
-              },
-              {
-                  "description": None,
-                  "disabled": False,
-                  "filter": "logName:container",
-                  "name": "no-container",
-              },
-          ],
-      ),
-      ("info", []),
-      ("notice", []),
-      ("warning", []),
-  ]
+    exclusions = [(r["index"], r["values"]["exclusions"]) for r in sinks]
+    assert sorted(exclusions) == [
+        (
+            "debug",
+            [
+                {
+                    "description": None,
+                    "disabled": False,
+                    "filter": "logName:compute",
+                    "name": "no-compute",
+                },
+                {
+                    "description": None,
+                    "disabled": False,
+                    "filter": "logName:container",
+                    "name": "no-container",
+                },
+            ],
+        ),
+        ("info", []),
+        ("notice", []),
+        ("warning", []),
+    ]
 
 
 def test_exclusions(plan_runner):
-  "Test folder-level logging exclusions."
-  logging_exclusions = (
-      "{"
-      'exclusion1 = "resource.type=gce_instance", '
-      'exclusion2 = "severity=NOTICE", '
-      "}"
-  )
-  _, resources = plan_runner(logging_exclusions=logging_exclusions)
-  assert len(resources) == 3
-  exclusions = [
-      r for r in resources if r["type"] == "google_logging_folder_exclusion"
-  ]
-  assert sorted([r["index"] for r in exclusions]) == [
-      "exclusion1",
-      "exclusion2",
-  ]
-  values = [(r["index"], r["values"]["filter"]) for r in exclusions]
-  assert sorted(values) == [
-      ("exclusion1", "resource.type=gce_instance"),
-      ("exclusion2", "severity=NOTICE"),
-  ]
+    "Test folder-level logging exclusions."
+    logging_exclusions = (
+        "{"
+        'exclusion1 = "resource.type=gce_instance", '
+        'exclusion2 = "severity=NOTICE", '
+        "}"
+    )
+    _, resources = plan_runner(logging_exclusions=logging_exclusions)
+    assert len(resources) == 3
+    exclusions = [
+        r for r in resources if r["type"] == "google_logging_folder_exclusion"
+    ]
+    assert sorted([r["index"] for r in exclusions]) == [
+        "exclusion1",
+        "exclusion2",
+    ]
+    values = [(r["index"], r["values"]["filter"]) for r in exclusions]
+    assert sorted(values) == [
+        ("exclusion1", "resource.type=gce_instance"),
+        ("exclusion2", "severity=NOTICE"),
+    ]

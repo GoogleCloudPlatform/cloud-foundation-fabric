@@ -2,7 +2,7 @@
 
 This module allows creating a managed instance group supporting one or more application versions via instance templates. Optionally, a health check and an autoscaler can be created, and the managed instance group can be configured to be stateful.
 
-This module can be coupled with the [`compute-vm`](../compute-vm) module which can manage instance templates, and the [`net-ilb`](../net-ilb) module to assign the MIG to a backend wired to an Internal Load Balancer. The first use case is shown in the examples below. 
+This module can be coupled with the [`compute-vm`](../compute-vm) module which can manage instance templates, and the [`net-ilb`](../net-ilb) module to assign the MIG to a backend wired to an Internal Load Balancer. The first use case is shown in the examples below.
 
 Stateful disks can be created directly, as shown in the last example below.
 
@@ -270,7 +270,7 @@ module "nginx-mig" {
 
 ### Stateful MIGs - MIG Config
 
-Stateful MIGs have some limitations documented [here](https://cloud.google.com/compute/docs/instance-groups/configuring-stateful-migs#limitations). Enforcement of these requirements is the responsibility of users of this module. 
+Stateful MIGs have some limitations documented [here](https://cloud.google.com/compute/docs/instance-groups/configuring-stateful-migs#limitations). Enforcement of these requirements is the responsibility of users of this module.
 
 You can configure a disk defined in the instance template to be stateful  for all instances in the MIG by configuring in the MIG's stateful policy, using the `stateful_disk_mig` variable. Alternatively, you can also configure stateful persistent disks individually per instance of the MIG by setting the `stateful_disk_instance` variable. A discussion on these scenarios can be found in the [docs](https://cloud.google.com/compute/docs/instance-groups/configuring-stateful-disks-in-migs).
 
@@ -352,7 +352,7 @@ module "nginx-mig" {
 ```
 
 ### Stateful MIGs - Instance Config
-Here is an example defining the stateful config at the instance level. 
+Here is an example defining the stateful config at the instance level.
 
 Note that you will need to know the instance name in order to use this configuration.
 
@@ -419,7 +419,7 @@ module "nginx-mig" {
       instance-1 = {
         stateful_disks = {
           persistent-disk-1 = {
-            source = "test-disk", 
+            source = "test-disk",
             mode = "READ_ONLY",
             delete_rule= "NEVER",
           },
@@ -430,7 +430,7 @@ module "nginx-mig" {
         update_config = {
           minimal_action                   = "NONE",
           most_disruptive_allowed_action   = "REPLACE",
-          remove_instance_state_on_destroy = false, 
+          remove_instance_state_on_destroy = false,
         },
       },
     },
@@ -458,7 +458,7 @@ module "nginx-mig" {
 | [health_check_config](variables.tf#L53) | Optional auto-created health check configuration, use the output self-link to set it in the auto healing policy. Refer to examples for usage. | <code title="object&#40;&#123;&#10;  type    &#61; string      &#35; http https tcp ssl http2&#10;  check   &#61; map&#40;any&#41;    &#35; actual health check block attributes&#10;  config  &#61; map&#40;number&#41; &#35; interval, thresholds, timeout&#10;  logging &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [named_ports](variables.tf#L73) | Named ports. | <code>map&#40;number&#41;</code> |  | <code>null</code> |
 | [regional](variables.tf#L84) | Use regional instance group. When set, `location` should be set to the region. | <code>bool</code> |  | <code>false</code> |
-| [stateful_config](variables.tf#L90) | Stateful configuration can be done by individual instances or for all instances in the MIG. They key in per_instance_config is the name of the specific instance. The key of the stateful_disks is the 'device_name' field of the resource. Please note that device_name is defined at the OS mount level, unlike the disk name. | <code title="object&#40;&#123;&#10;  per_instance_config &#61; map&#40;object&#40;&#123;&#10;    stateful_disks &#61; map&#40;object&#40;&#123;&#10;      source      &#61; string&#10;      mode        &#61; string &#35; READ_WRITE &#124; READ_ONLY &#10;      delete_rule &#61; string &#35; NEVER &#124; ON_PERMANENT_INSTANCE_DELETION&#10;    &#125;&#41;&#41;&#10;    metadata &#61; map&#40;string&#41;&#10;    update_config &#61; object&#40;&#123;&#10;      minimal_action                   &#61; string &#35; NONE &#124; REPLACE &#124; RESTART &#124; REFRESH&#10;      most_disruptive_allowed_action   &#61; string &#35; REPLACE &#124; RESTART &#124; REFRESH &#124; NONE&#10;      remove_instance_state_on_destroy &#61; bool&#10;    &#125;&#41;&#10;  &#125;&#41;&#41;&#10;&#10;&#10;  mig_config &#61; object&#40;&#123;&#10;    stateful_disks &#61; map&#40;object&#40;&#123;&#10;      delete_rule &#61; string &#35; NEVER &#124; ON_PERMANENT_INSTANCE_DELETION&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#10;&#10;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [stateful_config](variables.tf#L90) | Stateful configuration can be done by individual instances or for all instances in the MIG. They key in per_instance_config is the name of the specific instance. The key of the stateful_disks is the 'device_name' field of the resource. Please note that device_name is defined at the OS mount level, unlike the disk name. | <code title="object&#40;&#123;&#10;  per_instance_config &#61; map&#40;object&#40;&#123;&#10;    stateful_disks &#61; map&#40;object&#40;&#123;&#10;      source      &#61; string&#10;      mode        &#61; string &#35; READ_WRITE &#124; READ_ONLY&#10;      delete_rule &#61; string &#35; NEVER &#124; ON_PERMANENT_INSTANCE_DELETION&#10;    &#125;&#41;&#41;&#10;    metadata &#61; map&#40;string&#41;&#10;    update_config &#61; object&#40;&#123;&#10;      minimal_action                   &#61; string &#35; NONE &#124; REPLACE &#124; RESTART &#124; REFRESH&#10;      most_disruptive_allowed_action   &#61; string &#35; REPLACE &#124; RESTART &#124; REFRESH &#124; NONE&#10;      remove_instance_state_on_destroy &#61; bool&#10;    &#125;&#41;&#10;  &#125;&#41;&#41;&#10;&#10;&#10;  mig_config &#61; object&#40;&#123;&#10;    stateful_disks &#61; map&#40;object&#40;&#123;&#10;      delete_rule &#61; string &#35; NEVER &#124; ON_PERMANENT_INSTANCE_DELETION&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#10;&#10;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [target_pools](variables.tf#L121) | Optional list of URLs for target pools to which new instances in the group are added. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 | [target_size](variables.tf#L127) | Group target size, leave null when using an autoscaler. | <code>number</code> |  | <code>null</code> |
 | [update_policy](variables.tf#L133) | Update policy. Type can be 'OPPORTUNISTIC' or 'PROACTIVE', action 'REPLACE' or 'restart', surge type 'fixed' or 'percent'. | <code title="object&#40;&#123;&#10;  type                 &#61; string &#35; OPPORTUNISTIC &#124; PROACTIVE&#10;  minimal_action       &#61; string &#35; REPLACE &#124; RESTART&#10;  min_ready_sec        &#61; number&#10;  max_surge_type       &#61; string &#35; fixed &#124; percent&#10;  max_surge            &#61; number&#10;  max_unavailable_type &#61; string&#10;  max_unavailable      &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |

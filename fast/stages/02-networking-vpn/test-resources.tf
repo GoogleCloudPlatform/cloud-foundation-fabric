@@ -38,7 +38,7 @@
 #   metadata = {
 #     startup-script = <<EOF
 #       apt update
-#       apt install iputils-ping 	bind9-dnsutils
+#       apt install iputils-ping     bind9-dnsutils
 #     EOF
 #   }
 # }
@@ -66,7 +66,7 @@
 #   metadata = {
 #     startup-script = <<EOF
 #       apt update
-#       apt install iputils-ping 	bind9-dnsutils
+#       apt install iputils-ping     bind9-dnsutils
 #     EOF
 #   }
 # }
@@ -94,7 +94,7 @@
 #   metadata = {
 #     startup-script = <<EOF
 #       apt update
-#       apt install iputils-ping 	bind9-dnsutils
+#       apt install iputils-ping     bind9-dnsutils
 #     EOF
 #   }
 # }

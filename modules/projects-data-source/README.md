@@ -1,6 +1,6 @@
-# Projects Data Source Module 
+# Projects Data Source Module
 
-This module extends functionality of [google_projects](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/projects) data source by retrieving all the projects and folders under a specific `parent` recursively. 
+This module extends functionality of [google_projects](https://registry.terraform.io/providers/hashicorp/google/latest/docs/data-sources/projects) data source by retrieving all the projects and folders under a specific `parent` recursively.
 
 A good usage pattern would be when we want all the projects under a specific folder (including nested subfolders) to be included into [VPC Service Controls](../vpc-sc/). Instead of manually maintaining the list of project numbers as an input to the `vpc-sc` module we can use that module to retrieve all the project numbers dynamically.
 
@@ -31,7 +31,7 @@ output "folders" {
 module "my-dev" {
   source = "./modules/projects-data-source"
   parent = "folders/123456789"
-  filter = "labels.env:DEV lifecycleState:ACTIVE"   
+  filter = "labels.env:DEV lifecycleState:ACTIVE"
 }
 
 output "dev-projects" {

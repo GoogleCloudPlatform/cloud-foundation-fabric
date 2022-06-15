@@ -200,7 +200,7 @@ module "project" {
     ]
   }
   iam = {
-    "roles/editor" = [      
+    "roles/editor" = [
       "serviceAccount:${module.project.service_accounts.cloud_services}"
     ]
   }
@@ -227,7 +227,7 @@ module "project" {
   source          = "./modules/project"
   name            = "project-example"
   iam = {
-    "roles/editor" = [      
+    "roles/editor" = [
       "serviceAccount:${module.project.service_accounts.cloud_services}"
     ]
   }

@@ -62,5 +62,3 @@ variable "vsphere_environment" {
     virtual_net   = string
   })
 }
-
-

@@ -12,9 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 def test_firweall_policy(plan_runner):
-  "Test boolean folder policy."
-  policy = """
+    "Test boolean folder policy."
+    policy = """
   {
     policy1 = {
       allow-ingress = {
@@ -46,40 +47,57 @@ def test_firweall_policy(plan_runner):
     }
   }
   """
-  association = '{policy1="policy1"}'
-  _, resources = plan_runner(firewall_policies=policy,
-                             firewall_policy_association=association)
-  assert len(resources) == 5
+    association = '{policy1="policy1"}'
+    _, resources = plan_runner(
+        firewall_policies=policy, firewall_policy_association=association
+    )
+    assert len(resources) == 5
 
-  policies = [r for r in resources
-              if r['type'] == 'google_compute_firewall_policy']
-  assert len(policies) == 1
+    policies = [r for r in resources if r["type"] == "google_compute_firewall_policy"]
+    assert len(policies) == 1
 
-  rules = [r for r in resources
-           if r['type'] == 'google_compute_firewall_policy_rule']
-  assert len(rules) == 2
+    rules = [r for r in resources if r["type"] == "google_compute_firewall_policy_rule"]
+    assert len(rules) == 2
 
-  rule_values = []
-  for rule in rules:
-    name = rule['name']
-    index = rule['index']
-    action = rule['values']['action']
-    direction = rule['values']['direction']
-    priority = rule['values']['priority']
-    match = rule['values']['match']
-    rule_values.append((name, index, action, direction, priority, match))
+    rule_values = []
+    for rule in rules:
+        name = rule["name"]
+        index = rule["index"]
+        action = rule["values"]["action"]
+        direction = rule["values"]["direction"]
+        priority = rule["values"]["priority"]
+        match = rule["values"]["match"]
+        rule_values.append((name, index, action, direction, priority, match))
 
-  assert sorted(rule_values) == sorted([
-      ('rule', 'policy1-allow-ingress', 'allow', 'INGRESS', 100, [
-          {
-              'dest_ip_ranges': None,
-              'layer4_configs': [{'ip_protocol': 'tcp', 'ports': ['22']}],
-              'src_ip_ranges': ['10.0.0.0/8']
-          }]),
-      ('rule', 'policy1-deny-egress', 'deny', 'EGRESS', 200, [
-          {
-              'dest_ip_ranges': ['192.168.0.0/24'],
-              'layer4_configs': [{'ip_protocol': 'tcp', 'ports': ['443']}],
-              'src_ip_ranges': None
-          }])
-  ])
+    assert sorted(rule_values) == sorted(
+        [
+            (
+                "rule",
+                "policy1-allow-ingress",
+                "allow",
+                "INGRESS",
+                100,
+                [
+                    {
+                        "dest_ip_ranges": None,
+                        "layer4_configs": [{"ip_protocol": "tcp", "ports": ["22"]}],
+                        "src_ip_ranges": ["10.0.0.0/8"],
+                    }
+                ],
+            ),
+            (
+                "rule",
+                "policy1-deny-egress",
+                "deny",
+                "EGRESS",
+                200,
+                [
+                    {
+                        "dest_ip_ranges": ["192.168.0.0/24"],
+                        "layer4_configs": [{"ip_protocol": "tcp", "ports": ["443"]}],
+                        "src_ip_ranges": None,
+                    }
+                ],
+            ),
+        ]
+    )

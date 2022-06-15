@@ -12,43 +12,42 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 def test_buckets(plan_runner):
-  "Test bucket resources."
-  _, resources = plan_runner()
-  assert len(resources) == 1
-  r = resources[0]
-  assert r['type'] == 'google_storage_bucket'
-  assert r['values']['name'] == 'bucket-a'
-  assert r['values']['project'] == 'my-project'
+    "Test bucket resources."
+    _, resources = plan_runner()
+    assert len(resources) == 1
+    r = resources[0]
+    assert r["type"] == "google_storage_bucket"
+    assert r["values"]["name"] == "bucket-a"
+    assert r["values"]["project"] == "my-project"
 
 
 def test_prefix(plan_runner):
-  "Test bucket name when prefix is set."
-  _, resources = plan_runner(prefix='foo')
-  assert resources[0]['values']['name'] == 'foo-bucket-a'
+    "Test bucket name when prefix is set."
+    _, resources = plan_runner(prefix="foo")
+    assert resources[0]["values"]["name"] == "foo-bucket-a"
 
 
 def test_config_values(plan_runner):
-  "Test that variables set the correct attributes on buckets."
-  variables = dict(
-      uniform_bucket_level_access='true',
-      force_destroy='true',
-      versioning='true'
-  )
-  _, resources = plan_runner(**variables)
-  assert len(resources) == 1
-  r = resources[0]
-  assert r['values']['uniform_bucket_level_access'] is True
-  assert r['values']['force_destroy'] is True
-  assert r['values']['versioning'] == [{'enabled': True}]
-  assert r['values']['logging'] == [{'log_bucket': 'foo'}]
-  assert r['values']['retention_policy'] == [
-      {'is_locked': False, 'retention_period': 5}
-  ]
+    "Test that variables set the correct attributes on buckets."
+    variables = dict(
+        uniform_bucket_level_access="true", force_destroy="true", versioning="true"
+    )
+    _, resources = plan_runner(**variables)
+    assert len(resources) == 1
+    r = resources[0]
+    assert r["values"]["uniform_bucket_level_access"] is True
+    assert r["values"]["force_destroy"] is True
+    assert r["values"]["versioning"] == [{"enabled": True}]
+    assert r["values"]["logging"] == [{"log_bucket": "foo"}]
+    assert r["values"]["retention_policy"] == [
+        {"is_locked": False, "retention_period": 5}
+    ]
 
 
 def test_iam(plan_runner):
-  "Test bucket resources with iam roles and members."
-  iam = '{ "roles/storage.admin" = ["user:a@b.com"] }'
-  _, resources = plan_runner(iam=iam)
-  assert len(resources) == 2
+    "Test bucket resources with iam roles and members."
+    iam = '{ "roles/storage.admin" = ["user:a@b.com"] }'
+    _, resources = plan_runner(iam=iam)
+    assert len(resources) == 2

@@ -86,7 +86,7 @@ locals {
   ]...)
 }
 
-# 10 datasources are used to cover 10 possible nested layers in GCP organization hirerarcy. 
+# 10 datasources are used to cover 10 possible nested layers in GCP organization hirerarcy.
 data "google_folders" "folders_l1" {
   parent_id = var.parent
 }

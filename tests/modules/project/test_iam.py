@@ -12,47 +12,62 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 def test_iam(plan_runner):
-  "Test IAM bindings."
-  iam = (
-      '{"roles/owner" = ["user:one@example.org"],'
-      '"roles/viewer" = ["user:two@example.org", "user:three@example.org"]}'
-  )
-  _, resources = plan_runner(iam=iam)
-  roles = dict((r['values']['role'], r['values']['members'])
-               for r in resources if r['type'] == 'google_project_iam_binding')
-  assert roles == {
-      'roles/owner': ['user:one@example.org'],
-      'roles/viewer': ['user:three@example.org', 'user:two@example.org']}
+    "Test IAM bindings."
+    iam = (
+        '{"roles/owner" = ["user:one@example.org"],'
+        '"roles/viewer" = ["user:two@example.org", "user:three@example.org"]}'
+    )
+    _, resources = plan_runner(iam=iam)
+    roles = dict(
+        (r["values"]["role"], r["values"]["members"])
+        for r in resources
+        if r["type"] == "google_project_iam_binding"
+    )
+    assert roles == {
+        "roles/owner": ["user:one@example.org"],
+        "roles/viewer": ["user:three@example.org", "user:two@example.org"],
+    }
 
 
 def test_iam_additive(plan_runner):
-  "Test IAM additive bindings."
-  iam = (
-      '{"roles/owner" = ["user:one@example.org"],'
-      '"roles/viewer" = ["user:two@example.org", "user:three@example.org"]}'
-  )
-  _, resources = plan_runner(iam_additive=iam)
-  roles = set((r['values']['role'], r['values']['member'])
-              for r in resources if r['type'] == 'google_project_iam_member')
-  assert roles == set([
-      ('roles/owner', 'user:one@example.org'),
-      ('roles/viewer', 'user:three@example.org'),
-      ('roles/viewer', 'user:two@example.org')
-  ])
+    "Test IAM additive bindings."
+    iam = (
+        '{"roles/owner" = ["user:one@example.org"],'
+        '"roles/viewer" = ["user:two@example.org", "user:three@example.org"]}'
+    )
+    _, resources = plan_runner(iam_additive=iam)
+    roles = set(
+        (r["values"]["role"], r["values"]["member"])
+        for r in resources
+        if r["type"] == "google_project_iam_member"
+    )
+    assert roles == set(
+        [
+            ("roles/owner", "user:one@example.org"),
+            ("roles/viewer", "user:three@example.org"),
+            ("roles/viewer", "user:two@example.org"),
+        ]
+    )
 
 
 def test_iam_additive_members(plan_runner):
-  "Test IAM additive members."
-  iam = (
-      '{"user:one@example.org" = ["roles/owner"],'
-      '"user:two@example.org" = ["roles/owner", "roles/editor"]}'
-  )
-  _, resources = plan_runner(iam_additive_members=iam)
-  roles = set((r['values']['role'], r['values']['member'])
-              for r in resources if r['type'] == 'google_project_iam_member')
-  assert roles == set([
-      ('roles/owner', 'user:one@example.org'),
-      ('roles/owner', 'user:two@example.org'),
-      ('roles/editor', 'user:two@example.org')
-  ])
+    "Test IAM additive members."
+    iam = (
+        '{"user:one@example.org" = ["roles/owner"],'
+        '"user:two@example.org" = ["roles/owner", "roles/editor"]}'
+    )
+    _, resources = plan_runner(iam_additive_members=iam)
+    roles = set(
+        (r["values"]["role"], r["values"]["member"])
+        for r in resources
+        if r["type"] == "google_project_iam_member"
+    )
+    assert roles == set(
+        [
+            ("roles/owner", "user:one@example.org"),
+            ("roles/owner", "user:two@example.org"),
+            ("roles/editor", "user:two@example.org"),
+        ]
+    )

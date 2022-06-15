@@ -94,4 +94,3 @@ variable "ssh_source_ranges" {
   type        = list(string)
   default     = ["35.235.240.0/20"]
 }
-

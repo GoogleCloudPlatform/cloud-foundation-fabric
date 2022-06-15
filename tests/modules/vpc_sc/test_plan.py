@@ -12,31 +12,33 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 def test_create_policy(plan_runner):
-  "Test with auto-created policy."
-  _, resources = plan_runner()
-  counts = {}
-  for r in resources:
-    n = f'{r["type"]}.{r["name"]}'
-    counts[n] = counts.get(n, 0) + 1
-  assert counts == {
-      'google_access_context_manager_access_level.basic': 2,
-      'google_access_context_manager_access_policy.default': 1,
-      'google_access_context_manager_service_perimeter.bridge': 2,
-      'google_access_context_manager_service_perimeter.regular': 2
-  }
+    "Test with auto-created policy."
+    _, resources = plan_runner()
+    counts = {}
+    for r in resources:
+        n = f'{r["type"]}.{r["name"]}'
+        counts[n] = counts.get(n, 0) + 1
+    assert counts == {
+        "google_access_context_manager_access_level.basic": 2,
+        "google_access_context_manager_access_policy.default": 1,
+        "google_access_context_manager_service_perimeter.bridge": 2,
+        "google_access_context_manager_service_perimeter.regular": 2,
+    }
 
 
 def test_use_policy(plan_runner):
-  "Test with existing policy."
-  _, resources = plan_runner(access_policy_create="null",
-                             access_policy="accessPolicies/foobar")
-  counts = {}
-  for r in resources:
-    n = f'{r["type"]}.{r["name"]}'
-    counts[n] = counts.get(n, 0) + 1
-  assert counts == {
-      'google_access_context_manager_access_level.basic': 2,
-      'google_access_context_manager_service_perimeter.bridge': 2,
-      'google_access_context_manager_service_perimeter.regular': 2
-  }
+    "Test with existing policy."
+    _, resources = plan_runner(
+        access_policy_create="null", access_policy="accessPolicies/foobar"
+    )
+    counts = {}
+    for r in resources:
+        n = f'{r["type"]}.{r["name"]}'
+        counts[n] = counts.get(n, 0) + 1
+    assert counts == {
+        "google_access_context_manager_access_level.basic": 2,
+        "google_access_context_manager_service_perimeter.bridge": 2,
+        "google_access_context_manager_service_perimeter.regular": 2,
+    }

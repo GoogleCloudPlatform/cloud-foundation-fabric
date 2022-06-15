@@ -12,7 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 def test_counts(e2e_plan_runner):
-  "Check for a clean plan"
-  modules, resources = e2e_plan_runner()
-  assert len(modules) > 0 and len(resources) > 0
+    "Check for a clean plan"
+    modules, resources = e2e_plan_runner()
+    assert len(modules) > 0 and len(resources) > 0

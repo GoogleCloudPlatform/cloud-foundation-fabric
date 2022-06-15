@@ -17,20 +17,23 @@ import pytest
 
 @pytest.fixture
 def resources(plan_runner):
-  _, resources = plan_runner()
-  return resources
+    _, resources = plan_runner()
+    return resources
 
 
 def test_resource_count(resources):
-  "Test number of resources created."
-  assert len(resources) == 5
+    "Test number of resources created."
+    assert len(resources) == 5
 
 
 def test_secret_iam(resources):
-  "Test secret IAM binding resources."
-  bindings = [r['values'] for r in resources if r['type']
-              == 'google_secret_manager_secret_iam_binding']
-  assert len(bindings) == 2
-  assert set(b['role'] for b in bindings) == set([
-      'roles/secretmanager.secretAccessor', 'roles/secretmanager.viewer'
-  ])
+    "Test secret IAM binding resources."
+    bindings = [
+        r["values"]
+        for r in resources
+        if r["type"] == "google_secret_manager_secret_iam_binding"
+    ]
+    assert len(bindings) == 2
+    assert set(b["role"] for b in bindings) == set(
+        ["roles/secretmanager.secretAccessor", "roles/secretmanager.viewer"]
+    )

@@ -44,4 +44,3 @@ output "vpc" {
     subnets = module.vpc-shared.subnet_ips
   }
 }
-

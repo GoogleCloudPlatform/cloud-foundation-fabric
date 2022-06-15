@@ -3,7 +3,7 @@
 The most straightforward way for workloads running outside of Google Cloud to call Google Cloud APIs is by using a downloaded service account key. However, this approach has 2 major pain points:
 
 * A management hassle,  keys need to be stored securely and rotated often.
-* A security risk, keys are long term credentials that could be compromised. 
+* A security risk, keys are long term credentials that could be compromised.
 
 Workload identity federation enables applications running outside of Google Cloud to replace long-lived service account keys with short-lived access tokens. This is achieved by configuring Google Cloud to trust an external identity provider, so applications can use the credentials issued by the external identity provider to impersonate a service account.
 
@@ -25,9 +25,9 @@ The provided terraform configuration will set up the following architecture:
 
 * On Google Cloud:
 
-    * A Google Cloud project with: 
+    * A Google Cloud project with:
 
-        * A workload identity pool and provider configured to trust the AAD application 
+        * A workload identity pool and provider configured to trust the AAD application
 
         * A service account with the Viewer role granted on the project. The external identities in the workload identity pool would be assigned the Workload Identity User role on that service account.
 
@@ -42,7 +42,7 @@ Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/c
 
 Once the resources have been created, do the following to verify that everything works as expected:
 
-1. Log in to the VM. 
+1. Log in to the VM.
 
     If you have created the VM using this terraform configuration proceed the following way:
 

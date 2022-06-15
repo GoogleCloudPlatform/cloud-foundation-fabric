@@ -17,14 +17,14 @@ Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/c
 
 The following outputs will be available once everything is deployed:
 
-* `glb_ip_address`, containing the IPv4 address of the HTTP Load Balancer 
+* `glb_ip_address`, containing the IPv4 address of the HTTP Load Balancer
 * `vm_siege_external_ip`, containing the external IPv4 address of the siege VM.
 
 Once done testing, you can clean up resources by running `terraform destroy`.
 
 ## Testing the example
 
-1. Connect to the siege VM and run the following command 
+1. Connect to the siege VM and run the following command
 
         siege -c 250 -t150s http://$LB_IP`ß
 

@@ -17,18 +17,21 @@ import pytest
 
 @pytest.fixture
 def resources(plan_runner):
-  _, resources = plan_runner()
-  return resources
+    _, resources = plan_runner()
+    return resources
 
 
 def test_resource_count(resources):
-  "Test number of resources created."
-  assert len(resources) == 3
+    "Test number of resources created."
+    assert len(resources) == 3
 
 
 def test_iam(resources):
-  "Test IAM binding resources."
-  bindings = [r['values'] for r in resources if r['type']
-              == 'google_cloudfunctions_function_iam_binding']
-  assert len(bindings) == 1
-  assert bindings[0]['role'] == 'roles/cloudfunctions.invoker'
+    "Test IAM binding resources."
+    bindings = [
+        r["values"]
+        for r in resources
+        if r["type"] == "google_cloudfunctions_function_iam_binding"
+    ]
+    assert len(bindings) == 1
+    assert bindings[0]["role"] == "roles/cloudfunctions.invoker"

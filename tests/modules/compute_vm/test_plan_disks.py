@@ -12,8 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 def test_types(plan_runner):
-  _disks = '''[{
+    _disks = """[{
     name = "data1"
     size = "10"
     source_type = "image"
@@ -32,27 +33,33 @@ def test_types(plan_runner):
     source = "disk-3"
     options = null
   }]
-  '''
-  _, resources = plan_runner(attached_disks=_disks)
-  assert len(resources) == 3
-  disks = {r['values']['name']: r['values']
-           for r in resources if r['type'] == 'google_compute_disk'}
-  assert disks['test-data1']['size'] == 10
-  assert disks['test-data2']['size'] == 20
-  assert disks['test-data1']['image'] == 'image-1'
-  assert disks['test-data1']['snapshot'] is None
-  assert disks['test-data2']['snapshot'] == 'snapshot-2'
-  assert disks['test-data2']['image'] is None
-  instance = [r['values']
-              for r in resources if r['type'] == 'google_compute_instance'][0]
-  instance_disks = {d['source']: d['device_name']
-                    for d in instance['attached_disk']}
-  assert instance_disks == {'test-data1': 'data1',
-                            'test-data2': 'data2', 'disk-3': 'data3'}
+  """
+    _, resources = plan_runner(attached_disks=_disks)
+    assert len(resources) == 3
+    disks = {
+        r["values"]["name"]: r["values"]
+        for r in resources
+        if r["type"] == "google_compute_disk"
+    }
+    assert disks["test-data1"]["size"] == 10
+    assert disks["test-data2"]["size"] == 20
+    assert disks["test-data1"]["image"] == "image-1"
+    assert disks["test-data1"]["snapshot"] is None
+    assert disks["test-data2"]["snapshot"] == "snapshot-2"
+    assert disks["test-data2"]["image"] is None
+    instance = [
+        r["values"] for r in resources if r["type"] == "google_compute_instance"
+    ][0]
+    instance_disks = {d["source"]: d["device_name"] for d in instance["attached_disk"]}
+    assert instance_disks == {
+        "test-data1": "data1",
+        "test-data2": "data2",
+        "disk-3": "data3",
+    }
 
 
 def test_options(plan_runner):
-  _disks = '''[{
+    _disks = """[{
     name = "data1"
     size = "10"
     source_type = "image"
@@ -69,22 +76,23 @@ def test_options(plan_runner):
       mode = null, replica_zone = "europe-west1-c", type = "pd-ssd"
     }
   }]
-  '''
-  _, resources = plan_runner(attached_disks=_disks)
-  assert len(resources) == 3
-  disks_z = [r['values']
-             for r in resources if r['type'] == 'google_compute_disk']
-  disks_r = [r['values']
-             for r in resources if r['type'] == 'google_compute_region_disk']
-  assert len(disks_z) == len(disks_r) == 1
-  instance = [r['values']
-              for r in resources if r['type'] == 'google_compute_instance'][0]
-  instance_disks = [d['device_name'] for d in instance['attached_disk']]
-  assert instance_disks == ['data1', 'data2']
+  """
+    _, resources = plan_runner(attached_disks=_disks)
+    assert len(resources) == 3
+    disks_z = [r["values"] for r in resources if r["type"] == "google_compute_disk"]
+    disks_r = [
+        r["values"] for r in resources if r["type"] == "google_compute_region_disk"
+    ]
+    assert len(disks_z) == len(disks_r) == 1
+    instance = [
+        r["values"] for r in resources if r["type"] == "google_compute_instance"
+    ][0]
+    instance_disks = [d["device_name"] for d in instance["attached_disk"]]
+    assert instance_disks == ["data1", "data2"]
 
 
 def test_template(plan_runner):
-  _disks = '''[{
+    _disks = """[{
     name = "data1"
     size = "10"
     source_type = "image"
@@ -101,10 +109,12 @@ def test_template(plan_runner):
       mode = null, replica_zone = "europe-west1-c", type = "pd-ssd"
     }
   }]
-  '''
-  _, resources = plan_runner(attached_disks=_disks,
-                             create_template="true")
-  assert len(resources) == 1
-  template = [r['values'] for r in resources if r['type']
-              == 'google_compute_instance_template'][0]
-  assert len(template['disk']) == 3
+  """
+    _, resources = plan_runner(attached_disks=_disks, create_template="true")
+    assert len(resources) == 1
+    template = [
+        r["values"]
+        for r in resources
+        if r["type"] == "google_compute_instance_template"
+    ][0]
+    assert len(template["disk"]) == 3

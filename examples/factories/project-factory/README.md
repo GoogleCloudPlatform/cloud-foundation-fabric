@@ -13,14 +13,14 @@ The Project Factory is meant to be executed by a Service Account (or a regular u
   * `"dns.networks.bindPrivateDNSZone"`
   * and role `"roles/orgpolicy.policyAdmin"`
 * **on each folder** where projects will be created
-  * `"roles/logging.admin"` 
-  * `"roles/owner"` 
-  * `"roles/resourcemanager.folderAdmin"` 
+  * `"roles/logging.admin"`
+  * `"roles/owner"`
+  * `"roles/resourcemanager.folderAdmin"`
   * `"roles/resourcemanager.projectCreator"`
 * **on the host project** for the Shared VPC/s
-  * `"roles/browser"`       
+  * `"roles/browser"`
   * `"roles/compute.viewer"`
-  * `"roles/dns.admin"` 
+  * `"roles/dns.admin"`
 
 ## Example
 
@@ -113,9 +113,9 @@ vpc_host_project: project-example-host-project
 
 # [opt] Billing account id - overrides default if set
 billing_account_id: 012345-67890A-BCDEF0
-                    
+
 # [opt] Billing alerts config - overrides default if set
-billing_alert:      
+billing_alert:
   amount: 10
   thresholds:
     current:
@@ -123,41 +123,41 @@ billing_alert:
       - 0.8
     forecasted: []
 
-# [opt] DNS zones to be created as children of the environment_dns_zone defined in defaults 
-dns_zones:          
+# [opt] DNS zones to be created as children of the environment_dns_zone defined in defaults
+dns_zones:
     - lorem
     - ipsum
 
-# [opt] Contacts for billing alerts and important notifications 
-essential_contacts:                  
+# [opt] Contacts for billing alerts and important notifications
+essential_contacts:
   - team-a-contacts@example.com
 
 # Folder the project will be created as children of
 folder_id: folders/012345678901
 
 # [opt] Authoritative IAM bindings in group => [roles] format
-group_iam:          
+group_iam:
   test-team-foobar@fast-lab-0.gcp-pso-italy.net:
     - roles/compute.admin
 
 # [opt] Authoritative IAM bindings in role => [principals] format
 # Generally used to grant roles to service accounts external to the project
-iam:                                    
+iam:
   roles/compute.admin:
     - serviceAccount:service-account
 
-# [opt] Service robots and keys they will be assigned as cryptoKeyEncrypterDecrypter 
+# [opt] Service robots and keys they will be assigned as cryptoKeyEncrypterDecrypter
 # in service => [keys] format
-kms_service_agents:                 
+kms_service_agents:
   compute: [key1, key2]
   storage: [key1, key2]
 
 # [opt] Labels for the project - merged with the ones defined in defaults
-labels:             
+labels:
   environment: prod
 
 # [opt] Org policy overrides defined at project level
-org_policies:       
+org_policies:
   policy_boolean:
     constraints/compute.disableGuestAttributesAccess: true
   policy_list:
@@ -170,43 +170,43 @@ org_policies:
 
 # [opt] Service account to create for the project and their roles on the project
 # in name => [roles] format
-service_accounts:                      
+service_accounts:
   another-service-account:
     - roles/compute.admin
   my-service-account:
     - roles/compute.admin
 
-# [opt] APIs to enable on the project. 
-services:           
+# [opt] APIs to enable on the project.
+services:
   - storage.googleapis.com
   - stackdriver.googleapis.com
   - compute.googleapis.com
 
 # [opt] Roles to assign to the robots service accounts in robot => [roles] format
-services_iam:       
+services_iam:
   compute:
     - roles/storage.objectViewer
 
- # [opt] VPC setup. 
- # If set enables the `compute.googleapis.com` service and configures 
+ # [opt] VPC setup.
+ # If set enables the `compute.googleapis.com` service and configures
  # service project attachment
-vpc:               
+vpc:
 
   # [opt] If set, enables the container API
-  gke_setup:        
+  gke_setup:
 
-    # Grants "roles/container.hostServiceAgentUser" to the container robot if set 
+    # Grants "roles/container.hostServiceAgentUser" to the container robot if set
     enable_host_service_agent: false
 
-    # Grants  "roles/compute.securityAdmin" to the container robot if set                    
+    # Grants  "roles/compute.securityAdmin" to the container robot if set
     enable_security_admin: true
 
-  # Host project the project will be service project of                    
+  # Host project the project will be service project of
   host_project: fast-prod-net-spoke-0
 
   # [opt] Subnets in the host project where principals will be granted networkUser
-  # in region/subnet-name => [principals]                    
-  subnets_iam:                          
+  # in region/subnet-name => [principals]
+  subnets_iam:
     europe-west1/prod-default-ew1: []
       - user:foobar@example.com
       - serviceAccount:service-account1

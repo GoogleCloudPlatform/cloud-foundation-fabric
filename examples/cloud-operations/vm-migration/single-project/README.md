@@ -13,7 +13,7 @@ This is the high level diagram:
 This sample creates several distinct groups of resources:
 
 - projects
-  - M4CE host project with [required services](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/enable-services#enabling_required_services_on_the_host_project) deployed on a new or existing project. 
+  - M4CE host project with [required services](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/enable-services#enabling_required_services_on_the_host_project) deployed on a new or existing project.
 - networking
   - Default VPC network
 - IAM
