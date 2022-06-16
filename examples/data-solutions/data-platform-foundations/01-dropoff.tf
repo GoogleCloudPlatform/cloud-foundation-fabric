@@ -129,7 +129,7 @@ module "drop-sa-bq-0" {
 module "drop-bq-0" {
   source         = "../../../modules/bigquery-dataset"
   project_id     = module.drop-project.project_id
-  id             = "${replace(var.prefix, "-", "_")}drp_bq_0"
+  id             = "${replace(var.prefix, "-", "_")}-drp_bq_0"
   location       = var.location
   encryption_key = try(local.service_encryption_keys.bq, null)
 }
