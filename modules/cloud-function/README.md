@@ -173,11 +173,12 @@ module "cf-http" {
 | [labels](variables.tf#L82) | Resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [prefix](variables.tf#L93) | Optional prefix used for resource names. | <code>string</code> |  | <code>null</code> |
 | [region](variables.tf#L104) | Region used for all resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| [service_account](variables.tf#L110) | Service account email. Unused if service account is auto-created. | <code>string</code> |  | <code>null</code> |
-| [service_account_create](variables.tf#L116) | Auto-create service account. | <code>bool</code> |  | <code>false</code> |
-| [trigger_config](variables.tf#L122) | Function trigger configuration. Leave null for HTTP trigger. | <code title="object&#40;&#123;&#10;  event    &#61; string&#10;  resource &#61; string&#10;  retry    &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [vpc_connector](variables.tf#L132) | VPC connector configuration. Set create to 'true' if a new connector needs to be created. | <code title="object&#40;&#123;&#10;  create          &#61; bool&#10;  name            &#61; string&#10;  egress_settings &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [vpc_connector_config](variables.tf#L142) | VPC connector network configuration. Must be provided if new VPC connector is being created. | <code title="object&#40;&#123;&#10;  ip_cidr_range &#61; string&#10;  network       &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [secrets](variables.tf#L110) | Secret Manager secrets. Key is the variable name or mountpoint, volume versions are in version:path format. | <code title="map&#40;object&#40;&#123;&#10;  is_volume  &#61; bool&#10;  project_id &#61; number&#10;  secret     &#61; string&#10;  versions   &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [service_account](variables.tf#L122) | Service account email. Unused if service account is auto-created. | <code>string</code> |  | <code>null</code> |
+| [service_account_create](variables.tf#L128) | Auto-create service account. | <code>bool</code> |  | <code>false</code> |
+| [trigger_config](variables.tf#L134) | Function trigger configuration. Leave null for HTTP trigger. | <code title="object&#40;&#123;&#10;  event    &#61; string&#10;  resource &#61; string&#10;  retry    &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [vpc_connector](variables.tf#L144) | VPC connector configuration. Set create to 'true' if a new connector needs to be created. | <code title="object&#40;&#123;&#10;  create          &#61; bool&#10;  name            &#61; string&#10;  egress_settings &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [vpc_connector_config](variables.tf#L154) | VPC connector network configuration. Must be provided if new VPC connector is being created. | <code title="object&#40;&#123;&#10;  ip_cidr_range &#61; string&#10;  network       &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
