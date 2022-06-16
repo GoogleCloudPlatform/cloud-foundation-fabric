@@ -20,4 +20,3 @@ terraform {
     prefix = "fabric/operations/onprem-sa-key-management"
   }
 }
-

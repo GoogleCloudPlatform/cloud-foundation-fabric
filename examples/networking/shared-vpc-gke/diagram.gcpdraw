@@ -1,13 +1,13 @@
 elements {
   gcp {
 
-	group project_host {
+    group project_host {
       name "Host project"
 
       group host_services {
         name "Shared Services"
         background_color "#f6f6f6"
-      	card dns {
+          card dns {
          name "Private zone"
         }
         card nat {

@@ -83,7 +83,7 @@ function Node-Up {
   while ($true) {
     Write-Log "Waiting for this node to be up in cluster..."
     try {
-        $NodeStatus = Get-ClusterNode | Where-Object Name -eq $env:computername | Select State 
+        $NodeStatus = Get-ClusterNode | Where-Object Name -eq $env:computername | Select State
         if ($NodeStatus.State -eq "Up") {
             Write-Log "Current node is up, continuing..."
             break

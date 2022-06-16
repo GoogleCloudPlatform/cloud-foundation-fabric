@@ -109,7 +109,3 @@ variable "router_network" {
   type        = string
   default     = null
 }
-
-
-
-

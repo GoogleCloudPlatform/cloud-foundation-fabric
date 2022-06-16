@@ -116,31 +116,31 @@ with models.DAG(
     trigger_rule='all_success'
   )
 
-  # Bigquery Tables deleted here for demo porpuse. 
+  # Bigquery Tables deleted here for demo porpuse.
   # Consider a dedicated pipeline or tool for a real life scenario.
-  with TaskGroup('delete_table') as delte_table:  
+  with TaskGroup('delete_table') as delte_table:
     delete_table_customers = BigQueryDeleteTableOperator(
       task_id="delete_table_customers",
       deletion_dataset_table=DWH_LAND_PRJ+"."+DWH_LAND_BQ_DATASET+".customers",
       impersonation_chain=[TRF_SA_DF]
-    )  
+    )
 
     delete_table_purchases = BigQueryDeleteTableOperator(
       task_id="delete_table_purchases",
       deletion_dataset_table=DWH_LAND_PRJ+"."+DWH_LAND_BQ_DATASET+".purchases",
       impersonation_chain=[TRF_SA_DF]
-    )   
+    )
 
     delete_table_customer_purchase_curated = BigQueryDeleteTableOperator(
       task_id="delete_table_customer_purchase_curated",
       deletion_dataset_table=DWH_CURATED_PRJ+"."+DWH_CURATED_BQ_DATASET+".customer_purchase",
       impersonation_chain=[TRF_SA_DF]
-    )   
+    )
 
     delete_table_customer_purchase_confidential = BigQueryDeleteTableOperator(
       task_id="delete_table_customer_purchase_confidential",
       deletion_dataset_table=DWH_CONFIDENTIAL_PRJ+"."+DWH_CONFIDENTIAL_BQ_DATASET+".customer_purchase",
       impersonation_chain=[TRF_SA_DF]
-    )       
+    )
 
-  start >> delte_table >> end  
+  start >> delte_table >> end

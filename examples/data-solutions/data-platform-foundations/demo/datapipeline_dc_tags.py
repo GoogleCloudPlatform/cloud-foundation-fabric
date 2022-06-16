@@ -116,9 +116,9 @@ with models.DAG(
     trigger_rule='all_success'
   )
 
-  # Bigquery Tables created here for demo porpuse. 
+  # Bigquery Tables created here for demo porpuse.
   # Consider a dedicated pipeline or tool for a real life scenario.
-  with TaskGroup('upsert_table') as upsert_table:  
+  with TaskGroup('upsert_table') as upsert_table:
     upsert_table_customers = BigQueryUpsertTableOperator(
       task_id="upsert_table_customers",
       project_id=DWH_LAND_PRJ,
@@ -127,17 +127,17 @@ with models.DAG(
       table_resource={
         "tableReference": {"tableId": "customers"},
       },
-    )  
+    )
 
     upsert_table_purchases = BigQueryUpsertTableOperator(
       task_id="upsert_table_purchases",
       project_id=DWH_LAND_PRJ,
       dataset_id=DWH_LAND_BQ_DATASET,
-      impersonation_chain=[TRF_SA_BQ],      
+      impersonation_chain=[TRF_SA_BQ],
       table_resource={
         "tableReference": {"tableId": "purchases"}
       },
-    )   
+    )
 
     upsert_table_customer_purchase_curated = BigQueryUpsertTableOperator(
       task_id="upsert_table_customer_purchase_curated",
@@ -147,7 +147,7 @@ with models.DAG(
       table_resource={
         "tableReference": {"tableId": "customer_purchase"}
       },
-    )   
+    )
 
     upsert_table_customer_purchase_confidential = BigQueryUpsertTableOperator(
       task_id="upsert_table_customer_purchase_confidential",
@@ -157,11 +157,11 @@ with models.DAG(
       table_resource={
         "tableReference": {"tableId": "customer_purchase"}
       },
-    )       
+    )
 
-  # Bigquery Tables schema defined here for demo porpuse. 
+  # Bigquery Tables schema defined here for demo porpuse.
   # Consider a dedicated pipeline or tool for a real life scenario.
-  with TaskGroup('update_schema_table') as update_schema_table:  
+  with TaskGroup('update_schema_table') as update_schema_table:
     update_table_schema_customers = BigQueryUpdateTableSchemaOperator(
       task_id="update_table_schema_customers",
       project_id=DWH_LAND_PRJ,
@@ -175,7 +175,7 @@ with models.DAG(
         { "mode": "REQUIRED", "name": "surname", "type": "STRING", "description": "Surname", "policyTags": { "names": [DATA_CAT_TAGS.get('2_Private', None)]} },
         { "mode": "REQUIRED", "name": "timestamp", "type": "TIMESTAMP", "description": "Timestamp" }
       ]
-    )  
+    )
 
     update_table_schema_customers = BigQueryUpdateTableSchemaOperator(
       task_id="update_table_schema_purchases",
@@ -184,14 +184,14 @@ with models.DAG(
       table_id="purchases",
       impersonation_chain=[TRF_SA_BQ],
       include_policy_tags=True,
-      schema_fields_updates=[ 
-        {  "mode": "REQUIRED",  "name": "id",  "type": "INTEGER",  "description": "ID" }, 
-        {  "mode": "REQUIRED",  "name": "customer_id",  "type": "INTEGER",  "description": "ID" }, 
-        {  "mode": "REQUIRED",  "name": "item",  "type": "STRING",  "description": "Item Name" }, 
-        {  "mode": "REQUIRED",  "name": "price",  "type": "FLOAT",  "description": "Item Price" }, 
+      schema_fields_updates=[
+        {  "mode": "REQUIRED",  "name": "id",  "type": "INTEGER",  "description": "ID" },
+        {  "mode": "REQUIRED",  "name": "customer_id",  "type": "INTEGER",  "description": "ID" },
+        {  "mode": "REQUIRED",  "name": "item",  "type": "STRING",  "description": "Item Name" },
+        {  "mode": "REQUIRED",  "name": "price",  "type": "FLOAT",  "description": "Item Price" },
         {  "mode": "REQUIRED",  "name": "timestamp",  "type": "TIMESTAMP",  "description": "Timestamp" }
       ]
-    )    
+    )
 
     update_table_schema_customer_purchase_curated = BigQueryUpdateTableSchemaOperator(
       task_id="update_table_schema_customer_purchase_curated",
@@ -319,4 +319,4 @@ with models.DAG(
     },
     impersonation_chain=[TRF_SA_BQ]
   )
-  start >> upsert_table >> update_schema_table >> [customers_import, purchases_import] >> join_customer_purchase >> confidential_customer_purchase >> end  
+  start >> upsert_table >> update_schema_table >> [customers_import, purchases_import] >> join_customer_purchase >> confidential_customer_purchase >> end

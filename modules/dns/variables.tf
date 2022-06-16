@@ -112,6 +112,3 @@ variable "zone_create" {
   type        = bool
   default     = true
 }
-
-
-

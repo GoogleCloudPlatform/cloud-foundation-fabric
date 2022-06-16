@@ -147,4 +147,3 @@ variable "vpc_connector_config" {
   })
   default = null
 }
-

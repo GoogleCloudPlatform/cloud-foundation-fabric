@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 '''Validate YaML document against yamale schemas.
-Fast includes YaML driven resource factories, along with their schemas which 
+Fast includes YaML driven resource factories, along with their schemas which
 are available at `fast/assets/schemas`.
 
 An arbitrary number of files and directories can be validated against a given

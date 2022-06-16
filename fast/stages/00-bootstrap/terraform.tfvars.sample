@@ -16,4 +16,3 @@ outputs_location = "~/fast-config"
 
 # use something unique and short
 prefix           = "abcd"
-

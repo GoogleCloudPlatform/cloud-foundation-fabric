@@ -8,7 +8,7 @@ The example contains the following components:
 
 - [Cloud Scheduler](https://cloud.google.com/scheduler) to initiate a healthcheck on a schedule.
 - [Serverless VPC Connector](https://cloud.google.com/vpc/docs/configure-serverless-vpc-access) to allow Cloud Functions TCP level access to private GCE instances.
-- **Healthchecker** Cloud Function to perform TCP checks against GCE instances. 
+- **Healthchecker** Cloud Function to perform TCP checks against GCE instances.
 - **Restarter** PubSub topic to keep track of instances which are to be restarted.
 - **Restarter** Cloud Function to perform GCE instance reset for instances which are failing TCP healthcheck.
 
@@ -21,10 +21,10 @@ The resources created in this example are shown in the high level diagram below:
 Healthchecker cloud function has the following configuration options:
 
 - `FILTER` to filter list of GCE instances the health check will be targeted to. For instance `(name = nginx-*) AND (labels.env = dev)`
-- `GRACE_PERIOD` time period to prevent instance check of newly created instanced allowing services to start on the instance. 
+- `GRACE_PERIOD` time period to prevent instance check of newly created instanced allowing services to start on the instance.
 - `MAX_PARALLELISM` - max amount of healthchecks performed in parallel, be aware that every check requires an open TCP connection which is limited.
-- `PUBSUB_TOPIC` topic to publish the message with instance metadata. 
-- `RECHECK_INTERVAL` time period for performing recheck, when a check is failed it will be rechecked before marking as unhealthy. 
+- `PUBSUB_TOPIC` topic to publish the message with instance metadata.
+- `RECHECK_INTERVAL` time period for performing recheck, when a check is failed it will be rechecked before marking as unhealthy.
 - `TCP_PORT` port used for health checking
 - `TIMEOUT` the timeout time of a TCP probe.
 

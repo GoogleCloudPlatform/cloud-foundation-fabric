@@ -129,24 +129,24 @@ Security Associations (2 up, 0 connecting):
          gcp{3}:   0.0.0.0/0 === 0.0.0.0/0
 
 # check that the BGP sessions works and the advertised routes are set
-sudo docker exec -it onprem_bird_1 ip route 
-default via 10.0.16.1 dev eth0 
-10.0.0.0/24  proto bird  src 10.0.16.2 
+sudo docker exec -it onprem_bird_1 ip route
+default via 10.0.16.1 dev eth0
+10.0.0.0/24  proto bird  src 10.0.16.2
         nexthop via 169.254.1.1  dev vti0 weight 1
         nexthop via 169.254.2.1  dev vti1 weight 1
-10.0.16.0/24 dev eth0  proto kernel  scope link  src 10.0.16.2 
-10.10.0.0/24  proto bird  src 10.0.16.2 
+10.0.16.0/24 dev eth0  proto kernel  scope link  src 10.0.16.2
+10.10.0.0/24  proto bird  src 10.0.16.2
         nexthop via 169.254.1.1  dev vti0 weight 1
         nexthop via 169.254.2.1  dev vti1 weight 1
-35.199.192.0/19  proto bird  src 10.0.16.2 
+35.199.192.0/19  proto bird  src 10.0.16.2
         nexthop via 169.254.1.1  dev vti0 weight 1
         nexthop via 169.254.2.1  dev vti1 weight 1
-169.254.1.0/30 dev vti0  proto kernel  scope link  src 169.254.1.2 
-169.254.2.0/30 dev vti1  proto kernel  scope link  src 169.254.2.2 
-199.36.153.4/30  proto bird  src 10.0.16.2 
+169.254.1.0/30 dev vti0  proto kernel  scope link  src 169.254.1.2
+169.254.2.0/30 dev vti1  proto kernel  scope link  src 169.254.2.2
+199.36.153.4/30  proto bird  src 10.0.16.2
         nexthop via 169.254.1.1  dev vti0 weight 1
         nexthop via 169.254.2.1  dev vti1 weight 1
-199.36.153.8/30  proto bird  src 10.0.16.2 
+199.36.153.8/30  proto bird  src 10.0.16.2
         nexthop via 169.254.1.1  dev vti0 weight 1
         nexthop via 169.254.2.1  dev vti1 weight 1
 

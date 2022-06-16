@@ -16,7 +16,7 @@ ${functions}
 
 $ErrorActionPreference = "stop"
 $InitialSetup = 'c:\InitialSetupDone.txt'
-if (-not(Test-Path -Path $InitialSetup -PathType Leaf)) {  
+if (-not(Test-Path -Path $InitialSetup -PathType Leaf)) {
   Write-Log "Performing initial setup"
 
   $DatabaseName = Invoke-SqlCmd -Query "SELECT serverproperty('ServerName') AS ServerName"
@@ -59,7 +59,7 @@ try {
   New-Cluster -Name ${sql_cluster_full} -Node ${node_netbios_1},${node_netbios_2} -NoStorage -StaticAddress ${cluster_ip}
   Start-Sleep -s 45
 %{ if managed_ad_dn != "" }
-    
+
   Write-Output "Adding ${sql_cluster_name}$ to Cloud Service Domain Join Accounts"
   Add-ADGroupMember -Identity "Cloud Service Domain Join Accounts" -Members ${sql_cluster_name}$
 %{ endif }
@@ -106,11 +106,11 @@ SetSPN -d "$${spn}" ${node_netbios_2}
   # Wait for other node to finish
   Start-Sleep -s 30
 
-  if ($env:computername -eq "${node_netbios_1}") {    
-    $Quorum = Get-ClusterQuorum 
+  if ($env:computername -eq "${node_netbios_1}") {
+    $Quorum = Get-ClusterQuorum
     if ($Quorum.QuorumResource.State -ne "Online") {
         while ($true) {
-            try { 
+            try {
                 Write-Log "Turning on witness quorum in cluster..."
                 Set-ClusterQuorum -FileShareWitness \\${witness_netbios}\QWitness
                 break
@@ -156,10 +156,10 @@ SetSPN -d "$${spn}" ${node_netbios_2}
           'ProbePort' = ${health_check_port};
           'SubnetMask' = '255.255.255.255';
           'Network' = (Get-ClusterNetwork).Name;
-          'EnableDhcp' = 0; 
+          'EnableDhcp' = 0;
         }
 
-        Write-Log "Stopping and starting cluster resource..."       
+        Write-Log "Stopping and starting cluster resource..."
         $SqlIpAddress | Stop-ClusterResource
         $SqlIpAddress = Get-ClusterResource | Where-Object {$_.Name.StartsWith("${aog}")} | Start-ClusterResource
 

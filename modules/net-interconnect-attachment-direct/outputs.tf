@@ -27,5 +27,3 @@ output "router" {
   description = "Router resource (only if auto-created)."
   value       = google_compute_router.router
 }
-
-

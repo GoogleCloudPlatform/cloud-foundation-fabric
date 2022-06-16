@@ -7,4 +7,3 @@
 - run the command in the command_feed_create output
 
 Refer to the README.md file for more info and testing flow.
-

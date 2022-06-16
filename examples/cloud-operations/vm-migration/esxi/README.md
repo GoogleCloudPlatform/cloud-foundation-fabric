@@ -13,7 +13,7 @@ This is the high level diagram:
 This sample creates several distinct groups of resources:
 
 - virtual machine
-  - [M4CE migrate connector](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/migrate-connector#installing_the_migrate_connector) 
+  - [M4CE migrate connector](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/migrate-connector#installing_the_migrate_connector)
 - IAM
   - [vCenter user role](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/migrate-connector#step-1)
 <!-- BEGIN TFDOC -->

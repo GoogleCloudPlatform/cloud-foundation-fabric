@@ -87,7 +87,7 @@ module "iot-platform" {
 ```
 
 ## Example integrated with Data Foundation Platform
-In this example, we will show how to extend the **[Data Foundations Platform](../../examples/data-solutions/data-platform-foundations/)** to include IoT Platform as a new source of data. 
+In this example, we will show how to extend the **[Data Foundations Platform](../../examples/data-solutions/data-platform-foundations/)** to include IoT Platform as a new source of data.
 
 ![Target architecture](./diagram_iot.png)
 

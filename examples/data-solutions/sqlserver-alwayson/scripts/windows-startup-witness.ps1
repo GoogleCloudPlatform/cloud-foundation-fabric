@@ -22,7 +22,7 @@ $BackupPath = "C:\Backup"
 
 if (-not(Test-Path -Path $InitialSetup -PathType Leaf)) {
   Write-Output "Performing initial setup for witness"
-  
+
   All-Instances-Ready
 
   if (-not(Test-Path -Path $WitnessPath -PathType Container)) {
@@ -40,7 +40,7 @@ if (-not(Test-Path -Path $InitialSetup -PathType Leaf)) {
   }
 
   icacls $WitnessPath /t /grant '${node_netbios_1}$:(OI)(CI)(M)'
-  icacls $WitnessPath /t /grant '${node_netbios_2}$:(OI)(CI)(M)'  
+  icacls $WitnessPath /t /grant '${node_netbios_2}$:(OI)(CI)(M)'
 
   Cluster-In-Domain
 

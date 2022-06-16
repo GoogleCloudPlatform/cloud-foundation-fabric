@@ -264,4 +264,3 @@ resource "google_compute_health_check" "http2" {
     }
   }
 }
-

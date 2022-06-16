@@ -25,7 +25,7 @@ The project factory takes care of the following activities:
 - Project-level org policies definition
 - Billing setup (billing account attachment and budget configuration)
 - Essential contacts definition (for [budget alerts](https://cloud.google.com/billing/docs/how-to/budgets) and [important notifications](https://cloud.google.com/resource-manager/docs/managing-notification-contacts?hl=en))
-  
+
 ## How to run this stage
 
 This stage is meant to be executed after "foundational stages" (i.e., stages [`00-bootstrap`](../../00-bootstrap), [`01-resman`](../../01-resman), 02-networking (either [VPN](../../02-networking-vpn) or [NVA](../../02-networking-nva)) and [`02-security`](../../02-security)) have been run.
@@ -75,7 +75,7 @@ If you configured a valid path for `outputs_location` in the bootstrap and netwo
 ```bash
 # Variable `outputs_location` is set to `~/fast-config`
 ln -s ~/fast-config/tfvars/00-bootstrap.auto.tfvars.json .
-ln -s ~/fast-config/tfvars/01-resman.auto.tfvars.json . 
+ln -s ~/fast-config/tfvars/01-resman.auto.tfvars.json .
 ln -s ~/fast-config/tfvars/02-networking.auto.tfvars.json .
 ```
 

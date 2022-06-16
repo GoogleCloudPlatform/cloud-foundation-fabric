@@ -20,4 +20,3 @@ terraform {
     prefix = "fabric/operations/service-directory-dns"
   }
 }
-

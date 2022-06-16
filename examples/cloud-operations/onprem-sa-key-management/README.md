@@ -9,7 +9,7 @@ This example shows how to manage IAM Service Account Keys by manually generating
  - let keys [expire automatically](https://cloud.google.com/iam/docs/best-practices-for-managing-service-account-keys#key-expiryhaving)
 
 
-## Running the example 
+## Running the example
 
 Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fcloud-foundation-fabric&cloudshell_print=cloud-shell-readme.txt&cloudshell_working_dir=examples%2Fcloud-operations%2Fonprem-sa-key-management&cloudshell_open_in_editor=cloudshell_open%2Fcloud-foundation-fabric%2Fexamples%2Fcloud-operations%2Fonprem-sa-key-management%2Fvariables.tf), then go through the following steps to create resources:
 
@@ -49,7 +49,7 @@ contents=$(jq --arg key "$(cat keys/data_uploader_private_key.pem)" '.private_ke
 contents=$(jq --arg key "$(cat keys/prisma_security_private_key.pem)" '.private_key=$key' prisma-security.json) && echo "$contents" > prisma-security.json
 ```
 
-## Testing the example 
+## Testing the example
 Validate that service accounts json credentials are valid
 ```bash
 gcloud auth activate-service-account --key-file prisma-security.json

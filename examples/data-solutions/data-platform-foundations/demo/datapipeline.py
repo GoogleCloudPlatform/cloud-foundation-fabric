@@ -116,7 +116,7 @@ with models.DAG(
     trigger_rule='all_success'
   )
 
-  # Bigquery Tables automatically created for demo porpuse. 
+  # Bigquery Tables automatically created for demo porpuse.
   # Consider a dedicated pipeline or tool for a real life scenario.
   customers_import = DataflowTemplatedJobStartOperator(
     task_id="dataflow_customers_import",

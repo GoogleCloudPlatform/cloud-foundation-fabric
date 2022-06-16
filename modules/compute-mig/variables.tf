@@ -96,7 +96,7 @@ variable "stateful_config" {
       stateful_disks = map(object({
         #device_name is the key
         source      = string
-        mode        = string # READ_WRITE | READ_ONLY 
+        mode        = string # READ_WRITE | READ_ONLY
         delete_rule = string # NEVER | ON_PERMANENT_INSTANCE_DELETION
       }))
       metadata = map(string)

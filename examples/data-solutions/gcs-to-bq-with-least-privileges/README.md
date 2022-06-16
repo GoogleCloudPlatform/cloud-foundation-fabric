@@ -50,7 +50,7 @@ In this example you can also configure users or group of user to assign them vie
 
 We assume the identiy running the following steps has the following role:
  - `resourcemanager.projectCreator` in case a new project will be created.
- - `owner` on the project in case you use an existing project. 
+ - `owner` on the project in case you use an existing project.
 
 Run Terraform init:
 
@@ -90,7 +90,7 @@ We assume all those steps are run using a user listed on `data_eng_principals`. 
 
 ```
 $ gcloud init
-$ gcloud auth application-default login 
+$ gcloud auth application-default login
 ```
 
 For the purpose of the example we will import from GCS to Bigquery a CSV file with the following structure:
@@ -103,7 +103,7 @@ We need to create 3 file:
  - A `person.csv` file containing your data in the form `name,surname,timestam`. Here an example line `Lorenzo,Caggioni,1637771951'.
  - A `person_udf.js` containing the UDF javascript file used by the Dataflow template.
  - A `person_schema.json` file containing the table schema used to import the CSV.
- 
+
 You can find an example of those file in the folder `./data-demo`. You can copy the example files in the GCS bucket using the  command returned in the terraform output as `command_01_gcs`. Below an example:
 
 ```bash
@@ -127,7 +127,7 @@ JSONPath=gs://PREFIX-data/person_schema.json,\
 javascriptTextTransformGcsPath=gs://PREFIX-data/person_udf.js,\
 inputFilePattern=gs://PREFIX-data/person.csv,\
 outputTable=PROJECT:datalake.person,\
-bigQueryLoadingTemporaryDirectory=gs://PREFIX-df-tmp 
+bigQueryLoadingTemporaryDirectory=gs://PREFIX-df-tmp
 ```
 
 You can check data imported into Google BigQuery using the  command returned in the terraform output as `command_03_bq`. Below an example:

@@ -15,59 +15,59 @@
 package restarter
 
 import (
-	"context"
-	"encoding/json"
-	"fmt"
-	"strings"
+    "context"
+    "encoding/json"
+    "fmt"
+    "strings"
 
-	"cloud.google.com/go/pubsub"
-	compute "google.golang.org/api/compute/v1"
+    "cloud.google.com/go/pubsub"
+    compute "google.golang.org/api/compute/v1"
 )
 
 type InstanceRestarter struct {
-	ctx context.Context
-	m   pubsub.Message
+    ctx context.Context
+    m   pubsub.Message
 }
 
 // NewInstanceRestarter creates new InstanceRestarter
 func NewInstanceRestarter(context context.Context, message pubsub.Message) *InstanceRestarter {
-	return &InstanceRestarter{
-		ctx: context,
-		m:   message,
-	}
+    return &InstanceRestarter{
+        ctx: context,
+        m:   message,
+    }
 }
 
 // RestartInstance consumes a Pub/Sub message with an instance metadata and resets the instance.
 func RestartInstance(ctx context.Context, m pubsub.Message) error {
-	return NewInstanceRestarter(ctx, m).restart()
+    return NewInstanceRestarter(ctx, m).restart()
 }
 
 // restartInstance sends a reset instance request to the Compute Engine API and waits for it to complete.
 func (r *InstanceRestarter) restart() error {
-	var instance compute.Instance
+    var instance compute.Instance
 
-	computeService, err := compute.NewService(r.ctx)
-	if err != nil {
-		fmt.Errorf("NewInstancesRESTClient: %v", err)
-		return err
-	}
+    computeService, err := compute.NewService(r.ctx)
+    if err != nil {
+        fmt.Errorf("NewInstancesRESTClient: %v", err)
+        return err
+    }
 
-	err = json.Unmarshal(r.m.Data, &instance)
-	if err != nil {
-		fmt.Errorf("JsonUnmarshalInstance: %v", err)
-		return err
-	}
+    err = json.Unmarshal(r.m.Data, &instance)
+    if err != nil {
+        fmt.Errorf("JsonUnmarshalInstance: %v", err)
+        return err
+    }
 
-	zone := instance.Zone[strings.LastIndex(instance.Zone, "/")+1:]
-	project := strings.Split(instance.SelfLink, "/")[6]
+    zone := instance.Zone[strings.LastIndex(instance.Zone, "/")+1:]
+    project := strings.Split(instance.SelfLink, "/")[6]
 
-	_, err = computeService.Instances.Reset(project, zone, instance.Name).Do()
-	if err != nil {
-		fmt.Errorf("ResetInstanceRequest: %v:", err)
-		return err
-	}
+    _, err = computeService.Instances.Reset(project, zone, instance.Name).Do()
+    if err != nil {
+        fmt.Errorf("ResetInstanceRequest: %v:", err)
+        return err
+    }
 
-	fmt.Printf("Instance %s has been reset.", instance.Name)
+    fmt.Printf("Instance %s has been reset.", instance.Name)
 
-	return nil
+    return nil
 }

@@ -55,4 +55,3 @@ module "folder" {
     factory-policy = "factory"
   }
 }
-

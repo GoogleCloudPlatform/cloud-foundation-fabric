@@ -16,7 +16,7 @@ These modules are used in the examples included in this repository. If you are u
     - Evolve the existing modules.
     - Create your own modules.
     - Sync from the upstream repository to get all the updates.
- 
+
 - Use GitHub sources with refs to reference the modules. See an example below:
     ```
     module "project" {
