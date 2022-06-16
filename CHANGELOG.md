@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 - add support for IAM and Cloud Build triggers to source repository module
 - add `id` output to service account module
+- add support for secrets to cloud function module
 
 **FAST**
 
