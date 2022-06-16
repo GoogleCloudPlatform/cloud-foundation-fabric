@@ -52,9 +52,11 @@ locals {
     for k, v in local.cicd_repositories : k => templatefile(
       "${path.module}/templates/workflow-${v.type}.yaml",
       merge(local.cicd_workflow_attrs[k], {
-        identity_provider = local.identity_providers[v.identity_provider].name
-        outputs_bucket    = var.automation.outputs_bucket
-        stage_name        = k
+        identity_provider = try(
+          local.identity_providers[v.identity_provider].name, null
+        )
+        outputs_bucket = var.automation.outputs_bucket
+        stage_name     = k
       })
     )
   }
