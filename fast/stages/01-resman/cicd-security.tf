@@ -35,7 +35,7 @@ module "branch-security-cicd-repo" {
     fast-02-security = {
       filename        = ".cloudbuild/workflow.yaml"
       included_files  = ["**/*tf", ".cloudbuild/workflow.yaml"]
-      service_account = module.branch-security-sa.id
+      service_account = module.branch-security-sa-cicd.0.id
       substitutions   = {}
       template = {
         project_id  = null

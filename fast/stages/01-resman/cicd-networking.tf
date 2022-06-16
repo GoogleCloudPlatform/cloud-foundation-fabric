@@ -35,7 +35,7 @@ module "branch-network-cicd-repo" {
     fast-02-networking = {
       filename        = ".cloudbuild/workflow.yaml"
       included_files  = ["**/*tf", ".cloudbuild/workflow.yaml"]
-      service_account = module.branch-network-sa.id
+      service_account = module.branch-network-sa-cicd.0.id
       substitutions   = {}
       template = {
         project_id  = null

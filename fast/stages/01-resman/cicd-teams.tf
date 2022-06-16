@@ -37,7 +37,7 @@ module "branch-teams-dev-pf-cicd-repo" {
       included_files = [
         "**/*json", "**/*tf", "**/*yaml", ".cloudbuild/workflow.yaml"
       ]
-      service_account = module.branch-teams-dev-pf-sa.iam_email
+      service_account = module.branch-teams-dev-pf-sa-cicd.0.id
       substitutions   = {}
       template = {
         project_id  = null
@@ -68,7 +68,7 @@ module "branch-teams-prod-pf-cicd-repo" {
       included_files = [
         "**/*json", "**/*tf", "**/*yaml", ".cloudbuild/workflow.yaml"
       ]
-      service_account = module.branch-teams-prod-pf-sa.iam_email
+      service_account = module.branch-teams-prod-pf-sa-cicd.0.id
       substitutions   = {}
       template = {
         project_id  = null
