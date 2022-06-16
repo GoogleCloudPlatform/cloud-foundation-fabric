@@ -589,7 +589,7 @@ The linting workflow tests:
 - that all README files have up to date outputs, variables, and files (where relevant) tables, via `tools/check_documentation.py`
 - that all links in README files are syntactically correct and valid if internal, via `tools/check_links.py`
 - that resource names used in FAST stages stay within a length limit, via `tools/check_names.py`
-- that all Python code has been formatted with the correct `black` + `flake8` code style
+- that all Python code has been formatted with the correct code style
 
 To run the full suite of checks, a helper Make target exists:
 
