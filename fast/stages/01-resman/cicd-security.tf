@@ -63,7 +63,9 @@ module "branch-security-sa-cicd" {
   iam = (
     each.value.type == "sourcerepo"
     # used directly from the cloud build trigger for source repos
-    ? {}
+    ? {
+      "roles/iam.serviceAccountUser" = [local.automation_resman_sa]
+    }
     # impersonated via workload identity federation for external repos
     : {
       "roles/iam.workloadIdentityUser" = [
