@@ -36,13 +36,18 @@ module "automation-project" {
   # machine (service accounts) IAM bindings
   iam = {
     "roles/owner" = [
-      module.automation-tf-bootstrap-sa.iam_email,
+      module.automation-tf-bootstrap-sa.iam_email
+    ]
+    "roles/cloudbuild.builds.editor" = [
       module.automation-tf-resman-sa.iam_email
     ]
     "roles/iam.serviceAccountAdmin" = [
       module.automation-tf-resman-sa.iam_email
     ]
     "roles/iam.workloadIdentityPoolAdmin" = [
+      module.automation-tf-resman-sa.iam_email
+    ]
+    "roles/source.admin" = [
       module.automation-tf-resman-sa.iam_email
     ]
     "roles/storage.admin" = [
