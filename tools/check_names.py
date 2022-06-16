@@ -84,13 +84,21 @@ def main(dirs, prefix_length=None):
   source_just = max(len(k) for k in MOD_LIMITS)
   name_just = max(len(n.name) for n in names)
   value_just = max(len(n.value) for n in names)
+  errors = []
   for name in names:
     name_length = name.length + prefix_length
-    flag = '✗' if name_length >= MOD_LIMITS[name.source] else '✓'
-    print(f'[{flag}] {name.source.ljust(source_just)} '
-          f'{name.name.ljust(name_just)} '
-          f'{name.value.ljust(value_just)} '
-          f'({name_length})')
+    if name_length >= MOD_LIMITS[name.source]:
+      flag = "✗"
+      errors += [f"{name.source}:{name.name}:{name_length}"]
+    else:
+      flag = "✓"
+
+    print(f"[{flag}] {name.source.ljust(source_just)} "
+          f"{name.name.ljust(name_just)} "
+          f"{name.value.ljust(value_just)} "
+          f"({name_length})")
+  if errors:
+    raise ValueError(errors)
 
 
 if __name__ == '__main__':
