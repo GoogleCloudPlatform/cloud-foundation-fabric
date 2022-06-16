@@ -47,6 +47,7 @@ module "branch-dp-dev-cicd-repo" {
       }
     }
   }
+  depends_on = [module.branch-dp-dev-sa-cicd]
 }
 
 module "branch-dp-prod-cicd-repo" {
@@ -78,6 +79,7 @@ module "branch-dp-prod-cicd-repo" {
       }
     }
   }
+  depends_on = [module.branch-dp-prod-sa-cicd]
 }
 
 # SAs used by CI/CD workflows to impersonate automation SAs
@@ -97,7 +99,7 @@ module "branch-dp-dev-sa-cicd" {
     each.value.type == "sourcerepo"
     # used directly from the cloud build trigger for source repos
     ? {
-      "roles/iam.serviceAccountUser" = [local.automation_resman_sa]
+      "roles/iam.serviceAccountUser" = local.automation_resman_sa
     }
     # impersonated via workload identity federation for external repos
     : {
@@ -138,7 +140,7 @@ module "branch-dp-prod-sa-cicd" {
     each.value.type == "sourcerepo"
     # used directly from the cloud build trigger for source repos
     ? {
-      "roles/iam.serviceAccountUser" = [local.automation_resman_sa]
+      "roles/iam.serviceAccountUser" = local.automation_resman_sa
     }
     # impersonated via workload identity federation for external repos
     : {
