@@ -31,6 +31,14 @@ repos:
       - id: trailing-whitespace
       # Disabled, as YAML does not currently lint successfully
       # - id: check-yaml
+  - repo: https://github.com/google/yapf
+    rev: v0.32.0
+    hooks:
+      - id: yapf
+        name: "yapf"
+        args: ['--style', '{based_on_style: google, indent_width: 2, SPLIT_BEFORE_NAMED_ASSIGNS: false}', -p, -d]
+        files: 'tools/tfeditor'
+        types: ['file', 'python']
   # Disabled: baby steps
   # - repo: https://github.com/PyCQA/isort
   #   rev: 5.10.1
@@ -88,10 +96,12 @@ repos:
     hooks:
       - id: terraform_fmt
         files: ^modules
-      # Disabled because validation takes a LONG time in this repo!
+      # Disabled because validation takes a LONG time (>5minutes) in this repo!
       # - id: terraform_validate
       #   files: ^modules
       # Disabled in favour of local tfdoc implementation.  For now...
       # - id: terraform_docs
       #   args:
       #     - --args=--lockfile=false
+      # Disabled because the repo currently requires a lot of work to pass tflint
+      # - id: terraform_tflint
