@@ -2,6 +2,8 @@
 
 This module allows simplified creation and management of one a service account and its IAM bindings. A key can optionally be generated and will be stored in Terraform state. To use it create a sensitive output in your root modules referencing the `key` output, then extract the private key from the JSON formatted outputs. Alternatively, the `key` can be generated with `openssl` library and only public part uploaded to the Service Account, for more refer to the [Onprem SA Key Management](../../examples/cloud-operations/onprem-sa-key-management/) example.
 
+Note that this module does not fully comply with our design principles, as outputs have no dependencies on IAM bindings to prevent resource cycles.
+
 ## Example
 
 ```hcl
@@ -62,11 +64,11 @@ module "myproject-default-service-accounts" {
 | name | description | sensitive |
 |---|---|:---:|
 | [email](outputs.tf#L17) | Service account email. |  |
-| [iam_email](outputs.tf#L27) | IAM-format service account email. |  |
-| [id](outputs.tf#L37) | Service account id. |  |
-| [key](outputs.tf#L47) | Service account key. | ✓ |
-| [name](outputs.tf#L53) | Service account name. |  |
-| [service_account](outputs.tf#L58) | Service account resource. |  |
-| [service_account_credentials](outputs.tf#L63) | Service account json credential templates for uploaded public keys data. |  |
+| [iam_email](outputs.tf#L25) | IAM-format service account email. |  |
+| [id](outputs.tf#L33) | Service account id. |  |
+| [key](outputs.tf#L41) | Service account key. | ✓ |
+| [name](outputs.tf#L47) | Service account name. |  |
+| [service_account](outputs.tf#L52) | Service account resource. |  |
+| [service_account_credentials](outputs.tf#L57) | Service account json credential templates for uploaded public keys data. |  |
 
 <!-- END TFDOC -->

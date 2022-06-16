@@ -18,9 +18,7 @@ output "email" {
   description = "Service account email."
   value       = local.resource_email_static
   depends_on = [
-    local.service_account,
-    google_service_account_iam_binding.roles,
-    google_service_account_iam_member.additive
+    local.service_account
   ]
 }
 
@@ -28,9 +26,7 @@ output "iam_email" {
   description = "IAM-format service account email."
   value       = local.resource_iam_email_static
   depends_on = [
-    local.service_account,
-    google_service_account_iam_binding.roles,
-    google_service_account_iam_member.additive
+    local.service_account
   ]
 }
 
@@ -38,9 +34,7 @@ output "id" {
   description = "Service account id."
   value       = local.service_account.id
   depends_on = [
-    local.service_account,
-    google_service_account_iam_binding.roles,
-    google_service_account_iam_member.additive
+    local.service_account
   ]
 }
 
