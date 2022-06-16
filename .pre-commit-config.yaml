@@ -1,0 +1,97 @@
+#
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+---
+default_language_version:
+    python: python3
+repos:
+  - repo: https://github.com/Lucas-C/pre-commit-hooks
+    rev: v1.2.0
+    hooks:
+      - id: forbid-crlf
+      - id: remove-crlf
+      - id: forbid-tabs
+      - id: remove-tabs
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.3.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      # Disabled, as YAML does not currently lint successfully
+      # - id: check-yaml
+  # Disabled: baby steps
+  # - repo: https://github.com/PyCQA/isort
+  #   rev: 5.10.1
+  #   hooks:
+  #     - id: isort
+  #       args: ["--profile", "black", "--filter-files"]
+  # - repo: https://github.com/psf/black
+  #   rev: 22.3.0
+  #   hooks:
+  #     - id: black
+  #       language_version: python3
+  # - repo: https://github.com/PyCQA/flake8
+  #   rev: 4.0.1
+  #   hooks:
+  #     - id: flake8
+  - repo: local
+    hooks:
+    - id: check_boilerplate
+      name: Check Boilerplate
+      entry: python3
+      args: ['tools/check_boilerplate.py', '.']
+      language: system
+      types_or: ['dockerfile', 'python', 'yaml', 'terraform', 'bash']
+    - id: check_links
+      name: Check Links
+      entry: python3
+      args: ['tools/check_links.py', '.']
+      language: system
+      types: ['file', 'markdown']
+    - id: check_documentation
+      name: Check Documentation
+      entry: python3
+      args: ['tools/check_documentation.py', 'modules', 'examples', 'fast']
+      language: system
+    - id: check_names
+      name: Check Names
+      entry: python3
+      args: ['tools/check_names.py', '--prefix-length=10', 'fast/stages']
+      language: system
+      types: ['file', 'terraform']
+  # Disabled, to avoid adding additional dependencies
+  # - repo: https://github.com/Lucas-C/pre-commit-hooks-safety
+  #   rev: v1.2.4
+  #   hooks:
+  #     - id: python-safety-dependencies-check
+  # Disabled, to avoid adding additional dependencies
+  # - repo: https://github.com/PyCQA/bandit
+  #   rev: v1.7.4
+  #   hooks:
+  #     - id: python-bandit-vulnerability-check
+  #       args: [-ll, --recursive, tools, fast]
+  #       files: .py$
+  - repo: https://github.com/antonbabenko/pre-commit-terraform
+    rev: v1.72.1
+    hooks:
+      - id: terraform_fmt
+        files: ^modules
+      # Disabled because validation takes a LONG time in this repo!
+      # - id: terraform_validate
+      #   files: ^modules
+      # Disabled in favour of local tfdoc implementation.  For now...
+      # - id: terraform_docs
+      #   args:
+      #     - --args=--lockfile=false
