@@ -17,6 +17,8 @@ To achieve this, we rely on specific GCP functionality like [delegated role gran
 
 Refer to each stage's documentation for a detailed description of its purpose, the architectural choices made in its design, and how it can be configured and wired together to terraform a whole GCP organization. The following is a brief overview of each stage.
 
+To destroy a previous FAST deployment follow the instructions detailed in [cleanup](CLEANUP.md).
+
 ## Organizational level (00-01)
 
 - [Bootstrap](00-bootstrap/README.md)  
