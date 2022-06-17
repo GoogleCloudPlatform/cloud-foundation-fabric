@@ -23,6 +23,7 @@ variable "automation" {
   type = object({
     outputs_bucket          = string
     project_id              = string
+    project_number          = string
     federated_identity_pool = string
     federated_identity_providers = map(object({
       issuer           = string
