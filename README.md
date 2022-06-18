@@ -1,5 +1,8 @@
 <p align="center">
-  <img src="assets/logos/fabric-logo-colors-800.png?raw=true" alt="Cloud Foundation Fabric">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/GoogleCloudPlatform/cloud-foundation-fabric/master/assets/logos/fabric-logo-colors-gray-800.png?v1">
+    <img src="https://raw.githubusercontent.com/GoogleCloudPlatform/cloud-foundation-fabric/master/assets/logos/fabric-logo-colors-800.png?v1" alt="Cloud Foundation Fabric">
+  </picture>
 </p>
 
 # Terraform Examples and Modules for Google Cloud
@@ -10,7 +13,7 @@ This repository provides **end-to-end examples** and a **suite of Terraform modu
 - reference [examples](./examples/) used to deep dive on network patterns or product features
 - a comprehensive source of lean [modules](./modules/dns) that lend themselves well to changes
 
-The whole repository is meant to be cloned as a single unit, and then forked into separate owned repositories to seed production usage, or used as-is and periodically updated as a complete toolkit for prototyping. You can read more on this approach in our [manifesto](./MANIFESTO.md).
+The whole repository is meant to be cloned as a single unit, and then forked into separate owned repositories to seed production usage, or used as-is and periodically updated as a complete toolkit for prototyping. You can read more on this approach in our [contributing guide](./CONTRIBUTING.md).
 
 ## Organization blueprint (Fabric FAST)
 

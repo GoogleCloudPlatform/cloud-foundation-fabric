@@ -20,6 +20,7 @@ module "stage" {
     federated_identity_pool      = null
     federated_identity_providers = null
     project_id                   = "fast-prod-automation"
+    project_number               = 123456
     outputs_bucket               = "test"
   }
   billing_account = {

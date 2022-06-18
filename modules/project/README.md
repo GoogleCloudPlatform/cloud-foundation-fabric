@@ -97,8 +97,8 @@ module "project" {
   source          = "./modules/project"
   name            = "project-example"
   group_iam = {
-    "roles/editor" = [
-      "group:foo@example.com"
+    "foo@example.com" = [
+      "roles/editor"
     ]
   }
   iam = {
@@ -107,7 +107,7 @@ module "project" {
     ]
   }
 }
-# tftest modules=1 resources=3
+# tftest modules=1 resources=2
 ```
 
 ## Shared VPC service
@@ -221,7 +221,7 @@ module "project-host" {
   logging_sinks = {
     warnings = {
       type          = "storage"
-      destination   = module.gcs.name
+      destination   = module.gcs.id
       filter        = "severity=WARNING"
       iam           = false
       unique_writer = false

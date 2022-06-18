@@ -74,37 +74,3 @@ module "branch-security-gcs" {
     "roles/storage.objectAdmin" = [module.branch-security-sa.iam_email]
   }
 }
-
-# ci/cd service account
-
-module "branch-security-sa-cicd" {
-  source = "../../../modules/iam-service-account"
-  for_each = (
-    lookup(local.cicd_repositories, "security", null) == null
-    ? {}
-    : { 0 = local.cicd_repositories.security }
-  )
-  project_id  = var.automation.project_id
-  name        = "prod-resman-sec-1"
-  description = "Terraform CI/CD stage 2 security service account."
-  prefix      = var.prefix
-  iam = {
-    "roles/iam.workloadIdentityUser" = [
-      each.value.branch == null
-      ? format(
-        local.identity_providers[each.value.identity_provider].principalset_tpl,
-        var.automation.federated_identity_pool,
-        each.value.name
-      )
-      : format(
-        local.identity_providers[each.value.identity_provider].principal_tpl,
-        var.automation.federated_identity_pool,
-        each.value.name,
-        each.value.branch
-      )
-    ]
-  }
-  iam_storage_roles = {
-    (var.automation.outputs_bucket) = ["roles/storage.objectViewer"]
-  }
-}

@@ -19,14 +19,18 @@ resource "google_sourcerepo_repository" "default" {
   name    = var.name
 }
 
-resource "google_sourcerepo_repository_iam_binding" "default" {
-  for_each   = var.iam
-  project    = var.project_id
-  repository = google_sourcerepo_repository.default.name
-  role       = each.key
-  members    = each.value
-
-  depends_on = [
-    google_sourcerepo_repository.default
-  ]
+resource "google_cloudbuild_trigger" "default" {
+  for_each        = coalesce(var.triggers, {})
+  project         = var.project_id
+  name            = each.key
+  filename        = each.value.filename
+  included_files  = each.value.included_files
+  service_account = each.value.service_account
+  substitutions   = each.value.substitutions
+  trigger_template {
+    project_id  = try(each.value.template.project_id, var.project_id)
+    branch_name = try(each.value.template.branch_name, null)
+    repo_name   = google_sourcerepo_repository.default.name
+    tag_name    = try(each.value.template.tag_name, null)
+  }
 }

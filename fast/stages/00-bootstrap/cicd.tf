@@ -17,45 +17,101 @@
 # tfdoc:file:description Workload Identity Federation configurations for CI/CD.
 
 locals {
-  # TODO: map null provider to Cloud Build once we add support for it
   cicd_repositories = {
     for k, v in coalesce(var.cicd_repositories, {}) : k => v
     if(
       v != null
       &&
-      contains(keys(local.identity_providers), v.identity_provider)
+      (
+        v.type == "sourcerepo"
+        ||
+        contains(keys(local.identity_providers), coalesce(v.identity_provider, ":"))
+      )
       &&
       fileexists("${path.module}/templates/workflow-${v.type}.yaml")
     )
   }
-  cicd_service_accounts = {
-    for k, v in module.automation-tf-cicd-sa :
-    k => v.iam_email
+  cicd_workflow_providers = {
+    bootstrap = "00-bootstrap-providers.tf"
+    resman    = "01-resman-providers.tf"
+  }
+  cicd_workflow_var_files = {
+    bootstrap = []
+    resman = [
+      "00-bootstrap.auto.tfvars.json",
+      "globals.auto.tfvars.json"
+    ]
   }
 }
+
+# source repository
+
+module "automation-tf-cicd-repo" {
+  source = "../../../modules/source-repository"
+  for_each = {
+    for k, v in local.cicd_repositories : k => v if v.type == "sourcerepo"
+  }
+  project_id = module.automation-project.project_id
+  name       = each.value.name
+  iam = {
+    "roles/source.admin" = [
+      each.key == "bootstrap"
+      ? module.automation-tf-bootstrap-sa.iam_email
+      : module.automation-tf-resman-sa.iam_email
+    ]
+    "roles/source.reader" = [
+      module.automation-tf-cicd-sa[each.key].iam_email
+    ]
+  }
+  triggers = {
+    "fast-00-${each.key}" = {
+      filename        = ".cloudbuild/workflow.yaml"
+      included_files  = ["**/*tf", ".cloudbuild/workflow.yaml"]
+      service_account = module.automation-tf-cicd-sa[each.key].id
+      substitutions   = {}
+      template = {
+        project_id  = null
+        branch_name = each.value.branch
+        repo_name   = each.value.name
+        tag_name    = null
+      }
+    }
+  }
+}
+
+# SAs used by CI/CD workflows to impersonate automation SAs
 
 module "automation-tf-cicd-sa" {
   source      = "../../../modules/iam-service-account"
   for_each    = local.cicd_repositories
   project_id  = module.automation-project.project_id
   name        = "${each.key}-1"
-  description = "Terraform CI/CD stage 1 ${each.key} service account."
+  description = "Terraform CI/CD ${each.key} service account."
   prefix      = local.prefix
-  iam = {
-    "roles/iam.workloadIdentityUser" = [
-      each.value.branch == null
-      ? format(
-        local.identity_providers_defs[each.value.type].principalset_tpl,
-        google_iam_workload_identity_pool.default.0.name,
-        each.value.name
-      )
-      : format(
-        local.identity_providers_defs[each.value.type].principal_tpl,
-        google_iam_workload_identity_pool.default.0.name,
-        each.value.name,
-        each.value.branch
-      )
-    ]
+  iam = (
+    each.value.type == "sourcerepo"
+    # used directly from the cloud build trigger for source repos
+    ? {}
+    # impersonated via workload identity federation for external repos
+    : {
+      "roles/iam.workloadIdentityUser" = [
+        each.value.branch == null
+        ? format(
+          local.identity_providers_defs[each.value.type].principalset_tpl,
+          google_iam_workload_identity_pool.default.0.name,
+          each.value.name
+        )
+        : format(
+          local.identity_providers_defs[each.value.type].principal_tpl,
+          google_iam_workload_identity_pool.default.0.name,
+          each.value.name,
+          each.value.branch
+        )
+      ]
+    }
+  )
+  iam_project_roles = {
+    (module.automation-project.project_id) = ["roles/logging.logWriter"]
   }
   iam_storage_roles = {
     (module.automation-tf-output-gcs.name) = ["roles/storage.objectViewer"]

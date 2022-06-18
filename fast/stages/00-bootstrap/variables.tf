@@ -29,7 +29,6 @@ variable "bootstrap_user" {
 }
 
 variable "cicd_repositories" {
-  # TODO: edit description once we add support for Cloud Build (null provider)
   description = "CI/CD repository configuration. Identity providers reference keys in the `federated_identity_providers` variable. Set to null to disable, or set individual repositories to null if not needed."
   type = object({
     bootstrap = object({
@@ -49,22 +48,29 @@ variable "cicd_repositories" {
   validation {
     condition = alltrue([
       for k, v in coalesce(var.cicd_repositories, {}) :
-      v == null || (
-        try(v.name, null) != null
-        &&
-        try(v.identity_provider, null) != null
-      )
+      v == null || try(v.name, null) != null
     ])
-    error_message = "Non-null repositories need non-null name and providers."
+    error_message = "Non-null repositories need a non-null name."
   }
   validation {
     condition = alltrue([
       for k, v in coalesce(var.cicd_repositories, {}) :
       v == null || (
-        contains(["gitlab", "github"], coalesce(try(v.type, null), "null"))
+        try(v.identity_provider, null) != null
+        ||
+        try(v.type, null) == "sourcerepo"
       )
     ])
-    error_message = "Invalid repository type, supported types: 'github' or 'gitlab'."
+    error_message = "Non-null repositories need a non-null provider unless type is 'sourcerepo'."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in coalesce(var.cicd_repositories, {}) :
+      v == null || (
+        contains(["github", "gitlab", "sourcerepo"], coalesce(try(v.type, null), "null"))
+      )
+    ])
+    error_message = "Invalid repository type, supported types: 'github' 'gitlab' or 'sourcerepo'."
   }
 }
 

@@ -14,19 +14,28 @@
  * limitations under the License.
  */
 
+variable "project_create" {
+  description = "Parameters for the creation of the new project."
+  type = object({
+    billing_account_id = string
+    parent             = string
+  })
+  default = null
+}
+
 variable "project_id" {
-  type    = string
-  default = "test-project"
+  description = "Identifier of the project."
+  type        = string
 }
 
-variable "iam" {
-  type = map(list(string))
-  default = {
-    "roles/source.reader" = ["foo@example.org"]
-  }
+variable "enforce_security_policy" {
+  description = "Enforce security policy."
+  type        = bool
+  default     = true
 }
 
-variable "name" {
-  type    = string
-  default = "test"
+variable "prefix" {
+  description = "Prefix used for created resources."
+  type        = string
+  default     = null
 }

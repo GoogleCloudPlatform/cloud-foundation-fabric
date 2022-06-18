@@ -38,10 +38,16 @@ module "automation-project" {
     "roles/owner" = [
       module.automation-tf-bootstrap-sa.iam_email
     ]
+    "roles/cloudbuild.builds.editor" = [
+      module.automation-tf-resman-sa.iam_email
+    ]
     "roles/iam.serviceAccountAdmin" = [
       module.automation-tf-resman-sa.iam_email
     ]
     "roles/iam.workloadIdentityPoolAdmin" = [
+      module.automation-tf-resman-sa.iam_email
+    ]
+    "roles/source.admin" = [
       module.automation-tf-resman-sa.iam_email
     ]
     "roles/storage.admin" = [
@@ -55,6 +61,7 @@ module "automation-project" {
     "bigquerystorage.googleapis.com",
     "billingbudgets.googleapis.com",
     "cloudbilling.googleapis.com",
+    "cloudbuild.googleapis.com",
     "cloudkms.googleapis.com",
     "cloudresourcemanager.googleapis.com",
     "container.googleapis.com",
@@ -65,6 +72,7 @@ module "automation-project" {
     "pubsub.googleapis.com",
     "servicenetworking.googleapis.com",
     "serviceusage.googleapis.com",
+    "sourcerepo.googleapis.com",
     "stackdriver.googleapis.com",
     "storage-component.googleapis.com",
     "storage.googleapis.com",
@@ -72,7 +80,7 @@ module "automation-project" {
   ]
 }
 
-# outputt files bucket
+# output files bucket
 
 module "automation-tf-output-gcs" {
   source     = "../../../modules/gcs"
@@ -100,6 +108,7 @@ module "automation-tf-bootstrap-sa" {
   name        = "bootstrap-0"
   description = "Terraform organization bootstrap service account."
   prefix      = local.prefix
+  # allow SA used by CI/CD workflow to impersonate this SA
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
       try(module.automation-tf-cicd-sa["bootstrap"].iam_email, null)
@@ -130,6 +139,7 @@ module "automation-tf-resman-sa" {
   name        = "resman-0"
   description = "Terraform stage 1 resman service account."
   prefix      = local.prefix
+  # allow SA used by CI/CD workflow to impersonate this SA
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
       try(module.automation-tf-cicd-sa["resman"].iam_email, null)

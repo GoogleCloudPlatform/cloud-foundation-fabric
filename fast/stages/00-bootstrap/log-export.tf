@@ -59,15 +59,15 @@ module "log-export-gcs" {
 
 module "log-export-logbucket" {
   source      = "../../../modules/logging-bucket"
-  count       = contains(local.log_types, "logging") ? 1 : 0
+  for_each    = toset([for k, v in var.log_sinks : k if v.type == "logging"])
   parent_type = "project"
   parent      = module.log-export-project.project_id
-  id          = "audit-logs-0"
+  id          = "audit-logs-${each.key}"
 }
 
 module "log-export-pubsub" {
   source     = "../../../modules/pubsub"
-  for_each   = toset([for k, v in var.log_sinks : k if v == "pubsub"])
+  for_each   = toset([for k, v in var.log_sinks : k if v.type == "pubsub"])
   project_id = module.log-export-project.project_id
   name       = "audit-logs-${each.key}"
 }
