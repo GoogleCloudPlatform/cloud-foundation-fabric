@@ -33,6 +33,9 @@ output "iam_email" {
 output "id" {
   description = "Service account id."
   value       = local.service_account.id
+  depends_on = [
+    local.service_account
+  ]
 }
 
 output "key" {
