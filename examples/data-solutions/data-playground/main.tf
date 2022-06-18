@@ -18,11 +18,11 @@
 
 module "project" {
   source          = "../../../modules/project"
-  billing_account = var.billing_account
   name            = var.project_id
-  parent          = var.root_node
-  prefix          = var.prefix
-
+  parent          = try(var.project_create.parent, null)
+  billing_account = try(var.project_create.billing_account_id, null)
+  project_create  = var.project_create != null
+  prefix          = var.project_create == null ? null : var.prefix
   services = [
     "stackdriver.googleapis.com",
     "compute.googleapis.com",

@@ -12,10 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-variable "billing_account" {
-  description = "Billing account id used as default for new projects."
-  type        = string
-}
 
 variable "location" {
   description = "The location where resources will be deployed."
@@ -24,12 +20,21 @@ variable "location" {
 }
 
 variable "project_id" {
-  description = "Name for the project."
+  description = "Project id, references existing project if `project_create` is null."
   type        = string
 }
 
+variable "project_create" {
+  description = "Provide values if project creation is needed, uses existing project if null. Parent format:  folders/folder_id or organizations/org_id"
+  type = object({
+    billing_account_id = string
+    parent             = string
+  })
+  default = null
+}
+
 variable "prefix" {
-  description = "Prefix name for the project"
+  description = "Unique prefix used for resource names. Not used for project if 'project_create' is null."
   type        = string
   default     = "data-play"
 }
@@ -38,11 +43,6 @@ variable "region" {
   description = "The region where resources will be deployed."
   type        = string
   default     = "europe-west1"
-}
-
-variable "root_node" {
-  description = "The resource name of the parent Folder or Organization. Must be of the form folders/folder_id or organizations/org_id."
-  type        = string
 }
 
 variable "vpc_ip_cidr_range" {
