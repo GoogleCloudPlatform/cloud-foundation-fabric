@@ -19,9 +19,9 @@
 module "project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account
-  name            = var.project_name
+  name            = var.project_id
   parent          = var.root_node
-  prefix          = "data-playground"
+  prefix          = var.prefix
 
   services = [
     "stackdriver.googleapis.com",
@@ -80,7 +80,7 @@ module "base-gcs-bucket" {
 
 resource "google_notebooks_instance" "playground" {
   name         = "data-play-notebook"
-  location     = format("%s-%s", var.region, var.zone)
+  location     = format("%s-%s", var.region, "b")
   machine_type = "e2-medium"
   project      = module.project.project_id
 

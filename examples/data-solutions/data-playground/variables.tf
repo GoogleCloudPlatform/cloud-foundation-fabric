@@ -23,21 +23,21 @@ variable "location" {
   default     = "europe"
 }
 
-variable "project_name" {
+variable "project_id" {
   description = "Name for the project."
   type        = string
+}
+
+variable "prefix" {
+  description = "Prefix name for the project"
+  type        = string
+  default     = "data-play"
 }
 
 variable "region" {
   description = "The region where resources will be deployed."
   type        = string
   default     = "europe-west1"
-}
-
-variable "zone" {
-  description = "The zone where resources will be deployed."
-  type        = string
-  default     = "b"
 }
 
 variable "root_node" {
