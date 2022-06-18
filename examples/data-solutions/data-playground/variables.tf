@@ -45,20 +45,16 @@ variable "region" {
   default     = "europe-west1"
 }
 
-variable "vpc_ip_cidr_range" {
-  description = "Ip range used in the subnet deployed in the project."
-  type        = string
-  default     = "10.0.0.0/20"
-}
-
-variable "vpc_name" {
-  description = "Name of the VPC created in the project."
-  type        = string
-  default     = "data-playground-vpc"
-}
-
-variable "vpc_subnet_name" {
-  description = "Name of the subnet created in the project."
-  type        = string
-  default     = "default-subnet"
+variable "vpc_config" {
+  description = "Parameters to create a simple VPC for the Data Playground"
+  type = object({
+    ip_cidr_range = string
+    vpc_name      = string
+    subnet_name   = string
+  })
+  default = {
+    ip_cidr_range = "10.0.0.0/20"
+    vpc_name      = "data-playground-vpc"
+    subnet_name   = "default-subnet"
+  }
 }

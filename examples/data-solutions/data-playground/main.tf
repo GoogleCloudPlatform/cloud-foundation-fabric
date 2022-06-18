@@ -45,11 +45,11 @@ module "project" {
 module "vpc" {
   source     = "../../../modules/net-vpc"
   project_id = module.project.project_id
-  name       = var.vpc_name
+  name       = var.vpc_config.vpc_name
   subnets = [
     {
-      ip_cidr_range      = var.vpc_ip_cidr_range
-      name               = var.vpc_subnet_name
+      ip_cidr_range      = var.vpc_config.ip_cidr_range
+      name               = var.vpc_config.subnet_name
       region             = var.region
       secondary_ip_range = {}
     }
@@ -60,7 +60,7 @@ module "vpc-firewall" {
   source       = "../../../modules/net-vpc-firewall"
   project_id   = module.project.project_id
   network      = module.vpc.name
-  admin_ranges = [var.vpc_ip_cidr_range]
+  admin_ranges = [var.vpc_config.ip_cidr_range]
 }
 
 ###############################################################################
@@ -97,5 +97,5 @@ resource "google_notebooks_instance" "playground" {
   no_proxy_access = false
 
   network = module.vpc.network.id
-  subnet  = module.vpc.subnets[format("%s/%s", var.region, var.vpc_subnet_name)].id
+  subnet  = module.vpc.subnets[format("%s/%s", var.region, var.vpc_config.subnet_name)].id
 }
