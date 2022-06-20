@@ -35,7 +35,7 @@ variable "custom_roles" {
   # tfdoc:variable:source 00-bootstrap
   description = "Custom roles defined at the org level, in key => id format."
   type = object({
-    cloud_kms_key_role_editor = string
+    cloud_kms_key_editor = string
   })
   default = null
 }
