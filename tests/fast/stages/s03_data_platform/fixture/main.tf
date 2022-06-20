@@ -18,6 +18,9 @@
 
 module "stage" {
   source = "../../../../../fast/stages/03-data-platform/dev/"
+  automation = {
+    outputs_bucket = "test"
+  }
   billing_account = {
     id              = "012345-67890A-BCDEF0",
     organization_id = 123456
