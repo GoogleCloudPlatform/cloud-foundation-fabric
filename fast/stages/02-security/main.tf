@@ -15,6 +15,7 @@
  */
 
 locals {
+  custom_roles = coalesce(var.custom_roles, {})
   kms_keys = {
     for k, v in var.kms_keys : k => {
       iam    = coalesce(v.iam, {})

@@ -31,6 +31,15 @@ variable "billing_account" {
   })
 }
 
+variable "custom_roles" {
+  # tfdoc:variable:source 00-bootstrap
+  description = "Custom roles defined at the org level, in key => id format."
+  type = object({
+    cloud_kms_key_role_editor = string
+  })
+  default = null
+}
+
 variable "folder_ids" {
   # tfdoc:variable:source 01-resman
   description = "Folder name => id mappings, the 'security' folder name must exist."
@@ -81,6 +90,8 @@ variable "service_accounts" {
   # tfdoc:variable:source 01-resman
   description = "Automation service accounts that can assign the encrypt/decrypt roles on keys."
   type = object({
+    data-platform-dev    = string
+    data-platform-prod   = string
     project-factory-dev  = string
     project-factory-prod = string
   })

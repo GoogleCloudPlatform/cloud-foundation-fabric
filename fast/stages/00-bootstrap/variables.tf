@@ -79,10 +79,12 @@ variable "custom_role_names" {
   type = object({
     organization_iam_admin        = string
     service_project_network_admin = string
+    cloud_kms_key_role_editor     = string
   })
   default = {
     organization_iam_admin        = "organizationIamAdmin"
     service_project_network_admin = "serviceProjectNetworkAdmin"
+    cloud_kms_key_role_editor     = "cloudKmsKeyAdmin"
   }
 }
 

@@ -27,7 +27,8 @@ module "prod-sec-project" {
   prefix          = var.prefix
   billing_account = var.billing_account.id
   iam = {
-    "roles/cloudkms.viewer" = local.prod_kms_restricted_admins
+    (local.custom_roles.cloud_kms_key_role_editor) = ["serviceAccount:${var.service_accounts.data-platform-prod}"]
+    "roles/cloudkms.viewer"                        = local.prod_kms_restricted_admins
   }
   labels   = { environment = "prod", team = "security" }
   services = local.project_services
