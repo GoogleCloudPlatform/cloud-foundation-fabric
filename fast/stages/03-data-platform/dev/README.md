@@ -108,6 +108,14 @@ If you're running this on top of Fast, you should run the following commands to 
 ln -s ~/fast-config/providers/03-data-platform-dev-providers.tf .
 ```
 
+If you have not configured `outputs_location` in bootstrap, you can derive the providers file from that stage's outputs:
+
+```bash
+cd ../../01-resman
+terraform output -json providers | jq -r '.["03-data-platform-dev"]' \
+  > ../03-data-platform/dev/providers.tf
+```
+
 ### Variable configuration
 
 There are two broad sets of variables that can be configured:
@@ -124,6 +132,8 @@ If you configured a valid path for `outputs_location` in the bootstrap security 
 ln -s ~/fast-config/tfvars/00-bootstrap.auto.tfvars.json .
 ln -s ~/fast-config/tfvars/01-resman.auto.tfvars.json . 
 ln -s ~/fast-config/tfvars/02-networking.auto.tfvars.json .
+# also copy the tfvars file used for the bootstrap stage
+cp ../../00-bootstrap/terraform.tfvars .
 ```
 
 If you're not using FAST or its output files, refer to the [Variables](#variables) table at the bottom of this document for a full list of variables, their origin (e.g., a stage or specific to this one), and descriptions explaining their meaning.
