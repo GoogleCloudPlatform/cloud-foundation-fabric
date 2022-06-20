@@ -24,7 +24,7 @@ module "stage" {
     organization_id = 123456789012
   }
   custom_roles = {
-    cloud_kms_key_role_editor = "cloudKmsKeyAdmin"
+    cloud_kms_key_editor = "cloudKmsKeyAdmin"
   }
   folder_ids = {
     security = null
