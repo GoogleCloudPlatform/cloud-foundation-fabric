@@ -23,20 +23,25 @@ locals {
       v != null
       &&
       (
-        v.type == "sourcerepo"
+        try(v.type, null) == "sourcerepo"
         ||
-        contains(keys(local.identity_providers), coalesce(v.identity_provider, ":"))
+        contains(keys(local.identity_providers), coalesce(try(v.identity_provider, null), ":"))
       )
       &&
-      fileexists("${path.module}/templates/workflow-${v.type}.yaml")
+      fileexists(format("${path.module}/templates/workflow-%s.yaml", try(v.type, "")))
     )
   }
   cicd_workflow_providers = {
     bootstrap = "00-bootstrap-providers.tf"
+    cicd      = "00-cicd-providers.tf"
     resman    = "01-resman-providers.tf"
   }
   cicd_workflow_var_files = {
     bootstrap = []
+    cicd = [
+      "00-bootstrap.auto.tfvars.json",
+      "globals.auto.tfvars.json"
+    ]
     resman = [
       "00-bootstrap.auto.tfvars.json",
       "globals.auto.tfvars.json"

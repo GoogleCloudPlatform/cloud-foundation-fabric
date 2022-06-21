@@ -37,6 +37,12 @@ variable "cicd_repositories" {
       name              = string
       type              = string
     })
+    cicd = object({
+      branch            = string
+      identity_provider = string
+      name              = string
+      type              = string
+    })
     resman = object({
       branch            = string
       identity_provider = string
@@ -91,6 +97,10 @@ variable "federated_identity_providers" {
   type = map(object({
     attribute_condition = string
     issuer              = string
+    custom_settings = object({
+      issuer_uri        = string
+      allowed_audiences = list(string)
+    })
   }))
   default  = {}
   nullable = false
