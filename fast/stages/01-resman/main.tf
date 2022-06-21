@@ -16,6 +16,13 @@
 
 locals {
   # convenience flags that express where billing account resides
+  automation_resman_sa = try(
+    [format(
+      "serviceAccount:%s",
+      data.google_client_openid_userinfo.provider_identity.0.email
+    )],
+    []
+  )
   billing_ext     = var.billing_account.organization_id == null
   billing_org     = var.billing_account.organization_id == var.organization.id
   billing_org_ext = !local.billing_ext && !local.billing_org
@@ -63,4 +70,8 @@ locals {
   identity_providers = coalesce(
     try(var.automation.federated_identity_providers, null), {}
   )
+}
+
+data "google_client_openid_userinfo" "provider_identity" {
+  count = length(local.cicd_repositories) > 0 ? 1 : 0
 }

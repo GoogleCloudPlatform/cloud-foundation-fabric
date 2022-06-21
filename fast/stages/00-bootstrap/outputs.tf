@@ -57,6 +57,7 @@ locals {
       federated_identity_providers = local.wif_providers
       outputs_bucket               = module.automation-tf-output-gcs.name
       project_id                   = module.automation-project.project_id
+      project_number               = module.automation-project.number
     }
     custom_roles = local.custom_roles
   }

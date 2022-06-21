@@ -35,7 +35,7 @@ module "branch-security-cicd-repo" {
     fast-02-security = {
       filename        = ".cloudbuild/workflow.yaml"
       included_files  = ["**/*tf", ".cloudbuild/workflow.yaml"]
-      service_account = module.branch-security-sa.id
+      service_account = module.branch-security-sa-cicd.0.id
       substitutions   = {}
       template = {
         project_id  = null
@@ -45,6 +45,7 @@ module "branch-security-cicd-repo" {
       }
     }
   }
+  depends_on = [module.branch-security-sa-cicd]
 }
 
 # SA used by CI/CD workflows to impersonate automation SAs
@@ -63,7 +64,9 @@ module "branch-security-sa-cicd" {
   iam = (
     each.value.type == "sourcerepo"
     # used directly from the cloud build trigger for source repos
-    ? {}
+    ? {
+      "roles/iam.serviceAccountUser" = local.automation_resman_sa
+    }
     # impersonated via workload identity federation for external repos
     : {
       "roles/iam.workloadIdentityUser" = [

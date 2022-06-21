@@ -50,7 +50,7 @@ module "projects" {
   prefix                 = var.prefix
   service_accounts       = try(each.value.service_accounts, {})
   services               = try(each.value.services, [])
-  service_identities_iam = try(each.value.services_iam, {})
+  service_identities_iam = try(each.value.service_identities_iam, {})
   vpc                    = try(each.value.vpc, null)
 }
 
