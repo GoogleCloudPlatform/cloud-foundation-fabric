@@ -25,11 +25,12 @@ locals {
   identity_providers_defs = {
     github = {
       attribute_mapping = {
-        "google.subject"       = "assertion.sub"
-        "attribute.sub"        = "assertion.sub"
-        "attribute.actor"      = "assertion.actor"
-        "attribute.repository" = "assertion.repository"
-        "attribute.ref"        = "assertion.ref"
+        "google.subject"             = "assertion.sub"
+        "attribute.sub"              = "assertion.sub"
+        "attribute.actor"            = "assertion.actor"
+        "attribute.repository"       = "assertion.repository"
+        "attribute.repository_owner" = "assertion.repository_owner"
+        "attribute.ref"              = "assertion.ref"
       }
       issuer_uri       = "https://token.actions.githubusercontent.com"
       principal_tpl    = "principal://iam.googleapis.com/%s/subject/repo:%s:ref:refs/heads/%s"
