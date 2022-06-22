@@ -225,8 +225,8 @@ If you have set a valid value for `outputs_location` in the bootstrap and in the
 
 ```bash
 # `outputs_location` is set to `~/fast-config`
-ln -s ../../configs/example/02-networking/terraform-bootstrap.auto.tfvars.json
-ln -s ../../configs/example/02-networking/terraform-resman.auto.tfvars.json
+ln -s ~/fast-config/tfvars/00-bootstrap.auto.tfvars.json .
+ln -s ~/fast-config/tfvars/01-resman.auto.tfvars.json .
 # also copy the tfvars file used for the bootstrap stage
 cp ../00-bootstrap/terraform.tfvars .
 ```
