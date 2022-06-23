@@ -195,14 +195,15 @@ Due to its simplicity, this stage lends itself easily to customizations: adding 
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [cicd_repositories](outputs.tf#L145) | WIF configuration for CI/CD repositories. |  |  |
-| [dataplatform](outputs.tf#L159) | Data for the Data Platform stage. |  |  |
-| [networking](outputs.tf#L175) | Data for the networking stage. |  |  |
-| [project_factories](outputs.tf#L184) | Data for the project factories stage. |  |  |
-| [providers](outputs.tf#L200) | Terraform provider files for this stage and dependent stages. | ✓ | <code>02-networking</code> · <code>02-security</code> · <code>03-dataplatform</code> · <code>xx-sandbox</code> · <code>xx-teams</code> |
-| [sandbox](outputs.tf#L207) | Data for the sandbox stage. |  | <code>xx-sandbox</code> |
-| [security](outputs.tf#L217) | Data for the networking stage. |  | <code>02-security</code> |
-| [teams](outputs.tf#L227) | Data for the teams stage. |  |  |
-| [tfvars](outputs.tf#L240) | Terraform variable files for the following stages. | ✓ |  |
+| [cicd_repositories](outputs.tf#L159) | WIF configuration for CI/CD repositories. |  |  |
+| [dataplatform](outputs.tf#L173) | Data for the Data Platform stage. |  |  |
+| [gke_multitenant](outputs.tf#L241) | Data for the GKE multitenant stage. |  | <code>03-gke-multitenant</code> |
+| [networking](outputs.tf#L189) | Data for the networking stage. |  |  |
+| [project_factories](outputs.tf#L198) | Data for the project factories stage. |  |  |
+| [providers](outputs.tf#L214) | Terraform provider files for this stage and dependent stages. | ✓ | <code>02-networking</code> · <code>02-security</code> · <code>03-dataplatform</code> · <code>xx-sandbox</code> · <code>xx-teams</code> |
+| [sandbox](outputs.tf#L221) | Data for the sandbox stage. |  | <code>xx-sandbox</code> |
+| [security](outputs.tf#L231) | Data for the networking stage. |  | <code>02-security</code> |
+| [teams](outputs.tf#L258) | Data for the teams stage. |  |  |
+| [tfvars](outputs.tf#L271) | Terraform variable files for the following stages. | ✓ |  |
 
 <!-- END TFDOC -->
