@@ -371,7 +371,7 @@ federated_identity_providers = {
     custom_settings     = {
       issuer_uri          = "https://gitlab.fast.example.com"
       allowed_audiences   = ["https://gitlab.fast.example.com"]
-    }    
+    }
   }
 }
 ```
@@ -397,7 +397,7 @@ cicd_repositories = {
     identity_provider = "github-sample"
     name              = "my-gh-org/fast-cicd"
     type              = "github"
-  }  
+  }
   resman = {
     branch            = "main"
     identity_provider = "github-sample"
