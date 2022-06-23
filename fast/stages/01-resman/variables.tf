@@ -23,6 +23,7 @@ variable "automation" {
   type = object({
     outputs_bucket          = string
     project_id              = string
+    project_number          = string
     federated_identity_pool = string
     federated_identity_providers = map(object({
       issuer           = string
@@ -197,13 +198,4 @@ variable "team_folders" {
     impersonation_groups = list(string)
   }))
   default = null
-  # default = {
-  #   team-a = {
-  #     descriptive_name = "Team A"
-  #     group_iam = {
-  #       team-a-group@example.com = ["roles/owner", "roles/resourcemanager.projectCreator"]
-  #     }
-  #     impersonation_groups = ["team-a-admins@example.com"]
-  #   }
-  # }
 }

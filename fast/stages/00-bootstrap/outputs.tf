@@ -43,6 +43,11 @@ locals {
       name   = "bootstrap"
       sa     = module.automation-tf-bootstrap-sa.email
     })
+    "00-cicd" = templatefile(local._tpl_providers, {
+      bucket = module.automation-tf-cicd-gcs.name
+      name   = "cicd"
+      sa     = module.automation-tf-cicd-provisioning-sa.email
+    })
     "01-resman" = templatefile(local._tpl_providers, {
       bucket = module.automation-tf-resman-gcs.name
       name   = "resman"
@@ -57,6 +62,7 @@ locals {
       federated_identity_providers = local.wif_providers
       outputs_bucket               = module.automation-tf-output-gcs.name
       project_id                   = module.automation-project.project_id
+      project_number               = module.automation-project.number
     }
     custom_roles = local.custom_roles
   }
@@ -133,6 +139,7 @@ output "service_accounts" {
   description = "Automation service accounts created by this stage."
   value = {
     bootstrap = module.automation-tf-bootstrap-sa.email
+    cicd      = module.automation-tf-cicd-provisioning-sa.email
     resman    = module.automation-tf-resman-sa.email
   }
 }

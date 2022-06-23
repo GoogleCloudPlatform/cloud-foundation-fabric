@@ -107,6 +107,18 @@ variable "region" {
   default     = "europe-west1"
 }
 
+variable "secrets" {
+  description = "Secret Manager secrets. Key is the variable name or mountpoint, volume versions are in version:path format."
+  type = map(object({
+    is_volume  = bool
+    project_id = number
+    secret     = string
+    versions   = list(string)
+  }))
+  nullable = false
+  default  = {}
+}
+
 variable "service_account" {
   description = "Service account email. Unused if service account is auto-created."
   type        = string

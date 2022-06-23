@@ -52,9 +52,11 @@ locals {
     for k, v in local.cicd_repositories : k => templatefile(
       "${path.module}/templates/workflow-${v.type}.yaml",
       merge(local.cicd_workflow_attrs[k], {
-        identity_provider = local.identity_providers[v.identity_provider].name
-        outputs_bucket    = var.automation.outputs_bucket
-        stage_name        = k
+        identity_provider = try(
+          local.identity_providers[v.identity_provider].name, null
+        )
+        outputs_bucket = var.automation.outputs_bucket
+        stage_name     = k
       })
     )
   }
@@ -158,9 +160,11 @@ output "cicd_repositories" {
   description = "WIF configuration for CI/CD repositories."
   value = {
     for k, v in local.cicd_repositories : k => {
-      branch          = v.branch
-      name            = v.name
-      provider        = local.identity_providers[v.identity_provider].name
+      branch = v.branch
+      name   = v.name
+      provider = try(
+        local.identity_providers[v.identity_provider].name, null
+      )
       service_account = local.cicd_workflow_attrs[k].service_account
     } if v != null
   }

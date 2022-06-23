@@ -38,10 +38,16 @@ module "automation-project" {
     "roles/owner" = [
       module.automation-tf-bootstrap-sa.iam_email
     ]
+    "roles/cloudbuild.builds.editor" = [
+      module.automation-tf-resman-sa.iam_email
+    ]
     "roles/iam.serviceAccountAdmin" = [
       module.automation-tf-resman-sa.iam_email
     ]
     "roles/iam.workloadIdentityPoolAdmin" = [
+      module.automation-tf-resman-sa.iam_email
+    ]
+    "roles/source.admin" = [
       module.automation-tf-resman-sa.iam_email
     ]
     "roles/storage.admin" = [
@@ -107,6 +113,37 @@ module "automation-tf-bootstrap-sa" {
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
       try(module.automation-tf-cicd-sa["bootstrap"].iam_email, null)
+    ])
+  }
+  iam_storage_roles = {
+    (module.automation-tf-output-gcs.name) = ["roles/storage.admin"]
+  }
+}
+
+# cicd stage's bucket and service account
+
+module "automation-tf-cicd-gcs" {
+  source     = "../../../modules/gcs"
+  project_id = module.automation-project.project_id
+  name       = "iac-core-cicd-0"
+  prefix     = local.prefix
+  versioning = true
+  iam = {
+    "roles/storage.objectAdmin" = [module.automation-tf-cicd-provisioning-sa.iam_email]
+  }
+  depends_on = [module.organization]
+}
+
+module "automation-tf-cicd-provisioning-sa" {
+  source      = "../../../modules/iam-service-account"
+  project_id  = module.automation-project.project_id
+  name        = "cicd-0"
+  description = "Terraform stage 1 CICD service account."
+  prefix      = local.prefix
+  # allow SA used by CI/CD workflow to impersonate this SA
+  iam = {
+    "roles/iam.serviceAccountTokenCreator" = compact([
+      try(module.automation-tf-cicd-sa["cicd"].iam_email, null)
     ])
   }
   iam_storage_roles = {

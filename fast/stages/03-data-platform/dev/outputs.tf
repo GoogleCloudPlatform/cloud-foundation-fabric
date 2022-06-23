@@ -14,6 +14,31 @@
 
 # tfdoc:file:description Output variables.
 
+locals {
+  tfvars = {
+    bigquery_dataset = module.data-platform.bigquery-datasets
+    gcs_buckets      = module.data-platform.gcs-buckets
+    projects         = module.data-platform.projects
+  }
+}
+
+# generate tfvars file for subsequent stages
+
+resource "local_file" "tfvars" {
+  for_each        = var.outputs_location == null ? {} : { 1 = 1 }
+  file_permission = "0644"
+  filename        = "${pathexpand(var.outputs_location)}/tfvars/03-data-platform-dev.auto.tfvars.json"
+  content         = jsonencode(local.tfvars)
+}
+
+resource "google_storage_bucket_object" "tfvars" {
+  bucket  = var.automation.outputs_bucket
+  name    = "tfvars/03-data-platform-dev.auto.tfvars.json"
+  content = jsonencode(local.tfvars)
+}
+
+# outputs
+
 output "bigquery_datasets" {
   description = "BigQuery datasets."
   value       = module.data-platform.bigquery-datasets

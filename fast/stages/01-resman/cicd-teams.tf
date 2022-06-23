@@ -37,7 +37,7 @@ module "branch-teams-dev-pf-cicd-repo" {
       included_files = [
         "**/*json", "**/*tf", "**/*yaml", ".cloudbuild/workflow.yaml"
       ]
-      service_account = module.branch-teams-dev-pf-sa.iam_email
+      service_account = module.branch-teams-dev-pf-sa-cicd.0.id
       substitutions   = {}
       template = {
         project_id  = null
@@ -47,6 +47,7 @@ module "branch-teams-dev-pf-cicd-repo" {
       }
     }
   }
+  depends_on = [module.branch-teams-dev-pf-sa-cicd]
 }
 
 module "branch-teams-prod-pf-cicd-repo" {
@@ -68,7 +69,7 @@ module "branch-teams-prod-pf-cicd-repo" {
       included_files = [
         "**/*json", "**/*tf", "**/*yaml", ".cloudbuild/workflow.yaml"
       ]
-      service_account = module.branch-teams-prod-pf-sa.iam_email
+      service_account = module.branch-teams-prod-pf-sa-cicd.0.id
       substitutions   = {}
       template = {
         project_id  = null
@@ -78,6 +79,7 @@ module "branch-teams-prod-pf-cicd-repo" {
       }
     }
   }
+  depends_on = [module.branch-teams-prod-pf-sa-cicd]
 }
 
 # SAs used by CI/CD workflows to impersonate automation SAs
@@ -96,7 +98,9 @@ module "branch-teams-dev-pf-sa-cicd" {
   iam = (
     each.value.type == "sourcerepo"
     # used directly from the cloud build trigger for source repos
-    ? {}
+    ? {
+      "roles/iam.serviceAccountUser" = local.automation_resman_sa
+    }
     # impersonated via workload identity federation for external repos
     : {
       "roles/iam.workloadIdentityUser" = [
@@ -135,7 +139,9 @@ module "branch-teams-prod-pf-sa-cicd" {
   iam = (
     each.value.type == "sourcerepo"
     # used directly from the cloud build trigger for source repos
-    ? {}
+    ? {
+      "roles/iam.serviceAccountUser" = local.automation_resman_sa
+    }
     # impersonated via workload identity federation for external repos
     : {
       "roles/iam.workloadIdentityUser" = [
