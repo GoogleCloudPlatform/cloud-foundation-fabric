@@ -119,7 +119,7 @@ module "automation-tf-bootstrap-sa" {
   }
 }
 
-# resource hierarchy stage's bucket and service account
+# cicd stage's bucket and service account
 
 module "automation-tf-cicd-gcs" {
   source     = "../../../modules/gcs"

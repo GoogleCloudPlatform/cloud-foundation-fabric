@@ -19,11 +19,12 @@
 locals {
   identity_providers = {
     for k, v in var.federated_identity_providers : k => merge(
-      v, lookup(local.identity_providers_defs, v.issuer, {}),
-      { for kk, vv in lookup(v, "custom_settings", {}) : kk => vv if vv != null }
+      v,
+      lookup(local.identity_providers_defs, v.issuer, {})
     )
   }
   identity_providers_defs = {
+    # https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/about-security-hardening-with-openid-connect
     github = {
       attribute_mapping = {
         "google.subject"             = "assertion.sub"
@@ -81,7 +82,15 @@ resource "google_iam_workload_identity_pool_provider" "default" {
   attribute_condition                = each.value.attribute_condition
   attribute_mapping                  = each.value.attribute_mapping
   oidc {
-    allowed_audiences = try(each.value.allowed_audiences, null)
-    issuer_uri        = each.value.issuer_uri
+    allowed_audiences = (
+      try(each.value.custom_settings.allowed_audiences, null) != null
+      ? each.value.custom_settings.allowed_audiences
+      : try(each.value.allowed_audiences, null)
+    )
+    issuer_uri = (
+      try(each.value.custom_settings.issuer_uri, null) != null
+      ? each.value.custom_settings.issuer_uri
+      : try(each.value.issuer_uri, null)
+    )
   }
 }
