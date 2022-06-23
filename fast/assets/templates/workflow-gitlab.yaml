@@ -15,6 +15,15 @@
 default:
   image:
     name: registry.gitlab.com/gitlab-org/terraform-images/releases/1.1
+  before_script:
+    - |
+      ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+      echo "$CICD_MODULES_KEY" | base64 -d | tr -d '\r' | ssh-add - > /dev/null
+      mkdir -p ~/.ssh
+      ssh-keyscan -H 'gitlab.com' >> ~/.ssh/known_hosts
+      ssh-keyscan gitlab.com | sort -u - ~/.ssh/known_hosts -o ~/.ssh/known_hosts
+      cd "$${TF_ROOT}"
+      cp -R .tf-setup/. .
 
 variables:
   FAST_OUTPUTS_BUCKET: ${outputs_bucket}
@@ -43,6 +52,7 @@ cache:
 # Configure GCP Auth with Access Token
 gcp-auth:
   stage: gcp-auth
+  before_script: []
   script:
     - |
       PAYLOAD="$(cat <<EOF
@@ -83,6 +93,7 @@ gcp-auth:
 # Downloading from bucket into cache
 tf-setup:
   stage: tf-setup
+  before_script: []
   script:
     - |
       mkdir -p .tf-setup
@@ -104,13 +115,6 @@ tf-init:
   stage: tf-init
   script:
     - |
-      ssh-agent -a $SSH_AUTH_SOCK > /dev/null
-      echo "$CICD_MODULES_KEY" | tr -d '\r' | ssh-add - > /dev/null
-      mkdir -p ~/.ssh
-      ssh-keyscan -H 'gitlab.com' >> ~/.ssh/known_hosts
-      ssh-keyscan gitlab.com | sort -u - ~/.ssh/known_hosts -o ~/.ssh/known_hosts
-      cd "$${TF_ROOT}"
-      cp -R .tf-setup/. .
       gitlab-terraform init
   dependencies:
     - gcp-auth
@@ -120,13 +124,6 @@ tf-validate:
   stage: tf-validate
   script:
     - |
-      ssh-agent -a $SSH_AUTH_SOCK > /dev/null
-      echo "$CICD_MODULES_KEY" | tr -d '\r' | ssh-add - > /dev/null
-      mkdir -p ~/.ssh
-      ssh-keyscan -H 'gitlab.com' >> ~/.ssh/known_hosts
-      ssh-keyscan gitlab.com | sort -u - ~/.ssh/known_hosts -o ~/.ssh/known_hosts
-      cd "$${TF_ROOT}"
-      cp -R .tf-setup/. .
       gitlab-terraform validate
   dependencies:
     - gcp-auth
@@ -136,13 +133,6 @@ tf-plan:
   stage: tf-plan
   script:
   - |
-    ssh-agent -a $SSH_AUTH_SOCK > /dev/null
-    echo "$CICD_MODULES_KEY" | tr -d '\r' | ssh-add - > /dev/null
-    mkdir -p ~/.ssh
-    ssh-keyscan -H 'gitlab.com' >> ~/.ssh/known_hosts
-    ssh-keyscan gitlab.com | sort -u - ~/.ssh/known_hosts -o ~/.ssh/known_hosts
-    cd "$${TF_ROOT}"
-    cp -R .tf-setup/. .
     gitlab-terraform plan
     gitlab-terraform plan-json
   dependencies:
