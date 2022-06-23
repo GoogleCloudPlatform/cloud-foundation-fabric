@@ -16,7 +16,8 @@
 
 locals {
   prod_kms_restricted_admins = [
-    "serviceAccount:${var.service_accounts.project-factory-prod}"
+    "serviceAccount:${var.service_accounts.project-factory-prod}",
+    "serviceAccount:${var.service_accounts.data-platform-prod}"
   ]
 }
 
@@ -59,7 +60,7 @@ resource "google_project_iam_member" "prod_key_admin_delegated" {
     title       = "kms_sa_delegated_grants"
     description = "Automation service account delegated grants."
     expression = format(
-      "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
+      "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s]) && resource.type == 'cloudkms.googleapis.com/CryptoKey'",
       join(",", formatlist("'%s'", [
         "roles/cloudkms.cryptoKeyEncrypterDecrypter",
         "roles/cloudkms.cryptoKeyEncrypterDecrypterViaDelegation"
