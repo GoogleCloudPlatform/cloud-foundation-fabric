@@ -16,7 +16,8 @@
 
 locals {
   dev_kms_restricted_admins = [
-    "serviceAccount:${var.service_accounts.project-factory-dev}"
+    "serviceAccount:${var.service_accounts.project-factory-dev}",
+    "serviceAccount:${var.service_accounts.data-platform-dev}"
   ]
 }
 
@@ -27,8 +28,7 @@ module "dev-sec-project" {
   prefix          = var.prefix
   billing_account = var.billing_account.id
   iam = {
-    (local.custom_roles.cloud_kms_key_editor) = ["serviceAccount:${var.service_accounts.data-platform-dev}"]
-    "roles/cloudkms.viewer"                   = local.dev_kms_restricted_admins
+    "roles/cloudkms.viewer" = local.dev_kms_restricted_admins
   }
   labels   = { environment = "dev", team = "security" }
   services = local.project_services
@@ -50,7 +50,6 @@ module "dev-sec-kms" {
 }
 
 # TODO(ludo): add support for conditions to Fabric modules
-# TODO(ludo): grant delegated role at key instead of project level
 
 resource "google_project_iam_member" "dev_key_admin_delegated" {
   for_each = toset(local.dev_kms_restricted_admins)
@@ -61,7 +60,7 @@ resource "google_project_iam_member" "dev_key_admin_delegated" {
     title       = "kms_sa_delegated_grants"
     description = "Automation service account delegated grants."
     expression = format(
-      "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
+      "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s]) && resource.type == 'cloudkms.googleapis.com/CryptoKey'",
       join(",", formatlist("'%s'", [
         "roles/cloudkms.cryptoKeyEncrypterDecrypter",
         "roles/cloudkms.cryptoKeyEncrypterDecrypterViaDelegation"

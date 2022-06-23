@@ -171,12 +171,6 @@ module "organization" {
       "dns.networks.bindPrivateDNSZone",
       "resourcemanager.projects.get",
     ]
-    (var.custom_role_names.cloud_kms_key_editor) = [
-      "cloudkms.cryptoKeys.get",
-      "cloudkms.cryptoKeys.list",
-      "cloudkms.cryptoKeys.getIamPolicy",
-      "cloudkms.cryptoKeys.setIamPolicy"
-    ]
   }
   logging_sinks = {
     for name, attrs in var.log_sinks : name => {
