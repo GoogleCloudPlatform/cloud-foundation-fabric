@@ -39,6 +39,7 @@ def test_vpn_peering_parity(e2e_plan_runner):
   for VPN and VPC peering resources'''
   _, plan_peering = e2e_plan_runner(fixture_path=FIXTURE_PEERING)
   _, plan_vpn = e2e_plan_runner(fixture_path=FIXTURE_VPN)
+
   ddiff = DeepDiff(plan_vpn, plan_peering, ignore_order=True,
                    group_by='address', view='tree')
 
