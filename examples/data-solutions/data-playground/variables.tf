@@ -36,7 +36,7 @@ variable "project_create" {
 variable "prefix" {
   description = "Unique prefix used for resource names. Not used for project if 'project_create' is null."
   type        = string
-  default     = "data-play"
+  default     = "dp"
 }
 
 variable "region" {
@@ -48,7 +48,7 @@ variable "region" {
 variable "service_encryption_keys" { # service encription key
   description = "Cloud KMS to use to encrypt different services. Key location should match service region."
   type = object({
-    storage  = string
+    storage = string
   })
   default = null
 }

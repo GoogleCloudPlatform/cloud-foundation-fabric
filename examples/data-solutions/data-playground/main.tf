@@ -44,7 +44,7 @@ module "project" {
     # Example of applying a project wide policy, mainly useful for Composer
   }
   service_encryption_key_ids = {
-    storage  = [try(local.service_encryption_keys.storage, null)]
+    storage = [try(local.service_encryption_keys.storage, null)]
   }
 }
 
@@ -78,10 +78,10 @@ module "vpc-firewall" {
 ###############################################################################
 
 module "base-gcs-bucket" {
-  source     = "../../../modules/gcs"
-  project_id = module.project.project_id
-  prefix     = module.project.project_id
-  name       = "base"
+  source         = "../../../modules/gcs"
+  project_id     = module.project.project_id
+  prefix         = module.project.project_id
+  name           = "base"
   encryption_key = try(local.service_encryption_keys.storage, null) # Example assignment of an encryption key
 }
 
@@ -89,6 +89,7 @@ module "base-gcs-bucket" {
 #                         Vertex AI Notebook                                   #
 ###############################################################################
 # TODO: Add encryption_key to Vertex AI notebooks as well
+# TODO: Add shared VPC support
 resource "google_notebooks_instance" "playground" {
   name         = "data-play-notebook"
   location     = format("%s-%s", var.region, "b")
