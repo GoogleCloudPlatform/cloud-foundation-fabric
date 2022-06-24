@@ -20,17 +20,17 @@ This sample creates several distinct groups of resources:
 
 
 ## Variables
-| name                   | description                                                                                                              | type   | required | default             |
-| ---------------------- | ------------------------------------------------------------------------------------------------------------------------ | ------ | -------- | ------------------- |
-| billing\_account       | Billing account id used as default for new projects.                                                                     | string | ✓        |                     |
-| project\_service\_name | Name for the project.                                                                                                    | string | ✓        |                     |
-| root\_node             | The resource name of the parent Folder or Organization. Must be of the form folders/folder\_id or organizations/org\_id. | string | ✓        |                     |
-| location               | The location where resources will be deployed                                                                            | string |          | europe              |
-| region                 | The region where resources will be deployed.                                                                             | string |          | europe-west1        |
-| zone                   | The zone where resources will be deployed.                                                                               | string |          | b                   |
-| vpc\_ip\_cidr\_range   | Ip range used in the subnet deployed in the project                                                                      | string |          | 10.0.0.0/20         |
-| vpc\_name              | Name of the VPC created in the project.                                                                                  | string |          | data-playground-vpc |
-| vpc\_subnet\_name      | Name of the subnet created in the project                                                                                | string |          | default-subnet      |
+| name                      | description                                                                                                                             | type        | required | default      |
+| ------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ----------- | -------- | ------------ |
+| project\_id               | Project id, references existing project if \`project\_create\` is null.                                                                 | string      | ✓        |              |
+| location                  | The location where resources will be deployed                                                                                           | string      |          | europe       |
+| region                    | The region where resources will be deployed.                                                                                            | string      |          | europe-west1 |
+| project\_create           | Provide values if project creation is needed, uses existing project if null. Parent format: folders/folder\_id or organizations/org\_id | object({…}) |          | null         |
+| prefix                    | Unique prefix used for resource names. Not used for project if 'project\_create' is null.                                               | string      |          | dp           |
+| service\_encryption\_keys | Cloud KMS to use to encrypt different services. Key location should match service region.                                               | object({…}) |          | null         |
+| vpc\_config               | Parameters to create a simple VPC for the Data Playground                                                                               | object({…}) |          | {...}        |
+📋 Copy
+Clear
 
 
 ## Outputs
