@@ -15,6 +15,9 @@
 ###############################################################################
 #                                   Project                                   #
 ###############################################################################
+locals {
+  service_encryption_keys = var.service_encryption_keys
+}
 
 module "project" {
   source          = "../../../modules/project"
@@ -36,6 +39,13 @@ module "project" {
     "notebooks.googleapis.com",
     "composer.googleapis.com"
   ]
+  policy_boolean = {
+    # "constraints/compute.requireOsLogin" = false 
+    # Example of applying a project wide policy, mainly useful for Composer
+  }
+  service_encryption_key_ids = {
+    storage  = [try(local.service_encryption_keys.storage, null)]
+  }
 }
 
 ###############################################################################
@@ -72,12 +82,13 @@ module "base-gcs-bucket" {
   project_id = module.project.project_id
   prefix     = module.project.project_id
   name       = "base"
+  encryption_key = try(local.service_encryption_keys.storage, null) # Example assignment of an encryption key
 }
 
 ###############################################################################
 #                         Vertex AI Notebook                                   #
 ###############################################################################
-
+# TODO: Add encryption_key to Vertex AI notebooks as well
 resource "google_notebooks_instance" "playground" {
   name         = "data-play-notebook"
   location     = format("%s-%s", var.region, "b")

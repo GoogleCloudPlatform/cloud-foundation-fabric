@@ -45,6 +45,14 @@ variable "region" {
   default     = "europe-west1"
 }
 
+variable "service_encryption_keys" { # service encription key
+  description = "Cloud KMS to use to encrypt different services. Key location should match service region."
+  type = object({
+    storage  = string
+  })
+  default = null
+}
+
 variable "vpc_config" {
   description = "Parameters to create a simple VPC for the Data Playground"
   type = object({
