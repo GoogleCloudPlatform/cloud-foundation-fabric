@@ -3,6 +3,7 @@
 This example creates a minimum viable template for a data experimentation project with the needed APIs enabled, basic VPC and Firewall set in place, GCS bucket and an AI notebook to get started.
 
 This is the high level diagram:
+
 ![High-level diagram](diagram.svg "High-level diagram")
 
 ## Managed resources and services
