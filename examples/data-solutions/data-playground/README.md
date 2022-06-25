@@ -4,7 +4,7 @@ This example creates a minimum viable template for a data experimentation projec
 
 This is the high level diagram:
 
-![High-level diagram](diagram.svg "High-level diagram")
+![High-level diagram](diagram.png "High-level diagram")
 
 ## Managed resources and services
 
@@ -33,9 +33,6 @@ This sample creates several distinct groups of resources:
 | prefix                    | Unique prefix used for resource names. Not used for project if 'project\_create' is null.                                               | string      |          | dp           |
 | service\_encryption\_keys | Cloud KMS to use to encrypt different services. Key location should match service region.                                               | object({…}) |          | null         |
 | vpc\_config               | Parameters to create a simple VPC for the Data Playground                                                                               | object({…}) |          | {...}        |
-📋 Copy
-Clear
-
 
 ## Outputs
 | Name                                                                                                                                                  | Description             |
