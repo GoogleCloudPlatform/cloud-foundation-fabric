@@ -23,10 +23,6 @@
     </feMerge>
 </filter>
 </defs>
-<rect x="0" y="0" width="360" height="200" style="fill:#fff" />
-<rect x="0" y="0" width="360" height="20" style="fill:rgb(81, 155, 247);filter:url(#drop-shadow);" />
-<text x="24" y="13" style="font-family:Roboto;font-size:8.5px;fill:rgb(255, 255, 255);" >Architecture</text>
-<rect x="0" y="190" width="360" height="10" style="fill:rgb(224, 224, 224);" />
 <g id="users" class="node">
 <rect x="15" y="90" width="30" height="30" style="stroke-Width:0.06;filter:url(#drop-shadow);fill:rgb(255, 255, 255);stroke:rgb(0, 0, 0);" />
 <image x="20" y="95" width="20" height="20" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJAAAACQCAYAAADnRuK4AAADWklEQVR42u3dIZPqMBSGYSwSi0XWYldisUjs2kpsJX+aW2Yyd5i5LHtpS5uTPMy8blm+Jm9K2iaH1e12WwFD0QggEAgEAoFAAIFAIBAIBAIIBAKBQCAQQCAQCAQCgQACgUAgEAgEAgEEAoFAIBAIIBAIBAKBQFkEXa2anmNP23P9gTb9TSM/ge6NvkkN2r1o9J/o0ns38lcoUP86DGz4Zx1xkL8SgfrX9pfT/FDaOUZz9PyhBUqN332g8R9H81b+AgWaofE/2gnR84cWaMbGf+yEjfzlCNTO2Ph/5xTyFyBQulq5LsSh9vyhBUr3SboFO+D+2eta85cg0HHBxh89iqPnL0GgLoMOuNSaP7RA6dnQNRN2teUvQaBjRh1wqC1/CQK1GXXAd235SxDomhFdbfkJNDG15Q8tULp/ErYDoucvQaB1cIHWBPIV5iuMQCbRNU+iXca7jC/mRuKxtvweZXiUUfejDA9TPUy1nMNyDgvKLCizpNWSVovqLaq3qN62Htt6bCy0sdDWZlubFVdQXEFxBeVdlHdRYEqBKSXu5CcQCAQCAQQCgUAgEAggEAgEAoFAIBBQjkBpTU2TlkSc7lt331xj06b3nNL/aJZeiPXmFqDs8ue8K+Muy1dqrDkWp7fps77m7pSJ9pEtlj8LgR6EOWeys7NLWWbpkP61j5x/EYHSKfg+ai651dV5tlU4ZW0+PIi6qPlnESg10imTs8yY0X0MvIvjY/k/IlAq/bbPrHbOlHOn/ZRbiWeu8DF5/skESuIcgp9t3lrkPlVHpLlL3PzEWb4j0iQ4ZP6xp99LheI8m7Q2EwzES8T8Qw/2TJx/OI8sFdNEzJ97EYGIX2vbERJ9R8u/5A2wktkPFGgXLT958pOojZQ/0qiIyC7AZf2o/P8zYTbnmbGGYWY/5PJr/t8O5kSC0ZyCV8E/DRIox580CsxmgWUfs+SPdBCROQaeB73M/+og3GVeqJp8hhculyEC6fjlftBuFyU/gQhEoAIFWhMIVfykJoEIRCACEYhABAKBCEQgAhGIQAQiEAik4wlEIAIRiEAEAoFAIEU2oUorCAQCAQQCgUAgEAgEAggEAoFAIBBAIBAIBAKBAAKBQCAQCAQQCAQCgUAgEAggEAgEAoFAwBv8AT2S8uMTXsxzAAAAAElFTkSuQmCC" />
