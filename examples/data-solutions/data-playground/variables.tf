@@ -57,12 +57,12 @@ variable "vpc_config" {
   description = "Parameters to create a simple VPC for the Data Playground"
   type = object({
     ip_cidr_range = string
-    vpc_name      = string
     subnet_name   = string
+    vpc_name      = string
   })
   default = {
     ip_cidr_range = "10.0.0.0/20"
-    vpc_name      = "data-playground-vpc"
     subnet_name   = "default-subnet"
+    vpc_name      = "data-playground-vpc"
   }
 }

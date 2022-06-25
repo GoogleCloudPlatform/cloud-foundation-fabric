@@ -17,6 +17,11 @@ output "bucket" {
   value       = module.base-gcs-bucket.url
 }
 
+output "notebook" {
+  description = "Vertex AI notebook"
+  value       = resource.google_notebooks_instance.playground.name
+}
+
 output "project" {
   description = "Project id"
   value       = module.project.project_id
@@ -25,9 +30,4 @@ output "project" {
 output "vpc" {
   description = "VPC Network"
   value       = module.vpc.name
-}
-
-output "notebook" {
-  description = "Vertex AI notebook"
-  value       = resource.google_notebooks_instance.playground.name
 }
