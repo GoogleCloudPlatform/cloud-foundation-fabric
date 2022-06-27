@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 - add `id` output to service account module
 - add support for secrets to cloud function module
 - new binary authorization module
+- add `consumer_accept_list` option to `apigee-x-instance` module.
 
 **FAST**
 

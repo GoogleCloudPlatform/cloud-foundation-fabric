@@ -34,6 +34,12 @@ variable "apigee_org_id" {
   type        = string
 }
 
+variable "consumer_accept_list" {
+  description = "List of projects (id/number) that can privately connect to the service attachment."
+  type        = list(string)
+  default     = null
+}
+
 variable "ip_range" {
   description = "Customer-provided CIDR blocks of length 22 and 28 for the Apigee instance (e.g. `10.0.0.0/22,10.1.0.0/28`)."
   type        = string
