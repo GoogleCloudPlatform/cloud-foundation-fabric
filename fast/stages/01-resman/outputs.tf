@@ -66,7 +66,7 @@ locals {
       networking      = module.branch-network-folder.id
       networking-dev  = module.branch-network-dev-folder.id
       networking-prod = module.branch-network-prod-folder.id
-      sandbox         = module.branch-sandbox-folder.id
+      sandbox         = try(module.branch-sandbox-folder["0"].id, null)
       security        = module.branch-security-folder.id
       teams           = module.branch-teams-folder.id
     },
@@ -83,43 +83,47 @@ locals {
       "team-${k}-prod" => v.id
     }
   )
-  providers = {
-    "02-networking" = templatefile(local._tpl_providers, {
-      bucket = module.branch-network-gcs.name
-      name   = "networking"
-      sa     = module.branch-network-sa.email
-    })
-    "02-security" = templatefile(local._tpl_providers, {
-      bucket = module.branch-security-gcs.name
-      name   = "security"
-      sa     = module.branch-security-sa.email
-    })
-    "03-data-platform-dev" = templatefile(local._tpl_providers, {
-      bucket = module.branch-dp-dev-gcs.name
-      name   = "dp-dev"
-      sa     = module.branch-dp-dev-sa.email
-    })
-    "03-data-platform-prod" = templatefile(local._tpl_providers, {
-      bucket = module.branch-dp-prod-gcs.name
-      name   = "dp-prod"
-      sa     = module.branch-dp-prod-sa.email
-    })
-    "03-project-factory-dev" = templatefile(local._tpl_providers, {
-      bucket = module.branch-teams-dev-pf-gcs.name
-      name   = "team-dev"
-      sa     = module.branch-teams-dev-pf-sa.email
-    })
-    "03-project-factory-prod" = templatefile(local._tpl_providers, {
-      bucket = module.branch-teams-prod-pf-gcs.name
-      name   = "team-prod"
-      sa     = module.branch-teams-prod-pf-sa.email
-    })
-    "99-sandbox" = templatefile(local._tpl_providers, {
-      bucket = module.branch-sandbox-gcs.name
-      name   = "sandbox"
-      sa     = module.branch-sandbox-sa.email
-    })
-  }
+  providers = merge(
+    {
+      "02-networking" = templatefile(local._tpl_providers, {
+        bucket = module.branch-network-gcs.name
+        name   = "networking"
+        sa     = module.branch-network-sa.email
+      })
+      "02-security" = templatefile(local._tpl_providers, {
+        bucket = module.branch-security-gcs.name
+        name   = "security"
+        sa     = module.branch-security-sa.email
+      })
+      "03-data-platform-dev" = templatefile(local._tpl_providers, {
+        bucket = module.branch-dp-dev-gcs.name
+        name   = "dp-dev"
+        sa     = module.branch-dp-dev-sa.email
+      })
+      "03-data-platform-prod" = templatefile(local._tpl_providers, {
+        bucket = module.branch-dp-prod-gcs.name
+        name   = "dp-prod"
+        sa     = module.branch-dp-prod-sa.email
+      })
+      "03-project-factory-dev" = templatefile(local._tpl_providers, {
+        bucket = module.branch-teams-dev-pf-gcs.name
+        name   = "team-dev"
+        sa     = module.branch-teams-dev-pf-sa.email
+      })
+      "03-project-factory-prod" = templatefile(local._tpl_providers, {
+        bucket = module.branch-teams-prod-pf-gcs.name
+        name   = "team-prod"
+        sa     = module.branch-teams-prod-pf-sa.email
+      })
+    },
+    !var.fast_config.sandbox ? {} : {
+      "99-sandbox" = templatefile(local._tpl_providers, {
+        bucket = module.branch-sandbox-gcs["0"].name
+        name   = "sandbox"
+        sa     = module.branch-sandbox-sa["0"].email
+      })
+    }
+  )
   service_accounts = merge(
     {
       data-platform-dev    = module.branch-dp-dev-sa.email
@@ -127,7 +131,7 @@ locals {
       networking           = module.branch-network-sa.email
       project-factory-dev  = module.branch-teams-dev-pf-sa.email
       project-factory-prod = module.branch-teams-prod-pf-sa.email
-      sandbox              = module.branch-sandbox-sa.email
+      sandbox              = try(module.branch-sandbox-sa["0"].email, null)
       security             = module.branch-security-sa.email
       teams                = module.branch-teams-prod-sa.email
     },
@@ -207,11 +211,15 @@ output "providers" {
 output "sandbox" {
   # tfdoc:output:consumers xx-sandbox
   description = "Data for the sandbox stage."
-  value = {
-    folder          = module.branch-sandbox-folder.id
-    gcs_bucket      = module.branch-sandbox-gcs.name
-    service_account = module.branch-sandbox-sa.email
-  }
+  value = (
+    var.fast_config.sandbox
+    ? {
+      folder          = module.branch-sandbox-folder["0"].id
+      gcs_bucket      = module.branch-sandbox-gcs["0"].name
+      service_account = module.branch-sandbox-sa["0"].email
+    }
+    : null
+  )
 }
 
 output "security" {
