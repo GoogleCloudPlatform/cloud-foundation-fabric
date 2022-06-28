@@ -123,6 +123,24 @@ variable "custom_roles" {
   default = null
 }
 
+variable "fast_features" {
+  # tfdoc:variable:source 00-bootstrap
+  description = "Selective control for top-level FAST features."
+  type = object({
+    data_platform   = bool
+    project_factory = bool
+    sandbox         = bool
+    teams           = bool
+  })
+  default = {
+    data_platform   = true
+    project_factory = true
+    sandbox         = true
+    teams           = true
+  }
+  # nullable = false
+}
+
 variable "groups" {
   # tfdoc:variable:source 00-bootstrap
   description = "Group names to grant organization-level permissions."

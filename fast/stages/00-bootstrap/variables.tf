@@ -92,6 +92,23 @@ variable "custom_role_names" {
   }
 }
 
+variable "fast_features" {
+  description = "Selective control for top-level FAST features."
+  type = object({
+    data_platform   = bool
+    project_factory = bool
+    sandbox         = bool
+    teams           = bool
+  })
+  default = {
+    data_platform   = true
+    project_factory = true
+    sandbox         = true
+    teams           = true
+  }
+  nullable = false
+}
+
 variable "federated_identity_providers" {
   description = "Workload Identity Federation pools. The `cicd_repositories` variable references keys here."
   type = map(object({
