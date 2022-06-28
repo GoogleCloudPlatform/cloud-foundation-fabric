@@ -68,7 +68,7 @@ locals {
   }
   tfvars_globals = {
     billing_account = var.billing_account
-    fast_config     = var.fast_config
+    fast_features   = var.fast_features
     groups          = var.groups
     organization    = var.organization
     prefix          = var.prefix

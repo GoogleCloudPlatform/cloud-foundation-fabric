@@ -92,7 +92,7 @@ variable "custom_role_names" {
   }
 }
 
-variable "fast_config" {
+variable "fast_features" {
   description = "Selective control for top-level FAST features."
   type = object({
     data_platform   = bool

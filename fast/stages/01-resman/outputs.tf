@@ -62,13 +62,14 @@ locals {
   }
   folder_ids = merge(
     {
-      data-platform   = module.branch-dp-dev-folder.id
-      networking      = module.branch-network-folder.id
-      networking-dev  = module.branch-network-dev-folder.id
-      networking-prod = module.branch-network-prod-folder.id
-      sandbox         = try(module.branch-sandbox-folder["0"].id, null)
-      security        = module.branch-security-folder.id
-      teams           = module.branch-teams-folder.id
+      data-platform-dev  = try(module.branch-dp-dev-folder.0.id, null)
+      data-platform-prod = try(module.branch-dp-prod-folder.0.id, null)
+      networking         = module.branch-network-folder.id
+      networking-dev     = module.branch-network-dev-folder.id
+      networking-prod    = module.branch-network-prod-folder.id
+      sandbox            = try(module.branch-sandbox-folder["0"].id, null)
+      security           = module.branch-security-folder.id
+      teams              = module.branch-teams-folder.id
     },
     {
       for k, v in module.branch-teams-team-folder :
@@ -95,16 +96,6 @@ locals {
         name   = "security"
         sa     = module.branch-security-sa.email
       })
-      "03-data-platform-dev" = templatefile(local._tpl_providers, {
-        bucket = module.branch-dp-dev-gcs.name
-        name   = "dp-dev"
-        sa     = module.branch-dp-dev-sa.email
-      })
-      "03-data-platform-prod" = templatefile(local._tpl_providers, {
-        bucket = module.branch-dp-prod-gcs.name
-        name   = "dp-prod"
-        sa     = module.branch-dp-prod-sa.email
-      })
       "03-project-factory-dev" = templatefile(local._tpl_providers, {
         bucket = module.branch-teams-dev-pf-gcs.name
         name   = "team-dev"
@@ -116,7 +107,19 @@ locals {
         sa     = module.branch-teams-prod-pf-sa.email
       })
     },
-    !var.fast_config.sandbox ? {} : {
+    !var.fast_features.data_platform ? {} : {
+      "03-data-platform-dev" = templatefile(local._tpl_providers, {
+        bucket = module.branch-dp-dev-gcs.0.name
+        name   = "dp-dev"
+        sa     = module.branch-dp-dev-sa.0.email
+      })
+      "03-data-platform-prod" = templatefile(local._tpl_providers, {
+        bucket = module.branch-dp-prod-gcs.0.name
+        name   = "dp-prod"
+        sa     = module.branch-dp-prod-sa.0.email
+      })
+    },
+    !var.fast_features.sandbox ? {} : {
       "99-sandbox" = templatefile(local._tpl_providers, {
         bucket = module.branch-sandbox-gcs["0"].name
         name   = "sandbox"
@@ -126,8 +129,8 @@ locals {
   )
   service_accounts = merge(
     {
-      data-platform-dev    = module.branch-dp-dev-sa.email
-      data-platform-prod   = module.branch-dp-prod-sa.email
+      data-platform-dev    = try(module.branch-dp-dev-sa.0.email, null)
+      data-platform-prod   = try(module.branch-dp-prod-sa.0.email, null)
       networking           = module.branch-network-sa.email
       project-factory-dev  = module.branch-teams-dev-pf-sa.email
       project-factory-prod = module.branch-teams-prod-pf-sa.email
@@ -162,16 +165,16 @@ output "cicd_repositories" {
 
 output "dataplatform" {
   description = "Data for the Data Platform stage."
-  value = {
+  value = !var.fast_features.data_platform ? {} : {
     dev = {
-      folder          = module.branch-dp-dev-folder.id
-      gcs_bucket      = module.branch-dp-dev-gcs.name
-      service_account = module.branch-dp-dev-sa.email
+      folder          = module.branch-dp-dev-folder.0.id
+      gcs_bucket      = module.branch-dp-dev-gcs.0.name
+      service_account = module.branch-dp-dev-sa.0.email
     }
     prod = {
-      folder          = module.branch-dp-prod-folder.id
-      gcs_bucket      = module.branch-dp-prod-gcs.name
-      service_account = module.branch-dp-prod-sa.email
+      folder          = module.branch-dp-prod-folder.0.id
+      gcs_bucket      = module.branch-dp-prod-gcs.0.name
+      service_account = module.branch-dp-prod-sa.0.email
     }
   }
 }
@@ -212,7 +215,7 @@ output "sandbox" {
   # tfdoc:output:consumers xx-sandbox
   description = "Data for the sandbox stage."
   value = (
-    var.fast_config.sandbox
+    var.fast_features.sandbox
     ? {
       folder          = module.branch-sandbox-folder["0"].id
       gcs_bucket      = module.branch-sandbox-gcs["0"].name

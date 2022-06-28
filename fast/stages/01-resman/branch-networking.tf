@@ -50,10 +50,10 @@ module "branch-network-prod-folder" {
   parent = module.branch-network-folder.id
   name   = "Production"
   iam = {
-    "roles/compute.xpnAdmin" = [
-      module.branch-dp-prod-sa.iam_email,
+    "roles/compute.xpnAdmin" = compact([
+      try(module.branch-dp-prod-sa.0.iam_email, ""),
       module.branch-teams-prod-pf-sa.iam_email
-    ]
+    ])
   }
   tag_bindings = {
     environment = try(
@@ -67,10 +67,10 @@ module "branch-network-dev-folder" {
   parent = module.branch-network-folder.id
   name   = "Development"
   iam = {
-    (local.custom_roles.service_project_network_admin) = [
-      module.branch-dp-dev-sa.iam_email,
+    (local.custom_roles.service_project_network_admin) = compact([
+      try(module.branch-dp-dev-sa.0.iam_email, ""),
       module.branch-teams-dev-pf-sa.iam_email
-    ]
+    ])
   }
   tag_bindings = {
     environment = try(
