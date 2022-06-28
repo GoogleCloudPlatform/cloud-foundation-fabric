@@ -17,7 +17,8 @@ OAUTH_SCOPES = [
     'https://www.googleapis.com/auth/devstorage.read_only',
     'https://www.googleapis.com/auth/logging.write',
     'https://www.googleapis.com/auth/monitoring',
-    'https://www.googleapis.com/auth/monitoring.write']
+    'https://www.googleapis.com/auth/monitoring.write'
+]
 
 
 def test_defaults(plan_runner):
