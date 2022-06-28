@@ -90,7 +90,7 @@ resource "google_container_cluster" "cluster" {
       auth     = var.addons.istio_config.tls ? "AUTH_MUTUAL_TLS" : "AUTH_NONE"
     }
     gce_persistent_disk_csi_driver_config {
-      enabled = var.addons.gce_persistent_disk_csi_driver_config
+      enabled = var.enable_autopilot || var.addons.gce_persistent_disk_csi_driver_config
     }
     dynamic "gcp_filestore_csi_driver_config" {
       # Pass the user-provided value when autopilot is disabled. When
@@ -98,7 +98,7 @@ resource "google_container_cluster" "cluster" {
       # set to true. This will fail but warns the user that autopilot
       # doesn't support this option, instead of silently discarding
       # and hiding the error
-      for_each = !var.enable_autopilot || (var.enable_autopilot && var.addons.gcp_filestore_csi_driver_config) ? [""] : []
+      for_each = var.enable_autopilot && !var.addons.gcp_filestore_csi_driver_config ? [] : [""]
       content {
         enabled = var.addons.gcp_filestore_csi_driver_config
       }
