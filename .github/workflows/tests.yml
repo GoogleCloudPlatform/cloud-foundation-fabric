@@ -48,6 +48,11 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
+      - name: Pin provider versions
+        run: |
+          sed -i 's/>=\(.*# tftest\)/=\1/g' default-versions.tf
+          find -name versions.tf -exec cp default-versions.tf {} \;
+
       - name: Run tests on documentation examples
         id: pytest
         run: |
@@ -75,6 +80,11 @@ jobs:
         with:
           terraform_version: ${{ env.TF_VERSION }}
           terraform_wrapper: false
+
+      - name: Pin provider versions
+        run: |
+          sed -i 's/>=\(.*# tftest\)/=\1/g' default-versions.tf
+          find -name versions.tf -exec cp default-versions.tf {} \;
 
       - name: Run tests environments
         id: pytest
@@ -104,6 +114,11 @@ jobs:
           terraform_version: ${{ env.TF_VERSION }}
           terraform_wrapper: false
 
+      - name: Pin provider versions
+        run: |
+          sed -i 's/>=\(.*# tftest\)/=\1/g' default-versions.tf
+          find -name versions.tf -exec cp default-versions.tf {} \;
+
       - name: Run tests modules
         id: pytest
         run: |
@@ -131,6 +146,11 @@ jobs:
         with:
           terraform_version: ${{ env.TF_VERSION }}
           terraform_wrapper: false
+
+      - name: Pin provider versions
+        run: |
+          sed -i 's/>=\(.*# tftest\)/=\1/g' default-versions.tf
+          find -name versions.tf -exec cp default-versions.tf {} \;
 
       - name: Run tests on FAST stages
         id: pytest

@@ -60,7 +60,12 @@ resource "google_container_cluster" "cluster" {
   # TODO(ludomagno): compute addons map in locals and use a single dynamic block
   addons_config {
     dynamic "dns_cache_config" {
-      for_each = var.enable_autopilot ? [] : [""]
+      # Pass the user-provided value when autopilot is disabled. When
+      # autopilot is enabled, pass the value only when the addon is
+      # set to true. This will fail but warns the user that autopilot
+      # doesn't support this option, instead of silently discarding
+      # and hiding the error
+      for_each = !var.enable_autopilot || (var.enable_autopilot && var.addons.dns_cache_config) ? [""] : []
       content {
         enabled = var.addons.dns_cache_config
       }
@@ -87,8 +92,16 @@ resource "google_container_cluster" "cluster" {
     gce_persistent_disk_csi_driver_config {
       enabled = var.addons.gce_persistent_disk_csi_driver_config
     }
-    gcp_filestore_csi_driver_config {
-      enabled = var.addons.gcp_filestore_csi_driver_config
+    dynamic "gcp_filestore_csi_driver_config" {
+      # Pass the user-provided value when autopilot is disabled. When
+      # autopilot is enabled, pass the value only when the addon is
+      # set to true. This will fail but warns the user that autopilot
+      # doesn't support this option, instead of silently discarding
+      # and hiding the error
+      for_each = !var.enable_autopilot || (var.enable_autopilot && var.addons.gcp_filestore_csi_driver_config) ? [""] : []
+      content {
+        enabled = var.addons.gcp_filestore_csi_driver_config
+      }
     }
     kalm_config {
       enabled = var.addons.kalm_config
