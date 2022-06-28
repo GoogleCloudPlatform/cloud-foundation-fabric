@@ -69,7 +69,7 @@ locals {
       networking-prod    = module.branch-network-prod-folder.id
       sandbox            = try(module.branch-sandbox-folder["0"].id, null)
       security           = module.branch-security-folder.id
-      teams              = module.branch-teams-folder.0.id
+      teams              = try(module.branch-teams-folder.0.id, null)
     },
     {
       for k, v in module.branch-teams-team-folder :
@@ -96,16 +96,6 @@ locals {
         name   = "security"
         sa     = module.branch-security-sa.email
       })
-      "03-project-factory-dev" = templatefile(local._tpl_providers, {
-        bucket = module.branch-pf-dev-gcs.name
-        name   = "team-dev"
-        sa     = module.branch-pf-dev-sa.email
-      })
-      "03-project-factory-prod" = templatefile(local._tpl_providers, {
-        bucket = module.branch-pf-prod-gcs.name
-        name   = "team-prod"
-        sa     = module.branch-pf-prod-sa.email
-      })
     },
     !var.fast_features.data_platform ? {} : {
       "03-data-platform-dev" = templatefile(local._tpl_providers, {
@@ -117,6 +107,18 @@ locals {
         bucket = module.branch-dp-prod-gcs.0.name
         name   = "dp-prod"
         sa     = module.branch-dp-prod-sa.0.email
+      })
+    },
+    !var.fast_features.project_factory ? {} : {
+      "03-project-factory-dev" = templatefile(local._tpl_providers, {
+        bucket = module.branch-pf-dev-gcs.name
+        name   = "team-dev"
+        sa     = module.branch-pf-dev-sa.email
+      })
+      "03-project-factory-prod" = templatefile(local._tpl_providers, {
+        bucket = module.branch-pf-prod-gcs.name
+        name   = "team-prod"
+        sa     = module.branch-pf-prod-sa.email
       })
     },
     !var.fast_features.sandbox ? {} : {
@@ -136,7 +138,7 @@ locals {
       project-factory-prod = module.branch-pf-prod-sa.email
       sandbox              = try(module.branch-sandbox-sa["0"].email, null)
       security             = module.branch-security-sa.email
-      teams                = module.branch-teams-prod-sa.0.email
+      teams                = try(module.branch-teams-prod-sa.0.email, null)
     },
     {
       for k, v in module.branch-teams-team-sa : "team-${k}" => v.email
