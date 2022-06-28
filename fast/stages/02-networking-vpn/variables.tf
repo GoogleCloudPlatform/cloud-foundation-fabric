@@ -71,6 +71,24 @@ variable "dns" {
   }
 }
 
+variable "fast_features" {
+  # tfdoc:variable:source 00-bootstrap
+  description = "Selective control for top-level FAST features."
+  type = object({
+    data_platform   = bool
+    project_factory = bool
+    sandbox         = bool
+    teams           = bool
+  })
+  default = {
+    data_platform   = true
+    project_factory = true
+    sandbox         = true
+    teams           = true
+  }
+  # nullable = false
+}
+
 variable "folder_ids" {
   # tfdoc:variable:source 01-resman
   description = "Folders to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created."
