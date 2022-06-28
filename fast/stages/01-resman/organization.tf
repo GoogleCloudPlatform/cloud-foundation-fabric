@@ -27,10 +27,14 @@ locals {
     : []
   )
   # set to the empty list if you remove the teams branch
-  branch_teams_pf_sa_iam_emails = [
-    module.branch-pf-dev-sa.iam_email,
-    module.branch-pf-prod-sa.iam_email
-  ]
+  branch_teams_pf_sa_iam_emails = (
+    var.fast_features.project_factory
+    ? [
+      module.branch-pf-dev-sa.0.iam_email,
+      module.branch-pf-prod-sa.0.iam_email
+    ]
+    : []
+  )
   list_allow = {
     inherit_from_parent = false
     suggested_value     = null
@@ -199,9 +203,9 @@ resource "google_organization_iam_member" "org_policy_admin_dp" {
 }
 
 resource "google_organization_iam_member" "org_policy_admin_pf" {
-  for_each = {
-    pf-dev  = ["teams", "development", module.branch-pf-dev-sa.iam_email]
-    pf-prod = ["teams", "production", module.branch-pf-prod-sa.iam_email]
+  for_each = !var.fast_features.project_factory ? {} : {
+    pf-dev  = ["teams", "development", module.branch-pf-dev-sa.0.iam_email]
+    pf-prod = ["teams", "production", module.branch-pf-prod-sa.0.iam_email]
   }
   org_id = var.organization.id
   role   = "roles/orgpolicy.policyAdmin"

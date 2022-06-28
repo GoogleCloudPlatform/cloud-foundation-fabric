@@ -18,11 +18,12 @@
 
 moved {
   from = module.branch-teams-dev-pf-sa
-  to   = module.branch-pf-dev-sa
+  to   = module.branch-pf-dev-sa.0
 }
 
 module "branch-pf-dev-sa" {
   source     = "../../../modules/iam-service-account"
+  count      = var.fast_features.project_factory ? 1 : 0
   project_id = var.automation.project_id
   name       = "dev-resman-pf-0"
   # naming: environment in description
@@ -40,11 +41,12 @@ module "branch-pf-dev-sa" {
 
 moved {
   from = module.branch-teams-prod-pf-sa
-  to   = module.branch-pf-prod-sa
+  to   = module.branch-pf-prod-sa.0
 }
 
 module "branch-pf-prod-sa" {
   source     = "../../../modules/iam-service-account"
+  count      = var.fast_features.project_factory ? 1 : 0
   project_id = var.automation.project_id
   name       = "prod-resman-pf-0"
   # naming: environment in description
@@ -62,32 +64,34 @@ module "branch-pf-prod-sa" {
 
 moved {
   from = module.branch-teams-dev-pf-gcs
-  to   = module.branch-pf-dev-gcs
+  to   = module.branch-pf-dev-gcs.0
 }
 
 module "branch-pf-dev-gcs" {
   source     = "../../../modules/gcs"
+  count      = var.fast_features.project_factory ? 1 : 0
   project_id = var.automation.project_id
   name       = "dev-resman-pf-0"
   prefix     = var.prefix
   versioning = true
   iam = {
-    "roles/storage.objectAdmin" = [module.branch-pf-dev-sa.iam_email]
+    "roles/storage.objectAdmin" = [module.branch-pf-dev-sa.0.iam_email]
   }
 }
 
 moved {
   from = module.branch-teams-prod-pf-gcs
-  to   = module.branch-pf-prod-gcs
+  to   = module.branch-pf-prod-gcs.0
 }
 
 module "branch-pf-prod-gcs" {
   source     = "../../../modules/gcs"
+  count      = var.fast_features.project_factory ? 1 : 0
   project_id = var.automation.project_id
   name       = "prod-resman-pf-0"
   prefix     = var.prefix
   versioning = true
   iam = {
-    "roles/storage.objectAdmin" = [module.branch-pf-prod-sa.iam_email]
+    "roles/storage.objectAdmin" = [module.branch-pf-prod-sa.0.iam_email]
   }
 }

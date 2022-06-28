@@ -67,7 +67,7 @@ locals {
       networking         = module.branch-network-folder.id
       networking-dev     = module.branch-network-dev-folder.id
       networking-prod    = module.branch-network-prod-folder.id
-      sandbox            = try(module.branch-sandbox-folder["0"].id, null)
+      sandbox            = try(module.branch-sandbox-folder.0.id, null)
       security           = module.branch-security-folder.id
       teams              = try(module.branch-teams-folder.0.id, null)
     },
@@ -111,21 +111,21 @@ locals {
     },
     !var.fast_features.project_factory ? {} : {
       "03-project-factory-dev" = templatefile(local._tpl_providers, {
-        bucket = module.branch-pf-dev-gcs.name
+        bucket = module.branch-pf-dev-gcs.0.name
         name   = "team-dev"
-        sa     = module.branch-pf-dev-sa.email
+        sa     = module.branch-pf-dev-sa.0.email
       })
       "03-project-factory-prod" = templatefile(local._tpl_providers, {
-        bucket = module.branch-pf-prod-gcs.name
+        bucket = module.branch-pf-prod-gcs.0.name
         name   = "team-prod"
-        sa     = module.branch-pf-prod-sa.email
+        sa     = module.branch-pf-prod-sa.0.email
       })
     },
     !var.fast_features.sandbox ? {} : {
       "99-sandbox" = templatefile(local._tpl_providers, {
-        bucket = module.branch-sandbox-gcs["0"].name
+        bucket = module.branch-sandbox-gcs.0.name
         name   = "sandbox"
-        sa     = module.branch-sandbox-sa["0"].email
+        sa     = module.branch-sandbox-sa.0.email
       })
     }
   )
@@ -134,9 +134,9 @@ locals {
       data-platform-dev    = try(module.branch-dp-dev-sa.0.email, null)
       data-platform-prod   = try(module.branch-dp-prod-sa.0.email, null)
       networking           = module.branch-network-sa.email
-      project-factory-dev  = module.branch-pf-dev-sa.email
-      project-factory-prod = module.branch-pf-prod-sa.email
-      sandbox              = try(module.branch-sandbox-sa["0"].email, null)
+      project-factory-dev  = try(module.branch-pf-dev-sa.0.email, null)
+      project-factory-prod = try(module.branch-pf-prod-sa.0.email, null)
+      sandbox              = try(module.branch-sandbox-sa.0.email, null)
       security             = module.branch-security-sa.email
       teams                = try(module.branch-teams-prod-sa.0.email, null)
     },
@@ -192,14 +192,14 @@ output "networking" {
 
 output "project_factories" {
   description = "Data for the project factories stage."
-  value = {
+  value = !var.fast_features.project_factory ? {} : {
     dev = {
-      bucket = module.branch-pf-dev-gcs.name
-      sa     = module.branch-pf-dev-sa.email
+      bucket = module.branch-pf-dev-gcs.0.name
+      sa     = module.branch-pf-dev-sa.0.email
     }
     prod = {
-      bucket = module.branch-pf-prod-gcs.name
-      sa     = module.branch-pf-prod-sa.email
+      bucket = module.branch-pf-prod-gcs.0.name
+      sa     = module.branch-pf-prod-sa.0.email
     }
   }
 }
@@ -219,9 +219,9 @@ output "sandbox" {
   value = (
     var.fast_features.sandbox
     ? {
-      folder          = module.branch-sandbox-folder["0"].id
-      gcs_bucket      = module.branch-sandbox-gcs["0"].name
-      service_account = module.branch-sandbox-sa["0"].email
+      folder          = module.branch-sandbox-folder.0.id
+      gcs_bucket      = module.branch-sandbox-gcs.0.name
+      service_account = module.branch-sandbox-sa.0.email
     }
     : null
   )
