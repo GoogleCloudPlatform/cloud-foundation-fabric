@@ -33,12 +33,12 @@ locals {
       tf_var_files      = local.cicd_workflow_var_files.stage_2
     }
     project_factory_dev = {
-      service_account   = try(module.branch-teams-dev-pf-sa-cicd.0.email, null)
+      service_account   = try(module.branch-pf-dev-sa-cicd.0.email, null)
       tf_providers_file = "03-project-factory-dev-providers.tf"
       tf_var_files      = local.cicd_workflow_var_files.stage_3
     }
     project_factory_prod = {
-      service_account   = try(module.branch-teams-prod-pf-sa-cicd.0.email, null)
+      service_account   = try(module.branch-pf-prod-sa-cicd.0.email, null)
       tf_providers_file = "03-project-factory-prod-providers.tf"
       tf_var_files      = local.cicd_workflow_var_files.stage_3
     }
@@ -69,7 +69,7 @@ locals {
       networking-prod    = module.branch-network-prod-folder.id
       sandbox            = try(module.branch-sandbox-folder["0"].id, null)
       security           = module.branch-security-folder.id
-      teams              = module.branch-teams-folder.id
+      teams              = module.branch-teams-folder.0.id
     },
     {
       for k, v in module.branch-teams-team-folder :
@@ -97,14 +97,14 @@ locals {
         sa     = module.branch-security-sa.email
       })
       "03-project-factory-dev" = templatefile(local._tpl_providers, {
-        bucket = module.branch-teams-dev-pf-gcs.name
+        bucket = module.branch-pf-dev-gcs.name
         name   = "team-dev"
-        sa     = module.branch-teams-dev-pf-sa.email
+        sa     = module.branch-pf-dev-sa.email
       })
       "03-project-factory-prod" = templatefile(local._tpl_providers, {
-        bucket = module.branch-teams-prod-pf-gcs.name
+        bucket = module.branch-pf-prod-gcs.name
         name   = "team-prod"
-        sa     = module.branch-teams-prod-pf-sa.email
+        sa     = module.branch-pf-prod-sa.email
       })
     },
     !var.fast_features.data_platform ? {} : {
@@ -132,11 +132,11 @@ locals {
       data-platform-dev    = try(module.branch-dp-dev-sa.0.email, null)
       data-platform-prod   = try(module.branch-dp-prod-sa.0.email, null)
       networking           = module.branch-network-sa.email
-      project-factory-dev  = module.branch-teams-dev-pf-sa.email
-      project-factory-prod = module.branch-teams-prod-pf-sa.email
+      project-factory-dev  = module.branch-pf-dev-sa.email
+      project-factory-prod = module.branch-pf-prod-sa.email
       sandbox              = try(module.branch-sandbox-sa["0"].email, null)
       security             = module.branch-security-sa.email
-      teams                = module.branch-teams-prod-sa.email
+      teams                = module.branch-teams-prod-sa.0.email
     },
     {
       for k, v in module.branch-teams-team-sa : "team-${k}" => v.email
@@ -192,12 +192,12 @@ output "project_factories" {
   description = "Data for the project factories stage."
   value = {
     dev = {
-      bucket = module.branch-teams-dev-pf-gcs.name
-      sa     = module.branch-teams-dev-pf-sa.email
+      bucket = module.branch-pf-dev-gcs.name
+      sa     = module.branch-pf-dev-sa.email
     }
     prod = {
-      bucket = module.branch-teams-prod-pf-gcs.name
-      sa     = module.branch-teams-prod-pf-sa.email
+      bucket = module.branch-pf-prod-gcs.name
+      sa     = module.branch-pf-prod-sa.email
     }
   }
 }
