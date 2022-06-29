@@ -16,8 +16,10 @@
 
 locals {
   dev_kms_restricted_admins = [
-    "serviceAccount:${var.service_accounts.project-factory-dev}",
-    "serviceAccount:${var.service_accounts.data-platform-dev}"
+    for sa in compact([
+      var.service_accounts.project-factory-dev,
+      var.service_accounts.data-platform-dev
+    ]) : "serviceAccount:${sa}"
   ]
 }
 
