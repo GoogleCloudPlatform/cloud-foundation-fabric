@@ -39,7 +39,7 @@ resource "google_container_cluster" "cluster" {
   min_master_version          = var.min_master_version
   network                     = var.network
   subnetwork                  = var.subnetwork
-  logging_service             = var.logging_config == null ? var.logging_service : null
+  logging_service             = var.monitoring_config != null ? null : var.logging_config == null ? var.logging_service : null
   monitoring_service          = var.monitoring_config == null ? var.monitoring_service : null
   resource_labels             = var.labels
   default_max_pods_per_node   = var.enable_autopilot ? null : var.default_max_pods_per_node
