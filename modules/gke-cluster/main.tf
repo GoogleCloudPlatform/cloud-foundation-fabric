@@ -39,7 +39,7 @@ resource "google_container_cluster" "cluster" {
   min_master_version          = var.min_master_version
   network                     = var.network
   subnetwork                  = var.subnetwork
-  logging_service             = var.logging_config == null ? var.logging_service : null
+  logging_service             = var.monitoring_config != null ? null : var.logging_config == null ? var.logging_service : null
   monitoring_service          = var.monitoring_config == null ? var.monitoring_service : null
   resource_labels             = var.labels
   default_max_pods_per_node   = var.enable_autopilot ? null : var.default_max_pods_per_node
@@ -60,7 +60,12 @@ resource "google_container_cluster" "cluster" {
   # TODO(ludomagno): compute addons map in locals and use a single dynamic block
   addons_config {
     dynamic "dns_cache_config" {
-      for_each = var.enable_autopilot ? [] : [""]
+      # Pass the user-provided value when autopilot is disabled. When
+      # autopilot is enabled, pass the value only when the addon is
+      # set to true. This will fail but warns the user that autopilot
+      # doesn't support this option, instead of silently discarding
+      # and hiding the error
+      for_each = !var.enable_autopilot || (var.enable_autopilot && var.addons.dns_cache_config) ? [""] : []
       content {
         enabled = var.addons.dns_cache_config
       }
@@ -85,10 +90,18 @@ resource "google_container_cluster" "cluster" {
       auth     = var.addons.istio_config.tls ? "AUTH_MUTUAL_TLS" : "AUTH_NONE"
     }
     gce_persistent_disk_csi_driver_config {
-      enabled = var.addons.gce_persistent_disk_csi_driver_config
+      enabled = var.enable_autopilot || var.addons.gce_persistent_disk_csi_driver_config
     }
-    gcp_filestore_csi_driver_config {
-      enabled = var.addons.gcp_filestore_csi_driver_config
+    dynamic "gcp_filestore_csi_driver_config" {
+      # Pass the user-provided value when autopilot is disabled. When
+      # autopilot is enabled, pass the value only when the addon is
+      # set to true. This will fail but warns the user that autopilot
+      # doesn't support this option, instead of silently discarding
+      # and hiding the error
+      for_each = var.enable_autopilot && !var.addons.gcp_filestore_csi_driver_config ? [] : [""]
+      content {
+        enabled = var.addons.gcp_filestore_csi_driver_config
+      }
     }
     kalm_config {
       enabled = var.addons.kalm_config

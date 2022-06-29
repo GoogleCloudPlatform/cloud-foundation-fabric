@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-resource "google_apigee_instance" "apigee_instance" {
-  org_id                   = var.apigee_org_id
-  name                     = var.name
-  location                 = var.region
-  ip_range                 = var.ip_range
-  disk_encryption_key_name = var.disk_encryption_key
-  consumer_accept_list     = var.consumer_accept_list
-}
-
-resource "google_apigee_instance_attachment" "apigee_instance_attchment" {
-  for_each    = toset(var.apigee_environments)
-  instance_id = google_apigee_instance.apigee_instance.id
-  environment = each.key
+module "test" {
+  source                   = "../../../../modules/gke-cluster"
+  project_id               = "my-project"
+  name                     = "cluster-1"
+  location                 = "europe-west1-b"
+  network                  = "mynetwork"
+  subnetwork               = "mysubnet"
+  secondary_range_pods     = "pods"
+  secondary_range_services = "services"
+  enable_autopilot         = var.enable_autopilot
+  addons                   = var.addons
 }

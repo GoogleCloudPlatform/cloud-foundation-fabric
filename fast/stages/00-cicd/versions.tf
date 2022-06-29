@@ -15,17 +15,15 @@
 terraform {
   required_version = ">= 1.1.0"
   required_providers {
-    gitlab = {
-      source  = "gitlabhq/gitlab"
-      version = ">= 3.15.0"
+    google = {
+      source  = "hashicorp/google"
+      version = ">= 4.20.0" # tftest
     }
-    github = {
-      source  = "integrations/github"
-      version = ">= 4.26.0"
-    }
-    tls = {
-      source  = "hashicorp/tls"
-      version = "3.4.0"
+    google-beta = {
+      source  = "hashicorp/google-beta"
+      version = ">= 4.20.0" # tftest
     }
   }
 }
+
+

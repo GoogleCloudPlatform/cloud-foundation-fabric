@@ -41,7 +41,7 @@ module "prod-spoke-project" {
   }
   metric_scopes = [module.landing-project.project_id]
   iam = {
-    "roles/dns.admin" = [local.service_accounts.project-factory-prod]
+    "roles/dns.admin" = compact([local.service_accounts.project-factory-prod])
   }
 }
 
@@ -100,11 +100,11 @@ module "prod-spoke-cloudnat" {
 resource "google_project_iam_binding" "prod_spoke_project_iam_delegated" {
   project = module.prod-spoke-project.project_id
   role    = "roles/resourcemanager.projectIamAdmin"
-  members = [
+  members = compact([
     local.service_accounts.data-platform-prod,
     local.service_accounts.project-factory-prod,
     local.service_accounts.gke-multitenant-prod,
-  ]
+  ])
   condition {
     title       = "prod_stage3_sa_delegated_grants"
     description = "Production host project delegated grants."
