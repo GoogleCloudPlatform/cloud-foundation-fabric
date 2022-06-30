@@ -53,7 +53,7 @@ module "branch-network-prod-folder" {
     "roles/compute.xpnAdmin" = compact([
       try(module.branch-dp-prod-sa.0.iam_email, ""),
       try(module.branch-pf-prod-sa.0.iam_email, ""),
-      module.branch-gke-multitenant-prod-sa.iam_email,
+      module.branch-gke-prod-sa.iam_email,
     ])
   }
   tag_bindings = {
@@ -71,7 +71,7 @@ module "branch-network-dev-folder" {
     (local.custom_roles.service_project_network_admin) = compact([
       try(module.branch-dp-dev-sa.0.iam_email, ""),
       try(module.branch-pf-dev-sa.0.iam_email, ""),
-      module.branch-gke-multitenant-dev-sa.iam_email,
+      module.branch-gke-dev-sa.iam_email,
     ])
   }
   tag_bindings = {

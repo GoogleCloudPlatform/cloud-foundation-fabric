@@ -64,8 +64,8 @@ locals {
     {
       data-platform-dev    = try(module.branch-dp-dev-folder.0.id, null)
       data-platform-prod   = try(module.branch-dp-prod-folder.0.id, null)
-      gke-multitenant-dev  = module.branch-gke-multitenant-dev-folder.id
-      gke-multitenant-prod = module.branch-gke-multitenant-prod-folder.id
+      gke-multitenant-dev  = module.branch-gke-dev-folder.id
+      gke-multitenant-prod = module.branch-gke-prod-folder.id
       networking           = module.branch-network-folder.id
       networking-dev       = module.branch-network-dev-folder.id
       networking-prod      = module.branch-network-prod-folder.id
@@ -98,15 +98,15 @@ locals {
         name   = "security"
         sa     = module.branch-security-sa.email
       })
-      "03-gke-multitenant-dev" = templatefile(local._tpl_providers, {
-        bucket = module.branch-gke-multitenant-dev-gcs.name
-        name   = "gke-multitenant-dev"
-        sa     = module.branch-gke-multitenant-dev-sa.email
+      "03-gke-dev" = templatefile(local._tpl_providers, {
+        bucket = module.branch-gke-dev-gcs.name
+        name   = "gke-dev"
+        sa     = module.branch-gke-dev-sa.email
       })
-      "03-gke-multitenant-prod" = templatefile(local._tpl_providers, {
-        bucket = module.branch-gke-multitenant-prod-gcs.name
-        name   = "gke-multitenant-prod"
-        sa     = module.branch-gke-multitenant-prod-sa.email
+      "03-gke-prod" = templatefile(local._tpl_providers, {
+        bucket = module.branch-gke-prod-gcs.name
+        name   = "gke-prod"
+        sa     = module.branch-gke-prod-sa.email
       })
     },
     !var.fast_features.data_platform ? {} : {
@@ -254,14 +254,14 @@ output "gke_multitenant" {
   description = "Data for the GKE multitenant stage."
   value = {
     "dev" = {
-      folder          = module.branch-gke-multitenant-dev-folder.id
-      gcs_bucket      = module.branch-gke-multitenant-dev-gcs.name
-      service_account = module.branch-gke-multitenant-dev-sa.email
+      folder          = module.branch-gke-dev-folder.id
+      gcs_bucket      = module.branch-gke-dev-gcs.name
+      service_account = module.branch-gke-dev-sa.email
     }
     "prod" = {
-      folder          = module.branch-gke-multitenant-prod-folder.id
-      gcs_bucket      = module.branch-gke-multitenant-prod-gcs.name
-      service_account = module.branch-gke-multitenant-prod-sa.email
+      folder          = module.branch-gke-prod-folder.id
+      gcs_bucket      = module.branch-gke-prod-gcs.name
+      service_account = module.branch-gke-prod-sa.email
     }
   }
 }

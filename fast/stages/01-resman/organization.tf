@@ -26,12 +26,15 @@ locals {
     ]
     : []
   )
-  # set to the empty list if you remove the teams branch
-  branch_gke_multitenant_sa_iam_emails = [
-    module.branch-gke-multitenant-dev-sa.iam_email,
-    module.branch-gke-multitenant-prod-sa.iam_email
-  ]
-  branch_teams_pf_sa_iam_emails = (
+  branch_gke_sa_iam_emails = (
+    var.fast_features.gke
+    ? [
+      module.branch-gke-dev-sa.iam_email,
+      module.branch-gke-prod-sa.iam_email
+    ]
+    : []
+  )
+  branch_pf_sa_iam_emails = (
     var.fast_features.project_factory
     ? [
       module.branch-pf-dev-sa.0.iam_email,
@@ -76,19 +79,19 @@ module "organization" {
       ]
     },
     local.billing_org ? {
-      "roles/billing.costsManager" = local.branch_teams_pf_sa_iam_emails
+      "roles/billing.costsManager" = local.branch_pf_sa_iam_emails
       "roles/billing.user" = concat(
         [
           module.branch-network-sa.iam_email,
           module.branch-security-sa.iam_email,
         ],
         local.branch_dataplatform_sa_iam_emails,
+        local.branch_gke_sa_iam_emails,
+        local.branch_pf_sa_iam_emails,
         # enable if individual teams can create their own projects
         # [
         #   for k, v in module.branch-teams-team-sa : v.iam_email
         # ],
-        local.branch_teams_pf_sa_iam_emails,
-        local.branch_gke_multitenant_sa_iam_emails
       )
     } : {}
   )

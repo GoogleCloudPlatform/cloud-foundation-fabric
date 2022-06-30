@@ -57,7 +57,6 @@ locals {
       "02-security.auto.tfvars.json"
     ]
   }
-
   custom_roles = coalesce(var.custom_roles, {})
   groups = {
     for k, v in var.groups :

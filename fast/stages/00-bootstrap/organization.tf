@@ -163,6 +163,12 @@ module "organization" {
     ]
     (var.custom_role_names.service_project_network_admin) = [
       "compute.globalOperations.get",
+      # the following two permissions are used by automation service accounts
+      # who manage service projects where peering creation might be needed
+      # (e.g. GKE), if you remove them make sure your network administrators
+      # should create peerings for service projects
+      "compute.networks.updatePeering",
+      "compute.networks.get",
       "compute.organizations.disableXpnResource",
       "compute.organizations.enableXpnResource",
       "compute.projects.get",
@@ -170,14 +176,6 @@ module "organization" {
       "compute.subnetworks.setIamPolicy",
       "dns.networks.bindPrivateDNSZone",
       "resourcemanager.projects.get",
-
-      # if you prefer not granting permissions to create peerings to
-      # service accounts deploying service projects, remove these
-      # permissions and ask you network administrator to create any
-      # needed peerings (e.g. if you need to update routes for a GKE
-      # cluster)
-      "compute.networks.updatePeering",
-      "compute.networks.get",
     ]
   }
   logging_sinks = {

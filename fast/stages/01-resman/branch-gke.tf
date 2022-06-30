@@ -32,24 +32,24 @@ module "branch-gke-folder" {
 
 # GKE-level folders, service accounts and buckets for each individual environment
 
-module "branch-gke-multitenant-prod-folder" {
+module "branch-gke-prod-folder" {
   source = "../../../modules/folder"
   parent = module.branch-gke-folder.id
   name   = "Production"
   iam = {
     "roles/owner" = [
-      module.branch-gke-multitenant-prod-sa.iam_email
+      module.branch-gke-prod-sa.iam_email
     ]
     "roles/resourcemanager.projectCreator" = [
-      module.branch-gke-multitenant-prod-sa.iam_email
+      module.branch-gke-prod-sa.iam_email
     ]
     "roles/compute.xpnAdmin" = [
-      module.branch-gke-multitenant-prod-sa.iam_email
+      module.branch-gke-prod-sa.iam_email
     ]
   }
 }
 
-module "branch-gke-multitenant-prod-sa" {
+module "branch-gke-prod-sa" {
   source      = "../../../modules/iam-service-account"
   project_id  = var.automation.project_id
   name        = "prod-resman-gke-0"
@@ -61,36 +61,36 @@ module "branch-gke-multitenant-prod-sa" {
   }
 }
 
-module "branch-gke-multitenant-prod-gcs" {
+module "branch-gke-prod-gcs" {
   source     = "../../../modules/gcs"
   project_id = var.automation.project_id
   name       = "prod-resman-gke-0"
   prefix     = var.prefix
   versioning = true
   iam = {
-    "roles/storage.objectAdmin" = [module.branch-gke-multitenant-prod-sa.iam_email]
+    "roles/storage.objectAdmin" = [module.branch-gke-prod-sa.iam_email]
   }
 }
 
 
-module "branch-gke-multitenant-dev-folder" {
+module "branch-gke-dev-folder" {
   source = "../../../modules/folder"
   parent = module.branch-gke-folder.id
   name   = "Development"
   iam = {
     "roles/owner" = [
-      module.branch-gke-multitenant-dev-sa.iam_email
+      module.branch-gke-dev-sa.iam_email
     ]
     "roles/resourcemanager.projectCreator" = [
-      module.branch-gke-multitenant-dev-sa.iam_email
+      module.branch-gke-dev-sa.iam_email
     ]
     "roles/compute.xpnAdmin" = [
-      module.branch-gke-multitenant-dev-sa.iam_email
+      module.branch-gke-dev-sa.iam_email
     ]
   }
 }
 
-module "branch-gke-multitenant-dev-sa" {
+module "branch-gke-dev-sa" {
   source      = "../../../modules/iam-service-account"
   project_id  = var.automation.project_id
   name        = "dev-resman-gke-0"
@@ -102,13 +102,13 @@ module "branch-gke-multitenant-dev-sa" {
   }
 }
 
-module "branch-gke-multitenant-dev-gcs" {
+module "branch-gke-dev-gcs" {
   source     = "../../../modules/gcs"
   project_id = var.automation.project_id
   name       = "dev-resman-gke-0"
   prefix     = var.prefix
   versioning = true
   iam = {
-    "roles/storage.objectAdmin" = [module.branch-gke-multitenant-dev-sa.iam_email]
+    "roles/storage.objectAdmin" = [module.branch-gke-dev-sa.iam_email]
   }
 }
