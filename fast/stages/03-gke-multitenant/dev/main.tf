@@ -25,7 +25,7 @@ module "gke-project-0" {
   source          = "../../../../modules/project"
   billing_account = var.billing_account.id
   name            = "dev-gke-clusters-0"
-  parent          = var.folder_ids.gke-multitenant-dev
+  parent          = var.folder_ids.gke-dev
   prefix          = var.prefix
   labels          = local.labels
   services = [

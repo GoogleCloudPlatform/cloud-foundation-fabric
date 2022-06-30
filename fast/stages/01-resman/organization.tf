@@ -29,8 +29,8 @@ locals {
   branch_gke_sa_iam_emails = (
     var.fast_features.gke
     ? [
-      module.branch-gke-dev-sa.iam_email,
-      module.branch-gke-prod-sa.iam_email
+      module.branch-gke-dev-sa.0.iam_email,
+      module.branch-gke-prod-sa.0.iam_email
     ]
     : []
   )

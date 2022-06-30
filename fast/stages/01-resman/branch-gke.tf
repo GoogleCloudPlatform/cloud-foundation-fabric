@@ -16,99 +16,137 @@
 
 # tfdoc:file:description GKE multitenant stage resources.
 
-# top-level gke folder
+moved {
+  from = module.branch-gke-folder
+  to   = module.branch-gke-folder.0
+}
 
 module "branch-gke-folder" {
   source = "../../../modules/folder"
+  count  = var.fast_features.gke ? 1 : 0
   parent = "organizations/${var.organization.id}"
   name   = "GKE"
-  # iam = {
-  #   "roles/logging.admin"                  = [module.branch-gke-sa.iam_email]
-  #   "roles/owner"                          = [module.branch-gke-sa.iam_email]
-  #   "roles/resourcemanager.folderAdmin"    = [module.branch-gke-sa.iam_email]
-  #   "roles/resourcemanager.projectCreator" = [module.branch-gke-sa.iam_email]
-  # }
-}
-
-# GKE-level folders, service accounts and buckets for each individual environment
-
-module "branch-gke-prod-folder" {
-  source = "../../../modules/folder"
-  parent = module.branch-gke-folder.id
-  name   = "Production"
-  iam = {
-    "roles/owner" = [
-      module.branch-gke-prod-sa.iam_email
-    ]
-    "roles/resourcemanager.projectCreator" = [
-      module.branch-gke-prod-sa.iam_email
-    ]
-    "roles/compute.xpnAdmin" = [
-      module.branch-gke-prod-sa.iam_email
-    ]
+  tag_bindings = {
+    context = try(
+      module.organization.tag_values["${var.tag_names.context}/gke"].id, null
+    )
   }
 }
 
-module "branch-gke-prod-sa" {
-  source      = "../../../modules/iam-service-account"
-  project_id  = var.automation.project_id
-  name        = "prod-resman-gke-0"
-  description = "Terraform gke multitenant prod service account."
-  prefix      = var.prefix
-  iam = {
-    # FIXME(jccb): who should we use here?
-    "roles/iam.serviceAccountTokenCreator" = ["group:${local.groups.gcp-devops}"]
-  }
+moved {
+  from = module.branch-gke-dev-folder
+  to   = module.branch-gke-dev-folder.0
 }
-
-module "branch-gke-prod-gcs" {
-  source     = "../../../modules/gcs"
-  project_id = var.automation.project_id
-  name       = "prod-resman-gke-0"
-  prefix     = var.prefix
-  versioning = true
-  iam = {
-    "roles/storage.objectAdmin" = [module.branch-gke-prod-sa.iam_email]
-  }
-}
-
 
 module "branch-gke-dev-folder" {
   source = "../../../modules/folder"
-  parent = module.branch-gke-folder.id
+  count  = var.fast_features.gke ? 1 : 0
+  parent = module.branch-gke-folder.0.id
   name   = "Development"
   iam = {
-    "roles/owner" = [
-      module.branch-gke-dev-sa.iam_email
-    ]
-    "roles/resourcemanager.projectCreator" = [
-      module.branch-gke-dev-sa.iam_email
-    ]
-    "roles/compute.xpnAdmin" = [
-      module.branch-gke-dev-sa.iam_email
-    ]
+    "roles/owner"                          = [module.branch-gke-dev-sa.0.iam_email]
+    "roles/logging.admin"                  = [module.branch-gke-dev-sa.0.iam_email]
+    "roles/resourcemanager.folderAdmin"    = [module.branch-gke-dev-sa.0.iam_email]
+    "roles/resourcemanager.projectCreator" = [module.branch-gke-dev-sa.0.iam_email]
+    "roles/compute.xpnAdmin"               = [module.branch-gke-dev-sa.0.iam_email]
   }
+  tag_bindings = {
+    context = try(
+      module.organization.tag_values["${var.tag_names.environment}/development"].id,
+      null
+    )
+  }
+}
+
+moved {
+  from = module.branch-gke-prod-folder
+  to   = module.branch-gke-prod-folder.0
+}
+
+module "branch-gke-prod-folder" {
+  source = "../../../modules/folder"
+  count  = var.fast_features.gke ? 1 : 0
+  parent = module.branch-gke-folder.0.id
+  name   = "Production"
+  iam = {
+    "roles/owner"                          = [module.branch-gke-prod-sa.0.iam_email]
+    "roles/logging.admin"                  = [module.branch-gke-prod-sa.0.iam_email]
+    "roles/resourcemanager.folderAdmin"    = [module.branch-gke-prod-sa.0.iam_email]
+    "roles/resourcemanager.projectCreator" = [module.branch-gke-prod-sa.0.iam_email]
+    "roles/compute.xpnAdmin"               = [module.branch-gke-prod-sa.0.iam_email]
+  }
+  tag_bindings = {
+    context = try(
+      module.organization.tag_values["${var.tag_names.environment}/production"].id,
+      null
+    )
+  }
+}
+
+moved {
+  from = module.branch-gke-dev-sa
+  to   = module.branch-gke-dev-sa.0
 }
 
 module "branch-gke-dev-sa" {
   source      = "../../../modules/iam-service-account"
+  count       = var.fast_features.gke ? 1 : 0
   project_id  = var.automation.project_id
   name        = "dev-resman-gke-0"
   description = "Terraform gke multitenant dev service account."
   prefix      = var.prefix
   iam = {
-    # FIXME(jccb): who should we use here?
     "roles/iam.serviceAccountTokenCreator" = ["group:${local.groups.gcp-devops}"]
   }
 }
 
+moved {
+  from = module.branch-gke-prod-sa
+  to   = module.branch-gke-prod-sa.0
+}
+
+module "branch-gke-prod-sa" {
+  source      = "../../../modules/iam-service-account"
+  count       = var.fast_features.gke ? 1 : 0
+  project_id  = var.automation.project_id
+  name        = "prod-resman-gke-0"
+  description = "Terraform gke multitenant prod service account."
+  prefix      = var.prefix
+  iam = {
+    "roles/iam.serviceAccountTokenCreator" = ["group:${local.groups.gcp-devops}"]
+  }
+}
+
+moved {
+  from = module.branch-gke-dev-gcs
+  to   = module.branch-gke-dev-gcs.0
+}
+
 module "branch-gke-dev-gcs" {
   source     = "../../../modules/gcs"
+  count      = var.fast_features.gke ? 1 : 0
   project_id = var.automation.project_id
   name       = "dev-resman-gke-0"
   prefix     = var.prefix
   versioning = true
   iam = {
-    "roles/storage.objectAdmin" = [module.branch-gke-dev-sa.iam_email]
+    "roles/storage.objectAdmin" = [module.branch-gke-dev-sa.0.iam_email]
+  }
+}
+
+moved {
+  from = module.branch-gke-prod-gcs
+  to   = module.branch-gke-prod-gcs.0
+}
+
+module "branch-gke-prod-gcs" {
+  source     = "../../../modules/gcs"
+  count      = var.fast_features.gke ? 1 : 0
+  project_id = var.automation.project_id
+  name       = "prod-resman-gke-0"
+  prefix     = var.prefix
+  versioning = true
+  iam = {
+    "roles/storage.objectAdmin" = [module.branch-gke-prod-sa.0.iam_email]
   }
 }

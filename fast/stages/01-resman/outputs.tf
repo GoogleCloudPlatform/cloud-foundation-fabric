@@ -62,16 +62,16 @@ locals {
   }
   folder_ids = merge(
     {
-      data-platform-dev    = try(module.branch-dp-dev-folder.0.id, null)
-      data-platform-prod   = try(module.branch-dp-prod-folder.0.id, null)
-      gke-multitenant-dev  = module.branch-gke-dev-folder.id
-      gke-multitenant-prod = module.branch-gke-prod-folder.id
-      networking           = module.branch-network-folder.id
-      networking-dev       = module.branch-network-dev-folder.id
-      networking-prod      = module.branch-network-prod-folder.id
-      sandbox              = try(module.branch-sandbox-folder.0.id, null)
-      security             = module.branch-security-folder.id
-      teams                = try(module.branch-teams-folder.0.id, null)
+      data-platform-dev  = try(module.branch-dp-dev-folder.0.id, null)
+      data-platform-prod = try(module.branch-dp-prod-folder.0.id, null)
+      gke-dev            = try(module.branch-gke-dev-folder.0.id, null)
+      gke-prod           = try(module.branch-gke-prod-folder.0.id, null)
+      networking         = module.branch-network-folder.id
+      networking-dev     = module.branch-network-dev-folder.id
+      networking-prod    = module.branch-network-prod-folder.id
+      sandbox            = try(module.branch-sandbox-folder.0.id, null)
+      security           = module.branch-security-folder.id
+      teams              = try(module.branch-teams-folder.0.id, null)
     },
     {
       for k, v in module.branch-teams-team-folder :
@@ -98,16 +98,6 @@ locals {
         name   = "security"
         sa     = module.branch-security-sa.email
       })
-      "03-gke-dev" = templatefile(local._tpl_providers, {
-        bucket = module.branch-gke-dev-gcs.name
-        name   = "gke-dev"
-        sa     = module.branch-gke-dev-sa.email
-      })
-      "03-gke-prod" = templatefile(local._tpl_providers, {
-        bucket = module.branch-gke-prod-gcs.name
-        name   = "gke-prod"
-        sa     = module.branch-gke-prod-sa.email
-      })
     },
     !var.fast_features.data_platform ? {} : {
       "03-data-platform-dev" = templatefile(local._tpl_providers, {
@@ -119,6 +109,18 @@ locals {
         bucket = module.branch-dp-prod-gcs.0.name
         name   = "dp-prod"
         sa     = module.branch-dp-prod-sa.0.email
+      })
+    },
+    !var.fast_features.gke ? {} : {
+      "03-gke-dev" = templatefile(local._tpl_providers, {
+        bucket = module.branch-gke-dev-gcs.0.name
+        name   = "gke-dev"
+        sa     = module.branch-gke-dev-sa.0.email
+      })
+      "03-gke-prod" = templatefile(local._tpl_providers, {
+        bucket = module.branch-gke-prod-gcs.0.name
+        name   = "gke-prod"
+        sa     = module.branch-gke-prod-sa.0.email
       })
     },
     !var.fast_features.project_factory ? {} : {
@@ -252,18 +254,22 @@ output "security" {
 output "gke_multitenant" {
   # tfdoc:output:consumers 03-gke-multitenant
   description = "Data for the GKE multitenant stage."
-  value = {
-    "dev" = {
-      folder          = module.branch-gke-dev-folder.id
-      gcs_bucket      = module.branch-gke-dev-gcs.name
-      service_account = module.branch-gke-dev-sa.email
+  value = (
+    var.fast_features.gke
+    ? {
+      "dev" = {
+        folder          = module.branch-gke-dev-folder.0.id
+        gcs_bucket      = module.branch-gke-dev-gcs.0.name
+        service_account = module.branch-gke-dev-sa.0.email
+      }
+      "prod" = {
+        folder          = module.branch-gke-prod-folder.0.id
+        gcs_bucket      = module.branch-gke-prod-gcs.0.name
+        service_account = module.branch-gke-prod-sa.0.email
+      }
     }
-    "prod" = {
-      folder          = module.branch-gke-prod-folder.id
-      gcs_bucket      = module.branch-gke-prod-gcs.name
-      service_account = module.branch-gke-prod-sa.email
-    }
-  }
+    : {}
+  )
 }
 
 output "teams" {

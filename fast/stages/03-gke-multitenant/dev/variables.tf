@@ -113,7 +113,7 @@ variable "folder_ids" {
   # tfdoc:variable:source 01-resman
   description = "Folders to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created."
   type = object({
-    gke-multitenant-dev = string
+    gke-dev = string
   })
 }
 
