@@ -74,7 +74,7 @@ module "gke-cluster" {
   monitoring_config = ["SYSTEM_COMPONENTS", "WORKLOADS"]
 
   # if you don't have compute.networks.updatePeering in the host
-  # project, comment out the next line and ask your network admin to
+  # project, comment the next lines and ask your network admin to
   # create the peering for you
   peering_config = {
     export_routes = true
@@ -89,11 +89,13 @@ module "gke-cluster" {
   #       in locals, merge defaults with cluster-level stuff
   # TODO(jccb): change fabric module
   database_encryption = (
-    each.value.overrides.database_encryption_key == null ? {
+    each.value.overrides.database_encryption_key == null
+    ? {
       enabled  = false
       state    = null
       key_name = null
-      } : {
+    }
+    : {
       enabled  = true
       state    = "ENCRYPTED"
       key_name = each.value.overrides.database_encryption_key

@@ -97,14 +97,8 @@ variable "clusters" {
   }))
 }
 
-variable "cluster_viewer_users" {
-  description = "list of users to be granted as container.clusterViewer"
-  type        = list(any)
-  default     = []
-}
-
 variable "dns_domain" {
-  description = "Domain name used for clusters, prefix by each cluster name. Leave null to disable Cloud DNS for GKE."
+  description = "Domain name used for clusters, prefixed by each cluster name. Leave null to disable Cloud DNS for GKE."
   type        = string
   default     = null
 }
@@ -123,6 +117,13 @@ variable "host_project_ids" {
   type = object({
     dev-spoke-0 = string
   })
+}
+
+variable "group_iam" {
+  description = "Project-level IAM bindings for groups. Use group emails as keys, list of roles as values."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
 }
 
 variable "labels" {
