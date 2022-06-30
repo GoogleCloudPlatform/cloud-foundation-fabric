@@ -21,6 +21,7 @@ locals {
 
 provider "gitlab" {
   base_url = var.gitlab.url
+  early_auth_check = false
 }
 
 data "gitlab_group" "group" {

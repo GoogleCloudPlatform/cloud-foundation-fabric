@@ -35,7 +35,23 @@ variable "automation" {
 variable "cicd_repositories" {
   description = "CI/CD repository configuration. Identity providers reference keys in the `federated_identity_providers` variable. Set to null to disable, or set individual repositories to null if not needed."
   type = object({
+    modules = object({
+      branch       = string
+      name         = string
+      description  = string
+      type         = string
+      create       = bool
+      create_group = bool
+    })
     bootstrap = object({
+      branch       = string
+      name         = string
+      description  = string
+      type         = string
+      create       = bool
+      create_group = bool
+    })
+    cicd = object({
       branch       = string
       name         = string
       description  = string

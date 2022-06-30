@@ -19,8 +19,8 @@
 locals {
   identity_providers = {
     for k, v in var.federated_identity_providers : k => merge(
-      v,
-      lookup(local.identity_providers_defs, v.issuer, {})
+      v, lookup(local.identity_providers_defs, v.issuer, {}),
+      { for kk, vv in try(coalesce(v.custom_settings, {}), {}) : kk => vv if vv != null }
     )
   }
   identity_providers_defs = {

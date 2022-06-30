@@ -20,7 +20,7 @@ locals {
 
 provider "github" {
   base_url = var.github.url
-  owner    = local.github_groups[0]
+  owner    = length(local.github_groups) > 0 ? local.github_groups[0] : null
 }
 
 data "github_organization" "organization" {
@@ -40,6 +40,8 @@ resource "github_repository" "repositories" {
   description = each.value.description
 
   visibility = var.github.visibility
+  
+  archive_on_destroy = false
 }
 
 resource "github_actions_secret" "actions-modules-key" {
