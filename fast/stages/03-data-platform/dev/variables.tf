@@ -87,6 +87,12 @@ variable "host_project_ids" {
   })
 }
 
+variable "location" {
+  description = "Location used for multi-regional resources."
+  type        = string
+  default     = "eu"
+}
+
 variable "network_config_composer" {
   description = "Network configurations to use for Composer."
   type = object({
