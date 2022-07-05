@@ -3,13 +3,12 @@
 This module allows simplified creation and management of a GKE Hub object and its features for a given set of clusters. The given list of clusters will be registered inside the Hub and all the configured features will be activated.
 
 To use this module you must ensure the following APIs are enabled in the target project:
-```
-"gkehub.googleapis.com"
-"gkeconnect.googleapis.com"
-"anthosconfigmanagement.googleapis.com"
-"multiclusteringress.googleapis.com"
-"multiclusterservicediscovery.googleapis.com"
-```
+
+- `anthosconfigmanagement.googleapis.com`
+- `gkeconnect.googleapis.com`
+- `gkehub.googleapis.com`
+- `multiclusteringress.googleapis.com`
+- `multiclusterservicediscovery.googleapis.com`
 
 ## Full GKE Hub example
 
@@ -20,10 +19,10 @@ module "project" {
   name            = "gkehub-test"
   parent          = "folders/12345"
   services = [
-    "container.googleapis.com",
-    "gkehub.googleapis.com",
-    "gkeconnect.googleapis.com",
     "anthosconfigmanagement.googleapis.com",
+    "container.googleapis.com",
+    "gkeconnect.googleapis.com",
+    "gkehub.googleapis.com",
     "multiclusteringress.googleapis.com",
     "multiclusterservicediscovery.googleapis.com",
   ]

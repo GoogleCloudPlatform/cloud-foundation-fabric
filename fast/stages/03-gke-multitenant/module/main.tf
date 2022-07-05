@@ -28,14 +28,17 @@ module "gke-project-0" {
   labels          = local.labels
   services = [
     "anthosconfigmanagement.googleapis.com",
-    "anthos.googleapis.com", "dns.googleapis.com",
+    # "anthos.googleapis.com",
+    "cloudresourcemanager.googleapis.com",
+    "container.googleapis.com",
+    "dns.googleapis.com",
     "gkeconnect.googleapis.com",
     "gkehub.googleapis.com",
+    "iam.googleapis.com",
+    # "multiclusteringress.googleapis.com",
+    # "multiclusterservicediscovery.googleapis.com",
     "stackdriver.googleapis.com",
-    "container.googleapis.com",
-    "multiclusterservicediscovery.googleapis.com",
-    "multiclusteringress.googleapis.com",
-    "trafficdirector.googleapis.com"
+    # "trafficdirector.googleapis.com"
   ]
   shared_vpc_service_config = {
     attach       = true
