@@ -155,7 +155,7 @@ projects/my-project-id:
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [config_directory](variables.tf#L17) | Paths to a folder where organization policy configs are stored in yaml format. Files suffix must be `.yaml`. | <code>string</code> |  | <code>null</code> |
-| [organization_policies](variables.tf#L25) | Organization policies keyed by parent in format `projects/project-id`, `folders/1234567890` or `organizations/1234567890`. | <code>any</code> |  | <code>&#123;&#125;</code> |
+| [organization_policies](variables.tf#L26) | Organization policies keyed by parent in format `projects/project-id`, `folders/1234567890` or `organizations/1234567890`. | <code>any</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
