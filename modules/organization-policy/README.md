@@ -4,6 +4,8 @@ This module allows creation and management of [GCP Organization Policies](https:
 
 Yaml based factory can simplify centralized management of Org Policies for a DevSecOps team by providing a simple way to define/structure policies and exclusions.
 
+> **_NOTE:_**  This module uses experimental feature `module_variable_optional_attrs` which will be included into [terraform release 1.3](https://github.com/hashicorp/terraform/releases/tag/v1.3.0-alpha20220706).
+
 ## Example
 
 ### Terraform code
