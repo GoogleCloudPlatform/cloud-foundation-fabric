@@ -15,5 +15,5 @@
 
 terraform {
   # TODO: Remove once Terraform 1.3 is released https://github.com/hashicorp/terraform/releases/tag/v1.3.0-alpha20220622
-  experiments = [module_variable_optional_attrs]  
+  experiments = [module_variable_optional_attrs]
 }
