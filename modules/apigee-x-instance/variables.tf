@@ -41,7 +41,7 @@ variable "consumer_accept_list" {
 }
 
 variable "ip_range" {
-  description = "Customer-provided CIDR blocks of length 22 and 28 for the Apigee instance (e.g. `10.0.0.0/22,10.1.0.0/28`)."
+  description = "Input: Customer-provided CIDR blocks of length 22 (e.g. `10.0.0.0/22`) Output: Main and Support CIDR (e.g. `10.0.0.0/22,10.1.0.0/28`)."
   type        = string
   default     = null
 }
