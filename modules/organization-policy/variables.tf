@@ -20,11 +20,26 @@ variable "config_directory" {
   default     = null
 }
 
-# TODO: convert to a proper data structure map(map(object({...}))) once tf1.3 is released and optional object keys are avaliable,
-# for now it will cause multiple keys to be set to null for every policy definition
-# https://github.com/hashicorp/terraform/releases/tag/v1.3.0-alpha20220622
-variable "organization_policies" {
+variable "policies" {
   description = "Organization policies keyed by parent in format `projects/project-id`, `folders/1234567890` or `organizations/1234567890`."
-  type        = any
-  default     = {}
+  type = map(map(object({
+    inherit_from_parent = optional(bool) # List policy only.
+    reset               = optional(bool)
+    rules = optional(
+      list(object({
+        allow   = optional(list(string)) # List policy only. Stands for `allow_all` if set to empty list `[]` or to `values.allowed_values` if set to a list of values 
+        deny    = optional(list(string)) # List policy only. Stands for `deny_all` if set to empty list `[]` or to `values.denied_values` if set to a list of values
+        enforce = optional(bool)         # Boolean policy only.    
+        condition = optional(
+          object({
+            description = optional(string)
+            expression  = optional(string)
+            location    = optional(string)
+            title       = optional(string)
+          })
+        )
+      }))
+    )
+  })))
+  default = {}
 }

@@ -17,25 +17,23 @@ def test_org_policy_simple(plan_runner):
   org_policies = (
    '{'
    '"folders/1234567890" = {'
-   '     "constraints/iam.disableServiceAccountKeyUpload" = {'
-   '       rules = ['
-   '         {'
-   '             enforce = true'
-   '         }'
-   '       ]'
-   '     }'
+   '  "constraints/iam.disableServiceAccountKeyUpload" = {'
+   '    rules = ['
+   '       {'
+   '         enforce = true,'
+   '       }'
+   '     ]'
+   '   }'
    ' },'
    ' "organizations/1234567890" = {'
    '   "run.allowedIngress" = {'
    '     rules = ['
    '       {'
+   '         allow = ["internal"],'
    '         condition = {'
    '           description= "allow ingress",'
    '           expression = "resource.matchTag(\'123456789/environment\', \'prod\')",'
-   '           title = "allow-for-prod-org",'
-   '         },'
-   '         values = {'
-   '           allowed_values = ["internal"]'
+   '           title = "allow-for-prod-org"'
    '         }'
    '       }'
    '     ]'
@@ -44,7 +42,7 @@ def test_org_policy_simple(plan_runner):
    '}'
   )
   _, resources = plan_runner(
-    organization_policies = org_policies
+    policies = org_policies
   )
   assert len(resources) == 2
 
@@ -85,7 +83,7 @@ def test_combined_org_policy_config(plan_runner):
   )
   _, resources = plan_runner(
     config_directory="./policies",
-    organization_policies = org_policies
+    policies = org_policies
   )
 
   assert len(resources) == 6

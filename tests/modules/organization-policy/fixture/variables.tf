@@ -24,7 +24,7 @@ variable "config_directory" {
 # TODO: convert to a proper data structure map(map(object({...}))) once tf1.3 is released and optional object keys are avaliable,
 # for now it will cause multiple keys to be set to null for every policy definition
 # https://github.com/hashicorp/terraform/releases/tag/v1.3.0-alpha20220622
-variable "organization_policies" {
+variable "policies" {
   description = "Organization policies keyed by parent in format `projects/project-id`, `folders/1234567890` or `organizations/1234567890`."
   type        = any
   default     = {}

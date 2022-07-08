@@ -20,27 +20,34 @@ module "org-policy-factory" {
 module "org-policy" {
   source = "./modules/organization-policy"
   
-  organization_policies = {
+  policies = {
     "folders/1234567890" = {
-        "constraints/iam.disableServiceAccountKeyUpload" = {
-          rules = [
-            {
-                enforce = true
-            }
-          ]
-        }
+      # enforce boolean policy with no conditions
+      "iam.disableServiceAccountKeyUpload" = {
+        rules = [
+          {
+            enforce = true
+          }
+        ]
+      },
+      # Deny All for compute.vmCanIpForward policy
+      "compute.vmCanIpForward" = {
+        inherit_from_parent = false
+        rules = [
+          deny = [] # stands for deny_all
+        ]
+      }
     },
     "organizations/1234567890" = {
+      # allow only internal ingress when match condition env=prod
       "run.allowedIngress" = {
         rules = [
           {
+            allow = ["internal"]
             condition = {
               description= "allow ingress"
               expression = "resource.matchTag('123456789/environment', 'prod')"
               title = "allow-for-prod-org"
-            },
-            values = {
-              allowed_values = ["internal"]
             }
           }
         ]
@@ -53,28 +60,24 @@ module "org-policy" {
 
 ## Org Policy definition format and structure
 
-### Structure of `organization_policies` variable
+### Structure of `policies` variable
 
 ```hcl
-organization_policies = {
+policies = {
   "parent_id" = { # parent id in format projects/project-id, folders/1234567890 or organizations/1234567890.
     "policy_name" = { # policy constraint id, for example compute.vmExternalIpAccess.
       inherit_from_parent = true|false # (Optional) Only for list constraints. Determines the inheritance behavior for this policy.
       reset               = true|false # (Optional) Ignores policies set above this resource and restores the constraint_default enforcement behavior.
       rules               = [ # Up to 10 PolicyRules are allowed.
         {
-          allow_all = true|false # (Optional) Only for list constraints. Setting this to true means that all values are allowed.
-          deny_all  = true|false # (Optional) Only for list constraints. Setting this to true means that all values are denied.
-          enforce   = true|false # (Optional) Only for boolean constraints. If true, then the Policy is enforced.
-          condition = {          # (Optional) A condition which determines whether this rule is used in the evaluation of the policy.
+          allow = ["value1", "value2"] # (Optional) Only for list constraints. Stands for `allow_all` if set to empty list `[]` or to `values.allowed_values` if set to a list of values
+          denyl = ["value3", "value4"] # (Optional) Only for list constraints. Stands for `deny_all` if set to empty list `[]` or to `values.denied_values` if set to a list of values
+          enforce   = true|false       # (Optional) Only for boolean constraints. If true, then the Policy is enforced.
+          condition = {                # (Optional) A condition which determines whether this rule is used in the evaluation of the policy.
             description = "Condition description" # (Optional)
             expression  = "Condition expression"  # (Optional) For example "resource.matchTag('123456789/environment', 'prod')".
             location    = "policy-error.log"      # (Optional) String indicating the location of the expression for error reporting.
             title       = "condition-title"       # (Optional)
-          }
-          values = {             # (Optional) Only for list constraints. List of values to be used for this PolicyRule.
-            allowed_values = ["value1", "value2"] # (Optional) List of values allowed at this resource.
-            denied_values  = ["value3", "value4"] # (Optional) List of values denied at this resource.
           }
         }
       ]
@@ -94,18 +97,14 @@ parent_id: # parent id in format projects/project-id, folders/1234567890 or orga
     inherit_from_parent: true|false # (Optional) Only for list constraints. Determines the inheritance behavior for this policy.
     reset: true|false               # (Optional) Ignores policies set above this resource and restores the constraint_default enforcement behavior.
     rules:
-      - allow_all: true|false # (Optional) Only for list constraints. Setting this to true means that all values are allowed.
-        deny_all: true|false  # (Optional) Only for list constraints. Setting this to true means that all values are denied.
+      - allow: ["value1", "value2"] # (Optional) Only for list constraints. Stands for `allow_all` if set to empty list `[]` or to `values.allowed_values` if set to a list of values
+        deny: ["value3", "value4"] # (Optional) Only for list constraints. Stands for `deny_all` if set to empty list `[]` or to `values.denied_values` if set to a list of values
         enforce: true|false   # (Optional) Only for boolean constraints. If true, then the Policy is enforced.
         condition:            # (Optional) A condition which determines whether this rule is used in the evaluation of the policy.
           description: Condition description   # (Optional)
           expression: Condition expression     # (Optional) For example resource.matchTag("123456789/environment", "prod")
           location: policy-error.log           # (Optional) String indicating the location of the expression for error reporting.
           title: condition-title               # (Optional)
-        values:               # (Optional) Only for list constraints. List of values to be used for this PolicyRule.
-          allowed_values: ['value1', 'value2'] # (Optional) List of values allowed at this resource.
-          denied_values:  ['value3', 'value4'] # (Optional) List of values denied at this resource.
-
 ```
 
 Module allows policies to be distributed into multiple yaml files for a better management and navigation.
@@ -130,7 +129,7 @@ folders/1234567890:
     inherit_from_parent: false
     reset: false
     rules:
-      - allow_all: true
+      - allow: [] # Stands for allow_all = true
 projects/my-project-id:
   run.allowedIngress:
     inherit_from_parent: true
@@ -144,7 +143,7 @@ projects/my-project-id:
           allowed_values: ['internal']
   iam.allowServiceAccountCredentialLifetimeExtension:
     rules:
-      - allow_all: true
+      - deny: [] # Stands for deny_all = true
   compute.disableGlobalLoadBalancing:
     reset: true
 ```
@@ -155,12 +154,12 @@ projects/my-project-id:
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [config_directory](variables.tf#L17) | Paths to a folder where organization policy configs are stored in yaml format. Files suffix must be `.yaml`. | <code>string</code> |  | <code>null</code> |
-| [organization_policies](variables.tf#L26) | Organization policies keyed by parent in format `projects/project-id`, `folders/1234567890` or `organizations/1234567890`. | <code>any</code> |  | <code>&#123;&#125;</code> |
+| [policies](variables.tf#L23) | Organization policies keyed by parent in format `projects/project-id`, `folders/1234567890` or `organizations/1234567890`. | <code title="map&#40;map&#40;object&#40;&#123;&#10;  inherit_from_parent &#61; optional&#40;bool&#41; &#35; List policy only.&#10;  reset               &#61; optional&#40;bool&#41;&#10;  rules &#61; optional&#40;&#10;    list&#40;object&#40;&#123;&#10;      allow   &#61; optional&#40;list&#40;string&#41;&#41; &#35; List policy only. Stands for &#96;allow_all&#96; if set to empty list &#96;&#91;&#93;&#96; or to &#96;values.allowed_values&#96; if set to a list of values &#10;      deny    &#61; optional&#40;list&#40;string&#41;&#41; &#35; List policy only. Stands for &#96;deny_all&#96; if set to empty list &#96;&#91;&#93;&#96; or to &#96;values.denied_values&#96; if set to a list of values&#10;      enforce &#61; optional&#40;bool&#41;         &#35; Boolean policy only.    &#10;      condition &#61; optional&#40;&#10;        object&#40;&#123;&#10;          description &#61; optional&#40;string&#41;&#10;          expression  &#61; optional&#40;string&#41;&#10;          location    &#61; optional&#40;string&#41;&#10;          title       &#61; optional&#40;string&#41;&#10;        &#125;&#41;&#10;      &#41;&#10;    &#125;&#41;&#41;&#10;  &#41;&#10;&#125;&#41;&#41;&#41;">map&#40;map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| [organization_policies](outputs.tf#L17) | Organization policies. |  |
+| [policies](outputs.tf#L17) | Organization policies. |  |
 
 <!-- END TFDOC -->

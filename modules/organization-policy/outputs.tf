@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-output "organization_policies" {
+output "policies" {
   description = "Organization policies."
   value       = google_org_policy_policy.primary
 }

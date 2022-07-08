@@ -22,20 +22,19 @@ folders/1234567890:
     inherit_from_parent: false
     reset: false
     rules:
-      - allow_all: true
+      - allow: []
 projects/my-project-id:
   run.allowedIngress:
     inherit_from_parent: true
     rules:
-      - condition:
+      - allow: ['internal']
+        condition:
           description: allow internal ingress
           expression: resource.matchTag("123456789/environment", "prod")
           location: test.log
           title: allow-for-prod
-        values: 
-          allowed_values: ['internal']
   iam.allowServiceAccountCredentialLifetimeExtension:
     rules:
-      - allow_all: true
+      - deny: []
   compute.disableGlobalLoadBalancing:
     reset: true

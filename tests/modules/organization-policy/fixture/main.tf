@@ -17,6 +17,6 @@
 module "org-policy" {
   source = "../../../../modules/organization-policy"
 
-  config_directory      = var.config_directory
-  organization_policies = var.organization_policies
+  config_directory = var.config_directory
+  policies         = var.policies
 }
