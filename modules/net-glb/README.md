@@ -531,11 +531,12 @@ Target proxies  leverage [url-maps](url-map.tf): set of L7 rules, which create a
 | name | description | sensitive |
 |---|---|:---:|
 | [backend_services](outputs.tf#L22) | Backend service resources. |  |
-| [global_forwarding_rule](outputs.tf#L57) | The global forwarding rule. |  |
+| [global_forwarding_rule](outputs.tf#L62) | The global forwarding rule. |  |
 | [health_checks](outputs.tf#L17) | Health-check resources. |  |
 | [ip_address](outputs.tf#L44) | The reserved global IP address. |  |
+| [ip_address_self_link](outputs.tf#L49) | The URI of the reserved global IP address. |  |
 | [ssl_certificates](outputs.tf#L35) | The SSL certificate. |  |
-| [target_proxy](outputs.tf#L49) | The target proxy. |  |
+| [target_proxy](outputs.tf#L54) | The target proxy. |  |
 | [url_map](outputs.tf#L30) | The url-map. |  |
 
 <!-- END TFDOC -->

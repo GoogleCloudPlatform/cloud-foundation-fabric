@@ -12,7 +12,7 @@ Nested folder structure for yaml configurations is optionally supported, which a
 
 ```hcl
 module "prod-firewall" {
-  source = "./modules/net-vpc-firewall-yaml"
+  source = "./examples/factories/net-vpc-firewall-yaml"
   
   project_id         = "my-prod-project"
   network            = "my-prod-network"
@@ -27,7 +27,7 @@ module "prod-firewall" {
 }
 
 module "dev-firewall" {
-  source = "./modules/net-vpc-firewall-yaml"
+  source = "./examples/factories/net-vpc-firewall-yaml"
   
   project_id         = "my-dev-project"
   network            = "my-dev-network"

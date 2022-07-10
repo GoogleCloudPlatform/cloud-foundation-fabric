@@ -38,10 +38,12 @@ module "landing-project" {
     service_projects = []
   }
   iam = {
-    "roles/dns.admin" = [local.service_accounts.project-factory-prod]
-    (local.custom_roles.service_project_network_admin) = [
-      local.service_accounts.project-factory-prod
-    ]
+    "roles/dns.admin" = compact([
+      try(local.service_accounts.project-factory-prod, null)
+    ])
+    (local.custom_roles.service_project_network_admin) = compact([
+      try(local.service_accounts.project-factory-prod, null)
+    ])
   }
 }
 

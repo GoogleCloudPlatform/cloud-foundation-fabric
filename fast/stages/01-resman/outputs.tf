@@ -33,12 +33,12 @@ locals {
       tf_var_files      = local.cicd_workflow_var_files.stage_2
     }
     project_factory_dev = {
-      service_account   = try(module.branch-teams-dev-pf-sa-cicd.0.email, null)
+      service_account   = try(module.branch-pf-dev-sa-cicd.0.email, null)
       tf_providers_file = "03-project-factory-dev-providers.tf"
       tf_var_files      = local.cicd_workflow_var_files.stage_3
     }
     project_factory_prod = {
-      service_account   = try(module.branch-teams-prod-pf-sa-cicd.0.email, null)
+      service_account   = try(module.branch-pf-prod-sa-cicd.0.email, null)
       tf_providers_file = "03-project-factory-prod-providers.tf"
       tf_var_files      = local.cicd_workflow_var_files.stage_3
     }
@@ -62,13 +62,14 @@ locals {
   }
   folder_ids = merge(
     {
-      data-platform   = module.branch-dp-dev-folder.id
-      networking      = module.branch-network-folder.id
-      networking-dev  = module.branch-network-dev-folder.id
-      networking-prod = module.branch-network-prod-folder.id
-      sandbox         = module.branch-sandbox-folder.id
-      security        = module.branch-security-folder.id
-      teams           = module.branch-teams-folder.id
+      data-platform-dev  = try(module.branch-dp-dev-folder.0.id, null)
+      data-platform-prod = try(module.branch-dp-prod-folder.0.id, null)
+      networking         = module.branch-network-folder.id
+      networking-dev     = module.branch-network-dev-folder.id
+      networking-prod    = module.branch-network-prod-folder.id
+      sandbox            = try(module.branch-sandbox-folder.0.id, null)
+      security           = module.branch-security-folder.id
+      teams              = try(module.branch-teams-folder.0.id, null)
     },
     {
       for k, v in module.branch-teams-team-folder :
@@ -83,53 +84,61 @@ locals {
       "team-${k}-prod" => v.id
     }
   )
-  providers = {
-    "02-networking" = templatefile(local._tpl_providers, {
-      bucket = module.branch-network-gcs.name
-      name   = "networking"
-      sa     = module.branch-network-sa.email
-    })
-    "02-security" = templatefile(local._tpl_providers, {
-      bucket = module.branch-security-gcs.name
-      name   = "security"
-      sa     = module.branch-security-sa.email
-    })
-    "03-data-platform-dev" = templatefile(local._tpl_providers, {
-      bucket = module.branch-dp-dev-gcs.name
-      name   = "dp-dev"
-      sa     = module.branch-dp-dev-sa.email
-    })
-    "03-data-platform-prod" = templatefile(local._tpl_providers, {
-      bucket = module.branch-dp-prod-gcs.name
-      name   = "dp-prod"
-      sa     = module.branch-dp-prod-sa.email
-    })
-    "03-project-factory-dev" = templatefile(local._tpl_providers, {
-      bucket = module.branch-teams-dev-pf-gcs.name
-      name   = "team-dev"
-      sa     = module.branch-teams-dev-pf-sa.email
-    })
-    "03-project-factory-prod" = templatefile(local._tpl_providers, {
-      bucket = module.branch-teams-prod-pf-gcs.name
-      name   = "team-prod"
-      sa     = module.branch-teams-prod-pf-sa.email
-    })
-    "99-sandbox" = templatefile(local._tpl_providers, {
-      bucket = module.branch-sandbox-gcs.name
-      name   = "sandbox"
-      sa     = module.branch-sandbox-sa.email
-    })
-  }
+  providers = merge(
+    {
+      "02-networking" = templatefile(local._tpl_providers, {
+        bucket = module.branch-network-gcs.name
+        name   = "networking"
+        sa     = module.branch-network-sa.email
+      })
+      "02-security" = templatefile(local._tpl_providers, {
+        bucket = module.branch-security-gcs.name
+        name   = "security"
+        sa     = module.branch-security-sa.email
+      })
+    },
+    !var.fast_features.data_platform ? {} : {
+      "03-data-platform-dev" = templatefile(local._tpl_providers, {
+        bucket = module.branch-dp-dev-gcs.0.name
+        name   = "dp-dev"
+        sa     = module.branch-dp-dev-sa.0.email
+      })
+      "03-data-platform-prod" = templatefile(local._tpl_providers, {
+        bucket = module.branch-dp-prod-gcs.0.name
+        name   = "dp-prod"
+        sa     = module.branch-dp-prod-sa.0.email
+      })
+    },
+    !var.fast_features.project_factory ? {} : {
+      "03-project-factory-dev" = templatefile(local._tpl_providers, {
+        bucket = module.branch-pf-dev-gcs.0.name
+        name   = "team-dev"
+        sa     = module.branch-pf-dev-sa.0.email
+      })
+      "03-project-factory-prod" = templatefile(local._tpl_providers, {
+        bucket = module.branch-pf-prod-gcs.0.name
+        name   = "team-prod"
+        sa     = module.branch-pf-prod-sa.0.email
+      })
+    },
+    !var.fast_features.sandbox ? {} : {
+      "99-sandbox" = templatefile(local._tpl_providers, {
+        bucket = module.branch-sandbox-gcs.0.name
+        name   = "sandbox"
+        sa     = module.branch-sandbox-sa.0.email
+      })
+    }
+  )
   service_accounts = merge(
     {
-      data-platform-dev    = module.branch-dp-dev-sa.email
-      data-platform-prod   = module.branch-dp-prod-sa.email
+      data-platform-dev    = try(module.branch-dp-dev-sa.0.email, null)
+      data-platform-prod   = try(module.branch-dp-prod-sa.0.email, null)
       networking           = module.branch-network-sa.email
-      project-factory-dev  = module.branch-teams-dev-pf-sa.email
-      project-factory-prod = module.branch-teams-prod-pf-sa.email
-      sandbox              = module.branch-sandbox-sa.email
+      project-factory-dev  = try(module.branch-pf-dev-sa.0.email, null)
+      project-factory-prod = try(module.branch-pf-prod-sa.0.email, null)
+      sandbox              = try(module.branch-sandbox-sa.0.email, null)
       security             = module.branch-security-sa.email
-      teams                = module.branch-teams-prod-sa.email
+      teams                = try(module.branch-teams-prod-sa.0.email, null)
     },
     {
       for k, v in module.branch-teams-team-sa : "team-${k}" => v.email
@@ -158,16 +167,16 @@ output "cicd_repositories" {
 
 output "dataplatform" {
   description = "Data for the Data Platform stage."
-  value = {
+  value = !var.fast_features.data_platform ? {} : {
     dev = {
-      folder          = module.branch-dp-dev-folder.id
-      gcs_bucket      = module.branch-dp-dev-gcs.name
-      service_account = module.branch-dp-dev-sa.email
+      folder          = module.branch-dp-dev-folder.0.id
+      gcs_bucket      = module.branch-dp-dev-gcs.0.name
+      service_account = module.branch-dp-dev-sa.0.email
     }
     prod = {
-      folder          = module.branch-dp-prod-folder.id
-      gcs_bucket      = module.branch-dp-prod-gcs.name
-      service_account = module.branch-dp-prod-sa.email
+      folder          = module.branch-dp-prod-folder.0.id
+      gcs_bucket      = module.branch-dp-prod-gcs.0.name
+      service_account = module.branch-dp-prod-sa.0.email
     }
   }
 }
@@ -183,14 +192,14 @@ output "networking" {
 
 output "project_factories" {
   description = "Data for the project factories stage."
-  value = {
+  value = !var.fast_features.project_factory ? {} : {
     dev = {
-      bucket = module.branch-teams-dev-pf-gcs.name
-      sa     = module.branch-teams-dev-pf-sa.email
+      bucket = module.branch-pf-dev-gcs.0.name
+      sa     = module.branch-pf-dev-sa.0.email
     }
     prod = {
-      bucket = module.branch-teams-prod-pf-gcs.name
-      sa     = module.branch-teams-prod-pf-sa.email
+      bucket = module.branch-pf-prod-gcs.0.name
+      sa     = module.branch-pf-prod-sa.0.email
     }
   }
 }
@@ -207,11 +216,15 @@ output "providers" {
 output "sandbox" {
   # tfdoc:output:consumers xx-sandbox
   description = "Data for the sandbox stage."
-  value = {
-    folder          = module.branch-sandbox-folder.id
-    gcs_bucket      = module.branch-sandbox-gcs.name
-    service_account = module.branch-sandbox-sa.email
-  }
+  value = (
+    var.fast_features.sandbox
+    ? {
+      folder          = module.branch-sandbox-folder.0.id
+      gcs_bucket      = module.branch-sandbox-gcs.0.name
+      service_account = module.branch-sandbox-sa.0.email
+    }
+    : null
+  )
 }
 
 output "security" {

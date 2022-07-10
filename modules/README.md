@@ -37,6 +37,7 @@ These modules are used in the examples included in this repository. If you are u
 - [project](./project)
 - [projects-data-source](./projects-data-source)
 - [service account](./iam-service-account)
+- [organization policy](./organization-policy)
 
 ## Networking modules
 

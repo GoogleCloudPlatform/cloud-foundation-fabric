@@ -25,7 +25,8 @@ locals {
     })]
   }
   service_accounts = {
-    for k, v in coalesce(var.service_accounts, {}) : k => "serviceAccount:${v}"
+    for k, v in coalesce(var.service_accounts, {}) :
+    k => "serviceAccount:${v}" if v != null
   }
   stage3_sas_delegated_grants = [
     "roles/composer.sharedVpcAgent",

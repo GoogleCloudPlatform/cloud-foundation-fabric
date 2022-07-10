@@ -21,6 +21,7 @@ on:
     types:
       - closed
       - opened
+      - synchronize
 
 env:
   FAST_OUTPUTS_BUCKET: ${outputs_bucket}

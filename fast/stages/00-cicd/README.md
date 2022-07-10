@@ -1,11 +1,10 @@
 # CI/CD bootstrap
 
-The primary purpose of this stage is to set up your CI/CD project structure automatically, with most of the
-necessary configuration to run the pipelines out of the box.
+The primary purpose of this stage is to set up your CI/CD project structure automatically, with most of the necessary configuration to run the pipelines out of the box.
 
 ## How to run this stage
 
-This stage is meant to be executed after the [bootstrap](../00-bootstrap) stage has run, as it leverages the automation service account and bucket created there. 
+This stage is meant to be executed after the [bootstrap](../00-bootstrap) stage has run, as it leverages the automation service account and bucket created there.
 The entire stage is optional, you may also choose to create your repositories manually.
 
 ### Providers configuration
@@ -51,7 +50,7 @@ cp ../00-bootstrap/terraform.tfvars .
 
 A second set of variables is specific to this stage, they are all optional so if you need to customize them, create an extra `terraform.tfvars` file or add them to the file copied from bootstrap.
 
-Refer to the [Variables](#variables) table at the bottom of this document, for a full list of variables, their origin (e.g. a stage or specific to this one), and descriptions explaining their meaning. The sections below also describe some of the possible customizations. 
+Refer to the [Variables](#variables) table at the bottom of this document, for a full list of variables, their origin (e.g. a stage or specific to this one), and descriptions explaining their meaning. The sections below also describe some of the possible customizations.
 
 ### CI/CD systems
 
@@ -89,7 +88,7 @@ and such, the `00-cicd` stage creates all the repositories in your CI/CD system 
 configuration is essentially a combination of all the `cicd_repositories` variables of the other stages
 plus additional CI/CD system specific configuration information.
 
-This is an example of configuring the repositories in this stage. 
+This is an example of configuring the repositories in this stage.
 
 ```hcl
 cicd_repositories = {
@@ -162,7 +161,6 @@ cicd_repositories = {
 The `type` attribute can be set to one of the supported repository types: `github` or `gitlab`.
 
 Once the stage is applied the generated output files will contain pre-configured workflow files for each repository, that will use Workload Identity Federation via a dedicated service account for each repository to impersonate the automation service account for the stage.
-
 
 Once done, you can run this stage:
 

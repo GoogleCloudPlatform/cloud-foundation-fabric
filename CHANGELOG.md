@@ -8,6 +8,8 @@ All notable changes to this project will be documented in this file.
 - add `id` output to service account module
 - add support for secrets to cloud function module
 - new binary authorization module
+- add `consumer_accept_list` option to `apigee-x-instance` module
+- fix addons for GKE autopilot
 
 **FAST**
 
@@ -16,6 +18,7 @@ All notable changes to this project will be documented in this file.
 - remove unsupported attributes and add supported ones to the Gitlab mapping used for Workload Identity Federation pools
 - add roles for CI/CD source repositories to stage 1 service account on automation project
 - fixes to CI/CD source repositories in stage 1
+- implement feature flags for FAST
 
 ## [16.0.0] - 2022-06-06
 

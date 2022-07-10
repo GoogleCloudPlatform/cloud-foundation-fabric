@@ -18,7 +18,12 @@
 
 # source repositories
 
-module "branch-teams-dev-pf-cicd-repo" {
+moved {
+  from = module.branch-teams-dev-pf-cicd-repo
+  to   = module.branch-pf-dev-cicd-repo
+}
+
+module "branch-pf-dev-cicd-repo" {
   source = "../../../modules/source-repository"
   for_each = (
     try(local.cicd_repositories.project_factory_dev.type, null) == "sourcerepo"
@@ -28,8 +33,8 @@ module "branch-teams-dev-pf-cicd-repo" {
   project_id = var.automation.project_id
   name       = each.value.name
   iam = {
-    "roles/source.admin"  = [module.branch-teams-dev-pf-sa.iam_email]
-    "roles/source.reader" = [module.branch-teams-dev-pf-sa-cicd.0.iam_email]
+    "roles/source.admin"  = [module.branch-pf-dev-sa.0.iam_email]
+    "roles/source.reader" = [module.branch-pf-dev-sa-cicd.0.iam_email]
   }
   triggers = {
     fast-03-pf-dev = {
@@ -37,7 +42,7 @@ module "branch-teams-dev-pf-cicd-repo" {
       included_files = [
         "**/*json", "**/*tf", "**/*yaml", ".cloudbuild/workflow.yaml"
       ]
-      service_account = module.branch-teams-dev-pf-sa-cicd.0.id
+      service_account = module.branch-pf-dev-sa-cicd.0.id
       substitutions   = {}
       template = {
         project_id  = null
@@ -47,10 +52,15 @@ module "branch-teams-dev-pf-cicd-repo" {
       }
     }
   }
-  depends_on = [module.branch-teams-dev-pf-sa-cicd]
+  depends_on = [module.branch-pf-dev-sa-cicd]
 }
 
-module "branch-teams-prod-pf-cicd-repo" {
+moved {
+  from = module.branch-teams-prod-pf-cicd-repo
+  to   = module.branch-pf-prod-cicd-repo
+}
+
+module "branch-pf-prod-cicd-repo" {
   source = "../../../modules/source-repository"
   for_each = (
     try(local.cicd_repositories.project_factory_prod.type, null) == "sourcerepo"
@@ -60,8 +70,8 @@ module "branch-teams-prod-pf-cicd-repo" {
   project_id = var.automation.project_id
   name       = each.value.name
   iam = {
-    "roles/source.admin"  = [module.branch-teams-prod-pf-sa.iam_email]
-    "roles/source.reader" = [module.branch-teams-prod-pf-sa-cicd.0.iam_email]
+    "roles/source.admin"  = [module.branch-pf-prod-sa.0.iam_email]
+    "roles/source.reader" = [module.branch-pf-prod-sa-cicd.0.iam_email]
   }
   triggers = {
     fast-03-pf-prod = {
@@ -69,7 +79,7 @@ module "branch-teams-prod-pf-cicd-repo" {
       included_files = [
         "**/*json", "**/*tf", "**/*yaml", ".cloudbuild/workflow.yaml"
       ]
-      service_account = module.branch-teams-prod-pf-sa-cicd.0.id
+      service_account = module.branch-pf-prod-sa-cicd.0.id
       substitutions   = {}
       template = {
         project_id  = null
@@ -79,12 +89,17 @@ module "branch-teams-prod-pf-cicd-repo" {
       }
     }
   }
-  depends_on = [module.branch-teams-prod-pf-sa-cicd]
+  depends_on = [module.branch-pf-prod-sa-cicd]
 }
 
 # SAs used by CI/CD workflows to impersonate automation SAs
 
-module "branch-teams-dev-pf-sa-cicd" {
+moved {
+  from = module.branch-teams-dev-pf-sa-cicd
+  to   = module.branch-pf-dev-sa-cicd
+}
+
+module "branch-pf-dev-sa-cicd" {
   source = "../../../modules/iam-service-account"
   for_each = (
     try(local.cicd_repositories.project_factory_dev.name, null) != null
@@ -107,10 +122,12 @@ module "branch-teams-dev-pf-sa-cicd" {
         each.value.branch == null
         ? format(
           local.identity_providers[each.value.identity_provider].principalset_tpl,
+          var.automation.federated_identity_pool,
           each.value.name
         )
         : format(
           local.identity_providers[each.value.identity_provider].principal_tpl,
+          var.automation.federated_identity_pool,
           each.value.name,
           each.value.branch
         )
@@ -125,7 +142,12 @@ module "branch-teams-dev-pf-sa-cicd" {
   }
 }
 
-module "branch-teams-prod-pf-sa-cicd" {
+moved {
+  from = module.branch-teams-prod-pf-sa-cicd
+  to   = module.branch-pf-prod-sa-cicd
+}
+
+module "branch-pf-prod-sa-cicd" {
   source = "../../../modules/iam-service-account"
   for_each = (
     try(local.cicd_repositories.project_factory_prod.name, null) != null

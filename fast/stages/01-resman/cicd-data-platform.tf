@@ -28,8 +28,12 @@ module "branch-dp-dev-cicd-repo" {
   project_id = var.automation.project_id
   name       = each.value.name
   iam = {
-    "roles/source.admin"  = [module.branch-dp-dev-sa.iam_email]
-    "roles/source.reader" = [module.branch-dp-dev-sa-cicd.0.iam_email]
+    "roles/source.admin" = compact([
+      try(module.branch-dp-dev-sa.0.iam_email, "")
+    ])
+    "roles/source.reader" = compact([
+      try(module.branch-dp-dev-sa-cicd.0.iam_email, "")
+    ])
   }
   triggers = {
     fast-03-dp-dev = {
@@ -60,7 +64,7 @@ module "branch-dp-prod-cicd-repo" {
   project_id = var.automation.project_id
   name       = each.value.name
   iam = {
-    "roles/source.admin"  = [module.branch-dp-prod-sa.iam_email]
+    "roles/source.admin"  = [module.branch-dp-prod-sa.0.iam_email]
     "roles/source.reader" = [module.branch-dp-prod-sa-cicd.0.iam_email]
   }
   triggers = {
