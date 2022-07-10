@@ -12,6 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+variable "vpc_connector" {
+  type    = any
+  default = null
+}
+
+variable "vpc_connector_config" {
+  type    = any
+  default = null
+}
+
 module "cloud_run" {
   source        = "../../../../modules/cloud-run"
   project_id    = "my-project"
@@ -37,4 +47,6 @@ module "cloud_run" {
   iam = {
     "roles/run.invoker" = ["allUsers"]
   }
+  vpc_connector        = var.vpc_connector
+  vpc_connector_config = var.vpc_connector_config
 }
