@@ -28,21 +28,54 @@ def test_resource_count(resources):
 
 def test_iam(resources):
   "Test IAM binding resources."
-  bindings = [r['values'] for r in resources if r['type']
-              == 'google_cloud_run_service_iam_binding']
+  bindings = [
+      r['values']
+      for r in resources
+      if r['type'] == 'google_cloud_run_service_iam_binding'
+  ]
   assert len(bindings) == 1
   assert bindings[0]['role'] == 'roles/run.invoker'
 
 
 def test_audit_log_triggers(resources):
   "Test audit logs Eventarc trigger resources."
-  audit_log_triggers = [r['values'] for r in resources if r['type']
-                        == 'google_eventarc_trigger' and r['name'] == 'audit_log_triggers']
+  audit_log_triggers = [
+      r['values']
+      for r in resources
+      if r['type'] == 'google_eventarc_trigger' and
+      r['name'] == 'audit_log_triggers'
+  ]
   assert len(audit_log_triggers) == 1
 
 
 def test_pubsub_triggers(resources):
   "Test Pub/Sub Eventarc trigger resources."
-  pubsub_triggers = [r['values'] for r in resources if r['type']
-                     == 'google_eventarc_trigger' and r['name'] == 'pubsub_triggers']
+  pubsub_triggers = [
+      r['values'] for r in resources if
+      r['type'] == 'google_eventarc_trigger' and r['name'] == 'pubsub_triggers'
+  ]
   assert len(pubsub_triggers) == 2
+
+
+def test_vpc_connector_none(plan_runner):
+  "Test VPC connector creation."
+  _, resources = plan_runner()
+  assert len(
+      [r for r in resources if r['type'] == 'google_vpc_access_connector']) == 0
+
+
+def test_vpc_connector_nocreate(plan_runner):
+  "Test VPC connector creation."
+  _, resources = plan_runner(
+      vpc_connector='{create=false, name="foo", egress_settings=null}')
+  assert len(
+      [r for r in resources if r['type'] == 'google_vpc_access_connector']) == 0
+
+
+def test_vpc_connector_create(plan_runner):
+  "Test VPC connector creation."
+  _, resources = plan_runner(
+      vpc_connector='{create=true, name="foo", egress_settings=null}',
+      vpc_connector_config='{ip_cidr_range="10.0.0.0/28", network="default"}')
+  assert len(
+      [r for r in resources if r['type'] == 'google_vpc_access_connector']) == 1
