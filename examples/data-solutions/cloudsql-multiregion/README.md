@@ -22,7 +22,7 @@ The solution will use:
 
 This is the high level diagram:
 
-![Cloud SQL multi-region.](diagram.png "Cloud SQL multi-region")
+![Cloud SQL multi-region.](images/diagram.png "Cloud SQL multi-region")
 
 If you're migrating from another Cloud Provider, refer to [this](https://cloud.google.com/free/docs/aws-azure-gcp-service-comparison) documentation to see equivalent services and comparisons in Microsoft Azure and Amazon Web Services.
 
@@ -38,11 +38,11 @@ If `project_create` is left to `null`, the identity performing the deployment ne
 
 Click on the image below, sign in if required and when the prompt appears, click on “confirm”.
 
-[BUTTON](https://ssh.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2FGoogleCloudPlatform%2Fcloud-foundation-fabric&cloudshell_git_branch=master&cloudshell_open_in_editor=terraform.tfvars.sample&cloudshell_workspace=examples%2Fdata-solutions%2Fcloudsql-multiregion)
+![Open Cloud Shell](images/button.png)(https://ssh.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2FGoogleCloudPlatform%2Fcloud-foundation-fabric&cloudshell_git_branch=master&cloudshell_open_in_editor=terraform.tfvars.sample&cloudshell_workspace=examples%2Fdata-solutions%2Fcloudsql-multiregion)
 
 This will clone the repository to your cloud shell and a screen like this one will appear:
 
-IMAGE1
+![Import package](images/image1.png)
 
 Before you deploy the architecture, make sure you run the following command to move your cloudshell session  into your service project: `gcloud config set project [SERVICE_PROJECT_ID]`
 
@@ -58,7 +58,7 @@ Once you have the required information, head back to the cloud shell editor. Mak
 
 Configure the Terraform variables in your `terraform.tfvars` file. You need to specify at least the `project_id` and `prefix` variables. See  [`terraform.tfvars.sample`](terraform.tfvars.sample) as starting point.
 
-IMAGE2
+![Deploy ressources](images/image2.png)
 
 Run Terraform init:
 
@@ -69,7 +69,7 @@ $ terraform apply
 
 The resource creation will take a few minutes, at the end this is the output you should expect for successful completion along with a list of the created resources:
 
-IMAGE3
+![Ressources installed](images/image3.png)
 
 ## Move to real use case consideration
 
