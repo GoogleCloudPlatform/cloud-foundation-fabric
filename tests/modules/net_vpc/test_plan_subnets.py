@@ -20,8 +20,7 @@ _VAR_SUBNETS = (
     '   secondary_ip_range=null},'
     '{name = "c", region = "europe-west1", ip_cidr_range = "10.0.2.0/24",'
     '   secondary_ip_range={a="192.168.0.0/24", b="192.168.1.0/24"}},'
-    ']'
-)
+    ']')
 
 _VAR_DATA_FOLDER = "data"
 
@@ -29,9 +28,10 @@ _VAR_DATA_FOLDER = "data"
 def test_subnet_factory(plan_runner):
   "Test subnet factory."
   _, resources = plan_runner(data_folder=_VAR_DATA_FOLDER)
-  assert len(resources) == 5
-  subnets = [r['values']
-             for r in resources if r['type'] == 'google_compute_subnetwork']
+  assert len(resources) == 3
+  subnets = [
+      r['values'] for r in resources if r['type'] == 'google_compute_subnetwork'
+  ]
   assert {s['name'] for s in subnets} == {'factory-subnet', 'factory-subnet2'}
   assert {len(s['secondary_ip_range']) for s in subnets} == {0, 1}
 
@@ -40,8 +40,9 @@ def test_subnets_simple(plan_runner):
   "Test subnets variable."
   _, resources = plan_runner(subnets=_VAR_SUBNETS)
   assert len(resources) == 4
-  subnets = [r['values']
-             for r in resources if r['type'] == 'google_compute_subnetwork']
+  subnets = [
+      r['values'] for r in resources if r['type'] == 'google_compute_subnetwork'
+  ]
   assert {s['name'] for s in subnets} == {'a', 'b', 'c'}
   assert {len(s['secondary_ip_range']) for s in subnets} == {0, 0, 2}
 
@@ -51,11 +52,9 @@ def test_subnet_log_configs(plan_runner):
   log_config = '{"europe-west1/a" = { flow_sampling = 0.1 }}'
   log_config_defaults = (
       '{aggregation_interval = "INTERVAL_10_MIN", flow_sampling = 0.5, '
-      'metadata = "INCLUDE_ALL_METADATA"}'
-  )
+      'metadata = "INCLUDE_ALL_METADATA"}')
   subnet_flow_logs = '{"europe-west1/a"=true, "europe-west1/b"=true}'
-  _, resources = plan_runner(subnets=_VAR_SUBNETS,
-                             log_configs=log_config,
+  _, resources = plan_runner(subnets=_VAR_SUBNETS, log_configs=log_config,
                              log_config_defaults=log_config_defaults,
                              subnet_flow_logs=subnet_flow_logs)
   assert len(resources) == 4
@@ -63,9 +62,10 @@ def test_subnet_log_configs(plan_runner):
   for r in resources:
     if r['type'] != 'google_compute_subnetwork':
       continue
-    flow_logs[r['values']['name']] = [{key: config[key] for key in config.keys()
-                                       & {'aggregation_interval', 'flow_sampling', 'metadata'}}
-                                      for config in r['values']['log_config']]
+    flow_logs[r['values']['name']] = [{
+        key: config[key] for key in config.keys() &
+        {'aggregation_interval', 'flow_sampling', 'metadata'}
+    } for config in r['values']['log_config']]
   assert flow_logs == {
       # enable, override one default option
       'a': [{
