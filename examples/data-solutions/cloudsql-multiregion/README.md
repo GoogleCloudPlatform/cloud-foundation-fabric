@@ -38,7 +38,7 @@ If `project_create` is left to `null`, the identity performing the deployment ne
 
 Click on the image below, sign in if required and when the prompt appears, click on “confirm”.
 
-[<img alt="Open Cloudshell" src="images/button.png" />](https://ssh.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2FGoogleCloudPlatform%2Fcloud-foundation-fabric&cloudshell_git_branch=master&cloudshell_open_in_editor=terraform.tfvars.sample&cloudshell_workspace=examples%2Fdata-solutions%2Fcloudsql-multiregion)
+[<p align="center"> <img alt="Open Cloudshell" width = "300px" src="images/button.png" /> </p>](https://ssh.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2FGoogleCloudPlatform%2Fcloud-foundation-fabric&cloudshell_git_branch=master&cloudshell_open_in_editor=terraform.tfvars.sample&cloudshell_workspace=examples%2Fdata-solutions%2Fcloudsql-multiregion)
 
 
 This will clone the repository to your cloud shell and a screen like this one will appear:
