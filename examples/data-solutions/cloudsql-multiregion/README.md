@@ -26,30 +26,6 @@ This is the high level diagram:
 
 If you're migrating from another Cloud Provider, refer to [this](https://cloud.google.com/free/docs/aws-azure-gcp-service-comparison) documentation to see equivalent services and comparisons in Microsoft Azure and Amazon Web Services.
 
-#Costs 
-
-This deployment uses the following billable components of Google Cloud:
-- [Cloud Storage](https://cloud.google.com/storage/pricing)
-- [Cloud Compute Engine](https://cloud.google.com/compute/all-pricing)
-- [Cloud SQL](https://cloud.google.com/sql/pricing)
-- [Cloud NAT](https://cloud.google.com/nat/pricing)
-- [Virtual Private Cloud](https://cloud.google.com/vpc/pricing)
-
-To generate a cost estimate based on your projected usage, please use the [pricing calculator](https://cloud.google.com/products/calculator).
-
-Price calculation example for ecommerce web hosting (Region: Singapore)
-
-| Service | Item | Quantity | Monthly charge (USD) |
-|---|---|---|---|
-|Cloud Storage|a) Standard class b) Class B operations | a) 100GiB b) 4 million (Class B operations) |$2.4, pricing calculator [link](https://cloud.google.com/products/calculator/#id=4de0bb46-840a-4626-8776-62b6da2a471e) |
-|Cloud Compute Engine|Compute (e2-standard-2, 2vCPU, 8GiB RAM & boot disk (10GiB)|730 hours (1 VM)|$60.79, pricing calculator [link](https://cloud.google.com/products/calculator/#id=94d3c168-8d61-4fcb-9885-15fc1703bb7c)|
-|Cloud SQL|a) CPU/Memory (vCPU: 2, RAM: 15 GB) b) Storage (SSD) c) Backup | a) 730 hours (1VM) b) 100GiB c) 100GiB |$311.09, pricing calculator [link](https://cloud.google.com/products/calculator/#id=cc5e2a9c-3599-4e71-87a4-f54f613879d1)|
-|Cloud NAT||||
-|Virtual Private Cloud||||
-|Total estimated cost - $ / month||
-
-If you wish to remove all the deployed resources and to avoid continued billing, please see the Clean up section at the end.
-
 # Requirements
 
 This example will deploy all its resources into the project defined by the `project_id` variable. Please note that we assume this project already exists. However, if you provide the appropriate values to the `project_create` variable, the project will be created as part of the deployment.
