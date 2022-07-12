@@ -105,7 +105,7 @@ resource "google_project_iam_binding" "dev_spoke_project_iam_delegated" {
   members = compact([
     try(local.service_accounts.data-platform-dev, null),
     try(local.service_accounts.project-factory-dev, null),
-    try(local.service_accounts.gke-dev, null)
+    try(local.service_accounts.gke-dev, null),
   ])
   condition {
     title       = "dev_stage3_sa_delegated_grants"
