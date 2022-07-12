@@ -30,9 +30,9 @@ locals {
       subnet = k
       role   = "roles/compute.networkUser"
       members = concat(
-        formatlist("group:%s", try(v.iam_groups, [])),
-        formatlist("user:%s", try(v.iam_users, [])),
-        formatlist("serviceAccount:%s", try(v.iam_service_accounts, []))
+        formatlist("group:%s", lookup(v, "iam_groups", [])),
+        formatlist("user:%s", lookup(v, "iam_users", [])),
+        formatlist("serviceAccount:%s", lookup(v, "iam_service_accounts", []))
       )
     }
   ]
@@ -73,7 +73,8 @@ locals {
     local._factory_descriptions, var.subnet_descriptions
   )
   subnet_iam_members = concat(
-    local._factory_iam_members, local._subnet_iam_members
+    [for k in local._factory_iam_members : k if length(k.members) > 0],
+    local._subnet_iam_members
   )
   subnet_flow_logs = merge(
     local._factory_flow_logs, local._subnet_flow_logs

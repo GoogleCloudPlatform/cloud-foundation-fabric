@@ -59,6 +59,12 @@ variable "labels" {
   default     = {}
 }
 
+variable "message_retention_duration" {
+  description = "Minimum duration to retain a message after it is published to the topic."
+  type        = string
+  default     = null
+}
+
 variable "name" {
   description = "PubSub topic name."
   type        = string
