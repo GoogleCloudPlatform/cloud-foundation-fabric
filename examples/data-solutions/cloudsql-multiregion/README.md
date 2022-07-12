@@ -53,7 +53,7 @@ Before we deploy the architecture, you will need the following information:
 
 Once you can see your service project id in the yellow parenthesis, you’re ready to start.
 
-### Step 1: Deploy resources.
+### Step 1: Deploy resources
 
 Once you have the required information, head back to the cloud shell editor. Make sure you’re in the following directory: `cloudshell_open/cloud-foundation-fabric/examples/data-solutions/cloudsql-multiregion/`
 
@@ -100,7 +100,7 @@ You can find computed commands on the Terraform `demo_commands` output.
 To implement a fallback to your original region (R1) after it becomes available, you can follow the same process that is described in the above section. The process is summarized [here](https://cloud.google.com/architecture/cloud-sql-postgres-disaster-recovery-complete-failover-fallback#phase_3_implementing_a_fallback).
 
 
-## Clean up your environment
+## Clean up your environment
 
 The easiest way to remove all the deployed resources is to run the following command in Cloud Shell:
 ```
