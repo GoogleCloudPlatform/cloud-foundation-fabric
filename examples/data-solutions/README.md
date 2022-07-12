@@ -33,3 +33,9 @@ This [example](./data-platform-foundations/) implements SQL Server Always On Ava
 <a href="./cloudsql-multiregion/" title="Cloud SQL instance with multi-region read replicas"><img src="./cloudsql-multiregion/diagram.png" align="left" width="280px"></a>
 This [example](./cloudsql-multiregion/) creates a [Cloud SQL instance](https://cloud.google.com/sql) with multi-region read replicas as described in the [Cloud SQL for PostgreSQL disaster recovery](https://cloud.google.com/architecture/cloud-sql-postgres-disaster-recovery-complete-failover-fallback) article.
 <br clear="left">
+
+### Data Playground starter with Cloud Vertex AI Notebook and GCS
+
+<a href="./data-playground/" title="Data Playground starter with Cloud Vertex AI Notebook and GCS"><img src="./data-playground/diagram.png" align="left" width="280px"></a>
+This [example](./data-playground/) creates a [Vertex AI Notebook](https://cloud.google.com/vertex-ai/docs/workbench/introduction) running under a VPC network and a starter GCS bucket to store inputs and outputs of data experiments.
+<br clear="left">

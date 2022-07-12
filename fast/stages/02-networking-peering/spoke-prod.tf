@@ -41,7 +41,9 @@ module "prod-spoke-project" {
   }
   metric_scopes = [module.landing-project.project_id]
   iam = {
-    "roles/dns.admin" = compact([local.service_accounts.project-factory-prod])
+    "roles/dns.admin" = compact([
+      try(local.service_accounts.project-factory-prod, null)
+    ])
   }
 }
 
@@ -101,9 +103,9 @@ resource "google_project_iam_binding" "prod_spoke_project_iam_delegated" {
   project = module.prod-spoke-project.project_id
   role    = "roles/resourcemanager.projectIamAdmin"
   members = compact([
-    local.service_accounts.data-platform-prod,
-    local.service_accounts.project-factory-prod,
-    local.service_accounts.gke-prod,
+    try(local.service_accounts.data-platform-prod, null),
+    try(local.service_accounts.project-factory-prod, null),
+    try(local.service_accounts.gke-prod, null),
   ])
   condition {
     title       = "prod_stage3_sa_delegated_grants"

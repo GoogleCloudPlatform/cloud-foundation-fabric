@@ -19,6 +19,7 @@
 locals {
   # used here for convenience, in organization.tf members are explicit
   billing_ext_admins = [
+    local.groups_iam.gcp-billing-admins,
     local.groups_iam.gcp-organization-admins,
     module.automation-tf-bootstrap-sa.iam_email,
     module.automation-tf-resman-sa.iam_email
@@ -101,5 +102,14 @@ resource "google_billing_account_iam_member" "billing_ext_admin" {
   )
   billing_account_id = var.billing_account.id
   role               = "roles/billing.admin"
+  member             = each.key
+}
+
+resource "google_billing_account_iam_member" "billing_ext_cost_manager" {
+  for_each = toset(
+    local.billing_ext ? local.billing_ext_admins : []
+  )
+  billing_account_id = var.billing_account.id
+  role               = "roles/billing.costsManager"
   member             = each.key
 }

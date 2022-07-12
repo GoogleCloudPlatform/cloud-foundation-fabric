@@ -15,6 +15,21 @@
  */
 
 locals {
+  annotations = merge(
+    var.ingress_settings == null ? {} : {
+      "run.googleapis.com/ingress" = var.ingress_settings
+    },
+    var.vpc_connector == null ? {} : {
+      "run.googleapis.com/vpc-access-connector" = (
+        try(var.vpc_connector.create, false)
+        ? google_vpc_access_connector.connector.0.id
+        : var.vpc_connector.name
+      )
+    },
+    try(var.vpc_connector.egress_settings, null) == null ? {} : {
+      "run.googleapis.com/vpc-access-egress" = var.vpc_connector.egress_settings
+    }
+  )
   prefix = var.prefix == null ? "" : "${var.prefix}-"
   service_account_email = (
     var.service_account_create
@@ -25,21 +40,10 @@ locals {
     )
     : var.service_account
   )
-
-  annotations = merge(var.ingress_settings == null ? {} : { "run.googleapis.com/ingress" = var.ingress_settings },
-    var.vpc_connector == null
-    ? {}
-    : try(var.vpc_connector.create, false)
-    ? { "run.googleapis.com/vpc-access-connector" = var.vpc_connector.name }
-    : { "run.googleapis.com/vpc-access-connector" = google_vpc_access_connector.connector.0.id }
-    ,
-    try(var.vpc_connector.egress_settings, null) == null
-    ? {}
-  : { "run.googleapis.com/vpc-access-egress" = var.vpc_connector.egress_settings })
 }
 
 resource "google_vpc_access_connector" "connector" {
-  count         = try(var.vpc_connector.create, false) == false ? 0 : 1
+  count         = try(var.vpc_connector.create, false) ? 1 : 0
   project       = var.project_id
   name          = var.vpc_connector.name
   region        = var.region
@@ -56,20 +60,30 @@ resource "google_cloud_run_service" "service" {
   template {
     spec {
       dynamic "containers" {
-        for_each = var.containers == null ? {} : { for i, container in var.containers : i => container }
+        for_each = var.containers == null ? {} : {
+          for i, container in var.containers : i => container
+        }
         content {
           image   = containers.value["image"]
           command = try(containers.value["options"]["command"], null)
           args    = try(containers.value["options"]["args"], null)
           dynamic "env" {
-            for_each = try(containers.value["options"]["env"], null) == null ? {} : containers.value["options"]["env"]
+            for_each = (
+              try(containers.value["options"]["env"], null) == null
+              ? {}
+              : containers.value["options"]["env"]
+            )
             content {
               name  = env.key
               value = env.value
             }
           }
           dynamic "env" {
-            for_each = try(containers.value["options"]["env_from"], null) == null ? {} : containers.value["options"]["env_from"]
+            for_each = (
+              try(containers.value["options"]["env_from"], null) == null
+              ? {}
+              : containers.value["options"]["env_from"]
+            )
             content {
               name = env.key
               value_from {
@@ -81,7 +95,14 @@ resource "google_cloud_run_service" "service" {
             }
           }
           dynamic "ports" {
-            for_each = containers.value["ports"] == null ? {} : { for port in containers.value["ports"] : "${port.name}-${port.container_port}" => port }
+            for_each = (
+              containers.value["ports"] == null
+              ? {}
+              : {
+                for port in containers.value["ports"] :
+                "${port.name}-${port.container_port}" => port
+              }
+            )
             content {
               name           = ports.value["name"]
               protocol       = ports.value["protocol"]
@@ -96,7 +117,11 @@ resource "google_cloud_run_service" "service" {
             }
           }
           dynamic "volume_mounts" {
-            for_each = containers.value["volume_mounts"] == null ? {} : containers.value["volume_mounts"]
+            for_each = (
+              containers.value["volume_mounts"] == null
+              ? {}
+              : containers.value["volume_mounts"]
+            )
             content {
               name       = volume_mounts.key
               mount_path = volume_mounts.value
@@ -112,7 +137,11 @@ resource "google_cloud_run_service" "service" {
           secret {
             secret_name = volumes.value["secret_name"]
             dynamic "items" {
-              for_each = volumes.value["items"] == null ? [] : volumes.value["items"]
+              for_each = (
+                volumes.value["items"] == null
+                ? []
+                : volumes.value["items"]
+              )
               content {
                 key  = items.value["key"]
                 path = items.value["path"]
@@ -129,7 +158,6 @@ resource "google_cloud_run_service" "service" {
       }
     }
   }
-
 
   metadata {
     annotations = local.annotations
@@ -162,7 +190,10 @@ resource "google_service_account" "service_account" {
 }
 
 resource "google_eventarc_trigger" "audit_log_triggers" {
-  for_each = var.audit_log_triggers == null ? {} : { for trigger in var.audit_log_triggers : "${trigger.service_name}-${trigger.method_name}" => trigger }
+  for_each = var.audit_log_triggers == null ? {} : {
+    for trigger in var.audit_log_triggers :
+    "${trigger.service_name}-${trigger.method_name}" => trigger
+  }
   name     = "${local.prefix}${each.key}-audit-log-trigger"
   location = google_cloud_run_service.service.location
   project  = google_cloud_run_service.service.project
@@ -188,7 +219,11 @@ resource "google_eventarc_trigger" "audit_log_triggers" {
 
 resource "google_eventarc_trigger" "pubsub_triggers" {
   for_each = var.pubsub_triggers == null ? [] : toset(var.pubsub_triggers)
-  name     = each.value == "" ? "${local.prefix}default-pubsub-trigger" : "${local.prefix}${each.value}-pubsub-trigger"
+  name = (
+    each.value == ""
+    ? "${local.prefix}default-pubsub-trigger"
+    : "${local.prefix}${each.value}-pubsub-trigger"
+  )
   location = google_cloud_run_service.service.location
   project  = google_cloud_run_service.service.project
   matching_criteria {
