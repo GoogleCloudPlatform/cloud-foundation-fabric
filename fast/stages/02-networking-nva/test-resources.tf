@@ -16,7 +16,7 @@
 
 # tfdoc:file:description temporary instances for testing
 
-# Untrusted (Landing)
+# # Untrusted (Landing)
 
 # module "test-vm-landing-untrusted-ew1-0" {
 #   source     = "../../../modules/compute-vm"
@@ -36,6 +36,11 @@
 #     image = "projects/debian-cloud/global/images/family/debian-10"
 #     type  = "pd-balanced"
 #     size  = 10
+#   }
+#   options = {
+#     allow_stopping_for_update = true
+#     deletion_protection       = false
+#     spot                      = true
 #   }
 #   metadata = {
 #     startup-script = <<EOF
@@ -64,6 +69,11 @@
 #     type  = "pd-balanced"
 #     size  = 10
 #   }
+#   options = {
+#     allow_stopping_for_update = true
+#     deletion_protection       = false
+#     spot                      = true
+#   }
 #   metadata = {
 #     startup-script = <<EOF
 #       apt update
@@ -72,7 +82,7 @@
 #   }
 # }
 
-# Trusted (hub)
+# # Trusted (hub)
 
 # module "test-vm-landing-trusted-ew1-0" {
 #   source     = "../../../modules/compute-vm"
@@ -92,6 +102,11 @@
 #     image = "projects/debian-cloud/global/images/family/debian-10"
 #     type  = "pd-balanced"
 #     size  = 10
+#   }
+#   options = {
+#     allow_stopping_for_update = true
+#     deletion_protection       = false
+#     spot                      = true
 #   }
 #   metadata = {
 #     startup-script = <<EOF
@@ -120,6 +135,11 @@
 #     type  = "pd-balanced"
 #     size  = 10
 #   }
+#   options = {
+#     allow_stopping_for_update = true
+#     deletion_protection       = false
+#     spot                      = true
+#   }
 #   metadata = {
 #     startup-script = <<EOF
 #       apt update
@@ -128,7 +148,7 @@
 #   }
 # }
 
-# Dev spoke
+# # Dev spoke
 
 # module "test-vm-dev-ew1-0" {
 #   source     = "../../../modules/compute-vm"
@@ -149,6 +169,11 @@
 #     image = "projects/debian-cloud/global/images/family/debian-10"
 #     type  = "pd-balanced"
 #     size  = 10
+#   }
+#   options = {
+#     allow_stopping_for_update = true
+#     deletion_protection       = false
+#     spot                      = true
 #   }
 #   metadata = {
 #     startup-script = <<EOF
@@ -178,6 +203,11 @@
 #     type  = "pd-balanced"
 #     size  = 10
 #   }
+#   options = {
+#     allow_stopping_for_update = true
+#     deletion_protection       = false
+#     spot                      = true
+#   }
 #   metadata = {
 #     startup-script = <<EOF
 #       apt update
@@ -186,7 +216,7 @@
 #   }
 # }
 
-# Prod spoke
+# # Prod spoke
 
 # module "test-vm-prod-ew1-0" {
 #   source     = "../../../modules/compute-vm"
@@ -207,6 +237,11 @@
 #     image = "projects/debian-cloud/global/images/family/debian-10"
 #     type  = "pd-balanced"
 #     size  = 10
+#   }
+#   options = {
+#     allow_stopping_for_update = true
+#     deletion_protection       = false
+#     spot                      = true
 #   }
 #   metadata = {
 #     startup-script = <<EOF
@@ -235,6 +270,11 @@
 #     image = "projects/debian-cloud/global/images/family/debian-10"
 #     type  = "pd-balanced"
 #     size  = 10
+#   }
+#   options = {
+#     allow_stopping_for_update = true
+#     deletion_protection       = false
+#     spot                      = true
 #   }
 #   metadata = {
 #     startup-script = <<EOF
