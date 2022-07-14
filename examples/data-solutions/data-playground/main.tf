@@ -27,24 +27,32 @@ module "project" {
   project_create  = var.project_create != null
   prefix          = var.project_create == null ? null : var.prefix
   services = [
-    "stackdriver.googleapis.com",
-    "compute.googleapis.com",
-    "storage-component.googleapis.com",
-    "storage.googleapis.com",
-    "servicenetworking.googleapis.com",
     "bigquery.googleapis.com",
     "bigquerystorage.googleapis.com",
     "bigqueryreservation.googleapis.com",
+    "composer.googleapis.com",
+    "compute.googleapis.com",
     "dataflow.googleapis.com",
+    "ml.googleapis.com",
     "notebooks.googleapis.com",
-    "composer.googleapis.com"
+    "servicenetworking.googleapis.com",
+    "stackdriver.googleapis.com",
+    "storage.googleapis.com",
+    "storage-component.googleapis.com"
   ]
   policy_boolean = {
     # "constraints/compute.requireOsLogin" = false 
     # Example of applying a project wide policy, mainly useful for Composer
   }
   service_encryption_key_ids = {
+    compute = [try(local.service_encryption_keys.compute, null)]
+    bq      = [try(local.service_encryption_keys.bq, null)]
     storage = [try(local.service_encryption_keys.storage, null)]
+  }
+
+  service_config = {
+    disable_on_destroy         = false,
+    disable_dependent_services = false
   }
 }
 
@@ -55,11 +63,11 @@ module "project" {
 module "vpc" {
   source     = "../../../modules/net-vpc"
   project_id = module.project.project_id
-  name       = var.vpc_config.vpc_name
+  name       = "${var.prefix}-vpc"
   subnets = [
     {
       ip_cidr_range      = var.vpc_config.ip_cidr_range
-      name               = var.vpc_config.subnet_name
+      name               = "${var.prefix}-subnet"
       region             = var.region
       secondary_ip_range = {}
     }
@@ -71,18 +79,48 @@ module "vpc-firewall" {
   project_id   = module.project.project_id
   network      = module.vpc.name
   admin_ranges = [var.vpc_config.ip_cidr_range]
+  custom_rules = {
+    #TODO Remove and rely on 'ssh' tag once issues/9273 is fixed
+    ("${var.prefix}-iap") = {
+      description          = "Enable SSH from IAP on Notboks."
+      direction            = "INGRESS"
+      action               = "allow"
+      sources              = []
+      ranges               = ["35.235.240.0/20"]
+      targets              = ["notebook-instance"]
+      use_service_accounts = false
+      rules                = [{ protocol = "tcp", ports = [22] }]
+      extra_attributes     = {}
+    }
+  }
+}
+
+module "cloudnat" {
+  source         = "../../../modules/net-cloudnat"
+  project_id     = module.project.project_id
+  name           = "${var.prefix}-default"
+  region         = var.region
+  router_network = module.vpc.name
 }
 
 ###############################################################################
-#                                GCS                                          #
+#                              Storage                                        #
 ###############################################################################
 
-module "base-gcs-bucket" {
+module "bucket" {
   source         = "../../../modules/gcs"
   project_id     = module.project.project_id
-  prefix         = module.project.project_id
-  name           = "base"
+  prefix         = var.prefix
+  location       = var.location
+  name           = "data"
   encryption_key = try(local.service_encryption_keys.storage, null) # Example assignment of an encryption key
+}
+
+module "dataset" {
+  source         = "../../../modules/bigquery-dataset"
+  project_id     = module.project.project_id
+  id             = "${var.prefix}_data"
+  encryption_key = try(local.service_encryption_keys.bq, null) # Example assignment of an encryption key
 }
 
 ###############################################################################
@@ -90,8 +128,24 @@ module "base-gcs-bucket" {
 ###############################################################################
 # TODO: Add encryption_key to Vertex AI notebooks as well
 # TODO: Add shared VPC support
+
+module "service-account-notebook" {
+  source     = "../../../modules/iam-service-account"
+  project_id = module.project.project_id
+  name       = "notebook-sa"
+  iam_project_roles = {
+    (module.project.project_id) = [
+      "roles/bigquery.admin",
+      "roles/bigquery.jobUser",
+      "roles/bigquery.dataEditor",
+      "roles/bigquery.user",
+      "roles/storage.admin",
+    ]
+  }
+}
+
 resource "google_notebooks_instance" "playground" {
-  name         = "data-play-notebook"
+  name         = "${var.prefix}-notebook"
   location     = format("%s-%s", var.region, "b")
   machine_type = "e2-medium"
   project      = module.project.project_id
@@ -104,10 +158,17 @@ resource "google_notebooks_instance" "playground" {
   install_gpu_driver = true
   boot_disk_type     = "PD_SSD"
   boot_disk_size_gb  = 110
+  disk_encryption    = try(local.service_encryption_keys.compute != null, false) ? "CMEK" : "GMEK"
+  kms_key            = try(local.service_encryption_keys.compute, null)
 
-  no_public_ip    = false
+  no_public_ip    = true
   no_proxy_access = false
 
   network = module.vpc.network.id
-  subnet  = module.vpc.subnets[format("%s/%s", var.region, var.vpc_config.subnet_name)].id
+  subnet  = module.vpc.subnets[format("%s/%s", var.region, "${var.prefix}-subnet")].id
+
+  service_account = module.service-account-notebook.email
+
+  #TODO Uncomment once issues/9273 is fixed
+  # tags = ["ssh"]
 }

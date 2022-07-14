@@ -14,12 +14,15 @@
 
 output "bucket" {
   description = "GCS Bucket URL."
-  value       = module.base-gcs-bucket.url
+  value       = module.bucket.url
 }
 
 output "notebook" {
-  description = "Vertex AI notebook"
-  value       = resource.google_notebooks_instance.playground.name
+  description = "Vertex AI notebook details."
+  value = {
+    name = resource.google_notebooks_instance.playground.name
+    id   = resource.google_notebooks_instance.playground.id
+  }
 }
 
 output "project" {
