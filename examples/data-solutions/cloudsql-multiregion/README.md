@@ -7,7 +7,7 @@ The solution is resilient to a regional outage. To get familiar with the procedu
 The solution will use:
 - VPC with Private Service Access to deploy the instances and VM
 - Cloud SQL - Postgre SQL instanced with Private IP
-- Goocle Cloud Storage bucket to handle database import/export
+- Google Cloud Storage bucket to handle database import/export
 - Google Cloud Engine instance to connect to the Posgre SQL instance
 - Google Cloud NAT to access internet resources
 
