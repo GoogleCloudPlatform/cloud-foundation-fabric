@@ -59,7 +59,7 @@ If no shared services are needed, the shared service project module can of cours
 | [environment_service_account_keys](outputs.tf#L35) | Service account keys used to run each environment Terraform modules. | ✓ |
 | [environment_service_accounts](outputs.tf#L40) | Service accounts used to run each environment Terraform modules. |  |
 | [environment_tf_gcs_buckets](outputs.tf#L45) | GCS buckets used for each environment Terraform state. |  |
-| [shared_services_project](outputs.tf#L50) | Project that holdes resources shared across environments. |  |
+| [shared_services_project](outputs.tf#L50) | Project that holds resources shared across environments. |  |
 | [terraform_project](outputs.tf#L55) | Project that holds the base Terraform resources. |  |
 
 <!-- END TFDOC -->
