@@ -7,19 +7,19 @@ The solution will use:
 - Cloud NAT to let resources egress to the Internet, to run system updates and install packages
 - rely on [Service Account Impersonation](https://cloud.google.com/iam/docs/impersonating-service-accounts) to avoid the use of service account keys
 - Service Accounts with least privilege on each resource
-- (Optional) CMEK encription for GCS bucket, DataFlow instances and BigQuery tables
+- (Optional) CMEK encryption for GCS bucket, DataFlow instances and BigQuery tables
 
 The example is designed to match real-world use cases with a minimum amount of resources and some compromises listed below. It can be used as a starting point for more complex scenarios.
 
 This is the high level diagram:
 
-![GCS to Biquery High-level diagram](diagram.png "GCS to Biquery High-level diagram")
+![GCS to BigQuery High-level diagram](diagram.png "GCS to BigQuery High-level diagram")
 
 ## Move to real use case consideration
 In the example we implemented some compromise to keep the example minimal and easy to read. On a real word use case, you may evaluate the option to:
  - Configure a Shared-VPC
- - Use only Identity Groups to assigne roles
- - Use Authorative IAM role assignement
+ - Use only Identity Groups to assigned roles
+ - Use Authorative IAM role assignment
  - Split resources in different project: Data Landing, Data Transformation, Data Lake, ...
  - Use VPC-SC to mitigate data exfiltration
 
@@ -42,13 +42,13 @@ This sample creates several distinct groups of resources:
   - One bucket
 - BQ
   - One dataset
-  - One table. Tables are defined in Terraform for the porpuse of the example. Probably, in real scenario, would handle Tables creation in a separate Terraform State or using a different tool/pipeline (for example: Dataform).
+  - One table. Tables are defined in Terraform for the purpose of the example. Probably, in real scenario, would handle Tables creation in a separate Terraform State or using a different tool/pipeline (for example: Dataform).
 
-In this example you can also configure users or group of user to assign them viewer role on the resources created and the ability to imprsonate service accounts to test dataflow pipelines before autometing them with Composer or any other orchestration systems.
+In this example you can also configure users or group of user to assign them viewer role on the resources created and the ability to impersonate service accounts to test dataflow pipelines before automating them with Composer or any other orchestration systems.
 
-## Deploy your enviroment
+## Deploy your environment
 
-We assume the identiy running the following steps has the following role:
+We assume the identity running the following steps has the following role:
  - `resourcemanager.projectCreator` in case a new project will be created.
  - `owner` on the project in case you use an existing project. 
 
@@ -58,7 +58,7 @@ Run Terraform init:
 $ terraform init
 ```
 
-Configure the Terraform variable in your `terraform.tfvars` file. You need to spefify at least the following variables:
+Configure the Terraform variable in your `terraform.tfvars` file. You need to specify at least the following variables:
 
 ```
 data_eng_principals = ["user:data-eng@domain.com"]
