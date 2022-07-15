@@ -80,9 +80,9 @@ module "vpc-firewall" {
   network      = module.vpc.name
   admin_ranges = [var.vpc_config.ip_cidr_range]
   custom_rules = {
-    #TODO Remove and rely on 'ssh' tag once issues/9273 is fixed
+    #TODO Remove and rely on 'ssh' tag once terraform-provider-google/issues/9273 is fixed
     ("${var.prefix}-iap") = {
-      description          = "Enable SSH from IAP on Notboks."
+      description          = "Enable SSH from IAP on Notebooks."
       direction            = "INGRESS"
       action               = "allow"
       sources              = []
@@ -169,6 +169,6 @@ resource "google_notebooks_instance" "playground" {
 
   service_account = module.service-account-notebook.email
 
-  #TODO Uncomment once issues/9273 is fixed
+  #TODO Uncomment once terraform-provider-google/issues/9273 is fixed
   # tags = ["ssh"]
 }

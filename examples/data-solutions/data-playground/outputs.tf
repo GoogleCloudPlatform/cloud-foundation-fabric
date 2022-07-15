@@ -17,6 +17,11 @@ output "bucket" {
   value       = module.bucket.url
 }
 
+output "dataset" {
+  description = "GCS Bucket URL."
+  value       = module.dataset.id
+}
+
 output "notebook" {
   description = "Vertex AI notebook details."
   value = {
