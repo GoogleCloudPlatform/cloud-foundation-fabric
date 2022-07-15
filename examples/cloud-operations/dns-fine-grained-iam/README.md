@@ -106,7 +106,7 @@ dig app1.svc.example.org +short
 |---|---|:---:|:---:|:---:|
 | [project_id](variables.tf#L29) | Existing project id. | <code>string</code> | ✓ |  |
 | [name](variables.tf#L17) | Arbitrary string used to name created resources. | <code>string</code> |  | <code>&#34;dns-sd-test&#34;</code> |
-| [project_create](variables.tf#L23) | Create project instead ofusing an existing one. | <code>bool</code> |  | <code>false</code> |
+| [project_create](variables.tf#L23) | Create project instead of using an existing one. | <code>bool</code> |  | <code>false</code> |
 | [region](variables.tf#L34) | Compute region used in the example. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
 | [zone_domain](variables.tf#L40) | Domain name used for the DNS zone. | <code>string</code> |  | <code>&#34;svc.example.org.&#34;</code> |
 
