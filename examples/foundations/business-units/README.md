@@ -1,6 +1,6 @@
 # Business-units based organizational sample
 
-This sample creates an organizational layout with two folder levels, where the first level is usually mapped to one business unit or team (infra, data, analytics) and the second level represents enviroments (prod, test). It also sets up all prerequisites for automation (GCS state buckets, service accounts, etc.), and the correct roles on those to enforce separation of duties at the environment level.
+This sample creates an organizational layout with two folder levels, where the first level is usually mapped to one business unit or team (infra, data, analytics) and the second level represents environments (prod, test). It also sets up all prerequisites for automation (GCS state buckets, service accounts, etc.), and the correct roles on those to enforce separation of duties at the environment level.
 
 This layout is well suited for medium-sized infrastructures managed by different sets of teams, and in cases where the core infrastructure is managed centrally, as the top-level automation service accounts for each environment allow cross-team management of the base resources (projects, IAM, etc.).
 
@@ -53,7 +53,7 @@ This sample uses a top-level folder to encapsulate projects that host resources 
 | [bu_machine_learning](outputs.tf#L43) | Machine Learning attributes. |  |
 | [bu_machine_learning_keys](outputs.tf#L53) | Machine Learning service account keys. | ✓ |
 | [shared_folder_id](outputs.tf#L59) | Shared folder id. |  |
-| [shared_resources_project](outputs.tf#L64) | Project that holdes resources shared across business units. |  |
+| [shared_resources_project](outputs.tf#L64) | Project that holds resources shared across business units. |  |
 | [terraform_project](outputs.tf#L69) | Project that holds the base Terraform resources. |  |
 
 <!-- END TFDOC -->
