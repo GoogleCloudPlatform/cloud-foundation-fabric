@@ -1,6 +1,6 @@
 # Data Playground
 
-This example creates a minimum viable template for a data experimentation project with the needed APIs enabled, basic VPC and Firewall set in place, BigQuesy dataset, GCS bucket and an AI notebook to get started.
+This example creates a minimum viable architecture for a data experimentation project with the needed APIs enabled, VPC and Firewall set in place, BigQuesy dataset, GCS bucket and an AI notebook to get started.
 
 This is the high level diagram:
 
@@ -14,9 +14,34 @@ This sample creates several distinct groups of resources:
 - networking
     - VPC network with a default subnet and CloudNat
     - Firewall rules for [SSH access via IAP](https://cloud.google.com/iap/docs/using-tcp-forwarding) and open communication within the VPC
-- Vertex AI Workbench notebook with a specialized Service Account
-- One bucket bucket
+- Vertex AI Workbench notebook configured with a private IP and using a dedicated Service Account
+- One GCS bucket
 - One BigQuery dataset
+
+## Deploy your enviroment
+We assume the identiy running the following steps has the following role:
+
+- resourcemanager.projectCreator in case a new project will be created.
+- owner on the project in case you use an existing project.
+
+Run Terraform init:
+```
+$ terraform init
+```
+
+Configure the Terraform variable in your terraform.tfvars file. You need to spefify at least the following variables:
+```
+prefix = "prefix"
+project_id      = "data-001"
+```
+
+You can run now:
+```
+$ terraform apply
+```
+
+You can now connect to the Vertex AI notbook to perform your data analysy.
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
