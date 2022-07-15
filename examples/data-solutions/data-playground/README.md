@@ -41,7 +41,6 @@ $ terraform apply
 ```
 
 You can now connect to the Vertex AI notbook to perform your data analysy.
-
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -60,8 +59,9 @@ You can now connect to the Vertex AI notbook to perform your data analysy.
 | name | description | sensitive |
 |---|---|:---:|
 | [bucket](outputs.tf#L15) | GCS Bucket URL. |  |
-| [notebook](outputs.tf#L20) | Vertex AI notebook details. |  |
-| [project](outputs.tf#L28) | Project id |  |
-| [vpc](outputs.tf#L33) | VPC Network |  |
+| [dataset](outputs.tf#L20) | GCS Bucket URL. |  |
+| [notebook](outputs.tf#L25) | Vertex AI notebook details. |  |
+| [project](outputs.tf#L33) | Project id |  |
+| [vpc](outputs.tf#L38) | VPC Network |  |
 
 <!-- END TFDOC -->
