@@ -37,6 +37,7 @@ locals {
     containerregistry = "service-%s@containerregistry"
     dataflow          = "service-%s@dataflow-service-producer-prod"
     dataproc          = "service-%s@dataproc-accounts"
+    fleet             = "service-%s@gcp-sa-gkehub"
     gae-flex          = "service-%s@gae-api-prod"
     # TODO: deprecate gcf
     gcf                      = "service-%s@gcf-admin-robot"

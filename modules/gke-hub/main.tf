@@ -55,9 +55,17 @@ resource "google_gke_hub_feature" "mcs" {
   location = "global"
 }
 
+resource "google_gke_hub_feature" "servicemesh" {
+  provider = google-beta
+  for_each = var.features.servicemesh ? { 1 = 1 } : {}
+  project  = var.project_id
+  name     = "servicemesh"
+  location = "global"
+}
+
 resource "google_gke_hub_feature_membership" "feature_member" {
   provider   = google-beta
-  for_each   = var.member_clusters
+  for_each   = var.features.configmanagement ? var.member_clusters : {}
   project    = var.project_id
   location   = "global"
   feature    = google_gke_hub_feature.configmanagement["1"].name

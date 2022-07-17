@@ -20,11 +20,13 @@ variable "features" {
     configmanagement    = bool
     mc_ingress          = bool
     mc_servicediscovery = bool
+    servicemesh         = bool
   })
   default = {
     configmanagement    = true
     mc_ingress          = false
     mc_servicediscovery = false
+    servicemesh         = false
   }
   nullable = false
 }
