@@ -14,6 +14,14 @@
 
 # tfdoc:file:description Terraform Variables.
 
+variable "automation" {
+  # tfdoc:variable:source 00-bootstrap
+  description = "Automation resources created by the bootstrap stage."
+  type = object({
+    outputs_bucket = string
+  })
+}
+
 variable "billing_account" {
   # tfdoc:variable:source 00-globals
   description = "Billing account id and organization id ('nnnnnnnn' or null)."
@@ -33,6 +41,17 @@ variable "composer_config" {
     node_count      = 3
     airflow_version = "composer-1.17.5-airflow-2.1.4"
     env_variables   = {}
+  }
+}
+
+variable "data_catalog_tags" {
+  description = "List of Data Catalog Policy tags to be created with optional IAM binging configuration in {tag => {ROLE => [MEMBERS]}} format."
+  type        = map(map(list(string)))
+  nullable    = false
+  default = {
+    "3_Confidential" = null
+    "2_Private"      = null
+    "1_Sensitive"    = null
   }
 }
 
@@ -66,6 +85,12 @@ variable "host_project_ids" {
   type = object({
     dev-spoke-0 = string
   })
+}
+
+variable "location" {
+  description = "Location used for multi-regional resources."
+  type        = string
+  default     = "eu"
 }
 
 variable "network_config_composer" {

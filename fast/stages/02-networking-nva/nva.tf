@@ -58,8 +58,7 @@ module "nva-template-ew1" {
   options = {
     allow_stopping_for_update = true
     deletion_protection       = false
-    # Creates preemptible instances, cheaper than regular one. Only suitable for testing.
-    preemptible = true
+    spot                      = true
   }
   metadata = {
     startup-script = templatefile(

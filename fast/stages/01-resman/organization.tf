@@ -18,16 +18,23 @@
 
 
 locals {
-  # set to the empty list if you remove the data platform branch
-  branch_dataplatform_sa_iam_emails = [
-    module.branch-dp-dev-sa.iam_email,
-    module.branch-dp-prod-sa.iam_email
-  ]
+  branch_dataplatform_sa_iam_emails = (
+    var.fast_features.data_platform
+    ? [
+      module.branch-dp-dev-sa.0.iam_email,
+      module.branch-dp-prod-sa.0.iam_email
+    ]
+    : []
+  )
   # set to the empty list if you remove the teams branch
-  branch_teams_pf_sa_iam_emails = [
-    module.branch-teams-dev-pf-sa.iam_email,
-    module.branch-teams-prod-pf-sa.iam_email
-  ]
+  branch_teams_pf_sa_iam_emails = (
+    var.fast_features.project_factory
+    ? [
+      module.branch-pf-dev-sa.0.iam_email,
+      module.branch-pf-prod-sa.0.iam_email
+    ]
+    : []
+  )
   list_allow = {
     inherit_from_parent = false
     suggested_value     = null
@@ -82,29 +89,29 @@ module "organization" {
   )
   # sample subset of useful organization policies, edit to suit requirements
   policy_boolean = {
-    "constraints/cloudfunctions.requireVPCConnector"              = true
-    "constraints/compute.disableGuestAttributesAccess"            = true
-    "constraints/compute.disableInternetNetworkEndpointGroup"     = true
-    "constraints/compute.disableNestedVirtualization"             = true
-    "constraints/compute.disableSerialPortAccess"                 = true
-    "constraints/compute.requireOsLogin"                          = true
-    "constraints/compute.restrictXpnProjectLienRemoval"           = true
-    "constraints/compute.skipDefaultNetworkCreation"              = true
-    "constraints/compute.setNewProjectDefaultToZonalDNSOnly"      = true
+    # "constraints/cloudfunctions.requireVPCConnector"              = true
+    # "constraints/compute.disableGuestAttributesAccess" = true
+    # "constraints/compute.disableInternetNetworkEndpointGroup"     = true
+    # "constraints/compute.disableNestedVirtualization"             = true
+    # "constraints/compute.disableSerialPortAccess"                 = true
+    "constraints/compute.requireOsLogin" = true
+    # "constraints/compute.restrictXpnProjectLienRemoval"           = true
+    "constraints/compute.skipDefaultNetworkCreation" = true
+    # "constraints/compute.setNewProjectDefaultToZonalDNSOnly"      = true
     "constraints/iam.automaticIamGrantsForDefaultServiceAccounts" = true
     "constraints/iam.disableServiceAccountKeyCreation"            = true
-    "constraints/iam.disableServiceAccountKeyUpload"              = true
-    "constraints/sql.restrictPublicIp"                            = true
-    "constraints/sql.restrictAuthorizedNetworks"                  = true
-    "constraints/storage.uniformBucketLevelAccess"                = true
+    # "constraints/iam.disableServiceAccountKeyUpload"              = true
+    "constraints/sql.restrictPublicIp"             = true
+    "constraints/sql.restrictAuthorizedNetworks"   = true
+    "constraints/storage.uniformBucketLevelAccess" = true
   }
   policy_list = {
-    "constraints/cloudfunctions.allowedIngressSettings" = merge(
-      local.list_allow, { values = ["is:ALLOW_INTERNAL_ONLY"] }
-    )
-    "constraints/cloudfunctions.allowedVpcConnectorEgressSettings" = merge(
-      local.list_allow, { values = ["is:PRIVATE_RANGES_ONLY"] }
-    )
+    # "constraints/cloudfunctions.allowedIngressSettings" = merge(
+    #   local.list_allow, { values = ["is:ALLOW_INTERNAL_ONLY"] }
+    # )
+    # "constraints/cloudfunctions.allowedVpcConnectorEgressSettings" = merge(
+    #   local.list_allow, { values = ["is:PRIVATE_RANGES_ONLY"] }
+    # )
     "constraints/compute.restrictLoadBalancerCreationForTypes" = merge(
       local.list_allow, { values = ["in:INTERNAL"] }
     )
@@ -119,9 +126,9 @@ module "organization" {
     "constraints/run.allowedIngress" = merge(
       local.list_allow, { values = ["is:internal"] }
     )
-    "constraints/run.allowedVPCEgress" = merge(
-      local.list_allow, { values = ["is:private-ranges-only"] }
-    )
+    # "constraints/run.allowedVPCEgress" = merge(
+    #   local.list_allow, { values = ["is:private-ranges-only"] }
+    # )
     # "constraints/compute.restrictCloudNATUsage"                      = local.list_deny
     # "constraints/compute.restrictDedicatedInterconnectUsage"         = local.list_deny
     # "constraints/compute.restrictPartnerInterconnectUsage"           = local.list_deny
@@ -137,9 +144,21 @@ module "organization" {
     #   status              = true
     #   values              = local.allowed_regions
     # }
+    # https://cloud.google.com/iam/docs/manage-workload-identity-pools-providers#restrict
+    # "constraints/iam.workloadIdentityPoolProviders" = merge(
+    #   local.list_allow, { values = [
+    #     for k, v in coalesce(var.automation.federated_identity_providers, {}) :
+    #     v.issuer_uri
+    #   ] }
+    # )
+    # "constraints/iam.workloadIdentityPoolAwsAccounts" = merge(
+    #   local.list_allow, { values = [
+    #
+    #   ] }
+    # )
   }
   tags = {
-    context = {
+    (var.tag_names.context) = {
       description = "Resource management context."
       iam         = {}
       values = {
@@ -151,7 +170,7 @@ module "organization" {
         teams      = null
       }
     }
-    environment = {
+    (var.tag_names.environment) = {
       description = "Environment definition."
       iam         = {}
       values = {
@@ -164,24 +183,40 @@ module "organization" {
 
 # organization policy admin role assigned with a condition on tags
 
-resource "google_organization_iam_member" "org_policy_admin" {
-  for_each = {
-    data-dev  = ["data", "development", module.branch-dp-dev-sa.iam_email]
-    data-prod = ["data", "production", module.branch-dp-prod-sa.iam_email]
-    pf-dev    = ["teams", "development", module.branch-teams-dev-pf-sa.iam_email]
-    pf-prod   = ["teams", "production", module.branch-teams-prod-pf-sa.iam_email]
+resource "google_organization_iam_member" "org_policy_admin_dp" {
+  for_each = !var.fast_features.data_platform ? {} : {
+    data-dev  = ["data", "development", module.branch-dp-dev-sa.0.iam_email]
+    data-prod = ["data", "production", module.branch-dp-prod-sa.0.iam_email]
   }
   org_id = var.organization.id
   role   = "roles/orgpolicy.policyAdmin"
   member = each.value.2
   condition {
-    title       = "org_policy_tag_scoped"
+    title       = "org_policy_tag_dp_scoped"
     description = "Org policy tag scoped grant for ${each.value.0}/${each.value.1}."
     expression  = <<-END
-    resource.matchTag('${var.organization.id}/context', '${each.value.0}')
+    resource.matchTag('${var.organization.id}/${var.tag_names.context}', '${each.value.0}')
     &&
-    resource.matchTag('${var.organization.id}/environment', '${each.value.1}')
+    resource.matchTag('${var.organization.id}/${var.tag_names.environment}', '${each.value.1}')
     END
   }
 }
 
+resource "google_organization_iam_member" "org_policy_admin_pf" {
+  for_each = !var.fast_features.project_factory ? {} : {
+    pf-dev  = ["teams", "development", module.branch-pf-dev-sa.0.iam_email]
+    pf-prod = ["teams", "production", module.branch-pf-prod-sa.0.iam_email]
+  }
+  org_id = var.organization.id
+  role   = "roles/orgpolicy.policyAdmin"
+  member = each.value.2
+  condition {
+    title       = "org_policy_tag_pf_scoped"
+    description = "Org policy tag scoped grant for ${each.value.0}/${each.value.1}."
+    expression  = <<-END
+    resource.matchTag('${var.organization.id}/${var.tag_names.context}', '${each.value.0}')
+    &&
+    resource.matchTag('${var.organization.id}/${var.tag_names.environment}', '${each.value.1}')
+    END
+  }
+}

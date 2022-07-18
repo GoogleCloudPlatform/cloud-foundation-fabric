@@ -144,8 +144,7 @@ healthchecks:
 
 | name | description | sensitive |
 |---|---|:---:|
-| [admin_ranges](outputs.tf#L17) | Admin ranges data.
-  value = {    enabled = length(var.admin_ranges) > 0    ranges  = join(",", var.admin_ranges)  } |  |
+| [admin_ranges](outputs.tf#L17) | Admin ranges data. |  |
 | [custom_egress_allow_rules](outputs.tf#L26) | Custom egress rules with allow blocks. |  |
 | [custom_egress_deny_rules](outputs.tf#L34) | Custom egress rules with allow blocks. |  |
 | [custom_ingress_allow_rules](outputs.tf#L42) | Custom ingress rules with allow blocks. |  |

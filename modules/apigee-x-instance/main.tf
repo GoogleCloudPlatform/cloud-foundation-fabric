@@ -20,6 +20,7 @@ resource "google_apigee_instance" "apigee_instance" {
   location                 = var.region
   ip_range                 = var.ip_range
   disk_encryption_key_name = var.disk_encryption_key
+  consumer_accept_list     = var.consumer_accept_list
 }
 
 resource "google_apigee_instance_attachment" "apigee_instance_attchment" {

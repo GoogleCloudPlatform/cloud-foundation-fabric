@@ -186,18 +186,19 @@ Below an example for an access level that allows unconditional ingress from a se
 # terraform.tfvars
 
 vpc_sc_access_levels = {
-  on-prem = {
+  onprem = {
+    combining_function = null,
     conditions = [{
-      ip_subnetworks = ["10.0.0.0/24", "10.0.0.1/24"],
-      combining_function = null, members = null, negate = null,
+      ip_subnetworks = ["101.101.101.0/24"],
+      members = null, negate = null,
       regions = null, required_access_levels = null
     }]
   }
 }
 vpc_sc_perimeter_access_levels = {
   dev     = null
-  landing = ["on-prem"]
-  prod    = ["on-prem"]
+  landing = ["onprem"]
+  prod    = ["onprem"]
 }
 ```
 
@@ -277,7 +278,7 @@ Some references that might be useful in setting up this stage:
 | [core-dev.tf](./core-dev.tf) | None | <code>kms</code> · <code>project</code> | <code>google_project_iam_member</code> |
 | [core-prod.tf](./core-prod.tf) | None | <code>kms</code> · <code>project</code> | <code>google_project_iam_member</code> |
 | [main.tf](./main.tf) | Module-level locals and resources. |  |  |
-| [outputs.tf](./outputs.tf) | Module outputs. |  | <code>local_file</code> |
+| [outputs.tf](./outputs.tf) | Module outputs. |  | <code>google_storage_bucket_object</code> · <code>local_file</code> |
 | [variables.tf](./variables.tf) | Module variables. |  |  |
 | [vpc-sc.tf](./vpc-sc.tf) | None | <code>vpc-sc</code> |  |
 
@@ -285,29 +286,30 @@ Some references that might be useful in setting up this stage:
 
 | name | description | type | required | default | producer |
 |---|---|:---:|:---:|:---:|:---:|
-| [billing_account](variables.tf#L17) | Billing account id and organization id ('nnnnnnnn' or null). | <code title="object&#40;&#123;&#10;  id              &#61; string&#10;  organization_id &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>00-bootstrap</code> |
-| [folder_ids](variables.tf#L26) | Folder name => id mappings, the 'security' folder name must exist. | <code title="object&#40;&#123;&#10;  security &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>01-resman</code> |
-| [organization](variables.tf#L81) | Organization details. | <code title="object&#40;&#123;&#10;  domain      &#61; string&#10;  id          &#61; number&#10;  customer_id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>00-bootstrap</code> |
-| [prefix](variables.tf#L97) | Prefix used for resources that need unique names. Use 9 characters or less. | <code>string</code> | ✓ |  | <code>00-bootstrap</code> |
-| [service_accounts](variables.tf#L72) | Automation service accounts that can assign the encrypt/decrypt roles on keys. | <code title="object&#40;&#123;&#10;  project-factory-dev  &#61; string&#10;  project-factory-prod &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>01-resman</code> |
-| [groups](variables.tf#L34) | Group names to grant organization-level permissions. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  gcp-billing-admins      &#61; &#34;gcp-billing-admins&#34;,&#10;  gcp-devops              &#61; &#34;gcp-devops&#34;,&#10;  gcp-network-admins      &#61; &#34;gcp-network-admins&#34;&#10;  gcp-organization-admins &#61; &#34;gcp-organization-admins&#34;&#10;  gcp-security-admins     &#61; &#34;gcp-security-admins&#34;&#10;  gcp-support             &#61; &#34;gcp-support&#34;&#10;&#125;">&#123;&#8230;&#125;</code> | <code>00-bootstrap</code> |
-| [kms_defaults](variables.tf#L49) | Defaults used for KMS keys. | <code title="object&#40;&#123;&#10;  locations       &#61; list&#40;string&#41;&#10;  rotation_period &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  locations       &#61; &#91;&#34;europe&#34;, &#34;europe-west1&#34;, &#34;europe-west3&#34;, &#34;global&#34;&#93;&#10;  rotation_period &#61; &#34;7776000s&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
-| [kms_keys](variables.tf#L61) | KMS keys to create, keyed by name. Null attributes will be interpolated with defaults. | <code title="map&#40;object&#40;&#123;&#10;  iam             &#61; map&#40;list&#40;string&#41;&#41;&#10;  labels          &#61; map&#40;string&#41;&#10;  locations       &#61; list&#40;string&#41;&#10;  rotation_period &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [outputs_location](variables.tf#L91) | Path where providers, tfvars files, and lists for the following stages are written. Leave empty to disable. | <code>string</code> |  | <code>null</code> |  |
-| [vpc_sc_access_levels](variables.tf#L108) | VPC SC access level definitions. | <code title="map&#40;object&#40;&#123;&#10;  combining_function &#61; string&#10;  conditions &#61; list&#40;object&#40;&#123;&#10;    ip_subnetworks         &#61; list&#40;string&#41;&#10;    members                &#61; list&#40;string&#41;&#10;    negate                 &#61; bool&#10;    regions                &#61; list&#40;string&#41;&#10;    required_access_levels &#61; list&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [vpc_sc_egress_policies](variables.tf#L123) | VPC SC egress policy defnitions. | <code title="map&#40;object&#40;&#123;&#10;  egress_from &#61; object&#40;&#123;&#10;    identity_type &#61; string&#10;    identities    &#61; list&#40;string&#41;&#10;  &#125;&#41;&#10;  egress_to &#61; object&#40;&#123;&#10;    operations &#61; list&#40;object&#40;&#123;&#10;      method_selectors &#61; list&#40;string&#41;&#10;      service_name     &#61; string&#10;    &#125;&#41;&#41;&#10;    resources &#61; list&#40;string&#41;&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [vpc_sc_ingress_policies](variables.tf#L141) | VPC SC ingress policy defnitions. | <code title="map&#40;object&#40;&#123;&#10;  ingress_from &#61; object&#40;&#123;&#10;    identity_type        &#61; string&#10;    identities           &#61; list&#40;string&#41;&#10;    source_access_levels &#61; list&#40;string&#41;&#10;    source_resources     &#61; list&#40;string&#41;&#10;  &#125;&#41;&#10;  ingress_to &#61; object&#40;&#123;&#10;    operations &#61; list&#40;object&#40;&#123;&#10;      method_selectors &#61; list&#40;string&#41;&#10;      service_name     &#61; string&#10;    &#125;&#41;&#41;&#10;    resources &#61; list&#40;string&#41;&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
-| [vpc_sc_perimeter_access_levels](variables.tf#L161) | VPC SC perimeter access_levels. | <code title="object&#40;&#123;&#10;  dev     &#61; list&#40;string&#41;&#10;  landing &#61; list&#40;string&#41;&#10;  prod    &#61; list&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |  |
-| [vpc_sc_perimeter_egress_policies](variables.tf#L171) | VPC SC egress policies per perimeter, values reference keys defined in the `vpc_sc_ingress_policies` variable. | <code title="object&#40;&#123;&#10;  dev     &#61; list&#40;string&#41;&#10;  landing &#61; list&#40;string&#41;&#10;  prod    &#61; list&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |  |
-| [vpc_sc_perimeter_ingress_policies](variables.tf#L181) | VPC SC ingress policies per perimeter, values reference keys defined in the `vpc_sc_ingress_policies` variable. | <code title="object&#40;&#123;&#10;  dev     &#61; list&#40;string&#41;&#10;  landing &#61; list&#40;string&#41;&#10;  prod    &#61; list&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |  |
-| [vpc_sc_perimeter_projects](variables.tf#L191) | VPC SC perimeter resources. | <code title="object&#40;&#123;&#10;  dev     &#61; list&#40;string&#41;&#10;  landing &#61; list&#40;string&#41;&#10;  prod    &#61; list&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |  |
+| [automation](variables.tf#L17) | Automation resources created by the bootstrap stage. | <code title="object&#40;&#123;&#10;  outputs_bucket &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>00-bootstrap</code> |
+| [billing_account](variables.tf#L25) | Billing account id and organization id ('nnnnnnnn' or null). | <code title="object&#40;&#123;&#10;  id              &#61; string&#10;  organization_id &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>00-bootstrap</code> |
+| [folder_ids](variables.tf#L34) | Folder name => id mappings, the 'security' folder name must exist. | <code title="object&#40;&#123;&#10;  security &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>01-resman</code> |
+| [organization](variables.tf#L91) | Organization details. | <code title="object&#40;&#123;&#10;  domain      &#61; string&#10;  id          &#61; number&#10;  customer_id &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>00-bootstrap</code> |
+| [prefix](variables.tf#L107) | Prefix used for resources that need unique names. Use 9 characters or less. | <code>string</code> | ✓ |  | <code>00-bootstrap</code> |
+| [service_accounts](variables.tf#L80) | Automation service accounts that can assign the encrypt/decrypt roles on keys. | <code title="object&#40;&#123;&#10;  data-platform-dev    &#61; string&#10;  data-platform-prod   &#61; string&#10;  project-factory-dev  &#61; string&#10;  project-factory-prod &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  | <code>01-resman</code> |
+| [groups](variables.tf#L42) | Group names to grant organization-level permissions. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  gcp-billing-admins      &#61; &#34;gcp-billing-admins&#34;,&#10;  gcp-devops              &#61; &#34;gcp-devops&#34;,&#10;  gcp-network-admins      &#61; &#34;gcp-network-admins&#34;&#10;  gcp-organization-admins &#61; &#34;gcp-organization-admins&#34;&#10;  gcp-security-admins     &#61; &#34;gcp-security-admins&#34;&#10;  gcp-support             &#61; &#34;gcp-support&#34;&#10;&#125;">&#123;&#8230;&#125;</code> | <code>00-bootstrap</code> |
+| [kms_defaults](variables.tf#L57) | Defaults used for KMS keys. | <code title="object&#40;&#123;&#10;  locations       &#61; list&#40;string&#41;&#10;  rotation_period &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  locations       &#61; &#91;&#34;europe&#34;, &#34;europe-west1&#34;, &#34;europe-west3&#34;, &#34;global&#34;&#93;&#10;  rotation_period &#61; &#34;7776000s&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |  |
+| [kms_keys](variables.tf#L69) | KMS keys to create, keyed by name. Null attributes will be interpolated with defaults. | <code title="map&#40;object&#40;&#123;&#10;  iam             &#61; map&#40;list&#40;string&#41;&#41;&#10;  labels          &#61; map&#40;string&#41;&#10;  locations       &#61; list&#40;string&#41;&#10;  rotation_period &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [outputs_location](variables.tf#L101) | Path where providers, tfvars files, and lists for the following stages are written. Leave empty to disable. | <code>string</code> |  | <code>null</code> |  |
+| [vpc_sc_access_levels](variables.tf#L118) | VPC SC access level definitions. | <code title="map&#40;object&#40;&#123;&#10;  combining_function &#61; string&#10;  conditions &#61; list&#40;object&#40;&#123;&#10;    ip_subnetworks         &#61; list&#40;string&#41;&#10;    members                &#61; list&#40;string&#41;&#10;    negate                 &#61; bool&#10;    regions                &#61; list&#40;string&#41;&#10;    required_access_levels &#61; list&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [vpc_sc_egress_policies](variables.tf#L133) | VPC SC egress policy defnitions. | <code title="map&#40;object&#40;&#123;&#10;  egress_from &#61; object&#40;&#123;&#10;    identity_type &#61; string&#10;    identities    &#61; list&#40;string&#41;&#10;  &#125;&#41;&#10;  egress_to &#61; object&#40;&#123;&#10;    operations &#61; list&#40;object&#40;&#123;&#10;      method_selectors &#61; list&#40;string&#41;&#10;      service_name     &#61; string&#10;    &#125;&#41;&#41;&#10;    resources &#61; list&#40;string&#41;&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [vpc_sc_ingress_policies](variables.tf#L151) | VPC SC ingress policy defnitions. | <code title="map&#40;object&#40;&#123;&#10;  ingress_from &#61; object&#40;&#123;&#10;    identity_type        &#61; string&#10;    identities           &#61; list&#40;string&#41;&#10;    source_access_levels &#61; list&#40;string&#41;&#10;    source_resources     &#61; list&#40;string&#41;&#10;  &#125;&#41;&#10;  ingress_to &#61; object&#40;&#123;&#10;    operations &#61; list&#40;object&#40;&#123;&#10;      method_selectors &#61; list&#40;string&#41;&#10;      service_name     &#61; string&#10;    &#125;&#41;&#41;&#10;    resources &#61; list&#40;string&#41;&#10;  &#125;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |  |
+| [vpc_sc_perimeter_access_levels](variables.tf#L171) | VPC SC perimeter access_levels. | <code title="object&#40;&#123;&#10;  dev     &#61; list&#40;string&#41;&#10;  landing &#61; list&#40;string&#41;&#10;  prod    &#61; list&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |  |
+| [vpc_sc_perimeter_egress_policies](variables.tf#L181) | VPC SC egress policies per perimeter, values reference keys defined in the `vpc_sc_ingress_policies` variable. | <code title="object&#40;&#123;&#10;  dev     &#61; list&#40;string&#41;&#10;  landing &#61; list&#40;string&#41;&#10;  prod    &#61; list&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |  |
+| [vpc_sc_perimeter_ingress_policies](variables.tf#L191) | VPC SC ingress policies per perimeter, values reference keys defined in the `vpc_sc_ingress_policies` variable. | <code title="object&#40;&#123;&#10;  dev     &#61; list&#40;string&#41;&#10;  landing &#61; list&#40;string&#41;&#10;  prod    &#61; list&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |  |
+| [vpc_sc_perimeter_projects](variables.tf#L201) | VPC SC perimeter resources. | <code title="object&#40;&#123;&#10;  dev     &#61; list&#40;string&#41;&#10;  landing &#61; list&#40;string&#41;&#10;  prod    &#61; list&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |  |
 
 ## Outputs
 
 | name | description | sensitive | consumers |
 |---|---|:---:|---|
-| [kms_keys](outputs.tf#L53) | KMS key ids. |  |  |
-| [stage_perimeter_projects](outputs.tf#L58) | Security project numbers. They can be added to perimeter resources. |  |  |
-| [tfvars](outputs.tf#L68) | Terraform variable files for the following stages. | ✓ |  |
+| [kms_keys](outputs.tf#L59) | KMS key ids. |  |  |
+| [stage_perimeter_projects](outputs.tf#L64) | Security project numbers. They can be added to perimeter resources. |  |  |
+| [tfvars](outputs.tf#L74) | Terraform variable files for the following stages. | ✓ |  |
 
 <!-- END TFDOC -->

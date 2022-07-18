@@ -27,8 +27,10 @@ variable "addons" {
     })
     network_policy_config                 = bool
     gce_persistent_disk_csi_driver_config = bool
+    gcp_filestore_csi_driver_config       = bool
     config_connector_config               = bool
     kalm_config                           = bool
+    gke_backup_agent_config               = bool
   })
   default = {
     cloudrun_config            = false
@@ -41,8 +43,10 @@ variable "addons" {
     }
     network_policy_config                 = false
     gce_persistent_disk_csi_driver_config = false
+    gcp_filestore_csi_driver_config       = false
     config_connector_config               = false
     kalm_config                           = false
+    gke_backup_agent_config               = false
   }
 }
 
@@ -103,11 +107,7 @@ variable "dns_config" {
     cluster_dns_scope  = string
     cluster_dns_domain = string
   })
-  default = {
-    cluster_dns        = "PROVIDER_UNSPECIFIED"
-    cluster_dns_scope  = "DNS_SCOPE_UNSPECIFIED"
-    cluster_dns_domain = ""
-  }
+  default = null
 }
 
 variable "enable_autopilot" {

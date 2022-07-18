@@ -1,0 +1,157 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+default:
+  image:
+    name: registry.gitlab.com/gitlab-org/terraform-images/releases/1.1
+  before_script:
+    - |
+      ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+      echo "$CICD_MODULES_KEY" | base64 -d | tr -d '\r' | ssh-add - > /dev/null
+      mkdir -p ~/.ssh
+      ssh-keyscan -H 'gitlab.com' >> ~/.ssh/known_hosts
+      ssh-keyscan gitlab.com | sort -u - ~/.ssh/known_hosts -o ~/.ssh/known_hosts
+      cd "$${TF_ROOT}"
+      cp -R .tf-setup/. .
+
+variables:
+  FAST_OUTPUTS_BUCKET: ${outputs_bucket}
+  FAST_SERVICE_ACCOUNT: ${service_account}
+  FAST_WIF_PROVIDER: ${identity_provider}
+  SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+  TF_PROVIDERS_FILE: ${tf_providers_file}
+  TF_VAR_FILES: ${tf_var_files == [] ? "''" : join("\n    ", tf_var_files)}
+  TF_VERSION: 1.1.7
+  TF_ROOT: $${CI_PROJECT_DIR}  # The relative path to the root directory of the Terraform project
+
+stages:
+  - gcp-auth
+  - tf-setup
+  - tf-init
+  - tf-validate
+  - tf-plan
+  - tf-apply
+
+cache:
+  key: "$${TF_ROOT}"
+  paths:
+    - $${TF_ROOT}/.terraform/
+    - $${TF_ROOT}/.tf-setup/
+
+# Configure GCP Auth with Access Token
+gcp-auth:
+  stage: gcp-auth
+  before_script: []
+  script:
+    - |
+      PAYLOAD="$(cat <<EOF
+      {
+        "audience": "//iam.googleapis.com/$${FAST_WIF_PROVIDER}",
+        "grantType": "urn:ietf:params:oauth:grant-type:token-exchange",
+        "requestedTokenType": "urn:ietf:params:oauth:token-type:access_token",
+        "scope": "https://www.googleapis.com/auth/cloud-platform",
+        "subjectTokenType": "urn:ietf:params:oauth:token-type:jwt",
+        "subjectToken": "$${CI_JOB_JWT_V2}"
+      }
+      EOF
+      )"
+
+      FEDERATED_TOKEN="$(curl --silent "https://sts.googleapis.com/v1/token" \
+        --header "Accept: application/json" \
+        --header "Content-Type: application/json" \
+        --data "$${PAYLOAD}" \
+        | jq -r '.access_token'
+      )"
+
+      GOOGLE_OAUTH_ACCESS_TOKEN="$(curl --silent --show-error --fail "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/$${FAST_SERVICE_ACCOUNT}:generateAccessToken" \
+        --header "Accept: application/json" \
+        --header "Content-Type: application/json" \
+        --header "Authorization: Bearer $${FEDERATED_TOKEN}" \
+        --data '{"scope": ["https://www.googleapis.com/auth/cloud-platform"]}' \
+        | jq -r '.accessToken'
+      )"
+
+      echo "GOOGLE_OAUTH_ACCESS_TOKEN=$GOOGLE_OAUTH_ACCESS_TOKEN" >> gcp-auth.env
+
+      if [ -z "$GOOGLE_OAUTH_ACCESS_TOKEN" ]; then exit 1; fi
+# WIP - will have to find a better way of doing this
+  artifacts:
+    reports:
+      dotenv: gcp-auth.env
+
+# Downloading from bucket into cache
+tf-setup:
+  stage: tf-setup
+  before_script: []
+  script:
+    - |
+      mkdir -p .tf-setup
+      curl -X GET \
+        -H "Authorization: Bearer $GOOGLE_OAUTH_ACCESS_TOKEN" \
+        -o ".tf-setup/$${TF_PROVIDERS_FILE}" \
+        "https://storage.googleapis.com/$${FAST_OUTPUTS_BUCKET}/providers/$${TF_PROVIDERS_FILE}"
+      for f in $TF_VAR_FILES; do
+        curl -X GET \
+          -H "Authorization: Bearer $GOOGLE_OAUTH_ACCESS_TOKEN" \
+          -o ".tf-setup/$f" \
+          "https://storage.googleapis.com/$${FAST_OUTPUTS_BUCKET}/tfvars/$f"
+      done
+  dependencies:
+    - gcp-auth
+
+# Terraform Init
+tf-init:
+  stage: tf-init
+  script:
+    - |
+      gitlab-terraform init
+  dependencies:
+    - gcp-auth
+
+# Terraform Validate
+tf-validate:
+  stage: tf-validate
+  script:
+    - |
+      gitlab-terraform validate
+  dependencies:
+    - gcp-auth
+
+# Terraform Plan
+tf-plan:
+  stage: tf-plan
+  script:
+  - |
+    gitlab-terraform plan
+    gitlab-terraform plan-json
+  dependencies:
+    - gcp-auth
+  artifacts:
+    paths:
+      - $${TF_ROOT}/plan.cache
+    reports:
+      terraform: $${TF_ROOT}/plan.json
+
+# Terraform Apply
+tf-apply:
+  stage: tf-apply
+  script:
+    - cd "$${TF_ROOT}"
+    - gitlab-terraform apply
+  when: manual
+  only:
+    variables:
+      - $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+  dependencies:
+    - gcp-auth

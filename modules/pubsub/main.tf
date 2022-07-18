@@ -36,10 +36,11 @@ locals {
 }
 
 resource "google_pubsub_topic" "default" {
-  project      = var.project_id
-  name         = var.name
-  kms_key_name = var.kms_key
-  labels       = var.labels
+  project                    = var.project_id
+  name                       = var.name
+  kms_key_name               = var.kms_key
+  labels                     = var.labels
+  message_retention_duration = var.message_retention_duration
 
   dynamic "message_storage_policy" {
     for_each = length(var.regions) > 0 ? [var.regions] : []
@@ -66,6 +67,7 @@ resource "google_pubsub_subscription" "default" {
   ack_deadline_seconds       = each.value.options.ack_deadline_seconds
   message_retention_duration = each.value.options.message_retention_duration
   retain_acked_messages      = each.value.options.retain_acked_messages
+  filter                     = each.value.options.filter
 
   dynamic "expiration_policy" {
     for_each = each.value.options.expiration_policy_ttl == null ? [] : [""]

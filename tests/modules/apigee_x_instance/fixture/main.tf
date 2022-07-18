@@ -25,4 +25,8 @@ module "apigee-x-instance" {
     "eval1",
     "eval2"
   ]
+  consumer_accept_list = [
+    "project1",
+    "project2"
+  ]
 }

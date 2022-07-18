@@ -1,4 +1,6 @@
 click
+deepdiff
 marko
+requests
 yamale
 yapf

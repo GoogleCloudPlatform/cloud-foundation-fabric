@@ -27,9 +27,9 @@ The code in this example doesn't address Organization-level configurations (Orga
 
 The Data Platform is designed to rely on several projects, one project per data stage. The stages identified are:
 
-- landing
+- drop off
 - load
-- data lake
+- data warehouse
 - orchestration
 - transformation
 - exposure
@@ -38,15 +38,15 @@ This separation into projects allows adhering to the least-privilege principle b
 
 The script will create the following projects:
 
-- **Landing** Used to store temporary data. Data is pushed to Cloud Storage, BigQuery, or Cloud PubSub. Resources are configured with a customizable lifecycle policy.
-- **Load** Used to load data from landing to data lake. The load is made with minimal to zero transformation logic (mainly `cast`). Anonymization or tokenization of Personally Identifiable Information (PII) can be implemented here or in the transformation stage, depending on your requirements. The use of [Cloud Dataflow templates](https://cloud.google.com/dataflow/docs/concepts/dataflow-templates) is recommended.
-- **Data Lake** Several projects distributed across 3 separate layers, to host progressively processed and refined data:
-  - **L0 - Raw data** Structured Data, stored in relevant formats: structured data stored in BigQuery, unstructured data stored on Cloud Storage with additional metadata stored in BigQuery (for example pictures stored in Cloud Storage and analysis of the images for Cloud Vision API stored in BigQuery).
-  - **L1 - Cleansed, aggregated and standardized data**
-  - **L2 - Curated layer**
-  - **Playground** Temporary tables that Data Analyst may use to perform R&D on data available in other Data Lake layers.
+- **Drop off** Used to store temporary data. Data is pushed to Cloud Storage, BigQuery, or Cloud PubSub. Resources are configured with a customizable lifecycle policy.
+- **Load** Used to load data from the drop off zone to the data warehouse. The load is made with minimal to zero transformation logic (mainly `cast`). Anonymization or tokenization of Personally Identifiable Information (PII) can be implemented here or in the transformation stage, depending on your requirements. The use of [Cloud Dataflow templates](https://cloud.google.com/dataflow/docs/concepts/dataflow-templates) is recommended.
+- **Data Warehouse** Several projects distributed across 3 separate layers, to host progressively processed and refined data:
+  - **Landing - Raw data** Structured Data, stored in relevant formats: structured data stored in BigQuery, unstructured data stored on Cloud Storage with additional metadata stored in BigQuery (for example pictures stored in Cloud Storage and analysis of the images for Cloud Vision API stored in BigQuery).
+  - **Curated - Cleansed, aggregated and curated data**
+  - **Confidential - Curated and unencrypted layer**
+  - **Playground** Temporary tables that Data Analyst may use to perform R&D on data available in other Data Warehouse layers.
 - **Orchestration** Used to host Cloud Composer, which orchestrates all tasks that move data across layers.
-- **Transformation** Used to move data between Data Lake layers. We strongly suggest relying on BigQuery Engine to perform the transformations. If BigQuery doesn't have the features needed to perform your transformations, you can use Cloud Dataflow with [Cloud Dataflow templates](https://cloud.google.com/dataflow/docs/concepts/dataflow-templates). This stage can also optionally  anonymize or tokenize PII.
+- **Transformation** Used to move data between Data Warehouse layers. We strongly suggest relying on BigQuery Engine to perform the transformations. If BigQuery doesn't have the features needed to perform your transformations, you can use Cloud Dataflow with [Cloud Dataflow templates](https://cloud.google.com/dataflow/docs/concepts/dataflow-templates). This stage can also optionally  anonymize or tokenize PII.
 - **Exposure** Used to host resources that share processed data with external systems. Depending on the access pattern, data can be presented via Cloud SQL, BigQuery, or Bigtable. For BigQuery data, we strongly suggest relying on [Authorized views](https://cloud.google.com/bigquery/docs/authorized-views).
 
 ### Roles
@@ -57,9 +57,9 @@ We assign roles on resources at the project level, granting the appropriate role
 
 Service account creation follows the least privilege principle, performing a single task which requires access to a defined set of resources. The table below shows a high level overview of roles for each service account on each data layer, using `READ` or `WRITE` access patterns for simplicity. For detailed roles please refer to the code.
 
-|Service Account|Landing|DataLake L0|DataLake L1|DataLake L2|
+|Service Account|Drop off|DWH Landing|DWH Curated|DWH Confidential|
 |-|:-:|:-:|:-:|:-:|
-|`landing-sa`|`WRITE`|-|-|-|
+|`drop-sa`|`WRITE`|-|-|-|
 |`load-sa`|`READ`|`READ`/`WRITE`|-|-|
 |`transformation-sa`|-|`READ`/`WRITE`|`READ`/`WRITE`|`READ`/`WRITE`|
 |`orchestration-sa`|-|-|-|-|
@@ -75,12 +75,12 @@ User groups provide a stable frame of reference that allows decoupling the final
 We use three groups to control access to resources:
 
 - *Data Engineers* They handle and run the Data Hub, with read access to all resources in order to troubleshoot possible issues with pipelines. This team can also impersonate any service account.
-- *Data Analysts*. They perform analysis on datasets, with read access to the data lake L2 project, and BigQuery READ/WRITE access to the playground project.
+- *Data Analysts*. They perform analysis on datasets, with read access to the Data Warehouse Confidential project, and BigQuery READ/WRITE access to the playground project.
 - *Data Security*:. They handle security configurations related to the Data Hub. This team has admin access to the common project to configure Cloud DLP templates or Data Catalog policy tags.
 
 The table below shows a high level overview of roles for each group on each project, using `READ`, `WRITE` and `ADMIN` access patterns for simplicity. For detailed roles please refer to the code.
 
-|Group|Landing|Load|Transformation|Data Lake L0|Data Lake L1|Data Lake L2|Data Lake Playground|Orchestration|Common|
+|Group|Drop off|Load|Transformation|DHW Landing|DWH Curated|DWH Confidential|DWH Playground|Orchestration|Common|
 |-|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
 |Data Engineers|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|`ADMIN`|
 |Data Analysts|-|-|-|-|-|`READ`|`READ`/`WRITE`|-|-|
@@ -154,6 +154,19 @@ Cloud Data Loss Prevention resources and templates should be stored in the secur
 
 You can find more details and best practices on using DLP to De-identification and re-identification of PII in large-scale datasets in the [GCP documentation](https://cloud.google.com/architecture/de-identification-re-identification-pii-using-cloud-dlp).
 
+## Data Catalog
+
+[Data Catalog](https://cloud.google.com/data-catalog) helps you to document your data entry at scale. Data Catalog relies on [tags](https://cloud.google.com/data-catalog/docs/tags-and-tag-templates#tags) and [tag template](https://cloud.google.com/data-catalog/docs/tags-and-tag-templates#tag-templates) to manage metadata for all data entries in a unified and centralized service. To implement [column-level security](https://cloud.google.com/bigquery/docs/column-level-security-intro) on BigQuery, we suggest to use `Tags` and `Tag templates`.
+
+The default configuration will implement 3 tags:
+ - `3_Confidential`: policy tag for columns that include very sensitive information, such as credit card numbers.
+ - `2_Private`: policy tag for columns that include sensitive personal identifiable information (PII) information, such as a person's first name.
+ - `1_Sensitive`: policy tag for columns that include data that cannot be made public, such as the credit limit.
+
+Anything that is not tagged is available to all users who have access to the data warehouse.
+
+For the porpuse of the example no groups has access to tagged data. You can configure your tags and roles associated by configuring the `data_catalog_tags` variable. We suggest useing the "[Best practices for using policy tags in BigQuery](https://cloud.google.com/bigquery/docs/best-practices-policy-tags)" article as a guide to designing your tags structure and access pattern.
+
 ## How to run this script
 
 To deploy this example on your GCP organization, you will need
@@ -202,22 +215,15 @@ To create Cloud Key Management keys in the Data Platform you can uncomment the C
 
 ### Assign roles at BQ Dataset level
 
-To handle multiple groups of `data-analysts` accessing the same Data Lake layer projects but only to the dataset belonging to a specific group, you may want to assign roles at BigQuery dataset level instead of at project-level.
+To handle multiple groups of `data-analysts` accessing the same Data Warehouse layer projects but only to the dataset belonging to a specific group, you may want to assign roles at BigQuery dataset level instead of at project-level.
 To do this, you need to remove IAM binging at project-level for the `data-analysts` group and give roles at BigQuery dataset level using the `iam` variable on `bigquery-dataset` modules.
 
 ## Demo pipeline
 
-The application layer is out of scope of this script, but as a demo, it is provided with a Cloud Composer DAG to mode data from the `landing` area to the `DataLake L2` dataset.
+The application layer is out of scope of this script. As a demo purpuse only, several Cloud Composer DAGs are provided. Demos will import data from the `drop off` area to the `Data Warehouse Confidential` dataset suing different features. 
 
-Just follow the commands you find in the `demo_commands` Terraform output, go in the Cloud Composer UI and run the `data_pipeline_dag`.
+You can find examples in the `[demo](./demo)` folder.
 
-Description of commands:
-
-- 01: copy sample data to a `landing` Cloud Storage bucket impersonating the `load` service account.
-- 02: copy sample data structure definition in the `orchestration` Cloud Storage bucket impersonating the `orchestration` service account.
-- 03: copy the Cloud Composer DAG to the Cloud Composer Storage bucket impersonating the `orchestration` service account.
-- 04: Open the Cloud Composer Airflow UI and run the imported DAG.
-- 05: Run the BigQuery query to see results.
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -225,17 +231,18 @@ Description of commands:
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [billing_account_id](variables.tf#L17) | Billing account id. | <code>string</code> | ✓ |  |
-| [folder_id](variables.tf#L42) | Folder to be used for the networking resources in folders/nnnn format. | <code>string</code> | ✓ |  |
-| [organization_domain](variables.tf#L87) | Organization domain. | <code>string</code> | ✓ |  |
-| [prefix](variables.tf#L92) | Unique prefix used for resource names. | <code>string</code> | ✓ |  |
+| [folder_id](variables.tf#L53) | Folder to be used for the networking resources in folders/nnnn format. | <code>string</code> | ✓ |  |
+| [organization_domain](variables.tf#L98) | Organization domain. | <code>string</code> | ✓ |  |
+| [prefix](variables.tf#L103) | Unique prefix used for resource names. | <code>string</code> | ✓ |  |
 | [composer_config](variables.tf#L22) | Cloud Composer config. | <code title="object&#40;&#123;&#10;  node_count      &#61; number&#10;  airflow_version &#61; string&#10;  env_variables   &#61; map&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  node_count      &#61; 3&#10;  airflow_version &#61; &#34;composer-1.17.5-airflow-2.1.4&#34;&#10;  env_variables   &#61; &#123;&#125;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [data_force_destroy](variables.tf#L36) | Flag to set 'force_destroy' on data services like BiguQery or Cloud Storage. | <code>bool</code> |  | <code>false</code> |
-| [groups](variables.tf#L53) | User groups. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  data-analysts  &#61; &#34;gcp-data-analysts&#34;&#10;  data-engineers &#61; &#34;gcp-data-engineers&#34;&#10;  data-security  &#61; &#34;gcp-data-security&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [location](variables.tf#L47) | Location used for multi-regional resources. | <code>string</code> |  | <code>&#34;eu&#34;</code> |
-| [network_config](variables.tf#L63) | Shared VPC network configurations to use. If null networks will be created in projects with preconfigured values. | <code title="object&#40;&#123;&#10;  host_project      &#61; string&#10;  network_self_link &#61; string&#10;  subnet_self_links &#61; object&#40;&#123;&#10;    load           &#61; string&#10;    transformation &#61; string&#10;    orchestration  &#61; string&#10;  &#125;&#41;&#10;  composer_ip_ranges &#61; object&#40;&#123;&#10;    cloudsql   &#61; string&#10;    gke_master &#61; string&#10;    web_server &#61; string&#10;  &#125;&#41;&#10;  composer_secondary_ranges &#61; object&#40;&#123;&#10;    pods     &#61; string&#10;    services &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [project_services](variables.tf#L97) | List of core services enabled on all projects. | <code>list&#40;string&#41;</code> |  | <code title="&#91;&#10;  &#34;cloudresourcemanager.googleapis.com&#34;,&#10;  &#34;iam.googleapis.com&#34;,&#10;  &#34;serviceusage.googleapis.com&#34;,&#10;  &#34;stackdriver.googleapis.com&#34;&#10;&#93;">&#91;&#8230;&#93;</code> |
-| [project_suffix](variables.tf#L108) | Suffix used only for project ids. | <code>string</code> |  | <code>null</code> |
-| [region](variables.tf#L114) | Region used for regional resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [data_catalog_tags](variables.tf#L36) | List of Data Catalog Policy tags to be created with optional IAM binging configuration in {tag => {ROLE => [MEMBERS]}} format. | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code title="&#123;&#10;  &#34;3_Confidential&#34; &#61; null&#10;  &#34;2_Private&#34;      &#61; null&#10;  &#34;1_Sensitive&#34;    &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [data_force_destroy](variables.tf#L47) | Flag to set 'force_destroy' on data services like BiguQery or Cloud Storage. | <code>bool</code> |  | <code>false</code> |
+| [groups](variables.tf#L64) | User groups. | <code>map&#40;string&#41;</code> |  | <code title="&#123;&#10;  data-analysts  &#61; &#34;gcp-data-analysts&#34;&#10;  data-engineers &#61; &#34;gcp-data-engineers&#34;&#10;  data-security  &#61; &#34;gcp-data-security&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [location](variables.tf#L58) | Location used for multi-regional resources. | <code>string</code> |  | <code>&#34;eu&#34;</code> |
+| [network_config](variables.tf#L74) | Shared VPC network configurations to use. If null networks will be created in projects with preconfigured values. | <code title="object&#40;&#123;&#10;  host_project      &#61; string&#10;  network_self_link &#61; string&#10;  subnet_self_links &#61; object&#40;&#123;&#10;    load           &#61; string&#10;    transformation &#61; string&#10;    orchestration  &#61; string&#10;  &#125;&#41;&#10;  composer_ip_ranges &#61; object&#40;&#123;&#10;    cloudsql   &#61; string&#10;    gke_master &#61; string&#10;    web_server &#61; string&#10;  &#125;&#41;&#10;  composer_secondary_ranges &#61; object&#40;&#123;&#10;    pods     &#61; string&#10;    services &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [project_services](variables.tf#L108) | List of core services enabled on all projects. | <code>list&#40;string&#41;</code> |  | <code title="&#91;&#10;  &#34;cloudresourcemanager.googleapis.com&#34;,&#10;  &#34;iam.googleapis.com&#34;,&#10;  &#34;serviceusage.googleapis.com&#34;,&#10;  &#34;stackdriver.googleapis.com&#34;&#10;&#93;">&#91;&#8230;&#93;</code> |
+| [project_suffix](variables.tf#L119) | Suffix used only for project ids. | <code>string</code> |  | <code>null</code> |
+| [region](variables.tf#L125) | Region used for regional resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
 
 ## Outputs
 
@@ -254,13 +261,6 @@ Description of commands:
 
 Features to add in future releases:
 
-- Add support for Column level access on BigQuery
-- Add example templates for Data Catalog
 - Add example on how to use Cloud Data Loss Prevention
 - Add solution to handle Tables, Views, and Authorized Views lifecycle
 - Add solution to handle Metadata lifecycle
-
-## To Test/Fix
-
-- Composer require "Require OS Login" not enforced
-- External Shared-VPC

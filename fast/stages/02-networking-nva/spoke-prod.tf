@@ -40,7 +40,9 @@ module "prod-spoke-project" {
   }
   metric_scopes = [module.landing-project.project_id]
   iam = {
-    "roles/dns.admin" = [local.service_accounts.project-factory-prod]
+    "roles/dns.admin" = compact([
+      try(local.service_accounts.project-factory-prod, null)
+    ])
   }
 }
 
@@ -51,8 +53,8 @@ module "prod-spoke-vpc" {
   mtu                             = 1500
   data_folder                     = "${var.data_dir}/subnets/prod"
   delete_default_routes_on_create = true
-  psa_config                      = { prod = { ranges = values(var.psa_ranges.prod), routes = null } }
-  subnets_l7ilb                   = local.l7ilb_subnets.prod
+  psa_config                      = try(var.psa_ranges.prod, null)
+  subnets_proxy_only              = local.l7ilb_subnets.prod
   # Set explicit routes for googleapis; send everything else to NVAs
   routes = {
     private-googleapis = {
@@ -123,10 +125,10 @@ module "peering-prod" {
 resource "google_project_iam_binding" "prod_spoke_project_iam_delegated" {
   project = module.prod-spoke-project.project_id
   role    = "roles/resourcemanager.projectIamAdmin"
-  members = [
-    local.service_accounts.data-platform-prod,
-    local.service_accounts.project-factory-prod,
-  ]
+  members = compact([
+    try(local.service_accounts.data-platform-prod, null),
+    try(local.service_accounts.project-factory-prod, null),
+  ])
   condition {
     title       = "prod_stage3_sa_delegated_grants"
     description = "Production host project delegated grants."

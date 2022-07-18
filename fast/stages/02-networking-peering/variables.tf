@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
+variable "automation" {
+  # tfdoc:variable:source 00-bootstrap
+  description = "Automation resources created by the bootstrap stage."
+  type = object({
+    outputs_bucket = string
+  })
+}
+
 variable "billing_account" {
   # tfdoc:variable:source 00-bootstrap
   description = "Billing account id and organization id ('nnnnnnnn' or null)."
@@ -120,17 +128,39 @@ variable "prefix" {
 
 variable "psa_ranges" {
   description = "IP ranges used for Private Service Access (e.g. CloudSQL)."
-  type        = map(map(string))
-  default = {
-    prod = {
-      cloudsql-mysql     = "10.128.94.0/24"
-      cloudsql-sqlserver = "10.128.95.0/24"
-    }
-    dev = {
-      cloudsql-mysql     = "10.128.62.0/24"
-      cloudsql-sqlserver = "10.128.63.0/24"
-    }
-  }
+  type = object({
+    dev = object({
+      ranges = map(string)
+      routes = object({
+        export = bool
+        import = bool
+      })
+    })
+    prod = object({
+      ranges = map(string)
+      routes = object({
+        export = bool
+        import = bool
+      })
+    })
+  })
+  default = null
+  # default = {
+  #   dev = {
+  #     ranges = {
+  #       cloudsql-mysql     = "10.128.62.0/24"
+  #       cloudsql-sqlserver = "10.128.63.0/24"
+  #     }
+  #     routes = null
+  #   }
+  #   prod = {
+  #     ranges = {
+  #       cloudsql-mysql     = "10.128.94.0/24"
+  #       cloudsql-sqlserver = "10.128.95.0/24"
+  #     }
+  #     routes = null
+  #   }
+  # }
 }
 
 variable "router_onprem_configs" {

@@ -4,14 +4,67 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+- add support for IAM and Cloud Build triggers to source repository module
+- add `id` output to service account module
+- add support for secrets to cloud function module
+- new binary authorization module
+- add `consumer_accept_list` option to `apigee-x-instance` module
+- fix addons for GKE autopilot
+
+**FAST**
+
+- add support for Cloud Source Repositories in stage 0 and 1 CI/CD
+- fix Gitlab workflow indentation
+- remove unsupported attributes and add supported ones to the Gitlab mapping used for Workload Identity Federation pools
+- add roles for CI/CD source repositories to stage 1 service account on automation project
+- fixes to CI/CD source repositories in stage 1
+- implement feature flags for FAST
+
+## [16.0.0] - 2022-06-06
+
+- add support for [Spot VMs](https://cloud.google.com/compute/docs/instances/spot) to `gke-nodepool` module
+- **incompatible change** add support for [Spot VMs](https://cloud.google.com/compute/docs/instances/spot) to `compute-vm` module
+- SQL Server AlwaysOn availability groups example
+- fixed Terraform change detection in CloudSQL when backup is disabled
+- allow multiple CIDR blocks in the ip_range for Apigee Instance
+- add prefix to project factory SA bindings
+- **incompatible change** `subnets_l7ilb` variable is deprecated in the `net-vpc` module, instead `subnets_proxy_only` variable [should be used](https://cloud.google.com/load-balancing/docs/proxy-only-subnets#proxy_only_subnet_create)
+- add support for [Private Service Connect](https://cloud.google.com/vpc/docs/private-service-connect#psc-subnets) and [Proxy-only](https://cloud.google.com/load-balancing/docs/proxy-only-subnets) subnets to `net-vpc` module
+- bump Google provider versions to `>= 4.17.0`
+- bump Terraform version to `>= 1.1.0`
+- add `shielded_instance_config` support for instance template on `compute-vm` module
+- add support for `gke_backup_agent_config` to GKE module addons
+- add support for subscription filters to PubSub module
+- refactor Hub and Spoke with VPN example
+- fix tfdoc parsing on newllines in outputs
+- fix subnet factory example in vpc module README
+- fix condition in subnet factory flow logs
+- added new example on GLB and Cloud Armor
+- revamped and expanded Contributing Guide
+
+**FAST**
+
+- add support for Workload Identity Federation and CI/CD repositories
+- simplify VPN tunnel configuration in the Hub and Spoke VPN network stage
+- fix subnet YAML schema
+
+## [15.0.0] - 2022-04-05
+
+- **incompatible change** the variable for PSA ranges in the `net-vpc` module has changed to support configuring peering routes
 - fix permadiff in `net-vpc-firewall` module rules
 - new [gke-hub](modules/gke-hub) module
+- new [unmanaged-instances-healthcheck](examples/cloud-operations/unmanaged-instances-healthcheck) example
 - add support for IAM to `data-catalog-policy-tag` module
 - add support for IAM additive to `folder` module, fixes #580
+- optionally turn off gcplogs driver in COS modules
+- fix `tag` output on `data-catalog-policy-tag` module
+- add shared-vpc support on `gcs-to-bq-with-least-privileges`
+- new `net-ilb-l7` module
 
 **FAST**
 
 - new [02-networking-peering](fast/stages/02-networking-peering) networking stage
+- **incompatible change** the variable for PSA ranges in networking stages have changed
 
 ## [14.0.0] - 2022-02-25
 
@@ -23,7 +76,7 @@ All notable changes to this project will be documented in this file.
 - **incompatible change** the variable for service identities IAM has changed in the project factory
 - add `data-catalog-policy-tag` module
 - new [workload identity federetion example](examples/cloud-operations/workload-identity-federation)
-- new `api-gateway` [module](/modules/api-gateway) and [example](examples/serverless/api-gateway).
+- new `api-gateway` [module](./modules/api-gateway) and [example](examples/serverless/api-gateway).
 - **incompatible change** the `psn_ranges` variable has been renamed to `psa_ranges` in the `net-vpc` module and its type changed from `list(string)` to `map(string)`
 - **incompatible change** removed `iam` flag for organization and folder level sinks
 - **incompatible change** removed `ingress_settings` configuration option in the `cloud-functions` module.
@@ -31,6 +84,7 @@ All notable changes to this project will be documented in this file.
 - Support for resource management tags in the `organization`, `folder`, `project`, `compute-vm`, and `kms` modules
 
 **FAST**
+
 - new [data platform](fast/stages/03-data-platform) stage 3
 - new [02-networking-nva](fast/stages/02-networking-nva) networking stage
 - allow customizing the names of custom roles
@@ -41,7 +95,6 @@ All notable changes to this project will be documented in this file.
 - standarize names of projects, service accounts and buckets
 - swtich to folder-level `xpnAdmin` and `xpnServiceAdmin`
 - moved networking projects to folder matching their enviroments
-
 
 ## [13.0.0] - 2022-01-27
 
@@ -99,7 +152,7 @@ All notable changes to this project will be documented in this file.
 - added gVNIC support to `compute-vm` module
 - added a rule factory to `net-vpc-firewall` module
 - added a subnet factory to `net-vpc` module
-- **incompatible change** added support for partitioned tables to `organization` module sinks 
+- **incompatible change** added support for partitioned tables to `organization` module sinks
 - **incompatible change** renamed `private_service_networking_range` variable to `psc_ranges` in `net-vpc`module, and changed its type to `list(string)`
 - added a firewall policy factory to `organization` and `firewall` module
 - refactored `tfdoc`
@@ -130,11 +183,10 @@ All notable changes to this project will be documented in this file.
 - **incompatible change** changed maintenance window definition from `maintenance_start_time` to `maintenance_config` in `gke-cluster`
 - added `monitoring_config`,`logging_config`, `dns_config` and `enable_l4_ilb_subsetting` to `gke-cluster`
 
-
 ## [6.0.0] - 2021-10-04
 
 - new `apigee-organization` and `apigee-x-instance`
-- generate `email` and `iam_email` statically in the `iam-service-account` module 
+- generate `email` and `iam_email` statically in the `iam-service-account` module
 - new `billing-budget` module
 - fix `scheduled-asset-inventory-export-bq` module
 - output custom role information from the `organization` module
@@ -433,7 +485,6 @@ All notable changes to this project will be documented in this file.
 - new `envoy-traffic-director` module in the `cloud-config-container` suite
 - new `pubsub` module
 
-
 ## [1.4.1] - 2020-05-02
 
 - new `secret-manager` module
@@ -476,7 +527,9 @@ All notable changes to this project will be documented in this file.
 - merge development branch with suite of new modules and end-to-end examples
 
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v14.0.0...HEAD
+[Unreleased]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v16.0.0...HEAD
+[16.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v15.0.0...v16.0.0
+[15.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v14.0.0...v15.0.0
 [14.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v13.0.0...v14.0.0
 [13.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v12.0.0...v13.0.0
 [12.0.0]: https://github.com/terraform-google-modules/cloud-foundation-fabric/compare/v11.2.0...v12.0.0

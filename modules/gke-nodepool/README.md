@@ -41,7 +41,7 @@ module "cluster-1-nodepool-1" {
 |---|---|:---:|:---:|:---:|
 | [cluster_name](variables.tf#L26) | Cluster name. | <code>string</code> | ✓ |  |
 | [location](variables.tf#L59) | Cluster location. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L210) | Cluster project id. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L216) | Cluster project id. | <code>string</code> | ✓ |  |
 | [autoscaling_config](variables.tf#L17) | Optional autoscaling configuration. | <code title="object&#40;&#123;&#10;  min_node_count &#61; number&#10;  max_node_count &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [gke_version](variables.tf#L31) | Kubernetes nodes version. Ignored if auto_upgrade is set in management_config. | <code>string</code> |  | <code>null</code> |
 | [initial_node_count](variables.tf#L37) | Initial number of nodes for the pool. | <code>number</code> |  | <code>1</code> |
@@ -68,10 +68,11 @@ module "cluster-1-nodepool-1" {
 | [node_service_account_create](variables.tf#L174) | Auto-create service account. | <code>bool</code> |  | <code>false</code> |
 | [node_service_account_scopes](variables.tf#L182) | Scopes applied to service account. Default to: 'cloud-platform' when creating a service account; 'devstorage.read_only', 'logging.write', 'monitoring.write' otherwise. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 | [node_shielded_instance_config](variables.tf#L188) | Shielded instance options. | <code title="object&#40;&#123;&#10;  enable_secure_boot          &#61; bool&#10;  enable_integrity_monitoring &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [node_tags](variables.tf#L197) | Network tags applied to nodes. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
-| [node_taints](variables.tf#L203) | Kubernetes taints applied to nodes. E.g. type=blue:NoSchedule. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [upgrade_config](variables.tf#L215) | Optional node upgrade configuration. | <code title="object&#40;&#123;&#10;  max_surge       &#61; number&#10;  max_unavailable &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [workload_metadata_config](variables.tf#L224) | Metadata configuration to expose to workloads on the node pool. | <code>string</code> |  | <code>&#34;GKE_METADATA&#34;</code> |
+| [node_spot](variables.tf#L197) | Use Spot VMs for nodes. | <code>bool</code> |  | <code>null</code> |
+| [node_tags](variables.tf#L203) | Network tags applied to nodes. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
+| [node_taints](variables.tf#L209) | Kubernetes taints applied to nodes. E.g. type=blue:NoSchedule. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [upgrade_config](variables.tf#L221) | Optional node upgrade configuration. | <code title="object&#40;&#123;&#10;  max_surge       &#61; number&#10;  max_unavailable &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [workload_metadata_config](variables.tf#L230) | Metadata configuration to expose to workloads on the node pool. | <code>string</code> |  | <code>&#34;GKE_METADATA&#34;</code> |
 
 ## Outputs
 

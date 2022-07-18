@@ -1,5 +1,8 @@
 <p align="center">
-  <img src="assets/logos/fabric-logo-colors-800.png?raw=true" alt="Cloud Foundation Fabric">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/GoogleCloudPlatform/cloud-foundation-fabric/master/assets/logos/fabric-logo-colors-gray-800.png?v1">
+    <img src="https://raw.githubusercontent.com/GoogleCloudPlatform/cloud-foundation-fabric/master/assets/logos/fabric-logo-colors-800.png?v1" alt="Cloud Foundation Fabric">
+  </picture>
 </p>
 
 # Terraform Examples and Modules for Google Cloud
@@ -10,7 +13,7 @@ This repository provides **end-to-end examples** and a **suite of Terraform modu
 - reference [examples](./examples/) used to deep dive on network patterns or product features
 - a comprehensive source of lean [modules](./modules/dns) that lend themselves well to changes
 
-The whole repository is meant to be cloned as a single unit, and then forked into separate owned repositories to seed production usage, or used as-is and periodically updated as a complete toolkit for prototyping. You can read more on this approach in our [manifesto](./MANIFESTO.md).
+The whole repository is meant to be cloned as a single unit, and then forked into separate owned repositories to seed production usage, or used as-is and periodically updated as a complete toolkit for prototyping. You can read more on this approach in our [contributing guide](./CONTRIBUTING.md).
 
 ## Organization blueprint (Fabric FAST)
 
@@ -26,8 +29,8 @@ The current list of modules supports most of the core foundational and networkin
 
 Currently available modules:
 
-- **foundational** - [folder](./modules/folder), [organization](./modules/organization), [project](./modules/project), [service accounts](./modules/iam-service-account), [logging bucket](./modules/logging-bucket), [billing budget](./modules/billing-budget), [naming convention](./modules/naming-convention), [projects-data-source](./modules/projects-data-source)
-- **networking** - [VPC](./modules/net-vpc), [VPC firewall](./modules/net-vpc-firewall), [VPC peering](./modules/net-vpc-peering), [VPN static](./modules/net-vpn-static), [VPN dynamic](./modules/net-vpn-dynamic), [HA VPN](./modules/net-vpn-ha), [NAT](./modules/net-cloudnat), [address reservation](./modules/net-address), [DNS](./modules/dns), [L4 ILB](./modules/net-ilb), [Service Directory](./modules/service-directory), [Cloud Endpoints](./modules/endpoints)
+- **foundational** - [folder](./modules/folder), [organization](./modules/organization), [project](./modules/project), [service accounts](./modules/iam-service-account), [logging bucket](./modules/logging-bucket), [billing budget](./modules/billing-budget), [naming convention](./modules/naming-convention), [projects-data-source](./modules/projects-data-source), [organization-policy](./modules/organization-policy)
+- **networking** - [VPC](./modules/net-vpc), [VPC firewall](./modules/net-vpc-firewall), [VPC peering](./modules/net-vpc-peering), [VPN static](./modules/net-vpn-static), [VPN dynamic](./modules/net-vpn-dynamic), [HA VPN](./modules/net-vpn-ha), [NAT](./modules/net-cloudnat), [address reservation](./modules/net-address), [DNS](./modules/dns), [L4 ILB](./modules/net-ilb), [L7 ILB](./modules/net-ilb-l7), [Service Directory](./modules/service-directory), [Cloud Endpoints](./modules/endpoints)
 - **compute** - [VM/VM group](./modules/compute-vm), [MIG](./modules/compute-mig), [GKE cluster](./modules/gke-cluster), [GKE nodepool](./modules/gke-nodepool), [GKE hub](./modules/gke-hub), [COS container](./modules/cloud-config-container/cos-generic-metadata/) (coredns, mysql, onprem, squid)
 - **data** - [GCS](./modules/gcs), [BigQuery dataset](./modules/bigquery-dataset), [Pub/Sub](./modules/pubsub), [Datafusion](./modules/datafusion), [Bigtable instance](./modules/bigtable-instance), [Cloud SQL instance](./modules/cloudsql-instance), [Data Catalog Policy Tag](./modules/data-catalog-policy-tag)
 - **development** - [Cloud Source Repository](./modules/source-repository), [Container Registry](./modules/container-registry), [Artifact Registry](./modules/artifact-registry), [Apigee Organization](./modules/apigee-organization), [Apigee X Instance](./modules/apigee-x-instance), [API Gateway](./modules/api-gateway)

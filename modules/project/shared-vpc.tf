@@ -18,14 +18,14 @@
 
 locals {
   # compute the host project IAM bindings for this project's service identities
-  _svpc_service_identity_iam = coalesce(
-    local.svpc_service_config.service_identity_iam, {}
-  )
   _svpc_service_iam = flatten([
     for role, services in local._svpc_service_identity_iam : [
       for service in services : { role = role, service = service }
     ]
   ])
+  _svpc_service_identity_iam = coalesce(
+    local.svpc_service_config.service_identity_iam, {}
+  )
   svpc_host_config = {
     enabled = coalesce(
       try(var.shared_vpc_host_config.enabled, null), false
@@ -43,9 +43,10 @@ locals {
 }
 
 resource "google_compute_shared_vpc_host_project" "shared_vpc_host" {
-  provider = google-beta
-  count    = local.svpc_host_config.enabled ? 1 : 0
-  project  = local.project.project_id
+  provider   = google-beta
+  count      = local.svpc_host_config.enabled ? 1 : 0
+  project    = local.project.project_id
+  depends_on = [google_project_service.project_services]
 }
 
 resource "google_compute_shared_vpc_service_project" "service_projects" {

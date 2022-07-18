@@ -37,12 +37,16 @@ locals {
     containerregistry = "service-%s@containerregistry"
     dataflow          = "service-%s@dataflow-service-producer-prod"
     dataproc          = "service-%s@dataproc-accounts"
+    fleet             = "service-%s@gcp-sa-gkehub"
     gae-flex          = "service-%s@gae-api-prod"
     # TODO: deprecate gcf
-    gcf           = "service-%s@gcf-admin-robot"
-    pubsub        = "service-%s@gcp-sa-pubsub"
-    secretmanager = "service-%s@gcp-sa-secretmanager"
-    storage       = "service-%s@gs-project-accounts"
+    gcf                      = "service-%s@gcf-admin-robot"
+    monitoring-notifications = "service-%s@gcp-sa-monitoring-notification"
+    pubsub                   = "service-%s@gcp-sa-pubsub"
+    secretmanager            = "service-%s@gcp-sa-secretmanager"
+    sql                      = "service-%s@gcp-sa-cloud-sql"
+    sqladmin                 = "service-%s@gcp-sa-cloud-sql"
+    storage                  = "service-%s@gs-project-accounts"
   }
   service_accounts_default = {
     compute = "${local.project.number}-compute@developer.gserviceaccount.com"
@@ -56,9 +60,10 @@ locals {
     k => "${format(v, local.project.number)}.iam.gserviceaccount.com"
   }
   service_accounts_jit_services = [
-    "secretmanager.googleapis.com",
+    "cloudasset.googleapis.com",
     "pubsub.googleapis.com",
-    "cloudasset.googleapis.com"
+    "secretmanager.googleapis.com",
+    "sqladmin.googleapis.com"
   ]
   service_accounts_cmek_service_keys = distinct(flatten([
     for s in keys(var.service_encryption_key_ids) : [
@@ -82,6 +87,21 @@ data "google_bigquery_default_service_account" "bq_sa" {
   count      = contains(var.services, "bigquery.googleapis.com") ? 1 : 0
   project    = local.project.project_id
   depends_on = [google_project_service.project_services]
+}
+
+resource "google_project_service_identity" "servicenetworking" {
+  provider   = google-beta
+  count      = contains(var.services, "servicenetworking.googleapis.com") ? 1 : 0
+  project    = local.project.project_id
+  service    = "servicenetworking.googleapis.com"
+  depends_on = [google_project_service.project_services]
+}
+
+resource "google_project_iam_member" "servicenetworking" {
+  count   = contains(var.services, "servicenetworking.googleapis.com") ? 1 : 0
+  project = local.project.project_id
+  role    = "roles/servicenetworking.serviceAgent"
+  member  = "serviceAccount:${google_project_service_identity.servicenetworking.0.email}"
 }
 
 # Secret Manager SA created just in time, we need to trigger the creation.

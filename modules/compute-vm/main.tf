@@ -30,7 +30,7 @@ locals {
     k => v if try(v.options.replica_zone, null) == null
   }
   on_host_maintenance = (
-    var.options.preemptible || var.confidential_compute
+    var.options.spot || var.confidential_compute
     ? "TERMINATE"
     : "MIGRATE"
   )
@@ -212,9 +212,10 @@ resource "google_compute_instance" "default" {
   }
 
   scheduling {
-    automatic_restart   = !var.options.preemptible
+    automatic_restart   = !var.options.spot
     on_host_maintenance = local.on_host_maintenance
-    preemptible         = var.options.preemptible
+    preemptible         = var.options.spot
+    provisioning_model  = var.options.spot ? "SPOT" : "STANDARD"
   }
 
   dynamic "scratch_disk" {
@@ -338,14 +339,25 @@ resource "google_compute_instance_template" "default" {
   }
 
   scheduling {
-    automatic_restart   = !var.options.preemptible
+    automatic_restart   = !var.options.spot
     on_host_maintenance = local.on_host_maintenance
-    preemptible         = var.options.preemptible
+    preemptible         = var.options.spot
+    provisioning_model  = var.options.spot ? "SPOT" : "STANDARD"
   }
 
   service_account {
     email  = local.service_account_email
     scopes = local.service_account_scopes
+  }
+
+  dynamic "shielded_instance_config" {
+    for_each = var.shielded_config != null ? [var.shielded_config] : []
+    iterator = config
+    content {
+      enable_secure_boot          = config.value.enable_secure_boot
+      enable_vtpm                 = config.value.enable_vtpm
+      enable_integrity_monitoring = config.value.enable_integrity_monitoring
+    }
   }
 
   lifecycle {

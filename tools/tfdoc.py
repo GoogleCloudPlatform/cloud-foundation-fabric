@@ -70,7 +70,7 @@ OUT_RE = re.compile(r'''(?smx)
     # output open
     (?:^\s*output\s*"([^"]+)"\s*\{\s*$) |
     # attribute
-    (?:^\s{2}([a-z]+)\s*=\s*"?(.*?)"?\s*$) |
+    (?:^\n?\s{2}([a-z]+)\s*=\s*"?(.*?)"?\s*$) |
     # output close
     (?:^\s?(\})\s*$) |
     # comment
@@ -206,7 +206,7 @@ def parse_variables(basepath, exclude_files=None):
     except (IOError, OSError) as e:
       raise SystemExit(f'Cannot open variables file {shortname}.')
     for item in _parse(body):
-      description = ''.join(item['description'])
+      description = (''.join(item['description'])).replace('|', '\\|')
       vtype = '\n'.join(item['type'])
       default = HEREDOC_RE.sub(r'\1', '\n'.join(item['default']))
       required = not item['default']

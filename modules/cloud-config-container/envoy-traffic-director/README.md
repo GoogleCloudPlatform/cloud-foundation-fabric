@@ -50,8 +50,8 @@ module "vm-cos" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
+| [docker_logging](variables.tf#L23) | Log via the Docker gcplogs driver. Disable if you use the legacy Logging Agent instead. | <code>bool</code> |  | <code>true</code> |
 | [envoy_image](variables.tf#L17) | Envoy Proxy container image to use. | <code>string</code> |  | <code>&#34;envoyproxy&#47;envoy:v1.14.1&#34;</code> |
-| [gcp_logging](variables.tf#L23) | Should container logs be sent to Google Cloud Logging. | <code>bool</code> |  | <code>true</code> |
 
 ## Outputs
 

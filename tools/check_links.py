@@ -21,6 +21,7 @@ destinations. Its main use is in CI pipelines triggered by pull requests.
 
 import collections
 import pathlib
+import requests
 import urllib.parse
 
 import click
@@ -31,46 +32,68 @@ DOC = collections.namedtuple('DOC', 'path relpath links')
 LINK = collections.namedtuple('LINK', 'dest valid')
 
 
-def check_docs(dir_name):
-  'Traverse dir_name and check links in Markdown files.'
+def check_link(link, readme_path, external):
+  'Checks if a link element has a valid destination.'
+  link_valid = None
+  url = urllib.parse.urlparse(link.dest)
+  # If the link is public, say the link is anyway valid
+  # if --external is not set; check the link otherwise
+  if url.scheme:
+    link_valid = True
+    if external:
+      try:
+        response = requests.get(link.dest)
+        link_valid = response.ok
+      except requests.exceptions.RequestException:
+        link_valid = False
+  # The link is private
+  else:
+    link_valid = (readme_path.parent / url.path).exists()
+  return LINK(link.dest, link_valid)
+
+
+def check_docs(dir_name, external=False):
+  'Traverses dir_name and checks for all Markdown files.'
   dir_path = BASEDIR / dir_name
+  parser = marko.parser.Parser()
   for readme_path in sorted(dir_path.glob('**/*.md')):
     if '.terraform' in str(readme_path) or '.pytest' in str(readme_path):
       continue
+
+    root = parser.parse(readme_path.read_text())
+    elements = collections.deque([root])
     links = []
-    for el in marko.parser.Parser().parse(readme_path.read_text()).children:
-      if not isinstance(el, marko.block.Paragraph):
-        continue
-      for subel in el.children:
-        if not isinstance(subel, marko.inline.Link):
-          continue
-        link_valid = None
-        url = urllib.parse.urlparse(subel.dest)
-        if url.scheme:
-          link_valid = True
-        else:
-          link_valid = (readme_path.parent / url.path).exists()
-        links.append(LINK(subel.dest, link_valid))
+    while elements:
+      el = elements.popleft()
+      if isinstance(el, marko.inline.Link):
+        links.append(check_link(el, readme_path, external))
+      elif hasattr(el, 'children'):
+        elements.extend(el.children)
+
     yield DOC(readme_path, str(readme_path.relative_to(dir_path)), links)
 
 
 @click.command()
 @click.argument('dirs', type=str, nargs=-1)
-def main(dirs):
-  'Check links in Markdown files contained in dirs.'
-  errors = 0
+@click.option('-e', '--external', is_flag=True, default=False,
+              help='Whether to test external links.')
+def main(dirs, external):
+  'Checks links in Markdown files contained in dirs.'
+  errors = []
   for dir_name in dirs:
     print(f'----- {dir_name} -----')
-    for doc in check_docs(dir_name):
+    for doc in check_docs(dir_name, external):
       state = '✓' if all(l.valid for l in doc.links) else '✗'
       print(f'[{state}] {doc.relpath} ({len(doc.links)})')
       if state == '✗':
-        errors += 1
+        error = [f'{dir_name}{doc.relpath}']
         for l in doc.links:
           if not l.valid:
+            error.append(f'  - {l.dest}')
             print(f'  {l.dest}')
+        errors.append('\n'.join(error))
   if errors:
-    raise SystemExit('Errors found.')
+    raise SystemExit('Errors found:\n{}'.format('\n'.join(errors)))
 
 
 if __name__ == '__main__':

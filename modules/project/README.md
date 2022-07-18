@@ -1,8 +1,19 @@
 # Project Module
 
-## Examples
+This module implements the creation and management of one GCP project including IAM, organization policies, Shared VPC host or service attachment, service API activation, and tag attachment. It also offers a convenient way to refer to managed service identities (aka robot service accounts) for APIs.
 
-### Minimal example with IAM
+## IAM Examples
+
+IAM is managed via several variables that implement different levels of control:
+
+- `group_iam` and `iam` configure authoritative bindings that manage individual roles exclusively, mapping to the [`google_project_iam_binding`](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_iam#google_project_iam_binding) resource
+- `iam_additive` and `iam_additive_members` configure additive bindings that only manage individual role/member pairs, mapping to the [`google_project_iam_member`](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/google_project_iam#google_project_iam_member) resource
+
+Be mindful about service identity roles when using authoritative IAM, as you might inadvertently remove a role from a [service identity](https://cloud.google.com/iam/docs/service-accounts#google-managed) or default service account. For example, using `roles/editor` with `iam` or `group_iam` will remove the default permissions for the Cloud Services identity. A simple workaround for these scenarios is described below.
+
+### Authoritative IAM
+
+The `iam` variable is based on role keys and is typically used for service accounts, or where member values can be dynamic and would create potential problems in the underlying `for_each` cycle.
 
 ```hcl
 locals {
@@ -28,16 +39,43 @@ module "project" {
 # tftest modules=1 resources=4
 ```
 
-### Minimal example with IAM additive roles
+The `group_iam` variable uses group email addresses as keys and is a convenient way to assign roles to humans following Google's best practices. The end result is readable code that also serves as documentation.
+
+```hcl
+module "project" {
+  source          = "./modules/project"
+  billing_account = "123456-123456-123456"
+  name            = "project-example"
+  parent          = "folders/1234567890"
+  prefix          = "foo"
+  services        = [
+    "container.googleapis.com",
+    "stackdriver.googleapis.com"
+  ]
+  group_iam = {
+    "gcp-security-admins@example.com" = [
+      "roles/cloudasset.owner",
+      "roles/cloudsupport.techSupportEditor",
+      "roles/iam.securityReviewer",
+      "roles/logging.admin",
+    ]
+  }
+}
+# tftest modules=1 resources=7
+```
+
+### Additive IAM
+
+Additive IAM is typically used where bindings for specific roles are controlled by different modules or in different Terraform stages. One example is when the project is created by one team but a different team manages service account creation for the project, and some of the project-level roles overlap in the two configurations.
 
 ```hcl
 module "project" {
   source          = "./modules/project"
   name            = "project-example"
-
   iam_additive = {
     "roles/viewer"               = [
-      "group:one@example.org", "group:two@xample.org"
+      "group:one@example.org",
+      "group:two@xample.org"
     ],
     "roles/storage.objectAdmin"  = [
       "group:two@example.org"
@@ -50,13 +88,54 @@ module "project" {
 # tftest modules=1 resources=5
 ```
 
-### Shared VPC service
+### Service Identities and authoritative IAM
+
+As mentioned above, there are cases where authoritative management of specific IAM roles results in removal of default bindings from service identities. One example is outlined below, with a simple workaround leveraging the `service_accounts` output to identify the service identity. A full list of service identities and their roles can be found [here](https://cloud.google.com/iam/docs/service-agents).
 
 ```hcl
 module "project" {
   source          = "./modules/project"
   name            = "project-example"
+  group_iam = {
+    "foo@example.com" = [
+      "roles/editor"
+    ]
+  }
+  iam = {
+    "roles/editor" = [      
+      "serviceAccount:${module.project.service_accounts.cloud_services}"
+    ]
+  }
+}
+# tftest modules=1 resources=2
+```
 
+## Shared VPC service
+
+The module allows managing Shared VPC status for both hosts and service projects, and includes a simple way of assigning Shared VPC roles to service identities.
+
+### Host project
+
+You can enable Shared VPC Host at the project level and manage project service association independently.
+
+```hcl
+module "project" {
+  source          = "./modules/project"
+  name            = "project-example"
+  shared_vpc_host_config = {
+    enabled          = true
+    service_projects = []
+  }
+}
+# tftest modules=1 resources=2
+```
+
+### Service project
+
+```hcl
+module "project" {
+  source          = "./modules/project"
+  name            = "project-example"
   shared_vpc_service_config = {
     attach               = true
     host_project         = "my-host-project"
@@ -76,7 +155,7 @@ module "project" {
 # tftest modules=1 resources=6
 ```
 
-### Organization policies
+## Organization policies
 
 ```hcl
 module "project" {
@@ -142,7 +221,7 @@ module "project-host" {
   logging_sinks = {
     warnings = {
       type          = "storage"
-      destination   = module.gcs.name
+      destination   = module.gcs.id
       filter        = "severity=WARNING"
       iam           = false
       unique_writer = false
@@ -183,6 +262,8 @@ module "project-host" {
 ```
 
 ## Cloud KMS encryption keys
+
+The module offers a simple, centralized way to assign `roles/cloudkms.cryptoKeyEncrypterDecrypter` to service identities.
 
 ```hcl
 module "project" {
@@ -238,6 +319,27 @@ module "project" {
 # tftest modules=2 resources=6
 ```
 
+## Outputs
+
+Most of this module's outputs depend on its resources, to allow Terraform to compute all dependencies required for the project to be correctly configured. This allows you to reference outputs like `project_id` in other modules or resources without having to worry about setting `depends_on` blocks manually.
+
+One non-obvious output is `service_accounts`, which offers a simple way to discover service identities and default service accounts, and guarantees that service identities that require an API call to trigger creation (like GCS or BigQuery) exist before use.
+
+```hcl
+module "project" {
+  source   = "./modules/project"
+  name     = "project-example"
+  services = [
+    "compute.googleapis.com"
+  ]
+}
+
+output "compute_robot" {
+  value = module.project.service_accounts.robots.compute
+}
+# tftest modules=1 resources=2
+```
+
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
 
@@ -250,7 +352,7 @@ module "project" {
 | [main.tf](./main.tf) | Module-level locals and resources. | <code>google_compute_project_metadata_item</code> · <code>google_essential_contacts_contact</code> · <code>google_monitoring_monitored_project</code> · <code>google_project</code> · <code>google_project_service</code> · <code>google_resource_manager_lien</code> |
 | [organization-policies.tf](./organization-policies.tf) | Project-level organization policies. | <code>google_project_organization_policy</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |
-| [service-accounts.tf](./service-accounts.tf) | Service identities and supporting resources. | <code>google_kms_crypto_key_iam_member</code> · <code>google_project_service_identity</code> |
+| [service-accounts.tf](./service-accounts.tf) | Service identities and supporting resources. | <code>google_kms_crypto_key_iam_member</code> · <code>google_project_iam_member</code> · <code>google_project_service_identity</code> |
 | [shared-vpc.tf](./shared-vpc.tf) | Shared VPC project-level configuration. | <code>google_compute_shared_vpc_host_project</code> · <code>google_compute_shared_vpc_service_project</code> · <code>google_project_iam_member</code> |
 | [tags.tf](./tags.tf) | None | <code>google_tags_tag_binding</code> |
 | [variables.tf](./variables.tf) | Module variables. |  |
@@ -302,7 +404,7 @@ module "project" {
 | [name](outputs.tf#L25) | Project name. |  |
 | [number](outputs.tf#L38) | Project number. |  |
 | [project_id](outputs.tf#L51) | Project id. |  |
-| [service_accounts](outputs.tf#L66) | Product robot service accounts in project. |  |
-| [sink_writer_identities](outputs.tf#L82) | Writer identities created for each sink. |  |
+| [service_accounts](outputs.tf#L68) | Product robot service accounts in project. |  |
+| [sink_writer_identities](outputs.tf#L84) | Writer identities created for each sink. |  |
 
 <!-- END TFDOC -->

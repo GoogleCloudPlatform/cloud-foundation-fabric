@@ -16,7 +16,7 @@
 
 output "tags" {
   description = "Policy Tags."
-  value       = { for k, v in google_data_catalog_policy_tag.default : v.id => v.name }
+  value       = { for k, v in google_data_catalog_policy_tag.default : k => v.id }
 }
 
 output "taxonomy_id" {

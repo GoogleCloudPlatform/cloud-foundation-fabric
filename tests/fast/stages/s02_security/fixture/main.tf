@@ -16,6 +16,9 @@
 
 module "stage" {
   source = "../../../../../fast/stages/02-security"
+  automation = {
+    outputs_bucket = "test"
+  }
   billing_account = {
     id              = "000000-111111-222222"
     organization_id = 123456789012
@@ -41,6 +44,8 @@ module "stage" {
   }
   service_accounts = {
     security             = "foobar@iam.gserviceaccount.com"
+    data-platform-dev    = "foobar@iam.gserviceaccount.com"
+    data-platform-prod   = "foobar@iam.gserviceaccount.com"
     project-factory-dev  = "foobar@iam.gserviceaccount.com"
     project-factory-prod = "foobar@iam.gserviceaccount.com"
   }

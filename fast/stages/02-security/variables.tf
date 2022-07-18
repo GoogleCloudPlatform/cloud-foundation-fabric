@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
+variable "automation" {
+  # tfdoc:variable:source 00-bootstrap
+  description = "Automation resources created by the bootstrap stage."
+  type = object({
+    outputs_bucket = string
+  })
+}
+
 variable "billing_account" {
   # tfdoc:variable:source 00-bootstrap
   description = "Billing account id and organization id ('nnnnnnnn' or null)."
@@ -73,6 +81,8 @@ variable "service_accounts" {
   # tfdoc:variable:source 01-resman
   description = "Automation service accounts that can assign the encrypt/decrypt roles on keys."
   type = object({
+    data-platform-dev    = string
+    data-platform-prod   = string
     project-factory-dev  = string
     project-factory-prod = string
   })

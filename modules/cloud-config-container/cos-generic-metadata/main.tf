@@ -22,6 +22,7 @@ locals {
     container_name    = var.container_name
     container_volumes = var.container_volumes
     docker_args       = var.docker_args
+    docker_logging    = var.docker_logging
     files             = local.files
     gcp_logging       = var.gcp_logging
     run_commands      = var.run_commands

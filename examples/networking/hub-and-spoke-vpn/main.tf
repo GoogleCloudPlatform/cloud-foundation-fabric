@@ -13,297 +13,71 @@
 # limitations under the License.
 
 locals {
-  vm-startup-script = join("\n", [
-    "#! /bin/bash",
-    "apt-get update && apt-get install -y dnsutils"
-  ])
+  prefix = var.prefix == null ? "" : "${var.prefix}-"
 }
 
-################################################################################
-#                                Hub networking                                #
-################################################################################
+# enable services in the project used
 
-module "vpc-hub" {
-  source     = "../../../modules/net-vpc"
-  project_id = var.project_id
-  name       = "hub"
-  subnets = [
-    {
-      ip_cidr_range      = var.ip_ranges.hub-a
-      name               = "hub-a"
-      region             = var.regions.a
-      secondary_ip_range = {}
-    },
-    {
-      ip_cidr_range      = var.ip_ranges.hub-b
-      name               = "hub-b"
-      region             = var.regions.b
-      secondary_ip_range = {}
-    }
+module "project" {
+  source          = "../../..//modules/project"
+  name            = var.project_id
+  parent          = try(var.project_create_config.parent, null)
+  billing_account = try(var.project_create_config.billing_account_id, null)
+  project_create  = try(var.project_create_config.billing_account_id, null) != null
+  services = [
+    "compute.googleapis.com",
+    "dns.googleapis.com"
   ]
-}
-
-module "vpc-hub-firewall" {
-  source       = "../../../modules/net-vpc-firewall"
-  project_id   = var.project_id
-  network      = module.vpc-hub.name
-  admin_ranges = values(var.ip_ranges)
-}
-
-module "vpn-hub-a" {
-  source     = "../../../modules/net-vpn-dynamic"
-  project_id = var.project_id
-  region     = var.regions.a
-  network    = module.vpc-hub.name
-  name       = "hub-a"
-  router_asn = var.bgp_asn.hub
-  tunnels = {
-    spoke-1 = {
-      bgp_peer = {
-        address = cidrhost(var.bgp_interface_ranges.spoke-1, 2)
-        asn     = var.bgp_asn.spoke-1
-      }
-      bgp_peer_options = {
-        advertise_groups = ["ALL_SUBNETS"]
-        advertise_ip_ranges = {
-          (var.bgp_custom_advertisements.hub-to-spoke-1) = "spoke-2"
-        }
-        advertise_mode = "CUSTOM"
-        route_priority = 1000
-      }
-      bgp_session_range = "${cidrhost(var.bgp_interface_ranges.spoke-1, 1)}/30"
-      ike_version       = 2
-      peer_ip           = module.vpn-spoke-1.address
-      router            = null
-      shared_secret     = ""
-    }
+  service_config = {
+    disable_on_destroy         = false
+    disable_dependent_services = false
   }
 }
 
-module "vpn-hub-b" {
-  source     = "../../../modules/net-vpn-dynamic"
-  project_id = var.project_id
-  region     = var.regions.b
-  network    = module.vpc-hub.name
-  name       = "hub-b"
-  router_asn = var.bgp_asn.hub
-  tunnels = {
-    spoke-2 = {
-      bgp_peer = {
-        address = cidrhost(var.bgp_interface_ranges.spoke-2, 2)
-        asn     = var.bgp_asn.spoke-2
-      }
-      bgp_peer_options = {
-        advertise_groups = ["ALL_SUBNETS"]
-        advertise_ip_ranges = {
-          (var.bgp_custom_advertisements.hub-to-spoke-2) = "spoke-1"
-        }
-        advertise_mode = "CUSTOM"
-        route_priority = 1000
-      }
-      bgp_session_range = "${cidrhost(var.bgp_interface_ranges.spoke-2, 1)}/30"
-      ike_version       = 2
-      peer_ip           = module.vpn-spoke-2.address
-      router            = null
-      shared_secret     = ""
-    }
-  }
-}
+# test VM in landing region 1
 
-################################################################################
-#                              Spoke 1 networking                              #
-################################################################################
-
-module "vpc-spoke-1" {
-  source     = "../../../modules/net-vpc"
-  project_id = var.project_id
-  name       = "spoke-1"
-  subnets = [
-    {
-      ip_cidr_range      = var.ip_ranges.spoke-1-a
-      name               = "spoke-1-a"
-      region             = var.regions.a
-      secondary_ip_range = {}
-    },
-    {
-      ip_cidr_range      = var.ip_ranges.spoke-1-b
-      name               = "spoke-1-b"
-      region             = var.regions.b
-      secondary_ip_range = {}
-    }
-  ]
-}
-
-module "vpc-spoke-1-firewall" {
-  source       = "../../../modules/net-vpc-firewall"
-  project_id   = var.project_id
-  network      = module.vpc-spoke-1.name
-  admin_ranges = values(var.ip_ranges)
-}
-
-module "vpn-spoke-1" {
-  source     = "../../../modules/net-vpn-dynamic"
-  project_id = var.project_id
-  region     = var.regions.a
-  network    = module.vpc-spoke-1.name
-  name       = "spoke-1"
-  router_asn = var.bgp_asn.spoke-1
-  tunnels = {
-    hub = {
-      bgp_peer = {
-        address = cidrhost(var.bgp_interface_ranges.spoke-1, 1)
-        asn     = var.bgp_asn.hub
-      }
-      bgp_peer_options  = null
-      bgp_session_range = "${cidrhost(var.bgp_interface_ranges.spoke-1, 2)}/30"
-      ike_version       = 2
-      peer_ip           = module.vpn-hub-a.address
-      router            = null
-      shared_secret     = module.vpn-hub-a.random_secret
-    }
-  }
-}
-
-module "nat-spoke-1" {
-  source        = "../../../modules/net-cloudnat"
-  project_id    = var.project_id
-  region        = var.regions.a
-  name          = "spoke-1"
-  router_create = false
-  router_name   = module.vpn-spoke-1.router_name
-}
-
-################################################################################
-#                              Spoke 2 networking                              #
-################################################################################
-
-module "vpc-spoke-2" {
-  source     = "../../../modules/net-vpc"
-  project_id = var.project_id
-  name       = "spoke-2"
-  subnets = [
-    {
-      ip_cidr_range      = var.ip_ranges.spoke-2-a
-      name               = "spoke-2-a"
-      region             = var.regions.a
-      secondary_ip_range = {}
-    },
-    {
-      ip_cidr_range      = var.ip_ranges.spoke-2-b
-      name               = "spoke-2-b"
-      region             = var.regions.b
-      secondary_ip_range = {}
-    }
-  ]
-}
-
-module "vpc-spoke-2-firewall" {
-  source       = "../../../modules/net-vpc-firewall"
-  project_id   = var.project_id
-  network      = module.vpc-spoke-2.name
-  admin_ranges = values(var.ip_ranges)
-}
-
-module "vpn-spoke-2" {
-  source     = "../../../modules/net-vpn-dynamic"
-  project_id = var.project_id
-  region     = var.regions.a
-  network    = module.vpc-spoke-2.name
-  name       = "spoke-2"
-  router_asn = var.bgp_asn.spoke-2
-  tunnels = {
-    hub = {
-      bgp_peer = {
-        address = cidrhost(var.bgp_interface_ranges.spoke-2, 1)
-        asn     = var.bgp_asn.hub
-      }
-      bgp_peer_options  = null
-      bgp_session_range = "${cidrhost(var.bgp_interface_ranges.spoke-2, 2)}/30"
-      ike_version       = 2
-      peer_ip           = module.vpn-hub-b.address
-      router            = null
-      shared_secret     = module.vpn-hub-b.random_secret
-    }
-  }
-}
-
-module "nat-spoke-2" {
-  source        = "../../../modules/net-cloudnat"
-  project_id    = var.project_id
-  region        = var.regions.a
-  name          = "spoke-2"
-  router_create = false
-  router_name   = module.vpn-spoke-2.router_name
-}
-
-################################################################################
-#                                   Test VMs                                   #
-################################################################################
-
-module "vm-spoke-1" {
+module "landing-r1-vm" {
   source     = "../../../modules/compute-vm"
   project_id = var.project_id
-  zone       = "${var.regions.b}-b"
-  name       = "spoke-1-test"
+  name       = "${local.prefix}lnd-test-r1"
+  zone       = "${var.regions.r1}-b"
   network_interfaces = [{
-    network    = module.vpc-spoke-1.self_link
-    subnetwork = module.vpc-spoke-1.subnet_self_links["${var.regions.b}/spoke-1-b"]
+    network    = module.landing-vpc.self_link
+    subnetwork = module.landing-vpc.subnet_self_links["${var.regions.r1}/${local.prefix}lnd-0"]
     nat        = false
     addresses  = null
   }]
-  tags     = ["ssh"]
-  metadata = { startup-script = local.vm-startup-script }
+  tags = ["ssh"]
 }
 
-module "vm-spoke-2" {
+# test VM in prod region 1
+
+module "prod-r1-vm" {
   source     = "../../../modules/compute-vm"
   project_id = var.project_id
-  zone       = "${var.regions.b}-b"
-  name       = "spoke-2-test"
+  name       = "${local.prefix}prd-test-r1"
+  zone       = "${var.regions.r1}-b"
   network_interfaces = [{
-    network    = module.vpc-spoke-2.self_link
-    subnetwork = module.vpc-spoke-2.subnet_self_links["${var.regions.b}/spoke-2-b"]
+    network    = module.prod-vpc.self_link
+    subnetwork = module.prod-vpc.subnet_self_links["${var.regions.r1}/${local.prefix}prd-0"]
     nat        = false
     addresses  = null
   }]
-  tags     = ["ssh"]
-  metadata = { startup-script = local.vm-startup-script }
+  tags = ["ssh"]
 }
 
-################################################################################
-#                                  DNS zones                                   #
-################################################################################
+# test VM in dev region 1
 
-module "dns-host" {
-  source          = "../../../modules/dns"
-  project_id      = var.project_id
-  type            = "private"
-  name            = "example"
-  domain          = "example.com."
-  client_networks = [module.vpc-hub.self_link]
-  recordsets = {
-    "A localhost"    = { ttl = 300, records = ["127.0.0.1"] }
-    "A spoke-1-test" = { ttl = 300, records = [module.vm-spoke-1.internal_ip] }
-    "A spoke-2-test" = { ttl = 300, records = [module.vm-spoke-2.internal_ip] }
-  }
-}
-
-module "dns-spoke-1" {
-  source          = "../../../modules/dns"
-  project_id      = var.project_id
-  type            = "peering"
-  name            = "spoke-1"
-  domain          = "example.com."
-  client_networks = [module.vpc-spoke-1.self_link]
-  peer_network    = module.vpc-hub.self_link
-}
-
-module "dns-spoke-2" {
-  source          = "../../../modules/dns"
-  project_id      = var.project_id
-  type            = "peering"
-  name            = "spoke-2"
-  domain          = "example.com."
-  client_networks = [module.vpc-spoke-2.self_link]
-  peer_network    = module.vpc-hub.self_link
+module "dev-r2-vm" {
+  source     = "../../../modules/compute-vm"
+  project_id = var.project_id
+  name       = "${local.prefix}dev-test-r2"
+  zone       = "${var.regions.r2}-b"
+  network_interfaces = [{
+    network    = module.dev-vpc.self_link
+    subnetwork = module.dev-vpc.subnet_self_links["${var.regions.r2}/${local.prefix}dev-0"]
+    nat        = false
+    addresses  = null
+  }]
+  tags = ["ssh"]
 }

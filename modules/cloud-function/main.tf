@@ -91,6 +91,35 @@ resource "google_cloudfunctions_function" "function" {
     }
   }
 
+  dynamic "secret_environment_variables" {
+    for_each = { for k, v in var.secrets : k => v if !v.is_volume }
+    iterator = secret
+    content {
+      key        = secret.key
+      project_id = secret.value.project_id
+      secret     = secret.value.secret
+      version    = try(secret.value.versions.0, "latest")
+    }
+  }
+
+  dynamic "secret_volumes" {
+    for_each = { for k, v in var.secrets : k => v if v.is_volume }
+    iterator = secret
+    content {
+      mount_path = secret.key
+      project_id = secret.value.project_id
+      secret     = secret.value.secret
+      dynamic "versions" {
+        for_each = secret.value.versions
+        iterator = version
+        content {
+          path    = split(":", version)[1]
+          version = split(":", version)[0]
+        }
+      }
+    }
+  }
+
 }
 
 resource "google_cloudfunctions_function_iam_binding" "default" {
@@ -103,9 +132,10 @@ resource "google_cloudfunctions_function_iam_binding" "default" {
 }
 
 resource "google_storage_bucket" "bucket" {
-  count   = var.bucket_config == null ? 0 : 1
-  project = var.project_id
-  name    = "${local.prefix}${var.bucket_name}"
+  count                       = var.bucket_config == null ? 0 : 1
+  project                     = var.project_id
+  name                        = "${local.prefix}${var.bucket_name}"
+  uniform_bucket_level_access = true
   location = (
     var.bucket_config.location == null
     ? var.region
@@ -117,7 +147,17 @@ resource "google_storage_bucket" "bucket" {
     for_each = var.bucket_config.lifecycle_delete_age == null ? [] : [""]
     content {
       action { type = "Delete" }
-      condition { age = var.bucket_config.lifecycle_delete_age }
+      condition {
+        age        = var.bucket_config.lifecycle_delete_age
+        with_state = "ARCHIVED"
+      }
+    }
+  }
+
+  dynamic "versioning" {
+    for_each = var.bucket_config.lifecycle_delete_age == null ? [] : [""]
+    content {
+      enabled = true
     }
   }
 }

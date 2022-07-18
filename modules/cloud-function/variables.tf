@@ -74,7 +74,7 @@ variable "iam" {
 }
 
 variable "ingress_settings" {
-  description = "Control traffic that reaches the cloud function. Allowed values are ALLOW_ALL and ALLOW_INTERNAL_ONLY."
+  description = "Control traffic that reaches the cloud function. Allowed values are ALLOW_ALL, ALLOW_INTERNAL_AND_GCLB and ALLOW_INTERNAL_ONLY ."
   type        = string
   default     = null
 }
@@ -105,6 +105,18 @@ variable "region" {
   description = "Region used for all resources."
   type        = string
   default     = "europe-west1"
+}
+
+variable "secrets" {
+  description = "Secret Manager secrets. Key is the variable name or mountpoint, volume versions are in version:path format."
+  type = map(object({
+    is_volume  = bool
+    project_id = number
+    secret     = string
+    versions   = list(string)
+  }))
+  nullable = false
+  default  = {}
 }
 
 variable "service_account" {
