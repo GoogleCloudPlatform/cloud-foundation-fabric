@@ -14,7 +14,7 @@ Contributors are the engine that keeps Fabric alive so if you were or are planni
 - [Design principles in action](#design-principles-in-action)
 - [FAST stage design](#fast-stage-design)
 - [Style guide reference](#style-guide-reference)
-- [Checks, tests and tools](#checks-tests-and-tools)
+- [Checks, tests and tools](#interacting-with-checks-tests-and-tools)
 
 ## I just found a bug / have a feature request
 

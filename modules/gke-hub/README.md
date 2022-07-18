@@ -9,6 +9,7 @@ To use this module you must ensure the following APIs are enabled in the target 
 "anthosconfigmanagement.googleapis.com"
 "multiclusteringress.googleapis.com"
 "multiclusterservicediscovery.googleapis.com"
+"mesh.googleapis.com"
 ```
 
 ## Full GKE Hub example
@@ -26,6 +27,7 @@ module "project" {
     "anthosconfigmanagement.googleapis.com",
     "multiclusteringress.googleapis.com",
     "multiclusterservicediscovery.googleapis.com",
+    "mesh.googleapis.com"
   ]
 }
 
@@ -89,7 +91,7 @@ module "hub" {
   }
 }
 
-# tftest modules=4 resources=13
+# tftest modules=4 resources=14
 ```
 <!-- BEGIN TFDOC -->
 
@@ -97,10 +99,10 @@ module "hub" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [project_id](variables.tf#L75) | GKE hub project ID. | <code>string</code> | ✓ |  |
-| [features](variables.tf#L17) | GKE hub features to enable. | <code title="object&#40;&#123;&#10;  configmanagement    &#61; bool&#10;  mc_ingress          &#61; bool&#10;  mc_servicediscovery &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  configmanagement    &#61; true&#10;  mc_ingress          &#61; false&#10;  mc_servicediscovery &#61; false&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [member_clusters](variables.tf#L32) | List for member cluster self links. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [member_features](variables.tf#L39) | Member features for each cluster | <code title="object&#40;&#123;&#10;  configmanagement &#61; object&#40;&#123;&#10;    binauthz &#61; bool&#10;    config_sync &#61; object&#40;&#123;&#10;      gcp_service_account_email &#61; string&#10;      https_proxy               &#61; string&#10;      policy_dir                &#61; string&#10;      secret_type               &#61; string&#10;      source_format             &#61; string&#10;      sync_branch               &#61; string&#10;      sync_repo                 &#61; string&#10;      sync_rev                  &#61; string&#10;    &#125;&#41;&#10;    hierarchy_controller &#61; object&#40;&#123;&#10;      enable_hierarchical_resource_quota &#61; bool&#10;      enable_pod_tree_labels             &#61; bool&#10;    &#125;&#41;&#10;    policy_controller &#61; object&#40;&#123;&#10;      exemptable_namespaces      &#61; list&#40;string&#41;&#10;      log_denies_enabled         &#61; bool&#10;      referential_rules_enabled  &#61; bool&#10;      template_library_installed &#61; bool&#10;    &#125;&#41;&#10;    version &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  configmanagement &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [project_id](variables.tf#L77) | GKE hub project ID. | <code>string</code> | ✓ |  |
+| [features](variables.tf#L17) | GKE hub features to enable. | <code title="object&#40;&#123;&#10;  configmanagement    &#61; bool&#10;  mc_ingress          &#61; bool&#10;  mc_servicediscovery &#61; bool&#10;  servicemesh         &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  configmanagement    &#61; true&#10;  mc_ingress          &#61; false&#10;  mc_servicediscovery &#61; false&#10;  servicemesh         &#61; false&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [member_clusters](variables.tf#L34) | List for member cluster self links. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [member_features](variables.tf#L41) | Member features for each cluster | <code title="object&#40;&#123;&#10;  configmanagement &#61; object&#40;&#123;&#10;    binauthz &#61; bool&#10;    config_sync &#61; object&#40;&#123;&#10;      gcp_service_account_email &#61; string&#10;      https_proxy               &#61; string&#10;      policy_dir                &#61; string&#10;      secret_type               &#61; string&#10;      source_format             &#61; string&#10;      sync_branch               &#61; string&#10;      sync_repo                 &#61; string&#10;      sync_rev                  &#61; string&#10;    &#125;&#41;&#10;    hierarchy_controller &#61; object&#40;&#123;&#10;      enable_hierarchical_resource_quota &#61; bool&#10;      enable_pod_tree_labels             &#61; bool&#10;    &#125;&#41;&#10;    policy_controller &#61; object&#40;&#123;&#10;      exemptable_namespaces      &#61; list&#40;string&#41;&#10;      log_denies_enabled         &#61; bool&#10;      referential_rules_enabled  &#61; bool&#10;      template_library_installed &#61; bool&#10;    &#125;&#41;&#10;    version &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  configmanagement &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
 
 ## Outputs
 

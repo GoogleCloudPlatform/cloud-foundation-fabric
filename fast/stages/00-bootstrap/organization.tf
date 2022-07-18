@@ -76,6 +76,13 @@ locals {
     },
     local.billing_org ? {
       "roles/billing.admin" = [
+        local.groups_iam.gcp-billing-admins,
+        local.groups_iam.gcp-organization-admins,
+        module.automation-tf-bootstrap-sa.iam_email,
+        module.automation-tf-resman-sa.iam_email
+      ],
+      "roles/billing.costsManager" = [
+        local.groups_iam.gcp-billing-admins,
         local.groups_iam.gcp-organization-admins,
         module.automation-tf-bootstrap-sa.iam_email,
         module.automation-tf-resman-sa.iam_email

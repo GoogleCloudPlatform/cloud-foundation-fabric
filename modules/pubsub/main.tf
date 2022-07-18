@@ -36,10 +36,11 @@ locals {
 }
 
 resource "google_pubsub_topic" "default" {
-  project      = var.project_id
-  name         = var.name
-  kms_key_name = var.kms_key
-  labels       = var.labels
+  project                    = var.project_id
+  name                       = var.name
+  kms_key_name               = var.kms_key
+  labels                     = var.labels
+  message_retention_duration = var.message_retention_duration
 
   dynamic "message_storage_policy" {
     for_each = length(var.regions) > 0 ? [var.regions] : []
