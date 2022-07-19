@@ -22,6 +22,7 @@ module "hub" {
     configmanagement    = true
     mc_ingress          = true
     mc_servicediscovery = true
+    servicemesh         = true
   }
   member_features = {
     configmanagement = {
