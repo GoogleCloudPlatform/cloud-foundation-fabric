@@ -23,15 +23,15 @@ terraform {
       source  = "hashicorp/google-beta"
       version = ">= 4.20.0" # tftest
     }
-    
+
     github = {
       source  = "integrations/github"
-      version = "~> 4.0" 
+      version = "~> 4.0"
     }
-    
+
     gitlab = {
       source  = "gitlabhq/gitlab"
-      version = ">= 3.16.1" 
+      version = ">= 3.16.1"
     }
   }
 }
