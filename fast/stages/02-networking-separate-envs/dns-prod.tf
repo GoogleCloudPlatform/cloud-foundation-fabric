@@ -20,11 +20,11 @@
 
 module "prod-dns-private-zone" {
   source          = "../../../modules/dns"
-  project_id      = module.prod-project.project_id
+  project_id      = module.prod-spoke-project.project_id
   type            = "private"
   name            = "prod-gcp-example-com"
   domain          = "prod.gcp.example.com."
-  client_networks = [module.prod-vpc.self_link]
+  client_networks = [module.prod-spoke-vpc.self_link]
   recordsets = {
     "A localhost" = { type = "A", ttl = 300, records = ["127.0.0.1"] }
   }
@@ -32,32 +32,32 @@ module "prod-dns-private-zone" {
 
 module "prod-onprem-example-dns-forwarding" {
   source          = "../../../modules/dns"
-  project_id      = module.prod-project.project_id
+  project_id      = module.prod-spoke-project.project_id
   type            = "forwarding"
   name            = "example-com"
   domain          = "onprem.example.com."
-  client_networks = [module.prod-vpc.self_link]
+  client_networks = [module.prod-spoke-vpc.self_link]
   forwarders      = { for ip in var.dns.prod : ip => null }
 }
 
 module "prod-reverse-10-dns-forwarding" {
   source          = "../../../modules/dns"
-  project_id      = module.prod-project.project_id
+  project_id      = module.prod-spoke-project.project_id
   type            = "forwarding"
   name            = "root-reverse-10"
   domain          = "10.in-addr.arpa."
-  client_networks = [module.prod-vpc.self_link]
+  client_networks = [module.prod-spoke-vpc.self_link]
   forwarders      = { for ip in var.dns.prod : ip => null }
 }
 
 
 module "prod-googleapis-private-zone" {
   source          = "../../../modules/dns"
-  project_id      = module.prod-project.project_id
+  project_id      = module.prod-spoke-project.project_id
   type            = "private"
   name            = "googleapis-com"
   domain          = "googleapis.com."
-  client_networks = [module.prod-vpc.self_link]
+  client_networks = [module.prod-spoke-vpc.self_link]
   recordsets = {
     "A private" = { type = "A", ttl = 300, records = [
       "199.36.153.8", "199.36.153.9", "199.36.153.10", "199.36.153.11"

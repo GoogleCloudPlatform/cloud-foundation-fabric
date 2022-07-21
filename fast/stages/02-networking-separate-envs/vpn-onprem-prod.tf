@@ -19,8 +19,8 @@
 module "prod-to-onprem-ew1-vpn" {
   count                 = local.enable_onprem_vpn ? 1 : 0
   source                = "../../../modules/net-vpn-ha"
-  project_id            = module.prod-project.project_id
-  network               = module.prod-vpc.self_link
+  project_id            = module.prod-spoke-project.project_id
+  network               = module.prod-spoke-vpc.self_link
   region                = "europe-west1"
   name                  = "vpn-to-onprem-ew1"
   router_create         = true

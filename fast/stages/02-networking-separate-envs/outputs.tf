@@ -16,16 +16,16 @@
 
 locals {
   host_project_ids = {
-    dev-0  = module.dev-project.project_id
-    prod-0 = module.prod-project.project_id
+    dev-spoke-0  = module.dev-spoke-project.project_id
+    prod-spoke-0 = module.prod-spoke-project.project_id
   }
   host_project_numbers = {
-    dev-0  = module.dev-project.number
-    prod-0 = module.prod-project.number
+    dev-spoke-0  = module.dev-spoke-project.number
+    prod-spoke-0 = module.prod-spoke-project.number
   }
   subnet_self_links = {
-    dev-0  = module.dev-vpc.subnet_self_links
-    prod-0 = module.prod-vpc.subnet_self_links
+    dev-spoke-0  = module.dev-spoke-vpc.subnet_self_links
+    prod-spoke-0 = module.prod-spoke-vpc.subnet_self_links
   }
   tfvars = {
     host_project_ids     = local.host_project_ids
@@ -34,12 +34,12 @@ locals {
     vpc_self_links       = local.vpc_self_links
   }
   vpc_self_links = {
-    dev-0  = module.dev-vpc.self_link
-    prod-0 = module.prod-vpc.self_link
+    dev-spoke-0  = module.dev-spoke-vpc.self_link
+    prod-spoke-0 = module.prod-spoke-vpc.self_link
   }
 }
 
-# optionally generate tfvars file for subsequent stages
+# generate tfvars file for subsequent stages
 
 resource "local_file" "tfvars" {
   for_each        = var.outputs_location == null ? {} : { 1 = 1 }
@@ -48,16 +48,22 @@ resource "local_file" "tfvars" {
   content         = jsonencode(local.tfvars)
 }
 
+resource "google_storage_bucket_object" "tfvars" {
+  bucket  = var.automation.outputs_bucket
+  name    = "tfvars/02-networking.auto.tfvars.json"
+  content = jsonencode(local.tfvars)
+}
+
 # outputs
 
 output "dev_cloud_dns_inbound_policy" {
   description = "IP Addresses for Cloud DNS inbound policy for the dev environment."
-  value       = [for s in module.dev-vpc.subnets : cidrhost(s.ip_cidr_range, 2)]
+  value       = [for s in module.dev-spoke-vpc.subnets : cidrhost(s.ip_cidr_range, 2)]
 }
 
 output "prod_cloud_dns_inbound_policy" {
   description = "IP Addresses for Cloud DNS inbound policy for the prod environment."
-  value       = [for s in module.prod-vpc.subnets : cidrhost(s.ip_cidr_range, 2)]
+  value       = [for s in module.prod-spoke-vpc.subnets : cidrhost(s.ip_cidr_range, 2)]
 }
 
 output "host_project_ids" {

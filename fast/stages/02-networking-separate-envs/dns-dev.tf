@@ -20,11 +20,11 @@
 
 module "dev-dns-private-zone" {
   source          = "../../../modules/dns"
-  project_id      = module.dev-project.project_id
+  project_id      = module.dev-spoke-project.project_id
   type            = "private"
   name            = "dev-gcp-example-com"
   domain          = "dev.gcp.example.com."
-  client_networks = [module.dev-vpc.self_link]
+  client_networks = [module.dev-spoke-vpc.self_link]
   recordsets = {
     "A localhost" = { type = "A", ttl = 300, records = ["127.0.0.1"] }
   }
@@ -32,31 +32,31 @@ module "dev-dns-private-zone" {
 
 module "dev-onprem-example-dns-forwarding" {
   source          = "../../../modules/dns"
-  project_id      = module.dev-project.project_id
+  project_id      = module.dev-spoke-project.project_id
   type            = "forwarding"
   name            = "example-com"
   domain          = "onprem.example.com."
-  client_networks = [module.dev-vpc.self_link]
+  client_networks = [module.dev-spoke-vpc.self_link]
   forwarders      = { for ip in var.dns.dev : ip => null }
 }
 
 module "dev-reverse-10-dns-forwarding" {
   source          = "../../../modules/dns"
-  project_id      = module.dev-project.project_id
+  project_id      = module.dev-spoke-project.project_id
   type            = "forwarding"
   name            = "root-reverse-10"
   domain          = "10.in-addr.arpa."
-  client_networks = [module.dev-vpc.self_link]
+  client_networks = [module.dev-spoke-vpc.self_link]
   forwarders      = { for ip in var.dns.dev : ip => null }
 }
 
 module "dev-googleapis-private-zone" {
   source          = "../../../modules/dns"
-  project_id      = module.dev-project.project_id
+  project_id      = module.dev-spoke-project.project_id
   type            = "private"
   name            = "googleapis-com"
   domain          = "googleapis.com."
-  client_networks = [module.dev-vpc.self_link]
+  client_networks = [module.dev-spoke-vpc.self_link]
   recordsets = {
     "A private" = { type = "A", ttl = 300, records = [
       "199.36.153.8", "199.36.153.9", "199.36.153.10", "199.36.153.11"

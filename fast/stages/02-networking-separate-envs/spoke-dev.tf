@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Production spoke VPC and related resources.
+# tfdoc:file:description Dev spoke VPC and related resources.
 
-module "prod-project" {
+module "dev-spoke-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account.id
-  name            = "prod-net-spoke-0"
-  parent          = var.folder_ids.networking-prod
+  name            = "dev-net-spoke-0"
+  parent          = var.folder_ids.networking-dev
   prefix          = var.prefix
   service_config = {
     disable_on_destroy         = false
@@ -40,18 +40,20 @@ module "prod-project" {
     service_projects = []
   }
   iam = {
-    "roles/dns.admin" = [local.service_accounts.project-factory-prod]
+    "roles/dns.admin" = compact([
+      try(local.service_accounts.project-factory-dev, null)
+    ])
   }
 }
 
-module "prod-vpc" {
-  source        = "../../../modules/net-vpc"
-  project_id    = module.prod-project.project_id
-  name          = "prod-0"
-  mtu           = 1500
-  data_folder   = "${var.data_dir}/subnets/prod"
-  psa_ranges    = var.psa_ranges.prod
-  subnets_l7ilb = local.l7ilb_subnets.prod
+module "dev-spoke-vpc" {
+  source             = "../../../modules/net-vpc"
+  project_id         = module.dev-spoke-project.project_id
+  name               = "dev-spoke-0"
+  mtu                = 1500
+  data_folder        = "${var.data_dir}/subnets/dev"
+  psa_config         = try(var.psa_ranges.dev, null)
+  subnets_proxy_only = local.l7ilb_subnets.dev
   # set explicit routes for googleapis in case the default route is deleted
   routes = {
     private-googleapis = {
@@ -69,50 +71,43 @@ module "prod-vpc" {
       next_hop      = "default-internet-gateway"
     }
   }
-  #TODO: consider implementing a design that creates an ad-hoc VPC where to 
-  # enable the inbound policy. This saves from creating one ip per subnet.
-  dns_policy = {
-    inbound  = true
-    logging  = false
-    outbound = null
-  }
 }
 
-module "prod-firewall" {
+module "dev-spoke-firewall" {
   source              = "../../../modules/net-vpc-firewall"
-  project_id          = module.prod-project.project_id
-  network             = module.prod-vpc.name
+  project_id          = module.dev-spoke-project.project_id
+  network             = module.dev-spoke-vpc.name
   admin_ranges        = []
   http_source_ranges  = []
   https_source_ranges = []
   ssh_source_ranges   = []
-  data_folder         = "${var.data_dir}/firewall-rules/prod"
+  data_folder         = "${var.data_dir}/firewall-rules/dev"
   cidr_template_file  = "${var.data_dir}/cidrs.yaml"
 }
 
-module "prod-cloudnat" {
-  for_each       = toset(values(module.prod-vpc.subnet_regions))
+module "dev-spoke-cloudnat" {
+  for_each       = toset(values(module.dev-spoke-vpc.subnet_regions))
   source         = "../../../modules/net-cloudnat"
-  project_id     = module.prod-project.project_id
+  project_id     = module.dev-spoke-project.project_id
   region         = each.value
-  name           = "prod-nat-${local.region_trigram[each.value]}"
+  name           = "dev-nat-${local.region_trigram[each.value]}"
   router_create  = true
-  router_network = module.prod-vpc.name
+  router_network = module.dev-spoke-vpc.name
   router_asn     = 4200001024
   logging_filter = "ERRORS_ONLY"
 }
 
 # Create delegated grants for stage3 service accounts
-resource "google_project_iam_binding" "prod_spoke_project_iam_delegated" {
-  project = module.prod-project.project_id
+resource "google_project_iam_binding" "dev_spoke_project_iam_delegated" {
+  project = module.dev-spoke-project.project_id
   role    = "roles/resourcemanager.projectIamAdmin"
-  members = [
-    local.service_accounts.data-platform-prod,
-    local.service_accounts.project-factory-prod,
-  ]
+  members = compact([
+    try(local.service_accounts.data-platform-dev, null),
+    try(local.service_accounts.project-factory-dev, null),
+  ])
   condition {
-    title       = "prod_stage3_sa_delegated_grants"
-    description = "Production host project delegated grants."
+    title       = "dev_stage3_sa_delegated_grants"
+    description = "Development host project delegated grants."
     expression = format(
       "api.getAttribute('iam.googleapis.com/modifiedGrantsByRole', []).hasOnly([%s])",
       join(",", formatlist("'%s'", local.stage3_sas_delegated_grants))

@@ -18,13 +18,13 @@
 
 # module "test-vm-dev-0" {
 #   source     = "../../../modules/compute-vm"
-#   project_id = module.dev-project.project_id
+#   project_id = module.dev-spoke-project.project_id
 #   zone       = "europe-west1-b"
 #   name       = "test-vm-0"
 #   network_interfaces = [{
-#     network = module.dev-vpc.self_link
+#     network = module.dev-spoke-vpc.self_link
 #     # change the subnet name to match the values you are actually using
-#     subnetwork = module.dev-vpc.subnet_self_links["europe-west1/dev-default-ew1"]
+#     subnetwork = module.dev-spoke-vpc.subnet_self_links["europe-west1/dev-default-ew1"]
 #     alias_ips  = {}
 #     nat        = false
 #     addresses  = null
@@ -35,6 +35,11 @@
 #     image = "projects/debian-cloud/global/images/family/debian-10"
 #     type  = "pd-balanced"
 #     size  = 10
+#   }
+#   options = {
+#     allow_stopping_for_update = true
+#     deletion_protection       = false
+#     spot                      = true
 #   }
 #   metadata = {
 #     startup-script = <<EOF
@@ -46,13 +51,13 @@
 
 # module "test-vm-prod-0" {
 #   source     = "../../../modules/compute-vm"
-#   project_id = module.prod-project.project_id
+#   project_id = module.prod-spoke-project.project_id
 #   zone       = "europe-west1-b"
 #   name       = "test-vm-0"
 #   network_interfaces = [{
-#     network = module.prod-vpc.self_link
+#     network = module.prod-spoke-vpc.self_link
 #     # change the subnet name to match the values you are actually using
-#     subnetwork = module.prod-vpc.subnet_self_links["europe-west1/prod-default-ew1"]
+#     subnetwork = module.prod-spoke-vpc.subnet_self_links["europe-west1/prod-default-ew1"]
 #     alias_ips  = {}
 #     nat        = false
 #     addresses  = null
@@ -63,6 +68,11 @@
 #     image = "projects/debian-cloud/global/images/family/debian-10"
 #     type  = "pd-balanced"
 #     size  = 10
+#   }
+#   options = {
+#     allow_stopping_for_update = true
+#     deletion_protection       = false
+#     spot                      = true
 #   }
 #   metadata = {
 #     startup-script = <<EOF
