@@ -56,7 +56,7 @@ def test_sinks(plan_runner):
   }
   """
   _, resources = plan_runner(logging_sinks=logging_sinks)
-  assert len(resources) == 9
+  assert len(resources) == 12
 
   resource_types = Counter([r["type"] for r in resources])
   assert resource_types == {
@@ -66,6 +66,8 @@ def test_sinks(plan_runner):
       "google_project_iam_member": 1,
       "google_pubsub_topic_iam_member": 1,
       "google_storage_bucket_iam_member": 1,
+      "google_compute_shared_vpc_host_project": 1,
+      "google_compute_shared_vpc_service_project": 2
   }
 
   sinks = [r for r in resources if r["type"] == "google_logging_project_sink"]
@@ -149,7 +151,7 @@ def test_exclusions(plan_runner):
       "}"
   )
   _, resources = plan_runner(logging_exclusions=logging_exclusions)
-  assert len(resources) == 3
+  assert len(resources) == 6
   exclusions = [
       r for r in resources if r["type"] == "google_logging_project_exclusion"
   ]
