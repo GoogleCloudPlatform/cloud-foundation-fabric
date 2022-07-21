@@ -117,3 +117,26 @@ def test_databases(plan_runner):
   assert len(resources) == 2
   assert all(r['values']['instance'] == "db" for r in resources)
   assert sorted(r['values']['name'] for r in resources) == ["db1", "db2"]
+
+
+def test_simple_instance_ipv4_enable(plan_runner):
+  "Test instance ipv4_enabled."
+
+  _, resources = plan_runner(ipv4_enabled="true")
+  assert len(resources) == 1 
+  assert r['values']['settings'][0]['ip_configuration'][0]['ipv4_enabled'] == True
+
+
+def test_replicas_ipv4_enable(plan_runner):
+  "Test replicas ipv4_enabled."
+
+  replicas = """{
+    replica1 = { region = "europe-west3", encryption_key_name = null }
+  }"""
+
+  _, resources = plan_runner(replicas=replicas, ipv4_enabled="true")
+  
+  assert len(resources) == 2
+  r = resources[1]
+  assert r['values']['settings'][0]['ip_configuration'][0]['ipv4_enabled'] == True
+  
