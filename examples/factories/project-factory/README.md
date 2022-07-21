@@ -13,14 +13,14 @@ The Project Factory is meant to be executed by a Service Account (or a regular u
   * `"dns.networks.bindPrivateDNSZone"`
   * and role `"roles/orgpolicy.policyAdmin"`
 * **on each folder** where projects will be created
-  * `"roles/logging.admin"` 
-  * `"roles/owner"` 
-  * `"roles/resourcemanager.folderAdmin"` 
+  * `"roles/logging.admin"`
+  * `"roles/owner"`
+  * `"roles/resourcemanager.folderAdmin"`
   * `"roles/resourcemanager.projectCreator"`
 * **on the host project** for the Shared VPC/s
-  * `"roles/browser"`       
+  * `"roles/browser"`
   * `"roles/compute.viewer"`
-  * `"roles/dns.admin"` 
+  * `"roles/dns.admin"`
 
 ## Example
 
@@ -176,6 +176,13 @@ service_accounts:
   my-service-account:
     - roles/compute.admin
 
+# [opt] IAM bindings on the service account resources.
+# in name => {role => [members]} format
+service_accounts_iam:                      
+  another-service-account:
+    - roles/iam.serviceAccountTokenCreator:
+      - group: app-team-1@example.com
+
 # [opt] APIs to enable on the project. 
 services:           
   - storage.googleapis.com
@@ -209,7 +216,7 @@ vpc:
   subnets_iam:                          
     europe-west1/prod-default-ew1: []
       - user:foobar@example.com
-      - serviceAccount:service-account1
+      - serviceAccount:service-account1@my-project.iam.gserviceaccount.com
 ```
 <!-- BEGIN TFDOC -->
 
@@ -230,10 +237,11 @@ vpc:
 | [labels](variables.tf#L92) | Labels to be assigned at project level. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [org_policies](variables.tf#L98) | Org-policy overrides at project level. | <code title="object&#40;&#123;&#10;  policy_boolean &#61; map&#40;bool&#41;&#10;  policy_list &#61; map&#40;object&#40;&#123;&#10;    inherit_from_parent &#61; bool&#10;    suggested_value     &#61; string&#10;    status              &#61; bool&#10;    values              &#61; list&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [prefix](variables.tf#L112) | Prefix used for the project id. | <code>string</code> |  | <code>null</code> |
-| [service_accounts](variables.tf#L123) | Service accounts to be created, and roles to assign them. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [service_identities_iam](variables.tf#L136) | Custom IAM settings for service identities in service => [role] format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [services](variables.tf#L129) | Services to be enabled for the project. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [vpc](variables.tf#L143) | VPC configuration for the project. | <code title="object&#40;&#123;&#10;  host_project &#61; string&#10;  gke_setup &#61; object&#40;&#123;&#10;    enable_security_admin     &#61; bool&#10;    enable_host_service_agent &#61; bool&#10;  &#125;&#41;&#10;  subnets_iam &#61; map&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [service_accounts](variables.tf#L123) | Service accounts to be created, and roles assigned them on the project. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [service_accounts_iam](variables.tf#L129) | IAM bindings on service account resources. Format is KEY => {ROLE => [MEMBERS]} | <code>map&#40;map&#40;list&#40;string&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [service_identities_iam](variables.tf#L143) | Custom IAM settings for service identities in service => [role] format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [services](variables.tf#L136) | Services to be enabled for the project. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [vpc](variables.tf#L150) | VPC configuration for the project. | <code title="object&#40;&#123;&#10;  host_project &#61; string&#10;  gke_setup &#61; object&#40;&#123;&#10;    enable_security_admin     &#61; bool&#10;    enable_host_service_agent &#61; bool&#10;  &#125;&#41;&#10;  subnets_iam &#61; map&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
