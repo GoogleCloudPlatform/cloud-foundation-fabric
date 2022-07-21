@@ -193,7 +193,6 @@ The easiest way to remove all the deployed resources is to run the following com
         terraform destroy -var-file=terraform.tfvars.sample -auto-approve
   
 The above command will delete the associated resources so there will be no billable charges made afterwards.
-
 <!-- BEGIN TFDOC -->
 
 ## Variables
@@ -202,7 +201,7 @@ The above command will delete the associated resources so there will be no billa
 |---|---|:---:|:---:|:---:|
 | [prefix](variables.tf#L36) | Unique prefix used for resource names. Not used for project if 'project_create' is null. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L50) | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
-| [cmek_encryption](variables.tf#L15) | Flag to enable CMEK on Google Cloud resources created. | <code>bool</code> |  | <code>false</code> |
+| [cmek_encryption](variables.tf#L15) | Flag to enable CMEK on GCP resources created. | <code>bool</code> |  | <code>false</code> |
 | [data_eng_principals](variables.tf#L21) | Groups with Service Account Token creator role on service accounts in IAM format, eg 'group:group@domain.com'. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 | [network_config](variables.tf#L27) | Shared VPC network configurations to use. If null networks will be created in projects with preconfigured values. | <code title="object&#40;&#123;&#10;  host_project     &#61; string&#10;  subnet_self_link &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [project_create](variables.tf#L41) | Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
