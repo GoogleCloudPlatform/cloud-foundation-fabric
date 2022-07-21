@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description temporary instances for testing
+# tfdoc:file:description Temporary instances for testing
 
 # module "test-vm-dev-0" {
 #   source     = "../../../modules/compute-vm"

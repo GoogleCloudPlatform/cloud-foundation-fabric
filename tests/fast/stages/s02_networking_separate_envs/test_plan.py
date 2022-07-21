@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 def test_counts(fast_e2e_plan_runner):
   "Test stage."
   num_modules, num_resources, _ = fast_e2e_plan_runner()
