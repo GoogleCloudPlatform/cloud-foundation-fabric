@@ -49,6 +49,7 @@ module "projects" {
   org_policies           = try(each.value.org_policies, null)
   prefix                 = var.prefix
   service_accounts       = try(each.value.service_accounts, {})
+  service_accounts_iam   = try(each.value.service_accounts_iam, {})
   services               = try(each.value.services, [])
   service_identities_iam = try(each.value.service_identities_iam, {})
   vpc                    = try(each.value.vpc, null)
