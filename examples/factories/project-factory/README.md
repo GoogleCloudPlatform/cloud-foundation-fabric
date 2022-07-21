@@ -178,7 +178,7 @@ service_accounts:
 
 # [opt] IAM bindings on the service account resources.
 # in name => {role => [members]} format
-service_accounts_iam:                      
+service_accounts_iam:
   another-service-account:
     - roles/iam.serviceAccountTokenCreator:
       - group: app-team-1@example.com
