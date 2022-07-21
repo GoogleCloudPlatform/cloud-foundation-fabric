@@ -16,7 +16,7 @@ def test_policy_boolean(plan_runner):
   "Test boolean org policy."
   policy_boolean = '{policy-a = true, policy-b = false, policy-c = null}'
   _, resources = plan_runner(policy_boolean=policy_boolean)
-  assert len(resources) == 4
+  assert len(resources) == 7
   resources = [r for r in resources if r['type']
                == 'google_project_organization_policy']
   assert sorted([r['index'] for r in resources]) == [
@@ -45,7 +45,7 @@ def test_policy_list(plan_runner):
       '}'
   )
   _, resources = plan_runner(policy_list=policy_list)
-  assert len(resources) == 4
+  assert len(resources) == 7
   values = [r['values'] for r in resources if r['type']
             == 'google_project_organization_policy']
   assert [r['constraint'] for r in values] == [
