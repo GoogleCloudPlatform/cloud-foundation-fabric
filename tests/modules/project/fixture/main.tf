@@ -16,8 +16,8 @@
 
 module "test" {
   source                     = "../../../../modules/project"
-  name                       = "my-project"
-  billing_account            = "12345-12345-12345"
+  name                       = var.name
+  billing_account            = var.billing_account
   auto_create_network        = var.auto_create_network
   custom_roles               = var.custom_roles
   iam                        = var.iam
@@ -36,4 +36,6 @@ module "test" {
   services                   = var.services
   logging_sinks              = var.logging_sinks
   logging_exclusions         = var.logging_exclusions
+  shared_vpc_host_config     = var.shared_vpc_host_config
 }
+
