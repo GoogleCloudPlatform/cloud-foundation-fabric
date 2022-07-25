@@ -183,6 +183,7 @@ module "service-accounts" {
   for_each   = var.service_accounts
   name       = each.key
   project_id = module.project.project_id
+  iam        = lookup(var.service_accounts_iam, each.key, null)
 }
 
 resource "google_compute_subnetwork_iam_member" "default" {

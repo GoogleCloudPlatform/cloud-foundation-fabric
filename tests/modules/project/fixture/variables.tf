@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 
+variable "name" {
+  type    = string
+  default = "my-project"
+}
+
+variable "billing_account" {
+  type    = string
+  default = "12345-12345-12345"
+}
+
 variable "auto_create_network" {
   type    = bool
   default = false
@@ -114,4 +124,18 @@ variable "logging_sinks" {
 variable "logging_exclusions" {
   type    = map(string)
   default = {}
+}
+
+variable "shared_vpc_host_config" {
+  type = object({
+    enabled          = bool
+    service_projects = list(string)
+  })
+  default = {
+    enabled = true
+    service_projects = [
+      "my-service-project-1",
+      "my-service-project-2"
+    ]
+  }
 }
