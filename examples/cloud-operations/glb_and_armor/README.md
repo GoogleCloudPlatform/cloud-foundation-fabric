@@ -74,12 +74,6 @@ This will clone the repository to your cloud shell and a screen like this one wi
 
 ![cloud_shell](cloud_shell.png)
 
-Before you deploy the architecture, make sure you run the following command to move your cloudshell session  into your service project:
-
-        gcloud config set project [SERVICE_PROJECT_ID]
-
-Once you can see your service project id in the yellow parenthesis, you’re ready to start.
-
 Before we deploy the architecture, you will need the following information:
 
 * The __service project ID__.
