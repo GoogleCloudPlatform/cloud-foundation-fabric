@@ -54,7 +54,7 @@ This solution assumes you already have a project created and set up where you wi
 
 * Have an [organization](https://cloud.google.com/resource-manager/docs/creating-managing-organization) set up in Google cloud.
 * Have a [billing account](https://cloud.google.com/billing/docs/how-to/manage-billing-account) set up.
-* Have an existing [project](https://cloud.google.com/resource-manager/docs/creating-managing-projects) with [billing enabled](https://cloud.google.com/billing/docs/how-to/modify-project), we’ll call this the __service project__.
+* Have an existing [project](https://cloud.google.com/resource-manager/docs/creating-managing-projects) with [billing enabled](https://cloud.google.com/billing/docs/how-to/modify-project).
 
 ### Roles & Permissions
 
