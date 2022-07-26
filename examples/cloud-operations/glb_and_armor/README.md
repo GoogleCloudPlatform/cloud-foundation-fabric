@@ -78,7 +78,6 @@ Before we deploy the architecture, you will need the following information:
 
 * The __service project ID__.
 * A __unique prefix__ that you want all the deployed resources to have (for example: awesomestartup). This must be a string with no spaces or tabs.
-* A __list of Groups or Users__ with Service Account Token creator role on Service Accounts in IAM format, eg 'group:group@domain.com'.
 
 #### Step 2: Deploying the resources
 
