@@ -77,7 +77,6 @@ This will clone the repository to your cloud shell and a screen like this one wi
 Before we deploy the architecture, you will need the following information:
 
 * The __project ID__.
-* Optional: a __unique prefix__ that you want all the deployed resources to have (for example: awesomestartup). This must be a string with no spaces or tabs.
 
 #### Step 2: Deploying the resources
 
