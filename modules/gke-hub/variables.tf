@@ -14,51 +14,74 @@
  * limitations under the License.
  */
 
-variable "member_clusters" {
+variable "clusters" {
   description = "Clusters members of this GKE Hub in name => id format."
   type        = map(string)
   default     = {}
   nullable    = false
 }
 
-variable "member_configs" {
-  description = "Sets of feature configurations that can be applied to member clusters, in config name => {options} format."
+variable "configmanagement_clusters" {
+  description = "Config management features enabled on specific sets of member clusters, in config name => [cluster name] format."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+}
+
+variable "configmanagement_templates" {
+  description = "Sets of config management configurations that can be applied to member clusters, in config name => {options} format."
   type = map(object({
-    binauthz                  = bool
-    config_management_version = string
-    hierarchy_controller = object({
-      hierarchical_resource_quota = bool
-      pod_tree_labels             = bool
-    })
+    binauthz = bool
     config_sync = object({
-      gcp_service_account_email = string
-      https_proxy               = string
-      policy_dir                = string
-      secret_type               = string
-      source_format             = string
-      sync_branch               = string
-      sync_repo                 = string
-      sync_rev                  = string
+      git = object({
+        gcp_service_account_email = string
+        https_proxy               = string
+        policy_dir                = string
+        secret_type               = string
+        sync_branch               = string
+        sync_repo                 = string
+        sync_rev                  = string
+        sync_wait_secs            = number
+      })
+      prevent_drift = string
+      source_format = string
     })
-    multi_cluster_ingress = bool
-    multi_cluster_service = bool
-    # service_mesh          = bool
+    hierarchy_controller = object({
+      enable_hierarchical_resource_quota = bool
+      enable_pod_tree_labels             = bool
+    })
     policy_controller = object({
+      audit_interval_seconds     = number
       exemptable_namespaces      = list(string)
       log_denies_enabled         = bool
       referential_rules_enabled  = bool
       template_library_installed = bool
     })
+    version = string
   }))
   default  = {}
   nullable = false
 }
 
-variable "member_features" {
-  description = "Features enabled on specific sets of member clusters, in config name => [cluster name] format."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
+variable "features" {
+  description = "Enable and configue fleet features."
+  type = object({
+    cloudrun               = bool
+    configmanagement       = bool
+    identity-service       = bool
+    ingress                = string
+    mesh                   = bool
+    multi-cluster-services = bool
+  })
+  default = {
+    cloudrun               = false
+    configmanagement       = false
+    identity-service       = false
+    ingress                = null
+    mesh                   = false
+    multi-cluster-services = false
+  }
+  nullable = false
 }
 
 variable "project_id" {

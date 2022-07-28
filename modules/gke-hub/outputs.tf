@@ -14,24 +14,13 @@
  * limitations under the License.
  */
 
-# output "cluster_ids" {
-#   value = var.member_clusters
-#   depends_on = [
-#     google_gke_hub_membership.membership,
-#     google_gke_hub_feature.configmanagement,
-#     google_gke_hub_feature.mci,
-#     google_gke_hub_feature.mcs,
-#     google_gke_hub_feature_membership.feature_member,
-#   ]
-# }
-
-output "foo" {
+output "cluster_ids" {
   value = {
-    # _cluster_features = local._cluster_features
-    # cluster_features  = local.cluster_features
-    # mci = {
-    #   for k, v in local.cluster_features :
-    #   k => 1 if v.multi_cluster_ingress == true # don't fail on null
-    # }
+    for k, v in google_gke_hub_membership.default : k => v.id
   }
+  depends_on = [
+    google_gke_hub_membership.default,
+    google_gke_hub_feature.default,
+    google_gke_hub_feature_membership.default,
+  ]
 }
