@@ -18,15 +18,13 @@ locals {
   _cluster_cm_config = flatten([
     for template, clusters in var.configmanagement_clusters : [
       for cluster in clusters : {
-        cluster_id = cluster
-        cluster    = lookup(var.clusters, cluster, null)
-        template   = lookup(var.configmanagement_templates, template, null)
+        cluster  = cluster
+        template = lookup(var.configmanagement_templates, template, null)
       }
     ]
   ])
   cluster_cm_config = {
-    for k in local._cluster_cm_config : k.cluster_id => k.template if(
-      k.cluster != null &&
+    for k in local._cluster_cm_config : k.cluster => k.template if(
       k.template != null &&
       var.features.configmanagement == true
     )
