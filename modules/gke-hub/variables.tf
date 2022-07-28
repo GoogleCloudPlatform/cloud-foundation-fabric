@@ -15,98 +15,53 @@
  */
 
 variable "member_clusters" {
-  description = ""
+  description = "Clusters members of this GKE Hub in name => id format."
+  type        = map(string)
+  default     = {}
+  nullable    = false
+}
+
+variable "member_configs" {
+  description = "Sets of feature configurations that can be applied to member clusters, in config name => {options} format."
+  type = map(object({
+    binauthz                  = bool
+    config_management_version = string
+    hierarchy_controller = object({
+      hierarchical_resource_quota = bool
+      pod_tree_labels             = bool
+    })
+    config_sync = object({
+      gcp_service_account_email = string
+      https_proxy               = string
+      policy_dir                = string
+      secret_type               = string
+      source_format             = string
+      sync_branch               = string
+      sync_repo                 = string
+      sync_rev                  = string
+    })
+    multi_cluster_ingress = bool
+    multi_cluster_service = bool
+    service_mesh          = bool
+    policy_controller = object({
+      exemptable_namespaces      = list(string)
+      log_denies_enabled         = bool
+      referential_rules_enabled  = bool
+      template_library_installed = bool
+    })
+  }))
+  default  = {}
+  nullable = false
+}
+
+variable "member_features" {
+  description = "Features enabled on specific sets of member clusters, in config name => [cluster name] format."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
 }
 
 variable "project_id" {
   description = "GKE hub project ID."
   type        = string
 }
-
-/*
-module "hub" {
-  source     = "./modules/gke-hub"
-  project_id = module.project.project_id
-  member_clusters = {
-    cluster1 = id1
-    cluster2 = id2
-  }
-  member_configs = {
-    app1 = {
-      binauthz = false
-      hierarchy_controller = null # {resource_quota = false, pod_tree_labels = false}
-      mci = false
-      mcs = false
-      configsync = {
-        secret_type = "none"
-      }
-      policy_controller = {}
-    }
-  }
-  member_features = {
-    app1 = {config = "app1", members = ["clusster1", "cluster2"]}
-  }
-}
-*/
-###############################################################################
-
-variable "features" {
-  description = "GKE hub features to enable."
-  type = object({
-    configmanagement    = bool
-    mc_ingress          = bool
-    mc_servicediscovery = bool
-    servicemesh         = bool
-  })
-  default = {
-    configmanagement    = true
-    mc_ingress          = false
-    mc_servicediscovery = false
-    servicemesh         = false
-  }
-  nullable = false
-}
-
-variable "member_clusters" {
-  description = "List for member cluster self links."
-  type        = map(string)
-  default     = {}
-  nullable    = false
-}
-
-variable "member_features" {
-  description = "Member features for each cluster"
-  type = object({
-    configmanagement = object({
-      binauthz = bool
-      config_sync = object({
-        gcp_service_account_email = string
-        https_proxy               = string
-        policy_dir                = string
-        secret_type               = string
-        source_format             = string
-        sync_branch               = string
-        sync_repo                 = string
-        sync_rev                  = string
-      })
-      hierarchy_controller = object({
-        enable_hierarchical_resource_quota = bool
-        enable_pod_tree_labels             = bool
-      })
-      policy_controller = object({
-        exemptable_namespaces      = list(string)
-        log_denies_enabled         = bool
-        referential_rules_enabled  = bool
-        template_library_installed = bool
-      })
-      version = string
-    })
-    # mc-ingress          = bool
-    # mc-servicediscovery = bool
-  })
-  default = {
-    configmanagement = null
-  }
-  nullable = false
-}
-
