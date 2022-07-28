@@ -26,5 +26,12 @@
 # }
 
 output "foo" {
-  value = local._cluster_features
+  value = {
+    # _cluster_features = local._cluster_features
+    # cluster_features  = local.cluster_features
+    # mci = {
+    #   for k, v in local.cluster_features :
+    #   k => 1 if v.multi_cluster_ingress == true # don't fail on null
+    # }
+  }
 }

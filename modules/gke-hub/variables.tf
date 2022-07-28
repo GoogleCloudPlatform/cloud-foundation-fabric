@@ -42,7 +42,7 @@ variable "member_configs" {
     })
     multi_cluster_ingress = bool
     multi_cluster_service = bool
-    service_mesh          = bool
+    # service_mesh          = bool
     policy_controller = object({
       exemptable_namespaces      = list(string)
       log_denies_enabled         = bool
