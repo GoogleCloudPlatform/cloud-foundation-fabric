@@ -72,11 +72,7 @@ module "hub" {
     cluster-1 = module.cluster-1.id
   }
   features = {
-<<<<<<< HEAD
     appdevexperience       = false
-=======
-    cloudrun               = false
->>>>>>> 579efb76 (Fixes)
     configmanagement       = true
     identity-service       = false
     ingress                = null
