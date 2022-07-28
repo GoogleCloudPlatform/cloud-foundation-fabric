@@ -88,3 +88,10 @@ variable "project_id" {
   description = "GKE hub project ID."
   type        = string
 }
+
+variable "workload_identity_clusters" {
+  description = "Cluster that will use fleet Workload Identity."
+  type        = map(bool)
+  default     = {}
+  nullable    = false
+}

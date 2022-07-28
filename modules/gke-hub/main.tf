@@ -43,6 +43,17 @@ resource "google_gke_hub_membership" "default" {
       resource_link = each.value
     }
   }
+  dynamic "authority" {
+    for_each = (
+      lookup(var.workload_identity_clusters, each.key, null) == null ||
+      lookup(var.clusters, each.key, null) == null
+      ? {}
+      : { 1 = 1 }
+    )
+    content {
+      issuer = "https://container.googleapis.com/v1/${var.clusters[each.key]}"
+    }
+  }
 }
 
 resource "google_gke_hub_feature" "default" {
