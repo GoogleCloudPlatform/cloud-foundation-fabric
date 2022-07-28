@@ -72,7 +72,11 @@ module "hub" {
     cluster-1 = module.cluster-1.id
   }
   features = {
+<<<<<<< HEAD
     appdevexperience       = false
+=======
+    cloudrun               = false
+>>>>>>> 579efb76 (Fixes)
     configmanagement       = true
     identity-service       = false
     ingress                = null
@@ -97,9 +101,18 @@ module "hub" {
         prevent_drift = false
         source_format = "hierarchy"
       }
-      hierarchy_controller = null
-      policy_controller    = null
-      version              = "1.10.2"
+      hierarchy_controller = {
+        enable_hierarchical_resource_quota = bool
+        enable_pod_tree_labels             = bool
+      }
+      policy_controller = {
+        audit_interval_seconds     = number
+        exemptable_namespaces      = list(string)
+        log_denies_enabled         = bool
+        referential_rules_enabled  = bool
+        template_library_installed = bool
+      }
+      version = "v1"
     }
   }
   configmanagement_clusters = {
