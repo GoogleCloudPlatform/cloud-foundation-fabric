@@ -46,7 +46,7 @@ module "vpc" {
   }]
 }
 
-module "cluster-1" {
+module "cluster_1" {
   source                   = "./modules/gke-cluster"
   project_id               = module.project.project_id
   name                     = "cluster-1"
@@ -69,7 +69,7 @@ module "hub" {
   source     = "./modules/gke-hub"
   project_id = module.project.project_id
   clusters = {
-    cluster-1 = module.cluster-1.id
+    cluster-1 = module.cluster_1.id
   }
   features = {
     appdevexperience             = false
