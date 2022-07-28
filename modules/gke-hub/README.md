@@ -66,29 +66,48 @@ module "cluster-1" {
 }
 
 module "hub" {
-  source     = "./modules/gke-hub"
+  source     = "./cloud-foundation-fabric/modules/gke-hub"
   project_id = module.project.project_id
-  member_clusters = {
-    cluster1 = module.cluster-1.id
+  clusters = {
+    cluster-1 = module.cluster-1.id
   }
-  member_features = {
-    configmanagement = {
-      binauthz = true
+
+  features = {
+    appdevexperience             = false
+    configmanagement             = true
+    identityservice              = false
+    multiclusteringress          = "cluster-1"
+    servicemesh                  = false
+    multiclusterservicediscovery = false
+  }
+
+  configmanagement_templates = {
+    default = {
+      binauthz = false
       config_sync = {
-        gcp_service_account_email = null
-        https_proxy               = null
-        policy_dir                = "configsync"
-        secret_type               = "none"
-        source_format             = "hierarchy"
-        sync_branch               = "main"
-        sync_repo                 = "https://github.com/danielmarzini/configsync-platform-example"
-        sync_rev                  = null
+        git = {
+          gcp_service_account_email = null
+          https_proxy               = null
+          policy_dir                = "configsync"
+          secret_type               = "none"
+          source_format             = "hierarchy"
+          sync_branch               = "main"
+          sync_repo                 = "https://github.com/danielmarzini/configsync-platform-example"
+          sync_rev                  = null
+          sync_wait_secs            = null
+        }
+        prevent_drift = false
+        source_format = "hierarchy"
       }
       hierarchy_controller = null
       policy_controller    = null
       version              = "1.10.2"
     }
   }
+  configmanagement_clusters = {
+    default = ["cluster-1"]
+  }
+
 }
 
 # tftest modules=4 resources=15

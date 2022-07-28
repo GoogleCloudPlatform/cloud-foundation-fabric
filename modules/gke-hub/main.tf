@@ -60,7 +60,7 @@ resource "google_gke_hub_feature" "default" {
   name     = each.key
   location = "global"
   dynamic "spec" {
-    for_each = each.key == "ingress" && each.value != null ? { 1 = 1 } : {}
+    for_each = each.key == "multiclusteringress" && each.value != null ? { 1 = 1 } : {}
     content {
       multiclusteringress {
         config_membership = google_gke_hub_membership.default[each.value].id
