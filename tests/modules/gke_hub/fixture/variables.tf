@@ -25,6 +25,17 @@ variable "clusters" {
   }
 }
 
+variable "features" {
+  default = {
+    cloudrun               = false
+    configmanagement       = true
+    identity-service       = false
+    ingress                = null
+    multi-cluster-services = false
+    servicemesh            = false
+  }
+}
+
 variable "configmanagement_templates" {
   default = {
     "common" = {
@@ -44,15 +55,18 @@ variable "configmanagement_templates" {
         source_format = "unstructured"
       }
       hierarchy_controller = {
-        enable_hierarchical_resource_quota = bool
-        enable_pod_tree_labels             = bool
+        enable_hierarchical_resource_quota = true
+        enable_pod_tree_labels             = true
       }
       policy_controller = {
-        audit_interval_seconds     = number
-        exemptable_namespaces      = list(string)
-        log_denies_enabled         = bool
-        referential_rules_enabled  = bool
-        template_library_installed = bool
+        audit_interval_seconds = 120
+        exemptable_namespaces = [
+          "namespace-1",
+          "namespace-2",
+        ]
+        log_denies_enabled         = true
+        referential_rules_enabled  = true
+        template_library_installed = true
       }
       version = "v1"
     }

@@ -102,21 +102,25 @@ module "hub" {
         source_format = "hierarchy"
       }
       hierarchy_controller = {
-        enable_hierarchical_resource_quota = bool
-        enable_pod_tree_labels             = bool
+        enable_hierarchical_resource_quota = true
+        enable_pod_tree_labels             = true
       }
       policy_controller = {
-        audit_interval_seconds     = number
-        exemptable_namespaces      = list(string)
-        log_denies_enabled         = bool
-        referential_rules_enabled  = bool
-        template_library_installed = bool
+        audit_interval_seconds     = 120
+        exemptable_namespaces      = []
+        log_denies_enabled         = true
+        referential_rules_enabled  = true
+        template_library_installed = true
       }
       version = "v1"
     }
   }
   configmanagement_clusters = {
+<<<<<<< HEAD
     "default" = [ "cluster-1" ]
+=======
+    "common" = [ "cluster-1" ]
+>>>>>>> 37906d9d (Fixes)
   }
 }
 
@@ -295,7 +299,7 @@ module "cluster_2_nodepool" {
   source                      = "./module/gke-nodepool"
   project_id                  = module.project.project_id
   cluster_name                = module.cluster_2.name
-  location                    = "europe-west"
+  location                    = "europe-west4"
   name                        = "nodepool"
   node_service_account_create = true
   initial_node_count          = 1

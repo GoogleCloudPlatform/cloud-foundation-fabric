@@ -17,7 +17,7 @@
 module "hub" {
   source                     = "../../../../modules/gke-hub"
   project_id                 = var.project_id
-  clusters                   = var.member_clusters
+  clusters                   = var.clusters
   features                   = var.features
   configmanagement_templates = var.configmanagement_templates
   configmanagement_clusters  = var.configmanagement_clusters
