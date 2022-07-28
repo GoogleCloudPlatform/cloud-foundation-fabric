@@ -116,11 +116,7 @@ module "hub" {
     }
   }
   configmanagement_clusters = {
-<<<<<<< HEAD
     "default" = [ "cluster-1" ]
-=======
-    "common" = [ "cluster-1" ]
->>>>>>> 37906d9d (Fixes)
   }
 }
 
@@ -159,6 +155,7 @@ module "vpc" {
       secondary_ip_range = {
         pods     = "10.1.0.0/16"
         services = "10.2.0.0/24"
+      }
     },
     {
       ip_cidr_range = config.subnet_cidr_block
@@ -167,6 +164,7 @@ module "vpc" {
       secondary_ip_range = {
         pods     = "10.3.0.0/16"
         services = "10.4.0.0/24"
+      }
     },
     {
       ip_cidr_range      = "10.0.0.0/28"
@@ -188,7 +186,7 @@ module "firewall" {
       action               = "allow"
       sources              = []
       ranges               = ["10.1.0.0/16", "10.3.0.0/16"]
-      targets              = ["cluster-1-node", "cluster-2-node""]
+      targets              = ["cluster-1-node", "cluster-2-node"]
       use_service_accounts = false
       rules = [{ protocol = "tcp", ports = null },
         { protocol = "udp", ports = null },
