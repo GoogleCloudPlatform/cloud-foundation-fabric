@@ -20,62 +20,50 @@ variable "project_id" {
 
 variable "clusters" {
   default = {
-    mycluster1 = "projects/myproject/locations/europe-west1-b/clusters/mycluster1"
-    mycluster2 = "projects/myproject/locations/europe-west1-b/clusters/mycluster2"
+    cluster-1 = "projects/myproject/locations/europe-west1-b/clusters/cluster-1"
+    cluster-2 = "projects/myproject/locations/europe-west1-b/clusters/cluster-2"
   }
 }
 
 variable "features" {
   default = {
-    cloudrun               = false
-    configmanagement       = true
-    identity-service       = false
-    ingress                = null
-    multi-cluster-services = false
-    servicemesh            = false
+    appdevexperience             = false
+    configmanagement             = true
+    identityservice              = false
+    multiclusteringress          = null
+    servicemesh                  = false
+    multiclusterservicediscovery = false
   }
 }
 
 variable "configmanagement_templates" {
   default = {
-    "common" = {
-      binauthz = true
+    default = {
+      binauthz = false
       config_sync = {
         git = {
           gcp_service_account_email = null
           https_proxy               = null
-          policy_dir                = "."
+          policy_dir                = "configsync"
           secret_type               = "ssh"
           sync_branch               = "main"
-          sync_repo                 = "git@github.com:my-org/repo.git"
+          sync_repo                 = "https://github.com/danielmarzini/configsync-platform-example"
           sync_rev                  = null
-          sync_wait_secs            = 60
+          sync_wait_secs            = null
         }
-        prevent_drift = true
-        source_format = "unstructured"
+        prevent_drift = false
+        source_format = "hierarchy"
       }
-      hierarchy_controller = {
-        enable_hierarchical_resource_quota = true
-        enable_pod_tree_labels             = true
-      }
-      policy_controller = {
-        audit_interval_seconds = 120
-        exemptable_namespaces = [
-          "namespace-1",
-          "namespace-2",
-        ]
-        log_denies_enabled         = true
-        referential_rules_enabled  = true
-        template_library_installed = true
-      }
-      version = "v1"
+      hierarchy_controller = null
+      policy_controller    = null
+      version              = "1.10.2"
     }
   }
 }
 
 variable "configmanagement_clusters" {
   default = {
-    "common" = ["mycluster1", "mycluster2"]
+    default = ["cluster-1", "cluster-2"]
   }
 }
 

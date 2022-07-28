@@ -17,10 +17,54 @@ import pytest
 
 @pytest.fixture
 def resources(plan_runner):
-  _, resources = plan_runner()
-  return resources
+    _, resources = plan_runner()
+    return resources
 
 
 def test_resource_count(resources):
-  "Test number of resources created."
-  assert len(resources) == 6
+    "Test number of resources created."
+    assert len(resources) == 6
+    assert sorted(r['address'] for r in resources) == [
+        'module.hub.google_gke_hub_feature.default["configmanagement"]',
+        'module.hub.google_gke_hub_feature.default["multiclusteringress"]',
+        'module.hub.google_gke_hub_feature_membership.default["cluster-1"]',
+        'module.hub.google_gke_hub_feature_membership.default["cluster-2"]',
+        'module.hub.google_gke_hub_membership.default["cluster-1"]',
+        'module.hub.google_gke_hub_membership.default["cluster-2"]'
+    ]
+
+def test_configmanagement_setup(resources):
+  "Test configuration of configmanagement."
+  resources = {r['address']: r['values'] for r in resources}
+
+  expected_configmanagement = [{
+      'binauthz': [],
+      'config_sync': [{
+        'git': [{
+              'gcp_service_account_email': None,
+              'https_proxy': None,
+              'policy_dir': 'configsync',
+              'secret_type': 'ssh',
+              'sync_branch': 'main',
+              'sync_repo': 'https://github.com/danielmarzini/configsync-platform-example',
+              'sync_rev': None,
+              'sync_wait_secs': None
+          }],
+          'prevent_drift': False,
+          'source_format': 'hierarchy'
+      }],
+      'hierarchy_controller': [],
+      'policy_controller': [],
+      'version': '1.10.2'
+  }]
+
+  for cluster in ['cluster-1', 'cluster-2']:
+    membership_key = f'module.hub.google_gke_hub_membership.default["{cluster}"]'
+    membership = resources[membership_key]
+    link = membership['endpoint'][0]['gke_cluster'][0]['resource_link']
+    assert link == f'projects/myproject/locations/europe-west1-b/clusters/{cluster}'
+
+    fm_key = f'module.hub.google_gke_hub_feature_membership.default["{cluster}"]'
+    fm = resources[fm_key]
+    print(fm['configmanagement'])
+    assert fm['configmanagement'] == expected_configmanagement    

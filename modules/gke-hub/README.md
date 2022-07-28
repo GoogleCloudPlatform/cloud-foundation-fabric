@@ -72,12 +72,12 @@ module "hub" {
     cluster-1 = module.cluster-1.id
   }
   features = {
-    appdevexperience       = false
-    configmanagement       = true
-    identity-service       = false
-    ingress                = null
-    multi-cluster-services = false
-    servicemesh            = false
+    appdevexperience             = false
+    configmanagement             = true
+    identityservice              = false
+    multiclusteringress          = null
+    servicemesh                  = false
+    multiclusterservicediscovery = false
   }
   configmanagement_templates = {
     default = {
@@ -116,7 +116,7 @@ module "hub" {
   }
 }
 
-# tftest modules=4 resources=15
+# tftest modules=4 resources=16
 ```
 
 ## Multi-cluster mesh on GKE
@@ -124,7 +124,7 @@ module "hub" {
 ```hcl
 module "project" {
   source          = "./modules/project"
-  billing_account = local.billing_account_id
+  billing_account = "123-456-789"
   name            = "gkehub-test"
   parent          = "folders/12345"
   services = [
@@ -141,11 +141,11 @@ module "project" {
 module "vpc" {
   source     = "./modules/net-vpc"
   project_id = module.project.project_id
-  name       = "svpc"
+  name       = "vpc"
   mtu        = 1500
   subnets = [
     {
-      ip_cidr_range = config.subnet_cidr_block
+      ip_cidr_range = "10.0.1.0/24"
       name          = "subnet-cluster-1"
       region        = "europe-west1"
       secondary_ip_range = {
@@ -154,7 +154,7 @@ module "vpc" {
       }
     },
     {
-      ip_cidr_range = config.subnet_cidr_block
+      ip_cidr_range = "10.0.2.0/24"
       name          = "subnet-cluster-2"
       region        = "europe-west4"
       secondary_ip_range = {
@@ -168,7 +168,7 @@ module "vpc" {
       region             = "europe-west1"
       secondary_ip_range = null
     }
-  ])
+  ]
 }
 
 module "firewall" {
@@ -177,7 +177,7 @@ module "firewall" {
   network    = module.vpc.name
   custom_rules = { 
     allow-mesh = {
-      description          = "Allow "
+      description          = "Allow mesh"
       direction            = "INGRESS"
       action               = "allow"
       sources              = []
@@ -194,8 +194,8 @@ module "firewall" {
         priority = 900
       }
     }, 
-    "allow-cluster-1-istio" => {
-      description          = "Allow "
+    "allow-cluster-1-istio" = {
+      description          = "Allow istio sidecar injection, istioctl version and istioctl ps"
       direction            = "INGRESS"
       action               = "allow"
       sources              = []
@@ -207,8 +207,8 @@ module "firewall" {
         priority = 1000
       }
     },
-    "allow-cluster-2-istio" => {
-      description          = "Allow "
+    "allow-cluster-2-istio" = {
+      description          = "Allow istio sidecar injection, istioctl version and istioctl ps"
       direction            = "INGRESS"
       action               = "allow"
       sources              = []
@@ -229,18 +229,18 @@ module "cluster_1" {
   name                     = "cluster-1"
   location                 = "europe-wes1"
   network                  = module.vpc.self_link
-  subnetwork               = module.vpc.subnet_self_links["europe-wes1/subnet-cluster-1"]
+  subnetwork               = module.vpc.subnet_self_links["europe-west1/subnet-cluster-1"]
   secondary_range_pods     = "pods"
   secondary_range_services = "services"
   private_cluster_config = {
     enable_private_nodes    = true
     enable_private_endpoint = false
-    master_ipv4_cidr_block  = ["192.168.1.0/28"]
+    master_ipv4_cidr_block  = "192.168.1.0/28"
     master_global_access    = true
   }
   master_authorized_ranges = {
-    mgmt = ["10.0.0.0/28"]
-    "pods-cluster-1" = [ "10.3.0.0/16"]
+    mgmt           = "10.0.0.0/28"
+    pods-cluster-1 =  "10.3.0.0/16"
   }
   enable_autopilot  = false
   release_channel   = "REGULAR"
@@ -251,7 +251,7 @@ module "cluster_1" {
 }
 
 module "cluster_1_nodepool" {
-  source                      = "./module/gke-nodepool"
+  source                      = "./modules/gke-nodepool"
   project_id                  = module.project.project_id
   cluster_name                = module.cluster_1.name
   location                    = "europe-west1"
@@ -268,18 +268,18 @@ module "cluster_2" {
   name                     = "cluster-1"
   location                 = "europe-wes1"
   network                  = module.vpc.self_link
-  subnetwork               = module.vpc.subnet_self_links["europe-wes1/subnet-cluster-1"]
+  subnetwork               = module.vpc.subnet_self_links["europe-west4/subnet-cluster-2"]
   secondary_range_pods     = "pods"
   secondary_range_services = "services"
   private_cluster_config = {
     enable_private_nodes    = true
     enable_private_endpoint = false
-    master_ipv4_cidr_block  = ["192.168.2.0/28"]
+    master_ipv4_cidr_block  = "192.168.2.0/28"
     master_global_access    = true
   }
   master_authorized_ranges = {
-    mgmt = ["10.0.0.0/28"]
-    "pods-cluster-1" = [ "10.1.0.0/16"]
+    mgmt           = "10.0.0.0/28"
+    pods-cluster-1 = "10.1.0.0/16"
   }
   enable_autopilot  = false
   release_channel   = "REGULAR"
@@ -290,7 +290,7 @@ module "cluster_2" {
 }
 
 module "cluster_2_nodepool" {
-  source                      = "./module/gke-nodepool"
+  source                      = "./modules/gke-nodepool"
   project_id                  = module.project.project_id
   cluster_name                = module.cluster_2.name
   location                    = "europe-west4"
@@ -310,21 +310,20 @@ module "hub" {
     cluster-2 = module.cluster_2.id
   }
   features = {
-    cloudrun               = false
-    configmanagement       = false
-    identity-service       = false
-    ingress                = null
-    multi-cluster-services = false
-    servicemesh            = true
+    appdevexperience             = false
+    configmanagement             = false
+    identityservice              = false
+    multiclusteringress          = null
+    servicemesh                  = true
+    multiclusterservicediscovery = false
   }
-  workload_identity_clusters = keys(module.clusters)
+  workload_identity_clusters = [
+    "cluster-1",
+    "cluster-2"
+  ]
 }
-
-# tftest modules=4 resources=15
+# tftest modules=8 resources=29
 ```
-
-
-
 
 <!-- BEGIN TFDOC -->
 
