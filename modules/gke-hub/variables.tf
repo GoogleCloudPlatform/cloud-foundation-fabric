@@ -14,6 +14,42 @@
  * limitations under the License.
  */
 
+variable "member_clusters" {
+  description = ""
+}
+
+variable "project_id" {
+  description = "GKE hub project ID."
+  type        = string
+}
+
+/*
+module "hub" {
+  source     = "./modules/gke-hub"
+  project_id = module.project.project_id
+  member_clusters = {
+    cluster1 = id1
+    cluster2 = id2
+  }
+  member_configs = {
+    app1 = {
+      binauthz = false
+      hierarchy_controller = null # {resource_quota = false, pod_tree_labels = false}
+      mci = false
+      mcs = false
+      configsync = {
+        secret_type = "none"
+      }
+      policy_controller = {}
+    }
+  }
+  member_features = {
+    app1 = {config = "app1", members = ["clusster1", "cluster2"]}
+  }
+}
+*/
+###############################################################################
+
 variable "features" {
   description = "GKE hub features to enable."
   type = object({
@@ -74,7 +110,3 @@ variable "member_features" {
   nullable = false
 }
 
-variable "project_id" {
-  description = "GKE hub project ID."
-  type        = string
-}
