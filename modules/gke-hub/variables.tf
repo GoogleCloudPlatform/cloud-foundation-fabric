@@ -70,8 +70,8 @@ variable "features" {
     configmanagement       = bool
     identity-service       = bool
     ingress                = string
-    mesh                   = bool
     multi-cluster-services = bool
+    servicemesh            = bool
   })
   default = {
     cloudrun               = false
@@ -90,8 +90,8 @@ variable "project_id" {
 }
 
 variable "workload_identity_clusters" {
-  description = "Cluster that will use fleet Workload Identity."
-  type        = map(bool)
-  default     = {}
+  description = "Clusters that will use fleet Workload Identity."
+  type        = list(string)
+  default     = []
   nullable    = false
 }

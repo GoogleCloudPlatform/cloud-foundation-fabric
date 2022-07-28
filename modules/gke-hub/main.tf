@@ -45,10 +45,7 @@ resource "google_gke_hub_membership" "default" {
   }
   dynamic "authority" {
     for_each = (
-      lookup(var.workload_identity_clusters, each.key, null) == null ||
-      lookup(var.clusters, each.key, null) == null
-      ? {}
-      : { 1 = 1 }
+      contains(var.workload_identity_clusters, each.key) ? {} : { 1 = 1 }
     )
     content {
       issuer = "https://container.googleapis.com/v1/${var.clusters[each.key]}"
