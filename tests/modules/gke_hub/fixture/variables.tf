@@ -18,7 +18,7 @@ variable "project_id" {
   default = "my-project"
 }
 
-variable "member_clusters" {
+variable "clusters" {
   default = {
     mycluster1 = "projects/myproject/locations/europe-west1-b/clusters/mycluster1"
     mycluster2 = "projects/myproject/locations/europe-west1-b/clusters/mycluster2"

@@ -90,7 +90,7 @@ variable "project_id" {
 }
 
 variable "workload_identity_clusters" {
-  description = "Clusters that will use fleet Workload Identity."
+  description = "Clusters that will use Fleet Workload Identity."
   type        = list(string)
   default     = []
   nullable    = false
