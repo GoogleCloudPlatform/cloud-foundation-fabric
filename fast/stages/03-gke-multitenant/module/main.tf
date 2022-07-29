@@ -44,14 +44,18 @@ module "gke-project-0" {
   shared_vpc_service_config = {
     attach       = true
     host_project = var.host_project_ids.dev-spoke-0
-    service_identity_iam = {
+    service_identity_iam = merge({
       "roles/compute.networkUser" = [
         "cloudservices", "container-engine"
       ]
       "roles/container.hostServiceAgentUser" = [
         "container-engine"
       ]
-    }
+      },
+      !local.fleet_mcs_enabled ? {} : {
+        "roles/multiclusterservicediscovery.serviceAgent" = ["gke-mcs"]
+        "roles/compute.networkViewer"                     = ["gke-mcs-importer"]
+    })
   }
   # specify project-level org policies here if you need them
   # policy_boolean = {

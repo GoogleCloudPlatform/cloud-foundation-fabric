@@ -103,6 +103,69 @@ variable "dns_domain" {
   default     = null
 }
 
+variable "fleet_configmanagement_clusters" {
+  description = "Config management features enabled on specific sets of member clusters, in config name => [cluster name] format."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+}
+
+
+variable "fleet_configmanagement_templates" {
+  description = "Sets of config management configurations that can be applied to member clusters, in config name => {options} format."
+  type = map(object({
+    binauthz = bool
+    config_sync = object({
+      git = object({
+        gcp_service_account_email = string
+        https_proxy               = string
+        policy_dir                = string
+        secret_type               = string
+        sync_branch               = string
+        sync_repo                 = string
+        sync_rev                  = string
+        sync_wait_secs            = number
+      })
+      prevent_drift = string
+      source_format = string
+    })
+    hierarchy_controller = object({
+      enable_hierarchical_resource_quota = bool
+      enable_pod_tree_labels             = bool
+    })
+    policy_controller = object({
+      audit_interval_seconds     = number
+      exemptable_namespaces      = list(string)
+      log_denies_enabled         = bool
+      referential_rules_enabled  = bool
+      template_library_installed = bool
+    })
+    version = string
+  }))
+  default  = {}
+  nullable = false
+}
+
+variable "fleet_features" {
+  description = "Enable and configue fleet features. Set to null to disable GKE Hub if fleet workload identity is not used."
+  type = object({
+    appdevexperience             = bool
+    configmanagement             = bool
+    identityservice              = bool
+    multiclusteringress          = string
+    multiclusterservicediscovery = bool
+    servicemesh                  = bool
+  })
+  default = null
+}
+
+variable "fleet_workload_identity" {
+  description = "Use Fleet Workload Identity for clusters. Enables GKE Hub if set to true."
+  type        = bool
+  default     = true
+  nullable    = false
+}
+
 variable "folder_ids" {
   # tfdoc:variable:source 01-resman
   description = "Folders to be used for the networking resources in folders/nnnnnnnnnnn format. If null, folder will be created."
@@ -111,19 +174,19 @@ variable "folder_ids" {
   })
 }
 
+variable "group_iam" {
+  description = "Project-level IAM bindings for groups. Use group emails as keys, list of roles as values."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+}
+
 variable "host_project_ids" {
   # tfdoc:variable:source 02-networking
   description = "Host project for the shared VPC."
   type = object({
     dev-spoke-0 = string
   })
-}
-
-variable "group_iam" {
-  description = "Project-level IAM bindings for groups. Use group emails as keys, list of roles as values."
-  type        = map(list(string))
-  default     = {}
-  nullable    = false
 }
 
 variable "labels" {
