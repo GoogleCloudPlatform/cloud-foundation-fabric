@@ -15,39 +15,11 @@
  */
 
 module "hub" {
-  source          = "../../../../modules/gke-hub"
-  project_id      = var.project_id
-  member_clusters = var.member_clusters
-  features = {
-    configmanagement    = true
-    mc_ingress          = true
-    mc_servicediscovery = true
-    servicemesh         = true
-  }
-  member_features = {
-    configmanagement = {
-      binauthz = true
-      config_sync = {
-        gcp_service_account_email = null
-        https_proxy               = null
-        policy_dir                = "configsync"
-        secret_type               = "none"
-        source_format             = "hierarchy"
-        sync_branch               = "main"
-        sync_repo                 = "https://github.com/danielmarzini/configsync-platform-example"
-        sync_rev                  = null
-      }
-      hierarchy_controller = {
-        enable_hierarchical_resource_quota = true
-        enable_pod_tree_labels             = true
-      }
-      policy_controller = {
-        exemptable_namespaces      = []
-        log_denies_enabled         = true
-        referential_rules_enabled  = true
-        template_library_installed = true
-      }
-      version = "1.10.2"
-    }
-  }
+  source                     = "../../../../modules/gke-hub"
+  project_id                 = var.project_id
+  clusters                   = var.clusters
+  features                   = var.features
+  configmanagement_templates = var.configmanagement_templates
+  configmanagement_clusters  = var.configmanagement_clusters
+  workload_identity_clusters = var.workload_identity_clusters
 }
