@@ -26,14 +26,15 @@ module "gke-project-0" {
   prefix          = var.prefix
   group_iam       = var.group_iam
   labels          = local.labels
+  # TODO: depend GKE hub services on GKE hub variable/activation
   services = [
-    "anthosconfigmanagement.googleapis.com",
+    # "anthosconfigmanagement.googleapis.com",
     # "anthos.googleapis.com",
     "cloudresourcemanager.googleapis.com",
     "container.googleapis.com",
     "dns.googleapis.com",
-    "gkeconnect.googleapis.com",
-    "gkehub.googleapis.com",
+    # "gkeconnect.googleapis.com",
+    # "gkehub.googleapis.com",
     "iam.googleapis.com",
     # "multiclusteringress.googleapis.com",
     # "multiclusterservicediscovery.googleapis.com",
