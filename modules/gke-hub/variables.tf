@@ -14,62 +14,72 @@
  * limitations under the License.
  */
 
-variable "features" {
-  description = "GKE hub features to enable."
-  type = object({
-    configmanagement    = bool
-    mc_ingress          = bool
-    mc_servicediscovery = bool
-    servicemesh         = bool
-  })
-  default = {
-    configmanagement    = true
-    mc_ingress          = false
-    mc_servicediscovery = false
-    servicemesh         = false
-  }
-  nullable = false
-}
-
-variable "member_clusters" {
-  description = "List for member cluster self links."
+variable "clusters" {
+  description = "Clusters members of this GKE Hub in name => id format."
   type        = map(string)
   default     = {}
   nullable    = false
 }
 
-variable "member_features" {
-  description = "Member features for each cluster"
-  type = object({
-    configmanagement = object({
-      binauthz = bool
-      config_sync = object({
+variable "configmanagement_clusters" {
+  description = "Config management features enabled on specific sets of member clusters, in config name => [cluster name] format."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+}
+
+variable "configmanagement_templates" {
+  description = "Sets of config management configurations that can be applied to member clusters, in config name => {options} format."
+  type = map(object({
+    binauthz = bool
+    config_sync = object({
+      git = object({
         gcp_service_account_email = string
         https_proxy               = string
         policy_dir                = string
         secret_type               = string
-        source_format             = string
         sync_branch               = string
         sync_repo                 = string
         sync_rev                  = string
+        sync_wait_secs            = number
       })
-      hierarchy_controller = object({
-        enable_hierarchical_resource_quota = bool
-        enable_pod_tree_labels             = bool
-      })
-      policy_controller = object({
-        exemptable_namespaces      = list(string)
-        log_denies_enabled         = bool
-        referential_rules_enabled  = bool
-        template_library_installed = bool
-      })
-      version = string
+      prevent_drift = string
+      source_format = string
     })
-    # mc-ingress          = bool
-    # mc-servicediscovery = bool
+    hierarchy_controller = object({
+      enable_hierarchical_resource_quota = bool
+      enable_pod_tree_labels             = bool
+    })
+    policy_controller = object({
+      audit_interval_seconds     = number
+      exemptable_namespaces      = list(string)
+      log_denies_enabled         = bool
+      referential_rules_enabled  = bool
+      template_library_installed = bool
+    })
+    version = string
+  }))
+  default  = {}
+  nullable = false
+}
+
+variable "features" {
+  description = "Enable and configue fleet features."
+  type = object({
+    appdevexperience             = bool
+    configmanagement             = bool
+    identityservice              = bool
+    multiclusteringress          = string
+    multiclusterservicediscovery = bool
+    servicemesh                  = bool
   })
   default = {
-    configmanagement = null
+    appdevexperience             = false
+    configmanagement             = false
+    identityservice              = false
+    multiclusteringress          = null
+    servicemesh                  = false
+    multiclusterservicediscovery = false
   }
   nullable = false
 }
@@ -77,4 +87,11 @@ variable "member_features" {
 variable "project_id" {
   description = "GKE hub project ID."
   type        = string
+}
+
+variable "workload_identity_clusters" {
+  description = "Clusters that will use Fleet Workload Identity."
+  type        = list(string)
+  default     = []
+  nullable    = false
 }
