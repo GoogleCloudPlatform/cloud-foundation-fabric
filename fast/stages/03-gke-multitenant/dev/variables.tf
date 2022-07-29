@@ -18,6 +18,14 @@
 # 1 project, m clusters
 # cloud dns for gke?
 
+variable "automation" {
+  # tfdoc:variable:source 00-bootstrap
+  description = "Automation resources created by the bootstrap stage."
+  type = object({
+    outputs_bucket = string
+  })
+}
+
 variable "authenticator_security_group" {
   description = "Optional group used for Groups for GKE."
   type        = string
@@ -228,6 +236,12 @@ variable "nodepools" {
     })
     preemptible = bool
   })))
+}
+
+variable "outputs_location" {
+  description = "Path where providers, tfvars files, and lists for the following stages are written. Leave empty to disable."
+  type        = string
+  default     = null
 }
 
 variable "prefix" {

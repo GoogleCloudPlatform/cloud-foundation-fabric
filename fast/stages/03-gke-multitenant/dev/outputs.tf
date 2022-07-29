@@ -57,6 +57,7 @@ resource "google_storage_bucket_object" "tfvars" {
 output "clusters" {
   description = "Cluster resources."
   value       = module.gke-multitenant.clusters
+  sensitive   = true
 }
 
 output "cluster_ids" {
