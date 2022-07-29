@@ -26,21 +26,24 @@ module "gke-project-0" {
   prefix          = var.prefix
   group_iam       = var.group_iam
   labels          = local.labels
-  # TODO: depend GKE hub services on GKE hub variable/activation
-  services = [
-    # "anthosconfigmanagement.googleapis.com",
-    # "anthos.googleapis.com",
-    "cloudresourcemanager.googleapis.com",
-    "container.googleapis.com",
-    "dns.googleapis.com",
-    # "gkeconnect.googleapis.com",
-    # "gkehub.googleapis.com",
-    "iam.googleapis.com",
-    # "multiclusteringress.googleapis.com",
-    # "multiclusterservicediscovery.googleapis.com",
-    "stackdriver.googleapis.com",
-    # "trafficdirector.googleapis.com"
-  ]
+  services = concat(
+    [
+      "cloudresourcemanager.googleapis.com",
+      "container.googleapis.com",
+      "dns.googleapis.com",
+      "iam.googleapis.com",
+      "stackdriver.googleapis.com",
+    ],
+    !local.fleet_enabled ? [] : [
+      "anthosconfigmanagement.googleapis.com",
+      "anthos.googleapis.com",
+      "gkeconnect.googleapis.com",
+      "gkehub.googleapis.com",
+      "multiclusteringress.googleapis.com",
+      "multiclusterservicediscovery.googleapis.com",
+      "trafficdirector.googleapis.com"
+    ]
+  )
   shared_vpc_service_config = {
     attach       = true
     host_project = var.host_project_ids.dev-spoke-0
