@@ -18,7 +18,9 @@ locals {
   annotations = merge(
     var.ingress_settings == null ? {} : {
       "run.googleapis.com/ingress" = var.ingress_settings
-    },
+    }
+  )
+  template_annotations = merge(
     var.vpc_connector == null ? {} : {
       "run.googleapis.com/vpc-access-connector" = (
         try(var.vpc_connector.create, false)
@@ -30,7 +32,8 @@ locals {
       "run.googleapis.com/vpc-access-egress" = var.vpc_connector.egress_settings
     }
   )
-  prefix = var.prefix == null ? "" : "${var.prefix}-"
+  revision_name = try(var.revision_name, null) == null ? null : "${var.name}-${var.revision_name}"
+  prefix        = var.prefix == null ? "" : "${var.prefix}-"
   service_account_email = (
     var.service_account_create
     ? (
@@ -151,11 +154,9 @@ resource "google_cloud_run_service" "service" {
         }
       }
     }
-    dynamic "metadata" {
-      for_each = var.revision_name == null ? [] : [""]
-      content {
-        name = "${var.name}-${var.revision_name}"
-      }
+    metadata {
+      name        = local.revision_name
+      annotations = local.template_annotations
     }
   }
 

@@ -15,12 +15,12 @@
  */
 
 output "cluster_ids" {
-  value = var.member_clusters
+  value = {
+    for k, v in google_gke_hub_membership.default : k => v.id
+  }
   depends_on = [
-    google_gke_hub_membership.membership,
-    google_gke_hub_feature.configmanagement,
-    google_gke_hub_feature.mci,
-    google_gke_hub_feature.mcs,
-    google_gke_hub_feature_membership.feature_member,
+    google_gke_hub_membership.default,
+    google_gke_hub_feature.default,
+    google_gke_hub_feature_membership.default,
   ]
 }

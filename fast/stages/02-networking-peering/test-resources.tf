@@ -35,6 +35,11 @@
 #     type  = "pd-balanced"
 #     size  = 10
 #   }
+#   options = {
+#     allow_stopping_for_update = true
+#     deletion_protection       = false
+#     spot                      = true
+#   }
 #   metadata = {
 #     startup-script = <<EOF
 #       apt update
@@ -63,6 +68,11 @@
 #     type  = "pd-balanced"
 #     size  = 10
 #   }
+#   options = {
+#     allow_stopping_for_update = true
+#     deletion_protection       = false
+#     spot                      = true
+#   }
 #   metadata = {
 #     startup-script = <<EOF
 #       apt update
@@ -90,6 +100,11 @@
 #     image = "projects/debian-cloud/global/images/family/debian-10"
 #     type  = "pd-balanced"
 #     size  = 10
+#   }
+#   options = {
+#     allow_stopping_for_update = true
+#     deletion_protection       = false
+#     spot                      = true
 #   }
 #   metadata = {
 #     startup-script = <<EOF
