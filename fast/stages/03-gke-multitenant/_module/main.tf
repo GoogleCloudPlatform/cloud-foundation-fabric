@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-locals {
-  labels = merge(var.labels, { environment = "dev" })
-}
-
 module "gke-project-0" {
   source          = "../../../../modules/project"
-  billing_account = var.billing_account.id
-  name            = "dev-gke-clusters-0"
-  parent          = var.folder_ids.gke-dev
+  billing_account = var.billing_account_id
+  name            = "gke-clusters-0"
+  parent          = var.folder_id
   prefix          = var.prefix
   group_iam       = var.group_iam
-  labels          = local.labels
+  labels          = var.labels
   services = concat(
     [
       "cloudresourcemanager.googleapis.com",
@@ -46,7 +42,7 @@ module "gke-project-0" {
   )
   shared_vpc_service_config = {
     attach       = true
-    host_project = var.host_project_ids.dev-spoke-0
+    host_project = var.vpc_config.host_project_id
     service_identity_iam = merge({
       "roles/compute.networkUser" = [
         "cloudservices", "container-engine"

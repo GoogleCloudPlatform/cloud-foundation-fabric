@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Data Platformy.
+# tfdoc:file:description Data Platform.
 
 module "data-platform" {
   source             = "../../../../examples/data-solutions/data-platform-foundations"
