@@ -158,7 +158,7 @@ You can find examples in the `[demo](../../../../examples/data-solutions/data-pl
 
 | name | description | modules | resources |
 |---|---|---|---|
-| [main.tf](./main.tf) | Data Platformy. | <code>data-platform-foundations</code> |  |
+| [main.tf](./main.tf) | Data Platform. | <code>data-platform-foundations</code> |  |
 | [outputs.tf](./outputs.tf) | Output variables. |  | <code>google_storage_bucket_object</code> · <code>local_file</code> |
 | [variables.tf](./variables.tf) | Terraform Variables. |  |  |
 
