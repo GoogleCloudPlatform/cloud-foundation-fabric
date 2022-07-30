@@ -174,6 +174,13 @@ variable "group_iam" {
   nullable    = false
 }
 
+variable "iam" {
+  description = "Project-level authoritative IAM bindings for users and service accounts in  {ROLE => [MEMBERS]} format."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+}
+
 variable "labels" {
   description = "Project-level labels."
   type        = map(string)

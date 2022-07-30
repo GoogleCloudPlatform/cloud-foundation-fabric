@@ -183,7 +183,14 @@ variable "folder_ids" {
 }
 
 variable "group_iam" {
-  description = "Project-level IAM bindings for groups. Use group emails as keys, list of roles as values."
+  description = "Project-level authoritative IAM bindings for groups in {GROUP_EMAIL => [ROLES]} format. Use group emails as keys, list of roles as values."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+}
+
+variable "iam" {
+  description = "Project-level authoritative IAM bindings for users and service accounts in  {ROLE => [MEMBERS]} format."
   type        = map(list(string))
   default     = {}
   nullable    = false

@@ -21,6 +21,7 @@ module "gke-multitenant" {
   billing_account_id = var.billing_account.id
   folder_id          = var.folder_ids.gke-dev
   group_iam          = var.group_iam
+  iam                = var.iam
   labels             = merge(var.labels, { environment = "dev" })
   prefix             = "${var.prefix}-dev"
   project_services   = var.project_services

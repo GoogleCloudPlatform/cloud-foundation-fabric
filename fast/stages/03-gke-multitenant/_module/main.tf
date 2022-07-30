@@ -21,6 +21,7 @@ module "gke-project-0" {
   parent          = var.folder_id
   prefix          = var.prefix
   group_iam       = var.group_iam
+  iam             = var.iam
   labels          = var.labels
   services = concat(
     [
