@@ -4,60 +4,60 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
--  Fix gke hub module features condition (ludoo) #761
--  GKE hub module refactor (ludoo) #760
--  FIX: Missing value to format principalSet (imp14a) #759
--  Changed cluster id sensitivity (apichick) #756
--  Remove key_algorithm from glb/ilb-l7 examples (ludoo) #757
--  Add support for IAM bindings on service accounts to project factory (ludoo) #753
--  Added dependency on google_compute_shared_vpc_host_project.shared_vpc… (apichick) #752
--  Added gkehub.googleapis.com to jit services (apichick) #747
--  Update multi region cloud SQL markdown file (bensadikgoogle) #746
--  FIX: 00-cicd stage - Gitlab and Github providers (imp14a) #745
--  Fixed issue with missing project reference in Cloud DNS data source  (rosmo) #744
--  Added servicemesh feature to GKE hub and included fleet robot service… (apichick) #741
--  Move Cloud Run VPC Connector annotations to template metadata (#735) (sethmoon) #737
--  FAST: Use spot VMs for test VM and for NVAs (sruffilli) #734
--  Fix dataset name (juliocc) #733
--  Add support for topic message duration to pubsub module (ludoo) #732
--  Avoid setting empty IAM binding in subnet factory (ludoo) #731
--  AD FS example (apichick) #712
--  FAST - add billing IAM for billing group (ludoo) #730
--  Fix connector create logic in cloud run module (ludoo) #729
--  New example for a data playground Terraform setup (aymanfarhat) #655
--  Fix documentation for organization-policy module (averbuks) #726
--  OrgPolicy module (factory) using new org-policy API, #698 (averbuks) #722
--  FAST: Resman: Update billing.tf (sruffilli) #721
--  FAST - added missing format argument in branch-pf-dev-sa-cicd (mgfeller) #716
--  Fix optional service accounts in networking stages (ludoo) #715
--  Modified reserved IP address outputs (apichick) #695
--  FAST - updated several stage READMEs about usage of *.auto.tfvars files (mgfeller) #711
--  when using managed prometheus or passing monitoring config there is e… (psabhishekgoogle) #709
--  FAST - trigger GitHub workflow also on PR synchronize event (mgfeller) #702
--  Fix #705 (ludoo) #708
--  FAST: configuration switches for features (ludoo) #703
--  Fix addons for autopilot clusters, add tests for gke-cluster. (juliocc) #707
--  Bump providers versions and pin versions for tests (juliocc) #706
--  Add `consumer_accept_list` to `apigee-x-instance` (juliocc) #704
--  Fix KMS delegation role (lcaggio) #692
--  Added missing image in GLB and Cloud Armor example (apichick) #696
--  Add repository_owner to GitHub identity attributes (ludoo) #699
--  Allow creating repositories in Gitlab/GitHub via Terraform and other CI/CD improvements (rosmo) #694
--  Fix stages tfvars links (lcaggio) #690
--  Fast/group creation gif (amgoogle) #676
--  Binary authorization module and example (apichick) #689
--  Fix for fast project factory (dosti-tee) #687
--  Binary authorization module and example (apichick) #683
--  Revert "Binary authorization module and example" (ludoo) #686
--  FAST cleanup instructions (ajlopezn) #668
--  fix: Raise ValueError when check_names detects overlong names (27Bslash6) #680
--  FAST: fix CI/CD source repositories in stage 01 (imp14a) #682
--  Cloud function module: add support for secrets (ludoo) #684
--  FAST: CI/CD support for Source Repository and Cloud Build (ludoo) #669
--  FAST: Fix Gitlab WIF attributes (ludoo) #671
--  FAST: Fix audit logs when using pubsub as destination (juliocc) #675
--  FAST: Remove team folders comment from 01 variables, clarify README (ludoo) #674
--  Module attribution and version updater tool, plus release automation (rosmo) #672
+-  Fix gke hub module features condition (ludoo) [#761](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/761)
+-  GKE hub module refactor (ludoo) [#760](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/760)
+-  FIX: Missing value to format principalSet (imp14a) [#759](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/759)
+-  Changed cluster id sensitivity (apichick) [#756](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/756)
+-  Remove key_algorithm from glb/ilb-l7 examples (ludoo) [#757](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/757)
+-  Add support for IAM bindings on service accounts to project factory (ludoo) [#753](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/753)
+-  Added dependency on google_compute_shared_vpc_host_project.shared_vpc… (apichick) [#752](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/752)
+-  Added gkehub.googleapis.com to jit services (apichick) [#747](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/747)
+-  Update multi region cloud SQL markdown file (bensadikgoogle) [#746](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/746)
+-  FIX: 00-cicd stage - Gitlab and Github providers (imp14a) [#745](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/745)
+-  Fixed issue with missing project reference in Cloud DNS data source  (rosmo) [#744](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/744)
+-  Added servicemesh feature to GKE hub and included fleet robot service… (apichick) [#741](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/741)
+-  Move Cloud Run VPC Connector annotations to template metadata (#735) (sethmoon) [#737](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/737)
+-  FAST: Use spot VMs for test VM and for NVAs (sruffilli) [#734](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/734)
+-  Fix dataset name (juliocc) [#733](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/733)
+-  Add support for topic message duration to pubsub module (ludoo) [#732](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/732)
+-  Avoid setting empty IAM binding in subnet factory (ludoo) [#731](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/731)
+-  AD FS example (apichick) [#712](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/712)
+-  FAST - add billing IAM for billing group (ludoo) [#730](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/730)
+-  Fix connector create logic in cloud run module (ludoo) [#729](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/729)
+-  New example for a data playground Terraform setup (aymanfarhat) [#655](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/655)
+-  Fix documentation for organization-policy module (averbuks) [#726](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/726)
+-  OrgPolicy module (factory) using new org-policy API, #698 (averbuks) [#722](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/722)
+-  FAST: Resman: Update billing.tf (sruffilli) [#721](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/721)
+-  FAST - added missing format argument in branch-pf-dev-sa-cicd (mgfeller) [#716](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/716)
+-  Fix optional service accounts in networking stages (ludoo) [#715](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/715)
+-  Modified reserved IP address outputs (apichick) [#695](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/695)
+-  FAST - updated several stage READMEs about usage of *.auto.tfvars files (mgfeller) [#711](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/711)
+-  when using managed prometheus or passing monitoring config there is e… (psabhishekgoogle) [#709](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/709)
+-  FAST - trigger GitHub workflow also on PR synchronize event (mgfeller) [#702](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/702)
+-  Fix #705 (ludoo) [#708](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/708)
+-  FAST: configuration switches for features (ludoo) [#703](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/703)
+-  Fix addons for autopilot clusters, add tests for gke-cluster. (juliocc) [#707](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/707)
+-  Bump providers versions and pin versions for tests (juliocc) [#706](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/706)
+-  Add `consumer_accept_list` to `apigee-x-instance` (juliocc) [#704](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/704)
+-  Fix KMS delegation role (lcaggio) [#692](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/692)
+-  Added missing image in GLB and Cloud Armor example (apichick) [#696](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/696)
+-  Add repository_owner to GitHub identity attributes (ludoo) [#699](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/699)
+-  Allow creating repositories in Gitlab/GitHub via Terraform and other CI/CD improvements (rosmo) [#694](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/694)
+-  Fix stages tfvars links (lcaggio) [#690](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/690)
+-  Fast/group creation gif (amgoogle) [#676](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/676)
+-  Binary authorization module and example (apichick) [#689](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/689)
+-  Fix for fast project factory (dosti-tee) [#687](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/687)
+-  Binary authorization module and example (apichick) [#683](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/683)
+-  Revert "Binary authorization module and example" (ludoo) [#686](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/686)
+-  FAST cleanup instructions (ajlopezn) [#668](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/668)
+-  fix: Raise ValueError when check_names detects overlong names (27Bslash6) [#680](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/680)
+-  FAST: fix CI/CD source repositories in stage 01 (imp14a) [#682](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/682)
+-  Cloud function module: add support for secrets (ludoo) [#684](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/684)
+-  FAST: CI/CD support for Source Repository and Cloud Build (ludoo) [#669](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/669)
+-  FAST: Fix Gitlab WIF attributes (ludoo) [#671](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/671)
+-  FAST: Fix audit logs when using pubsub as destination (juliocc) [#675](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/675)
+-  FAST: Remove team folders comment from 01 variables, clarify README (ludoo) [#674](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/674)
+-  Module attribution and version updater tool, plus release automation (rosmo) [#672](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/672)
 
 ## [16.0.0] - 2022-06-06
 
