@@ -30,6 +30,7 @@ module "gke-project-0" {
       "iam.googleapis.com",
       "stackdriver.googleapis.com",
     ],
+    var.project_services,
     !local.fleet_enabled ? [] : [
       "anthosconfigmanagement.googleapis.com",
       "anthos.googleapis.com",

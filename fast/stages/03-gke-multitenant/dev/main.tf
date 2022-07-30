@@ -23,6 +23,7 @@ module "gke-multitenant" {
   group_iam          = var.group_iam
   labels             = merge(var.labels, { environment = "dev" })
   prefix             = "${var.prefix}-dev"
+  project_services   = var.project_services
   vpc_config = {
     host_project_id = var.host_project_ids.dev-spoke-0
     vpc_self_link   = var.vpc_self_links.dev-spoke-0

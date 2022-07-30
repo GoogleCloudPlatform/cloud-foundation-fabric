@@ -101,12 +101,12 @@ module "gke-cluster" {
       key_name = each.value.overrides.database_encryption_key
     }
   )
-  default_max_pods_per_node   = each.value.overrides.max_pods_per_node
-  enable_binary_authorization = each.value.overrides.enable_binary_authorization
-  master_authorized_ranges    = each.value.overrides.master_authorized_ranges
-  pod_security_policy         = each.value.overrides.pod_security_policy
-  release_channel             = each.value.overrides.release_channel
-  vertical_pod_autoscaling    = each.value.overrides.vertical_pod_autoscaling
+  default_max_pods_per_node = each.value.overrides.max_pods_per_node
+  binary_authorization      = each.value.overrides.binary_authorization
+  master_authorized_ranges  = each.value.overrides.master_authorized_ranges
+  pod_security_policy       = each.value.overrides.pod_security_policy
+  release_channel           = each.value.overrides.release_channel
+  vertical_pod_autoscaling  = each.value.overrides.vertical_pod_autoscaling
   # dynamic "cluster_autoscaling" {
   #   for_each = each.value.cluster_autoscaling == null ? {} : { 1 = 1 }
   #   content {

@@ -34,7 +34,7 @@ variable "cluster_defaults" {
   type = object({
     cloudrun_config                 = bool
     database_encryption_key         = string
-    enable_binary_authorization     = bool
+    binary_authorization            = bool
     master_authorized_ranges        = map(string)
     max_pods_per_node               = number
     pod_security_policy             = bool
@@ -44,9 +44,9 @@ variable "cluster_defaults" {
   })
   default = {
     # TODO: review defaults
-    cloudrun_config             = false
-    database_encryption_key     = null
-    enable_binary_authorization = false
+    cloudrun_config         = false
+    database_encryption_key = null
+    binary_authorization    = false
     master_authorized_ranges = {
       rfc1918_1 = "10.0.0.0/8"
       rfc1918_2 = "172.16.0.0/12"
@@ -82,7 +82,7 @@ variable "clusters" {
     overrides = object({
       cloudrun_config                 = bool
       database_encryption_key         = string
-      enable_binary_authorization     = bool
+      binary_authorization            = bool
       master_authorized_ranges        = map(string)
       max_pods_per_node               = number
       pod_security_policy             = bool
@@ -218,6 +218,13 @@ variable "nodepools" {
 variable "prefix" {
   description = "Prefix used for resources that need unique names."
   type        = string
+}
+
+variable "project_services" {
+  description = "Additional project services to enable."
+  type        = list(string)
+  default     = []
+  nullable    = false
 }
 
 variable "vpc_config" {
