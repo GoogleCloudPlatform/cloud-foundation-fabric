@@ -27,9 +27,9 @@ on:
         required: false
         type: boolean
 
-permissions:
-  contents: write
-  pull-requests: read
+# permissions:
+#   contents: write
+#   pull-requests: read
 
 jobs:
   if_merged:
@@ -46,7 +46,7 @@ jobs:
           pip install -r tools/requirements.txt
       - name: Update Changelog
         run: |
-          python3 tools/changelog.py --token secrets.GITHUB_TOKEN CHANGELOG.md
+          python3 tools/changelog.py --token ${{ secrets.GITHUB_TOKEN }} CHANGELOG.md
       - name: Commit and push Changelog
         env:
           CI_COMMIT_MESSAGE: Update Changelog
