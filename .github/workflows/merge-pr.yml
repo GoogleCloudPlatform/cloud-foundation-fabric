@@ -21,10 +21,15 @@ on:
     types:
       - closed
   workflow_dispatch:
+    inputs:
+      force:
+        description: "Force running from workflow dispatch."
+        required: false
+        type: boolean
 
 jobs:
   if_merged:
-    if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true || ${{github.event.inputs.force}}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
