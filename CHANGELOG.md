@@ -4,69 +4,60 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
-- [#761] Fix gke hub module features condition (ludoo)
-- [#760] GKE hub module refactor (ludoo)
-- [#759] FIX: Missing value to format principalSet (imp14a)
-- [#756] Changed cluster id sensitivity (apichick)
-- [#757] Remove key_algorithm from glb/ilb-l7 examples (ludoo)
-- [#753] Add support for IAM bindings on service accounts to project factory (ludoo)
-- [#752] Added dependency on google_compute_shared_vpc_host_project.shared_vpc… (apichick)
-- [#747] Added gkehub.googleapis.com to jit services (apichick)
-- [#746] Update multi region cloud SQL markdown file (bensadikgoogle)
-- [#745] FIX: 00-cicd stage - Gitlab and Github providers (imp14a)
-- [#744] Fixed issue with missing project reference in Cloud DNS data source  (rosmo)
-- [#741] Added servicemesh feature to GKE hub and included fleet robot service… (apichick)
-- [#737] Move Cloud Run VPC Connector annotations to template metadata (#735) (sethmoon)
-- [#734] FAST: Use spot VMs for test VM and for NVAs (sruffilli)
-- [#733] Fix dataset name (juliocc)
-- [#732] Add support for topic message duration to pubsub module (ludoo)
-- [#731] Avoid setting empty IAM binding in subnet factory (ludoo)
-- [#712] AD FS example (apichick)
-- [#730] FAST - add billing IAM for billing group (ludoo)
-- [#729] Fix connector create logic in cloud run module (ludoo)
-- [#655] New example for a data playground Terraform setup (aymanfarhat)
-- [#726] Fix documentation for organization-policy module (averbuks)
-- [#722] OrgPolicy module (factory) using new org-policy API, #698 (averbuks)
-- [#721] FAST: Resman: Update billing.tf (sruffilli)
-- [#716] FAST - added missing format argument in branch-pf-dev-sa-cicd (mgfeller)
-- [#715] Fix optional service accounts in networking stages (ludoo)
-- [#695] Modified reserved IP address outputs (apichick)
-- [#711] FAST - updated several stage READMEs about usage of *.auto.tfvars files (mgfeller)
-- [#709] when using managed prometheus or passing monitoring config there is e… (psabhishekgoogle)
-- [#702] FAST - trigger GitHub workflow also on PR synchronize event (mgfeller)
-- [#708] Fix #705 (ludoo)
-- [#703] FAST: configuration switches for features (ludoo)
-- [#707] Fix addons for autopilot clusters, add tests for gke-cluster. (juliocc)
-- [#706] Bump providers versions and pin versions for tests (juliocc)
-- [#704] Add `consumer_accept_list` to `apigee-x-instance` (juliocc)
-- [#692] Fix KMS delegation role (lcaggio)
-- [#696] Added missing image in GLB and Cloud Armor example (apichick)
-- [#699] Add repository_owner to GitHub identity attributes (ludoo)
-- [#694] Allow creating repositories in Gitlab/GitHub via Terraform and other CI/CD improvements (rosmo)
-- [#690] Fix stages tfvars links (lcaggio)
-- [#676] Fast/group creation gif (amgoogle)
-- [#689] Binary authorization module and example (apichick)
-- [#687] Fix for fast project factory (dosti-tee)
-- [#683] Binary authorization module and example (apichick)
-- [#686] Revert "Binary authorization module and example" (ludoo)
-- [#668] FAST cleanup instructions (ajlopezn)
-- [#680] fix: Raise ValueError when check_names detects overlong names (27Bslash6)
-- [#682] FAST: fix CI/CD source repositories in stage 01 (imp14a)
-- [#684] Cloud function module: add support for secrets (ludoo)
-- [#669] FAST: CI/CD support for Source Repository and Cloud Build (ludoo)
-- [#671] FAST: Fix Gitlab WIF attributes (ludoo)
-- [#675] FAST: Fix audit logs when using pubsub as destination (juliocc)
-- [#674] FAST: Remove team folders comment from 01 variables, clarify README (ludoo)
-- [#672] Module attribution and version updater tool, plus release automation (rosmo)
-
-**FAST**
-
-- add support for Cloud Source Repositories in stage 0 and 1 CI/CD
-- fix Gitlab workflow indentation
-- remove unsupported attributes and add supported ones to the Gitlab mapping used for Workload Identity Federation pools
-- add roles for CI/CD source repositories to stage 1 service account on automation project
-- fixes to CI/CD source repositories in stage 1
-- implement feature flags for FAST
+-  Fix gke hub module features condition (ludoo) #761
+-  GKE hub module refactor (ludoo) #760
+-  FIX: Missing value to format principalSet (imp14a) #759
+-  Changed cluster id sensitivity (apichick) #756
+-  Remove key_algorithm from glb/ilb-l7 examples (ludoo) #757
+-  Add support for IAM bindings on service accounts to project factory (ludoo) #753
+-  Added dependency on google_compute_shared_vpc_host_project.shared_vpc… (apichick) #752
+-  Added gkehub.googleapis.com to jit services (apichick) #747
+-  Update multi region cloud SQL markdown file (bensadikgoogle) #746
+-  FIX: 00-cicd stage - Gitlab and Github providers (imp14a) #745
+-  Fixed issue with missing project reference in Cloud DNS data source  (rosmo) #744
+-  Added servicemesh feature to GKE hub and included fleet robot service… (apichick) #741
+-  Move Cloud Run VPC Connector annotations to template metadata (#735) (sethmoon) #737
+-  FAST: Use spot VMs for test VM and for NVAs (sruffilli) #734
+-  Fix dataset name (juliocc) #733
+-  Add support for topic message duration to pubsub module (ludoo) #732
+-  Avoid setting empty IAM binding in subnet factory (ludoo) #731
+-  AD FS example (apichick) #712
+-  FAST - add billing IAM for billing group (ludoo) #730
+-  Fix connector create logic in cloud run module (ludoo) #729
+-  New example for a data playground Terraform setup (aymanfarhat) #655
+-  Fix documentation for organization-policy module (averbuks) #726
+-  OrgPolicy module (factory) using new org-policy API, #698 (averbuks) #722
+-  FAST: Resman: Update billing.tf (sruffilli) #721
+-  FAST - added missing format argument in branch-pf-dev-sa-cicd (mgfeller) #716
+-  Fix optional service accounts in networking stages (ludoo) #715
+-  Modified reserved IP address outputs (apichick) #695
+-  FAST - updated several stage READMEs about usage of *.auto.tfvars files (mgfeller) #711
+-  when using managed prometheus or passing monitoring config there is e… (psabhishekgoogle) #709
+-  FAST - trigger GitHub workflow also on PR synchronize event (mgfeller) #702
+-  Fix #705 (ludoo) #708
+-  FAST: configuration switches for features (ludoo) #703
+-  Fix addons for autopilot clusters, add tests for gke-cluster. (juliocc) #707
+-  Bump providers versions and pin versions for tests (juliocc) #706
+-  Add `consumer_accept_list` to `apigee-x-instance` (juliocc) #704
+-  Fix KMS delegation role (lcaggio) #692
+-  Added missing image in GLB and Cloud Armor example (apichick) #696
+-  Add repository_owner to GitHub identity attributes (ludoo) #699
+-  Allow creating repositories in Gitlab/GitHub via Terraform and other CI/CD improvements (rosmo) #694
+-  Fix stages tfvars links (lcaggio) #690
+-  Fast/group creation gif (amgoogle) #676
+-  Binary authorization module and example (apichick) #689
+-  Fix for fast project factory (dosti-tee) #687
+-  Binary authorization module and example (apichick) #683
+-  Revert "Binary authorization module and example" (ludoo) #686
+-  FAST cleanup instructions (ajlopezn) #668
+-  fix: Raise ValueError when check_names detects overlong names (27Bslash6) #680
+-  FAST: fix CI/CD source repositories in stage 01 (imp14a) #682
+-  Cloud function module: add support for secrets (ludoo) #684
+-  FAST: CI/CD support for Source Repository and Cloud Build (ludoo) #669
+-  FAST: Fix Gitlab WIF attributes (ludoo) #671
+-  FAST: Fix audit logs when using pubsub as destination (juliocc) #675
+-  FAST: Remove team folders comment from 01 variables, clarify README (ludoo) #674
+-  Module attribution and version updater tool, plus release automation (rosmo) #672
 
 ## [16.0.0] - 2022-06-06
 
