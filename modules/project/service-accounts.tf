@@ -37,6 +37,7 @@ locals {
     containerregistry = "service-%s@containerregistry"
     dataflow          = "service-%s@dataflow-service-producer-prod"
     dataproc          = "service-%s@dataproc-accounts"
+    fleet             = "service-%s@gcp-sa-gkehub"
     gae-flex          = "service-%s@gae-api-prod"
     # TODO: deprecate gcf
     gcf                      = "service-%s@gcf-admin-robot"
@@ -60,6 +61,7 @@ locals {
   }
   service_accounts_jit_services = [
     "cloudasset.googleapis.com",
+    "gkehub.googleapis.com",
     "pubsub.googleapis.com",
     "secretmanager.googleapis.com",
     "sqladmin.googleapis.com"

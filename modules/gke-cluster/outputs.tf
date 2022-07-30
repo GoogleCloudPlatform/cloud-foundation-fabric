@@ -33,7 +33,6 @@ output "endpoint" {
 
 output "id" {
   description = "Cluster ID."
-  sensitive   = true
   value       = google_container_cluster.cluster.id
 }
 
