@@ -117,7 +117,7 @@ module "hub" {
   }
 }
 
-# tftest modules=4 resources=16
+# tftest modules=4 resources=15
 ```
 
 ## Multi-cluster mesh on GKE
@@ -323,7 +323,7 @@ module "hub" {
     "cluster-2"
   ]
 }
-# tftest modules=8 resources=29
+# tftest modules=8 resources=28
 ```
 <!-- BEGIN TFDOC -->
 
