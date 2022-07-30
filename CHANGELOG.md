@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 
 ## Unreleased
 
+<!-- BEGIN CHANGELOG -->
 - [[#761](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/761)] Fix gke hub module features condition (ludoo)
 - [[#760](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/760)] GKE hub module refactor (ludoo)
 - [[#759](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/759)] FIX: Missing value to format principalSet (imp14a)
@@ -58,6 +59,7 @@ All notable changes to this project will be documented in this file.
 - [[#675](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/675)] FAST: Fix audit logs when using pubsub as destination (juliocc)
 - [[#674](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/674)] FAST: Remove team folders comment from 01 variables, clarify README (ludoo)
 - [[#672](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/672)] Module attribution and version updater tool, plus release automation (rosmo)
+<!-- END CHANGELOG -->
 
 ## [16.0.0] - 2022-06-06
 

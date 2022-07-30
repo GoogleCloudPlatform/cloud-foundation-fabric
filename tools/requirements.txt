@@ -1,5 +1,7 @@
 click
 deepdiff
+ghapi
+iso8601
 marko
 requests
 yamale
