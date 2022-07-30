@@ -90,8 +90,11 @@ def write_doc(path, snippet):
 @click.argument('changelog', required=False, type=click.Path(exists=True))
 def main(token, changelog=None):
   buffer = []
-  for pr in get_pulls(token=token):
-    buffer.append(format_pull(pr))
+  try:
+    for pr in get_pulls(token=token):
+      buffer.append(format_pull(pr))
+  except Exception as e:
+    raise SystemExit(f'API error: {e}')
   buffer = '\n'.join(buffer)
   if not changelog:
     print(buffer)
