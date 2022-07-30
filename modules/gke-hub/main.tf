@@ -34,13 +34,6 @@ locals {
   }
 }
 
-output "foo" {
-  value = {
-    var = var.features
-    tmp = local.hub_features
-  }
-}
-
 resource "google_gke_hub_membership" "default" {
   provider      = google-beta
   for_each      = var.clusters
