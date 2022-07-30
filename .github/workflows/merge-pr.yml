@@ -20,6 +20,7 @@ on:
       - master
     types:
       - closed
+  workflow_dispatch:
 
 jobs:
   if_merged:
