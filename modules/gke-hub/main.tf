@@ -29,6 +29,16 @@ locals {
       var.features.configmanagement == true
     )
   }
+  hub_features = {
+    for k, v in var.features : k => v if v != null && v != false && v != ""
+  }
+}
+
+output "foo" {
+  value = {
+    var = var.features
+    tmp = local.hub_features
+  }
 }
 
 resource "google_gke_hub_membership" "default" {
@@ -53,7 +63,7 @@ resource "google_gke_hub_membership" "default" {
 
 resource "google_gke_hub_feature" "default" {
   provider = google-beta
-  for_each = { for k, v in var.features : k => v if coalesce(v, false) != false }
+  for_each = local.hub_features
   project  = var.project_id
   name     = each.key
   location = "global"
