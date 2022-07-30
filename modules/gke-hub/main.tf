@@ -53,7 +53,7 @@ resource "google_gke_hub_membership" "default" {
 
 resource "google_gke_hub_feature" "default" {
   provider = google-beta
-  for_each = { for k, v in var.features : k => v if v != false && v != "" }
+  for_each = { for k, v in var.features : k => v if coalesce(v, false) != false }
   project  = var.project_id
   name     = each.key
   location = "global"

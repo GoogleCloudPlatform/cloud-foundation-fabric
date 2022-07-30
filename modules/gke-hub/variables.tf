@@ -77,7 +77,7 @@ variable "features" {
     appdevexperience             = false
     configmanagement             = false
     identityservice              = false
-    multiclusteringress          = ""
+    multiclusteringress          = null
     servicemesh                  = false
     multiclusterservicediscovery = false
   }
