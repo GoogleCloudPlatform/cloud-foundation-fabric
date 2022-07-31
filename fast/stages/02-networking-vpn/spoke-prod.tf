@@ -43,7 +43,7 @@ module "prod-spoke-project" {
   iam = {
     "roles/dns.admin" = compact([
       try(local.service_accounts.gke-prod, null),
-      try(local.service_accounts.project-factory-prod, null)
+      try(local.service_accounts.project-factory-prod, null),
     ])
   }
 }
