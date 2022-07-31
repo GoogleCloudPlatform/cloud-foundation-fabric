@@ -42,6 +42,7 @@ module "prod-spoke-project" {
   metric_scopes = [module.landing-project.project_id]
   iam = {
     "roles/dns.admin" = compact([
+      try(local.service_accounts.gke-prod, null),
       try(local.service_accounts.project-factory-prod, null)
     ])
   }
