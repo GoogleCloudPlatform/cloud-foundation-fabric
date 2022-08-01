@@ -2,30 +2,26 @@
 
 ## Introduction
 
-Coming up with an amazing app idea is really hard… but what’s even worse is making sure you’re able to deploy it securely on a global scale! Many developers and engineers struggle with making sure their product backends are highly-available and secure at the same time - usually ending up focusing on one of the two. This project aims to change just that.
+This repository contains all necessary Terraform modules to build a multi-regional infrastructure with horizontally scalable managed instance group backends, HTTP load balancing and Google’s advanced WAF security tool (Cloud Armor) on top to securely deploy an application at global scale.
 
-Using the power of terraform scripts (Infrastructure as a Code deployments), we will be creating a multi-regional infrastructure with horizontally scaling managed instance group backends, HTTP load balancing and Google’s advanced WAF (Web application Firewall) security tool (Cloud Armor) on top.
-
-What does this mean? Instead of a long running architecture planning and deployment sprints, we will have a robust backend infrastructure ready in just a few steps. The architecture in question is general enough to fit in a variety of use-cases, but has the potential to be adapted to any specific workload as well. For example - once deployed, this particular architecture can be adapted to run a mobile app’s backend or be used to host proprietary workloads at scale. Not to get into too much detail, let’s elaborate on this in the next section.
+This tutorial is general enough to fit in a variety of use-cases, from hosting a mobile app's backend to deploy proprietary workloads at scale.
 
 ## Use cases
 
-Google Cloud enables workloads of all types to be deployed at any scale using a variety of high-performing resources. But even though there’s many ways to implement any architecture, some workloads are more specific than others and we will be discussing one such very common implementation in this document.
-
-In a world of rapidly scaling products, some workloads require high compute power or specific licenses while making sure the workloads are secured by a managed service and highly available across multiple regions. An architecture consisting of Managed Instance Groups in multiple regions available through an HTTP Load Balancer with Cloud Armor enabled is ideal for such use-cases.
+Even though there are many ways to implement an architecture, some workloads require high compute power or specific licenses while making sure the services are secured by a managed service and highly available across multiple regions. An architecture consisting of Managed Instance Groups in multiple regions available through an HTTP Load Balancer with Cloud Armor enabled is suitable for such use-cases.
 
 This architecture caters to multiple workloads ranging from the ones requiring compliance with specific data access restrictions to compute-specific proprietary applications with specific licensing and OS requirements. Descriptions of some possible use-cases are as follows:
 
-* __Proprietary OS workloads__: Some applications require specific Operating systems (enterprise grade Linux distributions) with specific licensing requirements with low-level access to the kernel. In such cases, since the applications cannot be containerised and horizontal scaling is required, multi-region Managed Instance Group (MIG) with custom instance images are the ideal implementation.
-* __Industry-specific applications__: Your applications may require high compute power alongside a sophisticated layer of networking security. This architecture satisfies both these requirements by promising configurable compute power on the instances backed by various features offered by Cloud Armor such as traffic restriction, DDoS protection etc.
-* __Workloads requiring GDPR compliance__: Most applications require restricting data access and usage from outside a certain region (mostly to comply with data residency requirements). This architecture caters to such workloads perfectly because Cloud Armor allows you to lock access to your workloads from various fine-grained identifiers.
+* __Proprietary OS workloads__: Some applications require specific Operating systems (enterprise grade Linux distributions for example) with specific licensing requirements or low-level access to the kernel. In such cases, since the applications cannot be containerised and horizontal scaling is required, multi-region Managed Instance Group (MIG) with custom instance images are the ideal implementation.
+* __Industry-specific applications__: Other applications may require high compute power alongside a sophisticated layer of networking security. This architecture satisfies both these requirements by promising configurable compute power on the instances backed by various features offered by Cloud Armor such as traffic restriction, DDoS protection etc.
+* __Workloads requiring GDPR compliance__: Most applications require restricting data access and usage from outside a certain region (mostly to comply with data residency requirements). This architecture caters to such workloads as Cloud Armor allows you to lock access to your workloads from various fine-grained identifiers.
 * __Medical Queuing systems__: Another great example usage for this  architecture will be applications requiring high compute power, availability and limited memory access requirements such as a medical queuing system.
-* __DDoS Protection and WAF__:  Applications and workloads exposed to the internet are constantly under the risk for DDoS attacks. While L3/L4 and protocol based attacks are handled at Google’s edge, L7 attacks can still be immensely effective with botnets. A setup of an external Cloud Load Balancer with Cloud Armor and well crafted WAF rules would be the best way to mitigate such attacks.
+* __DDoS Protection and WAF__:  Applications and workloads exposed to the internet expose themselves to the risk of DDoS attacks. While L3/L4 and protocol based attacks are handled at Google’s edge, L7 attacks can still be effective with botnets. A setup of an external Cloud Load Balancer with Cloud Armor and appropriate WAF rules can mitigate such attacks.
 * __Geofencing__: If you want to restrict content served on your application due to licensing restrictions (similar to OTT content in the US), Geofencing allows you to create a virtual perimeter to stop the service from being accessed outside the region. The architecture of using a Cloud Load Balancer with Cloud Armor enables you to implement geofencing around your applications and services.
 
 ## Architecture
 
-<img src="architecture.png" width="500">
+<p align="center"> <img src="architecture.png" width="700"> </p>
 
 The main components that we would be setting up are (to learn more about these products, click on the hyperlinks):
 
@@ -42,9 +38,7 @@ The main components that we would be setting up are (to learn more about these p
 
 ## Costs
 
-Pricing Estimates - We have created a sample estimate based on some usage we see from new startups looking to scale. This estimate would give you an idea of how much this deployment would essentially cost per month at this scale and you extend it to the scale you further prefer.
-
-<https://cloud.google.com/products/calculator/#id=3105bbf2-4ee0-4289-978e-9ab6855d37ed>
+Pricing Estimates - We have created a sample estimate based on some usage we see from new startups looking to scale. This estimate would give you an idea of how much this deployment would essentially cost per month at this scale and you extend it to the scale you further prefer. Here's the [link](https://cloud.google.com/products/calculator/#id=3105bbf2-4ee0-4289-978e-9ab6855d37ed).
 
 ## Setup
 
@@ -68,7 +62,7 @@ Note: To grant a user a role, take a look at the [Granting and Revoking Access](
 
 Click on the button below, sign in if required and when the prompt appears, click on “confirm”.
 
-[<img src="shell_button.png" width="250">](https://goo.gle/GoCloudArmor)
+[<p align="center"> <img alt="Open Cloudshell" width = "300px" src="shell_button.png" /> </p>](https://goo.gle/GoCloudArmor)
 
 This will clone the repository to your cloud shell and a screen like this one will appear:
 
