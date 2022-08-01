@@ -15,8 +15,6 @@
 
 import click
 import collections
-import os
-import pprint
 import re
 
 import ghapi.all
@@ -28,6 +26,7 @@ ORG = 'GoogleCloudPlatform'
 REPO = 'cloud-foundation-fabric'
 
 PullRequest = collections.namedtuple('PullRequest', 'id author title merged_at')
+Release = collections.namedtuple('Release', 'tag merged_at')
 
 
 def format_pull(pr):
