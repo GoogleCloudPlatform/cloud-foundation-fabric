@@ -137,7 +137,7 @@ All notable changes to this project will be documented in this file.
 
 ## [13.0.0] - 2022-01-27
 
-- **initial Fabric Fast implementation**
+- **initial Fabric FAST implementation**
 - new `net-glb` module for Global External Load balancer
 - new `project-factory` module in [`examples/factories`](./examples/factories)
 - add missing service identity accounts (artifactregistry, composer) in project module
@@ -400,7 +400,6 @@ All notable changes to this project will be documented in this file.
 ## [3.1.1] - 2020-08-26
 
 - fix error in `project` module
-
 - **incompatible change** make HA VPN Gateway creation optional for `net-vpn-ha` module. Now an existing HA VPN Gateway can be used. Updating to the new version of the module will cause VPN Gateway recreation which can be handled by `terraform state rm/terraform import` operations.  
 
 ## [3.1.0] - 2020-08-16
@@ -535,14 +534,10 @@ All notable changes to this project will be documented in this file.
 - fix Cloud NAT module internal router name lookup
 - re-enable and update outputs for the foundations environments example
 - add peering route configuration for private clusters to GKE cluster module
-- **incompatible changes** in the GKE nodepool module
-  - rename `node_config_workload_metadata_config` variable to `workload_metadata_config`
-  - new default for `workload_metadata_config` is `GKE_METADATA_SERVER`
-- **incompatible change** in the `compute-vm` module
-  - removed support for MIG and the `group_manager` variable
+- **incompatible changes** in the GKE nodepool module: rename `node_config_workload_metadata_config` variable to `workload_metadata_config`, new default for `workload_metadata_config` is `GKE_METADATA_SERVER`
+- **incompatible change** in the `compute-vm` module: removed support for MIG and the `group_manager` variable
 - add `compute-mig` and `net-ilb` modules
-- **incompatible change** in `net-vpc`
-  - a new `name` attribute has been added to the `subnets` variable, allowing to directly set subnet name, to update to the new module add an extra `name = false` attribute to each subnet
+- **incompatible change** in `net-vpc`: a new `name` attribute has been added to the `subnets` variable, allowing to directly set subnet name, to update to the new module add an extra `name = false` attribute to each subnet
 
 ## [1.3.0] - 2020-04-08
 
