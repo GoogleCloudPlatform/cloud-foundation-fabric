@@ -3,6 +3,7 @@
 This module allows simplified creation and management of a GKE Hub object and its features for a given set of clusters. The given list of clusters will be registered inside the Hub and all the configured features will be activated.
 
 To use this module you must ensure the following APIs are enabled in the target project:
+
 ```
 "gkehub.googleapis.com"
 "gkeconnect.googleapis.com"
@@ -116,7 +117,7 @@ module "hub" {
   }
 }
 
-# tftest modules=4 resources=16
+# tftest modules=4 resources=15
 ```
 
 ## Multi-cluster mesh on GKE
@@ -322,7 +323,7 @@ module "hub" {
     "cluster-2"
   ]
 }
-# tftest modules=8 resources=29
+# tftest modules=8 resources=28
 ```
 <!-- BEGIN TFDOC -->
 
