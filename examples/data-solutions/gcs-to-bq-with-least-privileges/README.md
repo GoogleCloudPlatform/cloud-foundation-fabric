@@ -56,7 +56,7 @@ __Note__: To grant a user a role, take a look at the [Granting and Revoking Acce
 
 ### Spinning up the architecture
 
-#### Step 1: Cloning the repository__
+#### Step 1: Cloning the repository
 
 Click on the button below, sign in if required and when the prompt appears, click on “confirm”.
 
@@ -78,7 +78,7 @@ Before we deploy the architecture, you will need the following information:
 * A __unique prefix__ that you want all the deployed resources to have (for example: awesomestartup). This must be a string with no spaces or tabs.
 * A __list of Groups or Users__ with Service Account Token creator role on Service Accounts in IAM format, eg 'group:group@domain.com'.
 
-#### Step 2: Deploying the resources__
+#### Step 2: Deploying the resources
 
 1. Once you have the required information, head back to the cloud shell editor. Make sure you’re in the following directory:
 
