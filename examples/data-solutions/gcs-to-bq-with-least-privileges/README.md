@@ -2,13 +2,9 @@
 
 ## Introduction
 
-It’s incredible what you can achieve with your businesses when you’re making informed decisions and not speculating. But before the advent of BigData and Cloud, this was a major challenge! Even though companies had petabytes of data about user activity stored away in silos, there were very limited ways to convert this data into actionable insights.
+This repository contains the necessary Terraform modules to securely deploy a basic ETL pipeline that will dump data from a Google Cloud Storage (GCS) bucket to tables in BigQuery.
 
-But that’s changed now - and with ETL data pipelines on Google Cloud it is easier than ever to process existing data or set up pipelines to process streaming data and drive it into a data warehouse (like BigQuery) for richer analytics. But this brings up the question, how can a business use this? Consider an e-commerce platform that logs all user activity and clicks into a database for record-keeping purposes but hasn’t really been able to pool this invaluable data to modify the visitor’s experience. With a proper ETL pipeline, the business can stream this data to get insight into user usage patterns, modify product suggestions for individual users (by embedding a bit of ML via BigQuery ML) or even plan stocking requirements based on demand from a certain user type at a certain time of the year. The possibilities are endless!
-
-Do you think your business could use an ETL pipeline to activate your data records? Let’s discuss how to implement a foundation data pipeline on Google Cloud.
-
-An ETL pipeline is defined by three simple steps:
+An ETL pipeline is defined in three steps:
 
 * Extraction: retrieving data from sources.
 * Transformation: cleaning the data, putting it into a common format, calculating other fields, taking out duplicates or erroneous records so it can be stored into a target.
@@ -31,18 +27,16 @@ Whether you’re transferring from another Cloud Service Provider or you’re ta
 
 The main components that we would be setting up are (to learn more about these products, click on the hyperlinks):
 
-* [Cloud Storage (GCS) bucket](https://cloud.google.com/storage/): for storing extracted data that must undergo some kind of transformation.
-* [Cloud Dataflow pipeline](https://cloud.google.com/dataflow): to build fully managed batch and streaming pipelines to transform data stored in GCS buckets ready for processing in the Data Warehouse.
-* [BigQuery datasets and tables](https://cloud.google.com/bigquery): to store the transformed data in and query it, use it to make reports or even begin training [machine learning](https://cloud.google.com/bigquery-ml/docs/introduction) models without having to take your data out.
+* [Cloud Storage (GCS) bucket](https://cloud.google.com/storage/): data lake solution to store extracted raw data that must undergo some kind of transformation.
+* [Cloud Dataflow pipeline](https://cloud.google.com/dataflow): to build fully managed batch and streaming pipelines to transform data stored in GCS buckets ready for processing in the Data Warehouse using Apache Beam.
+* [BigQuery datasets and tables](https://cloud.google.com/bigquery): to store the transformed data in and query it using SQL, use it to make reports or begin training [machine learning](https://cloud.google.com/bigquery-ml/docs/introduction) models without having to take your data out.
 * [Service accounts](https://cloud.google.com/iam/docs/service-accounts) (__created with least privilege on each resource__): one for uploading data into the GCS bucket, one for Orchestration, one for Dataflow instances and one for the BigQuery tables. You can also configure users or groups of users to assign them a viewer role on the created resources and the ability to impersonate service accounts to test the Dataflow pipelines before automating them with a tool like [Cloud Composer](https://cloud.google.com/composer).
 
 For a full list of the resources that will be created, please refer to the [github repository](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/examples/data-solutions/gcs-to-bq-with-least-privileges) for this project. If you're migrating from another Cloud Provider, refer to [this](https://cloud.google.com/free/docs/aws-azure-gcp-service-comparison) documentation to see equivalent services and comparisons in Microsoft Azure and Amazon Web Services
 
 ## Costs
 
-Pricing Estimates - We have created a sample estimate based on some usage we see from new startups looking to scale. This estimate would give you an idea of how much this deployment would essentially cost per month at this scale and you extend it to the scale you further prefer.
-
-<https://cloud.google.com/products/calculator#id=44710202-c9d4-49d5-a378-99d7dd34f5e2>
+Pricing Estimates - We have created a sample estimate based on some usage we see from new startups looking to scale. This estimate would give you an idea of how much this deployment would essentially cost per month at this scale and you extend it to the scale you further prefer. Here's the [link](https://cloud.google.com/products/calculator#id=44710202-c9d4-49d5-a378-99d7dd34f5e2).
 
 ## Setup
 
@@ -66,7 +60,7 @@ __Note__: To grant a user a role, take a look at the [Granting and Revoking Acce
 
 Click on the button below, sign in if required and when the prompt appears, click on “confirm”.
 
-[<img src="shell_button.png" width="250">](https://goo.gle/GoDataPipe)
+[<p align="center"> <img alt="Open Cloudshell" width = "250" src="shell_button.png" /> </p>](https://goo.gle/GoDataPipe)
 
 This will clone the repository to your cloud shell and a screen like this one will appear:
 
