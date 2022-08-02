@@ -58,6 +58,7 @@ output "project_id" {
     google_project_organization_policy.list,
     google_project_service.project_services,
     google_compute_shared_vpc_host_project.shared_vpc_host,
+    google_compute_shared_vpc_service_project.shared_vpc_service,
     google_compute_shared_vpc_service_project.service_projects,
     google_project_iam_member.shared_vpc_host_robots,
     google_kms_crypto_key_iam_member.service_identity_cmek,

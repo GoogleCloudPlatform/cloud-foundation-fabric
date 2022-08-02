@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+variable "_test_service_project" {
+  type    = bool
+  default = false
+}
+
 variable "name" {
   type    = string
   default = "my-project"
