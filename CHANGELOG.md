@@ -79,7 +79,6 @@ All notable changes to this project will be documented in this file.
 - [[#680](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/680)] Toos: fix Raise ValueError when check_names detects overlong names ([27Bslash6](https://github.com/27Bslash6)) <!-- 2022-06-16 08:01:59+00:00 -->
 - [[#672](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/672)] Module attribution and version updater tool, plus release automation ([rosmo](https://github.com/rosmo)) <!-- 2022-06-09 11:40:50+00:00 -->
 
-
 ## [16.0.0] - 2022-06-06
 
 - add support for [Spot VMs](https://cloud.google.com/compute/docs/instances/spot) to `gke-nodepool` module

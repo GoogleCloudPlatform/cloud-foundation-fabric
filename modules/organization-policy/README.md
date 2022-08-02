@@ -125,7 +125,7 @@ cat ./policies/baseline.yaml
 organizations/1234567890:
   constraints/compute.vmExternalIpAccess:
     rules:
-      - deny_all: true
+      - deny: [] # Stands for deny_all = true
 folders/1234567890:
   compute.vmCanIpForward:
     inherit_from_parent: false
@@ -136,13 +136,12 @@ projects/my-project-id:
   run.allowedIngress:
     inherit_from_parent: true
     rules:
-      - condition:
+      - allow: ['internal'] # Stands for values.allowed_values
+        condition:
           description: allow internal ingress
           expression: resource.matchTag("123456789/environment", "prod")
           location: test.log
           title: allow-for-prod
-        values: 
-          allowed_values: ['internal']
   iam.allowServiceAccountCredentialLifetimeExtension:
     rules:
       - deny: [] # Stands for deny_all = true
