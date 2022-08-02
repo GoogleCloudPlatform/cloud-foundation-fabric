@@ -19,7 +19,6 @@ import collections
 import ghapi.all
 import iso8601
 
-
 ORG = 'GoogleCloudPlatform'
 REPO = 'cloud-foundation-fabric'
 URL = f'https://github.com/{ORG}/{REPO}'
