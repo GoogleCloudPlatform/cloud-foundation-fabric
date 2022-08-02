@@ -46,7 +46,6 @@ variable "cluster_defaults" {
   type = object({
     cloudrun_config                 = bool
     database_encryption_key         = string
-    binary_authorization            = bool
     master_authorized_ranges        = map(string)
     max_pods_per_node               = number
     pod_security_policy             = bool
@@ -58,7 +57,7 @@ variable "cluster_defaults" {
     # TODO: review defaults
     cloudrun_config         = false
     database_encryption_key = null
-    binary_authorization    = false
+    # binary_authorization    = false
     master_authorized_ranges = {
       rfc1918_1 = "10.0.0.0/8"
       rfc1918_2 = "172.16.0.0/12"
@@ -92,9 +91,9 @@ variable "clusters" {
       subnet       = string
     })
     overrides = object({
-      cloudrun_config                 = bool
-      database_encryption_key         = string
-      binary_authorization            = bool
+      cloudrun_config         = bool
+      database_encryption_key = string
+      # binary_authorization            = bool
       master_authorized_ranges        = map(string)
       max_pods_per_node               = number
       pod_security_policy             = bool
