@@ -38,6 +38,7 @@ module "gke-nodepool" {
   node_machine_type  = each.value.node_type
   # TODO(jccb): can we use spot instances here?
   node_preemptible = each.value.preemptible
+  node_spot        = each.value.spot
 
   node_count = each.value.node_count
   # node_count = (
