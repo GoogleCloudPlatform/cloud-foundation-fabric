@@ -116,12 +116,6 @@ variable "enable_autopilot" {
   default     = false
 }
 
-variable "enable_binary_authorization" {
-  description = "Enable Google Binary Authorization."
-  type        = bool
-  default     = null
-}
-
 variable "enable_dataplane_v2" {
   description = "Enable Dataplane V2 on the cluster, will disable network_policy addons config."
   type        = bool

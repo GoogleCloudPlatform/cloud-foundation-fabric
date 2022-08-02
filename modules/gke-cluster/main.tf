@@ -43,7 +43,6 @@ resource "google_container_cluster" "cluster" {
   monitoring_service          = var.monitoring_config == null ? var.monitoring_service : null
   resource_labels             = var.labels
   default_max_pods_per_node   = var.enable_autopilot ? null : var.default_max_pods_per_node
-  enable_binary_authorization = var.enable_binary_authorization
   enable_intranode_visibility = var.enable_intranode_visibility
   enable_l4_ilb_subsetting    = var.enable_l4_ilb_subsetting
   enable_shielded_nodes       = var.enable_shielded_nodes
