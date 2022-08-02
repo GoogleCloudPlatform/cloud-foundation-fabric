@@ -18,9 +18,9 @@ locals {
   fleet_enabled = (
     var.fleet_features != null || var.fleet_workload_identity
   )
-  fleet_mcs_enabled = local.fleet_enabled && lookup(
-    coalesce(var.fleet_features, {}), "multiclusterservicediscovery", false
-  ) == true
+  fleet_mcs_enabled = (
+    try(var.fleet_features.multiclusterservicediscovery, false) == true
+  )
 }
 
 module "gke-hub" {

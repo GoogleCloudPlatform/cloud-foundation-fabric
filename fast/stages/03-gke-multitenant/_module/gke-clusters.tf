@@ -102,7 +102,6 @@ module "gke-cluster" {
     }
   )
   default_max_pods_per_node = each.value.overrides.max_pods_per_node
-  binary_authorization      = each.value.overrides.binary_authorization
   master_authorized_ranges  = each.value.overrides.master_authorized_ranges
   pod_security_policy       = each.value.overrides.pod_security_policy
   release_channel           = each.value.overrides.release_channel
