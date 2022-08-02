@@ -32,7 +32,7 @@ class Error(Exception):
   pass
 
 
-def _paginate(method, since=None, **kw):
+def _paginate(method, **kw):
   'Paginate GitHub API call.'
   page = 1
   while True:
@@ -115,7 +115,7 @@ def group_pulls(pulls):
   groups = {None: []}
   for pull in pulls:
     labels = [l[3:] for l in pull.labels if l.startswith('on:')]
-    if not pull.labels:
+    if not labels:
       groups[None].append(pull)
       continue
     for label in labels:
