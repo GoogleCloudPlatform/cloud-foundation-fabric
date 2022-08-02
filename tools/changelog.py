@@ -83,13 +83,16 @@ def changelog_dumps(releases, overrides=None):
     if name in overrides:
       buffer.append(
           f'<!-- {overrides[name].published} < {overrides[name].since} -->\n')
-      # TODO(ludoo): group by 'on:*' label
-      pulls = [
-          format_pull(pull) for pull in sorted(
-              overrides[name].pulls, key=lambda p: p.merged_at, reverse=True)
-      ]
-    for pull in pulls:
-      buffer.append(pull)
+      pulls = group_pulls(overrides[name].pulls)
+      for k in sorted(pulls.keys(), key=lambda s: s or ''):
+        if k is not None:
+          buffer.append(f'### {k}\n')
+        for pull in pulls[k]:
+          buffer.append(format_pull(pull))
+        buffer.append('')
+    else:
+      for pull in pulls:
+        buffer.append(pull)
     buffer.append('')
   return '\n'.join(buffer + [''] + ref_buffer)
 
@@ -98,10 +101,27 @@ def format_pull(pull):
   'Format pull request.'
   url = 'https://github.com'
   pull_url = f'{url}/{ORG}/{REPO}/pull'
-  # TODO(ludoo): mark as breaking change if 'breaking' in labels
+  prefix = ''
+  if 'incompatible change' in pull.labels:
+    prefix = '**incompatible change:** '
   return (f'- [[#{pull.id}]({pull_url}/{pull.id})] '
+          f'{prefix}'
           f'{pull.title} '
           f'([{pull.author}]({url}/{pull.author})) <!-- {pull.merged_at} -->')
+
+
+def group_pulls(pulls):
+  pulls.sort(key=lambda p: p.merged_at, reverse=True)
+  groups = {None: []}
+  for pull in pulls:
+    labels = [l[3:] for l in pull.labels if l.startswith('on:')]
+    if not pull.labels:
+      groups[None].append(pull)
+      continue
+    for label in labels:
+      group = groups.setdefault(label.upper(), [])
+      group.append(pull)
+  return groups
 
 
 def get_api(token, owner=ORG, name=REPO):
