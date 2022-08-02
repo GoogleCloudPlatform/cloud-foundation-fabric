@@ -404,7 +404,7 @@ output "compute_robot" {
 | [name](outputs.tf#L25) | Project name. |  |
 | [number](outputs.tf#L38) | Project number. |  |
 | [project_id](outputs.tf#L51) | Project id. |  |
-| [service_accounts](outputs.tf#L69) | Product robot service accounts in project. |  |
-| [sink_writer_identities](outputs.tf#L85) | Writer identities created for each sink. |  |
+| [service_accounts](outputs.tf#L70) | Product robot service accounts in project. |  |
+| [sink_writer_identities](outputs.tf#L86) | Writer identities created for each sink. |  |
 
 <!-- END TFDOC -->
