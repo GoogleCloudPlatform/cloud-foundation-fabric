@@ -50,11 +50,11 @@ module "branch-network-prod-folder" {
   parent = module.branch-network-folder.id
   name   = "Production"
   iam = {
-    (local.custom_roles.service_project_network_admin) = compact([
-      try(module.branch-dp-prod-sa.0.iam_email, ""),
-      try(module.branch-pf-prod-sa.0.iam_email, ""),
-      try(module.branch-gke-prod-sa.0.iam_email, ""),
-    ])
+    (local.custom_roles.service_project_network_admin) = concat(
+      local.branch_optional_sa_lists.dp-prod,
+      local.branch_optional_sa_lists.gke-prod,
+      local.branch_optional_sa_lists.pf-prod,
+    )
   }
   tag_bindings = {
     environment = try(
@@ -69,11 +69,11 @@ module "branch-network-dev-folder" {
   parent = module.branch-network-folder.id
   name   = "Development"
   iam = {
-    (local.custom_roles.service_project_network_admin) = compact([
-      try(module.branch-dp-dev-sa.0.iam_email, ""),
-      try(module.branch-pf-dev-sa.0.iam_email, ""),
-      try(module.branch-gke-dev-sa.iam_email, ""),
-    ])
+    (local.custom_roles.service_project_network_admin) = concat(
+      local.branch_optional_sa_lists.dp-dev,
+      local.branch_optional_sa_lists.gke-dev,
+      local.branch_optional_sa_lists.pf-dev,
+    )
   }
   tag_bindings = {
     environment = try(
