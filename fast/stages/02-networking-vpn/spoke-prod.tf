@@ -91,7 +91,7 @@ module "prod-spoke-cloudnat" {
   source         = "../../../modules/net-cloudnat"
   project_id     = module.prod-spoke-project.project_id
   region         = each.value
-  name           = "prod-nat-${local.region_trigram[each.value]}"
+  name           = "prod-nat-${var.region_trigram[each.value]}"
   router_create  = true
   router_network = module.prod-spoke-vpc.name
   router_asn     = 4200001024
