@@ -56,7 +56,7 @@ jobs:
       - name: Check documentation (fabric)
         id: documentation-fabric
         run: |
-          python3 tools/check_documentation.py --show-diffs examples modules fast
+          python3 tools/check_documentation.py examples modules fast
 
       - name: Check documentation links (fabric)
         id: documentation-links-fabric
