@@ -15,7 +15,6 @@
  */
 
 locals {
-  # internal structures for group IAM bindings
   _group_iam = {
     for r in local._group_iam_bindings : r => [
       for k, v in var.group_iam :
@@ -23,8 +22,11 @@ locals {
     ]
   }
   _group_iam_bindings = distinct(flatten(values(var.group_iam)))
-  # internal structures for project service accounts IAM bindings
-  _project_id = var.prefix == null || var.prefix == "" ? var.project_id : "${var.prefix}-${var.project_id}"
+  _project_id = (
+    var.prefix == null || var.prefix == ""
+    ? var.project_id
+    : "${var.prefix}-${var.project_id}"
+  )
   _service_accounts_iam = {
     for r in local._service_accounts_iam_bindings : r => [
       for k, v in var.service_accounts :
@@ -35,7 +37,6 @@ locals {
   _service_accounts_iam_bindings = distinct(flatten(
     values(var.service_accounts)
   ))
-  # internal structures for project services
   _services = concat([
     "billingbudgets.googleapis.com",
     "essentialcontacts.googleapis.com"
@@ -44,7 +45,6 @@ locals {
     try(var.vpc.gke_setup, null) != null ? ["container.googleapis.com"] : [],
     var.vpc != null ? ["compute.googleapis.com"] : [],
   )
-  # internal structures for service identity IAM bindings
   _service_identities_roles = distinct(flatten(values(var.service_identities_iam)))
   _service_identities_iam = {
     for role in local._service_identities_roles : role => [
@@ -53,7 +53,6 @@ locals {
       if contains(roles, role)
     ]
   }
-  # internal structure for Shared VPC service project IAM bindings
   _vpc_subnet_bindings = (
     local.vpc.subnets_iam == null || local.vpc.host_project == null
     ? []
@@ -67,7 +66,6 @@ locals {
       ]
     ])
   )
-  # structures for billing id
   billing_account_id = coalesce(
     var.billing_account_id, try(var.defaults.billing_account_id, "")
   )
@@ -76,11 +74,9 @@ locals {
     ? try(var.defaults.billing_alert, null)
     : var.billing_alert
   )
-  # structure for essential contacts
   essential_contacts = concat(
     try(var.defaults.essential_contacts, []), var.essential_contacts
   )
-  # structure that combines all authoritative IAM bindings
   iam = {
     for role in distinct(concat(
       keys(var.iam),
@@ -95,13 +91,10 @@ locals {
       try(local._service_identities_iam[role], []),
     )
   }
-  # merge labels with defaults
   labels = merge(
     coalesce(var.labels, {}), coalesce(try(var.defaults.labels, {}), {})
   )
-  # deduplicate services
   services = distinct(concat(var.services, local._services))
-  # structures for Shared VPC resources in host project
   vpc = coalesce(var.vpc, {
     host_project = null, gke_setup = null, subnets_iam = null
   })
@@ -192,5 +185,9 @@ resource "google_compute_subnetwork_iam_member" "default" {
   subnetwork = "projects/${local.vpc.host_project}/regions/${each.value.region}/subnetworks/${each.value.subnet}"
   region     = each.value.region
   role       = "roles/compute.networkUser"
-  member     = each.value.member
+  member = (
+    lookup(var.service_accounts, each.value.member, null) != null
+    ? module.service-accounts[each.value.member].iam_email
+    : each.value.member
+  )
 }
