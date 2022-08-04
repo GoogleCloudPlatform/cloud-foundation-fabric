@@ -214,7 +214,7 @@ vpc:
   # [opt] Subnets in the host project where principals will be granted networkUser
   # in region/subnet-name => [principals]                    
   subnets_iam:                          
-    europe-west1/prod-default-ew1: []
+    europe-west1/prod-default-ew1:
       - user:foobar@example.com
       - serviceAccount:service-account1@my-project.iam.gserviceaccount.com
 ```
