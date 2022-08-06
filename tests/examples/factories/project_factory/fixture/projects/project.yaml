@@ -97,4 +97,5 @@ vpc:
   subnets_iam:
     europe-west1/prod-default-ew1:
       - user:foobar@example.com
-      - serviceAccount:service-account1
+      - serviceAccount:service-account1@example.com
+      - my-service-account

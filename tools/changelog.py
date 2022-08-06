@@ -80,10 +80,10 @@ def changelog_dumps(releases, overrides=None):
     else:
       buffer.append(f'## [{name}]\n')
       ref_buffer.append(f'[Unreleased]: {URL}/compare/v{prev_name}...HEAD')
-    if name in overrides:
-      buffer.append(
-          f'<!-- {overrides[name].published} < {overrides[name].since} -->\n')
-      pulls = group_pulls(overrides[name].pulls)
+    override = overrides.get(name, overrides.get(f'v{name}'))
+    if override:
+      buffer.append(f'<!-- {override.published} < {override.since} -->\n')
+      pulls = group_pulls(override.pulls)
       for k in sorted(pulls.keys(), key=lambda s: s or ''):
         if k is not None:
           buffer.append(f'### {k}\n')
@@ -164,6 +164,8 @@ def get_releases(api, filter_names=None):
 
 
 @click.command
+@click.option('--all-releases', is_flag=True, default=False,
+              help='All releases.')
 @click.option(
     '--release', required=False, default=['Unreleased'], multiple=True,
     help='Release to replace, specify multiple times for more than one version.'
@@ -174,8 +176,10 @@ def get_releases(api, filter_names=None):
               help='Write modified changelog file.')
 @click.argument('changelog', required=False, default='CHANGELOG.md',
                 type=click.Path(exists=True))
-def main(token, changelog='CHANGELOG.md', release=None, write=False):
+def main(token, changelog='CHANGELOG.md', all_releases=False, release=None,
+         write=False):
   api = get_api(token)
+  release = [] if all_releases else release
   releases = [r for r in get_releases(api, release)]
   releases = {r.name: r for r in get_release_pulls(api, releases)}
   try:
