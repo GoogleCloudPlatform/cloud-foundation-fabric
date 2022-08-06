@@ -216,8 +216,7 @@ variable "nodepools" {
       node_tags         = list(string)
       node_taints       = list(string)
     })
-    preemptible = bool
-    spot        = bool
+    spot = bool
   })))
 }
 
