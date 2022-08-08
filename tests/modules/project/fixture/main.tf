@@ -39,3 +39,28 @@ module "test" {
   shared_vpc_host_config     = var.shared_vpc_host_config
 }
 
+module "test-svpc-service" {
+  source              = "../../../../modules/project"
+  count               = var._test_service_project ? 1 : 0
+  name                = "test-svc"
+  billing_account     = var.billing_account
+  auto_create_network = false
+  parent              = var.parent
+  services            = var.services
+  shared_vpc_service_config = {
+    attach       = true
+    host_project = module.test.project_id
+    service_identity_iam = {
+      "roles/compute.networkUser" = [
+        "cloudservices", "container-engine"
+      ]
+      "roles/vpcaccess.user" = [
+        "cloudrun"
+      ]
+      "roles/container.hostServiceAgentUser" = [
+        "container-engine"
+      ]
+    }
+  }
+}
+
