@@ -12,15 +12,144 @@ TODO
 
 ### Cluster and nodepool configuration
 
-TODO
+Clusters and nodepools configuration comes with variables that let you define common configuration (cluster_default) and define the single cluster details when needed. This stage is designed with multi-tenancy in mind, this means that the GKE clusters within this stage will be similar more often than not.
+
+```
+cluster_defaults = {
+  cloudrun_config                 = false
+  database_encryption_key         = null
+  gcp_filestore_csi_driver_config = false
+  master_authorized_ranges = {
+    rfc1918_1 = "10.0.0.0/8"
+    rfc1918_2 = "172.16.0.0/12"
+    rfc1918_3 = "192.168.0.0/16"
+    on_prem = "100.xxx.xxx.xxx/xx"
+  }
+  max_pods_per_node        = 110
+  pod_security_policy      = false
+  release_channel          = "STABLE"
+  vertical_pod_autoscaling = false
+}
+```
+The variable cluster_defaults is used as a shared configuration between all the clusters within the projects, clusters variable instead can be used to define the required specific details:
+
+```
+clusters = {
+  "gke-1" = {
+    cluster_autoscaling = null
+    description         = "gke-1"
+    dns_domain          = null
+    location            = "europe-west1"
+    labels              = {}
+    net = {
+      master_range = "172.17.16.0/28"
+      pods         = "pods"
+      services     = "services"
+      subnet       = "https://www.googleapis.com/compute/v1/projects/XXXX-dev-net-spoke-0/regions/europe-west1/subnetworks/dev-gke-nodes-ew1"
+    }
+    overrides = null
+  }
+  "gke-2" = {
+    cluster_autoscaling = null
+    description         = "gke-2"
+    dns_domain          = null
+    location            = "europe-west3"
+    labels              = {}
+    net = {
+      master_range = "172.17.17.0/28"
+      pods         = "pods"
+      services     = "services"
+      subnet       = "https://www.googleapis.com/compute/v1/projects/XXXX-dev-net-spoke-0/regions/europe-west3/subnetworks/dev-gke-nodes-ew3"
+    }
+    overrides = null
+  }
+}
+
+```
+The same design principle used for the clusters variable is used to define the nodepool and attach them to the right GKE cluster (previously defined)
+
+```
+nodepools = {
+  "gke-1" = {
+    "np-001" = {
+      initial_node_count = 1
+      node_count         = 1
+      node_type          = "n2-standard-4"
+      overrides          = null
+      spot               = false
+    }
+  }
+  "gke-2" = {
+    "np-002" = {
+      initial_node_count = 1
+      node_count         = 1
+      node_type          = "n2-standard-4"
+      overrides          = null
+      spot               = true
+    }
+  }
+}
+```
+
+On the top of all the clusters configuration, the variable authenticator_security_group can be used to define the google group that should be used within Google Groups for RBAC feature as authenticator security group.
 
 ### Fleet management
 
-TODO
+Fleet management is achieved by the configuration of the fleet_configmanagement_templates, fleet_configmanagement_clusters and fleet_features variables exposed by the module in _module. In details fleet_features lets you activate the fleet features, fleet_configmanagement_templates lets you define one o more fleet configmanagement configuration template to be activated onto one or more GKE clusters. Configured features and settings can be applied to clusters by leveraging fleet_configmanagement_clusters where a single template can be applied to one or more clusters.
+
+In the example below, we're defining a configuring the configmanagement feature with the name default, only config_sync is configured, other features have been left inactive.
+
+The entire fleet (fleet_features) has been configured to have multiclusterservicediscovery and multiclusteringress active; pay attention that multiclusteringress is not a bool, it's a string since MCI requires a configuration cluster.
+
+The variable fleet_configmanagement_clusters is used to activate the configmanagement feature on the given set of clusters.
+
+```
+fleet_configmanagement_templates = {
+  default = {
+    binauthz = false
+    config_sync = {
+      git = {
+        gcp_service_account_email = null
+        https_proxy               = null
+        policy_dir                = "configsync"
+        secret_type               = "none"
+        source_format             = "hierarchy"
+        sync_branch               = "main"
+        sync_repo                 = "https://github.com/.../..."
+        sync_rev                  = null
+        sync_wait_secs            = null
+      }
+      prevent_drift = true
+      source_format = "hierarchy"
+    }
+    hierarchy_controller = null
+    policy_controller    = null
+    version              = "1.10.2"
+  }
+}
+
+fleet_configmanagement_clusters = {
+  default = ["gke-1", "gke-2"]
+}
+
+fleet_features = {
+  appdevexperience             = false
+  configmanagement             = false
+  identityservice              = false
+  multiclusteringress          = "gke-1"
+  multiclusterservicediscovery = true
+  servicemesh                  = false
+}
+```
+
 
 ## How to run this stage
 
-TODO
+This stage is meant to be executed after "foundational stages" (i.e., stages [`00-bootstrap`](../../00-bootstrap), [`01-resman`](../../01-resman), 02-networking (either [VPN](../../02-networking-vpn) or [NVA](../../02-networking-nva)) and [`02-security`](../../02-security)) have been run.
+
+It's of course possible to run this stage in isolation, by making sure the architectural prerequisites are satisfied (e.g., networking), and that the Service Account running the stage is granted the roles/permissions below:
+
+...
 
 ### Providers configuration
 
