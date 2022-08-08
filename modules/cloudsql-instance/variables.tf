@@ -141,7 +141,7 @@ variable "users" {
 }
 
 variable "ipv4_enabled" {
-  description = "Allow public access to database instance."
+  description = "Add a public IP address to database instance."
   type        = bool
   default     = false
 }
