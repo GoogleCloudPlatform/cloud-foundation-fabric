@@ -1,26 +1,6 @@
 # GKE Multitenant Module
 
-TODO: add description and diagram
-
-<p align="center">
-  <img src="diagram.png" alt="GKE multitenant">
-</p>
-
-## Design overview and choices
-
-TODO
-
-### Cluster and nodepool configuration
-
-TODO
-
-### Fleet management
-
-TODO
-
-### Variable configuration
-
-TODO
+TODO: add brief explanation and refer back to dev folder?
 
 <!-- TFDOC OPTS files:1 show_extra:1 -->
 <!-- BEGIN TFDOC -->

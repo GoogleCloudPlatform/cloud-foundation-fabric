@@ -43,7 +43,7 @@ module "gke-cluster" {
     horizontal_pod_autoscaling            = true
     config_connector_config               = true
     kalm_config                           = false
-    gcp_filestore_csi_driver_config       = false
+    gcp_filestore_csi_driver_config       = each.value.overrides.gcp_filestore_csi_driver_config
     gke_backup_agent_config               = false
     # enable only if enable_dataplane_v2 is changed to false below
     network_policy_config = false

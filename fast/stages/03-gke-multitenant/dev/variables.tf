@@ -54,7 +54,6 @@ variable "cluster_defaults" {
     gcp_filestore_csi_driver_config = bool
   })
   default = {
-    # TODO: review defaults
     cloudrun_config         = false
     database_encryption_key = null
     # binary_authorization    = false
