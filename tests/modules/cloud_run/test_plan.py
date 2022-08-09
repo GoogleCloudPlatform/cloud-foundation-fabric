@@ -57,25 +57,51 @@ def test_pubsub_triggers(resources):
   assert len(pubsub_triggers) == 2
 
 
-def test_vpc_connector_none(plan_runner):
-  "Test VPC connector creation."
-  _, resources = plan_runner()
-  assert len(
-      [r for r in resources if r['type'] == 'google_vpc_access_connector']) == 0
+def test_revision_annotations(plan_runner):
+  revision_annotations = '''{
+    autoscaling = null
+    cloudsql_instances = ["a", "b"]
+    vpcaccess_connector = "foo"
+    vpcaccess_egress = "all-traffic"
+  }'''
+  _, resources = plan_runner(revision_annotations=revision_annotations)
+  r = [
+      r['values'] for r in resources if r['type'] == 'google_cloud_run_service'
+  ][0]
+  assert r['template'][0]['metadata'][0]['annotations'] == {
+      'run.googleapis.com/cloudsql-instances': 'a,b',
+      'run.googleapis.com/vpc-access-connector': 'foo',
+      'run.googleapis.com/vpc-access-egress': 'all-traffic'
+  }
 
 
-def test_vpc_connector_nocreate(plan_runner):
-  "Test VPC connector creation."
-  _, resources = plan_runner(
-      vpc_connector='{create=false, name="foo", egress_settings=null}')
-  assert len(
-      [r for r in resources if r['type'] == 'google_vpc_access_connector']) == 0
+def test_revision_annotations_autoscaling(plan_runner):
+  revision_annotations = '''{
+    autoscaling = {max_scale = 5, min_scale = 1}
+    cloudsql_instances = null
+    vpcaccess_connector = null
+    vpcaccess_egress = null
+  }'''
+  _, resources = plan_runner(revision_annotations=revision_annotations)
+  r = [
+      r['values'] for r in resources if r['type'] == 'google_cloud_run_service'
+  ][0]
+  assert r['template'][0]['metadata'][0]['annotations'] == {
+      'autoscaling.knative.dev/maxScale': '5',
+      'autoscaling.knative.dev/minScale': '1'
+  }
+
+
+def test_revision_annotations_none(resources):
+  r = [
+      r['values'] for r in resources if r['type'] == 'google_cloud_run_service'
+  ][0]
+  assert r['template'][0]['metadata'][0].get('annotations') is None
 
 
 def test_vpc_connector_create(plan_runner):
-  "Test VPC connector creation."
-  _, resources = plan_runner(
-      vpc_connector='{create=true, name="foo", egress_settings=null}',
-      vpc_connector_config='{ip_cidr_range="10.0.0.0/28", network="default"}')
-  assert len(
-      [r for r in resources if r['type'] == 'google_vpc_access_connector']) == 1
+  vpc_connector_create = '''{
+    ip_cidr_range = "10.10.10.0/24", name = "foo", vpc_self_link = "foo-vpc"
+  }'''
+  _, resources = plan_runner(vpc_connector_create=vpc_connector_create)
+  assert any(r['type'] == 'google_vpc_access_connector' for r in resources)
