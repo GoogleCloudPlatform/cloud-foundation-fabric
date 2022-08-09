@@ -161,6 +161,7 @@ module "db" {
 | [disk_type](variables.tf#L73) | The type of data disk: `PD_SSD` or `PD_HDD`. | <code>string</code> |  | <code>&#34;PD_SSD&#34;</code> |
 | [encryption_key_name](variables.tf#L79) | The full path to the encryption key used for the CMEK disk encryption of the primary instance. | <code>string</code> |  | <code>null</code> |
 | [flags](variables.tf#L85) | Map FLAG_NAME=>VALUE for database-specific tuning. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [ipv4_enabled](variables.tf#L143) | Add a public IP address to database instance. | <code>bool</code> |  | <code>false</code> |
 | [labels](variables.tf#L91) | Labels to be attached to all instances. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 | [prefix](variables.tf#L107) | Prefix used to generate instance names. | <code>string</code> |  | <code>null</code> |
 | [replicas](variables.tf#L123) | Map of NAME=> {REGION, KMS_KEY} for additional read replicas. Set to null to disable replica creation. | <code title="map&#40;object&#40;&#123;&#10;  region              &#61; string&#10;  encryption_key_name &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
