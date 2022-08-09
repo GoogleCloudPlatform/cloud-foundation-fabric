@@ -14,134 +14,137 @@
  * limitations under the License.
  */
 
-resource "google_gke_hub_membership" "membership" {
+locals {
+  _cluster_cm_config = flatten([
+    for template, clusters in var.configmanagement_clusters : [
+      for cluster in clusters : {
+        cluster  = cluster
+        template = lookup(var.configmanagement_templates, template, null)
+      }
+    ]
+  ])
+  cluster_cm_config = {
+    for k in local._cluster_cm_config : k.cluster => k.template if(
+      k.template != null &&
+      var.features.configmanagement == true
+    )
+  }
+  hub_features = {
+    for k, v in var.features : k => v if v != null && v != false && v != ""
+  }
+}
+
+resource "google_gke_hub_membership" "default" {
   provider      = google-beta
-  for_each      = var.member_clusters
-  membership_id = each.key
+  for_each      = var.clusters
   project       = var.project_id
+  membership_id = each.key
   endpoint {
     gke_cluster {
       resource_link = each.value
     }
   }
-}
-
-resource "google_gke_hub_feature" "configmanagement" {
-  provider = google-beta
-  for_each = var.features.configmanagement ? { 1 = 1 } : {}
-  project  = var.project_id
-  name     = "configmanagement"
-  location = "global"
-}
-
-resource "google_gke_hub_feature" "mci" {
-  provider = google-beta
-  for_each = var.features.mc_ingress ? var.member_clusters : {}
-  project  = var.project_id
-  name     = "multiclusteringress"
-  location = "global"
-  spec {
-    multiclusteringress {
-      config_membership = google_gke_hub_membership.membership[each.key].id
+  dynamic "authority" {
+    for_each = (
+      contains(var.workload_identity_clusters, each.key) ? {} : { 1 = 1 }
+    )
+    content {
+      issuer = "https://container.googleapis.com/v1/${var.clusters[each.key]}"
     }
   }
 }
 
-resource "google_gke_hub_feature" "mcs" {
+resource "google_gke_hub_feature" "default" {
   provider = google-beta
-  for_each = var.features.mc_servicediscovery ? { 1 = 1 } : {}
+  for_each = local.hub_features
   project  = var.project_id
-  name     = "multiclusterservicediscovery"
+  name     = each.key
   location = "global"
+  dynamic "spec" {
+    for_each = each.key == "multiclusteringress" && each.value != null ? { 1 = 1 } : {}
+    content {
+      multiclusteringress {
+        config_membership = google_gke_hub_membership.default[each.value].id
+      }
+    }
+  }
 }
 
-resource "google_gke_hub_feature" "servicemesh" {
-  provider = google-beta
-  for_each = var.features.servicemesh ? { 1 = 1 } : {}
-  project  = var.project_id
-  name     = "servicemesh"
-  location = "global"
-}
-
-resource "google_gke_hub_feature_membership" "feature_member" {
+resource "google_gke_hub_feature_membership" "default" {
   provider   = google-beta
-  for_each   = var.features.configmanagement ? var.member_clusters : {}
+  for_each   = local.cluster_cm_config
   project    = var.project_id
   location   = "global"
-  feature    = google_gke_hub_feature.configmanagement["1"].name
-  membership = google_gke_hub_membership.membership[each.key].membership_id
+  feature    = google_gke_hub_feature.default["configmanagement"].name
+  membership = google_gke_hub_membership.default[each.key].membership_id
 
-  dynamic "configmanagement" {
-    for_each = (
-      try(var.member_features.configmanagement, null) != null
-      ? [var.member_features.configmanagement]
-      : []
-    )
-    iterator = configmanagement
+  configmanagement {
+    version = each.value.version
 
-    content {
-      version = try(configmanagement.value.version, null)
+    dynamic "binauthz" {
+      for_each = each.value.binauthz != true ? {} : { 1 = 1 }
+      content {
+        enabled = true
+      }
+    }
 
-      dynamic "config_sync" {
-        for_each = (
-          try(configmanagement.value.config_sync, null) != null
-          ? [configmanagement.value.config_sync]
-          : []
-        )
-        iterator = config_sync
-        content {
-          git {
-            https_proxy               = try(config_sync.value.https_proxy, null)
-            sync_repo                 = try(config_sync.value.sync_repo, null)
-            sync_branch               = try(config_sync.value.sync_branch, null)
-            sync_rev                  = try(config_sync.value.sync_rev, null)
-            secret_type               = try(config_sync.value.secret_type, null)
-            gcp_service_account_email = try(config_sync.value.gcp_service_account_email, null)
-            policy_dir                = try(config_sync.value.policy_dir, null)
+    dynamic "config_sync" {
+      for_each = each.value.config_sync == null ? {} : { 1 = 1 }
+      content {
+        prevent_drift = each.value.config_sync.prevent_drift
+        source_format = each.value.config_sync.source_format
+        dynamic "git" {
+          for_each = (
+            try(each.value.config_sync.git, null) == null ? {} : { 1 = 1 }
+          )
+          content {
+            gcp_service_account_email = (
+              each.value.config_sync.git.gcp_service_account_email
+            )
+            https_proxy    = each.value.config_sync.git.https_proxy
+            policy_dir     = each.value.config_sync.git.policy_dir
+            secret_type    = each.value.config_sync.git.secret_type
+            sync_branch    = each.value.config_sync.git.sync_branch
+            sync_repo      = each.value.config_sync.git.sync_repo
+            sync_rev       = each.value.config_sync.git.sync_rev
+            sync_wait_secs = each.value.config_sync.git.sync_wait_secs
           }
-          source_format = try(config_sync.value.source_format, null)
         }
       }
+    }
 
-      dynamic "policy_controller" {
-        for_each = (
-          try(configmanagement.value.policy_controller, null) != null
-          ? [configmanagement.value.policy_controller]
-          : []
+    dynamic "hierarchy_controller" {
+      for_each = each.value.hierarchy_controller == null ? {} : { 1 = 1 }
+      content {
+        enable_hierarchical_resource_quota = (
+          each.value.hierarchy_controller.enable_hierarchical_resource_quota
         )
-        iterator = policy_controller
-        content {
-          enabled                    = true
-          exemptable_namespaces      = try(policy_controller.value.exemptable_namespaces, null)
-          log_denies_enabled         = try(policy_controller.value.log_denies_enabled, null)
-          referential_rules_enabled  = try(policy_controller.value.referential_rules_enabled, null)
-          template_library_installed = try(policy_controller.value.template_library_installed, null)
-        }
+        enable_pod_tree_labels = (
+          each.value.hierarchy_controller.enable_pod_tree_labels
+        )
+        enabled = true
       }
+    }
 
-      dynamic "binauthz" {
-        for_each = (
-          try(configmanagement.value.binauthz, false)
-          ? [1]
-          : []
+    dynamic "policy_controller" {
+      for_each = each.value.policy_controller == null ? {} : { 1 = 1 }
+      content {
+        audit_interval_seconds = (
+          each.value.policy_controller.audit_interval_seconds
         )
-        content {
-          enabled = true
-        }
-      }
-
-      dynamic "hierarchy_controller" {
-        for_each = (
-          try(var.member_features.hierarchy_controller, null) != null
-          ? [var.member_features.hierarchy_controller]
-          : []
+        exemptable_namespaces = (
+          each.value.policy_controller.exemptable_namespaces
         )
-        iterator = hierarchy_controller
-        content {
-          enabled                            = true
-          enable_pod_tree_labels             = try(hierarchy_controller.value.enable_pod_tree_labels)
-          enable_hierarchical_resource_quota = try(hierarchy_controller.value.enable_hierarchical_resource_quota)
-        }
+        log_denies_enabled = (
+          each.value.policy_controller.log_denies_enabled
+        )
+        referential_rules_enabled = (
+          each.value.policy_controller.referential_rules_enabled
+        )
+        template_library_installed = (
+          each.value.policy_controller.template_library_installed
+        )
+        enabled = true
       }
     }
   }
