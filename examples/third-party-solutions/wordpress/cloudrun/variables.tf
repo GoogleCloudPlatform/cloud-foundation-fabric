@@ -44,3 +44,15 @@ variable "principals" {
   type        = list(string)
   default     = []
 }
+
+variable "wordpress_image" {
+  type        = string
+  description = "Image to run with Cloud Run, starts with \"gcr.io\""
+}
+
+# Documentation: https://cloud.google.com/run/docs/securing/managing-access#making_a_service_public
+variable "cloud_run_invoker" {
+  type        = string
+  description = "IAM member authorized to access the end-point (for example, 'user:YOUR_IAM_USER' for only you or 'allUsers' for everyone)"
+  default     = "allUsers"
+}
