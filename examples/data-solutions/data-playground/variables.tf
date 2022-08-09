@@ -16,7 +16,7 @@
 variable "location" {
   description = "The location where resources will be deployed."
   type        = string
-  default     = "europe"
+  default     = "EU"
 }
 
 variable "project_id" {
@@ -36,7 +36,6 @@ variable "project_create" {
 variable "prefix" {
   description = "Unique prefix used for resource names. Not used for project if 'project_create' is null."
   type        = string
-  default     = "dp"
 }
 
 variable "region" {
@@ -48,21 +47,19 @@ variable "region" {
 variable "service_encryption_keys" { # service encription key
   description = "Cloud KMS to use to encrypt different services. Key location should match service region."
   type = object({
+    bq      = string
+    compute = string
     storage = string
   })
   default = null
 }
 
 variable "vpc_config" {
-  description = "Parameters to create a simple VPC for the Data Playground"
+  description = "Parameters to create a VPC."
   type = object({
     ip_cidr_range = string
-    subnet_name   = string
-    vpc_name      = string
   })
   default = {
     ip_cidr_range = "10.0.0.0/20"
-    subnet_name   = "default-subnet"
-    vpc_name      = "data-playground-vpc"
   }
 }

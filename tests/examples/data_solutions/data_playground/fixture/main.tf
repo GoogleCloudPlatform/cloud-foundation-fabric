@@ -17,6 +17,7 @@
 module "test" {
   source     = "../../../../../examples/data-solutions/data-playground/"
   project_id = "sampleproject"
+  prefix     = "tst"
   project_create = {
     billing_account_id = "123456-123456-123456",
     parent             = "folders/467898377"
