@@ -18,23 +18,6 @@
 
 
 locals {
-  branch_dataplatform_sa_iam_emails = (
-    var.fast_features.data_platform
-    ? [
-      module.branch-dp-dev-sa.0.iam_email,
-      module.branch-dp-prod-sa.0.iam_email
-    ]
-    : []
-  )
-  # set to the empty list if you remove the teams branch
-  branch_teams_pf_sa_iam_emails = (
-    var.fast_features.project_factory
-    ? [
-      module.branch-pf-dev-sa.0.iam_email,
-      module.branch-pf-prod-sa.0.iam_email
-    ]
-    : []
-  )
   list_allow = {
     inherit_from_parent = false
     suggested_value     = null
@@ -72,18 +55,19 @@ module "organization" {
       ]
     },
     local.billing_org ? {
-      "roles/billing.costsManager" = local.branch_teams_pf_sa_iam_emails
+      "roles/billing.costsManager" = concat(
+        local.branch_optional_sa_lists.pf-dev,
+        local.branch_optional_sa_lists.pf-prod
+      )
       "roles/billing.user" = concat(
         [
           module.branch-network-sa.iam_email,
           module.branch-security-sa.iam_email,
         ],
-        local.branch_dataplatform_sa_iam_emails,
-        # enable if individual teams can create their own projects
-        # [
-        #   for k, v in module.branch-teams-team-sa : v.iam_email
-        # ],
-        local.branch_teams_pf_sa_iam_emails
+        local.branch_optional_sa_lists.dp-dev,
+        local.branch_optional_sa_lists.dp-prod,
+        local.branch_optional_sa_lists.pf-dev,
+        local.branch_optional_sa_lists.pf-prod,
       )
     } : {}
   )

@@ -1,0 +1,51 @@
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+name: Post-merge tasks
+
+on:
+  pull_request:
+    branches:
+      - master
+    types:
+      - closed
+
+env:
+  PYTHON_VERSION: 3.10
+
+jobs:
+  if_merged:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install dependencies
+        run: |
+          pip install -r tools/requirements.txt
+      - name: Update Changelog
+        run: |
+          python3 tools/changelog.py --token secrets.GITHUB_TOKEN CHANGELOG.md
+      - name: Commit and push Changelog
+        env:
+          CI_COMMIT_MESSAGE: Update Changelog
+          CI_COMMIT_AUTHOR: Fabric Repo Workflows
+        run: |
+          git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
+          git config --global user.email "username@users.noreply.github.com"
+          git commit -a -m "${{ env.CI_COMMIT_MESSAGE }}"
+          git push

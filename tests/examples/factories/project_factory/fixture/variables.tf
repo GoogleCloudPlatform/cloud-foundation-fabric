@@ -58,7 +58,6 @@ variable "shared_vpc_self_link" {
 }
 
 variable "vpc_host_project" {
-  # tfdoc:variable:source 02-networking
   description = "Host project for the shared VPC."
   type        = string
   default     = "host-project"
