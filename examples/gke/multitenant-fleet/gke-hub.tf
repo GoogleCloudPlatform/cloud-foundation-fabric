@@ -24,7 +24,7 @@ locals {
 }
 
 module "gke-hub" {
-  source     = "../../../../modules/gke-hub"
+  source     = "../../../modules/gke-hub"
   count      = local.fleet_enabled ? 1 : 0
   project_id = module.gke-project-0.project_id
   clusters = {

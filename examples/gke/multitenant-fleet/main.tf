@@ -15,7 +15,7 @@
  */
 
 module "gke-project-0" {
-  source          = "../../../../modules/project"
+  source          = "../../../modules/project"
   billing_account = var.billing_account_id
   name            = "gke-clusters-0"
   parent          = var.folder_id
@@ -73,7 +73,7 @@ module "gke-project-0" {
 }
 
 module "gke-dataset-resource-usage" {
-  source        = "../../../../modules/bigquery-dataset"
+  source        = "../../../modules/bigquery-dataset"
   project_id    = module.gke-project-0.project_id
   id            = "gke_resource_usage"
   friendly_name = "GKE resource usage."
