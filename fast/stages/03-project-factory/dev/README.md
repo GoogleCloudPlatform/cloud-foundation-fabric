@@ -53,7 +53,7 @@ It's of course possible to run this stage in isolation, by making sure the archi
 
 ### Providers configuration
 
-If you're running this on top of Fast, you should run the following commands to create the providers file, and populate the required variables from the previous stage.
+If you're running this on top of FAST, you should run the following commands to create the providers file, and populate the required variables from the previous stage.
 
 ```bash
 # Variable `outputs_location` is set to `~/fast-config` in stage 01-resman
