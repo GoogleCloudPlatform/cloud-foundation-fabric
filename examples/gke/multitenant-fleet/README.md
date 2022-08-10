@@ -2,6 +2,118 @@
 
 TODO: add brief explanation and refer back to dev folder?
 
+This is an example of that shows the use of the above variables:
+
+```hcl
+# the `cluster_defaults` variable defaults are used and not shown here
+clusters = {
+  "gke-00" = {
+    cluster_autoscaling = null
+    description         = "gke-00"
+    dns_domain          = null
+    location            = "europe-west1"
+    labels              = {}
+    net = {
+      master_range = "172.17.16.0/28"
+      pods         = "pods"
+      services     = "services"
+      subnet       = local.vpc.subnet_self_links["europe-west3/gke-dev-0"]
+    }
+    overrides = null
+  }
+  "gke-01" = {
+    cluster_autoscaling = null
+    description         = "gke-01"
+    dns_domain          = null
+    location            = "europe-west3"
+    labels              = {}
+    net = {
+      master_range = "172.17.17.0/28"
+      pods         = "pods"
+      services     = "services"
+      subnet       = local.vpc.subnet_self_links["europe-west3/gke-dev-0"]
+    }
+    overrides = {
+      cloudrun_config                 = false
+      database_encryption_key         = null
+      gcp_filestore_csi_driver_config = true
+      master_authorized_ranges = {
+        rfc1918_1 = "10.0.0.0/8"
+      }
+      max_pods_per_node        = 64
+      pod_security_policy      = true
+      release_channel          = "STABLE"
+      vertical_pod_autoscaling = false
+    }
+  }
+}
+nodepools = {
+  "gke-0" = {
+    "gke-00-000" = {
+      initial_node_count = 1
+      node_count         = 1
+      node_type          = "n2-standard-4"
+      overrides          = null
+      spot               = false
+    }
+  }
+  "gke-1" = {
+    "gke-01-000" = {
+      initial_node_count = 1
+      node_count         = 1
+      node_type          = "n2-standard-4"
+      overrides          = {
+        image_type        = "UBUNTU_CONTAINERD"
+        max_pods_per_node = 64
+        node_locations    = []
+        node_tags         = []
+        node_taints       = []
+      }
+      spot               = true
+    }
+  }
+}
+```
+
+```hcl
+fleet_configmanagement_templates = {
+  default = {
+    binauthz = false
+    config_sync = {
+      git = {
+        gcp_service_account_email = null
+        https_proxy               = null
+        policy_dir                = "configsync"
+        secret_type               = "none"
+        source_format             = "hierarchy"
+        sync_branch               = "main"
+        sync_repo                 = "https://github.com/.../..."
+        sync_rev                  = null
+        sync_wait_secs            = null
+      }
+      prevent_drift = true
+      source_format = "hierarchy"
+    }
+    hierarchy_controller = null
+    policy_controller    = null
+    version              = "1.10.2"
+  }
+}
+
+fleet_configmanagement_clusters = {
+  default = ["gke-1", "gke-2"]
+}
+
+fleet_features = {
+  appdevexperience             = false
+  configmanagement             = false
+  identityservice              = false
+  multiclusteringress          = "gke-1"
+  multiclusterservicediscovery = true
+  servicemesh                  = false
+}
+```
+
 <!-- TFDOC OPTS files:1 show_extra:1 -->
 <!-- BEGIN TFDOC -->
 

@@ -1,6 +1,8 @@
 # GKE Multitenant
 
-TODO: add description and diagram
+This stage allows creation and management of a fleet of GKE multitenant clusters, optionally leveraging GKE Hub to configure additional features. It's designed to be replicated once for every homogeneous set of clusters, either per environment or with more granularity as needed (e.g. teams or sets of teams sharing similar requirements).
+
+The following diagram illustrates the high-level design of created resources and a schema of the VPC SC design, which can be adapted to specific requirements via variables:
 
 <p align="center">
   <img src="diagram.png" alt="GKE multitenant">
@@ -12,146 +14,80 @@ TODO
 
 ## How to run this stage
 
-TODO
+This stage is meant to be executed after "foundational stages" (i.e., stages [`00-bootstrap`](../../00-bootstrap), [`01-resman`](../../01-resman), 02-networking (either [VPN](../../02-networking-vpn) or [NVA](../../02-networking-nva)) and [`02-security`](../../02-security)) have been run.
 
+It's of course possible to run this stage in isolation, by making sure the architectural prerequisites are satisfied (e.g., networking), and that the Service Account running the stage is granted the roles/permissions below:
+
+- on the organization or network folder level
+  - `roles/xpnAdmin` or a custom role which includes the following permissions
+    - `compute.organizations.enableXpnResource`,
+    - `compute.organizations.disableXpnResource`,
+    - `compute.subnetworks.setIamPolicy`,
+- on each folder where projects are created
+  - `roles/logging.admin`
+  - `roles/owner`
+  - `roles/resourcemanager.folderAdmin`
+  - `roles/resourcemanager.projectCreator`
+  - `roles/xpnAdmin`
+- on the host project for the Shared VPC
+  - `roles/browser`
+  - `roles/compute.viewer`
+- on the organization or billing account
+  - `roles/billing.admin`
+  
+The VPC host project, VPC and subnets should already exist.
+  
 ### Providers configuration
 
-TODO
+If you're running this on top of FAST, you should run the following commands to create the providers file, and populate the required variables from the previous stage.
+
+```bash
+# Variable `outputs_location` is set to `~/fast-config` in stage 01-resman
+$ cd fabric-fast/stages/03-gke-multitenant/dev
+ln -s ~/fast-config/providers/03-gke-dev-providers.tf .
+```
 
 ### Variable configuration
 
+There are two broad sets of variables you will need to fill in:
+
+- variables shared by other stages (org id, billing account id, etc.), or derived from a resource managed by a different stage (folder id, automation project id, etc.)
+- variables specific to resources managed by this stage
+
+#### Variables passed in from other stages
+
+To avoid the tedious job of filling in the first group of variables with values derived from other stages' outputs, the same mechanism used above for the provider configuration can be used to leverage pre-configured `.tfvars` files.
+
+If you configured a valid path for `outputs_location` in the bootstrap and networking stage, simply link the relevant `terraform-*.auto.tfvars.json` files from this stage's outputs folder (under the path you specified), where the `*` above is set to the name of the stage that produced it. For this stage, a single `.tfvars` file is available:
+
+```bash
+# Variable `outputs_location` is set to `~/fast-config`
+ln -s ~/fast-config/tfvars/00-bootstrap.auto.tfvars.json .
+ln -s ~/fast-config/tfvars/01-resman.auto.tfvars.json . 
+ln -s ~/fast-config/tfvars/02-networking.auto.tfvars.json .
+```
+
+If you're not using FAST, refer to the [Variables](#variables) table at the bottom of this document for a full list of variables, their origin (e.g., a stage or specific to this one), and descriptions explaining their meaning.
+
 #### Cluster and nodepools
 
-This stage is designed with multi-tenancy in mind, and the expectation is that  GKE clusters will mostly share a common set of defaults. Stage variables are designed to support this approach for both clusters and nodepools:
+This stage is designed with multi-tenancy in mind, and the expectation is that  GKE clusters will mostly share a common set of defaults. Variables are designed to support this approach for both clusters and nodepools:
 
 - the `cluster_default` variable allows defining common defaults for cluster
 - the `clusters` variable is used to declare the actual GKE clusters and allows overriding defaults on a per-cluster basis
 - the `nodepool_defaults` variable allows definining common defaults for nodepools
 - the `nodepools` variable is used to declare cluster nodepools and allows overriding defaults on a per-cluster basis
 
-This is an example of that shows the use of the above variables:
-
-```hcl
-# the `cluster_defaults` variable defaults are used and not shown here
-clusters = {
-  "gke-00" = {
-    cluster_autoscaling = null
-    description         = "gke-00"
-    dns_domain          = null
-    location            = "europe-west1"
-    labels              = {}
-    net = {
-      master_range = "172.17.16.0/28"
-      pods         = "pods"
-      services     = "services"
-      subnet       = local.vpc.subnet_self_links["europe-west3/gke-dev-0"]
-    }
-    overrides = null
-  }
-  "gke-01" = {
-    cluster_autoscaling = null
-    description         = "gke-01"
-    dns_domain          = null
-    location            = "europe-west3"
-    labels              = {}
-    net = {
-      master_range = "172.17.17.0/28"
-      pods         = "pods"
-      services     = "services"
-      subnet       = local.vpc.subnet_self_links["europe-west3/gke-dev-0"]
-    }
-    overrides = {
-      cloudrun_config                 = false
-      database_encryption_key         = null
-      gcp_filestore_csi_driver_config = true
-      master_authorized_ranges = {
-        rfc1918_1 = "10.0.0.0/8"
-      }
-      max_pods_per_node        = 64
-      pod_security_policy      = true
-      release_channel          = "STABLE"
-      vertical_pod_autoscaling = false
-    }
-  }
-}
-nodepools = {
-  "gke-0" = {
-    "gke-00-000" = {
-      initial_node_count = 1
-      node_count         = 1
-      node_type          = "n2-standard-4"
-      overrides          = null
-      spot               = false
-    }
-  }
-  "gke-1" = {
-    "gke-01-000" = {
-      initial_node_count = 1
-      node_count         = 1
-      node_type          = "n2-standard-4"
-      overrides          = {
-        image_type        = "UBUNTU_CONTAINERD"
-        max_pods_per_node = 64
-        node_locations    = []
-        node_tags         = []
-        node_taints       = []
-      }
-      spot               = true
-    }
-  }
-}
-```
-
 There are two additional variables that influence cluster configuration: `authenticator_security_group` to configure Google Groups for RBAC, `dns_domain` to configure Cloud DNS for GKE.
 
 #### Fleet management
 
-Fleet management is achieved by the configuration of the fleet_configmanagement_templates, fleet_configmanagement_clusters and fleet_features variables exposed by the module in _module. In details fleet_features lets you activate the fleet features, fleet_configmanagement_templates lets you define one o more fleet configmanagement configuration template to be activated onto one or more GKE clusters. Configured features and settings can be applied to clusters by leveraging fleet_configmanagement_clusters where a single template can be applied to one or more clusters.
+Fleet management is entirely optional, and uses three separate variables:
 
-In the example below, we're defining a configuring the configmanagement feature with the name default, only config_sync is configured, other features have been left inactive.
-
-The entire fleet (fleet_features) has been configured to have multiclusterservicediscovery and multiclusteringress active; pay attention that multiclusteringress is not a bool, it's a string since MCI requires a configuration cluster.
-
-The variable fleet_configmanagement_clusters is used to activate the configmanagement feature on the given set of clusters.
-
-```
-fleet_configmanagement_templates = {
-  default = {
-    binauthz = false
-    config_sync = {
-      git = {
-        gcp_service_account_email = null
-        https_proxy               = null
-        policy_dir                = "configsync"
-        secret_type               = "none"
-        source_format             = "hierarchy"
-        sync_branch               = "main"
-        sync_repo                 = "https://github.com/.../..."
-        sync_rev                  = null
-        sync_wait_secs            = null
-      }
-      prevent_drift = true
-      source_format = "hierarchy"
-    }
-    hierarchy_controller = null
-    policy_controller    = null
-    version              = "1.10.2"
-  }
-}
-
-fleet_configmanagement_clusters = {
-  default = ["gke-1", "gke-2"]
-}
-
-fleet_features = {
-  appdevexperience             = false
-  configmanagement             = false
-  identityservice              = false
-  multiclusteringress          = "gke-1"
-  multiclusterservicediscovery = true
-  servicemesh                  = false
-}
-```
+- `fleet_features`, that specifies the [GKE fleet](https://cloud.google.com/anthos/fleet-management/docs/fleet-concepts#fleet-enabled-components) features you want activate
+- `fleet_configmanagement_templates`, that allows defing configuration templates for specific sets of features ([Config Management](https://cloud.google.com/anthos-config-management/docs/how-to/install-anthos-config-management) currently)
+- `fleet_configmanagement_clusters`, that specifies which clusters are managed by fleet features, and the optional Config Management template for each cluster
+- `fleet_workload_identity` that enables optional centralized [Workload Identity](https://cloud.google.com/anthos/fleet-management/docs/use-workload-identity)
 
 ## How to run this stage
 
@@ -160,14 +96,6 @@ This stage is meant to be executed after "foundational stages" (i.e., stages [`0
 It's of course possible to run this stage in isolation, by making sure the architectural prerequisites are satisfied (e.g., networking), and that the Service Account running the stage is granted the roles/permissions below:
 
 ...
-
-### Providers configuration
-
-TODO
-
-### Variable configuration
-
-TODO
 
 <!-- TFDOC OPTS files:1 show_extra:1 -->
 <!-- BEGIN TFDOC -->
