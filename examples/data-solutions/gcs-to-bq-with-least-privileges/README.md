@@ -2,16 +2,7 @@
 
 ## Introduction
 
-<<<<<<< HEAD
-The solution will use:
-- internal IPs for GCE and Cloud Dataflow instances
-- Cloud NAT to let resources egress to the Internet, to run system updates and install packages
-- rely on [Service Account Impersonation](https://cloud.google.com/iam/docs/impersonating-service-accounts) to avoid the use of service account keys
-- Service Accounts with least privilege on each resource
-- (Optional) CMEK encryption for GCS bucket, DataFlow instances and BigQuery tables
-=======
 This repository contains the necessary Terraform modules to securely deploy a basic ETL pipeline that will dump data from a Google Cloud Storage (GCS) bucket to tables in BigQuery.
->>>>>>> origin/master
 
 An ETL pipeline is defined in three steps:
 
@@ -34,17 +25,7 @@ Whether you’re transferring from another Cloud Service Provider or you’re ta
 
 ![GCS to BigQuery High-level diagram](diagram.png "GCS to BigQuery High-level diagram")
 
-<<<<<<< HEAD
-## Move to real use case consideration
-In the example we implemented some compromise to keep the example minimal and easy to read. On a real word use case, you may evaluate the option to:
- - Configure a Shared-VPC
- - Use only Identity Groups to assigned roles
- - Use Authorative IAM role assignment
- - Split resources in different project: Data Landing, Data Transformation, Data Lake, ...
- - Use VPC-SC to mitigate data exfiltration
-=======
 The main components that we would be setting up are (to learn more about these products, click on the hyperlinks):
->>>>>>> origin/master
 
 * [Cloud Storage (GCS) bucket](https://cloud.google.com/storage/): data lake solution to store extracted raw data that must undergo some kind of transformation.
 * [Cloud Dataflow pipeline](https://cloud.google.com/dataflow): to build fully managed batch and streaming pipelines to transform data stored in GCS buckets ready for processing in the Data Warehouse using Apache Beam.
@@ -53,32 +34,6 @@ The main components that we would be setting up are (to learn more about these p
 
 For a full list of the resources that will be created, please refer to the [github repository](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/examples/data-solutions/gcs-to-bq-with-least-privileges) for this project. If you're migrating from another Cloud Provider, refer to [this](https://cloud.google.com/free/docs/aws-azure-gcp-service-comparison) documentation to see equivalent services and comparisons in Microsoft Azure and Amazon Web Services
 
-<<<<<<< HEAD
-- projects
-  - Service Project configured for GCS buckets, Dataflow instances and BigQuery tables and orchestration
-- networking
-  - VPC network
-  - One subnet
-  - Firewall rules for [SSH access via IAP](https://cloud.google.com/iap/docs/using-tcp-forwarding) and open communication within the VPC
-- IAM
-  - One service account for uploading data into the GCS landing bucket
-  - One service account for Orchestration
-  - One service account for Dataflow instances
-  - One service account for Bigquery tables
-- GCS
-  - One bucket
-- BQ
-  - One dataset
-  - One table. Tables are defined in Terraform for the purpose of the example. Probably, in real scenario, would handle Tables creation in a separate Terraform State or using a different tool/pipeline (for example: Dataform).
-
-In this example you can also configure users or group of user to assign them viewer role on the resources created and the ability to impersonate service accounts to test dataflow pipelines before automating them with Composer or any other orchestration systems.
-
-## Deploy your environment
-
-We assume the identity running the following steps has the following role:
- - `resourcemanager.projectCreator` in case a new project will be created.
- - `owner` on the project in case you use an existing project. 
-=======
 ## Costs
 
 Pricing Estimates - We have created a sample estimate based on some usage we see from new startups looking to scale. This estimate would give you an idea of how much this deployment would essentially cost per month at this scale and you extend it to the scale you further prefer. Here's the [link](https://cloud.google.com/products/calculator#id=44710202-c9d4-49d5-a378-99d7dd34f5e2).
@@ -86,7 +41,6 @@ Pricing Estimates - We have created a sample estimate based on some usage we see
 ## Setup
 
 This solution assumes you already have a project created and set up where you wish to host these resources. If not, and you would like for the project to create a new project as well,  please refer to the [github repository](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/examples/data-solutions/gcs-to-bq-with-least-privileges) for instructions.
->>>>>>> origin/master
 
 ### Prerequisites
 
@@ -94,11 +48,7 @@ This solution assumes you already have a project created and set up where you wi
 * Have a [billing account](https://cloud.google.com/billing/docs/how-to/manage-billing-account) set up.
 * Have an existing [project](https://cloud.google.com/resource-manager/docs/creating-managing-projects) with [billing enabled](https://cloud.google.com/billing/docs/how-to/modify-project), we’ll call this the __service project__.
 
-<<<<<<< HEAD
-Configure the Terraform variable in your `terraform.tfvars` file. You need to specify at least the following variables:
-=======
 ### Roles & Permissions
->>>>>>> origin/master
 
 In order to spin up this architecture, you will need to be a user with the “__Project owner__” [IAM](https://cloud.google.com/iam) role on the existing project:
 
