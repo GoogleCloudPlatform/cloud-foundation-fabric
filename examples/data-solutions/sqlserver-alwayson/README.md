@@ -57,7 +57,7 @@ and to `C:\GcpSetupLog.txt` file.
 | [region](variables.tf#L21) | Region for resources | <code>string</code> |  | <code>&#34;europe-west4&#34;</code> |
 | [shared_vpc_project_id](variables.tf#L32) | Shared VPC project ID for firewall rules | <code>string</code> |  | <code>null</code> |
 | [sql_client_cidrs](variables.tf#L54) | CIDR ranges that are allowed to connect to SQL Server | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;0.0.0.0&#47;0&#34;&#93;</code> |
-| [vpc_ip_cidr_range](variables.tf#L183) | Ip range used in the subnet deployed in the Service Project. | <code>string</code> |  | <code>&#34;10.0.0.0&#47;20&#34;</code> |
+| [vpc_ip_cidr_range](variables.tf#L183) | Ip range used in the subnet deployef in the Service Project. | <code>string</code> |  | <code>&#34;10.0.0.0&#47;20&#34;</code> |
 | [witness_image](variables.tf#L84) | SQL Server witness machine image | <code>string</code> |  | <code>&#34;projects&#47;windows-cloud&#47;global&#47;images&#47;family&#47;windows-2019&#34;</code> |
 | [witness_instance_type](variables.tf#L72) | SQL Server witness node instance type | <code>string</code> |  | <code>&#34;n2-standard-2&#34;</code> |
 | [witness_name](variables.tf#L168) | Witness base name | <code>string</code> |  | <code>&#34;witness&#34;</code> |

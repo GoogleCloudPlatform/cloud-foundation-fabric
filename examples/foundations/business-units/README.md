@@ -53,7 +53,7 @@ This sample uses a top-level folder to encapsulate projects that host resources 
 | [bu_machine_learning](outputs.tf#L43) | Machine Learning attributes. |  |
 | [bu_machine_learning_keys](outputs.tf#L53) | Machine Learning service account keys. | ✓ |
 | [shared_folder_id](outputs.tf#L59) | Shared folder id. |  |
-| [shared_resources_project](outputs.tf#L64) | Project that holds resources shared across business units. |  |
+| [shared_resources_project](outputs.tf#L64) | Project that holdes resources shared across business units. |  |
 | [terraform_project](outputs.tf#L69) | Project that holds the base Terraform resources. |  |
 
 <!-- END TFDOC -->

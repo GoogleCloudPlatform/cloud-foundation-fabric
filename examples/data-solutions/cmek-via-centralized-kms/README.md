@@ -41,7 +41,7 @@ This sample creates several distinct groups of resources:
 | [project_kms_name](variables.tf#L27) | Name for the new KMS Project. | <code>string</code> |  | <code>&#34;my-project-kms-001&#34;</code> |
 | [project_service_name](variables.tf#L33) | Name for the new Service Project. | <code>string</code> |  | <code>&#34;my-project-service-001&#34;</code> |
 | [region](variables.tf#L39) | The region where resources will be deployed. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| [vpc_ip_cidr_range](variables.tf#L50) | Ip range used in the subnet deployed in the Service Project. | <code>string</code> |  | <code>&#34;10.0.0.0&#47;20&#34;</code> |
+| [vpc_ip_cidr_range](variables.tf#L50) | Ip range used in the subnet deployef in the Service Project. | <code>string</code> |  | <code>&#34;10.0.0.0&#47;20&#34;</code> |
 | [vpc_name](variables.tf#L56) | Name of the VPC created in the Service Project. | <code>string</code> |  | <code>&#34;local&#34;</code> |
 | [vpc_subnet_name](variables.tf#L62) | Name of the subnet created in the Service Project. | <code>string</code> |  | <code>&#34;subnet&#34;</code> |
 
