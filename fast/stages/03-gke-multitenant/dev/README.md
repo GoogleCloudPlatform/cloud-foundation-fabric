@@ -89,6 +89,10 @@ Fleet management is entirely optional, and uses three separate variables:
 - `fleet_configmanagement_clusters`, that specifies which clusters are managed by fleet features, and the optional Config Management template for each cluster
 - `fleet_workload_identity` that enables optional centralized [Workload Identity](https://cloud.google.com/anthos/fleet-management/docs/use-workload-identity)
 
+## TODO
+Adjusting External Load balancer Policy:
+Error ensuring load balancer: Insert: Constraint constraints/compute.restrictLoadBalancerCreationForTypes violated for projects/0000-dev-gke-clusters-0. Forwarding Rule projects/000-dev-gke-clusters-0/global/forwardingRules/mci-jz0ri8-fw-apps-whereami-ingress of type EXTERNAL_HTTP_HTTPS
+
 ## How to run this stage
 
 This stage is meant to be executed after "foundational stages" (i.e., stages [`00-bootstrap`](../../00-bootstrap), [`01-resman`](../../01-resman), 02-networking (either [VPN](../../02-networking-vpn) or [NVA](../../02-networking-nva)) and [`02-security`](../../02-security)) have been run.
