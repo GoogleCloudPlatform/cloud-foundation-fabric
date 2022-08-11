@@ -10,7 +10,7 @@ They are meant to be used as minimal but complete starting points to create migr
 
 <a href="./single-project/" title="M4CE with single project"><img src="./single-project/diagram.png" align="left" width="280px"></a> This [example](./single-project/) implements a simple environment for Migrate for Compute Engine (v5) where both the API backend and the migration target environment are deployed on a single GCP project.
 
-This example represents the easiest sceario to implement a Migrate for Compute Engine (v5) enviroment suitable for small migrations on simple enviroments or for product showcases. 
+This example represents the easiest scenario to implement a Migrate for Compute Engine (v5) environment suitable for small migrations on simple environments or for product showcases. 
 <br clear="left">
 
 ### M4CE with host and target projects
