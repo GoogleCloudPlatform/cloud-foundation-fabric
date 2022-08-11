@@ -15,31 +15,36 @@
 def test_prefix(plan_runner):
   "Test project id prefix."
   _, resources = plan_runner()
-  assert len(resources) == 1
-  assert resources[0]['values']['name'] == 'my-project'
+  assert len(resources) == 4
+  [project_resource] = [r for r in resources if r['address'] == 'module.test.google_project.project[0]']
+  assert project_resource['values']['name'] == 'my-project'
   _, resources = plan_runner(prefix='foo')
-  assert len(resources) == 1
-  assert resources[0]['values']['name'] == 'foo-my-project'
+  assert len(resources) == 4
+  [project_resource] = [r for r in resources if r['address'] == 'module.test.google_project.project[0]']
+  assert project_resource['values']['name'] == 'foo-my-project'
 
 
 def test_parent(plan_runner):
   "Test project parent."
   _, resources = plan_runner(parent='folders/12345678')
-  assert len(resources) == 1
-  assert resources[0]['values']['folder_id'] == '12345678'
-  assert resources[0]['values'].get('org_id') == None
+  assert len(resources) == 4
+  [project_resource] = [r for r in resources if r['address'] == 'module.test.google_project.project[0]']
+  assert project_resource['values']['folder_id'] == '12345678'
+  assert project_resource['values'].get('org_id') == None
   _, resources = plan_runner(parent='organizations/12345678')
-  assert len(resources) == 1
-  assert resources[0]['values']['org_id'] == '12345678'
-  assert resources[0]['values'].get('folder_id') == None
+  assert len(resources) == 4
+  [project_resource] = [r for r in resources if r['address'] == 'module.test.google_project.project[0]']
+  assert project_resource['values']['org_id'] == '12345678'
+  assert project_resource['values'].get('folder_id') == None
 
 
 def test_no_parent(plan_runner):
   "Test null project parent."
   _, resources = plan_runner()
-  assert len(resources) == 1
-  assert resources[0]['values'].get('folder_id') == None
-  assert resources[0]['values'].get('org_id') == None
+  assert len(resources) == 4
+  [project_resource] = [r for r in resources if r['address'] == 'module.test.google_project.project[0]']
+  assert project_resource['values'].get('folder_id') == None
+  assert project_resource['values'].get('org_id') == None
 
 
 def test_service_encryption_keys(plan_runner):

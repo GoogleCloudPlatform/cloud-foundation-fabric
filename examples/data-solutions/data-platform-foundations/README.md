@@ -165,7 +165,7 @@ The default configuration will implement 3 tags:
 
 Anything that is not tagged is available to all users who have access to the data warehouse.
 
-For the porpuse of the example no groups has access to tagged data. You can configure your tags and roles associated by configuring the `data_catalog_tags` variable. We suggest useing the "[Best practices for using policy tags in BigQuery](https://cloud.google.com/bigquery/docs/best-practices-policy-tags)" article as a guide to designing your tags structure and access pattern.
+For the purpose of the example no groups has access to tagged data. You can configure your tags and roles associated by configuring the `data_catalog_tags` variable. We suggest using the "[Best practices for using policy tags in BigQuery](https://cloud.google.com/bigquery/docs/best-practices-policy-tags)" article as a guide to designing your tags structure and access pattern.
 
 ## How to run this script
 
@@ -223,7 +223,6 @@ To do this, you need to remove IAM binging at project-level for the `data-analys
 The application layer is out of scope of this script. As a demo purpuse only, several Cloud Composer DAGs are provided. Demos will import data from the `drop off` area to the `Data Warehouse Confidential` dataset suing different features. 
 
 You can find examples in the `[demo](./demo)` folder.
-
 <!-- BEGIN TFDOC -->
 
 ## Variables

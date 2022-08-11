@@ -139,3 +139,9 @@ variable "users" {
   type        = map(string)
   default     = null
 }
+
+variable "ipv4_enabled" {
+  description = "Add a public IP address to database instance."
+  type        = bool
+  default     = false
+}

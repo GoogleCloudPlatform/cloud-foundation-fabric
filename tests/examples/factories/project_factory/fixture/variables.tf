@@ -38,6 +38,19 @@ variable "defaults_file" {
   default     = "./defaults.yaml"
 }
 
+variable "service_accounts" {
+  description = "Service accounts to be created, and roles assigned them on the project."
+  type        = map(list(string))
+  default     = {}
+}
+
+variable "service_accounts_iam" {
+  description = "IAM bindings on service account resources. Format is KEY => {ROLE => [MEMBERS]}"
+  type        = map(map(list(string)))
+  default     = {}
+  nullable    = false
+}
+
 variable "shared_vpc_self_link" {
   description = "Self link for the shared VPC."
   type        = string
@@ -45,7 +58,6 @@ variable "shared_vpc_self_link" {
 }
 
 variable "vpc_host_project" {
-  # tfdoc:variable:source 02-networking
   description = "Host project for the shared VPC."
   type        = string
   default     = "host-project"
