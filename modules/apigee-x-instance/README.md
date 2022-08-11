@@ -55,7 +55,7 @@ module "apigee-x-instance" {
 | [apigee_environments](variables.tf#L26) | Apigee Environment Names. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 | [consumer_accept_list](variables.tf#L37) | List of projects (id/number) that can privately connect to the service attachment. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
 | [disk_encryption_key](variables.tf#L49) | Customer Managed Encryption Key (CMEK) self link (e.g. `projects/foo/locations/us/keyRings/bar/cryptoKeys/baz`) used for disk and volume encryption (required for PAID Apigee Orgs only). | <code>string</code> |  | <code>null</code> |
-| [ip_range](variables.tf#L43) | Customer-provided CIDR blocks of length 22 and 28 for the Apigee instance (e.g. `10.0.0.0/22,10.1.0.0/28`). | <code>string</code> |  | <code>null</code> |
+| [ip_range](variables.tf#L43) | Input: Customer-provided CIDR blocks of length 22 (e.g. `10.0.0.0/22`) Output: Main and Support CIDR (e.g. `10.0.0.0/22,10.1.0.0/28`). | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 
