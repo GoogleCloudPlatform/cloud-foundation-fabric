@@ -102,6 +102,20 @@ variable "region" {
   default     = "europe-west1"
 }
 
+variable "revision_annotations" {
+  description = "Configure revision template annotations."
+  type = object({
+    autoscaling = object({
+      max_scale = number
+      min_scale = number
+    })
+    cloudsql_instances  = list(string)
+    vpcaccess_connector = string
+    vpcaccess_egress    = string
+  })
+  default = null
+}
+
 variable "revision_name" {
   description = "Revision name."
   type        = string
@@ -139,21 +153,12 @@ variable "volumes" {
   default = null
 }
 
-variable "vpc_connector" {
-  description = "VPC connector configuration. Set create to 'true' if a new connecto needs to be created."
-  type = object({
-    create          = bool
-    name            = string
-    egress_settings = string
-  })
-  default = null
-}
-
-variable "vpc_connector_config" {
-  description = "VPC connector network configuration. Must be provided if new VPC connector is being created."
+variable "vpc_connector_create" {
+  description = "Populate this to create a VPC connector. You can then refer to it in the template annotations."
   type = object({
     ip_cidr_range = string
-    network       = string
+    name          = string
+    vpc_self_link = string
   })
   default = null
 }
