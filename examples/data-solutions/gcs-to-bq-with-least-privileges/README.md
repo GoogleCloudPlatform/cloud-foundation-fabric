@@ -23,7 +23,7 @@ Whether you’re transferring from another Cloud Service Provider or you’re ta
 
 ## Architecture
 
-![GCS to Biquery High-level diagram](diagram.png "GCS to Biquery High-level diagram")
+![GCS to BigQuery High-level diagram](diagram.png "GCS to BigQuery High-level diagram")
 
 The main components that we would be setting up are (to learn more about these products, click on the hyperlinks):
 

@@ -2,7 +2,7 @@
 
 This example deploys a virtual machine from an OVA image and the security prerequisites to run the Migrate for Compute Engine (v5) [connector](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/migrate-connector) on VMWare ESXi.
 
-The example is designed to deploy the M4CE (v5) connector on and existing VMWare environment. The [network configuration](https://cloud.google.com/migrate/compute-engine/docs/5.0/concepts/architecture#migration_architecture) required to allow the communication of the migrate connetor to the GCP API is not included in this example.
+The example is designed to deploy the M4CE (v5) connector on and existing VMWare environment. The [network configuration](https://cloud.google.com/migrate/compute-engine/docs/5.0/concepts/architecture#migration_architecture) required to allow the communication of the migrate connector to the GCP API is not included in this example.
 
 This is the high level diagram:
 
@@ -31,7 +31,7 @@ This sample creates several distinct groups of resources:
 <!-- END TFDOC -->
 ## Manual Steps
 Once this example is deployed a VCenter user has to be created and binded to the M4CE role in order to allow the connector access the VMWare resources.
-The user can be created manually through the VCenter web interface or througt GOV commandline if it is available:
+The user can be created manually through the VCenter web interface or through GOV commandline if it is available:
 ```bash
 export GOVC_URL=<VCENTER_URL> (eg. https://192.168.1.100/sdk)
 export GOVC_USERNAME=<VCENTER_ADMIN_USER> (eg. administrator@example.local)

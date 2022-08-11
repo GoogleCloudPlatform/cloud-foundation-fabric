@@ -13,7 +13,7 @@ Terraform:
 Ansible:
 
 - Installs the required Windows features and joins the computer to the AD domain.
-- Provisions some tests users, groups and group memberships in AD. The data to provision is in the ifles directory of the ad-provisioning ansible role. There is script available in the scripts/ad-provisioning folder that you can use to generate an alternative users or memberships file. 
+- Provisions some tests users, groups and group memberships in AD. The data to provision is in the files directory of the ad-provisioning ansible role. There is script available in the scripts/ad-provisioning folder that you can use to generate an alternative users or memberships file. 
 - Installs AD FS
 
 In addition to this, we also include a Powershell script that facilitates the configuration required for Anthos when authenticating users with AD FS as IdP.
@@ -43,7 +43,7 @@ Once the resources have been created, do the following:
         https://adfs.my-domain.org/adfs/ls/IdpInitiatedSignOn.aspx
 
 2. Enter the username and password of one of the users provisioned. The username has to be in the format: username@my-domain.org
-3. Verify that you have successfuly signed in.
+3. Verify that you have successfully signed in.
 
 Once done testing, you can clean up resources by running `terraform destroy`.
 <!-- BEGIN TFDOC -->
