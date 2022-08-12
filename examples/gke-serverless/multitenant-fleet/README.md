@@ -2,6 +2,10 @@
 
 TODO: add brief explanation and refer back to dev folder?
 
+<p align="center">
+  <img src="diagram.png" alt="GKE multitenant">
+</p>
+
 This is an example of that shows the use of the above variables:
 
 ```hcl
