@@ -17,7 +17,7 @@
 # tfdoc:file:description GKE multitenant for development environment.
 
 module "gke-multitenant" {
-  source             = "../../../../examples/gke/multitenant-fleet"
+  source             = "../../../../examples/gke-serverless/multitenant-fleet"
   billing_account_id = var.billing_account.id
   folder_id          = var.folder_ids.gke-dev
   group_iam          = var.group_iam
