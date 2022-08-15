@@ -65,7 +65,7 @@ variable "folder_ids" {
   # tfdoc:variable:source 01-resman
   description = "Folder to be used for the networking resources in folders/nnnn format."
   type = object({
-    data-platform = string
+    data-platform-dev = string
   })
 }
 

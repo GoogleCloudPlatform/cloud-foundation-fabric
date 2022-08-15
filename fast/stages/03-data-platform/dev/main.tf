@@ -22,7 +22,7 @@ module "data-platform" {
   composer_config    = var.composer_config
   data_force_destroy = var.data_force_destroy
   data_catalog_tags  = var.data_catalog_tags
-  folder_id          = var.folder_ids.data-platform
+  folder_id          = var.folder_ids.data-platform-dev
   groups             = var.groups
   location           = var.location
   network_config = {
