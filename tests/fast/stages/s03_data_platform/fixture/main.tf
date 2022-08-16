@@ -26,7 +26,7 @@ module "stage" {
     organization_id = 123456
   }
   folder_ids = {
-    data-platform = "folders/12345678"
+    data-platform-dev = "folders/12345678"
   }
   host_project_ids = {
     dev-spoke-0 = "fast-dev-net-spoke-0"
