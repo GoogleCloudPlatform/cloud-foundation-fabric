@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 <!-- None < 2022-06-06 13:42:51+00:00 -->
 
+- [[#774](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/774)] FAST: fix data-platform-dev folder in stage 03-data-platform ([sttomm](https://github.com/sttomm)) <!-- 2022-08-16 07:36:24+00:00 -->
 
 ###  FAST
 
