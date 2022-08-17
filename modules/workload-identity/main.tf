@@ -20,6 +20,7 @@ locals {
 }
 
 resource "google_iam_workload_identity_pool" "default_pool" {
+  provider                  = google-beta
   workload_identity_pool_id = var.pool_id
   display_name              = local.pool_display_name
   disabled                  = var.disabled
@@ -27,6 +28,7 @@ resource "google_iam_workload_identity_pool" "default_pool" {
 }
 
 resource "google_iam_workload_identity_pool_provider" "default_pool_provider" {
+  provider                           = google-beta
   project                            = var.project_id
   workload_identity_pool_id          = google_iam_workload_identity_pool.default_pool.workload_identity_pool_id
   workload_identity_pool_provider_id = var.provider_id
