@@ -1,4 +1,4 @@
-# Google Cloud Pub/Sub Module
+# Google Cloud Workload Identity Federation Module
 
 This module allows managing a single Workload Identity Federation, creating configuration for an external identity provider.
 
