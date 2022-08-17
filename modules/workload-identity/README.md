@@ -41,10 +41,9 @@ module "workload_identity_aws" {
 
   provider_id = "my-provider-id"
   provider_attribute_mapping = {
-    "google.subject"       = "assertion.sub"
-    "attribute.actor"      = "assertion.actor"
-    "attribute.aud"        = "assertion.aud"
-    "attribute.repository" = "assertion.repository"
+    "google.subject"        = "assertion.arn"
+    "attribute.aws_account" = "assertion.account"
+    "attribute.environment" = "assertion.arn.contains(\":instance-profile/Production\") ? \"prod\" : \"test\""
   }
   provider_config = {
     oidc = null,
