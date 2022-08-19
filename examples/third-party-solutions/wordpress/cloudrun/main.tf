@@ -15,6 +15,7 @@
  */
 
 locals {
+  prefix = var.prefix == null ? "" : "${var.prefix}-"
   all_principals_iam = [
     for k in var.principals :
     "user:${k}"
@@ -36,15 +37,16 @@ locals {
     "roles/iam.serviceAccountTokenCreator" = local.all_principals_iam
   }
   cloud_sql_conf = {
-    availability_type = "REGIONAL"
+    availability_type = "ZONAL"
     database_version  = "MYSQL_8_0"
     psa_range         = "10.60.0.0/16"
     tier              = "db-g1-small"
     db                = "wp-mysql"
     user              = "admin"
-    pass              = "password"
+    pass              = "password" # TODO: var
   }
   sql_vpc_cidr = "10.0.0.0/20"
+  connector_cidr = "10.8.0.0/28" # !!!
 }
 
 module "project" {
@@ -62,29 +64,30 @@ module "project" {
     "monitoring.googleapis.com",
     "sqladmin.googleapis.com",
     "sql-component.googleapis.com",
-    "storage.googleapis.com",
-    "storage-component.googleapis.com",
+    #"storage.googleapis.com",
+    #"storage-component.googleapis.com",
     "vpcaccess.googleapis.com"
   ]
-  service_config = {
-    disable_on_destroy = false, disable_dependent_services = false
-  }
+#  service_config = {
+#    disable_on_destroy = false,
+#    disable_dependent_services = false
+#  }
 }
 
 module "cloud_run" {
   source     = "../../../../modules/cloud-run"
   project_id = module.project.project_id
-  name     = "${var.prefix}-cr-wordpress"
+  name     = "${local.prefix}cr-wordpress"
   region = var.region
   cloudsql_instances = module.cloudsql.connection_name
   vpc_connector = {
     create          = true
-    name            = "wp-connector"
+    name            = "${local.prefix}wp-connector"
     egress_settings = "all-traffic"
   }
   vpc_connector_config = {
     network       = module.vpc.self_link
-    ip_cidr_range = "10.8.0.0/28" # !!!
+    ip_cidr_range = local.connector_cidr
   }
 #        "run.googleapis.com/ingress" = "internal-and-cloud-load-balancing"
 
@@ -100,11 +103,11 @@ module "cloud_run" {
       args     = null
       env_from = null
       env      = {
-        "DB_HOST"        : module.cloudsql.ip #google_sql_database_instance.cloud_sql.private_ip_address
+        "DB_HOST"        : module.cloudsql.ip
         "DB_USER"        : local.cloud_sql_conf.user
         "DB_PASSWORD"    : local.cloud_sql_conf.pass
         "DB_NAME"        : local.cloud_sql_conf.db
-        "WORDPRESS_DEBUG": "1"
+        # "WORDPRESS_DEBUG": "1"
       }
     }
     resources = null
@@ -120,51 +123,6 @@ module "cloud_run" {
 # tftest modules=1 resources=1
 
 /*
-resource "google_cloud_run_service" "cloud_run" {
-  project  = module.project.project_id
-  name     = "${var.prefix}-cr-wordpress"
-  location = var.region
-
-  template {
-    spec {
-      containers {
-        image = var.wordpress_image
-        ports {
-          container_port = 80
-        }
-        env {
-          name = "DB_HOST"
-          value = "34.91.36.235"
-        }
-        env {
-          name = "DB_USER"
-          value = "admin"
-        }
-        env {
-          name = "DB_PASSWORD"
-          value = "password"
-        }
-        env {
-          name = "DB_NAME"
-          value = "wp-mysql"
-        }
-        env {
-          name = "WORDPRESS_DEBUG"
-          value = "1"
-        }
-      }
-    }
-
-    metadata {
-      annotations = {
-        #"autoscaling.knative.dev/maxScale"      = "10"
-        "run.googleapis.com/cloudsql-instances" = module.cloudsql.connection_name
-        "run.googleapis.com/client-name"        = "terraform"
-      }
-    }
-  }
-}
-
 # Grant Cloud Run usage rights to someone who is authorized to access the end-point
 resource "google_cloud_run_service_iam_member" "cloud_run_iam_member" {
   project  = module.project.project_id
@@ -180,7 +138,7 @@ resource "google_cloud_run_service_iam_member" "cloud_run_iam_member" {
 module "vpc" {
   source     = "../../../../modules/net-vpc"
   project_id = module.project.project_id
-  name       = "vpc"
+  name       = "${local.prefix}sql-vpc"
   subnets = [
     {
       ip_cidr_range      = local.sql_vpc_cidr
@@ -207,17 +165,16 @@ module "nat" {
   source         = "../../../../modules/net-cloudnat"
   project_id     = module.project.project_id
   region         = var.region
-  name           = "${var.prefix}-default"
+  name           = "${local.prefix}nat"
   router_network = module.vpc.name
 }
 
 module "cloudsql" {
   source              = "../../../../modules/cloudsql-instance"
   project_id          = module.project.project_id
-  availability_type   = local.cloud_sql_conf.availability_type
+#  availability_type   = local.cloud_sql_conf.availability_type
   network             = module.vpc.self_link
-  # network              = data.google_compute_network.default.id
-  name                = "${var.prefix}-mysql"
+  name                = "${local.prefix}mysql"
   region              = var.region
   database_version    = local.cloud_sql_conf.database_version
   tier                = local.cloud_sql_conf.tier
@@ -225,22 +182,10 @@ module "cloudsql" {
   users = {
       "${local.cloud_sql_conf.user}" = "${local.cloud_sql_conf.pass}"
   }
-#  backup_configuration = {
-#    enabled            = true
-#    binary_log_enabled = true
-#    start_time         = "23:00"
-#    location           = var.region
-#    log_retention_days = 7
-#    retention_count    = 7
-#  }
 #  authorized_networks = {
 #    internet = "0.0.0.0/0"
 #  }
 }
-
-#data "google_compute_network" "default" {
-#  name = "default"
-#}
 
 /*
 resource "google_compute_global_address" "private_ip_address" {

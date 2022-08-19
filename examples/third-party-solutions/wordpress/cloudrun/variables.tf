@@ -17,6 +17,7 @@
 variable "prefix" {
   description = "Unique prefix used for resource names. Not used for project if 'project_create' is null."
   type        = string
+  default     = ""
 }
 
 variable "project_create" {
@@ -30,7 +31,7 @@ variable "project_create" {
 
 variable "project_id" {
   description = "Project id, references existing project if `project_create` is null."
-  type        = string
+  type        = string # TODO: check locals
 }
 
 variable "region" {
