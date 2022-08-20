@@ -202,7 +202,7 @@ variable "options" {
     condition = (var.options.spot_instance_termination_action == null
       ||
     contains(["STOP", "DELETE"], coalesce(var.options.spot_instance_termination_action, "1")))
-    error_message = "Allowed values for options.spot_instance_termination_action are 'STOP', 'DELETE' and null"
+    error_message = "Allowed values for options.spot_instance_termination_action are 'STOP', 'DELETE' and null."
   }
 }
 
