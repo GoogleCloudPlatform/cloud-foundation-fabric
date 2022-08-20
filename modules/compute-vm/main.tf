@@ -212,10 +212,11 @@ resource "google_compute_instance" "default" {
   }
 
   scheduling {
-    automatic_restart   = !var.options.spot
-    on_host_maintenance = local.on_host_maintenance
-    preemptible         = var.options.spot
-    provisioning_model  = var.options.spot ? "SPOT" : "STANDARD"
+    automatic_restart           = !var.options.spot
+    on_host_maintenance         = local.on_host_maintenance
+    preemptible                 = var.options.spot
+    provisioning_model          = var.options.spot ? "SPOT" : "STANDARD"
+    instance_termination_action = var.options.spot ? "STOP" : null
   }
 
   dynamic "scratch_disk" {
@@ -339,10 +340,11 @@ resource "google_compute_instance_template" "default" {
   }
 
   scheduling {
-    automatic_restart   = !var.options.spot
-    on_host_maintenance = local.on_host_maintenance
-    preemptible         = var.options.spot
-    provisioning_model  = var.options.spot ? "SPOT" : "STANDARD"
+    automatic_restart           = !var.options.spot
+    on_host_maintenance         = local.on_host_maintenance
+    preemptible                 = var.options.spot
+    provisioning_model          = var.options.spot ? "SPOT" : "STANDARD"
+    instance_termination_action = var.options.spot ? "STOP" : null
   }
 
   service_account {
