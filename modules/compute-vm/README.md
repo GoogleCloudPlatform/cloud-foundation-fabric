@@ -45,7 +45,7 @@ module "spot-vm-example" {
     allow_stopping_for_update = true
     deletion_protection       = false
     spot                      = true
-    spot_instance_termination_action = "STOP"    
+    termination_action = "STOP"    
   }
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -348,7 +348,7 @@ module "instance-group" {
 | [metadata](variables.tf#L148) | Instance metadata. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [min_cpu_platform](variables.tf#L154) | Minimum CPU platform. | <code>string</code> |  | <code>null</code> |
 | [network_interface_options](variables.tf#L165) | Network interfaces extended options. The key is the index of the inteface to configure. The value is an object with alias_ips and nic_type. Set alias_ips or nic_type to null if you need only one of them. | <code title="map&#40;object&#40;&#123;&#10;  alias_ips &#61; map&#40;string&#41;&#10;  nic_type  &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [options](variables.tf#L187) | Instance options. | <code title="object&#40;&#123;&#10;  allow_stopping_for_update        &#61; bool&#10;  deletion_protection              &#61; bool&#10;  spot                             &#61; bool&#10;  spot_instance_termination_action &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  allow_stopping_for_update        &#61; true&#10;  deletion_protection              &#61; false&#10;  spot                             &#61; false&#10;  spot_instance_termination_action &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [options](variables.tf#L187) | Instance options. | <code title="object&#40;&#123;&#10;  allow_stopping_for_update        &#61; bool&#10;  deletion_protection              &#61; bool&#10;  spot                             &#61; bool&#10;  termination_action &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  allow_stopping_for_update        &#61; true&#10;  deletion_protection              &#61; false&#10;  spot                             &#61; false&#10;  termination_action &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [scratch_disks](variables.tf#L214) | Scratch disks configuration. | <code title="object&#40;&#123;&#10;  count     &#61; number&#10;  interface &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  count     &#61; 0&#10;  interface &#61; &#34;NVME&#34;&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [service_account](variables.tf#L226) | Service account email. Unused if service account is auto-created. | <code>string</code> |  | <code>null</code> |
 | [service_account_create](variables.tf#L232) | Auto-create service account. | <code>bool</code> |  | <code>false</code> |

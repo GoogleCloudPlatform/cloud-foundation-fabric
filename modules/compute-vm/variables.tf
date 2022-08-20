@@ -187,22 +187,22 @@ variable "network_interfaces" {
 variable "options" {
   description = "Instance options."
   type = object({
-    allow_stopping_for_update        = bool
-    deletion_protection              = bool
-    spot                             = bool
-    spot_instance_termination_action = string
+    allow_stopping_for_update = bool
+    deletion_protection       = bool
+    spot                      = bool
+    termination_action        = string
   })
   default = {
-    allow_stopping_for_update        = true
-    deletion_protection              = false
-    spot                             = false
-    spot_instance_termination_action = null
+    allow_stopping_for_update = true
+    deletion_protection       = false
+    spot                      = false
+    termination_action        = null
   }
   validation {
-    condition = (var.options.spot_instance_termination_action == null
+    condition = (var.options.termination_action == null
       ||
-    contains(["STOP", "DELETE"], coalesce(var.options.spot_instance_termination_action, "1")))
-    error_message = "Allowed values for options.spot_instance_termination_action are 'STOP', 'DELETE' and null."
+    contains(["STOP", "DELETE"], coalesce(var.options.termination_action, "1")))
+    error_message = "Allowed values for options.termination_action are 'STOP', 'DELETE' and null."
   }
 }
 

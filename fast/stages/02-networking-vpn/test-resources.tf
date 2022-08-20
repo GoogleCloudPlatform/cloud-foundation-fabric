@@ -39,7 +39,7 @@
 #     allow_stopping_for_update = true
 #     deletion_protection       = false
 #     spot                      = true
-#     spot_instance_termination_action = "STOP"
+#     termination_action        = "STOP"
 #   }
 #   metadata = {
 #     startup-script = <<EOF
@@ -73,7 +73,7 @@
 #     allow_stopping_for_update = true
 #     deletion_protection       = false
 #     spot                      = true
-#     spot_instance_termination_action = "STOP"
+#     termination_action        = "STOP"
 #   }
 #   metadata = {
 #     startup-script = <<EOF
@@ -107,7 +107,7 @@
 #     allow_stopping_for_update = true
 #     deletion_protection       = false
 #     spot                      = true
-#     spot_instance_termination_action = "STOP"
+#     termination_action        = "STOP"
 #   }
 #   metadata = {
 #     startup-script = <<EOF

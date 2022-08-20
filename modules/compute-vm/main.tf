@@ -66,7 +66,7 @@ locals {
       ]
     )
   )
-  spot_instance_termination_action = var.options.spot ? coalesce(var.options.spot_instance_termination_action, "STOP") : null
+  termination_action = var.options.spot ? coalesce(var.options.termination_action, "STOP") : null
 }
 
 resource "google_compute_disk" "disks" {
@@ -213,7 +213,7 @@ resource "google_compute_instance" "default" {
 
   scheduling {
     automatic_restart           = !var.options.spot
-    instance_termination_action = local.spot_instance_termination_action
+    instance_termination_action = local.termination_action
     on_host_maintenance         = local.on_host_maintenance
     preemptible                 = var.options.spot
     provisioning_model          = var.options.spot ? "SPOT" : "STANDARD"
@@ -341,7 +341,7 @@ resource "google_compute_instance_template" "default" {
 
   scheduling {
     automatic_restart           = !var.options.spot
-    instance_termination_action = local.spot_instance_termination_action
+    instance_termination_action = local.termination_action
     on_host_maintenance         = local.on_host_maintenance
     preemptible                 = var.options.spot
     provisioning_model          = var.options.spot ? "SPOT" : "STANDARD"
