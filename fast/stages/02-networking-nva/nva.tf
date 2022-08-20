@@ -56,9 +56,10 @@ module "nva-template-ew1" {
   create_template = true
   instance_type   = "f1-micro"
   options = {
-    allow_stopping_for_update = true
-    deletion_protection       = false
-    spot                      = true
+    allow_stopping_for_update        = true
+    deletion_protection              = false
+    spot                             = true
+    spot_instance_termination_action = "STOP"
   }
   metadata = {
     startup-script = templatefile(
