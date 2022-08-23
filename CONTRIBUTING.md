@@ -49,7 +49,7 @@ If you changed variables or outputs you need to regenerate the relevant tables i
 ./tools/tfdoc.py modules/my-changed-module
 ```
 
-If the folder contains files which won't be pushed to the repository, for example provider files used in FAST stages, you need to change the command above to specifically exclude them from `tfdoc` geerated output.
+If the folder contains files which won't be pushed to the repository, for example provider files used in FAST stages, you need to change the command above to specifically exclude them from `tfdoc` generated output.
 
 ```bash
 # exclude a local provider file from the generated documentation
@@ -106,7 +106,7 @@ This is probably our oldest and most important design principle. When designing 
 
 It's a radically different approach from designing by product or feature, where boundaries are drawn around a single GCP functionality.
 
-Our modules -- and in a much broader sense our FAST stages -- are all designed to encapsulate a set of functionally related resources and their configurations. This achieves two main goals: to dramatically improve readabiity by using a single block of code -- a module declaration -- for a logical component; and to allow consumers to rely on outputs without having to worry about the dependency chain, as all related resources and configurations are managed internally in the module or stage.
+Our modules -- and in a much broader sense our FAST stages -- are all designed to encapsulate a set of functionally related resources and their configurations. This achieves two main goals: to dramatically improve readability by using a single block of code -- a module declaration -- for a logical component; and to allow consumers to rely on outputs without having to worry about the dependency chain, as all related resources and configurations are managed internally in the module or stage.
 
 Taking IAM as an example, we do not offer a single module to centrally manage role bindings (the product/feature based approach) but implement it instead in each module (the logical component approach) since:
 
@@ -335,7 +335,7 @@ module "simple-vm-example" {
 
 #### Depend outputs on internal resources
 
-We mentioned this principle when discussing encapsulation above but it's worth repating it explicitly: **set explicit dependencies in outputs so consumers will wait for full resource configuration**.
+We mentioned this principle when discussing encapsulation above but it's worth repeating it explicitly: **set explicit dependencies in outputs so consumers will wait for full resource configuration**.
 
 As an example, users can safely reference the project module's `project_id` output from other modules, knowing that the dependency tree for project configurations (service activation, IAM, etc.) has already been defined inside the module itself. In this particular example the output is also interpolated instead of derived from the resource, so as to avoid issues when used in `for_each` keys.
 
@@ -410,7 +410,7 @@ variable "folder_ids" {
 }
 ```
 
-When creating a new stage or adding a feature to an existing one, always try to leverage the existing interfaces when some of the information you produce needs to cross the stage boundary, so as to minimize impact on producers and consumers lofically dependent on your stage.
+When creating a new stage or adding a feature to an existing one, always try to leverage the existing interfaces when some of the information you produce needs to cross the stage boundary, so as to minimize impact on producers and consumers logically dependent on your stage.
 
 #### Output files
 
@@ -566,7 +566,7 @@ We run two GitHub workflows on PRs:
 The linting workflow tests:
 
 - that the correct copyright boilerplate is present in all files, using `tools/check_boilerplate.py`
-- that all Teraform code is linted via `terraform fmt`
+- that all Terraform code is linted via `terraform fmt`
 - that all README files have up to date outputs, variables, and files (where relevant) tables, via `tools/check_documentation.py`
 - that all links in README files are syntactically correct and valid if internal, via `tools/check_links.py`
 - that resource names used in FAST stages stay within a length limit, via `tools/check_names.py`

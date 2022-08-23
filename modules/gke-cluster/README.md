@@ -114,11 +114,11 @@ module "cluster-1" {
 | [ca_certificate](outputs.tf#L17) | Public certificate of the cluster (base64-encoded). | ✓ |
 | [cluster](outputs.tf#L23) | Cluster resource. | ✓ |
 | [endpoint](outputs.tf#L29) | Cluster endpoint. |  |
-| [id](outputs.tf#L34) | Cluster ID. | ✓ |
-| [location](outputs.tf#L40) | Cluster location. |  |
-| [master_version](outputs.tf#L45) | Master version. |  |
-| [name](outputs.tf#L50) | Cluster name. |  |
-| [notifications](outputs.tf#L55) | GKE PubSub notifications topic. |  |
-| [self_link](outputs.tf#L60) | Cluster self link. | ✓ |
+| [id](outputs.tf#L34) | Cluster ID. |  |
+| [location](outputs.tf#L39) | Cluster location. |  |
+| [master_version](outputs.tf#L44) | Master version. |  |
+| [name](outputs.tf#L49) | Cluster name. |  |
+| [notifications](outputs.tf#L54) | GKE PubSub notifications topic. |  |
+| [self_link](outputs.tf#L59) | Cluster self link. | ✓ |
 
 <!-- END TFDOC -->

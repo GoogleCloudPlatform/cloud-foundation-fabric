@@ -128,8 +128,38 @@ module "test" {
         access_levels       = [module.test.access_level_names["a1"], "a2"]
         resources           = ["projects/11111", "projects/111111"]
         restricted_services = ["storage.googleapis.com"]
-        egress_policies     = null
-        ingress_policies    = null
+        # example: allow writing to external GCS bucket
+        egress_policies     = [
+          {
+            egress_from = {
+              identity_type = null
+              identities = [
+                "serviceAccount:foo@myproject.iam.gserviceaccount.com"
+              ]
+            }
+            egress_to = {
+              operations = [{
+                method_selectors = ["*"], service_name = "storage.googleapis.com"
+              }]
+              resources = ["projects/123456789"]
+            }
+          }
+        ]
+        # example: allow management from external automation SA
+        ingress_policies    = [
+          {
+            ingress_from = {
+              identities = [
+                "serviceAccount:test-tf@myproject.iam.gserviceaccount.com",
+              ],
+              source_access_levels = ["*"], identity_type = null, source_resources = null
+            }
+            ingress_to = {
+              operations = [{ method_selectors = [], service_name = "*" }]
+              resources  = ["*"]
+            }
+          }
+        ]
         vpc_accessible_services = {
           allowed_services   = ["storage.googleapis.com"]
           enable_restriction = true
@@ -144,7 +174,7 @@ module "test" {
 
 ## Notes
 
-- To remove an access level, first remove the binding between perimeter and the access level in `status` and/or `spec` without removing the access level itself. Once you have run `terraform apply`, you'll then be able to remove the access level and run `terraform apply` again. 
+- To remove an access level, first remove the binding between perimeter and the access level in `status` and/or `spec` without removing the access level itself. Once you have run `terraform apply`, you'll then be able to remove the access level and run `terraform apply` again.
 
 ## TODO
 

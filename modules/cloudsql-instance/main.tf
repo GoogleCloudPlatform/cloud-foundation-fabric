@@ -59,7 +59,7 @@ resource "google_sql_database_instance" "primary" {
     user_labels       = var.labels
 
     ip_configuration {
-      ipv4_enabled    = false
+      ipv4_enabled    = var.ipv4_enabled
       private_network = var.network
       dynamic "authorized_networks" {
         for_each = var.authorized_networks != null ? var.authorized_networks : {}
@@ -124,7 +124,7 @@ resource "google_sql_database_instance" "replicas" {
     user_labels = var.labels
 
     ip_configuration {
-      ipv4_enabled    = false
+      ipv4_enabled    = var.ipv4_enabled
       private_network = var.network
       dynamic "authorized_networks" {
         for_each = var.authorized_networks != null ? var.authorized_networks : {}

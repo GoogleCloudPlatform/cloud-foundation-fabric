@@ -2,7 +2,7 @@
 
 This example creates a Migrate for Compute Engine (v5) environment deployed on an host project with multiple [target projects](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/enable-services#identifying_your_host_project) and shared VPCs.
 
-The example is designed to implement a M4CE (v5) environment on-top of complex migration landing environment where VMs have to be migrated to multiple target projects. In this example targets are alse service projects for a shared VPC. It also includes the IAM wiring needed to make such scenarios work.
+The example is designed to implement a M4CE (v5) environment on-top of complex migration landing environment where VMs have to be migrated to multiple target projects. In this example targets are also service projects for a shared VPC. It also includes the IAM wiring needed to make such scenarios work.
 
 This is the high level diagram:
 

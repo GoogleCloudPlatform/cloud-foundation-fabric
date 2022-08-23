@@ -25,10 +25,6 @@ locals {
         name   = "${env}-l7ilb-${s.region}"
     })]
   }
-  region_trigram = {
-    europe-west1 = "ew1"
-    europe-west3 = "ew3"
-  }
   stage3_sas_delegated_grants = [
     "roles/composer.sharedVpcAgent",
     "roles/compute.networkUser",

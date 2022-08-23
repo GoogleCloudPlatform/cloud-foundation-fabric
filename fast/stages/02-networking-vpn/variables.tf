@@ -163,6 +163,15 @@ variable "psa_ranges" {
   # }
 }
 
+variable "region_trigram" {
+  description = "Short names for GCP regions."
+  type        = map(string)
+  default = {
+    europe-west1 = "ew1"
+    europe-west3 = "ew3"
+  }
+}
+
 variable "router_onprem_configs" {
   description = "Configurations for routers used for onprem connectivity."
   type = map(object({

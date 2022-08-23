@@ -23,8 +23,8 @@ This sample creates several distinct groups of resources:
   - One service account for the GGE instance
 - KMS
   - One key ring
-  - One crypto key (Procection level: softwere) for Cloud Engine
-  - One crypto key (Protection level: softwere) for Cloud Storage
+  - One crypto key (Protection level: software) for Cloud Engine
+  - One crypto key (Protection level: software) for Cloud Storage
 - GCE
   - One instance encrypted with a CMEK Cryptokey hosted in Cloud KMS
 - GCS

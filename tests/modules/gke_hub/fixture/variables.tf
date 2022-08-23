@@ -18,9 +18,55 @@ variable "project_id" {
   default = "my-project"
 }
 
-variable "member_clusters" {
+variable "clusters" {
   default = {
-    mycluster1 = "projects/myproject/locations/europe-west1-b/clusters/mycluster1"
-    mycluster2 = "projects/myproject/locations/europe-west1-b/clusters/mycluster2"
+    cluster-1 = "projects/myproject/locations/europe-west1-b/clusters/cluster-1"
+    cluster-2 = "projects/myproject/locations/europe-west1-b/clusters/cluster-2"
   }
+}
+
+variable "features" {
+  default = {
+    appdevexperience             = false
+    configmanagement             = true
+    identityservice              = false
+    multiclusteringress          = null
+    servicemesh                  = false
+    multiclusterservicediscovery = false
+  }
+}
+
+variable "configmanagement_templates" {
+  default = {
+    default = {
+      binauthz = false
+      config_sync = {
+        git = {
+          gcp_service_account_email = null
+          https_proxy               = null
+          policy_dir                = "configsync"
+          secret_type               = "ssh"
+          sync_branch               = "main"
+          sync_repo                 = "https://github.com/danielmarzini/configsync-platform-example"
+          sync_rev                  = null
+          sync_wait_secs            = null
+        }
+        prevent_drift = false
+        source_format = "hierarchy"
+      }
+      hierarchy_controller = null
+      policy_controller    = null
+      version              = "1.10.2"
+    }
+  }
+}
+
+variable "configmanagement_clusters" {
+  default = {
+    default = ["cluster-1", "cluster-2"]
+  }
+}
+
+variable "workload_identity_clusters" {
+  default = ["mycluster1", "mycluster2"]
 }
