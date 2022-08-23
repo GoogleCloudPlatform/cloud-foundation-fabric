@@ -29,6 +29,12 @@ locals {
     for k, v in local.attached_disks :
     k => v if try(v.options.replica_zone, null) == null
   }
+  network_interface_options = {
+    for i, v in var.network_interfaces : i => lookup(var.network_interface_options, i, {
+      alias_ips = null,
+      nic_type  = null
+    })
+  }
   on_host_maintenance = (
     var.options.spot || var.confidential_compute
     ? "TERMINATE"
@@ -60,13 +66,7 @@ locals {
       ]
     )
   )
-
-  network_interface_options = {
-    for i, v in var.network_interfaces : i => lookup(var.network_interface_options, i, {
-      alias_ips = null,
-      nic_type  = null
-    })
-  }
+  termination_action = var.options.spot ? coalesce(var.options.termination_action, "STOP") : null
 }
 
 resource "google_compute_disk" "disks" {
@@ -212,10 +212,11 @@ resource "google_compute_instance" "default" {
   }
 
   scheduling {
-    automatic_restart   = !var.options.spot
-    on_host_maintenance = local.on_host_maintenance
-    preemptible         = var.options.spot
-    provisioning_model  = var.options.spot ? "SPOT" : "STANDARD"
+    automatic_restart           = !var.options.spot
+    instance_termination_action = local.termination_action
+    on_host_maintenance         = local.on_host_maintenance
+    preemptible                 = var.options.spot
+    provisioning_model          = var.options.spot ? "SPOT" : "STANDARD"
   }
 
   dynamic "scratch_disk" {
@@ -339,10 +340,11 @@ resource "google_compute_instance_template" "default" {
   }
 
   scheduling {
-    automatic_restart   = !var.options.spot
-    on_host_maintenance = local.on_host_maintenance
-    preemptible         = var.options.spot
-    provisioning_model  = var.options.spot ? "SPOT" : "STANDARD"
+    automatic_restart           = !var.options.spot
+    instance_termination_action = local.termination_action
+    on_host_maintenance         = local.on_host_maintenance
+    preemptible                 = var.options.spot
+    provisioning_model          = var.options.spot ? "SPOT" : "STANDARD"
   }
 
   service_account {

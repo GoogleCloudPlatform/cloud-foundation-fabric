@@ -24,7 +24,7 @@ Terraform natively supports YaML, JSON and CSV parsing - however Fabric has deci
 - YaML is easier to parse for a human, and allows for comments and nested, complex structures
 - JSON and CSV can't include comments, which can be used to document configurations, but are often useful to bridge from other systems in automated pipelines
 - JSON is more verbose (reads: longer) and harder to parse visually for humans
-- CSV isn't often expressive enough (e.g. dit oesn't allow for nested structures)
+- CSV isn't often expressive enough (e.g. dit doesn't allow for nested structures)
 
 If needed, converting factories to consume JSON is a matter of switching from `yamldecode()` to `jsondecode()` in the right place on each module.
 

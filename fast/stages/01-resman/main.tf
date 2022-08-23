@@ -26,6 +26,12 @@ locals {
   billing_ext     = var.billing_account.organization_id == null
   billing_org     = var.billing_account.organization_id == var.organization.id
   billing_org_ext = !local.billing_ext && !local.billing_org
+  branch_optional_sa_lists = {
+    dp-dev  = compact([try(module.branch-dp-dev-sa.0.iam_email, "")])
+    dp-prod = compact([try(module.branch-dp-prod-sa.0.iam_email, "")])
+    pf-dev  = compact([try(module.branch-pf-dev-sa.0.iam_email, "")])
+    pf-prod = compact([try(module.branch-pf-prod-sa.0.iam_email, "")])
+  }
   cicd_repositories = {
     for k, v in coalesce(var.cicd_repositories, {}) : k => v
     if(
@@ -57,7 +63,6 @@ locals {
       "02-security.auto.tfvars.json"
     ]
   }
-
   custom_roles = coalesce(var.custom_roles, {})
   groups = {
     for k, v in var.groups :

@@ -36,6 +36,6 @@ This [example](./cloudsql-multiregion/) creates a [Cloud SQL instance](https://c
 
 ### Data Playground starter with Cloud Vertex AI Notebook and GCS
 
-<a href="./data-playground/" title="Data Playground starter with Cloud Vertex AI Notebook and GCS"><img src="./data-playground/diagram.png" align="left" width="280px"></a>
-This [example](./data-playground/) creates a [Vertex AI Notebook](https://cloud.google.com/vertex-ai/docs/workbench/introduction) running under a VPC network and a starter GCS bucket to store inputs and outputs of data experiments.
+<a href="./data-playground/" title="Data Playground project with Cloud Vertex AI Notebook, BigQuery and GCS"><img src="./data-playground/diagram.png" align="left" width="280px"></a>
+This [example](./data-playground/) creates a [Vertex AI Notebook](https://cloud.google.com/vertex-ai/docs/workbench/introduction) running on a VPC with a private IP and a dedicated Service Account. A GCS bucket and a BigQuery dataset are created to store inputs and outputs of data experiments.
 <br clear="left">

@@ -103,8 +103,9 @@ resource "google_dns_managed_zone" "non-public" {
 }
 
 data "google_dns_managed_zone" "public" {
-  count = var.zone_create ? 0 : 1
-  name  = var.name
+  count   = var.zone_create ? 0 : 1
+  project = var.project_id
+  name    = var.name
 }
 
 resource "google_dns_managed_zone" "public" {

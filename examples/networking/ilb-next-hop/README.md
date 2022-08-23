@@ -33,7 +33,7 @@ Create a large file on a destination VM (eg `ilb-test-vm-right-1`) to test long-
 dd if=/dev/zero of=/var/www/html/test.txt bs=10M count=100 status=progress
 ```
 
-Run curl from a source VM (eg `ilb-test-vm-left-1`) to send requests to a destination VM artifically slowing traffic.
+Run curl from a source VM (eg `ilb-test-vm-left-1`) to send requests to a destination VM artificially slowing traffic.
 
 ```bash
 curl -0 --output /dev/null --limit-rate 10k 10.0.1.3/test.txt

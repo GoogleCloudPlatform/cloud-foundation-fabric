@@ -34,4 +34,5 @@ module "test" {
   users                = var.users
   tier                 = var.tier
   deletion_protection  = var.deletion_protection
+  ipv4_enabled         = var.ipv4_enabled
 }

@@ -2,7 +2,7 @@
 
 This example creates a simple **Hub and Spoke** setup, where the VPC network connects satellite locations (spokes) through a single intermediary location (hub) via [VPC Peering](https://cloud.google.com/vpc/docs/vpc-peering).
 
-The example shows some of the limitations that need to be taken into account when using VPC Peering, mostly due to the lack of transivity between peerings:
+The example shows some of the limitations that need to be taken into account when using VPC Peering, mostly due to the lack of transitivity between peerings:
 
 - no mesh networking between the spokes
 - complex support for managed services hosted in tenant VPCs connected via peering (Cloud SQL, GKE, etc.)
