@@ -38,15 +38,15 @@ locals {
     try(var.revision_annotations.autoscaling.max_scale, null) == null ? {} : {
       "autoscaling.knative.dev/maxScale" = var.revision_annotations.autoscaling.max_scale
     },
+    try(var.revision_annotations.autoscaling.min_scale, null) == null ? {} : {
+      "autoscaling.knative.dev/minScale" = var.revision_annotations.autoscaling.min_scale
+    },
     try(var.revision_annotations.cloudsql_instances, null) == null ? {} : {
       "run.googleapis.com/cloudsql-instances" = join(",", coalesce(
         var.revision_annotations.cloudsql_instances, []
       ))
     },
     local._vpcaccess_annotation,
-    try(var.revision_annotations.autoscaling.max_scale, null) == null ? {} : {
-      "autoscaling.knative.dev/minScale" = var.revision_annotations.autoscaling.min_scale
-    },
     try(var.revision_annotations.vpcaccess_egress, null) == null ? {} : {
       "run.googleapis.com/vpc-access-egress" = var.revision_annotations.vpcaccess_egress
     },
