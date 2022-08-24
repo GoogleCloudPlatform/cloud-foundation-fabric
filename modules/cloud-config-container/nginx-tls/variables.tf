@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-variable "envoy_image" {
-  description = "Envoy Proxy container image to use."
+variable "nginx_image" {
+  description = "Nginx container image to use."
   type        = string
-  default     = "envoyproxy/envoy:v1.15.5"
+  default     = "nginx:1.23.1"
 }
 
 variable "docker_logging" {
