@@ -1,37 +1,46 @@
-variable "container_configuration" {
-  type = object({
-    image                 = string
-    container_port        = number
-    container_concurrency = number
-    timeout_seconds       = number
-    traffic_percent       = number
-    latest_revision       = bool
-
-  })
-
-  default = {
-    image                 = "gcr.io/cloudrun/hello"
-    container_port        = 8080
-    container_concurrency = 50
-    timeout_seconds       = 100
-    traffic_percent       = 100
-    latest_revision       = true
-  }
-
+variable "dataset_id" {
+  description = "Dataset id to store the routed logs"
+  type        = string
 }
 
-variable "method_list" {
-  type    = list(string)
-  default = ["google.admin.AdminService.addGroupMember"]
+variable "exclusions" {
+  description = "Logging exclusions for the sink in the form {NAME -> FILTER}."
+  type        = map(string)
+  default     = {}
+}
+
+variable "filter" {
+  description = "The filter to apply when exporting logs"
+  type        = string
+}
+
+variable "location" {
+  description = "Dataset location"
+  type        = string
+  default     = "EU"
 }
 
 variable "org_id" {
-  type = string
+  description = "Organization Id"
+  type        = string
 }
+
+variable "prefix" {
+  description = "Prefix used to generate project id and name.	"
+  type        = string
+  default     = null
+}
+
+variable "project_create" {
+  description = "Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format."
+  type = object({
+    billing_account_id = string
+    parent             = string
+  })
+  default = null
+}
+
 variable "project_id" {
-  type = string
-}
-variable "region" {
-  type    = string
-  default = "us-central1"
+  description = "Project id, references existing project if `project_create` is null."
+  type        = string
 }
