@@ -20,7 +20,7 @@ module "cos-envoy-td" {
 module "vm-cos" {
   source     = "./modules/compute-vm"
   project_id = local.project_id
-  region     = local.region
+  zone       = local.zone
   name       = "cos-envoy-td"
   network_interfaces = [{
     network    = local.vpc.self_link,
@@ -28,7 +28,6 @@ module "vm-cos" {
     nat        = false,
     addresses  = null
   }]
-  instance_count = 1
   tags           = ["ssh", "http"]
 
   metadata = {
