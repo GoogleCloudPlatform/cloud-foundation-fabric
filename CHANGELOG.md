@@ -58,7 +58,7 @@ All notable changes to this project will be documented in this file.
 
 - [[#783](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/783)] fix service unit indent on cloud-config-container module ([drebes](https://github.com/drebes)) <!-- 2022-08-24 07:38:48+00:00 -->
 - [[#782](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/782)] typo fix (max_scale -> min_scale) ([skalolazka](https://github.com/skalolazka)) <!-- 2022-08-23 17:04:56+00:00 -->
-- [[#778](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/778)] instance_termination_action must be set for compute-vm spot instances ([sruffilli](https://github.com/sruffilli)) <!-- 2022-08-20 16:37:17+00:00 -->
+- [[#778](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/778)] **incompatible change:** instance_termination_action must be set for compute-vm spot instances ([sruffilli](https://github.com/sruffilli)) <!-- 2022-08-20 16:37:17+00:00 -->
 - [[#727](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/727)] Fix `ip_range` variable description in `apigee-x-instance` module ([alexlo03](https://github.com/alexlo03)) <!-- 2022-08-11 07:55:39+00:00 -->
 - [[#773](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/773)] **incompatible change:** Refactor Cloud Run module ([ludoo](https://github.com/ludoo)) <!-- 2022-08-09 12:06:30+00:00 -->
 - [[#754](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/754)] Add support to a public access to cloudsql-instance ([alefmreis](https://github.com/alefmreis)) <!-- 2022-08-09 11:42:42+00:00 -->
