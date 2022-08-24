@@ -1,6 +1,7 @@
-# Containerized Envoy Proxy with Traffic Director on Container Optimized OS
+# Containerized Nginx with self-signed TLS on Container Optimized OS
 
-This module manages a `cloud-config` configuration that starts a containerized Envoy Proxy on Container Optimized OS connected to Traffic Director. The default configuration creates a reverse proxy exposed on the node's port 80. Traffic routing policies and management should be managed by other means via Traffic Director.
+This module manages a `cloud-config` configuration that starts a containerized Nginx with a self-signed TLS cert on Container Optimized OS.
+This can be useful if you need quickly a VM or instance group answering HTTPS for prototyping.
 
 The generated cloud config is rendered in the `cloud_config` output, and is meant to be used in instances or instance templates via the `user-data` metadata.
 
@@ -11,27 +12,26 @@ This module depends on the [`cos-generic-metadata` module](../cos-generic-metada
 ### Default configuration
 
 ```hcl
-# Envoy TD config
-module "cos-envoy-td" {
-  source = "./modules/cloud-config-container/envoy-traffic-director"
+# Nginx with self-signed TLS config
+module "cos-nginx-tls" {
+  source = "./modules/cloud-config-container/nginx-tls"
 }
 
 # COS VM
-module "vm-cos" {
+module "vm-nginx-tls" {
   source     = "./modules/compute-vm"
   project_id = local.project_id
   zone       = local.zone
-  name       = "cos-envoy-td"
+  name       = "cos-nginx-tls"
   network_interfaces = [{
     network    = local.vpc.self_link,
     subnetwork = local.vpc.subnet_self_link,
     nat        = false,
     addresses  = null
   }]
-  tags           = ["ssh", "http"]
 
   metadata = {
-    user-data = module.cos-envoy-td.cloud_config
+    user-data = module.cos-nginx-tls.cloud_config
   }
 
   boot_disk = {
@@ -50,7 +50,7 @@ module "vm-cos" {
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [docker_logging](variables.tf#L23) | Log via the Docker gcplogs driver. Disable if you use the legacy Logging Agent instead. | <code>bool</code> |  | <code>true</code> |
-| [envoy_image](variables.tf#L17) | Envoy Proxy container image to use. | <code>string</code> |  | <code>&#34;envoyproxy&#47;envoy:v1.15.5&#34;</code> |
+| [nginx_image](variables.tf#L17) | Nginx container image to use. | <code>string</code> |  | <code>&#34;nginx:1.23.1&#34;</code> |
 
 ## Outputs
 

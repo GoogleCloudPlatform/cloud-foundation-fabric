@@ -14,14 +14,7 @@
  * limitations under the License.
  */
 
-variable "envoy_image" {
-  description = "Envoy Proxy container image to use."
-  type        = string
-  default     = "envoyproxy/envoy:v1.15.5"
-}
-
-variable "docker_logging" {
-  description = "Log via the Docker gcplogs driver. Disable if you use the legacy Logging Agent instead."
-  type        = bool
-  default     = true
+output "cloud_config" {
+  description = "Rendered cloud-config file to be passed as user-data instance metadata."
+  value       = module.cos-envoy-td.cloud_config
 }
