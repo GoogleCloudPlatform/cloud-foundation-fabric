@@ -108,7 +108,7 @@ It's of course possible to run this stage in isolation, by making sure the archi
 
 | name | description | modules | resources |
 |---|---|---|---|
-| [main.tf](./main.tf) | GKE multitenant for development environment. | <code>_module</code> |  |
+| [main.tf](./main.tf) | GKE multitenant for development environment. | <code>multitenant-fleet</code> |  |
 | [outputs.tf](./outputs.tf) | Output variables. |  | <code>google_storage_bucket_object</code> · <code>local_file</code> |
 | [variables.tf](./variables.tf) | Module variables. |  |  |
 
