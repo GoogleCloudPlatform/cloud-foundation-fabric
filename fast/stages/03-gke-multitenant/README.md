@@ -4,7 +4,6 @@ This directory contains a stage that can be used to centralize management of GKE
 
 The Terraform code follows the same general approach used for the [project factory](../03-project-factory/) and [data platform](../03-data-platform/) stages, where a "fat module" contains the stage code and is used by thin code wrappers that localize it for each environment or specialized configuration:
 
-- the [`dev` folder](./dev/) contains an example setup for a generic development environment, and can be used as-is or cloned to implement other environments, or more specialized setups
-- the [`_module` folder](./_module) implements the actual stage code
+The [`dev` folder](./dev/) contains an example setup for a generic development environment, and can be used as-is or cloned to implement other environments, or more specialized setups
 
-Refer to [the `dev` documentation](./dev/README.md) configuration details, and to [the `_module` documentation](./_module/README.md) for the architectural design and decisions taken.
+Refer to [the `dev` documentation](./dev/README.md) configuration details, and to [the `gke-serverless` documentation](../../../examples/gke-serverless/multitenant-fleet) for the architectural design and decisions taken.
