@@ -51,7 +51,7 @@ ln -s ~/fast-config/providers/03-gke-dev-providers.tf .
 
 There are two broad sets of variables you will need to fill in:
 
-- variables shared by other stages (org id, billing account id, etc.), or derived from a resource managed by a different stage (folder id, automation project id, etc.)
+- variables shared by other stages (organization id, billing account id, etc.), or derived from a resource managed by a different stage (folder id, automation project id, etc.)
 - variables specific to resources managed by this stage
 
 #### Variables passed in from other stages
@@ -69,35 +69,36 @@ ln -s ~/fast-config/tfvars/02-networking.auto.tfvars.json .
 
 If you're not using FAST, refer to the [Variables](#variables) table at the bottom of this document for a full list of variables, their origin (e.g., a stage or specific to this one), and descriptions explaining their meaning.
 
-#### Cluster and nodepools
+#### Cluster and node pools
 
-This stage is designed with multi-tenancy in mind, and the expectation is that  GKE clusters will mostly share a common set of defaults. Variables are designed to support this approach for both clusters and nodepools:
+This stage is designed with multi-tenancy in mind, and the expectation is that  GKE clusters will mostly share a common set of defaults. Variables are designed to support this approach for both clusters and node pools:
 
-- the `cluster_default` variable allows defining common defaults for cluster
+- the `cluster_default` variable allows defining common defaults for all clusters
 - the `clusters` variable is used to declare the actual GKE clusters and allows overriding defaults on a per-cluster basis
-- the `nodepool_defaults` variable allows definining common defaults for nodepools
-- the `nodepools` variable is used to declare cluster nodepools and allows overriding defaults on a per-cluster basis
+- the `nodepool_defaults` variable allows definining common defaults for all node pools
+- the `nodepools` variable is used to declare cluster node pools and allows overriding defaults on a per-cluster basis
 
-There are two additional variables that influence cluster configuration: `authenticator_security_group` to configure Google Groups for RBAC, `dns_domain` to configure Cloud DNS for GKE.
+There are two additional variables that influence cluster configuration: `authenticator_security_group` to configure [Google Groups for RBAC](https://cloud.google.com/kubernetes-engine/docs/how-to/google-groups-rbac), `dns_domain` to configure [Cloud DNS for GKE](https://cloud.google.com/kubernetes-engine/docs/how-to/cloud-dns).
 
 #### Fleet management
 
 Fleet management is entirely optional, and uses three separate variables:
 
-- `fleet_features`, that specifies the [GKE fleet](https://cloud.google.com/anthos/fleet-management/docs/fleet-concepts#fleet-enabled-components) features you want activate
-- `fleet_configmanagement_templates`, that allows defing configuration templates for specific sets of features ([Config Management](https://cloud.google.com/anthos-config-management/docs/how-to/install-anthos-config-management) currently)
-- `fleet_configmanagement_clusters`, that specifies which clusters are managed by fleet features, and the optional Config Management template for each cluster
-- `fleet_workload_identity` that enables optional centralized [Workload Identity](https://cloud.google.com/anthos/fleet-management/docs/use-workload-identity)
+- `fleet_features`: specifies the [GKE fleet](https://cloud.google.com/anthos/fleet-management/docs/fleet-concepts#fleet-enabled-components) features you want activate
+- `fleet_configmanagement_templates`: defines configuration templates for specific sets of features ([Config Management](https://cloud.google.com/anthos-config-management/docs/how-to/install-anthos-config-management) currently)
+- `fleet_configmanagement_clusters`: specifies which clusters are managed by fleet features, and the optional Config Management template for each cluster
+- `fleet_workload_identity`: to enables optional centralized [Workload Identity](https://cloud.google.com/anthos/fleet-management/docs/use-workload-identity)
 
-## TODO
-Adjusting External Load balancer Policy:
-Error ensuring load balancer: Insert: Constraint constraints/compute.restrictLoadBalancerCreationForTypes violated for projects/0000-dev-gke-clusters-0. Forwarding Rule projects/000-dev-gke-clusters-0/global/forwardingRules/mci-jz0ri8-fw-apps-whereami-ingress of type EXTERNAL_HTTP_HTTPS
+Leave all these variables unset (or set to `null`) to disable fleet management.
 
-## How to run this stage
+## Running Terraform
 
-This stage is meant to be executed after "foundational stages" (i.e., stages [`00-bootstrap`](../../00-bootstrap), [`01-resman`](../../01-resman), 02-networking (either [VPN](../../02-networking-vpn) or [NVA](../../02-networking-nva)) and [`02-security`](../../02-security)) have been run.
+Once the [providers](#providers-configuration) and [variable](#variable-configuration) configuration is complete, you can apply this stage:
 
-It's of course possible to run this stage in isolation, by making sure the architectural prerequisites are satisfied (e.g., networking), and that the Service Account running the stage is granted the roles/permissions below:
+```bash
+terraform init
+terraform apply
+```
 
 ...
 
