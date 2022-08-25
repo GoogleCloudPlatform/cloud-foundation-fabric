@@ -66,7 +66,7 @@ LINK NEEDED
 
 Before we deploy the architecture, you will at least need the following information (for more precise configuration see the Variables section):
 
-* The service project Id.
+* The project Id.
 * The organization Id.
 * A dataset Id to export logs to.
 * A log filter to target specific audit logs to route to BigQuery.
