@@ -1,8 +1,8 @@
-# Ingestion and analysis of audit logs for a Workspace / GCP organization
+# Ingestion and analysis of audit logs for a Workspace / Google Cloud organization
 
-As a Workspace / GCP [organization administrator](https://cloud.google.com/resource-manager/docs/creating-managing-organization), being able to oversee and monitor events happening across projects, users and resources for security, auditing and regulatory reasons is a core part of an administrator's responsibilities. Unfortunately, as these organizations generate a large variety and volume of events, this task requires a robust infrastructure to both ingest and analyze the logs.
+As a Workspace / Google Cloud [organization administrator](https://cloud.google.com/resource-manager/docs/creating-managing-organization), being able to oversee and monitor events happening across projects, users and resources for security, auditing and regulatory reasons is a core part of an administrator's responsibilities. Unfortunately, as these organizations generate a large variety and volume of events, this task requires a robust infrastructure to both ingest and analyze the logs.
 
-This repository contains the necessary Terraform files and steps to deploy an easy-to-manage pipeline for ingestion audit logs at the organization level to monitor Workspace or any GCP audit logs events through a simple SQL interface in BigQuery. This allows simple query and rapid analytic capabilities as well as a powerful backend for any dashboard like Looker or Datastudio.  
+This repository contains the necessary Terraform files and steps to deploy an easy-to-manage pipeline for ingestion audit logs at the organization level to monitor Workspace or any Google Cloud audit logs events through a simple SQL interface in BigQuery. This allows simple query and rapid analytic capabilities as well as a powerful backend for any dashboard like Looker or Datastudio.  
 
 ## Use cases
 
@@ -36,12 +36,80 @@ The main components that are deployed in this architecture are the following (yo
 
 * [Cloud logging aggregated sinks](https://cloud.google.com/logging/docs/export/aggregated_sinks): combine and route log entries from the resources container by an organization or a folder.
 * [BigQuery](https://cloud.google.com/bigquery): managed data warehouse solution that offers a powerful scalable SQL engine for analytical workloads
-* [Service accounts](https://cloud.google.com/iam/docs/service-accounts):
+* [Service accounts](https://cloud.google.com/iam/docs/service-accounts): credentials used by Google Cloud
 
 ## Setup
 
 ### Prerequisites
 
-Data access enabled
-Export GWS enabled
-Classic prerequisites: project id, org id
+#### Google Workspace data sharing enabled
+
+If you are interested to route Google Workspace audit logs to Google Cloud, this will require to enable data sharing between both environments. To enable sharing Google Workspace data with Google Cloud from your Google Workspace, Cloud Identity, or Drive Enterprise account, follow the instructions in [Share data with Google Cloud services](https://support.google.com/a/answer/9320190).
+
+#### Setting up the project for the deployment
+
+This example will deploy all its resources into the project defined by the `project_id` variable. Please note that we assume this project already exists. However, if you provide the appropriate values to the `project_create` variable, the project will be created as part of the deployment.
+
+If `project_create` is left to `null`, the identity performing the deployment needs the `owner` role on the project defined by the `project_id` variable. Otherwise, the identity performing the deployment needs `resourcemanager.projectCreator` on the resource hierarchy node specified by `project_create.parent` and `billing.user` on the billing account specified by `project_create.billing_account_id`.
+
+### Deployment
+
+#### Step 0: Cloning the repository
+
+Click on the image below, sign in if required and when the prompt appears, click on “confirm”.
+
+BUTTON
+
+Before we deploy the architecture, you will at least need the following information (for more precise configuration see the Variables section):
+
+* The service project Id.
+* The organization Id.
+* A dataset Id to export logs to.
+* A log filter to target specific audit logs to route to BigQuery.
+
+#### Step 1: Deploy resources
+
+Once you have the required information, head back to the cloud shell editor. Make sure you’re in the following directory: `cloudshell_open/cloud-foundation-fabric/examples/data-solutions/org_audit_logs_bq/`.
+
+Configure the Terraform variables in your terraform.tfvars file. See [terraform.tfvars.sample](terraform.tfvars.sample) as starting point.
+
+Initialize your Terraform environment:
+
+``` {shell}
+alias tf=terraform 
+tf init
+tf apply -var-file="terraform.tfvars.sample"
+```
+
+The resource creation will take a few minutes, at the end this is the output you should expect for successful completion along with a list of the created resources.
+
+#### Clean up your environment
+
+The easiest way to remove all the deployed resources is to run the following command in Cloud Shell:
+
+``` {shell}
+tf destroy -var-file="terraform.tfvars.sample"
+```
+
+The above command will delete the associated resources so there will be no billable charges made afterwards.
+
+Note: This will also destroy the BigQuery dataset as the following option in `main.tf` is set to `true`: `delete_contents_on_destroy`.
+
+### Customizing to your environment
+
+#### Use an already existing BigQuery dataset
+
+In order to push the audit logs to a BigQuery dataset that already exists, follow these steps:
+
+1. Remove the `"bigquery-dataset"` module block at the end of the [`main.tf`](main.tf) file.
+2. Replace the following line in the `"google_logging_organization_sink"` resource block
+
+```{terrafom}
+  destination      = "bigquery.googleapis.com/projects/${module.project.project_id}/datasets/${module.bigquery-dataset.dataset_id}"
+```
+
+with:
+
+```{terrafom}
+  destination      = "bigquery.googleapis.com/projects/${module.project.project_id}/datasets/${var.dataset_id}"
+```
