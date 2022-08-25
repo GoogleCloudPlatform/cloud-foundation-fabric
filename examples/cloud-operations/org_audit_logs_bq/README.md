@@ -36,7 +36,7 @@ The main components that are deployed in this architecture are the following (yo
 
 * [Cloud logging aggregated sinks](https://cloud.google.com/logging/docs/export/aggregated_sinks): combine and route log entries from the resources container by an organization or a folder.
 * [BigQuery](https://cloud.google.com/bigquery): managed data warehouse solution that offers a powerful scalable SQL engine for analytical workloads
-* [Service accounts](https://cloud.google.com/iam/docs/service-accounts): credentials used by Google Cloud
+* [Service accounts](https://cloud.google.com/iam/docs/service-accounts): credentials used by Google Cloud services to interact with other Google Cloud components
 
 ## Setup
 
@@ -58,7 +58,9 @@ If `project_create` is left to `null`, the identity performing the deployment ne
 
 Click on the image below, sign in if required and when the prompt appears, click on “confirm”.
 
-BUTTON
+[<p align="center"> <img alt="Open Cloudshell" width = "300px" src="images/button.png" /> </p>]()
+
+LINK NEEDED
 
 Before we deploy the architecture, you will at least need the following information (for more precise configuration see the Variables section):
 
