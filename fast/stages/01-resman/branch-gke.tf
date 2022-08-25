@@ -98,6 +98,9 @@ module "branch-gke-dev-sa" {
   iam = {
     "roles/iam.serviceAccountTokenCreator" = ["group:${local.groups.gcp-devops}"]
   }
+  iam_storage_roles = {
+    (var.automation.outputs_bucket) = ["roles/storage.admin"]
+  }
 }
 
 moved {
@@ -114,6 +117,9 @@ module "branch-gke-prod-sa" {
   prefix      = var.prefix
   iam = {
     "roles/iam.serviceAccountTokenCreator" = ["group:${local.groups.gcp-devops}"]
+  }
+  iam_storage_roles = {
+    (var.automation.outputs_bucket) = ["roles/storage.admin"]
   }
 }
 
