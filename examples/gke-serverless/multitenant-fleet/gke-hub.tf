@@ -37,4 +37,8 @@ module "gke-hub" {
   workload_identity_clusters = (
     var.fleet_workload_identity ? keys(var.clusters) : []
   )
+
+  depends_on = [
+    module.gke-nodepool
+  ]
 }

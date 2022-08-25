@@ -21,27 +21,33 @@ module "gke-project-0" {
   parent          = var.folder_id
   prefix          = var.prefix
   group_iam       = var.group_iam
-  iam             = var.iam
   labels          = var.labels
+  iam = merge(var.iam, {
+    "roles/gkehub.serviceAgent" = [
+      "serviceAccount:${module.gke-project-0.service_accounts.robots.fleet}"
+    ] }
+  )
   services = concat(
     [
+      "anthos.googleapis.com",
+      "anthosconfigmanagement.googleapis.com",
       "cloudresourcemanager.googleapis.com",
       "container.googleapis.com",
       "dns.googleapis.com",
-      "iam.googleapis.com",
-      "stackdriver.googleapis.com",
-    ],
-    var.project_services,
-    !local.fleet_enabled ? [] : [
-      "anthosconfigmanagement.googleapis.com",
-      "anthos.googleapis.com",
       "gkeconnect.googleapis.com",
       "gkehub.googleapis.com",
+      "iam.googleapis.com",
       "multiclusteringress.googleapis.com",
       "multiclusterservicediscovery.googleapis.com",
+      "stackdriver.googleapis.com",
       "trafficdirector.googleapis.com"
-    ]
+    ],
+    var.project_services
   )
+  service_config = {
+    disable_on_destroy         = false
+    disable_dependent_services = false
+  }
   shared_vpc_service_config = {
     attach       = true
     host_project = var.vpc_config.host_project_id

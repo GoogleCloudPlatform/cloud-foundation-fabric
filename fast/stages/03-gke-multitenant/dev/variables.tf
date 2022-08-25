@@ -168,7 +168,7 @@ variable "fleet_features" {
 variable "fleet_workload_identity" {
   description = "Use Fleet Workload Identity for clusters. Enables GKE Hub if set to true."
   type        = bool
-  default     = true
+  default     = false
   nullable    = false
 }
 
