@@ -225,6 +225,11 @@ variable "prefix" {
   type        = string
 }
 
+variable "project_id" {
+  description = "ID of the project that will contain all the clusters."
+  type        = string
+}
+
 variable "project_services" {
   description = "Additional project services to enable."
   type        = list(string)

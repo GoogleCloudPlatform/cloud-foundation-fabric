@@ -17,7 +17,7 @@
 module "gke-project-0" {
   source          = "../../../modules/project"
   billing_account = var.billing_account_id
-  name            = "gke-clusters-0"
+  name            = var.project_id
   parent          = var.folder_id
   prefix          = var.prefix
   group_iam       = var.group_iam

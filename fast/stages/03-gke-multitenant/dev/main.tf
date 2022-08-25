@@ -20,6 +20,7 @@ module "gke-multitenant" {
   source             = "../../../../examples/gke-serverless/multitenant-fleet"
   billing_account_id = var.billing_account.id
   folder_id          = var.folder_ids.gke-dev
+  project_id         = "gke-clusters-0"
   group_iam          = var.group_iam
   iam                = var.iam
   labels             = merge(var.labels, { environment = "dev" })
