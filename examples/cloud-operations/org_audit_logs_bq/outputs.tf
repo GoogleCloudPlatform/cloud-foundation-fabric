@@ -1,7 +1,24 @@
-output "project_id" {
-  value = module.project.project_id
+output "org_id" {
+  description = "Organization Id."
+  value       = var.org_id
 }
 
-output "org_id" {
-  value = var.org_id
+output "org_log_service_account" {
+  description = "Serice account used by the org sink to write to the BigQuery table."
+  value       = google_logging_organization_sink.audit_log_org_sink.writer_identity
+}
+
+output "org_log_sink_id" {
+  description = "Organization level log sink Id."
+  value       = google_logging_organization_sink.audit_log_org_sink.id
+}
+
+output "dataset_id" {
+  description = "Dataset Id where logs are routed."
+  value       = var.dataset_id
+}
+
+output "project_id" {
+  description = "Project containing the BigQuery dataset where logs are routed."
+  value       = module.project.project_id
 }

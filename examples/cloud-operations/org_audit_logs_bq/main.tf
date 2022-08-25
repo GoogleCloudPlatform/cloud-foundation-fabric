@@ -4,13 +4,13 @@ module "project" {
     ? var.project_create.billing_account_id
     : null
   )
-  parent = (var.project_create != null 
-    ? var.project_create.parent 
-    : null)
-  prefix = (var.project_create == null 
-    ? null 
-    : var.prefix)
-  name   = var.project_id
+  parent = (var.project_create != null
+    ? var.project_create.parent
+  : null)
+  prefix = (var.project_create == null
+    ? null
+  : var.prefix)
+  name = var.project_id
   services = [
     "logging.googleapis.com",
     "bigquery.googleapis.com"
@@ -37,7 +37,7 @@ resource "google_logging_organization_sink" "audit_log_org_sink" {
     }
   }
   bigquery_options {
-        use_partitioned_tables = true
+    use_partitioned_tables = true
   }
 }
 
