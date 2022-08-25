@@ -28,6 +28,8 @@ This architecture is naturally compatible with other critical audit log types:
 * [Admin Activity](https://cloud.google.com/logging/docs/audit#admin-activity) audit logs: record of any configuration or metadata changes made to a Google Cloud resource inside an organization
 * [Policy Denied](https://cloud.google.com/logging/docs/audit#policy_denied) audit logs: record any GPC Services Controls violation
 
+Note that the Google Workspace Reports API offers a [native export to BigQuery](https://support.google.com/a/answer/9079365?hl=en#) that is available for Enterprise, Education Standard and Education Plus editions.
+
 ## Architecture
 
 ![Audit logs to BigQuery](images/architecture.png "Audit logs to BigQuery")
@@ -115,3 +117,26 @@ with:
 ```{terrafom}
   destination      = "bigquery.googleapis.com/projects/${module.project.project_id}/datasets/${var.dataset_id}"
 ```
+<!-- BEGIN TFDOC -->
+
+## Variables
+
+| name | description | type | required | default |
+|---|---|:---:|:---:|:---:|
+| [dataset_id](variables.tf#L1) | Dataset id to store the routed logs | <code>string</code> | ✓ |  |
+| [filter](variables.tf#L12) | The filter to apply when exporting logs | <code>string</code> | ✓ |  |
+| [org_id](variables.tf#L23) | Organization Id | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L43) | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
+| [exclusions](variables.tf#L6) | Logging exclusions for the sink in the form {NAME -> FILTER}. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
+| [location](variables.tf#L17) | Dataset location | <code>string</code> |  | <code>&#34;EU&#34;</code> |
+| [prefix](variables.tf#L28) | Prefix used to generate project id and name. | <code>string</code> |  | <code>null</code> |
+| [project_create](variables.tf#L34) | Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+
+## Outputs
+
+| name | description | sensitive |
+|---|---|:---:|
+| [org_id](outputs.tf#L5) |  |  |
+| [project_id](outputs.tf#L1) |  |  |
+
+<!-- END TFDOC -->
