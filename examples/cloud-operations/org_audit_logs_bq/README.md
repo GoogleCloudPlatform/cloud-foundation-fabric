@@ -136,7 +136,10 @@ with:
 
 | name | description | sensitive |
 |---|---|:---:|
-| [org_id](outputs.tf#L5) |  |  |
-| [project_id](outputs.tf#L1) |  |  |
+| [dataset_id](outputs.tf#L16) | Dataset Id where logs are routed. |  |
+| [org_id](outputs.tf#L1) | Organization Id. |  |
+| [org_log_service_account](outputs.tf#L6) | Serice account used by the org sink to write to the BigQuery table. |  |
+| [org_log_sink_id](outputs.tf#L11) | Organization level log sink Id. |  |
+| [project_id](outputs.tf#L21) | Project containing the BigQuery dataset where logs are routed. |  |
 
 <!-- END TFDOC -->
