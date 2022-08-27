@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+variable "region" {
+  description = "Create a regional load balancer."
+  type        = string
+  default     = null
+}
+
 variable "health_checks_config_defaults" {
   description = "Auto-created health check default configuration."
   type = object({
@@ -204,6 +210,27 @@ variable "global_forwarding_rule_config" {
     ip_version            = "IPV4"
     # If not specified, 80 for https = false, 443 otherwise
     port_range = null
+  }
+}
+
+variable "forwarding_rule_config" {
+  description = "Global forwarding rule configurations."
+  type = object({
+    ip_protocol           = string
+    ip_version            = string
+    load_balancing_scheme = string
+    port_range            = string
+    network_tier          = string
+    network               = string
+  })
+  default = {
+    load_balancing_scheme = "EXTERNAL_MANAGED"
+    ip_protocol           = "TCP"
+    ip_version            = "IPV4"
+    # If not specified, 80 for https = false, 443 otherwise
+    port_range   = null
+    network_tier = "STANDARD"
+    network      = "default"
   }
 }
 

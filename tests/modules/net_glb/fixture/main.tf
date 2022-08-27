@@ -18,6 +18,7 @@ module "test" {
   source                           = "../../../../modules/net-glb"
   project_id                       = "my-project"
   name                             = "glb-test"
+  region                           = var.region
   health_checks_config_defaults    = var.health_checks_config_defaults
   health_checks_config             = var.health_checks_config
   backend_services_config          = var.backend_services_config
@@ -28,4 +29,6 @@ module "test" {
   target_proxy_https_config        = var.target_proxy_https_config
   reserve_ip_address               = var.reserve_ip_address
   global_forwarding_rule_config    = var.global_forwarding_rule_config
+  forwarding_rule_config           = var.forwarding_rule_config
 }
+
