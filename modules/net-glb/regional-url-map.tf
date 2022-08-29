@@ -14,80 +14,42 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description URL maps.
-
+# tfdoc:file:description regional URL maps.
 locals {
   # Look for a backend services in the config whose id is
   # the default_service given in the url-map.
   # If not found, use the default_service id as given
   # (assuming it's already existing).
   # If the variable is null, will be set to null.
-  _default_service = try(
+  _regional_default_service = try(
     google_compute_backend_bucket.bucket[var.url_map_config.default_service].id,
-    google_compute_backend_service.group[var.url_map_config.default_service].id,
+    google_compute_region_backend_service.group[var.url_map_config.default_service].id,
     var.url_map_config.default_service,
     null
   )
 
   # If no backend services are specified,
   # the first backend service defined is associated
-  default_service = (
-    try(local._default_service, null) == null
+  regional_default_service = (
+    try(local._regional_default_service, null) == null
     && try(var.url_map_config.default_route_action.weighted_backend_services, null) == null
     && try(var.url_map_config.default_url_redirect, null) == null
     ? try(
       google_compute_backend_bucket.bucket[keys(google_compute_backend_bucket.bucket)[0]].id,
-      google_compute_backend_service.group[keys(google_compute_backend_service.group)[0]].id,
+      google_compute_region_backend_service.group[keys(google_compute_region_backend_service.group)[0]].id,
       null
     )
     : null
   )
 }
 
-resource "google_compute_url_map" "url_map" {
-  count           = var.region == null ? 1 : 0
+resource "google_compute_region_url_map" "url_map" {
+  count           = var.region != null ? 1 : 0
   name            = var.name
   description     = "Terraform managed."
   project         = var.project_id
-  default_service = local.default_service
-
-  dynamic "header_action" {
-    for_each = (
-      try(var.url_map_config.header_action, null) == null
-      ? []
-      : [var.url_map_config.header_action]
-    )
-    content {
-      request_headers_to_remove  = try(header_action.value.request_headers_to_remove, null)
-      response_headers_to_remove = try(header_action.value.response_headers_to_remove, null)
-
-      dynamic "request_headers_to_add" {
-        for_each = (
-          try(header_action.value.request_headers_to_add, null) == null
-          ? []
-          : [header_action.value.request_headers_to_add]
-        )
-        content {
-          header_name  = try(request_headers_to_add.value.header_name, null)
-          header_value = try(request_headers_to_add.value.header_value, null)
-          replace      = try(request_headers_to_add.value.replace, null)
-        }
-      }
-
-      dynamic "response_headers_to_add" {
-        for_each = (
-          try(header_action.response_headers_to_add, null) == null
-          ? []
-          : [header_action.response_headers_to_add]
-        )
-        content {
-          header_name  = try(response_headers_to_add.value.header_name, null)
-          header_value = try(response_headers_to_add.value.header_value, null)
-          replace      = try(response_headers_to_add.value.replace, null)
-        }
-      }
-    }
-  }
+  region          = var.region
+  default_service = local.regional_default_service
 
   dynamic "host_rule" {
     for_each = (
@@ -113,48 +75,10 @@ resource "google_compute_url_map" "url_map" {
       description = try(path_matcher.value.description, null)
       default_service = try(
         google_compute_backend_bucket.bucket[var.url_map_config.default_service].id,
-        google_compute_backend_service.group[var.url_map_config.default_service].id,
+        google_compute_region_backend_service.group[var.url_map_config.default_service].id,
         path_matcher.value.default_service,
         null
       )
-
-      dynamic "header_action" {
-        for_each = (
-          try(path_matcher.value.header_action, null) == null
-          ? []
-          : [path_matcher.value.header_action]
-        )
-        content {
-          request_headers_to_remove  = try(header_action.value.request_headers_to_remove, null)
-          response_headers_to_remove = try(header_action.value.response_headers_to_remove, null)
-
-          dynamic "request_headers_to_add" {
-            for_each = (
-              try(header_action.value.request_headers_to_add, null) == null
-              ? []
-              : [header_action.value.request_headers_to_add]
-            )
-            content {
-              header_name  = try(request_headers_to_add.value.header_name, null)
-              header_value = try(request_headers_to_add.value.header_value, null)
-              replace      = try(request_headers_to_add.value.replace, null)
-            }
-          }
-
-          dynamic "response_headers_to_add" {
-            for_each = (
-              try(header_action.response_headers_to_add, null) == null
-              ? []
-              : [header_action.response_headers_to_add]
-            )
-            content {
-              header_name  = try(response_headers_to_add.value.header_name, null)
-              header_value = try(response_headers_to_add.value.header_value, null)
-              replace      = try(response_headers_to_add.value.replace, null)
-            }
-          }
-        }
-      }
 
       dynamic "path_rule" {
         for_each = (
@@ -166,7 +90,7 @@ resource "google_compute_url_map" "url_map" {
           paths = try(path_rule.value.paths, null)
           service = try(
             google_compute_backend_bucket.bucket[path_rule.value.service].id,
-            google_compute_backend_service.group[path_rule.value.service].id,
+            google_compute_region_backend_service.group[path_rule.value.service].id,
             path_rule.value.service,
             null
           )
@@ -253,7 +177,7 @@ resource "google_compute_url_map" "url_map" {
                 content {
                   backend_service = try(
                     google_compute_backend_bucket.bucket[policy.value.backend_service].id,
-                    google_compute_backend_service.group[policy.value.backend_service].id,
+                    google_compute_region_backend_service.group[policy.value.backend_service].id,
                     policy.value.backend_service,
                     null
                   )
@@ -751,203 +675,6 @@ resource "google_compute_url_map" "url_map" {
           strip_query            = try(default_url_redirect.value.strip_query, null)
         }
       }
-
-      dynamic "default_route_action" {
-        for_each = (
-          try(path_matcher.value.default_route_action, null) == null
-          ? []
-          : path_matcher.value.default_route_action
-        )
-        content {
-          dynamic "cors_policy" {
-            for_each = (
-              try(default_route_action.value.cors_policy, null) == null
-              ? []
-              : [default_route_action.value.cors_policy]
-            )
-            content {
-              allow_credentials    = try(cors_policy.value.allow_credentials, null)
-              allow_headers        = try(cors_policy.value.allow_headers, null)
-              allow_methods        = try(cors_policy.value.allow_methods, null)
-              allow_origin_regexes = try(cors_policy.value.allow_origin_regexes, null)
-              allow_origins        = try(cors_policy.value.allow_origins, null)
-              disabled             = try(cors_policy.value.disabled, null)
-              expose_headers       = try(cors_policy.value.expose_headers, null)
-              max_age              = try(cors_policy.value.max_age, null)
-            }
-          }
-
-          dynamic "fault_injection_policy" {
-            for_each = (
-              try(default_route_action.value.fault_injection_policy, null) == null
-              ? []
-              : [default_route_action.value.fault_injection_policy]
-            )
-            iterator = policy
-            content {
-
-              dynamic "abort" {
-                for_each = (
-                  try(policy.value.abort, null) == null
-                  ? []
-                  : [policy.value.abort]
-                )
-                content {
-                  http_status = try(abort.value.http_status, null) # Must be between 200 and 599 inclusive
-                  percentage  = try(abort.value.percentage, null)  # Must be between 0.0 and 100.0 inclusive
-                }
-              }
-
-              dynamic "delay" {
-                for_each = (
-                  try(policy.value.delay, null) == null
-                  ? []
-                  : [policy.value.delay]
-                )
-                content {
-                  percentage = try(delay.value.percentage, null) # Must be between 0.0 and 100.0 inclusive
-
-                  dynamic "fixed_delay" {
-                    for_each = (
-                      try(delay.value.fixed_delay, null) == null
-                      ? []
-                      : [delay.value.fixed_delay]
-                    )
-                    content {
-                      nanos   = try(fixed_delay.value.nanos, null)   # Must be from 0 to 999,999,999 inclusive
-                      seconds = try(fixed_delay.value.seconds, null) # Must be from 0 to 315,576,000,000 inclusive
-                    }
-                  }
-                }
-              }
-            }
-          }
-
-          dynamic "request_mirror_policy" {
-            for_each = (
-              try(default_route_action.value.request_mirror_policy, null) == null
-              ? []
-              : [default_route_action.value.request_mirror_policy]
-            )
-            iterator = policy
-            content {
-              backend_service = try(
-                google_compute_backend_bucket.bucket[policy.value.backend_service].id,
-                google_compute_backend_service.group[policy.value.backend_service].id,
-                policy.value.backend_service,
-                null
-              )
-            }
-          }
-
-          dynamic "retry_policy" {
-            for_each = (
-              try(default_route_action.value.retry_policy, null) == null
-              ? []
-              : [default_route_action.value.retry_policy]
-            )
-            iterator = policy
-            content {
-              num_retries = try(policy.num_retries, null) # Must be > 0
-              # Valid values at https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_url_map#retry_conditions
-              retry_conditions = try(policy.retry_conditions, null)
-
-              dynamic "per_try_timeout" {
-                for_each = (
-                  try(policy.value.per_try_timeout, null) == null
-                  ? []
-                  : [policy.value.per_try_timeout]
-                )
-                iterator = timeout
-                content {
-                  nanos   = try(timeout.value.nanos, null)   # Must be from 0 to 999,999,999 inclusive
-                  seconds = try(timeout.value.seconds, null) # Must be from 0 to 315,576,000,000 inclusive
-                }
-              }
-            }
-          }
-
-          dynamic "timeout" {
-            for_each = (
-              try(default_route_action.value.timeout, null) == null
-              ? []
-              : [default_route_action.value.timeout]
-            )
-            content {
-              nanos   = try(timeout.value.nanos, null)   # Must be from 0 to 999,999,999 inclusive
-              seconds = try(timeout.value.seconds, null) # Must be from 0 to 315,576,000,000 inclusive
-            }
-          }
-
-          dynamic "url_rewrite" {
-            for_each = (
-              try(default_route_action.value.url_rewrite, null) == null
-              ? []
-              : [default_route_action.value.url_rewrite]
-            )
-            content {
-              host_rewrite        = try(url_rewrite.value.host_rewrite, null)        # Must be between 1 and 255 characters
-              path_prefix_rewrite = try(url_rewrite.value.path_prefix_rewrite, null) # Must be between 1 and 1024 characters
-            }
-          }
-
-          dynamic "weighted_backend_services" {
-            for_each = (
-              try(default_route_action.value.weighted_backend_services, null) == null
-              ? []
-              : default_route_action.value.weighted_backend_services
-            )
-            iterator = weighted
-            content {
-              weight = try(weighted.value.weigth, null)
-              backend_service = try(
-                google_compute_backend_bucket.bucket[weighted.value.backend_service].id,
-                google_compute_backend_service.group[weighted.value.backend_service].id,
-                weighted.value.backend_service,
-                null
-              )
-
-              dynamic "header_action" {
-                for_each = (
-                  try(path_matcher.value.header_action, null) == null
-                  ? []
-                  : [path_matcher.value.header_action]
-                )
-                content {
-                  request_headers_to_remove  = try(header_action.value.request_headers_to_remove, null)
-                  response_headers_to_remove = try(header_action.value.response_headers_to_remove, null)
-
-                  dynamic "request_headers_to_add" {
-                    for_each = (
-                      try(header_action.value.request_headers_to_add, null) == null
-                      ? []
-                      : [header_action.value.request_headers_to_add]
-                    )
-                    content {
-                      header_name  = try(request_headers_to_add.value.header_name, null)
-                      header_value = try(request_headers_to_add.value.header_value, null)
-                      replace      = try(request_headers_to_add.value.replace, null)
-                    }
-                  }
-
-                  dynamic "response_headers_to_add" {
-                    for_each = (
-                      try(header_action.response_headers_to_add, null) == null
-                      ? []
-                      : [header_action.response_headers_to_add]
-                    )
-                    content {
-                      header_name  = try(response_headers_to_add.value.header_name, null)
-                      header_value = try(response_headers_to_add.value.header_value, null)
-                      replace      = try(response_headers_to_add.value.replace, null)
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
     }
   }
 
@@ -987,198 +714,4 @@ resource "google_compute_url_map" "url_map" {
       strip_query            = try(default_url_redirect.value.strip_query, null)
     }
   }
-
-  dynamic "default_route_action" {
-    for_each = (
-      try(var.url_map_config.default_route_action, null) == null
-      ? []
-      : [var.url_map_config.default_route_action]
-    )
-    content {
-      dynamic "cors_policy" {
-        for_each = (
-          try(default_route_action.value.cors_policy, null) == null
-          ? []
-          : [default_route_action.value.cors_policy]
-        )
-        content {
-          allow_credentials    = try(cors_policy.value.allow_credentials, null)
-          allow_headers        = try(cors_policy.value.allow_headers, null)
-          allow_methods        = try(cors_policy.value.allow_methods, null)
-          allow_origin_regexes = try(cors_policy.value.allow_origin_regexes, null)
-          allow_origins        = try(cors_policy.value.allow_origins, null)
-          disabled             = try(cors_policy.value.disabled, null)
-          expose_headers       = try(cors_policy.value.expose_headers, null)
-          max_age              = try(cors_policy.value.max_age, null)
-        }
-      }
-
-      dynamic "fault_injection_policy" {
-        for_each = (
-          try(default_route_action.value.fault_injection_policy, null) == null
-          ? []
-          : [default_route_action.value.fault_injection_policy]
-        )
-        iterator = policy
-        content {
-
-          dynamic "abort" {
-            for_each = (
-              try(policy.value.abort, null) == null
-              ? []
-              : [policy.value.abort]
-            )
-            content {
-              http_status = try(abort.value.http_status, null) # Must be between 200 and 599 inclusive
-              percentage  = try(abort.value.percentage, null)  # Must be between 0.0 and 100.0 inclusive
-            }
-          }
-
-          dynamic "delay" {
-            for_each = (
-              try(policy.value.delay, null) == null
-              ? []
-              : [policy.value.delay]
-            )
-            content {
-              percentage = try(delay.value.percentage, null) # Must be between 0.0 and 100.0 inclusive
-
-              dynamic "fixed_delay" {
-                for_each = try(delay.value.fixed_delay, null) == null ? [] : [delay.value.fixed_delay]
-                content {
-                  nanos   = try(fixed_delay.value.nanos, null)   # Must be from 0 to 999,999,999 inclusive
-                  seconds = try(fixed_delay.value.seconds, null) # Must be from 0 to 315,576,000,000 inclusive
-                }
-              }
-            }
-          }
-        }
-      }
-
-      dynamic "request_mirror_policy" {
-        for_each = (
-          try(default_route_action.value.request_mirror_policy, null) == null
-          ? []
-          : [default_route_action.value.request_mirror_policy]
-        )
-        iterator = policy
-        content {
-          backend_service = try(
-            google_compute_backend_bucket.bucket[policy.value.backend_service].id,
-            google_compute_backend_service.group[policy.value.backend_service].id,
-            policy.value.backend_service,
-            null
-          )
-        }
-      }
-
-      dynamic "retry_policy" {
-        for_each = (
-          try(default_route_action.value.retry_policy, null) == null
-          ? []
-          : [default_route_action.value.retry_policy]
-        )
-        iterator = policy
-        content {
-          num_retries = try(policy.num_retries, null) # Must be > 0
-          # Valid values at https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_url_map#retry_conditions
-          retry_conditions = try(policy.retry_conditions, null)
-
-          dynamic "per_try_timeout" {
-            for_each = (
-              try(policy.value.per_try_timeout, null) == null
-              ? []
-              : [policy.value.per_try_timeout]
-            )
-            iterator = timeout
-            content {
-              nanos   = try(timeout.value.nanos, null)   # Must be from 0 to 999,999,999 inclusive
-              seconds = try(timeout.value.seconds, null) # Must be from 0 to 315,576,000,000 inclusive
-            }
-          }
-        }
-      }
-
-      dynamic "timeout" {
-        for_each = (
-          try(default_route_action.value.timeout, null) == null
-          ? []
-          : [default_route_action.value.timeout]
-        )
-        content {
-          nanos   = try(timeout.value.nanos, null)   # Must be from 0 to 999,999,999 inclusive
-          seconds = try(timeout.value.seconds, null) # Must be from 0 to 315,576,000,000 inclusive
-        }
-      }
-
-      dynamic "url_rewrite" {
-        for_each = (
-          try(default_route_action.value.url_rewrite, null) == null
-          ? []
-          : [default_route_action.value.url_rewrite]
-        )
-        content {
-          host_rewrite        = try(url_rewrite.value.host_rewrite, null)        # Must be between 1 and 255 characters
-          path_prefix_rewrite = try(url_rewrite.value.path_prefix_rewrite, null) # Must be between 1 and 1024 characters
-        }
-      }
-
-      dynamic "weighted_backend_services" {
-        for_each = (
-          try(default_route_action.value.weighted_backend_services, null) == null
-          ? []
-          : default_route_action.value.weighted_backend_services
-        )
-        iterator = weighted
-        content {
-          weight = try(weighted.value.weigth, null)
-          backend_service = try(
-            google_compute_backend_bucket.bucket[weighted.value.backend_service].id,
-            google_compute_backend_service.group[weighted.value.backend_service].id,
-            weighted.value.backend_service,
-            null
-          )
-
-          dynamic "header_action" {
-            for_each = (
-              try(weighted.value.header_action, null) == null
-              ? []
-              : [weighted.value.header_action]
-            )
-            content {
-              request_headers_to_remove  = try(header_action.value.request_headers_to_remove, null)
-              response_headers_to_remove = try(header_action.value.response_headers_to_remove, null)
-
-              dynamic "request_headers_to_add" {
-                for_each = (
-                  try(header_action.value.request_headers_to_add, null) == null
-                  ? []
-                  : [header_action.value.request_headers_to_add]
-                )
-                content {
-                  header_name  = try(request_headers_to_add.value.header_name, null)
-                  header_value = try(request_headers_to_add.value.header_value, null)
-                  replace      = try(request_headers_to_add.value.replace, null)
-                }
-              }
-
-              dynamic "response_headers_to_add" {
-                for_each = (
-                  try(header_action.response_headers_to_add, null) == null
-                  ? []
-                  : [header_action.response_headers_to_add]
-                )
-                content {
-                  header_name  = try(response_headers_to_add.value.header_name, null)
-                  header_value = try(response_headers_to_add.value.header_value, null)
-                  replace      = try(response_headers_to_add.value.replace, null)
-                }
-              }
-            }
-          }
-        }
-      }
-    }
-  }
 }
-
