@@ -36,4 +36,5 @@ output "version_ids" {
 output "versions" {
   description = "Secret versions."
   value       = google_secret_manager_secret_version.default
+  sensitive   = true
 }
