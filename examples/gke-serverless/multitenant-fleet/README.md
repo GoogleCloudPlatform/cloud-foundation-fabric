@@ -1,6 +1,30 @@
-# GKE Multitenant Module
+# GKE Multitenant Example
 
-TODO: add brief explanation and refer back to dev folder?
+This example presents an opinionated architecture to handle multiple homogeneous GKE clusters. The general idea behind this example is to deploy a single project hosting multiple clusters leveraging several useful GKE features. This pattern is useful, for example, in cases where multiple clusters host/support the same workloads, such as in the case of a multi-regional deployment.
+
+In addition to supporting multiple clusters, the architecture assumes that multiple tenants (e.g. teams, applications) will share the cluster. As such, several options are provided to isolate tenants from each other.
+
+- Private clusters
+- VPC-native only. Route-based clusters are not (and will not be) supported
+- Metering enabled, and data is stored in a BQ dataset
+- DB encryption
+- Optional gke fleet support with support for workload identity, config sync, hierarchy controller and policy controller
+- logging monitoring to cloud operations by default
+- support for groups for gke to allow flexible RBAC policies
+- optional etcd database encryption with KMS
+- support to customize peering configuration of the control plane vpc
+- features enabled by default
+ - workload identity
+ - shielded nodes
+ - dataplane v2
+ - intranode visibility
+ - dns cache
+ - http load balancing
+ - gce persistent disk csi driver
+ - node auto upgrade and auto repair for all nodepools
+
+
+This example is used as part of the [FAST GKE stage](../../../fast/stages/03-gke-multitenant/) but it can also be used independently if desired.
 
 <p align="center">
   <img src="diagram.png" alt="GKE multitenant">
