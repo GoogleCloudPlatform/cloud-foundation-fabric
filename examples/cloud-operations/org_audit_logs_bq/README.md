@@ -69,7 +69,7 @@ Before we deploy the architecture, you will at least need the following informat
 * The project Id.
 * The organization Id.
 * A dataset Id to export logs to.
-* A log filter to target specific audit logs to route to BigQuery.
+* A log filter to target specific audit logs to route to BigQuery (see examples in the [terraform.tfvars.sample](terraform.tfvars.sample) file).
 
 #### Step 1: Deploy resources
 
