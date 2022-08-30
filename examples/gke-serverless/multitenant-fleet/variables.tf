@@ -220,6 +220,19 @@ variable "nodepools" {
   })))
 }
 
+variable "peering_config" {
+  description = "Configure peering with the control plane VPC. Requires compute.networks.updatePeering. Set to null if you don't want to update the default peering configuration."
+  type = object({
+    export_routes = bool
+    import_routes = bool
+  })
+  default = {
+    export_routes = true
+    // TODO(jccb) is there any situation where the control plane VPC would export any routes?
+    import_routes = false
+  }
+}
+
 variable "prefix" {
   description = "Prefix used for resources that need unique names."
   type        = string

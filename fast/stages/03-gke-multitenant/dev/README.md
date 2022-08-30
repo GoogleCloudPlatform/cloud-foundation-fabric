@@ -92,7 +92,7 @@ Leave all these variables unset (or set to `null`) to disable fleet management.
 
 ## Running Terraform
 
-Once the [providers](#providers-configuration) and [variable](#variable-configuration) configuration is complete, you can apply this stage:
+Once the [provider](#providers-configuration) and [variable](#variable-configuration) configuration is complete, you can apply this stage:
 
 ```bash
 terraform init

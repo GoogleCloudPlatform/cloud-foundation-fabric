@@ -73,12 +73,9 @@ module "gke-cluster" {
   logging_config    = ["SYSTEM_COMPONENTS", "WORKLOADS"]
   monitoring_config = ["SYSTEM_COMPONENTS", "WORKLOADS"]
 
-  # if you don't have compute.networks.updatePeering in the host
-  # project, comment the next lines and ask your network admin to
-  # create the peering for you
-  peering_config = {
-    export_routes = true
-    import_routes = false
+  peering_config = var.peering_config == null ? null : {
+    export_routes = var.peering_config.export_routes
+    import_routes = var.peering_config.import_routes
     project_id    = var.vpc_config.host_project_id
   }
   resource_usage_export_config = {
@@ -116,5 +113,4 @@ module "gke-cluster" {
   #     memory_max = each.value.cluster_autoscaling.memory_max
   #   }
   # }
-
 }
