@@ -14,27 +14,14 @@
  * limitations under the License.
  */
 
-output "ids" {
-  description = "Secret ids keyed by secret_ids (names)."
-  value = {
-    for k, v in google_secret_manager_secret.default : v.secret_id => v.id
-  }
+variable "nginx_image" {
+  description = "Nginx container image to use."
+  type        = string
+  default     = "nginx:1.23.1"
 }
 
-output "secrets" {
-  description = "Secret resources."
-  value       = google_secret_manager_secret.default
-}
-
-output "version_ids" {
-  description = "Version ids keyed by secret name : version name."
-  value = {
-    for k, v in google_secret_manager_secret_version.default : k => v.id
-  }
-}
-
-output "versions" {
-  description = "Secret versions."
-  value       = google_secret_manager_secret_version.default
-  sensitive   = true
+variable "docker_logging" {
+  description = "Log via the Docker gcplogs driver. Disable if you use the legacy Logging Agent instead."
+  type        = bool
+  default     = true
 }

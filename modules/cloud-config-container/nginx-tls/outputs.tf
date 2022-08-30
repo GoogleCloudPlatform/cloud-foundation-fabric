@@ -14,27 +14,7 @@
  * limitations under the License.
  */
 
-output "ids" {
-  description = "Secret ids keyed by secret_ids (names)."
-  value = {
-    for k, v in google_secret_manager_secret.default : v.secret_id => v.id
-  }
-}
-
-output "secrets" {
-  description = "Secret resources."
-  value       = google_secret_manager_secret.default
-}
-
-output "version_ids" {
-  description = "Version ids keyed by secret name : version name."
-  value = {
-    for k, v in google_secret_manager_secret_version.default : k => v.id
-  }
-}
-
-output "versions" {
-  description = "Secret versions."
-  value       = google_secret_manager_secret_version.default
-  sensitive   = true
+output "cloud_config" {
+  description = "Rendered cloud-config file to be passed as user-data instance metadata."
+  value       = module.cos-envoy-td.cloud_config
 }

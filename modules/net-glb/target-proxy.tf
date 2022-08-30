@@ -40,18 +40,37 @@ locals {
 }
 
 resource "google_compute_target_http_proxy" "http" {
-  count       = var.https ? 0 : 1
+  count       = var.https ? 0 : (var.region == null ? 1 : 0)
   name        = var.name
   project     = var.project_id
   description = "Terraform managed."
-  url_map     = google_compute_url_map.url_map.id
+  url_map     = google_compute_url_map.url_map.0.id
 }
 
 resource "google_compute_target_https_proxy" "https" {
-  count            = var.https ? 1 : 0
+  count            = var.https ? (var.region == null ? 1 : 0) : 0
   name             = var.name
   project          = var.project_id
   description      = "Terraform managed."
-  url_map          = google_compute_url_map.url_map.id
+  url_map          = google_compute_url_map.url_map.0.id
+  ssl_certificates = local.ssl_certificates
+}
+
+resource "google_compute_region_target_http_proxy" "http" {
+  count       = var.https ? 0 : (var.region != null ? 1 : 0)
+  name        = var.name
+  project     = var.project_id
+  region      = var.region
+  description = "Terraform managed."
+  url_map     = google_compute_region_url_map.url_map.0.id
+}
+
+resource "google_compute_region_target_https_proxy" "https" {
+  count            = var.https ? (var.region != null ? 1 : 0) : 0
+  name             = var.name
+  project          = var.project_id
+  region           = var.region
+  description      = "Terraform managed."
+  url_map          = google_compute_region_url_map.url_map.0.id
   ssl_certificates = local.ssl_certificates
 }
