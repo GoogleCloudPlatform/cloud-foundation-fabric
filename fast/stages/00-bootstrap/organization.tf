@@ -170,10 +170,11 @@ module "organization" {
     ]
     (var.custom_role_names.service_project_network_admin) = [
       "compute.globalOperations.get",
-      # the following two permissions are used by automation service accounts
-      # who manage service projects where peering creation might be needed
-      # (e.g. GKE), if you remove them make sure your network administrators
-      # should create peerings for service projects
+      # compute.networks.updatePeering and compute.networks.get are
+      # used by automation service accounts who manage service
+      # projects where peering creation might be needed (e.g. GKE). If
+      # you remove them your network administrators should create
+      # peerings for service projects
       "compute.networks.updatePeering",
       "compute.networks.get",
       "compute.organizations.disableXpnResource",
