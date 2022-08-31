@@ -1,0 +1,6 @@
+display_name: Group 1
+description: Group 1
+members:
+  - user1@example.com
+managers:
+  - user2@example.com
