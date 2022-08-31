@@ -22,20 +22,20 @@ locals {
   ]
   iam = {
     # CloudSQL
-    "roles/cloudsql.admin"                 = local.all_principals_iam
-    "roles/cloudsql.client"                = local.all_principals_iam
-    "roles/cloudsql.instanceUser"          = local.all_principals_iam
+    "roles/cloudsql.admin"        = local.all_principals_iam
+    "roles/cloudsql.client"       = local.all_principals_iam
+    "roles/cloudsql.instanceUser" = local.all_principals_iam
     # common roles
     "roles/logging.admin"                  = local.all_principals_iam
     "roles/iam.serviceAccountUser"         = local.all_principals_iam
     "roles/iam.serviceAccountTokenCreator" = local.all_principals_iam
   }
   cloud_sql_conf = {
-    database_version  = "MYSQL_8_0"
-    tier              = "db-g1-small"
-    db                = "wp-mysql"
-    user              = "admin"
-    pass              = "password"
+    database_version = "MYSQL_8_0"
+    tier             = "db-g1-small"
+    db               = "wp-mysql"
+    user             = "admin"
+    pass             = "password"
   }
   wp_user = "user"
 }
@@ -67,8 +67,8 @@ resource "random_password" "wp_password" {
 module "cloud_run" { # create the Cloud Run service
   source     = "../../../../modules/cloud-run"
   project_id = module.project.project_id
-  name     = "${local.prefix}cr-wordpress"
-  region = var.region
+  name       = "${local.prefix}cr-wordpress"
+  region     = var.region
 
   containers = [{
     image = var.wordpress_image
@@ -81,22 +81,22 @@ module "cloud_run" { # create the Cloud Run service
       command  = null
       args     = null
       env_from = null
-      env      = { # set up the database connection
-        "APACHE_HTTP_PORT_NUMBER"    : var.wordpress_port
-        "WORDPRESS_DATABASE_HOST"    : module.cloudsql.ip
-        "WORDPRESS_DATABASE_NAME"    : local.cloud_sql_conf.db
-        "WORDPRESS_DATABASE_USER"    : local.cloud_sql_conf.user
-        "WORDPRESS_DATABASE_PASSWORD": local.cloud_sql_conf.pass
-        "WORDPRESS_USERNAME"         : local.wp_user
-        "WORDPRESS_PASSWORD"         : random_password.wp_password.result
+      env = { # set up the database connection
+        "APACHE_HTTP_PORT_NUMBER" : var.wordpress_port
+        "WORDPRESS_DATABASE_HOST" : module.cloudsql.ip
+        "WORDPRESS_DATABASE_NAME" : local.cloud_sql_conf.db
+        "WORDPRESS_DATABASE_USER" : local.cloud_sql_conf.user
+        "WORDPRESS_DATABASE_PASSWORD" : local.cloud_sql_conf.pass
+        "WORDPRESS_USERNAME" : local.wp_user
+        "WORDPRESS_PASSWORD" : random_password.wp_password.result
       }
     }
-    resources = null
+    resources     = null
     volume_mounts = null
   }]
 
   iam = {
-    "roles/run.invoker": [var.cloud_run_invoker]
+    "roles/run.invoker" : [var.cloud_run_invoker]
   }
 
   revision_annotations = {
@@ -105,7 +105,7 @@ module "cloud_run" { # create the Cloud Run service
       max_scale = 2
     }
     # connect to CloudSQL
-    cloudsql_instances = [ module.cloudsql.connection_name ]
+    cloudsql_instances  = [module.cloudsql.connection_name]
     vpcaccess_connector = null
     vpcaccess_egress    = "all-traffic" # allow all traffic
   }
@@ -123,7 +123,7 @@ module "vpc" { # create a VPC for CloudSQL
   source     = "../../../../modules/net-vpc"
   project_id = module.project.project_id
   name       = "${local.prefix}sql-vpc"
-  subnets    = [
+  subnets = [
     {
       ip_cidr_range      = var.sql_vpc_cidr
       name               = "subnet"
@@ -150,15 +150,15 @@ module "firewall" { # set up firewall for CloudSQL
 
 
 module "cloudsql" { # Set up CloudSQL
-  source              = "../../../../modules/cloudsql-instance"
-  project_id          = module.project.project_id
-  network             = module.vpc.self_link
-  name                = "${local.prefix}mysql"
-  region              = var.region
-  database_version    = local.cloud_sql_conf.database_version
-  tier                = local.cloud_sql_conf.tier
-  databases           = [local.cloud_sql_conf.db]
+  source           = "../../../../modules/cloudsql-instance"
+  project_id       = module.project.project_id
+  network          = module.vpc.self_link
+  name             = "${local.prefix}mysql"
+  region           = var.region
+  database_version = local.cloud_sql_conf.database_version
+  tier             = local.cloud_sql_conf.tier
+  databases        = [local.cloud_sql_conf.db]
   users = {
-      "${local.cloud_sql_conf.user}" = "${local.cloud_sql_conf.pass}"
+    "${local.cloud_sql_conf.user}" = "${local.cloud_sql_conf.pass}"
   }
 }
