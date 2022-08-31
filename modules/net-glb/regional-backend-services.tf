@@ -14,66 +14,21 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Bucket and group backend services.
+# tfdoc:file:description Bucket and group backend services for regional load balancers.
 
-locals {
-  backend_services_bucket = {
-    for k, v in coalesce(var.backend_services_config, {}) :
-    k => v if v.bucket_config != null
-  }
-  backend_services_group = {
-    for k, v in coalesce(var.backend_services_config, {}) :
-    k => v if v.group_config != null
-  }
-}
-
-resource "google_compute_backend_bucket" "bucket" {
-  for_each                = local.backend_services_bucket
-  name                    = "${var.name}-${each.key}"
-  description             = "Terraform managed."
-  project                 = var.project_id
-  bucket_name             = try(each.value.bucket_config.bucket_name, null)
-  custom_response_headers = try(each.value.bucket_config.options.custom_response_headers, null)
-  enable_cdn              = try(each.value.enable_cdn, null)
-
-  dynamic "cdn_policy" {
-    for_each = try(each.value.cdn_policy, null) == null ? [] : [each.value.cdn_policy]
-    content {
-      cache_mode                   = try(cdn_policy.value.cache_mode, null)
-      client_ttl                   = try(cdn_policy.value.client_ttl, null)
-      default_ttl                  = try(cdn_policy.value.default_ttl, null)
-      max_ttl                      = try(cdn_policy.value.max_ttl, null)
-      negative_caching             = try(cdn_policy.value.negative_caching, null)
-      serve_while_stale            = try(cdn_policy.value.serve_while_stale, null)
-      signed_url_cache_max_age_sec = try(cdn_policy.value.signed_url_cache_max_age_sec, null)
-
-      dynamic "negative_caching_policy" {
-        for_each = try(cdn_policy.value.negative_caching_policy, null) == null ? [] : [cdn_policy.value.negative_caching_policy]
-        iterator = ncp
-        content {
-          code = ncp.value.code
-          ttl  = ncp.value.ttl
-        }
-      }
-    }
-  }
-}
-
-resource "google_compute_backend_service" "group" {
-  for_each                        = var.region == null ? local.backend_services_group : {}
+resource "google_compute_region_backend_service" "group" {
+  for_each                        = var.region != null ? local.backend_services_group : {}
   name                            = "${var.name}-${each.key}"
   project                         = var.project_id
+  region                          = var.region
   description                     = "Terraform managed."
   affinity_cookie_ttl_sec         = try(each.value.group_config.options.affinity_cookie_ttl_sec, null)
   enable_cdn                      = try(each.value.enable_cdn, null)
-  custom_request_headers          = try(each.value.group_config.options.custom_request_headers, null)
-  custom_response_headers         = try(each.value.group_config.options.custom_response_headers, null)
   connection_draining_timeout_sec = try(each.value.group_config.options.connection_draining_timeout_sec, null)
   load_balancing_scheme           = try(each.value.group_config.options.load_balancing_scheme, null)
   locality_lb_policy              = try(each.value.group_config.options.locality_lb_policy, null)
   port_name                       = try(each.value.group_config.options.port_name, null)
   protocol                        = try(each.value.group_config.options.protocol, null)
-  security_policy                 = try(each.value.group_config.options.security_policy, null)
   session_affinity                = try(each.value.group_config.options.session_affinity, null)
   timeout_sec                     = try(each.value.group_config.options.timeout_sec, null)
 
@@ -83,12 +38,12 @@ resource "google_compute_backend_service" "group" {
   health_checks = (
     try(length(each.value.group_config.health_checks), 0) == 0
     ? try(
-      [google_compute_health_check.health_check["default"].id],
+      [google_compute_region_health_check.health_check["default"].id],
       null
     )
     : [
       for hc in each.value.group_config.health_checks :
-      try(google_compute_health_check.health_check[hc].id, hc)
+      try(google_compute_region_health_check.health_check[hc].id, hc)
     ]
   )
 
@@ -177,7 +132,6 @@ resource "google_compute_backend_service" "group" {
         iterator = ncp
         content {
           code = try(ncp.value.code, null)
-          ttl  = try(ncp.value.ttl, null)
         }
       }
     }
@@ -208,4 +162,3 @@ resource "google_compute_backend_service" "group" {
     }
   }
 }
-
