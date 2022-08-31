@@ -13,3 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+output "cloud_run_service" {
+  description = "CloudRun service URL"
+  value       = module.cloud_run.service.status[0].url
+  sensitive   = true
+}
+
+output "wp_user" {
+  description = "Wordpress username"
+  value       = local.wp_user
+}
+
+output "wp_password" {
+  description = "Wordpress user password"
+  value       = random_password.wp_password.result
+  sensitive   = true
+}

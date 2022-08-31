@@ -1,6 +1,6 @@
 # Wordpress deployment on Cloud Run
 
-43% of the Web is built on Wordpress. Because of its simplicity and versatility, Wordpress can be used for internal websites as well as customer facing e-commerce platforms in small to large businesses while still offering security.
+43% of the Web is built on Wordpress. Because of its simplicity and versatility, Wordpress can be used for internal websites as well as customer facing e-commerce platforms in small to large businesses, while still offering security.
 
 This repository contains the necessary Terraform files to deploy a functioning new Wordpress website exposed to the public internet with minimal technical overhead.
 
@@ -8,7 +8,7 @@ This architecture can be used for the following use cases and more:
 
 * Blog
 * Intranet / internal Wiki
-* Ecommerce platform
+* E-commerce platform
 
 ## Architecture
 
@@ -16,8 +16,8 @@ This architecture can be used for the following use cases and more:
 
 The main components that are deployed in this architecture are the following (you can learn about them by following the hyperlinks):
 
-* [Cloud Run](https://cloud.google.com/run): serverless PaaS offering to host containers for web oriented applications while offering security, scalability and easy versioning.  
-* [Cloud SQL](https://cloud.google.com/sql): Managed solution for SQL DB
+* [Cloud Run](https://cloud.google.com/run): serverless PaaS offering to host containers for web-oriented applications, while offering security, scalability and easy versioning
+* [Cloud SQL](https://cloud.google.com/sql): Managed solution for SQL databases
 
 ## Setup
 
@@ -41,43 +41,51 @@ LINK NEEDED
 
 Before we deploy the architecture, you will at least need the following information (for more precise configuration see the Variables section):
 
-* The project Id.
+* The project ID.
 * A Google Cloud Registry path to a Wordpress container image.
 
-#### Step 1: Build Wordpress image
+#### Step 1: Add Wordpress image
 
-In order to deploy the Wordpress service to Cloud Run, you need to build and store the image in Google Cloud Registry (GCR).
+In order to deploy the Wordpress service to Cloud Run, you need to store the [Wordpress image](https://hub.docker.com/r/bitnami/wordpress/) in Google Cloud Registry (GCR).
 
 Make sure that the GCR API is enabled and run the following commands in your Cloud Shell environment with your `project_id` in place of the `MY_PROJECT` placeholder:
 
 ``` {shell}
-docker pull wordpress
-docker tag wordpress gcr.io/MY_PROJECT/busybox
+docker pull bitnami/wordpress
+docker tag bitnami/wordpress gcr.io/MY_PROJECT/busybox
 docker push gcr.io/MY_PROJECT/wordpress
 ```
+
 
 #### Step 2: Deploy resources
 
 Once you have the required information, head back to the Cloud Shell editor. Make sure you’re in the following directory: `cloudshell_open/cloud-foundation-fabric/examples/third-party-solutions/wordpress/cloudrun/`.
 
-Configure the Terraform variables in your terraform.tfvars file. See [terraform.tfvars.sample](terraform.tfvars.sample) as starting point.
+Configure the Terraform variables in your terraform.tfvars file. See [terraform.tfvars.sample](terraform.tfvars.sample) as starting point - just copy it to `terraform.tfvars` and edit the latter.
 
-Initialize your Terraform environment:
+Initialize your Terraform environment and deploy the resources:
 
 ``` {shell}
-alias tf=terraform 
-tf init
-tf apply -var-file="terraform.tfvars.sample"
+terraform init
+terraform apply
 ```
 
-The resource creation will take a few minutes, at the end this is the output you should expect for successful completion along with a list of the created resources.
+The resource creation will take a few minutes.
+
+Upon completion, you will see the output with the values for the Cloud Run service and the user and password to access the `/admin` part of the website. You can also view it later with:
+``` {shell}
+terraform output
+# or for the concrete variable:
+terraform output cloud_run_service
+```
+
 
 #### Clean up your environment
 
 The easiest way to remove all the deployed resources is to run the following command in Cloud Shell:
 
 ``` {shell}
-tf destroy -var-file="terraform.tfvars.sample"
+tf destroy
 ```
 
 The above command will delete the associated resources so there will be no billable charges made afterwards.

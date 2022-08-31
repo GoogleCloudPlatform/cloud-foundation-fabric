@@ -31,7 +31,7 @@ variable "project_create" {
 
 variable "project_id" {
   description = "Project id, references existing project if `project_create` is null."
-  type        = string # TODO: check locals
+  type        = string
 }
 
 variable "region" {
@@ -51,9 +51,34 @@ variable "wordpress_image" {
   description = "Image to run with Cloud Run, starts with \"gcr.io\""
 }
 
+variable "wordpress_port" {
+  type        = number
+  description = "Port for the Wordpress image (8080 by default)"
+  default     = 8080
+}
+
 # Documentation: https://cloud.google.com/run/docs/securing/managing-access#making_a_service_public
 variable "cloud_run_invoker" {
   type        = string
   description = "IAM member authorized to access the end-point (for example, 'user:YOUR_IAM_USER' for only you or 'allUsers' for everyone)"
   default     = "allUsers"
+}
+
+variable "connector_cidr" {
+  type        = string
+  description = "CIDR block for the VPC serverless connector (10.8.0.0/28 by default)"
+  default     = "10.8.0.0/28"
+}
+
+variable "sql_vpc_cidr" {
+  type        = string
+  description = "CIDR block for the VPC for the CloudSQL (10.0.0.0/20 by default)"
+  default     = "10.0.0.0/20"
+}
+
+# Documentation: https://cloud.google.com/vpc/docs/configure-private-services-access#allocating-range
+variable "psa_cidr" {
+  type        = string
+  description = "CIDR block for Private Service Access for CloudSQL (10.60.0.0/24 by default)"
+  default     = "10.60.0.0/24"
 }
