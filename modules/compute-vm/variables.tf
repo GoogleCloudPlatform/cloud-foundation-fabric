@@ -190,11 +190,19 @@ variable "options" {
     allow_stopping_for_update = bool
     deletion_protection       = bool
     spot                      = bool
+    termination_action        = string
   })
   default = {
     allow_stopping_for_update = true
     deletion_protection       = false
     spot                      = false
+    termination_action        = null
+  }
+  validation {
+    condition = (var.options.termination_action == null
+      ||
+    contains(["STOP", "DELETE"], coalesce(var.options.termination_action, "1")))
+    error_message = "Allowed values for options.termination_action are 'STOP', 'DELETE' and null."
   }
 }
 

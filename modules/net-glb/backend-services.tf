@@ -60,7 +60,7 @@ resource "google_compute_backend_bucket" "bucket" {
 }
 
 resource "google_compute_backend_service" "group" {
-  for_each                        = local.backend_services_group
+  for_each                        = var.region == null ? local.backend_services_group : {}
   name                            = "${var.name}-${each.key}"
   project                         = var.project_id
   description                     = "Terraform managed."
@@ -208,3 +208,4 @@ resource "google_compute_backend_service" "group" {
     }
   }
 }
+

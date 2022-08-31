@@ -353,7 +353,6 @@ resource "tls_private_key" "self_signed_key" {
 }
 
 resource "tls_self_signed_cert" "self_signed_cert" {
-  key_algorithm         = tls_private_key.self_signed_key.algorithm
   private_key_pem       = tls_private_key.self_signed_key.private_key_pem
   validity_period_hours = 12
   early_renewal_hours   = 3

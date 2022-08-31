@@ -40,7 +40,7 @@ In the list of addresses, look for the address with purpose `DNS_RESOLVER` in th
 
 ### Update the forwarder address variable and recreate on-prem
 
-If the forwader address does not match the Terraform variable, add the correct value in your `terraform.tfvars` (or change the default value in `variables.tf`), then taint the onprem instance and apply to recreate it with the correct value in the DNS configuration:
+If the forwarder address does not match the Terraform variable, add the correct value in your `terraform.tfvars` (or change the default value in `variables.tf`), then taint the onprem instance and apply to recreate it with the correct value in the DNS configuration:
 
 ```bash
 tf apply

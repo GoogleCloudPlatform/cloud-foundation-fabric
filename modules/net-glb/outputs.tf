@@ -43,12 +43,12 @@ output "ssl_certificates" {
 
 output "ip_address" {
   description = "The reserved global IP address."
-  value       = try(google_compute_global_address.static_ip[0].address, null)
+  value       = var.region == null ? try(google_compute_global_address.static_ip.0.address, null) : try(google_compute_address.static_ip.0.address, null)
 }
 
 output "ip_address_self_link" {
   description = "The URI of the reserved global IP address."
-  value       = google_compute_global_forwarding_rule.forwarding_rule.ip_address
+  value       = var.region == null ? google_compute_global_forwarding_rule.forwarding_rule.0.ip_address : google_compute_forwarding_rule.forwarding_rule.0.ip_address
 }
 
 output "target_proxy" {
@@ -61,5 +61,10 @@ output "target_proxy" {
 
 output "global_forwarding_rule" {
   description = "The global forwarding rule."
-  value       = google_compute_global_forwarding_rule.forwarding_rule
+  value       = var.region == null ? google_compute_global_forwarding_rule.forwarding_rule.0 : null
+}
+
+output "forwarding_rule" {
+  description = "The regional forwarding rule."
+  value       = var.region == null ? google_compute_global_forwarding_rule.forwarding_rule.0 : google_compute_forwarding_rule.forwarding_rule.0
 }

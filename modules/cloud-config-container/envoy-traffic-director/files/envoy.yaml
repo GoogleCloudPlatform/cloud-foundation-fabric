@@ -13,47 +13,68 @@
 # limitations under the License.
 
 node:
-  id: "_ENVOY_NODE_ID_"
+  # The id must be in the following format: projects/<project number>/networks/<network name>/nodes/<node id>
+  id: "projects/CONFIG_PROJECT_NUMBER/networks/VPC_NETWORK_NAME/nodes/ENVOY_NODE_ID"
   cluster: cluster # unused
   locality:
-    zone: "_ENVOY_ZONE_"
+    zone: "ENVOY_ZONE"
   metadata:
     TRAFFICDIRECTOR_INTERCEPTION_PORT: "15001"
-    TRAFFICDIRECTOR_NETWORK_NAME: "_VPC_NETWORK_NAME_"
-    TRAFFICDIRECTOR_GCP_PROJECT_NUMBER: "_CONFIG_PROJECT_NUMBER_"
     TRAFFICDIRECTOR_ENABLE_TRACING: "false"
     TRAFFICDIRECTOR_ACCESS_LOG_PATH: ""
     TRAFFICDIRECTOR_INBOUND_BACKEND_PORTS: ""
 
 dynamic_resources:
-  lds_config: { ads: {} }
-  cds_config: { ads: {} }
+  lds_config:
+    ads: {}
+    resource_api_version: V3
+  cds_config:
+    ads: {}
+    resource_api_version: V3
   ads_config:
     api_type: GRPC
+    transport_api_version: V3
     grpc_services:
-      - google_grpc:
-          target_uri: trafficdirector.googleapis.com:443
-          stat_prefix: trafficdirector
-          channel_credentials:
-            ssl_credentials:
-              root_certs:
-                filename: /etc/ssl/certs/ca-certificates.crt
-          call_credentials:
-            google_compute_engine: {}
+    - google_grpc:
+        target_uri: trafficdirector.googleapis.com:443
+        stat_prefix: trafficdirector
+        channel_credentials:
+          ssl_credentials:
+            root_certs:
+              filename: /etc/ssl/certs/ca-certificates.crt
+        call_credentials:
+          google_compute_engine: {}
+        channel_args:
+          args:
+            grpc.http2.max_pings_without_data:
+              int_value: 0
+            grpc.keepalive_time_ms:
+              int_value: 10000
+            grpc.keepalive_timeout_ms:
+              int_value: 20000
 
 cluster_manager:
   load_stats_config:
     api_type: GRPC
+    transport_api_version: V3
     grpc_services:
-      - google_grpc:
-          target_uri: trafficdirector.googleapis.com:443
-          stat_prefix: trafficdirector
-          channel_credentials:
-            ssl_credentials:
-              root_certs:
-                filename: /etc/ssl/certs/ca-certificates.crt
-          call_credentials:
-            google_compute_engine: {}
+    - google_grpc:
+        target_uri: trafficdirector.googleapis.com:443
+        stat_prefix: trafficdirector
+        channel_credentials:
+          ssl_credentials:
+            root_certs:
+              filename: /etc/ssl/certs/ca-certificates.crt
+        call_credentials:
+          google_compute_engine: {}
+        channel_args:
+          args:
+            grpc.http2.max_pings_without_data:
+              int_value: 0
+            grpc.keepalive_time_ms:
+              int_value: 10000
+            grpc.keepalive_timeout_ms:
+              int_value: 20000
 
 admin:
   access_log_path: /dev/stdout
@@ -66,89 +87,15 @@ tracing:
   http:
     name: envoy.tracers.opencensus
     typed_config:
-      "@type": type.googleapis.com/envoy.config.trace.v2.OpenCensusConfig
+      "@type": type.googleapis.com/envoy.config.trace.v3.OpenCensusConfig
       stackdriver_exporter_enabled: "false"
       stackdriver_project_id: ""
 
 layered_runtime:
   layers:
-    - name: rtds_layer
-      rtds_layer:
-        name: traffic_director_runtime
-        rtds_config: { ads: {} }
-    - name: static_layer
-      static_layer:
-        envoy:
-          deprecated_features:
-            cluster:
-              proto:ORIGINAL_DST_LB: "true"
-              proto:extension_protocol_options: "true"
-              proto:tls_context: "true"
-            health_check:
-              proto:use_http2: "true"
-            http_connection_manager:
-              proto:operation_name: "true"
-            listener:
-              proto:tls_context: "true"
-            listener_components:
-              proto:config: "true"
-            route_components:
-              proto:allow_origin: "true"
-              proto:method: "true"
-              proto:pattern: "true"
-              proto:regex: "true"
-              proto:regex_match: "true"
-              proto:value: "true"
-            string:
-              proto:regex: "true"
-            trace:
-              proto:HTTP_JSON_V1: "true"
-          deprecated_features:envoy:
-            api:
-              v2:
-                Cluster:
-                  LbPolicy:
-                    ORIGINAL_DST_LB: "true"
-                  extension_protocol_options: "true"
-                  tls_context: "true"
-                Listener:
-                  tls_context: "true"
-                core:
-                  HealthCheck:
-                    HttpHealthCheck:
-                      use_http2: "true"
-                listener:
-                  Filter:
-                    config: "true"
-                  ListenerFilter:
-                    config: "true"
-                route:
-                  CorsPolicy:
-                    allow_origin: "true"
-                  HeaderMatcher:
-                    regex_match: "true"
-                  QueryParameterMatcher:
-                    regex: "true"
-                    value: "true"
-                  RouteMatch:
-                    regex: "true"
-                  VirtualCluster:
-                    method: "true"
-                    pattern: "true"
-            config:
-              filter:
-                network:
-                  http_connection_manager:
-                    v2:
-                      HttpConnectionManager:
-                        Tracing:
-                          operation_name: "true"
-              trace:
-                v2:
-                  ZipkinConfig:
-                    CollectorEndpointVersion:
-                      HTTP_JSON_V1: "true"
-            type:
-              matcher:
-                StringMatcher:
-                  regex: "true"
+  - name: rtds_layer
+    rtds_layer:
+      name: traffic_director_runtime
+      rtds_config:
+        ads: {}
+        resource_api_version: V3

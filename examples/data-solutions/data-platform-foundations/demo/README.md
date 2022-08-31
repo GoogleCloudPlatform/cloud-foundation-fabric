@@ -20,7 +20,7 @@ Below you can find a description of each example:
  - Import data with Policy Tags: [`datapipeline_dc_tags.py`](./datapipeline.py) imports provided data from `drop off` bucket to the Data Hub Confidential layer protecting sensitive data using Data Catalog policy Tags.
  - Delete tables: [`delete_table.py`](./delete_table.py) deletes BigQuery tables created by import pipelines. 
 
-## Runnin the demo
+## Running the demo
 To run demo examples, please follow the following steps:
 
 - 01: copy sample data to the `drop off` Cloud Storage bucket impersonating the `load` service account.

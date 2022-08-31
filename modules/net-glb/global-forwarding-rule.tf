@@ -17,26 +17,26 @@
 # tfdoc:file:description Global address and forwarding rule.
 
 locals {
-  ip_address = (
-    var.reserve_ip_address
+  ip_address = var.region == null ? (
+    var.region == null && var.reserve_ip_address
     ? google_compute_global_address.static_ip.0.id
     : null
-  )
+  ) : null
 
   port_range = coalesce(
     var.global_forwarding_rule_config.port_range,
     var.https ? "443" : "80"
   )
 
-  target = (
+  target = var.region == null ? (
     var.https
     ? google_compute_target_https_proxy.https.0.id
     : google_compute_target_http_proxy.http.0.id
-  )
+  ) : null
 }
 
 resource "google_compute_global_address" "static_ip" {
-  count       = var.reserve_ip_address ? 1 : 0
+  count       = var.region == null && var.reserve_ip_address ? 1 : 0
   provider    = google-beta
   name        = var.name
   project     = var.project_id
@@ -44,6 +44,7 @@ resource "google_compute_global_address" "static_ip" {
 }
 
 resource "google_compute_global_forwarding_rule" "forwarding_rule" {
+  count                 = var.region == null ? 1 : 0
   provider              = google-beta
   name                  = var.name
   project               = var.project_id

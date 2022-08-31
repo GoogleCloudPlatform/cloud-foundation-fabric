@@ -69,6 +69,7 @@ variable "essential_contacts" {
 variable "folder_id" {
   description = "Folder ID for the folder where the project will be created."
   type        = string
+  default     = null
 }
 
 variable "group_iam" {
@@ -121,9 +122,16 @@ variable "project_id" {
 }
 
 variable "service_accounts" {
-  description = "Service accounts to be created, and roles to assign them."
+  description = "Service accounts to be created, and roles assigned them on the project."
   type        = map(list(string))
   default     = {}
+}
+
+variable "service_accounts_iam" {
+  description = "IAM bindings on service account resources. Format is KEY => {ROLE => [MEMBERS]}"
+  type        = map(map(list(string)))
+  default     = {}
+  nullable    = false
 }
 
 variable "services" {

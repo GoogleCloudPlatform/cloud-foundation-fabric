@@ -12,7 +12,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-def test_counts(e2e_plan_runner):
+
+def test_plan(e2e_plan_runner):
   "Check for a clean plan"
   modules, resources = e2e_plan_runner()
+  assert len(modules) > 0 and len(resources) > 0
+
+
+def test_plan_service_accounts(e2e_plan_runner):
+  "Check for a clean plan"
+  service_accounts = '''{
+    sa-001 = []
+    sa-002 = ["roles/owner"]
+  }'''
+  service_accounts_iam = '''{
+    sa-002 = {
+      "roles/iam.serviceAccountTokenCreator" = ["group:team-1@example.com"]
+    }
+  }'''
+  modules, resources = e2e_plan_runner(
+      service_accounts=service_accounts,
+      service_accounts_iam=service_accounts_iam)
   assert len(modules) > 0 and len(resources) > 0

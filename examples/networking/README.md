@@ -8,9 +8,9 @@ They are meant to be used as minimal but complete starting points to create actu
 
 ### Hub and Spoke via Peering
 
-<a href="./hub-and-spoke-peering/" title="Hub and spoke via peering example"><img src="./hub-and-spoke-peering/diagram.png" align="left" width="280px"></a> This [example](./hub-and-spoke-peering/) implements a hub and spoke topology via VPC peering, a common design where a landing zone VPC (hub) is conncted to on-premises, and then peered with satellite VPCs (spokes) to further partition the infrastructure.
+<a href="./hub-and-spoke-peering/" title="Hub and spoke via peering example"><img src="./hub-and-spoke-peering/diagram.png" align="left" width="280px"></a> This [example](./hub-and-spoke-peering/) implements a hub and spoke topology via VPC peering, a common design where a landing zone VPC (hub) is connected to on-premises, and then peered with satellite VPCs (spokes) to further partition the infrastructure.
 
-The sample highlights the lack of transitivity in peering: the absence of connectivity between spokes, and the need create workarounds for private service access to managed services. One such workarund is shown for private GKE, allowing access from hub and all spokes to GKE masters via a dedicated VPN.
+The sample highlights the lack of transitivity in peering: the absence of connectivity between spokes, and the need create workarounds for private service access to managed services. One such workaround is shown for private GKE, allowing access from hub and all spokes to GKE masters via a dedicated VPN.
 <br clear="left">
 
 ### Hub and Spoke via Dynamic VPN

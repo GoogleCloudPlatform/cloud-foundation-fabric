@@ -45,6 +45,7 @@ locals {
 }
 
 resource "google_compute_url_map" "url_map" {
+  count           = var.region == null ? 1 : 0
   name            = var.name
   description     = "Terraform managed."
   project         = var.project_id
@@ -1180,3 +1181,4 @@ resource "google_compute_url_map" "url_map" {
     }
   }
 }
+

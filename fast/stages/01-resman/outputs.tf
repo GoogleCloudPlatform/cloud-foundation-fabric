@@ -127,7 +127,24 @@ locals {
         name   = "sandbox"
         sa     = module.branch-sandbox-sa.0.email
       })
-    }
+    },
+    !var.fast_features.teams ? {} : merge(
+      {
+        "03-teams" = templatefile(local._tpl_providers, {
+          bucket = module.branch-teams-gcs.0.name
+          name   = "teams"
+          sa     = module.branch-teams-sa.0.email
+        })
+      },
+      {
+        for k, v in module.branch-teams-team-sa :
+        "03-teams-${k}" => templatefile(local._tpl_providers, {
+          bucket = module.branch-teams-team-gcs[k].name
+          name   = "teams"
+          sa     = v.email
+        })
+      }
+    )
   )
   service_accounts = merge(
     {
@@ -138,7 +155,7 @@ locals {
       project-factory-prod = try(module.branch-pf-prod-sa.0.email, null)
       sandbox              = try(module.branch-sandbox-sa.0.email, null)
       security             = module.branch-security-sa.email
-      teams                = try(module.branch-teams-prod-sa.0.email, null)
+      teams                = try(module.branch-teams-sa.0.email, null)
     },
     {
       for k, v in module.branch-teams-team-sa : "team-${k}" => v.email

@@ -17,7 +17,7 @@
 variable "envoy_image" {
   description = "Envoy Proxy container image to use."
   type        = string
-  default     = "envoyproxy/envoy:v1.14.1"
+  default     = "envoyproxy/envoy:v1.15.5"
 }
 
 variable "docker_logging" {

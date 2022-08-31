@@ -13,11 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-ENVOY_NODE_ID=$(uuidgen)~$(curl -s -H "Metadata-Flavor: Google" http://metadata/computeMetadata/v1/instance/network-interfaces/0/ip)
+ENVOY_NODE_ID=$(uuidgen)
 ENVOY_ZONE=$(curl -s -H "Metadata-Flavor: Google" http://metadata/computeMetadata/v1/instance/zone | cut -f 4 -d '/')
 CONFIG_PROJECT_NUMBER=$(curl -s -H "Metadata-Flavor: Google" http://metadata/computeMetadata/v1/instance/network-interfaces/0/network | cut -f 2 -d '/')
 VPC_NETWORK_NAME=$(curl -s -H "Metadata-Flavor: Google" http://metadata/computeMetadata/v1/instance/network-interfaces/0/network | cut -f 4 -d '/')
-sed -i "s/_ENVOY_NODE_ID_/${ENVOY_NODE_ID}/" /etc/envoy/envoy.yaml
-sed -i "s/_ENVOY_ZONE_/${ENVOY_ZONE}/" /etc/envoy/envoy.yaml
-sed -i "s/_CONFIG_PROJECT_NUMBER_/${CONFIG_PROJECT_NUMBER}/" /etc/envoy/envoy.yaml
-sed -i "s/_VPC_NETWORK_NAME_/${VPC_NETWORK_NAME}/" /etc/envoy/envoy.yaml
+sed -i "s/ENVOY_NODE_ID/${ENVOY_NODE_ID}/" /etc/envoy/envoy.yaml
+sed -i "s/ENVOY_ZONE/${ENVOY_ZONE}/" /etc/envoy/envoy.yaml
+sed -i "s/CONFIG_PROJECT_NUMBER/${CONFIG_PROJECT_NUMBER}/" /etc/envoy/envoy.yaml
+sed -i "s/VPC_NETWORK_NAME/${VPC_NETWORK_NAME}/" /etc/envoy/envoy.yaml

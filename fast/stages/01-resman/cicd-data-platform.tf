@@ -111,10 +111,12 @@ module "branch-dp-dev-sa-cicd" {
         each.value.branch == null
         ? format(
           local.identity_providers[each.value.identity_provider].principalset_tpl,
+          var.automation.federated_identity_pool,
           each.value.name
         )
         : format(
           local.identity_providers[each.value.identity_provider].principal_tpl,
+          var.automation.federated_identity_pool,
           each.value.name,
           each.value.branch
         )
