@@ -42,6 +42,7 @@ All notable changes to this project will be documented in this file.
 
 ### EXAMPLES
 
+- [[#790](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/790)] Cloud Identity Group factory ([lcaggio](https://github.com/lcaggio)) <!-- 2022-09-01 13:30:58+00:00 -->
 - [[#740](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/740)] Update to multiple READMEs  ([bluPhy](https://github.com/bluPhy)) <!-- 2022-08-11 07:40:55+00:00 -->
 - [[#738](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/738)] Improve Data Playground example ([lcaggio](https://github.com/lcaggio)) <!-- 2022-08-09 13:56:39+00:00 -->
 - [[#771](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/771)] Example of a multi-cluster mesh on GKE configuring managed control pl… ([apichick](https://github.com/apichick)) <!-- 2022-08-08 14:54:03+00:00 -->
@@ -97,6 +98,7 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#788](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/788)] fix yaml quotes for merge-pr workflow ([drebes](https://github.com/drebes)) <!-- 2022-08-31 13:47:33+00:00 -->
 - [[#763](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/763)] Changelog generator ([ludoo](https://github.com/ludoo)) <!-- 2022-08-02 09:45:06+00:00 -->
 - [[#762](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/762)] Update changelog on pull request merge ([ludoo](https://github.com/ludoo)) <!-- 2022-07-30 17:04:00+00:00 -->
 - [[#680](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/680)] Tools: fix `ValueError` raised in `check_names.py` when overlong names are detected ([27Bslash6](https://github.com/27Bslash6)) <!-- 2022-06-16 08:01:59+00:00 -->
