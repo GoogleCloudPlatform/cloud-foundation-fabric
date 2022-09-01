@@ -38,6 +38,7 @@ If needed, converting factories to consume JSON is a matter of switching from `y
 
 ### Dedicated Factories
 
+- [cloud-identity-group-factory](cloud-identity-group-factory/README.md) for Cloud Identity group
 - [net-vpc-firewall-yaml](net-vpc-firewall-yaml/README.md) for VPC firewall rules across different projects/VPCs
 - [project-factory](project-factory/README.md) for projects
  
