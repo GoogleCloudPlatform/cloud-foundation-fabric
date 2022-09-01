@@ -13,3 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+output "group_id" {
+  description = "Group name => Group ID mapping."
+  value = {
+    for k in module.group :
+    k.name => k.id
+  }
+}

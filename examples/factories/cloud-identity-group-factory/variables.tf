@@ -22,6 +22,5 @@ variable "customer_id" {
 variable "data_dir" {
   description = "Relative path for the folder storing configuration data."
   type        = string
-  default     = "data"
 }
 
