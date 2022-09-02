@@ -2,33 +2,49 @@
 
 This example presents an opinionated architecture to handle multiple homogeneous GKE clusters. The general idea behind this example is to deploy a single project hosting multiple clusters leveraging several useful GKE features. This pattern is useful, for example, in cases where multiple clusters host/support the same workloads, such as in the case of a multi-regional deployment.
 
-In addition to supporting multiple clusters, the architecture assumes that multiple tenants (e.g. teams, applications) will share the cluster. As such, several options are provided to isolate tenants from each other.
-
-- Private clusters
-- VPC-native only. Route-based clusters are not (and will not be) supported
-- Metering enabled, and data is stored in a BQ dataset
-- DB encryption
-- Optional gke fleet support with support for workload identity, config sync, hierarchy controller and policy controller
-- logging monitoring to cloud operations by default
-- support for groups for gke to allow flexible RBAC policies
-- optional etcd database encryption with KMS
-- support to customize peering configuration of the control plane vpc
-- features enabled by default
- - workload identity
- - shielded nodes
- - dataplane v2
- - intranode visibility
- - dns cache
- - http load balancing
- - gce persistent disk csi driver
- - node auto upgrade and auto repair for all nodepools
-
+In addition to supporting multiple clusters, the architecture presented here assumes that multiple tenants (e.g. teams, applications) will share the cluster. As such, several options are provided to isolate tenants from each other.
 
 This example is used as part of the [FAST GKE stage](../../../fast/stages/03-gke-multitenant/) but it can also be used independently if desired.
 
 <p align="center">
   <img src="diagram.png" alt="GKE multitenant">
 </p>
+
+The overall architecture is based on the following design decisions:
+
+- All clusters are assumed to be [private](https://cloud.google.com/kubernetes-engine/docs/how-to/private-clusters), therefore only [VPC-native clusters](https://cloud.google.com/kubernetes-engine/docs/concepts/alias-ips) are supported.
+- Logging and monitoring configured to use Cloud Operations for system components and user workloads.
+- [GKE metering](https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-usage-metering) enabled by default and stored in a bigquery dataset created withing the project.
+- Optional [GKE Fleet](https://cloud.google.com/kubernetes-engine/docs/fleets-overview) support with the possibility to enable any of the following features:
+  - [Fleet workload identity](https://cloud.google.com/anthos/fleet-management/docs/use-workload-identity)
+  - [Anthos Config Management](https://cloud.google.com/anthos-config-management/docs/overview)
+  - [Anthos Service Mesh](https://cloud.google.com/service-mesh/docs/overview)
+  - [Anthos Identity Service](https://cloud.google.com/anthos/identity/setup/fleet)
+  - [Multi-cluster services](https://cloud.google.com/kubernetes-engine/docs/concepts/multi-cluster-services)
+  - [Multi-cluster ingress](https://cloud.google.com/kubernetes-engine/docs/concepts/multi-cluster-ingress).
+- Support for [Config Sync](https://cloud.google.com/anthos-config-management/docs/config-sync-overview), [Hierarchy Controller](https://cloud.google.com/anthos-config-management/docs/concepts/hierarchy-controller), and [Policy Controller](https://cloud.google.com/anthos-config-management/docs/concepts/policy-controller) when using Anthos Config Management.
+- [Groups for GKE](https://cloud.google.com/kubernetes-engine/docs/how-to/google-groups-rbac) can be enabled to facilitate the creation of flexible RBAC policies referencing group principals.
+- Support for [application layer secret encryption](https://cloud.google.com/kubernetes-engine/docs/how-to/encrypting-secrets).
+- Support to customize peering configuration of the control plane VPC (e.g. to import/export routes to the peered network)
+- Some features are enabled by default in all clusters:
+  - [Intranode visibility](https://cloud.google.com/kubernetes-engine/docs/how-to/intranode-visibility)
+  - [Dataplane v2](https://cloud.google.com/kubernetes-engine/docs/concepts/dataplane-v2)
+  - [Shielded GKE nodes](https://cloud.google.com/kubernetes-engine/docs/how-to/shielded-gke-nodes)
+  - [Workload identity](https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity)
+  - [Node local DNS cache](https://cloud.google.com/kubernetes-engine/docs/how-to/nodelocal-dns-cache)
+  - [Use of the GCE persistent disk CSI driver](https://cloud.google.com/kubernetes-engine/docs/how-to/persistent-volumes/gce-pd-csi-driver)
+  - Node [auto-upgrade](https://cloud.google.com/kubernetes-engine/docs/how-to/node-auto-upgrades) and [auto-repair](https://cloud.google.com/kubernetes-engine/docs/how-to/node-auto-repair) for all node pools
+
+<!--
+- [GKE subsetting for L4 internal load balancers](https://cloud.google.com/kubernetes-engine/docs/concepts/service-load-balancer#subsetting) enabled by default in all clusters
+-->
+
+## Basic usage
+
+## Fleet configuration
+
+## Multi-tenant usage
+
 
 This is an example of that shows the use of the above variables:
 
