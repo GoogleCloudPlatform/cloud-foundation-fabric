@@ -17,7 +17,7 @@ organization = {
 outputs_location = "~/fast-config"
 
 # use something unique and short
-prefix           = "my-gcp-rgr"
+prefix           = "gcprgr"
 
 # variables for CI/CD
 federated_identity_providers = {
