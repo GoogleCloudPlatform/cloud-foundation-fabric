@@ -62,13 +62,142 @@ gcloud beta billing accounts add-iam-policy-binding $FAST_BA_ID \
 If you are using a billing account in a different organization, please follow [these steps](00-bootstrap#billing-account-in-a-different-organization) instead
 
 ## Stage 0 (Bootstrap)
+This initial stage will create common projects for iac, logging & billing, and bootstrap IAM policies.
+
+```bash
+# move to the 00-bootstrap directory
+cd $FAST_PWD/00-bootstrap
+
+# copy the template terraform tfvars file and save as `terraform.tfvars`
+# then edit to match your environment!
+edit terraform.tfvars.sample
+```
+
+```hcl
+# fetch the required id by running `gcloud beta billing accounts list`
+billing_account={
+    id="012345-67890A-BCDEF0"
+    organization_id="01234567890"
+}
+# get the required info by running `gcloud organizations list`
+organization={
+    id="01234567890"
+    domain="fast.example.com"
+    customer_id="Cxxxxxxx"
+}
+# create your own 4-letters prefix
+prefix="abcd"
+
+# path for automatic generation of configs
+outputs_location = "~/fast-config"
+```
+
+```bash
+# run init and apply
+terraform init
+terraform apply -var bootstrap_user=$FAST_BU
+
+# link the generated provider file
+ln -s ~/fast-config/providers/00-bootstrap* .
+
+# re-run init and apply to remove user-level IAM
+terraform init -migrate-state
+# answer 'yes' to terraform's question
+terraform apply
+```
 
 ## Stage 1 (Resource Management)
+In this stage, we will deploy first level of folders. Initially: Networking, Security, GKE, Data Platform and optionally Teams (to host company teams sandbox environments)
+```bash
+# move to the 01-resman directory
+cd $FAST_PWD/01-resman
+
+# Link providers and variables from previous stages
+ln -s ~/fast-config/providers/01-resman-providers.tf .
+ln -s ~/fast-config/tfvars/00-bootstrap.auto.tfvars.json .
+ln -s ~/fast-config/tfvars/globals.auto.tfvars.json .
+
+# Edit your terraform.tfvars to append the code in the box below
+edit terraform.tfvars
+```
+In the following terraform.tfvars it is shown an example of configuration for teams provisioning:
+```hcl
+outputs_location = "~/fast-config"
+
+# optional
+team_folders = {
+ team-1 = {
+   descriptive_name = "Team 1"
+   group_iam = {
+    // "team-1-users@example.com" = ["roles/viewer"]
+   }
+   impersonation_groups = [
+     // "team-1-admins@example.com"
+   ]
+ }
+}
+```
+```bash
+# Showtime!
+terraform init
+terraform apply
+```
 
 ## Stage 2 (Networking)
+In this stage, we will deploy one of the 3 available Hub&Spoke networking topologies:
+1. Peering
+2. VPN
+3. Appliances (NVA)
+```bash
+# move to the 02-networking-vpn directory
+cd $FAST_PWD/02-networking-XXX
+
+# setup providers and variables from previous stages
+ln -s ~/fast-config/providers/02-networking-providers.tf .
+ln -s ~/fast-config/tfvars/00-bootstrap.auto.tfvars.json .
+ln -s ~/fast-config/tfvars/01-resman.auto.tfvars.json .
+ln -s ~/fast-config/tfvars/globals.auto.tfvars.json .
+cp ../00-bootstrap/terraform.tfvars .
+
+# You can leave terraform.tfvars as-is in this stage. If you’re curious…
+edit terraform.tfvars
+
+# Showtime!
+terraform init
+terraform apply
+```
 
 ## Stage 2 (Security)
+This stage sets up security resources (KMS and VPC-SC) and configurations which impact the whole organization, or are shared across the hierarchy to other projects and teams.
+```bash
+# move to the 02-security directory
+cd $FAST_PWD/02-security
 
-## Stage 3 (GKE)
+# link providers and variables from previous stages
+ln -s ~/fast-config/providers/02-security* .
+ln -s ~/fast-config/tfvars/0[0,1]* .
+cp ../00-bootstrap/terraform.tfvars .
+
+# Edit your terraform.tfvars to include KMS and/or VPC-SC configuration
+edit terraform.tfvars
+```
+Some examples of terraform.tfvars configurations for KMS and VPC-SC can be found [here](02-security#customizations)
+```bash
+terraform init
+terraform apply
+```
 
 ## Stage 3 (Project Factory)
+The Project Factory (PF) builds on top of your foundations to create and set up projects (and related resources) to be used for your workloads. It is organized in folders representing environments (e.g. "dev", "prod"), each implemented by a stand-alone terraform resource factory.
+```bash
+# Variable `outputs_location` is set to `~/fast-config` in stage 01-resman
+$ cd $FAST_PWD/03-project-factory/ENVIRONMENT
+ln -s ~/fast-config/providers/03-project-factory-ENVIRONMENT-providers.tf .
+
+ln -s ~/fast-config/tfvars/00-bootstrap.auto.tfvars.json .
+ln -s ~/fast-config/tfvars/01-resman.auto.tfvars.json . 
+ln -s ~/fast-config/tfvars/02-networking.auto.tfvars.json .
+
+terraform init
+terraform apply
+```
