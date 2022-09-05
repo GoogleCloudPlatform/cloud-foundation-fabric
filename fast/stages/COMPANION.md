@@ -1,10 +1,9 @@
 # FAST deployment companion guide
-In order to successfully deploy your GCP Landing Zone using FAST in your organization, a series of prerequisites are required to be followed before starting. Then, FAST deployment is splitted in different stages that are required to be executed in order as some of them depend on previous stages output.
+In order to successfully deploy your GCP Landing Zone using FAST in your organization, a series of prerequisites are required before starting. Then, FAST deployment is splitted in different stages that are required to be executed in order as some of them depend on previous stages output.
 
-Detailed explanation of each stage execution, configuration or possible modifications and adaptations are included in each stage section. The target of this companion guide is to serve as a cheat sheet with the list of commands to be executed during FAST deployment. 
+Detailed explanation of each stage execution, configuration or possible modifications and adaptations are included in each stage section. The target of this companion guide is to serve as a cheat sheet, including the list of commands to be executed during FAST deployment. 
 
-**Warning**
-Executing FAST sets organization policies and authoritative role bindings in your GCP Organization. We recommend using FAST on a clean organization, or to fork and adapt FAST to support your existing Organization.
+**Warning! Executing FAST sets organization policies and authoritative role bindings in your GCP Organization. We recommend using FAST on a clean organization, or to fork and adapt FAST to support your existing Organization needs.**
 
 ## Prerequisites
 1. First of all, go to Workspace / Cloud Identity and create (or validate they already exist) all the required groups closely mirroring the [GCP Enterprise Setup checklist](https://cloud.google.com/docs/enterprise/setup-checklist):
@@ -52,7 +51,7 @@ done
 7. Configure Billing Account permissions. 
 If you are using a standalone billing account, the identity applying this stage for the first time needs to be a Billing Administrator
 ```bash
-# find your billing account id
+# find your billing account id with gcloud beta billing accounts list
 # replace with your billing id!
 export FAST_BA_ID=0186A4-36005F-9ADEDE
 # set needed roles (do not change this)
@@ -107,7 +106,9 @@ terraform apply
 ```
 
 ## Stage 1 (Resource Management)
-In this stage, we will deploy first level of folders. Initially: Networking, Security, GKE, Data Platform and optionally Teams (to host company teams sandbox environments)
+This stage performs two important tasks:
+- Create the top-level hierarchy of folders, and the associated resources used later on to automate each part of the hierarchy (eg. Networking).
+- Set organization policies on the organization, and any exception required on specific folders.
 ```bash
 # move to the 01-resman directory
 cd $FAST_PWD/01-resman
@@ -117,22 +118,20 @@ ln -s ~/fast-config/providers/01-resman-providers.tf .
 ln -s ~/fast-config/tfvars/00-bootstrap.auto.tfvars.json .
 ln -s ~/fast-config/tfvars/globals.auto.tfvars.json .
 
-# Edit your terraform.tfvars to append the code in the box below
+# Edit your terraform.tfvars to append Teams configuration
 edit terraform.tfvars
 ```
 In the following terraform.tfvars it is shown an example of configuration for teams provisioning:
 ```hcl
-outputs_location = "~/fast-config"
-
 # optional
 team_folders = {
  team-1 = {
    descriptive_name = "Team 1"
    group_iam = {
-    // "team-1-users@example.com" = ["roles/viewer"]
+     "team-1-users@example.com" = ["roles/viewer"]
    }
    impersonation_groups = [
-     // "team-1-admins@example.com"
+      "team-1-admins@example.com"
    ]
  }
 }
@@ -145,9 +144,9 @@ terraform apply
 
 ## Stage 2 (Networking)
 In this stage, we will deploy one of the 3 available Hub&Spoke networking topologies:
-1. Peering
-2. VPN
-3. Appliances (NVA)
+1. VPC Peering
+2. HA VPN
+3. Multi-NIC appliances (NVA)
 ```bash
 # move to the 02-networking-vpn directory
 cd $FAST_PWD/02-networking-XXX
@@ -174,8 +173,9 @@ This stage sets up security resources (KMS and VPC-SC) and configurations which 
 cd $FAST_PWD/02-security
 
 # link providers and variables from previous stages
-ln -s ~/fast-config/providers/02-security* .
-ln -s ~/fast-config/tfvars/0[0,1]* .
+ln -s ~/fast-config/providers/02-security-providers.tf .
+ln -s ~/fast-config/tfvars/00-bootstrap.auto.tfvars.json .
+ln -s ~/fast-config/tfvars/01-resman.auto.tfvars.json .
 cp ../00-bootstrap/terraform.tfvars .
 
 # Edit your terraform.tfvars to include KMS and/or VPC-SC configuration
@@ -188,7 +188,7 @@ terraform apply
 ```
 
 ## Stage 3 (Project Factory)
-The Project Factory (PF) builds on top of your foundations to create and set up projects (and related resources) to be used for your workloads. It is organized in folders representing environments (e.g. "dev", "prod"), each implemented by a stand-alone terraform resource factory.
+The Project Factory stage builds on top of your foundations to create and set up projects (and related resources) to be used for your workloads. It is organized in folders representing environments (e.g. "dev", "prod"), each implemented by a stand-alone terraform resource factory.
 ```bash
 # Variable `outputs_location` is set to `~/fast-config` in stage 01-resman
 $ cd $FAST_PWD/03-project-factory/ENVIRONMENT
@@ -197,6 +197,13 @@ ln -s ~/fast-config/providers/03-project-factory-ENVIRONMENT-providers.tf .
 ln -s ~/fast-config/tfvars/00-bootstrap.auto.tfvars.json .
 ln -s ~/fast-config/tfvars/01-resman.auto.tfvars.json . 
 ln -s ~/fast-config/tfvars/02-networking.auto.tfvars.json .
+
+# Define your environment default values (eg for billing alerts and labels)
+edit data/defaults.yaml
+
+# Create one yaml file per project to be created. Yaml file will include project configuration. Projects will be named after the filename
+cp data/projects/project.yaml.sample data/projects/YOUR_PROJECT_NAME.yaml
+edit data/projects/YOUR_PROJECT_NAME.yaml
 
 terraform init
 terraform apply
