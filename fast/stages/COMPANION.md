@@ -190,8 +190,8 @@ terraform apply
 ## Stage 3 (Project Factory)
 The Project Factory stage builds on top of your foundations to create and set up projects (and related resources) to be used for your workloads. It is organized in folders representing environments (e.g. "dev", "prod"), each implemented by a stand-alone terraform resource factory.
 ```bash
-# Variable `outputs_location` is set to `~/fast-config` in stage 01-resman
-$ cd $FAST_PWD/03-project-factory/ENVIRONMENT
+# Variable `outputs_location` is set to `~/fast-config`
+cd $FAST_PWD/03-project-factory/ENVIRONMENT
 ln -s ~/fast-config/providers/03-project-factory-ENVIRONMENT-providers.tf .
 
 ln -s ~/fast-config/tfvars/00-bootstrap.auto.tfvars.json .
