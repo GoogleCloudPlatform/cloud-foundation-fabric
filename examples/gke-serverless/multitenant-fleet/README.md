@@ -1,8 +1,8 @@
 # GKE Multitenant Example
 
-This example presents an opinionated architecture to handle multiple homogeneous GKE clusters. The general idea behind this example is to deploy a single project hosting multiple clusters leveraging several useful GKE features. This pattern is useful, for example, in cases where multiple clusters host/support the same workloads, such as in the case of a multi-regional deployment.
+This example presents an opinionated architecture to handle multiple homogeneous GKE clusters. The general idea behind this example is to deploy a single project hosting multiple clusters leveraging several useful GKE features.
 
-In addition to supporting multiple clusters, the architecture presented here assumes that multiple tenants (e.g. teams, applications) will share the cluster. As such, several options are provided to isolate tenants from each other.
+The pattern used in this design is useful, for example, in cases where multiple clusters host/support the same workloads, such as in the case of a multi-regional deployment. Furthermore, combined with Anthos Config Sync and proper RBAC, this architecture can be used to host multiple tenants (e.g. teams, applications) sharing the clusters.
 
 This example is used as part of the [FAST GKE stage](../../../fast/stages/03-gke-multitenant/) but it can also be used independently if desired.
 
@@ -40,6 +40,39 @@ The overall architecture is based on the following design decisions:
 -->
 
 ## Basic usage
+
+The following example shows how to deploy a single cluster and a single node pool
+
+```hcl
+clusters = {
+  "mycluster" = {
+    cluster_autoscaling = null
+    description         = "mycluster"
+    dns_domain          = null
+    location            = "europe-west1"
+    labels              = {}
+    net = {
+      master_range = "172.17.16.0/28"
+      pods         = "pods"
+      services     = "services"
+      subnet       = "//www.googleapis.com/compute/v1/projects/<MY_PROJECT>/regions/europe-west1/subnetworks/<MY_SUBNET>"
+    }
+    overrides = null
+  }
+}
+nodepools = {
+  "mycluster" = {
+    "mynodepool" = {
+      initial_node_count = 1
+      node_count         = 1
+      node_type          = "n2-standard-4"
+      overrides          = null
+      spot               = false
+    }
+  }
+}
+
+```
 
 ## Fleet configuration
 
