@@ -14,7 +14,7 @@ In this module **no lifecycle blocks are set on resources to prevent destroy**, 
 
 ```hcl
 module "kms" {
-  source         = "./modules/kms"
+  source         = "./fabric/modules/kms"
   project_id     = "my-project"
   iam    = {
     "roles/cloudkms.admin" = ["user:user1@example.com"]
@@ -30,7 +30,7 @@ module "kms" {
 
 ```hcl
 module "kms" {
-  source     = "./modules/kms"
+  source     = "./fabric/modules/kms"
   project_id = "my-project"
   iam_additive = {
     "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
@@ -63,7 +63,7 @@ module "kms" {
 
 ```hcl
 module "kms" {
-  source      = "./modules/kms"
+  source      = "./fabric/modules/kms"
   project_id  = "my-project"
   key_purpose = {
     key-c = {

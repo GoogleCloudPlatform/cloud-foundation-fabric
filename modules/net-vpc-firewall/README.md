@@ -16,7 +16,7 @@ This is often useful for prototyping or testing infrastructure, allowing open in
 
 ```hcl
 module "firewall" {
-  source               = "./modules/net-vpc-firewall"
+  source               = "./fabric/modules/net-vpc-firewall"
   project_id           = "my-project"
   network              = "my-network"
   admin_ranges         = ["10.0.0.0/8"]
@@ -30,7 +30,7 @@ This is an example of how to define custom rules, with a sample rule allowing op
 
 ```hcl
 module "firewall" {
-  source       = "./modules/net-vpc-firewall"
+  source       = "./fabric/modules/net-vpc-firewall"
   project_id   = "my-project"
   network      = "my-network"
   admin_ranges = ["10.0.0.0/8"]
@@ -57,7 +57,7 @@ If you don't want any predefined rules set `admin_ranges`, `http_source_ranges`,
 
 ```hcl
 module "firewall" {
-  source              = "./modules/net-vpc-firewall"
+  source              = "./fabric/modules/net-vpc-firewall"
   project_id          = "my-project"
   network             = "my-network"
   admin_ranges        = []
@@ -87,7 +87,7 @@ The module includes a rules factory (see [Resource Factories](../../examples/fac
 
 ```hcl
 module "firewall" {
-  source             = "./modules/net-vpc-firewall"
+  source             = "./fabric/modules/net-vpc-firewall"
   project_id         = "my-project"
   network            = "my-network"
   data_folder        = "config/firewall"

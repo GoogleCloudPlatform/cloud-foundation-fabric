@@ -127,7 +127,7 @@ We suggest a centralized approach to key management, where Organization Security
 
 To configure the use of Cloud KMS on resources, you have to specify the key id on the `service_encryption_keys` variable. Key locations should match resource locations. Example:
 
-```hcl
+```tfvars
 service_encryption_keys = {
     bq       = "KEY_URL_MULTIREGIONAL"
     composer = "KEY_URL_REGIONAL"
@@ -135,6 +135,7 @@ service_encryption_keys = {
     storage  = "KEY_URL_MULTIREGIONAL"
     pubsub   = "KEY_URL_MULTIREGIONAL"
 }
+# tftest skip
 ```
 
 This step is optional and depends on customer policies and security best practices.
@@ -191,12 +192,13 @@ The Data Platform is meant to be executed by a Service Account (or a regular use
 
 There are three sets of variables you will need to fill in:
 
-```hcl
+```tfvars
 billing_account_id  = "111111-222222-333333"
 older_id            = "folders/123456789012"
 organization_domain = "domain.com"
 prefix              = "myco"
-```
+# tftest skip`
+``
 
 For more fine details check variables on [`variables.tf`](./variables.tf) and update according to the desired configuration. Remember to create team groups described [below](#groups).
 
@@ -205,6 +207,22 @@ Once the configuration is complete, run the project factory by running
 ```bash
 terraform init
 terraform apply
+```
+
+## How to use this example from Terraform
+
+While this example can be used as a standalone deployment, it can also be called directly as a Terraform module by providing the variables values as show below:
+
+```hcl
+module "data-platform" {
+  source              = "./fabric/examples/data-solutions/data-platform-foundations"
+  billing_account_id  = var.billing_account_id
+  folder_id           = var.folder_id
+  organization_domain = "example.com"
+  prefix              = "myprefix"
+}
+
+# tftest modules=1 resources=1
 ```
 
 ## Customizations

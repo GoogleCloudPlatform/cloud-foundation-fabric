@@ -8,7 +8,7 @@ Note that this module does not fully comply with our design principles, as outpu
 
 ```hcl
 module "myproject-default-service-accounts" {
-  source            = "./modules/iam-service-account"
+  source            = "./fabric/modules/iam-service-account"
   project_id        = "myproject"
   name              = "vm-default"
   generate_key      = true

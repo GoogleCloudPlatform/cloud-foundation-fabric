@@ -8,7 +8,7 @@ This module allows simple management of ['Google Cloud Endpoints'](https://cloud
 
 ```hcl
 module "endpoint" {
-  source         = "./modules/endpoints"
+  source         = "./fabric/modules/endpoints"
   project_id     = "my-project"
   service_name   = "YOUR-API.endpoints.YOUR-PROJECT-ID.cloud.goog"
   openapi_config = { "yaml_path" = "openapi.yaml" }

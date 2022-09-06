@@ -10,7 +10,7 @@ This is a minimal example, which creates a global HTTP load balancer, pointing t
 
 ```hcl
 module "glb" {
-  source     = "./modules/net-glb"
+  source     = "./fabric/modules/net-glb"
   name       = "glb-test"
   project_id = var.project_id
 
@@ -35,7 +35,7 @@ A very similar coniguration also applies to GCE instance groups:
 
 ```hcl
 module "glb" {
-  source     = "./modules/net-glb"
+  source     = "./fabric/modules/net-glb"
   name       = "glb-test"
   project_id = var.project_id
 
@@ -72,7 +72,7 @@ For example, to contextually create a health check and attach it to the backend 
 
 ```hcl
 module "glb" {
-  source     = "./modules/net-glb"
+  source     = "./fabric/modules/net-glb"
   name       = "glb-test"
   project_id = var.project_id
 
@@ -117,7 +117,7 @@ Serverless backends can also be used, as shown in the example below.
 
 ```hcl
 module "glb" {
-  source     = "./modules/net-glb"
+  source     = "./fabric/modules/net-glb"
   name       = "glb-test"
   project_id = var.project_id
 
@@ -163,7 +163,7 @@ Backends can be multiple, group and bucket backends can be mixed and group backe
 
 ```hcl
 module "glb" {
-  source     = "./modules/net-glb"
+  source     = "./fabric/modules/net-glb"
   name       = "glb-test"
   project_id = var.project_id
 
@@ -227,7 +227,7 @@ In this example, we're using one backend service as the default backend
 
 ```hcl
 module "glb" {
-  source     = "./modules/net-glb"
+  source     = "./fabric/modules/net-glb"
   name       = "glb-test"
   project_id = var.project_id
 
@@ -295,7 +295,7 @@ Optionally, a static IP address can be reserved:
 
 ```hcl
 module "glb" {
-  source     = "./modules/net-glb"
+  source     = "./fabric/modules/net-glb"
   name       = "glb-test"
   project_id = var.project_id
 
@@ -332,7 +332,7 @@ If no `ssl_certificates_config` variable is specified, a managed certificate for
 
 ```hcl
 module "glb" {
-  source     = "./modules/net-glb"
+  source     = "./fabric/modules/net-glb"
   name       = "glb-test"
   project_id = var.project_id
 
@@ -366,7 +366,7 @@ If the ids specified in the `target_proxy_https_config` variable are not found i
 
 ```hcl
 module "glb" {
-  source     = "./modules/net-glb"
+  source     = "./fabric/modules/net-glb"
   name       = "glb-test"
   project_id = var.project_id
 
@@ -414,7 +414,7 @@ Using unamanged certificates is also possible. Here is an example:
 
 ```hcl
 module "glb" {
-  source     = "./modules/net-glb"
+  source     = "./fabric/modules/net-glb"
   name       = "glb-test"
   project_id = var.project_id
 
@@ -487,7 +487,7 @@ You can also use regional load balancing by specifying a `region` parameter:
 
 ```hcl
 module "glb" {
-  source     = "./modules/net-glb"
+  source     = "./fabric/modules/net-glb"
   name       = "glb-test"
   project_id = var.project_id
   region     = var.region

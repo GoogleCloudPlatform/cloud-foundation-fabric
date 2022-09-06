@@ -14,7 +14,7 @@ By default, the module is configured to use an existing policy, passed in by nam
 
 ```hcl
 module "test" {
-  source        = "./modules/vpc-sc"
+  source        = "./fabric/modules/vpc-sc"
   access_policy = "12345678"
 }
 # tftest modules=0 resources=0
@@ -24,7 +24,7 @@ If you need the module to create the policy for you, use the `access_policy_crea
 
 ```hcl
 module "test" {
-  source        = "./modules/vpc-sc"
+  source        = "./fabric/modules/vpc-sc"
   access_policy = null
   access_policy_create = {
     parent = "organizations/123456"
@@ -40,7 +40,7 @@ As highlighted above, the `access_levels` type replicates the underlying resourc
 
 ```hcl
 module "test" {
-  source        = "./modules/vpc-sc"
+  source        = "./fabric/modules/vpc-sc"
   access_policy = "12345678"
   access_levels = {
     a1 = {
@@ -81,7 +81,7 @@ Resources for both perimeters have a `lifecycle` block that ignores changes to `
 
 ```hcl
 module "test" {
-  source        = "./modules/vpc-sc"
+  source        = "./fabric/modules/vpc-sc"
   access_policy = "12345678"
   service_perimeters_bridge = {
     b1 = {
@@ -103,7 +103,7 @@ module "test" {
 
 ```hcl
 module "test" {
-  source        = "./modules/vpc-sc"
+  source        = "./fabric/modules/vpc-sc"
   access_policy = "12345678"
   access_levels = {
     a1 = {

@@ -32,6 +32,10 @@ variable "organization_id" {
   default = "organizations/1122334455"
 }
 
+variable "folder_id" {
+  default = "folders/1122334455"
+}
+
 variable "project_id" {
   default = "projects/project-id"
 }

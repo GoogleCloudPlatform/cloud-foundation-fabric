@@ -8,7 +8,7 @@ This module allows the creation and management of folders, including support for
 
 ```hcl
 module "folder" {
-  source = "./modules/folder"
+  source = "./fabric/modules/folder"
   parent = "organizations/1234567890"
   name  = "Folder name"
   group_iam       = {
@@ -28,7 +28,7 @@ module "folder" {
 
 ```hcl
 module "folder" {
-  source = "./modules/folder"
+  source = "./fabric/modules/folder"
   parent = "organizations/1234567890"
   name  = "Folder name"
   policy_boolean = {
@@ -53,7 +53,7 @@ In the same way as for the [organization](../organization) module, the in-built 
 
 ```hcl
 module "folder" {
-  source          = "./modules/folder"
+  source          = "./fabric/modules/folder"
   parent = "organizations/1234567890"
   name  = "Folder name"
   firewall_policy_factory = {
@@ -109,33 +109,33 @@ allow-ssh-from-iap:
 
 ```hcl
 module "gcs" {
-  source        = "./modules/gcs"
+  source        = "./fabric/modules/gcs"
   project_id    = "my-project"
   name          = "gcs_sink"
   force_destroy = true
 }
 
 module "dataset" {
-  source     = "./modules/bigquery-dataset"
+  source     = "./fabric/modules/bigquery-dataset"
   project_id = "my-project"
   id         = "bq_sink"
 }
 
 module "pubsub" {
-  source     = "./modules/pubsub"
+  source     = "./fabric/modules/pubsub"
   project_id = "my-project"
   name       = "pubsub_sink"
 }
 
 module "bucket" {
-  source      = "./modules/logging-bucket"
+  source      = "./fabric/modules/logging-bucket"
   parent_type = "project"
   parent      = "my-project"
   id          = "bucket"
 }
 
 module "folder-sink" {
-  source = "./modules/folder"
+  source = "./fabric/modules/folder"
   parent = "folders/657104291943"
   name   = "my-folder"
   logging_sinks = {
@@ -181,7 +181,7 @@ module "folder-sink" {
 
 ```hcl
 module "folder1" {
-  source = "./modules/folder"
+  source = "./fabric/modules/folder"
   parent = var.organization_id
   name   = "policy-container"
 
@@ -206,7 +206,7 @@ module "folder1" {
 }
 
 module "folder2" {
-  source = "./modules/folder"
+  source = "./fabric/modules/folder"
   parent = var.organization_id
   name   = "hf2"
   firewall_policy_association = {
@@ -222,7 +222,7 @@ Refer to the [Creating and managing tags](https://cloud.google.com/resource-mana
 
 ```hcl
 module "org" {
-  source          = "./modules/organization"
+  source          = "./fabric/modules/organization"
   organization_id = var.organization_id
   tags = {
     environment = {
@@ -237,7 +237,7 @@ module "org" {
 }
 
 module "folder" {
-  source = "./modules/folder"
+  source = "./fabric/modules/folder"
   name   = "Test"
   parent = module.org.organization_id
   tag_bindings = {

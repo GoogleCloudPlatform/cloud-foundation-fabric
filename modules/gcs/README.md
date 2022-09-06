@@ -3,7 +3,7 @@
 
 ```hcl
 module "bucket" {
-  source     = "./modules/gcs"
+  source     = "./fabric/modules/gcs"
   project_id = "myproject"
   prefix     = "test"
   name       = "my-bucket"
@@ -18,7 +18,7 @@ module "bucket" {
 
 ```hcl
 module "bucket" {
-  source     = "./modules/gcs"
+  source     = "./fabric/modules/gcs"
   project_id = "myproject"
   prefix     = "test"
   name       = "my-bucket"
@@ -34,7 +34,7 @@ module "bucket" {
 
 ```hcl
 module "bucket" {
-  source     = "./modules/gcs"
+  source     = "./fabric/modules/gcs"
   project_id = "myproject"
   prefix     = "test"
   name       = "my-bucket"
@@ -59,7 +59,7 @@ module "bucket" {
 
 ```hcl
 module "bucket" {
-  source     = "./modules/gcs"
+  source     = "./fabric/modules/gcs"
   project_id = "myproject"
   prefix     = "test"
   name      = "my-bucket"
@@ -91,7 +91,7 @@ module "bucket" {
 ### Minimal example with GCS notifications
 ```hcl
 module "bucket-gcs-notification" {
-  source     = "./modules/gcs"
+  source     = "./fabric/modules/gcs"
   project_id = "myproject"
   prefix     = "test"
   name       = "my-bucket"
