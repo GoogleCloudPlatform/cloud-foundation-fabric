@@ -10,7 +10,7 @@ For DNSSEC configuration, refer to the [`dns_managed_zone` documentation](https:
 
 ```hcl
 module "private-dns" {
-  source          = "./modules/dns"
+  source          = "./fabric/modules/dns"
   project_id      = "myproject"
   type            = "private"
   name            = "test-example"
@@ -27,7 +27,7 @@ module "private-dns" {
 
 ```hcl
 module "private-dns" {
-  source          = "./modules/dns"
+  source          = "./fabric/modules/dns"
   project_id      = "myproject"
   type            = "forwarding"
   name            = "test-example"
@@ -42,7 +42,7 @@ module "private-dns" {
 
 ```hcl
 module "private-dns" {
-  source          = "./modules/dns"
+  source          = "./fabric/modules/dns"
   project_id      = "myproject"
   type            = "peering"
   name            = "test-example"

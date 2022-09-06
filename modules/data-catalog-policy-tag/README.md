@@ -9,7 +9,7 @@ Note: Data Catalog is still in beta, hence this module currently uses the beta p
 
 ```hcl
 module "cmn-dc" {
-  source     = "./modules/data-catalog-policy-tag"
+  source     = "./fabric/modules/data-catalog-policy-tag"
   name       = "my-datacatalog-policy-tags"
   project_id = "my-project"
   tags       = {
@@ -23,7 +23,7 @@ module "cmn-dc" {
 
 ```hcl
 module "cmn-dc" {
-  source     = "./modules/data-catalog-policy-tag"
+  source     = "./fabric/modules/data-catalog-policy-tag"
   name       = "my-datacatalog-policy-tags"
   project_id = "my-project"
   tags       = { 

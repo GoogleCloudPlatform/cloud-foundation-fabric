@@ -6,7 +6,7 @@ This module makes it easy to deploy either GCP-to-GCP or GCP-to-On-prem [Cloud H
 ### GCP to GCP
 ```hcl
 module "vpn_ha-1" {
-  source           = "./modules/net-vpn-ha"
+  source           = "./fabric/modules/net-vpn-ha"
   project_id       = "<PROJECT_ID>"
   region           = "europe-west4"
   network          = "https://www.googleapis.com/compute/v1/projects/<PROJECT_ID>/global/networks/network-1"
@@ -51,7 +51,7 @@ module "vpn_ha-1" {
 }
 
 module "vpn_ha-2" {
-  source           = "./modules/net-vpn-ha"
+  source           = "./fabric/modules/net-vpn-ha"
   project_id       = "<PROJECT_ID>"
   region           = "europe-west4"
   network          = "https://www.googleapis.com/compute/v1/projects/<PROJECT_ID>/global/networks/local-network"
@@ -96,7 +96,7 @@ Note: When using the `for_each` meta-argument you might experience a Cycle Error
 
 ```hcl
 module "vpn_ha" {
-  source     = "./modules/net-vpn-ha"
+  source     = "./fabric/modules/net-vpn-ha"
   project_id = var.project_id
   region     = var.region
   network    = var.vpc.self_link

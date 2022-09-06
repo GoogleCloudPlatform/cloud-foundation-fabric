@@ -8,7 +8,7 @@ This module simplifies the creation of a Binary Authorization policy, attestors 
 
 ```hcl
 module "binauthz" {
-  source     = "./modules/binauthz"
+  source     = "./fabric/modules/binauthz"
   project_id = "my_project"
   global_policy_evaluation_mode = "DISABLE"
   default_admission_rule = {

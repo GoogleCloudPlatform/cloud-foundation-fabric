@@ -19,7 +19,7 @@ The access variables are split into `access` and `access_identities` variables, 
 
 ```hcl
 module "bigquery-dataset" {
-  source     = "./modules/bigquery-dataset"
+  source     = "./fabric/modules/bigquery-dataset"
   project_id = "my-project"
   id          = "my-dataset"
   access = {
@@ -44,7 +44,7 @@ Access configuration can also be specified via IAM instead of basic roles via th
 
 ```hcl
 module "bigquery-dataset" {
-  source     = "./modules/bigquery-dataset"
+  source     = "./fabric/modules/bigquery-dataset"
   project_id = "my-project"
   id          = "my-dataset"
   iam = {
@@ -60,7 +60,7 @@ Dataset options are set via the `options` variable. all options must be specifie
 
 ```hcl
 module "bigquery-dataset" {
-  source     = "./modules/bigquery-dataset"
+  source     = "./fabric/modules/bigquery-dataset"
   project_id = "my-project"
   id         = "my-dataset"
   options = {
@@ -85,7 +85,7 @@ locals {
 }
 
 module "bigquery-dataset" {
-  source     = "./modules/bigquery-dataset"
+  source     = "./fabric/modules/bigquery-dataset"
   project_id = "my-project"
   id         = "my_dataset"
   tables = {
@@ -113,7 +113,7 @@ locals {
 }
 
 module "bigquery-dataset" {
-  source     = "./modules/bigquery-dataset"
+  source     = "./fabric/modules/bigquery-dataset"
   project_id = "my-project"
   id         = "my-dataset"
   tables = {
@@ -145,7 +145,7 @@ locals {
 }
 
 module "bigquery-dataset" {
-  source     = "./modules/bigquery-dataset"
+  source     = "./fabric/modules/bigquery-dataset"
   project_id = "my-project"
   id         = "my_dataset"
   tables = {

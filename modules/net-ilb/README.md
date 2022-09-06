@@ -18,7 +18,7 @@ This examples shows how to create an ILB by combining externally managed instanc
 
 ```hcl
 module "ilb" {
-  source        = "./modules/net-ilb"
+  source        = "./fabric/modules/net-ilb"
   project_id    = var.project_id
   region        = "europe-west1"
   name          = "ilb-test"
@@ -58,11 +58,11 @@ Note that the example uses the GCE default service account. You might want to cr
 
 ```hcl
 module "cos-nginx" {
-  source = "./modules/cloud-config-container/nginx"
+  source = "./fabric/modules/cloud-config-container/nginx"
 }
 
 module "instance-group" {
-  source     = "./modules/compute-vm"
+  source     = "./fabric/modules/compute-vm"
   for_each = toset(["b", "c"])
   project_id = var.project_id
   zone     = "europe-west1-${each.key}"
@@ -86,7 +86,7 @@ module "instance-group" {
 }
 
 module "ilb" {
-  source        = "./modules/net-ilb"
+  source        = "./fabric/modules/net-ilb"
   project_id    = var.project_id
   region        = "europe-west1"
   name          = "ilb-test"

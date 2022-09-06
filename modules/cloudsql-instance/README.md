@@ -12,7 +12,7 @@ This example shows how to setup a project, VPC and a standalone Cloud SQL instan
 
 ```hcl
 module "project" {
-  source          = "./modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   parent          = var.organization_id
   name            = "my-db-project"
@@ -22,7 +22,7 @@ module "project" {
 }
 
 module "vpc" {
-  source     = "./modules/net-vpc"
+  source     = "./fabric/modules/net-vpc"
   project_id = module.project.project_id
   name       = "my-network"
   psa_config = {
@@ -32,7 +32,7 @@ module "vpc" {
 }
 
 module "db" {
-  source           = "./modules/cloudsql-instance"
+  source           = "./fabric/modules/cloudsql-instance"
   project_id       = module.project.project_id
   network          = module.vpc.self_link
   name             = "db"
@@ -47,7 +47,7 @@ module "db" {
 
 ```hcl
 module "db" {
-  source           = "./modules/cloudsql-instance"
+  source           = "./fabric/modules/cloudsql-instance"
   project_id       = var.project_id
   network          = var.vpc.self_link
   name             = "db"
@@ -67,7 +67,7 @@ module "db" {
 
 ```hcl
 module "db" {
-  source           = "./modules/cloudsql-instance"
+  source           = "./fabric/modules/cloudsql-instance"
   project_id       = var.project_id
   network          = var.vpc.self_link
   name             = "db"
@@ -98,7 +98,7 @@ module "db" {
 ```hcl
 
 module "project" {
-  source          = "./modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   parent          = var.organization_id
   name            = "my-db-project"
@@ -109,7 +109,7 @@ module "project" {
 }
 
 module "kms" {
-  source     = "./modules/kms"
+  source     = "./fabric/modules/kms"
   project_id = module.project.project_id
   keyring = {
     name     = "keyring"
@@ -128,7 +128,7 @@ module "kms" {
 }
 
 module "db" {
-  source              = "./modules/cloudsql-instance"
+  source              = "./fabric/modules/cloudsql-instance"
   project_id          = module.project.project_id
   encryption_key_name = module.kms.keys["key-sql"].id
   network             = var.vpc.self_link

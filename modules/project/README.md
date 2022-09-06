@@ -21,7 +21,7 @@ locals {
 }
 
 module "project" {
-  source          = "./modules/project"
+  source          = "./fabric/modules/project"
   billing_account = "123456-123456-123456"
   name            = "project-example"
   parent          = "folders/1234567890"
@@ -43,7 +43,7 @@ The `group_iam` variable uses group email addresses as keys and is a convenient 
 
 ```hcl
 module "project" {
-  source          = "./modules/project"
+  source          = "./fabric/modules/project"
   billing_account = "123456-123456-123456"
   name            = "project-example"
   parent          = "folders/1234567890"
@@ -70,7 +70,7 @@ Additive IAM is typically used where bindings for specific roles are controlled 
 
 ```hcl
 module "project" {
-  source          = "./modules/project"
+  source          = "./fabric/modules/project"
   name            = "project-example"
   iam_additive = {
     "roles/viewer"               = [
@@ -94,7 +94,7 @@ As mentioned above, there are cases where authoritative management of specific I
 
 ```hcl
 module "project" {
-  source          = "./modules/project"
+  source          = "./fabric/modules/project"
   name            = "project-example"
   group_iam = {
     "foo@example.com" = [
@@ -120,7 +120,7 @@ You can enable Shared VPC Host at the project level and manage project service a
 
 ```hcl
 module "project" {
-  source          = "./modules/project"
+  source          = "./fabric/modules/project"
   name            = "project-example"
   shared_vpc_host_config = {
     enabled          = true
@@ -134,7 +134,7 @@ module "project" {
 
 ```hcl
 module "project" {
-  source          = "./modules/project"
+  source          = "./fabric/modules/project"
   name            = "project-example"
   shared_vpc_service_config = {
     attach               = true
@@ -159,7 +159,7 @@ module "project" {
 
 ```hcl
 module "project" {
-  source          = "./modules/project"
+  source          = "./fabric/modules/project"
   billing_account = "123456-123456-123456"
   name            = "project-example"
   parent          = "folders/1234567890"
@@ -188,33 +188,33 @@ module "project" {
 
 ```hcl
 module "gcs" {
-  source        = "./modules/gcs"
+  source        = "./fabric/modules/gcs"
   project_id    = var.project_id
   name          = "gcs_sink"
   force_destroy = true
 }
 
 module "dataset" {
-  source     = "./modules/bigquery-dataset"
+  source     = "./fabric/modules/bigquery-dataset"
   project_id = var.project_id
   id         = "bq_sink"
 }
 
 module "pubsub" {
-  source     = "./modules/pubsub"
+  source     = "./fabric/modules/pubsub"
   project_id = var.project_id
   name       = "pubsub_sink"
 }
 
 module "bucket" {
-  source      = "./modules/logging-bucket"
+  source      = "./fabric/modules/logging-bucket"
   parent_type = "project"
   parent      = "my-project"
   id          = "bucket"
 }
 
 module "project-host" {
-  source          = "./modules/project"
+  source          = "./fabric/modules/project"
   name            = "my-project"
   billing_account = "123456-123456-123456"
   parent          = "folders/1234567890"
@@ -267,7 +267,7 @@ The module offers a simple, centralized way to assign `roles/cloudkms.cryptoKeyE
 
 ```hcl
 module "project" {
-  source          = "./modules/project"
+  source          = "./fabric/modules/project"
   name            = "my-project"
   billing_account = "123456-123456-123456"
   prefix          = "foo"
@@ -294,7 +294,7 @@ Refer to the [Creating and managing tags](https://cloud.google.com/resource-mana
 
 ```hcl
 module "org" {
-  source          = "./modules/organization"
+  source          = "./fabric/modules/organization"
   organization_id = var.organization_id
   tags = {
     environment = {
@@ -309,7 +309,7 @@ module "org" {
 }
 
 module "project" {
-  source = "./modules/project"
+  source = "./fabric/modules/project"
   name   = "test-project"
   tag_bindings = {
     env-prod = module.org.tag_values["environment/prod"].id
@@ -327,7 +327,7 @@ One non-obvious output is `service_accounts`, which offers a simple way to disco
 
 ```hcl
 module "project" {
-  source   = "./modules/project"
+  source   = "./fabric/modules/project"
   name     = "project-example"
   services = [
     "compute.googleapis.com"

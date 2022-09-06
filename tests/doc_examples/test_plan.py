@@ -15,14 +15,12 @@
 import re
 from pathlib import Path
 
-
 BASE_PATH = Path(__file__).parent
 EXPECTED_RESOURCES_RE = re.compile(r'# tftest modules=(\d+) resources=(\d+)')
 
 
 def test_example(doc_example_plan_runner, tmp_path, example):
-  (tmp_path / 'modules').symlink_to(
-      Path(BASE_PATH, '../../modules/').resolve())
+  (tmp_path / 'fabric').symlink_to(Path(BASE_PATH, '../../').resolve())
   (tmp_path / 'variables.tf').symlink_to(
       Path(BASE_PATH, 'variables.tf').resolve())
   (tmp_path / 'main.tf').write_text(example)

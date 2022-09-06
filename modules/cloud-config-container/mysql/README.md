@@ -26,7 +26,7 @@ This example will create a `cloud-config` that uses the container's default conf
 
 ```hcl
 module "cos-mysql" {
-  source         = "./modules/cos-container/mysql"
+  source         = "./fabric/modules/cos-container/mysql"
   mysql_password = "foo"
 }
 
@@ -43,7 +43,7 @@ This example will create a `cloud-config` that uses a custom MySQL configuration
 
 ```hcl
 module "cos-mysql" {
-  source         = "./modules/cos-container/mysql"
+  source         = "./fabric/modules/cos-container/mysql"
   mysql_config   = "./my.cnf"
   mysql_password = "CiQAsd7WY=="
   kms_config     = {
@@ -61,7 +61,7 @@ This example shows how to create the single instance optionally managed by the m
 
 ```hcl
 module "cos-mysql" {
-  source         = "./modules/cos-container/mysql"
+  source         = "./fabric/modules/cos-container/mysql"
   mysql_password = "foo"
   test_instance = {
     project_id = "my-project"

@@ -14,12 +14,12 @@ This module depends on the [`cos-generic-metadata` module](../cos-generic-metada
 ```hcl
 # Nginx with self-signed TLS config
 module "cos-nginx-tls" {
-  source = "./modules/cloud-config-container/nginx-tls"
+  source = "./fabric/modules/cloud-config-container/nginx-tls"
 }
 
 # COS VM
 module "vm-nginx-tls" {
-  source     = "./modules/compute-vm"
+  source     = "./fabric/modules/compute-vm"
   project_id = local.project_id
   zone       = local.zone
   name       = "cos-nginx-tls"

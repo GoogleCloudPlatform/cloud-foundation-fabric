@@ -8,7 +8,7 @@ This module allows managing a single Cloud Source Repository, including IAM bind
 
 ```hcl
 module "repo" {
-  source     = "./modules/source-repository"
+  source     = "./fabric/modules/source-repository"
   project_id = "my-project"
   name       = "my-repo"
   iam = {
@@ -22,7 +22,7 @@ module "repo" {
 
 ```hcl
 module "repo" {
-  source     = "./modules/source-repository"
+  source     = "./fabric/modules/source-repository"
   project_id = "my-project"
   name       = "my-repo"
   triggers = {
