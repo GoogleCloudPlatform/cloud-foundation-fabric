@@ -1,5 +1,5 @@
 # FAST deployment companion guide
-In order to successfully deploy your GCP Landing Zone using FAST in your organization, a series of prerequisites are required before starting. Then, FAST deployment is splitted in different stages that are required to be executed in order as some of them depend on previous stages output.
+In order to successfully deploy your GCP Landing Zone using FAST in your Organization, a series of prerequisites are required before starting. Then, FAST deployment is splitted in different stages that are required to be executed in order as some of them depend on previous stages output.
 
 Detailed explanation of each stage execution, configuration or possible modifications and adaptations are included in each stage section. The target of this companion guide is to serve as a cheat sheet, including the list of commands to be executed during FAST deployment. 
 
@@ -13,19 +13,18 @@ Detailed explanation of each stage execution, configuration or possible modifica
 - gcp-organization-admins@
 - gcp-security-admins@
 - gcp-support@
-2. Grant your user “Organization Administrator” role in your Organization and add it to the gcp-organization-admins@ group
-3. If you already executed FAST in your Organization, [clean it up](CLEANUP.md) before executing it again
-4. Login
+2. If you already executed FAST in your Organization, [clean it up](CLEANUP.md) before executing it again.
+3. Grant your user “Organization Administrator” role in your Organization and add it to the gcp-organization-admins@ group.
+4. If not already done, Login with your user using gcloud.
 ```bash
 gcloud auth list
 gcloud auth login
-gcloud auth application-default login
 ```
-5. Clone Fabric
+5. Clone Fabric.
 ```bash
 git clone https://github.com/GoogleCloudPlatform/cloud-foundation-fabric.git
 ```
-6. Grant required roles to your user
+6. Grant required roles to your user.
 ```bash
 # set a variable to the fast folder
 export FAST_PWD="$(pwd)/fast/stages"
@@ -49,7 +48,8 @@ gcloud organizations add-iam-policy-binding $FAST_ORG_ID \
 done
 ```
 7. Configure Billing Account permissions. 
-If you are using a standalone billing account, the identity applying this stage for the first time needs to be a Billing Administrator
+
+If you are using a standalone billing account, the user applying this stage for the first time needs to be a Billing Administrator.
 ```bash
 # find your billing account id with gcloud beta billing accounts list
 # replace with your billing id!
@@ -58,7 +58,7 @@ export FAST_BA_ID=0186A4-36005F-9ADEDE
 gcloud beta billing accounts add-iam-policy-binding $FAST_BA_ID \
 --member user:$FAST_BU --role roles/billing.admin
 ```
-If you are using a billing account in a different organization, please follow [these steps](00-bootstrap#billing-account-in-a-different-organization) instead
+If you are using a billing account in a different organization, please follow [these steps](00-bootstrap#billing-account-in-a-different-organization) instead.
 
 ## Stage 0 (Bootstrap)
 This initial stage will create common projects for IaC, Logging & Billing, and bootstrap IAM policies.
@@ -139,7 +139,7 @@ team_folders = {
 }
 ```
 ```bash
-# Showtime!
+# run init and apply
 terraform init
 terraform apply
 ```
@@ -150,7 +150,7 @@ In this stage, we will deploy one of the 3 available Hub&Spoke networking topolo
 2. HA VPN
 3. Multi-NIC appliances (NVA)
 ```bash
-# move to the 02-networking-vpn directory
+# move to the 02-networking-XXX directory (where XXX should be one of vpn|peering|nva)
 cd $FAST_PWD/02-networking-XXX
 
 # setup providers and variables from previous stages
@@ -168,7 +168,7 @@ edit terraform.tfvars
 outputs_location = "~/fast-config"
 ```
 ```bash
-# Showtime!
+# run init and apply
 terraform init
 terraform apply
 ```
@@ -191,6 +191,7 @@ edit terraform.tfvars
 ```
 Some examples of terraform.tfvars configurations for KMS and VPC-SC can be found [here](02-security#customizations)
 ```bash
+# run init and apply
 terraform init
 terraform apply
 ```
@@ -205,6 +206,7 @@ ln -s ~/fast-config/providers/03-project-factory-ENVIRONMENT-providers.tf .
 ln -s ~/fast-config/tfvars/00-bootstrap.auto.tfvars.json .
 ln -s ~/fast-config/tfvars/01-resman.auto.tfvars.json . 
 ln -s ~/fast-config/tfvars/02-networking.auto.tfvars.json .
+ln -s ~/fast-config/tfvars/globals.auto.tfvars.json .
 
 # Define your environment default values (eg for billing alerts and labels)
 edit data/defaults.yaml
@@ -213,6 +215,7 @@ edit data/defaults.yaml
 cp data/projects/project.yaml.sample data/projects/YOUR_PROJECT_NAME.yaml
 edit data/projects/YOUR_PROJECT_NAME.yaml
 
+# run init and apply
 terraform init
 terraform apply
 ```
