@@ -8,7 +8,7 @@ This module allows reserving Compute Engine external, global, and internal addre
 
 ```hcl
 module "addresses" {
-  source     = "./modules/net-address"
+  source     = "./fabric/modules/net-address"
   project_id = var.project_id
   external_addresses = {
     nat-1      = var.region
@@ -23,7 +23,7 @@ module "addresses" {
 
 ```hcl
 module "addresses" {
-  source     = "./modules/net-address"
+  source     = "./fabric/modules/net-address"
   project_id = var.project_id
   internal_addresses = {
     ilb-1 = {
@@ -51,7 +51,7 @@ module "addresses" {
 
 ```hcl
 module "addresses" {
-  source     = "./modules/net-address"
+  source     = "./fabric/modules/net-address"
   project_id = var.project_id
   psa_addresses = {
     cloudsql-mysql = {
@@ -68,7 +68,7 @@ module "addresses" {
 
 ```hcl
 module "addresses" {
-  source     = "./modules/net-address"
+  source     = "./fabric/modules/net-address"
   project_id = var.project_id
   psc_addresses = {
     one = {

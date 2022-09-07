@@ -15,11 +15,7 @@
  */
 
 module "test" {
-  source       = "../../../../modules/cloud-identity-group"
-  name         = var.name
-  display_name = var.display_name
-  description  = var.description
-  customer_id  = var.customer_id
-  managers     = var.managers
-  members      = var.members
+  source      = "../../../../../examples/factories/cloud-identity-group-factory/"
+  customer_id = "customers/C01234567"
+  data_dir    = "data"
 }

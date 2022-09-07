@@ -8,7 +8,7 @@ This module allows simplified creation and management of GKE clusters and should
 
 ```hcl
 module "cluster-1" {
-  source                    = "./modules/gke-cluster"
+  source                    = "./fabric/modules/gke-cluster"
   project_id                = "myproject"
   name                      = "cluster-1"
   location                  = "europe-west1-b"
@@ -37,7 +37,7 @@ module "cluster-1" {
 
 ```hcl
 module "cluster-1" {
-  source                    = "./modules/gke-cluster"
+  source                    = "./fabric/modules/gke-cluster"
   project_id                = "myproject"
   name                      = "cluster-1"
   location                  = "europe-west1-b"

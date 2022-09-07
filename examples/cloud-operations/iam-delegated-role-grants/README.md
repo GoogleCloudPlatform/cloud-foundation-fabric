@@ -33,6 +33,7 @@ You can easily configure the example for this use case:
 delegated_role_grants = ["roles/compute.networkUser"]
 direct_role_grants = []
 restricted_role_grant = "roles/compute.networkAdmin"
+# tftest skip
 ```
 
 This diagram shows the resources and expected behaviour:

@@ -17,7 +17,7 @@ To use this module you must ensure the following APIs are enabled in the target 
 
 ```hcl
 module "project" {
-  source          = "./modules/project"
+  source          = "./fabric/modules/project"
   billing_account = var.billing_account_id
   name            = "gkehub-test"
   parent          = "folders/12345"
@@ -33,7 +33,7 @@ module "project" {
 }
 
 module "vpc" {
-  source     = "./modules/net-vpc"
+  source     = "./fabric/modules/net-vpc"
   project_id = module.project.project_id
   name       = "network"
   subnets = [{
@@ -48,7 +48,7 @@ module "vpc" {
 }
 
 module "cluster_1" {
-  source                   = "./modules/gke-cluster"
+  source                   = "./fabric/modules/gke-cluster"
   project_id               = module.project.project_id
   name                     = "cluster-1"
   location                 = "europe-west1-b"
@@ -67,7 +67,7 @@ module "cluster_1" {
 }
 
 module "hub" {
-  source     = "./modules/gke-hub"
+  source     = "./fabric/modules/gke-hub"
   project_id = module.project.project_id
   clusters = {
     cluster-1 = module.cluster_1.id
@@ -124,7 +124,7 @@ module "hub" {
 
 ```hcl
 module "project" {
-  source          = "./modules/project"
+  source          = "./fabric/modules/project"
   billing_account = "123-456-789"
   name            = "gkehub-test"
   parent          = "folders/12345"
@@ -140,7 +140,7 @@ module "project" {
 }
 
 module "vpc" {
-  source     = "./modules/net-vpc"
+  source     = "./fabric/modules/net-vpc"
   project_id = module.project.project_id
   name       = "vpc"
   mtu        = 1500
@@ -173,7 +173,7 @@ module "vpc" {
 }
 
 module "firewall" {
-  source     = "./modules/net-vpc-firewall"
+  source     = "./fabric/modules/net-vpc-firewall"
   project_id = module.project.project_id
   network    = module.vpc.name
   custom_rules = { 
@@ -225,7 +225,7 @@ module "firewall" {
 }
 
 module "cluster_1" {
-  source                   = "./modules/gke-cluster"
+  source                   = "./fabric/modules/gke-cluster"
   project_id               = module.project.project_id
   name                     = "cluster-1"
   location                 = "europe-wes1"
@@ -252,7 +252,7 @@ module "cluster_1" {
 }
 
 module "cluster_1_nodepool" {
-  source                      = "./modules/gke-nodepool"
+  source                      = "./fabric/modules/gke-nodepool"
   project_id                  = module.project.project_id
   cluster_name                = module.cluster_1.name
   location                    = "europe-west1"
@@ -264,7 +264,7 @@ module "cluster_1_nodepool" {
 }
 
 module "cluster_2" {
-  source                   = "./modules/gke-cluster"
+  source                   = "./fabric/modules/gke-cluster"
   project_id               = module.project.project_id
   name                     = "cluster-1"
   location                 = "europe-wes1"
@@ -291,7 +291,7 @@ module "cluster_2" {
 }
 
 module "cluster_2_nodepool" {
-  source                      = "./modules/gke-nodepool"
+  source                      = "./fabric/modules/gke-nodepool"
   project_id                  = module.project.project_id
   cluster_name                = module.cluster_2.name
   location                    = "europe-west4"
@@ -304,7 +304,7 @@ module "cluster_2_nodepool" {
 
 
 module "hub" {
-  source     = "./modules/gke-hub"
+  source     = "./fabric/modules/gke-hub"
   project_id = module.project.project_id
   clusters = { 
     cluster-1 = module.cluster_1.id

@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-module "test" {
-  source       = "../../../../modules/cloud-identity-group"
-  name         = var.name
-  display_name = var.display_name
-  description  = var.description
-  customer_id  = var.customer_id
-  managers     = var.managers
-  members      = var.members
+variable "customer_id" {
+  description = "Directory customer ID in the form customers/C0xxxxxxx."
+  type        = string
 }
+
+variable "data_dir" {
+  description = "Relative path for the folder storing configuration data."
+  type        = string
+}
+

@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
-module "test" {
-  source       = "../../../../modules/cloud-identity-group"
-  name         = var.name
-  display_name = var.display_name
-  description  = var.description
+locals {
+  groups = {
+    for f in fileset("${var.data_dir}", "**/*.yaml") :
+    trimsuffix(f, ".yaml") => yamldecode(file("${var.data_dir}/${f}"))
+  }
+}
+
+module "group" {
+  source       = "../../../modules/cloud-identity-group"
+  for_each     = local.groups
   customer_id  = var.customer_id
-  managers     = var.managers
-  members      = var.members
+  name         = each.key
+  display_name = try(each.value.display_name, null)
+  description  = try(each.value.description, null)
+  members      = try(each.value.members, [])
+  managers     = try(each.value.managers, [])
 }

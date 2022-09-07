@@ -14,7 +14,7 @@ The secret replication policy is automatically managed if no location is set, or
 
 ```hcl
 module "secret-manager" {
-  source     = "./modules/secret-manager"
+  source     = "./fabric/modules/secret-manager"
   project_id = "my-project"
   secrets    = {
     test-auto   = null
@@ -30,7 +30,7 @@ IAM bindings can be set per secret in the same way as for most other modules sup
 
 ```hcl
 module "secret-manager" {
-  source     = "./modules/secret-manager"
+  source     = "./fabric/modules/secret-manager"
   project_id = "my-project"
   secrets    = {
     test-auto   = null
@@ -54,7 +54,7 @@ As mentioned above, please be aware that **version data will be stored in state 
 
 ```hcl
 module "secret-manager" {
-  source     = "./modules/secret-manager"
+  source     = "./fabric/modules/secret-manager"
   project_id = "my-project"
   secrets    = {
     test-auto   = null

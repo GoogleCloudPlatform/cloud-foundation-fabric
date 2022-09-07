@@ -44,7 +44,7 @@ device_2:
 
 ```hcl
 module "iot-platform" {
-  source                     = "./modules/iot-core"
+  source                     = "./fabric/modules/iot-core"
   project_id                 = "my_project_id"
   region                     = "europe-west1"
   telemetry_pubsub_topic_id = "telemetry_topic_id"
@@ -67,7 +67,7 @@ If you need to match specific MQTT topics (eg, /temperature) into specific PubSu
 
 ```hcl
 module "iot-platform" {
-  source                     = "./modules/iot-core"
+  source                     = "./fabric/modules/iot-core"
   project_id                 = "my_project_id"
   region                     = "europe-west1"
   telemetry_pubsub_topic_id = "telemetry_topic_id"
@@ -99,7 +99,7 @@ In this example, we will show how to extend the **[Data Foundations Platform](..
 
 ```hcl
 module "iot-platform" {
-  source                     = "./modules/iot-core"
+  source                     = "./fabric/modules/iot-core"
   project_id                 = "landing-project-id"
   region                     = "europe-west1"
   telemetry_pubsub_topic_id = "landing_pubsub_topic_id"

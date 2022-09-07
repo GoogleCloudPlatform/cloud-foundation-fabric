@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-module "test" {
-  source       = "../../../../modules/cloud-identity-group"
-  name         = var.name
-  display_name = var.display_name
-  description  = var.description
-  customer_id  = var.customer_id
-  managers     = var.managers
-  members      = var.members
+output "group_id" {
+  description = "Group name => Group ID mapping."
+  value = {
+    for k in module.group :
+    k.name => k.id
+  }
 }

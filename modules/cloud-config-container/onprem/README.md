@@ -24,7 +24,7 @@ The test instance is optional, as described above.
 
 ```hcl
 module "cloud-vpn" {
-  source     = "./modules/net-vpn-static"
+  source     = "./fabric/modules/net-vpn-static"
   project_id = "my-project"
   region     = "europe-west1"
   network    = "my-vpc"
@@ -41,7 +41,7 @@ module "cloud-vpn" {
 }
 
 module "on-prem" {
-  source = "./modules/cos-container/on-prem"
+  source = "./fabric/modules/cos-container/on-prem"
   name       = "onprem"
   vpn_config = {
     type          = "static"

@@ -47,7 +47,7 @@ The example configures the peering with the GKE master VPC to export routes for 
 
 Change the GKE cluster module and add a new variable after `private_cluster_config`:
 
-```hcl
+```tfvars
   peering_config = {
     export_routes = true
     import_routes = false

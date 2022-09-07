@@ -79,6 +79,8 @@ module "projects" {
   services_iam       = try(each.value.services_iam, {})
   vpc                = try(each.value.vpc, null)
 }
+
+# tftest skip
 ```
 
 ### Projects configuration

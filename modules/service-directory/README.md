@@ -11,7 +11,7 @@ It can be used in conjunction with the [DNS](../dns) module to create [service-d
 
 ```hcl
 module "service-directory" {
-  source      = "./modules/service-directory"
+  source      = "./fabric/modules/service-directory"
   project_id  = "my-project"
   location    = "europe-west1"
   name        = "sd-1"
@@ -28,7 +28,7 @@ module "service-directory" {
 
 ```hcl
 module "service-directory" {
-  source      = "./modules/service-directory"
+  source      = "./fabric/modules/service-directory"
   project_id  = "my-project"
   location    = "europe-west1"
   name        = "sd-1"
@@ -59,7 +59,7 @@ Wiring a service directory namespace to a private DNS zone allows querying the n
 
 ```hcl
 module "service-directory" {
-  source      = "./modules/service-directory"
+  source      = "./fabric/modules/service-directory"
   project_id  = "my-project"
   location    = "europe-west1"
   name       = "apps"
@@ -77,7 +77,7 @@ module "service-directory" {
 }
 
 module "dns-sd" {
-  source                      = "./modules/dns"
+  source                      = "./fabric/modules/dns"
   project_id                  = "my-project"
   type                        = "service-directory"
   name                        = "apps"
