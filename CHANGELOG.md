@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 <!-- None < 2022-06-06 13:42:51+00:00 -->
 
+- [[#794](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/794)] Test documentation examples in the `examples/` folder ([juliocc](https://github.com/juliocc)) <!-- 2022-09-06 19:38:26+00:00 -->
 
 ###  FAST
 
