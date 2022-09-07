@@ -61,7 +61,7 @@ gcloud beta billing accounts add-iam-policy-binding $FAST_BA_ID \
 If you are using a billing account in a different organization, please follow [these steps](00-bootstrap#billing-account-in-a-different-organization) instead
 
 ## Stage 0 (Bootstrap)
-This initial stage will create common projects for iac, logging & billing, and bootstrap IAM policies.
+This initial stage will create common projects for IaC, Logging & Billing, and bootstrap IAM policies.
 
 ```bash
 # move to the 00-bootstrap directory
@@ -118,11 +118,13 @@ ln -s ~/fast-config/providers/01-resman-providers.tf .
 ln -s ~/fast-config/tfvars/00-bootstrap.auto.tfvars.json .
 ln -s ~/fast-config/tfvars/globals.auto.tfvars.json .
 
-# Edit your terraform.tfvars to append Teams configuration
+# Edit your terraform.tfvars to append Teams configuration (optional)
 edit terraform.tfvars
 ```
 In the following terraform.tfvars it is shown an example of configuration for teams provisioning:
 ```hcl
+outputs_location = "~/fast-config"
+
 # optional
 team_folders = {
  team-1 = {
@@ -156,11 +158,16 @@ ln -s ~/fast-config/providers/02-networking-providers.tf .
 ln -s ~/fast-config/tfvars/00-bootstrap.auto.tfvars.json .
 ln -s ~/fast-config/tfvars/01-resman.auto.tfvars.json .
 ln -s ~/fast-config/tfvars/globals.auto.tfvars.json .
+
+# Copy and edit terraform.tfvars. output_location variable is required to generate networking stage output
 cp ../00-bootstrap/terraform.tfvars .
-
-# You can leave terraform.tfvars as-is in this stage. If you’re curious…
 edit terraform.tfvars
-
+```
+```hcl
+# path for automatic generation of configs
+outputs_location = "~/fast-config"
+```
+```bash
 # Showtime!
 terraform init
 terraform apply
@@ -176,9 +183,10 @@ cd $FAST_PWD/02-security
 ln -s ~/fast-config/providers/02-security-providers.tf .
 ln -s ~/fast-config/tfvars/00-bootstrap.auto.tfvars.json .
 ln -s ~/fast-config/tfvars/01-resman.auto.tfvars.json .
-cp ../00-bootstrap/terraform.tfvars .
+ln -s ~/fast-config/tfvars/globals.auto.tfvars.json .
 
-# Edit your terraform.tfvars to include KMS and/or VPC-SC configuration
+# Copy and edit terraform.tfvars to include KMS and/or VPC-SC configuration
+cp ../00-bootstrap/terraform.tfvars .
 edit terraform.tfvars
 ```
 Some examples of terraform.tfvars configurations for KMS and VPC-SC can be found [here](02-security#customizations)
