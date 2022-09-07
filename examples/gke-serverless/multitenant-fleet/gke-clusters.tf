@@ -97,7 +97,7 @@ module "gke-cluster" {
       state    = "ENCRYPTED"
       key_name = each.value.overrides.database_encryption_key
     }
-
+  )
   default_max_pods_per_node = each.value.overrides.max_pods_per_node
   master_authorized_ranges  = each.value.overrides.master_authorized_ranges
   pod_security_policy       = each.value.overrides.pod_security_policy
