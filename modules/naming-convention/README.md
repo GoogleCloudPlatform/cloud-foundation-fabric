@@ -14,7 +14,7 @@ In its default configuration, the module supports an option prefix and suffix, a
 
 ```hcl
 module "names-org" {
-  source     = "./modules/naming-convention"
+  source     = "./fabric/modules/naming-convention"
   prefix      = "myco"
   environment = "dev"
   team        = "cloud"
@@ -30,7 +30,7 @@ module "names-org" {
 }
 
 module "project-tf" {
-  source = "./modules/project"
+  source = "./fabric/modules/project"
   # myco-cloud-dev-tf
   name   = module.names-org.names.project.tf
   # { environment = "dev", scope = "global", team = "cloud" }
@@ -42,7 +42,7 @@ You can also enable resource type naming, useful with some legacy CMDB setups. W
 
 ```hcl
 module "names-org" {
-  source     = "./modules/naming-convention"
+  source     = "./fabric/modules/naming-convention"
   prefix      = "myco"
   environment = "dev"
   team        = "cloud"
@@ -59,7 +59,7 @@ module "names-org" {
 }
 
 module "project-tf" {
-  source = "./modules/project"
+  source = "./fabric/modules/project"
   # prj-myco-cloud-dev-tf
   name   = module.names-org.names.prj.tf
 }

@@ -4,7 +4,7 @@
 
 ```hcl
 module "addresses" {
-  source     = "./modules/net-address"
+  source     = "./fabric/modules/net-address"
   project_id = var.project_id
   external_addresses = {
     vpn = "europe-west1"
@@ -12,7 +12,7 @@ module "addresses" {
 }
 
 module "vpn" {
-  source          = "./modules/net-vpn-static"
+  source          = "./fabric/modules/net-vpn-static"
   project_id      = var.project_id
   region          = var.region
   network         = var.vpc.self_link

@@ -10,7 +10,7 @@ A good usage pattern would be when we want all the projects under a specific fol
 
 ```hcl
 module "my-org" {
-  source     = "./modules/projects-data-source"
+  source     = "./fabric/modules/projects-data-source"
   parent     = "organizations/123456789"
 }
 
@@ -29,7 +29,7 @@ output "folders" {
 
 ```hcl
 module "my-dev" {
-  source = "./modules/projects-data-source"
+  source = "./fabric/modules/projects-data-source"
   parent = "folders/123456789"
   filter = "labels.env:DEV lifecycleState:ACTIVE"   
 }

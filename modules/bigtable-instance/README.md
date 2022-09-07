@@ -14,7 +14,7 @@ This module allows managing a single BigTable instance, including access configu
 ```hcl
 
 module "bigtable-instance" {
-  source               = "./modules/bigtable-instance"
+  source               = "./fabric/modules/bigtable-instance"
   project_id           = "my-project"
   name                 = "instance"
   cluster_id           = "instance"

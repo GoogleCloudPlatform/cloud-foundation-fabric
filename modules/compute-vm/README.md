@@ -15,7 +15,7 @@ The simplest example leverages defaults for the boot disk image and size, and us
 
 ```hcl
 module "simple-vm-example" {
-  source     = "./modules/compute-vm"
+  source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
   zone     = "europe-west1-b"
   name       = "test"
@@ -37,7 +37,7 @@ module "simple-vm-example" {
 
 ```hcl
 module "spot-vm-example" {
-  source     = "./modules/compute-vm"
+  source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
   zone     = "europe-west1-b"
   name       = "test"
@@ -72,7 +72,7 @@ This is an example of attaching a pre-existing regional PD to a new instance:
 
 ```hcl
 module "simple-vm-example" {
-  source     = "./modules/compute-vm"
+  source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
   zone     = "${var.region}-b"
   name       = "test"
@@ -102,7 +102,7 @@ And the same example for an instance template (where not using the full self lin
 
 ```hcl
 module "simple-vm-example" {
-  source     = "./modules/compute-vm"
+  source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
   zone     = "${var.region}-b"
   name       = "test"
@@ -135,7 +135,7 @@ This example shows how to control disk encryption via the the `encryption` varia
 
 ```hcl
 module "kms-vm-example" {
-  source     = "./modules/compute-vm"
+  source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
   zone       = "europe-west1-b"
   name       = "kms-test"
@@ -175,7 +175,7 @@ This example shows how to add additional [Alias IPs](https://cloud.google.com/vp
 
 ```hcl
 module "vm-with-alias-ips" {
-  source     = "./modules/compute-vm"
+  source     = "./fabric/modules/compute-vm"
   project_id = "my-project"
   zone       = "europe-west1-b"
   name       = "test"
@@ -224,7 +224,7 @@ resource "google_compute_image" "cos-gvnic" {
 }
 
 module "vm-with-gvnic" {
-  source     = "./modules/compute-vm"
+  source     = "./fabric/modules/compute-vm"
   project_id = "my-project"
   zone       = "europe-west1-b"
   name       = "test"
@@ -256,7 +256,7 @@ This example shows how to use the module to manage an instance template that def
 
 ```hcl
 module "cos-test" {
-  source     = "./modules/compute-vm"
+  source     = "./fabric/modules/compute-vm"
   project_id = "my-project"
   zone     = "europe-west1-b"
   name       = "test"
@@ -296,7 +296,7 @@ locals {
 }
 
 module "instance-group" {
-  source     = "./modules/compute-vm"
+  source     = "./fabric/modules/compute-vm"
   project_id = "my-project"
   zone     = "europe-west1-b"
   name       = "ilb-test"

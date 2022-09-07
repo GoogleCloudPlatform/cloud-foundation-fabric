@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 "Shared fixtures"
 
 import inspect
@@ -46,12 +45,13 @@ def _plan_runner():
       tf = tftest.TerraformTest(tmp_path, BASEDIR,
                                 os.environ.get('TERRAFORM', 'terraform'))
       tf.setup(upgrade=True)
-      return tf.plan(output=True, refresh=refresh, tf_vars=tf_vars, targets=targets)
+      return tf.plan(output=True, refresh=refresh, tf_vars=tf_vars,
+                     targets=targets)
 
   return run_plan
 
 
-@ pytest.fixture(scope='session')
+@pytest.fixture(scope='session')
 def plan_runner(_plan_runner):
   "Returns a function to run Terraform plan on a module fixture."
 
@@ -65,15 +65,15 @@ def plan_runner(_plan_runner):
   return run_plan
 
 
-@ pytest.fixture(scope='session')
+@pytest.fixture(scope='session')
 def e2e_plan_runner(_plan_runner):
   "Returns a function to run Terraform plan on an end-to-end fixture."
 
   def run_plan(fixture_path=None, targets=None, refresh=True,
                include_bare_resources=False, **tf_vars):
     "Runs Terraform plan on an end-to-end module using defaults, returns data."
-    plan = _plan_runner(fixture_path, targets=targets,
-                        refresh=refresh, **tf_vars)
+    plan = _plan_runner(fixture_path, targets=targets, refresh=refresh,
+                        **tf_vars)
     # skip the fixture
     root_module = plan.root_module['child_modules'][0]
     modules = dict((mod['address'], mod['resources'])
@@ -87,7 +87,7 @@ def e2e_plan_runner(_plan_runner):
   return run_plan
 
 
-@ pytest.fixture(scope='session')
+@pytest.fixture(scope='session')
 def doc_example_plan_runner(_plan_runner):
   "Returns a function to run Terraform plan on documentation examples."
 
@@ -99,14 +99,12 @@ def doc_example_plan_runner(_plan_runner):
     plan = tf.plan(output=True, refresh=True)
     # the fixture is the example we are testing
     modules = plan.modules or {}
-    return (
-        len(modules),
-        sum(len(m.resources) for m in modules.values()))
+    return (len(modules), sum(len(m.resources) for m in modules.values()))
 
   return run_plan
 
 
-@ pytest.fixture(scope='session')
+@pytest.fixture(scope='session')
 def apply_runner():
   "Returns a function to run Terraform apply on a fixture."
 

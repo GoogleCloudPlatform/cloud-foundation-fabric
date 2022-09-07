@@ -14,7 +14,7 @@ This example will create a `cloud-config` that starts [Envoy Proxy](https://www.
 
 ```hcl
 module "cos-envoy" {
-  source = "./modules/cos-generic-metadata"
+  source = "./fabric/modules/cos-generic-metadata"
 
   container_image = "envoyproxy/envoy:v1.14.1"
   container_name  = "envoy"

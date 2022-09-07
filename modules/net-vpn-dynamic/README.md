@@ -9,7 +9,7 @@ This example shows how to configure a single VPN tunnel using a couple of extra 
 
 ```hcl
 module "vpn-dynamic" {
-  source          = "./modules/net-vpn-dynamic"
+  source          = "./fabric/modules/net-vpn-dynamic"
   project_id      = "my-project"
   region          = "europe-west1"
   network         = "my-vpc"

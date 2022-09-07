@@ -9,6 +9,7 @@ All notable changes to this project will be documented in this file.
 
 ###  FAST
 
+- [[#793](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/793)] FAST: fix typo in CI/CD stage outputs. ([fawzihmouda](https://github.com/fawzihmouda)) <!-- 2022-09-04 11:50:36+00:00 -->
 - [[#774](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/774)] FAST: fix data-platform-dev folder in stage 03-data-platform ([sttomm](https://github.com/sttomm)) <!-- 2022-08-16 07:36:24+00:00 -->
 - [[#770](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/770)] FAST: fix to move without `output_location` ([daisuky-jp](https://github.com/daisuky-jp)) <!-- 2022-08-07 07:00:27+00:00 -->
 - [[#767](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/767)] Allow interpolating SAs in project factory subnet IAM bindings ([ludoo](https://github.com/ludoo)) <!-- 2022-08-04 08:39:28+00:00 -->
@@ -98,6 +99,7 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#794](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/794)] Test documentation examples in the `examples/` folder ([juliocc](https://github.com/juliocc)) <!-- 2022-09-06 19:38:26+00:00 -->
 - [[#788](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/788)] fix yaml quotes for merge-pr workflow ([drebes](https://github.com/drebes)) <!-- 2022-08-31 13:47:33+00:00 -->
 - [[#763](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/763)] Changelog generator ([ludoo](https://github.com/ludoo)) <!-- 2022-08-02 09:45:06+00:00 -->
 - [[#762](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/762)] Update changelog on pull request merge ([ludoo](https://github.com/ludoo)) <!-- 2022-07-30 17:04:00+00:00 -->

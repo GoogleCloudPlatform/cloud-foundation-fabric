@@ -10,7 +10,7 @@ This deploys a Cloud Run service and sets some environment variables.
 
 ```hcl
 module "cloud_run" {
-  source     = "./modules/cloud-run"
+  source     = "./fabric/modules/cloud-run"
   project_id = "my-project"
   name       = "hello"
   containers = [{
@@ -36,7 +36,7 @@ module "cloud_run" {
 
 ```hcl
 module "cloud_run" {
-  source     = "./modules/cloud-run"
+  source     = "./fabric/modules/cloud-run"
   project_id = "my-project"
   name       = "hello"
   containers = [{
@@ -64,7 +64,7 @@ module "cloud_run" {
 
 ```hcl
 module "cloud_run" {
-  source     = "./modules/cloud-run"
+  source     = "./fabric/modules/cloud-run"
   project_id = var.project_id
   name       = "hello"
   region     = var.region
@@ -98,7 +98,7 @@ This deploys a Cloud Run service with traffic split between two revisions.
 
 ```hcl
 module "cloud_run" {
-  source     = "./modules/cloud-run"
+  source     = "./fabric/modules/cloud-run"
   project_id = "my-project"
   name       = "hello"
   revision_name = "green"
@@ -123,7 +123,7 @@ This deploys a Cloud Run service that will be triggered when messages are publis
 
 ```hcl
 module "cloud_run" {
-  source     = "./modules/cloud-run"
+  source     = "./fabric/modules/cloud-run"
   project_id = "my-project"
   name       = "hello"
   containers = [{
@@ -147,7 +147,7 @@ This deploys a Cloud Run service that will be triggered when specific log events
 
 ```hcl
 module "cloud_run" {
-  source     = "./modules/cloud-run"
+  source     = "./fabric/modules/cloud-run"
   project_id = "my-project"
   name       = "hello"
   containers = [{
@@ -173,7 +173,7 @@ To use a custom service account managed by the module, set `service_account_crea
 
 ```hcl
 module "cloud_run" {
-  source     = "./modules/cloud-run"
+  source     = "./fabric/modules/cloud-run"
   project_id = "my-project"
   name       = "hello"
   containers = [{
@@ -192,7 +192,7 @@ To use an externally managed service account, pass its email in `service_account
 
 ```hcl
 module "cloud_run" {
-  source     = "./modules/cloud-run"
+  source     = "./fabric/modules/cloud-run"
   project_id = "my-project"
   name       = "hello"
   containers = [{

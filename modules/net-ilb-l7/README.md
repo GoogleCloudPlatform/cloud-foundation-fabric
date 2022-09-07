@@ -11,7 +11,7 @@ An HTTP ILB with a backend service pointing to a GCE instance group:
 
 ```hcl
 module "ilb" {
-  source     = "./modules/net-ilb-l7"
+  source     = "./fabric/modules/net-ilb-l7"
   name       = "ilb-test"
   project_id = var.project_id
   region     = "europe-west1"
@@ -39,7 +39,7 @@ Network and subnetwork can be entered using their name (if present in the same p
 
 ```hcl
 module "ilb" {
-  source     = "./modules/net-ilb-l7"
+  source     = "./fabric/modules/net-ilb-l7"
   name       = "ilb-test"
   project_id = var.project_id
   region     = "europe-west1"
@@ -75,7 +75,7 @@ For example, to contextually create a health check and attach it to the backend 
 
 ```hcl
 module "ilb" {
-  source     = "./modules/net-ilb-l7"
+  source     = "./fabric/modules/net-ilb-l7"
   name       = "ilb-test"
   project_id = var.project_id
   region     = "europe-west1"
@@ -118,7 +118,7 @@ Zonal Network Endpoint Groups (NEGs) can also be used, as shown in the example b
 
 ```hcl
 module "ilb" {
-  source     = "./modules/net-ilb-l7"
+  source     = "./fabric/modules/net-ilb-l7"
   name       = "ilb-test"
   project_id = var.project_id
   region     = "europe-west1"
@@ -175,7 +175,7 @@ In this example, we're using a backend service as the default backend
 
 ```hcl
 module "ilb" {
-  source     = "./modules/net-ilb-l7"
+  source     = "./fabric/modules/net-ilb-l7"
   name       = "ilb-test"
   project_id = var.project_id
   region     = "europe-west1"
@@ -234,7 +234,7 @@ Optionally, a static IP address can be reserved:
 
 ```hcl
 module "ilb" {
-  source     = "./modules/net-ilb-l7"
+  source     = "./fabric/modules/net-ilb-l7"
   name       = "ilb-test"
   project_id = var.project_id
   region     = "europe-west1"
@@ -271,7 +271,7 @@ When HTTPS is enabled, if the ids specified in the `target_proxy_https_config` v
 
 ```hcl
 module "ilb" {
-  source     = "./modules/net-ilb-l7"
+  source     = "./fabric/modules/net-ilb-l7"
   name       = "ilb-test"
   project_id = var.project_id
   region     = "europe-west1"
@@ -307,7 +307,7 @@ Otherwise, unmanaged certificates can also be contextually created:
 
 ```hcl
 module "ilb" {
-  source     = "./modules/net-ilb-l7"
+  source     = "./fabric/modules/net-ilb-l7"
   name       = "ilb-test"
   project_id = var.project_id
   region     = "europe-west1"
