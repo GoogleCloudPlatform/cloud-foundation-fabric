@@ -44,7 +44,7 @@ def pytest_generate_tests(metafunc):
             continue
           examples.append(code)
           path = module.relative_to(FABRIC_ROOT)
-          name = f'{path}/{module.stem}:{last_header}'
+          name = f'{path}:{last_header}'
           if index > 1:
             name += f' {index}'
           ids.append(name)
