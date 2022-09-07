@@ -104,7 +104,6 @@ variable "fleet_configmanagement_clusters" {
   nullable    = false
 }
 
-
 variable "fleet_configmanagement_templates" {
   description = "Sets of config management configurations that can be applied to member clusters, in config name => {options} format."
   type = map(object({

@@ -44,151 +44,258 @@ The overall architecture is based on the following design decisions:
 The following example shows how to deploy a single cluster and a single node pool
 
 ```hcl
-clusters = {
-  "mycluster" = {
-    cluster_autoscaling = null
-    description         = "mycluster"
-    dns_domain          = null
-    location            = "europe-west1"
-    labels              = {}
-    net = {
-      master_range = "172.17.16.0/28"
-      pods         = "pods"
-      services     = "services"
-      subnet       = "//www.googleapis.com/compute/v1/projects/<MY_PROJECT>/regions/europe-west1/subnetworks/<MY_SUBNET>"
-    }
-    overrides = null
+module "gke" {
+  source             = "./fabric/examples/gke-serverless/multitenant-fleet/"
+  project_id         = var.project_id
+  billing_account_id = var.billing_account_id
+  folder_id          = var.folder_id
+  prefix             = "myprefix"
+  vpc_config = {
+    host_project_id = "my-host-project-id"
+    vpc_self_link   = "projects/my-host-project-id/global/networks/my-network"
   }
-}
-nodepools = {
-  "mycluster" = {
-    "mynodepool" = {
-      initial_node_count = 1
-      node_count         = 1
-      node_type          = "n2-standard-4"
-      overrides          = null
-      spot               = false
-    }
-  }
-}
 
+authenticator_security_group = "gke-rbac-base@example.com"
+  group_iam = {
+    "gke-admin@example.com" = [
+      "roles/container.admin"
+    ]
+  }
+  iam = {
+    "roles/container.clusterAdmin" = [
+      "cicd@my-cicd-project.iam.gserviceaccount.com"
+    ]
+  }
+
+  clusters = {
+    mycluster = {
+      cluster_autoscaling = null
+      description         = "My cluster"
+      dns_domain          = null
+      location            = "europe-west1"
+      labels              = {}
+      net = {
+        master_range = "172.17.16.0/28"
+        pods         = "pods"
+        services     = "services"
+        subnet       = "projects/my-host-project-id/regions/europe-west1/subnetworks/mycluster-subnet"
+      }
+      overrides = null
+    }
+  }
+  nodepools = {
+    mycluster = {
+      mynodepool = {
+        initial_node_count = 1
+        node_count         = 1
+        node_type          = "n2-standard-4"
+        overrides          = null
+        spot               = false
+      }
+    }
+  }
+}
+# tftest modules=1 resources=0
 ```
+
+## Creating Multiple Clusters
+
+The following example shows how to deploy two clusters with different configurations.
+
+The first cluster `cluster-euw1` defines the mandatory configuration parameters (description, location, network setup) and inherits the some defaults from the `cluster_defaults` and `nodepool_detaults` variables. These two variables are used whenever the `override` key of the `clusters` and `nodepools` variables are set to `null`.
+
+On the other hand, the second cluster (`cluster-euw3`) defines its own configuration by providing a value to the `overrides` key.
+
+
+```hcl
+module "gke" {
+  source             = "./fabric/examples/gke-serverless/multitenant-fleet/"
+  project_id         = var.project_id
+  billing_account_id = var.billing_account_id
+  folder_id          = var.folder_id
+  prefix             = "myprefix"
+  vpc_config = {
+    host_project_id = "my-host-project-id"
+    vpc_self_link   = "projects/my-host-project-id/global/networks/my-network"
+  }
+  clusters = {
+    cluster-euw1 = {
+      cluster_autoscaling = null
+      description         = "Cluster for europ-west1"
+      dns_domain          = null
+      location            = "europe-west1"
+      labels              = {}
+      net = {
+        master_range = "172.17.16.0/28"
+        pods         = "pods"
+        services     = "services"
+        subnet       = "projects/my-host-project-id/regions/europe-west1/subnetworks/euw1-subnet"
+      }
+      overrides = null
+    }
+    cluster-euw3 = {
+      cluster_autoscaling = null
+      description         = "Cluster for europe-west3"
+      dns_domain          = null
+      location            = "europe-west3"
+      labels              = {}
+      net = {
+        master_range = "172.17.17.0/28"
+        pods         = "pods"
+        services     = "services"
+        subnet       = "projects/my-host-project-id/regions/europe-west3/subnetworks/euw3-subnet"
+      }
+      overrides = {
+        cloudrun_config                 = false
+        database_encryption_key         = null
+        gcp_filestore_csi_driver_config = true
+        master_authorized_ranges = {
+          rfc1918_1 = "10.0.0.0/8"
+        }
+        max_pods_per_node        = 64
+        pod_security_policy      = true
+        release_channel          = "STABLE"
+        vertical_pod_autoscaling = false
+      }
+    }
+  }
+  nodepools = {
+    cluster-euw1 = {
+      pool-euw1 = {
+        initial_node_count = 1
+        node_count         = 1
+        node_type          = "n2-standard-4"
+        overrides          = null
+        spot               = false
+      }
+    }
+    cluster-euw3 = {
+      pool-euw3 = {
+        initial_node_count = 1
+        node_count         = 1
+        node_type          = "n2-standard-4"
+        overrides = {
+          image_type        = "UBUNTU_CONTAINERD"
+          max_pods_per_node = 64
+          node_locations    = []
+          node_tags         = []
+          node_taints       = []
+        }
+        spot = true
+      }
+    }
+  }
+}
+# tftest modules=1 resources=0
+```
+
+## Multitenant configuration
+
 
 ## Fleet configuration
 
-## Multi-tenant usage
-
-
-This is an example of that shows the use of the above variables:
 
 ```hcl
-# the `cluster_defaults` variable defaults are used and not shown here
-clusters = {
-  "gke-00" = {
-    cluster_autoscaling = null
-    description         = "gke-00"
-    dns_domain          = null
-    location            = "europe-west1"
-    labels              = {}
-    net = {
-      master_range = "172.17.16.0/28"
-      pods         = "pods"
-      services     = "services"
-      subnet       = local.vpc.subnet_self_links["europe-west3/gke-dev-0"]
-    }
-    overrides = null
+module "gke" {
+  source             = "./fabric/examples/gke-serverless/multitenant-fleet/"
+  project_id         = var.project_id
+  billing_account_id = var.billing_account_id
+  folder_id          = var.folder_id
+  prefix             = "myprefix"
+  vpc_config = {
+    host_project_id = "my-host-project-id"
+    vpc_self_link   = "projects/my-host-project-id/global/networks/my-network"
   }
-  "gke-01" = {
-    cluster_autoscaling = null
-    description         = "gke-01"
-    dns_domain          = null
-    location            = "europe-west3"
-    labels              = {}
-    net = {
-      master_range = "172.17.17.0/28"
-      pods         = "pods"
-      services     = "services"
-      subnet       = local.vpc.subnet_self_links["europe-west3/gke-dev-0"]
-    }
-    overrides = {
-      cloudrun_config                 = false
-      database_encryption_key         = null
-      gcp_filestore_csi_driver_config = true
-      master_authorized_ranges = {
-        rfc1918_1 = "10.0.0.0/8"
+  clusters = {
+    cluster-euw1 = {
+      cluster_autoscaling = null
+      description         = "Cluster for europe-west1"
+      dns_domain          = null
+      location            = "europe-west1"
+      labels              = {}
+      net = {
+        master_range = "172.17.16.0/28"
+        pods         = "pods"
+        services     = "services"
+        subnet       = "projects/my-host-project-id/regions/europe-west1/subnetworks/euw1-subnet"
       }
-      max_pods_per_node        = 64
-      pod_security_policy      = true
-      release_channel          = "STABLE"
-      vertical_pod_autoscaling = false
+      overrides = null
     }
-  }
-}
-nodepools = {
-  "gke-0" = {
-    "gke-00-000" = {
-      initial_node_count = 1
-      node_count         = 1
-      node_type          = "n2-standard-4"
-      overrides          = null
-      spot               = false
-    }
-  }
-  "gke-1" = {
-    "gke-01-000" = {
-      initial_node_count = 1
-      node_count         = 1
-      node_type          = "n2-standard-4"
-      overrides          = {
-        image_type        = "UBUNTU_CONTAINERD"
-        max_pods_per_node = 64
-        node_locations    = []
-        node_tags         = []
-        node_taints       = []
+    cluster-euw3 = {
+      cluster_autoscaling = null
+      description         = "Cluster for europe-west3"
+      dns_domain          = null
+      location            = "europe-west3"
+      labels              = {}
+      net = {
+        master_range = "172.17.17.0/28"
+        pods         = "pods"
+        services     = "services"
+        subnet       = "projects/my-host-project-id/regions/europe-west3/subnetworks/euw3-subnet"
       }
-      spot               = true
+      overrides = null
     }
   }
-}
-```
-
-```hcl
-fleet_configmanagement_templates = {
-  default = {
-    binauthz = false
-    config_sync = {
-      git = {
-        gcp_service_account_email = null
-        https_proxy               = null
-        policy_dir                = "configsync"
-        secret_type               = "none"
-        source_format             = "hierarchy"
-        sync_branch               = "main"
-        sync_repo                 = "https://github.com/.../..."
-        sync_rev                  = null
-        sync_wait_secs            = null
+  nodepools = {
+    cluster-euw1 = {
+      pool-euw1 = {
+        initial_node_count = 1
+        node_count         = 1
+        node_type          = "n2-standard-4"
+        overrides          = null
+        spot               = false
       }
-      prevent_drift = true
-      source_format = "hierarchy"
     }
-    hierarchy_controller = null
-    policy_controller    = null
-    version              = "1.10.2"
+    cluster-euw3 = {
+      pool-euw3 = {
+        initial_node_count = 1
+        node_count         = 1
+        node_type          = "n2-standard-4"
+        overrides          = null
+        spot               = true
+      }
+    }
+  }
+
+  fleet_configmanagement_templates = {
+    default = {
+      binauthz = false
+      config_sync = {
+        git = {
+          gcp_service_account_email = null
+          https_proxy               = null
+          policy_dir                = "configsync"
+          secret_type               = "none"
+          source_format             = "hierarchy"
+          sync_branch               = "main"
+          sync_repo                 = "https://github.com/.../..."
+          sync_rev                  = null
+          sync_wait_secs            = null
+        }
+        prevent_drift = true
+        source_format = "hierarchy"
+      }
+      hierarchy_controller = null
+      policy_controller    = null
+      version              = "1.10.2"
+    }
+  }
+
+  fleet_configmanagement_clusters = {
+    default = ["cluster-euw1", "cluster-euw3"]
+  }
+
+  fleet_features = {
+    appdevexperience             = false
+    configmanagement             = false
+    identityservice              = false
+    multiclusteringress          = "cluster-euw1"
+    multiclusterservicediscovery = true
+    servicemesh                  = false
   }
 }
 
-fleet_configmanagement_clusters = {
-  default = ["gke-1", "gke-2"]
-}
-
-fleet_features = {
-  appdevexperience             = false
-  configmanagement             = false
-  identityservice              = false
-  multiclusteringress          = "gke-1"
-  multiclusterservicediscovery = true
-  servicemesh                  = false
-}
+# tftest modules=1 resources=0
 ```
 
 <!-- TFDOC OPTS files:1 show_extra:1 -->
