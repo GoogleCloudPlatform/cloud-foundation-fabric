@@ -15,6 +15,11 @@
  */
 
 locals {
+  gcs_storage_class = (
+    length(split("-", var.locations.gcs)) > 1
+    ? "MULTI-REGIONAL"
+    : "REGIONAL"
+  )
   groups = {
     for k, v in var.groups :
     k => "${v}@${var.organization.domain}"
