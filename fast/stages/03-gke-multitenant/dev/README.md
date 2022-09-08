@@ -2,13 +2,40 @@
 
 This stage allows creation and management of a fleet of GKE multitenant clusters, optionally leveraging GKE Hub to configure additional features. It's designed to be replicated once for every homogeneous set of clusters, either per environment or with more granularity as needed (e.g. teams or sets of teams sharing similar requirements).
 
-The following diagram illustrates the high-level design of created resources and a schema of the VPC SC design, which can be adapted to specific requirements via variables:
+The following diagram illustrates the high-level design of created resources, which can be adapted to specific requirements via variables:
 
 <p align="center">
   <img src="diagram.png" alt="GKE multitenant">
 </p>
 
 ## Design overview and choices
+
+> The detailed architecture of the underlying resources is explained in the documentation of [GKE multitenant module](../../../../examples/gke-serverless/multitenant-fleet/README.md).
+
+This stage creates containing a cluster and as many clusters and node pools as requested by the user through the [variables](#variables) explained below. The GKE clusters are created with the with the following setup
+
+- All clusters are assumed to be [private](https://cloud.google.com/kubernetes-engine/docs/how-to/private-clusters), therefore only [VPC-native clusters](https://cloud.google.com/kubernetes-engine/docs/concepts/alias-ips) are supported.
+- Logging and monitoring configured to use Cloud Operations for system components and user workloads.
+- [GKE metering](https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-usage-metering) enabled by default and stored in a bigquery dataset created within the project.
+- Optional [GKE Fleet](https://cloud.google.com/kubernetes-engine/docs/fleets-overview) support with the possibility to enable any of the following features:
+  - [Fleet workload identity](https://cloud.google.com/anthos/fleet-management/docs/use-workload-identity)
+  - [Anthos Config Management](https://cloud.google.com/anthos-config-management/docs/overview)
+  - [Anthos Service Mesh](https://cloud.google.com/service-mesh/docs/overview)
+  - [Anthos Identity Service](https://cloud.google.com/anthos/identity/setup/fleet)
+  - [Multi-cluster services](https://cloud.google.com/kubernetes-engine/docs/concepts/multi-cluster-services)
+  - [Multi-cluster ingress](https://cloud.google.com/kubernetes-engine/docs/concepts/multi-cluster-ingress).
+- Support for [Config Sync](https://cloud.google.com/anthos-config-management/docs/config-sync-overview), [Hierarchy Controller](https://cloud.google.com/anthos-config-management/docs/concepts/hierarchy-controller), and [Policy Controller](https://cloud.google.com/anthos-config-management/docs/concepts/policy-controller) when using Anthos Config Management.
+- [Groups for GKE](https://cloud.google.com/kubernetes-engine/docs/how-to/google-groups-rbac) can be enabled to facilitate the creation of flexible RBAC policies referencing group principals.
+- Support for [application layer secret encryption](https://cloud.google.com/kubernetes-engine/docs/how-to/encrypting-secrets).
+- Support to customize peering configuration of the control plane VPC (e.g. to import/export routes to the peered network)
+- Some features are enabled by default in all clusters:
+  - [Intranode visibility](https://cloud.google.com/kubernetes-engine/docs/how-to/intranode-visibility)
+  - [Dataplane v2](https://cloud.google.com/kubernetes-engine/docs/concepts/dataplane-v2)
+  - [Shielded GKE nodes](https://cloud.google.com/kubernetes-engine/docs/how-to/shielded-gke-nodes)
+  - [Workload identity](https://cloud.google.com/kubernetes-engine/docs/how-to/workload-identity)
+  - [Node local DNS cache](https://cloud.google.com/kubernetes-engine/docs/how-to/nodelocal-dns-cache)
+  - [Use of the GCE persistent disk CSI driver](https://cloud.google.com/kubernetes-engine/docs/how-to/persistent-volumes/gce-pd-csi-driver)
+  - Node [auto-upgrade](https://cloud.google.com/kubernetes-engine/docs/how-to/node-auto-upgrades) and [auto-repair](https://cloud.google.com/kubernetes-engine/docs/how-to/node-auto-repair) for all node pools
 
 
 ## How to run this stage
@@ -33,9 +60,9 @@ It's of course possible to run this stage in isolation, by making sure the archi
   - `roles/compute.viewer`
 - on the organization or billing account
   - `roles/billing.admin`
-  
+
 The VPC host project, VPC and subnets should already exist.
-  
+
 ### Providers configuration
 
 If you're running this on top of FAST, you should run the following commands to create the providers file, and populate the required variables from the previous stage.
@@ -98,8 +125,6 @@ Once the [provider](#providers-configuration) and [variable](#variable-configura
 terraform init
 terraform apply
 ```
-
-...
 
 <!-- TFDOC OPTS files:1 show_extra:1 -->
 <!-- BEGIN TFDOC -->
