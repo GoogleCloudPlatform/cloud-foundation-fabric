@@ -41,6 +41,9 @@ locals {
       [module.automation-tf-bootstrap-sa.iam_email],
       local._iam_bootstrap_user
     )
+    "roles/resourcemanager.projectMover" = [
+      module.automation-tf-bootstrap-sa.iam_email
+    ]
     "roles/resourcemanager.tagAdmin" = [
       module.automation-tf-resman-sa.iam_email
     ]

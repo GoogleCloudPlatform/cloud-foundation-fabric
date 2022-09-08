@@ -141,12 +141,14 @@ moved {
 }
 
 module "branch-dp-dev-gcs" {
-  source     = "../../../modules/gcs"
-  count      = var.fast_features.data_platform ? 1 : 0
-  project_id = var.automation.project_id
-  name       = "dev-resman-dp-0"
-  prefix     = var.prefix
-  versioning = true
+  source        = "../../../modules/gcs"
+  count         = var.fast_features.data_platform ? 1 : 0
+  project_id    = var.automation.project_id
+  name          = "dev-resman-dp-0"
+  prefix        = var.prefix
+  location      = var.locations.gcs
+  storage_class = local.gcs_storage_class
+  versioning    = true
   iam = {
     "roles/storage.objectAdmin" = [module.branch-dp-dev-sa.0.iam_email]
   }
@@ -158,12 +160,14 @@ moved {
 }
 
 module "branch-dp-prod-gcs" {
-  source     = "../../../modules/gcs"
-  count      = var.fast_features.data_platform ? 1 : 0
-  project_id = var.automation.project_id
-  name       = "prod-resman-dp-0"
-  prefix     = var.prefix
-  versioning = true
+  source        = "../../../modules/gcs"
+  count         = var.fast_features.data_platform ? 1 : 0
+  project_id    = var.automation.project_id
+  name          = "prod-resman-dp-0"
+  prefix        = var.prefix
+  location      = var.locations.gcs
+  storage_class = local.gcs_storage_class
+  versioning    = true
   iam = {
     "roles/storage.objectAdmin" = [module.branch-dp-prod-sa.0.iam_email]
   }

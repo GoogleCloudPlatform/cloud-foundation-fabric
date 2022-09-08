@@ -158,6 +158,24 @@ variable "groups" {
   }
 }
 
+variable "locations" {
+  # tfdoc:variable:source 00-bootstrap
+  description = "Optional locations for GCS, BigQuery, and logging buckets created here."
+  type = object({
+    bq      = string
+    gcs     = string
+    logging = string
+    pubsub  = list(string)
+  })
+  default = {
+    bq      = "EU"
+    gcs     = "EU"
+    logging = "global"
+    pubsub  = []
+  }
+  nullable = false
+}
+
 variable "organization" {
   # tfdoc:variable:source 00-bootstrap
   description = "Organization details."

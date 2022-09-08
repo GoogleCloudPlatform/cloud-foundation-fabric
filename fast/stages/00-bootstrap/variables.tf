@@ -151,6 +151,23 @@ variable "iam_additive" {
   default     = {}
 }
 
+variable "locations" {
+  description = "Optional locations for GCS, BigQuery, and logging buckets created here."
+  type = object({
+    bq      = string
+    gcs     = string
+    logging = string
+    pubsub  = list(string)
+  })
+  default = {
+    bq      = "EU"
+    gcs     = "EU"
+    logging = "global"
+    pubsub  = []
+  }
+  nullable = false
+}
+
 # See https://cloud.google.com/architecture/exporting-stackdriver-logging-for-security-and-access-analytics
 # for additional logging filter examples
 variable "log_sinks" {
@@ -201,4 +218,19 @@ variable "prefix" {
     condition     = try(length(var.prefix), 0) < 10
     error_message = "Use a maximum of 9 characters for prefix."
   }
+}
+
+variable "project_parent_ids" {
+  description = "Optional parents for projects created here in folders/nnnnnnn format. Null values will use the organization as parent."
+  type = object({
+    automation = string
+    billing    = string
+    logging    = string
+  })
+  default = {
+    automation = null
+    billing    = null
+    logging    = null
+  }
+  nullable = false
 }
