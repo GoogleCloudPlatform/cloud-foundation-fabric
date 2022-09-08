@@ -14,7 +14,7 @@ The overall architecture is based on the following design decisions:
 
 - All clusters are assumed to be [private](https://cloud.google.com/kubernetes-engine/docs/how-to/private-clusters), therefore only [VPC-native clusters](https://cloud.google.com/kubernetes-engine/docs/concepts/alias-ips) are supported.
 - Logging and monitoring configured to use Cloud Operations for system components and user workloads.
-- [GKE metering](https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-usage-metering) enabled by default and stored in a bigquery dataset created withing the project.
+- [GKE metering](https://cloud.google.com/kubernetes-engine/docs/how-to/cluster-usage-metering) enabled by default and stored in a bigquery dataset created within the project.
 - Optional [GKE Fleet](https://cloud.google.com/kubernetes-engine/docs/fleets-overview) support with the possibility to enable any of the following features:
   - [Fleet workload identity](https://cloud.google.com/anthos/fleet-management/docs/use-workload-identity)
   - [Anthos Config Management](https://cloud.google.com/anthos-config-management/docs/overview)
@@ -102,7 +102,7 @@ module "gke" {
 
 The following example shows how to deploy two clusters with different configurations.
 
-The first cluster `cluster-euw1` defines the mandatory configuration parameters (description, location, network setup) and inherits the some defaults from the `cluster_defaults` and `nodepool_detaults` variables. These two variables are used whenever the `override` key of the `clusters` and `nodepools` variables are set to `null`.
+The first cluster `cluster-euw1` defines the mandatory configuration parameters (description, location, network setup) and inherits the some defaults from the `cluster_defaults` and `nodepool_deaults` variables. These two variables are used whenever the `override` key of the `clusters` and `nodepools` variables are set to `null`.
 
 On the other hand, the second cluster (`cluster-euw3`) defines its own configuration by providing a value to the `overrides` key.
 
@@ -191,10 +191,10 @@ module "gke" {
 
 ## Multiple clusters with GKE Fleet
 
-This example deploys two clusters and configures the several GKE Fleet features:
+This example deploys two clusters and configures several GKE Fleet features:
 
 - Enables [multi-cluster ingress](https://cloud.google.com/kubernetes-engine/docs/concepts/multi-cluster-ingress) and sets the configuration cluster to be `cluster-eu1`.
-- Enables [Multi-cluster services](https://cloud.google.com/kubernetes-engine/docs/concepts/multi-cluster-services) and gives assigns the [required roles](https://cloud.google.com/kubernetes-engine/docs/how-to/multi-cluster-services#authenticating) to its service accounts.
+- Enables [Multi-cluster services](https://cloud.google.com/kubernetes-engine/docs/concepts/multi-cluster-services) and assigns the [required roles](https://cloud.google.com/kubernetes-engine/docs/how-to/multi-cluster-services#authenticating) to its service accounts.
 - A `default` Config Management template is created with binary authorization, config sync enabled with a git repository, hierarchy controller, and policy controller.
 - The two clusters are configured to use the `default` Config Management template.
 
