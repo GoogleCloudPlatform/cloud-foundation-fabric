@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-# we deal with one env here
-# 1 project, m clusters
-# cloud dns for gke?
-
 variable "authenticator_security_group" {
   description = "Optional group used for Groups for GKE."
   type        = string

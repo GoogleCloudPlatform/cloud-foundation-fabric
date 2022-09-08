@@ -55,7 +55,7 @@ module "gke" {
     vpc_self_link   = "projects/my-host-project-id/global/networks/my-network"
   }
 
-authenticator_security_group = "gke-rbac-base@example.com"
+  authenticator_security_group = "gke-rbac-base@example.com"
   group_iam = {
     "gke-admin@example.com" = [
       "roles/container.admin"
@@ -189,11 +189,14 @@ module "gke" {
 # tftest modules=1 resources=0
 ```
 
-## Multitenant configuration
+## Multiple clusters with GKE Fleet
 
+This example deploys two clusters and configures the several GKE Fleet features:
 
-## Fleet configuration
-
+- Enables [multi-cluster ingress](https://cloud.google.com/kubernetes-engine/docs/concepts/multi-cluster-ingress) and sets the configuration cluster to be `cluster-eu1`.
+- Enables [Multi-cluster services](https://cloud.google.com/kubernetes-engine/docs/concepts/multi-cluster-services) and gives assigns the [required roles](https://cloud.google.com/kubernetes-engine/docs/how-to/multi-cluster-services#authenticating) to its service accounts.
+- A `default` Config Management template is created with binary authorization, config sync enabled with a git repository, hierarchy controller, and policy controller.
+- The two clusters are configured to use the `default` Config Management template.
 
 ```hcl
 module "gke" {
@@ -257,9 +260,18 @@ module "gke" {
     }
   }
 
+  fleet_features = {
+    appdevexperience             = false
+    configmanagement             = true
+    identityservice              = true
+    multiclusteringress          = "cluster-euw1"
+    multiclusterservicediscovery = true
+    servicemesh                  = true
+  }
+  fleet_workload_identity = true
   fleet_configmanagement_templates = {
     default = {
-      binauthz = false
+      binauthz = true
       config_sync = {
         git = {
           gcp_service_account_email = null
@@ -268,30 +280,29 @@ module "gke" {
           secret_type               = "none"
           source_format             = "hierarchy"
           sync_branch               = "main"
-          sync_repo                 = "https://github.com/.../..."
+          sync_repo                 = "https://github.com/myorg/myrepo"
           sync_rev                  = null
           sync_wait_secs            = null
         }
         prevent_drift = true
         source_format = "hierarchy"
       }
-      hierarchy_controller = null
-      policy_controller    = null
+      hierarchy_controller = {
+        enable_hierarchical_resource_quota = true
+        enable_pod_tree_labels             = true
+      }
+      policy_controller    = {
+        audit_interval_seconds     = 30
+        exemptable_namespaces      = ["kube-system"]
+        log_denies_enabled         = true
+        referential_rules_enabled  = true
+        template_library_installed = true
+      }
       version              = "1.10.2"
     }
   }
-
   fleet_configmanagement_clusters = {
     default = ["cluster-euw1", "cluster-euw3"]
-  }
-
-  fleet_features = {
-    appdevexperience             = false
-    configmanagement             = false
-    identityservice              = false
-    multiclusteringress          = "cluster-euw1"
-    multiclusterservicediscovery = true
-    servicemesh                  = false
   }
 }
 
