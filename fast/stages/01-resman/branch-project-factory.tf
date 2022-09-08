@@ -68,12 +68,14 @@ moved {
 }
 
 module "branch-pf-dev-gcs" {
-  source     = "../../../modules/gcs"
-  count      = var.fast_features.project_factory ? 1 : 0
-  project_id = var.automation.project_id
-  name       = "dev-resman-pf-0"
-  prefix     = var.prefix
-  versioning = true
+  source        = "../../../modules/gcs"
+  count         = var.fast_features.project_factory ? 1 : 0
+  project_id    = var.automation.project_id
+  name          = "dev-resman-pf-0"
+  prefix        = var.prefix
+  location      = var.locations.gcs
+  storage_class = local.gcs_storage_class
+  versioning    = true
   iam = {
     "roles/storage.objectAdmin" = [module.branch-pf-dev-sa.0.iam_email]
   }
@@ -85,12 +87,14 @@ moved {
 }
 
 module "branch-pf-prod-gcs" {
-  source     = "../../../modules/gcs"
-  count      = var.fast_features.project_factory ? 1 : 0
-  project_id = var.automation.project_id
-  name       = "prod-resman-pf-0"
-  prefix     = var.prefix
-  versioning = true
+  source        = "../../../modules/gcs"
+  count         = var.fast_features.project_factory ? 1 : 0
+  project_id    = var.automation.project_id
+  name          = "prod-resman-pf-0"
+  prefix        = var.prefix
+  location      = var.locations.gcs
+  storage_class = local.gcs_storage_class
+  versioning    = true
   iam = {
     "roles/storage.objectAdmin" = [module.branch-pf-prod-sa.0.iam_email]
   }

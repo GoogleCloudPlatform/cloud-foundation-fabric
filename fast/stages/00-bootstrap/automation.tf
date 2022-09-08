@@ -85,23 +85,27 @@ module "automation-project" {
 # output files bucket
 
 module "automation-tf-output-gcs" {
-  source     = "../../../modules/gcs"
-  project_id = module.automation-project.project_id
-  name       = "iac-core-outputs-0"
-  prefix     = local.prefix
-  versioning = true
-  depends_on = [module.organization]
+  source        = "../../../modules/gcs"
+  project_id    = module.automation-project.project_id
+  name          = "iac-core-outputs-0"
+  prefix        = local.prefix
+  location      = var.locations.gcs
+  storage_class = local.gcs_storage_class
+  versioning    = true
+  depends_on    = [module.organization]
 }
 
 # this stage's bucket and service account
 
 module "automation-tf-bootstrap-gcs" {
-  source     = "../../../modules/gcs"
-  project_id = module.automation-project.project_id
-  name       = "iac-core-bootstrap-0"
-  prefix     = local.prefix
-  versioning = true
-  depends_on = [module.organization]
+  source        = "../../../modules/gcs"
+  project_id    = module.automation-project.project_id
+  name          = "iac-core-bootstrap-0"
+  prefix        = local.prefix
+  location      = var.locations.gcs
+  storage_class = local.gcs_storage_class
+  versioning    = true
+  depends_on    = [module.organization]
 }
 
 module "automation-tf-bootstrap-sa" {
@@ -124,11 +128,13 @@ module "automation-tf-bootstrap-sa" {
 # cicd stage's bucket and service account
 
 module "automation-tf-cicd-gcs" {
-  source     = "../../../modules/gcs"
-  project_id = module.automation-project.project_id
-  name       = "iac-core-cicd-0"
-  prefix     = local.prefix
-  versioning = true
+  source        = "../../../modules/gcs"
+  project_id    = module.automation-project.project_id
+  name          = "iac-core-cicd-0"
+  prefix        = local.prefix
+  location      = var.locations.gcs
+  storage_class = local.gcs_storage_class
+  versioning    = true
   iam = {
     "roles/storage.objectAdmin" = [module.automation-tf-cicd-provisioning-sa.iam_email]
   }
@@ -155,11 +161,13 @@ module "automation-tf-cicd-provisioning-sa" {
 # resource hierarchy stage's bucket and service account
 
 module "automation-tf-resman-gcs" {
-  source     = "../../../modules/gcs"
-  project_id = module.automation-project.project_id
-  name       = "iac-core-resman-0"
-  prefix     = local.prefix
-  versioning = true
+  source        = "../../../modules/gcs"
+  project_id    = module.automation-project.project_id
+  name          = "iac-core-resman-0"
+  prefix        = local.prefix
+  location      = var.locations.gcs
+  storage_class = local.gcs_storage_class
+  versioning    = true
   iam = {
     "roles/storage.objectAdmin" = [module.automation-tf-resman-sa.iam_email]
   }

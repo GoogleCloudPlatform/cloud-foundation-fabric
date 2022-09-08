@@ -56,6 +56,7 @@ module "billing-export-dataset" {
   project_id    = module.billing-export-project.0.project_id
   id            = "billing_export"
   friendly_name = "Billing export."
+  location      = var.locations.bq
 }
 
 # billing account in a different org

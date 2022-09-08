@@ -149,6 +149,23 @@ variable "iam_additive" {
   default     = {}
 }
 
+variable "locations" {
+  description = "Optional locations for GCS, BigQuery, and logging buckets created here."
+  type = object({
+    bq      = string
+    gcs     = string
+    logging = string
+    pubsub  = list(string)
+  })
+  default = {
+    bq      = "EU"
+    gcs     = "EU"
+    logging = "global"
+    pubsub  = []
+  }
+  nullable = false
+}
+
 # See https://cloud.google.com/architecture/exporting-stackdriver-logging-for-security-and-access-analytics
 # for additional logging filter examples
 variable "log_sinks" {

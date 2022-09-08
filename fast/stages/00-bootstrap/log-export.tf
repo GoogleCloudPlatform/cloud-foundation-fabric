@@ -49,14 +49,17 @@ module "log-export-dataset" {
   project_id    = module.log-export-project.project_id
   id            = "audit_export"
   friendly_name = "Audit logs export."
+  location      = var.locations.bq
 }
 
 module "log-export-gcs" {
-  source     = "../../../modules/gcs"
-  count      = contains(local.log_types, "storage") ? 1 : 0
-  project_id = module.log-export-project.project_id
-  name       = "audit-logs-0"
-  prefix     = local.prefix
+  source        = "../../../modules/gcs"
+  count         = contains(local.log_types, "storage") ? 1 : 0
+  project_id    = module.log-export-project.project_id
+  name          = "audit-logs-0"
+  prefix        = local.prefix
+  location      = var.locations.gcs
+  storage_class = local.gcs_storage_class
 }
 
 module "log-export-logbucket" {
@@ -65,6 +68,7 @@ module "log-export-logbucket" {
   parent_type = "project"
   parent      = module.log-export-project.project_id
   id          = "audit-logs-${each.key}"
+  location    = var.locations.logging
 }
 
 module "log-export-pubsub" {
@@ -72,4 +76,5 @@ module "log-export-pubsub" {
   for_each   = toset([for k, v in var.log_sinks : k if v.type == "pubsub"])
   project_id = module.log-export-project.project_id
   name       = "audit-logs-${each.key}"
+  regions    = var.locations.pubsub
 }
