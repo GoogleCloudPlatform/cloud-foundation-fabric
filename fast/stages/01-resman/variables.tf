@@ -128,12 +128,14 @@ variable "fast_features" {
   description = "Selective control for top-level FAST features."
   type = object({
     data_platform   = bool
+    gke             = bool
     project_factory = bool
     sandbox         = bool
     teams           = bool
   })
   default = {
     data_platform   = true
+    gke             = true
     project_factory = true
     sandbox         = true
     teams           = true

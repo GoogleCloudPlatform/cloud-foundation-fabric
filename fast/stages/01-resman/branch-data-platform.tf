@@ -56,7 +56,8 @@ module "branch-dp-dev-folder" {
   }
   tag_bindings = {
     context = try(
-      module.organization.tag_values["${var.tag_names.environment}/development"].id, null
+      module.organization.tag_values["${var.tag_names.environment}/development"].id,
+      null
     )
   }
 }
@@ -82,7 +83,8 @@ module "branch-dp-prod-folder" {
   }
   tag_bindings = {
     context = try(
-      module.organization.tag_values["${var.tag_names.environment}/production"].id, null
+      module.organization.tag_values["${var.tag_names.environment}/production"].id,
+      null
     )
   }
 }
