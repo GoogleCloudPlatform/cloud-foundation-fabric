@@ -21,9 +21,11 @@ locals {
 }
 
 module "log-export-project" {
-  source          = "../../../modules/project"
-  name            = "audit-logs-0"
-  parent          = "organizations/${var.organization.id}"
+  source = "../../../modules/project"
+  name   = "audit-logs-0"
+  parent = coalesce(
+    var.project_parents.logging, "organizations/${var.organization.id}"
+  )
   prefix          = local.prefix
   billing_account = var.billing_account.id
   iam = {
