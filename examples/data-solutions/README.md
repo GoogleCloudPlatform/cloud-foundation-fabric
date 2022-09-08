@@ -30,7 +30,7 @@ This [example](./data-platform-foundations/) implements SQL Server Always On Ava
 
 ### Cloud SQL instance with multi-region read replicas
 
-<a href="./cloudsql-multiregion/" title="Cloud SQL instance with multi-region read replicas"><img src="./cloudsql-multiregion/diagram.png" align="left" width="280px"></a>
+<a href="./cloudsql-multiregion/" title="Cloud SQL instance with multi-region read replicas"><img src="./cloudsql-multiregion/images/diagram.png" align="left" width="280px"></a>
 This [example](./cloudsql-multiregion/) creates a [Cloud SQL instance](https://cloud.google.com/sql) with multi-region read replicas as described in the [Cloud SQL for PostgreSQL disaster recovery](https://cloud.google.com/architecture/cloud-sql-postgres-disaster-recovery-complete-failover-fallback) article.
 <br clear="left">
 

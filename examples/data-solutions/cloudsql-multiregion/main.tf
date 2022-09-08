@@ -54,6 +54,20 @@ locals {
       "serviceAccount:${module.project.service_accounts.robots.sql}"
     ]
   }
+
+  shared_vpc_project = try(var.network_config.host_project, null)
+  use_shared_vpc     = var.network_config != null
+
+  subnet = (
+    local.use_shared_vpc
+    ? var.network_config.subnet_self_link
+    : values(module.vpc.0.subnet_self_links)[0]
+  )
+  vpc_self_link = (
+    local.use_shared_vpc
+    ? var.network_config.network_self_link
+    : module.vpc.0.self_link
+  )
 }
 
 module "project" {
@@ -67,6 +81,7 @@ module "project" {
   iam_additive    = var.project_create == null ? local.iam : {}
   services = [
     "cloudkms.googleapis.com",
+    "compute.googleapis.com",
     "iap.googleapis.com",
     "logging.googleapis.com",
     "monitoring.googleapis.com",
@@ -77,6 +92,18 @@ module "project" {
     "storage.googleapis.com",
     "storage-component.googleapis.com",
   ]
+
+  shared_vpc_service_config = local.shared_vpc_project == null ? null : {
+    attach               = true
+    host_project         = local.shared_vpc_project
+    service_identity_iam = {}
+  }
+
+  service_encryption_key_ids = {
+    compute = try(values(var.service_encryption_keys), [])
+    sql     = try(values(var.service_encryption_keys), [])
+    storage = try(values(var.service_encryption_keys), [])
+  }
   service_config = {
     disable_on_destroy = false, disable_dependent_services = false
   }
@@ -84,6 +111,7 @@ module "project" {
 
 module "vpc" {
   source     = "../../../modules/net-vpc"
+  count      = local.use_shared_vpc ? 0 : 1
   project_id = module.project.project_id
   name       = "vpc"
   subnets = [
@@ -103,15 +131,17 @@ module "vpc" {
 
 module "firewall" {
   source       = "../../../modules/net-vpc-firewall"
+  count        = local.use_shared_vpc ? 0 : 1
   project_id   = module.project.project_id
-  network      = module.vpc.name
+  network      = module.vpc.0.name
   admin_ranges = ["10.0.0.0/20"]
 }
 
 module "nat" {
   source         = "../../../modules/net-cloudnat"
+  count          = local.use_shared_vpc ? 0 : 1
   project_id     = module.project.project_id
   region         = var.regions.primary
   name           = "${var.prefix}-default"
-  router_network = module.vpc.name
+  router_network = module.vpc.0.name
 }
