@@ -21,7 +21,7 @@ module "automation-project" {
   billing_account = var.billing_account.id
   name            = "iac-core-0"
   parent = coalesce(
-    var.project_parents.automation, "organizations/${var.organization.id}"
+    var.project_parent_ids.automation, "organizations/${var.organization.id}"
   )
   prefix = local.prefix
   # human (groups) IAM bindings

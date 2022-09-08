@@ -34,7 +34,7 @@ module "billing-export-project" {
   billing_account = var.billing_account.id
   name            = "billing-exp-0"
   parent = coalesce(
-    var.project_parents.billing, "organizations/${var.organization.id}"
+    var.project_parent_ids.billing, "organizations/${var.organization.id}"
   )
   prefix = local.prefix
   iam = {
