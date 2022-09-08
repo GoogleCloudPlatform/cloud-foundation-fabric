@@ -98,11 +98,13 @@ module "branch-network-sa" {
 }
 
 module "branch-network-gcs" {
-  source     = "../../../modules/gcs"
-  project_id = var.automation.project_id
-  name       = "prod-resman-net-0"
-  prefix     = var.prefix
-  versioning = true
+  source        = "../../../modules/gcs"
+  project_id    = var.automation.project_id
+  name          = "prod-resman-net-0"
+  prefix        = var.prefix
+  location      = var.locations.gcs
+  storage_class = local.gcs_storage_class
+  versioning    = true
   iam = {
     "roles/storage.objectAdmin" = [module.branch-network-sa.iam_email]
   }
