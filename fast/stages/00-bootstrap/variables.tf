@@ -155,13 +155,13 @@ variable "locations" {
     bq      = string
     gcs     = string
     logging = string
-    pubsub(list(string))
+    pubsub  = list(string)
   })
   default = {
     bq      = "EU"
     gcs     = "EU"
     logging = "global"
-    pubsub = []
+    pubsub  = []
   }
   nullable = false
 }
