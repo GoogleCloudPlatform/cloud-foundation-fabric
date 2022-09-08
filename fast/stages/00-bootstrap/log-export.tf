@@ -66,7 +66,7 @@ module "log-export-logbucket" {
   parent_type = "project"
   parent      = module.log-export-project.project_id
   id          = "audit-logs-${each.key}"
-  location    = var.locations.bq
+  location    = var.locations.logging
 }
 
 module "log-export-pubsub" {
