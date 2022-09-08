@@ -33,8 +33,10 @@ module "billing-export-project" {
   count           = local.billing_org ? 1 : 0
   billing_account = var.billing_account.id
   name            = "billing-exp-0"
-  parent          = "organizations/${var.organization.id}"
-  prefix          = local.prefix
+  parent = coalesce(
+    var.project_parent_ids.billing, "organizations/${var.organization.id}"
+  )
+  prefix = local.prefix
   iam = {
     "roles/owner" = [module.automation-tf-bootstrap-sa.iam_email]
   }

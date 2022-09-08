@@ -20,8 +20,10 @@ module "automation-project" {
   source          = "../../../modules/project"
   billing_account = var.billing_account.id
   name            = "iac-core-0"
-  parent          = "organizations/${var.organization.id}"
-  prefix          = local.prefix
+  parent = coalesce(
+    var.project_parent_ids.automation, "organizations/${var.organization.id}"
+  )
+  prefix = local.prefix
   # human (groups) IAM bindings
   group_iam = {
     (local.groups.gcp-devops) = [
