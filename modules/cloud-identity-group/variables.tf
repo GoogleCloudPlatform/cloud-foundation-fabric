@@ -34,6 +34,12 @@ variable "display_name" {
   type        = string
 }
 
+variable "managers" {
+  description = "List of group managers."
+  type        = list(string)
+  default     = []
+}
+
 variable "members" {
   description = "List of group members."
   type        = list(string)
@@ -47,12 +53,6 @@ variable "name" {
 
 # variable "owners" {
 #   description = "List of group owners."
-#   type        = list(string)
-#   default     = []
-# }
-
-# variable "managers" {
-#   description = "List of group managers."
 #   type        = list(string)
 #   default     = []
 # }
