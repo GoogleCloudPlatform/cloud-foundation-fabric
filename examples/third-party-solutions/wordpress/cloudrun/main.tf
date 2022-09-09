@@ -56,7 +56,8 @@ module "project" { # either create a project or set up the given one
     "monitoring.googleapis.com",
     "sqladmin.googleapis.com",
     "sql-component.googleapis.com",
-    "vpcaccess.googleapis.com"
+    "vpcaccess.googleapis.com",
+    "servicenetworking.googleapis.com"
   ]
 }
 
