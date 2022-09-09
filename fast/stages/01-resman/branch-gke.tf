@@ -16,11 +16,6 @@
 
 # tfdoc:file:description GKE multitenant stage resources.
 
-moved {
-  from = module.branch-gke-folder
-  to   = module.branch-gke-folder.0
-}
-
 module "branch-gke-folder" {
   source = "../../../modules/folder"
   count  = var.fast_features.gke ? 1 : 0
@@ -31,11 +26,6 @@ module "branch-gke-folder" {
       module.organization.tag_values["${var.tag_names.context}/gke"].id, null
     )
   }
-}
-
-moved {
-  from = module.branch-gke-dev-folder
-  to   = module.branch-gke-dev-folder.0
 }
 
 module "branch-gke-dev-folder" {
@@ -58,11 +48,6 @@ module "branch-gke-dev-folder" {
   }
 }
 
-moved {
-  from = module.branch-gke-prod-folder
-  to   = module.branch-gke-prod-folder.0
-}
-
 module "branch-gke-prod-folder" {
   source = "../../../modules/folder"
   count  = var.fast_features.gke ? 1 : 0
@@ -83,11 +68,6 @@ module "branch-gke-prod-folder" {
   }
 }
 
-moved {
-  from = module.branch-gke-dev-sa
-  to   = module.branch-gke-dev-sa.0
-}
-
 module "branch-gke-dev-sa" {
   source      = "../../../modules/iam-service-account"
   count       = var.fast_features.gke ? 1 : 0
@@ -96,16 +76,16 @@ module "branch-gke-dev-sa" {
   description = "Terraform gke multitenant dev service account."
   prefix      = var.prefix
   iam = {
-    "roles/iam.serviceAccountTokenCreator" = ["group:${local.groups.gcp-devops}"]
+    "roles/iam.serviceAccountTokenCreator" = concat(
+      ["group:${local.groups.gcp-devops}"],
+      compact([
+        try(module.branch-gke-dev-sa-cicd.0.iam_email, null)
+      ])
+    )
   }
   iam_storage_roles = {
     (var.automation.outputs_bucket) = ["roles/storage.admin"]
   }
-}
-
-moved {
-  from = module.branch-gke-prod-sa
-  to   = module.branch-gke-prod-sa.0
 }
 
 module "branch-gke-prod-sa" {
@@ -116,16 +96,16 @@ module "branch-gke-prod-sa" {
   description = "Terraform gke multitenant prod service account."
   prefix      = var.prefix
   iam = {
-    "roles/iam.serviceAccountTokenCreator" = ["group:${local.groups.gcp-devops}"]
+    "roles/iam.serviceAccountTokenCreator" = concat(
+      ["group:${local.groups.gcp-devops}"],
+      compact([
+        try(module.branch-gke-prod-sa-cicd.0.iam_email, null)
+      ])
+    )
   }
   iam_storage_roles = {
     (var.automation.outputs_bucket) = ["roles/storage.admin"]
   }
-}
-
-moved {
-  from = module.branch-gke-dev-gcs
-  to   = module.branch-gke-dev-gcs.0
 }
 
 module "branch-gke-dev-gcs" {
@@ -138,11 +118,6 @@ module "branch-gke-dev-gcs" {
   iam = {
     "roles/storage.objectAdmin" = [module.branch-gke-dev-sa.0.iam_email]
   }
-}
-
-moved {
-  from = module.branch-gke-prod-gcs
-  to   = module.branch-gke-prod-gcs.0
 }
 
 module "branch-gke-prod-gcs" {

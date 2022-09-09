@@ -59,6 +59,18 @@ variable "cicd_repositories" {
       name              = string
       type              = string
     })
+    gke_dev = object({
+      branch            = string
+      identity_provider = string
+      name              = string
+      type              = string
+    })
+    gke_prod = object({
+      branch            = string
+      identity_provider = string
+      name              = string
+      type              = string
+    })
     networking = object({
       branch            = string
       identity_provider = string

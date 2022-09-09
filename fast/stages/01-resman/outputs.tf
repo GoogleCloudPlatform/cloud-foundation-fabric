@@ -27,7 +27,16 @@ locals {
       tf_providers_file = "03-data-platform-prod-providers.tf"
       tf_var_files      = local.cicd_workflow_var_files.stage_3
     }
-    # TODO(jccb): add gke here
+    gke_dev = {
+      service_account   = try(module.branch-gke-dev-sa-cicd.0.email, null)
+      tf_providers_file = "03-gke-dev-providers.tf"
+      tf_var_files      = local.cicd_workflow_var_files.stage_3
+    }
+    gke_prod = {
+      service_account   = try(module.branch-gke-prod-sa-cicd.0.email, null)
+      tf_providers_file = "03-gke-prod-providers.tf"
+      tf_var_files      = local.cicd_workflow_var_files.stage_3
+    }
     networking = {
       service_account   = try(module.branch-network-sa-cicd.0.email, null)
       tf_providers_file = "02-networking-providers.tf"
