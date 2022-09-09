@@ -1,5 +1,5 @@
 # FAST deployment companion guide
-In order to successfully deploy your GCP Landing Zone using FAST in your Organization, a series of prerequisites are required before starting. Then, FAST deployment is splitted in different stages that are required to be executed in order as some of them depend on previous stages output.
+In order to successfully deploy your GCP Landing Zone using FAST in your Organization, a series of prerequisites are required before starting. Then, FAST deployment is split in different stages that are required to be executed in order as some of them depend on previous stages output.
 
 Detailed explanation of each stage execution, configuration or possible modifications and adaptations are included in each stage section. The target of this companion guide is to serve as a cheat sheet, including the list of commands to be executed during FAST deployment. 
 
@@ -19,6 +19,7 @@ Detailed explanation of each stage execution, configuration or possible modifica
 ```bash
 gcloud auth list
 gcloud auth login
+gcloud auth application-default login
 ```
 5. Clone Fabric.
 ```bash
@@ -32,11 +33,11 @@ export FAST_PWD="$(pwd)/fast/stages"
 # set the initial user variable via gcloud
 export FAST_BU=$(gcloud config list --format 'value(core.account)')
 
-# find your org id
-gcloud organizations list --filter display_name:[part of your domain]
+# find your org id. change "fast.example.com" with your own org domain
+gcloud organizations list --filter display_name:fast.example.com
 
 # set your org id
-export FAST_ORG_ID=123456
+export FAST_ORG_ID=1234567890
 
 # set needed roles (do not change this)
 export FAST_ROLES="roles/billing.admin roles/logging.admin \
@@ -53,7 +54,7 @@ If you are using a standalone billing account, the user applying this stage for 
 ```bash
 # find your billing account id with gcloud beta billing accounts list
 # replace with your billing id!
-export FAST_BA_ID=0186A4-36005F-9ADEDE
+export FAST_BA_ID=XXXXXX-YYYYYY-ZZZZZZ
 # set needed roles (do not change this)
 gcloud beta billing accounts add-iam-policy-binding $FAST_BA_ID \
 --member user:$FAST_BU --role roles/billing.admin
@@ -71,11 +72,11 @@ cd $FAST_PWD/00-bootstrap
 # then edit to match your environment!
 edit terraform.tfvars.sample
 ```
-
+Here you have a terraform.tfvars example:
 ```hcl
 # fetch the required id by running `gcloud beta billing accounts list`
 billing_account={
-    id="012345-67890A-BCDEF0"
+    id="XXXXXX-YYYYYY-ZZZZZZ"
     organization_id="01234567890"
 }
 # get the required info by running `gcloud organizations list`
@@ -130,10 +131,10 @@ team_folders = {
  team-1 = {
    descriptive_name = "Team 1"
    group_iam = {
-     "team-1-users@example.com" = ["roles/viewer"]
+     "team-1-users@fast.example.com" = ["roles/viewer"]
    }
    impersonation_groups = [
-      "team-1-admins@example.com"
+      "team-1-admins@fast.example.com"
    ]
  }
 }
@@ -159,10 +160,10 @@ ln -s ~/fast-config/tfvars/00-bootstrap.auto.tfvars.json .
 ln -s ~/fast-config/tfvars/01-resman.auto.tfvars.json .
 ln -s ~/fast-config/tfvars/globals.auto.tfvars.json .
 
-# Copy and edit terraform.tfvars. output_location variable is required to generate networking stage output
-cp ../00-bootstrap/terraform.tfvars .
+# Create terraform.tfvars. output_location variable is required to generate networking stage output file
 edit terraform.tfvars
 ```
+In the following terraform.tfvars we configure output_location variable to generate networking stage output file:
 ```hcl
 # path for automatic generation of configs
 outputs_location = "~/fast-config"
@@ -185,8 +186,7 @@ ln -s ~/fast-config/tfvars/00-bootstrap.auto.tfvars.json .
 ln -s ~/fast-config/tfvars/01-resman.auto.tfvars.json .
 ln -s ~/fast-config/tfvars/globals.auto.tfvars.json .
 
-# Copy and edit terraform.tfvars to include KMS and/or VPC-SC configuration
-cp ../00-bootstrap/terraform.tfvars .
+# Edit terraform.tfvars to include KMS and/or VPC-SC configuration
 edit terraform.tfvars
 ```
 Some examples of terraform.tfvars configurations for KMS and VPC-SC can be found [here](02-security#customizations)
