@@ -6,4 +6,4 @@ The Terraform code follows the same general approach used for the [project facto
 
 The [`dev` folder](./dev/) contains an example setup for a generic development environment, and can be used as-is or cloned to implement other environments, or more specialized setups
 
-Refer to [the `dev` documentation](./dev/README.md) configuration details, and to [the `gke-serverless` documentation](../../../examples/gke-serverless/multitenant-fleet) for the architectural design and decisions taken.
+Refer to [the `dev` documentation](./dev/README.md) configuration details, and to [the `gke-serverless` documentation](../../../blueprints/gke-serverless/multitenant-fleet) for the architectural design and decisions taken.

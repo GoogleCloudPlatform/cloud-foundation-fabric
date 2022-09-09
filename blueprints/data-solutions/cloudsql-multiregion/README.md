@@ -56,7 +56,7 @@ Once you can see your service project id in the yellow parenthesis, you’re rea
 
 ### Step 1: Deploy resources
 
-Once you have the required information, head back to the cloud shell editor. Make sure you’re in the following directory: `cloudshell_open/cloud-foundation-fabric/examples/data-solutions/cloudsql-multiregion/`
+Once you have the required information, head back to the cloud shell editor. Make sure you’re in the following directory: `cloudshell_open/cloud-foundation-fabric/blueprints/data-solutions/cloudsql-multiregion/`
 
 Configure the Terraform variables in your `terraform.tfvars` file. You need to specify at least the `project_id` and `prefix` variables. See  [`terraform.tfvars.sample`](terraform.tfvars.sample) as starting point.
 

@@ -18,13 +18,13 @@ import marko
 
 FABRIC_ROOT = Path(__file__).parents[2]
 MODULES_PATH = FABRIC_ROOT / 'modules/'
-EXAMPLES_PATH = FABRIC_ROOT / 'examples/'
+BLUEPRINTS_PATH = FABRIC_ROOT / 'blueprints/'
 
 
 def pytest_generate_tests(metafunc):
   if 'example' in metafunc.fixturenames:
     modules = [x for x in MODULES_PATH.iterdir() if x.is_dir()]
-    modules.extend(x for x in EXAMPLES_PATH.glob("*/*") if x.is_dir())
+    modules.extend(x for x in BLUEPRINTS_PATH.glob("*/*") if x.is_dir())
     modules.sort()
     examples = []
     ids = []

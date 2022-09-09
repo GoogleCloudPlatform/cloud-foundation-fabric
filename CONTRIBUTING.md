@@ -613,7 +613,7 @@ Putting it all together, here is how an end-to-end example test works.
 Each example is a Python module in its own directory, and a Terraform fixture that calls the example as a module:
 
 ```bash
-tests/examples/cloud_operations/iam_delegated_role_grants/
+tests/blueprints/cloud_operations/iam_delegated_role_grants/
 ├── fixture
 │   ├── main.tf
 │   └── variables.tf
@@ -637,23 +637,23 @@ The Terraform fixture is a single block that runs the whole example as a module,
 
 ```hcl
 module "test" {
-  source         = "../../../../../examples/cloud-operations/asset-inventory-feed-remediation"
+  source         = "../../../../../blueprints/cloud-operations/asset-inventory-feed-remediation"
   project_create = var.project_create
   project_id     = var.project_id
 }
 ```
 
-You can run this test as part of or entire suite of tests, the examples suite, or individually:
+You can run this test as part of or entire suite of tests, the blueprints suite, or individually:
 
 ```bash
 # run all tests
 pytest
 # only run example tests
-pytest tests/examples
+pytest tests/blueprints
 # only run this example tests
-pytest tests/examples/cloud_operations/iam_delegated_role_grants/
+pytest tests/blueprints/cloud_operations/iam_delegated_role_grants/
 # only run a single unit
-pytest tests/examples/cloud_operations/iam_delegated_role_grants/test_plan.py::test_resources
+pytest tests/blueprints/cloud_operations/iam_delegated_role_grants/test_plan.py::test_resources
 ```
 
 ##### Testing modules
@@ -679,7 +679,7 @@ def test_iam(plan_runner):
 
 #### Testing documentation examples
 
-Most of our documentation examples are also tested via the `doc_examples` test suite. To enable an example for testing just use the special `tftest` comment as the last line in the example, listing the number of modules and resources tested.
+Most of our documentation examples are also tested via the `examples` test suite. To enable an example for testing just use the special `tftest` comment as the last line in the example, listing the number of modules and resources tested.
 
 A few preset variables are available for use, as shown in this example from the `dns` module documentation.
 

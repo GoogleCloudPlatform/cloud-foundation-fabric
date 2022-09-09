@@ -17,7 +17,7 @@
 # tfdoc:file:description Data Platform.
 
 module "data-platform" {
-  source             = "../../../../examples/data-solutions/data-platform-foundations"
+  source             = "../../../../blueprints/data-solutions/data-platform-foundations"
   billing_account_id = var.billing_account.id
   composer_config    = var.composer_config
   data_force_destroy = var.data_force_destroy

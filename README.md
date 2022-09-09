@@ -10,7 +10,7 @@
 This repository provides **end-to-end examples** and a **suite of Terraform modules** for Google Cloud, which support different use cases:
 
 - organization-wide [landing zone blueprint](fast/) used to bootstrap real-world cloud foundations
-- reference [examples](./examples/) used to deep dive on network patterns or product features
+- reference [blueprints](./blueprints/) used to deep dive on network patterns or product features
 - a comprehensive source of lean [modules](./modules/dns) that lend themselves well to changes
 
 The whole repository is meant to be cloned as a single unit, and then forked into separate owned repositories to seed production usage, or used as-is and periodically updated as a complete toolkit for prototyping. You can read more on this approach in our [contributing guide](./CONTRIBUTING.md).
@@ -39,6 +39,6 @@ Currently available modules:
 
 For more information and usage examples see each module's README file.
 
-## End-to-end examples
+## End-to-end blueprints
 
-The [examples](./examples/) in this repository are split in several main sections: **[foundational examples](./examples/foundations/)** that bootstrap the organizational hierarchy and automation prerequisites, **[networking examples](./examples/networking/)** that implement core patterns or features, **[data solutions examples](./examples/data-solutions/)** that demonstrate how to integrate data services in complete scenarios, **[cloud operations examples](./examples/cloud-operations/)** that leverage specific products to meet specific operational needs and **[factories](./examples/factories/)** that implement resource factories for the repetitive creation of specific resources.
+The [blueprints](./blueprints/) in this repository are split in several main sections: **[foundational blueprints](./blueprints/foundations/)** that bootstrap the organizational hierarchy and automation prerequisites, **[networking blueprints](./blueprints/networking/)** that implement core patterns or features, **[data solutions blueprints](./blueprints/data-solutions/)** that demonstrate how to integrate data services in complete scenarios, **[cloud operations blueprints](./blueprints/cloud-operations/)** that leverage specific products to meet specific operational needs and **[factories](./blueprints/factories/)** that implement resource factories for the repetitive creation of specific resources.

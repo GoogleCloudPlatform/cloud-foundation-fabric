@@ -32,7 +32,7 @@ The main components that we would be setting up are (to learn more about these p
 * [BigQuery datasets and tables](https://cloud.google.com/bigquery): to store the transformed data in and query it using SQL, use it to make reports or begin training [machine learning](https://cloud.google.com/bigquery-ml/docs/introduction) models without having to take your data out.
 * [Service accounts](https://cloud.google.com/iam/docs/service-accounts) (__created with least privilege on each resource__): one for uploading data into the GCS bucket, one for Orchestration, one for Dataflow instances and one for the BigQuery tables. You can also configure users or groups of users to assign them a viewer role on the created resources and the ability to impersonate service accounts to test the Dataflow pipelines before automating them with a tool like [Cloud Composer](https://cloud.google.com/composer).
 
-For a full list of the resources that will be created, please refer to the [github repository](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/examples/data-solutions/gcs-to-bq-with-least-privileges) for this project. If you're migrating from another Cloud Provider, refer to [this](https://cloud.google.com/free/docs/aws-azure-gcp-service-comparison) documentation to see equivalent services and comparisons in Microsoft Azure and Amazon Web Services
+For a full list of the resources that will be created, please refer to the [github repository](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/blueprints/data-solutions/gcs-to-bq-with-least-privileges) for this project. If you're migrating from another Cloud Provider, refer to [this](https://cloud.google.com/free/docs/aws-azure-gcp-service-comparison) documentation to see equivalent services and comparisons in Microsoft Azure and Amazon Web Services
 
 ## Costs
 
@@ -40,7 +40,7 @@ Pricing Estimates - We have created a sample estimate based on some usage we see
 
 ## Setup
 
-This solution assumes you already have a project created and set up where you wish to host these resources. If not, and you would like for the project to create a new project as well,  please refer to the [github repository](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/examples/data-solutions/gcs-to-bq-with-least-privileges) for instructions.
+This solution assumes you already have a project created and set up where you wish to host these resources. If not, and you would like for the project to create a new project as well,  please refer to the [github repository](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/blueprints/data-solutions/gcs-to-bq-with-least-privileges) for instructions.
 
 ### Prerequisites
 
@@ -82,7 +82,7 @@ Before we deploy the architecture, you will need the following information:
 
 1. Once you have the required information, head back to the cloud shell editor. Make sure you’re in the following directory:
 
-        cloudshell_open/cloud-foundation-fabric/examples/data-solutions/gcs-to-bq-with-least-privileges
+        cloudshell_open/cloud-foundation-fabric/blueprints/data-solutions/gcs-to-bq-with-least-privileges
 
 2. In the editor, edit the terraform.tfvars.sample file with the variables you gathered in the step above.
 
@@ -123,7 +123,7 @@ To make the next steps easier, create two environment variables with the service
 
 Again, make sure you’re in the following directory:
 
-        cloudshell_open/cloud-foundation-fabric/examples/data-solutions/gcs-to-bq-with-least-privileges
+        cloudshell_open/cloud-foundation-fabric/blueprints/data-solutions/gcs-to-bq-with-least-privileges
 
 For the purpose of the example we will import from GCS to Bigquery a CSV file with the following structure:
 

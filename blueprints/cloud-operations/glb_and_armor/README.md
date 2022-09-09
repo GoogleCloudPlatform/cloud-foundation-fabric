@@ -42,7 +42,7 @@ Pricing Estimates - We have created a sample estimate based on some usage we see
 
 ## Setup
 
-This solution assumes you already have a project created and set up where you wish to host these resources. If not, and you would like for the project to create a new project as well,  please refer to the [github repository](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/examples/data-solutions/gcs-to-bq-with-least-privileges) for instructions.
+This solution assumes you already have a project created and set up where you wish to host these resources. If not, and you would like for the project to create a new project as well,  please refer to the [github repository](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/blueprints/data-solutions/gcs-to-bq-with-least-privileges) for instructions.
 
 ### Prerequisites
 
@@ -77,7 +77,7 @@ Before we deploy the architecture, you will need the following information:
 1. After cloning the repo, and going through the prerequisites, head back to the cloud shell editor.
 2. Make sure you’re in the following directory. if not, you can change your directory to it via the ‘cd’ command:
 
-       cloudshell_open/cloud-foundation-fabric/examples/cloud-operations/glb_and_armor
+       cloudshell_open/cloud-foundation-fabric/blueprints/cloud-operations/glb_and_armor
 
 3. Run the following command to initialize the terraform working directory:
 

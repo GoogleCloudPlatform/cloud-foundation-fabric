@@ -215,7 +215,7 @@ While this example can be used as a standalone deployment, it can also be called
 
 ```hcl
 module "data-platform" {
-  source              = "./fabric/examples/data-solutions/data-platform-foundations"
+  source              = "./fabric/blueprints/data-solutions/data-platform-foundations"
   billing_account_id  = var.billing_account_id
   folder_id           = var.folder_id
   organization_domain = "example.com"
