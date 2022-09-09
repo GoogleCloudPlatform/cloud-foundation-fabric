@@ -30,10 +30,6 @@ module "project" {
     "dns.googleapis.com",
     "servicedirectory.googleapis.com"
   ]
-  service_config = {
-    disable_on_destroy         = false,
-    disable_dependent_services = false
-  }
 }
 
 module "vpc" {
