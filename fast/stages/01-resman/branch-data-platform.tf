@@ -16,11 +16,6 @@
 
 # tfdoc:file:description Data Platform stages resources.
 
-moved {
-  from = module.branch-dp-folder
-  to   = module.branch-dp-folder.0
-}
-
 module "branch-dp-folder" {
   source = "../../../modules/folder"
   count  = var.fast_features.data_platform ? 1 : 0
@@ -31,11 +26,6 @@ module "branch-dp-folder" {
       module.organization.tag_values["${var.tag_names.context}/data"].id, null
     )
   }
-}
-
-moved {
-  from = module.branch-dp-dev-folder
-  to   = module.branch-dp-dev-folder.0
 }
 
 module "branch-dp-dev-folder" {
@@ -56,14 +46,10 @@ module "branch-dp-dev-folder" {
   }
   tag_bindings = {
     context = try(
-      module.organization.tag_values["${var.tag_names.environment}/development"].id, null
+      module.organization.tag_values["${var.tag_names.environment}/development"].id,
+      null
     )
   }
-}
-
-moved {
-  from = module.branch-dp-prod-folder
-  to   = module.branch-dp-prod-folder.0
 }
 
 module "branch-dp-prod-folder" {
@@ -82,17 +68,13 @@ module "branch-dp-prod-folder" {
   }
   tag_bindings = {
     context = try(
-      module.organization.tag_values["${var.tag_names.environment}/production"].id, null
+      module.organization.tag_values["${var.tag_names.environment}/production"].id,
+      null
     )
   }
 }
 
 # automation service accounts and buckets
-
-moved {
-  from = module.branch-dp-dev-sa
-  to   = module.branch-dp-dev-sa.0
-}
 
 module "branch-dp-dev-sa" {
   source      = "../../../modules/iam-service-account"
@@ -109,11 +91,6 @@ module "branch-dp-dev-sa" {
   iam_storage_roles = {
     (var.automation.outputs_bucket) = ["roles/storage.admin"]
   }
-}
-
-moved {
-  from = module.branch-dp-prod-sa
-  to   = module.branch-dp-prod-sa.0
 }
 
 module "branch-dp-prod-sa" {
@@ -133,11 +110,6 @@ module "branch-dp-prod-sa" {
   }
 }
 
-moved {
-  from = module.branch-dp-dev-gcs
-  to   = module.branch-dp-dev-gcs.0
-}
-
 module "branch-dp-dev-gcs" {
   source        = "../../../modules/gcs"
   count         = var.fast_features.data_platform ? 1 : 0
@@ -150,11 +122,6 @@ module "branch-dp-dev-gcs" {
   iam = {
     "roles/storage.objectAdmin" = [module.branch-dp-dev-sa.0.iam_email]
   }
-}
-
-moved {
-  from = module.branch-dp-prod-gcs
-  to   = module.branch-dp-prod-gcs.0
 }
 
 module "branch-dp-prod-gcs" {

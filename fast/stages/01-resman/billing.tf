@@ -25,6 +25,8 @@ locals {
     ],
     local.branch_optional_sa_lists.dp-dev,
     local.branch_optional_sa_lists.dp-prod,
+    local.branch_optional_sa_lists.gke-dev,
+    local.branch_optional_sa_lists.gke-prod,
     local.branch_optional_sa_lists.pf-dev,
     local.branch_optional_sa_lists.pf-prod,
   )
