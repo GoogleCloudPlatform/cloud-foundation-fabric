@@ -29,10 +29,6 @@ module "project" {
   parent          = var.folder_id
   prefix          = var.prefix
   services        = var.project_services
-  service_config = {
-    disable_on_destroy         = false,
-    disable_dependent_services = false
-  }
 }
 
 module "vpc" {

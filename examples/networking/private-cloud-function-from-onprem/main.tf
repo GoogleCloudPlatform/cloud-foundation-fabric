@@ -24,10 +24,6 @@ module "project" {
   project_create  = var.project_create == null ? false : true
   billing_account = try(var.project_create.billing_account_id, null)
   parent          = try(var.project_create.parent, null)
-  service_config = {
-    disable_dependent_services = false
-    disable_on_destroy         = false
-  }
   services = [
     "cloudfunctions.googleapis.com",
     "cloudbuild.googleapis.com",

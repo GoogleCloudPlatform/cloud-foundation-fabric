@@ -22,10 +22,10 @@ module "project" {
   name            = "gkehub-test"
   parent          = "folders/12345"
   services = [
-    "container.googleapis.com",
-    "gkehub.googleapis.com",
-    "gkeconnect.googleapis.com",
     "anthosconfigmanagement.googleapis.com",
+    "container.googleapis.com",
+    "gkeconnect.googleapis.com",
+    "gkehub.googleapis.com",
     "multiclusteringress.googleapis.com",
     "multiclusterservicediscovery.googleapis.com",
     "mesh.googleapis.com"

@@ -77,9 +77,6 @@ module "project" {
     "storage.googleapis.com",
     "storage-component.googleapis.com",
   ]
-  service_config = {
-    disable_on_destroy = false, disable_dependent_services = false
-  }
 }
 
 module "vpc" {

@@ -97,8 +97,7 @@ module "cluster" {
     master_ipv4_cidr_block  = var.master_cidr_block
     master_global_access    = false
   }
-  enable_binary_authorization = true
-  workload_identity           = true
+  workload_identity = true
 }
 
 module "cluster_nodepool" {

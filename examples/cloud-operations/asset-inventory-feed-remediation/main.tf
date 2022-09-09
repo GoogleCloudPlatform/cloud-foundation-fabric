@@ -29,10 +29,6 @@ module "project" {
     "cloudfunctions.googleapis.com",
     "compute.googleapis.com"
   ]
-  service_config = {
-    disable_on_destroy         = false,
-    disable_dependent_services = false
-  }
   custom_roles = {
     (local.role_name) = [
       "compute.instances.list",
