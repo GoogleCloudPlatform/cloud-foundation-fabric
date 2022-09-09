@@ -4,7 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+
 ## [18.0.0] - 2022-09-09
+
+<!-- 2022-09-09 18:02:15+00:00 < 2022-06-06 13:42:51+00:00 -->
 
 - [[#808](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/808)] Rename examples to blueprints ([juliocc](https://github.com/juliocc)) <!-- 2022-09-09 15:14:19+00:00 -->
 
