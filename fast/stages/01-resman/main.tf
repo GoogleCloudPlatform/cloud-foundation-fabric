@@ -67,8 +67,8 @@ locals {
   }
   custom_roles = coalesce(var.custom_roles, {})
   gcs_storage_class = (
-    length(split("-", var.locations.gcs)) > 1
-    ? "MULTI-REGIONAL"
+    length(split("-", var.locations.gcs)) < 2
+    ? "MULTI_REGIONAL"
     : "REGIONAL"
   )
   groups = {
