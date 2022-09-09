@@ -37,7 +37,7 @@ variable "folder_id" {
 }
 
 variable "project_id" {
-  default = "projects/project-id"
+  default = "project-id"
 }
 
 variable "region" {

@@ -27,6 +27,16 @@ locals {
       tf_providers_file = "03-data-platform-prod-providers.tf"
       tf_var_files      = local.cicd_workflow_var_files.stage_3
     }
+    gke_dev = {
+      service_account   = try(module.branch-gke-dev-sa-cicd.0.email, null)
+      tf_providers_file = "03-gke-dev-providers.tf"
+      tf_var_files      = local.cicd_workflow_var_files.stage_3
+    }
+    gke_prod = {
+      service_account   = try(module.branch-gke-prod-sa-cicd.0.email, null)
+      tf_providers_file = "03-gke-prod-providers.tf"
+      tf_var_files      = local.cicd_workflow_var_files.stage_3
+    }
     networking = {
       service_account   = try(module.branch-network-sa-cicd.0.email, null)
       tf_providers_file = "02-networking-providers.tf"
@@ -64,6 +74,8 @@ locals {
     {
       data-platform-dev  = try(module.branch-dp-dev-folder.0.id, null)
       data-platform-prod = try(module.branch-dp-prod-folder.0.id, null)
+      gke-dev            = try(module.branch-gke-dev-folder.0.id, null)
+      gke-prod           = try(module.branch-gke-prod-folder.0.id, null)
       networking         = module.branch-network-folder.id
       networking-dev     = module.branch-network-dev-folder.id
       networking-prod    = module.branch-network-prod-folder.id
@@ -109,6 +121,18 @@ locals {
         sa     = module.branch-dp-prod-sa.0.email
       })
     },
+    !var.fast_features.gke ? {} : {
+      "03-gke-dev" = templatefile(local._tpl_providers, {
+        bucket = module.branch-gke-dev-gcs.0.name
+        name   = "gke-dev"
+        sa     = module.branch-gke-dev-sa.0.email
+      })
+      "03-gke-prod" = templatefile(local._tpl_providers, {
+        bucket = module.branch-gke-prod-gcs.0.name
+        name   = "gke-prod"
+        sa     = module.branch-gke-prod-sa.0.email
+      })
+    },
     !var.fast_features.project_factory ? {} : {
       "03-project-factory-dev" = templatefile(local._tpl_providers, {
         bucket = module.branch-pf-dev-gcs.0.name
@@ -150,6 +174,8 @@ locals {
     {
       data-platform-dev    = try(module.branch-dp-dev-sa.0.email, null)
       data-platform-prod   = try(module.branch-dp-prod-sa.0.email, null)
+      gke-dev              = try(module.branch-gke-dev-sa.0.email, null)
+      gke-prod             = try(module.branch-gke-prod-sa.0.email, null)
       networking           = module.branch-network-sa.email
       project-factory-dev  = try(module.branch-pf-dev-sa.0.email, null)
       project-factory-prod = try(module.branch-pf-prod-sa.0.email, null)
@@ -252,6 +278,27 @@ output "security" {
     gcs_bucket      = module.branch-security-gcs.name
     service_account = module.branch-security-sa.iam_email
   }
+}
+
+output "gke_multitenant" {
+  # tfdoc:output:consumers 03-gke-multitenant
+  description = "Data for the GKE multitenant stage."
+  value = (
+    var.fast_features.gke
+    ? {
+      "dev" = {
+        folder          = module.branch-gke-dev-folder.0.id
+        gcs_bucket      = module.branch-gke-dev-gcs.0.name
+        service_account = module.branch-gke-dev-sa.0.email
+      }
+      "prod" = {
+        folder          = module.branch-gke-prod-folder.0.id
+        gcs_bucket      = module.branch-gke-prod-gcs.0.name
+        service_account = module.branch-gke-prod-sa.0.email
+      }
+    }
+    : {}
+  )
 }
 
 output "teams" {
