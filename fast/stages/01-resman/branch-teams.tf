@@ -16,11 +16,6 @@
 
 # tfdoc:file:description Team stage resources.
 
-moved {
-  from = module.branch-teams-folder
-  to   = module.branch-teams-folder.0
-}
-
 # TODO(ludo): add support for CI/CD
 
 ############### top-level Teams branch and automation resources ###############

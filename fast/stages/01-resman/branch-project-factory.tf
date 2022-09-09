@@ -16,11 +16,6 @@
 
 # tfdoc:file:description Project factory stage resources.
 
-moved {
-  from = module.branch-teams-dev-pf-sa
-  to   = module.branch-pf-dev-sa.0
-}
-
 module "branch-pf-dev-sa" {
   source     = "../../../modules/iam-service-account"
   count      = var.fast_features.project_factory ? 1 : 0
@@ -37,11 +32,6 @@ module "branch-pf-dev-sa" {
   iam_storage_roles = {
     (var.automation.outputs_bucket) = ["roles/storage.admin"]
   }
-}
-
-moved {
-  from = module.branch-teams-prod-pf-sa
-  to   = module.branch-pf-prod-sa.0
 }
 
 module "branch-pf-prod-sa" {
@@ -62,11 +52,6 @@ module "branch-pf-prod-sa" {
   }
 }
 
-moved {
-  from = module.branch-teams-dev-pf-gcs
-  to   = module.branch-pf-dev-gcs.0
-}
-
 module "branch-pf-dev-gcs" {
   source        = "../../../modules/gcs"
   count         = var.fast_features.project_factory ? 1 : 0
@@ -79,11 +64,6 @@ module "branch-pf-dev-gcs" {
   iam = {
     "roles/storage.objectAdmin" = [module.branch-pf-dev-sa.0.iam_email]
   }
-}
-
-moved {
-  from = module.branch-teams-prod-pf-gcs
-  to   = module.branch-pf-prod-gcs.0
 }
 
 module "branch-pf-prod-gcs" {
