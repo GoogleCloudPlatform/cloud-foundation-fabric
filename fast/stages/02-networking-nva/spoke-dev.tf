@@ -22,10 +22,6 @@ module "dev-spoke-project" {
   name            = "dev-net-spoke-0"
   parent          = var.folder_ids.networking-dev
   prefix          = var.prefix
-  service_config = {
-    disable_on_destroy         = false
-    disable_dependent_services = false
-  }
   services = [
     "compute.googleapis.com",
     "dns.googleapis.com",

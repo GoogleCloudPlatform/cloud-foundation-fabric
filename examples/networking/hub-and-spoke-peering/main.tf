@@ -40,10 +40,6 @@ module "project" {
     "compute.googleapis.com",
     "container.googleapis.com"
   ]
-  service_config = {
-    disable_on_destroy         = false,
-    disable_dependent_services = false
-  }
 }
 
 ################################################################################

@@ -129,9 +129,6 @@ module "project" {
     host_project         = local.shared_vpc_project
     service_identity_iam = {}
   }
-  service_config = {
-    disable_on_destroy = false, disable_dependent_services = false
-  }
 }
 
 resource "google_project_iam_member" "shared_vpc" {

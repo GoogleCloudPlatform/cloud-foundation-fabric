@@ -53,7 +53,4 @@ module "project" {
     host_project         = var.shared_vpc_project_id
     service_identity_iam = {}
   }
-  service_config = {
-    disable_on_destroy = false, disable_dependent_services = false
-  }
 }

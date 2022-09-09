@@ -30,10 +30,6 @@ module "project" {
     "compute.googleapis.com",
     "cloudfunctions.googleapis.com"
   ]
-  service_config = {
-    disable_on_destroy         = false,
-    disable_dependent_services = false
-  }
   iam = {
     "roles/monitoring.metricWriter" = [module.cf.service_account_iam_email]
   }

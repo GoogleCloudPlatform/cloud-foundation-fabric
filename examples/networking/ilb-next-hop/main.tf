@@ -31,10 +31,6 @@ module "project" {
     "compute.googleapis.com",
     "dns.googleapis.com",
   ]
-  service_config = {
-    disable_on_destroy         = false
-    disable_dependent_services = false
-  }
 }
 
 module "service-accounts" {

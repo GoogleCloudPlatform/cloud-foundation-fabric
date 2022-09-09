@@ -44,10 +44,6 @@ module "gke-project-0" {
     ],
     var.project_services
   )
-  service_config = {
-    disable_on_destroy         = false
-    disable_dependent_services = false
-  }
   shared_vpc_service_config = {
     attach       = true
     host_project = var.vpc_config.host_project_id
