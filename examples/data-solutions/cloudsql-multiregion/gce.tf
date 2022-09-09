@@ -29,8 +29,8 @@ module "test-vm" {
   zone       = "${var.regions.primary}-b"
   name       = "sql-test"
   network_interfaces = [{
-    network    = module.vpc.self_link
-    subnetwork = module.vpc.subnets["${var.regions.primary}/subnet"].self_link
+    network    = local.vpc_self_link
+    subnetwork = local.subnet
     nat        = false
     addresses  = null
   }]
@@ -50,10 +50,10 @@ module "test-vm" {
     type  = "pd-ssd"
     size  = 10
   }
-  encryption = var.cmek_encryption ? {
+  encryption = var.service_encryption_keys != null ? {
     encrypt_boot            = true
     disk_encryption_key_raw = null
-    kms_key_self_link       = var.cmek_encryption ? module.kms[var.regions.primary].keys["key"].id : null
+    kms_key_self_link       = var.service_encryption_keys != null ? try(var.service_encryption_keys[var.regions.primary], null) : null
   } : null
   metadata = { startup-script = local.startup-script }
   tags     = ["ssh"]

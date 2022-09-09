@@ -16,8 +16,8 @@ module "db" {
   source              = "../../../modules/cloudsql-instance"
   project_id          = module.project.project_id
   availability_type   = var.sql_configuration.availability_type
-  encryption_key_name = var.cmek_encryption ? module.kms[var.regions.primary].keys.key.id : null
-  network             = module.vpc.self_link
+  encryption_key_name = var.service_encryption_keys != null ? try(var.service_encryption_keys[var.regions.primary], null) : null
+  network             = local.vpc_self_link
   name                = "${var.prefix}-db"
   region              = var.regions.primary
   database_version    = var.sql_configuration.database_version
@@ -29,7 +29,7 @@ module "db" {
     for k, v in var.regions :
     k => {
       region              = v,
-      encryption_key_name = var.cmek_encryption ? module.kms[v].keys.key.id : null
+      encryption_key_name = var.service_encryption_keys != null ? try(var.service_encryption_keys[v], null) : null
     } if k != "primary"
   }
   databases = [var.postgres_database]

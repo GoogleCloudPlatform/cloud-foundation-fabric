@@ -14,16 +14,27 @@
  * limitations under the License.
  */
 
-variable "cmek_encryption" {
-  description = "Flag to enable CMEK on GCP resources created."
-  type        = bool
-  default     = false
+variable "service_encryption_keys" {
+  description = "Cloud KMS keys to use to encrypt resources. Provide a key for each reagion configured."
+  type        = map(string)
+  default     = null
 }
 
 variable "data_eng_principals" {
   description = "Groups with Service Account Token creator role on service accounts in IAM format, only user supported on CloudSQL, eg 'user@domain.com'."
   type        = list(string)
   default     = []
+}
+
+variable "network_config" {
+  description = "Shared VPC network configurations to use. If null networks will be created in projects with preconfigured values."
+  type = object({
+    host_project       = string
+    network_self_link  = string
+    subnet_self_link   = string
+    cloudsql_psa_range = string
+  })
+  default = null
 }
 
 variable "postgres_user_password" {
