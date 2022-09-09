@@ -42,5 +42,5 @@ To destroy a previous FAST deployment follow the instructions detailed in [clean
 - [Project Factory](03-project-factory/dev/)  
   YAML-based fatory to create and configure application or team-level projects. Configuration includes VPC-level settings for Shared VPC, service-level configuration for CMEK encryption via centralized keys, and service account creation for workloads and applications. This stage is meant to be used once per environment.
 - [Data Platform](03-data-platform/dev/)
-- GKE Multitenant (in development)
+- [GKE Multitenant](03-gke-multitenant/dev/)
 - GCE Migration (in development)
