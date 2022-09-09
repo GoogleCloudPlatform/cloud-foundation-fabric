@@ -53,7 +53,7 @@ module "test-vm" {
   encryption = var.service_encryption_keys != null ? {
     encrypt_boot            = true
     disk_encryption_key_raw = null
-    kms_key_self_link       = var.service_encryption_keys != null ? var.service_encryption_keys[var.regions.primary] : null
+    kms_key_self_link       = var.service_encryption_keys != null ? try(var.service_encryption_keys[var.regions.primary], null) : null
   } : null
   metadata = { startup-script = local.startup-script }
   tags     = ["ssh"]

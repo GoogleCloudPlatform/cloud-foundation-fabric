@@ -80,8 +80,8 @@ This implementation is intentionally minimal and easy to read. A real world use 
 - Using a Shared VPC
 - Using VPC-SC to mitigate data exfiltration
 
-### Share VPC
-The example support the configuration of a Shared VPC as an input variable. 
+### Shared VPC
+The example supports the configuration of a Shared VPC as an input variable. 
 To deploy the solution on a Shared VPC, you have to configure the `network_config` variable:
 
 ```
@@ -93,16 +93,13 @@ network_config = {
   }
 ```
 
-To run this example, the Shared VPC project need to have:
+To run this example, the Shared VPC project needs to have:
  - A Private Service Connect with a range of `/24` (example: `10.60.0.0/24`) to deploy the Cloud SQL instance.
- - Internet gateway configured to let the Test VM download packages. 
+ - Internet access configured (for example Cloud NAT) to let the Test VM download packages. 
 
-In order to run the example and deploy Cloud SQL on a shared VPC the identity running Terraform must have the following IAM permissions on the Shared VPC Host project.
- - compute.networks.list
- - compute.addresses.create
- - compute.addresses.list
- - servicenetworking.services.addPeering
- - compute.xpnAdmin
+In order to run the example and deploy Cloud SQL on a shared VPC the identity running Terraform must have the following IAM role on the Shared VPC Host project.
+ - Compute Network Admin (roles/compute.networkAdmin)
+ - Compute Shared VPC Admin (roles/compute.xpnAdmin)
 
 ## Test your environment
 

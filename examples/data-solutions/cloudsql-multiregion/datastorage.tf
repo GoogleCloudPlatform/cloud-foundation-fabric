@@ -19,7 +19,7 @@ module "gcs" {
   name           = "data"
   location       = var.regions.primary
   storage_class  = "REGIONAL"
-  encryption_key = var.service_encryption_keys != null ? var.service_encryption_keys[var.regions.primary] : null
+  encryption_key = var.service_encryption_keys != null ? try(var.service_encryption_keys[var.regions.primary], null) : null
   force_destroy  = true
 }
 
