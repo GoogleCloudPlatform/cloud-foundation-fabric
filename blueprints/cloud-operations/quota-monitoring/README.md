@@ -1,10 +1,10 @@
 # Compute Engine quota monitoring
 
-This example improves on the [GCE quota exporter tool](https://github.com/GoogleCloudPlatform/professional-services/tree/master/tools/gce-quota-sync) (by the same author of this example), and shows a practical way of collecting and monitoring [Compute Engine resource quotas](https://cloud.google.com/compute/quotas) via Cloud Monitoring metrics as an alternative to the recently released [built-in quota metrics](https://cloud.google.com/monitoring/alerts/using-quota-metrics).
+This blueprint improves on the [GCE quota exporter tool](https://github.com/GoogleCloudPlatform/professional-services/tree/master/tools/gce-quota-sync) (by the same author of this blueprint), and shows a practical way of collecting and monitoring [Compute Engine resource quotas](https://cloud.google.com/compute/quotas) via Cloud Monitoring metrics as an alternative to the recently released [built-in quota metrics](https://cloud.google.com/monitoring/alerts/using-quota-metrics).
 
 Compared to the built-in metrics, it offers a simpler representation of quotas and quota ratios which is especially useful in charts, it allows filtering or combining quotas between different projects regardless of their monitoring workspace, and it creates a default alerting policy without the need to interact directly with the monitoring API.
 
-Regardless of its specific purpose, this example is also useful in showing how to manipulate and write time series to cloud monitoring. The resources it creates are shown in the high level diagram below:
+Regardless of its specific purpose, this blueprint is also useful in showing how to manipulate and write time series to cloud monitoring. The resources it creates are shown in the high level diagram below:
 
 <img src="diagram.png" width="640px" alt="GCP resource diagram">
 
@@ -16,7 +16,7 @@ Quota time series are stored using a [custom metric](https://cloud.google.com/mo
 
 The solution also creates a basic monitoring alert policy, to demonstrate how to raise alerts when any of the tracked quota ratios go over a predefined threshold.
 
-## Running the example
+## Running the blueprint
 
 Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fcloud-foundation-fabric&cloudshell_print=cloud-shell-readme.txt&cloudshell_working_dir=blueprints%2Fcloud-operations%2Fquota-monitoring), then go through the following steps to create resources:
 

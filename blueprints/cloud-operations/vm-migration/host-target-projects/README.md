@@ -1,8 +1,8 @@
 # M4CE(v5) - Host and Target Projects
 
-This example creates a Migrate for Compute Engine (v5) environment deployed on an host project with multiple  [target projects](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/enable-services#identifying_your_host_project).
+This blueprint creates a Migrate for Compute Engine (v5) environment deployed on an host project with multiple  [target projects](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/enable-services#identifying_your_host_project).
 
-The example is designed to implement a M4CE (v5) environment on-top of complex migration landing environments where VMs have to be migrated to multiple target projects. It also includes the IAM wiring needed to make such scenarios work.
+The blueprint is designed to implement a M4CE (v5) environment on-top of complex migration landing environments where VMs have to be migrated to multiple target projects. It also includes the IAM wiring needed to make such scenarios work.
 
 This is the high level diagram:
 

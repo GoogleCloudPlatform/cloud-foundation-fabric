@@ -3,7 +3,7 @@
 This repository provides an end-to-end solution to gather some GCP Networking quotas and limits (that cannot be seen in the GCP console today) and display them in a dashboard.
 The goal is to allow for better visibility of these limits, facilitating capacity planning and avoiding hitting these limits.
 
-Here is an example of dashboard you can get with this solution:
+Here is an blueprint of dashboard you can get with this solution:
 
 <img src="metric.png" width="640px">
 
@@ -48,7 +48,7 @@ It writes this values to custom metrics in Cloud Monitoring and creates a dashbo
 
 Note that metrics are created in the cloud-function/metrics.yaml file.
 
-You can also edit default limits for a specific network in that file. See the example for `vpc_peering_per_network`.
+You can also edit default limits for a specific network in that file. See the blueprint for `vpc_peering_per_network`.
 
 ## Next steps and ideas
 In a future release, we could support:

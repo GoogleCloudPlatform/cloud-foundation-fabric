@@ -1,6 +1,6 @@
 # Network filtering with Squid
 
-This example shows how to deploy a filtering HTTP proxy to restrict Internet access. Here we show one way to do this using a VPC with two subnets:
+This blueprint shows how to deploy a filtering HTTP proxy to restrict Internet access. Here we show one way to do this using a VPC with two subnets:
 
 - The `apps` subnet hosts the VMs that will have their Internet access tightly controlled by a non-caching filtering forward proxy.
 - The `proxy` subnet hosts a Cloud NAT instance and a [Squid](http://www.squid-cache.org/) server.

@@ -1,8 +1,8 @@
 # M4CE(v5) - Host and Target Projects with Shared VPC
 
-This example creates a Migrate for Compute Engine (v5) environment deployed on an host project with multiple [target projects](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/enable-services#identifying_your_host_project) and shared VPCs.
+This blueprint creates a Migrate for Compute Engine (v5) environment deployed on an host project with multiple [target projects](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/enable-services#identifying_your_host_project) and shared VPCs.
 
-The example is designed to implement a M4CE (v5) environment on-top of complex migration landing environment where VMs have to be migrated to multiple target projects. In this example targets are also service projects for a shared VPC. It also includes the IAM wiring needed to make such scenarios work.
+The blueprint is designed to implement a M4CE (v5) environment on-top of complex migration landing environment where VMs have to be migrated to multiple target projects. In this blueprint targets are also service projects for a shared VPC. It also includes the IAM wiring needed to make such scenarios work.
 
 This is the high level diagram:
 
@@ -41,4 +41,4 @@ This sample creates\update several distinct groups of resources:
 
 <!-- END TFDOC -->
 ## Manual Steps
-Once this example is deployed the M4CE [m4ce_gmanaged_service_account](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/target-sa-compute-engine#configuring_the_default_service_account) has to be configured to grant the access to the shared VPC and allow the deploy of Compute Engine instances as the result of the migration.
+Once this blueprint is deployed the M4CE [m4ce_gmanaged_service_account](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/target-sa-compute-engine#configuring_the_default_service_account) has to be configured to grant the access to the shared VPC and allow the deploy of Compute Engine instances as the result of the migration.

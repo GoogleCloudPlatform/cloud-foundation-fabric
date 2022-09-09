@@ -1,10 +1,10 @@
 # TCP healthcheck and restart for unmanaged GCE instances
 
-This example shows how to leverage [Serverless VPC Access](https://cloud.google.com/vpc/docs/configure-serverless-vpc-access) and Cloud Functions to organize a highly performant TCP healthcheck for unmanaged GCE instances. Healthchecker Cloud Function uses [goroutines](https://gobyexample.com/goroutines) to achieve parallel healthchecking for multiple instances and handles up to 1 thousand VMs checked in less than a second execution time.
+This blueprint shows how to leverage [Serverless VPC Access](https://cloud.google.com/vpc/docs/configure-serverless-vpc-access) and Cloud Functions to organize a highly performant TCP healthcheck for unmanaged GCE instances. Healthchecker Cloud Function uses [goroutines](https://gobyexample.com/goroutines) to achieve parallel healthchecking for multiple instances and handles up to 1 thousand VMs checked in less than a second execution time.
 
-**_NOTE:_** [Managed Instance Groups](https://cloud.google.com/compute/docs/instance-groups/autohealing-instances-in-migs) has autohealing functionality out of the box, current example is more applicable for standalone VMs or VMs in an unmanaged instance group.
+**_NOTE:_** [Managed Instance Groups](https://cloud.google.com/compute/docs/instance-groups/autohealing-instances-in-migs) has autohealing functionality out of the box, current blueprint is more applicable for standalone VMs or VMs in an unmanaged instance group.
 
-The example contains the following components:
+The blueprint contains the following components:
 
 - [Cloud Scheduler](https://cloud.google.com/scheduler) to initiate a healthcheck on a schedule.
 - [Serverless VPC Connector](https://cloud.google.com/vpc/docs/configure-serverless-vpc-access) to allow Cloud Functions TCP level access to private GCE instances.
@@ -13,7 +13,7 @@ The example contains the following components:
 - **Restarter** Cloud Function to perform GCE instance reset for instances which are failing TCP healthcheck.
 
 
-The resources created in this example are shown in the high level diagram below:
+The resources created in this blueprint are shown in the high level diagram below:
 
 <img src="diagram.png" width="640px">
 
@@ -31,7 +31,7 @@ Healthchecker cloud function has the following configuration options:
 **_NOTE:_** In the current example `healthchecker` is used along with the `restarter` cloud function, but restarter can be replaced with another function like [Pubsub2Inbox](https://github.com/GoogleCloudPlatform/professional-services/tree/main/tools/pubsub2inbox) for email notifications.
 
 
-## Running the example
+## Running the blueprint
 
 Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fcloud-foundation-fabric&cloudshell_print=cloud-shell-readme.txt&cloudshell_working_dir=blueprints%2Fcloud-operations%2Funmanaged-instances-healthcheck), then go through the following steps to create resources:
 
@@ -40,7 +40,7 @@ Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/c
 
 Once done testing, you can clean up resources by running `terraform destroy`. To persist state, check out the `backend.tf.sample` file.
 
-## Testing the example
+## Testing the blueprint
 Configure `gcloud` with the project used for the deployment
 ```bash
 gcloud config set project <MY-PROJECT-ID>

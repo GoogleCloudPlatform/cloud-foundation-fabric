@@ -1,15 +1,15 @@
 # Hub and Spoke via VPN
 
-This example creates a simple **Hub and Spoke VPN** setup, where the VPC network connects satellite locations (spokes) through a single intermediary location (hub) via [IPsec HA VPN](https://cloud.google.com/network-connectivity/docs/vpn/concepts/overview#ha-vpn).
+This blueprint creates a simple **Hub and Spoke VPN** setup, where the VPC network connects satellite locations (spokes) through a single intermediary location (hub) via [IPsec HA VPN](https://cloud.google.com/network-connectivity/docs/vpn/concepts/overview#ha-vpn).
 
 A few additional features are also shown:
 
 - [custom BGP advertisements](https://cloud.google.com/router/docs/how-to/advertising-overview) to implement transitivity between spokes
 - [VPC Global Routing](https://cloud.google.com/network-connectivity/docs/router/how-to/configuring-routing-mode) to leverage a regional set of VPN gateways in different regions as next hops (used here for illustrative/study purpose, not usually done in real life)
 
-The example has been purposefully kept simple to show how to use and wire the VPC and VPN-HA modules together, and so that it can be used as a basis for experimentation. For a more complex scenario that better reflects real-life usage, including [Shared VPC](https://cloud.google.com/vpc/docs/shared-vpc) and [DNS cross-project binding](https://cloud.google.com/dns/docs/zones/cross-project-binding) please refer to the [FAST network stage](../../../fast/stages/02-networking-vpn/).
+The blueprint has been purposefully kept simple to show how to use and wire the VPC and VPN-HA modules together, and so that it can be used as a basis for experimentation. For a more complex scenario that better reflects real-life usage, including [Shared VPC](https://cloud.google.com/vpc/docs/shared-vpc) and [DNS cross-project binding](https://cloud.google.com/dns/docs/zones/cross-project-binding) please refer to the [FAST network stage](../../../fast/stages/02-networking-vpn/).
 
-This is the high level diagram of this example:
+This is the high level diagram of this blueprint:
 
 ![High-level diagram](diagram.png "High-level diagram")
 
@@ -27,9 +27,9 @@ This sample creates several distinct groups of resources:
 
 ## Prerequisites
 
-A single pre-existing project is used in this example to keep variables and complexity to a minimum, in a real world scenarios each spoke would probably use a separate project.
+A single pre-existing project is used in this blueprint to keep variables and complexity to a minimum, in a real world scenarios each spoke would probably use a separate project.
 
-The provided project needs a valid billing account, the Compute and DNS APIs are enabled by the example.
+The provided project needs a valid billing account, the Compute and DNS APIs are enabled by the blueprint.
 
 You can easily create such a project by commenting turning on project creation in the project module contained in `main.tf`, as shown in this snippet:
 
@@ -52,7 +52,7 @@ module "project" {
 
 ## Testing
 
-Once the example is up, you can quickly test features by logging in to one of the test VMs:
+Once the blueprint is up, you can quickly test features by logging in to one of the test VMs:
 
 ```bash
 gcloud compute ssh hs-ha-lnd-test-r1

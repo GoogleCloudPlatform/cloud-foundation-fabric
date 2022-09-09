@@ -1,6 +1,6 @@
-## SQL Server Always On Groups example
+## SQL Server Always On Groups blueprint
 
-This is an example of building [SQL Server Always On Availability Groups](https://cloud.google.com/compute/docs/instances/sql-server/configure-availability) 
+This is an blueprint of building [SQL Server Always On Availability Groups](https://cloud.google.com/compute/docs/instances/sql-server/configure-availability) 
 using Fabric modules. It builds a two node cluster with a fileshare witness instance in an existing VPC and adds the necessary firewalling. 
 
 ![Architecture diagram](https://cloud.google.com/compute/images/sqlserver-ag-architecture.svg)

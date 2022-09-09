@@ -2,18 +2,18 @@
 
 When managing GCP Service Accounts with terraform, it's often a question on **how to avoid Service Account Key in the terraform state?**
 
-This example shows how to manage IAM Service Account Keys by manually generating a key pair and uploading the public part of the key to GCP. It has the following benefits:
+This blueprint shows how to manage IAM Service Account Keys by manually generating a key pair and uploading the public part of the key to GCP. It has the following benefits:
 
  - no [passing keys between users](https://cloud.google.com/iam/docs/best-practices-for-managing-service-account-keys#pass-between-users) or systems
  - no private keys stored in the terraform state (only public part of the key is in the state)
  - let keys [expire automatically](https://cloud.google.com/iam/docs/best-practices-for-managing-service-account-keys#key-expiryhaving)
 
 
-## Running the example 
+## Running the blueprint 
 
 Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fcloud-foundation-fabric&cloudshell_print=cloud-shell-readme.txt&cloudshell_working_dir=blueprints%2Fcloud-operations%2Fonprem-sa-key-management&cloudshell_open_in_editor=cloudshell_open%2Fcloud-foundation-fabric%2Fblueprints%2Fcloud-operations%2Fonprem-sa-key-management%2Fvariables.tf), then go through the following steps to create resources:
 
-Cleaning up example keys
+Cleaning up blueprint keys
 ```bash
 rm -f /public-keys/data-uploader/
 rm -f /public-keys/prisma-security/
@@ -49,7 +49,7 @@ contents=$(jq --arg key "$(cat keys/data_uploader_private_key.pem)" '.private_ke
 contents=$(jq --arg key "$(cat keys/prisma_security_private_key.pem)" '.private_key=$key' prisma-security.json) && echo "$contents" > prisma-security.json
 ```
 
-## Testing the example 
+## Testing the blueprint 
 Validate that service accounts json credentials are valid
 ```bash
 gcloud auth activate-service-account --key-file prisma-security.json

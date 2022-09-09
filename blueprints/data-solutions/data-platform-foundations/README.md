@@ -8,7 +8,7 @@ The following diagram is a high-level reference of the resources created and man
 
 ![Data Platform architecture overview](./images/overview_diagram.png "Data Platform architecture overview")
 
-A demo Airflow pipeline is also part of this example: it can be built and run on top of the foundational infrastructure to verify or test the setup quickly.
+A demo Airflow pipeline is also part of this blueprint: it can be built and run on top of the foundational infrastructure to verify or test the setup quickly.
 
 ## Design overview and choices
 
@@ -21,7 +21,7 @@ The approach adapts to different high-level requirements:
 - least privilege principle
 - rely on service account impersonation
 
-The code in this example doesn't address Organization-level configurations (Organization policy, VPC-SC, centralized logs). We expect those elements to be managed by automation stages external to this script like those in [FAST](../../../fast).
+The code in this blueprint doesn't address Organization-level configurations (Organization policy, VPC-SC, centralized logs). We expect those elements to be managed by automation stages external to this script like those in [FAST](../../../fast).
 
 ### Project structure
 
@@ -66,7 +66,7 @@ Service account creation follows the least privilege principle, performing a sin
 
 A full reference of IAM roles managed by the Data Platform [is available here](./IAM.md).
 
-Using of service account keys within a data pipeline exposes to several security risks deriving from a credentials leak. This example shows how to leverage impersonation to avoid the need of creating keys.
+Using of service account keys within a data pipeline exposes to several security risks deriving from a credentials leak. This blueprint shows how to leverage impersonation to avoid the need of creating keys.
 
 ### User groups
 
@@ -90,13 +90,13 @@ You can configure groups via the `groups` variable.
 
 ### Virtual Private Cloud (VPC) design
 
-As is often the case in real-world configurations, this example accepts as input an existing [Shared-VPC](https://cloud.google.com/vpc/docs/shared-vpc) via the `network_config` variable. Make sure that the GKE API (`container.googleapis.com`) is enabled in the VPC host project.
+As is often the case in real-world configurations, this blueprint accepts as input an existing [Shared-VPC](https://cloud.google.com/vpc/docs/shared-vpc) via the `network_config` variable. Make sure that the GKE API (`container.googleapis.com`) is enabled in the VPC host project.
 
 If the `network_config` variable is not provided, one VPC will be created in each project that supports network resources (load, transformation and orchestration).
 
 ### IP ranges and subnetting
 
-To deploy this example with self-managed VPCs you need the following ranges:
+To deploy this blueprint with self-managed VPCs you need the following ranges:
 
 - one /24 for the load project VPC subnet used for Cloud Dataflow workers
 - one /24 for the transformation VPC subnet used for Cloud Dataflow workers
@@ -144,7 +144,7 @@ This step is optional and depends on customer policies and security best practic
 
 We suggest using Cloud Data Loss Prevention to identify/mask/tokenize your confidential data.
 
-While implementing a Data Loss Prevention strategy is out of scope for this example, we enable the service in two different projects so that [Cloud Data Loss Prevention templates](https://cloud.google.com/dlp/docs/concepts-templates) can be configured in one of two ways:
+While implementing a Data Loss Prevention strategy is out of scope for this blueprint, we enable the service in two different projects so that [Cloud Data Loss Prevention templates](https://cloud.google.com/dlp/docs/concepts-templates) can be configured in one of two ways:
 
 - during the ingestion phase, from Dataflow
 - during the transformation phase, from [BigQuery](https://cloud.google.com/bigquery/docs/scan-with-dlp) or [Cloud Dataflow](https://cloud.google.com/architecture/running-automated-dataflow-pipeline-de-identify-pii-dataset)
@@ -166,11 +166,11 @@ The default configuration will implement 3 tags:
 
 Anything that is not tagged is available to all users who have access to the data warehouse.
 
-For the purpose of the example no groups has access to tagged data. You can configure your tags and roles associated by configuring the `data_catalog_tags` variable. We suggest using the "[Best practices for using policy tags in BigQuery](https://cloud.google.com/bigquery/docs/best-practices-policy-tags)" article as a guide to designing your tags structure and access pattern.
+For the purpose of the blueprint no groups has access to tagged data. You can configure your tags and roles associated by configuring the `data_catalog_tags` variable. We suggest using the "[Best practices for using policy tags in BigQuery](https://cloud.google.com/bigquery/docs/best-practices-policy-tags)" article as a guide to designing your tags structure and access pattern.
 
 ## How to run this script
 
-To deploy this example on your GCP organization, you will need
+To deploy this blueprint on your GCP organization, you will need
 
 - a folder or organization where new projects will be created
 - a billing account that will be associated with the new projects
@@ -209,9 +209,9 @@ terraform init
 terraform apply
 ```
 
-## How to use this example from Terraform
+## How to use this blueprint from Terraform
 
-While this example can be used as a standalone deployment, it can also be called directly as a Terraform module by providing the variables values as show below:
+While this blueprint can be used as a standalone deployment, it can also be called directly as a Terraform module by providing the variables values as show below:
 
 ```hcl
 module "data-platform" {

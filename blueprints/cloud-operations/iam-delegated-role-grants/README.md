@@ -1,13 +1,13 @@
 # Delegated Role Grants
 
-This example shows two applications of [delegated role grants](https://cloud.google.com/iam/docs/setting-limits-on-granting-roles):
+This blueprint shows two applications of [delegated role grants](https://cloud.google.com/iam/docs/setting-limits-on-granting-roles):
 
 - how to use them to restrict service usage in a GCP project
 - how to use them to allow administrative access to a service via a predefined role, while restricting administrators from minting other admins.
 
 ## Restricting service usage
 
-In its default configuration, the example provisions two sets of permissions:
+In its default configuration, the blueprint provisions two sets of permissions:
 
 - the roles listed in `direct_role_grants` will be granted unconditionally to the users listed in `project_administrators`.
 - additionally, `project_administrators` will be granted the role `roles/resourcemanager.projectIamAdmin` in a restricted fashion, allowing them to only grant the roles listed in `delegated_role_grants` to other users.
@@ -19,13 +19,13 @@ This diagram shows the resources and expected behaviour:
 <img src="diagram.png" width="572px">
 
 
-A [Medium article](https://medium.com/@jccb/managing-gcp-service-usage-through-delegated-role-grants-a843610f2226) has been published for this example, refer to it for more details on the context and the specifics of running the example.
+A [Medium article](https://medium.com/@jccb/managing-gcp-service-usage-through-delegated-role-grants-a843610f2226) has been published for this blueprint, refer to it for more details on the context and the specifics of running the blueprint.
 
 ## Restricting a predefined role
 
-By changing the `restricted_role_grant`, the example can be used to grant administrators a predefined role like `roles/compute.networkAdmin`, which allows setting IAM policies on service resources like subnetworks, but restrict the roles that those administrators are able to confer to other users.
+By changing the `restricted_role_grant`, the blueprint can be used to grant administrators a predefined role like `roles/compute.networkAdmin`, which allows setting IAM policies on service resources like subnetworks, but restrict the roles that those administrators are able to confer to other users.
 
-You can easily configure the example for this use case:
+You can easily configure the blueprint for this use case:
 
 ```hcl
 # terraform.tfvars
@@ -40,7 +40,7 @@ This diagram shows the resources and expected behaviour:
 
 <img src="diagram-2.png" width="572px">
 
-## Running the example
+## Running the blueprint
 
 Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fcloud-foundation-fabric&cloudshell_print=cloud-shell-readme.txt&cloudshell_working_dir=blueprints%2Fcloud-operations%2Fiam-delegated-role-grants), then go through the following steps to create resources:
 
@@ -51,7 +51,7 @@ Once done testing, you can clean up resources by running `terraform destroy`.
 
 ## Auditing Roles
 
-This example includes a python script that audits a list of roles to ensure you're not granting the `setIamPolicy` permission at the project, folder or organization level. To audit all the predefined compute roles, run it like this:
+This blueprint includes a python script that audits a list of roles to ensure you're not granting the `setIamPolicy` permission at the project, folder or organization level. To audit all the predefined compute roles, run it like this:
 
 ```bash
 pip3 install -r requirements.txt

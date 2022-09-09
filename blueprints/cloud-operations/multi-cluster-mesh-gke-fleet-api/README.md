@@ -1,8 +1,8 @@
 # Multi-cluster mesh on GKE (fleet API)
 
-The following example shows how to create a multi-cluster mesh for two private clusters on GKE. Anthos Service Mesh with automatic control plane management is set up for clusters using the Fleet API. This can only be done if the clusters are in a single project and in the same VPC. In this particular case both clusters having being deployed to different subnets in a shared VPC. 
+The following blueprint shows how to create a multi-cluster mesh for two private clusters on GKE. Anthos Service Mesh with automatic control plane management is set up for clusters using the Fleet API. This can only be done if the clusters are in a single project and in the same VPC. In this particular case both clusters having being deployed to different subnets in a shared VPC. 
 
-The diagram below depicts the architecture of the example.
+The diagram below depicts the architecture of the blueprint.
 
 ![Architecture](architecture.png)
 
@@ -22,7 +22,7 @@ Ansible is used to execute commands in the management VM. From this VM there is 
 10. Deploy a sleep service in both clusters.
 11. Send requests from a sleep pod to the hello-world service from both clusters, to verify that we get responses from alternative versions.
 
-## Running the example
+## Running the blueprint
 
 Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fcloud-foundation-fabric&cloudshell_print=cloud-shell-readme.txt&cloudshell_working_dir=blueprints%2Fcloud-operations%2Fmulti-cluster-mesh-gke-fleet-api), then go through the following steps to create resources:
 
@@ -40,7 +40,7 @@ Once terraform completes do the following:
         ansible-playbook -v playbook.yaml
 
 
-## Testing the example
+## Testing the blueprint
 
 The last two commands executed with Ansible Send requests from a sleep pod to the hello-world service from both clusters. If you see in the output of those two commands responses from alternative versions, everything works as expected.
 

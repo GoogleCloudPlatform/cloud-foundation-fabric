@@ -1,8 +1,8 @@
 # Hub and Spoke via VPC Peering
 
-This example creates a simple **Hub and Spoke** setup, where the VPC network connects satellite locations (spokes) through a single intermediary location (hub) via [VPC Peering](https://cloud.google.com/vpc/docs/vpc-peering).
+This blueprint creates a simple **Hub and Spoke** setup, where the VPC network connects satellite locations (spokes) through a single intermediary location (hub) via [VPC Peering](https://cloud.google.com/vpc/docs/vpc-peering).
 
-The example shows some of the limitations that need to be taken into account when using VPC Peering, mostly due to the lack of transitivity between peerings:
+The blueprint shows some of the limitations that need to be taken into account when using VPC Peering, mostly due to the lack of transitivity between peerings:
 
 - no mesh networking between the spokes
 - complex support for managed services hosted in tenant VPCs connected via peering (Cloud SQL, GKE, etc.)
@@ -11,7 +11,7 @@ One possible solution to the managed service limitation above is presented here,
 
 One other topic that needs to be considered when using peering is the limit of 25 peerings in each peering group, which constrains the scalability of design like the one presented here.
 
-The example has been purposefully kept simple to show how to use and wire the VPC modules together, and so that it can be used as a basis for more complex scenarios. This is the high level diagram:
+The blueprint has been purposefully kept simple to show how to use and wire the VPC modules together, and so that it can be used as a basis for more complex scenarios. This is the high level diagram:
 
 ![High-level diagram](diagram.png "High-level diagram")
 
@@ -41,7 +41,7 @@ gcloud container clusters get-credentials cluster-1 --zone europe-west1-b
 kubectl get all
 ```
 
-The example configures the peering with the GKE master VPC to export routes for you, so that VPN routes are passed through the peering. You can disable by hand in the console or by editing the `peering_config` variable in the `gke-cluster` module, to test non-working configurations or switch to using the [GKE proxy](https://cloud.google.com/solutions/creating-kubernetes-engine-private-clusters-with-net-proxies).
+The blueprint configures the peering with the GKE master VPC to export routes for you, so that VPN routes are passed through the peering. You can disable by hand in the console or by editing the `peering_config` variable in the `gke-cluster` module, to test non-working configurations or switch to using the [GKE proxy](https://cloud.google.com/solutions/creating-kubernetes-engine-private-clusters-with-net-proxies).
 
 ### Export routes via Terraform (recommended)
 
@@ -73,7 +73,7 @@ Then connect via SSH to the spoke 1 instance and run the same commands you ran o
 
 ## Operational considerations
 
-A single pre-existing project is used in this example to keep variables and complexity to a minimum, in a real world scenario each spoke would use a separate project (and Shared VPC).
+A single pre-existing project is used in this blueprint to keep variables and complexity to a minimum, in a real world scenario each spoke would use a separate project (and Shared VPC).
 
 A few APIs need to be enabled in the project, if `apply` fails due to a service not being enabled just click on the link in the error message to enable it for the project, then resume `apply`.
 

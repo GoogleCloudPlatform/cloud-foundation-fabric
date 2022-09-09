@@ -1,8 +1,8 @@
 # Binary Authorization
 
-The following example shows to how to create a CI and a CD pipeline in Cloud Build for the deployment of an application to a private GKE cluster with unrestricted access to a public endpoint. The example enables a Binary Authorization policy in the project so only images that have been attested can be deployed to the cluster. The attestations are created using a cryptographic key pair that has been provisioned in KMS.
+The following blueprint shows to how to create a CI and a CD pipeline in Cloud Build for the deployment of an application to a private GKE cluster with unrestricted access to a public endpoint. The blueprint enables a Binary Authorization policy in the project so only images that have been attested can be deployed to the cluster. The attestations are created using a cryptographic key pair that has been provisioned in KMS.
 
-The diagram below depicts the architecture used in the example.
+The diagram below depicts the architecture used in the blueprint.
 
 ![Architecture](diagram.png)
 
@@ -15,16 +15,16 @@ The CI pipeline does the following:
 
 The CD pipeline deploys the application to the cluster.
 
-## Running the example
+## Running the blueprint
 
 Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fcloud-foundation-fabric&cloudshell_print=cloud-shell-readme.txt&cloudshell_working_dir=blueprints%2Fcloud-operations%2Fbinauthz), then go through the following steps to create resources:
 
 * `terraform init`
 * `terraform apply -var project_id=my-project-id`
 
-WARNING: The example requires the activation of the Binary Authorization API. That API does not support authentication with user credentials. A service account will need to be used to run the example
+WARNING: The blueprint requires the activation of the Binary Authorization API. That API does not support authentication with user credentials. A service account will need to be used to run the blueprint
 
-## Testing the example
+## Testing the blueprint
 
 Once the resources have been created, do the following to verify that everything works as expected.
 

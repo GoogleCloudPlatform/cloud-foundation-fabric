@@ -7,7 +7,7 @@ The most straightforward way for workloads running outside of Google Cloud to ca
 
 Workload identity federation enables applications running outside of Google Cloud to replace long-lived service account keys with short-lived access tokens. This is achieved by configuring Google Cloud to trust an external identity provider, so applications can use the credentials issued by the external identity provider to impersonate a service account.
 
-This example shows how to set up everything, both in Azure and Google Cloud, so a workload in Azure can access Google Cloud resources without a service account key. This will be possible by configuring workload identity federation to trust access tokens generated for a specific application in an Azure Active Directory (AAD) tenant.
+This blueprint shows how to set up everything, both in Azure and Google Cloud, so a workload in Azure can access Google Cloud resources without a service account key. This will be possible by configuring workload identity federation to trust access tokens generated for a specific application in an Azure Active Directory (AAD) tenant.
 
 The following diagram illustrates how the VM will get a short-lived access token and use it to access a resource:
 
@@ -31,14 +31,14 @@ The provided terraform configuration will set up the following architecture:
 
         * A service account with the Viewer role granted on the project. The external identities in the workload identity pool would be assigned the Workload Identity User role on that service account.
 
-## Running the example
+## Running the blueprint
 
 Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fcloud-foundation-fabric&cloudshell_print=cloud-shell-readme.txt&cloudshell_working_dir=blueprints%2Fcloud-operations%2Fworkload-identity-federation), then go through the following steps to create resources:
 
 * `terraform init`
 * `terraform apply -var project_id=my-project-id`
 
-## Testing the example
+## Testing the blueprint
 
 Once the resources have been created, do the following to verify that everything works as expected:
 

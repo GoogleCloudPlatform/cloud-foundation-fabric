@@ -1,6 +1,6 @@
 # AD FS
 
-This example does the following: 
+This blueprint does the following: 
 
 Terraform:
 
@@ -18,11 +18,11 @@ Ansible:
 
 In addition to this, we also include a Powershell script that facilitates the configuration required for Anthos when authenticating users with AD FS as IdP.
 
-The diagram below depicts the architecture of the example:
+The diagram below depicts the architecture of the blueprint:
 
 ![Architecture](architecture.png)
 
-## Running the example
+## Running the blueprint
 
 Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fcloud-foundation-fabric&cloudshell_print=cloud-shell-readme.txt&cloudshell_working_dir=blueprints%2Fcloud-operations%2Fadfs), then go through the following steps to create resources:
 
@@ -36,7 +36,7 @@ Once the resources have been created, do the following:
 
         ansible-playbook playbook.yaml
 
-# Testing the example
+# Testing the blueprint
 
 1. In your browser open the following URL:
 

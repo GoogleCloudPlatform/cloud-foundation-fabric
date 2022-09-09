@@ -1,8 +1,8 @@
 # M4CE(v5) - Single Project
 
-This sample creates a simple M4CE (v5) environment deployed on a single [host project](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/enable-services#identifying_your_host_project).
+This blueprint creates a simple M4CE (v5) environment deployed on a single [host project](https://cloud.google.com/migrate/compute-engine/docs/5.0/how-to/enable-services#identifying_your_host_project).
 
-The example is designed for quick tests or product demos where it is required to setup a simple and minimal M4CE (v5) environment. It also includes the IAM wiring needed to make such scenarios work.
+The blueprint is designed for quick tests or product demos where it is required to setup a simple and minimal M4CE (v5) environment. It also includes the IAM wiring needed to make such scenarios work.
 
 This is the high level diagram:
 

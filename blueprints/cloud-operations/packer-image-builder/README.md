@@ -1,11 +1,11 @@
 # Compute Image builder with Hashicorp Packer
 
-This example shows how to deploy infrastructure for a Compute Engine image builder based on
+This blueprint shows how to deploy infrastructure for a Compute Engine image builder based on
 [Hashicorp's Packer tool](https://www.packer.io).
 
 ![High-level diagram](diagram.png "High-level diagram")
 
-## Running the example
+## Running the blueprint
 
 Prerequisite: [Packer](https://www.packer.io/downloads) version >= v1.7.0
 
@@ -24,18 +24,18 @@ Building Compute Engine image (Packer part):
 
 ## Using Packer's service account
 
-The following example leverages [service account impersonation](https://cloud.google.com/iam/docs/impersonating-service-accounts)
+The following blueprint leverages [service account impersonation](https://cloud.google.com/iam/docs/impersonating-service-accounts)
 to execute any operations on GCP as a dedicated Packer service account. Depending on how you execute
 the Packer tool, you need to grant your principal rights to impersonate Packer's service account.
 
 Set `packer_account_users` variable in Terraform configuration to grant roles required to impersonate
 Packer's service account to selected IAM principals.
-Example: allow default [Cloud Build](https://cloud.google.com/build) service account to impersonate
+Blueprint: allow default [Cloud Build](https://cloud.google.com/build) service account to impersonate
 Packer SA: `packer_account_users=["serviceAccount:myProjectNumber@cloudbuild.gserviceaccount.com"]`.
 
 ## Configuring Packer
 
-Provided Packer build example uses [HCL2 configuration files](https://www.packer.io/guides/hcl) and
+Provided Packer build blueprint uses [HCL2 configuration files](https://www.packer.io/guides/hcl) and
 requires configuration of some input variables *(i.e. service accounts emails)*.
 Values of those variables can be taken from the Terraform outputs.
 
@@ -55,7 +55,7 @@ IP addresses only, communication with this VM has to either:
 * originate from the network routable on Packer's VPC *(i.e. peered VPC, over VPN or interconnect)*
 * use [Identity-Aware Proxy](https://cloud.google.com/iap/docs/using-tcp-forwarding) tunnel
 
-By default, this example assumes that IAP tunnel is needed to communicate with the temporary VM.
+By default, this blueprint assumes that IAP tunnel is needed to communicate with the temporary VM.
 This might be changed by setting `use_iap` variable to `false` in Terraform and Packer
 configurations respectively.
 
@@ -63,7 +63,7 @@ configurations respectively.
 
 ## Accessing resources over the Internet
 
-The following example assumes that provisioning of a Compute Engine VM requires access to
+The blueprint assumes that provisioning of a Compute Engine VM requires access to
 the resources over the Internet (i.e. to install OS packages). Since Compute VM has no public IP
 address for security reasons, Internet connectivity is done with [Cloud NAT](https://cloud.google.com/nat/docs/overview).
 <!-- BEGIN TFDOC -->

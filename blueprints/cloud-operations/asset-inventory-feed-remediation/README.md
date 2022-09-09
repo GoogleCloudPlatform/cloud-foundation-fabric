@@ -1,6 +1,6 @@
 # Cloud Asset Inventory feeds for resource change tracking and remediation
 
-This example shows how to leverage [Cloud Asset Inventory feeds](https://cloud.google.com/asset-inventory/docs/monitoring-asset-changes) to stream resource changes in real time, and how to programmatically react to changes by wiring a Cloud Function to the feed outputs.
+This blueprint shows how to leverage [Cloud Asset Inventory feeds](https://cloud.google.com/asset-inventory/docs/monitoring-asset-changes) to stream resource changes in real time, and how to programmatically react to changes by wiring a Cloud Function to the feed outputs.
 
 The Cloud Function can then be used for different purposes:
 
@@ -9,25 +9,25 @@ The Cloud Function can then be used for different purposes:
 - adapting the configuration of separate related resources
 - implementing remediation steps that enforce policy compliance by tweaking or reverting the changes.
 
-A [companion Medium article](https://medium.com/google-cloud/using-cloud-asset-inventory-feeds-for-dynamic-configuration-and-policy-enforcement-c37b6a590c49) has been published for this example, refer to it for more details on the context and the specifics of running the example.
+A [companion Medium article](https://medium.com/google-cloud/using-cloud-asset-inventory-feeds-for-dynamic-configuration-and-policy-enforcement-c37b6a590c49) has been published for this blueprint, refer to it for more details on the context and the specifics of running the blueprint.
 
-This example shows a simple remediation use case: how to enforce policies on instance tags and revert non-compliant changes in near-real time, thus adding an additional measure of control when using tags for firewall rule scoping. Changing the [monitored asset](https://cloud.google.com/asset-inventory/docs/supported-asset-types) and the function logic allows simple adaptation to other common use cases:
+This blueprint shows a simple remediation use case: how to enforce policies on instance tags and revert non-compliant changes in near-real time, thus adding an additional measure of control when using tags for firewall rule scoping. Changing the [monitored asset](https://cloud.google.com/asset-inventory/docs/supported-asset-types) and the function logic allows simple adaptation to other common use cases:
 
 - enforcing a centrally defined Cloud Armor policy in backend services
 - creating custom DNS records for instances or forwarding rules
 
-The example uses a single project for ease of testing, in actual use a few changes are needed to operate at the resource hierarchy level:
+The blueprint uses a single project for ease of testing, in actual use a few changes are needed to operate at the resource hierarchy level:
 
 - the feed should be set at the folder or organization level
 - the custom role used to assign tag changing permissions should be defined at the organization level
 - the role binding that grants the custom role to the Cloud Function service account should be set at the same level as the feed (folder or organization)
 
-The resources created in this example are shown in the high level diagram below:
+The resources created in this blueprint are shown in the high level diagram below:
 
 <img src="diagram.png" width="640px">
 
 
-## Running the example
+## Running the blueprint
 
 Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fcloud-foundation-fabric&cloudshell_print=cloud-shell-readme.txt&cloudshell_working_dir=blueprints%2Fcloud-operations%2Fasset-inventory-feed-remediation), then go through the following steps to create resources:
 
@@ -36,9 +36,9 @@ Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/c
 
 Once done testing, you can clean up resources by running `terraform destroy`. To persist state, check out the `backend.tf.sample` file.
 
-## Testing the example
+## Testing the blueprint
 
-The terraform outputs generate preset `gcloud` commands that you can copy and run in the console, to complete configuration and test the example:
+The terraform outputs generate preset `gcloud` commands that you can copy and run in the console, to complete configuration and test the blueprint:
 
 - `subscription_pull` shows messages in the PubSub queue, to check feed message format if the Cloud Function is disabled
 - `cf_logs` shows Cloud Function logs to check that remediation works

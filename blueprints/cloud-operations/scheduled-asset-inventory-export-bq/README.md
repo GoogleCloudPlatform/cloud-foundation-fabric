@@ -1,18 +1,18 @@
 # Scheduled Cloud Asset Inventory Export to Bigquery
 
-This example shows how to leverage [Cloud Asset Inventory Exporting to Bigquery](https://cloud.google.com/asset-inventory/docs/exporting-to-bigquery) feature to keep track of your project wide assets over time storing information in Bigquery.
+This blueprint shows how to leverage [Cloud Asset Inventory Exporting to Bigquery](https://cloud.google.com/asset-inventory/docs/exporting-to-bigquery) feature to keep track of your project wide assets over time storing information in Bigquery.
 
 The data stored in Bigquery can then be used for different purposes:
 
 - dashboarding
 - analysis
 
-The example uses export resources at the project level for ease of testing, in actual use a few changes are needed to operate at the resource hierarchy level:
+The blueprint uses export resources at the project level for ease of testing, in actual use a few changes are needed to operate at the resource hierarchy level:
 
 - the export should be set at the folder or organization level
 - the `roles/cloudasset.viewer` on the service account should be set at the folder or organization level
 
-The resources created in this example are shown in the high level diagram below:
+The resources created in this blueprint are shown in the high level diagram below:
 
 <img src="diagram.png" width="640px">
 
@@ -23,7 +23,7 @@ Ensure that you grant your account one of the following roles on your project, f
 - Cloud Asset Viewer role (`roles/cloudasset.viewer`)
 - Owner primitive role (`roles/owner`)
 
-## Running the example
+## Running the blueprint
 
 Clone this repository, specify your variables in a `terraform.tvars` and then go through the following steps to create resources:
 
@@ -32,9 +32,9 @@ Clone this repository, specify your variables in a `terraform.tvars` and then go
 
 Once done testing, you can clean up resources by running `terraform destroy`. To persist state, check out the `backend.tf.sample` file.
 
-## Testing the example
+## Testing the blueprint
 
-Once resources are created, you can run queries on the data you exported on Bigquery. [Here](https://cloud.google.com/asset-inventory/docs/exporting-to-bigquery#querying_an_asset_snapshot) you can find some example of queries you can run.
+Once resources are created, you can run queries on the data you exported on Bigquery. [Here](https://cloud.google.com/asset-inventory/docs/exporting-to-bigquery#querying_an_asset_snapshot) you can find some blueprint of queries you can run.
 
 You can also create a dashboard connecting [Datalab](https://datastudio.google.com/) or any other BI tools of your choice to your Bigquery dataset.
 

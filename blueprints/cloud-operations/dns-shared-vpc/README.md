@@ -2,18 +2,18 @@
 
 ## Usage
 
-This example shows how to create reusable and modular Cloud DNS architectures when using Shared VPC.
+This blueprint shows how to create reusable and modular Cloud DNS architectures when using Shared VPC.
 
 The goal is to provision dedicated Cloud DNS instances for application teams that want to manage their own DNS records, and configure DNS peering to ensure name resolution works in a common Shared VPC.
 
-The example will:
+The blueprint will:
 
 - Create a GCP project per application team based on the `teams` input variable
 - Create a VPC and Cloud DNS instance per application team
 - Create a Cloud DNS private zone per application team in the form of `[teamname].[dns_domain]`, with `teamname` and `dns_domain` based on input variables
 - Configure DNS peering for each private zone from the Shared VPC to the DNS VPC of each application team
 
-The resources created in this example are shown in the high level diagram below:
+The resources created in this blueprint are shown in the high level diagram below:
 
 <img src="diagram.png" width="640px">
 
