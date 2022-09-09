@@ -128,7 +128,7 @@ variable "region" {
   default     = "europe-west1"
 }
 
-variable "service_encryption_keys" { # service encription key
+variable "service_encryption_keys" {
   description = "Cloud KMS to use to encrypt different services. Key location should match service region."
   type = object({
     bq       = string
