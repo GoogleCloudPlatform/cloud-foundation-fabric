@@ -386,7 +386,7 @@ output "compute_robot" {
 | [policy_list](variables.tf#L168) | Map of list org policies, status is true for allow, false for deny, null for restore. Values can only be used for allow or deny. | <code title="map&#40;object&#40;&#123;&#10;  inherit_from_parent &#61; bool&#10;  suggested_value     &#61; string&#10;  status              &#61; bool&#10;  values              &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [prefix](variables.tf#L180) | Prefix used to generate project id and name. | <code>string</code> |  | <code>null</code> |
 | [project_create](variables.tf#L186) | Create project. When set to false, uses a data source to reference existing project. | <code>bool</code> |  | <code>true</code> |
-| [service_config](variables.tf#L192) | Configure service API activation. | <code title="object&#40;&#123;&#10;  disable_on_destroy         &#61; bool&#10;  disable_dependent_services &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  disable_on_destroy         &#61; true&#10;  disable_dependent_services &#61; true&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [service_config](variables.tf#L192) | Configure service API activation. | <code title="object&#40;&#123;&#10;  disable_on_destroy         &#61; bool&#10;  disable_dependent_services &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  disable_on_destroy         &#61; false&#10;  disable_dependent_services &#61; false&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [service_encryption_key_ids](variables.tf#L204) | Cloud KMS encryption key in {SERVICE => [KEY_URL]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [service_perimeter_bridges](variables.tf#L211) | Name of VPC-SC Bridge perimeters to add project into. See comment in the variables file for format. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
 | [service_perimeter_standard](variables.tf#L218) | Name of VPC-SC Standard perimeter to add project into. See comment in the variables file for format. | <code>string</code> |  | <code>null</code> |
@@ -403,8 +403,8 @@ output "compute_robot" {
 | [custom_roles](outputs.tf#L17) | Ids of the created custom roles. |  |
 | [name](outputs.tf#L25) | Project name. |  |
 | [number](outputs.tf#L38) | Project number. |  |
-| [project_id](outputs.tf#L51) | Project id. |  |
-| [service_accounts](outputs.tf#L70) | Product robot service accounts in project. |  |
-| [sink_writer_identities](outputs.tf#L86) | Writer identities created for each sink. |  |
+| [project_id](outputs.tf#L56) | Project id. |  |
+| [service_accounts](outputs.tf#L76) | Product robot service accounts in project. |  |
+| [sink_writer_identities](outputs.tf#L92) | Writer identities created for each sink. |  |
 
 <!-- END TFDOC -->

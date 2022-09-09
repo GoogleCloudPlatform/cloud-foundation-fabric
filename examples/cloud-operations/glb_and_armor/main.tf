@@ -33,10 +33,6 @@ module "project" {
   services = [
     "compute.googleapis.com"
   ]
-  service_config = {
-    disable_on_destroy         = false
-    disable_dependent_services = false
-  }
   project_create = var.project_create != null
 }
 

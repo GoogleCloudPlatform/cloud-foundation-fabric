@@ -49,11 +49,6 @@ module "project" {
     bq      = [try(local.service_encryption_keys.bq, null)]
     storage = [try(local.service_encryption_keys.storage, null)]
   }
-
-  service_config = {
-    disable_on_destroy         = false,
-    disable_dependent_services = false
-  }
 }
 
 ###############################################################################
