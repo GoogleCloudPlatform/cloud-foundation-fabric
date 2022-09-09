@@ -66,7 +66,7 @@ Keep in mind we also test documentation examples so even if your PR only changes
 
 ```bash
 # use if you only changed README examples, ignore if you ran all tests
-pytest tests/doc_examples
+pytest tests/examples
 ```
 
 Once everything looks good, add/commit any pending changes then push and open a PR on GitHub. We typically enforce a set of design and style conventions, so please make sure you have familiarized yourself with the following sections and implemented them in your code, to avoid lengthy review cycles.
@@ -535,7 +535,7 @@ locals {
 
 ### Interacting with checks, tests and tools
 
-Our modules are designed for composition and live in a monorepo together with several end-to-end examples, so it was inevitable that over time we found ways of ensuring that a change does not break consumers.
+Our modules are designed for composition and live in a monorepo together with several end-to-end blueprints, so it was inevitable that over time we found ways of ensuring that a change does not break consumers.
 
 Our tests exercise most of the code in the repo including documentation examples, and leverages the [tftest Python library](https://pypi.org/project/tftest/) we developed and independently published on PyPi.
 
@@ -606,9 +606,9 @@ As our testing needs are very simple, we also wanted to reduce the friction requ
 
 The last piece of our testing framework is our [`tftest`](https://pypi.org/project/tftest/) library, which wraps the Terraform executable and returns familiar data structures for most commands.
 
-##### Testing end to end examples
+##### Testing end-to-end examples
 
-Putting it all together, here is how an end-to-end example test works.
+Putting it all together, here is how an end-to-end blueprint test works.
 
 Each example is a Python module in its own directory, and a Terraform fixture that calls the example as a module:
 

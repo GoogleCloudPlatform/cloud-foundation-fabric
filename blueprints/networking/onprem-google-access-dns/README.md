@@ -1,12 +1,12 @@
 # On-prem DNS and Google Private Access
 
-This example leverages the [on prem in a box](../../../modules/cloud-config-container/onprem) module to bootstrap an emulated on-premises environment on GCP, then connects it via VPN and sets up BGP and DNS so that several specific features can be tested:
+This blueprint leverages the [on prem in a box](../../../modules/cloud-config-container/onprem) module to bootstrap an emulated on-premises environment on GCP, then connects it via VPN and sets up BGP and DNS so that several specific features can be tested:
 
 - [Cloud DNS forwarding zone](https://cloud.google.com/dns/docs/overview#fz-targets) to on-prem
 - DNS forwarding from on-prem via a [Cloud DNS inbound policy](https://cloud.google.com/dns/docs/policies#create-in)
 - [Private Access for on-premises hosts](https://cloud.google.com/vpc/docs/configure-private-google-access-hybrid)
 
-The example has been purposefully kept simple to show how to use and wire the on-prem module, but it lends itself well to experimenting and can be combined with the other [infrastructure examples](../) in this repository to test different GCP networking patterns in connection to on-prem. This is the high level diagram:
+The blueprint has been purposefully kept simple to show how to use and wire the on-prem module, but it lends itself well to experimenting and can be combined with the other [infrastructure blueprints](../) in this repository to test different GCP networking patterns in connection to on-prem. This is the high level diagram:
 
 ![High-level diagram](diagram.png "High-level diagram")
 
@@ -197,7 +197,7 @@ curl www.onprem.example.org -s |grep h1
 
 ## Operational considerations
 
-A single pre-existing project is used in this example to keep variables and complexity to a minimum, in a real world scenarios each spoke would probably use a separate project.
+A single pre-existing project is used in this blueprint to keep variables and complexity to a minimum, in a real world scenarios each spoke would probably use a separate project.
 
 The VPN-s used to connect to the on-premises environment do not account for HA, upgrading to use HA VPN is reasonably simple by using the relevant [module](../../../modules/net-vpn-ha).
 <!-- BEGIN TFDOC -->

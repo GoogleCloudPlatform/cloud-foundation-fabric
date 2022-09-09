@@ -1,8 +1,8 @@
 # Internal Load Balancer as Next Hop
 
-This example bootstraps a minimal infrastructure for testing [ILB as next hop](https://cloud.google.com/load-balancing/docs/internal/ilb-next-hop-overview),  using simple Linux gateway VMS between two VPCs to emulate virtual appliances.
+This blueprint bootstraps a minimal infrastructure for testing [ILB as next hop](https://cloud.google.com/load-balancing/docs/internal/ilb-next-hop-overview),  using simple Linux gateway VMS between two VPCs to emulate virtual appliances.
 
-The following diagram shows the resources created by this example
+The following diagram shows the resources created by this blueprint
 
 ![High-level diagram](diagram.png "High-level diagram")
 

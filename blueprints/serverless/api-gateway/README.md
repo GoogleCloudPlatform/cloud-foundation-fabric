@@ -2,18 +2,18 @@
 
 This tutorial shows you how to configure an HTTP(S) load balancer to enable multi-region deployments for API Gateway. For more details on how this set up work have a look at the article [here](https://cloud.google.com/api-gateway/docs/multi-region-deployment).
 
-The diagram below depicts the architecture that this example sets up.
+The diagram below depicts the architecture that this blueprint sets up.
 
 ![Architecture](architecture.png)
 
-# Running the example
+# Running the blueprint
 
-Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fcloud-foundation-fabric&cloudshell_print=cloud-shell-readme.txt&cloudshell_working_dir=examples%2Fserverless%2Fapi-gateway), then go through the following steps to create resources:
+Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fcloud-foundation-fabric&cloudshell_print=cloud-shell-readme.txt&cloudshell_working_dir=blueprints%2Fserverless%2Fapi-gateway), then go through the following steps to create resources:
 
 * `terraform init`
 * `terraform apply -var project_id=my-project-id`
 
-## Testing the example
+## Testing the blueprint
 
 1. Copy the IP address returned as output
 

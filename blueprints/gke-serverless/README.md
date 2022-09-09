@@ -1,10 +1,10 @@
-# GKE and Serverless examples
+# GKE and Serverless blueprints
 
-The examples in this folder show implement **end-to-end scenarios** for GKE or Serveless topologies that show how to automate common configurations or leverage specific products.
+The blueprints in this folder show implement **end-to-end scenarios** for GKE or Serveless topologies that show how to automate common configurations or leverage specific products.
 
 They are meant to be used as minimal but complete starting points to create actual infrastructure, and as playgrounds to experiment with Google Cloud features.
 
-## Examples
+## Blueprints
 
 ### Multitenant GKE fleet
 

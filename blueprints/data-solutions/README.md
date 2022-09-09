@@ -1,10 +1,10 @@
-# GCP Data Services examples
+# GCP Data Services blueprints
 
-The examples in this folder implement **typical data service topologies** and **end-to-end scenarios**, that allow testing specific features like Cloud KMS to encrypt your data, or VPC-SC to mitigate data exfiltration.
+The blueprints in this folder implement **typical data service topologies** and **end-to-end scenarios**, that allow testing specific features like Cloud KMS to encrypt your data, or VPC-SC to mitigate data exfiltration.
 
 They are meant to be used as minimal but complete starting points to create actual infrastructure, and as playgrounds to experiment with specific Google Cloud features.
 
-## Examples
+## Blueprints
 
 ### GCE and GCS CMEK via centralized Cloud KMS
 

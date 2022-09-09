@@ -1,10 +1,10 @@
-# Migrate for Compute Engine (v5) examples
+# Migrate for Compute Engine (v5) blueprints
 
-The examples in this folder implement **Migrate for Compute Engine (v5)** environments for the main migration scenarios like the ones with host and target project, or with shared VPC.
+The blueprints in this folder implement **Migrate for Compute Engine (v5)** environments for the main migration scenarios like the ones with host and target project, or with shared VPC.
 
 They are meant to be used as minimal but complete starting points to create migration environment **on top of existing cloud foundations**, and as playgrounds to experiment with specific Google Cloud features.
 
-## Examples
+## Blueprints
 
 ### M4CE on a single project
 

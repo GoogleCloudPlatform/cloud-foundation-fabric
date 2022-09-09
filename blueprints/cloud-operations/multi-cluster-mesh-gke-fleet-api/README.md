@@ -24,7 +24,7 @@ Ansible is used to execute commands in the management VM. From this VM there is 
 
 ## Running the example
 
-Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fcloud-foundation-fabric&cloudshell_print=cloud-shell-readme.txt&cloudshell_working_dir=examples%2Fcloud-operations%2Fmulti-cluster-mesh-gke-fleet-api), then go through the following steps to create resources:
+Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fcloud-foundation-fabric&cloudshell_print=cloud-shell-readme.txt&cloudshell_working_dir=blueprints%2Fcloud-operations%2Fmulti-cluster-mesh-gke-fleet-api), then go through the following steps to create resources:
 
 * `terraform init`
 * `terraform apply -var billing_account_id=my-billing-account-id -var parent=folders/my-folder-id -var host_project_id=my-host-project-id -var fleet_project_id=my-fleet-project-id -var mgmt_project_id=my-mgmt-project-id`

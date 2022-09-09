@@ -1,8 +1,8 @@
 # Third Party Solutions
 
-The examples in this folder show how to automate installation of specific third party products on GCP, following typical best practices.
+The blueprints in this folder show how to automate installation of specific third party products on GCP, following typical best practices.
 
-## Examples
+## Blueprints
 
 ### OpenShift cluster bootstrap on Shared VPC
 

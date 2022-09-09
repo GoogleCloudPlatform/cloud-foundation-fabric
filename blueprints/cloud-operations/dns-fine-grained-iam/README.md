@@ -1,28 +1,28 @@
 # Fine-grained Cloud DNS IAM via Service Directory
 
-This example shows how to leverage [Service Directory](https://cloud.google.com/blog/products/networking/introducing-service-directory) and Cloud DNS Service Directory private zones, to implement fine-grained IAM controls on DNS by
+This blueprint shows how to leverage [Service Directory](https://cloud.google.com/blog/products/networking/introducing-service-directory) and Cloud DNS Service Directory private zones, to implement fine-grained IAM controls on DNS by
 
 - creating a Service Directory namespace with two services and their endpoints
 - creating a Cloud DNS private zone that uses the namespace as its authoritative source
 - creating two service accounts and assigning them the `roles/servicedirectory.editor` role on the namespace and on one service respectively
 - creating two VMs and setting them to use the two service accounts, so that DNS queries and `gcloud` commands can be used to verify the setup
 
-The resources created in this example are shown in the high level diagram below:
+The resources created in this blueprint are shown in the high level diagram below:
 
 <img src="diagram.png" width="640px">
 
-A [companion Medium article](https://medium.com/google-cloud/fine-grained-cloud-dns-iam-via-service-directory-446058b4362e) has been published for this example, you can refer to it for more details on the context, and the specifics of running the example.
+A [companion Medium article](https://medium.com/google-cloud/fine-grained-cloud-dns-iam-via-service-directory-446058b4362e) has been published for this blueprint, you can refer to it for more details on the context, and the specifics of running the blueprint.
 
-## Running the example
+## Running the blueprint
 
-Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fcloud-foundation-fabric&cloudshell_print=cloud-shell-readme.txt&cloudshell_working_dir=examples%2Fcloud-operations%2Fdns-fine-grained-iam&cloudshell_open_in_editor=cloudshell_open%2Fcloud-foundation-fabric%2Fexamples%2Fcloud-operations%2Fdns-fine-grained-iam%2Fvariables.tf), then go through the following steps to create resources:
+Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fcloud-foundation-fabric&cloudshell_print=cloud-shell-readme.txt&cloudshell_working_dir=blueprints%2Fcloud-operations%2Fdns-fine-grained-iam&cloudshell_open_in_editor=cloudshell_open%2Fcloud-foundation-fabric%2Fblueprints%2Fcloud-operations%2Fdns-fine-grained-iam%2Fvariables.tf), then go through the following steps to create resources:
 
 - `terraform init`
 - `terraform apply -var project_id=my-project-id`
 
 Once done testing, you can clean up resources by running `terraform destroy`. To persist state, check out the `backend.tf.sample` file.
 
-## Testing the example
+## Testing the blueprint
 
 The terraform outputs generate preset `gcloud compute ssh` commands that you can copy and run in the console to connect to each VM. Remember to adapt the testing commands below if you changed the default values for the `name`, `region`, or `zone_domain` variables.
 
