@@ -4,10 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+
 ## [18.0.0] - 2022-09-09
 
-<!-- None < 2022-06-06 13:42:51+00:00 -->
+<!-- 2022-09-09 18:02:15+00:00 < 2022-06-06 13:42:51+00:00 -->
 
+- [[#808](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/808)] Rename examples to blueprints ([juliocc](https://github.com/juliocc)) <!-- 2022-09-09 15:14:19+00:00 -->
 
 ###  FAST
 
@@ -50,6 +52,8 @@ All notable changes to this project will be documented in this file.
 
 ### EXAMPLES
 
+- [[#801](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/801)] Update Cloud SQL example ([lcaggio](https://github.com/lcaggio)) <!-- 2022-09-09 14:02:07+00:00 -->
+- [[#802](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/802)] Fix Data Platform example ([lcaggio](https://github.com/lcaggio)) <!-- 2022-09-09 07:19:28+00:00 -->
 - [[#790](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/790)] Cloud Identity Group factory ([lcaggio](https://github.com/lcaggio)) <!-- 2022-09-01 13:30:58+00:00 -->
 - [[#740](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/740)] Update to multiple READMEs  ([bluPhy](https://github.com/bluPhy)) <!-- 2022-08-11 07:40:55+00:00 -->
 - [[#738](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/738)] Improve Data Playground example ([lcaggio](https://github.com/lcaggio)) <!-- 2022-08-09 13:56:39+00:00 -->
@@ -65,6 +69,7 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#805](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/805)] Change `modules/project` service_config default ([juliocc](https://github.com/juliocc)) <!-- 2022-09-09 07:54:31+00:00 -->
 - [[#787](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/787)] Support manager role in cloud identity group module ([lcaggio](https://github.com/lcaggio)) <!-- 2022-08-31 10:29:05+00:00 -->
 - [[#786](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/786)] Secret manager flag sensitive output ([ddaluka](https://github.com/ddaluka)) <!-- 2022-08-29 11:22:52+00:00 -->
 - [[#775](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/775)] net-glb: Added support for regional external HTTP(s) load balancing ([rosmo](https://github.com/rosmo)) <!-- 2022-08-27 20:58:11+00:00 -->
@@ -145,7 +150,7 @@ All notable changes to this project will be documented in this file.
 - **incompatible change** the variable for PSA ranges in the `net-vpc` module has changed to support configuring peering routes
 - fix permadiff in `net-vpc-firewall` module rules
 - new [gke-hub](modules/gke-hub) module
-- new [unmanaged-instances-healthcheck](examples/cloud-operations/unmanaged-instances-healthcheck) example
+- new [unmanaged-instances-healthcheck](blueprints/cloud-operations/unmanaged-instances-healthcheck) example
 - add support for IAM to `data-catalog-policy-tag` module
 - add support for IAM additive to `folder` module, fixes #580
 - optionally turn off gcplogs driver in COS modules
@@ -164,12 +169,12 @@ All notable changes to this project will be documented in this file.
 - **incompatible change** the variables for host and service Shared VPCs have changed in the project module
 - **incompatible change** the variable for service identities IAM has changed in the project factory
 - add `data-catalog-policy-tag` module
-- new [workload identity federetion example](examples/cloud-operations/workload-identity-federation)
-- new `api-gateway` [module](./modules/api-gateway) and [example](examples/serverless/api-gateway).
+- new [workload identity federetion example](blueprints/cloud-operations/workload-identity-federation)
+- new `api-gateway` [module](./modules/api-gateway) and [example](blueprints/serverless/api-gateway).
 - **incompatible change** the `psn_ranges` variable has been renamed to `psa_ranges` in the `net-vpc` module and its type changed from `list(string)` to `map(string)`
 - **incompatible change** removed `iam` flag for organization and folder level sinks
 - **incompatible change** removed `ingress_settings` configuration option in the `cloud-functions` module.
-- new [m4ce VM example](examples/cloud-operations/vm-migration/)
+- new [m4ce VM example](blueprints/cloud-operations/vm-migration/)
 - Support for resource management tags in the `organization`, `folder`, `project`, `compute-vm`, and `kms` modules
 - new [data platform](fast/stages/03-data-platform) stage 3
 - new [02-networking-nva](fast/stages/02-networking-nva) networking stage
@@ -186,7 +191,7 @@ All notable changes to this project will be documented in this file.
 
 - **initial Fabric FAST implementation**
 - new `net-glb` module for Global External Load balancer
-- new `project-factory` module in [`examples/factories`](./examples/factories)
+- new `project-factory` module in [`blueprints/factories`](./blueprints/factories)
 - add missing service identity accounts (artifactregistry, composer) in project module
 - new "Cloud Storage to Bigquery with Cloud Dataflow with least privileges" example
 - support service dependencies for crypto key bindings in project module
@@ -252,7 +257,7 @@ All notable changes to this project will be documented in this file.
 
 ## [7.0.0] - 2021-10-21
 
-- new cloud operations example showing how to deploy infrastructure for [Compute Engine image builder based on Hashicorp Packer](./examples/cloud-operations/packer-image-builder)
+- new cloud operations example showing how to deploy infrastructure for [Compute Engine image builder based on Hashicorp Packer](./blueprints/cloud-operations/packer-image-builder)
 - **incompatible change** the format of the `records` variable in the `dns` module has changed, to better support dynamic values
 - new `naming-convention` module
 - new `cloudsql-instance` module
@@ -277,7 +282,7 @@ All notable changes to this project will be documented in this file.
 - fix `scheduled-asset-inventory-export-bq` module
 - output custom role information from the `organization` module
 - enable multiple `vpc-sc` perimeters over multiple modules
-- new cloud operations example showing how to [restrict service usage using delegated role grants](./examples/cloud-operations/iam-delegated-role-grants)
+- new cloud operations example showing how to [restrict service usage using delegated role grants](./blueprints/cloud-operations/iam-delegated-role-grants)
 - **incompatible change** multiple instance support has been removed from the `compute-vm` module, to bring its interface in line with other modules and enable simple use of `for_each` at the module level; its variables have also slightly changed (`attached_disks`, `boot_disk_delete`, `crate_template`, `zone`)
 - **incompatible change** dropped the `admin_ranges_enabled` variable in `net-vpc-firewall`. Set `admin_ranges = []` to get the same effect
 - added the `named_ranges` variable to `net-vpc-firewall`
@@ -290,8 +295,8 @@ All notable changes to this project will be documented in this file.
 - add support for CMEK keys in Data Foundation end to end example
 - add support for VPC-SC perimeters in Data Foundation end to end example
 - fix `vpc-sc` module
-- new networking example showing how to use [Private Service Connect to call a Cloud Function from on-premises](./examples/networking/private-cloud-function-from-onprem/)
-- new networking example showing how to organize [decentralized firewall](./examples/networking/decentralized-firewall/) management on GCP
+- new networking example showing how to use [Private Service Connect to call a Cloud Function from on-premises](./blueprints/networking/private-cloud-function-from-onprem/)
+- new networking example showing how to organize [decentralized firewall](./blueprints/networking/decentralized-firewall/) management on GCP
 
 ## [5.0.0] - 2021-06-17
 
