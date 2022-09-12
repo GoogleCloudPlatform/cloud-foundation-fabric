@@ -22,3 +22,8 @@ It is meant to be used as a starting point for most Shared VPC configurations, a
 
 <a href="../gke/binauthz/" title="Binary Authorization Pipeline"><img src="../gke/binauthz/diagram.png" align="left" width="280px"></a> This [blueprint](../gke/binauthz/) shows how to create a CI and a CD pipeline in Cloud Build for the deployment of an application to a private GKE cluster with unrestricted access to a public endpoint. The blueprint enables a Binary Authorization policy in the project so only images that have been attested can be deployed to the cluster. The attestations are created using a cryptographic key pair that has been provisioned in KMS.
 <br clear="left">
+
+### Multi-cluster mesh on GKE (fleet API)
+
+<a href="../gke/multi-cluster-mesh-gke-fleet-api/" title="Binary Authorization Pipeline"><img src="../gke/multi-cluster-mesh-gke-fleet-api/diagram.png" align="left" width="280px"></a> This [blueprint](../gke/multi-cluster-mesh-gke-fleet-api/) shows how to create a multi-cluster mesh for two private clusters on GKE. Anthos Service Mesh with automatic control plane management is set up for clusters using the Fleet API. This can only be done if the clusters are in a single project and in the same VPC. In this particular case both clusters having being deployed to different subnets in a shared VPC.
+<br clear="left">

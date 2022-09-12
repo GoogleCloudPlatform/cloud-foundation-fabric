@@ -4,7 +4,7 @@ The following blueprint shows how to create a multi-cluster mesh for two private
 
 The diagram below depicts the architecture of the blueprint.
 
-![Architecture](architecture.png)
+![Architecture diagram](diagram.png)
 
 Terraform is used to provision the required infrastructure, create the IAM binding and register the clusters to the fleet.
 
