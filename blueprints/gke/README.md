@@ -17,3 +17,8 @@ They are meant to be used as minimal but complete starting points to create actu
 
 It is meant to be used as a starting point for most Shared VPC configurations, and to be integrated to the above blueprints where Shared VPC is needed in more complex network topologies.
 <br clear="left">
+
+### Binary Authorization Pipeline
+
+<a href="../gke/binauthz/" title="Binary Authorization Pipeline"><img src="../gke/binauthz/diagram.png" align="left" width="280px"></a> This [blueprint](../gke/binauthz/) shows how to create a CI and a CD pipeline in Cloud Build for the deployment of an application to a private GKE cluster with unrestricted access to a public endpoint. The blueprint enables a Binary Authorization policy in the project so only images that have been attested can be deployed to the cluster. The attestations are created using a cryptographic key pair that has been provisioned in KMS.
+<br clear="left">

@@ -1,4 +1,4 @@
-# Binary Authorization
+# Binary Authorization Pipeline Blueprint
 
 The following blueprint shows to how to create a CI and a CD pipeline in Cloud Build for the deployment of an application to a private GKE cluster with unrestricted access to a public endpoint. The blueprint enables a Binary Authorization policy in the project so only images that have been attested can be deployed to the cluster. The attestations are created using a cryptographic key pair that has been provisioned in KMS.
 
