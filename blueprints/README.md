@@ -1,6 +1,6 @@
 # Terraform end-to-end blueprints for Google Cloud
 
-This section contains **[foundational blueprints](./foundations/)** that bootstrap the organizational hierarchy and automation prerequisites, **[networking blueprints](./networking/)** that implement core patterns or features, **[data solutions blueprints](./data-solutions/)** that demonstrate how to integrate data services in complete scenarios, **[cloud operations blueprints](./cloud-operations/)** that leverage specific products to meet specific operational needs and **[factories](./factories/)** that implement resource factories for the repetitive creation of specific resources.
+This section **[networking blueprints](./networking/)** that implement core patterns or features, **[data solutions blueprints](./data-solutions/)** that demonstrate how to integrate data services in complete scenarios, **[cloud operations blueprints](./cloud-operations/)** that leverage specific products to meet specific operational needs, **[GKE](./gke/)** and **[Serverless](./serverless/)** blueprints, and **[factories](./factories/)** that implement resource factories for the repetitive creation of specific resources.
 
 Currently available blueprints:
 
