@@ -15,9 +15,7 @@
  */
 
 module "test" {
-  source             = "../../../../../blueprints/foundations/business-units"
-  billing_account_id = var.billing_account_id
-  organization_id    = var.organization_id
-  prefix             = var.prefix
-  root_node          = var.root_node
+  source         = "../../../../../blueprints/gke/binauthz"
+  project_create = var.project_create
+  project_id     = var.project_id
 }

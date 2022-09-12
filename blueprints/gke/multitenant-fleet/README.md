@@ -45,7 +45,7 @@ The following example shows how to deploy a single cluster and a single node poo
 
 ```hcl
 module "gke" {
-  source             = "./fabric/blueprints/gke-serverless/multitenant-fleet/"
+  source             = "./fabric/blueprints/gke/multitenant-fleet/"
   project_id         = var.project_id
   billing_account_id = var.billing_account_id
   folder_id          = var.folder_id
@@ -106,10 +106,9 @@ The first cluster `cluster-euw1` defines the mandatory configuration parameters 
 
 On the other hand, the second cluster (`cluster-euw3`) defines its own configuration by providing a value to the `overrides` key.
 
-
 ```hcl
 module "gke" {
-  source             = "./fabric/blueprints/gke-serverless/multitenant-fleet/"
+  source             = "./fabric/blueprints/gke/multitenant-fleet/"
   project_id         = var.project_id
   billing_account_id = var.billing_account_id
   folder_id          = var.folder_id
@@ -200,7 +199,7 @@ This example deploys two clusters and configures several GKE Fleet features:
 
 ```hcl
 module "gke" {
-  source             = "./fabric/blueprints/gke-serverless/multitenant-fleet/"
+  source             = "./fabric/blueprints/gke/multitenant-fleet/"
   project_id         = var.project_id
   billing_account_id = var.billing_account_id
   folder_id          = var.folder_id

@@ -15,14 +15,14 @@
  */
 
 module "test" {
-  source               = "../../../../../blueprints/foundations/environments"
-  billing_account_id   = var.billing_account_id
-  environments         = var.environments
-  iam_audit_viewers    = var.iam_audit_viewers
-  iam_shared_owners    = var.iam_shared_owners
-  iam_terraform_owners = var.iam_terraform_owners
-  iam_xpn_config       = var.iam_xpn_config
-  organization_id      = var.organization_id
-  prefix               = var.prefix
-  root_node            = var.root_node
+  source                 = "../../../../../blueprints/gke/multi-cluster-mesh-gke-fleet-api"
+  billing_account_id     = var.billing_account_id
+  parent                 = var.parent
+  host_project_id        = var.host_project_id
+  fleet_project_id       = var.fleet_project_id
+  mgmt_project_id        = var.mgmt_project_id
+  region                 = var.region
+  clusters_config        = var.clusters_config
+  mgmt_subnet_cidr_block = var.mgmt_subnet_cidr_block
+  istio_version          = var.istio_version
 }
