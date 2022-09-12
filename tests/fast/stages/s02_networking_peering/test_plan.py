@@ -27,9 +27,9 @@ STAGE_PEERING = STAGES / '02-networking-peering'
 STAGE_VPN = STAGES / '02-networking-vpn'
 
 
-def test_counts(fast_e2e_plan_runner):
+def test_counts(recursive_e2e_plan_runner):
   'Test stage.'
-  num_modules, num_resources, _ = fast_e2e_plan_runner()
+  num_modules, num_resources = recursive_e2e_plan_runner()
   # TODO: to re-enable per-module resource count check print _, then test
   assert num_modules > 0 and num_resources > 0
 

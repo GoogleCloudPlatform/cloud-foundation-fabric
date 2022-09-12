@@ -88,18 +88,28 @@ def e2e_plan_runner(_plan_runner):
 
 
 @pytest.fixture(scope='session')
-def doc_example_plan_runner(_plan_runner):
-  "Returns a function to run Terraform plan on documentation examples."
+def recursive_e2e_plan_runner(_plan_runner):
+  """Plan runner for end-to-end root module, returns total number of
+  (nested) modules and resources"""
 
-  def run_plan(fixture_path=None):
-    "Runs Terraform plan and returns count of modules and resources."
-    tf = tftest.TerraformTest(fixture_path, BASEDIR,
-                              os.environ.get('TERRAFORM', 'terraform'))
-    tf.setup(upgrade=True)
-    plan = tf.plan(output=True, refresh=True)
-    # the fixture is the example we are testing
-    modules = plan.modules or {}
-    return (len(modules), sum(len(m.resources) for m in modules.values()))
+  def walk_plan(node, modules, resources):
+    # TODO(jccb): this would be better with node.get() but
+    # TerraformPlanOutput objects don't have it
+    new_modules = node['child_modules'] if 'child_modules' in node else []
+    resources += node['resources'] if 'resources' in node else []
+    modules += new_modules
+    for module in new_modules:
+      walk_plan(module, modules, resources)
+
+  def run_plan(fixture_path=None, targets=None, refresh=True,
+               include_bare_resources=False, compute_sums=True, **tf_vars):
+    "Runs Terraform plan on a root module using defaults, returns data."
+    plan = _plan_runner(fixture_path, targets=targets, refresh=refresh,
+                        **tf_vars)
+    modules = []
+    resources = []
+    walk_plan(plan.root_module, modules, resources)
+    return len(modules), len(resources)
 
   return run_plan
 

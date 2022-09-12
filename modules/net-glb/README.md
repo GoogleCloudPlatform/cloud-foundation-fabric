@@ -154,7 +154,7 @@ resource "google_compute_region_network_endpoint_group" "serverless-neg" {
     service = "my-cloud-run-service"
   }
 }
-# tftest modules=1 resources=4
+# tftest modules=1 resources=5
 ```
 
 ### Mixing Backends
@@ -478,7 +478,7 @@ resource "tls_self_signed_cert" "self_signed_cert" {
     organization = "My Test Org"
   }
 }
-# tftest modules=1 resources=6
+# tftest modules=1 resources=8
 ```
 
 ## Regional Load Balancing

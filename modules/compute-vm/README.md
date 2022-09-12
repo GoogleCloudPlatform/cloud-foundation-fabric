@@ -247,7 +247,7 @@ module "vm-with-gvnic" {
   }
   service_account_create = true
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=3
 ```
 
 ### Instance template

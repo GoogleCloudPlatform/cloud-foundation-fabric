@@ -158,7 +158,7 @@ resource "google_compute_network_endpoint_group" "my-neg" {
   default_port = "90"
   zone         = "europe-west1-b"
 }
-# tftest modules=1 resources=5
+# tftest modules=1 resources=6
 ```
 -->
 
@@ -367,7 +367,7 @@ resource "tls_self_signed_cert" "self_signed_cert" {
     organization = "My Test Org"
   }
 }
-# tftest modules=1 resources=6
+# tftest modules=1 resources=8
 ```
 
 ## Components And Files Mapping
