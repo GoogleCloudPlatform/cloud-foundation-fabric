@@ -17,7 +17,7 @@
 # tfdoc:file:description GKE multitenant for development environment.
 
 module "gke-multitenant" {
-  source             = "../../../../blueprints/gke-serverless/multitenant-fleet"
+  source             = "../../../../blueprints/gke/multitenant-fleet"
   billing_account_id = var.billing_account.id
   folder_id          = var.folder_ids.gke-dev
   project_id         = "gke-clusters-0"

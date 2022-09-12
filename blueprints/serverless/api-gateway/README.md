@@ -4,7 +4,7 @@ This tutorial shows you how to configure an HTTP(S) load balancer to enable mult
 
 The diagram below depicts the architecture that this blueprint sets up.
 
-![Architecture](architecture.png)
+![Architecture diagram](diagram.png)
 
 # Running the blueprint
 
