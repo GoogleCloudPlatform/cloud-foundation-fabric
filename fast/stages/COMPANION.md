@@ -1,29 +1,30 @@
 # FAST deployment companion guide
-In order to successfully deploy your GCP Landing Zone using FAST in your Organization, a series of prerequisites are required before starting. Then, FAST deployment is split in different stages that are required to be executed in order as some of them depend on previous stages output.
 
-Detailed explanation of each stage execution, configuration or possible modifications and adaptations are included in each stage section. The target of this companion guide is to serve as a cheat sheet, including the list of commands to be executed during FAST deployment. 
+To deploy a GCP Landing Zone using FAST, your organization needs to meet a few prerequisites before starting. This guide serves as quick guide to prepare your GCP organization and also as cheat sheet with the commands and minimal configuration required to deploy FAST. 
+
+The detailed explanation of each stage, their configuration, possible modifications and adaptations are included in the README of stage. This document only outlines the minimal configuration to get from an empty organization to a working FAST deployment.
 
 **Warning! Executing FAST sets organization policies and authoritative role bindings in your GCP Organization. We recommend using FAST on a clean organization, or to fork and adapt FAST to support your existing Organization needs.**
 
 ## Prerequisites
-1. First of all, go to Workspace / Cloud Identity and create (or validate they already exist) all the required groups closely mirroring the [GCP Enterprise Setup checklist](https://cloud.google.com/docs/enterprise/setup-checklist):
-- gcp-billing-admins@
-- gcp-devops@
-- gcp-network-admins@
-- gcp-organization-admins@
-- gcp-security-admins@
-- gcp-support@
-2. If you already executed FAST in your Organization, [clean it up](CLEANUP.md) before executing it again.
-3. Grant your user “Organization Administrator” role in your Organization and add it to the gcp-organization-admins@ group.
-4. If not already done, Login with your user using gcloud.
+1. FAST uses the recommended groups from the [GCP Enterprise Setup checklist](). Go to [Workspace / Cloud Identity](https://admin.google.com) and ensure all the following groups exist:
+  - `gcp-billing-admins@`
+  - `gcp-devops@`
+  - `gcp-network-admins@`
+  - `gcp-organization-admins@`
+  - `gcp-security-admins@`
+  - `gcp-support@`
+2. If you already executed FAST in your organization, make you [clean it up](CLEANUP.md) before continuing with the rest of this guide.
+3. Grant your user “Organization Administrator” role in your organization and add it to the `gcp-organization-admins@` group.
+4. Login with your user using gcloud.
 ```bash
-gcloud auth list
 gcloud auth login
 gcloud auth application-default login
 ```
-5. Clone Fabric.
+5. Clone the Fabric repository.
 ```bash
 git clone https://github.com/GoogleCloudPlatform/cloud-foundation-fabric.git
+cd cloud-foundation-fabric
 ```
 6. Grant required roles to your user.
 ```bash
