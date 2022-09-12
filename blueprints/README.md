@@ -12,4 +12,4 @@ Currently available blueprints:
 - **serverless** - [Multi-region deployments for API Gateway](./serverless/api-gateway/)
 - **third party solutions** - [OpenShift cluster on Shared VPC](./third-party-solutions/openshift)
 
-For more information see the README files in the [foundations](./foundations/), [networking](./networking/), [data solutions](./data-solutions/), [cloud operations](./cloud-operations/) and [factories](./factories/) folders.
+For more information see the individual README files in each section.
