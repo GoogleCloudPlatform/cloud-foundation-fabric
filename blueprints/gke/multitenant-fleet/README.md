@@ -95,7 +95,7 @@ module "gke" {
     }
   }
 }
-# tftest modules=1 resources=0
+# tftest modules=5 resources=26
 ```
 
 ## Creating Multiple Clusters
@@ -185,7 +185,7 @@ module "gke" {
     }
   }
 }
-# tftest modules=1 resources=0
+# tftest modules=7 resources=28
 ```
 
 ## Multiple clusters with GKE Fleet
@@ -305,7 +305,7 @@ module "gke" {
   }
 }
 
-# tftest modules=1 resources=0
+# tftest modules=8 resources=39
 ```
 
 <!-- TFDOC OPTS files:1 show_extra:1 -->
