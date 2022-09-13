@@ -1,9 +1,26 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+<!-- markdownlint-disable MD024 -->
 
 ## [Unreleased]
+<!-- None < 2022-09-09 18:02:15+00:00 -->
 
+### BLUEPRINTS
+
+- [[#809](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/809)] Renaming and moving blueprints ([juliocc](https://github.com/juliocc)) <!-- 2022-09-12 10:19:15+00:00 -->
+
+### DOCUMENTATION
+
+- [[#806](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/806)] Companion Guide ([ajlopezn](https://github.com/ajlopezn)) <!-- 2022-09-12 07:11:03+00:00 -->
+
+### FAST
+
+- [[#807](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/807)] FAST: refactor Gitlab template ([ludoo](https://github.com/ludoo)) <!-- 2022-09-12 05:26:49+00:00 -->
+
+### TOOLS
+
+- [[#810](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/810)] Fully recursive e2e test runner for examples ([juliocc](https://github.com/juliocc)) <!-- 2022-09-12 12:35:46+00:00 -->
 
 ## [18.0.0] - 2022-09-09
 
@@ -11,7 +28,7 @@ All notable changes to this project will be documented in this file.
 
 - [[#808](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/808)] Rename examples to blueprints ([juliocc](https://github.com/juliocc)) <!-- 2022-09-09 15:14:19+00:00 -->
 
-###  FAST
+### FAST
 
 - [[#804](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/804)] GKE CI/CD ([ludoo](https://github.com/ludoo)) <!-- 2022-09-09 06:33:25+00:00 -->
 - [[#803](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/803)] FAST: fix GCS location in stage 00 and 01 ([miklosn](https://github.com/miklosn)) <!-- 2022-09-09 05:18:45+00:00 -->
@@ -118,7 +135,6 @@ All notable changes to this project will be documented in this file.
 - [[#762](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/762)] Update changelog on pull request merge ([ludoo](https://github.com/ludoo)) <!-- 2022-07-30 17:04:00+00:00 -->
 - [[#680](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/680)] Tools: fix `ValueError` raised in `check_names.py` when overlong names are detected ([27Bslash6](https://github.com/27Bslash6)) <!-- 2022-06-16 08:01:59+00:00 -->
 - [[#672](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/672)] Module attribution and version updater tool, plus release automation ([rosmo](https://github.com/rosmo)) <!-- 2022-06-09 11:40:50+00:00 -->
-
 
 ## [16.0.0] - 2022-06-06
 
@@ -610,7 +626,6 @@ All notable changes to this project will be documented in this file.
 ## [1.0.0] - 2020-03-27
 
 - merge development branch with suite of new modules and end-to-end examples
-
 
 <!-- markdown-link-check-disable -->
 [Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v18.0.0...HEAD

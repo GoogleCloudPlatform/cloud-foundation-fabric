@@ -19,13 +19,17 @@ import collections
 import ghapi.all
 import iso8601
 
+LINK_MARKER = '<!-- markdown-link-check-disable -->'
 ORG = 'GoogleCloudPlatform'
 REPO = 'cloud-foundation-fabric'
 URL = f'https://github.com/{ORG}/{REPO}'
 
 PullRequest = collections.namedtuple('PullRequest',
                                      'id author title merged_at labels')
-Release = collections.namedtuple('Release', 'name published since pulls')
+FileRelease = collections.namedtuple('FileRelease',
+                                     'name published since content')
+GitRelease = collections.namedtuple('GitRelease', 'name published since pulls')
+Section = collections.namedtuple('Section', 'text')
 
 
 class Error(Exception):
@@ -51,39 +55,41 @@ def changelog_load(path):
     with open(path) as f:
       for l in f.readlines():
         l = l.strip()
+        if l.startswith(LINK_MARKER):
+          break
         if l.startswith('## '):
           name, _, date = l[3:].partition(' - ')
-          releases.append(Release(name[1:-1], date, None, []))
-        elif l.startswith('- '):
-          if not releases:
-            raise Error(f'Pull found with no releases: {l}')
-          releases[-1].pulls.append(l)
+          releases.append(FileRelease(name[1:-1], date, None, []))
+        elif releases:
+          releases[-1].content.append(l)
     return releases
   except (IOError, OSError) as e:
     raise Error(f'Cannot open {path}: {e.args[0]}')
 
 
-def changelog_dumps(releases, overrides=None):
+def changelog_dumps(file_releases, git_releases=None):
   'Return formatted changelog from structured data, overriding versions.'
-  overrides = overrides or {}
+  git_releases = git_releases or {}
   buffer = [
       ('# Changelog\n\n'
-       'All notable changes to this project will be documented in this file.\n')
+       'All notable changes to this project will be documented in this file.\n'
+       '<!-- markdownlint-disable MD024 -->\n')
   ]
   ref_buffer = ['<!-- markdown-link-check-disable -->']
-  for i, release in enumerate(releases):
-    name, published, _, pulls = release
-    prev_name = releases[i + 1].name if i + 1 < len(releases) else '0.1'
+  for i, release in enumerate(file_releases):
+    name, published, _, items = release
+    prev_name = file_releases[i +
+                              1].name if i + 1 < len(file_releases) else '0.1'
     if name != 'Unreleased':
-      buffer.append(f'## [{name}] - {published}\n')
+      buffer.append(f'## [{name}] - {published}')
       ref_buffer.append(f'[{name}]: {URL}/compare/v{prev_name}...v{name}')
     else:
-      buffer.append(f'## [{name}]\n')
+      buffer.append(f'## [{name}]')
       ref_buffer.append(f'[Unreleased]: {URL}/compare/v{prev_name}...HEAD')
-    override = overrides.get(name, overrides.get(f'v{name}'))
-    if override:
-      buffer.append(f'<!-- {override.published} < {override.since} -->\n')
-      pulls = group_pulls(override.pulls)
+    release = git_releases.get(name, git_releases.get(f'v{name}'))
+    if release:
+      buffer.append(f'<!-- {release.published} < {release.since} -->')
+      pulls = group_pulls(release.pulls)
       for k in sorted(pulls.keys(), key=lambda s: s or ''):
         if k is not None:
           buffer.append(f'### {k}\n')
@@ -91,10 +97,8 @@ def changelog_dumps(releases, overrides=None):
           buffer.append(format_pull(pull))
         buffer.append('')
     else:
-      for pull in pulls:
-        buffer.append(pull)
-    buffer.append('')
-  return '\n'.join(buffer + [''] + ref_buffer)
+      buffer.append('\n'.join(items))
+  return '\n'.join(buffer + ref_buffer + [''])
 
 
 def format_pull(pull):
@@ -157,10 +161,10 @@ def get_releases(api, filter_names=None):
   for r in _paginate(api.repos.list_releases):
     published = iso8601.parse_date(r['published_at'])
     if not filter_names or buffer.name in filter_names:
-      yield Release(buffer.name, buffer.published, published, [])
+      yield GitRelease(buffer.name, buffer.published, published, [])
     buffer = Buffer(r['name'], published)
   if buffer and (not filter_names or buffer.name in filter_names):
-    yield Release(buffer.name, buffer.published, None, [])
+    yield GitRelease(buffer.name, buffer.published, None, [])
 
 
 @click.command
@@ -172,7 +176,7 @@ def get_releases(api, filter_names=None):
 )
 @click.option('--token', required=True, envvar='GH_TOKEN',
               help='GitHub API token.')
-@click.option('--write/-w', is_flag=True, required=False, default=False,
+@click.option('--write', '-w', is_flag=True, required=False, default=False,
               help='Write modified changelog file.')
 @click.argument('changelog', required=False, default='CHANGELOG.md',
                 type=click.Path(exists=True))
