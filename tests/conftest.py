@@ -28,7 +28,8 @@ BASEDIR = os.path.dirname(os.path.dirname(__file__))
 def _plan_runner():
   "Returns a function to run Terraform plan on a fixture."
 
-  def run_plan(fixture_path=None, targets=None, refresh=True, **tf_vars):
+  def run_plan(fixture_path=None, targets=None, refresh=True, tmpdir=True,
+               **tf_vars):
     "Runs Terraform plan and returns parsed output."
     if fixture_path is None:
       # find out the fixture directory from the caller's directory
@@ -37,19 +38,17 @@ def _plan_runner():
 
     fixture_parent = os.path.dirname(fixture_path)
     fixture_prefix = os.path.basename(fixture_path) + "_"
-    # with tempfile.TemporaryDirectory(prefix=fixture_prefix,
-    #                                  dir=fixture_parent) as tmp_path:
-    #   # copy fixture to a temporary directory so we can execute
-    #   # multiple tests in parallel
-    #   try:
-    #     shutil.copytree(fixture_path, tmp_path, dirs_exist_ok=True)
-    #   except shutil.Error as e:
-    #     raise SystemExit([fixture_path, tmp_path])
-    tf = tftest.TerraformTest(fixture_path, BASEDIR,
-                              os.environ.get('TERRAFORM', 'terraform'))
-    tf.setup(upgrade=True)
-    plan = tf.plan(output=True, refresh=refresh, tf_vars=tf_vars,
-                   targets=targets)
+    with tempfile.TemporaryDirectory(prefix=fixture_prefix,
+                                     dir=fixture_parent) as tmp_path:
+      # copy fixture to a temporary directory so we can execute
+      # multiple tests in parallel
+      if tmpdir:
+        shutil.copytree(fixture_path, tmp_path, dirs_exist_ok=True)
+      tf = tftest.TerraformTest(tmp_path if tmpdir else fixture_path, BASEDIR,
+                                os.environ.get('TERRAFORM', 'terraform'))
+      tf.setup(upgrade=True)
+      plan = tf.plan(output=True, refresh=refresh, tf_vars=tf_vars,
+                     targets=targets)
     return plan
 
   return run_plan
@@ -106,10 +105,11 @@ def recursive_e2e_plan_runner(_plan_runner):
       walk_plan(module, modules, resources)
 
   def run_plan(fixture_path=None, targets=None, refresh=True,
-               include_bare_resources=False, compute_sums=True, **tf_vars):
+               include_bare_resources=False, compute_sums=True, tmpdir=True,
+               **tf_vars):
     "Runs Terraform plan on a root module using defaults, returns data."
     plan = _plan_runner(fixture_path, targets=targets, refresh=refresh,
-                        **tf_vars)
+                        tmpdir=tmpdir, **tf_vars)
     modules = []
     resources = []
     walk_plan(plan.root_module, modules, resources)

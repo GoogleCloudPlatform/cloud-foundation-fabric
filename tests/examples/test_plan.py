@@ -29,6 +29,7 @@ def test_example(recursive_e2e_plan_runner, tmp_path, example):
   expected_modules = int(match.group(1)) if match is not None else 1
   expected_resources = int(match.group(2)) if match is not None else 1
 
-  num_modules, num_resources = recursive_e2e_plan_runner(str(tmp_path))
+  num_modules, num_resources = recursive_e2e_plan_runner(
+      str(tmp_path), tmpdir=False)
   assert expected_modules == num_modules
   assert expected_resources == num_resources
