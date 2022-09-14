@@ -37,16 +37,20 @@ def _plan_runner():
 
     fixture_parent = os.path.dirname(fixture_path)
     fixture_prefix = os.path.basename(fixture_path) + "_"
-    with tempfile.TemporaryDirectory(prefix=fixture_prefix,
-                                     dir=fixture_parent) as tmp_path:
-      # copy fixture to a temporary directory so we can execute
-      # multiple tests in parallel
-      shutil.copytree(fixture_path, tmp_path, dirs_exist_ok=True)
-      tf = tftest.TerraformTest(tmp_path, BASEDIR,
-                                os.environ.get('TERRAFORM', 'terraform'))
-      tf.setup(upgrade=True)
-      return tf.plan(output=True, refresh=refresh, tf_vars=tf_vars,
-                     targets=targets)
+    # with tempfile.TemporaryDirectory(prefix=fixture_prefix,
+    #                                  dir=fixture_parent) as tmp_path:
+    #   # copy fixture to a temporary directory so we can execute
+    #   # multiple tests in parallel
+    #   try:
+    #     shutil.copytree(fixture_path, tmp_path, dirs_exist_ok=True)
+    #   except shutil.Error as e:
+    #     raise SystemExit([fixture_path, tmp_path])
+    tf = tftest.TerraformTest(fixture_path, BASEDIR,
+                              os.environ.get('TERRAFORM', 'terraform'))
+    tf.setup(upgrade=True)
+    plan = tf.plan(output=True, refresh=refresh, tf_vars=tf_vars,
+                   targets=targets)
+    return plan
 
   return run_plan
 

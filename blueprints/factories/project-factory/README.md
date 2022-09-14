@@ -41,46 +41,40 @@ The Project Factory is meant to be executed by a Service Account (or a regular u
 
 ### Terraform code
 
-```tfvars
-# ./terraform.tfvars
-data_dir = "data/projects/"
-defaults_file = "data/defaults.yaml"
-```
-
 ```hcl
-# ./main.tf
-
 locals {
-  defaults = yamldecode(file(var.defaults_file))
+  defaults = yamldecode(file(local._defaults_file))
   projects = {
-    for f in fileset("${var.data_dir}", "**/*.yaml") :
-    trimsuffix(f, ".yaml") => yamldecode(file("${var.data_dir}/${f}"))
+    for f in fileset("${local._data_dir}", "**/*.yaml") :
+    trimsuffix(f, ".yaml") => yamldecode(file("${local._data_dir}/${f}"))
   }
+  # these are usually set via variables
+  _base_dir = "./fabric/blueprints/factories/project-factory"
+  _data_dir = "${local._base_dir}/sample-data/projects/"
+  _defaults_file = "${local._base_dir}/sample-data/defaults.yaml"
 }
 
 module "projects" {
-  source             = "./factories/project-factory"
-  for_each           = local.projects
-  defaults           = local.defaults
-  project_id         = each.key
-  billing_account_id = try(each.value.billing_account_id, null)
-  billing_alert      = try(each.value.billing_alert, null)
-  dns_zones          = try(each.value.dns_zones, [])
-  essential_contacts = try(each.value.essential_contacts, [])
-  folder_id          = each.value.folder_id
-  group_iam          = try(each.value.group_iam, {})
-  iam                = try(each.value.iam, {})
-  kms_service_agents = try(each.value.kms, {})
-  labels             = try(each.value.labels, {})
-  org_policies       = try(each.value.org_policies, null)
-  secrets            = try(each.value.secrets, {})
-  service_accounts   = try(each.value.service_accounts, {})
-  services           = try(each.value.services, [])
-  services_iam       = try(each.value.services_iam, {})
-  vpc                = try(each.value.vpc, null)
+  source                 = "./fabric/blueprints/factories/project-factory"
+  for_each               = local.projects
+  defaults               = local.defaults
+  project_id             = each.key
+  billing_account_id     = try(each.value.billing_account_id, null)
+  billing_alert          = try(each.value.billing_alert, null)
+  dns_zones              = try(each.value.dns_zones, [])
+  essential_contacts     = try(each.value.essential_contacts, [])
+  folder_id              = each.value.folder_id
+  group_iam              = try(each.value.group_iam, {})
+  iam                    = try(each.value.iam, {})
+  kms_service_agents     = try(each.value.kms, {})
+  labels                 = try(each.value.labels, {})
+  org_policies           = try(each.value.org_policies, null)
+  service_accounts       = try(each.value.service_accounts, {})
+  services               = try(each.value.services, [])
+  service_identities_iam = try(each.value.service_identities_iam, {})
+  vpc                    = try(each.value.vpc, null)
 }
-
-# tftest skip
+# tftest modules=7 resources=27
 ```
 
 ### Projects configuration
