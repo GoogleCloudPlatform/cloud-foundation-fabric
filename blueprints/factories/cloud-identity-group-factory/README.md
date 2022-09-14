@@ -1,6 +1,6 @@
 # Google Cloud Identity Group Factory
 
-This module allows creation and management of Cloud Identity Groups by defining them in well formatted `yaml` files. 
+This module allows creation and management of Cloud Identity Groups by defining them in well formatted `yaml` files.
 
 Yaml abstraction for Groups can simplify groups creation and members management. Yaml can be simpler and clearer comparing to HCL.
 
@@ -19,6 +19,7 @@ module "prod-firewall" {
 ```
 
 ### Configuration Structure
+
 Groups configuration should be placed in a set of yaml files. The name of the file identify the name of the group.
 
 ```bash
