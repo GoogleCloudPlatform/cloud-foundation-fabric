@@ -67,7 +67,7 @@ LINK NEEDED
 Before we deploy the architecture, you will at least need the following information (for more precise configuration see the Variables section):
 
 * The project Id.
-* The organization Id.
+* The organization Id (as mentioned [here](https://cloud.google.com/sdk/gcloud/reference/projects/get-ancestors), the following command outputs the organization: `gcloud projects get-ancestors PROJECT_ID`)
 * A dataset Id to export logs to (see [naming conventions](https://cloud.google.com/bigquery/docs/datasets#dataset-naming)). Note: this will create a new dataset (to use an existing dataset, see the following section below: "Use an already existing BigQuery dataset")
 * A log filter to target specific audit logs to route to BigQuery (see examples in the [`terraform.tfvars.sample`](terraform.tfvars.sample) file).
 
