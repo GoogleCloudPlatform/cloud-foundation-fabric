@@ -52,12 +52,14 @@ module "branch-network-prod-folder" {
   iam = {
     (local.custom_roles.service_project_network_admin) = concat(
       local.branch_optional_sa_lists.dp-prod,
+      local.branch_optional_sa_lists.gke-prod,
       local.branch_optional_sa_lists.pf-prod,
     )
   }
   tag_bindings = {
     environment = try(
-      module.organization.tag_values["${var.tag_names.environment}/production"].id, null
+      module.organization.tag_values["${var.tag_names.environment}/production"].id,
+      null
     )
   }
 }
@@ -69,12 +71,14 @@ module "branch-network-dev-folder" {
   iam = {
     (local.custom_roles.service_project_network_admin) = concat(
       local.branch_optional_sa_lists.dp-dev,
+      local.branch_optional_sa_lists.gke-dev,
       local.branch_optional_sa_lists.pf-dev,
     )
   }
   tag_bindings = {
     environment = try(
-      module.organization.tag_values["${var.tag_names.environment}/development"].id, null
+      module.organization.tag_values["${var.tag_names.environment}/development"].id,
+      null
     )
   }
 }
@@ -98,11 +102,13 @@ module "branch-network-sa" {
 }
 
 module "branch-network-gcs" {
-  source     = "../../../modules/gcs"
-  project_id = var.automation.project_id
-  name       = "prod-resman-net-0"
-  prefix     = var.prefix
-  versioning = true
+  source        = "../../../modules/gcs"
+  project_id    = var.automation.project_id
+  name          = "prod-resman-net-0"
+  prefix        = var.prefix
+  location      = var.locations.gcs
+  storage_class = local.gcs_storage_class
+  versioning    = true
   iam = {
     "roles/storage.objectAdmin" = [module.branch-network-sa.iam_email]
   }

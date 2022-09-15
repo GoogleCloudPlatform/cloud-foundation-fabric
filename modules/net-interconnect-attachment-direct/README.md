@@ -8,7 +8,7 @@ This module allows creation of a VLAN attachment for Direct Interconnect and rou
 
 ```hcl
 module "vlan-attachment-1" {
-  source         = "./modules/net-interconnect-attachment-direct"
+  source         = "./fabric/modules/net-interconnect-attachment-direct"
   project_id     = "dedicated-ic-5-8492"
   region         = "us-west2"
   router_network = "myvpc"
@@ -25,7 +25,7 @@ module "vlan-attachment-1" {
 
 ```hcl
 module "vlan-attachment-1" {
-  source      = "./modules/net-interconnect-attachment-direct"
+  source      = "./fabric/modules/net-interconnect-attachment-direct"
   project_id  = "dedicated-ic-3-8386"
   region      = "us-west2"
   router_name = "router-1"
@@ -63,7 +63,7 @@ module "vlan-attachment-1" {
 }
 
 module "vlan-attachment-2" {
-  source      = "./modules/net-interconnect-attachment-direct"
+  source      = "./fabric/modules/net-interconnect-attachment-direct"
   project_id  = "dedicated-ic-3-8386"
   region      = "us-west2"
   router_name = "router-2"

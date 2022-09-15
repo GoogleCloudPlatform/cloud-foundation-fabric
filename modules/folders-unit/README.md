@@ -6,7 +6,7 @@ This module allows creation and management of an organizational hierarchy "unit"
 
 ```hcl
 module "folders-unit" {
-  source                = "./modules/folders-unit"
+  source                = "./fabric/modules/folders-unit"
   name                  = "Business Intelligence"
   short_name            = "bi"
   automation_project_id = "automation-project-394yr923811"

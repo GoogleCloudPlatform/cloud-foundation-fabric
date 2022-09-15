@@ -21,7 +21,7 @@ locals {
 }
 
 module "project" {
-  source          = "./modules/project"
+  source          = "./fabric/modules/project"
   billing_account = "123456-123456-123456"
   name            = "project-example"
   parent          = "folders/1234567890"
@@ -43,7 +43,7 @@ The `group_iam` variable uses group email addresses as keys and is a convenient 
 
 ```hcl
 module "project" {
-  source          = "./modules/project"
+  source          = "./fabric/modules/project"
   billing_account = "123456-123456-123456"
   name            = "project-example"
   parent          = "folders/1234567890"
@@ -70,7 +70,7 @@ Additive IAM is typically used where bindings for specific roles are controlled 
 
 ```hcl
 module "project" {
-  source          = "./modules/project"
+  source          = "./fabric/modules/project"
   name            = "project-example"
   iam_additive = {
     "roles/viewer"               = [
@@ -94,7 +94,7 @@ As mentioned above, there are cases where authoritative management of specific I
 
 ```hcl
 module "project" {
-  source          = "./modules/project"
+  source          = "./fabric/modules/project"
   name            = "project-example"
   group_iam = {
     "foo@example.com" = [
@@ -120,7 +120,7 @@ You can enable Shared VPC Host at the project level and manage project service a
 
 ```hcl
 module "project" {
-  source          = "./modules/project"
+  source          = "./fabric/modules/project"
   name            = "project-example"
   shared_vpc_host_config = {
     enabled          = true
@@ -134,7 +134,7 @@ module "project" {
 
 ```hcl
 module "project" {
-  source          = "./modules/project"
+  source          = "./fabric/modules/project"
   name            = "project-example"
   shared_vpc_service_config = {
     attach               = true
@@ -159,7 +159,7 @@ module "project" {
 
 ```hcl
 module "project" {
-  source          = "./modules/project"
+  source          = "./fabric/modules/project"
   billing_account = "123456-123456-123456"
   name            = "project-example"
   parent          = "folders/1234567890"
@@ -188,33 +188,33 @@ module "project" {
 
 ```hcl
 module "gcs" {
-  source        = "./modules/gcs"
+  source        = "./fabric/modules/gcs"
   project_id    = var.project_id
   name          = "gcs_sink"
   force_destroy = true
 }
 
 module "dataset" {
-  source     = "./modules/bigquery-dataset"
+  source     = "./fabric/modules/bigquery-dataset"
   project_id = var.project_id
   id         = "bq_sink"
 }
 
 module "pubsub" {
-  source     = "./modules/pubsub"
+  source     = "./fabric/modules/pubsub"
   project_id = var.project_id
   name       = "pubsub_sink"
 }
 
 module "bucket" {
-  source      = "./modules/logging-bucket"
+  source      = "./fabric/modules/logging-bucket"
   parent_type = "project"
   parent      = "my-project"
   id          = "bucket"
 }
 
 module "project-host" {
-  source          = "./modules/project"
+  source          = "./fabric/modules/project"
   name            = "my-project"
   billing_account = "123456-123456-123456"
   parent          = "folders/1234567890"
@@ -267,7 +267,7 @@ The module offers a simple, centralized way to assign `roles/cloudkms.cryptoKeyE
 
 ```hcl
 module "project" {
-  source          = "./modules/project"
+  source          = "./fabric/modules/project"
   name            = "my-project"
   billing_account = "123456-123456-123456"
   prefix          = "foo"
@@ -294,7 +294,7 @@ Refer to the [Creating and managing tags](https://cloud.google.com/resource-mana
 
 ```hcl
 module "org" {
-  source          = "./modules/organization"
+  source          = "./fabric/modules/organization"
   organization_id = var.organization_id
   tags = {
     environment = {
@@ -309,7 +309,7 @@ module "org" {
 }
 
 module "project" {
-  source = "./modules/project"
+  source = "./fabric/modules/project"
   name   = "test-project"
   tag_bindings = {
     env-prod = module.org.tag_values["environment/prod"].id
@@ -327,7 +327,7 @@ One non-obvious output is `service_accounts`, which offers a simple way to disco
 
 ```hcl
 module "project" {
-  source   = "./modules/project"
+  source   = "./fabric/modules/project"
   name     = "project-example"
   services = [
     "compute.googleapis.com"
@@ -386,7 +386,7 @@ output "compute_robot" {
 | [policy_list](variables.tf#L168) | Map of list org policies, status is true for allow, false for deny, null for restore. Values can only be used for allow or deny. | <code title="map&#40;object&#40;&#123;&#10;  inherit_from_parent &#61; bool&#10;  suggested_value     &#61; string&#10;  status              &#61; bool&#10;  values              &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [prefix](variables.tf#L180) | Prefix used to generate project id and name. | <code>string</code> |  | <code>null</code> |
 | [project_create](variables.tf#L186) | Create project. When set to false, uses a data source to reference existing project. | <code>bool</code> |  | <code>true</code> |
-| [service_config](variables.tf#L192) | Configure service API activation. | <code title="object&#40;&#123;&#10;  disable_on_destroy         &#61; bool&#10;  disable_dependent_services &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  disable_on_destroy         &#61; true&#10;  disable_dependent_services &#61; true&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [service_config](variables.tf#L192) | Configure service API activation. | <code title="object&#40;&#123;&#10;  disable_on_destroy         &#61; bool&#10;  disable_dependent_services &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  disable_on_destroy         &#61; false&#10;  disable_dependent_services &#61; false&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [service_encryption_key_ids](variables.tf#L204) | Cloud KMS encryption key in {SERVICE => [KEY_URL]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [service_perimeter_bridges](variables.tf#L211) | Name of VPC-SC Bridge perimeters to add project into. See comment in the variables file for format. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
 | [service_perimeter_standard](variables.tf#L218) | Name of VPC-SC Standard perimeter to add project into. See comment in the variables file for format. | <code>string</code> |  | <code>null</code> |
@@ -403,8 +403,8 @@ output "compute_robot" {
 | [custom_roles](outputs.tf#L17) | Ids of the created custom roles. |  |
 | [name](outputs.tf#L25) | Project name. |  |
 | [number](outputs.tf#L38) | Project number. |  |
-| [project_id](outputs.tf#L51) | Project id. |  |
-| [service_accounts](outputs.tf#L70) | Product robot service accounts in project. |  |
-| [sink_writer_identities](outputs.tf#L86) | Writer identities created for each sink. |  |
+| [project_id](outputs.tf#L56) | Project id. |  |
+| [service_accounts](outputs.tf#L76) | Product robot service accounts in project. |  |
+| [sink_writer_identities](outputs.tf#L92) | Writer identities created for each sink. |  |
 
 <!-- END TFDOC -->

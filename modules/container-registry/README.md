@@ -6,7 +6,7 @@ This module simplifies the creation of GCS buckets used by Google Container Regi
 
 ```hcl
 module "container_registry" {
-  source     = "./modules/container-registry"
+  source     = "./fabric/modules/container-registry"
   project_id = "myproject"
   location   = "EU"
   iam = {

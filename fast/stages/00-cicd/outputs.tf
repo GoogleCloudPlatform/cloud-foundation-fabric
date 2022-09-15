@@ -23,7 +23,7 @@ locals {
   tfvars = {
     cicd_repositories = merge(local.cicd_repositories_by_system["gitlab"], local.cicd_repositories_by_system["github"])
     cicd_ssh_urls     = merge(local.gitlab_cicd_ssh, local.github_cicd_ssh)
-    cicd_https_urls   = merge(local.gitlab_cicd_https, local.gitlab_cicd_https)
+    cicd_https_urls   = merge(local.gitlab_cicd_https, local.github_cicd_https)
   }
 }
 

@@ -12,11 +12,11 @@ This example shows how to manage a simple MIG that leverages the `compute-vm` mo
 
 ```hcl
 module "cos-nginx" {
-  source = "./modules/cloud-config-container/nginx"
+  source = "./fabric/modules/cloud-config-container/nginx"
 }
 
 module "nginx-template" {
-  source     = "./modules/compute-vm"
+  source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
   name       = "nginx-template"
   zone     = "europe-west1-b"
@@ -39,7 +39,7 @@ module "nginx-template" {
 }
 
 module "nginx-mig" {
-  source      = "./modules/compute-mig"
+  source      = "./fabric/modules/compute-mig"
   project_id  = "my-project"
   location    = "europe-west1-b"
   name        = "mig-test"
@@ -58,11 +58,11 @@ If multiple versions are desired, use more `compute-vm` instances for the additi
 
 ```hcl
 module "cos-nginx" {
-  source = "./modules/cloud-config-container/nginx"
+  source = "./fabric/modules/cloud-config-container/nginx"
 }
 
 module "nginx-template" {
-  source     = "./modules/compute-vm"
+  source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
   name       = "nginx-template"
   zone     = "europe-west1-b"
@@ -85,7 +85,7 @@ module "nginx-template" {
 }
 
 module "nginx-mig" {
-  source      = "./modules/compute-mig"
+  source      = "./fabric/modules/compute-mig"
   project_id  = "my-project"
   location    = "europe-west1-b"
   name        = "mig-test"
@@ -111,11 +111,11 @@ Autohealing policies can use an externally defined health check, or have this mo
 
 ```hcl
 module "cos-nginx" {
-  source = "./modules/cloud-config-container/nginx"
+  source = "./fabric/modules/cloud-config-container/nginx"
 }
 
 module "nginx-template" {
-  source     = "./modules/compute-vm"
+  source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
   name       = "nginx-template"
   zone     = "europe-west1-b"
@@ -138,7 +138,7 @@ module "nginx-template" {
 }
 
 module "nginx-mig" {
-  source = "./modules/compute-mig"
+  source = "./fabric/modules/compute-mig"
   project_id = "my-project"
   location     = "europe-west1-b"
   name       = "mig-test"
@@ -167,11 +167,11 @@ The module can create and manage an autoscaler associated with the MIG. When usi
 
 ```hcl
 module "cos-nginx" {
-  source = "./modules/cloud-config-container/nginx"
+  source = "./fabric/modules/cloud-config-container/nginx"
 }
 
 module "nginx-template" {
-  source     = "./modules/compute-vm"
+  source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
   name       = "nginx-template"
   zone     = "europe-west1-b"
@@ -194,7 +194,7 @@ module "nginx-template" {
 }
 
 module "nginx-mig" {
-  source = "./modules/compute-mig"
+  source = "./fabric/modules/compute-mig"
   project_id = "my-project"
   location     = "europe-west1-b"
   name       = "mig-test"
@@ -219,11 +219,11 @@ module "nginx-mig" {
 
 ```hcl
 module "cos-nginx" {
-  source = "./modules/cloud-config-container/nginx"
+  source = "./fabric/modules/cloud-config-container/nginx"
 }
 
 module "nginx-template" {
-  source     = "./modules/compute-vm"
+  source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
   name       = "nginx-template"
   zone     = "europe-west1-b"
@@ -246,7 +246,7 @@ module "nginx-template" {
 }
 
 module "nginx-mig" {
-  source = "./modules/compute-mig"
+  source = "./fabric/modules/compute-mig"
   project_id = "my-project"
   location     = "europe-west1-b"
   name       = "mig-test"
@@ -281,11 +281,11 @@ Note that when referencing the stateful disk, you use `device_name` and not `dis
 
 ```hcl
 module "cos-nginx" {
-  source = "./modules/cloud-config-container/nginx"
+  source = "./fabric/modules/cloud-config-container/nginx"
 }
 
 module "nginx-template" {
-  source     = "./modules/compute-vm"
+  source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
   name       = "nginx-template"
   zone     = "europe-west1-b"
@@ -319,7 +319,7 @@ module "nginx-template" {
 }
 
 module "nginx-mig" {
-  source = "./modules/compute-mig"
+  source = "./fabric/modules/compute-mig"
   project_id = "my-project"
   location     = "europe-west1-b"
   name       = "mig-test"
@@ -358,11 +358,11 @@ Note that you will need to know the instance name in order to use this configura
 
 ```hcl
 module "cos-nginx" {
-  source = "./modules/cloud-config-container/nginx"
+  source = "./fabric/modules/cloud-config-container/nginx"
 }
 
 module "nginx-template" {
-  source     = "./modules/compute-vm"
+  source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
   name       = "nginx-template"
   zone     = "europe-west1-b"
@@ -396,7 +396,7 @@ module "nginx-template" {
 }
 
 module "nginx-mig" {
-  source = "./modules/compute-mig"
+  source = "./fabric/modules/compute-mig"
   project_id = "my-project"
   location     = "europe-west1-b"
   name       = "mig-test"

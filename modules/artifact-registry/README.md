@@ -8,7 +8,7 @@ Note: Artifact Registry is still in beta, hence this module currently uses the b
 
 ```hcl
 module "docker_artifact_registry" {
-  source     = "./modules/artifact-registry"
+  source     = "./fabric/modules/artifact-registry"
   project_id = "myproject"
   location   = "europe-west1"
   format     = "DOCKER"

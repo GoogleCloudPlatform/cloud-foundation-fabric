@@ -59,6 +59,18 @@ variable "cicd_repositories" {
       name              = string
       type              = string
     })
+    gke_dev = object({
+      branch            = string
+      identity_provider = string
+      name              = string
+      type              = string
+    })
+    gke_prod = object({
+      branch            = string
+      identity_provider = string
+      name              = string
+      type              = string
+    })
     networking = object({
       branch            = string
       identity_provider = string
@@ -128,12 +140,14 @@ variable "fast_features" {
   description = "Selective control for top-level FAST features."
   type = object({
     data_platform   = bool
+    gke             = bool
     project_factory = bool
     sandbox         = bool
     teams           = bool
   })
   default = {
     data_platform   = true
+    gke             = true
     project_factory = true
     sandbox         = true
     teams           = true
@@ -154,6 +168,24 @@ variable "groups" {
     gcp-security-admins     = "gcp-security-admins"
     gcp-support             = "gcp-support"
   }
+}
+
+variable "locations" {
+  # tfdoc:variable:source 00-bootstrap
+  description = "Optional locations for GCS, BigQuery, and logging buckets created here."
+  type = object({
+    bq      = string
+    gcs     = string
+    logging = string
+    pubsub  = list(string)
+  })
+  default = {
+    bq      = "EU"
+    gcs     = "EU"
+    logging = "global"
+    pubsub  = []
+  }
+  nullable = false
 }
 
 variable "organization" {

@@ -16,7 +16,7 @@ This is often useful for prototyping or testing infrastructure, allowing open in
 
 ```hcl
 module "firewall" {
-  source               = "./modules/net-vpc-firewall"
+  source               = "./fabric/modules/net-vpc-firewall"
   project_id           = "my-project"
   network              = "my-network"
   admin_ranges         = ["10.0.0.0/8"]
@@ -30,7 +30,7 @@ This is an example of how to define custom rules, with a sample rule allowing op
 
 ```hcl
 module "firewall" {
-  source       = "./modules/net-vpc-firewall"
+  source       = "./fabric/modules/net-vpc-firewall"
   project_id   = "my-project"
   network      = "my-network"
   admin_ranges = ["10.0.0.0/8"]
@@ -57,7 +57,7 @@ If you don't want any predefined rules set `admin_ranges`, `http_source_ranges`,
 
 ```hcl
 module "firewall" {
-  source              = "./modules/net-vpc-firewall"
+  source              = "./fabric/modules/net-vpc-firewall"
   project_id          = "my-project"
   network             = "my-network"
   admin_ranges        = []
@@ -83,11 +83,11 @@ module "firewall" {
 
 
 ### Rules Factory
-The module includes a rules factory (see [Resource Factories](../../examples/factories/)) for the massive creation of rules leveraging YaML configuration files. Each configuration file can optionally contain more than one rule which a structure that reflects the `custom_rules` variable.
+The module includes a rules factory (see [Resource Factories](../../blueprints/factories/)) for the massive creation of rules leveraging YaML configuration files. Each configuration file can optionally contain more than one rule which a structure that reflects the `custom_rules` variable.
 
 ```hcl
 module "firewall" {
-  source             = "./modules/net-vpc-firewall"
+  source             = "./fabric/modules/net-vpc-firewall"
   project_id         = "my-project"
   network            = "my-network"
   data_folder        = "config/firewall"

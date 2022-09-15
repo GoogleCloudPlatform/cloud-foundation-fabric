@@ -13,12 +13,12 @@ This module depends on the [`cos-generic-metadata` module](../cos-generic-metada
 ```hcl
 # Envoy TD config
 module "cos-envoy-td" {
-  source = "./modules/cloud-config-container/envoy-traffic-director"
+  source = "./fabric/modules/cloud-config-container/envoy-traffic-director"
 }
 
 # COS VM
 module "vm-cos" {
-  source     = "./modules/compute-vm"
+  source     = "./fabric/modules/compute-vm"
   project_id = local.project_id
   zone       = local.zone
   name       = "cos-envoy-td"

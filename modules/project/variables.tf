@@ -196,8 +196,8 @@ variable "service_config" {
     disable_dependent_services = bool
   })
   default = {
-    disable_on_destroy         = true
-    disable_dependent_services = true
+    disable_on_destroy         = false
+    disable_dependent_services = false
   }
 }
 

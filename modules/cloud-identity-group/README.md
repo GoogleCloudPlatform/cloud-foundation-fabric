@@ -17,7 +17,7 @@ Until that bug is fixed, this module will only support the creation of MEMBER an
 ### Simple Group
 ```hcl
 module "group" {
-  source       = "./modules/cloud-identity-group"
+  source       = "./fabric/modules/cloud-identity-group"
   customer_id  = "customers/C01234567"
   name         = "mygroup@example.com"
   display_name = "My group name"
@@ -34,7 +34,7 @@ module "group" {
 ### Group with managers
 ```hcl
 module "group" {
-  source       = "./modules/cloud-identity-group"
+  source       = "./fabric/modules/cloud-identity-group"
   customer_id  = "customers/C01234567"
   name         = "mygroup2@example.com"
   display_name = "My group name 2"

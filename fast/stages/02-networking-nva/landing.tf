@@ -22,10 +22,6 @@ module "landing-project" {
   name            = "prod-net-landing-0"
   parent          = var.folder_ids.networking-prod
   prefix          = var.prefix
-  service_config = {
-    disable_on_destroy         = false
-    disable_dependent_services = false
-  }
   services = [
     "compute.googleapis.com",
     "dns.googleapis.com",

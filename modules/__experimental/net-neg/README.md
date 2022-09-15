@@ -7,7 +7,7 @@ Note: this module will integrated into a general-purpose load balancing module i
 ## Example
 ```hcl
 module "neg" {
-  source     = "./modules/net-neg"
+  source     = "./fabric/modules/net-neg"
   project_id = "myproject"
   name       = "myneg"
   network    = module.vpc.self_link
