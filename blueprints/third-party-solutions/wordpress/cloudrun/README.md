@@ -62,13 +62,15 @@ docker tag bitnami/wordpress gcr.io/MY_PROJECT/wordpress
 docker push gcr.io/MY_PROJECT/wordpress
 ```
 
-** Important : please note this example architecture is built for this particular bitnami image, if you decide to use another one this example might not work.**
+**Not**: This example has been built for this particular Docker image. If you decide to use another one, this example might not work (or you can edit the variables in the Terraform files).
 
 #### Step 2: Deploy resources
 
 Once you have the required information, head back to the Cloud Shell editor. Make sure you’re in the directory of this tutorial (where this README is in).
 
-Configure the Terraform variables in your terraform.tfvars file. See [terraform.tfvars.sample](terraform.tfvars.sample) as starting point - just copy it to `terraform.tfvars` and edit the latter.
+Configure the Terraform variables in your terraform.tfvars file. See [terraform.tfvars.sample](terraform.tfvars.sample) as starting point - just copy it to `terraform.tfvars` and edit the latter. See the variables documentation below.
+
+**Note**: If you have the [domain restriction org. policy](https://cloud.google.com/resource-manager/docs/organization-policy/restricting-domains) on your organization, you have to edit the `cloud_run_invoker` variable and give it a value that will be accepted in accordance to your policy.
 
 Initialize your Terraform environment and deploy the resources:
 
@@ -78,6 +80,14 @@ terraform apply
 ```
 The resource creation will take a few minutes.
 
+**Note**: you might get the following error (similar):
+``` {shell}
+│ Error: resource is in failed state "Ready:False", message: Revision '...' is not ready and cannot serve traffic.│
+```
+You might try to reapply at this point, the Cloud Run service just needs several minutes.
+
+#### Step 3: Use the created resources
+
 Upon completion, you will see the output with the values for the Cloud Run service and the user and password to access the `/admin` part of the website. You can also view it later with:
 ``` {shell}
 terraform output
@@ -85,8 +95,7 @@ terraform output
 terraform output cloud_run_service
 ```
 
-
-#### Clean up your environment
+### Cleaning up your environment
 
 The easiest way to remove all the deployed resources is to run the following command in Cloud Shell:
 
