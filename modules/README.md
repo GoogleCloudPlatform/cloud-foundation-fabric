@@ -32,7 +32,6 @@ These modules are used in the examples included in this repository. If you are u
 - [billing budget](./billing-budget)
 - [folder](./folder)
 - [logging bucket](./logging-bucket)
-- [naming convention](./naming-convention)
 - [organization](./organization)
 - [project](./project)
 - [projects-data-source](./projects-data-source)
