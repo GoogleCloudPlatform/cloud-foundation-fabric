@@ -6,7 +6,7 @@ This module allows creating an API with its associated API config and API gatewa
 ## Basic example
 ```hcl
 module "gateway" {
-  source                = "./modules/api-gateway"
+  source                = "./fabric/modules/api-gateway"
   project_id            = "my-project"
   api_id                = "api"
   region                = "europe-west1"
@@ -21,7 +21,7 @@ module "gateway" {
 ## Basic example + customer service account
 ```hcl
 module "gateway" {
-  source                = "./modules/api-gateway"
+  source                = "./fabric/modules/api-gateway"
   project_id            = "my-project"
   api_id                = "api"
   region                = "europe-west1"
@@ -40,7 +40,7 @@ module "gateway" {
 ## Basic example + service account creation
 ```hcl
 module "gateway" {
-  source                = "./modules/api-gateway"
+  source                = "./fabric/modules/api-gateway"
   project_id            = "my-project"
   api_id                = "api"
   region                = "europe-west1"

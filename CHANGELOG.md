@@ -1,14 +1,43 @@
 # Changelog
 
 All notable changes to this project will be documented in this file.
+<!-- markdownlint-disable MD024 -->
 
 ## [Unreleased]
+<!-- None < 2022-09-09 18:02:15+00:00 -->
 
-<!-- None < 2022-06-06 13:42:51+00:00 -->
+### BLUEPRINTS
 
+- [[#813](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/813)] Add documentation example test for pf ([ludoo](https://github.com/ludoo)) <!-- 2022-09-14 12:34:30+00:00 -->
+- [[#809](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/809)] Renaming and moving blueprints ([juliocc](https://github.com/juliocc)) <!-- 2022-09-12 10:19:15+00:00 -->
 
-###  FAST
+### DOCUMENTATION
 
+- [[#806](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/806)] Companion Guide ([ajlopezn](https://github.com/ajlopezn)) <!-- 2022-09-12 07:11:03+00:00 -->
+
+### FAST
+
+- [[#807](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/807)] FAST: refactor Gitlab template ([ludoo](https://github.com/ludoo)) <!-- 2022-09-12 05:26:49+00:00 -->
+
+### TOOLS
+
+- [[#811](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/811)] Fix changelog generator ([ludoo](https://github.com/ludoo)) <!-- 2022-09-13 09:41:29+00:00 -->
+- [[#810](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/810)] Fully recursive e2e test runner for examples ([juliocc](https://github.com/juliocc)) <!-- 2022-09-12 12:35:46+00:00 -->
+
+## [18.0.0] - 2022-09-09
+
+<!-- 2022-09-09 18:02:15+00:00 < 2022-06-06 13:42:51+00:00 -->
+
+- [[#808](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/808)] Rename examples to blueprints ([juliocc](https://github.com/juliocc)) <!-- 2022-09-09 15:14:19+00:00 -->
+
+### FAST
+
+- [[#804](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/804)] GKE CI/CD ([ludoo](https://github.com/ludoo)) <!-- 2022-09-09 06:33:25+00:00 -->
+- [[#803](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/803)] FAST: fix GCS location in stage 00 and 01 ([miklosn](https://github.com/miklosn)) <!-- 2022-09-09 05:18:45+00:00 -->
+- [[#700](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/700)] FAST: GKE multitenant infrastructure ([ludoo](https://github.com/ludoo)) <!-- 2022-09-08 20:49:47+00:00 -->
+- [[#800](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/800)] FAST: add support for storage locations in stages 0 and 1 ([ludoo](https://github.com/ludoo)) <!-- 2022-09-08 13:24:43+00:00 -->
+- [[#799](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/799)] FAST: add support for project parents to bootstrap stage ([ludoo](https://github.com/ludoo)) <!-- 2022-09-08 13:11:47+00:00 -->
+- [[#793](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/793)] FAST: fix typo in CI/CD stage outputs. ([fawzihmouda](https://github.com/fawzihmouda)) <!-- 2022-09-04 11:50:36+00:00 -->
 - [[#774](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/774)] FAST: fix data-platform-dev folder in stage 03-data-platform ([sttomm](https://github.com/sttomm)) <!-- 2022-08-16 07:36:24+00:00 -->
 - [[#770](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/770)] FAST: fix to move without `output_location` ([daisuky-jp](https://github.com/daisuky-jp)) <!-- 2022-08-07 07:00:27+00:00 -->
 - [[#767](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/767)] Allow interpolating SAs in project factory subnet IAM bindings ([ludoo](https://github.com/ludoo)) <!-- 2022-08-04 08:39:28+00:00 -->
@@ -42,6 +71,9 @@ All notable changes to this project will be documented in this file.
 
 ### EXAMPLES
 
+- [[#801](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/801)] Update Cloud SQL example ([lcaggio](https://github.com/lcaggio)) <!-- 2022-09-09 14:02:07+00:00 -->
+- [[#802](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/802)] Fix Data Platform example ([lcaggio](https://github.com/lcaggio)) <!-- 2022-09-09 07:19:28+00:00 -->
+- [[#790](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/790)] Cloud Identity Group factory ([lcaggio](https://github.com/lcaggio)) <!-- 2022-09-01 13:30:58+00:00 -->
 - [[#740](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/740)] Update to multiple READMEs  ([bluPhy](https://github.com/bluPhy)) <!-- 2022-08-11 07:40:55+00:00 -->
 - [[#738](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/738)] Improve Data Playground example ([lcaggio](https://github.com/lcaggio)) <!-- 2022-08-09 13:56:39+00:00 -->
 - [[#771](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/771)] Example of a multi-cluster mesh on GKE configuring managed control pl… ([apichick](https://github.com/apichick)) <!-- 2022-08-08 14:54:03+00:00 -->
@@ -56,6 +88,7 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#805](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/805)] Change `modules/project` service_config default ([juliocc](https://github.com/juliocc)) <!-- 2022-09-09 07:54:31+00:00 -->
 - [[#787](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/787)] Support manager role in cloud identity group module ([lcaggio](https://github.com/lcaggio)) <!-- 2022-08-31 10:29:05+00:00 -->
 - [[#786](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/786)] Secret manager flag sensitive output ([ddaluka](https://github.com/ddaluka)) <!-- 2022-08-29 11:22:52+00:00 -->
 - [[#775](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/775)] net-glb: Added support for regional external HTTP(s) load balancing ([rosmo](https://github.com/rosmo)) <!-- 2022-08-27 20:58:11+00:00 -->
@@ -97,11 +130,13 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#796](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/796)] Remove duplicate path component from doc_examples test names. ([juliocc](https://github.com/juliocc)) <!-- 2022-09-07 09:37:19+00:00 -->
+- [[#794](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/794)] Test documentation examples in the `examples/` folder ([juliocc](https://github.com/juliocc)) <!-- 2022-09-06 19:38:26+00:00 -->
+- [[#788](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/788)] fix yaml quotes for merge-pr workflow ([drebes](https://github.com/drebes)) <!-- 2022-08-31 13:47:33+00:00 -->
 - [[#763](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/763)] Changelog generator ([ludoo](https://github.com/ludoo)) <!-- 2022-08-02 09:45:06+00:00 -->
 - [[#762](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/762)] Update changelog on pull request merge ([ludoo](https://github.com/ludoo)) <!-- 2022-07-30 17:04:00+00:00 -->
 - [[#680](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/680)] Tools: fix `ValueError` raised in `check_names.py` when overlong names are detected ([27Bslash6](https://github.com/27Bslash6)) <!-- 2022-06-16 08:01:59+00:00 -->
 - [[#672](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/672)] Module attribution and version updater tool, plus release automation ([rosmo](https://github.com/rosmo)) <!-- 2022-06-09 11:40:50+00:00 -->
-
 
 ## [16.0.0] - 2022-06-06
 
@@ -133,7 +168,7 @@ All notable changes to this project will be documented in this file.
 - **incompatible change** the variable for PSA ranges in the `net-vpc` module has changed to support configuring peering routes
 - fix permadiff in `net-vpc-firewall` module rules
 - new [gke-hub](modules/gke-hub) module
-- new [unmanaged-instances-healthcheck](examples/cloud-operations/unmanaged-instances-healthcheck) example
+- new [unmanaged-instances-healthcheck](blueprints/cloud-operations/unmanaged-instances-healthcheck) example
 - add support for IAM to `data-catalog-policy-tag` module
 - add support for IAM additive to `folder` module, fixes #580
 - optionally turn off gcplogs driver in COS modules
@@ -152,12 +187,12 @@ All notable changes to this project will be documented in this file.
 - **incompatible change** the variables for host and service Shared VPCs have changed in the project module
 - **incompatible change** the variable for service identities IAM has changed in the project factory
 - add `data-catalog-policy-tag` module
-- new [workload identity federetion example](examples/cloud-operations/workload-identity-federation)
-- new `api-gateway` [module](./modules/api-gateway) and [example](examples/serverless/api-gateway).
+- new [workload identity federetion example](blueprints/cloud-operations/workload-identity-federation)
+- new `api-gateway` [module](./modules/api-gateway) and [example](blueprints/serverless/api-gateway).
 - **incompatible change** the `psn_ranges` variable has been renamed to `psa_ranges` in the `net-vpc` module and its type changed from `list(string)` to `map(string)`
 - **incompatible change** removed `iam` flag for organization and folder level sinks
 - **incompatible change** removed `ingress_settings` configuration option in the `cloud-functions` module.
-- new [m4ce VM example](examples/cloud-operations/vm-migration/)
+- new [m4ce VM example](blueprints/cloud-operations/vm-migration/)
 - Support for resource management tags in the `organization`, `folder`, `project`, `compute-vm`, and `kms` modules
 - new [data platform](fast/stages/03-data-platform) stage 3
 - new [02-networking-nva](fast/stages/02-networking-nva) networking stage
@@ -174,7 +209,7 @@ All notable changes to this project will be documented in this file.
 
 - **initial Fabric FAST implementation**
 - new `net-glb` module for Global External Load balancer
-- new `project-factory` module in [`examples/factories`](./examples/factories)
+- new `project-factory` module in [`blueprints/factories`](./blueprints/factories)
 - add missing service identity accounts (artifactregistry, composer) in project module
 - new "Cloud Storage to Bigquery with Cloud Dataflow with least privileges" example
 - support service dependencies for crypto key bindings in project module
@@ -240,7 +275,7 @@ All notable changes to this project will be documented in this file.
 
 ## [7.0.0] - 2021-10-21
 
-- new cloud operations example showing how to deploy infrastructure for [Compute Engine image builder based on Hashicorp Packer](./examples/cloud-operations/packer-image-builder)
+- new cloud operations example showing how to deploy infrastructure for [Compute Engine image builder based on Hashicorp Packer](./blueprints/cloud-operations/packer-image-builder)
 - **incompatible change** the format of the `records` variable in the `dns` module has changed, to better support dynamic values
 - new `naming-convention` module
 - new `cloudsql-instance` module
@@ -265,7 +300,7 @@ All notable changes to this project will be documented in this file.
 - fix `scheduled-asset-inventory-export-bq` module
 - output custom role information from the `organization` module
 - enable multiple `vpc-sc` perimeters over multiple modules
-- new cloud operations example showing how to [restrict service usage using delegated role grants](./examples/cloud-operations/iam-delegated-role-grants)
+- new cloud operations example showing how to [restrict service usage using delegated role grants](./blueprints/cloud-operations/iam-delegated-role-grants)
 - **incompatible change** multiple instance support has been removed from the `compute-vm` module, to bring its interface in line with other modules and enable simple use of `for_each` at the module level; its variables have also slightly changed (`attached_disks`, `boot_disk_delete`, `crate_template`, `zone`)
 - **incompatible change** dropped the `admin_ranges_enabled` variable in `net-vpc-firewall`. Set `admin_ranges = []` to get the same effect
 - added the `named_ranges` variable to `net-vpc-firewall`
@@ -278,8 +313,8 @@ All notable changes to this project will be documented in this file.
 - add support for CMEK keys in Data Foundation end to end example
 - add support for VPC-SC perimeters in Data Foundation end to end example
 - fix `vpc-sc` module
-- new networking example showing how to use [Private Service Connect to call a Cloud Function from on-premises](./examples/networking/private-cloud-function-from-onprem/)
-- new networking example showing how to organize [decentralized firewall](./examples/networking/decentralized-firewall/) management on GCP
+- new networking example showing how to use [Private Service Connect to call a Cloud Function from on-premises](./blueprints/networking/private-cloud-function-from-onprem/)
+- new networking example showing how to organize [decentralized firewall](./blueprints/networking/decentralized-firewall/) management on GCP
 
 ## [5.0.0] - 2021-06-17
 
@@ -594,9 +629,9 @@ All notable changes to this project will be documented in this file.
 
 - merge development branch with suite of new modules and end-to-end examples
 
-
 <!-- markdown-link-check-disable -->
-[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v16.0.0...HEAD
+[Unreleased]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v18.0.0...HEAD
+[18.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v16.0.0...v18.0.0
 [16.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v15.0.0...v16.0.0
 [15.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v14.0.0...v15.0.0
 [14.0.0]: https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/compare/v13.0.0...v14.0.0

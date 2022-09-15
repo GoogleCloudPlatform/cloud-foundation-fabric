@@ -11,7 +11,7 @@ This module allows managing several organization properties:
 
 ```hcl
 module "org" {
-  source          = "./modules/organization"
+  source          = "./fabric/modules/organization"
   organization_id = "organizations/1234567890"
   group_iam       = {
     "cloud-owners@example.org" = ["roles/owner", "roles/projectCreator"]
@@ -52,7 +52,7 @@ Some care must also be takend with the `groups_iam` variable (and in some situat
 Hirerarchical firewall policies can be managed in two ways:
 
 - via the `firewall_policies` variable, to directly define policies and rules in Terraform
-- via the `firewall_policy_factory` variable, to leverage external YaML files via a simple "factory" embedded in the module ([see here](../../examples/factories) for more context on factories)
+- via the `firewall_policy_factory` variable, to leverage external YaML files via a simple "factory" embedded in the module ([see here](../../blueprints/factories) for more context on factories)
 
 Once you have policies (either created via the module or externally), you can associate them using the `firewall_policy_association` variable.
 
@@ -60,7 +60,7 @@ Once you have policies (either created via the module or externally), you can as
 
 ```hcl
 module "org" {
-  source          = "./modules/organization"
+  source          = "./fabric/modules/organization"
   organization_id = var.organization_id
   firewall_policies = {
     iap-policy = {
@@ -92,7 +92,7 @@ The in-built factory allows you to define a single policy, using one file for ru
 
 ```hcl
 module "org" {
-  source          = "./modules/organization"
+  source          = "./fabric/modules/organization"
   organization_id = var.organization_id
   firewall_policy_factory = {
     cidr_file   = "data/cidrs.yaml"
@@ -147,33 +147,33 @@ allow-ssh-from-iap:
 
 ```hcl
 module "gcs" {
-  source        = "./modules/gcs"
+  source        = "./fabric/modules/gcs"
   project_id    = var.project_id
   name          = "gcs_sink"
   force_destroy = true
 }
 
 module "dataset" {
-  source     = "./modules/bigquery-dataset"
+  source     = "./fabric/modules/bigquery-dataset"
   project_id = var.project_id
   id         = "bq_sink"
 }
 
 module "pubsub" {
-  source     = "./modules/pubsub"
+  source     = "./fabric/modules/pubsub"
   project_id = var.project_id
   name       = "pubsub_sink"
 }
 
 module "bucket" {
-  source      = "./modules/logging-bucket"
+  source      = "./fabric/modules/logging-bucket"
   parent_type = "project"
   parent      = "my-project"
   id          = "bucket"
 }
 
 module "org" {
-  source          = "./modules/organization"
+  source          = "./fabric/modules/organization"
   organization_id = var.organization_id
 
   logging_sinks = {
@@ -223,7 +223,7 @@ module "org" {
 
 ```hcl
 module "org" {
-  source          = "./modules/organization"
+  source          = "./fabric/modules/organization"
   organization_id = var.organization_id
   custom_roles = {
     "myRole" = [
@@ -243,7 +243,7 @@ Refer to the [Creating and managing tags](https://cloud.google.com/resource-mana
 
 ```hcl
 module "org" {
-  source          = "./modules/organization"
+  source          = "./fabric/modules/organization"
   organization_id = var.organization_id
   tags = {
     environment = {

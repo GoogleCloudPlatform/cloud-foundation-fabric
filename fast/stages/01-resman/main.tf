@@ -27,16 +27,17 @@ locals {
   billing_org     = var.billing_account.organization_id == var.organization.id
   billing_org_ext = !local.billing_ext && !local.billing_org
   branch_optional_sa_lists = {
-    dp-dev  = compact([try(module.branch-dp-dev-sa.0.iam_email, "")])
-    dp-prod = compact([try(module.branch-dp-prod-sa.0.iam_email, "")])
-    pf-dev  = compact([try(module.branch-pf-dev-sa.0.iam_email, "")])
-    pf-prod = compact([try(module.branch-pf-prod-sa.0.iam_email, "")])
+    dp-dev   = compact([try(module.branch-dp-dev-sa.0.iam_email, "")])
+    dp-prod  = compact([try(module.branch-dp-prod-sa.0.iam_email, "")])
+    gke-dev  = compact([try(module.branch-gke-dev-sa.0.iam_email, "")])
+    gke-prod = compact([try(module.branch-gke-prod-sa.0.iam_email, "")])
+    pf-dev   = compact([try(module.branch-pf-dev-sa.0.iam_email, "")])
+    pf-prod  = compact([try(module.branch-pf-prod-sa.0.iam_email, "")])
   }
   cicd_repositories = {
     for k, v in coalesce(var.cicd_repositories, {}) : k => v
     if(
-      v != null
-      &&
+      v != null &&
       (
         try(v.type, null) == "sourcerepo"
         ||
@@ -44,8 +45,7 @@ locals {
           keys(local.identity_providers),
           coalesce(try(v.identity_provider, null), ":")
         )
-      )
-      &&
+      ) &&
       fileexists("${path.module}/templates/workflow-${try(v.type, "")}.yaml")
     )
   }
@@ -64,6 +64,11 @@ locals {
     ]
   }
   custom_roles = coalesce(var.custom_roles, {})
+  gcs_storage_class = (
+    length(split("-", var.locations.gcs)) < 2
+    ? "MULTI_REGIONAL"
+    : "REGIONAL"
+  )
   groups = {
     for k, v in var.groups :
     k => "${v}@${var.organization.domain}"

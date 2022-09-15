@@ -13,7 +13,7 @@ Basic usage of this module is as follows:
 
 ```hcl
 module "peering" {
-  source        = "./modules/net-vpc-peering"
+  source        = "./fabric/modules/net-vpc-peering"
   prefix        = "name-prefix"
   local_network = "projects/project-1/global/networks/vpc-1"
   peer_network  = "projects/project-1/global/networks/vpc-2"
@@ -25,14 +25,14 @@ If you need to create more than one peering for the same VPC Network `(A -> B, A
 
 ```hcl
 module "peering-a-b" {
-  source        = "./modules/net-vpc-peering"
+  source        = "./fabric/modules/net-vpc-peering"
   prefix        = "name-prefix"
   local_network = "projects/project-a/global/networks/vpc-a"
   peer_network  = "projects/project-b/global/networks/vpc-b"
 }
 
 module "peering-a-c" {
-  source        = "./modules/net-vpc-peering"
+  source        = "./fabric/modules/net-vpc-peering"
   prefix        = "name-prefix"
   local_network = "projects/project-a/global/networks/vpc-a"
   peer_network  = "projects/project-c/global/networks/vpc-c"

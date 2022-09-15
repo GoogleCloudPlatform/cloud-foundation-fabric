@@ -9,7 +9,7 @@ This module allows managing a single Pub/Sub topic, including multiple subscript
 
 ```hcl
 module "pubsub" {
-  source     = "./modules/pubsub"
+  source     = "./fabric/modules/pubsub"
   project_id = "my-project"
   name       = "my-topic"
   iam = {
@@ -26,7 +26,7 @@ Subscriptions are defined with the `subscriptions` variable, allowing optional c
 
 ```hcl
 module "pubsub" {
-  source     = "./modules/pubsub"
+  source     = "./fabric/modules/pubsub"
   project_id = "my-project"
   name       = "my-topic"
   subscriptions = {
@@ -52,7 +52,7 @@ Push subscriptions need extra configuration in the `push_configs` variable.
 
 ```hcl
 module "pubsub" {
-  source     = "./modules/pubsub"
+  source     = "./fabric/modules/pubsub"
   project_id = "my-project"
   name       = "my-topic"
   subscriptions = {
@@ -73,7 +73,7 @@ module "pubsub" {
 
 ```hcl
 module "pubsub" {
-  source     = "./modules/pubsub"
+  source     = "./fabric/modules/pubsub"
   project_id = "my-project"
   name       = "my-topic"
   subscriptions = {

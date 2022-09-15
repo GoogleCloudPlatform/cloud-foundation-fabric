@@ -8,7 +8,7 @@ This module allows managing a single Apigee X instance and its environment attac
 
 ```hcl
 module "apigee-x-instance" {
-  source             = "./modules/apigee-x-instance"
+  source             = "./fabric/modules/apigee-x-instance"
   name               = "my-us-instance"
   region             = "us-central1"
   ip_range           = "10.0.0.0/22"
@@ -26,7 +26,7 @@ module "apigee-x-instance" {
 
 ```hcl
 module "apigee-x-instance" {
-  source              = "./modules/apigee-x-instance"
+  source              = "./fabric/modules/apigee-x-instance"
   name                = "my-us-instance"
   region              = "us-central1"
   ip_range            = "10.0.0.0/22"

@@ -40,7 +40,9 @@ locals {
     fleet             = "service-%s@gcp-sa-gkehub"
     gae-flex          = "service-%s@gae-api-prod"
     # TODO: deprecate gcf
-    gcf                      = "service-%s@gcf-admin-robot"
+    gcf = "service-%s@gcf-admin-robot"
+    # TODO: jit?
+    gke-mcs                  = "service-%s@gcp-sa-mcsd"
     monitoring-notifications = "service-%s@gcp-sa-monitoring-notification"
     pubsub                   = "service-%s@gcp-sa-pubsub"
     secretmanager            = "service-%s@gcp-sa-secretmanager"
@@ -55,10 +57,15 @@ locals {
   service_account_cloud_services = (
     "${local.project.number}@cloudservices.gserviceaccount.com"
   )
-  service_accounts_robots = {
-    for k, v in local._service_accounts_robot_services :
-    k => "${format(v, local.project.number)}.iam.gserviceaccount.com"
-  }
+  service_accounts_robots = merge(
+    {
+      for k, v in local._service_accounts_robot_services :
+      k => "${format(v, local.project.number)}.iam.gserviceaccount.com"
+    },
+    {
+      gke-mcs-importer = "${local.project.project_id}.svc.id.goog[gke-mcs/gke-mcs-importer]"
+    }
+  )
   service_accounts_jit_services = [
     "cloudasset.googleapis.com",
     "gkehub.googleapis.com",

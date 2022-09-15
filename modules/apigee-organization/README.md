@@ -8,7 +8,7 @@ This module allows managing a single Apigee organization and its environments an
 
 ```hcl
 module "apigee-organization" {
-  source     = "./modules/apigee-organization"
+  source     = "./fabric/modules/apigee-organization"
   project_id = "my-project"
   analytics_region = "us-central1"
   runtime_type = "CLOUD"
@@ -36,7 +36,7 @@ module "apigee-organization" {
 
 ```hcl
 module "apigee-organization" {
-  source     = "./modules/apigee-organization"
+  source     = "./fabric/modules/apigee-organization"
   project_id = "my-project"
   analytics_region = "us-central1"
   runtime_type = "CLOUD"
@@ -76,7 +76,7 @@ module "apigee-organization" {
 
 ```hcl
 module "apigee-organization" {
-  source     = "./modules/apigee-organization"
+  source     = "./fabric/modules/apigee-organization"
   project_id = "my-project"
   analytics_region = "us-central1"
   runtime_type = "HYBRID"

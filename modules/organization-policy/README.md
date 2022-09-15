@@ -13,14 +13,14 @@ Yaml based factory can simplify centralized management of Org Policies for a Dev
 ```hcl
 # using configuration provided in a set of yaml files
 module "org-policy-factory" {
-  source = "./modules/organization-policy"
+  source = "./fabric/modules/organization-policy"
 
   config_directory = "./policies"
 }
 
 # using configuration provided in the module variable
 module "org-policy" {
-  source = "./modules/organization-policy"
+  source = "./fabric/modules/organization-policy"
   
   policies = {
     "folders/1234567890" = {

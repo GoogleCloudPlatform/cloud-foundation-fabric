@@ -10,7 +10,7 @@ The module allows for several different VPC configurations, some of the most com
 
 ```hcl
 module "vpc" {
-  source     = "./modules/net-vpc"
+  source     = "./fabric/modules/net-vpc"
   project_id = "my-project"
   name       = "my-network"
   subnets = [
@@ -42,7 +42,7 @@ If you only want to create the "local" side of the peering, use `peering_create_
 
 ```hcl
 module "vpc-hub" {
-  source     = "./modules/net-vpc"
+  source     = "./fabric/modules/net-vpc"
   project_id = "hub"
   name       = "vpc-hub"
   subnets = [{
@@ -54,7 +54,7 @@ module "vpc-hub" {
 }
 
 module "vpc-spoke-1" {
-  source     = "./modules/net-vpc"
+  source     = "./fabric/modules/net-vpc"
   project_id = "spoke1"
   name       = "vpc-spoke1"
   subnets = [{
@@ -89,7 +89,7 @@ locals {
 }
 
 module "vpc-host" {
-  source     = "./modules/net-vpc"
+  source     = "./fabric/modules/net-vpc"
   project_id = "my-project"
   name       = "my-host-network"
   subnets = [
@@ -127,7 +127,7 @@ module "vpc-host" {
 
 ```hcl
 module "vpc" {
-  source     = "./modules/net-vpc"
+  source     = "./fabric/modules/net-vpc"
   project_id = "my-project"
   name       = "my-network"
   subnets = [
@@ -152,7 +152,7 @@ Custom routes can be optionally exported/imported through the peering formed wit
 
 ```hcl
 module "vpc" {
-  source     = "./modules/net-vpc"
+  source     = "./fabric/modules/net-vpc"
   project_id = "my-project"
   name       = "my-network"
   subnets = [
@@ -180,7 +180,7 @@ Along with common private subnets module supports creation more service specific
 
 ```hcl
 module "vpc" {
-  source     = "./modules/net-vpc"
+  source     = "./fabric/modules/net-vpc"
   project_id = "my-project"
   name       = "my-network"
 
@@ -207,7 +207,7 @@ module "vpc" {
 
 ```hcl
 module "vpc" {
-  source     = "./modules/net-vpc"
+  source     = "./fabric/modules/net-vpc"
   project_id = "my-project"
   name       = "my-network"
   dns_policy = {
@@ -232,11 +232,11 @@ module "vpc" {
 
 ### Subnet Factory
 
-The `net-vpc` module includes a subnet factory (see [Resource Factories](../../examples/factories/)) for the massive creation of subnets leveraging one configuration file per subnet.
+The `net-vpc` module includes a subnet factory (see [Resource Factories](../../blueprints/factories/)) for the massive creation of subnets leveraging one configuration file per subnet.
 
 ```hcl
 module "vpc" {
-  source      = "./modules/net-vpc"
+  source      = "./fabric/modules/net-vpc"
   project_id  = "my-project"
   name        = "my-network"
   data_folder = "config/subnets"

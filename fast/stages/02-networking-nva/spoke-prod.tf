@@ -22,10 +22,6 @@ module "prod-spoke-project" {
   name            = "prod-net-spoke-0"
   parent          = var.folder_ids.networking-prod
   prefix          = var.prefix
-  service_config = {
-    disable_on_destroy         = false
-    disable_dependent_services = false
-  }
   services = [
     "compute.googleapis.com",
     "dns.googleapis.com",
@@ -41,7 +37,8 @@ module "prod-spoke-project" {
   metric_scopes = [module.landing-project.project_id]
   iam = {
     "roles/dns.admin" = compact([
-      try(local.service_accounts.project-factory-prod, null)
+      try(local.service_accounts.gke-prod, null),
+      try(local.service_accounts.project-factory-prod, null),
     ])
   }
 }
@@ -128,6 +125,7 @@ resource "google_project_iam_binding" "prod_spoke_project_iam_delegated" {
   members = compact([
     try(local.service_accounts.data-platform-prod, null),
     try(local.service_accounts.project-factory-prod, null),
+    try(local.service_accounts.gke-prod, null),
   ])
   condition {
     title       = "prod_stage3_sa_delegated_grants"

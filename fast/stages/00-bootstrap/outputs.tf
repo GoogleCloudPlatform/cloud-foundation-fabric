@@ -70,6 +70,7 @@ locals {
     billing_account = var.billing_account
     fast_features   = var.fast_features
     groups          = var.groups
+    locations       = var.locations
     organization    = var.organization
     prefix          = var.prefix
   }

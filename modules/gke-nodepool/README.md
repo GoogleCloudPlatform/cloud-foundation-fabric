@@ -10,7 +10,7 @@ If no specific node configuration is set via variables, the module uses the prov
 
 ```hcl
 module "cluster-1-nodepool-1" {
-  source                      = "./modules/gke-nodepool"
+  source                      = "./fabric/modules/gke-nodepool"
   project_id                  = "myproject"
   cluster_name                = "cluster-1"
   location                    = "europe-west1-b"
@@ -24,7 +24,7 @@ To have the module auto-create a service account for the nodes, set the `node_se
 
 ```hcl
 module "cluster-1-nodepool-1" {
-  source                      = "./modules/gke-nodepool"
+  source                      = "./fabric/modules/gke-nodepool"
   project_id                  = "myproject"
   cluster_name                = "cluster-1"
   location                    = "europe-west1-b"

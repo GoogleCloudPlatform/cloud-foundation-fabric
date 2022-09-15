@@ -11,7 +11,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 "Shared fixtures"
 
 import inspect
@@ -29,7 +28,8 @@ BASEDIR = os.path.dirname(os.path.dirname(__file__))
 def _plan_runner():
   "Returns a function to run Terraform plan on a fixture."
 
-  def run_plan(fixture_path=None, targets=None, refresh=True, **tf_vars):
+  def run_plan(fixture_path=None, targets=None, refresh=True, tmpdir=True,
+               **tf_vars):
     "Runs Terraform plan and returns parsed output."
     if fixture_path is None:
       # find out the fixture directory from the caller's directory
@@ -42,16 +42,19 @@ def _plan_runner():
                                      dir=fixture_parent) as tmp_path:
       # copy fixture to a temporary directory so we can execute
       # multiple tests in parallel
-      shutil.copytree(fixture_path, tmp_path, dirs_exist_ok=True)
-      tf = tftest.TerraformTest(tmp_path, BASEDIR,
+      if tmpdir:
+        shutil.copytree(fixture_path, tmp_path, dirs_exist_ok=True)
+      tf = tftest.TerraformTest(tmp_path if tmpdir else fixture_path, BASEDIR,
                                 os.environ.get('TERRAFORM', 'terraform'))
       tf.setup(upgrade=True)
-      return tf.plan(output=True, refresh=refresh, tf_vars=tf_vars, targets=targets)
+      plan = tf.plan(output=True, refresh=refresh, tf_vars=tf_vars,
+                     targets=targets)
+    return plan
 
   return run_plan
 
 
-@ pytest.fixture(scope='session')
+@pytest.fixture(scope='session')
 def plan_runner(_plan_runner):
   "Returns a function to run Terraform plan on a module fixture."
 
@@ -65,15 +68,15 @@ def plan_runner(_plan_runner):
   return run_plan
 
 
-@ pytest.fixture(scope='session')
+@pytest.fixture(scope='session')
 def e2e_plan_runner(_plan_runner):
   "Returns a function to run Terraform plan on an end-to-end fixture."
 
   def run_plan(fixture_path=None, targets=None, refresh=True,
                include_bare_resources=False, **tf_vars):
     "Runs Terraform plan on an end-to-end module using defaults, returns data."
-    plan = _plan_runner(fixture_path, targets=targets,
-                        refresh=refresh, **tf_vars)
+    plan = _plan_runner(fixture_path, targets=targets, refresh=refresh,
+                        **tf_vars)
     # skip the fixture
     root_module = plan.root_module['child_modules'][0]
     modules = dict((mod['address'], mod['resources'])
@@ -87,26 +90,35 @@ def e2e_plan_runner(_plan_runner):
   return run_plan
 
 
-@ pytest.fixture(scope='session')
-def doc_example_plan_runner(_plan_runner):
-  "Returns a function to run Terraform plan on documentation examples."
+@pytest.fixture(scope='session')
+def recursive_e2e_plan_runner(_plan_runner):
+  """Plan runner for end-to-end root module, returns total number of
+  (nested) modules and resources"""
 
-  def run_plan(fixture_path=None):
-    "Runs Terraform plan and returns count of modules and resources."
-    tf = tftest.TerraformTest(fixture_path, BASEDIR,
-                              os.environ.get('TERRAFORM', 'terraform'))
-    tf.setup(upgrade=True)
-    plan = tf.plan(output=True, refresh=True)
-    # the fixture is the example we are testing
-    modules = plan.modules or {}
-    return (
-        len(modules),
-        sum(len(m.resources) for m in modules.values()))
+  def walk_plan(node, modules, resources):
+    # TODO(jccb): this would be better with node.get() but
+    # TerraformPlanOutput objects don't have it
+    new_modules = node['child_modules'] if 'child_modules' in node else []
+    resources += node['resources'] if 'resources' in node else []
+    modules += new_modules
+    for module in new_modules:
+      walk_plan(module, modules, resources)
+
+  def run_plan(fixture_path=None, targets=None, refresh=True,
+               include_bare_resources=False, compute_sums=True, tmpdir=True,
+               **tf_vars):
+    "Runs Terraform plan on a root module using defaults, returns data."
+    plan = _plan_runner(fixture_path, targets=targets, refresh=refresh,
+                        tmpdir=tmpdir, **tf_vars)
+    modules = []
+    resources = []
+    walk_plan(plan.root_module, modules, resources)
+    return len(modules), len(resources)
 
   return run_plan
 
 
-@ pytest.fixture(scope='session')
+@pytest.fixture(scope='session')
 def apply_runner():
   "Returns a function to run Terraform apply on a fixture."
 

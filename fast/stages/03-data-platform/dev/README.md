@@ -8,7 +8,7 @@ The Data Platform builds on top of your foundations to create and set up project
 
 ## Design overview and choices
 
-> A more comprehensive description of the Data Platform architecture and approach can be found in the [Data Platform module README](../../../../examples/data-solutions/data-platform-foundations/). The module is wrapped and configured here to leverage the FAST flow.
+> A more comprehensive description of the Data Platform architecture and approach can be found in the [Data Platform module README](../../../../blueprints/data-solutions/data-platform-foundations/). The module is wrapped and configured here to leverage the FAST flow.
 
 The Data Platform creates projects in a well-defined context, usually an ad-hoc folder  managed by the resource management setup. Resources are organized by environment within this folder.
 
@@ -28,7 +28,7 @@ The Data Platform manages:
 
 ### User groups
 
-As per our GCP best practices the Data Platform relies on user groups to assign roles to human identities. These are the specific groups used by the Data Platform and their access patterns, from the [module documentation](../../../../examples/data-solutions/data-platform-foundations/#groups):
+As per our GCP best practices the Data Platform relies on user groups to assign roles to human identities. These are the specific groups used by the Data Platform and their access patterns, from the [module documentation](../../../../blueprints/data-solutions/data-platform-foundations/#groups):
 
 - *Data Engineers* They handle and run the Data Hub, with read access to all resources in order to troubleshoot possible issues with pipelines. This team can also impersonate any service account.
 - *Data Analysts*. They perform analysis on datasets, with read access to the data warehouse Curated or Confidential projects depending on their privileges, and BigQuery READ/WRITE access to the playground project.
@@ -149,7 +149,7 @@ terraform apply
 
 The application layer is out of scope of this script. As a demo purpuse only, several Cloud Composer DAGs are provided. Demos will import data from the `landing` area to the `DataWarehouse Confidential` dataset suing different features. 
 
-You can find examples in the `[demo](../../../../examples/data-solutions/data-platform-foundations/demo)` folder.
+You can find examples in the `[demo](../../../../blueprints/data-solutions/data-platform-foundations/demo)` folder.
 
 <!-- TFDOC OPTS files:1 show_extra:1 -->
 <!-- BEGIN TFDOC -->
@@ -158,7 +158,7 @@ You can find examples in the `[demo](../../../../examples/data-solutions/data-pl
 
 | name | description | modules | resources |
 |---|---|---|---|
-| [main.tf](./main.tf) | Data Platformy. | <code>data-platform-foundations</code> |  |
+| [main.tf](./main.tf) | Data Platform. | <code>data-platform-foundations</code> |  |
 | [outputs.tf](./outputs.tf) | Output variables. |  | <code>google_storage_bucket_object</code> · <code>local_file</code> |
 | [variables.tf](./variables.tf) | Terraform Variables. |  |  |
 
