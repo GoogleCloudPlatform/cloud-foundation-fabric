@@ -37,7 +37,7 @@ Click on the image below, sign in if required and when the prompt appears, click
 
 [<p align="center"> <img alt="Open Cloudshell" width = "300px" src="images/button.png" /> </p>]()
 
-LINK NEEDED
+LINK NEEDED --> can only be added after PR
 
 Before we deploy the architecture, you will at least need the following information (for more precise configuration see the Variables section):
 
@@ -48,18 +48,25 @@ Before we deploy the architecture, you will at least need the following informat
 
 In order to deploy the Wordpress service to Cloud Run, you need to store the [Wordpress image](https://hub.docker.com/r/bitnami/wordpress/) in Google Cloud Registry (GCR).
 
-Make sure that the GCR API is enabled and run the following commands in your Cloud Shell environment with your `project_id` in place of the `MY_PROJECT` placeholder:
+Make sure that the Google Container Registry API is enabled and run the following commands in your Cloud Shell environment with your `project_id` in place of the `MY_PROJECT` placeholder:
 
 ``` {shell}
 docker pull bitnami/wordpress
-docker tag bitnami/wordpress gcr.io/MY_PROJECT/busybox
+```
+
+```{shell}
+docker tag bitnami/wordpress gcr.io/MY_PROJECT/wordpress
+```
+```{shell
+
 docker push gcr.io/MY_PROJECT/wordpress
 ```
 
+** Important : please note this example architecture is built for this particular bitnami image, if you decide to use another one this example might not work.**
 
 #### Step 2: Deploy resources
 
-Once you have the required information, head back to the Cloud Shell editor. Make sure you’re in the following directory: `cloudshell_open/cloud-foundation-fabric/examples/third-party-solutions/wordpress/cloudrun/`.
+Once you have the required information, head back to the Cloud Shell editor. Make sure you’re in the directory of this tutorial (where this README is in).
 
 Configure the Terraform variables in your terraform.tfvars file. See [terraform.tfvars.sample](terraform.tfvars.sample) as starting point - just copy it to `terraform.tfvars` and edit the latter.
 
@@ -69,7 +76,6 @@ Initialize your Terraform environment and deploy the resources:
 terraform init
 terraform apply
 ```
-
 The resource creation will take a few minutes.
 
 Upon completion, you will see the output with the values for the Cloud Run service and the user and password to access the `/admin` part of the website. You can also view it later with:
@@ -85,7 +91,7 @@ terraform output cloud_run_service
 The easiest way to remove all the deployed resources is to run the following command in Cloud Shell:
 
 ``` {shell}
-tf destroy
+terraform destroy
 ```
 
 The above command will delete the associated resources so there will be no billable charges made afterwards.
