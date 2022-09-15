@@ -68,21 +68,20 @@ Before we deploy the architecture, you will at least need the following informat
 
 * The project Id.
 * The organization Id.
-* A dataset Id to export logs to.
-* A log filter to target specific audit logs to route to BigQuery (see examples in the [terraform.tfvars.sample](terraform.tfvars.sample) file).
+* A dataset Id to export logs to (see [naming conventions](https://cloud.google.com/bigquery/docs/datasets#dataset-naming)). Note: this will create a new dataset (to use an existing dataset, see the following section below : "Use an already existing BigQuery dataset")
+* A log filter to target specific audit logs to route to BigQuery (see examples in the [`terraform.tfvars.sample`](terraform.tfvars.sample) file).
 
 #### Step 1: Deploy resources
 
 Once you have the required information, head back to the cloud shell editor. Make sure you’re in the following directory: `cloudshell_open/cloud-foundation-fabric/examples/data-solutions/org_audit_logs_bq/`.
 
-Configure the Terraform variables in your terraform.tfvars file. See [terraform.tfvars.sample](terraform.tfvars.sample) as starting point.
+Configure the Terraform variables in your `terraform.tfvars` file. See [`terraform.tfvars.sample`](terraform.tfvars.sample) as starting point - just copy it to `terraform.tfvars` and edit the latter.
 
-Initialize your Terraform environment:
+Initialize your Terraform environment and deploy the resources:
 
 ``` {shell}
-alias tf=terraform 
-tf init
-tf apply -var-file="terraform.tfvars.sample"
+terraform init
+terraform apply
 ```
 
 The resource creation will take a few minutes, at the end this is the output you should expect for successful completion along with a list of the created resources.
@@ -92,7 +91,7 @@ The resource creation will take a few minutes, at the end this is the output you
 The easiest way to remove all the deployed resources is to run the following command in Cloud Shell:
 
 ``` {shell}
-tf destroy -var-file="terraform.tfvars.sample"
+terraform destroy -var-file="terraform.tfvars.sample"
 ```
 
 The above command will delete the associated resources so there will be no billable charges made afterwards.
