@@ -68,7 +68,7 @@ Before we deploy the architecture, you will at least need the following informat
 
 * The project Id.
 * The organization Id.
-* A dataset Id to export logs to (see [naming conventions](https://cloud.google.com/bigquery/docs/datasets#dataset-naming)). Note: this will create a new dataset (to use an existing dataset, see the following section below : "Use an already existing BigQuery dataset")
+* A dataset Id to export logs to (see [naming conventions](https://cloud.google.com/bigquery/docs/datasets#dataset-naming)). Note: this will create a new dataset (to use an existing dataset, see the following section below: "Use an already existing BigQuery dataset")
 * A log filter to target specific audit logs to route to BigQuery (see examples in the [`terraform.tfvars.sample`](terraform.tfvars.sample) file).
 
 #### Step 1: Deploy resources
