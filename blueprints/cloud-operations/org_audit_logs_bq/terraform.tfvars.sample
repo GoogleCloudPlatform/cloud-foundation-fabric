@@ -1,0 +1,15 @@
+org_id     = "ORG_ID"
+project_id = "PROJECT_ID"
+dataset_id = "DATASET_ID"
+filter = "LOG_FILTER"
+
+# Uncomment one of following filter configuration to build one of the introductory examples 
+
+# GWS audit log filter example
+#filter = "protoPayload.methodName:\"google.admin.\""
+
+# Data Access audit log filter example
+#filter=“logName=\”projects/benjaminsadik-eventarc-mdm/logs/cloudaudit.googleapis.com%2Fdata_access\””
+
+# System events audit log filter example
+#filter=“logName=\”projects/benjaminsadik-eventarc-mdm/logs/cloudaudit.googleapis.com%2Fsystem_event\””
