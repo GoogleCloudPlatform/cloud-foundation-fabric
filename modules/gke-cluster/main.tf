@@ -293,7 +293,7 @@ resource "google_container_cluster" "cluster" {
   }
 
   dynamic "binary_authorization" {
-    for_each = var.enable_binary_authorization == true ? [""] : []
+    for_each = var.enable_binary_authorization ? [""] : []
     content {
       evaluation_mode = "PROJECT_SINGLETON_POLICY_ENFORCE"
     }
