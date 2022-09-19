@@ -92,5 +92,6 @@ resource "google_composer_environment" "env" {
   }
   depends_on = [
     google_project_iam_member.shared_vpc,
+    module.project
   ]
 }
