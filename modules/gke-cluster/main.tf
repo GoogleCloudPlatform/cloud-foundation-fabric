@@ -292,6 +292,13 @@ resource "google_container_cluster" "cluster" {
     }
   }
 
+  dynamic "binary_authorization" {
+    for_each = var.enable_binary_authorization == true ? [""] : []
+    content {
+      evaluation_mode = "PROJECT_SINGLETON_POLICY_ENFORCE"
+    }
+  }
+
   dynamic "dns_config" {
     for_each = var.dns_config != null ? [""] : []
     content {
