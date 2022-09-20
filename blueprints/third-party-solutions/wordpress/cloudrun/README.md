@@ -52,13 +52,7 @@ Make sure that the Google Container Registry API is enabled and run the followin
 
 ``` {shell}
 docker pull bitnami/wordpress
-```
-
-```{shell}
 docker tag bitnami/wordpress gcr.io/MY_PROJECT/wordpress
-```
-```{shell
-
 docker push gcr.io/MY_PROJECT/wordpress
 ```
 
