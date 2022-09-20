@@ -67,6 +67,7 @@ locals {
     }
   )
   service_accounts_jit_services = [
+    "artifactregistry.googleapis.com",
     "cloudasset.googleapis.com",
     "gkehub.googleapis.com",
     "pubsub.googleapis.com",
