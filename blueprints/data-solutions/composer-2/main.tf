@@ -87,6 +87,7 @@ module "project" {
   iam             = var.project_create != null ? local.iam : {}
   iam_additive    = var.project_create == null ? local.iam : {}
   services = [
+    "artifactregistry.googleapis.com",
     "cloudkms.googleapis.com",
     "container.googleapis.com",
     "containerregistry.googleapis.com",
