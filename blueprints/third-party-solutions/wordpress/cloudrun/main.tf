@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+
 locals {
   prefix = var.prefix == null ? "" : "${var.prefix}-"
   all_principals_iam = [
@@ -41,7 +42,8 @@ locals {
 }
 
 
-module "project" { # either create a project or set up the given one
+# either create a project or set up the given one
+module "project" {
   source          = "../../../../modules/project"
   name            = var.project_id
   parent          = try(var.project_create.parent, null)
@@ -61,11 +63,14 @@ module "project" { # either create a project or set up the given one
   ]
 }
 
+
 resource "random_password" "wp_password" {
   length = 8
 }
 
-module "cloud_run" { # create the Cloud Run service
+
+# create the Cloud Run service
+module "cloud_run" {
   source     = "../../../../modules/cloud-run"
   project_id = module.project.project_id
   name       = "${local.prefix}cr-wordpress"
@@ -82,7 +87,8 @@ module "cloud_run" { # create the Cloud Run service
       command  = null
       args     = null
       env_from = null
-      env = { # set up the database connection
+      # set up the database connection
+      env = {
         "APACHE_HTTP_PORT_NUMBER" : var.wordpress_port
         "WORDPRESS_DATABASE_HOST" : module.cloudsql.ip
         "WORDPRESS_DATABASE_NAME" : local.cloud_sql_conf.db
@@ -108,11 +114,13 @@ module "cloud_run" { # create the Cloud Run service
     # connect to CloudSQL
     cloudsql_instances  = [module.cloudsql.connection_name]
     vpcaccess_connector = null
-    vpcaccess_egress    = "all-traffic" # allow all traffic
+    # allow all traffic
+    vpcaccess_egress    = "all-traffic"
   }
   ingress_settings = "all"
 
-  vpc_connector_create = { # create a VPC connector for the ClouSQL VPC
+  # create a VPC connector for the ClouSQL VPC
+  vpc_connector_create = {
     ip_cidr_range = var.connector_cidr
     name          = "${local.prefix}wp-connector"
     vpc_self_link = module.vpc.self_link
@@ -120,7 +128,8 @@ module "cloud_run" { # create the Cloud Run service
 }
 
 
-module "vpc" { # create a VPC for CloudSQL
+# create a VPC for CloudSQL
+module "vpc" {
   source     = "../../../../modules/net-vpc"
   project_id = module.project.project_id
   name       = "${local.prefix}sql-vpc"
@@ -133,7 +142,8 @@ module "vpc" { # create a VPC for CloudSQL
     }
   ]
 
-  psa_config = { # Private Service Access
+  # Private Service Access
+  psa_config = {
     ranges = {
       cloud-sql = var.psa_cidr
     }
@@ -142,7 +152,8 @@ module "vpc" { # create a VPC for CloudSQL
 }
 
 
-module "firewall" { # set up firewall for CloudSQL
+# set up firewall for CloudSQL
+module "firewall" {
   source       = "../../../../modules/net-vpc-firewall"
   project_id   = module.project.project_id
   network      = module.vpc.name
@@ -150,7 +161,8 @@ module "firewall" { # set up firewall for CloudSQL
 }
 
 
-module "cloudsql" { # Set up CloudSQL
+# Set up CloudSQL
+module "cloudsql" {
   source           = "../../../../modules/cloudsql-instance"
   project_id       = module.project.project_id
   network          = module.vpc.self_link
