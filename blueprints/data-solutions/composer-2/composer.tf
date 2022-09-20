@@ -20,9 +20,6 @@ module "comp-sa" {
   prefix       = var.prefix
   name         = "cmp"
   display_name = "Composer service account"
-  iam = {
-    "roles/iam.serviceAccountTokenCreator" = [local.groups_iam.data-engineers]
-  }
 }
 
 resource "google_composer_environment" "env" {
@@ -81,12 +78,12 @@ resource "google_composer_environment" "env" {
     }
     dynamic "encryption_config" {
       for_each = (
-        try(lookup(var.service_encryption_keys, var.region, null) != null, false)
+        try(var.service_encryption_keys[var.region], null) != null
         ? { 1 = 1 }
         : {}
       )
       content {
-        kms_key_name = try(lookup(var.service_encryption_keys, var.region, null), null)
+        kms_key_name = try(var.service_encryption_keys[var.region], null)
       }
     }
   }

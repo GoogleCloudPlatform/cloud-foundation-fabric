@@ -26,12 +26,10 @@ variable "composer_config" {
   }
 }
 
-variable "groups" {
-  description = "User groups."
-  type        = map(string)
-  default = {
-    data-engineers = "gcp-data-engineers"
-  }
+variable "iam_groups_map" {
+  description = "Map of Role => groups to be added on the project. Example: { \"roles/composer.admin\" = [\"group:gcp-data-engineers@example.com\"]}."
+  type        = map(list(string))
+  default     = null
 }
 
 variable "network_config" {
@@ -46,11 +44,6 @@ variable "network_config" {
     })
   })
   default = null
-}
-
-variable "organization_domain" {
-  description = "Organization domain."
-  type        = string
 }
 
 variable "prefix" {

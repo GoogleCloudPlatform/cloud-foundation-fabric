@@ -18,7 +18,6 @@ module "test" {
   source     = "../../../../../blueprints/data-solutions/composer-2/"
   project_id = "project"
 
-  organization_domain = "example.com"
   project_create = {
     billing_account_id = "123456-123456-123456"
     parent             = "folders/12345678"

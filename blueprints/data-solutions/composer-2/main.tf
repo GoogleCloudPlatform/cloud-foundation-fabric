@@ -15,14 +15,13 @@
  */
 
 locals {
-  iam = {
-    "roles/composer.worker" = [
-      module.comp-sa.iam_email
-    ]
-    "roles/composer.ServiceAgentV2Ext" = [
-      "serviceAccount:${module.project.service_accounts.robots.composer}"
-    ]
-  }
+  iam = merge(
+    {
+      "roles/composer.worker"            = [module.comp-sa.iam_email]
+      "roles/composer.ServiceAgentV2Ext" = ["serviceAccount:${module.project.service_accounts.robots.composer}"]
+    },
+    var.iam_groups_map
+  )
 
   _shared_vpc_bindings = {
     "roles/compute.networkUser" = [
@@ -69,12 +68,6 @@ locals {
     ? var.network_config.network_self_link
     : module.vpc.0.self_link
   )
-  groups = {
-    for k, v in var.groups : k => "${v}@${var.organization_domain}"
-  }
-  groups_iam = {
-    for k, v in local.groups : k => "group:${v}"
-  }
 }
 
 module "project" {
