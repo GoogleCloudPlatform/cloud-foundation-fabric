@@ -314,6 +314,13 @@ resource "google_compute_instance_template" "default" {
     }
   }
 
+  dynamic "disk_encryption_key" {
+    for_each = var.encryption != null ? [""] : []
+    content {
+      kms_key_self_link = var.encryption.kms_key_self_link != null ? var.encryption.kms_key_self_link : null
+    }
+  }
+
   dynamic "network_interface" {
     for_each = var.network_interfaces
     iterator = config
