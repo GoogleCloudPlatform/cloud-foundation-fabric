@@ -16,11 +16,14 @@
 
 
 locals {
-  prefix = var.prefix == null ? "" : "${var.prefix}-"
-  all_principals_iam = [
-    for k in var.principals :
-    "user:${k}"
-  ]
+  all_principals_iam = [for k in var.principals : "user:${k}"]
+  cloud_sql_conf = {
+    database_version = "MYSQL_8_0"
+    tier             = "db-g1-small"
+    db               = "wp-mysql"
+    user             = "admin"
+    pass             = "password"
+  }
   iam = {
     # CloudSQL
     "roles/cloudsql.admin"        = local.all_principals_iam
@@ -31,13 +34,7 @@ locals {
     "roles/iam.serviceAccountUser"         = local.all_principals_iam
     "roles/iam.serviceAccountTokenCreator" = local.all_principals_iam
   }
-  cloud_sql_conf = {
-    database_version = "MYSQL_8_0"
-    tier             = "db-g1-small"
-    db               = "wp-mysql"
-    user             = "admin"
-    pass             = "password"
-  }
+  prefix  = var.prefix == null ? "" : "${var.prefix}-"
   wp_user = "user"
 }
 
@@ -115,7 +112,7 @@ module "cloud_run" {
     cloudsql_instances  = [module.cloudsql.connection_name]
     vpcaccess_connector = null
     # allow all traffic
-    vpcaccess_egress    = "all-traffic"
+    vpcaccess_egress = "all-traffic"
   }
   ingress_settings = "all"
 
