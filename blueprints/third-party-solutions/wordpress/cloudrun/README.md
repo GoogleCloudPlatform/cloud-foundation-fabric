@@ -104,17 +104,17 @@ The above command will delete the associated resources so there will be no billa
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [project_id](variables.tf#L32) | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
-| [wordpress_image](variables.tf#L49) | Image to run with Cloud Run, starts with \"gcr.io\" | <code>string</code> | ✓ |  |
-| [cloud_run_invoker](variables.tf#L61) | IAM member authorized to access the end-point (for example, 'user:YOUR_IAM_USER' for only you or 'allUsers' for everyone) | <code>string</code> |  | <code>&#34;allUsers&#34;</code> |
-| [connector_cidr](variables.tf#L67) | CIDR block for the VPC serverless connector (10.8.0.0/28 by default) | <code>string</code> |  | <code>&#34;10.8.0.0&#47;28&#34;</code> |
-| [prefix](variables.tf#L17) | Unique prefix used for resource names. Not used for project if 'project_create' is null. | <code>string</code> |  | <code>&#34;&#34;</code> |
-| [principals](variables.tf#L43) | List of emails of people/service accounts to give rights to, eg 'user@domain.com'. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [project_create](variables.tf#L23) | Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [psa_cidr](variables.tf#L80) | CIDR block for Private Service Access for CloudSQL (10.60.0.0/24 by default) | <code>string</code> |  | <code>&#34;10.60.0.0&#47;24&#34;</code> |
-| [region](variables.tf#L37) | Region for the created resources | <code>string</code> |  | <code>&#34;europe-west4&#34;</code> |
-| [sql_vpc_cidr](variables.tf#L73) | CIDR block for the VPC for the CloudSQL (10.0.0.0/20 by default) | <code>string</code> |  | <code>&#34;10.0.0.0&#47;20&#34;</code> |
-| [wordpress_port](variables.tf#L54) | Port for the Wordpress image (8080 by default) | <code>number</code> |  | <code>8080</code> |
+| [project_id](variables.tf#L51) | Project id, references existing project if `project_create` is null. | <code>string</code> | ✓ |  |
+| [wordpress_image](variables.tf#L75) | Image to run with Cloud Run, starts with \"gcr.io\" | <code>string</code> | ✓ |  |
+| [cloud_run_invoker](variables.tf#L18) | IAM member authorized to access the end-point (for example, 'user:YOUR_IAM_USER' for only you or 'allUsers' for everyone) | <code>string</code> |  | <code>&#34;allUsers&#34;</code> |
+| [connector_cidr](variables.tf#L24) | CIDR block for the VPC serverless connector (10.8.0.0/28 by default) | <code>string</code> |  | <code>&#34;10.8.0.0&#47;28&#34;</code> |
+| [prefix](variables.tf#L30) | Unique prefix used for resource names. Not used for project if 'project_create' is null. | <code>string</code> |  | <code>&#34;&#34;</code> |
+| [principals](variables.tf#L36) | List of emails of people/service accounts to give rights to, eg 'user@domain.com'. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [project_create](variables.tf#L42) | Provide values if project creation is needed, uses existing project if null. Parent is in 'folders/nnn' or 'organizations/nnn' format. | <code title="object&#40;&#123;&#10;  billing_account_id &#61; string&#10;  parent             &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [psa_cidr](variables.tf#L57) | CIDR block for Private Service Access for CloudSQL (10.60.0.0/24 by default) | <code>string</code> |  | <code>&#34;10.60.0.0&#47;24&#34;</code> |
+| [region](variables.tf#L63) | Region for the created resources | <code>string</code> |  | <code>&#34;europe-west4&#34;</code> |
+| [sql_vpc_cidr](variables.tf#L69) | CIDR block for the VPC for the CloudSQL (10.0.0.0/20 by default) | <code>string</code> |  | <code>&#34;10.0.0.0&#47;20&#34;</code> |
+| [wordpress_port](variables.tf#L80) | Port for the Wordpress image (8080 by default) | <code>number</code> |  | <code>8080</code> |
 
 ## Outputs
 
