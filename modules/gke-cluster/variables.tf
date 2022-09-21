@@ -323,3 +323,22 @@ variable "workload_identity" {
   type        = bool
   default     = true
 }
+
+
+variable "ifi_enabled" {
+  description = "Ingress for ILB leveraging Envoy proxies"
+  type        = bool
+  default     = false 
+}
+
+variable "ifi_proxy_only_subnet_cidr" {
+  description = "Subnet CIDR to host Envoy proxies in a format x.x.x.x/x"
+  type        = string
+  default     = ""
+}
+
+variable "ifi_region" {
+  description = "Region in which proxy only subnet shall be created"
+  type        = string
+  default     = ""
+}

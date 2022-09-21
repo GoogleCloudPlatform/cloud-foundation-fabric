@@ -106,6 +106,9 @@ module "cluster-1" {
 | [resource_usage_export_config](variables.tf#L288) | Configure the ResourceUsageExportConfig feature. | <code title="object&#40;&#123;&#10;  enabled &#61; bool&#10;  dataset &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  enabled &#61; null&#10;  dataset &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [vertical_pod_autoscaling](variables.tf#L315) | Enable the Vertical Pod Autoscaling feature. | <code>bool</code> |  | <code>null</code> |
 | [workload_identity](variables.tf#L321) | Enable the Workload Identity feature. | <code>bool</code> |  | <code>true</code> |
+| [ifi_enabled](variables.tf#L328) | Enable Ingress for Internal HTTP(S) Load Balancing. | <code>bool</code> |  | <code>false</code> |
+| [ifi_proxy_only_subnet_cidr](variables.tf#L334) | IP address range for proxy only subnet | <code>string</code> |  | <code>null</code> |
+| [ifi_region](variables.tf#L340) | Region for proxy only subnet | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 

@@ -335,3 +335,31 @@ resource "google_pubsub_topic" "notifications" {
     content = "gke-notifications"
   }
 }
+
+# Subnet required to host Envoy proxies. Only one subnet is required per region
+resource "google_compute_subnetwork" "proxy_only" {
+  count         = var.ifi_enabled ? 1 : 0
+  name          = "proxy-only-subnet"
+  ip_cidr_range = var.ifi_proxy_only_subnet_cidr == "" ? null : var.ifi_proxy_only_subnet_cidr
+  project       = var.project_id
+  region        = var.ifi_region == "" ? null : var.ifi_region
+  purpose       = "REGIONAL_MANAGED_PROXY"
+  role          = "ACTIVE"
+  network       = var.network
+}
+
+# All TCP ports are allowed for convenience
+resource "google_compute_firewall" "allow_proxy_connection" {
+  count     = var.ifi_enabled ? 1 : 0
+  name      = "allow-proxy-connection"
+  project   = var.project_id
+  network   = var.network
+  direction = "INGRESS"
+
+  allow {
+    protocol = "tcp"
+  }
+
+  source_ranges = [
+    var.ifi_proxy_only_subnet_cidr == "" ? null : var.ifi_proxy_only_subnet_cidr ]
+}
