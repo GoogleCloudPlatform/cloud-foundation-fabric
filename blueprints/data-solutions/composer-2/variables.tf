@@ -15,14 +15,46 @@
  */
 
 variable "composer_config" {
-  description = "Composer environemnt configuration."
+  description = "Composer environemnt configuration. See [attribute reference](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/composer_environment#argument-reference---cloud-composer-2) for details on settings variables."
   type = object({
     environment_size = string
-    image_version    = string
+    software_config  = any
+    workloads_config = object({
+      scheduler = object(
+        {
+          cpu        = number
+          memory_gb  = number
+          storage_gb = number
+          count      = number
+        }
+      )
+      web_server = object(
+        {
+          cpu        = number
+          memory_gb  = number
+          storage_gb = number
+        }
+      )
+      worker = object(
+        {
+          cpu        = number
+          memory_gb  = number
+          storage_gb = number
+          min_count  = number
+          max_count  = number
+        }
+      )
+    })
   })
   default = {
     environment_size = "ENVIRONMENT_SIZE_SMALL"
-    image_version    = "composer-2-airflow-2"
+    software_config = {
+      image_version = "composer-2-airflow-2"
+      env_variables = {
+        FOO = "bar"
+      }
+    }
+    workloads_config = null
   }
 }
 

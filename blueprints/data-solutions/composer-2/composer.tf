@@ -27,29 +27,46 @@ resource "google_composer_environment" "env" {
   project = module.project.project_id
   region  = var.region
   config {
-    software_config {
-      image_version = var.composer_config.image_version
-    }
-    workloads_config {
-      scheduler {
-        cpu        = 0.5
-        memory_gb  = 1.875
-        storage_gb = 1
-        count      = 1
-      }
-      web_server {
-        cpu        = 0.5
-        memory_gb  = 1.875
-        storage_gb = 1
-      }
-      worker {
-        cpu        = 0.5
-        memory_gb  = 1.875
-        storage_gb = 1
-        min_count  = 1
-        max_count  = 3
+    dynamic "software_config" {
+      for_each = (
+        try(var.composer_config.software_config, null) != null
+        ? { 1 = 1 }
+        : {}
+      )
+      content {
+        airflow_config_overrides = try(var.composer_config.software_config.airflow_config_overrides, null)
+        pypi_packages            = try(var.composer_config.software_config.pypi_packages, null)
+        env_variables            = try(var.composer_config.software_config.env_variables, null)
+        image_version            = try(var.composer_config.software_config.image_version, null)
+        python_version           = try(var.composer_config.software_config.python_version, null)
+        scheduler_count          = try(var.composer_config.software_config.scheduler_count, null)
       }
     }
+    dynamic "workloads_config" {
+      for_each = (try(var.composer_config.workloads_config, null) != null ? { 1 = 1 } : {})
+
+      content {
+        scheduler {
+          cpu        = try(var.composer_config.workloads_config.scheduler.cpu, null)
+          memory_gb  = try(var.composer_config.workloads_config.scheduler.memory_gb, null)
+          storage_gb = try(var.composer_config.workloads_config.scheduler.storage_gb, null)
+          count      = try(var.composer_config.workloads_config.scheduler.count, null)
+        }
+        web_server {
+          cpu        = try(var.composer_config.workloads_config.web_server.cpu, null)
+          memory_gb  = try(var.composer_config.workloads_config.web_server.memory_gb, null)
+          storage_gb = try(var.composer_config.workloads_config.web_server.storage_gb, null)
+        }
+        worker {
+          cpu        = try(var.composer_config.workloads_config.worker.cpu, null)
+          memory_gb  = try(var.composer_config.workloads_config.worker.memory_gb, null)
+          storage_gb = try(var.composer_config.workloads_config.worker.storage_gb, null)
+          min_count  = try(var.composer_config.workloads_config.worker.min_count, null)
+          max_count  = try(var.composer_config.workloads_config.worker.max_count, null)
+        }
+      }
+    }
+
     environment_size = var.composer_config.environment_size
 
     node_config {
