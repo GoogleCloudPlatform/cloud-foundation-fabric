@@ -33,13 +33,16 @@ If `project_create` is left to null, the identity performing the deployment need
 
 #### Step 0: Cloning the repository
 
-Click on the image below, sign in if required and when the prompt appears, click on “confirm”.
+If you want to deploy from your Cloud Shell, click on the image below, sign in if required and when the prompt appears, click on “confirm”.
 
-[<p align="center"> <img alt="Open Cloudshell" width = "300px" src="images/button.png" /> </p>]()
+[<p align="center"> <img alt="Open Cloudshell" width = "300px" src="images/button.png" /> </p>](https://ssh.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2FGoogleCloudPlatform%2Fcloud-foundation-fabric&cloudshell_print=cloud-shell-readme.txt&cloudshell_working_dir=blueprints%2Fthird-party-solutions%2Fwordpress)
 
-LINK NEEDED --> can only be added after PR
+Otherwise, in your console of choice:
+``` {shell}
+git clone https://github.com/GoogleCloudPlatform/cloud-foundation-fabric
+```
 
-Before we deploy the architecture, you will at least need the following information (for more precise configuration see the Variables section):
+Before you deploy the architecture, you will need at least the following information (for more precise configuration see the Variables section):
 
 * The project ID.
 * A Google Cloud Registry path to a Wordpress container image.
@@ -60,9 +63,9 @@ docker push gcr.io/MY_PROJECT/wordpress
 
 #### Step 2: Deploy resources
 
-Once you have the required information, head back to the Cloud Shell editor. Make sure you’re in the directory of this tutorial (where this README is in).
+Once you have the required information, head back to your cloned repository. Make sure you’re in the directory of this tutorial (where this README is in).
 
-Configure the Terraform variables in your terraform.tfvars file. See [terraform.tfvars.sample](terraform.tfvars.sample) as starting point - just copy it to `terraform.tfvars` and edit the latter. See the variables documentation below.
+Configure the Terraform variables in your `terraform.tfvars` file. See [terraform.tfvars.sample](terraform.tfvars.sample) as starting point - just copy it to `terraform.tfvars` and edit the latter. See the variables documentation below.
 
 **Note**: If you have the [domain restriction org. policy](https://cloud.google.com/resource-manager/docs/organization-policy/restricting-domains) on your organization, you have to edit the `cloud_run_invoker` variable and give it a value that will be accepted in accordance to your policy.
 
@@ -74,7 +77,7 @@ terraform apply
 ```
 The resource creation will take a few minutes.
 
-**Note**: you might get the following error (similar):
+**Note**: you might get the following error (or a similar one):
 ``` {shell}
 │ Error: resource is in failed state "Ready:False", message: Revision '...' is not ready and cannot serve traffic.│
 ```
