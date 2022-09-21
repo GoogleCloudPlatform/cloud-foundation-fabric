@@ -56,7 +56,7 @@ docker tag bitnami/wordpress gcr.io/MY_PROJECT/wordpress
 docker push gcr.io/MY_PROJECT/wordpress
 ```
 
-**Not**: This example has been built for this particular Docker image. If you decide to use another one, this example might not work (or you can edit the variables in the Terraform files).
+**Note**: This example has been built for this particular Docker image. If you decide to use another one, this example might not work (or you can edit the variables in the Terraform files).
 
 #### Step 2: Deploy resources
 
