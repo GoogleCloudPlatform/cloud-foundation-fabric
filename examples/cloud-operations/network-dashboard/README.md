@@ -1,4 +1,4 @@
-{# Networking Dashboard
+# Networking Dashboard
 
 This repository provides an end-to-end solution to gather some GCP Networking quotas and limits (that cannot be seen in the GCP console today) and display them in a dashboard.
 The goal is to allow for better visibility of these limits, facilitating capacity planning and avoiding hitting these limits.
