@@ -15,10 +15,10 @@
  */
 
 locals {
-  projects_id_list = toset(var.monitored_projects_list)
-  projects         = join(",", local.projects_id_list)
+  project_ids = toset(var.monitored_projects_list)
+  projects    = join(",", local.projects_id_list)
 
-  folders_id_list    = toset(var.monitored_folders_list)
+  folder_ids         = toset(var.monitored_folders_list)
   folders            = join(",", local.folders_id_list)
   monitoring_project = var.monitoring_project_id == "" ? module.project-monitoring[0].project_id : var.monitoring_project_id
 }
