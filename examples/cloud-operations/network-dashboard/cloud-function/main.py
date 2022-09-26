@@ -35,7 +35,6 @@ def get_monitored_projects_list(config):
     '''
   monitored_projects = config["monitored_projects"]
   monitored_folders = os.environ.get("MONITORED_FOLDERS_LIST").split(",")
-  print("folders:", monitored_folders)
 
   # Gets all projects under each monitored folder (and even in sub folders)
   for folder in monitored_folders:

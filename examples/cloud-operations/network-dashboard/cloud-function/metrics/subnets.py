@@ -167,16 +167,15 @@ def compute_subnet_utilization(config, all_subnets_dict):
 
     # GCE instance or PSC Forwarding Rule
     if purpose == "GCE_ENDPOINT" and status == "RESERVED":
-
       all_subnets_dict[project_id][f"{subnet_region}/{subnet_name}"]['used_ip_addresses'] += 1
-      print("found GCE ip:", project_id, subnet_region, subnet_name)
     # Cloud DNS inbound policy
     if purpose == "DNS_RESOLVER":
       all_subnets_dict[project_id][f"{subnet_region}/{subnet_name}"]['used_ip_addresses'] += 1
-      print("found Cloud DNS ip:", project_id, subnet_region, subnet_name)
     # PSA Range for Cloud SQL, MemoryStore, etc.
     if purpose == "VPC_PEERING":
-      print("PSA range to be handled later:", address, prefixLength, network_name)
+      # TODO: PSA range to be handled later
+      # print("PSA range to be handled later:", address, prefixLength, network_name)
+      continue
 
 
 def get_subnets(config, metrics_dict):
