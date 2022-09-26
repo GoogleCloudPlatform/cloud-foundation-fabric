@@ -1,4 +1,4 @@
-# Networking Dashboard
+{# Networking Dashboard
 
 This repository provides an end-to-end solution to gather some GCP Networking quotas and limits (that cannot be seen in the GCP console today) and display them in a dashboard.
 The goal is to allow for better visibility of these limits, facilitating capacity planning and avoiding hitting these limits.
@@ -43,6 +43,7 @@ The Cloud Function currently tracks usage, limit and utilization of:
 - internal forwarding rules for internal L7 load balancers per VPC peering group
 - Dynamic routes per VPC
 - Dynamic routes per VPC peering group
+- IP utilization per subnet (% of IP addresses used in a subnet)
 
 It writes this values to custom metrics in Cloud Monitoring and creates a dashboard to visualize the current utilization of these metrics in Cloud Monitoring.
 
@@ -53,8 +54,6 @@ You can also edit default limits for a specific network in that file. See the ex
 ## Next steps and ideas
 In a future release, we could support:
 - Static routes per VPC / per VPC peering group
-- Dynamic routes per VPC peering group
 - Google managed VPCs that are peered with PSA (such as Cloud SQL or Memorystore)
-- Subnet IP ranges utilization
 
 If you are interested in this and/or would like to contribute, please contact legranda@google.com.
