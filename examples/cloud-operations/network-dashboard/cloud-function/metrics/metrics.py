@@ -42,15 +42,15 @@ def create_metrics(monitoring_project):
       metrics_dict = yaml.safe_load(stream)
 
       for metric_list in metrics_dict.values():
-        for metric in metric_list.values():
+        for metric_name, metric in metric_list.items():
           for sub_metric_key, sub_metric in metric.items():
             metric_link = f"custom.googleapis.com/{sub_metric['name']}"
             # If the metric doesn't exist yet, then we create it
             if metric_link not in existing_metrics:
               create_metric(sub_metric["name"], sub_metric["description"],
                             monitoring_project)
-            # Parse limits (both default values and network specific ones)
-            if sub_metric_key == "limit":
+            # Parse limits for network and peering group metrics, not subnet ones
+            if sub_metric_key == "limit" and metric_name != "ip_usage_per_subnet":
               limits_dict_for_metric = {}
               for network_link, limit_value in sub_metric["values"].items():
                 limits_dict_for_metric[network_link] = limit_value
@@ -85,7 +85,7 @@ def create_metric(metric_name, description, monitoring_project):
 
 
 def write_data_to_metric(config, monitored_project_id, value, metric_name,
-                         network_name):
+                         network_name, subnet_id=None):
   '''
     Writes data to Cloud Monitoring custom metrics.
 
@@ -95,6 +95,7 @@ def write_data_to_metric(config, monitored_project_id, value, metric_name,
         value (int): Value for the data point of the metric.
         metric_name (string): Name of the metric
         network_name (string): Name of the network (will be added as a label)
+        subnet_id (string): Identifier of the Subnet (region/name of the subnet)
       Returns:
         usage (int): Current usage for that network.
         limit (int): Current usage for that network.
@@ -106,6 +107,8 @@ def write_data_to_metric(config, monitored_project_id, value, metric_name,
   series.resource.type = "global"
   series.metric.labels["network_name"] = network_name
   series.metric.labels["project"] = monitored_project_id
+  if subnet_id:
+      series.metric.labels["subnet_id"] = subnet_id
 
   now = time.time()
   seconds = int(now)
@@ -129,6 +132,7 @@ def write_data_to_metric(config, monitored_project_id, value, metric_name,
     client.create_time_series(name=config["monitoring_project_link"],
                               time_series=[series])
   except Exception as e:
+    print("Error while writing data point for metric", metric_name)
     print(e)
 
 

@@ -17,9 +17,7 @@
 from code import interact
 from distutils.command.config import config
 import os
-from pickletools import int4
 import time
-import yaml
 from google.cloud import monitoring_v3, asset_v1
 from google.protobuf import field_mask_pb2
 from googleapiclient import discovery
