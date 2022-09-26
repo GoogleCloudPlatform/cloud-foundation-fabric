@@ -14,12 +14,10 @@
 # limitations under the License.
 #
 
-from collections import defaultdict
-from . import metrics, networks, limits, peerings, routers
+from . import metrics
 from google.protobuf import field_mask_pb2
 from google.protobuf.json_format import MessageToDict
 import ipaddress
-import time
 
 
 def get_all_subnets(config):
