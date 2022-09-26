@@ -108,7 +108,7 @@ def write_data_to_metric(config, monitored_project_id, value, metric_name,
   series.metric.labels["network_name"] = network_name
   series.metric.labels["project"] = monitored_project_id
   if subnet_id:
-      series.metric.labels["subnet_id"] = subnet_id
+    series.metric.labels["subnet_id"] = subnet_id
 
   now = time.time()
   seconds = int(now)

@@ -61,6 +61,7 @@ def get_subnet_ranges_dict(config: dict):
 
   return subnet_range_dict
 
+
 def get_networks(config, project_id):
   '''
     Returns a dictionary of all networks in a project.
