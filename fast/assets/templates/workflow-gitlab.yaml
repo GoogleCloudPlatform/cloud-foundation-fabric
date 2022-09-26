@@ -14,7 +14,7 @@
 
 default:
   before_script:
-    - echo "${CI_JOB_JWT_V2}" > token.txt
+    - echo "$${CI_JOB_JWT_V2}" > token.txt
   image:
     name: hashicorp/terraform
     entrypoint:
@@ -49,10 +49,10 @@ gcp-auth:
   script:
     - |
       gcloud iam workload-identity-pools create-cred-config \
-        ${FAST_WIF_PROVIDER} \
-        --service-account=${FAST_SERVICE_ACCOUNT} \
+        $${FAST_WIF_PROVIDER} \
+        --service-account=$${FAST_SERVICE_ACCOUNT} \
         --service-account-token-lifetime-seconds=3600 \
-        --output-file=${GOOGLE_CREDENTIALS} \
+        --output-file=$${GOOGLE_CREDENTIALS} \
         --credential-source-file=token.txt
 tf-files:
   dependencies:
@@ -62,14 +62,14 @@ tf-files:
   stage: tf-files
   script:
     # - gcloud components install -q alpha
-    - gcloud config set auth/credential_file_override ${GOOGLE_CREDENTIALS}
+    - gcloud config set auth/credential_file_override $${GOOGLE_CREDENTIALS}
     - mkdir -p .tf-setup
     - |
       gcloud alpha storage cp -r \
-        "gs://${FAST_OUTPUTS_BUCKET}/providers/${TF_PROVIDERS_FILE}" .tf-setup/
+        "gs://$${FAST_OUTPUTS_BUCKET}/providers/$${TF_PROVIDERS_FILE}" .tf-setup/
     - |
       gcloud alpha storage cp -r \
-        "gs://${FAST_OUTPUTS_BUCKET}/tfvars" .tf-setup/
+        "gs://$${FAST_OUTPUTS_BUCKET}/tfvars" .tf-setup/
 
 tf-plan:
   # uncomment the following lines and set the SSH key secret for private modules repo
@@ -82,9 +82,9 @@ tf-plan:
   #     ssh-keyscan gitlab.com | sort -u - ~/.ssh/known_hosts -o ~/.ssh/known_hosts
   stage: tf-plan
   script:
-    - cp .tf-setup/${TF_PROVIDERS_FILE} ./
+    - cp .tf-setup/$${TF_PROVIDERS_FILE} ./
     - |
-      for f in ${TF_VAR_FILES}; do
+      for f in $${TF_VAR_FILES}; do
         ln -s ".tf-setup/tfvars/$f" ./
       done
     - terraform init
@@ -104,9 +104,9 @@ tf-apply:
   #     ssh-keyscan gitlab.com | sort -u - ~/.ssh/known_hosts -o ~/.ssh/known_hosts
   stage: tf-apply
   script:
-    - cp .tf-setup/${TF_PROVIDERS_FILE} ./
+    - cp .tf-setup/$${TF_PROVIDERS_FILE} ./
     - |
-      for f in ${TF_VAR_FILES}; do
+      for f in $${TF_VAR_FILES}; do
         ln -s ".tf-setup/tfvars/$f" ./
       done
     - terraform init
