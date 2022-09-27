@@ -27,6 +27,7 @@ from metrics import ilb_fwrules, instances, networks, metrics, limits, peerings,
 def get_monitored_projects_list(config):
   '''
     Gets the projects to be monitored from the MONITORED_FOLDERS_LIST environment variable.
+    
       Parameters:
         config (dict): The dict containing config like clients and limits
       Returns:

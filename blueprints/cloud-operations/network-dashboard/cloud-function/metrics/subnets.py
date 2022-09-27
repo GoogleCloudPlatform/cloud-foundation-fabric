@@ -23,6 +23,7 @@ import ipaddress
 def get_all_subnets(config):
   '''
     Returns a dictionary with subnet level informations (such as IP utilization)
+    
       Parameters:
         config (dict): The dict containing config like clients and limits
       Returns:
@@ -83,9 +84,17 @@ def get_all_subnets(config):
 def compute_subnet_utilization(config, all_subnets_dict):
   '''
     Counts resources (VMs, ILBs, reserved IPs) using private IPs in the different subnets.
+<<<<<<< HEAD:blueprints/cloud-operations/network-dashboard/cloud-function/metrics/subnets.py
       Parameters:
         config (dict): Dict containing config like clients and limits
         all_subnets_dict (dict): Dict containing the information for each subnets in the GCP organization
+=======
+
+      Parameters:
+        config (dict): Dict containing config like clients and limits
+        all_subnets_dict (dict): Dict containing the information for each subnets in the GCP organization
+
+>>>>>>> cce16abce64c3376a7641359d1d38f1a824ac6ac:examples/cloud-operations/network-dashboard/cloud-function/metrics/subnets.py
       Returns:
         None
   '''
@@ -201,6 +210,10 @@ def compute_subnet_utilization(config, all_subnets_dict):
 def get_subnets(config, metrics_dict):
   '''
     Writes all subnet metrics to custom metrics.
+<<<<<<< HEAD:blueprints/cloud-operations/network-dashboard/cloud-function/metrics/subnets.py
+=======
+
+>>>>>>> cce16abce64c3376a7641359d1d38f1a824ac6ac:examples/cloud-operations/network-dashboard/cloud-function/metrics/subnets.py
       Parameters:
         config (dict): The dict containing config like clients and limits
       Returns:
