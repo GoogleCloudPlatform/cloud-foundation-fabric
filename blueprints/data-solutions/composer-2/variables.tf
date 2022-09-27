@@ -50,9 +50,6 @@ variable "composer_config" {
     environment_size = "ENVIRONMENT_SIZE_SMALL"
     software_config = {
       image_version = "composer-2-airflow-2"
-      env_variables = {
-        FOO = "bar"
-      }
     }
     workloads_config = null
   }
