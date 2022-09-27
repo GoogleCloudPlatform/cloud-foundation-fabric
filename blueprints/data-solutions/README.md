@@ -46,5 +46,5 @@ running on a VPC with a private IP and a dedicated Service Account. A GCS bucket
 
 <a href="./composer-2/" title="# Cloud Composer version 2 private instance, supporting Shared VPC and external CMEK key
 "><img src="./composer-2/diagram.png" align="left" width="280px"></a>
-This [blueprint](./composer-2/) creates a [Cloud Composer](https://cloud.google.com/sql) version 2 instance on a VPC with a dedicated service account. The solution supports as inputs: a Shared VPC and Cloud KMS CMEK keys.
+This [blueprint](./composer-2/) creates a [Cloud Composer](https://cloud.google.com/composer/) version 2 instance on a VPC with a dedicated service account. The solution supports as inputs: a Shared VPC and Cloud KMS CMEK keys.
 <br clear="left">

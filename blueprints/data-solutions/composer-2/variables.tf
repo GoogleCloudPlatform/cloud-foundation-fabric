@@ -15,7 +15,7 @@
  */
 
 variable "composer_config" {
-  description = "Composer environemnt configuration. See [attribute reference](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/composer_environment#argument-reference---cloud-composer-2) for details on settings variables."
+  description = "Composer environment configuration. It accepts only following attributes: `environment_size`, `software_config` and `workloads_config`. See [attribute reference](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/composer_environment#argument-reference---cloud-composer-2) for details on settings variables."
   type = object({
     environment_size = string
     software_config  = any
@@ -98,7 +98,7 @@ variable "project_id" {
 }
 
 variable "region" {
-  description = "Region where instances will be deployed."
+  description = "Reagion where instances will be deployed."
   type        = string
   default     = "europe-west1"
 }

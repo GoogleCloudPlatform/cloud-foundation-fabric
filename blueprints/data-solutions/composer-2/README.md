@@ -1,10 +1,10 @@
 # Cloud Composer version 2 private instance, supporting Shared VPC and external CMEK key
 
-This blueprint creates a Private instance of [Cloud Composer version 2](https://cloud.google.com/composer/docs/composer-2/composer-versioning-overview) on a VPC with a dedicated service account. Cloud Composer 2 is the new major verion for Cloud Composer that supports:
+This blueprint creates a Private instance of [Cloud Composer version 2](https://cloud.google.com/composer/docs/composer-2/composer-versioning-overview) on a VPC with a dedicated service account. Cloud Composer 2 is the new major version for Cloud Composer that supports:
  - environment autoscaling
  - workloads configuration: CPU, memory, and storage parameters for Airflow workers, schedulers, web server, and database.
 
-Please consult the [documentation page](https://cloud.google.com/composer/docs/composer-2/composer-versioning-overview) for an exaustive comparison between Composer Version 1 and Version 2.
+Please consult the [documentation page](https://cloud.google.com/composer/docs/composer-2/composer-versioning-overview) for an exhaustive comparison between Composer Version 1 and Version 2.
 
 The solution will use:
  - Cloud Composer 
@@ -31,7 +31,7 @@ Run Terraform init:
 $ terraform init
 ```
 
-Configure the Terraform variable in your terraform.tfvars file. You need to spefify at least the following variables:
+Configure the Terraform variable in your terraform.tfvars file. You need to specify at least the following variables:
 
 ```tfvars
 project_id          = "lcaggioni-sandbox"
@@ -48,6 +48,12 @@ You can now connect to your instance.
 
 # Customizations
 
+## VPC
+If a shared VPC is not configured, a VPC will be created within the project. The following IP ranges will be used:
+- Cloudsql: `10.20.10.0/24`
+- GKE: `10.20.11.0/28`
+
+Change the code as needed to match your needed configuration, remember that these addresses should not overlap with any other range used in network.
 ## Shared VPC
 As is often the case in real-world configurations, this blueprint accepts as input an existing [`Shared-VPC`](https://cloud.google.com/vpc/docs/shared-vpc) via the `network_config` variable. 
 
@@ -69,7 +75,7 @@ Make sure that:
 - The subnet has secondary ranges configured with 2 ranges:
     - pods: `/22` example: `10.10.8.0/22`
     - services = `/24` example: 10.10.12.0/24`
-- Firewall rules are set, as described in the [documentation](https://cloud.google.com/composer/docs/how-to/managing/configuring-private-ip#step_3_configure_firewall_rules)
+- Firewall rules are set, as described in the [documentation](https://cloud.google.com/composer/docs/composer-2/configure-private-ip#step_3_configure_firewall_rules)
 
 In order to run the example and deploy Cloud Composer on a shared VPC the identity running Terraform must have the following IAM role on the Shared VPC Host project.
  - Compute Network Admin (roles/compute.networkAdmin)

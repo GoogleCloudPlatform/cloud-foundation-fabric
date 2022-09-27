@@ -23,6 +23,7 @@ locals {
     var.iam_groups_map
   )
 
+  # Adding Roles on Service Identities Service account as per documentation: https://cloud.google.com/composer/docs/composer-2/configure-shared-vpc#edit_permissions_for_the_google_apis_service_account
   _shared_vpc_bindings = {
     "roles/compute.networkUser" = [
       "prj-cloudservices", "prj-robot-gke"
@@ -128,13 +129,7 @@ module "vpc" {
   ]
 }
 
-module "firewall" {
-  source       = "../../../modules/net-vpc-firewall"
-  count        = local.use_shared_vpc ? 0 : 1
-  project_id   = module.project.project_id
-  network      = module.vpc.0.name
-  admin_ranges = ["10.0.0.0/20"]
-}
+# No explicit firewall rules set, created automatically by GKE autopilot
 
 module "nat" {
   source         = "../../../modules/net-cloudnat"
