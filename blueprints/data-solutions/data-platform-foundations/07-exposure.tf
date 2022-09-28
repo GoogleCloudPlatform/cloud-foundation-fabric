@@ -14,10 +14,59 @@
 
 # tfdoc:file:description common project.
 
+locals {
+  exp_group_iam = {
+    (local.groups.data-engineers) = [
+      "roles/bigquery.admin",
+      "roles/storage.admin",
+    ],
+    (local.groups.data-analysts) = [
+      "analyticshub.googleapis.com",
+      "roles/bigquery.dataViewer",
+      "roles/bigquery.jobUser",
+      "roles/bigquery.metadataViewer",
+      "roles/bigquery.user",
+      "roles/datacatalog.viewer",
+      "roles/datacatalog.tagTemplateViewer",
+      "roles/storage.objectViewer",
+    ]
+  }
+  exp_iam = {
+    "roles/bigquery.dataOwner" = [
+      module.transf-sa-df-0.iam_email,
+      module.transf-sa-bq-0.iam_email,
+    ]
+    "roles/bigquery.jobUser" = [
+      module.transf-sa-bq-0.iam_email,
+    ]
+    "roles/datacatalog.categoryAdmin" = [
+      module.load-sa-df-0.iam_email
+    ]
+    "roles/storage.objectCreator" = [
+      module.transf-sa-df-0.iam_email,
+    ]
+    "roles/storage.objectViewer" = [
+      module.transf-sa-df-0.iam_email,
+    ]
+  }
+  exp_services = concat(var.project_services, [
+    "bigquery.googleapis.com",
+    "bigqueryreservation.googleapis.com",
+    "bigquerystorage.googleapis.com",
+    "cloudkms.googleapis.com",
+    "pubsub.googleapis.com",
+    "storage.googleapis.com",
+    "storage-component.googleapis.com"
+  ])
+}
+
 module "exp-project" {
   source          = "../../../modules/project"
   parent          = var.folder_id
   billing_account = var.billing_account_id
   prefix          = var.prefix
   name            = "exp${local.project_suffix}"
+  group_iam       = local.exp_group_iam
+  iam             = local.exp_iam
+  services        = local.exp_services
 }
