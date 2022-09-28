@@ -30,7 +30,7 @@ This [blueprint](./data-platform-foundations/) implements SQL Server Always On A
 
 ### Cloud SQL instance with multi-region read replicas
 
-<a href="./cloudsql-multiregion/" title="Cloud SQL instance with multi-region read replicas"><img src="./cloudsql-multiregion/diagram.png" align="left" width="280px"></a>
+<a href="./cloudsql-multiregion/" title="Cloud SQL instance with multi-region read replicas"><img src="./cloudsql-multiregion/images/diagram.png" align="left" width="280px"></a>
 This [blueprint](./cloudsql-multiregion/) creates a [Cloud SQL instance](https://cloud.google.com/sql) with multi-region read replicas as described in the [Cloud SQL for PostgreSQL disaster recovery](https://cloud.google.com/architecture/cloud-sql-postgres-disaster-recovery-complete-failover-fallback) article.
 <br clear="left">
 
@@ -40,4 +40,11 @@ This [blueprint](./cloudsql-multiregion/) creates a [Cloud SQL instance](https:/
 This [blueprint](./data-playground/) creates a [Vertex AI
 Notebook](https://cloud.google.com/vertex-ai/docs/workbench/introduction)
 running on a VPC with a private IP and a dedicated Service Account. A GCS bucket and a BigQuery dataset are created to store inputs and outputs of data experiments.
+<br clear="left">
+
+### Cloud Composer version 2 private instance, supporting Shared VPC and external CMEK key
+
+<a href="./composer-2/" title="# Cloud Composer version 2 private instance, supporting Shared VPC and external CMEK key
+"><img src="./composer-2/diagram.png" align="left" width="280px"></a>
+This [blueprint](./composer-2/) creates a [Cloud Composer](https://cloud.google.com/composer/) version 2 instance on a VPC with a dedicated service account. The solution supports as inputs: a Shared VPC and Cloud KMS CMEK keys.
 <br clear="left">
