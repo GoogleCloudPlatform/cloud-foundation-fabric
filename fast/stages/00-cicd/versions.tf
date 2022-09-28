@@ -24,6 +24,14 @@ terraform {
       version = ">= 4.32.0" # tftest
     }
   }
+  github = {
+    source  = "integrations/github"
+    version = "~> 4.0"
+  }
+  gitlab = {
+    source  = "gitlabhq/gitlab"
+    version = ">= 3.16.1"
+  }
 }
 
 
