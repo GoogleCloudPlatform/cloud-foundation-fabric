@@ -142,8 +142,8 @@ resource "google_kms_crypto_key_iam_member" "service_identity_cmek" {
 }
 
 resource "google_project_default_service_accounts" "default_service_accounts" {
-  count          = upper(var.default_service_account_setting) == "KEEP" ? 0 : 1
-  action         = upper(var.default_service_account_setting)
+  count          = upper(var.default_service_account) == "KEEP" ? 0 : 1
+  action         = upper(var.default_service_account)
   project        = local.project.project_id
   restore_policy = "REVERT_AND_IGNORE_FAILURE"
   depends_on     = [google_project_service.project_services]

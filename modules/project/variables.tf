@@ -46,7 +46,7 @@ variable "descriptive_name" {
   default     = null
 }
 
-variable "default_service_account_setting" {
+variable "default_service_account" {
   description = "Project default service account setting: can be one of `delete`, `deprivilege`, `disable`, or `keep`."
   default     = "keep"
   type        = string
