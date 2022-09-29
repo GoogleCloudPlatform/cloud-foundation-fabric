@@ -311,6 +311,12 @@ resource "google_compute_instance_template" "default" {
         config.value.source_type != "attach" ? config.value.name : null
       )
       type = "PERSISTENT"
+      dynamic "disk_encryption_key" {
+        for_each = var.encryption != null ? [""] : []
+        content {
+          kms_key_self_link = var.encryption.kms_key_self_link
+        }
+      }
     }
   }
 
