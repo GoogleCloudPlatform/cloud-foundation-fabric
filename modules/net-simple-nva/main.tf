@@ -32,15 +32,16 @@ resource "google_service_account" "default" {
 
 resource "google_compute_instance" "default" {
   project        = var.project_id
-  zone           = var.zone
   name           = var.name
   description    = "Managed by the Simple-NVA Terraform module."
-  tags           = var.tags
-  machine_type   = var.instance_type
   can_ip_forward = true
+  machine_type   = var.instance_type
+  tags           = var.tags
+  zone           = var.zone
   metadata = {
     user-data = templatefile("${path.module}/assets/cloud-config.yaml", {
-      interfaces = local.interfaces
+      interfaces           = local.interfaces
+      enable_health_checks = var.enable_health_checks
     })
   }
 

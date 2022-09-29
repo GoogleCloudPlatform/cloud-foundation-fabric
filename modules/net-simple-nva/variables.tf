@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
+variable "enable_health_checks" {
+  description = "Configures routing to enable responses to health check probes."
+  type        = bool
+  default     = false
+}
+
 variable "instance_type" {
   description = "Instance type."
   type        = string
-  default     = "e2-highcpu-8" # highcpu instances are cheaper than equivalent standard
+  default     = "e2-highcpu-8"
 }
 
 variable "name" {

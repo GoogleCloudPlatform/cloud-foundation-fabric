@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+%{if enable_health_checks ~}
 write_files:
   - path: /var/lib/cloud/scripts/ipprefix_by_netmask
     permissions: "0700"
@@ -53,3 +54,9 @@ runcmd:
   - ip route add ${route} via `curl http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/${interface.number}/gateway -H "Metadata-Flavor:Google"` dev ${interface.name}
 %{ endfor ~}
 %{ endfor ~}
+%{ endif ~}
+
+%{ if enable_health_checks==false ~}
+runcmd:
+  - iptables --policy FORWARD ACCEPT
+%{ endif ~}
