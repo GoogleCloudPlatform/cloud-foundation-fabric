@@ -62,6 +62,7 @@ resource "google_compute_forwarding_rule" "forwarding_rule" {
   port_range            = local.port_range
   ports                 = []
   region                = try(var.region, null)
+  service_label         = try(var.forwarding_rule_config.service_label, null)
   subnetwork            = try(var.subnetwork, null)
   target                = local.target
 }

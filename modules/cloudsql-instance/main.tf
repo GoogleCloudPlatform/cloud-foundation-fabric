@@ -18,10 +18,11 @@ locals {
   prefix       = var.prefix == null ? "" : "${var.prefix}-"
   is_mysql     = can(regex("^MYSQL", var.database_version))
   has_replicas = try(length(var.replicas) > 0, false)
+  is_regional  = var.availability_type == "REGIONAL" ? true : false
 
   // Enable backup if the user asks for it or if the user is deploying
-  // MySQL with replicas
-  enable_backup = var.backup_configuration.enabled || (local.is_mysql && local.has_replicas)
+  // MySQL in HA configuration (regional or with specified replicas)
+  enable_backup = var.backup_configuration.enabled || (local.is_mysql && local.has_replicas) || (local.is_mysql && local.is_regional)
 
   users = {
     for user, password in coalesce(var.users, {}) :
@@ -49,6 +50,7 @@ resource "google_sql_database_instance" "primary" {
   region              = var.region
   database_version    = var.database_version
   encryption_key_name = var.encryption_key_name
+  root_password       = var.root_password
 
   settings {
     tier              = var.tier
@@ -76,11 +78,11 @@ resource "google_sql_database_instance" "primary" {
       content {
         enabled = true
 
-        // enable binary log if the user asks for it or we have replicas,
+        // enable binary log if the user asks for it or we have replicas (default in regional),
         // but only for MySQL
         binary_log_enabled = (
           local.is_mysql
-          ? var.backup_configuration.binary_log_enabled || local.has_replicas
+          ? var.backup_configuration.binary_log_enabled || local.has_replicas || local.is_regional
           : null
         )
         start_time                     = var.backup_configuration.start_time
