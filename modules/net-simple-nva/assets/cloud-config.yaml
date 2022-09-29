@@ -1,0 +1,55 @@
+#cloud-config
+
+# Copyright 2022 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+write_files:
+  - path: /var/lib/cloud/scripts/ipprefix_by_netmask
+    permissions: "0700"
+    owner: root
+    content: |
+      #!/bin/bash
+      c=0 x=0$(printf '%o' $${1//./ })
+      while [ $x -gt 0 ]; do
+        let c+=$((x % 2)) 'x>>=1'
+      done
+      echo $c
+  - path: /var/lib/cloud/scripts/pbr
+    permissions: "0700"
+    owner: root
+    content: |
+      #!/bin/bash
+      IF_NAME=$1
+      IF_NUMBER=$(echo $1 | sed -e s/eth//)
+      IF_GW=$(curl http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/$IF_NUMBER/gateway -H "Metadata-Flavor: Google")
+      IF_IP=$(curl http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/$IF_NUMBER/ip -H "Metadata-Flavor: Google")
+      IF_NETMASK=$(curl http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/$IF_NUMBER/subnetmask -H "Metadata-Flavor: Google")
+      IF_IP_PREFIX=$(/var/lib/cloud/scripts/ipprefix_by_netmask $IF_NETMASK)
+      IP_LB=$(ip r show table local | grep "$IF_NAME proto 66" | cut -f 2 -d " ")
+      grep -qxF "$((200 + $IF_NUMBER)) hc-$IF_NAME" /etc/iproute2/rt_tables || echo "$((200 + $IF_NUMBER)) hc-$IF_NAME" >>/etc/iproute2/rt_tables
+      ip route add $IF_GW src $IF_IP dev $IF_NAME table hc-$IF_NAME
+      ip route add default via $IF_GW dev $IF_NAME table hc-$IF_NAME
+      ip rule add from $IP_LB/32 table hc-$IF_NAME
+
+bootcmd:
+  - systemctl start node-problem-detector
+
+runcmd:
+  - iptables --policy FORWARD ACCEPT
+%{ for interface in interfaces ~}
+  - /var/lib/cloud/scripts/pbr ${interface.name}
+%{ for route in interface.routes ~}
+  - ip route add ${route} via `curl http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/${interface.number}/gateway -H "Metadata-Flavor:Google"` dev ${interface.name}
+%{ endfor ~}
+%{ endfor ~}
