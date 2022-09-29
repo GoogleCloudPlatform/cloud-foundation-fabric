@@ -20,6 +20,8 @@ multiple projects, and sends them to Stackdriver as custom metrics, where they
 can be used to set alert policies or create charts.
 """
 
+import time
+
 import base64
 import datetime
 import json
@@ -30,6 +32,8 @@ import warnings
 import click
 
 from google.api_core.exceptions import GoogleAPIError
+from google.api import label_pb2 as ga_label
+from google.api import metric_pb2 as ga_metric
 from google.cloud import monitoring_v3
 
 import googleapiclient.discovery
@@ -37,9 +41,12 @@ import googleapiclient.errors
 
 
 _BATCH_SIZE = 5
-_METRIC_KIND = monitoring_v3.enums.MetricDescriptor.MetricKind.GAUGE
-_METRIC_TYPE = 'custom.googleapis.com/quota/gce'
+_METRIC_KIND = ga_metric.MetricDescriptor.MetricKind.GAUGE
+_METRIC_TYPE_STEM = 'custom.googleapis.com/quota/'
 
+_USAGE="usage"
+_LIMIT="limit"
+_UTILIZATION="utilization"
 
 def _add_series(project_id, series, client=None):
   """Write metrics series to Stackdriver.
@@ -52,11 +59,11 @@ def _add_series(project_id, series, client=None):
         instead of obtaining a new one
   """
   client = client or monitoring_v3.MetricServiceClient()
-  project_name = client.project_path(project_id)
+  project_name = client.common_project_path(project_id)
   if isinstance(series, monitoring_v3.types.TimeSeries):
     series = [series]
   try:
-    client.create_time_series(project_name, series)
+    client.create_time_series(name=project_name, time_series=series)
   except GoogleAPIError as e:
     raise RuntimeError('Error from monitoring API: %s' % e)
 
@@ -95,7 +102,7 @@ def _fetch_quotas(project, region='global', compute=None):
                        (project, region))
 
 
-def _get_series(metric_labels, value, metric_type=_METRIC_TYPE, dt=None):
+def _get_series(metric_labels, value, metric_type, time_stamp, dt=None):
   """Create a Stackdriver monitoring time series from value and labels.
 
   Args:
@@ -109,28 +116,44 @@ def _get_series(metric_labels, value, metric_type=_METRIC_TYPE, dt=None):
   series.resource.type = 'global'
   for label in metric_labels:
     series.metric.labels[label] = metric_labels[label]
-  point = series.points.add()
+  point = monitoring_v3.types.Point()
   point.value.double_value = value
-  point.interval.end_time.FromDatetime(dt or datetime.datetime.utcnow())
+  
+  
+  seconds = int(time_stamp)
+  nanos = int((time_stamp - seconds) * 10 ** 9)
+  interval = monitoring_v3.TimeInterval( {"end_time": {"seconds": seconds, "nanos": nanos}})
+  point.interval=interval
+ 
+  series.points.append(point)
   return series
 
 
-def _quota_to_series(project, region, quota):
-  """Convert API quota objects to Stackdriver monitoring time series.
+def _quota_to_series_triplet(project, region, quota ):
+  """Convert API quota objects to three Stackdriver monitoring time series: usage, limit and utilization 
 
   Args:
     project: set in converted time series labels
     region: set in converted time series labels
     quota: quota object received from the GCE API
   """
-  labels = dict((k, str(v)) for k, v in quota.items())
+  #labels = dict((k, str(v)) for k, v in quota.items())
+  labels = dict()
   labels['project'] = project
   labels['region'] = region
-  try:
-    value = quota['usage'] / float(quota['limit'])
+
+  
+  try:  
+    utilization = quota['usage'] / float(quota['limit'])
   except ZeroDivisionError:
-    value = 0
-  return _get_series(labels, value)
+    utilization = 0
+  now=time.time()
+  metric_type_prefix=_METRIC_TYPE_STEM+quota['metric'].lower()+'_'
+  return [
+    _get_series(labels, quota['usage'],metric_type_prefix+_USAGE,now),
+    _get_series(labels, quota['limit'],metric_type_prefix+_LIMIT,now),
+    _get_series(labels, utilization,metric_type_prefix+_UTILIZATION,now),
+  ]
 
 
 @click.command()
@@ -191,10 +214,20 @@ def _main(monitoring_project, gce_project=None, gce_region=None, verbose=False,
         logging.debug('quota %s', quota)
         quotas.append((project, region, quota))
   client, i = monitoring_v3.MetricServiceClient(), 0
+  
+  x= len(quotas)
   while i < len(quotas):
-    series = [_quota_to_series(*q) for q in quotas[i:i + _BATCH_SIZE]]
+    series = sum([_quota_to_series_triplet(*q)  for q in quotas[i:i + _BATCH_SIZE]],[])
     _add_series(monitoring_project, series, client)
     i += _BATCH_SIZE
+  #
+  #for quota in quotas:
+  #  series_triplet = _quota_to_series(project,region,quota)
+  #  series_batch.update(series_triplet)
+  #  if (series_batch.__len__==_BATCH_SIZE):
+  #    _add_series(monitoring_project, series_batch, client)
+  #    series_batch=dict()
+  #_add_series(monitoring_project, series_batch, client)
 
 
 if __name__ == '__main__':
