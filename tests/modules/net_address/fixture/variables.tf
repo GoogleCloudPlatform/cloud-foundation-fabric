@@ -15,29 +15,17 @@
  */
 
 variable "external_addresses" {
-  type    = map(string)
+  type    = any
   default = {}
 }
 
 variable "global_addresses" {
-  type    = list(string)
+  type    = any
   default = []
 }
 
 variable "internal_addresses" {
-  type = map(object({
-    region     = string
-    subnetwork = string
-  }))
-  default = {}
-}
-
-variable "internal_addresses_config" {
-  type = map(object({
-    address = string
-    purpose = string
-    tier    = string
-  }))
+  type    = any
   default = {}
 }
 
@@ -47,10 +35,6 @@ variable "project_id" {
 }
 
 variable "psa_addresses" {
-  type = map(object({
-    address       = string
-    network       = string
-    prefix_length = number
-  }))
+  type    = any
   default = {}
 }

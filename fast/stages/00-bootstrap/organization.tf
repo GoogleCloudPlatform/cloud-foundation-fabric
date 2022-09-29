@@ -34,9 +34,10 @@ locals {
       [module.automation-tf-bootstrap-sa.iam_email],
       local._iam_bootstrap_user
     )
-    "roles/resourcemanager.organizationViewer" = [
-      "domain:${var.organization.domain}"
-    ]
+    # the following is useful if roles/browser is not desirable
+    # "roles/resourcemanager.organizationViewer" = [
+    #   "domain:${var.organization.domain}"
+    # ]
     "roles/resourcemanager.projectCreator" = concat(
       [module.automation-tf-bootstrap-sa.iam_email],
       local._iam_bootstrap_user

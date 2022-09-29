@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     https://www.apache.org/licenses/LICENSE-2.0
+#      http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-terraform {
-  # TODO: Remove once Terraform 1.3 is released https://github.com/hashicorp/terraform/releases/tag/v1.3.0-alpha20220622
-  experiments = [module_variable_optional_attrs]
-}
+def test_resources(e2e_plan_runner):
+  "Test that plan works and the numbers of resources is as expected."
+  modules, resources = e2e_plan_runner()
+  assert len(modules) == 4
+  assert len(resources) == 25
