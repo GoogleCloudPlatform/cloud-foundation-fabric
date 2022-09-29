@@ -138,7 +138,6 @@ def _quota_to_series_triplet(project, region, quota):
     region: set in converted time series labels
     quota: quota object received from the GCE API
   """
-  #labels = dict((k, str(v)) for k, v in quota.items())
   labels = dict()
   labels['project'] = project
   labels['region'] = region
@@ -221,14 +220,6 @@ def _main(monitoring_project, gce_project=None, gce_region=None, verbose=False,
         [_quota_to_series_triplet(*q) for q in quotas[i:i + _BATCH_SIZE]], [])
     _add_series(monitoring_project, series, client)
     i += _BATCH_SIZE
-  #
-  #for quota in quotas:
-  #  series_triplet = _quota_to_series(project,region,quota)
-  #  series_batch.update(series_triplet)
-  #  if (series_batch.__len__==_BATCH_SIZE):
-  #    _add_series(monitoring_project, series_batch, client)
-  #    series_batch=dict()
-  #_add_series(monitoring_project, series_batch, client)
 
 
 if __name__ == '__main__':
