@@ -50,6 +50,7 @@ resource "google_sql_database_instance" "primary" {
   region              = var.region
   database_version    = var.database_version
   encryption_key_name = var.encryption_key_name
+  root_password       = var.root_password
 
   settings {
     tier              = var.tier

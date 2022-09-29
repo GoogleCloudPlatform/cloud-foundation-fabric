@@ -129,6 +129,12 @@ variable "replicas" {
   default = {}
 }
 
+variable "root_password" {
+  description = "Root password of the Cloud SQL instance. Required for MS SQL Server"
+  type        = string
+  default     = null
+}
+
 variable "tier" {
   description = "The machine type to use for the instances."
   type        = string
