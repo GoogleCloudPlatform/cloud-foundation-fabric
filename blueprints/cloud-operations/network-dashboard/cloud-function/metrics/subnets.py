@@ -23,13 +23,12 @@ import ipaddress
 def get_all_subnets(config):
   '''
     Returns a dictionary with subnet level informations (such as IP utilization)
-    
+
       Parameters:
         config (dict): The dict containing config like clients and limits
       Returns:
         subnet_dict (dictionary of String: dictionary): Key is the project_id, value is a nested dictionary with subnet_region/subnet_name as the key.
   '''
-  subnet_dict = {}
   subnet_dict = {}
   read_mask = field_mask_pb2.FieldMask()
   read_mask.FromJsonString('name,versionedResources')
@@ -52,14 +51,14 @@ def get_all_subnets(config):
       for field_name, field_value in versioned.resource.items():
         if field_name == 'name':
           subnet_name = field_value
-        if field_name == 'network':
+        elif field_name == 'network':
           # Network self link format:
           # "https://www.googleapis.com/compute/v1/projects/<PROJECT_ID>/global/networks/<NETWORK_NAME>"
           project_id = field_value.split('/')[6]
           network_name = field_value.split('/')[-1]
-        if field_name == 'ipCidrRange':
+        elif field_name == 'ipCidrRange':
           ip_cidr_range = field_value
-        if field_name == 'region':
+        elif field_name == 'region':
           subnet_region = field_value.split('/')[-1]
 
       net = ipaddress.ip_network(ip_cidr_range)
@@ -71,8 +70,8 @@ def get_all_subnets(config):
         subnet_dict[project_id] = {}
       subnet_dict[project_id][f"{subnet_region}/{subnet_name}"] = {
           'name': subnet_name,
-          'ip_cidr_range': ip_cidr_range,
           'region': subnet_region,
+          'ip_cidr_range': ip_cidr_range,
           'total_ip_addresses': total_ip_addresses,
           'used_ip_addresses': 0,
           'network_name': network_name
@@ -84,17 +83,10 @@ def get_all_subnets(config):
 def compute_subnet_utilization(config, all_subnets_dict):
   '''
     Counts resources (VMs, ILBs, reserved IPs) using private IPs in the different subnets.
-<<<<<<< HEAD:blueprints/cloud-operations/network-dashboard/cloud-function/metrics/subnets.py
-      Parameters:
-        config (dict): Dict containing config like clients and limits
-        all_subnets_dict (dict): Dict containing the information for each subnets in the GCP organization
-=======
-
       Parameters:
         config (dict): Dict containing config like clients and limits
         all_subnets_dict (dict): Dict containing the information for each subnets in the GCP organization
 
->>>>>>> cce16abce64c3376a7641359d1d38f1a824ac6ac:examples/cloud-operations/network-dashboard/cloud-function/metrics/subnets.py
       Returns:
         None
   '''
@@ -135,24 +127,37 @@ def compute_subnet_utilization(config, all_subnets_dict):
   # Counting IP addresses for GCE Internal Load Balancers
   for asset in response_ilb:
     internal = False
-    network_name = ''
+    psc = False
     project_id = ''
     subnet_name = ''
     subnet_region = ''
+    address = ''
     for versioned in asset.versioned_resources:
       for field_name, field_value in versioned.resource.items():
         if 'loadBalancingScheme' in field_name and field_value == 'INTERNAL':
           internal = True
-        if field_name == 'network':
-          network_name = field_value.split('/')[-1]
+        # We want to count only accepted PSC endpoint Forwarding Rule
+        # If the PSC endpoint Forwarding Rule is pending, we will count it in the reserved IP addresses
+        elif field_name == 'pscConnectionStatus' and field_value == 'ACCEPTED':
+          psc = True
+        elif field_name == 'IPAddress':
+          address = field_value
+        elif field_name == 'network':
           project_id = field_value.split('/')[6]
-        if 'subnetwork' in field_name:
+        elif 'subnetwork' in field_name:
           subnet_name = field_value.split('/')[-1]
           subnet_region = field_value.split('/')[-3]
 
     if internal:
       all_subnets_dict[project_id][f"{subnet_region}/{subnet_name}"][
           'used_ip_addresses'] += 1
+    elif psc:
+      # PSC endpoint asset doesn't contain the subnet information in Asset Inventory
+      # We need to find the correct subnet with IP address matching
+      ip_address = ipaddress.ip_address(address)
+      for subnet_key, subnet_dict in all_subnets_dict[project_id].items():
+        if ip_address in ipaddress.ip_network(subnet_dict['ip_cidr_range']):
+          all_subnets_dict[project_id][subnet_key]['used_ip_addresses'] += 1
 
   response_reserved_ips = config["clients"][
       "asset_client"].search_all_resources(
@@ -176,32 +181,31 @@ def compute_subnet_utilization(config, all_subnets_dict):
       for field_name, field_value in versioned.resource.items():
         if field_name == 'purpose':
           purpose = field_value
-        if field_name == 'region':
+        elif field_name == 'region':
           subnet_region = field_value.split('/')[-1]
-        if field_name == 'status':
+        elif field_name == 'status':
           status = field_value
-        if field_name == 'address':
+        elif field_name == 'address':
           address = field_value
-        if field_name == 'network':
+        elif field_name == 'network':
           network_name = field_value.split('/')[-1]
           project_id = field_value.split('/')[6]
-        if field_name == 'subnetwork':
+        elif field_name == 'subnetwork':
           subnet_name = field_value.split('/')[-1]
-          # Cloud DNS doesn't include the 'network' or 'project' info so we get it here
           project_id = field_value.split('/')[6]
-        if field_name == 'prefixLength':
+        elif field_name == 'prefixLength':
           prefixLength = field_value
 
-    # GCE instance or PSC Forwarding Rule
+    # Rserved IP addresses for GCE instances or PSC Forwarding Rule PENDING state
     if purpose == "GCE_ENDPOINT" and status == "RESERVED":
       all_subnets_dict[project_id][f"{subnet_region}/{subnet_name}"][
           'used_ip_addresses'] += 1
     # Cloud DNS inbound policy
-    if purpose == "DNS_RESOLVER":
+    elif purpose == "DNS_RESOLVER":
       all_subnets_dict[project_id][f"{subnet_region}/{subnet_name}"][
           'used_ip_addresses'] += 1
     # PSA Range for Cloud SQL, MemoryStore, etc.
-    if purpose == "VPC_PEERING":
+    elif purpose == "VPC_PEERING":
       # TODO: PSA range to be handled later
       # print("PSA range to be handled later:", address, prefixLength, network_name)
       continue
@@ -210,10 +214,7 @@ def compute_subnet_utilization(config, all_subnets_dict):
 def get_subnets(config, metrics_dict):
   '''
     Writes all subnet metrics to custom metrics.
-<<<<<<< HEAD:blueprints/cloud-operations/network-dashboard/cloud-function/metrics/subnets.py
-=======
 
->>>>>>> cce16abce64c3376a7641359d1d38f1a824ac6ac:examples/cloud-operations/network-dashboard/cloud-function/metrics/subnets.py
       Parameters:
         config (dict): The dict containing config like clients and limits
       Returns:
@@ -225,7 +226,8 @@ def get_subnets(config, metrics_dict):
   compute_subnet_utilization(config, all_subnets_dict)
 
   for project_id in config["monitored_projects"]:
-
+    if project_id not in all_subnets_dict:
+      continue
     for subnet_dict in all_subnets_dict[project_id].values():
       ip_utilization = 0
       if subnet_dict['used_ip_addresses'] > 0:

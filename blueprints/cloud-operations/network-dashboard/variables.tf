@@ -29,6 +29,7 @@ variable "monitoring_project_id" {
 
 variable "prefix" {
   description = "Customer name to use as prefix for monitoring project"
+  default     = ""
 }
 
 variable "monitored_projects_list" {
@@ -39,6 +40,7 @@ variable "monitored_projects_list" {
 variable "monitored_folders_list" {
   type        = list(string)
   description = "ID of the projects to be monitored (where limits and quotas data will be pulled)"
+  default     = []
 }
 
 variable "schedule_cron" {

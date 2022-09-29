@@ -14,7 +14,6 @@
 # limitations under the License.
 #
 
-from code import interact
 from distutils.command.config import config
 import os
 import time
@@ -27,7 +26,7 @@ from metrics import ilb_fwrules, instances, networks, metrics, limits, peerings,
 def get_monitored_projects_list(config):
   '''
     Gets the projects to be monitored from the MONITORED_FOLDERS_LIST environment variable.
-    
+
       Parameters:
         config (dict): The dict containing config like clients and limits
       Returns:
@@ -35,6 +34,10 @@ def get_monitored_projects_list(config):
     '''
   monitored_projects = config["monitored_projects"]
   monitored_folders = os.environ.get("MONITORED_FOLDERS_LIST").split(",")
+
+  # Handling empty monitored folders list
+  if monitored_folders == ['']:
+    monitored_folders = []
 
   # Gets all projects under each monitored folder (and even in sub folders)
   for folder in monitored_folders:
@@ -53,7 +56,9 @@ def get_monitored_projects_list(config):
         for field_name, field_value in versioned.resource.items():
           if field_name == "projectId":
             project_id = field_value
-            monitored_projects.append(project_id)
+            # Avoid duplicate
+            if project_id not in monitored_projects:
+              monitored_projects.append(project_id)
 
   print("List of projects to be monitored:")
   print(monitored_projects)
@@ -126,6 +131,9 @@ def main(event, context):
       Returns:
         'Function executed successfully'
   '''
+  # Handling empty monitored projects list
+  if config["monitored_projects"] == ['']:
+    config["monitored_projects"] = []
 
   # Gets projects and folders to be monitored
   config["monitored_projects"] = get_monitored_projects_list(config)
