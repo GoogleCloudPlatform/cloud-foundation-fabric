@@ -12,15 +12,15 @@ The solution is designed so that the Cloud Function arguments that control funct
 
 Quota time series are stored using  [custom metrics](https://cloud.google.com/monitoring/custom-metrics) with metric type for usage, limit and utilization; metric types are named using a common frefix and two tokens joined by a `-` character:
 
--- `prefix` (custom.googleapis.com/quota/)
--- `quota name` 
--- `{usage,limit,utilization}`
+- `prefix` (custom.googleapis.com/quota/)
+- `quota name` 
+- `{usage,limit,utilization}`
 
 e.g:
 
--- `custom.googleapis.com/quota/firewalls_usage` 
--- `custom.googleapis.com/quota/firewalls_limit` 
--- `custom.googleapis.com/quota/firewalls_utilization`
+- `custom.googleapis.com/quota/firewalls_usage` 
+- `custom.googleapis.com/quota/firewalls_limit` 
+- `custom.googleapis.com/quota/firewalls_utilization`
 
 All custom metrics are associated to the `global` resource type and use [gauge kind](https://cloud.google.com/monitoring/api/v3/kinds-and-types#metric-kinds) 
 
