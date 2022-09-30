@@ -3,7 +3,7 @@
 This repository provides an end-to-end solution to gather some GCP Networking quotas and limits (that cannot be seen in the GCP console today) and display them in a dashboard.
 The goal is to allow for better visibility of these limits, facilitating capacity planning and avoiding hitting these limits.
 
-Here is an blueprint of dashboard you can get with this solution:
+Here is an example of dashboard you can get with this solution:
 
 <img src="metric.png" width="640px">
 
@@ -15,10 +15,11 @@ Here you see utilization (usage compared to the limit) for a specific metric (nu
 
 Clone this repository, then go through the following steps to create resources:
 - Create a terraform.tfvars file with the following content:
-  - organization_id = "[YOUR-ORG-ID]"
-  - billing_account = "[YOUR-BILLING-ACCOUNT]"
+  - organization_id = "<YOUR-ORG-ID>"
+  - billing_account = "<YOUR-BILLING-ACCOUNT>"
   - monitoring_project_id = "project-0" # Monitoring project where the dashboard will be created and the solution deployed
   - monitored_projects_list = ["project-1", "project2"] # Projects to be monitored by the solution
+  - monitored_folders_list = ["folder_id"] # Folders to be monitored by the solution
 - `terraform init`
 - `terraform apply`
 
@@ -43,18 +44,17 @@ The Cloud Function currently tracks usage, limit and utilization of:
 - internal forwarding rules for internal L7 load balancers per VPC peering group
 - Dynamic routes per VPC
 - Dynamic routes per VPC peering group
+- IP utilization per subnet (% of IP addresses used in a subnet)
 
 It writes this values to custom metrics in Cloud Monitoring and creates a dashboard to visualize the current utilization of these metrics in Cloud Monitoring.
 
 Note that metrics are created in the cloud-function/metrics.yaml file.
 
-You can also edit default limits for a specific network in that file. See the blueprint for `vpc_peering_per_network`.
+You can also edit default limits for a specific network in that file. See the example for `vpc_peering_per_network`.
 
 ## Next steps and ideas
 In a future release, we could support:
 - Static routes per VPC / per VPC peering group
-- Dynamic routes per VPC peering group
 - Google managed VPCs that are peered with PSA (such as Cloud SQL or Memorystore)
-- Subnet IP ranges utilization
 
 If you are interested in this and/or would like to contribute, please contact legranda@google.com.

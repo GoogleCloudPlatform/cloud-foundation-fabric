@@ -14,6 +14,17 @@
 # limitations under the License.
 #
 ---
+metrics_per_subnet:
+  ip_usage_per_subnet:
+    usage:
+      name: number_of_ip_used
+      description: Number of used IP addresses in the subnet.
+    utilization:
+      name: ip_addresses_per_subnet_utilization
+      description: Percentage of IP used in the subnet.
+    limit:
+      name: number_of_max_ip
+      description: Number of available IP addresses in the subnet.
 metrics_per_network:
   instance_per_network:
     usage:
@@ -60,7 +71,7 @@ metrics_per_network:
       name: internal_forwarding_rules_l4_limit
       description: Number of Internal Forwarding Rules for Internal L4 Load Balancers - limit.
       values:
-        default_value: 300
+        default_value: 500
     utilization:
       name: internal_forwarding_rules_l4_utilization
       description: Number of Internal Forwarding Rules for Internal L4 Load Balancers - utilization.
@@ -97,7 +108,7 @@ metrics_per_peering_group:
       name: internal_forwarding_rules_l4_ppg_limit
       description: Number of Internal Forwarding Rules for Internal L4 Load Balancers per VPC peering group - effective limit.
       values:
-        default_value: 300
+        default_value: 500
     utilization:
       name: internal_forwarding_rules_l4_ppg_utilization
       description: Number of Internal Forwarding Rules for Internal L4 Load Balancers per VPC peering group - utilization.
