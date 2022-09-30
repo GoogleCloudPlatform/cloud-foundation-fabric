@@ -111,9 +111,9 @@ resource "google_monitoring_alert_policy" "alert_policy" {
   display_name = "Quota monitor"
   combiner     = "OR"
   conditions {
-    display_name = "simple quota threshold"
+    display_name = "simple quota threshold for cpus utilization"
     condition_threshold {
-      filter          = "metric.type=\"custom.googleapis.com/quota/gce\" resource.type=\"global\""
+      filter          = "metric.type=\"custom.googleapis.com/quota/cpus_utilization\" resource.type=\"global\""
       threshold_value = 0.75
       comparison      = "COMPARISON_GT"
       duration        = "0s"
@@ -133,7 +133,7 @@ resource "google_monitoring_alert_policy" "alert_policy" {
     name = var.name
   }
   documentation {
-    content = "GCE quota over threshold."
+    content = "GCE cpus quota over threshold."
   }
 }
 

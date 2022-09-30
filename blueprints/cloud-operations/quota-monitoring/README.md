@@ -10,11 +10,25 @@ Regardless of its specific purpose, this blueprint is also useful in showing how
 
 The solution is designed so that the Cloud Function arguments that control function execution (eg to set which project quotas to monitor) are defined in the Cloud Scheduler payload set in the PubSub message, so that a single function can be used for different configurations by creating more schedules.
 
-Quota time series are stored using a [custom metric](https://cloud.google.com/monitoring/custom-metrics) with the `custom.googleapis.com/quota/gce` type and [gauge kind](https://cloud.google.com/monitoring/api/v3/kinds-and-types#metric-kinds), tracking the ratio between quota and limit as double to aid in visualization and alerting. Labels are set with the quota name, project id (which may differ from the monitoring workspace projects), value, and limit. This is how they look like in the metrics explorer.
+Quota time series are stored using  [custom metrics](https://cloud.google.com/monitoring/custom-metrics) with metric type for usage, limit and utilization; metric types are named using a common prefix and two tokens joined by a `-` character:
 
-<img src="explorer.png" width="640px" alt="GCP resource diagram">
+- `prefix` (custom.googleapis.com/quota/)
+- `quota name` 
+- `{usage,limit,utilization}`
 
-The solution also creates a basic monitoring alert policy, to demonstrate how to raise alerts when any of the tracked quota ratios go over a predefined threshold.
+e.g:
+
+- `custom.googleapis.com/quota/firewalls_usage` 
+- `custom.googleapis.com/quota/firewalls_limit` 
+- `custom.googleapis.com/quota/firewalls_utilization`
+
+All custom metrics are associated to the `global` resource type and use [gauge kind](https://cloud.google.com/monitoring/api/v3/kinds-and-types#metric-kinds) 
+
+Labels are set with project id (which may differ from the monitoring workspace projects) and region (quotas that are not region specific are labelled  `global`), this is how a usage/limit/utilization triplet looks in in Metrics Explorer
+
+<img src="explorer.png" width="640px" alt="GCP Metrics Explorer, usage, limit and utilization view sample">
+
+The solution also creates a basic monitoring alert policy, to demonstrate how to raise alerts when quotas utilization goes over a predefined threshold.
 
 ## Running the blueprint
 
