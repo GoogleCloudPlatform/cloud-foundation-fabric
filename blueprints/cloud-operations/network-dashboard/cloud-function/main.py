@@ -14,23 +14,63 @@
 # limitations under the License.
 #
 
-from code import interact
 from distutils.command.config import config
 import os
-from pickletools import int4
 import time
 from google.cloud import monitoring_v3, asset_v1
 from google.protobuf import field_mask_pb2
 from googleapiclient import discovery
-from metrics import ilb_fwrules, instances, networks, metrics, limits, peerings, routes, vpc_firewalls
+from metrics import ilb_fwrules, instances, networks, metrics, limits, peerings, routes, subnets
+
+
+def get_monitored_projects_list(config):
+  '''
+    Gets the projects to be monitored from the MONITORED_FOLDERS_LIST environment variable.
+
+      Parameters:
+        config (dict): The dict containing config like clients and limits
+      Returns:
+        monitored_projects (List of strings): Full list of projects to be monitored
+    '''
+  monitored_projects = config["monitored_projects"]
+  monitored_folders = os.environ.get("MONITORED_FOLDERS_LIST").split(",")
+
+  # Handling empty monitored folders list
+  if monitored_folders == ['']:
+    monitored_folders = []
+
+  # Gets all projects under each monitored folder (and even in sub folders)
+  for folder in monitored_folders:
+    read_mask = field_mask_pb2.FieldMask()
+    read_mask.FromJsonString('name,versionedResources')
+
+    response = config["clients"]["asset_client"].search_all_resources(
+        request={
+            "scope": f"folders/{folder}",
+            "asset_types": ["cloudresourcemanager.googleapis.com/Project"],
+            "read_mask": read_mask
+        })
+
+    for resource in response:
+      for versioned in resource.versioned_resources:
+        for field_name, field_value in versioned.resource.items():
+          if field_name == "projectId":
+            project_id = field_value
+            # Avoid duplicate
+            if project_id not in monitored_projects:
+              monitored_projects.append(project_id)
+
+  print("List of projects to be monitored:")
+  print(monitored_projects)
+
+  return monitored_projects
 
 
 def monitoring_interval():
   '''
   Creates the monitoring interval of 24 hours
-
     Returns:
-      monitoring_v3.TimeInterval: Moinitoring time interval of 24h
+      monitoring_v3.TimeInterval: Monitoring time interval of 24h
   '''
   now = time.time()
   seconds = int(now)
@@ -81,20 +121,25 @@ config = {
         "discovery_client": discovery.build('compute', 'v1'),
         "asset_client": asset_v1.AssetServiceClient(),
         "monitoring_client": monitoring_v3.MetricServiceClient()
-    }
+    },
 }
 
 
 def main(event, context):
   '''
     Cloud Function Entry point, called by the scheduler.
-
       Parameters:
         event: Not used for now (Pubsub trigger)
         context: Not used for now (Pubsub trigger)
       Returns:
         'Function executed successfully'
   '''
+  # Handling empty monitored projects list
+  if config["monitored_projects"] == ['']:
+    config["monitored_projects"] = []
+
+  # Gets projects and folders to be monitored
+  config["monitored_projects"] = get_monitored_projects_list(config)
 
   # Keep the monitoring interval up2date during each run
   config["monitoring_interval"] = monitoring_interval()
@@ -104,6 +149,9 @@ def main(event, context):
   project_quotas_dict = limits.get_quota_project_limit(config)
 
   firewalls_dict = vpc_firewalls.get_firewalls_dict(config)
+
+  # IP utilization subnet level metrics
+  subnets.get_subnets(config, metrics_dict)
 
   # Asset inventory queries
   gce_instance_dict = instances.get_gce_instance_dict(config)
@@ -153,7 +201,7 @@ def main(event, context):
   routes.get_dynamic_routes_ppg(
       config, metrics_dict["metrics_per_peering_group"]
       ["dynamic_routes_per_peering_group"], dynamic_routes_dict,
-      limits_dict['number_of_subnet_IP_ranges_ppg_limit'])
+      limits_dict['dynamic_routes_per_peering_group_limit'])
 
   return 'Function executed successfully'
 

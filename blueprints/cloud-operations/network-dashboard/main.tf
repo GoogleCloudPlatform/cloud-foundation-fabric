@@ -15,8 +15,11 @@
  */
 
 locals {
-  project_id_list    = toset(var.monitored_projects_list)
-  projects           = join(",", local.project_id_list)
+  project_ids = toset(var.monitored_projects_list)
+  projects    = join(",", local.project_ids)
+
+  folder_ids         = toset(var.monitored_folders_list)
+  folders            = join(",", local.folder_ids)
   monitoring_project = var.monitoring_project_id == "" ? module.project-monitoring[0].project_id : var.monitoring_project_id
 }
 
@@ -90,6 +93,7 @@ resource "google_cloud_scheduler_job" "job" {
   }
 }
 
+
 module "cloud-function" {
   source      = "../../../modules/cloud-function"
   project_id  = local.monitoring_project
@@ -116,11 +120,13 @@ module "cloud-function" {
 
   environment_variables = {
     MONITORED_PROJECTS_LIST = local.projects
+    MONITORED_FOLDERS_LIST  = local.folders
     MONITORING_PROJECT_ID   = local.monitoring_project
     ORGANIZATION_ID         = var.organization_id
   }
 
-  service_account = module.service-account-function.email
+  service_account  = module.service-account-function.email
+  ingress_settings = "ALLOW_INTERNAL_ONLY"
 
   trigger_config = {
     event    = "google.pubsub.topic.publish"

@@ -24,7 +24,6 @@ from . import peerings, limits, networks
 def create_metrics(monitoring_project):
   '''
     Creates all Cloud Monitoring custom metrics based on the metric.yaml file
-
       Parameters:
         monitoring_project (string): the project where the metrics are written to
       Returns:
@@ -37,20 +36,23 @@ def create_metrics(monitoring_project):
     existing_metrics.append(desc.type)
   limits_dict = {}
 
-  with open("/Users/mnoseda/Fabric/cloud-foundation-fabric/blueprints/cloud-operations/network-dashboard/cloud-function/metrics.yaml", 'r') as stream: #f
+  with open(
+      "/Users/mnoseda/Fabric/cloud-foundation-fabric/blueprints/cloud-operations/network-dashboard/cloud-function/metrics.yaml",
+      'r') as stream:  #f
     try:
       metrics_dict = yaml.safe_load(stream)
 
       for metric_list in metrics_dict.values():
-        for metric in metric_list.values():
+        for metric_name, metric in metric_list.items():
           for sub_metric_key, sub_metric in metric.items():
             metric_link = f"custom.googleapis.com/{sub_metric['name']}"
             # If the metric doesn't exist yet, then we create it
             if metric_link not in existing_metrics:
               create_metric(sub_metric["name"], sub_metric["description"],
                             monitoring_project)
-            # Parse limits (both default values and network specific ones)
-            if sub_metric_key == "limit":
+            # Parse limits for network and peering group metrics
+            # Subnet level metrics have a different limit: the subnet IP range size
+            if sub_metric_key == "limit" and metric_name != "ip_usage_per_subnet":
               limits_dict_for_metric = {}
               if "values" in sub_metric:
                 for network_link, limit_value in sub_metric["values"].items():
@@ -65,7 +67,6 @@ def create_metrics(monitoring_project):
 def create_metric(metric_name, description, monitoring_project):
   '''
     Creates a Cloud Monitoring metric based on the parameter given if the metric is not already existing
-
       Parameters:
         metric_name (string): Name of the metric to be created
         description (string): Description of the metric to be created
@@ -86,16 +87,16 @@ def create_metric(metric_name, description, monitoring_project):
 
 
 def write_data_to_metric(config, monitored_project_id, value, metric_name,
-                         network_name=None):
+                         network_name=None, subnet_id=None):
   '''
     Writes data to Cloud Monitoring custom metrics.
-
       Parameters:
         config (dict): The dict containing config like clients and limits
         monitored_project_id: ID of the project where the resource lives (will be added as a label)
         value (int): Value for the data point of the metric.
         metric_name (string): Name of the metric
         network_name (string): Name of the network (will be added as a label)
+        subnet_id (string): Identifier of the Subnet (region/name of the subnet)
       Returns:
         usage (int): Current usage for that network.
         limit (int): Current usage for that network.
@@ -108,6 +109,8 @@ def write_data_to_metric(config, monitored_project_id, value, metric_name,
   if network_name:
     series.metric.labels["network_name"] = network_name
   series.metric.labels["project"] = monitored_project_id
+  if subnet_id:
+    series.metric.labels["subnet_id"] = subnet_id
 
   now = time.time()
   seconds = int(now)
@@ -131,13 +134,13 @@ def write_data_to_metric(config, monitored_project_id, value, metric_name,
     client.create_time_series(name=config["monitoring_project_link"],
                               time_series=[series])
   except Exception as e:
+    print("Error while writing data point for metric", metric_name)
     print(e)
 
 
 def get_pgg_data(config, metric_dict, usage_dict, limit_metric, limit_dict):
   '''
     This function gets the usage, limit and utilization per VPC peering group for a specific metric for all projects to be monitored.
-
       Parameters:
         config (dict): The dict containing config like clients and limits
         metric_dict (dictionary of string: string): Dictionary with the metric names and description, that will be used to populate the metrics
@@ -223,7 +226,6 @@ def get_pgg_data(config, metric_dict, usage_dict, limit_metric, limit_dict):
 def customize_quota_view(quota_results):
   '''
     Customize the quota output for an easier parsable output.
-
       Parameters:
         quota_results (string): Input from get_quota_current_usage or get_quota_current_limit. Contains the Current usage or limit for all networks in that project.
       Returns:
