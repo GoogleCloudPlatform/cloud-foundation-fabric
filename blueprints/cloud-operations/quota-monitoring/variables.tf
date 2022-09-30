@@ -20,6 +20,12 @@ variable "bundle_path" {
   default     = "./bundle.zip"
 }
 
+variable "create_alert" {
+  description = "Enables the creation of a sample monitoring alert, false by default."
+  type        = bool
+  default     = false
+}
+
 variable "name" {
   description = "Arbitrary string used to name created resources."
   type        = string
