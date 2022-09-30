@@ -29,10 +29,6 @@ variable "enable_health_checks" {
 variable "network_interfaces" {
   description = "Network interfaces configuration."
   type = list(object({
-    address    = optional(string)
-    name       = string
-    network    = string
-    routes     = optional(list(string))
-    subnetwork = string
+    routes = optional(list(string))
   }))
 }
