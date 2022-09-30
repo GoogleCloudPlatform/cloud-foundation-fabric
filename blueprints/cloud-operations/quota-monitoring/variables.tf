@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
+variable "alert_create" {
+  description = "Enables the creation of a sample monitoring alert, false by default."
+  type        = bool
+  default     = false
+}
+
 variable "bundle_path" {
   description = "Path used to write the intermediate Cloud Function code bundle."
   type        = string
   default     = "./bundle.zip"
-}
-
-variable "create_alert" {
-  description = "Enables the creation of a sample monitoring alert, false by default."
-  type        = bool
-  default     = false
 }
 
 variable "name" {
@@ -33,7 +33,7 @@ variable "name" {
 }
 
 variable "project_create" {
-  description = "Create project instead ofusing an existing one."
+  description = "Create project instead of using an existing one."
   type        = bool
   default     = false
 }

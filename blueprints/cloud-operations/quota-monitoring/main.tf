@@ -106,38 +106,39 @@ resource "google_project_iam_member" "quota_viewer" {
   member   = module.cf.service_account_iam_email
 }
 
-var.create_alert ? {
-  resource "google_monitoring_alert_policy" "alert_policy" {
-    project      = module.project.project_id
-    display_name = "Quota monitor"
-    combiner     = "OR"
-    conditions {
-      display_name = "simple quota threshold for cpus utilization"
-      condition_threshold {
-        filter          = "metric.type=\"custom.googleapis.com/quota/cpus_utilization\" resource.type=\"global\""
-        threshold_value = 0.75
-        comparison      = "COMPARISON_GT"
-        duration        = "0s"
-        aggregations {
-          alignment_period   = "60s"
-          group_by_fields    = []
-          per_series_aligner = "ALIGN_MEAN"
-        }
-        trigger {
-          count   = 1
-          percent = 0
-        }
+
+resource "google_monitoring_alert_policy" "alert_policy" {
+  count        = var.alert_create ? 1 : 0 
+  project      = module.project.project_id
+  display_name = "Quota monitor"
+  combiner     = "OR"
+  conditions {
+    display_name = "simple quota threshold for cpus utilization"
+    condition_threshold {
+      filter          = "metric.type=\"custom.googleapis.com/quota/cpus_utilization\" resource.type=\"global\""
+      threshold_value = 0.75
+      comparison      = "COMPARISON_GT"
+      duration        = "0s"
+      aggregations {
+        alignment_period   = "60s"
+        group_by_fields    = []
+        per_series_aligner = "ALIGN_MEAN"
+      }
+      trigger {
+        count   = 1
+        percent = 0
       }
     }
-    enabled = false
-    user_labels = {
-      name = var.name
-    }
-    documentation {
-      content = "GCE cpus quota over threshold."
-    }
+  }
+  enabled = false
+  user_labels = {
+    name = var.name
+  }
+  documentation {
+    content = "GCE cpus quota over threshold."
   }
 }
+
 
 resource "random_pet" "random" {
   length = 1
