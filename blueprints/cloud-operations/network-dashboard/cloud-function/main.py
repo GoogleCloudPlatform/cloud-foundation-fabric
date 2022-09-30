@@ -22,7 +22,7 @@ import time
 from google.cloud import monitoring_v3, asset_v1
 from google.protobuf import field_mask_pb2
 from googleapiclient import discovery
-from metrics import ilb_fwrules, instances, networks, metrics, limits, peerings, routes
+from metrics import ilb_fwrules, instances, networks, metrics, limits, peerings, routes, vpc_firewalls
 
 
 def monitoring_interval():
@@ -49,15 +49,18 @@ def monitoring_interval():
 
 config = {
     # Organization ID containing the projects to be monitored
-    "organization":
-        os.environ.get("ORGANIZATION_ID"),
+    "organization":  #os.environ.get("ORGANIZATION_ID"),
+        '34855741773',
     # list of projects from which function will get quotas information
-    "monitored_projects":
-        os.environ.get("MONITORED_PROJECTS_LIST").split(","),
-    "monitoring_project_link":
-        os.environ.get('MONITORING_PROJECT_ID'),
-    "monitoring_project_link":
-        f"projects/{os.environ.get('MONITORING_PROJECT_ID')}",
+    "monitored_projects":  #os.environ.get("MONITORED_PROJECTS_LIST").split(","),
+        [
+            "mnoseda-prod-net-landing-0", "mnoseda-prod-net-spoke-0",
+            "mnoseda-dev-net-spoke-0"
+        ],
+    "monitoring_project":  #os.environ.get('MONITORING_PROJECT_ID'),
+        "monitoring-tlc",
+    "monitoring_project_link":  #f"projects/{os.environ.get('MONITORING_PROJECT_ID')}",
+        f"projects/monitoring-tlc",
     "monitoring_interval":
         monitoring_interval(),
     "limit_names": {
@@ -98,12 +101,19 @@ def main(event, context):
 
   metrics_dict, limits_dict = metrics.create_metrics(
       config["monitoring_project_link"])
+  project_quotas_dict = limits.get_quota_project_limit(config)
+
+  firewalls_dict = vpc_firewalls.get_firewalls_dict(config)
 
   # Asset inventory queries
   gce_instance_dict = instances.get_gce_instance_dict(config)
   l4_forwarding_rules_dict = ilb_fwrules.get_forwarding_rules_dict(config, "L4")
   l7_forwarding_rules_dict = ilb_fwrules.get_forwarding_rules_dict(config, "L7")
   subnet_range_dict = networks.get_subnet_ranges_dict(config)
+
+  # Per Project metrics
+  vpc_firewalls.get_firewalls_data(config, metrics_dict, project_quotas_dict,
+                                   firewalls_dict)
 
   # Per Network metrics
   instances.get_gce_instances_data(config, metrics_dict, gce_instance_dict,
