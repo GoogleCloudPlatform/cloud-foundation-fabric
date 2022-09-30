@@ -106,7 +106,9 @@ resource "google_project_iam_member" "quota_viewer" {
   member   = module.cf.service_account_iam_email
 }
 
+
 resource "google_monitoring_alert_policy" "alert_policy" {
+  count        = var.alert_create ? 1 : 0
   project      = module.project.project_id
   display_name = "Quota monitor"
   combiner     = "OR"
@@ -136,6 +138,7 @@ resource "google_monitoring_alert_policy" "alert_policy" {
     content = "GCE cpus quota over threshold."
   }
 }
+
 
 resource "random_pet" "random" {
   length = 1
