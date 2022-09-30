@@ -36,9 +36,7 @@ def create_metrics(monitoring_project):
     existing_metrics.append(desc.type)
   limits_dict = {}
 
-  with open(
-      "/Users/mnoseda/Fabric/cloud-foundation-fabric/blueprints/cloud-operations/network-dashboard/cloud-function/metrics.yaml",
-      'r') as stream:  #f
+  with open("metrics.yaml", 'r') as stream:
     try:
       metrics_dict = yaml.safe_load(stream)
 
@@ -54,9 +52,8 @@ def create_metrics(monitoring_project):
             # Subnet level metrics have a different limit: the subnet IP range size
             if sub_metric_key == "limit" and metric_name != "ip_usage_per_subnet":
               limits_dict_for_metric = {}
-              if "values" in sub_metric:
-                for network_link, limit_value in sub_metric["values"].items():
-                  limits_dict_for_metric[network_link] = limit_value
+              for network_link, limit_value in sub_metric["values"].items():
+                limits_dict_for_metric[network_link] = limit_value
               limits_dict[sub_metric["name"]] = limits_dict_for_metric
 
       return metrics_dict, limits_dict
@@ -87,7 +84,7 @@ def create_metric(metric_name, description, monitoring_project):
 
 
 def write_data_to_metric(config, monitored_project_id, value, metric_name,
-                         network_name=None, subnet_id=None):
+                         network_name, subnet_id=None):
   '''
     Writes data to Cloud Monitoring custom metrics.
       Parameters:
@@ -106,8 +103,7 @@ def write_data_to_metric(config, monitored_project_id, value, metric_name,
   series = monitoring_v3.TimeSeries()
   series.metric.type = f"custom.googleapis.com/{metric_name}"
   series.resource.type = "global"
-  if network_name:
-    series.metric.labels["network_name"] = network_name
+  series.metric.labels["network_name"] = network_name
   series.metric.labels["project"] = monitored_project_id
   if subnet_id:
     series.metric.labels["subnet_id"] = subnet_id

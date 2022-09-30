@@ -89,18 +89,15 @@ def monitoring_interval():
 
 config = {
     # Organization ID containing the projects to be monitored
-    "organization":  #os.environ.get("ORGANIZATION_ID"),
-        '34855741773',
+    "organization":
+        os.environ.get("ORGANIZATION_ID"),
     # list of projects from which function will get quotas information
-    "monitored_projects":  #os.environ.get("MONITORED_PROJECTS_LIST").split(","),
-        [
-            "mnoseda-prod-net-landing-0", "mnoseda-prod-net-spoke-0",
-            "mnoseda-dev-net-spoke-0"
-        ],
-    "monitoring_project":  #os.environ.get('MONITORING_PROJECT_ID'),
-        "monitoring-tlc",
-    "monitoring_project_link":  #f"projects/{os.environ.get('MONITORING_PROJECT_ID')}",
-        f"projects/monitoring-tlc",
+    "monitored_projects":
+        os.environ.get("MONITORED_PROJECTS_LIST").split(","),
+    "monitoring_project_link":
+        os.environ.get('MONITORING_PROJECT_ID'),
+    "monitoring_project_link":
+        f"projects/{os.environ.get('MONITORING_PROJECT_ID')}",
     "monitoring_interval":
         monitoring_interval(),
     "limit_names": {
@@ -146,9 +143,6 @@ def main(event, context):
 
   metrics_dict, limits_dict = metrics.create_metrics(
       config["monitoring_project_link"])
-  project_quotas_dict = limits.get_quota_project_limit(config)
-
-  firewalls_dict = vpc_firewalls.get_firewalls_dict(config)
 
   # IP utilization subnet level metrics
   subnets.get_subnets(config, metrics_dict)
@@ -158,10 +152,6 @@ def main(event, context):
   l4_forwarding_rules_dict = ilb_fwrules.get_forwarding_rules_dict(config, "L4")
   l7_forwarding_rules_dict = ilb_fwrules.get_forwarding_rules_dict(config, "L7")
   subnet_range_dict = networks.get_subnet_ranges_dict(config)
-
-  # Per Project metrics
-  vpc_firewalls.get_firewalls_data(config, metrics_dict, project_quotas_dict,
-                                   firewalls_dict)
 
   # Per Network metrics
   instances.get_gce_instances_data(config, metrics_dict, gce_instance_dict,
