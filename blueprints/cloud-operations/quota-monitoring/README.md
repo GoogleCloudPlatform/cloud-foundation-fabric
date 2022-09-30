@@ -42,12 +42,13 @@ Clone this repository or [open it in cloud shell](https://ssh.cloud.google.com/c
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [project_id](variables.tf#L35) | Project id that references existing project. | <code>string</code> | ✓ |  |
-| [bundle_path](variables.tf#L17) | Path used to write the intermediate Cloud Function code bundle. | <code>string</code> |  | <code>&#34;.&#47;bundle.zip&#34;</code> |
-| [name](variables.tf#L23) | Arbitrary string used to name created resources. | <code>string</code> |  | <code>&#34;quota-monitor&#34;</code> |
-| [project_create](variables.tf#L29) | Create project instead ofusing an existing one. | <code>bool</code> |  | <code>false</code> |
-| [quota_config](variables.tf#L40) | Cloud function configuration. | <code title="object&#40;&#123;&#10;  filters  &#61; list&#40;string&#41;&#10;  projects &#61; list&#40;string&#41;&#10;  regions  &#61; list&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  filters  &#61; null&#10;  projects &#61; null&#10;  regions  &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [region](variables.tf#L54) | Compute region used in the example. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
-| [schedule_config](variables.tf#L60) | Schedule timer configuration in crontab format. | <code>string</code> |  | <code>&#34;0 &#42; &#42; &#42; &#42;&#34;</code> |
+| [project_id](variables.tf#L41) | Project id that references existing project. | <code>string</code> | ✓ |  |
+| [alert_create](variables.tf#L17) | Enables the creation of a sample monitoring alert, false by default. | <code>bool</code> |  | <code>false</code> |
+| [bundle_path](variables.tf#L23) | Path used to write the intermediate Cloud Function code bundle. | <code>string</code> |  | <code>&#34;.&#47;bundle.zip&#34;</code> |
+| [name](variables.tf#L29) | Arbitrary string used to name created resources. | <code>string</code> |  | <code>&#34;quota-monitor&#34;</code> |
+| [project_create](variables.tf#L35) | Create project instead of using an existing one. | <code>bool</code> |  | <code>false</code> |
+| [quota_config](variables.tf#L46) | Cloud function configuration. | <code title="object&#40;&#123;&#10;  filters  &#61; list&#40;string&#41;&#10;  projects &#61; list&#40;string&#41;&#10;  regions  &#61; list&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  filters  &#61; null&#10;  projects &#61; null&#10;  regions  &#61; null&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [region](variables.tf#L60) | Compute region used in the example. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
+| [schedule_config](variables.tf#L66) | Schedule timer configuration in crontab format. | <code>string</code> |  | <code>&#34;0 &#42; &#42; &#42; &#42;&#34;</code> |
 
 <!-- END TFDOC -->

@@ -108,7 +108,7 @@ resource "google_project_iam_member" "quota_viewer" {
 
 
 resource "google_monitoring_alert_policy" "alert_policy" {
-  count        = var.alert_create ? 1 : 0 
+  count        = var.alert_create ? 1 : 0
   project      = module.project.project_id
   display_name = "Quota monitor"
   combiner     = "OR"
