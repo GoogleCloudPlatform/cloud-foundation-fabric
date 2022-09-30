@@ -40,7 +40,7 @@ variable "monitored_projects_list" {
 
 variable "schedule_cron" {
   description = "Cron format schedule to run the Cloud Function. Default is every 5 minutes."
-  default     = "*/5 * * * *"
+  default     = "*/60 * * * *"
 }
 
 variable "project_monitoring_services" {
@@ -63,5 +63,5 @@ variable "project_monitoring_services" {
 
 variable "region" {
   description = "Region used to deploy the cloud functions and scheduler"
-  default     = "europe-west1"
+  default     = "asia-south1"
 }

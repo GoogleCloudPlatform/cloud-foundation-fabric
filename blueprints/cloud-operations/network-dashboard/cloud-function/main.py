@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
+import functions_framework
 from code import interact
 from distutils.command.config import config
 import os
@@ -82,7 +82,9 @@ config = {
 }
 
 
-def main(event, context):
+@functions_framework.http
+def main(request):
+#def main(event, context):
   '''
     Cloud Function Entry point, called by the scheduler.
 
@@ -148,5 +150,4 @@ def main(event, context):
   return 'Function executed successfully'
 
 
-if __name__ == "__main__":
-  main(None, None)
+

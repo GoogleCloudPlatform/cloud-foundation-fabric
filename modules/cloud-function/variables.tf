@@ -54,7 +54,7 @@ variable "function_config" {
   type = object({
     entry_point = string
     instances   = number
-    memory      = number
+    memory      = string
     runtime     = string
     timeout     = number
   })
@@ -63,7 +63,7 @@ variable "function_config" {
     instances   = 1
     memory      = 256
     runtime     = "python37"
-    timeout     = 180
+    timeout     = 1800
   }
 }
 
@@ -104,7 +104,7 @@ variable "project_id" {
 variable "region" {
   description = "Region used for all resources."
   type        = string
-  default     = "europe-west1"
+  default     = "asia-south1"
 }
 
 variable "secrets" {

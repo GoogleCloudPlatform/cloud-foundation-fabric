@@ -47,17 +47,19 @@ module "service-account-function" {
   # Required IAM permissions for this service account are:
   # 1) compute.networkViewer on projects to be monitored (I gave it at organization level for now for simplicity)
   # 2) monitoring viewer on the projects to be monitored (I gave it at organization level for now for simplicity)
+  # 3) if you dont have permission to create service account and assign permission at organization Level, move these 3 roles project level.
   iam_organization_roles = {
     "${var.organization_id}" = [
-      "roles/compute.networkViewer",
+     "roles/compute.networkViewer",
       "roles/monitoring.viewer",
-      "roles/cloudasset.viewer"
+      "roles/cloudasset.viewer",
     ]
   }
 
   iam_project_roles = {
     "${local.monitoring_project}" = [
-      "roles/monitoring.metricWriter"
+      "roles/monitoring.metricWriter",
+       "roles/run.invoker"
     ]
   }
 }
@@ -66,16 +68,6 @@ module "service-account-function" {
 # Cloud Function configuration (& Scheduler)   #
 ################################################
 
-module "pubsub" {
-  source     = "../../../modules/pubsub"
-  project_id = local.monitoring_project
-  name       = "network-dashboard-pubsub"
-  subscriptions = {
-    "network-dashboard-pubsub-default" = null
-  }
-  # the Cloud Scheduler robot service account already has pubsub.topics.publish
-  # at the project level via roles/cloudscheduler.serviceAgent
-}
 
 resource "google_cloud_scheduler_job" "job" {
   project   = local.monitoring_project
@@ -83,10 +75,15 @@ resource "google_cloud_scheduler_job" "job" {
   name      = "network-dashboard-scheduler"
   schedule  = var.schedule_cron
   time_zone = "UTC"
+  attempt_deadline = "1800s"
+  
+   http_target {
+    http_method = "POST"
+    uri         = module.cloud-function.uri
 
-  pubsub_target {
-    topic_name = module.pubsub.topic.id
-    data       = base64encode("test")
+    oidc_token {
+      service_account_email = module.service-account-function.email
+    }
   }
 }
 
@@ -107,11 +104,11 @@ module "cloud-function" {
   }
 
   function_config = {
-    timeout     = 180
+    timeout     = 3000
     entry_point = "main"
     runtime     = "python39"
-    instances   = 1
-    memory      = 256
+    instances   = 2
+    memory      = "512M"
   }
 
   environment_variables = {
@@ -122,11 +119,7 @@ module "cloud-function" {
 
   service_account = module.service-account-function.email
 
-  trigger_config = {
-    event    = "google.pubsub.topic.publish"
-    resource = module.pubsub.topic.id
-    retry    = null
-  }
+
 }
 
 ################################################

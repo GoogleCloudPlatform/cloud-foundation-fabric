@@ -54,71 +54,41 @@ resource "google_vpc_access_connector" "connector" {
   network       = var.vpc_connector_config.network
 }
 
-resource "google_cloudfunctions_function" "function" {
+resource "google_cloudfunctions2_function" "function" {
+  provider              = google-beta
   project               = var.project_id
-  region                = var.region
+  location                = var.region
   name                  = "${local.prefix}${var.name}"
   description           = var.description
-  runtime               = var.function_config.runtime
-  available_memory_mb   = var.function_config.memory
-  max_instances         = var.function_config.instances
-  timeout               = var.function_config.timeout
-  entry_point           = var.function_config.entry_point
-  environment_variables = var.environment_variables
-  service_account_email = local.service_account_email
-  source_archive_bucket = local.bucket
-  source_archive_object = google_storage_bucket_object.bundle.name
-  labels                = var.labels
-  trigger_http          = var.trigger_config == null ? true : null
-  ingress_settings      = var.ingress_settings
-
-  vpc_connector = local.vpc_connector
-  vpc_connector_egress_settings = try(
+  build_config {
+    runtime = var.function_config.runtime
+    entry_point = var.function_config.entry_point # Set the entry point 
+    environment_variables = var.environment_variables
+     source {
+      storage_source {
+        bucket = google_storage_bucket.bucket[0].name
+        object = google_storage_bucket_object.bundle.name
+      }
+    }
+    }
+    service_config {
+    max_instance_count  = var.function_config.instances
+    min_instance_count = 0
+    available_memory    = var.function_config.memory
+    timeout_seconds     = var.function_config.timeout
+    environment_variables = var.environment_variables
+    ingress_settings      = var.ingress_settings
+    all_traffic_on_latest_revision = true
+    service_account_email = local.service_account_email
+    vpc_connector = local.vpc_connector
+    vpc_connector_egress_settings = try(
     var.vpc_connector.egress_settings, null
   )
 
-  dynamic "event_trigger" {
-    for_each = var.trigger_config == null ? [] : [""]
-    content {
-      event_type = var.trigger_config.event
-      resource   = var.trigger_config.resource
-      dynamic "failure_policy" {
-        for_each = var.trigger_config.retry == null ? [] : [""]
-        content {
-          retry = var.trigger_config.retry
-        }
-      }
-    }
-  }
+  }           
+   
+  labels                = var.labels
 
-  dynamic "secret_environment_variables" {
-    for_each = { for k, v in var.secrets : k => v if !v.is_volume }
-    iterator = secret
-    content {
-      key        = secret.key
-      project_id = secret.value.project_id
-      secret     = secret.value.secret
-      version    = try(secret.value.versions.0, "latest")
-    }
-  }
-
-  dynamic "secret_volumes" {
-    for_each = { for k, v in var.secrets : k => v if v.is_volume }
-    iterator = secret
-    content {
-      mount_path = secret.key
-      project_id = secret.value.project_id
-      secret     = secret.value.secret
-      dynamic "versions" {
-        for_each = secret.value.versions
-        iterator = version
-        content {
-          path    = split(":", version)[1]
-          version = split(":", version)[0]
-        }
-      }
-    }
-  }
 
 }
 
@@ -126,7 +96,7 @@ resource "google_cloudfunctions_function_iam_binding" "default" {
   for_each       = var.iam
   project        = var.project_id
   region         = var.region
-  cloud_function = google_cloudfunctions_function.function.name
+  cloud_function = google_cloudfunctions2_function.function.name
   role           = each.key
   members        = each.value
 }

@@ -28,12 +28,17 @@ output "bucket_name" {
 
 output "function" {
   description = "Cloud function resources."
-  value       = google_cloudfunctions_function.function
+  value       = google_cloudfunctions2_function.function
 }
 
 output "function_name" {
   description = "Cloud function name."
-  value       = google_cloudfunctions_function.function.name
+  value       = google_cloudfunctions2_function.function.name
+}
+
+output "uri" {
+  description = "Cloud function service uri."
+  value       = google_cloudfunctions2_function.function.service_config[0].uri
 }
 
 output "service_account" {
