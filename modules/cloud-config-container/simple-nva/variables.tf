@@ -14,21 +14,16 @@
  * limitations under the License.
  */
 
+variable "cloud_config" {
+  description = "Cloud config template path. If null default will be used."
+  type        = string
+  default     = null
+}
+
 variable "enable_health_checks" {
   description = "Configures routing to enable responses to health check probes."
   type        = bool
   default     = false
-}
-
-variable "instance_type" {
-  description = "Instance type."
-  type        = string
-  default     = "e2-highcpu-8"
-}
-
-variable "name" {
-  description = "Instance name."
-  type        = string
 }
 
 variable "network_interfaces" {
@@ -41,21 +36,3 @@ variable "network_interfaces" {
     subnetwork = string
   }))
 }
-
-variable "project_id" {
-  description = "Project id."
-  type        = string
-}
-
-variable "tags" {
-  description = "Instance network tags for firewall rule targets."
-  type        = list(string)
-  default     = []
-}
-
-variable "zone" {
-  description = "Compute zone."
-  type        = string
-}
-
-

@@ -14,17 +14,7 @@
  * limitations under the License.
  */
 
-output "instance" {
-  description = "Instance resource."
-  value       = google_compute_instance.default
-}
-
-output "internal_ips" {
-  description = "Instance internal IP addresses."
-  value       = google_compute_instance.default.network_interface.*.network_ip
-}
-
-output "self_link" {
-  description = "Instance self links."
-  value       = google_compute_instance.default.self_link
+output "cloud_config" {
+  description = "Rendered cloud-config file to be passed as user-data instance metadata."
+  value       = local.cloud_config
 }
