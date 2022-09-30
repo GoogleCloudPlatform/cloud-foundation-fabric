@@ -32,15 +32,20 @@ variable "prefix" {
   default     = ""
 }
 
-# TODO: support folder instead of a list of projects?
 variable "monitored_projects_list" {
   type        = list(string)
   description = "ID of the projects to be monitored (where limits and quotas data will be pulled)"
 }
 
+variable "monitored_folders_list" {
+  type        = list(string)
+  description = "ID of the projects to be monitored (where limits and quotas data will be pulled)"
+  default     = []
+}
+
 variable "schedule_cron" {
   description = "Cron format schedule to run the Cloud Function. Default is every 5 minutes."
-  default     = "*/5 * * * *"
+  default     = "*/10 * * * *"
 }
 
 variable "project_monitoring_services" {
