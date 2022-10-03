@@ -160,3 +160,15 @@ metrics_per_peering_group:
     utilization:
       name: dynamic_routes_per_peering_group_utilization
       description: Number of Dynamic routes per peering group - utilization.
+metrics_per_project:
+  firewalls:
+    usage:
+      name: firewalls_per_project_vpc_usage
+      description: Number of VPC firewall rules in a project - usage.
+    limit:
+      #no default limit as we can assume quotas can be always read from gcloud API
+      name: firewalls_per_project_limit
+      description: Number of VPC firewall rules in a project - limit.
+    utilization:
+      name: firewalls_per_project_utilization
+      description: Number of VPC firewall rules in a project - utilization.
