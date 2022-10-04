@@ -115,6 +115,12 @@ variable "users" {
   ]
 }
 
+variable "run_as_first_user" {
+  description = "Run as the first user if users are specified."
+  type        = bool
+  default     = true
+}
+
 variable "authenticate_gcr" {
   description = "Setup docker to pull images from private GCR. Requires at least one user since the token is stored in the home of the first user defined."
   type        = bool

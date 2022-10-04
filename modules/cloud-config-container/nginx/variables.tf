@@ -65,3 +65,25 @@ variable "files" {
   }))
   default = {}
 }
+
+variable "runcmd_pre" {
+  description = "Extra commands to run before starting nginx."
+  type        = list(string)
+  default     = []
+}
+
+variable "runcmd_post" {
+  description = "Extra commands to run after starting nginx."
+  type        = list(string)
+  default     = []
+}
+
+variable "users" {
+  description = "List of additional usernames to be created."
+  type = list(object({
+    username = string,
+    uid      = number,
+  }))
+  default = [
+  ]
+}
