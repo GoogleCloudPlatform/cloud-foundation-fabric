@@ -39,10 +39,10 @@ resource "google_compute_address" "internal" {
   address_type = "INTERNAL"
   region       = each.value.region
   subnetwork   = each.value.subnetwork
-  address      = try(var.internal_addresses_config[each.key].address, null)
-  network_tier = try(var.internal_addresses_config[each.key].tier, null)
-  purpose      = try(var.internal_addresses_config[each.key].purpose, null)
-  # labels       = lookup(var.internal_address_labels, each.key, {})
+  address      = each.value.address
+  network_tier = each.value.tier
+  purpose      = each.value.purpose
+  labels       = coalesce(each.value.labels, {})
 }
 
 resource "google_compute_global_address" "psc" {

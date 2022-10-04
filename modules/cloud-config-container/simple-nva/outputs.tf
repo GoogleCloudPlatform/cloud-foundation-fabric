@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-output "iot_registry" {
-  description = "Cloud IoT Core Registry"
-  value       = google_cloudiot_registry.registry
+output "cloud_config" {
+  description = "Rendered cloud-config file to be passed as user-data instance metadata."
+  value       = local.cloud_config
 }

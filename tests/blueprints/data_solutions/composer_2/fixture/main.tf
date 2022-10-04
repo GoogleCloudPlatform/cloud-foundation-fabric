@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-output "labels" {
-  description = "Per resource labels."
-  value       = local.labels
-}
+module "test" {
+  source     = "../../../../../blueprints/data-solutions/composer-2/"
+  project_id = "project"
 
-output "names" {
-  description = "Per resource names."
-  value       = local.names
+  project_create = {
+    billing_account_id = "123456-123456-123456"
+    parent             = "folders/12345678"
+  }
+  prefix = "prefix"
 }

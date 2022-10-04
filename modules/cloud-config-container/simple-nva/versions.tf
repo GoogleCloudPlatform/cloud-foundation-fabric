@@ -13,6 +13,17 @@
 # limitations under the License.
 
 terraform {
-  # TODO: Remove once Terraform 1.3 is released https://github.com/hashicorp/terraform/releases/tag/v1.3.0-alpha20220622
-  experiments = [module_variable_optional_attrs]
+  required_version = ">= 1.3.0"
+  required_providers {
+    google = {
+      source  = "hashicorp/google"
+      version = ">= 4.32.0" # tftest
+    }
+    google-beta = {
+      source  = "hashicorp/google-beta"
+      version = ">= 4.32.0" # tftest
+    }
+  }
 }
+
+

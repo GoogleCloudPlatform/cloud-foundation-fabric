@@ -16,4 +16,4 @@ def test_resources(e2e_plan_runner):
   "Test that plan works and the numbers of resources is as expected."
   modules, resources = e2e_plan_runner()
   assert len(modules) == 13
-  assert len(resources) == 42
+  assert len(resources) == 43
