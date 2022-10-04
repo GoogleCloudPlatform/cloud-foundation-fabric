@@ -49,7 +49,7 @@ write_files:
       ExecStartPre=/usr/bin/docker-credential-gcr configure-docker
       %{~ endif ~}
       ExecStart=/usr/bin/docker run --rm --name=${container_name} \
-      %{~ if length(users) > 0 ~}
+      %{~ if length(users) > 0 && run_as_first_user ~}
         --user=${users[0].uid} \
       %{~ endif ~}
       %{~ if docker_logging ~}
