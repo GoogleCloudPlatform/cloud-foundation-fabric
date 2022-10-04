@@ -1,4 +1,5 @@
 {
+  "category": "CUSTOM",
   "displayName": "quotas_utilization",
   "mosaicLayout": {
     "columns": 12,
@@ -17,14 +18,17 @@
                 "plotType": "LINE",
                 "targetAxis": "Y1",
                 "timeSeriesQuery": {
+                  "apiSource": "DEFAULT_CLOUD",
                   "timeSeriesFilter": {
                     "aggregation": {
                       "alignmentPeriod": "3600s",
+                      "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_NEXT_OLDER"
                     },
                     "filter": "metric.type=\"custom.googleapis.com/internal_forwarding_rules_l4_utilization\" resource.type=\"global\"",
                     "secondaryAggregation": {
                       "alignmentPeriod": "1800s",
+                      "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_MEAN"
                     }
                   }
@@ -38,7 +42,9 @@
             }
           }
         },
-        "width": 6
+        "width": 6,
+        "xPos": 0,
+        "yPos": 0
       },
       {
         "height": 4,
@@ -54,14 +60,17 @@
                 "plotType": "LINE",
                 "targetAxis": "Y1",
                 "timeSeriesQuery": {
+                  "apiSource": "DEFAULT_CLOUD",
                   "timeSeriesFilter": {
                     "aggregation": {
                       "alignmentPeriod": "3600s",
+                      "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_NEXT_OLDER"
                     },
                     "filter": "metric.type=\"custom.googleapis.com/internal_forwarding_rules_l7_utilization\" resource.type=\"global\"",
                     "secondaryAggregation": {
                       "alignmentPeriod": "60s",
+                      "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_MEAN"
                     }
                   }
@@ -76,6 +85,7 @@
           }
         },
         "width": 6,
+        "xPos": 0,
         "yPos": 12
       },
       {
@@ -92,14 +102,17 @@
                 "plotType": "LINE",
                 "targetAxis": "Y1",
                 "timeSeriesQuery": {
+                  "apiSource": "DEFAULT_CLOUD",
                   "timeSeriesFilter": {
                     "aggregation": {
                       "alignmentPeriod": "3600s",
+                      "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_NEXT_OLDER"
                     },
                     "filter": "metric.type=\"custom.googleapis.com/number_of_instances_utilization\" resource.type=\"global\"",
                     "secondaryAggregation": {
                       "alignmentPeriod": "60s",
+                      "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_MEAN"
                     }
                   }
@@ -114,6 +127,7 @@
           }
         },
         "width": 6,
+        "xPos": 0,
         "yPos": 8
       },
       {
@@ -130,14 +144,17 @@
                 "plotType": "LINE",
                 "targetAxis": "Y1",
                 "timeSeriesQuery": {
+                  "apiSource": "DEFAULT_CLOUD",
                   "timeSeriesFilter": {
                     "aggregation": {
                       "alignmentPeriod": "3600s",
+                      "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_NEXT_OLDER"
                     },
                     "filter": "metric.type=\"custom.googleapis.com/number_of_vpc_peerings_utilization\" resource.type=\"global\"",
                     "secondaryAggregation": {
                       "alignmentPeriod": "60s",
+                      "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_MEAN"
                     }
                   }
@@ -169,14 +186,17 @@
                 "plotType": "LINE",
                 "targetAxis": "Y1",
                 "timeSeriesQuery": {
+                  "apiSource": "DEFAULT_CLOUD",
                   "timeSeriesFilter": {
                     "aggregation": {
                       "alignmentPeriod": "3600s",
+                      "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_NEXT_OLDER"
                     },
                     "filter": "metric.type=\"custom.googleapis.com/number_of_active_vpc_peerings_utilization\" resource.type=\"global\"",
                     "secondaryAggregation": {
                       "alignmentPeriod": "60s",
+                      "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_INTERPOLATE"
                     }
                   }
@@ -191,6 +211,7 @@
           }
         },
         "width": 6,
+        "xPos": 0,
         "yPos": 4
       },
       {
@@ -207,14 +228,17 @@
                 "plotType": "LINE",
                 "targetAxis": "Y1",
                 "timeSeriesQuery": {
+                  "apiSource": "DEFAULT_CLOUD",
                   "timeSeriesFilter": {
                     "aggregation": {
                       "alignmentPeriod": "3600s",
+                      "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_NEXT_OLDER"
                     },
                     "filter": "metric.type=\"custom.googleapis.com/number_of_subnet_IP_ranges_ppg_utilization\" resource.type=\"global\"",
                     "secondaryAggregation": {
                       "alignmentPeriod": "3600s",
+                      "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_MEAN"
                     }
                   }
@@ -229,6 +253,7 @@
           }
         },
         "width": 6,
+        "xPos": 0,
         "yPos": 16
       },
       {
@@ -245,14 +270,17 @@
                 "plotType": "LINE",
                 "targetAxis": "Y1",
                 "timeSeriesQuery": {
+                  "apiSource": "DEFAULT_CLOUD",
                   "timeSeriesFilter": {
                     "aggregation": {
                       "alignmentPeriod": "3600s",
+                      "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_NEXT_OLDER"
                     },
                     "filter": "metric.type=\"custom.googleapis.com/internal_forwarding_rules_l4_ppg_utilization\" resource.type=\"global\"",
                     "secondaryAggregation": {
                       "alignmentPeriod": "3600s",
+                      "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_MEAN"
                     }
                   }
@@ -267,7 +295,8 @@
           }
         },
         "width": 6,
-        "xPos": 6
+        "xPos": 6,
+        "yPos": 0
       },
       {
         "height": 4,
@@ -283,14 +312,17 @@
                 "plotType": "LINE",
                 "targetAxis": "Y1",
                 "timeSeriesQuery": {
+                  "apiSource": "DEFAULT_CLOUD",
                   "timeSeriesFilter": {
                     "aggregation": {
                       "alignmentPeriod": "3600s",
+                      "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_NEXT_OLDER"
                     },
                     "filter": "metric.type=\"custom.googleapis.com/internal_forwarding_rules_l7_ppg_utilization\" resource.type=\"global\"",
                     "secondaryAggregation": {
                       "alignmentPeriod": "60s",
+                      "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_MEAN"
                     }
                   }
@@ -322,9 +354,11 @@
                 "plotType": "LINE",
                 "targetAxis": "Y1",
                 "timeSeriesQuery": {
+                  "apiSource": "DEFAULT_CLOUD",
                   "timeSeriesFilter": {
                     "aggregation": {
                       "alignmentPeriod": "3600s",
+                      "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_NEXT_OLDER"
                     },
                     "filter": "metric.type=\"custom.googleapis.com/number_of_instances_ppg_utilization\" resource.type=\"global\""
@@ -357,49 +391,14 @@
                 "plotType": "LINE",
                 "targetAxis": "Y1",
                 "timeSeriesQuery": {
+                  "apiSource": "DEFAULT_CLOUD",
                   "timeSeriesFilter": {
                     "aggregation": {
                       "alignmentPeriod": "60s",
+                      "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_MEAN"
                     },
                     "filter": "metric.type=\"custom.googleapis.com/dynamic_routes_per_network_utilization\" resource.type=\"global\""
-                  }
-                }
-              }
-            ],
-            "timeshiftDuration": "0s",
-            "yAxis": {
-              "label": "y1Axis",
-              "scale": "LINEAR"
-            }
-          }
-        },
-        "width": 6,
-        "yPos": 20
-      },
-      {
-        "height": 4,
-        "widget": {
-          "title": "ip_addresses_per_subnet_utilization",
-          "xyChart": {
-            "chartOptions": {
-              "mode": "COLOR"
-            },
-            "dataSets": [
-              {
-                "minAlignmentPeriod": "60s",
-                "plotType": "LINE",
-                "targetAxis": "Y1",
-                "timeSeriesQuery": {
-                  "timeSeriesFilter": {
-                    "aggregation": {
-                      "alignmentPeriod": "60s",
-                      "perSeriesAligner": "ALIGN_MEAN"
-                    },
-                    "filter": "metric.type=\"custom.googleapis.com/ip_addresses_per_subnet_utilization\" resource.type=\"global\"",
-                    "secondaryAggregation": {
-                      "alignmentPeriod": "60s"
-                    }
                   }
                 }
               }
@@ -418,7 +417,47 @@
       {
         "height": 4,
         "widget": {
-          "title": "dynamic_routes_ppg_utilization",
+          "title": "firewalls_per_project_usage",
+          "xyChart": {
+            "chartOptions": {
+              "mode": "COLOR"
+            },
+            "dataSets": [
+              {
+                "minAlignmentPeriod": "60s",
+                "plotType": "STACKED_BAR",
+                "targetAxis": "Y1",
+                "timeSeriesQuery": {
+                  "apiSource": "DEFAULT_CLOUD",
+                  "timeSeriesFilter": {
+                    "aggregation": {
+                      "alignmentPeriod": "60s",
+                      "crossSeriesReducer": "REDUCE_SUM",
+                      "groupByFields": [
+                        "metric.label.\"project\""
+                      ],
+                      "perSeriesAligner": "ALIGN_MEAN"
+                    },
+                    "filter": "metric.type=\"custom.googleapis.com/firewalls_per_project_usage\" resource.type=\"global\""
+                  }
+                }
+              }
+            ],
+            "timeshiftDuration": "0s",
+            "yAxis": {
+              "label": "y1Axis",
+              "scale": "LINEAR"
+            }
+          }
+        },
+        "width": 6,
+        "xPos": 0,
+        "yPos": 20
+      },
+      {
+        "height": 4,
+        "widget": {
+          "title": "firewalls_per_project_utilization",
           "xyChart": {
             "chartOptions": {
               "mode": "COLOR"
@@ -429,15 +468,14 @@
                 "plotType": "LINE",
                 "targetAxis": "Y1",
                 "timeSeriesQuery": {
+                  "apiSource": "DEFAULT_CLOUD",
                   "timeSeriesFilter": {
                     "aggregation": {
                       "alignmentPeriod": "60s",
-                      "perSeriesAligner": "ALIGN_MEAN"
+                      "crossSeriesReducer": "REDUCE_MAX",
+                      "perSeriesAligner": "ALIGN_MAX"
                     },
-                    "filter": "metric.type=\"custom.googleapis.com/dynamic_routes_per_peering_group_utilization\" resource.type=\"global\"",
-                    "secondaryAggregation": {
-                      "alignmentPeriod": "60s"
-                    }
+                    "filter": "metric.type=\"custom.googleapis.com/firewalls_per_project_utilization\" resource.type=\"global\""
                   }
                 }
               }
@@ -454,6 +492,5 @@
         "yPos": 20
       }
     ]
-  },
-  "name": "projects/347834224817/dashboards/1bdcd06a-030d-4977-bf4b-f32231aa3b77"
+  }
 }

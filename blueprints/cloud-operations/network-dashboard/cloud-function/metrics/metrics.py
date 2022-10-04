@@ -106,10 +106,10 @@ def write_data_to_metric(config, monitored_project_id, value, metric_name,
   series = monitoring_v3.TimeSeries()
   series.metric.type = f"custom.googleapis.com/{metric_name}"
   series.resource.type = "global"
+  series.metric.labels["project"] = monitored_project_id
   if network_name != None:
     series.metric.labels["network_name"] = network_name
-  series.metric.labels["project"] = monitored_project_id
-  if subnet_id:
+  if subnet_id != None:
     series.metric.labels["subnet_id"] = subnet_id
 
   now = time.time()
