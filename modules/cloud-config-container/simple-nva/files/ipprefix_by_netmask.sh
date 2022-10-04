@@ -1,4 +1,5 @@
 #!/bin/bash
+
 # Copyright 2022 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,7 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FQDN=$(curl -s -H "Metadata-Flavor: Google" http://metadata/computeMetadata/v1/instance/hostname)
-HOSTNAME=$(echo $FQDN | cut -d"." -f1)
-openssl req -new -newkey rsa:4096 -days 365 -nodes -x509 -subj /CN=$HOSTNAME/ -addext "subjectAltName = DNS:$FQDN" -keyout /etc/ssl/self-signed.key -out /etc/ssl/self-signed.crt
-sed -i "s/HOSTNAME/${HOSTNAME}/" /etc/nginx/conf.d/default.conf
+# https://stackoverflow.com/questions/50413579/bash-convert-netmask-in-cidr-notation
+c=0 x=0$(printf '%o' $${1//./ })
+while [ $x -gt 0 ]; do
+  let c+=$((x % 2)) 'x>>=1'
+done
+echo $c
