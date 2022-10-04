@@ -28,11 +28,11 @@ bootcmd:
 
 runcmd:
   - iptables --policy FORWARD ACCEPT
-%{if enable_health_checks ~}
 %{ for interface in network_interfaces ~}
+%{ if enable_health_checks ~}
   - /var/run/nva/policy_based_routing.sh ${interface.name}
+%{ endif ~}
 %{ for route in interface.routes ~}
   - ip route add ${route} via `curl http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/${interface.number}/gateway -H "Metadata-Flavor:Google"` dev ${interface.name}
 %{ endfor ~}
 %{ endfor ~}
-%{ endif ~}
