@@ -70,3 +70,8 @@ variable "region" {
   description = "Region used to deploy the cloud functions and scheduler"
   default     = "europe-west1"
 }
+variable "function_version" {
+  description = "Whether to use Cloud Function version 1st Gen or 2nd Gen."
+  type        = string
+  default     = "v2"
+}

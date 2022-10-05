@@ -55,6 +55,7 @@ variable "function_config" {
     entry_point = string
     instances   = number
     memory      = number
+    memory_2ndGen = string
     runtime     = string
     timeout     = number
   })
@@ -62,6 +63,7 @@ variable "function_config" {
     entry_point = "main"
     instances   = 1
     memory      = 256
+    memory_2ndGen="256M"
     runtime     = "python37"
     timeout     = 180
   }
@@ -158,5 +160,11 @@ variable "vpc_connector_config" {
     network       = string
   })
   default = null
+}
+
+variable "function_version" {
+  description = "Whether to use Cloud Function version 1st Gen or 2Nd Gen."
+  type        = string
+  default     = "v1"
 }
 

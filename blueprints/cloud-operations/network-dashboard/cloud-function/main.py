@@ -12,8 +12,9 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
+# uncomment to convrt this to http function  functions_framework
 
+#imperort functions_framework
 from distutils.command.config import config
 import os
 import time
@@ -121,7 +122,8 @@ config = {
     },
 }
 
-
+#@functions_framework.http
+#def main(request):
 def main(event, context):
   '''
     Cloud Function Entry point, called by the scheduler.
@@ -195,6 +197,6 @@ def main(event, context):
 
   return 'Function executed successfully'
 
-
+# comment belwo code to convert it to http function
 if __name__ == "__main__":
   main(None, None)
