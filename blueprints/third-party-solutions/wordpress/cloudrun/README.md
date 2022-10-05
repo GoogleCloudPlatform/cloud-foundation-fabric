@@ -54,7 +54,7 @@ In order to deploy the Wordpress service to Cloud Run, you need to store the [Wo
 Make sure that the Google Container Registry API is enabled and run the following commands in your Cloud Shell environment with your `project_id` in place of the `MY_PROJECT` placeholder:
 
 ``` {shell}
-docker pull bitnami/wordpress
+docker pull bitnami/wordpress:6.0.2
 docker tag bitnami/wordpress gcr.io/MY_PROJECT/wordpress
 docker push gcr.io/MY_PROJECT/wordpress
 ```
