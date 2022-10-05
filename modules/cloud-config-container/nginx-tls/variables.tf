@@ -25,3 +25,37 @@ variable "docker_logging" {
   type        = bool
   default     = true
 }
+
+variable "runcmd_pre" {
+  description = "Extra commands to run before starting nginx."
+  type        = list(string)
+  default     = []
+}
+
+variable "runcmd_post" {
+  description = "Extra commands to run after starting nginx."
+  type        = list(string)
+  default     = []
+}
+
+variable "files" {
+  description = "Map of extra files to create on the instance, path as key. Owner and permissions will use defaults if null."
+  type = map(object({
+    content     = string
+    owner       = string
+    permissions = string
+  }))
+  default = null
+}
+
+variable "users" {
+  description = "Additional list of usernames to be created."
+  type = list(object({
+    username = string,
+    uid      = number,
+  }))
+  default = [
+  ]
+}
+
+
