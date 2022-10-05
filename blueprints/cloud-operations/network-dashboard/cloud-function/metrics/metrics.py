@@ -36,9 +36,7 @@ def create_metrics(monitoring_project):
     existing_metrics.append(desc.type)
   limits_dict = {}
 
-  with open(
-      "/Users/mnoseda/Fabric/cloud-foundation-fabric/blueprints/cloud-operations/network-dashboard/cloud-function/metrics.yaml",
-      'r') as stream:
+  with open("./metrics.yaml", 'r') as stream:
     try:
       metrics_dict = yaml.safe_load(stream)
 
