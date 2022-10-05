@@ -61,38 +61,6 @@ def get_firewalls_dict(config: dict):
   return firewalls_dict
 
 
-'''def get_firewalls_per_project_vpc(config, project_id ):
-    
-      Returns returns the VPC firewall rules defined in a project
-
-      Parameters:
-        config (dict): The dict containing config like clients and limits
-        project_id (string): Project ID for the project containing the Cloud Router.
-      Returns:
-        sum_firewalls_per_vpc(dict): Number of firewall rules defined for each VPC in a project
-   
-    get_firewalls_dict(config)
-    sum_firewalls_per_vpc=dict()
-    sum_firewalls=0
-    page_token=None
-    while (1):
-        request = config["clients"]["discovery_client"].firewalls().list(
-            project=project_id,pageToken=page_token)
-        response = request.execute()
-        sum_firewalls_per_vpc = dict() 
-        if  'items' in response:
-            for firewall_rule in response['items']:
-                sum_firewalls_per_vpc[firewall_rule['network']] = sum_firewalls_per_vpc[firewall_rule['network']]+1 if firewall_rule['network'] in sum_firewalls_per_vpc  else 1
-        else: 
-            break
-        page_token = response['pageToken'] if 'pageToken' in response else None
-        if (not page_token):
-            break
-
-    return sum_firewalls_per_vpc
-'''
-
-
 def get_firewalls_data(config, metrics_dict, project_quotas_dict,
                        firewalls_dict):
   '''
