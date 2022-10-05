@@ -17,12 +17,12 @@
 
 locals {
   all_principals_iam = [for k in var.principals : "user:${k}"]
-  cloud_sql_conf = {
+  cloudsql_conf = {
     database_version = "MYSQL_8_0"
     tier             = "db-g1-small"
     db               = "wp-mysql"
     user             = "admin"
-    pass             = "password"
+    pass             = var.cloudsql_password == null ? random_password.cloudsql_password.result : var.cloudsql_password
   }
   iam = {
     # CloudSQL
@@ -36,8 +36,8 @@ locals {
   }
   prefix  = var.prefix == null ? "" : "${var.prefix}-"
   wp_user = "user"
+  wp_pass = var.wordpress_password == null ? random_password.wp_password.result : var.wordpress_password
 }
-
 
 # either create a project or set up the given one
 module "project" {
@@ -60,11 +60,13 @@ module "project" {
   ]
 }
 
-
 resource "random_password" "wp_password" {
   length = 8
 }
 
+resource "random_password" "cloudsql_password" {
+  length = 8
+}
 
 # create the Cloud Run service
 module "cloud_run" {
@@ -88,11 +90,11 @@ module "cloud_run" {
       env = {
         "APACHE_HTTP_PORT_NUMBER" : var.wordpress_port
         "WORDPRESS_DATABASE_HOST" : module.cloudsql.ip
-        "WORDPRESS_DATABASE_NAME" : local.cloud_sql_conf.db
-        "WORDPRESS_DATABASE_USER" : local.cloud_sql_conf.user
-        "WORDPRESS_DATABASE_PASSWORD" : local.cloud_sql_conf.pass
+        "WORDPRESS_DATABASE_NAME" : local.cloudsql_conf.db
+        "WORDPRESS_DATABASE_USER" : local.cloudsql_conf.user
+        "WORDPRESS_DATABASE_PASSWORD" : local.cloudsql_conf.pass
         "WORDPRESS_USERNAME" : local.wp_user
-        "WORDPRESS_PASSWORD" : random_password.wp_password.result
+        "WORDPRESS_PASSWORD" : local.wp_pass
       }
     }
     resources     = null
@@ -165,10 +167,10 @@ module "cloudsql" {
   network          = module.vpc.self_link
   name             = "${local.prefix}mysql"
   region           = var.region
-  database_version = local.cloud_sql_conf.database_version
-  tier             = local.cloud_sql_conf.tier
-  databases        = [local.cloud_sql_conf.db]
+  database_version = local.cloudsql_conf.database_version
+  tier             = local.cloudsql_conf.tier
+  databases        = [local.cloudsql_conf.db]
   users = {
-    "${local.cloud_sql_conf.user}" = "${local.cloud_sql_conf.pass}"
+    "${local.cloudsql_conf.user}" = "${local.cloudsql_conf.pass}"
   }
 }

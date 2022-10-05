@@ -20,6 +20,12 @@ output "cloud_run_service" {
   sensitive   = true
 }
 
+output "cloudsql_password" {
+  description = "CloudSQL password"
+  value       = local.cloudsql_conf.pass
+  sensitive   = true
+}
+
 output "wp_user" {
   description = "Wordpress username"
   value       = local.wp_user
@@ -27,6 +33,6 @@ output "wp_user" {
 
 output "wp_password" {
   description = "Wordpress user password"
-  value       = random_password.wp_password.result
+  value       = local.wp_pass
   sensitive   = true
 }
