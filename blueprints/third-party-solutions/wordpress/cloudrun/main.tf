@@ -120,7 +120,7 @@ module "cloud_run" {
 
   # create a VPC connector for the ClouSQL VPC
   vpc_connector_create = {
-    ip_cidr_range = var.connector_cidr
+    ip_cidr_range = var.ip_ranges.connector
     name          = "${local.prefix}wp-connector"
     vpc_self_link = module.vpc.self_link
   }
@@ -134,7 +134,7 @@ module "vpc" {
   name       = "${local.prefix}sql-vpc"
   subnets = [
     {
-      ip_cidr_range      = var.sql_vpc_cidr
+      ip_cidr_range      = var.ip_ranges.sql_vpc
       name               = "subnet"
       region             = var.region
       secondary_ip_range = {}
@@ -144,7 +144,7 @@ module "vpc" {
   # Private Service Access
   psa_config = {
     ranges = {
-      cloud-sql = var.psa_cidr
+      cloud-sql = var.ip_ranges.psa
     }
     routes = null
   }
@@ -156,7 +156,7 @@ module "firewall" {
   source       = "../../../../modules/net-vpc-firewall"
   project_id   = module.project.project_id
   network      = module.vpc.name
-  admin_ranges = [var.sql_vpc_cidr]
+  admin_ranges = [var.ip_ranges.sql_vpc]
 }
 
 

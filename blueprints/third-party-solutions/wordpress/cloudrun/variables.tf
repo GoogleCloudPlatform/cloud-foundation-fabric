@@ -27,10 +27,19 @@ variable "cloudsql_password" {
   default     = null
 }
 
-variable "connector_cidr" {
-  type        = string
-  description = "CIDR block for the VPC serverless connector (10.8.0.0/28 by default)"
-  default     = "10.8.0.0/28"
+# PSA: documentation: https://cloud.google.com/vpc/docs/configure-private-services-access#allocating-range
+variable "ip_ranges" {
+  description = "CIDR blocks: VPC serverless connector, Private Service Access(PSA) for CloudSQL, CloudSQL VPC"
+  type = object({
+    connector = string
+    psa       = string
+    sql_vpc   = string
+  })
+  default = {
+    connector = "10.8.0.0/28"
+    psa       = "10.60.0.0/24"
+    sql_vpc   = "10.0.0.0/20"
+  }
 }
 
 variable "prefix" {
@@ -59,23 +68,10 @@ variable "project_id" {
   type        = string
 }
 
-# Documentation: https://cloud.google.com/vpc/docs/configure-private-services-access#allocating-range
-variable "psa_cidr" {
-  type        = string
-  description = "CIDR block for Private Service Access for CloudSQL (10.60.0.0/24 by default)"
-  default     = "10.60.0.0/24"
-}
-
 variable "region" {
   type        = string
   description = "Region for the created resources"
   default     = "europe-west4"
-}
-
-variable "sql_vpc_cidr" {
-  type        = string
-  description = "CIDR block for the VPC for the CloudSQL (10.0.0.0/20 by default)"
-  default     = "10.0.0.0/20"
 }
 
 variable "wordpress_image" {
