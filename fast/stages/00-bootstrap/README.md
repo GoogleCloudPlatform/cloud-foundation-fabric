@@ -177,7 +177,7 @@ Before the first run, the following IAM groups must exist to allow IAM bindings 
 - gcp-security-admins
 - gcp-support
 
-You can refer to [this animated image](./groups.gif) for a step by step on group creation.
+You can refer to [this animated image](./groups.gif) for a step by step on group creation. Please note that `gcp-support` is not created by the automated wizard and needs to be created it manually.
 
 #### Configure variables
 
