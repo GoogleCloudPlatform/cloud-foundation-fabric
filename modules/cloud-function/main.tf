@@ -55,7 +55,7 @@ resource "google_vpc_access_connector" "connector" {
 }
 
 resource "google_cloudfunctions_function" "function" {
-  count                 = var.function_version == "v1" ? 1: 0
+  count                 = var.v2 ? 0 : 1
   project               = var.project_id
   region                = var.region
   name                  = "${local.prefix}${var.name}"
@@ -124,7 +124,7 @@ resource "google_cloudfunctions_function" "function" {
 }
 
 resource "google_cloudfunctions2_function" "function" {
-  count                 = var.function_version == "v2" ? 1: 0
+  count                 = var.v2  ? 1: 0
   provider              = google-beta
   project               = var.project_id
   location                = var.region
@@ -144,7 +144,7 @@ resource "google_cloudfunctions2_function" "function" {
     service_config {
     max_instance_count  = var.function_config.instances
     min_instance_count = 0
-    available_memory    = var.function_config.memory_2ndGen
+    available_memory    = "${var.function_config.memory}M"
     timeout_seconds     = var.function_config.timeout
     environment_variables = var.environment_variables
     ingress_settings      = var.ingress_settings
@@ -152,8 +152,7 @@ resource "google_cloudfunctions2_function" "function" {
     service_account_email = local.service_account_email
     vpc_connector = local.vpc_connector
     vpc_connector_egress_settings = try(
-    var.vpc_connector.egress_settings, null
-  )
+    var.vpc_connector.egress_settings, null)
 
   }           
    
@@ -164,7 +163,7 @@ resource "google_cloudfunctions_function_iam_binding" "default" {
   for_each       = var.iam
   project        = var.project_id
   region         = var.region
-  cloud_function = var.function_version == "v1" ? google_cloudfunctions_function.function[0].name : google_cloudfunctions2_function.function[0].name
+  cloud_function = var.v2  ? google_cloudfunctions2_function.function[0].name :  google_cloudfunctions_function.function[0].name 
   role           = each.key
   members        = each.value
 }

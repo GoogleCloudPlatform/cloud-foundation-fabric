@@ -86,7 +86,7 @@ module "pubsub" {
 }
 
 resource "google_cloud_scheduler_job" "job" {
-  count        = var.function_version == "v1" ? 1 : 0
+  count        = var.v2  ? 0 : 1
   project   = local.monitoring_project
   region    = var.region
   name      = "network-dashboard-scheduler"
@@ -101,7 +101,7 @@ resource "google_cloud_scheduler_job" "job" {
 #http trigger for 2nd generation function
 
 resource "google_cloud_scheduler_job" "job_httptrigger" {
-  count        = var.function_version == "v2" ? 1 : 0
+  count        = var.v2  ? 1 : 0
   project   = local.monitoring_project
   region    = var.region
   name      = "network-dashboard-scheduler"
@@ -119,7 +119,7 @@ resource "google_cloud_scheduler_job" "job_httptrigger" {
 }
 
 module "cloud-function" {
-  function_version = var.function_version
+  v2 = var.v2
   source      = "../../../modules/cloud-function"
   project_id  = local.monitoring_project
   name        = "network-dashboard-cloud-function"
@@ -140,9 +140,8 @@ module "cloud-function" {
     entry_point = "main"
     runtime     = "python39"
     instances   = 1
-    memory      = 256
-    # 2nd Generation function need memory in string 
-    memory_2ndGen="256M"
+    memory      = 256 # Memory in MB
+   
   }
 
   environment_variables = {
