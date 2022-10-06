@@ -46,6 +46,12 @@ variable "descriptive_name" {
   default     = null
 }
 
+variable "default_service_account" {
+  description = "Project default service account setting: can be one of `delete`, `deprivilege`, `disable`, or `keep`."
+  default     = "keep"
+  type        = string
+}
+
 variable "group_iam" {
   description = "Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable."
   type        = map(list(string))

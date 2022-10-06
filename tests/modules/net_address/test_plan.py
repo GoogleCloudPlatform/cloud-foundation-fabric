@@ -12,14 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 def test_external_addresses(plan_runner):
   addresses = '{one = "europe-west1", two = "europe-west2"}'
   _, resources = plan_runner(external_addresses=addresses)
   assert [r['values']['name'] for r in resources] == ['one', 'two']
-  assert set(r['values']['address_type']
-             for r in resources) == set(['EXTERNAL'])
-  assert [r['values']['region']
-          for r in resources] == ['europe-west1', 'europe-west2']
+  assert set(r['values']['address_type'] for r in resources) == set(
+      ['EXTERNAL'])
+  assert [r['values']['region'] for r in resources
+         ] == ['europe-west1', 'europe-west2']
 
 
 def test_global_addresses(plan_runner):
@@ -29,42 +30,37 @@ def test_global_addresses(plan_runner):
 
 
 def test_internal_addresses(plan_runner):
-  addresses = (
-      '{one = {region = "europe-west1", subnetwork = "foobar"}, '
-      'two = {region = "europe-west2", subnetwork = "foobarz"}}'
-  )
+  addresses = ('{one = {region = "europe-west1", subnetwork = "foobar"}, '
+               'two = {region = "europe-west2", subnetwork = "foobarz"}}')
   _, resources = plan_runner(internal_addresses=addresses)
   assert [r['values']['name'] for r in resources] == ['one', 'two']
-  assert set(r['values']['address_type']
-             for r in resources) == set(['INTERNAL'])
-  assert [r['values']['region']
-          for r in resources] == ['europe-west1', 'europe-west2']
+  assert set(r['values']['address_type'] for r in resources) == set(
+      ['INTERNAL'])
+  assert [r['values']['region'] for r in resources
+         ] == ['europe-west1', 'europe-west2']
 
 
 def test_internal_addresses_config(plan_runner):
-  addresses = (
-      '{one = {region = "europe-west1", subnetwork = "foobar"}, '
-      'two = {region = "europe-west2", subnetwork = "foobarz"}}'
-  )
-  config = (
-      '{one = {address = "10.0.0.2", purpose = "SHARED_LOADBALANCER_VIP", '
-      'tier=null}}'
-  )
-  _, resources = plan_runner(internal_addresses=addresses,
-                             internal_addresses_config=config)
+  addresses = '''{
+    one = {
+      region = "europe-west1"
+      subnetwork = "foobar"
+      address = "10.0.0.2"
+      purpose = "SHARED_LOADBALANCER_VIP"
+    },
+    two = {region = "europe-west2", subnetwork = "foobarz"}
+  }'''
+  _, resources = plan_runner(internal_addresses=addresses)
   assert [r['values']['name'] for r in resources] == ['one', 'two']
-  assert set(r['values']['address_type']
-             for r in resources) == set(['INTERNAL'])
-  assert [r['values'].get('address')
-          for r in resources] == ['10.0.0.2', None]
-  assert [r['values'].get('purpose')
-          for r in resources] == ['SHARED_LOADBALANCER_VIP', None]
+  assert set(r['values']['address_type'] for r in resources) == set(
+      ['INTERNAL'])
+  assert [r['values'].get('address') for r in resources] == ['10.0.0.2', None]
+  assert [r['values'].get('purpose') for r in resources
+         ] == ['SHARED_LOADBALANCER_VIP', None]
 
 
 def test_psa_config(plan_runner):
   psa_addresses = '{cloudsql-mysql={address="10.199.0.0", network="foobar", prefix_length = 24}}'
   _, resources = plan_runner(psa_addresses=psa_addresses)
-  assert set(r['values']['purpose']
-             for r in resources) == set(['VPC_PEERING'])
-  assert set(r['values']['address']
-             for r in resources) == set(['10.199.0.0'])
+  assert set(r['values']['purpose'] for r in resources) == set(['VPC_PEERING'])
+  assert set(r['values']['address'] for r in resources) == set(['10.199.0.0'])
