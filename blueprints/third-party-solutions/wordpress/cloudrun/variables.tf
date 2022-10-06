@@ -49,7 +49,7 @@ variable "prefix" {
 }
 
 variable "principals" {
-  description = "List of emails of users to give rights to, eg 'user@domain.com'."
+  description = "List of users to give rights to (CloudSQL admin, client and instanceUser, Logging admin, Service Account User and TokenCreator), eg 'user@domain.com'."
   type        = list(string)
   default     = []
 }
