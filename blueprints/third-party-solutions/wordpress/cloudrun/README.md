@@ -18,6 +18,7 @@ The main components that are deployed in this architecture are the following (yo
 
 * [Cloud Run](https://cloud.google.com/run): serverless PaaS offering to host containers for web-oriented applications, while offering security, scalability and easy versioning
 * [Cloud SQL](https://cloud.google.com/sql): Managed solution for SQL databases
+* [VPC Serverless Connector](https://cloud.google.com/vpc/docs/serverless-vpc-access): Solution to access the CloudSQL VPC from Cloud Run, using only internal IP addresses
 
 ## Setup
 
