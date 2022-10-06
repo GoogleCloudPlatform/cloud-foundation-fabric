@@ -92,6 +92,8 @@ terraform output
 # or for the concrete variable:
 terraform output cloud_run_service
 ```
+1. Open your browser at the URL that you get with that last command, and you will see your Wordpress installation.
+2. Add "/admin" in the end of the URL and log in to the admin interface, using the outputs "wp_user" and "wp_password".
 
 ### Cleaning up your environment
 
