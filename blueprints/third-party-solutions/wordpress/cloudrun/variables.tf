@@ -49,7 +49,7 @@ variable "prefix" {
 }
 
 variable "principals" {
-  description = "List of emails of people/service accounts to give rights to, eg 'user@domain.com'."
+  description = "List of emails of users to give rights to, eg 'user@domain.com'."
   type        = list(string)
   default     = []
 }
