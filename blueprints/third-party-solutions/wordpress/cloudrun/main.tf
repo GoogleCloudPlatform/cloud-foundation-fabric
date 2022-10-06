@@ -15,30 +15,6 @@
  */
 
 
-locals {
-  all_principals_iam = [for k in var.principals : "user:${k}"]
-  cloudsql_conf = {
-    database_version = "MYSQL_8_0"
-    tier             = "db-g1-small"
-    db               = "wp-mysql"
-    user             = "admin"
-    pass             = var.cloudsql_password == null ? random_password.cloudsql_password.result : var.cloudsql_password
-  }
-  iam = {
-    # CloudSQL
-    "roles/cloudsql.admin"        = local.all_principals_iam
-    "roles/cloudsql.client"       = local.all_principals_iam
-    "roles/cloudsql.instanceUser" = local.all_principals_iam
-    # common roles
-    "roles/logging.admin"                  = local.all_principals_iam
-    "roles/iam.serviceAccountUser"         = local.all_principals_iam
-    "roles/iam.serviceAccountTokenCreator" = local.all_principals_iam
-  }
-  prefix  = var.prefix == null ? "" : "${var.prefix}-"
-  wp_user = "user"
-  wp_pass = var.wordpress_password == null ? random_password.wp_password.result : var.wordpress_password
-}
-
 # either create a project or set up the given one
 module "project" {
   source          = "../../../../modules/project"
@@ -61,10 +37,6 @@ module "project" {
 }
 
 resource "random_password" "wp_password" {
-  length = 8
-}
-
-resource "random_password" "cloudsql_password" {
   length = 8
 }
 
@@ -115,62 +87,7 @@ module "cloud_run" {
     vpcaccess_connector = null
     # allow all traffic
     vpcaccess_egress = "all-traffic"
+    vpcaccess_connector = google_vpc_access_connector.connector.self_link
   }
   ingress_settings = "all"
-
-  # create a VPC connector for the ClouSQL VPC
-  vpc_connector_create = {
-    ip_cidr_range = var.ip_ranges.connector
-    name          = "${local.prefix}wp-connector"
-    vpc_self_link = module.vpc.self_link
-  }
-}
-
-
-# create a VPC for CloudSQL
-module "vpc" {
-  source     = "../../../../modules/net-vpc"
-  project_id = module.project.project_id
-  name       = "${local.prefix}sql-vpc"
-  subnets = [
-    {
-      ip_cidr_range      = var.ip_ranges.sql_vpc
-      name               = "subnet"
-      region             = var.region
-      secondary_ip_range = {}
-    }
-  ]
-
-  # Private Service Access
-  psa_config = {
-    ranges = {
-      cloud-sql = var.ip_ranges.psa
-    }
-    routes = null
-  }
-}
-
-
-# set up firewall for CloudSQL
-module "firewall" {
-  source       = "../../../../modules/net-vpc-firewall"
-  project_id   = module.project.project_id
-  network      = module.vpc.name
-  admin_ranges = [var.ip_ranges.sql_vpc]
-}
-
-
-# Set up CloudSQL
-module "cloudsql" {
-  source           = "../../../../modules/cloudsql-instance"
-  project_id       = module.project.project_id
-  network          = module.vpc.self_link
-  name             = "${local.prefix}mysql"
-  region           = var.region
-  database_version = local.cloudsql_conf.database_version
-  tier             = local.cloudsql_conf.tier
-  databases        = [local.cloudsql_conf.db]
-  users = {
-    "${local.cloudsql_conf.user}" = "${local.cloudsql_conf.pass}"
-  }
 }
