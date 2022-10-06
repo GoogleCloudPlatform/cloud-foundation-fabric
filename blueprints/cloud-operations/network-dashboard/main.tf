@@ -61,10 +61,10 @@ module "service-account-function" {
   }
 
   iam_project_roles = {
-    "${local.monitoring_project}" = [
+    "${local.monitoring_project}" = compact([
       "roles/monitoring.metricWriter",
       var.v2 ? "roles/run.invoker" : ""
-    ]
+    ])
   }
 }
 
