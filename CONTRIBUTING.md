@@ -141,9 +141,8 @@ module "project" {
     storage = [local.kms.europe.gcs]
   }
   shared_vpc_service_config = {
-    attach               = true
-    host_project         = "project-host"
-    service_identity_iam = {}
+    attach       = true
+    host_project = "project-host"
   }
 }
 ```
@@ -258,9 +257,8 @@ module "project" {
   source          = "./modules/project"
   name            = "prj-1"
   shared_vpc_service_config = {
-    attach               = true
-    host_project         = "project-host"
-    service_identity_iam = {}
+    attach       = true
+    host_project = "project-host"
   }
 }
 ```

@@ -38,28 +38,20 @@ module "nva-template-ew1" {
     {
       network    = module.landing-untrusted-vpc.self_link
       subnetwork = module.landing-untrusted-vpc.subnet_self_links["europe-west1/landing-untrusted-default-ew1"]
-      nat        = false
-      addresses  = null
     },
     {
       network    = module.landing-trusted-vpc.self_link
       subnetwork = module.landing-trusted-vpc.subnet_self_links["europe-west1/landing-trusted-default-ew1"]
-      nat        = false
-      addresses  = null
     }
   ]
   boot_disk = {
     image = "projects/debian-cloud/global/images/family/debian-10"
-    type  = "pd-balanced"
-    size  = 10
   }
   create_template = true
   instance_type   = "f1-micro"
   options = {
-    allow_stopping_for_update = true
-    deletion_protection       = false
-    spot                      = true
-    termination_action        = "STOP"
+    spot               = true
+    termination_action = "STOP"
   }
   metadata = {
     startup-script = templatefile(
