@@ -48,8 +48,7 @@ module "project-host" {
     "logging.googleapis.com"
   ]
   shared_vpc_host_config = {
-    enabled          = true
-    service_projects = []
+    enabled = true
   }
 }
 

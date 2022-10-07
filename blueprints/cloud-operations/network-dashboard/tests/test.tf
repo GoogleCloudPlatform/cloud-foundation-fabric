@@ -30,8 +30,7 @@ module "project-hub" {
   services        = var.project_vm_services
 
   shared_vpc_host_config = {
-    enabled          = true
-    service_projects = [] # defined later
+    enabled = true
   }
 }
 
@@ -58,9 +57,8 @@ module "project-svc-hub" {
   services        = var.project_vm_services
 
   shared_vpc_service_config = {
-    attach               = true
-    host_project         = module.project-hub.project_id
-    service_identity_iam = {}
+    attach       = true
+    host_project = module.project-hub.project_id
   }
 }
 
@@ -73,8 +71,7 @@ module "project-prod" {
   services        = var.project_vm_services
 
   shared_vpc_host_config = {
-    enabled          = true
-    service_projects = [] # defined later
+    enabled = true
   }
 }
 
@@ -101,9 +98,8 @@ module "project-svc-prod" {
   services        = var.project_vm_services
 
   shared_vpc_service_config = {
-    attach               = true
-    host_project         = module.project-prod.project_id
-    service_identity_iam = {}
+    attach       = true
+    host_project = module.project-prod.project_id
   }
 }
 
@@ -116,8 +112,7 @@ module "project-dev" {
   services        = var.project_vm_services
 
   shared_vpc_host_config = {
-    enabled          = true
-    service_projects = [] # defined later
+    enabled = true
   }
 }
 
@@ -144,9 +139,8 @@ module "project-svc-dev" {
   services        = var.project_vm_services
 
   shared_vpc_service_config = {
-    attach               = true
-    host_project         = module.project-dev.project_id
-    service_identity_iam = {}
+    attach       = true
+    host_project = module.project-dev.project_id
   }
 }
 

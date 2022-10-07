@@ -123,8 +123,7 @@ module "project" {
   source          = "./fabric/modules/project"
   name            = "project-example"
   shared_vpc_host_config = {
-    enabled          = true
-    service_projects = []
+    enabled = true
   }
 }
 # tftest modules=1 resources=2
