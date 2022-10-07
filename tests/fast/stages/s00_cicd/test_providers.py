@@ -11,6 +11,8 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
+import pathlib
 '''
 github = {
   source  = "integrations/github"
@@ -25,7 +27,8 @@ gitlab = {
 
 def test_providers():
   "Test providers file."
-  with open('fast/stages/00-cicd/versions.tf') as f:
+  p = pathlib.Path(__file__).parents[4]
+  with (p / 'fast/stages/00-cicd/versions.tf').open() as f:
     data = f.read()
     assert 'integrations/github' in data
     assert 'gitlabhq/gitlab' in data
