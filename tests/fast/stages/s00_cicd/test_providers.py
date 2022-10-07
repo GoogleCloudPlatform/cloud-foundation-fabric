@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     https://www.apache.org/licenses/LICENSE-2.0
+#      http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,18 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-terraform {
-  required_version = ">= 1.3.2"
-  required_providers {
-    google = {
-      source  = "hashicorp/google"
-      version = ">= 4.32.0" # tftest
-    }
-    google-beta = {
-      source  = "hashicorp/google-beta"
-      version = ">= 4.32.0" # tftest
-    }
-  }
+import os
+'''
+github = {
+  source  = "integrations/github"
+  version = "~> 4.0"
 }
+gitlab = {
+  source  = "gitlabhq/gitlab"
+  version = ">= 3.16.1"
+}
+'''
 
 
+def test_providers(basedir):
+  "Test providers file."
+  p = os.path.join(basedir, 'fast/stages/00-cicd/versions.tf')
+  with open(p) as f:
+    data = f.read()
+    assert 'integrations/github' in data
+    assert 'gitlabhq/gitlab' in data
