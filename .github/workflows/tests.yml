@@ -54,10 +54,12 @@ jobs:
           terraform_version: ${{ env.TF_VERSION }}
           terraform_wrapper: false
 
+      # avoid conflicts with user-installed providers on local machines
       - name: Pin provider versions
         run: |
-          sed -i 's/>=\(.*# tftest\)/=\1/g' default-versions.tf
-          find -name versions.tf -exec cp default-versions.tf {} \;
+          for f in $(find . -name versions.tf); do
+            sed -i 's/>=\(.*# tftest\)/=\1/g' $f;
+          done
 
       - name: Run tests on documentation examples
         id: pytest
@@ -87,10 +89,12 @@ jobs:
           terraform_version: ${{ env.TF_VERSION }}
           terraform_wrapper: false
 
+      # avoid conflicts with user-installed providers on local machines
       - name: Pin provider versions
         run: |
-          sed -i 's/>=\(.*# tftest\)/=\1/g' default-versions.tf
-          find -name versions.tf -exec cp default-versions.tf {} \;
+          for f in $(find . -name versions.tf); do
+            sed -i 's/>=\(.*# tftest\)/=\1/g' $f;
+          done
 
       - name: Run tests environments
         id: pytest
@@ -120,10 +124,12 @@ jobs:
           terraform_version: ${{ env.TF_VERSION }}
           terraform_wrapper: false
 
+      # avoid conflicts with user-installed providers on local machines
       - name: Pin provider versions
         run: |
-          sed -i 's/>=\(.*# tftest\)/=\1/g' default-versions.tf
-          find -name versions.tf -exec cp default-versions.tf {} \;
+          for f in $(find . -name versions.tf); do
+            sed -i 's/>=\(.*# tftest\)/=\1/g' $f;
+          done
 
       - name: Run tests modules
         id: pytest
@@ -153,10 +159,12 @@ jobs:
           terraform_version: ${{ env.TF_VERSION }}
           terraform_wrapper: false
 
+      # avoid conflicts with user-installed providers on local machines
       - name: Pin provider versions
         run: |
-          sed -i 's/>=\(.*# tftest\)/=\1/g' default-versions.tf
-          find -name versions.tf -exec cp default-versions.tf {} \;
+          for f in $(find . -name versions.tf); do
+            sed -i 's/>=\(.*# tftest\)/=\1/g' $f;
+          done
 
       - name: Run tests on FAST stages
         id: pytest
