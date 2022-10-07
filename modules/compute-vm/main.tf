@@ -29,12 +29,6 @@ locals {
     for k, v in local.attached_disks :
     k => v if try(v.options.replica_zone, null) == null
   }
-  network_interface_options = {
-    for i, v in var.network_interfaces : i => lookup(var.network_interface_options, i, {
-      alias_ips = null,
-      nic_type  = null
-    })
-  }
   on_host_maintenance = (
     var.options.spot || var.confidential_compute
     ? "TERMINATE"
@@ -200,14 +194,14 @@ resource "google_compute_instance" "default" {
         }
       }
       dynamic "alias_ip_range" {
-        for_each = local.network_interface_options[config.key].alias_ips != null ? local.network_interface_options[config.key].alias_ips : {}
+        for_each = config.value.alias_ips
         iterator = config_alias
         content {
           subnetwork_range_name = config_alias.key
           ip_cidr_range         = config_alias.value
         }
       }
-      nic_type = local.network_interface_options[config.key].nic_type
+      nic_type = config.value.nic_type
     }
   }
 
@@ -334,14 +328,14 @@ resource "google_compute_instance_template" "default" {
         }
       }
       dynamic "alias_ip_range" {
-        for_each = local.network_interface_options[config.key].alias_ips != null ? local.network_interface_options[config.key].alias_ips : {}
+        for_each = config.value.alias_ips
         iterator = config_alias
         content {
           subnetwork_range_name = config_alias.key
           ip_cidr_range         = config_alias.value
         }
       }
-      nic_type = local.network_interface_options[config.key].nic_type
+      nic_type = config.value.nic_type
     }
   }
 

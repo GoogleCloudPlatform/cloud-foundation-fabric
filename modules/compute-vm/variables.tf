@@ -110,8 +110,8 @@ variable "encryption" {
   description = "Encryption options. Only one of kms_key_self_link and disk_encryption_key_raw may be set. If needed, you can specify to encrypt or not the boot disk."
   type = object({
     encrypt_boot            = optional(bool, false)
-    disk_encryption_key_raw = string
-    kms_key_self_link       = string
+    disk_encryption_key_raw = optional(string)
+    kms_key_self_link       = optional(string)
   })
   default = null
 }
@@ -165,15 +165,6 @@ variable "name" {
   type        = string
 }
 
-variable "network_interface_options" {
-  description = "Network interfaces extended options. The key is the index of the inteface to configure. The value is an object with alias_ips and nic_type. Set alias_ips or nic_type to null if you need only one of them."
-  type = map(object({
-    alias_ips = optional(map(string))
-    nic_type  = optional(string)
-  }))
-  default = {}
-}
-
 variable "network_interfaces" {
   description = "Network interfaces configuration. Use self links for Shared VPC, set addresses to null if not needed."
   type = list(object({
@@ -184,6 +175,8 @@ variable "network_interfaces" {
       internal = string
       external = string
     }), null)
+    alias_ips = optional(map(string), {})
+    nic_type  = optional(string)
   }))
 }
 
