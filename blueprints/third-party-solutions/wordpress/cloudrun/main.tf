@@ -35,9 +35,9 @@ locals {
     "roles/iam.serviceAccountTokenCreator" = local.all_principals_iam
   }
   connector = var.connector == null ? google_vpc_access_connector.connector.0.self_link : var.connector
-  prefix  = var.prefix == null ? "" : "${var.prefix}-"
-  wp_user = "user"
-  wp_pass = var.wordpress_password == null ? random_password.wp_password.result : var.wordpress_password
+  prefix    = var.prefix == null ? "" : "${var.prefix}-"
+  wp_user   = "user"
+  wp_pass   = var.wordpress_password == null ? random_password.wp_password.result : var.wordpress_password
 }
 
 
