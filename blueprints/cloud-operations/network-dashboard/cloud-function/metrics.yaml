@@ -166,7 +166,7 @@ metrics_per_project:
       name: firewalls_per_project_vpc_usage
       description: Number of VPC firewall rules in a project - usage.
     limit:
-      #no default limit as we can assume quotas can be always read from gcloud API
+      # Firewalls limit is per project and we get the limit for the GCP quota API in vpc_firewalls.py
       name: firewalls_per_project_limit
       description: Number of VPC firewall rules in a project - limit.
     utilization:

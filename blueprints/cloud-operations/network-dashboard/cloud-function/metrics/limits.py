@@ -21,7 +21,7 @@ from . import metrics
 
 def get_quotas_dict(quotas_list):
   '''
-    Creates a dictionary of quotas from a list, with lowe case keys
+    Creates a dictionary of quotas from a list, with lower case quota name as keys
       Parameters:
         quotas_array (array): array of quotas
       Returns:

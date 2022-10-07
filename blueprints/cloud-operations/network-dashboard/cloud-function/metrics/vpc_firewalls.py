@@ -88,7 +88,8 @@ def get_firewalls_data(config, metrics_dict, project_quotas_dict,
     project_usage = 0
     for net in network_dict:
       usage = 0
-      if net['network_name'] in firewalls_dict:
+      if project in firewalls_dict and net['network_name'] in firewalls_dict[
+          project]:
         usage = firewalls_dict[project][net['network_name']]
         project_usage += usage
       metrics.write_data_to_metric(
@@ -96,7 +97,7 @@ def get_firewalls_data(config, metrics_dict, project_quotas_dict,
           metrics_dict["metrics_per_project"][f"firewalls"]["usage"]["name"],
           net['network_name'])
 
-    #firewall quotas are per project, not per single VPC
+    # firewall quotas are per project, not per single VPC
     metrics.write_data_to_metric(
         config, project, current_quota_limit['limit'],
         metrics_dict["metrics_per_project"][f"firewalls"]["limit"]["name"])
@@ -107,4 +108,4 @@ def get_firewalls_data(config, metrics_dict, project_quotas_dict,
         ["name"])
 
     print(
-        f"Wrote number of VPC Firewall Rules  to metric for projects/{project}")
+        f"Wrote number of VPC Firewall Rules to metric for projects/{project}")
