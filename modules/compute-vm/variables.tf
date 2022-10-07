@@ -34,11 +34,11 @@ variable "attached_disks" {
     name        = string
     size        = string
     source      = optional(string)
-    source_type = optional(string, null)
+    source_type = optional(string)
     options = optional(
       object({
         mode         = optional(string, "READ_WRITE")
-        replica_zone = optional(string, null)
+        replica_zone = optional(string)
         type         = optional(string, "pd-balanced")
       }),
       {
@@ -168,8 +168,8 @@ variable "name" {
 variable "network_interface_options" {
   description = "Network interfaces extended options. The key is the index of the inteface to configure. The value is an object with alias_ips and nic_type. Set alias_ips or nic_type to null if you need only one of them."
   type = map(object({
-    alias_ips = optional(map(string), null)
-    nic_type  = optional(string, null)
+    alias_ips = optional(map(string))
+    nic_type  = optional(string)
   }))
   default = {}
 }
@@ -193,7 +193,7 @@ variable "options" {
     allow_stopping_for_update = optional(bool, true)
     deletion_protection       = optional(bool, false)
     spot                      = optional(bool, false)
-    termination_action        = optional(string, null)
+    termination_action        = optional(string)
   })
   default = {
     allow_stopping_for_update = true
