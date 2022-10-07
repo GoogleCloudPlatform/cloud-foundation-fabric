@@ -20,7 +20,7 @@ locals {
     Description=Start monitoring agent container
     After=gcr-online.target docker.socket
     Wants=gcr-online.target docker.socket docker-events-collector.service
-    
+
     [Service]
     Environment="HOME=/home/opsagent"
     ExecStartPre=/usr/bin/docker-credential-gcr configure-docker
@@ -35,7 +35,7 @@ locals {
     logging:
       service:
         pipelines:
-          default_pipeline: 
+          default_pipeline:
             receivers: []
     metrics:
       receivers:
@@ -227,42 +227,34 @@ module "service-account-proxy" {
 }
 
 module "cos-nginx" {
-  count  = !var.tls ? 1 : 0
-  source = "../../../modules/cloud-config-container/nginx"
-
-  image = var.nginx_image
-  files = local.nginx_files
-  users = local.users
-
+  count       = !var.tls ? 1 : 0
+  source      = "../../../modules/cloud-config-container/nginx"
+  image       = var.nginx_image
+  files       = local.nginx_files
+  users       = local.users
   runcmd_pre  = ["sed -i \"s/HOSTNAME/$${HOSTNAME}/\" /etc/nginx/conf.d/default.conf"]
   runcmd_post = ["systemctl start monitoring-agent"]
 }
 
 module "cos-nginx-tls" {
-  count  = var.tls ? 1 : 0
-  source = "../../../modules/cloud-config-container/nginx-tls"
-
+  count       = var.tls ? 1 : 0
+  source      = "../../../modules/cloud-config-container/nginx-tls"
   nginx_image = var.nginx_image
   files       = local.nginx_files
   users       = local.users
-
   runcmd_post = ["systemctl start monitoring-agent"]
 }
 
 module "mig-proxy" {
   source     = "../../../modules/compute-mig"
   project_id = module.project.project_id
-
-  location = var.region
-  regional = true
-
-  name = format("%sproxy-cluster", var.prefix)
-
+  location   = var.region
+  regional   = true
+  name       = format("%sproxy-cluster", var.prefix)
   named_ports = {
     http  = "80"
     https = "443"
   }
-
   autoscaler_config = var.autoscaling == null ? null : {
     min_replicas                      = var.autoscaling.min_replicas
     max_replicas                      = var.autoscaling.max_replicas
@@ -271,7 +263,6 @@ module "mig-proxy" {
     load_balancing_utilization_target = null
     metric                            = var.autoscaling_metric
   }
-
   update_policy = {
     type                 = "PROACTIVE"
     minimal_action       = "REPLACE"
@@ -281,12 +272,10 @@ module "mig-proxy" {
     max_unavailable_type = null
     max_unavailable      = null
   }
-
   default_version = {
     instance_template = module.proxy-vm.template.self_link
     name              = "proxy-vm"
   }
-
   health_check_config = {
     type = "http"
     check = {
@@ -308,45 +297,32 @@ module "mig-proxy" {
 }
 
 module "proxy-vm" {
-  source = "../../../modules/compute-vm"
-
-  project_id = module.project.project_id
-
-  zone = format("%s-c", var.region)
-  name = "nginx-test-vm"
-
+  source        = "../../../modules/compute-vm"
+  project_id    = module.project.project_id
+  zone          = format("%s-c", var.region)
+  name          = "nginx-test-vm"
   instance_type = "e2-standard-2"
-
-  tags = ["proxy-cluster"]
+  tags          = ["proxy-cluster"]
   network_interfaces = [{
     network    = module.vpc.self_link
     subnetwork = module.vpc.subnet_self_links[format("%s/%s", var.region, var.subnetwork)]
-    nat        = false
-    addresses  = null
   }]
-
   boot_disk = {
     image = "projects/cos-cloud/global/images/family/cos-stable"
-    type  = "pd-ssd"
-    size  = 10
   }
-
   create_template = true
   metadata = {
     user-data = !var.tls ? module.cos-nginx.0.cloud_config : module.cos-nginx-tls.0.cloud_config
   }
-
   service_account        = module.service-account-proxy.email
   service_account_create = false
 }
 
 module "xlb" {
-  source     = "../../../modules/net-glb"
-  name       = format("%sreverse-proxy-xlb", var.prefix)
-  project_id = module.project.project_id
-
+  source             = "../../../modules/net-glb"
+  name               = format("%sreverse-proxy-xlb", var.prefix)
+  project_id         = module.project.project_id
   reserve_ip_address = true
-
   health_checks_config = {
     format("%sreverse-proxy-hc", var.prefix) = {
       type    = "http"
@@ -364,13 +340,11 @@ module "xlb" {
       }
     }
   }
-
   backend_services_config = {
     format("%sreverse-proxy-backend", var.prefix) = {
       bucket_config = null
       enable_cdn    = false
       cdn_config    = null
-
       group_config = {
         backends = [
           {
@@ -378,7 +352,6 @@ module "xlb" {
             options = null
           }
         ]
-
         health_checks = [format("%sreverse-proxy-hc", var.prefix)]
         log_config    = null
         options = {
