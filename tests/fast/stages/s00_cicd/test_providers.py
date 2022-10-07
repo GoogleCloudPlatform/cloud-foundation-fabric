@@ -28,6 +28,7 @@ gitlab = {
 def test_providers():
   "Test providers file."
   p = pathlib.Path(__file__).parents[4]
+  print(p)
   with (p / 'fast/stages/00-cicd/versions.tf').open() as f:
     data = f.read()
     assert 'integrations/github' in data
