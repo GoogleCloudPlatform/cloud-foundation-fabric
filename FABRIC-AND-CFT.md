@@ -1,6 +1,6 @@
 # Cloud Foundation Fabric and Cloud Foundation Toolkit
 
-This document highlights the main differences (both technical and philosophical) between Cloud Foundation Fabric and Cloud Foundation Toolkit for end users and guide them in their decision making process for identifying the best suite of modules for their use cases.
+This page highlights the main differences (both technical and philosophical) between Cloud Foundation Fabric and Cloud Foundation Toolkit for end users and guide them in their decision making process for identifying the best suite of modules for their use cases.
 
 ## Cloud Foundation Fabric (a.k.a Fabric, this repo)
 
@@ -157,3 +157,7 @@ Even with all the above points, it may be hard to make a decision. While the mod
 * Since modules work well together within their ecosystem, select logical boundaries for using Fabric or CFT. For example use CFT for deploying resources within projects but use Fabric for managing project creation and IAM.
 * Use strengths of each collection of modules to your advantage. Empower application teams to define their infrastructure as code using off the shelf CFT modules. Using Fabric, bootstrap your platform team with a collection of tailor built modules for your organization.
 * Lean into module composition and dependency inversion that both Fabric and CFT modules follow. For example, you can create a GKE cluster using either [Fabric](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/modules/gke-cluster#gke-cluster-module) or [CFT](https://github.com/terraform-google-modules/terraform-google-kubernetes-engine) GKE module and then use either [Fabric](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/modules/gke-hub#variables) or [CFT](https://github.com/terraform-google-modules/terraform-google-kubernetes-engine/tree/master/modules/fleet-membership) for setting up GKE Hub by passing in outputs from the GKE module.
+
+## Third-party reviews
+
+* [Google Cloud Landing Zone Comparison](https://www.meshcloud.io/2022/09/09/gcp-landing-zone-comparison/) by Meshcloud.
