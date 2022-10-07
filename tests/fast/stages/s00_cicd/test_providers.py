@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pathlib
+import os
 '''
 github = {
   source  = "integrations/github"
@@ -24,10 +24,11 @@ gitlab = {
 }
 '''
 
-# def test_providers():
-#   "Test providers file."
-#   p = pathlib.Path(__file__).parents[4]
-#   with (p / 'fast/stages/00-cicd/versions.tf').open() as f:
-#     data = f.read()
-#     assert 'integrations/github' in data
-#     assert 'gitlabhq/gitlab' in data
+
+def test_providers(basedir):
+  "Test providers file."
+  p = os.path.join(basedir, 'fast/stages/00-cicd/versions.tf')
+  with open(p) as f:
+    data = f.read()
+    assert 'integrations/github' in data
+    assert 'gitlabhq/gitlab' in data
