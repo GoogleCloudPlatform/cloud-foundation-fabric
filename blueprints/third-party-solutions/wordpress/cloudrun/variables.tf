@@ -27,6 +27,12 @@ variable "cloudsql_password" {
   default     = null
 }
 
+variable "connector" {
+  type        = string
+  description = "Existing VPC serverless connector to use if not creating a new one"
+  default     = null
+}
+
 variable "create_connector" {
   type        = bool
   description = "Should a VPC serverless connector be created or not"

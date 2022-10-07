@@ -34,6 +34,7 @@ locals {
     "roles/iam.serviceAccountUser"         = local.all_principals_iam
     "roles/iam.serviceAccountTokenCreator" = local.all_principals_iam
   }
+  connector = var.connector == null ? google_vpc_access_connector.connector.0.self_link : var.connector
   prefix  = var.prefix == null ? "" : "${var.prefix}-"
   wp_user = "user"
   wp_pass = var.wordpress_password == null ? random_password.wp_password.result : var.wordpress_password
@@ -114,7 +115,7 @@ module "cloud_run" {
     vpcaccess_connector = null
     # allow all traffic
     vpcaccess_egress    = "all-traffic"
-    vpcaccess_connector = google_vpc_access_connector.connector.0.self_link
+    vpcaccess_connector = local.connector
   }
   ingress_settings = "all"
 }
