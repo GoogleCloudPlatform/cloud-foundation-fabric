@@ -24,8 +24,7 @@ module "host_project" {
   parent          = var.parent
   name            = var.host_project_id
   shared_vpc_host_config = {
-    enabled          = true
-    service_projects = []
+    enabled = true
   }
   services = [
     "container.googleapis.com"
