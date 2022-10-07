@@ -10,6 +10,10 @@ Fabric is a collection of Terraform modules and end to end examples meant to be 
 
 CFT is a collection of Terraform modules and examples with opinionated GCP best practices implemented as individual modules for gradual adoption and off the shelf usage in organizations.
 
+## Third-party reviews
+
+* [Google Cloud Landing Zone Comparison](https://www.meshcloud.io/2022/09/09/gcp-landing-zone-comparison/) by Meshcloud.
+
 ## Key Differences
 
 <table>
@@ -141,14 +145,21 @@ For production/airgapped usage, customers may also mirror modules to a private r
 
 ## Should you choose Fabric or CFT?
 
-* You/Your organization is knowledgeable in Terraform and interested in forking and owning a collection of modules.
-  * Fabric is a better choice as it bootstraps you with a collection of modules out of the box that can be customized exactly to fit your organization needs.
-* You/Your organization is getting started with Terraform and interested in GCP best practices out of the box.
-    *   CFT is a better choice as it allows you to directly reference specific modules from the registry and provide opinionated configuration by default.
-* You/Your organization is looking to rapidly prototype some functionality on GCP.
-  * Fabric is a better choice. Being a mono repo it allows you to get started quickly with all your source code in one place for easier debugging.
-* You/Your organization has existing infrastructure and processes but want to start adopting IaC gradually.
-  * CFT is designed to be modular and off the shelf, providing higher level abstractions to product groups which allows certain teams to adopt Terraform without maintenance burden while allowing others to follow existing practices.
+> You/Your organization is knowledgeable in Terraform and interested in forking and owning a collection of modules.
+  
+  Fabric is a better choice as it bootstraps you with a collection of modules out of the box that can be customized exactly to fit your organization needs.
+
+> You/Your organization is getting started with Terraform and interested in GCP best practices out of the box.
+
+    CFT is a better choice as it allows you to directly reference specific modules from the registry and provide opinionated configuration by default.
+
+> You/Your organization is looking to rapidly prototype some functionality on GCP.
+  
+  Fabric is a better choice. Being a mono repo it allows you to get started quickly with all your source code in one place for easier debugging.
+
+> You/Your organization has existing infrastructure and processes but want to start adopting IaC gradually.
+  
+  CFT is designed to be modular and off the shelf, providing higher level abstractions to product groups which allows certain teams to adopt Terraform without maintenance burden while allowing others to follow existing practices.
 
 ## Using Fabric and CFT together
 
@@ -157,7 +168,3 @@ Even with all the above points, it may be hard to make a decision. While the mod
 * Since modules work well together within their ecosystem, select logical boundaries for using Fabric or CFT. For example use CFT for deploying resources within projects but use Fabric for managing project creation and IAM.
 * Use strengths of each collection of modules to your advantage. Empower application teams to define their infrastructure as code using off the shelf CFT modules. Using Fabric, bootstrap your platform team with a collection of tailor built modules for your organization.
 * Lean into module composition and dependency inversion that both Fabric and CFT modules follow. For example, you can create a GKE cluster using either [Fabric](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/modules/gke-cluster#gke-cluster-module) or [CFT](https://github.com/terraform-google-modules/terraform-google-kubernetes-engine) GKE module and then use either [Fabric](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/tree/master/modules/gke-hub#variables) or [CFT](https://github.com/terraform-google-modules/terraform-google-kubernetes-engine/tree/master/modules/fleet-membership) for setting up GKE Hub by passing in outputs from the GKE module.
-
-## Third-party reviews
-
-* [Google Cloud Landing Zone Comparison](https://www.meshcloud.io/2022/09/09/gcp-landing-zone-comparison/) by Meshcloud.
