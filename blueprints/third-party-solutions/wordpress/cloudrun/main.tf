@@ -15,6 +15,31 @@
  */
 
 
+locals {
+  all_principals_iam = [for k in var.principals : "user:${k}"]
+  cloudsql_conf = {
+    database_version = "MYSQL_8_0"
+    tier             = "db-g1-small"
+    db               = "wp-mysql"
+    user             = "admin"
+    pass             = var.cloudsql_password == null ? random_password.cloudsql_password.result : var.cloudsql_password
+  }
+  iam = {
+    # CloudSQL
+    "roles/cloudsql.admin"        = local.all_principals_iam
+    "roles/cloudsql.client"       = local.all_principals_iam
+    "roles/cloudsql.instanceUser" = local.all_principals_iam
+    # common roles
+    "roles/logging.admin"                  = local.all_principals_iam
+    "roles/iam.serviceAccountUser"         = local.all_principals_iam
+    "roles/iam.serviceAccountTokenCreator" = local.all_principals_iam
+  }
+  prefix  = var.prefix == null ? "" : "${var.prefix}-"
+  wp_user = "user"
+  wp_pass = var.wordpress_password == null ? random_password.wp_password.result : var.wordpress_password
+}
+
+
 # either create a project or set up the given one
 module "project" {
   source          = "../../../../modules/project"
@@ -36,9 +61,11 @@ module "project" {
   ]
 }
 
+
 resource "random_password" "wp_password" {
   length = 8
 }
+
 
 # create the Cloud Run service
 module "cloud_run" {
