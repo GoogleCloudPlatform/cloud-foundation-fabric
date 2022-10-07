@@ -10,7 +10,7 @@ This architecture can be used for the following use cases and more:
 * Intranet / internal Wiki
 * E-commerce platform
 
-## Architecture
+# Architecture
 
 ![Wordpress on Cloud Run](images/architecture.png "Wordpress on Cloud Run")
 
@@ -20,19 +20,19 @@ The main components that are deployed in this architecture are the following (yo
 * [Cloud SQL](https://cloud.google.com/sql): Managed solution for SQL databases
 * [VPC Serverless Connector](https://cloud.google.com/vpc/docs/serverless-vpc-access): Solution to access the CloudSQL VPC from Cloud Run, using only internal IP addresses
 
-## Setup
+# Setup
 
-### Prerequisites
+## Prerequisites
 
-#### Setting up the project for the deployment
+### Setting up the project for the deployment
 
 This example will deploy all its resources into the project defined by the `project_id` variable. Please note that we assume this project already exists. However, if you provide the appropriate values to the `project_create` variable, the project will be created as part of the deployment.
 
 If `project_create` is left to null, the identity performing the deployment needs the `owner` role on the project defined by the `project_id` variable. Otherwise, the identity performing the deployment needs `resourcemanager.projectCreator` on the resource hierarchy node specified by `project_create.parent` and `billing.user` on the billing account specified by `project_create.billing_account_id`.
 
-### Deployment
+## Deployment
 
-#### Step 0: Cloning the repository
+### Step 0: Cloning the repository
 
 If you want to deploy from your Cloud Shell, click on the image below, sign in if required and when the prompt appears, click on “confirm”.
 
@@ -48,7 +48,7 @@ Before you deploy the architecture, you will need at least the following informa
 * The project ID.
 * A Google Cloud Registry path to a Wordpress container image.
 
-#### Step 1: Add Wordpress image
+### Step 1: Add Wordpress image
 
 In order to deploy the Wordpress service to Cloud Run, you need to store the [Wordpress image](https://hub.docker.com/r/bitnami/wordpress/) in Google Cloud Registry (GCR).
 
@@ -62,13 +62,17 @@ docker push gcr.io/MY_PROJECT/wordpress
 
 **Note**: This example has been built for this particular Docker image. If you decide to use another one, this example might not work (or you can edit the variables in the Terraform files).
 
-#### Step 2: Deploy resources
+### Step 2: Prepare the variables
 
 Once you have the required information, head back to your cloned repository. Make sure you’re in the directory of this tutorial (where this README is in).
 
 Configure the Terraform variables in your `terraform.tfvars` file. See [terraform.tfvars.sample](terraform.tfvars.sample) as starting point - just copy it to `terraform.tfvars` and edit the latter. See the variables documentation below.
 
-**Note**: If you have the [domain restriction org. policy](https://cloud.google.com/resource-manager/docs/organization-policy/restricting-domains) on your organization, you have to edit the `cloud_run_invoker` variable and give it a value that will be accepted in accordance to your policy.
+**Notes**:
+1. If you will want to change your admin password later on, please note that it will only work in the admin interface of Wordpress, but not with redeploying with Terraform, since Wordpress writes that password into the database upon installation and ignores the environment variables (that you can change with Terraform) after that.
+2. If you have the [domain restriction org. policy](https://cloud.google.com/resource-manager/docs/organization-policy/restricting-domains) on your organization, you have to edit the `cloud_run_invoker` variable and give it a value that will be accepted in accordance to your policy.
+
+### Step 3: Deploy resources
 
 Initialize your Terraform environment and deploy the resources:
 
@@ -84,7 +88,7 @@ The resource creation will take a few minutes.
 ```
 You might try to reapply at this point, the Cloud Run service just needs several minutes.
 
-#### Step 3: Use the created resources
+### Step 4: Use the created resources
 
 Upon completion, you will see the output with the values for the Cloud Run service and the user and password to access the `/admin` part of the website. You can also view it later with:
 ``` {shell}
@@ -95,7 +99,7 @@ terraform output cloud_run_service
 1. Open your browser at the URL that you get with that last command, and you will see your Wordpress installation.
 2. Add "/admin" in the end of the URL and log in to the admin interface, using the outputs "wp_user" and "wp_password".
 
-### Cleaning up your environment
+## Cleaning up your environment
 
 The easiest way to remove all the deployed resources is to run the following command in Cloud Shell:
 
