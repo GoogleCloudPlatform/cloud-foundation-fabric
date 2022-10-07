@@ -155,8 +155,9 @@ jobs:
 
       - name: Pin provider versions
         run: |
-          sed -i 's/>=\(.*# tftest\)/=\1/g' default-versions.tf
-          find -name versions.tf -exec cp default-versions.tf {} \;
+          for f in $(find . -name versions.tf); do
+            sed -i 's/>=\(.*# tftest\)/=\1/g' $f;
+          done
 
       - name: Run tests on FAST stages
         id: pytest
