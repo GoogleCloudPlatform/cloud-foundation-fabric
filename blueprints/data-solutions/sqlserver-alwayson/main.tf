@@ -49,8 +49,7 @@ module "project" {
   iam          = {}
   iam_additive = {}
   shared_vpc_service_config = var.shared_vpc_project_id == null ? null : {
-    attach               = true
-    host_project         = var.shared_vpc_project_id
-    service_identity_iam = {}
+    attach       = true
+    host_project = var.shared_vpc_project_id
   }
 }

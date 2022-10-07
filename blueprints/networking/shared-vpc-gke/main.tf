@@ -27,8 +27,7 @@ module "project-host" {
   name            = "net"
   services        = concat(var.project_services, ["dns.googleapis.com"])
   shared_vpc_host_config = {
-    enabled          = true
-    service_projects = [] # defined later
+    enabled = true
   }
   iam = {
     "roles/owner" = var.owners_host

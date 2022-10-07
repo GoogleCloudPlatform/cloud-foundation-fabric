@@ -25,8 +25,7 @@ module "project-host-prod" {
   services        = var.project_services
 
   shared_vpc_host_config = {
-    enabled          = true
-    service_projects = []
+    enabled = true
   }
 }
 
@@ -39,8 +38,7 @@ module "project-host-dev" {
   services        = var.project_services
 
   shared_vpc_host_config = {
-    enabled          = true
-    service_projects = []
+    enabled = true
   }
 }
 
