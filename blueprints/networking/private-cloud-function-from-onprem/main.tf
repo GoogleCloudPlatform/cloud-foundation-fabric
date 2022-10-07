@@ -178,12 +178,8 @@ module "test-vm" {
   instance_type = "e2-micro"
   boot_disk = {
     image = "projects/ubuntu-os-cloud/global/images/family/ubuntu-2104"
-    type  = "pd-balanced"
-    size  = 10
   }
   network_interfaces = [{
-    addresses  = null
-    nat        = false
     network    = module.vpc-onprem.self_link
     subnetwork = module.vpc-onprem.subnet_self_links["${var.region}/${var.name}-onprem"]
   }]
