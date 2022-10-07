@@ -113,8 +113,8 @@ module "cloud_run" {
     cloudsql_instances  = [module.cloudsql.connection_name]
     vpcaccess_connector = null
     # allow all traffic
-    vpcaccess_egress = "all-traffic"
-    vpcaccess_connector = google_vpc_access_connector.connector.self_link
+    vpcaccess_egress    = "all-traffic"
+    vpcaccess_connector = google_vpc_access_connector.connector.0.self_link
   }
   ingress_settings = "all"
 }

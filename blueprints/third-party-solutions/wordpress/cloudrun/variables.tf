@@ -27,6 +27,12 @@ variable "cloudsql_password" {
   default     = null
 }
 
+variable "create_connector" {
+  type        = bool
+  description = "Should a VPC serverless connector be created or not"
+  default     = true
+}
+
 # PSA: documentation: https://cloud.google.com/vpc/docs/configure-private-services-access#allocating-range
 variable "ip_ranges" {
   description = "CIDR blocks: VPC serverless connector, Private Service Access(PSA) for CloudSQL, CloudSQL VPC"
@@ -81,7 +87,7 @@ variable "wordpress_image" {
 
 variable "wordpress_port" {
   type        = number
-  description = "Port for the Wordpress image (8080 by default)"
+  description = "Port for the Wordpress image"
   default     = 8080
 }
 

@@ -54,6 +54,7 @@ module "firewall" {
 
 # create a VPC connector for the ClouSQL VPC
 resource "google_vpc_access_connector" "connector" {
+  count         = var.create_connector ? 1 : 0
   project       = module.project.project_id
   name          = "${local.prefix}wp-connector"
   region        = var.region
