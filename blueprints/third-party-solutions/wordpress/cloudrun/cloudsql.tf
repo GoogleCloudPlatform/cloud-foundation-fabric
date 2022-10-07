@@ -43,15 +43,6 @@ module "vpc" {
 }
 
 
-# set up firewall for CloudSQL
-module "firewall" {
-  source       = "../../../../modules/net-vpc-firewall"
-  project_id   = module.project.project_id
-  network      = module.vpc.name
-  admin_ranges = [var.ip_ranges.sql_vpc]
-}
-
-
 # create a VPC connector for the ClouSQL VPC
 resource "google_vpc_access_connector" "connector" {
   count         = var.create_connector ? 1 : 0
