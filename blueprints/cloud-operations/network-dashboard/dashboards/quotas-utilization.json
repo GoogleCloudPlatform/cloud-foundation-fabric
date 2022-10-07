@@ -22,13 +22,11 @@
                   "timeSeriesFilter": {
                     "aggregation": {
                       "alignmentPeriod": "3600s",
-                      "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_NEXT_OLDER"
                     },
                     "filter": "metric.type=\"custom.googleapis.com/internal_forwarding_rules_l4_utilization\" resource.type=\"global\"",
                     "secondaryAggregation": {
                       "alignmentPeriod": "1800s",
-                      "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_MEAN"
                     }
                   }
@@ -64,13 +62,11 @@
                   "timeSeriesFilter": {
                     "aggregation": {
                       "alignmentPeriod": "3600s",
-                      "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_NEXT_OLDER"
                     },
                     "filter": "metric.type=\"custom.googleapis.com/internal_forwarding_rules_l7_utilization\" resource.type=\"global\"",
                     "secondaryAggregation": {
                       "alignmentPeriod": "60s",
-                      "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_MEAN"
                     }
                   }
@@ -106,13 +102,11 @@
                   "timeSeriesFilter": {
                     "aggregation": {
                       "alignmentPeriod": "3600s",
-                      "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_NEXT_OLDER"
                     },
                     "filter": "metric.type=\"custom.googleapis.com/number_of_instances_utilization\" resource.type=\"global\"",
                     "secondaryAggregation": {
                       "alignmentPeriod": "60s",
-                      "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_MEAN"
                     }
                   }
@@ -148,13 +142,11 @@
                   "timeSeriesFilter": {
                     "aggregation": {
                       "alignmentPeriod": "3600s",
-                      "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_NEXT_OLDER"
                     },
                     "filter": "metric.type=\"custom.googleapis.com/number_of_vpc_peerings_utilization\" resource.type=\"global\"",
                     "secondaryAggregation": {
                       "alignmentPeriod": "60s",
-                      "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_MEAN"
                     }
                   }
@@ -190,13 +182,11 @@
                   "timeSeriesFilter": {
                     "aggregation": {
                       "alignmentPeriod": "3600s",
-                      "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_NEXT_OLDER"
                     },
                     "filter": "metric.type=\"custom.googleapis.com/number_of_active_vpc_peerings_utilization\" resource.type=\"global\"",
                     "secondaryAggregation": {
                       "alignmentPeriod": "60s",
-                      "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_INTERPOLATE"
                     }
                   }
@@ -232,13 +222,11 @@
                   "timeSeriesFilter": {
                     "aggregation": {
                       "alignmentPeriod": "3600s",
-                      "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_NEXT_OLDER"
                     },
                     "filter": "metric.type=\"custom.googleapis.com/number_of_subnet_IP_ranges_ppg_utilization\" resource.type=\"global\"",
                     "secondaryAggregation": {
                       "alignmentPeriod": "3600s",
-                      "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_MEAN"
                     }
                   }
@@ -274,13 +262,11 @@
                   "timeSeriesFilter": {
                     "aggregation": {
                       "alignmentPeriod": "3600s",
-                      "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_NEXT_OLDER"
                     },
                     "filter": "metric.type=\"custom.googleapis.com/internal_forwarding_rules_l4_ppg_utilization\" resource.type=\"global\"",
                     "secondaryAggregation": {
                       "alignmentPeriod": "3600s",
-                      "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_MEAN"
                     }
                   }
@@ -316,13 +302,11 @@
                   "timeSeriesFilter": {
                     "aggregation": {
                       "alignmentPeriod": "3600s",
-                      "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_NEXT_OLDER"
                     },
                     "filter": "metric.type=\"custom.googleapis.com/internal_forwarding_rules_l7_ppg_utilization\" resource.type=\"global\"",
                     "secondaryAggregation": {
                       "alignmentPeriod": "60s",
-                      "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_MEAN"
                     }
                   }
@@ -358,7 +342,6 @@
                   "timeSeriesFilter": {
                     "aggregation": {
                       "alignmentPeriod": "3600s",
-                      "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_NEXT_OLDER"
                     },
                     "filter": "metric.type=\"custom.googleapis.com/number_of_instances_ppg_utilization\" resource.type=\"global\""
@@ -395,7 +378,6 @@
                   "timeSeriesFilter": {
                     "aggregation": {
                       "alignmentPeriod": "60s",
-                      "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_MEAN"
                     },
                     "filter": "metric.type=\"custom.googleapis.com/dynamic_routes_per_network_utilization\" resource.type=\"global\""
@@ -425,7 +407,7 @@
             "dataSets": [
               {
                 "minAlignmentPeriod": "60s",
-                "plotType": "STACKED_BAR",
+                "plotType": "LINE",
                 "targetAxis": "Y1",
                 "timeSeriesQuery": {
                   "apiSource": "DEFAULT_CLOUD",
@@ -438,11 +420,16 @@
                       ],
                       "perSeriesAligner": "ALIGN_MEAN"
                     },
-                    "filter": "metric.type=\"custom.googleapis.com/firewalls_per_project_vpc_usage\" resource.type=\"global\""
+                    "filter": "metric.type=\"custom.googleapis.com/firewalls_per_project_vpc_usage\" resource.type=\"global\"",
+                    "secondaryAggregation": {
+                      "alignmentPeriod": "60s",
+                      "perSeriesAligner": "ALIGN_NONE"
+                    }
                   }
                 }
               }
             ],
+            "thresholds": [],
             "timeshiftDuration": "0s",
             "yAxis": {
               "label": "y1Axis",
@@ -473,13 +460,21 @@
                     "aggregation": {
                       "alignmentPeriod": "60s",
                       "crossSeriesReducer": "REDUCE_MAX",
+                      "groupByFields": [
+                        "metric.label.\"project\""
+                      ],
                       "perSeriesAligner": "ALIGN_MAX"
                     },
-                    "filter": "metric.type=\"custom.googleapis.com/firewalls_per_project_utilization\" resource.type=\"global\""
+                    "filter": "metric.type=\"custom.googleapis.com/firewalls_per_project_utilization\" resource.type=\"global\"",
+                    "secondaryAggregation": {
+                      "alignmentPeriod": "60s",
+                      "perSeriesAligner": "ALIGN_NONE"
+                    }
                   }
                 }
               }
             ],
+            "thresholds": [],
             "timeshiftDuration": "0s",
             "yAxis": {
               "label": "y1Axis",
@@ -509,7 +504,6 @@
                   "timeSeriesFilter": {
                     "aggregation": {
                       "alignmentPeriod": "60s",
-                      "crossSeriesReducer": "REDUCE_NONE",
                       "perSeriesAligner": "ALIGN_MEAN"
                     },
                     "filter": "metric.type=\"custom.googleapis.com/ip_addresses_per_subnet_utilization\" resource.type=\"global\""
