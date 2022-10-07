@@ -1,6 +1,6 @@
 # Cloud Foundation Fabric and Cloud Foundation Toolkit
 
-This page highlights the main differences (both technical and philosophical) between Cloud Foundation Fabric and Cloud Foundation Toolkit for end users and guide them in their decision making process for identifying the best suite of modules for their use cases.
+This page highlights the main differences (both technical and philosophical) between Cloud Foundation Fabric and Cloud Foundation Toolkit for end users, to guide them in their decision making process for identifying the best suite of modules for their use cases.
 
 ## Cloud Foundation Fabric (a.k.a Fabric, this repo)
 
@@ -151,7 +151,7 @@ For production/airgapped usage, customers may also mirror modules to a private r
 
 > You/Your organization is getting started with Terraform and interested in GCP best practices out of the box.
 
-    CFT is a better choice as it allows you to directly reference specific modules from the registry and provide opinionated configuration by default.
+  CFT is a better choice as it allows you to directly reference specific modules from the registry and provide opinionated configuration by default.
 
 > You/Your organization is looking to rapidly prototype some functionality on GCP.
   
