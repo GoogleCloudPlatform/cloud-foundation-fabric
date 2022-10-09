@@ -27,27 +27,12 @@ variable "cluster_autoscaling" {
       min = number
       max = number
     }))
-    memory_limits = optional(object({
+    mem_limits = optional(object({
       min = number
       max = number
     }))
   })
   default = null
-}
-
-variable "database_encryption" {
-  description = "Enable and configure GKE application-layer secrets encryption."
-  type = object({
-    state    = string
-    key_name = string
-  })
-  default = null
-}
-
-variable "max_pods_per_node" {
-  description = "Maximum number of pods per node in this cluster."
-  type        = number
-  default     = 110
 }
 
 variable "description" {
@@ -56,63 +41,71 @@ variable "description" {
   default     = null
 }
 
-variable "dns" {
-  description = "Configuration for Using Cloud DNS for GKE."
-  type = object({
-    cluster_dns        = optional(string)
-    cluster_dns_scope  = optional(string)
-    cluster_dns_domain = optional(string)
-  })
-  default = null
-}
-
 variable "enable_addons" {
   description = "Addons enabled in the cluster (true means enabled)."
   type = object({
-    cloudrun_config            = optional(bool)
-    dns_cache_config           = optional(bool)
-    horizontal_pod_autoscaling = optional(bool)
-    http_load_balancing        = optional(bool)
-    istio_config = optional(object({
-      enabled = bool
-      tls     = bool
+    cloudrun                   = optional(bool, false)
+    dns_cache                  = optional(bool, false)
+    horizontal_pod_autoscaling = optional(bool, false)
+    http_load_balancing        = optional(bool, false)
+    istio = optional(object({
+      enable_tls = bool
     }))
-    network_policy_config                 = optional(bool)
-    gce_persistent_disk_csi_driver_config = optional(bool)
-    gcp_filestore_csi_driver_config       = optional(bool)
-    config_connector_config               = optional(bool)
-    kalm_config                           = optional(bool)
-    gke_backup_agent_config               = optional(bool)
+    gce_persistent_disk_csi_driver = optional(bool, false)
+    gcp_filestore_csi_driver       = optional(bool, false)
+    config_connector               = optional(bool, false)
+    kalm                           = optional(bool, false)
+    gke_backup_agent               = optional(bool, false)
+    network_policy                 = optional(bool, false)
   })
   default = {
     horizontal_pod_autoscaling = true
     http_load_balancing        = true
   }
+  nullable = false
 }
 
 variable "enable_features" {
-  description = "Enable cluster-level features."
+  description = "Enable cluster-level features. Certain features allow configuration."
   type = object({
-    autopilot                = optional(bool)
-    binary_authorization     = optional(bool)
-    dataplane_v2             = optional(bool)
-    intranode_visibility     = optional(bool)
-    l4_ilb_subsetting        = optional(bool)
-    pod_security_policy      = optional(bool)
-    shielded_nodes           = optional(bool)
-    tpu                      = optional(bool)
-    vertical_pod_autoscaling = optional(bool)
-    workload_identity        = optional(bool)
+    autopilot            = optional(bool, false)
+    binary_authorization = optional(bool, false)
+    cloud_dns = optional(object({
+      cluster_dns        = optional(string)
+      cluster_dns_scope  = optional(string)
+      cluster_dns_domain = optional(string)
+    }))
+    dataplane_v2 = optional(bool, false)
+    database_encryption = optional(object({
+      state    = string
+      key_name = string
+    }))
+    groups_for_rbac      = optional(string)
+    intranode_visibility = optional(bool, false)
+    l4_ilb_subsetting    = optional(bool, false)
+    pod_security_policy  = optional(bool, false)
+    resource_usage_export = optional(object({
+      dataset                              = string
+      enable_network_egress_metering       = optional(bool, false)
+      enable_resource_consumption_metering = optional(bool, false)
+    }))
+    shielded_nodes = optional(bool, false)
+    tpu            = optional(bool, false)
+    upgrade_notifications = optional(object({
+      topic_id = optional(string)
+    }))
+    vertical_pod_autoscaling = optional(bool, false)
+    workload_identity        = optional(bool, false)
   })
   default = {
     workload_identity = true
   }
 }
 
-variable "gke_groups" {
-  description = "RBAC security group for Google Groups for GKE, format is gke-security-groups@yourdomain.com."
-  type        = string
-  default     = null
+variable "issue_client_certificate" {
+  description = "Enable issuing client certificate."
+  type        = bool
+  default     = false
 }
 
 variable "labels" {
@@ -126,15 +119,15 @@ variable "location" {
   type        = string
 }
 
-variable "logging_components" {
+variable "logging_config" {
   description = "Logging configuration."
   type        = list(string)
   default     = ["SYSTEM_COMPONENTS"]
 }
 
-variable "maintenance" {
+variable "maintenance_config" {
   description = "Maintenance window configuration."
-  type = optional(object({
+  type = object({
     daily_window_start_time = optional(string)
     recurring_window = optional(object({
       start_time = string
@@ -142,17 +135,23 @@ variable "maintenance" {
       recurrence = string
     }))
     maintenance_exclusions = optional(list(object({
-      exclusion_name = string
-      start_time     = string
-      end_time       = string
-      scope          = optional(string)
+      name       = string
+      start_time = string
+      end_time   = string
+      scope      = optional(string)
     })))
-  }))
+  })
   default = {
     daily_window_start_time = "03:00"
     recurring_window        = null
     maintenance_exclusion   = []
   }
+}
+
+variable "max_pods_per_node" {
+  description = "Maximum number of pods per node in this cluster."
+  type        = number
+  default     = 110
 }
 
 variable "min_master_version" {
@@ -161,7 +160,7 @@ variable "min_master_version" {
   default     = null
 }
 
-variable "monitoring_components" {
+variable "monitoring_config" {
   description = "Monitoring components."
   type        = list(string)
   default     = ["SYSTEM_COMPONENTS"]
@@ -176,25 +175,19 @@ variable "node_locations" {
   description = "Zones in which the cluster's nodes are located."
   type        = list(string)
   default     = []
+  nullable    = false
 }
 
-variable "notifications" {
-  description = "GKE Cluster upgrade notifications via PubSub."
-  type        = bool
-  default     = false
-}
-
-variable "private_cluster" {
-  description = "Enable and configure private cluster, private nodes must be true if used."
+variable "private_cluster_config" {
+  description = "Private cluster configuration."
   type = object({
-    enable_private_nodes    = optional(bool)
     enable_private_endpoint = optional(bool)
     master_ipv4_cidr_block  = optional(string)
     master_global_access    = optional(bool)
     peering_config = optional(object({
       export_routes = optional(bool)
       import_routes = optional(bool)
-      project_id    = string
+      project_id    = optional(string)
     }))
   })
   default = null
@@ -211,25 +204,20 @@ variable "release_channel" {
   default     = null
 }
 
-variable "resource_usage_export" {
-  description = "Configure the ResourceUsageExportConfig feature."
-  type = object({
-    dataset                              = string
-    enable_network_egress_metering       = optional(bool)
-    enable_resource_consumption_metering = optional(bool)
-  })
-  default = null
-}
-
-variable "vpc" {
+variable "vpc_config" {
   description = "VPC-level configuration."
   type = object({
     network    = string
     subnetwork = string
-    secondary_ranges = optional(object({
-      pods     = string
+    secondary_range_blocks = optional(object({
+      cluster  = string
+      services = string
+    }))
+    secondary_range_names = optional(object({
+      cluster  = string
       services = string
     }))
     master_authorized_ranges = optional(map(string))
   })
+  nullable = false
 }
