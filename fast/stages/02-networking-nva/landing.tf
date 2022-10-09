@@ -21,7 +21,7 @@ module "landing-project" {
   billing_account = var.billing_account.id
   name            = "prod-net-landing-0"
   parent          = var.folder_ids.networking-prod
-  prefix          = var.prefix
+  prefix          = local.prefix
   services = [
     "compute.googleapis.com",
     "dns.googleapis.com",
