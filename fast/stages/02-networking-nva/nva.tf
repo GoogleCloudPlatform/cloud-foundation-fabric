@@ -15,7 +15,9 @@
  */
 
 locals {
-  network_interfaces = [
+  # routing_config should be aligned to the NVA network interfaces - i.e. 
+  # local.routing_config[0] sets up the first interface, and so on.
+  routing_config = [
     {
       name = "untrusted"
       routes = [
@@ -48,7 +50,7 @@ locals {
 module "nva-cloud-config" {
   source               = "../../../modules/cloud-config-container/simple-nva"
   enable_health_checks = true
-  network_interfaces   = local.network_interfaces
+  network_interfaces   = local.routing_config
 }
 
 module "nva-template" {
