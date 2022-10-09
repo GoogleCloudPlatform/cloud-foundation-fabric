@@ -33,8 +33,6 @@ module "vm-left" {
     {
       network    = module.vpc-left.self_link
       subnetwork = values(module.vpc-left.subnet_self_links)[0]
-      nat        = false
-      addresses  = null
     }
   ]
   tags = ["ssh"]
@@ -58,8 +56,6 @@ module "vm-right" {
     {
       network    = module.vpc-right.self_link
       subnetwork = values(module.vpc-right.subnet_self_links)[0]
-      nat        = false
-      addresses  = null
     }
   ]
   tags = ["ssh"]

@@ -37,8 +37,7 @@ module "project-host" {
   services        = var.project_services
 
   shared_vpc_host_config = {
-    enabled          = true
-    service_projects = [] # defined later
+    enabled = true
   }
 }
 

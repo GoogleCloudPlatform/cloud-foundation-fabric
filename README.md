@@ -13,7 +13,7 @@ This repository provides **end-to-end blueprints** and a **suite of Terraform mo
 - reference [blueprints](./blueprints/) used to deep dive on network patterns or product features
 - a comprehensive source of lean [modules](./modules/dns) that lend themselves well to changes
 
-The whole repository is meant to be cloned as a single unit, and then forked into separate owned repositories to seed production usage, or used as-is and periodically updated as a complete toolkit for prototyping. You can read more on this approach in our [contributing guide](./CONTRIBUTING.md).
+The whole repository is meant to be cloned as a single unit, and then forked into separate owned repositories to seed production usage, or used as-is and periodically updated as a complete toolkit for prototyping. You can read more on this approach in our [contributing guide](./CONTRIBUTING.md), and a comparison against similar toolkits [here](./FABRIC-AND-CFT.md).
 
 ## Organization blueprint (Fabric FAST)
 

@@ -30,8 +30,7 @@ module "landing-project" {
     "stackdriver.googleapis.com"
   ]
   shared_vpc_host_config = {
-    enabled          = true
-    service_projects = []
+    enabled = true
   }
   iam = {
     "roles/dns.admin" = compact([
