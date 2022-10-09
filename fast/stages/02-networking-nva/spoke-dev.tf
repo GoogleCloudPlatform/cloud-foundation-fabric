@@ -21,7 +21,7 @@ module "dev-spoke-project" {
   billing_account = var.billing_account.id
   name            = "dev-net-spoke-0"
   parent          = var.folder_ids.networking-dev
-  prefix          = local.prefix
+  prefix          = var.prefix
   services = [
     "compute.googleapis.com",
     "dns.googleapis.com",

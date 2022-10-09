@@ -122,7 +122,7 @@ module "ilb-nva-untrusted" {
   project_id    = module.landing-project.project_id
   region        = each.key
   name          = "nva-untrusted-${each.value.0}"
-  service_label = local.prefix
+  service_label = var.prefix
   global_access = true
   network       = module.landing-untrusted-vpc.self_link
   subnetwork    = module.landing-untrusted-vpc.subnet_self_links["${each.key}/landing-untrusted-default-${each.value.0}"]
@@ -144,7 +144,7 @@ module "ilb-nva-trusted" {
   project_id    = module.landing-project.project_id
   region        = each.key
   name          = "nva-trusted-${each.value.0}"
-  service_label = local.prefix
+  service_label = var.prefix
   global_access = true
   network       = module.landing-trusted-vpc.self_link
   subnetwork    = module.landing-trusted-vpc.subnet_self_links["${each.key}/landing-trusted-default-${each.value.0}"]

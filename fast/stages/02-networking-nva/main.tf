@@ -24,7 +24,6 @@ locals {
       name   = "${env}-l7ilb-${s.region}"
     })]
   }
-  prefix = coalesce(var.local_prefix, var.prefix)
   service_accounts = {
     for k, v in coalesce(var.service_accounts, {}) :
     k => "serviceAccount:${v}" if v != null
