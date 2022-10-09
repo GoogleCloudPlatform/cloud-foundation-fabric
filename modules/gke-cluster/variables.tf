@@ -44,19 +44,19 @@ variable "description" {
 variable "enable_addons" {
   description = "Addons enabled in the cluster (true means enabled)."
   type = object({
-    cloudrun                   = optional(bool, false)
-    dns_cache                  = optional(bool, false)
-    horizontal_pod_autoscaling = optional(bool, false)
-    http_load_balancing        = optional(bool, false)
+    cloudrun                       = optional(bool, false)
+    config_connector               = optional(bool, false)
+    dns_cache                      = optional(bool, false)
+    gce_persistent_disk_csi_driver = optional(bool, false)
+    gcp_filestore_csi_driver       = optional(bool, false)
+    gke_backup_agent               = optional(bool, false)
+    horizontal_pod_autoscaling     = optional(bool, false)
+    http_load_balancing            = optional(bool, false)
     istio = optional(object({
       enable_tls = bool
     }))
-    gce_persistent_disk_csi_driver = optional(bool, false)
-    gcp_filestore_csi_driver       = optional(bool, false)
-    config_connector               = optional(bool, false)
-    kalm                           = optional(bool, false)
-    gke_backup_agent               = optional(bool, false)
-    network_policy                 = optional(bool, false)
+    kalm           = optional(bool, false)
+    network_policy = optional(bool, false)
   })
   default = {
     horizontal_pod_autoscaling = true
@@ -75,11 +75,11 @@ variable "enable_features" {
       cluster_dns_scope  = optional(string)
       cluster_dns_domain = optional(string)
     }))
-    dataplane_v2 = optional(bool, false)
     database_encryption = optional(object({
       state    = string
       key_name = string
     }))
+    dataplane_v2         = optional(bool, false)
     groups_for_rbac      = optional(string)
     intranode_visibility = optional(bool, false)
     l4_ilb_subsetting    = optional(bool, false)
