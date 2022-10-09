@@ -104,16 +104,6 @@ variable "l7ilb_subnets" {
   }
 }
 
-variable "local_prefix" {
-  description = "Prefix used for resources that need unique names. If unset, var.prefix is used instead. Use 9 characters or less."
-  type        = string
-  default     = null
-  validation {
-    condition     = try(length(var.local_prefix), 0) < 10
-    error_message = "Use a maximum of 9 characters for prefix."
-  }
-}
-
 variable "onprem_cidr" {
   description = "Onprem addresses in name => range format."
   type        = map(string)
