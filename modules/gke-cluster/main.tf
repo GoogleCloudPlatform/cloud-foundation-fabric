@@ -296,7 +296,11 @@ resource "google_container_cluster" "cluster" {
   }
 
   dynamic "resource_usage_export_config" {
-    for_each = var.enable_features.resource_usage_export != null ? [""] : []
+    for_each = (
+      try(var.enable_features.resource_usage_export.dataset, null) != null
+      ? [""]
+      : []
+    )
     content {
       enable_network_egress_metering = (
         var.enable_features.resource_usage_export.enable_network_egress_metering

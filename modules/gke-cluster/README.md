@@ -8,20 +8,23 @@ This module allows simplified creation and management of GKE clusters and should
 
 ```hcl
 module "cluster-1" {
-  source                    = "./fabric/modules/gke-cluster"
-  project_id                = "myproject"
-  name                      = "cluster-1"
-  location                  = "europe-west1-b"
-  network                   = var.vpc.self_link
-  subnetwork                = var.subnet.self_link
-  secondary_range_pods      = "pods"
-  secondary_range_services  = "services"
-  default_max_pods_per_node = 32
-  master_authorized_ranges = {
-    internal-vms = "10.0.0.0/8"
+  source     = "./fabric/modules/gke-cluster"
+  project_id = "myproject"
+  name       = "cluster-1"
+  location   = "europe-west1-b"
+  vpc_config = {
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+    secondary_range_names = {
+      cluster  = "pods"
+      services = "services"
+    }
+    master_authorized_ranges = {
+      internal-vms = "10.0.0.0/8"
+    }
   }
+  max_pods_per_node = 32
   private_cluster_config = {
-    enable_private_nodes    = true
     enable_private_endpoint = true
     master_ipv4_cidr_block  = "192.168.0.0/28"
     master_global_access    = false
@@ -37,24 +40,29 @@ module "cluster-1" {
 
 ```hcl
 module "cluster-1" {
-  source                    = "./fabric/modules/gke-cluster"
-  project_id                = "myproject"
-  name                      = "cluster-1"
-  location                  = "europe-west1-b"
-  network                   = var.vpc.self_link
-  subnetwork                = var.subnet.self_link
-  secondary_range_pods      = "pods"
-  secondary_range_services  = "services"
-  default_max_pods_per_node = 32
-  enable_dataplane_v2       = true
-  master_authorized_ranges = {
-    internal-vms = "10.0.0.0/8"
+  source     = "./fabric/modules/gke-cluster"
+  project_id = "myproject"
+  name       = "cluster-1"
+  location   = "europe-west1-b"
+  vpc_config = {
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+    secondary_range_names = {
+      cluster  = "pods"
+      services = "services"
+    }
+    master_authorized_ranges = {
+      internal-vms = "10.0.0.0/8"
+    }
   }
   private_cluster_config = {
-    enable_private_nodes    = true
     enable_private_endpoint = true
     master_ipv4_cidr_block  = "192.168.0.0/28"
     master_global_access    = false
+  }
+  enable_features = {
+    dataplane_v2      = true
+    workload_identity = true
   }
   labels = {
     environment = "dev"
@@ -75,7 +83,7 @@ module "cluster-1" {
 | [cluster_autoscaling](variables.tf#L17) | Enable and configure limits for Node Auto-Provisioning with Cluster Autoscaler. | <code title="object&#40;&#123;&#10;  auto_provisioning_defaults &#61; optional&#40;object&#40;&#123;&#10;    boot_disk_kms_key &#61; optional&#40;string&#41;&#10;    image_type        &#61; optional&#40;string&#41;&#10;    oauth_scopes      &#61; optional&#40;list&#40;string&#41;&#41;&#10;    service_account   &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  cpu_limits &#61; optional&#40;object&#40;&#123;&#10;    min &#61; number&#10;    max &#61; number&#10;  &#125;&#41;&#41;&#10;  mem_limits &#61; optional&#40;object&#40;&#123;&#10;    min &#61; number&#10;    max &#61; number&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [description](variables.tf#L38) | Cluster description. | <code>string</code> |  | <code>null</code> |
 | [enable_addons](variables.tf#L44) | Addons enabled in the cluster (true means enabled). | <code title="object&#40;&#123;&#10;  cloudrun                   &#61; optional&#40;bool, false&#41;&#10;  dns_cache                  &#61; optional&#40;bool, false&#41;&#10;  horizontal_pod_autoscaling &#61; optional&#40;bool, false&#41;&#10;  http_load_balancing        &#61; optional&#40;bool, false&#41;&#10;  istio &#61; optional&#40;object&#40;&#123;&#10;    enable_tls &#61; bool&#10;  &#125;&#41;&#41;&#10;  gce_persistent_disk_csi_driver &#61; optional&#40;bool, false&#41;&#10;  gcp_filestore_csi_driver       &#61; optional&#40;bool, false&#41;&#10;  config_connector               &#61; optional&#40;bool, false&#41;&#10;  kalm                           &#61; optional&#40;bool, false&#41;&#10;  gke_backup_agent               &#61; optional&#40;bool, false&#41;&#10;  network_policy                 &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  horizontal_pod_autoscaling &#61; true&#10;  http_load_balancing        &#61; true&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [enable_features](variables.tf#L68) | Enable cluster-level features. Certain features allow configuration. | <code title="object&#40;&#123;&#10;  autopilot            &#61; optional&#40;bool, false&#41;&#10;  binary_authorization &#61; optional&#40;bool, false&#41;&#10;  cloud_dns &#61; optional&#40;object&#40;&#123;&#10;    cluster_dns        &#61; optional&#40;string&#41;&#10;    cluster_dns_scope  &#61; optional&#40;string&#41;&#10;    cluster_dns_domain &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  dataplane_v2 &#61; optional&#40;bool, false&#41;&#10;  database_encryption &#61; optional&#40;object&#40;&#123;&#10;    state    &#61; string&#10;    key_name &#61; string&#10;  &#125;&#41;&#41;&#10;  groups_for_rbac      &#61; optional&#40;string&#41;&#10;  intranode_visibility &#61; optional&#40;bool, false&#41;&#10;  l4_ilb_subsetting    &#61; optional&#40;bool, false&#41;&#10;  pod_security_policy  &#61; optional&#40;bool, false&#41;&#10;  resource_usage_export &#61; optional&#40;object&#40;&#123;&#10;    dataset                              &#61; string&#10;    enable_network_egress_metering       &#61; optional&#40;bool, false&#41;&#10;    enable_resource_consumption_metering &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;&#41;&#10;  shielded_nodes &#61; optional&#40;bool, false&#41;&#10;  tpu            &#61; optional&#40;bool, false&#41;&#10;  upgrade_notifications &#61; optional&#40;object&#40;&#123;&#10;    topic_id &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  vertical_pod_autoscaling &#61; optional&#40;bool, false&#41;&#10;  workload_identity        &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  workload_identity &#61; true&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [enable_features](variables.tf#L68) | Enable cluster-level features. Certain features allow configuration. | <code title="object&#40;&#123;&#10;  autopilot            &#61; optional&#40;bool, false&#41;&#10;  binary_authorization &#61; optional&#40;bool, false&#41;&#10;  cloud_dns &#61; optional&#40;object&#40;&#123;&#10;    cluster_dns        &#61; optional&#40;string&#41;&#10;    cluster_dns_scope  &#61; optional&#40;string&#41;&#10;    cluster_dns_domain &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  dataplane_v2 &#61; optional&#40;bool, false&#41;&#10;  database_encryption &#61; optional&#40;object&#40;&#123;&#10;    state    &#61; string&#10;    key_name &#61; string&#10;  &#125;&#41;&#41;&#10;  groups_for_rbac      &#61; optional&#40;string&#41;&#10;  intranode_visibility &#61; optional&#40;bool, false&#41;&#10;  l4_ilb_subsetting    &#61; optional&#40;bool, false&#41;&#10;  pod_security_policy  &#61; optional&#40;bool, false&#41;&#10;  resource_usage_export &#61; optional&#40;object&#40;&#123;&#10;    dataset                              &#61; optional&#40;string&#41;&#10;    enable_network_egress_metering       &#61; optional&#40;bool, false&#41;&#10;    enable_resource_consumption_metering &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;&#41;&#10;  shielded_nodes &#61; optional&#40;bool, false&#41;&#10;  tpu            &#61; optional&#40;bool, false&#41;&#10;  upgrade_notifications &#61; optional&#40;object&#40;&#123;&#10;    topic_id &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  vertical_pod_autoscaling &#61; optional&#40;bool, false&#41;&#10;  workload_identity        &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  workload_identity &#61; true&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [issue_client_certificate](variables.tf#L105) | Enable issuing client certificate. | <code>bool</code> |  | <code>false</code> |
 | [labels](variables.tf#L111) | Cluster resource labels. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 | [logging_config](variables.tf#L122) | Logging configuration. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;SYSTEM_COMPONENTS&#34;&#93;</code> |
