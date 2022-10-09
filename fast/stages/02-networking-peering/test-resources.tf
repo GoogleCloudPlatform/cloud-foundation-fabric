@@ -24,20 +24,13 @@
 #   network_interfaces = [{
 #     network    = module.landing-vpc.self_link
 #     subnetwork = module.landing-vpc.subnet_self_links["europe-west1/landing-default-ew1"]
-#     alias_ips  = {}
-#     nat        = false
-#     addresses  = null
 #   }]
 #   tags                   = ["ssh"]
 #   service_account_create = true
 #   boot_disk = {
 #     image = "projects/debian-cloud/global/images/family/debian-10"
-#     type  = "pd-balanced"
-#     size  = 10
 #   }
 #   options = {
-#     allow_stopping_for_update = true
-#     deletion_protection       = false
 #     spot                      = true
 #     termination_action        = "STOP"
 #   }
@@ -58,20 +51,13 @@
 #     network = module.dev-spoke-vpc.self_link
 #     # change the subnet name to match the values you are actually using
 #     subnetwork = module.dev-spoke-vpc.subnet_self_links["europe-west1/dev-default-ew1"]
-#     alias_ips  = {}
-#     nat        = false
-#     addresses  = null
 #   }]
 #   tags                   = ["ssh"]
 #   service_account_create = true
 #   boot_disk = {
 #     image = "projects/debian-cloud/global/images/family/debian-10"
-#     type  = "pd-balanced"
-#     size  = 10
 #   }
 #   options = {
-#     allow_stopping_for_update = true
-#     deletion_protection       = false
 #     spot                      = true
 #     termination_action        = "STOP"
 #   }
@@ -92,20 +78,13 @@
 #     network = module.prod-spoke-vpc.self_link
 #     # change the subnet name to match the values you are actually using
 #     subnetwork = module.prod-spoke-vpc.subnet_self_links["europe-west1/prod-default-ew1"]
-#     alias_ips  = {}
-#     nat        = false
-#     addresses  = null
 #   }]
 #   tags                   = ["ssh"]
 #   service_account_create = true
 #   boot_disk = {
 #     image = "projects/debian-cloud/global/images/family/debian-10"
-#     type  = "pd-balanced"
-#     size  = 10
 #   }
 #   options = {
-#     allow_stopping_for_update = true
-#     deletion_protection       = false
 #     spot                      = true
 #     termination_action        = "STOP"
 #   }
