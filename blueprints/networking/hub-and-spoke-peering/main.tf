@@ -244,10 +244,6 @@ module "cluster-1" {
   vpc_config = {
     network    = module.vpc-spoke-2.self_link
     subnetwork = module.vpc-spoke-2.subnet_self_links["${var.region}/${local.prefix}spoke-2-1"]
-    secondary_range_names = {
-      cluster  = "pods"
-      services = "services"
-    }
     master_authorized_ranges = {
       for name, range in var.ip_ranges : name => range
     }

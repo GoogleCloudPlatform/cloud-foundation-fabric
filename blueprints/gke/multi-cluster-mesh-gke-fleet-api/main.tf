@@ -141,10 +141,6 @@ module "clusters" {
   vpc_config = {
     network    = module.svpc.self_link
     subnetwork = module.svpc.subnet_self_links["${var.region}/subnet-${each.key}"]
-    secondary_range_names = {
-      cluster  = "pods"
-      services = "services"
-    }
     master_authorized_ranges = merge({
       mgmt : var.mgmt_subnet_cidr_block
       },

@@ -156,14 +156,14 @@ resource "google_container_cluster" "cluster" {
   dynamic "ip_allocation_policy" {
     for_each = var.vpc_config.secondary_range_blocks != null ? [""] : []
     content {
-      cluster_ipv4_cidr_block  = var.vpc_config.secondary_range_blocks.cluster
+      cluster_ipv4_cidr_block  = var.vpc_config.secondary_range_blocks.pods
       services_ipv4_cidr_block = var.vpc_config.secondary_range_blocks.services
     }
   }
   dynamic "ip_allocation_policy" {
     for_each = var.vpc_config.secondary_range_names != null ? [""] : []
     content {
-      cluster_secondary_range_name  = var.vpc_config.secondary_range_names.cluster
+      cluster_secondary_range_name  = var.vpc_config.secondary_range_names.pods
       services_secondary_range_name = var.vpc_config.secondary_range_names.services
     }
   }

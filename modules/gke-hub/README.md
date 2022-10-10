@@ -55,10 +55,6 @@ module "cluster_1" {
   vpc_config = {
     network    = module.vpc.self_link
     subnetwork = module.vpc.subnet_self_links["europe-west1/cluster-1"]
-    secondary_range_names = {
-      cluster  = "pods"
-      services = "services"
-    }
     master_authorized_ranges = { rfc1918_10_8 = "10.0.0.0/8" }
   }
   enable_features = {
@@ -238,10 +234,6 @@ module "cluster_1" {
   vpc_config = {
     network    = module.vpc.self_link
     subnetwork = module.vpc.subnet_self_links["europe-west1/subnet-cluster-1"]
-    secondary_range_names = {
-      cluster  = "pods"
-      services = "services"
-    }
     master_authorized_ranges = {
       mgmt           = "10.0.0.0/28"
       pods-cluster-1 = "10.3.0.0/16"
@@ -278,10 +270,6 @@ module "cluster_2" {
   vpc_config = {
     network    = module.vpc.self_link
     subnetwork = module.vpc.subnet_self_links["europe-west4/subnet-cluster-2"]
-    secondary_range_names = {
-      cluster  = "pods"
-      services = "services"
-    }
     master_authorized_ranges = {
       mgmt           = "10.0.0.0/28"
       pods-cluster-1 = "10.3.0.0/16"

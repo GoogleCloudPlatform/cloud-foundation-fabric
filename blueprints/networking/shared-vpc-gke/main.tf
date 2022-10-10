@@ -204,10 +204,6 @@ module "cluster-1" {
   vpc_config = {
     network    = module.vpc-shared.self_link
     subnetwork = module.vpc-shared.subnet_self_links["${var.region}/gke"]
-    secondary_range_names = {
-      cluster  = "pods"
-      services = "services"
-    }
     master_authorized_ranges = {
       internal-vms = var.ip_ranges.gce
     }

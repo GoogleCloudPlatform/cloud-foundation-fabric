@@ -90,10 +90,6 @@ module "cluster" {
   vpc_config = {
     network    = module.vpc.self_link
     subnetwork = module.vpc.subnet_self_links["${var.region}/subnet"]
-    secondary_range_names = {
-      cluster  = "pods"
-      services = "services"
-    }
   }
   private_cluster_config = {
     enable_private_endpoint = false

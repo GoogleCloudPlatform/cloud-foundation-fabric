@@ -16,7 +16,7 @@ module "cluster-1" {
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
     secondary_range_names = {
-      cluster  = "pods"
+      pods     = "pods"
       services = "services"
     }
     master_authorized_ranges = {
@@ -48,7 +48,7 @@ module "cluster-1" {
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
     secondary_range_names = {
-      cluster  = "pods"
+      pods     = "pods"
       services = "services"
     }
     master_authorized_ranges = {

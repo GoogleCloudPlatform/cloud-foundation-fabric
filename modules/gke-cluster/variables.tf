@@ -71,9 +71,9 @@ variable "enable_features" {
     autopilot            = optional(bool, false)
     binary_authorization = optional(bool, false)
     cloud_dns = optional(object({
-      cluster_dns        = optional(string)
-      cluster_dns_scope  = optional(string)
-      cluster_dns_domain = optional(string)
+      provider = optional(string)
+      scope    = optional(string)
+      domain   = optional(string)
     }))
     database_encryption = optional(object({
       state    = string
@@ -98,7 +98,8 @@ variable "enable_features" {
     workload_identity        = optional(bool, false)
   })
   default = {
-    workload_identity = true
+    workload_identity     = true
+    resource_usage_export = null
   }
 }
 
@@ -210,13 +211,13 @@ variable "vpc_config" {
     network    = string
     subnetwork = string
     secondary_range_blocks = optional(object({
-      cluster  = string
+      pods     = string
       services = string
-    }))
+    }), )
     secondary_range_names = optional(object({
-      cluster  = string
+      pods     = string
       services = string
-    }))
+    }), { pods = "pods", services = "services" })
     master_authorized_ranges = optional(map(string))
   })
   nullable = false

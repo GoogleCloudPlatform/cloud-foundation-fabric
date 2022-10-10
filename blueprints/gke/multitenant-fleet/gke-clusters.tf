@@ -34,7 +34,7 @@ module "gke-cluster" {
     network    = var.vpc_config.vpc_self_link
     subnetwork = each.value.net.subnet
     secondary_range_names = {
-      cluster  = each.value.net.pods
+      pods     = each.value.net.pods
       services = each.value.net.services
     }
     master_authorized_ranges = each.value.overrides.master_authorized_ranges

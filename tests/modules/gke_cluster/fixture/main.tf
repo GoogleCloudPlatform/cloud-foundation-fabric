@@ -22,10 +22,6 @@ module "test" {
   vpc_config = {
     network    = "mynetwork"
     subnetwork = "mysubnet"
-    secondary_range_names = {
-      cluster  = "pods"
-      services = "services"
-    }
   }
   enable_addons   = var.enable_addons
   enable_features = var.enable_features
