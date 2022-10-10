@@ -20,7 +20,7 @@ import time
 from google.cloud import monitoring_v3, asset_v1
 from google.protobuf import field_mask_pb2
 from googleapiclient import discovery
-from metrics import ilb_fwrules, instances, networks, metrics, limits, peerings, routes, subnets
+from metrics import ilb_fwrules, instances, networks, metrics, limits, peerings, routes, subnets, vpc_firewalls
 
 
 def get_monitored_projects_list(config):
@@ -33,7 +33,7 @@ def get_monitored_projects_list(config):
         monitored_projects (List of strings): Full list of projects to be monitored
     '''
   monitored_projects = config["monitored_projects"]
-  monitored_folders = os.environ.get("MONITORED_FOLDERS_LIST").split(",")
+  monitored_folders = []  #os.environ.get("MONITORED_FOLDERS_LIST").split(",")
 
   # Handling empty monitored folders list
   if monitored_folders == ['']:
@@ -94,7 +94,7 @@ config = {
     # list of projects from which function will get quotas information
     "monitored_projects":
         os.environ.get("MONITORED_PROJECTS_LIST").split(","),
-    "monitoring_project_link":
+    "monitoring_project":
         os.environ.get('MONITORING_PROJECT_ID'),
     "monitoring_project_link":
         f"projects/{os.environ.get('MONITORING_PROJECT_ID')}",
@@ -143,6 +143,9 @@ def main(event, context):
 
   metrics_dict, limits_dict = metrics.create_metrics(
       config["monitoring_project_link"])
+  project_quotas_dict = limits.get_quota_project_limit(config)
+
+  firewalls_dict = vpc_firewalls.get_firewalls_dict(config)
 
   # IP utilization subnet level metrics
   subnets.get_subnets(config, metrics_dict)
@@ -152,6 +155,10 @@ def main(event, context):
   l4_forwarding_rules_dict = ilb_fwrules.get_forwarding_rules_dict(config, "L4")
   l7_forwarding_rules_dict = ilb_fwrules.get_forwarding_rules_dict(config, "L7")
   subnet_range_dict = networks.get_subnet_ranges_dict(config)
+
+  # Per Project metrics
+  vpc_firewalls.get_firewalls_data(config, metrics_dict, project_quotas_dict,
+                                   firewalls_dict)
 
   # Per Network metrics
   instances.get_gce_instances_data(config, metrics_dict, gce_instance_dict,

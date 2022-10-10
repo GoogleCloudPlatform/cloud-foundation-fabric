@@ -1,4 +1,4 @@
-# Google Cloud DNS Module
+# Google Simple NVA Module
 
 This module allows for the creation of a NVA (Network Virtual Appliance) to be used for experiments and as a stub for future appliances deployment.
 

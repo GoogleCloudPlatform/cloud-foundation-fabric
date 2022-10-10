@@ -237,8 +237,6 @@ module "vm-test1" {
   network_interfaces = [{
     network    = module.vpc.self_link
     subnetwork = module.vpc.subnet_self_links["${var.region.gcp1}/subnet1"]
-    nat        = false
-    addresses  = null
   }]
   metadata               = { startup-script = local.vm-startup-script }
   service_account        = module.service-account-gce.email
@@ -312,8 +310,6 @@ module "vm-onprem" {
   name          = "onprem"
   boot_disk = {
     image = "ubuntu-os-cloud/ubuntu-1804-lts"
-    type  = "pd-ssd"
-    size  = 10
   }
   metadata = {
     user-data = module.config-onprem.cloud_config
@@ -321,8 +317,6 @@ module "vm-onprem" {
   network_interfaces = [{
     network    = module.vpc.name
     subnetwork = module.vpc.subnet_self_links["${var.region.gcp1}/subnet1"]
-    nat        = true
-    addresses  = null
   }]
   service_account        = module.service-account-onprem.email
   service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]

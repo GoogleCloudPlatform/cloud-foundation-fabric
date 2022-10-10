@@ -32,8 +32,7 @@ module "dev-spoke-project" {
     "stackdriver.googleapis.com",
   ]
   shared_vpc_host_config = {
-    enabled          = true
-    service_projects = []
+    enabled = true
   }
   metric_scopes = [module.landing-project.project_id]
   iam = {

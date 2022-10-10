@@ -145,3 +145,8 @@ def apply_runner():
       return apply, output
 
   return run_apply
+
+
+@pytest.fixture
+def basedir():
+  return BASEDIR

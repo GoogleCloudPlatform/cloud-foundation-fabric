@@ -48,18 +48,20 @@ module "vpc" {
 }
 
 module "cluster_1" {
-  source                   = "./fabric/modules/gke-cluster"
-  project_id               = module.project.project_id
-  name                     = "cluster-1"
-  location                 = "europe-west1-b"
-  network                  = module.vpc.self_link
-  subnetwork               = module.vpc.subnet_self_links["europe-west1/cluster-1"]
-  secondary_range_pods     = "pods"
-  secondary_range_services = "services"
-  enable_dataplane_v2      = true
-  master_authorized_ranges = { rfc1918_10_8 = "10.0.0.0/8" }
+  source     = "./fabric/modules/gke-cluster"
+  project_id = module.project.project_id
+  name       = "cluster-1"
+  location   = "europe-west1"
+  vpc_config = {
+    network    = module.vpc.self_link
+    subnetwork = module.vpc.subnet_self_links["europe-west1/cluster-1"]
+    master_authorized_ranges = { rfc1918_10_8 = "10.0.0.0/8" }
+  }
+  enable_features = {
+    dataplane_v2      = true
+    workload_identity = true
+  }
   private_cluster_config = {
-    enable_private_nodes    = true
     enable_private_endpoint = true
     master_ipv4_cidr_block  = "192.168.0.0/28"
     master_global_access    = false
@@ -225,27 +227,24 @@ module "firewall" {
 }
 
 module "cluster_1" {
-  source                   = "./fabric/modules/gke-cluster"
-  project_id               = module.project.project_id
-  name                     = "cluster-1"
-  location                 = "europe-wes1"
-  network                  = module.vpc.self_link
-  subnetwork               = module.vpc.subnet_self_links["europe-west1/subnet-cluster-1"]
-  secondary_range_pods     = "pods"
-  secondary_range_services = "services"
+  source     = "./fabric/modules/gke-cluster"
+  project_id = module.project.project_id
+  name       = "cluster-1"
+  location   = "europe-west1"
+  vpc_config = {
+    network    = module.vpc.self_link
+    subnetwork = module.vpc.subnet_self_links["europe-west1/subnet-cluster-1"]
+    master_authorized_ranges = {
+      mgmt           = "10.0.0.0/28"
+      pods-cluster-1 = "10.3.0.0/16"
+    }
+  }
   private_cluster_config = {
-    enable_private_nodes    = true
     enable_private_endpoint = false
     master_ipv4_cidr_block  = "192.168.1.0/28"
     master_global_access    = true
   }
-  master_authorized_ranges = {
-    mgmt           = "10.0.0.0/28"
-    pods-cluster-1 =  "10.3.0.0/16"
-  }
-  enable_autopilot  = false
-  release_channel   = "REGULAR"
-  workload_identity = true
+  release_channel = "REGULAR"
   labels = {
     mesh_id = "proj-${module.project.number}"
   }
@@ -266,25 +265,22 @@ module "cluster_1_nodepool" {
 module "cluster_2" {
   source                   = "./fabric/modules/gke-cluster"
   project_id               = module.project.project_id
-  name                     = "cluster-1"
-  location                 = "europe-wes1"
-  network                  = module.vpc.self_link
-  subnetwork               = module.vpc.subnet_self_links["europe-west4/subnet-cluster-2"]
-  secondary_range_pods     = "pods"
-  secondary_range_services = "services"
+  name                     = "cluster-2"
+  location                 = "europe-west4"
+  vpc_config = {
+    network    = module.vpc.self_link
+    subnetwork = module.vpc.subnet_self_links["europe-west4/subnet-cluster-2"]
+    master_authorized_ranges = {
+      mgmt           = "10.0.0.0/28"
+      pods-cluster-1 = "10.3.0.0/16"
+    }
+  }
   private_cluster_config = {
-    enable_private_nodes    = true
     enable_private_endpoint = false
     master_ipv4_cidr_block  = "192.168.2.0/28"
     master_global_access    = true
   }
-  master_authorized_ranges = {
-    mgmt           = "10.0.0.0/28"
-    pods-cluster-1 = "10.1.0.0/16"
-  }
-  enable_autopilot  = false
-  release_channel   = "REGULAR"
-  workload_identity = true
+  release_channel = "REGULAR"
   labels = {
     mesh_id = "proj-${module.project.number}"
   }

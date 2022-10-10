@@ -48,8 +48,7 @@ module "project-host" {
     "logging.googleapis.com"
   ]
   shared_vpc_host_config = {
-    enabled          = true
-    service_projects = []
+    enabled = true
   }
 }
 
@@ -156,13 +155,9 @@ module "squid-vm" {
   network_interfaces = [{
     network    = module.vpc.self_link
     subnetwork = module.vpc.subnet_self_links["${var.region}/proxy"]
-    nat        = false
-    addresses  = null
   }]
   boot_disk = {
     image = "cos-cloud/cos-stable"
-    type  = "pd-standard"
-    size  = 10
   }
   service_account        = module.service-account-squid.email
   service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
