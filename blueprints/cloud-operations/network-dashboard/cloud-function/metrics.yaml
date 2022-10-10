@@ -99,6 +99,18 @@ metrics_per_network:
     utilization:
       name: dynamic_routes_per_network_utilization
       description: Number of Dynamic routes per network - utilization.
+  static_routes_per_network:
+    usage:
+      name: static_routes_per_project_vpc_usage
+      description: Number of Static routes per project and network - usage.
+    limit:
+      name: static_routes_per_project_limit
+      description: Number of Static routes per project - limit.
+      values:
+        default_value: 250
+    utilization:
+      name: static_routes_per_project_utilization
+      description: Number of Static routes per project - utilization.
 metrics_per_peering_group:
   l4_forwarding_rules_per_peering_group:
     usage:

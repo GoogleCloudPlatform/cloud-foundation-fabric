@@ -14,9 +14,11 @@
 # limitations under the License.
 #
 
+import re
 import time
 
 from collections import defaultdict
+from google.protobuf import field_mask_pb2
 from . import metrics, networks, limits, peerings, routers
 
 
@@ -177,3 +179,92 @@ def get_dynamic_routes_ppg(config, metric_dict, usage_dict, limit_dict):
       print(
           f"Wrote {metric_dict['usage']['name']} for peering group {network_dict['network_name']} in {project}"
       )
+
+
+def get_static_routes_vpc(config, metrics_dict, project_quotas_dict):
+  '''
+    LOREM
+
+      Parameters:
+        config (dict): The dict containing config like clients and limits
+        metric_dict (dictionary of string: string): Dictionary with the metric names and description, that will be used to populate the metrics
+        usage_dict (dictionnary of string:int): Dictionary with the network link as key and the number of resources as value
+        project_quotas_dict (dictionary of string:int): Dictionary with the network link as key and the limit as value.
+      Returns:
+        None
+  '''
+  routes_per_vpc_dict = defaultdict()
+  usage_dict = defaultdict()
+
+  read_mask = field_mask_pb2.FieldMask()
+  read_mask.FromJsonString('name,versionedResources')
+
+  response = config["clients"]["asset_client"].search_all_resources(
+      request={
+          "scope": f"organizations/{config['organization']}",
+          "asset_types": ["compute.googleapis.com/Route"],
+          "read_mask": read_mask,
+      })
+
+  timestamp = time.time()
+  for resource in response:
+    for versioned in resource.versioned_resources:
+      static_route = dict()
+      for field_name, field_value in versioned.resource.items():
+        static_route[field_name] = field_value
+      static_route["project_id"] = re.search("\/([^\/]*)(\/[^\/]*){3}$",
+                                             static_route["network"]).group(1)
+      static_route["network_name"] = re.search("\/([^\/]*)$",
+                                               static_route["network"]).group(1)
+
+      #exclude default vpc and peering routes
+      if "nextHopPeering" not in static_route and "nextHopNetwork" not in static_route:
+        if static_route["project_id"] not in routes_per_vpc_dict:
+          routes_per_vpc_dict[static_route["project_id"]] = dict()
+        if static_route["network_name"] not in routes_per_vpc_dict[
+            static_route["project_id"]]:
+          routes_per_vpc_dict[static_route["project_id"]][
+              static_route["network_name"]] = dict()
+
+        if static_route["destRange"] not in routes_per_vpc_dict[
+            static_route["project_id"]][static_route["network_name"]]:
+          routes_per_vpc_dict[static_route["project_id"]][
+              static_route["network_name"]][static_route["destRange"]] = {}
+          if "usage" not in routes_per_vpc_dict[static_route["project_id"]][
+              static_route["network_name"]]:
+            routes_per_vpc_dict[static_route["project_id"]][
+                static_route["network_name"]]["usage"] = 0
+          routes_per_vpc_dict[static_route["project_id"]][
+              static_route["network_name"]]["usage"] = routes_per_vpc_dict[
+                  static_route["project_id"]][
+                      static_route["network_name"]]["usage"] + 1
+
+  for project_id in routes_per_vpc_dict:
+    current_quota_limit = project_quotas_dict[project_id]['global']["routes"][
+        "limit"]
+    if current_quota_limit is None:
+      print(
+          f"Could not determine static routes  metric for projects/{project_id} due to missing quotas"
+      )
+      continue
+    for network_name in routes_per_vpc_dict[project_id]:
+      metric_labels = {"project": project_id, "network_name": network_name}
+      metrics.append_data_to_series_buffer(
+          config, metrics_dict["metrics_per_network"]
+          ["static_routes_per_network"]["usage"]["name"],
+          routes_per_vpc_dict[project_id][network_name]["usage"], metric_labels,
+          timestamp=timestamp)
+
+    # limit and utilization are calculted by project
+    metric_labels = {"project": project_id}
+    metrics.append_data_to_series_buffer(
+        config, metrics_dict["metrics_per_network"]["static_routes_per_network"]
+        ["limit"]["name"], current_quota_limit, metric_labels,
+        timestamp=timestamp)
+    metrics.append_data_to_series_buffer(
+        config, metrics_dict["metrics_per_network"]["static_routes_per_network"]
+        ["utilization"]["name"],
+        routes_per_vpc_dict[project_id][network_name]["usage"] /
+        current_quota_limit, metric_labels, timestamp=timestamp)
+
+  return

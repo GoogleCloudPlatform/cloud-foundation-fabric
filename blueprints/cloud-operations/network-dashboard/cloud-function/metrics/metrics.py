@@ -91,7 +91,8 @@ def create_metric(metric_name, description, monitoring_project):
 def append_data_to_series_buffer(config, metric_name, metric_value,
                                  metric_labels, timestamp=None):
   '''
-    Writes data to Cloud Monitoring custom metrics.
+    Appends data to Cloud Monitoring custom metrics, using a buffer. buffer is flushed every BUFFER_LEN elements,
+    any unflushed series is discarded upon function closure
       Parameters:
         config (dict): The dict containing config like clients and limits
         metric_name (string): Name of the metric
@@ -136,7 +137,7 @@ def append_data_to_series_buffer(config, metric_name, metric_value,
 
 def flush_series_buffer(config):
   '''
-    writes buffered metrics to Google Cloud Monitoring, empties buffer upon failure
+    writes buffered metrics to Google Cloud Monitoring, empties buffer upon both failure/success
     config (dict): The dict containing config like clients and limits
   '''
   try:
@@ -237,7 +238,7 @@ def get_pgg_data(config, metric_dict, usage_dict, limit_metric, limit_dict):
                                    metric_dict["utilization"]["name"],
                                    limit_dict)
       print(
-          f"Wrote {metric_dict['usage']['name']} for peering group {network_dict['network_name']} in {project_id}"
+          f"Buffered {metric_dict['usage']['name']} for peering group {network_dict['network_name']} in {project_id}"
       )
 
 

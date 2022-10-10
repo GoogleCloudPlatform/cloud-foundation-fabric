@@ -42,7 +42,7 @@ def get_quotas_dict(quotas_list):
 
 def get_quota_project_limit(config, regions=["global"]):
   '''
-    Retrieves limit for a specific project quota 
+    Retrieves quotas for all monitored project in selected regions, default 'global'
       Parameters:
         project_link (string): Project link.
       Returns:

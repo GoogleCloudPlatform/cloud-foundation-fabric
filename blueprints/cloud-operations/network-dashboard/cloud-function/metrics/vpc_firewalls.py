@@ -83,7 +83,7 @@ def get_firewalls_data(config, metrics_dict, project_quotas_dict,
     current_quota_limit = project_quotas_dict[project_id]['global']["firewalls"]
     if current_quota_limit is None:
       print(
-          f"Could not determine VPC firewal rules to metric for projects/{project_id} due to missing quotas"
+          f"Could not determine VPC firewal rules  metric for projects/{project_id} due to missing quotas"
       )
       continue
 

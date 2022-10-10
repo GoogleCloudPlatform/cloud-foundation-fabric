@@ -176,6 +176,9 @@ def main(event, context):
     ilb_fwrules.get_forwarding_rules_data(
         config, metrics_dict, l7_forwarding_rules_dict,
         limits_dict['internal_forwarding_rules_l7_limit'], "L7")
+
+    routes.get_static_routes_vpc(config, metrics_dict, project_quotas_dict)
+
     peerings.get_vpc_peering_data(config, metrics_dict,
                                   limits_dict['number_of_vpc_peerings_limit'])
     dynamic_routes_dict = routes.get_dynamic_routes(
