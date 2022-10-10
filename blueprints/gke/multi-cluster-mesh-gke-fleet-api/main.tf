@@ -133,30 +133,27 @@ module "mgmt_server" {
 }
 
 module "clusters" {
-  for_each                 = var.clusters_config
-  source                   = "../../../modules/gke-cluster"
-  project_id               = module.fleet_project.project_id
-  name                     = each.key
-  location                 = var.region
-  network                  = module.svpc.self_link
-  subnetwork               = module.svpc.subnet_self_links["${var.region}/subnet-${each.key}"]
-  secondary_range_pods     = "pods"
-  secondary_range_services = "services"
+  for_each   = var.clusters_config
+  source     = "../../../modules/gke-cluster"
+  project_id = module.fleet_project.project_id
+  name       = each.key
+  location   = var.region
+  vpc_config = {
+    network    = module.svpc.self_link
+    subnetwork = module.svpc.subnet_self_links["${var.region}/subnet-${each.key}"]
+    master_authorized_ranges = merge({
+      mgmt : var.mgmt_subnet_cidr_block
+      },
+      { for key, config in var.clusters_config :
+        "pods-${key}" => config.pods_cidr_block if key != each.key
+    })
+  }
   private_cluster_config = {
-    enable_private_nodes    = true
     enable_private_endpoint = true
     master_ipv4_cidr_block  = each.value.master_cidr_block
     master_global_access    = true
   }
-  master_authorized_ranges = merge({
-    mgmt : var.mgmt_subnet_cidr_block
-    },
-    { for key, config in var.clusters_config :
-      "pods-${key}" => config.pods_cidr_block if key != each.key
-  })
-  enable_autopilot  = false
-  release_channel   = "REGULAR"
-  workload_identity = true
+  release_channel = "REGULAR"
   labels = {
     mesh_id = "proj-${module.fleet_project.number}"
   }
