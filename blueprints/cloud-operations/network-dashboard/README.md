@@ -9,7 +9,7 @@ Here is an example of dashboard you can get with this solution:
 
 Here you see utilization (usage compared to the limit) for a specific metric (number of instances per VPC) for multiple VPCs and projects.
 
-3 metrics are created: Usage, limit and utilization. You can follow each of these and create alerting policies if a threshold is reached.
+Three metric descriptors are created for each monitored resource: usage, limit and utilization. You can follow each of these and create alerting policies if a threshold is reached.
 
 ## Usage
 
@@ -45,6 +45,7 @@ The Cloud Function currently tracks usage, limit and utilization of:
 - Dynamic routes per VPC
 - Dynamic routes per VPC peering group
 - IP utilization per subnet (% of IP addresses used in a subnet)
+- VPC firewall rules per project (VPC drill down is available for usage)
 
 It writes this values to custom metrics in Cloud Monitoring and creates a dashboard to visualize the current utilization of these metrics in Cloud Monitoring.
 
