@@ -85,9 +85,9 @@ variable "enable_features" {
     l4_ilb_subsetting    = optional(bool, false)
     pod_security_policy  = optional(bool, false)
     resource_usage_export = optional(object({
-      dataset                              = optional(string)
-      enable_network_egress_metering       = optional(bool, false)
-      enable_resource_consumption_metering = optional(bool, false)
+      dataset                              = string
+      enable_network_egress_metering       = optional(bool)
+      enable_resource_consumption_metering = optional(bool)
     }))
     shielded_nodes = optional(bool, false)
     tpu            = optional(bool, false)
@@ -98,8 +98,7 @@ variable "enable_features" {
     workload_identity        = optional(bool, false)
   })
   default = {
-    workload_identity     = true
-    resource_usage_export = null
+    workload_identity = true
   }
 }
 
