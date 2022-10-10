@@ -26,7 +26,7 @@ Clone this repository, then go through the following steps to create resources:
 Once the resources are deployed, go to the following page to see the dashboard: https://console.cloud.google.com/monitoring/dashboards?project=<YOUR-MONITORING-PROJECT>.
 A dashboard called "quotas-utilization" should be created.
 
-The Cloud Function runs every 5 minutes by default so you should start getting some data points after a few minutes.
+The Cloud Function runs every 5m minutes by default so you should start getting some data points after a few minutes.
 You can change this frequency by modifying the "schedule_cron" variable in variables.tf.
 
 Once done testing, you can clean up resources by running `terraform destroy`.
@@ -46,6 +46,7 @@ The Cloud Function currently tracks usage, limit and utilization of:
 - Dynamic routes per VPC peering group
 - IP utilization per subnet (% of IP addresses used in a subnet)
 - VPC firewall rules per project (VPC drill down is available for usage)
+- Tuples per Firewall Policy
 
 It writes this values to custom metrics in Cloud Monitoring and creates a dashboard to visualize the current utilization of these metrics in Cloud Monitoring.
 
