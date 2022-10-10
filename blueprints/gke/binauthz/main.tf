@@ -83,21 +83,19 @@ module "nat" {
 }
 
 module "cluster" {
-  source                   = "../../../modules/gke-cluster"
-  project_id               = module.project.project_id
-  name                     = "${local.prefix}cluster"
-  location                 = var.zone
-  network                  = module.vpc.self_link
-  subnetwork               = module.vpc.subnet_self_links["${var.region}/subnet"]
-  secondary_range_pods     = "pods"
-  secondary_range_services = "services"
+  source     = "../../../modules/gke-cluster"
+  project_id = module.project.project_id
+  name       = "${local.prefix}cluster"
+  location   = var.zone
+  vpc_config = {
+    network    = module.vpc.self_link
+    subnetwork = module.vpc.subnet_self_links["${var.region}/subnet"]
+  }
   private_cluster_config = {
-    enable_private_nodes    = true
     enable_private_endpoint = false
     master_ipv4_cidr_block  = var.master_cidr_block
     master_global_access    = false
   }
-  workload_identity = true
 }
 
 module "cluster_nodepool" {
