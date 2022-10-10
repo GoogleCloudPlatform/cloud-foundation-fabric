@@ -15,7 +15,7 @@
  */
 
 module "test" {
-  source             = "../../../../../blueprints/networking/shared-vpc-gke"
+  source             = "../../../../../blueprints/gke/shared-vpc-gke"
   billing_account_id = var.billing_account_id
   prefix             = var.prefix
   root_node          = var.root_node

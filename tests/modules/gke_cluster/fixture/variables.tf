@@ -14,25 +14,17 @@
  * limitations under the License.
  */
 
-variable "enable_autopilot" {
-  default = false
-}
-
-variable "addons" {
+variable "enable_addons" {
+  type = any
   default = {
-    cloudrun_config            = false
-    dns_cache_config           = false
     horizontal_pod_autoscaling = true
     http_load_balancing        = true
-    istio_config = {
-      enabled = false
-      tls     = false
-    }
-    network_policy_config                 = false
-    gce_persistent_disk_csi_driver_config = false
-    gcp_filestore_csi_driver_config       = false
-    config_connector_config               = false
-    kalm_config                           = false
-    gke_backup_agent_config               = false
+  }
+}
+
+variable "enable_features" {
+  type = any
+  default = {
+    workload_identity = true
   }
 }

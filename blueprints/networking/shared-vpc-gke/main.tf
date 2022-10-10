@@ -196,27 +196,26 @@ module "vm-bastion" {
 ################################################################################
 
 module "cluster-1" {
-  source                    = "../../../modules/gke-cluster"
-  count                     = var.cluster_create ? 1 : 0
-  name                      = "cluster-1"
-  project_id                = module.project-svc-gke.project_id
-  location                  = "${var.region}-b"
-  network                   = module.vpc-shared.self_link
-  subnetwork                = module.vpc-shared.subnet_self_links["${var.region}/gke"]
-  secondary_range_pods      = "pods"
-  secondary_range_services  = "services"
-  default_max_pods_per_node = 32
-  labels = {
-    environment = "test"
+  source     = "../../../modules/gke-cluster"
+  count      = var.cluster_create ? 1 : 0
+  name       = "cluster-1"
+  project_id = module.project-svc-gke.project_id
+  location   = "${var.region}-b"
+  vpc_config = {
+    network    = module.vpc-shared.self_link
+    subnetwork = module.vpc-shared.subnet_self_links["${var.region}/gke"]
+    master_authorized_ranges = {
+      internal-vms = var.ip_ranges.gce
+    }
   }
-  master_authorized_ranges = {
-    internal-vms = var.ip_ranges.gce
-  }
+  max_pods_per_node = 32
   private_cluster_config = {
-    enable_private_nodes    = true
     enable_private_endpoint = true
     master_ipv4_cidr_block  = var.private_service_ranges.cluster-1
     master_global_access    = true
+  }
+  labels = {
+    environment = "test"
   }
 }
 

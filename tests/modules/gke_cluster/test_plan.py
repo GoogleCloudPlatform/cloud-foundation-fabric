@@ -28,9 +28,8 @@ def test_standard(plan_runner):
 
 def test_autopilot(plan_runner):
   "Test resources created with variable defaults."
-  _, resources = plan_runner(enable_autopilot="true")
+  _, resources = plan_runner(enable_features='{ autopilot=true }')
   assert len(resources) == 1
-
   cluster_config = resources[0]['values']
   assert cluster_config['name'] == "cluster-1"
   assert cluster_config['network'] == "mynetwork"
