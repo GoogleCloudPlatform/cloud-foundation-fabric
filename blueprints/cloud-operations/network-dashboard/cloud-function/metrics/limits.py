@@ -19,6 +19,60 @@ from google.cloud import monitoring_v3
 from . import metrics
 
 
+def get_quotas_dict(quotas_list):
+  '''
+    Creates a dictionary of quotas from a list, with lower case quota name as keys
+      Parameters:
+        quotas_array (array): array of quotas
+      Returns:
+        quotas_dict (dict): dictionary of quotas
+  '''
+  quota_keys = [q['metric'] for q in quotas_list]
+  quotas_dict = dict()
+  i = 0
+  for key in quota_keys:
+    if ("metric" in quotas_list[i]):
+      del (quotas_list[i]["metric"])
+    quotas_dict[key.lower()] = quotas_list[i]
+    i += 1
+  return quotas_dict
+
+
+def get_quota_project_limit(config, regions=["global"]):
+  '''
+    Retrieves limit for a specific project quota 
+      Parameters:
+        project_link (string): Project link.
+      Returns:
+        quotas (dict): quotas for all selected regions, default 'global'
+  '''
+  try:
+    request = {}
+    quotas = dict()
+    for project in config["monitored_projects"]:
+      quotas[project] = dict()
+      if regions != ["global"]:
+        for region in regions:
+          request = config["clients"]["discovery_client"].compute.regions().get(
+              region=region, project=project)
+          response = request.execute()
+          quotas[project][region] = get_quotas_dict(response['quotas'])
+      else:
+        region = "global"
+        request = config["clients"]["discovery_client"].projects().get(
+            project=project, fields="quotas")
+        response = request.execute()
+        quotas[project][region] = get_quotas_dict(response['quotas'])
+
+    return quotas
+  except exceptions.PermissionDenied as err:
+    print(
+        f"Warning: error reading quotas for {project}. " +
+        f"This can happen if you don't have permissions on the project, for example if the project is in another organization or a Google managed project"
+    )
+  return None
+
+
 def get_ppg(network_link, limit_dict):
   '''
     Checks if this network has a specific limit for a metric, if so, returns that limit, if not, returns the default limit.
