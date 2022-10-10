@@ -14,13 +14,14 @@
 # limitations under the License.
 #
 
+import re
 from distutils.command.config import config
 import os
 import time
 from google.cloud import monitoring_v3, asset_v1
 from google.protobuf import field_mask_pb2
 from googleapiclient import discovery
-from metrics import ilb_fwrules, instances, networks, metrics, limits, peerings, routes, subnets, vpc_firewalls
+from metrics import ilb_fwrules, firewall_policies, instances, networks, metrics, limits, peerings, routes, subnets, vpc_firewalls
 
 
 def get_monitored_projects_list(config):
@@ -119,6 +120,7 @@ config = {
         "asset_client": asset_v1.AssetServiceClient(),
         "monitoring_client": monitoring_v3.MetricServiceClient()
     },
+    "series_buffer": []
 }
 
 
@@ -146,6 +148,7 @@ def main(event, context):
   project_quotas_dict = limits.get_quota_project_limit(config)
 
   firewalls_dict = vpc_firewalls.get_firewalls_dict(config)
+  firewall_policies_dict = firewall_policies.get_firewall_policies_dict(config)
 
   # IP utilization subnet level metrics
   subnets.get_subnets(config, metrics_dict)
@@ -156,51 +159,60 @@ def main(event, context):
   l7_forwarding_rules_dict = ilb_fwrules.get_forwarding_rules_dict(config, "L7")
   subnet_range_dict = networks.get_subnet_ranges_dict(config)
 
-  # Per Project metrics
-  vpc_firewalls.get_firewalls_data(config, metrics_dict, project_quotas_dict,
-                                   firewalls_dict)
+  try:
 
-  # Per Network metrics
-  instances.get_gce_instances_data(config, metrics_dict, gce_instance_dict,
-                                   limits_dict['number_of_instances_limit'])
-  ilb_fwrules.get_forwarding_rules_data(
-      config, metrics_dict, l4_forwarding_rules_dict,
-      limits_dict['internal_forwarding_rules_l4_limit'], "L4")
-  ilb_fwrules.get_forwarding_rules_data(
-      config, metrics_dict, l7_forwarding_rules_dict,
-      limits_dict['internal_forwarding_rules_l7_limit'], "L7")
-  peerings.get_vpc_peering_data(config, metrics_dict,
-                                limits_dict['number_of_vpc_peerings_limit'])
-  dynamic_routes_dict = routes.get_dynamic_routes(
-      config, metrics_dict, limits_dict['dynamic_routes_per_network_limit'])
+    # Per Project metrics
+    vpc_firewalls.get_firewalls_data(config, metrics_dict, project_quotas_dict,
+                                     firewalls_dict)
+    # Per Firewall Policy metrics
+    firewall_policies.get_firewal_policies_data(config, metrics_dict,
+                                                firewall_policies_dict)
+    # Per Network metrics
+    instances.get_gce_instances_data(config, metrics_dict, gce_instance_dict,
+                                     limits_dict['number_of_instances_limit'])
+    ilb_fwrules.get_forwarding_rules_data(
+        config, metrics_dict, l4_forwarding_rules_dict,
+        limits_dict['internal_forwarding_rules_l4_limit'], "L4")
+    ilb_fwrules.get_forwarding_rules_data(
+        config, metrics_dict, l7_forwarding_rules_dict,
+        limits_dict['internal_forwarding_rules_l7_limit'], "L7")
+    peerings.get_vpc_peering_data(config, metrics_dict,
+                                  limits_dict['number_of_vpc_peerings_limit'])
+    dynamic_routes_dict = routes.get_dynamic_routes(
+        config, metrics_dict, limits_dict['dynamic_routes_per_network_limit'])
 
-  # Per VPC peering group metrics
-  metrics.get_pgg_data(
-      config,
-      metrics_dict["metrics_per_peering_group"]["instance_per_peering_group"],
-      gce_instance_dict, config["limit_names"]["GCE_INSTANCES"],
-      limits_dict['number_of_instances_ppg_limit'])
-  metrics.get_pgg_data(
-      config, metrics_dict["metrics_per_peering_group"]
-      ["l4_forwarding_rules_per_peering_group"], l4_forwarding_rules_dict,
-      config["limit_names"]["L4"],
-      limits_dict['internal_forwarding_rules_l4_ppg_limit'])
-  metrics.get_pgg_data(
-      config, metrics_dict["metrics_per_peering_group"]
-      ["l7_forwarding_rules_per_peering_group"], l7_forwarding_rules_dict,
-      config["limit_names"]["L7"],
-      limits_dict['internal_forwarding_rules_l7_ppg_limit'])
-  metrics.get_pgg_data(
-      config, metrics_dict["metrics_per_peering_group"]
-      ["subnet_ranges_per_peering_group"], subnet_range_dict,
-      config["limit_names"]["SUBNET_RANGES"],
-      limits_dict['number_of_subnet_IP_ranges_ppg_limit'])
-  routes.get_dynamic_routes_ppg(
-      config, metrics_dict["metrics_per_peering_group"]
-      ["dynamic_routes_per_peering_group"], dynamic_routes_dict,
-      limits_dict['dynamic_routes_per_peering_group_limit'])
+    # Per VPC peering group metrics
+    metrics.get_pgg_data(
+        config,
+        metrics_dict["metrics_per_peering_group"]["instance_per_peering_group"],
+        gce_instance_dict, config["limit_names"]["GCE_INSTANCES"],
+        limits_dict['number_of_instances_ppg_limit'])
+    metrics.get_pgg_data(
+        config, metrics_dict["metrics_per_peering_group"]
+        ["l4_forwarding_rules_per_peering_group"], l4_forwarding_rules_dict,
+        config["limit_names"]["L4"],
+        limits_dict['internal_forwarding_rules_l4_ppg_limit'])
+    metrics.get_pgg_data(
+        config, metrics_dict["metrics_per_peering_group"]
+        ["l7_forwarding_rules_per_peering_group"], l7_forwarding_rules_dict,
+        config["limit_names"]["L7"],
+        limits_dict['internal_forwarding_rules_l7_ppg_limit'])
+    metrics.get_pgg_data(
+        config, metrics_dict["metrics_per_peering_group"]
+        ["subnet_ranges_per_peering_group"], subnet_range_dict,
+        config["limit_names"]["SUBNET_RANGES"],
+        limits_dict['number_of_subnet_IP_ranges_ppg_limit'])
+    routes.get_dynamic_routes_ppg(
+        config, metrics_dict["metrics_per_peering_group"]
+        ["dynamic_routes_per_peering_group"], dynamic_routes_dict,
+        limits_dict['dynamic_routes_per_peering_group_limit'])
+  except Exception as e:
+    print("Error writing metrics")
+    print(e)
+  finally:
+    metrics.flush_series_buffer(config)
 
-  return 'Function executed successfully'
+  return 'Function execution completed'
 
 
 if __name__ == "__main__":
