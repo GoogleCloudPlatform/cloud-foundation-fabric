@@ -237,31 +237,29 @@ module "service-account-gce" {
 ################################################################################
 
 module "cluster-1" {
-  source                    = "../../../modules/gke-cluster"
-  name                      = "${local.prefix}cluster-1"
-  project_id                = module.project.project_id
-  location                  = "${var.region}-b"
-  network                   = module.vpc-spoke-2.self_link
-  subnetwork                = module.vpc-spoke-2.subnet_self_links["${var.region}/${local.prefix}spoke-2-1"]
-  secondary_range_pods      = "pods"
-  secondary_range_services  = "services"
-  default_max_pods_per_node = 32
+  source     = "../../../modules/gke-cluster"
+  name       = "${local.prefix}cluster-1"
+  project_id = module.project.project_id
+  location   = "${var.region}-b"
+  vpc_config = {
+    network    = module.vpc-spoke-2.self_link
+    subnetwork = module.vpc-spoke-2.subnet_self_links["${var.region}/${local.prefix}spoke-2-1"]
+    master_authorized_ranges = {
+      for name, range in var.ip_ranges : name => range
+    }
+  }
+  max_pods_per_node = 32
   labels = {
     environment = "test"
   }
-  master_authorized_ranges = {
-    for name, range in var.ip_ranges : name => range
-  }
   private_cluster_config = {
-    enable_private_nodes    = true
     enable_private_endpoint = true
     master_ipv4_cidr_block  = var.private_service_ranges.spoke-2-cluster-1
     master_global_access    = true
-  }
-  peering_config = {
-    export_routes = true
-    import_routes = false
-    project_id    = null
+    peering_config = {
+      export_routes = true
+      import_routes = false
+    }
   }
 }
 

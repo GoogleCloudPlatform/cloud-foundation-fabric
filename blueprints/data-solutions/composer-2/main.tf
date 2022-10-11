@@ -97,9 +97,8 @@ module "project" {
   ]
 
   shared_vpc_service_config = local.shared_vpc_project == null ? null : {
-    attach               = true
-    host_project         = local.shared_vpc_project
-    service_identity_iam = {}
+    attach       = true
+    host_project = local.shared_vpc_project
   }
 
   service_encryption_key_ids = {

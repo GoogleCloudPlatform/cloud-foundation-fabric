@@ -14,9 +14,25 @@
  * limitations under the License.
  */
 
-module "test" {
-  source             = "../../../../../blueprints/networking/shared-vpc-gke"
-  billing_account_id = var.billing_account_id
-  prefix             = var.prefix
-  root_node          = var.root_node
+output "cloud_run_service" {
+  description = "CloudRun service URL"
+  value       = module.cloud_run.service.status[0].url
+  sensitive   = true
+}
+
+output "cloudsql_password" {
+  description = "CloudSQL password"
+  value       = local.cloudsql_conf.pass
+  sensitive   = true
+}
+
+output "wp_user" {
+  description = "Wordpress username"
+  value       = local.wp_user
+}
+
+output "wp_password" {
+  description = "Wordpress user password"
+  value       = local.wp_pass
+  sensitive   = true
 }

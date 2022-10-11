@@ -16,27 +16,13 @@
 
 variable "attached_disks" {
   description = "Additional disks, if options is null defaults will be used in its place. Source type is one of 'image' (zonal disks in vms and template), 'snapshot' (vm), 'existing', and null."
-  type = list(object({
-    name        = string
-    size        = string
-    source      = string
-    source_type = string
-    options = object({
-      mode         = string
-      replica_zone = string
-      type         = string
-    })
-  }))
-  default = []
+  type        = any
+  default     = []
 }
 
 variable "attached_disk_defaults" {
   description = "Defaults for attached disks options."
-  type = object({
-    mode         = string
-    replica_zone = string
-    type         = string
-  })
+  type        = any
   default = {
     mode         = "READ_WRITE"
     replica_zone = null
@@ -70,29 +56,11 @@ variable "metadata" {
 }
 
 variable "network_interfaces" {
-  type = list(object({
-    nat        = bool
-    network    = string
-    subnetwork = string
-    addresses = object({
-      internal = string
-      external = string
-    })
-  }))
+  type = any
   default = [{
     network    = "https://www.googleapis.com/compute/v1/projects/my-project/global/networks/default",
     subnetwork = "https://www.googleapis.com/compute/v1/projects/my-project/regions/europe-west1/subnetworks/default-default",
-    nat        = false,
-    addresses  = null
   }]
-}
-
-variable "network_interface_options" {
-  type = map(object({
-    alias_ips = map(string)
-    nic_type  = string
-  }))
-  default = {}
 }
 
 variable "service_account_create" {

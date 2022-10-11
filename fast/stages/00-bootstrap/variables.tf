@@ -135,7 +135,11 @@ variable "groups" {
     gcp-network-admins      = "gcp-network-admins"
     gcp-organization-admins = "gcp-organization-admins"
     gcp-security-admins     = "gcp-security-admins"
-    gcp-support             = "gcp-support"
+    # gcp-support is not included in the official GCP Enterprise
+    # Checklist, so by default we map gcp-support to gcp-devops.
+    # However, we recommend creating gcp-support and updating the
+    # value in the following line
+    gcp-support = "gcp-devops"
   }
 }
 
