@@ -15,48 +15,39 @@
  */
 
 locals {
-  service_account_email = (
-    var.node_service_account_create
-    ? (
-      length(google_service_account.service_account) > 0
-      ? google_service_account.service_account[0].email
-      : null
+  image = {
+    is_cos = (
+      regexall("COS", coalesce(var.node_config.image_type, "")) > 0
     )
-    : var.node_service_account
+    is_cos_containerd = (
+      regexall("COS_CONTAINERD", coalesce(var.node_config.image_type, "")) > 0
+    )
+    is_windows = (
+      regexall("WINDOWS", coalesce(var.node_config.image_type, "")) > 0
+    )
+  }
+  node_metadata = var.node_config.metadata == null ? null : merge(
+    var.node_config.metadata,
+    { disable-legacy-endpoints = "true" }
+  )
+  service_account_email = (
+    try(var.service_account.email, null) != null
+    ? var.service_account.email
+    : google_service_account.service_account[0].email
   )
   service_account_scopes = (
-    length(var.node_service_account_scopes) > 0
-    ? var.node_service_account_scopes
-    : (
-      var.node_service_account_create
-      ? ["https://www.googleapis.com/auth/cloud-platform"]
-      : [
-        "https://www.googleapis.com/auth/devstorage.read_only",
-        "https://www.googleapis.com/auth/logging.write",
-        "https://www.googleapis.com/auth/monitoring",
-        "https://www.googleapis.com/auth/monitoring.write"
-      ]
-    )
+    try(var.service_account.scopes, null) != null
+    ? var.service_account.scopes
+    : [
+      "https://www.googleapis.com/auth/devstorage.read_only",
+      "https://www.googleapis.com/auth/logging.write",
+      "https://www.googleapis.com/auth/monitoring",
+      "https://www.googleapis.com/auth/monitoring.write",
+      "https://www.googleapis.com/auth/userinfo.email"
+    ]
   )
-  node_taint_effect = {
-    "NoExecute"        = "NO_EXECUTE",
-    "NoSchedule"       = "NO_SCHEDULE"
-    "PreferNoSchedule" = "PREFER_NO_SCHEDULE"
-  }
-  temp_node_pools_taints = [
-    for taint in var.node_taints :
-    {
-      "key"    = element(split("=", taint), 0),
-      "value"  = element(split(":", element(split("=", taint), 1)), 0),
-      "effect" = lookup(local.node_taint_effect, element(split(":", taint), 1)),
-    }
-  ]
-  # The taint is added to match the one that
-  # GKE implicitly adds when Windows node pools are created.
-  win_node_pools_taint = (
-    var.node_image_type == null
-    ? []
-    : length(regexall("WINDOWS", var.node_image_type)) > 0
+  taints_windows = (
+    local.image.is_windows
     ? [
       {
         "key"    = "node.kubernetes.io/os"
@@ -66,128 +57,162 @@ locals {
     ]
     : []
   )
-  node_taints = concat(local.temp_node_pools_taints, local.win_node_pools_taint)
 }
 
 resource "google_service_account" "service_account" {
-  count        = var.node_service_account_create ? 1 : 0
+  count        = try(var.service_account.email, null) == null ? 1 : 0
   project      = var.project_id
   account_id   = "tf-gke-${var.name}"
   display_name = "Terraform GKE ${var.cluster_name} ${var.name}."
 }
 
 resource "google_container_node_pool" "nodepool" {
-  provider = google-beta
-
-  project  = var.project_id
-  cluster  = var.cluster_name
-  location = var.location
-  name     = var.name
-
-  initial_node_count = var.node_count == null ? var.initial_node_count : null // (dmarzi) TOFIX
-  max_pods_per_node  = var.max_pods_per_node
-  node_count         = var.autoscaling_config == null ? var.node_count : null
-  node_locations     = var.node_locations
+  provider           = google-beta
+  project            = var.project_id
+  cluster            = var.cluster_name
+  location           = var.location
+  name               = var.name
   version            = var.gke_version
-
-  node_config {
-    disk_size_gb      = var.node_disk_size
-    disk_type         = var.node_disk_type
-    image_type        = var.node_image_type
-    labels            = var.node_labels
-    taint             = local.node_taints
-    local_ssd_count   = var.node_local_ssd_count
-    machine_type      = var.node_machine_type
-    metadata          = var.node_metadata
-    min_cpu_platform  = var.node_min_cpu_platform
-    oauth_scopes      = local.service_account_scopes
-    preemptible       = var.node_preemptible
-    service_account   = local.service_account_email
-    tags              = var.node_tags
-    boot_disk_kms_key = var.node_boot_disk_kms_key
-    spot              = var.node_spot
-
-    dynamic "guest_accelerator" {
-      for_each = var.node_guest_accelerator
-      iterator = config
-      content {
-        type  = config.key
-        count = config.value
-      }
-    }
-
-    dynamic "sandbox_config" {
-      for_each = (
-        var.node_sandbox_config != null
-        ? [var.node_sandbox_config]
-        : []
-      )
-      iterator = config
-      content {
-        sandbox_type = config.value
-      }
-    }
-
-    dynamic "shielded_instance_config" {
-      for_each = (
-        var.node_shielded_instance_config != null
-        ? [var.node_shielded_instance_config]
-        : []
-      )
-      iterator = config
-      content {
-        enable_secure_boot          = config.value.enable_secure_boot
-        enable_integrity_monitoring = config.value.enable_integrity_monitoring
-      }
-    }
-
-    workload_metadata_config {
-      mode = var.workload_metadata_config
-    }
-
-    dynamic "kubelet_config" {
-      for_each = var.kubelet_config != null ? [var.kubelet_config] : []
-      iterator = config
-      content {
-        cpu_manager_policy   = config.value.cpu_manager_policy
-        cpu_cfs_quota        = config.value.cpu_cfs_quota
-        cpu_cfs_quota_period = config.value.cpu_cfs_quota_period
-      }
-    }
-
-    dynamic "linux_node_config" {
-      for_each = var.linux_node_config_sysctls != null ? [var.linux_node_config_sysctls] : []
-      iterator = config
-      content {
-        sysctls = config.value
-      }
-    }
-  }
+  max_pods_per_node  = var.max_pods_per_node
+  initial_node_count = var.node_count.initial
+  node_count         = var.node_count.current
+  node_locations     = var.node_locations
+  placement_policy   = var.nodepool_config.placement_policy
 
   dynamic "autoscaling" {
-    for_each = var.autoscaling_config != null ? [var.autoscaling_config] : []
-    iterator = config
+    for_each = (
+      try(var.nodepool_config.autoscaling.use_total_nodes, false) ? [] : [""]
+    )
     content {
-      min_node_count = config.value.min_node_count
-      max_node_count = config.value.max_node_count
+      location_policy = var.nodepool_config.autoscaling.location_policy
+      max_node_count  = var.nodepool_config.autoscaling.max_node_count
+      min_node_count  = var.nodepool_config.autoscaling.min_node_count
+    }
+  }
+  dynamic "autoscaling" {
+    for_each = (
+      try(var.nodepool_config.autoscaling.use_total_nodes, false) ? [""] : []
+    )
+    content {
+      location_policy = var.nodepool_config.autoscaling.location_policy
+      max_node_count  = var.nodepool_config.autoscaling.max_node_count
+      min_node_count  = var.nodepool_config.autoscaling.min_node_count
     }
   }
 
   dynamic "management" {
-    for_each = var.management_config != null ? [var.management_config] : []
-    iterator = config
+    for_each = var.nodepool_config.management != null ? [""] : []
     content {
-      auto_repair  = config.value.auto_repair
-      auto_upgrade = config.value.auto_upgrade
+      auto_repair  = var.nodepool_config.management.auto_repair
+      auto_upgrade = var.nodepool_config.management.auto_upgrade
     }
   }
 
+  network_config {
+    create_pod_range    = var.pod_range.create
+    pod_ipv4_cidr_block = var.pod_range.cidr
+    pod_range           = var.pod_range.name
+  }
+
   dynamic "upgrade_settings" {
-    for_each = var.upgrade_config != null ? [var.upgrade_config] : []
-    iterator = config
+    for_each = var.nodepool_config.upgrade_settings != null
     content {
-      max_surge       = config.value.max_surge
-      max_unavailable = config.value.max_unavailable
+      max_surge       = var.nodepool_config.upgrade_settings.max_surge
+      max_unavailable = var.nodepool_config.upgrade_settings.max_unavailable
+    }
+  }
+
+  node_config {
+    boot_disk_kms_key = var.node_config.boot_disk_kms_key
+    disk_size_gb      = var.node_config.disk_size_gb
+    disk_type         = var.node_config.disk_type
+    image_type        = var.node_config.image_type
+    labels            = var.labels
+    local_ssd_count   = var.node_config.local_ssd_count
+    machine_type      = var.node_config.machine_type
+    metadata          = local.node_metadata
+    min_cpu_platform  = var.node_config.min_cpu_platform
+    node_group        = var.sole_tenant_nodegroup
+    oauth_scopes      = local.service_account_scopes
+    preemptible       = var.node_config.preemptible
+    service_account   = local.service_account_email
+    spot              = var.node_config.spot && var.node_config.preemptible != true
+    tags              = var.tags
+    taint = (
+      var.taints == null ? [] : concat(var.taints, local.taints_windows)
+    )
+
+    dynamic "ephemeral_storage_config" {
+      for_each = var.node_config.ephemeral_ssd_count != null ? [""] : []
+      content {
+        local_ssd_count = var.node_config.ephemeral_ssd_count
+      }
+    }
+    dynamic "gcfs_config" {
+      for_each = var.node_config.gcfs && local.image.is_cos_containerd ? [""] : []
+      content {
+        enabled = true
+      }
+    }
+    dynamic "guest_accelerator" {
+      for_each = var.node_config.guest_accelerator != null ? [""] : []
+      content {
+        count              = var.node_config.guest_accelerator.count
+        type               = var.node_config.guest_accelerator.type
+        gpu_partition_size = var.node_config.guest_accelerator.gpu_partition_size
+      }
+    }
+    dynamic "gvnic" {
+      for_each = var.node_config.gvnic && local.image.is_cos ? [""] : []
+      content {
+        enabled = true
+      }
+    }
+    dynamic "kubelet_config" {
+      for_each = var.node_config.kubelet_config != null ? [""] : []
+      content {
+        cpu_manager_policy   = var.node_config.kubelet_config.cpu_manager_policy
+        cpu_cfs_quota        = var.node_config.kubelet_config.cpu_cfs_quota
+        cpu_cfs_quota_period = var.node_config.kubelet_config.cpu_cfs_quota_period
+      }
+    }
+    dynamic "linux_node_config" {
+      for_each = var.node_config.linux_node_config_sysctls != null ? [""] : []
+      content {
+        sysctls = var.node_config.linux_node_config_sysctls
+      }
+    }
+    dynamic "reservation_affinity" {
+      for_each = var.reservation_affinity != null
+      content {
+        consume_reservation_type = var.reservation_affinity.consume_reservation_type
+        key                      = var.reservation_affinity.key
+        values                   = var.reservation_affinity.values
+      }
+    }
+    dynamic "sandbox_config" {
+      for_each = (
+        var.node_config.sandbox_config_gvisor &&
+        local.image.is_cos_containerd != null
+        ? [""]
+        : []
+      )
+      content {
+        sandbox_type = "gvisor"
+      }
+    }
+    dynamic "shielded_instance_config" {
+      for_each = var.node_config.shielded_instance_config != null ? [""] : []
+      content {
+        enable_secure_boot          = var.node_config.shielded_instance_config.enable_secure_boot
+        enable_integrity_monitoring = var.node_config.shielded_instance_config.enable_integrity_monitoring
+      }
+    }
+    dynamic "workload_metadata_config" {
+      for_each = var.node_config.workload_metadata_config_mode != null ? [""] : []
+      content {
+        mode = var.node_config.workload_metadata_config_mode
+      }
     }
   }
 }
