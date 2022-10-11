@@ -14,13 +14,13 @@
 # limitations under the License.
 # CFv2 define whether to use Cloud function 2nd generation or 1st generation
 
-from metrics import ilb_fwrules, instances, networks, metrics, limits, peerings, routes, subnets
-from googleapiclient import discovery
-from google.protobuf import field_mask_pb2
-from google.cloud import monitoring_v3, asset_v1
-import time
-import os
 from distutils.command.config import config
+import os
+import time
+from google.cloud import monitoring_v3, asset_v1
+from google.protobuf import field_mask_pb2
+from googleapiclient import discovery
+from metrics import ilb_fwrules, instances, networks, metrics, limits, peerings, routes, subnets, vpc_firewalls
 
 CFv2 = False
 if CFv2:
