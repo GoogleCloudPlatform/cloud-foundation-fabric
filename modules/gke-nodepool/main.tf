@@ -15,25 +15,21 @@
  */
 
 locals {
+  _image = coalesce(var.node_config.image_type, "-")
   image = {
-    is_cos = (
-      regexall("COS", coalesce(var.node_config.image_type, "")) > 0
-    )
-    is_cos_containerd = (
-      regexall("COS_CONTAINERD", coalesce(var.node_config.image_type, "")) > 0
-    )
-    is_windows = (
-      regexall("WINDOWS", coalesce(var.node_config.image_type, "")) > 0
-    )
+    is_cos            = length(regexall("COS", local._image)) > 0
+    is_cos_containerd = length(regexall("COS_CONTAINERD", local._image)) > 0
+    is_win            = length(regexall("WIN", local._image)) > 0
   }
   node_metadata = var.node_config.metadata == null ? null : merge(
     var.node_config.metadata,
     { disable-legacy-endpoints = "true" }
   )
+  service_account_create = var.service_account != null
   service_account_email = (
-    try(var.service_account.email, null) != null
-    ? var.service_account.email
-    : google_service_account.service_account[0].email
+    local.service_account_create
+    ? google_service_account.service_account[0].email
+    : try(var.service_account.email, null)
   )
   service_account_scopes = (
     try(var.service_account.scopes, null) != null
@@ -47,20 +43,16 @@ locals {
     ]
   )
   taints_windows = (
-    local.image.is_windows
-    ? [
-      {
-        "key"    = "node.kubernetes.io/os"
-        "value"  = "windows"
-        "effect" = local.node_taint_effect.NoSchedule
-      }
-    ]
+    local.image.is_win
+    ? [{
+      key = "node.kubernetes.io/os", value = "windows", effect = "NO_EXECUTE"
+    }]
     : []
   )
 }
 
 resource "google_service_account" "service_account" {
-  count        = try(var.service_account.email, null) == null ? 1 : 0
+  count        = local.service_account_create ? 1 : 0
   project      = var.project_id
   account_id   = "tf-gke-${var.name}"
   display_name = "Terraform GKE ${var.cluster_name} ${var.name}."
@@ -77,16 +69,16 @@ resource "google_container_node_pool" "nodepool" {
   initial_node_count = var.node_count.initial
   node_count         = var.node_count.current
   node_locations     = var.node_locations
-  placement_policy   = var.nodepool_config.placement_policy
+  # placement_policy   = var.nodepool_config.placement_policy
 
   dynamic "autoscaling" {
     for_each = (
       try(var.nodepool_config.autoscaling.use_total_nodes, false) ? [] : [""]
     )
     content {
-      location_policy = var.nodepool_config.autoscaling.location_policy
-      max_node_count  = var.nodepool_config.autoscaling.max_node_count
-      min_node_count  = var.nodepool_config.autoscaling.min_node_count
+      location_policy = try(var.nodepool_config.autoscaling.location_policy, null)
+      max_node_count  = try(var.nodepool_config.autoscaling.max_node_count, null)
+      min_node_count  = try(var.nodepool_config.autoscaling.min_node_count, null)
     }
   }
   dynamic "autoscaling" {
@@ -94,31 +86,34 @@ resource "google_container_node_pool" "nodepool" {
       try(var.nodepool_config.autoscaling.use_total_nodes, false) ? [""] : []
     )
     content {
-      location_policy = var.nodepool_config.autoscaling.location_policy
-      max_node_count  = var.nodepool_config.autoscaling.max_node_count
-      min_node_count  = var.nodepool_config.autoscaling.min_node_count
+      location_policy = try(var.nodepool_config.autoscaling.location_policy, null)
+      max_node_count  = try(var.nodepool_config.autoscaling.max_node_count, null)
+      min_node_count  = try(var.nodepool_config.autoscaling.min_node_count, null)
     }
   }
 
   dynamic "management" {
-    for_each = var.nodepool_config.management != null ? [""] : []
+    for_each = try(var.nodepool_config.management, null) != null ? [""] : []
     content {
-      auto_repair  = var.nodepool_config.management.auto_repair
-      auto_upgrade = var.nodepool_config.management.auto_upgrade
+      auto_repair  = try(var.nodepool_config.management.auto_repair, null)
+      auto_upgrade = try(var.nodepool_config.management.auto_upgrade, null)
     }
   }
 
-  network_config {
-    create_pod_range    = var.pod_range.create
-    pod_ipv4_cidr_block = var.pod_range.cidr
-    pod_range           = var.pod_range.name
+  dynamic "network_config" {
+    for_each = var.pod_range != null ? [""] : []
+    content {
+      create_pod_range    = var.pod_range.create
+      pod_ipv4_cidr_block = var.pod_range.cidr
+      pod_range           = var.pod_range.name
+    }
   }
 
   dynamic "upgrade_settings" {
-    for_each = var.nodepool_config.upgrade_settings != null
+    for_each = try(var.nodepool_config.upgrade_settings, null) != null ? [""] : []
     content {
-      max_surge       = var.nodepool_config.upgrade_settings.max_surge
-      max_unavailable = var.nodepool_config.upgrade_settings.max_unavailable
+      max_surge       = try(var.nodepool_config.upgrade_settings.max_surge, null)
+      max_unavailable = try(var.nodepool_config.upgrade_settings.max_unavailable, null)
     }
   }
 
@@ -136,8 +131,10 @@ resource "google_container_node_pool" "nodepool" {
     oauth_scopes      = local.service_account_scopes
     preemptible       = var.node_config.preemptible
     service_account   = local.service_account_email
-    spot              = var.node_config.spot && var.node_config.preemptible != true
-    tags              = var.tags
+    spot = (
+      var.node_config.spot == true && var.node_config.preemptible != true
+    )
+    tags = var.tags
     taint = (
       var.taints == null ? [] : concat(var.taints, local.taints_windows)
     )
@@ -183,7 +180,7 @@ resource "google_container_node_pool" "nodepool" {
       }
     }
     dynamic "reservation_affinity" {
-      for_each = var.reservation_affinity != null
+      for_each = var.reservation_affinity != null ? [""] : []
       content {
         consume_reservation_type = var.reservation_affinity.consume_reservation_type
         key                      = var.reservation_affinity.key
@@ -192,7 +189,7 @@ resource "google_container_node_pool" "nodepool" {
     }
     dynamic "sandbox_config" {
       for_each = (
-        var.node_config.sandbox_config_gvisor &&
+        var.node_config.sandbox_config_gvisor == true &&
         local.image.is_cos_containerd != null
         ? [""]
         : []

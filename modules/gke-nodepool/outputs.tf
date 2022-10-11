@@ -27,7 +27,7 @@ output "service_account_email" {
 output "service_account_iam_email" {
   description = "Service account email."
   value = format(
-    "serviceAccount:s",
+    "serviceAccount:%s",
     local.service_account_email == null ? "" : local.service_account_email
   )
 }

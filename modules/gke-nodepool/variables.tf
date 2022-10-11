@@ -100,6 +100,12 @@ variable "node_count" {
   nullable = false
 }
 
+variable "node_locations" {
+  description = "Node locations."
+  type        = list(string)
+  default     = null
+}
+
 variable "nodepool_config" {
   description = "Nodepool-level configuration."
   type = object({
@@ -113,7 +119,7 @@ variable "nodepool_config" {
       auto_repair  = optional(bool)
       auto_upgrade = optional(bool)
     }))
-    placement_policy = optional(bool)
+    # placement_policy = optional(bool)
     upgrade_settings = optional(object({
       max_surge       = number
       max_unavailable = number
@@ -131,6 +137,7 @@ variable "pod_range" {
       name   = string
     })
   })
+  default = null
 }
 
 variable "project_id" {
@@ -149,7 +156,7 @@ variable "reservation_affinity" {
 }
 
 variable "service_account" {
-  description = "Nodepool service account, leave email null to auto-create. If scopes are null a default will be used."
+  description = "Nodepool service account. If this variable is set to null, the default GCE service account will be used. If set and email is null, a service account will be created. If scopes are null a default will be used."
   type = object({
     email        = optional(string)
     oauth_scopes = optional(list(string))
