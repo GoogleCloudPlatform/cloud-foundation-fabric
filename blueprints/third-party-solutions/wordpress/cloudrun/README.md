@@ -36,10 +36,7 @@ If `project_create` is left to null, the identity performing the deployment need
 
 If you want to deploy from your Cloud Shell, click on the image below, sign in if required and when the prompt appears, click on “confirm”.
 
-[<p align="center"> <img alt="Open Cloudshell" width = "300px" src="images/button.png" /> </p>](https://ssh.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2FGoogleCloudPlatform%2Fcloud-foundation-fabric&cloudshell_print=cloud-shell-readme.txt&cloudshell_working_dir=blueprints%2Fthird-party-solutions%2Fwordpress
-
-https://shell.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2FGoogleCloudPlatform%2Fcloud-foundation-fabric&cloudshell_workspace=blueprints%2Fthird-party-solutions%2Fwordpress%2Fcloudrun
-)
+![https://ssh.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fcloud-foundation-fabric&cloudshell_print=cloud-shell-readme.txt&cloudshell_working_dir=blueprints%2Fthird-party-solutions%2Fwordpress%2Fcloudrun](cloud_shell.png)
 
 Otherwise, in your console of choice:
 ``` {shell}
