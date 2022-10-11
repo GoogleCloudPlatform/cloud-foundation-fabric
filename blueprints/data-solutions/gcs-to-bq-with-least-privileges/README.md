@@ -64,7 +64,7 @@ Click on the button below, sign in if required and when the prompt appears, clic
 
 This will clone the repository to your cloud shell and a screen like this one will appear:
 
-![https://ssh.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2Fterraform-google-modules%2Fcloud-foundation-fabric&cloudshell_print=cloud-shell-readme.txt&cloudshell_working_dir=blueprints%2Fdata-solutions%2Fgcs-to-bq-with-least-privileges](cloud_shell.png)
+![cloud_shell](cloud_shell.png)
 
 Before you deploy the architecture, make sure you run the following command to move your cloudshell session into your service project:
 
