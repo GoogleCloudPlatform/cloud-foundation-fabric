@@ -133,24 +133,34 @@ def get_api(token, owner=ORG, name=REPO):
   return ghapi.all.GhApi(owner=owner, repo=name, token=token)
 
 
-def get_release_pulls(api, releases):
-  'Get and add pull requests for releases.'
-  i = 0
-  for p in _paginate(api.pulls.list, base='master', state='closed',
-                     sort='updated', direction='desc'):
+def get_pulls(api):
+  'Get all pull requests (GH sometimes forgets pulls with filters).'
+  pulls = []
+  # this should be done on the fly with sort='updated', direction='desc'
+  # if the API could be trusted (they cannot)
+  for p in _paginate(api.pulls.list, base='master', state='closed'):
     try:
       merged_at = iso8601.parse_date(p['merged_at'])
     except iso8601.ParseError:
       continue
-    if releases[i].published and merged_at >= releases[i].published:
+    pulls.append(
+        PullRequest(p['number'], p['user']['login'], p['title'], merged_at,
+                    [l['name'] for l in p['labels']]))
+  pulls.sort(key=lambda p: p.merged_at, reverse=True)
+  return pulls
+
+
+def get_release_pulls(api, releases):
+  'Get and add pull requests for releases.'
+  i = 0
+  for p in get_pulls(api):
+    if releases[i].published and p.merged_at >= releases[i].published:
       continue
-    if releases[i].since and merged_at <= releases[i].since:
+    if releases[i].since and p.merged_at <= releases[i].since:
       i += 1
       if i == len(releases):
         break
-    releases[i].pulls.append(
-        PullRequest(p['number'], p['user']['login'], p['title'], merged_at,
-                    [l['name'] for l in p['labels']]))
+    releases[i].pulls.append(p)
   return releases
 
 

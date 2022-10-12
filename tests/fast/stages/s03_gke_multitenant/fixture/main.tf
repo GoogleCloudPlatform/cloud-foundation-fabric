@@ -28,27 +28,24 @@ module "stage" {
   clusters = {
     mycluster = {
       cluster_autoscaling = null
-      description         = "My cluster"
+      description         = "my cluster"
       dns_domain          = null
       location            = "europe-west1"
       labels              = {}
-      net = {
-        master_range = "172.17.16.0/28"
-        pods         = "pods"
-        services     = "services"
-        subnet       = "projects/my-host-project-id/regions/europe-west1/subnetworks/mycluster-subnet"
+      private_cluster_config = {
+        enable_private_endpoint = true
+        master_global_access    = true
       }
-      overrides = null
+      vpc_config = {
+        subnetwork             = "projects/prj-host/regions/europe-west1/subnetworks/gke-0"
+        master_ipv4_cidr_block = "172.16.20.0/28"
+      }
     }
   }
   nodepools = {
     mycluster = {
       mynodepool = {
-        initial_node_count = 1
-        node_count         = 1
-        node_type          = "n2-standard-4"
-        overrides          = null
-        spot               = false
+        node_count = { initial = 1 }
       }
     }
   }

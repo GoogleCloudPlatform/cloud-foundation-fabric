@@ -207,11 +207,11 @@ module "cluster-1" {
     master_authorized_ranges = {
       internal-vms = var.ip_ranges.gce
     }
+    master_ipv4_cidr_block = var.private_service_ranges.cluster-1
   }
   max_pods_per_node = 32
   private_cluster_config = {
     enable_private_endpoint = true
-    master_ipv4_cidr_block  = var.private_service_ranges.cluster-1
     master_global_access    = true
   }
   labels = {
@@ -220,11 +220,11 @@ module "cluster-1" {
 }
 
 module "cluster-1-nodepool-1" {
-  source                      = "../../../modules/gke-nodepool"
-  count                       = var.cluster_create ? 1 : 0
-  name                        = "nodepool-1"
-  project_id                  = module.project-svc-gke.project_id
-  location                    = module.cluster-1.0.location
-  cluster_name                = module.cluster-1.0.name
-  node_service_account_create = true
+  source          = "../../../modules/gke-nodepool"
+  count           = var.cluster_create ? 1 : 0
+  name            = "nodepool-1"
+  project_id      = module.project-svc-gke.project_id
+  location        = module.cluster-1.0.location
+  cluster_name    = module.cluster-1.0.name
+  service_account = {}
 }

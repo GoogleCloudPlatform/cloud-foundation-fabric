@@ -247,6 +247,7 @@ module "cluster-1" {
     master_authorized_ranges = {
       for name, range in var.ip_ranges : name => range
     }
+    master_ipv4_cidr_block = var.private_service_ranges.spoke-2-cluster-1
   }
   max_pods_per_node = 32
   labels = {
@@ -254,7 +255,6 @@ module "cluster-1" {
   }
   private_cluster_config = {
     enable_private_endpoint = true
-    master_ipv4_cidr_block  = var.private_service_ranges.spoke-2-cluster-1
     master_global_access    = true
     peering_config = {
       export_routes = true
@@ -264,12 +264,14 @@ module "cluster-1" {
 }
 
 module "cluster-1-nodepool-1" {
-  source               = "../../../modules/gke-nodepool"
-  name                 = "${local.prefix}nodepool-1"
-  project_id           = module.project.project_id
-  location             = module.cluster-1.location
-  cluster_name         = module.cluster-1.name
-  node_service_account = module.service-account-gke-node.email
+  source       = "../../../modules/gke-nodepool"
+  name         = "${local.prefix}nodepool-1"
+  project_id   = module.project.project_id
+  location     = module.cluster-1.location
+  cluster_name = module.cluster-1.name
+  service_account = {
+    email = module.service-account-gke-node.email
+  }
 }
 
 # roles assigned via this module use non-authoritative IAM bindings at the

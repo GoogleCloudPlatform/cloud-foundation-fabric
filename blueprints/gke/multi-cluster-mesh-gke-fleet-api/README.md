@@ -1,6 +1,6 @@
 # Multi-cluster mesh on GKE (fleet API)
 
-The following blueprint shows how to create a multi-cluster mesh for two private clusters on GKE. Anthos Service Mesh with automatic control plane management is set up for clusters using the Fleet API. This can only be done if the clusters are in a single project and in the same VPC. In this particular case both clusters having being deployed to different subnets in a shared VPC. 
+The following blueprint shows how to create a multi-cluster mesh for two private clusters on GKE. Anthos Service Mesh with automatic control plane management is set up for clusters using the Fleet API. This can only be done if the clusters are in a single project and in the same VPC. In this particular case both clusters having being deployed to different subnets in a shared VPC.
 
 The diagram below depicts the architecture of the blueprint.
 
@@ -39,13 +39,25 @@ Once terraform completes do the following:
 
         ansible-playbook -v playbook.yaml
 
-
 ## Testing the blueprint
 
 The last two commands executed with Ansible Send requests from a sleep pod to the hello-world service from both clusters. If you see in the output of those two commands responses from alternative versions, everything works as expected.
 
 Once done testing, you can clean up resources by running `terraform destroy`.
+
+<!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
+
+## Files
+
+| name | description | modules | resources |
+|---|---|---|---|
+| [ansible.tf](./ansible.tf) | Ansible generated files. |  | <code>local_file</code> |
+| [gke.tf](./gke.tf) | GKE cluster and hub resources. | <code>gke-cluster</code> · <code>gke-hub</code> · <code>gke-nodepool</code> |  |
+| [main.tf](./main.tf) | Project resources. | <code>project</code> |  |
+| [variables.tf](./variables.tf) | Module variables. |  |  |
+| [vm.tf](./vm.tf) | Management server. | <code>compute-vm</code> |  |
+| [vpc.tf](./vpc.tf) | Networking resources. | <code>net-cloudnat</code> · <code>net-vpc</code> · <code>net-vpc-firewall</code> |  |
 
 ## Variables
 
