@@ -83,7 +83,8 @@ resource "google_container_node_pool" "nodepool" {
     for_each = (
       try(var.nodepool_config.autoscaling, null) != null
       &&
-      try(var.nodepool_config.autoscaling.use_total_nodes, false) ? [] : [""]
+      !try(var.nodepool_config.autoscaling.use_total_nodes, false)
+      ? [""] : []
     )
     content {
       location_policy = try(var.nodepool_config.autoscaling.location_policy, null)

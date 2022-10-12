@@ -17,6 +17,7 @@ def test_defaults(plan_runner):
   "Test resources created with variable defaults."
   _, resources = plan_runner()
   assert len(resources) == 1
+  assert resources[0]['values']['autoscaling'] == []
 
 
 def test_service_account(plan_runner):
@@ -34,6 +35,22 @@ def test_nodepool_config(plan_runner):
     upgrade_settings = { max_surge = 3, max_unavailable = 3 }
   }'''
   _, resources = plan_runner(nodepool_config=nodepool_config)
+  assert resources[0]['values']['autoscaling'] == [{
+      'location_policy': None,
+      'max_node_count': None,
+      'min_node_count': None,
+      'total_max_node_count': 3,
+      'total_min_node_count': None
+  }]
+  nodepool_config = '{ autoscaling = { max_node_count = 3} }'
+  _, resources = plan_runner(nodepool_config=nodepool_config)
+  assert resources[0]['values']['autoscaling'] == [{
+      'location_policy': None,
+      'max_node_count': 3,
+      'min_node_count': None,
+      'total_max_node_count': None,
+      'total_min_node_count': None
+  }]
 
 
 def test_node_config(plan_runner):
