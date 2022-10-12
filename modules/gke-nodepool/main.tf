@@ -81,7 +81,10 @@ resource "google_container_node_pool" "nodepool" {
 
   dynamic "autoscaling" {
     for_each = (
-      try(var.nodepool_config.autoscaling.use_total_nodes, false) ? [] : [""]
+      try(var.nodepool_config.autoscaling, null) != null
+      &&
+      !try(var.nodepool_config.autoscaling.use_total_nodes, false)
+      ? [""] : []
     )
     content {
       location_policy = try(var.nodepool_config.autoscaling.location_policy, null)
@@ -94,9 +97,9 @@ resource "google_container_node_pool" "nodepool" {
       try(var.nodepool_config.autoscaling.use_total_nodes, false) ? [""] : []
     )
     content {
-      location_policy = try(var.nodepool_config.autoscaling.location_policy, null)
-      max_node_count  = try(var.nodepool_config.autoscaling.max_node_count, null)
-      min_node_count  = try(var.nodepool_config.autoscaling.min_node_count, null)
+      location_policy      = try(var.nodepool_config.autoscaling.location_policy, null)
+      total_max_node_count = try(var.nodepool_config.autoscaling.max_node_count, null)
+      total_min_node_count = try(var.nodepool_config.autoscaling.min_node_count, null)
     }
   }
 
