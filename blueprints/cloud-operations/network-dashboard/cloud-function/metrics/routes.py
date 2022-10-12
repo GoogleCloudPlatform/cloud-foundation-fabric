@@ -15,6 +15,7 @@
 #
 
 from ast import AnnAssign
+from os import times
 import re
 from sqlite3 import Timestamp
 import time
@@ -144,6 +145,7 @@ def get_routes_ppg(config, metric_dict, usage_dict, limit_dict):
       Returns:
         None
   '''
+  timestamp = time.time()
   for project_id in config["monitored_projects"]:
     network_dict_list = peerings.gather_peering_data(config, project_id)
 
@@ -177,7 +179,7 @@ def get_routes_ppg(config, metric_dict, usage_dict, limit_dict):
                                    metric_dict["usage"]["name"],
                                    metric_dict["limit"]["name"],
                                    metric_dict["utilization"]["name"],
-                                   limit_dict)
+                                   limit_dict, timestamp)
       print(
           f"Buffered {metric_dict['usage']['name']} for peering group {network_dict['network_name']} in {project_id}"
       )

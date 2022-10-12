@@ -186,6 +186,7 @@ def get_pgg_data(config, metric_dict, usage_dict, limit_metric, limit_dict):
 
     current_quota_limit_view = customize_quota_view(current_quota_limit)
 
+    timestamp = time.time()
     # For each network in this GCP project
     for network_dict in network_dict_list:
       if network_dict['network_id'] == 0:
@@ -236,7 +237,7 @@ def get_pgg_data(config, metric_dict, usage_dict, limit_metric, limit_dict):
                                    metric_dict["usage"]["name"],
                                    metric_dict["limit"]["name"],
                                    metric_dict["utilization"]["name"],
-                                   limit_dict)
+                                   limit_dict, timestamp)
       print(
           f"Buffered {metric_dict['usage']['name']} for peering group {network_dict['network_name']} in {project_id}"
       )
