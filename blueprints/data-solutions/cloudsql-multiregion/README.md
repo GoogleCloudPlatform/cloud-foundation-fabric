@@ -39,7 +39,7 @@ If `project_create` is left to `null`, the identity performing the deployment ne
 
 Click on the image below, sign in if required and when the prompt appears, click on “confirm”.
 
-[<p align="center"> <img alt="Open Cloudshell" width = "300px" src="images/button.png" /> </p>](https://goo.gle/GoCloudSQL)
+[![Open Cloudshell](images/button.png)](https://goo.gle/GoCloudSQL)
 
 This will clone the repository to your cloud shell and a screen like this one will appear:
 
