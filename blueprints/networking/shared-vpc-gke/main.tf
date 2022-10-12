@@ -220,11 +220,11 @@ module "cluster-1" {
 }
 
 module "cluster-1-nodepool-1" {
-  source                      = "../../../modules/gke-nodepool"
-  count                       = var.cluster_create ? 1 : 0
-  name                        = "nodepool-1"
-  project_id                  = module.project-svc-gke.project_id
-  location                    = module.cluster-1.0.location
-  cluster_name                = module.cluster-1.0.name
-  node_service_account_create = true
+  source          = "../../../modules/gke-nodepool"
+  count           = var.cluster_create ? 1 : 0
+  name            = "nodepool-1"
+  project_id      = module.project-svc-gke.project_id
+  location        = module.cluster-1.0.location
+  cluster_name    = module.cluster-1.0.name
+  service_account = {}
 }
