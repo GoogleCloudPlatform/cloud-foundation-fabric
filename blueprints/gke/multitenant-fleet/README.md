@@ -41,21 +41,29 @@ The overall architecture is based on the following design decisions:
 
 ## Basic usage
 
-The following example shows how to deploy a single cluster and a single node pool
+The following example shows how to deploy two clusters and one node pool for each
 
 ```hcl
+
+locals {
+  cluster_defaults = {
+    private_cluster_config = {
+      enable_private_endpoint = true
+      master_global_access    = true
+    }
+  }
+  subnet_self_links = {
+    ew1 = "projects/prj-host/regions/europe-west1/subnetworks/gke-0"
+    ew3 = "projects/prj-host/regions/europe-west3/subnetworks/gke-0"
+  }
+}
+
 module "gke" {
   source             = "./fabric/blueprints/gke/multitenant-fleet/"
   project_id         = var.project_id
   billing_account_id = var.billing_account_id
   folder_id          = var.folder_id
   prefix             = "myprefix"
-  vpc_config = {
-    host_project_id = "my-host-project-id"
-    vpc_self_link   = "projects/my-host-project-id/global/networks/my-network"
-  }
-
-  authenticator_security_group = "gke-rbac-base@example.com"
   group_iam = {
     "gke-admin@example.com" = [
       "roles/container.admin"
@@ -66,129 +74,52 @@ module "gke" {
       "cicd@my-cicd-project.iam.gserviceaccount.com"
     ]
   }
-
   clusters = {
-    mycluster = {
-      cluster_autoscaling = null
-      description         = "My cluster"
-      dns_domain          = null
-      location            = "europe-west1"
-      labels              = {}
-      net = {
-        master_range = "172.17.16.0/28"
-        pods         = "pods"
-        services     = "services"
-        subnet       = "projects/my-host-project-id/regions/europe-west1/subnetworks/mycluster-subnet"
+    cluster-0 = {
+      location               = "europe-west1"
+      private_cluster_config = local.cluster_defaults.private_cluster_config
+      vpc_config = {
+        subnetwork = local.subnet_self_links.ew1
+        master_ipv4_cidr_block = "172.16.10.0/28"
       }
-      overrides = null
+    }
+    cluster-1 = {
+      location               = "europe-west3"
+      private_cluster_config = local.cluster_defaults.private_cluster_config
+      vpc_config = {
+        subnetwork = local.subnet_self_links.ew3
+        master_ipv4_cidr_block = "172.16.20.0/28"
+      }
     }
   }
   nodepools = {
-    mycluster = {
-      mynodepool = {
-        initial_node_count = 1
-        node_count         = 1
-        node_type          = "n2-standard-4"
-        overrides          = null
-        spot               = false
+    cluster-0 = {
+      nodepool-0 = {
+        node_config = {
+          disk_type = "pd-balanced"
+          machine_type = "n2-standard-4
+          spot = true
+        }
       }
     }
+    cluster-1 = {
+      nodepool-0 = {
+        node_config = {
+          disk_type = "pd-balanced"
+          machine_type = "n2-standard-4
+        }
+      }
+    }
+  }
+  vpc_config = {
+    host_project_id = "my-host-project-id"
+    vpc_self_link   = "projects/prj-host/global/networks/prod-0"
   }
 }
 # tftest modules=5 resources=26
 ```
 
-## Creating Multiple Clusters
-
-The following example shows how to deploy two clusters with different configurations.
-
-The first cluster `cluster-euw1` defines the mandatory configuration parameters (description, location, network setup) and inherits the some defaults from the `cluster_defaults` and `nodepool_deaults` variables. These two variables are used whenever the `override` key of the `clusters` and `nodepools` variables are set to `null`.
-
-On the other hand, the second cluster (`cluster-euw3`) defines its own configuration by providing a value to the `overrides` key.
-
-```hcl
-module "gke" {
-  source             = "./fabric/blueprints/gke/multitenant-fleet/"
-  project_id         = var.project_id
-  billing_account_id = var.billing_account_id
-  folder_id          = var.folder_id
-  prefix             = "myprefix"
-  vpc_config = {
-    host_project_id = "my-host-project-id"
-    vpc_self_link   = "projects/my-host-project-id/global/networks/my-network"
-  }
-  clusters = {
-    cluster-euw1 = {
-      cluster_autoscaling = null
-      description         = "Cluster for europ-west1"
-      dns_domain          = null
-      location            = "europe-west1"
-      labels              = {}
-      net = {
-        master_range = "172.17.16.0/28"
-        pods         = "pods"
-        services     = "services"
-        subnet       = "projects/my-host-project-id/regions/europe-west1/subnetworks/euw1-subnet"
-      }
-      overrides = null
-    }
-    cluster-euw3 = {
-      cluster_autoscaling = null
-      description         = "Cluster for europe-west3"
-      dns_domain          = null
-      location            = "europe-west3"
-      labels              = {}
-      net = {
-        master_range = "172.17.17.0/28"
-        pods         = "pods"
-        services     = "services"
-        subnet       = "projects/my-host-project-id/regions/europe-west3/subnetworks/euw3-subnet"
-      }
-      overrides = {
-        cloudrun_config                 = false
-        database_encryption_key         = null
-        gcp_filestore_csi_driver_config = true
-        master_authorized_ranges = {
-          rfc1918_1 = "10.0.0.0/8"
-        }
-        max_pods_per_node        = 64
-        pod_security_policy      = true
-        release_channel          = "STABLE"
-        vertical_pod_autoscaling = false
-      }
-    }
-  }
-  nodepools = {
-    cluster-euw1 = {
-      pool-euw1 = {
-        initial_node_count = 1
-        node_count         = 1
-        node_type          = "n2-standard-4"
-        overrides          = null
-        spot               = false
-      }
-    }
-    cluster-euw3 = {
-      pool-euw3 = {
-        initial_node_count = 1
-        node_count         = 1
-        node_type          = "n2-standard-4"
-        overrides = {
-          image_type        = "UBUNTU_CONTAINERD"
-          max_pods_per_node = 64
-          node_locations    = []
-          node_tags         = []
-          node_taints       = []
-        }
-        spot = true
-      }
-    }
-  }
-}
-# tftest modules=7 resources=28
-```
-
-## Multiple clusters with GKE Fleet
+## GKE Fleet
 
 This example deploys two clusters and configures several GKE Fleet features:
 
@@ -209,56 +140,42 @@ module "gke" {
     vpc_self_link   = "projects/my-host-project-id/global/networks/my-network"
   }
   clusters = {
-    cluster-euw1 = {
-      cluster_autoscaling = null
-      description         = "Cluster for europe-west1"
-      dns_domain          = null
-      location            = "europe-west1"
-      labels              = {}
-      net = {
-        master_range = "172.17.16.0/28"
-        pods         = "pods"
-        services     = "services"
-        subnet       = "projects/my-host-project-id/regions/europe-west1/subnetworks/euw1-subnet"
+    cluster-0 = {
+      location               = "europe-west1"
+      private_cluster_config = local.cluster_defaults.private_cluster_config
+      vpc_config = {
+        subnetwork = local.subnet_self_links.ew1
+        master_ipv4_cidr_block = "172.16.10.0/28"
       }
-      overrides = null
     }
-    cluster-euw3 = {
-      cluster_autoscaling = null
-      description         = "Cluster for europe-west3"
-      dns_domain          = null
-      location            = "europe-west3"
-      labels              = {}
-      net = {
-        master_range = "172.17.17.0/28"
-        pods         = "pods"
-        services     = "services"
-        subnet       = "projects/my-host-project-id/regions/europe-west3/subnetworks/euw3-subnet"
+    cluster-1 = {
+      location               = "europe-west3"
+      private_cluster_config = local.cluster_defaults.private_cluster_config
+      vpc_config = {
+        subnetwork = local.subnet_self_links.ew3
+        master_ipv4_cidr_block = "172.16.20.0/28"
       }
-      overrides = null
     }
   }
   nodepools = {
-    cluster-euw1 = {
-      pool-euw1 = {
-        initial_node_count = 1
-        node_count         = 1
-        node_type          = "n2-standard-4"
-        overrides          = null
-        spot               = false
+    cluster-0 = {
+      nodepool-0 = {
+        node_config = {
+          disk_type = "pd-balanced"
+          machine_type = "n2-standard-4
+          spot = true
+        }
       }
     }
-    cluster-euw3 = {
-      pool-euw3 = {
-        initial_node_count = 1
-        node_count         = 1
-        node_type          = "n2-standard-4"
-        overrides          = null
-        spot               = true
+    cluster-1 = {
+      nodepool-0 = {
+        node_config = {
+          disk_type = "pd-balanced"
+          machine_type = "n2-standard-4
+        }
       }
     }
   }
-
   fleet_features = {
     appdevexperience             = false
     configmanagement             = true
@@ -301,14 +218,18 @@ module "gke" {
     }
   }
   fleet_configmanagement_clusters = {
-    default = ["cluster-euw1", "cluster-euw3"]
+    default = ["cluster-0", "cluster-1"]
+  }
+  vpc_config = {
+    host_project_id = "my-host-project-id"
+    vpc_self_link   = "projects/prj-host/global/networks/prod-0"
   }
 }
 
 # tftest modules=8 resources=39
 ```
 
-<!-- TFDOC OPTS files:1 show_extra:1 -->
+<!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
 
 ## Files

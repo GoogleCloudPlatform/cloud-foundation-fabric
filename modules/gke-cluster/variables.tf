@@ -182,7 +182,6 @@ variable "private_cluster_config" {
   description = "Private cluster configuration."
   type = object({
     enable_private_endpoint = optional(bool)
-    master_ipv4_cidr_block  = optional(string)
     master_global_access    = optional(bool)
     peering_config = optional(object({
       export_routes = optional(bool)
@@ -207,12 +206,13 @@ variable "release_channel" {
 variable "vpc_config" {
   description = "VPC-level configuration."
   type = object({
-    network    = string
-    subnetwork = string
+    network                = string
+    subnetwork             = string
+    master_ipv4_cidr_block = optional(string)
     secondary_range_blocks = optional(object({
       pods     = string
       services = string
-    }), )
+    }))
     secondary_range_names = optional(object({
       pods     = string
       services = string

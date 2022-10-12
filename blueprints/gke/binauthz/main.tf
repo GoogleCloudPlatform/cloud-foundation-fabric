@@ -99,13 +99,13 @@ module "cluster" {
 }
 
 module "cluster_nodepool" {
-  source                      = "../../../modules/gke-nodepool"
-  project_id                  = module.project.project_id
-  cluster_name                = module.cluster.name
-  location                    = var.zone
-  name                        = "nodepool"
-  node_service_account_create = true
-  initial_node_count          = 3
+  source          = "../../../modules/gke-nodepool"
+  project_id      = module.project.project_id
+  cluster_name    = module.cluster.name
+  location        = var.zone
+  name            = "nodepool"
+  service_account = {}
+  node_count      = { initial = 3 }
 }
 
 module "kms" {
