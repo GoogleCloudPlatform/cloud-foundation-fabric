@@ -14,7 +14,9 @@
 # limitations under the License.
 #
 
+from ast import AnnAssign
 import re
+from sqlite3 import Timestamp
 import time
 
 from collections import defaultdict
@@ -80,8 +82,8 @@ def get_routes_for_network(config, network_link, project_id, routers_dict):
 
 def get_dynamic_routes(config, metrics_dict, limits_dict):
   '''
-    Writes all dynamic routes per VPC to custom metrics.
-
+    This function gets the usage, limit and utilization for the dynamic routes per VPC
+    note: assumes global routing is ON for all VPCs
       Parameters:
         config (dict): The dict containing config like clients and limits
         metrics_dict (dictionary of dictionary of string: string): metrics names and descriptions.
@@ -130,10 +132,10 @@ def get_dynamic_routes(config, metrics_dict, limits_dict):
     return dynamic_routes_dict
 
 
-def get_dynamic_routes_ppg(config, metric_dict, usage_dict, limit_dict):
+def get_routes_ppg(config, metric_dict, usage_dict, limit_dict):
   '''
-    This function gets the usage, limit and utilization for the dynamic routes per VPC peering group.
-
+    This function gets the usage, limit and utilization for the static or dynamic routes per VPC peering group.
+    note: assumes global routing is ON for all VPCs for dynamic routes, assumes share custom routes is on for all peered networks
       Parameters:
         config (dict): The dict containing config like clients and limits
         metric_dict (dictionary of string: string): Dictionary with the metric names and description, that will be used to populate the metrics
@@ -142,11 +144,11 @@ def get_dynamic_routes_ppg(config, metric_dict, usage_dict, limit_dict):
       Returns:
         None
   '''
-  for project in config["monitored_projects"]:
-    network_dict_list = peerings.gather_peering_data(config, project)
+  for project_id in config["monitored_projects"]:
+    network_dict_list = peerings.gather_peering_data(config, project_id)
 
     for network_dict in network_dict_list:
-      network_link = f"https://www.googleapis.com/compute/v1/projects/{project}/global/networks/{network_dict['network_name']}"
+      network_link = f"https://www.googleapis.com/compute/v1/projects/{project_id}/global/networks/{network_dict['network_name']}"
 
       limit = limits.get_ppg(network_link, limit_dict)
 
@@ -171,27 +173,23 @@ def get_dynamic_routes_ppg(config, metric_dict, usage_dict, limit_dict):
         peered_network_dict["usage"] = peered_usage
         peered_network_dict["limit"] = peered_limit
 
-      limits.count_effective_limit(config, project, network_dict,
+      limits.count_effective_limit(config, project_id, network_dict,
                                    metric_dict["usage"]["name"],
                                    metric_dict["limit"]["name"],
                                    metric_dict["utilization"]["name"],
                                    limit_dict)
       print(
-          f"Wrote {metric_dict['usage']['name']} for peering group {network_dict['network_name']} in {project}"
+          f"Buffered {metric_dict['usage']['name']} for peering group {network_dict['network_name']} in {project_id}"
       )
 
 
-def get_static_routes_vpc(config, metrics_dict, project_quotas_dict):
+def get_static_routes_dict(config):
   '''
-    LOREM
-
-      Parameters:
-        config (dict): The dict containing config like clients and limits
-        metric_dict (dictionary of string: string): Dictionary with the metric names and description, that will be used to populate the metrics
-        usage_dict (dictionnary of string:int): Dictionary with the network link as key and the number of resources as value
-        project_quotas_dict (dictionary of string:int): Dictionary with the network link as key and the limit as value.
-      Returns:
-        None
+    Calls the Asset Inventory API to get all static customr routes under the GCP organization.
+    Parameters:
+      config (dict): The dict containing config like clients and limits
+    Returns:
+      routes_per_vpc_dict (dictionary of string: int): Keys are the network links and values are the number of custom static routes per network.
   '''
   routes_per_vpc_dict = defaultdict()
   usage_dict = defaultdict()
@@ -203,10 +201,9 @@ def get_static_routes_vpc(config, metrics_dict, project_quotas_dict):
       request={
           "scope": f"organizations/{config['organization']}",
           "asset_types": ["compute.googleapis.com/Route"],
-          "read_mask": read_mask,
+          "read_mask": read_mask
       })
 
-  timestamp = time.time()
   for resource in response:
     for versioned in resource.versioned_resources:
       static_route = dict()
@@ -216,30 +213,64 @@ def get_static_routes_vpc(config, metrics_dict, project_quotas_dict):
                                              static_route["network"]).group(1)
       static_route["network_name"] = re.search("\/([^\/]*)$",
                                                static_route["network"]).group(1)
-
-      #exclude default vpc and peering routes
+      network_link = f"https://www.googleapis.com/compute/v1/projects/{static_route['project_id']}/global/networks/{static_route['network_name']}"
+      #exclude default vpc and peering routes, dynamic routes are not in Cloud Asset Inventory
       if "nextHopPeering" not in static_route and "nextHopNetwork" not in static_route:
-        if static_route["project_id"] not in routes_per_vpc_dict:
-          routes_per_vpc_dict[static_route["project_id"]] = dict()
-        if static_route["network_name"] not in routes_per_vpc_dict[
-            static_route["project_id"]]:
-          routes_per_vpc_dict[static_route["project_id"]][
-              static_route["network_name"]] = dict()
+        if network_link not in routes_per_vpc_dict:
+          routes_per_vpc_dict[network_link] = dict()
+          routes_per_vpc_dict[network_link]["project_id"] = static_route[
+              "project_id"]
+          routes_per_vpc_dict[network_link]["network_name"] = static_route[
+              "network_name"]
+        if static_route["destRange"] not in routes_per_vpc_dict[network_link]:
+          routes_per_vpc_dict[network_link][static_route["destRange"]] = {}
+        if "usage" not in routes_per_vpc_dict[network_link]:
+          routes_per_vpc_dict[network_link]["usage"] = 0
+        routes_per_vpc_dict[network_link][
+            "usage"] = routes_per_vpc_dict[network_link]["usage"] + 1
 
-        if static_route["destRange"] not in routes_per_vpc_dict[
-            static_route["project_id"]][static_route["network_name"]]:
-          routes_per_vpc_dict[static_route["project_id"]][
-              static_route["network_name"]][static_route["destRange"]] = {}
-          if "usage" not in routes_per_vpc_dict[static_route["project_id"]][
-              static_route["network_name"]]:
-            routes_per_vpc_dict[static_route["project_id"]][
-                static_route["network_name"]]["usage"] = 0
-          routes_per_vpc_dict[static_route["project_id"]][
-              static_route["network_name"]]["usage"] = routes_per_vpc_dict[
-                  static_route["project_id"]][
-                      static_route["network_name"]]["usage"] + 1
+  #output a dict with network links and usage only
+  return {
+      network_link_out: routes_per_vpc_dict[network_link_out]["usage"]
+      for network_link_out in routes_per_vpc_dict
+  }
 
-  for project_id in routes_per_vpc_dict:
+
+def get_static_routes_data(config, metrics_dict, static_routes_dict,
+                           project_quotas_dict):
+  '''
+    Determines and writes the number of static routes for each VPC in monitored projects, the per project limit and the per project utilization
+    note: assumes custom routes sharing is ON for all VPCs
+      Parameters:
+        config (dict): The dict containing config like clients and limits
+        metric_dict (dictionary of string: string): Dictionary with the metric names and description, that will be used to populate the metrics
+        static_routes_dict (dictionary of dictionary: int): Keys are the network links and values are the number of custom static routes per network.
+        project_quotas_dict (dictionary of string:int): Dictionary with the network link as key and the limit as value.
+      Returns:
+        None
+  '''
+  timestamp = time.time()
+  project_usage = {project: 0 for project in config["monitored_projects"]}
+
+  #usage is drilled down by network
+  for network_link in static_routes_dict:
+
+    project_id = re.search("\/([^\/]*)(\/[^\/]*){3}$", network_link).group(1)
+    if (project_id not in config["monitored_projects"]):
+      continue
+    network_name = re.search("\/([^\/]*)$", network_link).group(1)
+
+    project_usage[project_id] = project_usage[project_id] + static_routes_dict[
+        network_link]
+
+    metric_labels = {"project": project_id, "network_name": network_name}
+    metrics.append_data_to_series_buffer(
+        config, metrics_dict["metrics_per_network"]["static_routes_per_network"]
+        ["usage"]["name"], static_routes_dict[network_link], metric_labels,
+        timestamp=timestamp)
+
+  #limit and utilization are calculated by projec
+  for project_id in project_usage:
     current_quota_limit = project_quotas_dict[project_id]['global']["routes"][
         "limit"]
     if current_quota_limit is None:
@@ -247,14 +278,6 @@ def get_static_routes_vpc(config, metrics_dict, project_quotas_dict):
           f"Could not determine static routes  metric for projects/{project_id} due to missing quotas"
       )
       continue
-    for network_name in routes_per_vpc_dict[project_id]:
-      metric_labels = {"project": project_id, "network_name": network_name}
-      metrics.append_data_to_series_buffer(
-          config, metrics_dict["metrics_per_network"]
-          ["static_routes_per_network"]["usage"]["name"],
-          routes_per_vpc_dict[project_id][network_name]["usage"], metric_labels,
-          timestamp=timestamp)
-
     # limit and utilization are calculted by project
     metric_labels = {"project": project_id}
     metrics.append_data_to_series_buffer(
@@ -264,7 +287,7 @@ def get_static_routes_vpc(config, metrics_dict, project_quotas_dict):
     metrics.append_data_to_series_buffer(
         config, metrics_dict["metrics_per_network"]["static_routes_per_network"]
         ["utilization"]["name"],
-        routes_per_vpc_dict[project_id][network_name]["usage"] /
-        current_quota_limit, metric_labels, timestamp=timestamp)
+        project_usage[project_id] / current_quota_limit, metric_labels,
+        timestamp=timestamp)
 
   return

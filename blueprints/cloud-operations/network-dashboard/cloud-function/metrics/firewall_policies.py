@@ -28,8 +28,8 @@ from . import metrics, networks, limits
 
 def get_firewall_policies_dict(config: dict):
   '''
-    Calls the Asset Inventory API to get all Firewall Policies under the GCP organization
-
+    Calls the Asset Inventory API to get all Firewall Policies under the GCP organization, including children
+    Ignores monitored projects list: returns all policies regardless of their parent resource
       Parameters:
         config (dict): The dict containing config like clients and limits
       Returns:
@@ -57,8 +57,8 @@ def get_firewall_policies_dict(config: dict):
 
 def get_firewal_policies_data(config, metrics_dict, firewall_policies_dict):
   '''
-    Gets the data for VPC Firewall lorem ipsum
-
+    Gets the data for VPC Firewall Policies in an organization, including children. All folders are considered, 
+    only projects in the monitored projects list are considered. 
       Parameters:
         config (dict): The dict containing config like clients and limits
         metrics_dict (dictionary of dictionary of string: string): metrics names and descriptions.
@@ -92,6 +92,9 @@ def get_firewal_policies_data(config, metrics_dict, firewall_policies_dict):
             firewall_policy["selfLink"]).group(1)
     parent_type = re.search("(^\w+)", firewall_policy["parent"]).group(
         1) if "parent" in firewall_policy else "projects"
+
+    if parent_type == "projects" and parent not in config["monitored_projects"]:
+      continue
 
     metric_labels = {'parent': parent, 'parent_type': parent_type}
 
