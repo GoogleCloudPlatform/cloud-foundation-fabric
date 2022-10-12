@@ -24,6 +24,11 @@ locals {
       : null
     )
   )
+  function = (
+    var.v2
+    ? google_cloudfunctions2_function.function[0]
+    : google_cloudfunctions_function.function[0]
+  )
   prefix = var.prefix == null ? "" : "${var.prefix}-"
   service_account_email = (
     var.service_account_create
@@ -163,7 +168,7 @@ resource "google_cloudfunctions_function_iam_binding" "default" {
   for_each       = var.iam
   project        = var.project_id
   region         = var.region
-  cloud_function = var.v2 ? google_cloudfunctions2_function.function[0].name : google_cloudfunctions_function.function[0].name
+  cloud_function = local.function.name
   role           = each.key
   members        = each.value
 }
