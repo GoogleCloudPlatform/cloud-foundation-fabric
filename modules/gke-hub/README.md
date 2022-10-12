@@ -53,7 +53,9 @@ module "cluster_1" {
   vpc_config = {
     network    = module.vpc.self_link
     subnetwork = module.vpc.subnet_self_links["europe-west1/cluster-1"]
-    master_authorized_ranges = { rfc1918_10_8 = "10.0.0.0/8" }
+    master_authorized_ranges = {
+      fc1918_10_8 = "10.0.0.0/8"
+    }
     master_ipv4_cidr_block  = "192.168.0.0/28"
   }
   enable_features = {

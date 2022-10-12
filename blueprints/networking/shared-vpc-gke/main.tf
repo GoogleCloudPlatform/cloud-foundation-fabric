@@ -207,11 +207,11 @@ module "cluster-1" {
     master_authorized_ranges = {
       internal-vms = var.ip_ranges.gce
     }
+    master_ipv4_cidr_block = var.private_service_ranges.cluster-1
   }
   max_pods_per_node = 32
   private_cluster_config = {
     enable_private_endpoint = true
-    master_ipv4_cidr_block  = var.private_service_ranges.cluster-1
     master_global_access    = true
   }
   labels = {
