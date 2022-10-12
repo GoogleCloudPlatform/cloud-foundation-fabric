@@ -44,7 +44,6 @@ The overall architecture is based on the following design decisions:
 The following example shows how to deploy two clusters and one node pool for each
 
 ```hcl
-
 locals {
   cluster_defaults = {
     private_cluster_config = {
@@ -97,7 +96,7 @@ module "gke" {
       nodepool-0 = {
         node_config = {
           disk_type = "pd-balanced"
-          machine_type = "n2-standard-4
+          machine_type = "n2-standard-4"
           spot = true
         }
       }
@@ -106,7 +105,7 @@ module "gke" {
       nodepool-0 = {
         node_config = {
           disk_type = "pd-balanced"
-          machine_type = "n2-standard-4
+          machine_type = "n2-standard-4"
         }
       }
     }
@@ -116,7 +115,7 @@ module "gke" {
     vpc_self_link   = "projects/prj-host/global/networks/prod-0"
   }
 }
-# tftest modules=5 resources=26
+# tftest modules=7 resources=26
 ```
 
 ## GKE Fleet
@@ -129,31 +128,30 @@ This example deploys two clusters and configures several GKE Fleet features:
 - The two clusters are configured to use the `default` Config Management template.
 
 ```hcl
+locals {
+  subnet_self_links = {
+    ew1 = "projects/prj-host/regions/europe-west1/subnetworks/gke-0"
+    ew3 = "projects/prj-host/regions/europe-west3/subnetworks/gke-0"
+  }
+}
+
 module "gke" {
   source             = "./fabric/blueprints/gke/multitenant-fleet/"
   project_id         = var.project_id
   billing_account_id = var.billing_account_id
   folder_id          = var.folder_id
   prefix             = "myprefix"
-  vpc_config = {
-    host_project_id = "my-host-project-id"
-    vpc_self_link   = "projects/my-host-project-id/global/networks/my-network"
-  }
   clusters = {
     cluster-0 = {
       location               = "europe-west1"
-      private_cluster_config = local.cluster_defaults.private_cluster_config
       vpc_config = {
         subnetwork = local.subnet_self_links.ew1
-        master_ipv4_cidr_block = "172.16.10.0/28"
       }
     }
     cluster-1 = {
       location               = "europe-west3"
-      private_cluster_config = local.cluster_defaults.private_cluster_config
       vpc_config = {
         subnetwork = local.subnet_self_links.ew3
-        master_ipv4_cidr_block = "172.16.20.0/28"
       }
     }
   }
@@ -162,7 +160,7 @@ module "gke" {
       nodepool-0 = {
         node_config = {
           disk_type = "pd-balanced"
-          machine_type = "n2-standard-4
+          machine_type = "n2-standard-4"
           spot = true
         }
       }
@@ -171,7 +169,7 @@ module "gke" {
       nodepool-0 = {
         node_config = {
           disk_type = "pd-balanced"
-          machine_type = "n2-standard-4
+          machine_type = "n2-standard-4"
         }
       }
     }
@@ -180,7 +178,7 @@ module "gke" {
     appdevexperience             = false
     configmanagement             = true
     identityservice              = true
-    multiclusteringress          = "cluster-euw1"
+    multiclusteringress          = "cluster-0"
     multiclusterservicediscovery = true
     servicemesh                  = true
   }
@@ -226,7 +224,7 @@ module "gke" {
   }
 }
 
-# tftest modules=8 resources=39
+# tftest modules=8 resources=35
 ```
 
 <!-- TFDOC OPTS files:1 -->

@@ -30,7 +30,7 @@ variable "clusters" {
     enable_features = optional(any, {
       workload_identity = true
     })
-    issue_client_certificate = optional(bool)
+    issue_client_certificate = optional(bool, false)
     labels                   = optional(map(string))
     location                 = string
     logging_config           = optional(list(string), ["SYSTEM_COMPONENTS"])
