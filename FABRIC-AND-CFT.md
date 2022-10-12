@@ -10,10 +10,6 @@ Fabric is a collection of Terraform modules and end to end examples meant to be 
 
 CFT is a collection of Terraform modules and examples with opinionated GCP best practices implemented as individual modules for gradual adoption and off the shelf usage in organizations.
 
-## Third-party reviews
-
-* [Google Cloud Landing Zone Comparison](https://www.meshcloud.io/2022/09/09/gcp-landing-zone-comparison/) by Meshcloud.
-
 ## Key Differences
 
 <table>
@@ -46,7 +42,7 @@ CFT is a collection of Terraform modules and examples with opinionated GCP best 
    </td>
    <td>Built with extensibility in mind catering to fork and use patterns. Modules are often lightweight and easy to adopt / tailor to specific use cases.
    </td>
-   <td>Not built with fork and use extensibility, caters to off the shelf consumption.
+   <td>Not built with fork and use extensibility catering primarily to off the shelf consumption. Modules are tailored towards common usecases and extensible via composition.
    </td>
   </tr>
   <tr>
@@ -62,9 +58,7 @@ CFT is a collection of Terraform modules and examples with opinionated GCP best 
    </td>
    <td>Thorough examples for individual modules, and end to end examples composing multiple modules covering a wide variety of use cases from foundations to solutions.
    </td>
-   <td>Examples for a module mostly focus on that individual module. \
- \
-Composition is often not shown in examples but in other modules built using smaller modules.
+   <td>Examples for a module mostly focus on that individual module. Composition is often not shown in examples but in larger modules built using smaller modules.
    </td>
   </tr>
   <tr>
@@ -96,7 +90,7 @@ Composition is often not shown in examples but in other modules built using smal
    </td>
    <td>Individual modules consumed directly using Git as a module source.
 <p>
-For production usage, we encourage customers to “fork and own” their own repository.
+For production usage, customers are encouraged to “fork and own” their own repository.
    </td>
    <td>Individual repositories consumed via the Terraform registry.
 <p>
@@ -108,7 +102,7 @@ For production/airgapped usage, customers may also mirror modules to a private r
    </td>
    <td>Fabric implements several "factories" in modules, where users can drive or automate Terraform via YAML files (projects, subnetworks, firewalls, etc.).
    </td>
-   <td>
+   <td>CFT does not implement factories and generally show examples usable with variable definitions files (.tfvars).
    </td>
   </tr>
   <tr>
@@ -132,7 +126,7 @@ For production/airgapped usage, customers may also mirror modules to a private r
    </td>
    <td>Every PR performs unit tests on modules, examples, and documentation snippets by evaluating a Terraform plan via Python <a href="https://pypi.org/project/tftest/">tftest</a> library.
    </td>
-   <td>Every PR performs full end-to-end deployment with integration tests using the blueprint test framework.
+   <td>Every PR performs full end-to-end deployment with integration tests using the <a href="https://pkg.go.dev/github.com/GoogleCloudPlatform/cloud-foundation-toolkit/infra/blueprint-test">blueprint test framework</a>.
    </td>
   </tr>
 </table>
