@@ -17,15 +17,23 @@
 locals {
   _image = coalesce(var.node_config.image_type, "-")
   image = {
-    is_cos            = length(regexall("COS", local._image)) > 0
-    is_cos_containerd = length(regexall("COS_CONTAINERD", local._image)) > 0
-    is_win            = length(regexall("WIN", local._image)) > 0
+    is_cos = length(regexall("COS", local._image)) > 0
+    is_cos_containerd = (
+      var.node_config.image_type == null
+      ||
+      length(regexall("COS_CONTAINERD", local._image)) > 0
+    )
+    is_win = length(regexall("WIN", local._image)) > 0
   }
   node_metadata = var.node_config.metadata == null ? null : merge(
     var.node_config.metadata,
     { disable-legacy-endpoints = "true" }
   )
-  service_account_create = var.service_account != null
+  # if no attributes passed for service account, use the GCE default
+  # if no email specified, create service account
+  service_account_create = (
+    var.service_account != null && try(var.service_account.email, null) == null
+  )
   service_account_email = (
     local.service_account_create
     ? google_service_account.service_account[0].email
