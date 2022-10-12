@@ -46,9 +46,8 @@ variable "clusters" {
     private_cluster_config = optional(any)
     release_channel        = optional(string)
     vpc_config = object({
-      subnetwork             = string
-      master_ipv4_cidr_block = optional(string)
-      network                = optional(string)
+      subnetwork = string
+      network    = optional(string)
       secondary_range_blocks = optional(object({
         pods     = string
         services = string
@@ -58,6 +57,7 @@ variable "clusters" {
         services = string
       }), { pods = "pods", services = "services" })
       master_authorized_ranges = optional(map(string))
+      master_ipv4_cidr_block   = optional(string)
     })
   }))
   default  = {}

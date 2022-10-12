@@ -24,6 +24,7 @@ def test_service_account(plan_runner):
   assert len(resources) == 1
   _, resources = plan_runner(service_account='{}')
   assert len(resources) == 2
+  assert 'google_service_account' in [r['type'] for r in resources]
 
 
 def test_nodepool_config(plan_runner):

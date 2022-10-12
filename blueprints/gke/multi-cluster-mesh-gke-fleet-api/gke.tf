@@ -31,10 +31,10 @@ module "clusters" {
       { for key, config in var.clusters_config :
         "pods-${key}" => config.pods_cidr_block if key != each.key
     })
+    master_ipv4_cidr_block = each.value.master_cidr_block
   }
   private_cluster_config = {
     enable_private_endpoint = true
-    master_ipv4_cidr_block  = each.value.master_cidr_block
     master_global_access    = true
   }
   release_channel = "REGULAR"
@@ -44,16 +44,15 @@ module "clusters" {
 }
 
 module "cluster_nodepools" {
-  for_each                    = var.clusters_config
-  source                      = "../../../modules/gke-nodepool"
-  project_id                  = module.fleet_project.project_id
-  cluster_name                = module.clusters[each.key].name
-  location                    = var.region
-  name                        = "nodepool-${each.key}"
-  node_service_account_create = true
-  initial_node_count          = 1
-  node_machine_type           = "e2-standard-4"
-  node_tags                   = ["${each.key}-node"]
+  for_each        = var.clusters_config
+  source          = "../../../modules/gke-nodepool"
+  project_id      = module.fleet_project.project_id
+  cluster_name    = module.clusters[each.key].name
+  location        = var.region
+  name            = "nodepool-${each.key}"
+  node_count      = { initial = 1 }
+  service_account = {}
+  tags            = ["${each.key}-node"]
 }
 
 module "hub" {

@@ -57,7 +57,7 @@ locals {
   }
 }
 
-module "gke" {
+module "gke-fleet" {
   source             = "./fabric/blueprints/gke/multitenant-fleet/"
   project_id         = var.project_id
   billing_account_id = var.billing_account_id
