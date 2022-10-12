@@ -137,6 +137,7 @@ def get_pulls(api):
   'Get all pull requests (GH sometimes forgets pulls with filters).'
   pulls = []
   # this should be done on the fly with sort='updated', direction='desc'
+  # if the API could be trusted (they cannot)
   for p in _paginate(api.pulls.list, base='master', state='closed'):
     try:
       merged_at = iso8601.parse_date(p['merged_at'])
