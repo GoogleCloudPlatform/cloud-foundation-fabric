@@ -22,11 +22,11 @@ module "cluster-1" {
     master_authorized_ranges = {
       internal-vms = "10.0.0.0/8"
     }
+    master_ipv4_cidr_block  = "192.168.0.0/28"
   }
   max_pods_per_node = 32
   private_cluster_config = {
     enable_private_endpoint = true
-    master_ipv4_cidr_block  = "192.168.0.0/28"
     master_global_access    = false
   }
   labels = {
@@ -54,10 +54,10 @@ module "cluster-1" {
     master_authorized_ranges = {
       internal-vms = "10.0.0.0/8"
     }
+    master_ipv4_cidr_block  = "192.168.0.0/28"
   }
   private_cluster_config = {
     enable_private_endpoint = true
-    master_ipv4_cidr_block  = "192.168.0.0/28"
     master_global_access    = false
   }
   enable_features = {
@@ -78,8 +78,8 @@ module "cluster-1" {
 |---|---|:---:|:---:|:---:|
 | [location](variables.tf#L117) | Cluster zone or region. | <code>string</code> | ✓ |  |
 | [name](variables.tf#L169) | Cluster name. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L196) | Cluster project id. | <code>string</code> | ✓ |  |
-| [vpc_config](variables.tf#L207) | VPC-level configuration. | <code title="object&#40;&#123;&#10;  network    &#61; string&#10;  subnetwork &#61; string&#10;  secondary_range_blocks &#61; optional&#40;object&#40;&#123;&#10;    pods     &#61; string&#10;    services &#61; string&#10;  &#125;&#41;, &#41;&#10;  secondary_range_names &#61; optional&#40;object&#40;&#123;&#10;    pods     &#61; string&#10;    services &#61; string&#10;  &#125;&#41;, &#123; pods &#61; &#34;pods&#34;, services &#61; &#34;services&#34; &#125;&#41;&#10;  master_authorized_ranges &#61; optional&#40;map&#40;string&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
+| [project_id](variables.tf#L195) | Cluster project id. | <code>string</code> | ✓ |  |
+| [vpc_config](variables.tf#L206) | VPC-level configuration. | <code title="object&#40;&#123;&#10;  network                &#61; string&#10;  subnetwork             &#61; string&#10;  master_ipv4_cidr_block &#61; optional&#40;string&#41;&#10;  secondary_range_blocks &#61; optional&#40;object&#40;&#123;&#10;    pods     &#61; string&#10;    services &#61; string&#10;  &#125;&#41;&#41;&#10;  secondary_range_names &#61; optional&#40;object&#40;&#123;&#10;    pods     &#61; string&#10;    services &#61; string&#10;  &#125;&#41;, &#123; pods &#61; &#34;pods&#34;, services &#61; &#34;services&#34; &#125;&#41;&#10;  master_authorized_ranges &#61; optional&#40;map&#40;string&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [cluster_autoscaling](variables.tf#L17) | Enable and configure limits for Node Auto-Provisioning with Cluster Autoscaler. | <code title="object&#40;&#123;&#10;  auto_provisioning_defaults &#61; optional&#40;object&#40;&#123;&#10;    boot_disk_kms_key &#61; optional&#40;string&#41;&#10;    image_type        &#61; optional&#40;string&#41;&#10;    oauth_scopes      &#61; optional&#40;list&#40;string&#41;&#41;&#10;    service_account   &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  cpu_limits &#61; optional&#40;object&#40;&#123;&#10;    min &#61; number&#10;    max &#61; number&#10;  &#125;&#41;&#41;&#10;  mem_limits &#61; optional&#40;object&#40;&#123;&#10;    min &#61; number&#10;    max &#61; number&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [description](variables.tf#L38) | Cluster description. | <code>string</code> |  | <code>null</code> |
 | [enable_addons](variables.tf#L44) | Addons enabled in the cluster (true means enabled). | <code title="object&#40;&#123;&#10;  cloudrun                       &#61; optional&#40;bool, false&#41;&#10;  config_connector               &#61; optional&#40;bool, false&#41;&#10;  dns_cache                      &#61; optional&#40;bool, false&#41;&#10;  gce_persistent_disk_csi_driver &#61; optional&#40;bool, false&#41;&#10;  gcp_filestore_csi_driver       &#61; optional&#40;bool, false&#41;&#10;  gke_backup_agent               &#61; optional&#40;bool, false&#41;&#10;  horizontal_pod_autoscaling     &#61; optional&#40;bool, false&#41;&#10;  http_load_balancing            &#61; optional&#40;bool, false&#41;&#10;  istio &#61; optional&#40;object&#40;&#123;&#10;    enable_tls &#61; bool&#10;  &#125;&#41;&#41;&#10;  kalm           &#61; optional&#40;bool, false&#41;&#10;  network_policy &#61; optional&#40;bool, false&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  horizontal_pod_autoscaling &#61; true&#10;  http_load_balancing        &#61; true&#10;&#125;">&#123;&#8230;&#125;</code> |
@@ -92,8 +92,8 @@ module "cluster-1" {
 | [min_master_version](variables.tf#L157) | Minimum version of the master, defaults to the version of the most recent official release. | <code>string</code> |  | <code>null</code> |
 | [monitoring_config](variables.tf#L163) | Monitoring components. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;SYSTEM_COMPONENTS&#34;&#93;</code> |
 | [node_locations](variables.tf#L174) | Zones in which the cluster's nodes are located. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [private_cluster_config](variables.tf#L181) | Private cluster configuration. | <code title="object&#40;&#123;&#10;  enable_private_endpoint &#61; optional&#40;bool&#41;&#10;  master_ipv4_cidr_block  &#61; optional&#40;string&#41;&#10;  master_global_access    &#61; optional&#40;bool&#41;&#10;  peering_config &#61; optional&#40;object&#40;&#123;&#10;    export_routes &#61; optional&#40;bool&#41;&#10;    import_routes &#61; optional&#40;bool&#41;&#10;    project_id    &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [release_channel](variables.tf#L201) | Release channel for GKE upgrades. | <code>string</code> |  | <code>null</code> |
+| [private_cluster_config](variables.tf#L181) | Private cluster configuration. | <code title="object&#40;&#123;&#10;  enable_private_endpoint &#61; optional&#40;bool&#41;&#10;  master_global_access    &#61; optional&#40;bool&#41;&#10;  peering_config &#61; optional&#40;object&#40;&#123;&#10;    export_routes &#61; optional&#40;bool&#41;&#10;    import_routes &#61; optional&#40;bool&#41;&#10;    project_id    &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [release_channel](variables.tf#L200) | Release channel for GKE upgrades. | <code>string</code> |  | <code>null</code> |
 
 ## Outputs
 
