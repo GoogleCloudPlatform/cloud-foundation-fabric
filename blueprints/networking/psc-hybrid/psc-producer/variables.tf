@@ -46,7 +46,7 @@ variable "subnet" {
 
 variable "subnet_proxy" {
   description = "L7 Regional load balancing subnet id."
-  type    = string
+  type        = string
 }
 
 variable "subnets_psc" {

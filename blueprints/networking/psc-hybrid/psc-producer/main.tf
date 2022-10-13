@@ -48,12 +48,12 @@ resource "google_compute_region_health_check" "health_check" {
 }
 
 resource "google_compute_region_backend_service" "backend_service" {
-  name                            = var.name
-  project                         = var.project_id
-  region                          = var.region
-  health_checks                   = [google_compute_region_health_check.health_check.id]
-  load_balancing_scheme           = "INTERNAL_MANAGED"
-  protocol                        = "TCP"
+  name                  = var.name
+  project               = var.project_id
+  region                = var.region
+  health_checks         = [google_compute_region_health_check.health_check.id]
+  load_balancing_scheme = "INTERNAL_MANAGED"
+  protocol              = "TCP"
 
   backend {
     group           = google_compute_network_endpoint_group.neg.self_link
