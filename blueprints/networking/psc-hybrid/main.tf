@@ -56,7 +56,7 @@ module "psc_producer" {
   zone            = var.zone
   subnet          = module.vpc_producer.subnets["${var.region}/${var.prefix}-main"].id
   subnet_proxy    = module.vpc_producer.subnets_proxy_only["${var.region}/${var.prefix}-proxy"].id
-  subnets_psc     = [
+  subnets_psc = [
     module.vpc_producer.subnets_psc["${var.region}/${var.prefix}-psc"].id
   ]
   accepted_limits = var.producer["accepted_limits"]

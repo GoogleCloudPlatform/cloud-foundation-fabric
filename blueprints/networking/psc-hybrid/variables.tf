@@ -47,10 +47,10 @@ variable "dest_port" {
 
 variable "producer" {
   description = "Producer configuration."
-  type        = object({
-    subnet_main     = string # CIDR
-    subnet_proxy    = string # CIDR
-    subnet_psc      = string # CIDR
+  type = object({
+    subnet_main  = string # CIDR
+    subnet_proxy = string # CIDR
+    subnet_psc   = string # CIDR
     # The accepted projects and related number of allowed PSC endpoints
     accepted_limits = map(number)
   })
