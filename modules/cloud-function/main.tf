@@ -159,8 +159,35 @@ resource "google_cloudfunctions2_function" "function" {
     vpc_connector_egress_settings = try(
     var.vpc_connector.egress_settings, null)
 
-  }
+    dynamic "secret_environment_variables" {
+      for_each = { for k, v in var.secrets : k => v if !v.is_volume }
+      iterator = secret
+      content {
+        key        = secret.key
+        project_id = secret.value.project_id
+        secret     = secret.value.secret
+        version    = try(secret.value.versions.0, "latest")
+      }
+    }
 
+    dynamic "secret_volumes" {
+      for_each = { for k, v in var.secrets : k => v if v.is_volume }
+      iterator = secret
+      content {
+        mount_path = secret.key
+        project_id = secret.value.project_id
+        secret     = secret.value.secret
+        dynamic "versions" {
+          for_each = secret.value.versions
+          iterator = version
+          content {
+            path    = split(":", version)[1]
+            version = split(":", version)[0]
+          }
+        }
+      }
+    }
+  }
   labels = var.labels
 }
 
