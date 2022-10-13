@@ -19,9 +19,12 @@ locals {
     (local.groups.data-engineers) = [
       "roles/bigquery.admin",
       "roles/storage.admin",
+      "roles/analyticshub.admin",
+      "roles/analyticshub.publisher",
+      "roles/analyticshub.listingAdmin"
     ],
     (local.groups.data-analysts) = [
-      "analyticshub.googleapis.com",
+      "roles/analyticshub.viewer",
       "roles/bigquery.dataViewer",
       "roles/bigquery.jobUser",
       "roles/bigquery.metadataViewer",
