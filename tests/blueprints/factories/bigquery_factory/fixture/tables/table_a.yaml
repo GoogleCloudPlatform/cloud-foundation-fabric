@@ -1,0 +1,3 @@
+dataset: dataset_a
+table: table_a
+schema: [{name: "test", type: "STRING"},{name: "test2", type: "INT64"}]

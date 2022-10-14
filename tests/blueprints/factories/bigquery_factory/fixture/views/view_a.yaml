@@ -1,0 +1,3 @@
+dataset: dataset_b
+view: view_a
+query: "SELECT CURRENT_DATE() LIMIT 1"
