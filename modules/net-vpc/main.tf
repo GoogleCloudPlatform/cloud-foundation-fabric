@@ -55,8 +55,12 @@ resource "google_compute_network_peering" "local" {
 }
 
 resource "google_compute_network_peering" "remote" {
-  provider             = google-beta
-  count                = var.peering_config != null && var.peering_create_remote_end ? 1 : 0
+  provider = google-beta
+  count = (
+    var.peering_config != null && try(var.peering_config.create_remote_peer, true)
+    ? 1
+    : 0
+  )
   name                 = "${local.peer_network}-${var.name}"
   network              = var.peering_config.peer_vpc_self_link
   peer_network         = local.network.self_link
@@ -74,10 +78,10 @@ resource "google_compute_shared_vpc_host_project" "shared_vpc_host" {
 
 resource "google_compute_shared_vpc_service_project" "service_projects" {
   provider = google-beta
-  for_each = (
+  for_each = toset(
     var.shared_vpc_host && var.shared_vpc_service_projects != null
-    ? toset(var.shared_vpc_service_projects)
-    : toset([])
+    ? var.shared_vpc_service_projects
+    : []
   )
   host_project    = var.project_id
   service_project = each.value
@@ -86,19 +90,23 @@ resource "google_compute_shared_vpc_service_project" "service_projects" {
 
 resource "google_dns_policy" "default" {
   count                     = var.dns_policy == null ? 0 : 1
-  enable_inbound_forwarding = var.dns_policy.inbound
-  enable_logging            = var.dns_policy.logging
-  name                      = var.name
   project                   = var.project_id
+  name                      = var.name
+  enable_inbound_forwarding = try(var.dns_policy.inbound, null)
+  enable_logging            = try(var.dns_policy.logging, null)
   networks {
     network_url = local.network.id
   }
 
   dynamic "alternative_name_server_config" {
-    for_each = toset(var.dns_policy.outbound == null ? [] : [""])
+    for_each = var.dns_policy.outbound != null ? [""] : []
     content {
       dynamic "target_name_servers" {
-        for_each = toset(var.dns_policy.outbound.private_ns)
+        for_each = (
+          var.dns_policy.outbound.private_ns != null
+          ? var.dns_policy.outbound.private_ns
+          : []
+        )
         iterator = ns
         content {
           ipv4_address    = ns.key
@@ -106,7 +114,11 @@ resource "google_dns_policy" "default" {
         }
       }
       dynamic "target_name_servers" {
-        for_each = toset(var.dns_policy.outbound.public_ns)
+        for_each = (
+          var.dns_policy.outbound.public_ns != null
+          ? var.dns_policy.outbound.public_ns
+          : []
+        )
         iterator = ns
         content {
           ipv4_address = ns.key
