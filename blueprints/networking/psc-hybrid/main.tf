@@ -15,7 +15,14 @@
  */
 
 locals {
-  project_id = var.project_create ? module.project.project_id : var.project_id
+  project_id         = var.project_create ? module.project.project_id : var.project_id
+  vpc_producer_id    = var.vpc_create ? module.vpc_producer.network.id : var.vpc_config["producer"]["id"]
+  vpc_producer_main  = var.vpc_create ? module.vpc_producer.subnets["${var.region}/${var.prefix}-main"].id : var.vpc_config["producer"]["subnet_main_id"]
+  vpc_producer_proxy = var.vpc_create ? module.vpc_producer.subnets_proxy_only["${var.region}/${var.prefix}-proxy"].id : var.vpc_config["producer"]["subnet_proxy_id"]
+  vpc_producer_psc   = var.vpc_create ? module.vpc_producer.subnets_psc["${var.region}/${var.prefix}-psc"].id : var.vpc_config["producer"]["subnet_psc_id"]
+  vpc_consumer_id    = var.vpc_create ? module.vpc_consumer.network.id : var.vpc_config["consumer"]["id"]
+  vpc_consumer_main  = var.vpc_create ? module.vpc_consumer.subnets["${var.region}/${var.prefix}-consumer"].id : var.vpc_config["consumer"]["subnet_main_id"]
+
 }
 
 module "project" {
@@ -66,13 +73,13 @@ module "psc_producer" {
   name            = var.prefix
   dest_ip_address = var.dest_ip_address
   dest_port       = var.dest_port
-  network         = module.vpc_producer.network.id
+  network         = local.vpc_producer_id
   region          = var.region
   zone            = var.zone
-  subnet          = module.vpc_producer.subnets["${var.region}/${var.prefix}-main"].id
-  subnet_proxy    = module.vpc_producer.subnets_proxy_only["${var.region}/${var.prefix}-proxy"].id
+  subnet          = local.vpc_producer_main
+  subnet_proxy    = local.vpc_producer_proxy
   subnets_psc = [
-    module.vpc_producer.subnets_psc["${var.region}/${var.prefix}-psc"].id
+    local.vpc_producer_psc
   ]
   accepted_limits = var.producer["accepted_limits"]
 }
@@ -98,7 +105,7 @@ module "psc_consumer" {
   project_id = local.project_id
   name       = "${var.prefix}-consumer"
   region     = var.region
-  network    = module.vpc_consumer.network.id
-  subnet     = module.vpc_consumer.subnets["${var.region}/${var.prefix}-consumer"].id
+  network    = local.vpc_consumer_id
+  subnet     = local.vpc_consumer_main
   sa_id      = module.psc_producer.service_attachment.id
 }

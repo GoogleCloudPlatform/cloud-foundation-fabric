@@ -63,18 +63,51 @@ variable "project_config" {
   }
 }
 
+variable "vpc_create" {
+  description = "Whether to automatically create VPCs."
+  type        = bool
+  default     = true
+}
+
+variable "vpc_config" {
+  description = "VPC and subnet ids, in case existing VPCs are used."
+  type = object({
+    producer = object({
+      id              = string
+      subnet_main_id  = string
+      subnet_proxy_id = string
+      subnet_psc_id   = string
+    })
+    consumer = object({
+      id             = string
+      subnet_main_id = string
+    })
+  })
+  default = {
+    producer = {
+      id              = "xxx"
+      subnet_main_id  = "xxx"
+      subnet_proxy_id = "xxx"
+      subnet_psc_id   = "xxx"
+    }
+    consumer = {
+      id             = "xxx"
+      subnet_main_id = "xxx"
+    }
+  }
+}
+
 variable "producer" {
   description = "Producer configuration."
   type = object({
-    subnet_main  = string # CIDR
-    subnet_proxy = string # CIDR
-    subnet_psc   = string # CIDR
-    # The accepted projects and related number of allowed PSC endpoints
-    accepted_limits = map(number)
+    subnet_main     = string      # CIDR
+    subnet_proxy    = string      # CIDR
+    subnet_psc      = string      # CIDR
+    accepted_limits = map(number) # Accepted project ids => PSC endpoint limit
   })
 }
 
 variable "subnet_consumer" {
   description = "Consumer subnet CIDR."
-  type        = string
+  type        = string # CIDR
 }
