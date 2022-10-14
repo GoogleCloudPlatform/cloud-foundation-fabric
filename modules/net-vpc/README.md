@@ -18,7 +18,7 @@ module "vpc" {
       ip_cidr_range = "10.0.0.0/24"
       name          = "production"
       region        = "europe-west1"
-      secondary_ip_range = {
+      secondary_ip_ranges = {
         pods     = "172.16.0.0/20"
         services = "192.168.0.0/24"
       }
@@ -27,7 +27,6 @@ module "vpc" {
       ip_cidr_range = "10.0.16.0/24"
       name          = "production"
       region        = "europe-west2"
-      secondary_ip_range = {}
     }
   ]
 }
@@ -49,7 +48,6 @@ module "vpc-hub" {
     ip_cidr_range      = "10.0.0.0/24"
     name               = "subnet-1"
     region             = "europe-west1"
-    secondary_ip_range = null
   }]
 }
 
@@ -61,11 +59,9 @@ module "vpc-spoke-1" {
     ip_cidr_range      = "10.0.1.0/24"
     name               = "subnet-2"
     region             = "europe-west1"
-    secondary_ip_range = null
   }]
   peering_config = {
     peer_vpc_self_link = module.vpc-hub.self_link
-    export_routes      = false
     import_routes      = true
   }
 }
@@ -108,7 +104,7 @@ module "vpc-host" {
     local.service_project_1.project_id,
     local.service_project_2.project_id
   ]
-  iam = {
+  subnet_iam = {
     "europe-west1/subnet-1" = {
       "roles/compute.networkUser" = [
         local.service_project_1.cloud_services_service_account,
@@ -135,12 +131,10 @@ module "vpc" {
       ip_cidr_range      = "10.0.0.0/24"
       name               = "production"
       region             = "europe-west1"
-      secondary_ip_range = null
     }
   ]
   psa_config = {
     ranges = { myrange = "10.0.1.0/24" }
-    routes = null
   }
 }
 # tftest modules=1 resources=5
@@ -160,12 +154,12 @@ module "vpc" {
       ip_cidr_range      = "10.0.0.0/24"
       name               = "production"
       region             = "europe-west1"
-      secondary_ip_range = null
     }
   ]
   psa_config = {
     ranges = { myrange = "10.0.1.0/24" }
-    routes = { export=true, import=true }
+    export_routes = true
+    import_routes = true
   }
 }
 # tftest modules=1 resources=5
@@ -212,7 +206,6 @@ module "vpc" {
   name       = "my-network"
   dns_policy = {
     inbound  = true
-    logging  = false
     outbound = {
       private_ns = ["10.0.0.1"]
       public_ns  = ["8.8.8.8"]
@@ -223,7 +216,6 @@ module "vpc" {
       ip_cidr_range      = "10.0.0.0/24"
       name               = "production"
       region             = "europe-west1"
-      secondary_ip_range = {}
     }
   ]
 }
