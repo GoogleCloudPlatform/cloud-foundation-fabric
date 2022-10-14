@@ -14,6 +14,8 @@
 
 import pytest
 
+# pytestmark = [pytest.mark.xdist_group(name=pathlib.Path().parent.name)]
+
 
 @pytest.fixture
 def resources(plan_runner):
