@@ -24,7 +24,7 @@ terraform {
       version = ">= 4.36.0" # tftest
     }
     # used in modules
-    local = {
+    archive = {
       source = "hashicorp/archive"
     }
     # used in fast
