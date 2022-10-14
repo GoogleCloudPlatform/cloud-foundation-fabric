@@ -180,7 +180,7 @@ metrics_per_peering_group:
       name: static_routes_per_peering_group_limit
       description: Number of Static routes per peering group - limit.
       values:
-        default_value: 250
+        default_value: 300
     utilization:
       name: static_routes_per_peering_group_utilization
       description: Number of Static routes per peering group - utilization.
