@@ -85,9 +85,9 @@ variable "enable_features" {
     l4_ilb_subsetting    = optional(bool, false)
     pod_security_policy  = optional(bool, false)
     resource_usage_export = optional(object({
-      dataset                              = optional(string)
-      enable_network_egress_metering       = optional(bool, false)
-      enable_resource_consumption_metering = optional(bool, false)
+      dataset                              = string
+      enable_network_egress_metering       = optional(bool)
+      enable_resource_consumption_metering = optional(bool)
     }))
     shielded_nodes = optional(bool, false)
     tpu            = optional(bool, false)
@@ -98,8 +98,7 @@ variable "enable_features" {
     workload_identity        = optional(bool, false)
   })
   default = {
-    workload_identity     = true
-    resource_usage_export = null
+    workload_identity = true
   }
 }
 
@@ -183,7 +182,6 @@ variable "private_cluster_config" {
   description = "Private cluster configuration."
   type = object({
     enable_private_endpoint = optional(bool)
-    master_ipv4_cidr_block  = optional(string)
     master_global_access    = optional(bool)
     peering_config = optional(object({
       export_routes = optional(bool)
@@ -208,12 +206,13 @@ variable "release_channel" {
 variable "vpc_config" {
   description = "VPC-level configuration."
   type = object({
-    network    = string
-    subnetwork = string
+    network                = string
+    subnetwork             = string
+    master_ipv4_cidr_block = optional(string)
     secondary_range_blocks = optional(object({
       pods     = string
       services = string
-    }), )
+    }))
     secondary_range_names = optional(object({
       pods     = string
       services = string

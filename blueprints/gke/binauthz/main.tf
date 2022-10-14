@@ -66,7 +66,7 @@ module "vpc" {
       ip_cidr_range = var.subnet_cidr_block
       name          = "subnet"
       region        = var.region
-      secondary_ip_range = {
+      secondary_ip_ranges = {
         pods     = var.pods_cidr_block
         services = var.services_cidr_block
       }
@@ -88,24 +88,24 @@ module "cluster" {
   name       = "${local.prefix}cluster"
   location   = var.zone
   vpc_config = {
-    network    = module.vpc.self_link
-    subnetwork = module.vpc.subnet_self_links["${var.region}/subnet"]
+    master_ipv4_cidr_block = var.master_cidr_block
+    network                = module.vpc.self_link
+    subnetwork             = module.vpc.subnet_self_links["${var.region}/subnet"]
   }
   private_cluster_config = {
     enable_private_endpoint = false
-    master_ipv4_cidr_block  = var.master_cidr_block
     master_global_access    = false
   }
 }
 
 module "cluster_nodepool" {
-  source                      = "../../../modules/gke-nodepool"
-  project_id                  = module.project.project_id
-  cluster_name                = module.cluster.name
-  location                    = var.zone
-  name                        = "nodepool"
-  node_service_account_create = true
-  initial_node_count          = 3
+  source          = "../../../modules/gke-nodepool"
+  project_id      = module.project.project_id
+  cluster_name    = module.cluster.name
+  location        = var.zone
+  name            = "nodepool"
+  service_account = {}
+  node_count      = { initial = 3 }
 }
 
 module "kms" {

@@ -42,15 +42,12 @@ module "vpc-onprem" {
   name       = "${var.name}-onprem"
   subnets = [
     {
-      ip_cidr_range      = var.ip_ranges.onprem
-      name               = "${var.name}-onprem"
-      region             = var.region
-      secondary_ip_range = {}
+      ip_cidr_range         = var.ip_ranges.onprem
+      name                  = "${var.name}-onprem"
+      region                = var.region
+      enable_private_access = false
     }
   ]
-  subnet_private_access = {
-    "${var.region}/${var.name}-onprem" = false
-  }
 }
 
 module "firewall-onprem" {
@@ -65,10 +62,9 @@ module "vpc-hub" {
   name       = "${var.name}-hub"
   subnets = [
     {
-      ip_cidr_range      = var.ip_ranges.hub
-      name               = "${var.name}-hub"
-      region             = var.region
-      secondary_ip_range = {}
+      ip_cidr_range = var.ip_ranges.hub
+      name          = "${var.name}-hub"
+      region        = var.region
     }
   ]
 }

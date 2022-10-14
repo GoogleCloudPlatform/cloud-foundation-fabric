@@ -48,23 +48,17 @@ module "landing-vpc" {
   name       = "prod-landing-0"
   mtu        = 1500
   dns_policy = {
-    inbound  = true
-    logging  = false
-    outbound = null
+    inbound = true
   }
   # set explicit routes for googleapis in case the default route is deleted
   routes = {
     private-googleapis = {
       dest_range    = "199.36.153.8/30"
-      priority      = 1000
-      tags          = []
       next_hop_type = "gateway"
       next_hop      = "default-internet-gateway"
     }
     restricted-googleapis = {
       dest_range    = "199.36.153.4/30"
-      priority      = 1000
-      tags          = []
       next_hop_type = "gateway"
       next_hop      = "default-internet-gateway"
     }

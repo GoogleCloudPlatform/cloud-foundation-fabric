@@ -50,6 +50,8 @@ module "service-account-function" {
   # Required IAM permissions for this service account are:
   # 1) compute.networkViewer on projects to be monitored (I gave it at organization level for now for simplicity)
   # 2) monitoring viewer on the projects to be monitored (I gave it at organization level for now for simplicity)
+  # 3) if you dont have permission to create service account and assign permission at organization Level, move these 3 roles to project level.
+
   iam_organization_roles = {
     "${var.organization_id}" = [
       "roles/compute.networkViewer",
@@ -59,17 +61,20 @@ module "service-account-function" {
   }
 
   iam_project_roles = {
-    "${local.monitoring_project}" = [
-      "roles/monitoring.metricWriter"
-    ]
+    "${local.monitoring_project}" = compact([
+      "roles/monitoring.metricWriter",
+      var.v2 ? "roles/run.invoker" : ""
+    ])
   }
 }
 
 ################################################
 # Cloud Function configuration (& Scheduler)   #
+# you can comment out  the pub/sub call in case of 2nd generation function
 ################################################
 
 module "pubsub" {
+
   source     = "../../../modules/pubsub"
   project_id = local.monitoring_project
   name       = "network-dashboard-pubsub"
@@ -81,6 +86,7 @@ module "pubsub" {
 }
 
 resource "google_cloud_scheduler_job" "job" {
+  count     = var.v2 ? 0 : 1
   project   = local.monitoring_project
   region    = var.region
   name      = "network-dashboard-scheduler"
@@ -92,9 +98,28 @@ resource "google_cloud_scheduler_job" "job" {
     data       = base64encode("test")
   }
 }
+#http trigger for 2nd generation function
 
+resource "google_cloud_scheduler_job" "job_httptrigger" {
+  count     = var.v2 ? 1 : 0
+  project   = local.monitoring_project
+  region    = var.region
+  name      = "network-dashboard-scheduler"
+  schedule  = var.schedule_cron
+  time_zone = "UTC"
+
+  http_target {
+    http_method = "POST"
+    uri         = module.cloud-function.uri
+
+    oidc_token {
+      service_account_email = module.service-account-function.email
+    }
+  }
+}
 
 module "cloud-function" {
+  v2          = var.v2
   source      = "../../../modules/cloud-function"
   project_id  = local.monitoring_project
   name        = "network-dashboard-cloud-function"
@@ -115,7 +140,8 @@ module "cloud-function" {
     entry_point = "main"
     runtime     = "python39"
     instances   = 1
-    memory      = 256
+    memory      = 256 # Memory in MB
+
   }
 
   environment_variables = {

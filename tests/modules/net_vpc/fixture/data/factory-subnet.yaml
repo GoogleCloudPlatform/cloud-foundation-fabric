@@ -15,9 +15,9 @@
 region: europe-west1
 description: Sample description
 ip_cidr_range: 10.128.0.0/24
-private_ip_google_access: false
+enable_private_access: false
 iam_users: ["foobar@example.com"]
 iam_groups: ["lorem@example.com"]
 iam_service_accounts: ["foobar@project-id.iam.gserviceaccount.com"]
-secondary_ip_range:
+secondary_ip_ranges:
   secondary-range-a: 192.168.128.0/24
