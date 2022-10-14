@@ -20,7 +20,7 @@ variable "prefix" {
 }
 
 variable "project_id" {
-  description = "The ID of the project where resources will be created."
+  description = "When referncing existing projects, the id of the project where resources will be created."
   type        = string
 }
 
@@ -43,6 +43,24 @@ variable "dest_port" {
   description = "On-prem service destination port."
   type        = string
   default     = "80"
+}
+
+variable "project_create" {
+  description = "Whether to automatically create a project."
+  type        = bool
+  default     = false
+}
+
+variable "project_config" {
+  description = "Project configuration, in case the project is automatically created."
+  type = object({
+    billing_account = string
+    parent          = string
+  })
+  default = {
+    billing_account = "my_billing_account"
+    parent          = "my_parent"
+  }
 }
 
 variable "producer" {

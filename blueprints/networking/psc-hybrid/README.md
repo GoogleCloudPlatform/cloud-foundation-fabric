@@ -4,9 +4,9 @@ The sample allows to connect to an on-prem service leveraging Private Service Co
 
 It creates:
 
-* A "producer": a VPC exposing a PSC Service Attachment (SA), connecting to an internal regional TCP proxy load balancer, using a hybrid NEG backend that connects to an on-premises service (IP address + port)
+* A [producer](./psc-producer/README.md): a VPC exposing a PSC Service Attachment (SA), connecting to an internal regional TCP proxy load balancer, using a hybrid NEG backend that connects to an on-premises service (IP address + port)
 
-* [PSC Consumer](./psc-consumer/README.md)
+* A [consumer](./psc-consumer/README.md): a VPC with a PSC endpoint pointing to the PSC SA exposed by the producer. The endpoint is accessible by clients through a local IP address on the consumer VPC.
 
 <!-- TODO(lucaprete) - Diagram goes here after first reviews -->
 

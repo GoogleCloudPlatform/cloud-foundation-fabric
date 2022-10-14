@@ -14,11 +14,26 @@
  * limitations under the License.
  */
 
-# Producer
+locals {
+  project_id = var.project_create ? module.project.project_id : var.project_id
+}
 
+module "project" {
+  count           = var.project_create ? 1 : 0
+  source          = "../../../modules/project"
+  billing_account = var.project_config["billing_account"]
+  name            = "psc-hybrid"
+  parent          = var.project_config["parent"]
+  prefix          = var.prefix
+  services = [
+    "compute.googleapis.com"
+  ]
+}
+
+# Producer
 module "vpc_producer" {
   source     = "../../../modules/net-vpc"
-  project_id = var.project_id
+  project_id = local.project_id
   name       = "${var.prefix}-producer"
   subnets = [
     {
@@ -47,7 +62,7 @@ module "vpc_producer" {
 
 module "psc_producer" {
   source          = "./psc-producer"
-  project_id      = var.project_id
+  project_id      = local.project_id
   name            = var.prefix
   dest_ip_address = var.dest_ip_address
   dest_port       = var.dest_port
@@ -66,7 +81,7 @@ module "psc_producer" {
 
 module "vpc_consumer" {
   source     = "../../../modules/net-vpc"
-  project_id = var.project_id
+  project_id = local.project_id
   name       = "${var.prefix}-consumer"
   subnets = [
     {
@@ -80,7 +95,7 @@ module "vpc_consumer" {
 
 module "psc_consumer" {
   source     = "./psc-consumer"
-  project_id = var.project_id
+  project_id = local.project_id
   name       = "${var.prefix}-consumer"
   region     = var.region
   network    = module.vpc_consumer.network.id
