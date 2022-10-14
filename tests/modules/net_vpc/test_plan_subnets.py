@@ -51,6 +51,7 @@ def test_subnet_factory(plan_runner):
   ]
   assert {s['name'] for s in subnets} == {'factory-subnet', 'factory-subnet2'}
   assert {len(s['secondary_ip_range']) for s in subnets} == {0, 1}
+  assert {s['private_ip_google_access'] for s in subnets} == {True, False}
 
 
 def test_subnets(plan_runner):
