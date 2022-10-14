@@ -22,7 +22,7 @@ from google.protobuf import field_mask_pb2
 from googleapiclient import discovery
 from metrics import ilb_fwrules, instances, networks, metrics, limits, peerings, routes, subnets, vpc_firewalls
 
-CFv2 = False
+CFv2 = os.environ.get("CF_VERSION")
 if CFv2:
   import functions_framework
 
@@ -37,7 +37,7 @@ def get_monitored_projects_list(config):
           monitored_projects (List of strings): Full list of projects to be monitored
       '''
   monitored_projects = config["monitored_projects"]
-  monitored_folders = []  #os.environ.get("MONITORED_FOLDERS_LIST").split(",")
+  monitored_folders = os.environ.get("MONITORED_FOLDERS_LIST").split(",")
 
   # Handling empty monitored folders list
   if monitored_folders == ['']:
@@ -208,10 +208,10 @@ def main(event, context):
 
 
 if CFv2:
-
   @functions_framework.http
   def main_http(request):
     main(None, None)
+    return 'Function v2 executed successfully'
 else:
   if __name__ == "__main__":
     main(None, None)

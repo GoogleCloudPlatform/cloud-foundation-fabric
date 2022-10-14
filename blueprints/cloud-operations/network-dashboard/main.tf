@@ -61,10 +61,23 @@ module "service-account-function" {
   }
 
   iam_project_roles = {
-    "${local.monitoring_project}" = compact([
+    "${local.monitoring_project}" = [
       "roles/monitoring.metricWriter",
-      var.v2 ? "roles/run.invoker" : ""
-    ])
+    ]
+  }
+}
+
+module "service-account-scheduler" {
+  source       = "../../../modules/iam-service-account"
+  project_id   = local.monitoring_project
+  name         = "sa-scheduler"
+  generate_key = false
+
+  iam_project_roles = {
+    "${local.monitoring_project}" = [
+      "roles/run.invoker",
+      "roles/cloudfunctions.invoker"
+    ]
   }
 }
 
@@ -113,7 +126,7 @@ resource "google_cloud_scheduler_job" "job_httptrigger" {
     uri         = module.cloud-function.uri
 
     oidc_token {
-      service_account_email = module.service-account-function.email
+      service_account_email = module.service-account-scheduler.email
     }
   }
 }
@@ -122,7 +135,7 @@ module "cloud-function" {
   v2          = var.v2
   source      = "../../../modules/cloud-function"
   project_id  = local.monitoring_project
-  name        = "network-dashboard-cloud-function"
+  name        = "network-dashboard-cloud-functionv2"
   bucket_name = "${local.monitoring_project}-network-dashboard-bucket"
   bucket_config = {
     location             = var.region
@@ -149,10 +162,12 @@ module "cloud-function" {
     MONITORED_FOLDERS_LIST  = local.folders
     MONITORING_PROJECT_ID   = local.monitoring_project
     ORGANIZATION_ID         = var.organization_id
+    CF_VERSION              = var.v2
   }
 
-  service_account  = module.service-account-function.email
-  ingress_settings = "ALLOW_INTERNAL_ONLY"
+  service_account = module.service-account-function.email
+  # Internal only doesn't seem to work with CFv2:
+  ingress_settings = var.v2 ? "ALLOW_ALL" : "ALLOW_INTERNAL_ONLY"
 
   trigger_config = {
     event    = "google.pubsub.topic.publish"
