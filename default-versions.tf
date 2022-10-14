@@ -23,6 +23,10 @@ terraform {
       source  = "hashicorp/google-beta"
       version = ">= 4.36.0" # tftest
     }
+    # used in modules
+    archive = {
+      source = "hashicorp/archive"
+    }
     # used in fast
     local = {
       source = "hashicorp/local"
