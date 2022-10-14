@@ -51,18 +51,6 @@ variable "project_create" {
   default     = false
 }
 
-variable "project_config" {
-  description = "Project configuration, in case the project is automatically created."
-  type = object({
-    billing_account = string
-    parent          = string
-  })
-  default = {
-    billing_account = "my_billing_account"
-    parent          = "my_parent"
-  }
-}
-
 variable "vpc_create" {
   description = "Whether to automatically create VPCs."
   type        = bool

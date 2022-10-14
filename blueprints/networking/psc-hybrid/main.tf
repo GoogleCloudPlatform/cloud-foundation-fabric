@@ -15,22 +15,48 @@
  */
 
 locals {
-  project_id         = var.project_create ? module.project.project_id : var.project_id
-  vpc_producer_id    = var.vpc_create ? module.vpc_producer.network.id : var.vpc_config["producer"]["id"]
-  vpc_producer_main  = var.vpc_create ? module.vpc_producer.subnets["${var.region}/${var.prefix}-main"].id : var.vpc_config["producer"]["subnet_main_id"]
-  vpc_producer_proxy = var.vpc_create ? module.vpc_producer.subnets_proxy_only["${var.region}/${var.prefix}-proxy"].id : var.vpc_config["producer"]["subnet_proxy_id"]
-  vpc_producer_psc   = var.vpc_create ? module.vpc_producer.subnets_psc["${var.region}/${var.prefix}-psc"].id : var.vpc_config["producer"]["subnet_psc_id"]
-  vpc_consumer_id    = var.vpc_create ? module.vpc_consumer.network.id : var.vpc_config["consumer"]["id"]
-  vpc_consumer_main  = var.vpc_create ? module.vpc_consumer.subnets["${var.region}/${var.prefix}-consumer"].id : var.vpc_config["consumer"]["subnet_main_id"]
+  prefix = coalesce(var.prefix, "") == "" ? "" : "${var.prefix}-"
+  project_id = (
+    var.project_create
+    ? module.project.project_id
+    : var.project_id
+  )
+  vpc_producer_id = (
+    var.vpc_create
+    ? module.vpc_producer.network.id
+    : var.vpc_config["producer"]["id"]
+  )
+  vpc_producer_main = (
+    var.vpc_create
+    ? module.vpc_producer.subnets["${var.region}/${var.prefix}-main"].id
+    : var.vpc_config["producer"]["subnet_main_id"]
+  )
+  vpc_producer_proxy = (
+    var.vpc_create
+    ? module.vpc_producer.subnets_proxy_only["${var.region}/${var.prefix}-proxy"].id
+    : var.vpc_config["producer"]["subnet_proxy_id"]
+  )
+  vpc_producer_psc = (
+    var.vpc_create
+    ? module.vpc_producer.subnets_psc["${var.region}/${var.prefix}-psc"].id
+    : var.vpc_config["producer"]["subnet_psc_id"]
+  )
+  vpc_consumer_id = (
+    var.vpc_create
+    ? module.vpc_consumer.network.id
+    : var.vpc_config["consumer"]["id"]
+  )
+  vpc_consumer_main = (
+    var.vpc_create
+    ? module.vpc_consumer.subnets["${var.region}/${var.prefix}-consumer"].id
+    : var.vpc_config["consumer"]["subnet_main_id"]
+  )
 }
 
 module "project" {
-  count           = var.project_create ? 1 : 0
-  source          = "../../../modules/project"
-  billing_account = var.project_config["billing_account"]
-  name            = "psc-hybrid"
-  parent          = var.project_config["parent"]
-  prefix          = var.prefix
+  source         = "../../../modules/project"
+  name           = var.project_id
+  project_create = var.project_create
   services = [
     "compute.googleapis.com"
   ]
@@ -40,7 +66,7 @@ module "project" {
 module "vpc_producer" {
   source     = "../../../modules/net-vpc"
   project_id = local.project_id
-  name       = "${var.prefix}-producer"
+  name       = "${local.prefix}producer"
   subnets = [
     {
       ip_cidr_range      = var.producer["subnet_main"]
@@ -52,7 +78,7 @@ module "vpc_producer" {
   subnets_proxy_only = [
     {
       ip_cidr_range = var.producer["subnet_proxy"]
-      name          = "${var.prefix}-proxy"
+      name          = "${local.prefix}proxy"
       region        = var.region
       active        = true
     }
@@ -60,7 +86,7 @@ module "vpc_producer" {
   subnets_psc = [
     {
       ip_cidr_range = var.producer["subnet_psc"]
-      name          = "${var.prefix}-psc"
+      name          = "${local.prefix}psc"
       region        = var.region
     }
   ]
@@ -88,11 +114,11 @@ module "psc_producer" {
 module "vpc_consumer" {
   source     = "../../../modules/net-vpc"
   project_id = local.project_id
-  name       = "${var.prefix}-consumer"
+  name       = "${local.prefix}consumer"
   subnets = [
     {
       ip_cidr_range      = var.subnet_consumer
-      name               = "${var.prefix}-consumer"
+      name               = "${local.prefix}consumer"
       region             = var.region
       secondary_ip_range = {}
     }
@@ -102,7 +128,7 @@ module "vpc_consumer" {
 module "psc_consumer" {
   source     = "./psc-consumer"
   project_id = local.project_id
-  name       = "${var.prefix}-consumer"
+  name       = "${local.prefix}consumer"
   region     = var.region
   network    = local.vpc_consumer_id
   subnet     = local.vpc_consumer_main

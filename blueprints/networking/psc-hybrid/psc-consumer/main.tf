@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-# PSC Endpoint
-
 resource "google_compute_address" "psc_endpoint_address" {
   name         = var.name
   project      = var.project_id
