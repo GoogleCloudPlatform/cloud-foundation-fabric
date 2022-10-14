@@ -27,10 +27,10 @@ locals {
       ip_cidr_range         = v.ip_cidr_range
       region                = v.region
       description           = try(v.description, null)
-      enable_private_access = try(v.private_access, true)
+      enable_private_access = try(v.enable_private_access, true)
       flow_logs_config      = try(v.flow_logs, null)
       ipv6                  = try(v.ipv6, null)
-      secondary_ip_range    = try(v.secondary_ip_ranges, null)
+      secondary_ip_ranges   = try(v.secondary_ip_ranges, null)
     }
   }
   _factory_subnets_iam = [

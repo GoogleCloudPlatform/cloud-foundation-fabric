@@ -242,11 +242,11 @@ region: europe-west1
 description: Sample description
 ip_cidr_range: 10.0.0.0/24
 # optional attributes
-private_ip_google_access: false   # defaults to true
+enable_private_access: false   # defaults to true
 iam_users: ["foobar@example.com"] # grant compute/networkUser to users
 iam_groups: ["lorem@example.com"] # grant compute/networkUser to groups
 iam_service_accounts: ["fbz@prj.iam.gserviceaccount.com"]
-secondary_ip_range:              # map of secondary ip ranges
+secondary_ip_ranges:              # map of secondary ip ranges
   secondary-range-a: 192.168.0.0/24
 flow_logs:                        # enable, set to empty map to use defaults
   - aggregation_interval: "INTERVAL_5_SEC"
