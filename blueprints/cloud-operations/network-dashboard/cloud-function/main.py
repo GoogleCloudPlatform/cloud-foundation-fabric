@@ -208,6 +208,7 @@ def main(event, context):
 
 
 if CFv2:
+
   @functions_framework.http
   def main_http(request):
     main(None, None)
