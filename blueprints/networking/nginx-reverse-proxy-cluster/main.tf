@@ -149,13 +149,11 @@ module "vpc" {
   name       = var.network
   subnets = [
     {
-      name               = var.subnetwork
-      ip_cidr_range      = var.cidrs[var.subnetwork]
-      region             = var.region
-      secondary_ip_range = null
+      name          = var.subnetwork
+      ip_cidr_range = var.cidrs[var.subnetwork]
+      region        = var.region
     },
   ]
-
   vpc_create = var.network_create
 }
 

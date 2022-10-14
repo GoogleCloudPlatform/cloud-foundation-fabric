@@ -25,15 +25,14 @@ module "svpc" {
     ip_cidr_range = config.subnet_cidr_block
     name          = "subnet-${key}"
     region        = var.region
-    secondary_ip_range = {
+    secondary_ip_ranges = {
       pods     = config.pods_cidr_block
       services = config.services_cidr_block
     }
     }], [{
-    ip_cidr_range      = var.mgmt_subnet_cidr_block
-    name               = "subnet-mgmt"
-    region             = var.mgmt_server_config.region
-    secondary_ip_range = null
+    ip_cidr_range = var.mgmt_subnet_cidr_block
+    name          = "subnet-mgmt"
+    region        = var.mgmt_server_config.region
   }])
 }
 

@@ -79,7 +79,11 @@ resource "google_container_cluster" "cluster" {
       )
     }
     gce_persistent_disk_csi_driver_config {
-      enabled = var.enable_addons.gce_persistent_disk_csi_driver
+      enabled = (
+        var.enable_features.autopilot
+        ? true
+        : var.enable_addons.gce_persistent_disk_csi_driver
+      )
     }
     dynamic "gcp_filestore_csi_driver_config" {
       for_each = !var.enable_features.autopilot ? [""] : []
@@ -169,7 +173,7 @@ resource "google_container_cluster" "cluster" {
   }
 
   dynamic "logging_config" {
-    for_each = var.logging_config != null ? [""] : []
+    for_each = var.logging_config != null && !var.enable_features.autopilot ? [""] : []
     content {
       enable_components = var.logging_config
     }
@@ -234,7 +238,7 @@ resource "google_container_cluster" "cluster" {
   }
 
   dynamic "monitoring_config" {
-    for_each = var.monitoring_config != null ? [""] : []
+    for_each = var.monitoring_config != null && !var.enable_features.autopilot ? [""] : []
     content {
       enable_components = var.monitoring_config
     }

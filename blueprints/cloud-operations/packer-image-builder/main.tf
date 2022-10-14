@@ -56,10 +56,9 @@ module "vpc" {
   name       = "image-builder"
   subnets = [
     {
-      name               = local.compute_subnet_name
-      ip_cidr_range      = var.cidrs.image-builder
-      region             = var.region
-      secondary_ip_range = null
+      name          = local.compute_subnet_name
+      ip_cidr_range = var.cidrs.image-builder
+      region        = var.region
     }
   ]
 }

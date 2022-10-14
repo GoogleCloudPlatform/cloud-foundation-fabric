@@ -35,11 +35,9 @@ def test_routes_export(plan_runner):
   psa_config = '''{
     ranges = {
       bar = "172.16.100.0/24"
-    },
-    routes = {
-      export = true
-      import = false
     }
+    export_routes = true
+    import_routes = false
   }'''
   _, resources = plan_runner(psa_config=psa_config)
   assert len(resources) == 4
@@ -55,10 +53,8 @@ def test_routes_import(plan_runner):
     ranges = {
       bar = "172.16.100.0/24"
     },
-    routes = {
-      export = false
-      import = true
-    }
+    export_routes = false
+    import_routes = true
   }'''
   _, resources = plan_runner(psa_config=psa_config)
   for r in resources:
@@ -73,10 +69,8 @@ def test_routes_export_import(plan_runner):
     ranges = {
       bar = "172.16.100.0/24"
     },
-    routes = {
-      export = true
-      import = true
-    }
+    export_routes = true
+    import_routes = true
   }'''
   _, resources = plan_runner(psa_config=psa_config)
   for r in resources:

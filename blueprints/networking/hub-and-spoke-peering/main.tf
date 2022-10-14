@@ -52,10 +52,9 @@ module "vpc-hub" {
   name       = "${local.prefix}hub"
   subnets = [
     {
-      ip_cidr_range      = var.ip_ranges.hub
-      name               = "${local.prefix}hub-1"
-      region             = var.region
-      secondary_ip_range = {}
+      ip_cidr_range = var.ip_ranges.hub
+      name          = "${local.prefix}hub-1"
+      region        = var.region
     }
   ]
 }
@@ -86,10 +85,9 @@ module "vpc-spoke-1" {
   name       = "${local.prefix}spoke-1"
   subnets = [
     {
-      ip_cidr_range      = var.ip_ranges.spoke-1
-      name               = "${local.prefix}spoke-1-1"
-      region             = var.region
-      secondary_ip_range = {}
+      ip_cidr_range = var.ip_ranges.spoke-1
+      name          = "${local.prefix}spoke-1-1"
+      region        = var.region
     }
   ]
 }
@@ -131,7 +129,7 @@ module "vpc-spoke-2" {
       ip_cidr_range = var.ip_ranges.spoke-2
       name          = "${local.prefix}spoke-2-1"
       region        = var.region
-      secondary_ip_range = {
+      secondary_ip_ranges = {
         pods     = var.ip_secondary_ranges.spoke-2-pods
         services = var.ip_secondary_ranges.spoke-2-services
       }

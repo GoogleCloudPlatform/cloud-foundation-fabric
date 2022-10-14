@@ -58,10 +58,9 @@ module "landing-vpc" {
   name       = "landing-vpc"
   subnets = [
     {
-      ip_cidr_range      = var.vpc_config.ip_cidr_range
-      name               = "landing-vpc-${var.vpc_config.region}"
-      region             = var.vpc_config.region
-      secondary_ip_range = {}
+      ip_cidr_range = var.vpc_config.ip_cidr_range
+      name          = "landing-vpc-${var.vpc_config.region}"
+      region        = var.vpc_config.region
     }
   ]
 }

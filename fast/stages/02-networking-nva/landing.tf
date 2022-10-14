@@ -49,13 +49,10 @@ module "landing-untrusted-vpc" {
   project_id = module.landing-project.project_id
   name       = "prod-untrusted-landing-0"
   mtu        = 1500
-
   dns_policy = {
-    inbound  = false
-    logging  = false
-    outbound = null
+    inbound = false
+    logging = false
   }
-
   data_folder = "${var.data_dir}/subnets/landing-untrusted"
 }
 
@@ -108,24 +105,18 @@ module "landing-trusted-vpc" {
   routes = {
     private-googleapis = {
       dest_range    = "199.36.153.8/30"
-      priority      = 1000
-      tags          = []
       next_hop_type = "gateway"
       next_hop      = "default-internet-gateway"
     }
     restricted-googleapis = {
       dest_range    = "199.36.153.4/30"
-      priority      = 1000
-      tags          = []
       next_hop_type = "gateway"
       next_hop      = "default-internet-gateway"
     }
   }
 
   dns_policy = {
-    inbound  = true
-    logging  = false
-    outbound = null
+    inbound = true
   }
 
   data_folder = "${var.data_dir}/subnets/landing-trusted"

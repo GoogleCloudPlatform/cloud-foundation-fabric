@@ -134,10 +134,9 @@ module "transf-vpc" {
   name       = "${var.prefix}-default"
   subnets = [
     {
-      ip_cidr_range      = "10.10.0.0/24"
-      name               = "default"
-      region             = var.region
-      secondary_ip_range = {}
+      ip_cidr_range = "10.10.0.0/24"
+      name          = "default"
+      region        = var.region
     }
   ]
 }
