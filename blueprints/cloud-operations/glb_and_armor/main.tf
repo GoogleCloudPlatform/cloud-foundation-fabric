@@ -43,22 +43,19 @@ module "vpc" {
   name       = "${local.prefix}vpc"
   subnets = [
     {
-      ip_cidr_range      = "10.0.1.0/24"
-      name               = "subnet-ew1"
-      region             = "europe-west1"
-      secondary_ip_range = null
+      ip_cidr_range = "10.0.1.0/24"
+      name          = "subnet-ew1"
+      region        = "europe-west1"
     },
     {
-      ip_cidr_range      = "10.0.2.0/24"
-      name               = "subnet-ue1"
-      region             = "us-east1"
-      secondary_ip_range = null
+      ip_cidr_range = "10.0.2.0/24"
+      name          = "subnet-ue1"
+      region        = "us-east1"
     },
     {
-      ip_cidr_range      = "10.0.3.0/24"
-      name               = "subnet-uw1"
-      region             = "us-west1"
-      secondary_ip_range = null
+      ip_cidr_range = "10.0.3.0/24"
+      name          = "subnet-uw1"
+      region        = "us-west1"
     }
   ]
 }

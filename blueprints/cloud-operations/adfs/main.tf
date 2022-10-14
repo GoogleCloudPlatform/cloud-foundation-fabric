@@ -44,10 +44,9 @@ module "vpc" {
   name       = "${local.prefix}vpc"
   subnets = [
     {
-      ip_cidr_range      = var.subnet_ip_cidr_block
-      name               = "subnet"
-      region             = var.region
-      secondary_ip_range = null
+      ip_cidr_range = var.subnet_ip_cidr_block
+      name          = "subnet"
+      region        = var.region
     }
   ]
 }

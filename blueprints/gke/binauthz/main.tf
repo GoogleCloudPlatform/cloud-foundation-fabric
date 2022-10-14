@@ -66,7 +66,7 @@ module "vpc" {
       ip_cidr_range = var.subnet_cidr_block
       name          = "subnet"
       region        = var.region
-      secondary_ip_range = {
+      secondary_ip_ranges = {
         pods     = var.pods_cidr_block
         services = var.services_cidr_block
       }

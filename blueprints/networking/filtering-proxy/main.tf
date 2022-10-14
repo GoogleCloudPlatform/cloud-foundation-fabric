@@ -58,16 +58,14 @@ module "vpc" {
   name       = "vpc"
   subnets = [
     {
-      name               = "apps"
-      ip_cidr_range      = var.cidrs.apps
-      region             = var.region
-      secondary_ip_range = null
+      name          = "apps"
+      ip_cidr_range = var.cidrs.apps
+      region        = var.region
     },
     {
-      name               = "proxy"
-      ip_cidr_range      = var.cidrs.proxy
-      region             = var.region
-      secondary_ip_range = null
+      name          = "proxy"
+      ip_cidr_range = var.cidrs.proxy
+      region        = var.region
     }
   ]
 }

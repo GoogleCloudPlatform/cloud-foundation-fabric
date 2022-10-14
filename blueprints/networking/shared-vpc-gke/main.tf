@@ -97,22 +97,21 @@ module "vpc-shared" {
   name       = "shared-vpc"
   subnets = [
     {
-      ip_cidr_range      = var.ip_ranges.gce
-      name               = "gce"
-      region             = var.region
-      secondary_ip_range = {}
+      ip_cidr_range = var.ip_ranges.gce
+      name          = "gce"
+      region        = var.region
     },
     {
       ip_cidr_range = var.ip_ranges.gke
       name          = "gke"
       region        = var.region
-      secondary_ip_range = {
+      secondary_ip_ranges = {
         pods     = var.ip_secondary_ranges.gke-pods
         services = var.ip_secondary_ranges.gke-services
       }
     }
   ]
-  iam = {
+  subnet_iam = {
     "${var.region}/gce" = {
       "roles/compute.networkUser" = concat(var.owners_gce, [
         "serviceAccount:${module.project-svc-gce.service_accounts.cloud_services}",
