@@ -26,19 +26,15 @@ module "vpc" {
   name       = "${local.prefix}sql-vpc"
   subnets = [
     {
-      ip_cidr_range      = var.ip_ranges.sql_vpc
-      name               = "subnet"
-      region             = var.region
-      secondary_ip_range = {}
+      ip_cidr_range = var.ip_ranges.sql_vpc
+      name          = "subnet"
+      region        = var.region
     }
   ]
-
-  # Private Service Access
   psa_config = {
     ranges = {
       cloud-sql = var.ip_ranges.psa
     }
-    routes = null
   }
 }
 
