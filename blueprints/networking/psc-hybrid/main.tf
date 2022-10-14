@@ -22,7 +22,6 @@ locals {
   vpc_producer_psc   = var.vpc_create ? module.vpc_producer.subnets_psc["${var.region}/${var.prefix}-psc"].id : var.vpc_config["producer"]["subnet_psc_id"]
   vpc_consumer_id    = var.vpc_create ? module.vpc_consumer.network.id : var.vpc_config["consumer"]["id"]
   vpc_consumer_main  = var.vpc_create ? module.vpc_consumer.subnets["${var.region}/${var.prefix}-consumer"].id : var.vpc_config["consumer"]["subnet_main_id"]
-
 }
 
 module "project" {
