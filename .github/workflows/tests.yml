@@ -66,7 +66,7 @@ jobs:
         run: |
           mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
           pip install -r tests/requirements.txt
-          pytest -vv --numprocesses auto --dist loadscope tests/examples
+          pytest -vv --numprocesses 4 tests/examples
 
   examples:
     runs-on: ubuntu-latest
@@ -101,7 +101,7 @@ jobs:
         run: |
           mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
           pip install -r tests/requirements.txt
-          pytest -vv --numprocesses auto --dist loadscope tests/blueprints
+          pytest -vv --numprocesses 4 --dist loadscope tests/blueprints
 
   modules:
     runs-on: ubuntu-latest
@@ -136,7 +136,7 @@ jobs:
         run: |
           mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
           pip install -r tests/requirements.txt
-          pytest -vv --numprocesses auto --dist loadscope tests/modules
+          pytest -vv --numprocesses 4 --dist loadscope tests/modules
 
   fast:
     runs-on: ubuntu-latest
@@ -171,4 +171,4 @@ jobs:
         run: |
           mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
           pip install -r tests/requirements.txt
-          pytest -vv --numprocesses auto --dist loadscope tests/fast
+          pytest -vv --numprocesses 4 --dist loadscope tests/fast
