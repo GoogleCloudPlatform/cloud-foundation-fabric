@@ -54,6 +54,11 @@ jobs:
           terraform_version: ${{ env.TF_VERSION }}
           terraform_wrapper: false
 
+      - name: Config Terraform plugin cache
+        run: |
+          echo 'plugin_cache_dir="$HOME/.terraform.d/plugin-cache"' >~/.terraformrc
+          mkdir --parents ~/.terraform.d/plugin-cache
+
       # avoid conflicts with user-installed providers on local machines
       - name: Pin provider versions
         run: |
@@ -66,7 +71,7 @@ jobs:
         run: |
           mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
           pip install -r tests/requirements.txt
-          pytest -vv --numprocesses 4 tests/examples
+          pytest -vv tests/examples
 
   examples:
     runs-on: ubuntu-latest
@@ -89,6 +94,11 @@ jobs:
           terraform_version: ${{ env.TF_VERSION }}
           terraform_wrapper: false
 
+      - name: Config Terraform plugin cache
+        run: |
+          echo 'plugin_cache_dir="$HOME/.terraform.d/plugin-cache"' >~/.terraformrc
+          mkdir --parents ~/.terraform.d/plugin-cache
+
       # avoid conflicts with user-installed providers on local machines
       - name: Pin provider versions
         run: |
@@ -101,7 +111,7 @@ jobs:
         run: |
           mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
           pip install -r tests/requirements.txt
-          pytest -vv --numprocesses 4 --dist loadscope tests/blueprints
+          pytest -vv --numprocesses auto --dist loadscope tests/blueprints
 
   modules:
     runs-on: ubuntu-latest
@@ -124,6 +134,11 @@ jobs:
           terraform_version: ${{ env.TF_VERSION }}
           terraform_wrapper: false
 
+      - name: Config Terraform plugin cache
+        run: |
+          echo 'plugin_cache_dir="$HOME/.terraform.d/plugin-cache"' >~/.terraformrc
+          mkdir --parents ~/.terraform.d/plugin-cache
+
       # avoid conflicts with user-installed providers on local machines
       - name: Pin provider versions
         run: |
@@ -136,7 +151,7 @@ jobs:
         run: |
           mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
           pip install -r tests/requirements.txt
-          pytest -vv --numprocesses 4 --dist loadscope tests/modules
+          pytest -vv --numprocesses auto --dist loadscope tests/modules
 
   fast:
     runs-on: ubuntu-latest
@@ -159,6 +174,11 @@ jobs:
           terraform_version: ${{ env.TF_VERSION }}
           terraform_wrapper: false
 
+      - name: Config Terraform plugin cache
+        run: |
+          echo 'plugin_cache_dir="$HOME/.terraform.d/plugin-cache"' >~/.terraformrc
+          mkdir --parents ~/.terraform.d/plugin-cache
+
       # avoid conflicts with user-installed providers on local machines
       - name: Pin provider versions
         run: |
@@ -171,4 +191,4 @@ jobs:
         run: |
           mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
           pip install -r tests/requirements.txt
-          pytest -vv --numprocesses 4 --dist loadscope tests/fast
+          pytest -vv --numprocesses auto --dist loadscope tests/fast
