@@ -136,7 +136,7 @@ jobs:
         run: |
           mkdir -p ${{ env.TF_PLUGIN_CACHE_DIR }}
           pip install -r tests/requirements.txt
-          pytest -vv tests/modules
+          pytest -vv --numprocesses auto --dist loadscope tests/modules
 
   fast:
     runs-on: ubuntu-latest
