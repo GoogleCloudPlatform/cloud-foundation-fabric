@@ -54,14 +54,14 @@ jobs:
           terraform_version: ${{ env.TF_VERSION }}
           terraform_wrapper: false
 
-      - name: Config Terraform plugin cache
-        run: |
-          echo 'plugin_cache_dir="$HOME/.terraform.d/plugin-cache"' >~/.terraformrc
-          mkdir --parents ~/.terraform.d/plugin-cache
+      # - name: Config Terraform plugin cache
+      #   run: |
+      #     echo 'plugin_cache_dir="$HOME/.terraform.d/plugin-cache"' >~/.terraformrc
+      #     mkdir --parents ~/.terraform.d/plugin-cache
 
-      - name: Initialize providers
-        run: |
-          terraform init
+      # - name: Initialize providers
+      #   run: |
+      #     terraform init
 
       # avoid conflicts with user-installed providers on local machines
       - name: Pin provider versions
@@ -98,15 +98,6 @@ jobs:
           terraform_version: ${{ env.TF_VERSION }}
           terraform_wrapper: false
 
-      - name: Config Terraform plugin cache
-        run: |
-          echo 'plugin_cache_dir="$HOME/.terraform.d/plugin-cache"' >~/.terraformrc
-          mkdir --parents ~/.terraform.d/plugin-cache
-
-      - name: Initialize providers
-        run: |
-          terraform init
-
       # avoid conflicts with user-installed providers on local machines
       - name: Pin provider versions
         run: |
@@ -142,15 +133,6 @@ jobs:
           terraform_version: ${{ env.TF_VERSION }}
           terraform_wrapper: false
 
-      - name: Config Terraform plugin cache
-        run: |
-          echo 'plugin_cache_dir="$HOME/.terraform.d/plugin-cache"' >~/.terraformrc
-          mkdir --parents ~/.terraform.d/plugin-cache
-
-      - name: Initialize providers
-        run: |
-          terraform init
-
       # avoid conflicts with user-installed providers on local machines
       - name: Pin provider versions
         run: |
@@ -185,15 +167,6 @@ jobs:
         with:
           terraform_version: ${{ env.TF_VERSION }}
           terraform_wrapper: false
-
-      - name: Config Terraform plugin cache
-        run: |
-          echo 'plugin_cache_dir="$HOME/.terraform.d/plugin-cache"' >~/.terraformrc
-          mkdir --parents ~/.terraform.d/plugin-cache
-
-      - name: Initialize providers
-        run: |
-          terraform init
 
       # avoid conflicts with user-installed providers on local machines
       - name: Pin provider versions
