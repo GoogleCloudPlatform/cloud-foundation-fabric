@@ -52,7 +52,7 @@ variable "dns_policy" {
 }
 
 variable "mtu" {
-  description = "Maximum Transmission Unit in bytes. The minimum value for this field is 1460 and the maximum value is 1500 bytes."
+  description = "Maximum Transmission Unit in bytes. The minimum value for this field is 1460 (the default) and the maximum value is 1500 bytes."
   type        = number
   default     = null
 }
