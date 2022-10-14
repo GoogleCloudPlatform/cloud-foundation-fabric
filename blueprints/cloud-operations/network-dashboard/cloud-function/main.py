@@ -218,19 +218,6 @@ def main(event, context):
 
   return 'Function execution completed'
 
-<<<<<<< HEAD
-if __name__ == "__main__":
-  main(None, None)
-=======
-if CFv2:
-
-  @functions_framework.http
-  def main_http(request):
-    main(None, None)
-else:
-  if __name__ == "__main__":
-    main(None, None)
->>>>>>> 68980127fdbfb079f4b1a041234d750bc7175c84
 
 if CFv2:
 
