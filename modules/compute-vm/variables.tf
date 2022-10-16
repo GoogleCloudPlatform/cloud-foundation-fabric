@@ -17,14 +17,21 @@
 variable "attached_disk_defaults" {
   description = "Defaults for attached disks options."
   type = object({
+    auto_delete  = optional(bool, false)
     mode         = string
     replica_zone = string
     type         = string
   })
   default = {
+    auto_delete  = true
     mode         = "READ_WRITE"
     replica_zone = null
     type         = "pd-balanced"
+  }
+
+  validation {
+    condition     = var.attached_disk_defaults.mode == "READ_WRITE" || !var.attached_disk_defaults.auto_delete
+    error_message = "auto_delete can only be specified on READ_WRITE disks."
   }
 }
 
@@ -37,11 +44,13 @@ variable "attached_disks" {
     source_type = optional(string)
     options = optional(
       object({
+        auto_delete  = optional(bool, false)
         mode         = optional(string, "READ_WRITE")
         replica_zone = optional(string)
         type         = optional(string, "pd-balanced")
       }),
       {
+        auto_delete  = true
         mode         = "READ_WRITE"
         replica_zone = null
         type         = "pd-balanced"
@@ -58,6 +67,14 @@ variable "attached_disks" {
       )
     ]) == length(var.attached_disks)
     error_message = "Source type must be one of 'image', 'snapshot', 'attach', null."
+  }
+
+  validation {
+    condition = length([
+      for d in var.attached_disks : d if d.options == null ||
+      d.options.mode == "READ_WRITE" || !d.options.auto_delete
+    ]) == length(var.attached_disks)
+    error_message = "auto_delete can only be specified on READ_WRITE disks."
   }
 }
 
