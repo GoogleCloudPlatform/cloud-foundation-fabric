@@ -1,4 +1,7 @@
 # PSC Consumer
+
+The module creates a consumer VPC and a Private Service Connect (PSC) endpoint, pointing to the PSC Service Attachment (SA) specified.
+
 <!-- BEGIN TFDOC -->
 
 ## Variables

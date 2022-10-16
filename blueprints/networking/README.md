@@ -49,8 +49,6 @@ It is meant to be used as a starting point for most Shared VPC configurations, a
 <a href="./psc-hybrid/" title="Hybrid connectivity to on-premise services thrugh PSC"><img src="./psc-hybrid/diagram.png" align="left" width="280px"></a> This [blueprint](./psc-hybrid/) shows how to privately connect to on-premise services (IP + port) from GCP, leveraging [Private Service Connect (PSC)](https://cloud.google.com/vpc/docs/private-service-connect) and [Hybrid Network Endpoint Groups](https://cloud.google.com/load-balancing/docs/negs/hybrid-neg-concepts).
 <br clear="left">
 
-![High-level diagram](diagram.png "High-level diagram")
-
 ### Decentralized firewall management
 
 <a href="./decentralized-firewall/" title="Decentralized firewall management"><img src="./decentralized-firewall/diagram.png" align="left" width="280px"></a> This [blueprint](./decentralized-firewall/) shows how a decentralized firewall management can be organized using the [firewall factory](../factories/net-vpc-firewall-yaml/).

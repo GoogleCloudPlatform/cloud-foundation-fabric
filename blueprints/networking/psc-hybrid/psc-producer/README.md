@@ -1,4 +1,11 @@
 # PSC Producer
+
+The module creates:
+
+- a producer VPC
+- an internal regional TCP proxy load balancer with a hybrid Network Endpoint Group (NEG) backend, pointing to an on-prem service (IP + port)
+- a Private Service Connect Service Attachment (PSC SA) exposing the service to [PSC consumers](../psc-consumer/README.md)
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
