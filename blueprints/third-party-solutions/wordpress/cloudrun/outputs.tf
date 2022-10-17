@@ -22,7 +22,7 @@ output "cloud_run_service" {
 
 output "cloudsql_password" {
   description = "CloudSQL password"
-  value       = local.cloudsql_conf.pass
+  value       = var.cloudsql_password == null ? module.cloudsql.user_passwords[local.cloudsql_conf.user] : var.cloudsql_password
   sensitive   = true
 }
 
