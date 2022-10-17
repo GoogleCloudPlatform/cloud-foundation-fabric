@@ -474,6 +474,3 @@ module "nginx-mig" {
 | [health_check](outputs.tf#L35) | Auto-created health-check resource. |  |
 
 <!-- END TFDOC -->
-## TODO
-
-- [✓] add support for instance groups
