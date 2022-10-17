@@ -17,3 +17,15 @@ ingress:
       - protocol: tcp
         ports:
           - 12345
+  # This is not really needed, but it's good to have it
+  # in place if the more generic hierarchical firewall policies
+  # get deleted
+  allow-ncc-nva-bgp-trusted:
+    description: "Allow BGP traffic from NCC Cloud Routers to NVAs"
+    source_ranges:
+      - ncc_cloud_routers_trusted
+    targets: ["nva"]
+    rules:
+      - protocol: tcp
+        ports:
+          - 179

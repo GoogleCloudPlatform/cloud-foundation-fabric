@@ -12,6 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-counts:
-  modules: 41
-  resources: 188
+
+def test_counts(plan_summary):
+  "Test stage."
+  summary = plan_summary("fast/stages/2-networking-c-nva",
+                         tf_var_files=["common.tfvars"])
+  assert summary.counts["modules"] == 39
+  assert summary.counts["resources"] == 181

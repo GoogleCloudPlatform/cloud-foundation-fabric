@@ -1,0 +1,76 @@
+# NVAs configuration template
+
+log syslog informational
+no ipv6 forwarding
+service integrated-vtysh-config
+
+interface lo
+ ip address ${ip_untrusted}/32
+
+ip prefix-list DEFAULT seq 10 permit 0.0.0.0/0
+!
+ip prefix-list PRIMARY seq 10 permit ${gcp_landing_trusted_primary}
+ip prefix-list PRIMARY seq 20 permit ${gcp_dev_primary}
+ip prefix-list PRIMARY seq 30 permit ${gcp_prod_primary}
+!
+ip prefix-list SECONDARY seq 10 permit ${gcp_landing_trusted_secondary}
+ip prefix-list SECONDARY seq 20 permit ${gcp_dev_secondary}
+ip prefix-list SECONDARY seq 30 permit ${gcp_prod_secondary}
+
+route-map TO-UNTRUSTED permit 10
+  match ip address prefix-list PRIMARY
+  set metric ${cost_primary}
+!
+route-map TO-UNTRUSTED permit 20
+  match ip address prefix-list SECONDARY
+  set metric ${cost_secondary}
+!
+route-map TO-TRUSTED permit 10
+  match ip address prefix-list DEFAULT
+  set metric 100
+!
+route-map TO-NVA permit 10
+  match ip address prefix-list ${announce-to-nva}
+  set metric 50
+
+router bgp ${asn_nva}
+ bgp router-id ${ip_untrusted}
+ bgp bestpath as-path ignore
+ bgp disable-ebgp-connected-route-check
+ bgp timers 20 60
+!
+ no bgp ebgp-requires-policy
+ no bgp network import-check
+!
+ neighbor ${ip_neighbor_untrusted_0} remote-as ${asn_untrusted}
+ neighbor ${ip_neighbor_untrusted_1} remote-as ${asn_untrusted}
+!
+ neighbor ${ip_neighbor_trusted_0} remote-as ${asn_trusted}
+ neighbor ${ip_neighbor_trusted_0} update-source ${ip_trusted}
+ neighbor ${ip_neighbor_trusted_1} remote-as ${asn_trusted}
+ neighbor ${ip_neighbor_trusted_1} update-source ${ip_trusted}
+!
+ neighbor ${ip_neighbor_cross_region_nva_0} remote-as ${asn_nva_cross_region}
+ neighbor ${ip_neighbor_cross_region_nva_0} ebgp-multihop 2
+ neighbor ${ip_neighbor_cross_region_nva_1} remote-as ${asn_nva_cross_region}
+ neighbor ${ip_neighbor_cross_region_nva_1} ebgp-multihop 2
+!
+ address-family ipv4 unicast
+  neighbor ${ip_neighbor_untrusted_0} route-map TO-UNTRUSTED out
+  neighbor ${ip_neighbor_untrusted_0} soft-reconfiguration inbound
+!
+  neighbor ${ip_neighbor_untrusted_1} route-map TO-UNTRUSTED out
+  neighbor ${ip_neighbor_untrusted_1} soft-reconfiguration inbound
+!
+  neighbor ${ip_neighbor_trusted_0} route-map TO-TRUSTED out
+  neighbor ${ip_neighbor_trusted_0} soft-reconfiguration inbound
+!
+  neighbor ${ip_neighbor_trusted_1} route-map TO-TRUSTED out
+  neighbor ${ip_neighbor_trusted_1} soft-reconfiguration inbound
+!
+  neighbor ${ip_neighbor_cross_region_nva_0} route-map TO-NVA out
+  neighbor ${ip_neighbor_cross_region_nva_0} soft-reconfiguration inbound
+!
+  neighbor ${ip_neighbor_cross_region_nva_1} route-map TO-NVA out
+  neighbor ${ip_neighbor_cross_region_nva_1} soft-reconfiguration inbound
+ exit-address-family

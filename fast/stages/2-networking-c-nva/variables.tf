@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,6 +94,17 @@ variable "gcp_ranges" {
     gcp_landing_untrusted_secondary = "10.128.32.0/19"
     gcp_prod_primary                = "10.128.192.0/19"
     gcp_prod_secondary              = "10.128.224.0/19"
+  }
+}
+
+variable "ncc_asn" {
+  description = "The NCC Cloud Routers ASN configuration."
+  type        = map(number)
+  default = {
+    nva_primary   = 64513
+    nva_secondary = 64514
+    trusted       = 64515
+    untrusted     = 64512
   }
 }
 
@@ -263,4 +274,10 @@ variable "vpn_onprem_secondary_config" {
     }))
   })
   default = null
+}
+
+variable "zones" {
+  description = "Zones in which NVAs are deployed."
+  type        = list(string)
+  default     = ["b", "c"]
 }
