@@ -315,12 +315,13 @@ module "instance-group" {
 | [group](outputs.tf#L26) | Instance group resource. |  |
 | [instance](outputs.tf#L31) | Instance resource. |  |
 | [internal_ip](outputs.tf#L36) | Instance main interface internal IP address. |  |
-| [self_link](outputs.tf#L44) | Instance self links. |  |
-| [service_account](outputs.tf#L49) | Service account resource. |  |
-| [service_account_email](outputs.tf#L56) | Service account email. |  |
-| [service_account_iam_email](outputs.tf#L61) | Service account email. |  |
-| [template](outputs.tf#L69) | Template resource. |  |
-| [template_name](outputs.tf#L74) | Template name. |  |
+| [internal_ips](outputs.tf#L44) | Instance interfaces internal IP addresses. |  |
+| [self_link](outputs.tf#L52) | Instance self links. |  |
+| [service_account](outputs.tf#L57) | Service account resource. |  |
+| [service_account_email](outputs.tf#L64) | Service account email. |  |
+| [service_account_iam_email](outputs.tf#L69) | Service account email. |  |
+| [template](outputs.tf#L77) | Template resource. |  |
+| [template_name](outputs.tf#L82) | Template name. |  |
 
 <!-- END TFDOC -->
 ## TODO
