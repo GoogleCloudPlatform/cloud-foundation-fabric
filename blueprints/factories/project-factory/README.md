@@ -157,12 +157,25 @@ org_policies:
   policy_boolean:
     constraints/compute.disableGuestAttributesAccess: true
   policy_list:
+    #Example 1: Allow with specific values
     constraints/compute.trustedImageProjects:
       inherit_from_parent: null
       status: true
       suggested_value: null
       values:
         - projects/fast-prod-iac-core-0
+    #Example 2: Allow All
+    constraints/compute.restrictVpcPeering:
+      inherit_from_parent: null
+      status: true
+      suggested_value: null
+      values:
+    #Example 3: Deny All
+    constraints/compute.disableInternetNetworkEndpointGroup:
+      inherit_from_parent: null
+      status: false
+    
+        
 
 # [opt] Service account to create for the project and their roles on the project
 # in name => [roles] format
