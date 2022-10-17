@@ -133,13 +133,14 @@ variable "target_size" {
 variable "update_policy" {
   description = "Update policy. Type can be 'OPPORTUNISTIC' or 'PROACTIVE', action 'REPLACE' or 'restart', surge type 'fixed' or 'percent'."
   type = object({
-    type                 = string # OPPORTUNISTIC | PROACTIVE
-    minimal_action       = string # REPLACE | RESTART
-    min_ready_sec        = number
-    max_surge_type       = string # fixed | percent
-    max_surge            = number
-    max_unavailable_type = string
-    max_unavailable      = number
+    instance_redistribution_type = optional(string, "PROACTIVE") # NONE | PROACTIVE. The attribute is ignored if regional is set to false.
+    max_surge_type               = string                        # fixed | percent
+    max_surge                    = number
+    max_unavailable_type         = string
+    max_unavailable              = number
+    minimal_action               = string # REPLACE | RESTART
+    min_ready_sec                = number
+    type                         = string # OPPORTUNISTIC | PROACTIVE
   })
   default = null
 }
