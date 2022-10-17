@@ -18,7 +18,7 @@ You can create as many files as you like, the code will loop through it and crea
 module "bq" {
   source = "github.com/GoogleCloudPlatform/cloud-foundation-fabric/modules/bigquery-dataset"
 
-  for_each   = local.output_e
+  for_each   = local.output
   project_id = var.project_id
   id         = each.key
   views      = try(each.value.views, null)
@@ -67,6 +67,17 @@ use_legacy_sql: bool # not required, defaults to false
 deletion_protection: bool # not required, defaults to false
 ```
 
+<!-- BEGIN TFDOC -->
+
+## Variables
+
+| name | description | type | required | default |
+|---|---|:---:|:---:|:---:|
+| [project_id](variables.tf#L27) | Project ID | <code>string</code> | ✓ |  |
+| [tables_dir](variables.tf#L22) | Relative path for the folder storing table data. | <code>string</code> | ✓ |  |
+| [views_dir](variables.tf#L17) | Relative path for the folder storing view data. | <code>string</code> | ✓ |  |
+
+<!-- END TFDOC -->
 
 
 ## TODO
@@ -74,15 +85,3 @@ deletion_protection: bool # not required, defaults to false
 - [ ] add external table support
 - [ ] add materialized view support
 
-
-<!-- BEGIN TFDOC -->
-
-## Variables
-
-| name | description | type | required | default |
-|---|---|:---:|:---:|:---:|
-| [tables_dir](variables.tf#L22) | Path to folders where table configs are stored in yaml format. Files suffix must be `.yaml`. | <code>list&#40;string&#41;</code> | ✓ |  |
-| [views_dir](variables.tf#L17) | Path to folders where view configs are stored in yaml format. Files suffix must be `.yaml`. | <code>list&#40;string&#41;</code> | ✓ |  |
-| [project_id](variables.tf#L27) | Project Id. | <code>string</code> | ✓ |  |
-
-<!-- END TFDOC -->
