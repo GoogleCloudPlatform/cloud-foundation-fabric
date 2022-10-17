@@ -14,25 +14,20 @@
  * limitations under the License.
  */
 
-output "cloud_run_service" {
-  description = "CloudRun service URL"
-  value       = module.cloud_run.service.status[0].url
-  sensitive   = true
+resource "google_compute_address" "psc_endpoint_address" {
+  name         = var.name
+  project      = var.project_id
+  address_type = "INTERNAL"
+  subnetwork   = var.subnet
+  region       = var.region
 }
 
-output "cloudsql_password" {
-  description = "CloudSQL password"
-  value       = var.cloudsql_password == null ? module.cloudsql.user_passwords[local.cloudsql_conf.user] : var.cloudsql_password
-  sensitive   = true
-}
-
-output "wp_user" {
-  description = "Wordpress username"
-  value       = local.wp_user
-}
-
-output "wp_password" {
-  description = "Wordpress user password"
-  value       = local.wp_pass
-  sensitive   = true
+resource "google_compute_forwarding_rule" "psc_ilb_consumer" {
+  name                  = var.name
+  project               = var.project_id
+  region                = var.region
+  target                = var.sa_id
+  load_balancing_scheme = ""
+  network               = var.network
+  ip_address            = google_compute_address.psc_endpoint_address.id
 }
