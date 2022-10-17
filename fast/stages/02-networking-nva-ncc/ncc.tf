@@ -20,15 +20,33 @@ resource "google_network_connectivity_hub" "hub" {
   project     = module.landing-project.project_id
 }
 
-resource "google_network_connectivity_spoke" "spoke_untrusted_ew1_b" {
-  name        = "prod-spoke-untrusted-ew1"
-  location    = "europe-west1"
-  description = "Spoke for internal connectivity - untrusted - europe-west1"
+resource "google_network_connectivity_spoke" "spoke_untrusted" {
+  for_each    = local.nvas_config
+  name        = "prod-spoke-untrusted-${each.value.trigram}"
+  location    = each.value.region
+  description = "Spoke for internal connectivity - untrusted - ${each.value.trigram}"
   hub         = google_network_connectivity_hub.hub.id
 
   linked_router_appliance_instances {
     instances {
-      virtual_machine = google_compute_instance.nva["europe-west1-b"].self_link
+      virtual_machine = google_compute_instance.nva["${each.key}"].self_link
+      ip_address      = each.value.ip_untrusted
+    }
+    site_to_site_data_transfer = false
+  }
+}
+
+resource "google_network_connectivity_spoke" "spoke_trusted" {
+  for_each    = local.nvas_config
+  name        = "prod-spoke-trusted-${each.value.trigram}"
+  location    = each.value.region
+  description = "Spoke for internal connectivity - trusted - ${each.value.trigram}"
+  hub         = google_network_connectivity_hub.hub.id
+
+  linked_router_appliance_instances {
+    instances {
+      virtual_machine = google_compute_instance.nva["${each.key}"].self_link
+      ip_address      = each.value.ip_trusted
     }
     site_to_site_data_transfer = false
   }
