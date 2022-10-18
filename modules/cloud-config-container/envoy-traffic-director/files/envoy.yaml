@@ -80,7 +80,9 @@ admin:
   access_log_path: /dev/stdout
   address:
     socket_address:
-      address: 127.0.0.1 # Admin page is only accessible locally.
+      # While we do listen on the admin port here on external interfaces,
+      # the iptables rules in start_envoy.sh limit access to the health checkers range.
+      address: 0.0.0.0
       port_value: 15000
 
 tracing:

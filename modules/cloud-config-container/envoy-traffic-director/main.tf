@@ -32,8 +32,13 @@ module "cos-envoy-td" {
   docker_args = "--network host --pid host"
 
   files = {
-    "/var/run/envoy/customize.sh" = {
-      content     = file("${path.module}/files/customize.sh")
+    "/var/run/start_envoy.sh" = {
+      content     = file("${path.module}/files/start_envoy.sh")
+      owner       = "root"
+      permissions = "0744"
+    }
+    "/var/run/set_source_routing.sh" = {
+      content     = file("${path.module}/files/set_source_routing.sh")
       owner       = "root"
       permissions = "0744"
     }
@@ -47,13 +52,8 @@ module "cos-envoy-td" {
   gcp_logging = var.docker_logging
 
   run_commands = [
-    "iptables -t nat -N ENVOY_IN_REDIRECT",
-    "iptables -t nat -A ENVOY_IN_REDIRECT -p tcp -j REDIRECT --to-port 15001",
-    "iptables -t nat -A PREROUTING -p tcp -m tcp --dport 80 -j ENVOY_IN_REDIRECT",
-    "iptables -t filter -A INPUT -p tcp -m tcp --dport 15001 -m state --state NEW,ESTABLISHED -j ACCEPT",
-    "/var/run/envoy/customize.sh",
-    "systemctl daemon-reload",
-    "systemctl start envoy",
+    "/var/run/set_source_routing.sh",
+    "/var/run/start_envoy.sh",
   ]
 
   users = [
