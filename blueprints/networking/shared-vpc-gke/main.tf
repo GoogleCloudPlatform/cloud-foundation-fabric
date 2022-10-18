@@ -27,8 +27,7 @@ module "project-host" {
   name            = "net"
   services        = concat(var.project_services, ["dns.googleapis.com"])
   shared_vpc_host_config = {
-    enabled          = true
-    service_projects = [] # defined later
+    enabled = true
   }
   iam = {
     "roles/owner" = var.owners_host
@@ -98,22 +97,21 @@ module "vpc-shared" {
   name       = "shared-vpc"
   subnets = [
     {
-      ip_cidr_range      = var.ip_ranges.gce
-      name               = "gce"
-      region             = var.region
-      secondary_ip_range = {}
+      ip_cidr_range = var.ip_ranges.gce
+      name          = "gce"
+      region        = var.region
     },
     {
       ip_cidr_range = var.ip_ranges.gke
       name          = "gke"
       region        = var.region
-      secondary_ip_range = {
+      secondary_ip_ranges = {
         pods     = var.ip_secondary_ranges.gke-pods
         services = var.ip_secondary_ranges.gke-services
       }
     }
   ]
-  iam = {
+  subnet_iam = {
     "${var.region}/gce" = {
       "roles/compute.networkUser" = concat(var.owners_gce, [
         "serviceAccount:${module.project-svc-gce.service_accounts.cloud_services}",
@@ -197,36 +195,35 @@ module "vm-bastion" {
 ################################################################################
 
 module "cluster-1" {
-  source                    = "../../../modules/gke-cluster"
-  count                     = var.cluster_create ? 1 : 0
-  name                      = "cluster-1"
-  project_id                = module.project-svc-gke.project_id
-  location                  = "${var.region}-b"
-  network                   = module.vpc-shared.self_link
-  subnetwork                = module.vpc-shared.subnet_self_links["${var.region}/gke"]
-  secondary_range_pods      = "pods"
-  secondary_range_services  = "services"
-  default_max_pods_per_node = 32
+  source     = "../../../modules/gke-cluster"
+  count      = var.cluster_create ? 1 : 0
+  name       = "cluster-1"
+  project_id = module.project-svc-gke.project_id
+  location   = "${var.region}-b"
+  vpc_config = {
+    network    = module.vpc-shared.self_link
+    subnetwork = module.vpc-shared.subnet_self_links["${var.region}/gke"]
+    master_authorized_ranges = {
+      internal-vms = var.ip_ranges.gce
+    }
+    master_ipv4_cidr_block = var.private_service_ranges.cluster-1
+  }
+  max_pods_per_node = 32
+  private_cluster_config = {
+    enable_private_endpoint = true
+    master_global_access    = true
+  }
   labels = {
     environment = "test"
-  }
-  master_authorized_ranges = {
-    internal-vms = var.ip_ranges.gce
-  }
-  private_cluster_config = {
-    enable_private_nodes    = true
-    enable_private_endpoint = true
-    master_ipv4_cidr_block  = var.private_service_ranges.cluster-1
-    master_global_access    = true
   }
 }
 
 module "cluster-1-nodepool-1" {
-  source                      = "../../../modules/gke-nodepool"
-  count                       = var.cluster_create ? 1 : 0
-  name                        = "nodepool-1"
-  project_id                  = module.project-svc-gke.project_id
-  location                    = module.cluster-1.0.location
-  cluster_name                = module.cluster-1.0.name
-  node_service_account_create = true
+  source          = "../../../modules/gke-nodepool"
+  count           = var.cluster_create ? 1 : 0
+  name            = "nodepool-1"
+  project_id      = module.project-svc-gke.project_id
+  location        = module.cluster-1.0.location
+  cluster_name    = module.cluster-1.0.name
+  service_account = {}
 }

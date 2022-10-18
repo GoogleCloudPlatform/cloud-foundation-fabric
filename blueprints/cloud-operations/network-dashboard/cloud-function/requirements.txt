@@ -8,3 +8,4 @@ oauth2client==4.1.3
 google-api-core==2.7.0
 PyYAML==6.0
 google-cloud-asset==3.8.1
+functions-framework==3.*

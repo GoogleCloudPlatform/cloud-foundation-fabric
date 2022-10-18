@@ -37,10 +37,9 @@ module "vpc" {
   project_id = module.project.project_id
   name       = var.name
   subnets = [{
-    ip_cidr_range      = "192.168.0.0/24"
-    name               = "${var.name}-default"
-    region             = var.region
-    secondary_ip_range = {}
+    ip_cidr_range = "192.168.0.0/24"
+    name          = "${var.name}-default"
+    region        = var.region
   }]
 }
 

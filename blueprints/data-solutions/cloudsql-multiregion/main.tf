@@ -36,7 +36,7 @@ locals {
       local.data_eng_principals_iam,
       [module.service-account-sql.iam_email]
     )
-    # compute engeneering 
+    # compute engineering
     "roles/compute.instanceAdmin.v1"   = local.data_eng_principals_iam
     "roles/compute.osLogin"            = local.data_eng_principals_iam
     "roles/compute.viewer"             = local.data_eng_principals_iam
@@ -94,9 +94,8 @@ module "project" {
   ]
 
   shared_vpc_service_config = local.shared_vpc_project == null ? null : {
-    attach               = true
-    host_project         = local.shared_vpc_project
-    service_identity_iam = {}
+    attach       = true
+    host_project = local.shared_vpc_project
   }
 
   service_encryption_key_ids = {
@@ -116,10 +115,9 @@ module "vpc" {
   name       = "vpc"
   subnets = [
     {
-      ip_cidr_range      = "10.0.0.0/20"
-      name               = "subnet"
-      region             = var.regions.primary
-      secondary_ip_range = {}
+      ip_cidr_range = "10.0.0.0/20"
+      name          = "subnet"
+      region        = var.regions.primary
     }
   ]
 

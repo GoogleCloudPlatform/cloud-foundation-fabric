@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
+# CFv2 define whether to use Cloud function 2nd generation or 1st generation
 
 from distutils.command.config import config
 import os
@@ -20,20 +20,24 @@ import time
 from google.cloud import monitoring_v3, asset_v1
 from google.protobuf import field_mask_pb2
 from googleapiclient import discovery
-from metrics import ilb_fwrules, instances, networks, metrics, limits, peerings, routes, subnets
+from metrics import ilb_fwrules, instances, networks, metrics, limits, peerings, routes, subnets, vpc_firewalls
+
+CFv2 = False
+if CFv2:
+  import functions_framework
 
 
 def get_monitored_projects_list(config):
   '''
-    Gets the projects to be monitored from the MONITORED_FOLDERS_LIST environment variable.
+      Gets the projects to be monitored from the MONITORED_FOLDERS_LIST environment variable.
 
-      Parameters:
-        config (dict): The dict containing config like clients and limits
-      Returns:
-        monitored_projects (List of strings): Full list of projects to be monitored
-    '''
+        Parameters:
+          config (dict): The dict containing config like clients and limits
+        Returns:
+          monitored_projects (List of strings): Full list of projects to be monitored
+      '''
   monitored_projects = config["monitored_projects"]
-  monitored_folders = os.environ.get("MONITORED_FOLDERS_LIST").split(",")
+  monitored_folders = []  #os.environ.get("MONITORED_FOLDERS_LIST").split(",")
 
   # Handling empty monitored folders list
   if monitored_folders == ['']:
@@ -68,10 +72,10 @@ def get_monitored_projects_list(config):
 
 def monitoring_interval():
   '''
-  Creates the monitoring interval of 24 hours
-    Returns:
-      monitoring_v3.TimeInterval: Monitoring time interval of 24h
-  '''
+    Creates the monitoring interval of 24 hours
+      Returns:
+        monitoring_v3.TimeInterval: Monitoring time interval of 24h
+    '''
   now = time.time()
   seconds = int(now)
   nanos = int((now - seconds) * 10**9)
@@ -94,7 +98,7 @@ config = {
     # list of projects from which function will get quotas information
     "monitored_projects":
         os.environ.get("MONITORED_PROJECTS_LIST").split(","),
-    "monitoring_project_link":
+    "monitoring_project":
         os.environ.get('MONITORING_PROJECT_ID'),
     "monitoring_project_link":
         f"projects/{os.environ.get('MONITORING_PROJECT_ID')}",
@@ -124,13 +128,13 @@ config = {
 
 def main(event, context):
   '''
-    Cloud Function Entry point, called by the scheduler.
-      Parameters:
-        event: Not used for now (Pubsub trigger)
-        context: Not used for now (Pubsub trigger)
-      Returns:
-        'Function executed successfully'
-  '''
+      Cloud Function Entry point, called by the scheduler.
+        Parameters:
+          event: Not used for now (Pubsub trigger)
+          context: Not used for now (Pubsub trigger)
+        Returns:
+          'Function executed successfully'
+    '''
   # Handling empty monitored projects list
   if config["monitored_projects"] == ['']:
     config["monitored_projects"] = []
@@ -143,6 +147,9 @@ def main(event, context):
 
   metrics_dict, limits_dict = metrics.create_metrics(
       config["monitoring_project_link"])
+  project_quotas_dict = limits.get_quota_project_limit(config)
+
+  firewalls_dict = vpc_firewalls.get_firewalls_dict(config)
 
   # IP utilization subnet level metrics
   subnets.get_subnets(config, metrics_dict)
@@ -152,6 +159,10 @@ def main(event, context):
   l4_forwarding_rules_dict = ilb_fwrules.get_forwarding_rules_dict(config, "L4")
   l7_forwarding_rules_dict = ilb_fwrules.get_forwarding_rules_dict(config, "L7")
   subnet_range_dict = networks.get_subnet_ranges_dict(config)
+
+  # Per Project metrics
+  vpc_firewalls.get_firewalls_data(config, metrics_dict, project_quotas_dict,
+                                   firewalls_dict)
 
   # Per Network metrics
   instances.get_gce_instances_data(config, metrics_dict, gce_instance_dict,
@@ -196,5 +207,11 @@ def main(event, context):
   return 'Function executed successfully'
 
 
-if __name__ == "__main__":
-  main(None, None)
+if CFv2:
+
+  @functions_framework.http
+  def main_http(request):
+    main(None, None)
+else:
+  if __name__ == "__main__":
+    main(None, None)

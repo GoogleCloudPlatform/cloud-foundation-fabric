@@ -31,8 +31,7 @@ module "dev-spoke-project" {
     "stackdriver.googleapis.com",
   ]
   shared_vpc_host_config = {
-    enabled          = true
-    service_projects = []
+    enabled = true
   }
   metric_scopes = [module.landing-project.project_id]
   iam = {
@@ -57,14 +56,12 @@ module "dev-spoke-vpc" {
     private-googleapis = {
       dest_range    = "199.36.153.8/30"
       priority      = 999
-      tags          = []
       next_hop_type = "gateway"
       next_hop      = "default-internet-gateway"
     }
     restricted-googleapis = {
       dest_range    = "199.36.153.4/30"
       priority      = 999
-      tags          = []
       next_hop_type = "gateway"
       next_hop      = "default-internet-gateway"
     }
@@ -73,28 +70,28 @@ module "dev-spoke-vpc" {
       priority      = 1000
       tags          = ["ew1"]
       next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-trusted-ew1.forwarding_rule_address
+      next_hop      = module.ilb-nva-trusted["europe-west1"].forwarding_rule_address
     }
     nva-ew4-to-ew4 = {
       dest_range    = "0.0.0.0/0"
       priority      = 1000
       tags          = ["ew4"]
       next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-trusted-ew4.forwarding_rule_address
+      next_hop      = module.ilb-nva-trusted["europe-west4"].forwarding_rule_address
     }
     nva-ew1-to-ew4 = {
       dest_range    = "0.0.0.0/0"
       priority      = 1001
       tags          = ["ew1"]
       next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-trusted-ew4.forwarding_rule_address
+      next_hop      = module.ilb-nva-trusted["europe-west4"].forwarding_rule_address
     }
     nva-ew4-to-ew1 = {
       dest_range    = "0.0.0.0/0"
       priority      = 1001
       tags          = ["ew4"]
       next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-trusted-ew1.forwarding_rule_address
+      next_hop      = module.ilb-nva-trusted["europe-west1"].forwarding_rule_address
     }
   }
 }

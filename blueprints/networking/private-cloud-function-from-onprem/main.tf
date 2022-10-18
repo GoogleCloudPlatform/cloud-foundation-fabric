@@ -42,15 +42,12 @@ module "vpc-onprem" {
   name       = "${var.name}-onprem"
   subnets = [
     {
-      ip_cidr_range      = var.ip_ranges.onprem
-      name               = "${var.name}-onprem"
-      region             = var.region
-      secondary_ip_range = {}
+      ip_cidr_range         = var.ip_ranges.onprem
+      name                  = "${var.name}-onprem"
+      region                = var.region
+      enable_private_access = false
     }
   ]
-  subnet_private_access = {
-    "${var.region}/${var.name}-onprem" = false
-  }
 }
 
 module "firewall-onprem" {
@@ -65,10 +62,9 @@ module "vpc-hub" {
   name       = "${var.name}-hub"
   subnets = [
     {
-      ip_cidr_range      = var.ip_ranges.hub
-      name               = "${var.name}-hub"
-      region             = var.region
-      secondary_ip_range = {}
+      ip_cidr_range = var.ip_ranges.hub
+      name          = "${var.name}-hub"
+      region        = var.region
     }
   ]
 }
@@ -178,12 +174,8 @@ module "test-vm" {
   instance_type = "e2-micro"
   boot_disk = {
     image = "projects/ubuntu-os-cloud/global/images/family/ubuntu-2104"
-    type  = "pd-balanced"
-    size  = 10
   }
   network_interfaces = [{
-    addresses  = null
-    nat        = false
     network    = module.vpc-onprem.self_link
     subnetwork = module.vpc-onprem.subnet_self_links["${var.region}/${var.name}-onprem"]
   }]

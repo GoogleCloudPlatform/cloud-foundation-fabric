@@ -32,8 +32,7 @@ module "dev-spoke-project" {
     "stackdriver.googleapis.com",
   ]
   shared_vpc_host_config = {
-    enabled          = true
-    service_projects = []
+    enabled = true
   }
   metric_scopes = [module.landing-project.project_id]
   iam = {
@@ -56,15 +55,11 @@ module "dev-spoke-vpc" {
   routes = {
     private-googleapis = {
       dest_range    = "199.36.153.8/30"
-      priority      = 1000
-      tags          = []
       next_hop_type = "gateway"
       next_hop      = "default-internet-gateway"
     }
     restricted-googleapis = {
       dest_range    = "199.36.153.4/30"
-      priority      = 1000
-      tags          = []
       next_hop_type = "gateway"
       next_hop      = "default-internet-gateway"
     }
