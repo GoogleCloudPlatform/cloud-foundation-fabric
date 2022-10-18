@@ -18,11 +18,11 @@ locals {
 
   vpcs = {
     "producer" = {
-      proxies = "172.16.0.0/24"
+      proxies = "172.16.0.0/29"
       service = "10.0.0.0/24"
     }
     "consumer" = {
-      proxies = "172.16.1.0/24"
+      proxies = "172.16.1.0/29"
       client  = "10.1.0.0/24"
     }
   }
@@ -320,7 +320,6 @@ module "envoy_ilb" {
 
 ### Traffic Director (this programs the Envoys to route traffic for the service)
 
-#TODO: iterate these over a list of services
 #TODO: move to networkservices.googleapis.com once TF supports it
 
 resource "google_compute_network_endpoint_group" "tcp_negs" {
