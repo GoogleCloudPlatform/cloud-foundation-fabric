@@ -31,14 +31,16 @@ locals {
 
   zones = { for z in var.zones : z => "${var.region}-${z}" }
 
-  service = {
-    frontend = {
-      address = "192.168.1.1"
-      port    = 443
-    }
-    backend = {
-      address = module.server_vm.internal_ip
-      port    = 443
+  services = {
+    "svc-1" = {
+      frontend = {
+        address = "192.168.1.1"
+        port    = 443
+      }
+      backend = {
+        address = "10.0.0.2"
+        port    = 443
+      }
     }
   }
 }
@@ -106,13 +108,12 @@ module "consumer_vpc" {
   project_id = module.project.project_id
   name       = "${var.prefix}-consumer"
   routes = {
-    "producer" = { #TODO: make it configurable
-      dest_range    = "${local.service.frontend.address}/32"
+    for k, v in local.services : k => {
+      dest_range    = "${v.frontend.address}/32"
       priority      = 1000
       next_hop_type = "ilb"
       next_hop      = module.envoy_ilb_address.internal_addresses["envoy-ilb"].address
       tags          = []
-
     }
   }
   subnets = [
@@ -187,7 +188,10 @@ module "server_vm" {
     network    = module.producer_vpc.self_link,
     subnetwork = module.producer_vpc.subnet_self_links["${var.region}/${var.prefix}-producer-service"],
     nat        = false,
-    addresses  = null
+    addresses = {
+      external = null
+      internal = local.services["svc-1"].backend.address
+    }
   }]
   tags = ["ssh"]
 
@@ -319,57 +323,66 @@ module "envoy_ilb" {
 #TODO: iterate these over a list of services
 #TODO: move to networkservices.googleapis.com once TF supports it
 
-resource "google_compute_network_endpoint_group" "tcp_neg" {
-  name                  = "${var.prefix}-tcp-neg"
+resource "google_compute_network_endpoint_group" "tcp_negs" {
+  for_each = local.services
+
+  name                  = "${var.prefix}-${each.key}-neg"
   network_endpoint_type = "NON_GCP_PRIVATE_IP_PORT"
   network               = module.producer_vpc.self_link
   zone                  = local.zones["b"]
   project               = module.project.project_id
 }
 
-resource "google_compute_network_endpoint" "tcp_neg_ep" {
-  network_endpoint_group = google_compute_network_endpoint_group.tcp_neg.name
-  ip_address             = local.service.backend.address
-  port                   = local.service.backend.port
+resource "google_compute_network_endpoint" "tcp_neg_eps" {
+  for_each = local.services
+
+  network_endpoint_group = google_compute_network_endpoint_group.tcp_negs[each.key].name
+  ip_address             = local.services[each.key].backend.address
+  port                   = local.services[each.key].backend.port
   zone                   = local.zones["b"]
   project                = module.project.project_id
 }
 
-resource "google_compute_health_check" "tcp_health_check" {
-  provider = google-beta
+resource "google_compute_health_check" "tcp_health_checks" {
+  for_each = local.services
 
-  name = "${var.prefix}-tcp-health-check"
+  name = "${var.prefix}-${each.key}-hc"
   tcp_health_check {
-    port = local.service.backend.port
+    port = local.services[each.key].backend.port
   }
   project = module.project.project_id
 }
 
-resource "google_compute_backend_service" "tcp_service" {
-  protocol = "TCP"
+resource "google_compute_backend_service" "tcp_services" {
+  for_each = local.services
 
-  name                  = "${var.prefix}-tcp-service"
+  protocol              = "TCP"
+  name                  = "${var.prefix}-${each.key}-svc"
   load_balancing_scheme = "INTERNAL_SELF_MANAGED"
-  health_checks         = [google_compute_health_check.tcp_health_check.id]
+  health_checks         = [google_compute_health_check.tcp_health_checks[each.key].id]
   project               = module.project.project_id
   backend {
-    group           = google_compute_network_endpoint_group.tcp_neg.id
+    group           = google_compute_network_endpoint_group.tcp_negs[each.key].id
     balancing_mode  = "CONNECTION"
     max_connections = 100
   }
 }
 
-resource "google_compute_target_tcp_proxy" "target_proxy" {
-  name            = "${var.prefix}-tcp-proxy"
-  backend_service = google_compute_backend_service.tcp_service.id
+resource "google_compute_target_tcp_proxy" "target_proxies" {
+  for_each = local.services
+
+  name            = "${var.prefix}-${each.key}-proxy"
+  backend_service = google_compute_backend_service.tcp_services[each.key].id
   project         = module.project.project_id
 }
 
 resource "google_compute_global_forwarding_rule" "fwd_rule" {
-  name                  = "${var.prefix}-fwd-rule"
-  target                = google_compute_target_tcp_proxy.target_proxy.id
-  ip_address            = local.service.frontend.address
-  port_range            = local.service.frontend.port
+  for_each = local.services
+
+  name                  = "${var.prefix}-${each.key}-fwd-rule"
+  target                = google_compute_target_tcp_proxy.target_proxies[each.key].id
+  ip_address            = local.services[each.key].frontend.address
+  port_range            = local.services[each.key].frontend.port
   network               = module.producer_vpc.self_link
   load_balancing_scheme = "INTERNAL_SELF_MANAGED"
   project               = module.project.project_id
