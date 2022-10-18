@@ -65,35 +65,36 @@ module "prod-spoke-vpc" {
       next_hop_type = "gateway"
       next_hop      = "default-internet-gateway"
     }
-    nva-ew1-to-ew1 = {
-      dest_range    = "0.0.0.0/0"
-      priority      = 1000
-      tags          = ["ew1"]
-      next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-trusted["europe-west1"].forwarding_rule_address
-    }
-    nva-ew4-to-ew4 = {
-      dest_range    = "0.0.0.0/0"
-      priority      = 1000
-      tags          = ["ew4"]
-      next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-trusted["europe-west4"].forwarding_rule_address
-    }
-    nva-ew1-to-ew4 = {
-      dest_range    = "0.0.0.0/0"
-      priority      = 1001
-      tags          = ["ew1"]
-      next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-trusted["europe-west4"].forwarding_rule_address
-    }
-    nva-ew4-to-ew1 = {
-      dest_range    = "0.0.0.0/0"
-      priority      = 1001
-      tags          = ["ew4"]
-      next_hop_type = "ilb"
-      next_hop      = module.ilb-nva-trusted["europe-west1"].forwarding_rule_address
-    }
   }
+  #   nva-ew1-to-ew1 = {
+  #     dest_range    = "0.0.0.0/0"
+  #     priority      = 1000
+  #     tags          = ["ew1"]
+  #     next_hop_type = "ilb"
+  #     next_hop      = module.ilb-nva-trusted["europe-west1"].forwarding_rule_address
+  #   }
+  #   nva-ew4-to-ew4 = {
+  #     dest_range    = "0.0.0.0/0"
+  #     priority      = 1000
+  #     tags          = ["ew4"]
+  #     next_hop_type = "ilb"
+  #     next_hop      = module.ilb-nva-trusted["europe-west4"].forwarding_rule_address
+  #   }
+  #   nva-ew1-to-ew4 = {
+  #     dest_range    = "0.0.0.0/0"
+  #     priority      = 1001
+  #     tags          = ["ew1"]
+  #     next_hop_type = "ilb"
+  #     next_hop      = module.ilb-nva-trusted["europe-west4"].forwarding_rule_address
+  #   }
+  #   nva-ew4-to-ew1 = {
+  #     dest_range    = "0.0.0.0/0"
+  #     priority      = 1001
+  #     tags          = ["ew4"]
+  #     next_hop_type = "ilb"
+  #     next_hop      = module.ilb-nva-trusted["europe-west1"].forwarding_rule_address
+  #   }
+  # }
 }
 
 module "prod-spoke-firewall" {

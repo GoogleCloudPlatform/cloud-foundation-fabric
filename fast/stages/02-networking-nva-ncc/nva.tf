@@ -37,7 +37,7 @@ locals {
       ]
     },
   ]
-  nvas_config = {
+  nva_configs = {
     europe-west1-b = {
       region       = "europe-west1",
       trigram      = "ew1",
@@ -77,8 +77,9 @@ module "nva-cloud-config" {
 }
 
 resource "google_compute_address" "nva_static_ip_untrusted" {
-  for_each     = local.nvas_config
+  for_each     = local.nva_configs
   name         = "nva-ip-untrusted-${each.value.trigram}-${each.value.zone}"
+  project      = module.landing-project.project_id
   subnetwork   = module.landing-untrusted-vpc.subnet_self_links["${each.value.region}/landing-untrusted-default-${each.value.trigram}"]
   address_type = "INTERNAL"
   address      = each.value.ip_untrusted
@@ -86,8 +87,9 @@ resource "google_compute_address" "nva_static_ip_untrusted" {
 }
 
 resource "google_compute_address" "nva_static_ip_trusted" {
-  for_each     = local.nvas_config
+  for_each     = local.nva_configs
   name         = "nva-ip-trusted-${each.value.trigram}-${each.value.zone}"
+  project      = module.landing-project.project_id
   subnetwork   = module.landing-trusted-vpc.subnet_self_links["${each.value.region}/landing-trusted-default-${each.value.trigram}"]
   address_type = "INTERNAL"
   address      = each.value.ip_trusted
@@ -95,7 +97,7 @@ resource "google_compute_address" "nva_static_ip_trusted" {
 }
 
 module "nva" {
-  for_each       = local.nvas_config
+  for_each       = local.nva_configs
   source         = "../../../modules/compute-vm"
   project_id     = module.landing-project.project_id
   name           = "nva-${each.value.trigram}-${each.value.zone}"
@@ -110,14 +112,17 @@ module "nva" {
       nat        = false
       addresses = {
         external = null
-        internal = google_compute_address.nva_static_ip_untrusted["${each.key}"].id
+        internal = google_compute_address.nva_static_ip_untrusted["${each.key}"].address
       }
     },
     {
       network    = module.landing-trusted-vpc.self_link
       subnetwork = module.landing-trusted-vpc.subnet_self_links["${each.value.region}/landing-trusted-default-${each.value.trigram}"]
       nat        = false
-      addresses  = google_compute_address.nva_static_ip_trusted["${each.key}"].id
+      addresses  = {
+        external = null
+        internal = google_compute_address.nva_static_ip_trusted["${each.key}"].address
+      }
     }
   ]
   boot_disk = {

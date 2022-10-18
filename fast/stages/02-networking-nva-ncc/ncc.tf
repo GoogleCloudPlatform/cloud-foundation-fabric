@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+locals {
+  nva_regions = toset([ for config in local.nva_configs : config.region ])
+}
+
 resource "google_network_connectivity_hub" "hub" {
   name        = "prod-hub"
   description = "NCC Hub for internal multi-region connectivity."
@@ -21,33 +25,49 @@ resource "google_network_connectivity_hub" "hub" {
 }
 
 resource "google_network_connectivity_spoke" "spoke_untrusted" {
-  for_each    = local.nvas_config
-  name        = "prod-spoke-untrusted-${each.value.trigram}"
-  location    = each.value.region
-  description = "Spoke for internal connectivity - untrusted - ${each.value.trigram}"
+  for_each    = local.nva_regions
+  name        = "prod-spoke-untrusted-${each.key}"
+  project     = module.landing-project.project_id
+  location    = each.key
+  description = "Spoke for internal connectivity - untrusted - ${each.key}"
   hub         = google_network_connectivity_hub.hub.id
 
   linked_router_appliance_instances {
-    instances {
-      virtual_machine = google_compute_instance.nva["${each.key}"].self_link
-      ip_address      = each.value.ip_untrusted
-    }
     site_to_site_data_transfer = false
+    dynamic "instances" {
+      for_each = {
+        for key, config in local.nva_configs :
+        key => config.ip_untrusted if config.region == each.key
+      }
+      iterator = nva
+      content {
+        virtual_machine = module.nva[nva.key].self_link
+        ip_address      = nva.value
+      }
+    }
   }
 }
 
 resource "google_network_connectivity_spoke" "spoke_trusted" {
-  for_each    = local.nvas_config
-  name        = "prod-spoke-trusted-${each.value.trigram}"
-  location    = each.value.region
-  description = "Spoke for internal connectivity - trusted - ${each.value.trigram}"
+  for_each    = local.nva_regions
+  name        = "prod-spoke-trusted-${each.key}"
+  project     = module.landing-project.project_id
+  location    = each.key
+  description = "Spoke for internal connectivity - trusted - ${each.key}"
   hub         = google_network_connectivity_hub.hub.id
 
   linked_router_appliance_instances {
-    instances {
-      virtual_machine = google_compute_instance.nva["${each.key}"].self_link
-      ip_address      = each.value.ip_trusted
-    }
     site_to_site_data_transfer = false
+    dynamic "instances" {
+      for_each = {
+        for key, config in local.nva_configs :
+        key => config.ip_trusted if config.region == each.key
+      }
+      iterator = nva
+      content {
+        virtual_machine = module.nva[nva.key].self_link
+        ip_address      = nva.value
+      }
+    }
   }
 }
