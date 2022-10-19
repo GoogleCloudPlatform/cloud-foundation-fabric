@@ -14,79 +14,30 @@
  * limitations under the License.
  */
 
-locals {
-  clusters = {
-    for name, config in var.clusters :
-    name => merge(config, {
-      overrides = coalesce(config.overrides, var.cluster_defaults)
-    })
-  }
-}
+# tfdoc:file:description GKE clusters.
 
 module "gke-cluster" {
-  source      = "../../../modules/gke-cluster"
-  for_each    = local.clusters
-  name        = each.key
-  project_id  = module.gke-project-0.project_id
-  description = each.value.description
-  location    = each.value.location
-  vpc_config = {
-    network    = var.vpc_config.vpc_self_link
-    subnetwork = each.value.net.subnet
-    secondary_range_names = {
-      pods     = each.value.net.pods
-      services = each.value.net.services
-    }
-    master_authorized_ranges = each.value.overrides.master_authorized_ranges
-  }
-  labels = each.value.labels
-  enable_addons = {
-    cloudrun                       = each.value.overrides.cloudrun_config
-    config_connector               = true
-    dns_cache                      = true
-    gce_persistent_disk_csi_driver = true
-    gcp_filestore_csi_driver       = each.value.overrides.gcp_filestore_csi_driver_config
-    gke_backup_agent               = false
-    horizontal_pod_autoscaling     = true
-    http_load_balancing            = true
-  }
-  enable_features = {
-    cloud_dns = var.dns_domain == null ? null : {
-      cluster_dns        = "CLOUD_DNS"
-      cluster_dns_scope  = "VPC_SCOPE"
-      cluster_dns_domain = "${each.key}.${var.dns_domain}"
-    }
-    database_encryption = (
-      each.value.overrides.database_encryption_key == null
-      ? null
-      : {
-        state    = "ENCRYPTED"
-        key_name = each.value.overrides.database_encryption_key
-      }
+  source                   = "../../../modules/gke-cluster"
+  for_each                 = var.clusters
+  name                     = each.key
+  project_id               = module.gke-project-0.project_id
+  cluster_autoscaling      = each.value.cluster_autoscaling
+  description              = each.value.description
+  enable_features          = each.value.enable_features
+  issue_client_certificate = each.value.issue_client_certificate
+  labels                   = each.value.labels
+  location                 = each.value.location
+  logging_config           = each.value.logging_config
+  maintenance_config       = each.value.maintenance_config
+  max_pods_per_node        = each.value.max_pods_per_node
+  min_master_version       = each.value.min_master_version
+  monitoring_config        = each.value.monitoring_config
+  node_locations           = each.value.node_locations
+  private_cluster_config   = each.value.private_cluster_config
+  release_channel          = each.value.release_channel
+  vpc_config = merge(each.value.vpc_config, {
+    network = coalesce(
+      each.value.vpc_config.network, var.vpc_config.vpc_self_link
     )
-    dataplane_v2         = true
-    groups_for_rbac      = var.authenticator_security_group
-    intranode_visibility = true
-    pod_security_policy  = each.value.overrides.pod_security_policy
-    resource_usage_export = {
-      dataset = module.gke-dataset-resource-usage.dataset_id
-    }
-    shielded_nodes           = true
-    vertical_pod_autoscaling = each.value.overrides.vertical_pod_autoscaling
-    workload_identity        = true
-  }
-  private_cluster_config = {
-    enable_private_endpoint = true
-    master_ipv4_cidr_block  = each.value.net.master_range
-    master_global_access    = true
-    peering_config = var.peering_config == null ? null : {
-      export_routes = var.peering_config.export_routes
-      import_routes = var.peering_config.import_routes
-      project_id    = var.vpc_config.host_project_id
-    }
-  }
-  logging_config    = ["SYSTEM_COMPONENTS", "WORKLOADS"]
-  monitoring_config = ["SYSTEM_COMPONENTS", "WORKLOADS"]
-  max_pods_per_node = each.value.overrides.max_pods_per_node
-  release_channel   = each.value.overrides.release_channel
+  })
 }

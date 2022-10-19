@@ -237,7 +237,7 @@ def get_pgg_data(config, metric_dict, usage_dict, limit_metric, limit_dict):
                                    metric_dict["utilization"]["name"],
                                    limit_dict)
       print(
-          f"Wrote {metric_dict['usage']['name']} for peering group {network_dict['network_name']} in {project_id}"
+          f"Buffered {metric_dict['usage']['name']} for peering group {network_dict['network_name']} in {project_id}"
       )
 
 

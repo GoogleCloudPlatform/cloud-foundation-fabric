@@ -40,10 +40,9 @@ module "vpc-hub" {
   name       = "vpc-hub"
   subnets = [
     {
-      ip_cidr_range      = "10.0.10.0/24"
-      name               = "subnet-hub-1"
-      region             = var.region
-      secondary_ip_range = {}
+      ip_cidr_range = "10.0.10.0/24"
+      name          = "subnet-hub-1"
+      region        = var.region
     }
   ]
 }
@@ -81,10 +80,9 @@ module "vpc-prod" {
   name       = "vpc-prod"
   subnets = [
     {
-      ip_cidr_range      = "10.0.20.0/24"
-      name               = "subnet-prod-1"
-      region             = var.region
-      secondary_ip_range = {}
+      ip_cidr_range = "10.0.20.0/24"
+      name          = "subnet-prod-1"
+      region        = var.region
     }
   ]
 }
@@ -122,10 +120,9 @@ module "vpc-dev" {
   name       = "vpc-dev"
   subnets = [
     {
-      ip_cidr_range      = "10.0.30.0/24"
-      name               = "subnet-dev-1"
-      region             = var.region
-      secondary_ip_range = {}
+      ip_cidr_range = "10.0.30.0/24"
+      name          = "subnet-dev-1"
+      region        = var.region
     }
   ]
 }

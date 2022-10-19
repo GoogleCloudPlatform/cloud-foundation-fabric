@@ -1,4 +1,5 @@
 pytest>=6.2.5
+pytest-xdist
 PyYAML>=6.0
 tftest>=1.6.3
 marko>=1.2.0

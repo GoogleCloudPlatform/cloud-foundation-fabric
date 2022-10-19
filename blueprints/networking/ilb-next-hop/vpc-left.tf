@@ -20,17 +20,14 @@ module "vpc-left" {
   name       = "${local.prefix}left"
   subnets = [
     {
-      ip_cidr_range      = var.ip_ranges.left
-      name               = "${local.prefix}left"
-      region             = var.region
-      secondary_ip_range = {}
+      ip_cidr_range = var.ip_ranges.left
+      name          = "${local.prefix}left"
+      region        = var.region
     },
   ]
   routes = {
     to-right = {
       dest_range    = var.ip_ranges.right
-      priority      = null
-      tags          = null
       next_hop_type = "ilb"
       next_hop      = module.ilb-left.forwarding_rule.self_link
     }

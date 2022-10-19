@@ -54,7 +54,7 @@ variable "function_config" {
   type = object({
     entry_point = string
     instances   = number
-    memory      = number
+    memory      = number # Memory in MB
     runtime     = string
     timeout     = number
   })
@@ -158,5 +158,11 @@ variable "vpc_connector_config" {
     network       = string
   })
   default = null
+}
+
+variable "v2" {
+  description = "Whether to use Cloud Function version 2nd Gen or 1st Gen."
+  type        = bool
+  default     = false
 }
 

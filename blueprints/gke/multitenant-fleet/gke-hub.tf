@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description GKE hub configuration.
+
 locals {
   fleet_enabled = (
     var.fleet_features != null || var.fleet_workload_identity

@@ -20,35 +20,36 @@ module "test" {
   billing_account_id = "ABCDEF-0123456-ABCDEF"
   folder_id          = "folders/1234567890"
   prefix             = "test"
-  vpc_config = {
-    host_project_id = "my-host-project-id"
-    vpc_self_link   = "projects/my-host-project-id/global/networks/my-network"
-  }
   clusters = {
-    mycluster = {
-      cluster_autoscaling = null
-      description         = "My cluster"
-      dns_domain          = null
-      location            = "europe-west1"
-      labels              = {}
-      net = {
-        master_range = "172.17.16.0/28"
-        pods         = "pods"
-        services     = "services"
-        subnet       = "projects/my-host-project-id/regions/europe-west1/subnetworks/mycluster-subnet"
+    cluster-0 = {
+      location = "europe-west1"
+      private_cluster_config = {
+        enable_private_endpoint = true
+        master_global_access    = true
       }
-      overrides = null
+      vpc_config = {
+        subnetwork             = "projects/my-host-project-id/regions/europe-west1/subnetworks/mycluster-subnet"
+        master_ipv4_cidr_block = "172.16.10.0/28"
+        secondary_range_names = {
+          pods     = "pods"
+          services = "services"
+        }
+      }
     }
   }
   nodepools = {
-    mycluster = {
-      mynodepool = {
-        initial_node_count = 1
-        node_count         = 1
-        node_type          = "n2-standard-4"
-        overrides          = null
-        spot               = false
+    cluster-0 = {
+      nodepool-0 = {
+        node_config = {
+          disk_type    = "pd-balanced"
+          machine_type = "n2-standard-4"
+          spot         = true
+        }
       }
     }
+  }
+  vpc_config = {
+    host_project_id = "my-host-project-id"
+    vpc_self_link   = "projects/my-host-project-id/global/networks/my-network"
   }
 }

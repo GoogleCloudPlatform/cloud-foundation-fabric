@@ -62,7 +62,7 @@ Note: To grant a user a role, take a look at the [Granting and Revoking Access](
 
 Click on the button below, sign in if required and when the prompt appears, click on “confirm”.
 
-[<p align="center"> <img alt="Open Cloudshell" width = "300px" src="shell_button.png" /> </p>](https://goo.gle/GoCloudArmor)
+[![Open Cloudshell](shell_button.png)](https://goo.gle/GoCloudArmor)
 
 This will clone the repository to your cloud shell and a screen like this one will appear:
 

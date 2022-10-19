@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
+# CFv2 define whether to use Cloud function 2nd generation or 1st generation
 
 import re
 from distutils.command.config import config
@@ -23,16 +23,20 @@ from google.protobuf import field_mask_pb2
 from googleapiclient import discovery
 from metrics import ilb_fwrules, firewall_policies, instances, networks, metrics, limits, peerings, routes, subnets, vpc_firewalls
 
+CFv2 = False
+if CFv2:
+  import functions_framework
+
 
 def get_monitored_projects_list(config):
   '''
-    Gets the projects to be monitored from the MONITORED_FOLDERS_LIST environment variable.
+      Gets the projects to be monitored from the MONITORED_FOLDERS_LIST environment variable.
 
-      Parameters:
-        config (dict): The dict containing config like clients and limits
-      Returns:
-        monitored_projects (List of strings): Full list of projects to be monitored
-    '''
+        Parameters:
+          config (dict): The dict containing config like clients and limits
+        Returns:
+          monitored_projects (List of strings): Full list of projects to be monitored
+      '''
   monitored_projects = config["monitored_projects"]
   monitored_folders = []  #os.environ.get("MONITORED_FOLDERS_LIST").split(",")
 
@@ -69,10 +73,10 @@ def get_monitored_projects_list(config):
 
 def monitoring_interval():
   '''
-  Creates the monitoring interval of 24 hours
-    Returns:
-      monitoring_v3.TimeInterval: Monitoring time interval of 24h
-  '''
+    Creates the monitoring interval of 24 hours
+      Returns:
+        monitoring_v3.TimeInterval: Monitoring time interval of 24h
+    '''
   now = time.time()
   seconds = int(now)
   nanos = int((now - seconds) * 10**9)
@@ -126,13 +130,13 @@ config = {
 
 def main(event, context):
   '''
-    Cloud Function Entry point, called by the scheduler.
-      Parameters:
-        event: Not used for now (Pubsub trigger)
-        context: Not used for now (Pubsub trigger)
-      Returns:
-        'Function executed successfully'
-  '''
+      Cloud Function Entry point, called by the scheduler.
+        Parameters:
+          event: Not used for now (Pubsub trigger)
+          context: Not used for now (Pubsub trigger)
+        Returns:
+          'Function executed successfully'
+    '''
   # Handling empty monitored projects list
   if config["monitored_projects"] == ['']:
     config["monitored_projects"] = []
@@ -215,5 +219,11 @@ def main(event, context):
   return 'Function execution completed'
 
 
-if __name__ == "__main__":
-  main(None, None)
+if CFv2:
+
+  @functions_framework.http
+  def main_http(request):
+    main(None, None)
+else:
+  if __name__ == "__main__":
+    main(None, None)

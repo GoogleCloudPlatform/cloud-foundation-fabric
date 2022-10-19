@@ -12,73 +12,87 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-_VAR_SUBNETS = (
-    '[ '
-    '{name = "a", region = "europe-west1", ip_cidr_range = "10.0.0.0/24",'
-    '   secondary_ip_range=null},'
-    '{name = "b", region = "europe-west1", ip_cidr_range = "10.0.1.0/24",'
-    '   secondary_ip_range=null},'
-    '{name = "c", region = "europe-west1", ip_cidr_range = "10.0.2.0/24",'
-    '   secondary_ip_range={a="192.168.0.0/24", b="192.168.1.0/24"}},'
-    ']')
-
-_VAR_DATA_FOLDER = "data"
+DATA_FOLDER = "data"
+SUBNET_IAM = '''{
+  "europe-west1/a" = {
+    "roles/compute.networkUser" = ["user:a@example.com", "group:g-a@example.com"]
+  }
+  "europe-west1/c" = {
+    "roles/compute.networkUser" = ["user:c@example.com", "group:g-c@example.com"]
+  }
+}'''
+SUBNETS = '''[
+  {
+    name = "a", region = "europe-west1", ip_cidr_range = "10.0.0.0/24"
+  },
+  {
+    name = "b", region = "europe-west1", ip_cidr_range = "10.0.1.0/24",
+    description="Subnet b", enable_private_access=false
+  },
+  {
+    name = "c", region = "europe-west1", ip_cidr_range = "10.0.2.0/24",
+    secondary_ip_ranges={a="192.168.0.0/24", b="192.168.1.0/24"}
+  },
+  {
+    name = "d", region = "europe-west1", ip_cidr_range = "10.0.3.0/24",
+    flow_logs_config = {
+      flow_sampling = 0.5, aggregation_interval = "INTERVAL_10_MIN"
+    }
+  },
+]'''
 
 
 def test_subnet_factory(plan_runner):
   "Test subnet factory."
-  _, resources = plan_runner(data_folder=_VAR_DATA_FOLDER)
+  _, resources = plan_runner(data_folder=DATA_FOLDER)
   assert len(resources) == 3
   subnets = [
       r['values'] for r in resources if r['type'] == 'google_compute_subnetwork'
   ]
   assert {s['name'] for s in subnets} == {'factory-subnet', 'factory-subnet2'}
   assert {len(s['secondary_ip_range']) for s in subnets} == {0, 1}
+  assert {s['private_ip_google_access'] for s in subnets} == {True, False}
 
 
-def test_subnets_simple(plan_runner):
+def test_subnets(plan_runner):
   "Test subnets variable."
-  _, resources = plan_runner(subnets=_VAR_SUBNETS)
-  assert len(resources) == 4
+  _, resources = plan_runner(subnet_iam=SUBNET_IAM, subnets=SUBNETS)
+  assert len(resources) == 7
   subnets = [
       r['values'] for r in resources if r['type'] == 'google_compute_subnetwork'
   ]
-  assert {s['name'] for s in subnets} == {'a', 'b', 'c'}
-  assert {len(s['secondary_ip_range']) for s in subnets} == {0, 0, 2}
-
-
-def test_subnet_log_configs(plan_runner):
-  "Test subnets flow logs configuration and defaults."
-  log_config = '{"europe-west1/a" = { flow_sampling = 0.1 }}'
-  log_config_defaults = (
-      '{aggregation_interval = "INTERVAL_10_MIN", flow_sampling = 0.5, '
-      'metadata = "INCLUDE_ALL_METADATA"}')
-  subnet_flow_logs = '{"europe-west1/a"=true, "europe-west1/b"=true}'
-  _, resources = plan_runner(subnets=_VAR_SUBNETS, log_configs=log_config,
-                             log_config_defaults=log_config_defaults,
-                             subnet_flow_logs=subnet_flow_logs)
-  assert len(resources) == 4
-  flow_logs = {}
-  for r in resources:
-    if r['type'] != 'google_compute_subnetwork':
-      continue
-    flow_logs[r['values']['name']] = [{
-        key: config[key] for key in config.keys() &
-        {'aggregation_interval', 'flow_sampling', 'metadata'}
-    } for config in r['values']['log_config']]
-  assert flow_logs == {
-      # enable, override one default option
-      'a': [{
+  assert {s['name'] for s in subnets} == {'a', 'b', 'c', 'd'}
+  assert {len(s['secondary_ip_range']) for s in subnets} == {0, 0, 2, 0}
+  log_config = {s['name']: s['log_config'] for s in subnets if s['log_config']}
+  assert log_config == {
+      'd': [{
           'aggregation_interval': 'INTERVAL_10_MIN',
-          'flow_sampling': 0.1,
-          'metadata': 'INCLUDE_ALL_METADATA'
-      }],
-      # enable, use defaults
-      'b': [{
-          'aggregation_interval': 'INTERVAL_10_MIN',
+          'filter_expr': 'true',
           'flow_sampling': 0.5,
-          'metadata': 'INCLUDE_ALL_METADATA'
-      }],
-      # don't enable
-      'c': []
+          'metadata': 'INCLUDE_ALL_METADATA',
+          'metadata_fields': None
+      }]
+  }
+  bindings = {
+      r['index']: r['values']
+      for r in resources
+      if r['type'] == 'google_compute_subnetwork_iam_binding'
+  }
+  assert bindings == {
+      'europe-west1/a.roles/compute.networkUser': {
+          'condition': [],
+          'members': ['group:g-a@example.com', 'user:a@example.com'],
+          'project': 'test-project',
+          'region': 'europe-west1',
+          'role': 'roles/compute.networkUser',
+          'subnetwork': 'a'
+      },
+      'europe-west1/c.roles/compute.networkUser': {
+          'condition': [],
+          'members': ['group:g-c@example.com', 'user:c@example.com'],
+          'project': 'test-project',
+          'region': 'europe-west1',
+          'role': 'roles/compute.networkUser',
+          'subnetwork': 'c'
+      },
   }

@@ -22,7 +22,6 @@ locals {
     tier             = "db-g1-small"
     db               = "wp-mysql"
     user             = "admin"
-    pass             = var.cloudsql_password == null ? random_password.cloudsql_password.result : var.cloudsql_password
   }
   iam = {
     # CloudSQL
@@ -92,7 +91,7 @@ module "cloud_run" {
         "WORDPRESS_DATABASE_HOST" : module.cloudsql.ip
         "WORDPRESS_DATABASE_NAME" : local.cloudsql_conf.db
         "WORDPRESS_DATABASE_USER" : local.cloudsql_conf.user
-        "WORDPRESS_DATABASE_PASSWORD" : local.cloudsql_conf.pass
+        "WORDPRESS_DATABASE_PASSWORD" : var.cloudsql_password == null ? module.cloudsql.user_passwords[local.cloudsql_conf.user] : var.cloudsql_password
         "WORDPRESS_USERNAME" : local.wp_user
         "WORDPRESS_PASSWORD" : local.wp_pass
       }

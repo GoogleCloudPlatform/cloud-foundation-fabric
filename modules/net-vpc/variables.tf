@@ -41,44 +41,19 @@ variable "description" {
 variable "dns_policy" {
   description = "DNS policy setup for the VPC."
   type = object({
-    inbound = bool
-    logging = bool
-    outbound = object({
+    inbound = optional(bool)
+    logging = optional(bool)
+    outbound = optional(object({
       private_ns = list(string)
       public_ns  = list(string)
-    })
+    }))
   })
   default = null
 }
 
-variable "iam" {
-  description = "Subnet IAM bindings in {REGION/NAME => {ROLE => [MEMBERS]} format."
-  type        = map(map(list(string)))
-  default     = {}
-}
-
-variable "log_config_defaults" {
-  description = "Default configuration for flow logs when enabled."
-  type = object({
-    aggregation_interval = string
-    flow_sampling        = number
-    metadata             = string
-  })
-  default = {
-    aggregation_interval = "INTERVAL_5_SEC"
-    flow_sampling        = 0.5
-    metadata             = "INCLUDE_ALL_METADATA"
-  }
-}
-
-variable "log_configs" {
-  description = "Map keyed by subnet 'region/name' of optional configurations for flow logs when enabled."
-  type        = map(map(string))
-  default     = {}
-}
-
 variable "mtu" {
-  description = "Maximum Transmission Unit in bytes. The minimum value for this field is 1460 and the maximum value is 1500 bytes."
+  description = "Maximum Transmission Unit in bytes. The minimum value for this field is 1460 (the default) and the maximum value is 1500 bytes."
+  type        = number
   default     = null
 }
 
@@ -91,16 +66,11 @@ variable "peering_config" {
   description = "VPC peering configuration."
   type = object({
     peer_vpc_self_link = string
-    export_routes      = bool
-    import_routes      = bool
+    create_remote_peer = optional(bool, true)
+    export_routes      = optional(bool)
+    import_routes      = optional(bool)
   })
   default = null
-}
-
-variable "peering_create_remote_end" {
-  description = "Skip creation of peering on the remote end when using peering_config."
-  type        = bool
-  default     = true
 }
 
 variable "project_id" {
@@ -111,11 +81,9 @@ variable "project_id" {
 variable "psa_config" {
   description = "The Private Service Access configuration for Service Networking."
   type = object({
-    ranges = map(string)
-    routes = object({
-      export = bool
-      import = bool
-    })
+    ranges        = map(string)
+    export_routes = optional(bool, false)
+    import_routes = optional(bool, false)
   })
   default = null
 }
@@ -124,12 +92,20 @@ variable "routes" {
   description = "Network routes, keyed by name."
   type = map(object({
     dest_range    = string
-    priority      = number
-    tags          = list(string)
     next_hop_type = string # gateway, instance, ip, vpn_tunnel, ilb
     next_hop      = string
+    priority      = optional(number)
+    tags          = optional(list(string))
   }))
-  default = {}
+  default  = {}
+  nullable = false
+  validation {
+    condition = alltrue([
+      for r in var.routes :
+      contains(["gateway", "instance", "ip", "vpn_tunnel", "ilb"], r.next_hop_type)
+    ])
+    error_message = "Unsupported next hop type for route."
+  }
 }
 
 variable "routing_mode" {
@@ -154,31 +130,33 @@ variable "shared_vpc_service_projects" {
   default     = []
 }
 
-variable "subnet_descriptions" {
-  description = "Optional map of subnet descriptions, keyed by subnet 'region/name'."
-  type        = map(string)
-  default     = {}
-}
-
-variable "subnet_flow_logs" {
-  description = "Optional map of boolean to control flow logs (default is disabled), keyed by subnet 'region/name'."
-  type        = map(bool)
-  default     = {}
-}
-
-variable "subnet_private_access" {
-  description = "Optional map of boolean to control private Google access (default is enabled), keyed by subnet 'region/name'."
-  type        = map(bool)
+variable "subnet_iam" {
+  description = "Subnet IAM bindings in {REGION/NAME => {ROLE => [MEMBERS]} format."
+  type        = map(map(list(string)))
   default     = {}
 }
 
 variable "subnets" {
-  description = "List of subnets being created."
+  description = "Subnet configuration."
   type = list(object({
-    name               = string
-    ip_cidr_range      = string
-    region             = string
-    secondary_ip_range = map(string)
+    name                  = string
+    ip_cidr_range         = string
+    region                = string
+    description           = optional(string)
+    enable_private_access = optional(bool, true)
+    flow_logs_config = optional(object({
+      aggregation_interval = optional(string)
+      filter_expression    = optional(string)
+      flow_sampling        = optional(number)
+      metadata             = optional(string)
+      # only if metadata == "CUSTOM_METADATA"
+      metadata_fields = optional(list(string))
+    }))
+    ipv6 = optional(object({
+      access_type           = optional(string)
+      enable_private_access = optional(bool, true)
+    }))
+    secondary_ip_ranges = optional(map(string))
   }))
   default = []
 }
@@ -186,10 +164,11 @@ variable "subnets" {
 variable "subnets_proxy_only" {
   description = "List of proxy-only subnets for Regional HTTPS  or Internal HTTPS load balancers. Note: Only one proxy-only subnet for each VPC network in each region can be active."
   type = list(object({
-    active        = bool
     name          = string
     ip_cidr_range = string
     region        = string
+    description   = optional(string)
+    active        = bool
   }))
   default = []
 }

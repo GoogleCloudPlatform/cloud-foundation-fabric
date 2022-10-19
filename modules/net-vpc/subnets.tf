@@ -21,11 +21,19 @@ locals {
     for f in fileset(var.data_folder, "**/*.yaml") :
     trimsuffix(basename(f), ".yaml") => yamldecode(file("${var.data_folder}/${f}"))
   }
-  _factory_descriptions = {
-    for k, v in local._factory_data :
-    "${v.region}/${k}" => try(v.description, null)
+  _factory_subnets = {
+    for k, v in local._factory_data : "${v.region}/${k}" => {
+      name                  = k
+      ip_cidr_range         = v.ip_cidr_range
+      region                = v.region
+      description           = try(v.description, null)
+      enable_private_access = try(v.enable_private_access, true)
+      flow_logs_config      = try(v.flow_logs, null)
+      ipv6                  = try(v.ipv6, null)
+      secondary_ip_ranges   = try(v.secondary_ip_ranges, null)
+    }
   }
-  _factory_iam_members = [
+  _factory_subnets_iam = [
     for k, v in local._factory_subnets : {
       subnet = k
       role   = "roles/compute.networkUser"
@@ -36,32 +44,8 @@ locals {
       )
     }
   ]
-  _factory_flow_logs = {
-    for k, v in local._factory_data : "${v.region}/${k}" => merge(
-      var.log_config_defaults, try(v.flow_logs, {})
-    ) if try(v.flow_logs, null) != null
-  }
-  _factory_private_access = {
-    for k, v in local._factory_data : "${v.region}/${k}" => try(
-      v.private_ip_google_access, true
-    )
-  }
-  _factory_subnets = {
-    for k, v in local._factory_data : "${v.region}/${k}" => {
-      ip_cidr_range      = v.ip_cidr_range
-      name               = k
-      region             = v.region
-      secondary_ip_range = try(v.secondary_ip_range, {})
-    }
-  }
-  _iam = var.iam == null ? {} : var.iam
-  _subnet_flow_logs = {
-    for k, v in var.subnet_flow_logs : k => merge(
-      var.log_config_defaults, try(var.log_configs[k], {})
-    )
-  }
   _subnet_iam_members = flatten([
-    for subnet, roles in local._iam : [
+    for subnet, roles in(var.subnet_iam == null ? {} : var.subnet_iam) : [
       for role, members in roles : {
         members = members
         role    = role
@@ -69,18 +53,9 @@ locals {
       }
     ]
   ])
-  subnet_descriptions = merge(
-    local._factory_descriptions, var.subnet_descriptions
-  )
   subnet_iam_members = concat(
-    [for k in local._factory_iam_members : k if length(k.members) > 0],
+    [for k in local._factory_subnets_iam : k if length(k.members) > 0],
     local._subnet_iam_members
-  )
-  subnet_flow_logs = merge(
-    local._factory_flow_logs, local._subnet_flow_logs
-  )
-  subnet_private_access = merge(
-    local._factory_private_access, var.subnet_private_access
   )
   subnets = merge(
     { for subnet in var.subnets : "${subnet.region}/${subnet.name}" => subnet },
@@ -97,33 +72,30 @@ locals {
 }
 
 resource "google_compute_subnetwork" "subnetwork" {
-  for_each      = local.subnets
-  project       = var.project_id
-  network       = local.network.name
-  region        = each.value.region
-  name          = each.value.name
-  ip_cidr_range = each.value.ip_cidr_range
-  secondary_ip_range = each.value.secondary_ip_range == null ? [] : [
-    for name, range in each.value.secondary_ip_range :
+  for_each                 = local.subnets
+  project                  = var.project_id
+  network                  = local.network.name
+  name                     = each.value.name
+  region                   = each.value.region
+  ip_cidr_range            = each.value.ip_cidr_range
+  description              = try(each.value.description, "Terraform-managed.")
+  private_ip_google_access = each.value.enable_private_access
+  secondary_ip_range = each.value.secondary_ip_ranges == null ? [] : [
+    for name, range in each.value.secondary_ip_ranges :
     { range_name = name, ip_cidr_range = range }
   ]
-  description = lookup(
-    local.subnet_descriptions, each.key, "Terraform-managed."
-  )
-  private_ip_google_access = lookup(
-    local.subnet_private_access, each.key, true
-  )
   dynamic "log_config" {
-    for_each = toset(
-      try(local.subnet_flow_logs[each.key], {}) != {}
-      ? [local.subnet_flow_logs[each.key]]
-      : []
-    )
-    iterator = config
+    for_each = each.value.flow_logs_config != null ? [""] : []
     content {
-      aggregation_interval = config.value.aggregation_interval
-      flow_sampling        = config.value.flow_sampling
-      metadata             = config.value.metadata
+      aggregation_interval = each.value.flow_logs_config.aggregation_interval
+      filter_expr          = each.value.flow_logs_config.filter_expression
+      flow_sampling        = each.value.flow_logs_config.flow_sampling
+      metadata             = each.value.flow_logs_config.metadata
+      metadata_fields = (
+        each.value.flow_logs_config.metadata == "CUSTOM_METADATA"
+        ? each.value.flow_logs_config.metadata_fields
+        : null
+      )
     }
   }
 }
@@ -132,17 +104,16 @@ resource "google_compute_subnetwork" "proxy_only" {
   for_each      = local.subnets_proxy_only
   project       = var.project_id
   network       = local.network.name
-  region        = each.value.region
   name          = each.value.name
+  region        = each.value.region
   ip_cidr_range = each.value.ip_cidr_range
-  purpose       = "REGIONAL_MANAGED_PROXY"
+  description = try(
+    each.value.description,
+    "Terraform-managed proxy-only subnet for Regional HTTPS or Internal HTTPS LB."
+  )
+  purpose = "REGIONAL_MANAGED_PROXY"
   role = (
     each.value.active || each.value.active == null ? "ACTIVE" : "BACKUP"
-  )
-  description = lookup(
-    local.subnet_descriptions,
-    "${each.value.region}/${each.value.name}",
-    "Terraform-managed proxy-only subnet for Regional HTTPS or Internal HTTPS LB."
   )
 }
 
@@ -150,15 +121,14 @@ resource "google_compute_subnetwork" "psc" {
   for_each      = local.subnets_psc
   project       = var.project_id
   network       = local.network.name
-  region        = each.value.region
   name          = each.value.name
+  region        = each.value.region
   ip_cidr_range = each.value.ip_cidr_range
-  purpose       = "PRIVATE_SERVICE_CONNECT"
-  description = lookup(
-    local.subnet_descriptions,
-    "${each.value.region}/${each.value.name}",
+  description = try(
+    each.value.description,
     "Terraform-managed subnet for Private Service Connect (PSC NAT)."
   )
+  purpose = "PRIVATE_SERVICE_CONNECT"
 }
 
 resource "google_compute_subnetwork_iam_binding" "binding" {
