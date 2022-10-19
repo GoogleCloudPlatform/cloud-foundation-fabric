@@ -262,13 +262,14 @@ module "mig-proxy" {
     metric                            = var.autoscaling_metric
   }
   update_policy = {
-    type                 = "PROACTIVE"
-    minimal_action       = "REPLACE"
-    min_ready_sec        = 60
-    max_surge_type       = "fixed"
-    max_surge            = 3
-    max_unavailable_type = null
-    max_unavailable      = null
+    instance_redistribution_type = "PROACTIVE"
+    max_surge_type               = "fixed"
+    max_surge                    = 3
+    max_unavailable_type         = null
+    max_unavailable              = null
+    minimal_action               = "REPLACE"
+    min_ready_sec                = 60
+    type                         = "PROACTIVE"
   }
   default_version = {
     instance_template = module.proxy-vm.template.self_link

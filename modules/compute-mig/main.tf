@@ -264,9 +264,10 @@ resource "google_compute_region_instance_group_manager" "default" {
     for_each = var.update_policy == null ? [] : [var.update_policy]
     iterator = config
     content {
-      type           = config.value.type
-      minimal_action = config.value.minimal_action
-      min_ready_sec  = config.value.min_ready_sec
+      instance_redistribution_type = config.value.instance_redistribution_type
+      type                         = config.value.type
+      minimal_action               = config.value.minimal_action
+      min_ready_sec                = config.value.min_ready_sec
       max_surge_fixed = (
         config.value.max_surge_type == "fixed" ? config.value.max_surge : null
       )

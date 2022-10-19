@@ -11,9 +11,3 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-
-def test_resource_count(plan_runner):
-  "Test number of resources created."
-  _, resources = plan_runner()
-  assert len(resources) == 5

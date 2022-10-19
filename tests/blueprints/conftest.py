@@ -12,8 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import pytest
 
-def test_resource_count(plan_runner):
-  "Test number of resources created."
-  _, resources = plan_runner()
-  assert len(resources) == 5
+
+def pytest_collection_modifyitems(config, items):
+  for item in items:
+    item.add_marker(
+        pytest.mark.xdist_group(name='/'.join(item.path.parent.parts[-2:])))

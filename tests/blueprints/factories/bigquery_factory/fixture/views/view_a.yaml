@@ -12,8 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-def test_resource_count(plan_runner):
-  "Test number of resources created."
-  _, resources = plan_runner()
-  assert len(resources) == 5
+dataset: dataset_b
+view: view_a
+query: "SELECT CURRENT_DATE() LIMIT 1"
