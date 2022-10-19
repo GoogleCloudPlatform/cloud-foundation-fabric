@@ -37,12 +37,12 @@ def get_forwarding_rules_dict(config, layer: str):
 
   forwarding_rules_dict = defaultdict(int)
 
-  # TODO: Paging?
   response = config["clients"]["asset_client"].search_all_resources(
       request={
           "scope": f"organizations/{config['organization']}",
           "asset_types": ["compute.googleapis.com/ForwardingRule"],
           "read_mask": read_mask,
+          "page_size": config["page_size"],
       })
 
   for resource in response:

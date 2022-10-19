@@ -38,6 +38,7 @@ def get_gce_instance_dict(config: dict):
       request={
           "scope": f"organizations/{config['organization']}",
           "asset_types": ["compute.googleapis.com/Instance"],
+          "page_size": config["page_size"],
       })
   for resource in response:
     for field_name, field_value in resource.additional_attributes.items():

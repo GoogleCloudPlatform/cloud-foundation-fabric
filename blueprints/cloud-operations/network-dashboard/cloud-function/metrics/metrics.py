@@ -22,19 +22,18 @@ from google.api import metric_pb2 as ga_metric
 from google.cloud import monitoring_v3
 from . import peerings, limits, networks
 
-BUFFER_LEN = 10
 
-
-def create_metrics(monitoring_project):
+def create_metrics(monitoring_project, config):
   '''
     Creates all Cloud Monitoring custom metrics based on the metric.yaml file
       Parameters:
         monitoring_project (string): the project where the metrics are written to
+        config (dict): The dict containing config like clients and limits
       Returns:
         metrics_dict (dictionary of dictionary of string: string): metrics names and descriptions
         limits_dict (dictionary of dictionary of string: int): limits_dict[metric_name]: dict[network_name] = limit_value
   '''
-  client = monitoring_v3.MetricServiceClient()
+  client = config["clients"]["monitoring_client"]
   existing_metrics = []
   for desc in client.list_metric_descriptors(name=monitoring_project):
     existing_metrics.append(desc.type)
@@ -51,7 +50,7 @@ def create_metrics(monitoring_project):
             # If the metric doesn't exist yet, then we create it
             if metric_link not in existing_metrics:
               create_metric(sub_metric["name"], sub_metric["description"],
-                            monitoring_project)
+                            monitoring_project, config)
             # Parse limits for network and peering group metrics
             # Subnet level metrics have a different limit: the subnet IP range size
             if sub_metric_key == "limit" and metric_name != "ip_usage_per_subnet":
@@ -66,17 +65,18 @@ def create_metrics(monitoring_project):
       print(exc)
 
 
-def create_metric(metric_name, description, monitoring_project):
+def create_metric(metric_name, description, monitoring_project, config):
   '''
     Creates a Cloud Monitoring metric based on the parameter given if the metric is not already existing
       Parameters:
         metric_name (string): Name of the metric to be created
         description (string): Description of the metric to be created
         monitoring_project (string): the project where the metrics are written to
+        config (dict): The dict containing config like clients and limits
       Returns:
         None
   '''
-  client = monitoring_v3.MetricServiceClient()
+  client = config["clients"]["monitoring_client"]
 
   descriptor = ga_metric.MetricDescriptor()
   descriptor.type = f"custom.googleapis.com/{metric_name}"
@@ -102,6 +102,9 @@ def append_data_to_series_buffer(config, metric_name, metric_value,
         usage (int): Current usage for that network.
         limit (int): Current usage for that network.
   '''
+
+  # Configurable buffer size to improve performance when writing datapoints to metrics
+  buffer_len = 10
 
   series = monitoring_v3.TimeSeries()
   series.metric.type = f"custom.googleapis.com/{metric_name}"
@@ -130,7 +133,7 @@ def append_data_to_series_buffer(config, metric_name, metric_value,
   # TODO: sometimes this cashes with 'DeadlineExceeded: 504 Deadline expired before operation could complete' error
   # Implement exponential backoff retries?
   config["series_buffer"].append(series)
-  if len(config["series_buffer"]) >= BUFFER_LEN:
+  if len(config["series_buffer"]) >= buffer_len:
     flush_series_buffer(config)
 
 
@@ -141,7 +144,7 @@ def flush_series_buffer(config):
   '''
   try:
     if config["series_buffer"] and len(config["series_buffer"]) > 0:
-      client = monitoring_v3.MetricServiceClient()
+      client = config["clients"]["monitoring_client"]
       client.create_time_series(name=config["monitoring_project_link"],
                                 time_series=config["series_buffer"])
       series_names = [

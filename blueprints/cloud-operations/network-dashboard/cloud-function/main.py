@@ -23,9 +23,7 @@ from google.protobuf import field_mask_pb2
 from googleapiclient import discovery
 from metrics import ilb_fwrules, firewall_policies, instances, networks, metrics, limits, peerings, routes, subnets, vpc_firewalls
 
-CFv2 = False
-if CFv2:
-  import functions_framework
+CF_VERSION = os.environ.get("CF_VERSION")
 
 
 def get_monitored_projects_list(config):
@@ -38,7 +36,7 @@ def get_monitored_projects_list(config):
           monitored_projects (List of strings): Full list of projects to be monitored
       '''
   monitored_projects = config["monitored_projects"]
-  monitored_folders = []  #os.environ.get("MONITORED_FOLDERS_LIST").split(",")
+  monitored_folders = os.environ.get("MONITORED_FOLDERS_LIST").split(",")
 
   # Handling empty monitored folders list
   if monitored_folders == ['']:
@@ -124,11 +122,14 @@ config = {
         "asset_client": asset_v1.AssetServiceClient(),
         "monitoring_client": monitoring_v3.MetricServiceClient()
     },
-    "series_buffer": []
+    # Improve performance for Asset Inventory queries on large environments
+    "page_size":
+        500,
+    "series_buffer": [],
 }
 
 
-def main(event, context):
+def main(event, context=None):
   '''
       Cloud Function Entry point, called by the scheduler.
         Parameters:
@@ -148,7 +149,7 @@ def main(event, context):
   config["monitoring_interval"] = monitoring_interval()
 
   metrics_dict, limits_dict = metrics.create_metrics(
-      config["monitoring_project_link"])
+      config["monitoring_project_link"], config)
   project_quotas_dict = limits.get_quota_project_limit(config)
 
   firewalls_dict = vpc_firewalls.get_firewalls_dict(config)
@@ -219,11 +220,9 @@ def main(event, context):
   return 'Function execution completed'
 
 
-if CFv2:
+if CF_VERSION == "V2":
+  import functions_framework
+  main_http = functions_framework.http(main)
 
-  @functions_framework.http
-  def main_http(request):
-    main(None, None)
-else:
-  if __name__ == "__main__":
-    main(None, None)
+if __name__ == "__main__":
+  main(None, None)

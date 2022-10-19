@@ -51,6 +51,7 @@ variable "schedule_cron" {
 variable "project_monitoring_services" {
   description = "Service APIs enabled in the monitoring project if it will be created."
   default = [
+    "artifactregistry.googleapis.com",
     "cloudasset.googleapis.com",
     "cloudbilling.googleapis.com",
     "cloudbuild.googleapis.com",
@@ -62,7 +63,8 @@ variable "project_monitoring_services" {
     "iamcredentials.googleapis.com",
     "logging.googleapis.com",
     "monitoring.googleapis.com",
-    "serviceusage.googleapis.com",
+    "run.googleapis.com",
+    "serviceusage.googleapis.com"
   ]
 }
 
@@ -70,8 +72,7 @@ variable "region" {
   description = "Region used to deploy the cloud functions and scheduler"
   default     = "europe-west1"
 }
-variable "v2" {
-  description = "Whether to use Cloud Function version 2nd Gen or 1st Gen."
-  type        = bool
-  default     = false
+variable "cf_version" {
+  description = "Cloud Function version 2nd Gen or 1st Gen. Possible options: 'V1' or 'V2'.Use CFv2 if your Cloud Function timeouts after 9 minutes. By default it is using CFv1."
+  default     = "V1"
 }

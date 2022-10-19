@@ -61,10 +61,23 @@ module "service-account-function" {
   }
 
   iam_project_roles = {
-    "${local.monitoring_project}" = compact([
+    "${local.monitoring_project}" = [
       "roles/monitoring.metricWriter",
-      var.v2 ? "roles/run.invoker" : ""
-    ])
+    ]
+  }
+}
+
+module "service-account-scheduler" {
+  source       = "../../../modules/iam-service-account"
+  project_id   = local.monitoring_project
+  name         = "sa-scheduler"
+  generate_key = false
+
+  iam_project_roles = {
+    "${local.monitoring_project}" = [
+      "roles/run.invoker",
+      "roles/cloudfunctions.invoker"
+    ]
   }
 }
 
@@ -86,7 +99,7 @@ module "pubsub" {
 }
 
 resource "google_cloud_scheduler_job" "job" {
-  count     = var.v2 ? 0 : 1
+  count     = var.cf_version == "V2" ? 0 : 1
   project   = local.monitoring_project
   region    = var.region
   name      = "network-dashboard-scheduler"
@@ -101,7 +114,7 @@ resource "google_cloud_scheduler_job" "job" {
 #http trigger for 2nd generation function
 
 resource "google_cloud_scheduler_job" "job_httptrigger" {
-  count     = var.v2 ? 1 : 0
+  count     = var.cf_version == "V2" ? 1 : 0
   project   = local.monitoring_project
   region    = var.region
   name      = "network-dashboard-scheduler"
@@ -113,13 +126,13 @@ resource "google_cloud_scheduler_job" "job_httptrigger" {
     uri         = module.cloud-function.uri
 
     oidc_token {
-      service_account_email = module.service-account-function.email
+      service_account_email = module.service-account-scheduler.email
     }
   }
 }
 
 module "cloud-function" {
-  v2          = var.v2
+  v2          = var.cf_version == "V2"
   source      = "../../../modules/cloud-function"
   project_id  = local.monitoring_project
   name        = "network-dashboard-cloud-function"
@@ -128,6 +141,7 @@ module "cloud-function" {
     location             = var.region
     lifecycle_delete_age = null
   }
+  region = var.region
 
   bundle_config = {
     source_dir  = "cloud-function"
@@ -136,7 +150,7 @@ module "cloud-function" {
   }
 
   function_config = {
-    timeout     = 180
+    timeout     = 480 # Timeout in seconds, increase it if your CF timeouts and use v2 if > 9 minutes.
     entry_point = "main"
     runtime     = "python39"
     instances   = 1
@@ -149,10 +163,12 @@ module "cloud-function" {
     MONITORED_FOLDERS_LIST  = local.folders
     MONITORING_PROJECT_ID   = local.monitoring_project
     ORGANIZATION_ID         = var.organization_id
+    CF_VERSION              = var.cf_version
   }
 
-  service_account  = module.service-account-function.email
-  ingress_settings = "ALLOW_INTERNAL_ONLY"
+  service_account = module.service-account-function.email
+  # Internal only doesn't seem to work with CFv2:
+  ingress_settings = var.cf_version == "V2" ? "ALLOW_ALL" : "ALLOW_INTERNAL_ONLY"
 
   trigger_config = {
     event    = "google.pubsub.topic.publish"
