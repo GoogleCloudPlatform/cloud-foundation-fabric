@@ -12,23 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-_VAR_PEER_VPC_CONFIG = (
-    '{'
-    'peer_vpc_self_link="projects/my-project/global/networks/my-peer-vpc", '
-    'export_routes=true, import_routes=null'
-    '}'
-)
-_VAR_ROUTES_TEMPLATE = (
-    '{'
-    ' next-hop-test = {'
-    '  dest_range="192.168.128.0/24", priority=1000, tags=null, '
-    '  next_hop_type="%s", next_hop="%s"},'
-    ' gateway-test = {'
-    '  dest_range="0.0.0.0/0", priority=100, tags=["tag-a"], '
-    '  next_hop_type="gateway", '
-    '  next_hop="global/gateways/default-internet-gateway"}'
-    '}'
-)
+_VAR_PEER_VPC_CONFIG = '''{
+  peer_vpc_self_link="projects/my-project/global/networks/peer",
+  export_routes=true, import_routes=null
+}'''
+_VAR_ROUTES_TEMPLATE = '''{
+  next-hop = {
+  dest_range="192.168.128.0/24", tags=null,
+  next_hop_type="%s", next_hop="%s"},
+  gateway = {
+  dest_range="0.0.0.0/0", priority=100, tags=["tag-a"],
+  next_hop_type="gateway",
+  next_hop="global/gateways/default-internet-gateway"}
+}'''
 _VAR_ROUTES_NEXT_HOPS = {
     'gateway': 'global/gateways/default-internet-gateway',
     'instance': 'zones/europe-west1-b/test',
@@ -43,8 +39,8 @@ def test_vpc_simple(plan_runner):
   _, resources = plan_runner()
   assert len(resources) == 1
   assert [r['type'] for r in resources] == ['google_compute_network']
-  assert [r['values']['name'] for r in resources] == ['my-vpc']
-  assert [r['values']['project'] for r in resources] == ['my-project']
+  assert [r['values']['name'] for r in resources] == ['test']
+  assert [r['values']['project'] for r in resources] == ['test-project']
 
 
 def test_vpc_shared(plan_runner):
@@ -62,13 +58,14 @@ def test_vpc_peering(plan_runner):
   "Test vpc peering variables."
   _, resources = plan_runner(peering_config=_VAR_PEER_VPC_CONFIG)
   assert len(resources) == 3
-  assert set(r['type'] for r in resources) == set([
-      'google_compute_network', 'google_compute_network_peering'
-  ])
-  peerings = [r['values']
-              for r in resources if r['type'] == 'google_compute_network_peering']
-  assert [p['name'] for p in peerings] == [
-      'my-vpc-my-peer-vpc', 'my-peer-vpc-my-vpc']
+  assert set(r['type'] for r in resources) == set(
+      ['google_compute_network', 'google_compute_network_peering'])
+  peerings = [
+      r['values']
+      for r in resources
+      if r['type'] == 'google_compute_network_peering'
+  ]
+  assert [p['name'] for p in peerings] == ['test-peer', 'peer-test']
   assert [p['export_custom_routes'] for p in peerings] == [True, False]
   assert [p['import_custom_routes'] for p in peerings] == [False, True]
 
@@ -79,6 +76,6 @@ def test_vpc_routes(plan_runner):
     _var_routes = _VAR_ROUTES_TEMPLATE % (next_hop_type, next_hop)
     _, resources = plan_runner(routes=_var_routes)
     assert len(resources) == 3
-    resource = [r for r in resources if r['values']
-                ['name'] == 'my-vpc-next-hop-test'][0]
+    resource = [r for r in resources if r['values']['name'] == 'test-next-hop'
+               ][0]
     assert resource['values']['next_hop_%s' % next_hop_type]

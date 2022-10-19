@@ -24,6 +24,7 @@ variable "attached_disk_defaults" {
   description = "Defaults for attached disks options."
   type        = any
   default = {
+    auto_delete  = true
     mode         = "READ_WRITE"
     replica_zone = null
     type         = "pd-balanced"

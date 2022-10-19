@@ -41,7 +41,7 @@ module "project" {
     "storage-component.googleapis.com"
   ]
   policy_boolean = {
-    # "constraints/compute.requireOsLogin" = false 
+    # "constraints/compute.requireOsLogin" = false
     # Example of applying a project wide policy, mainly useful for Composer
   }
   service_encryption_key_ids = {
@@ -61,10 +61,9 @@ module "vpc" {
   name       = "${var.prefix}-vpc"
   subnets = [
     {
-      ip_cidr_range      = var.vpc_config.ip_cidr_range
-      name               = "${var.prefix}-subnet"
-      region             = var.region
-      secondary_ip_range = {}
+      ip_cidr_range = var.vpc_config.ip_cidr_range
+      name          = "${var.prefix}-subnet"
+      region        = var.region
     }
   ]
 }

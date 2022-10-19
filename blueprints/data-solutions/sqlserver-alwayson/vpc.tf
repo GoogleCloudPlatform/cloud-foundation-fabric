@@ -58,10 +58,9 @@ module "vpc" {
   name       = var.network
   subnets = var.project_create != null ? [
     {
-      ip_cidr_range      = var.vpc_ip_cidr_range
-      name               = var.subnetwork
-      region             = var.region
-      secondary_ip_range = {}
+      ip_cidr_range = var.vpc_ip_cidr_range
+      name          = var.subnetwork
+      region        = var.region
     }
   ] : []
   vpc_create = var.project_create != null ? true : false

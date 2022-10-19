@@ -12,15 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import pytest
 
-
-@pytest.fixture
-def resources(plan_runner):
-  _, resources = plan_runner()
-  return resources
-
-
-def test_resource_count(resources):
+def test_resource_count(plan_runner):
   "Test number of resources created."
+  _, resources = plan_runner()
   assert len(resources) == 5

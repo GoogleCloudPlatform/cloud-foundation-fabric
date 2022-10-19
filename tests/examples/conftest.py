@@ -15,6 +15,7 @@
 from pathlib import Path
 
 import marko
+import pytest
 
 FABRIC_ROOT = Path(__file__).parents[2]
 MODULES_PATH = FABRIC_ROOT / 'modules/'
@@ -36,13 +37,14 @@ def pytest_generate_tests(metafunc):
       doc = marko.parse(readme.read_text())
       index = 0
       last_header = None
+      mark = pytest.mark.xdist_group(name=module.name)
       for child in doc.children:
         if isinstance(child, marko.block.FencedCode) and child.lang == 'hcl':
           index += 1
           code = child.children[0].children
           if 'tftest skip' in code:
             continue
-          examples.append(code)
+          examples.append(pytest.param(code, marks=mark))
           path = module.relative_to(FABRIC_ROOT)
           name = f'{path}:{last_header}'
           if index > 1:

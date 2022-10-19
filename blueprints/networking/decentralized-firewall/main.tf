@@ -52,10 +52,9 @@ module "vpc-prod" {
   name       = "prod-vpc"
   subnets = [
     {
-      ip_cidr_range      = var.ip_ranges.prod
-      name               = "prod"
-      region             = var.region
-      secondary_ip_range = {}
+      ip_cidr_range = var.ip_ranges.prod
+      name          = "prod"
+      region        = var.region
     }
   ]
 }
@@ -66,10 +65,9 @@ module "vpc-dev" {
   name       = "dev-vpc"
   subnets = [
     {
-      ip_cidr_range      = var.ip_ranges.dev
-      name               = "dev"
-      region             = var.region
-      secondary_ip_range = {}
+      ip_cidr_range = var.ip_ranges.dev
+      name          = "dev"
+      region        = var.region
     }
   ]
 }

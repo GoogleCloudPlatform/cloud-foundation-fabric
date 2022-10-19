@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+# tfdoc:file:description Project and usage dataset.
+
 module "gke-project-0" {
   source          = "../../../modules/project"
   billing_account = var.billing_account_id

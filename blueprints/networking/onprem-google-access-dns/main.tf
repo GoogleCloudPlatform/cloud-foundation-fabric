@@ -56,16 +56,14 @@ module "vpc" {
   name       = "to-onprem"
   subnets = [
     {
-      ip_cidr_range      = var.ip_ranges.gcp1
-      name               = "subnet1"
-      region             = var.region.gcp1
-      secondary_ip_range = {}
+      ip_cidr_range = var.ip_ranges.gcp1
+      name          = "subnet1"
+      region        = var.region.gcp1
     },
     {
-      ip_cidr_range      = var.ip_ranges.gcp2
-      name               = "subnet2"
-      region             = var.region.gcp2
-      secondary_ip_range = {}
+      ip_cidr_range = var.ip_ranges.gcp2
+      name          = "subnet2"
+      region        = var.region.gcp2
     }
   ]
 }
