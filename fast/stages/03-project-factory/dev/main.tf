@@ -41,7 +41,7 @@ module "projects" {
   billing_alert          = try(each.value.billing_alert, null)
   dns_zones              = try(each.value.dns_zones, [])
   essential_contacts     = try(each.value.essential_contacts, [])
-  folder_id              = each.value.folder_id
+  folder_id              = try(each.value.folder_id, local.defaults.folder_id)
   group_iam              = try(each.value.group_iam, {})
   iam                    = try(each.value.iam, {})
   kms_service_agents     = try(each.value.kms, {})
