@@ -22,8 +22,6 @@ from google.api import metric_pb2 as ga_metric
 from google.cloud import monitoring_v3
 from . import peerings, limits, networks
 
-BUFFER_LEN = 10
-
 
 def create_metrics(monitoring_project, config):
   '''
@@ -105,6 +103,9 @@ def append_data_to_series_buffer(config, metric_name, metric_value,
         limit (int): Current usage for that network.
   '''
 
+  # Configurable buffer size to improve performance when writing datapoints to metrics
+  buffer_len = 10
+
   series = monitoring_v3.TimeSeries()
   series.metric.type = f"custom.googleapis.com/{metric_name}"
   series.resource.type = "global"
@@ -132,7 +133,7 @@ def append_data_to_series_buffer(config, metric_name, metric_value,
   # TODO: sometimes this cashes with 'DeadlineExceeded: 504 Deadline expired before operation could complete' error
   # Implement exponential backoff retries?
   config["series_buffer"].append(series)
-  if len(config["series_buffer"]) >= BUFFER_LEN:
+  if len(config["series_buffer"]) >= buffer_len:
     flush_series_buffer(config)
 
 

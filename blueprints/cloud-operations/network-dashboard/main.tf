@@ -99,7 +99,7 @@ module "pubsub" {
 }
 
 resource "google_cloud_scheduler_job" "job" {
-  count     = var.v2 ? 0 : 1
+  count     = var.cf_version == "V2" ? 0 : 1
   project   = local.monitoring_project
   region    = var.region
   name      = "network-dashboard-scheduler"
@@ -114,7 +114,7 @@ resource "google_cloud_scheduler_job" "job" {
 #http trigger for 2nd generation function
 
 resource "google_cloud_scheduler_job" "job_httptrigger" {
-  count     = var.v2 ? 1 : 0
+  count     = var.cf_version == "V2" ? 1 : 0
   project   = local.monitoring_project
   region    = var.region
   name      = "network-dashboard-scheduler"
@@ -132,10 +132,10 @@ resource "google_cloud_scheduler_job" "job_httptrigger" {
 }
 
 module "cloud-function" {
-  v2          = var.v2
+  v2          = var.cf_version == "V2"
   source      = "../../../modules/cloud-function"
   project_id  = local.monitoring_project
-  name        = "network-dashboard-cloud-functionv2"
+  name        = "network-dashboard-cloud-function"
   bucket_name = "${local.monitoring_project}-network-dashboard-bucket"
   bucket_config = {
     location             = var.region
@@ -163,12 +163,12 @@ module "cloud-function" {
     MONITORED_FOLDERS_LIST  = local.folders
     MONITORING_PROJECT_ID   = local.monitoring_project
     ORGANIZATION_ID         = var.organization_id
-    CF_VERSION              = var.v2
+    CF_VERSION              = var.cf_version
   }
 
   service_account = module.service-account-function.email
   # Internal only doesn't seem to work with CFv2:
-  ingress_settings = var.v2 ? "ALLOW_ALL" : "ALLOW_INTERNAL_ONLY"
+  ingress_settings = var.cf_version == "V2" ? "ALLOW_ALL" : "ALLOW_INTERNAL_ONLY"
 
   trigger_config = {
     event    = "google.pubsub.topic.publish"

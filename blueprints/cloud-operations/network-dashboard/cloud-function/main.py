@@ -23,7 +23,7 @@ from google.protobuf import field_mask_pb2
 from googleapiclient import discovery
 from metrics import ilb_fwrules, firewall_policies, instances, networks, metrics, limits, peerings, routes, subnets, vpc_firewalls
 
-CFv2 = os.environ.get("CF_VERSION")
+CF_VERSION = os.environ.get("CF_VERSION")
 
 
 def get_monitored_projects_list(config):
@@ -220,7 +220,7 @@ def main(event, context=None):
   return 'Function execution completed'
 
 
-if CFv2:
+if CF_VERSION == "V2":
   import functions_framework
   main_http = functions_framework.http(main)
 
