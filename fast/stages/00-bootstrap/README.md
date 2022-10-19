@@ -213,7 +213,8 @@ organization = {
 outputs_location = "~/fast-config"
 
 # use something unique and no longer than 9 characters
-prefix = "abcd"```
+prefix = "abcd"
+```
 
 ### Output files and cross-stage variables
 
