@@ -14,25 +14,10 @@
  * limitations under the License.
  */
 
-output "cloud_run_service" {
-  description = "CloudRun service URL"
-  value       = module.cloud_run.service.status[0].url
-  sensitive   = true
-}
+module "bq" {
+  source = "../../../../../blueprints/factories/bigquery-factory/"
 
-output "cloudsql_password" {
-  description = "CloudSQL password"
-  value       = var.cloudsql_password == null ? module.cloudsql.user_passwords[local.cloudsql_conf.user] : var.cloudsql_password
-  sensitive   = true
-}
-
-output "wp_user" {
-  description = "Wordpress username"
-  value       = local.wp_user
-}
-
-output "wp_password" {
-  description = "Wordpress user password"
-  value       = local.wp_pass
-  sensitive   = true
+  project_id = "test-project"
+  views_dir  = "./views"
+  tables_dir = "./tables"
 }
