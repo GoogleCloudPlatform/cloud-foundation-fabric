@@ -14,6 +14,8 @@
 # limitations under the License.
 #
 
+import time
+
 from . import metrics, networks, limits
 
 
@@ -28,40 +30,53 @@ def get_vpc_peering_data(config, metrics_dict, limit_dict):
       Returns:
         None
   '''
+  timestamp = time.time()
   for project in config["monitored_projects"]:
     active_vpc_peerings, vpc_peerings = gather_vpc_peerings_data(
         config, project, limit_dict)
+
     for peering in active_vpc_peerings:
-      metrics.write_data_to_metric(
-          config, project, peering['active_peerings'],
-          metrics_dict["metrics_per_network"]["vpc_peering_active_per_network"]
-          ["usage"]["name"], peering['network_name'])
-      metrics.write_data_to_metric(
-          config, project, peering['network_limit'],
-          metrics_dict["metrics_per_network"]["vpc_peering_active_per_network"]
-          ["limit"]["name"], peering['network_name'])
-      metrics.write_data_to_metric(
-          config, project,
-          peering['active_peerings'] / peering['network_limit'],
-          metrics_dict["metrics_per_network"]["vpc_peering_active_per_network"]
-          ["utilization"]["name"], peering['network_name'])
-    print("Wrote number of active VPC peerings to custom metric for project:",
-          project)
+      metric_labels = {
+          'project': project,
+          'network_name': peering['network_name']
+      }
+      metrics.append_data_to_series_buffer(
+          config, metrics_dict["metrics_per_network"]
+          ["vpc_peering_active_per_network"]["usage"]["name"],
+          peering['active_peerings'], metric_labels, timestamp=timestamp)
+      metrics.append_data_to_series_buffer(
+          config, metrics_dict["metrics_per_network"]
+          ["vpc_peering_active_per_network"]["limit"]["name"],
+          peering['network_limit'], metric_labels, timestamp=timestamp)
+      metrics.append_data_to_series_buffer(
+          config, metrics_dict["metrics_per_network"]
+          ["vpc_peering_active_per_network"]["utilization"]["name"],
+          peering['active_peerings'] / peering['network_limit'], metric_labels,
+          timestamp=timestamp)
+    print(
+        "Buffered number of active VPC peerings to custom metric for project:",
+        project)
 
     for peering in vpc_peerings:
-      metrics.write_data_to_metric(
-          config, project, peering['peerings'],
-          metrics_dict["metrics_per_network"]["vpc_peering_per_network"]
-          ["usage"]["name"], peering['network_name'])
-      metrics.write_data_to_metric(
-          config, project, peering['network_limit'],
-          metrics_dict["metrics_per_network"]["vpc_peering_per_network"]
-          ["limit"]["name"], peering['network_name'])
-      metrics.write_data_to_metric(
-          config, project, peering['peerings'] / peering['network_limit'],
-          metrics_dict["metrics_per_network"]["vpc_peering_per_network"]
-          ["utilization"]["name"], peering['network_name'])
-    print("Wrote number of VPC peerings to custom metric for project:", project)
+      metric_labels = {
+          'project': project,
+          'network_name': peering['network_name']
+      }
+      metrics.append_data_to_series_buffer(
+          config, metrics_dict["metrics_per_network"]["vpc_peering_per_network"]
+          ["usage"]["name"], peering['peerings'], metric_labels,
+          timestamp=timestamp)
+      metrics.append_data_to_series_buffer(
+          config, metrics_dict["metrics_per_network"]["vpc_peering_per_network"]
+          ["limit"]["name"], peering['network_limit'], metric_labels,
+          timestamp=timestamp)
+      metrics.append_data_to_series_buffer(
+          config, metrics_dict["metrics_per_network"]["vpc_peering_per_network"]
+          ["utilization"]["name"],
+          peering['peerings'] / peering['network_limit'], metric_labels,
+          timestamp=timestamp)
+    print("Buffered number of VPC peerings to custom metric for project:",
+          project)
 
 
 def gather_peering_data(config, project_id):

@@ -14,6 +14,8 @@
 # limitations under the License.
 #
 
+import time
+
 from code import interact
 from collections import defaultdict
 from . import metrics, networks, limits
@@ -61,15 +63,16 @@ def get_gce_instances_data(config, metrics_dict, gce_instance_dict, limit_dict):
       Returns:
         gce_instance_dict
   '''
-
-  for project in config["monitored_projects"]:
-    network_dict = networks.get_networks(config, project)
+  timestamp = time.time()
+  for project_id in config["monitored_projects"]:
+    network_dict = networks.get_networks(config, project_id)
 
     current_quota_limit = limits.get_quota_current_limit(
-        config, f"projects/{project}", config["limit_names"]["GCE_INSTANCES"])
+        config, f"projects/{project_id}",
+        config["limit_names"]["GCE_INSTANCES"])
     if current_quota_limit is None:
       print(
-          f"Could not write number of instances for projects/{project} due to missing quotas"
+          f"Could not determine number of instances for projects/{project_id} due to missing quotas"
       )
 
     current_quota_limit_view = metrics.customize_quota_view(current_quota_limit)
@@ -81,15 +84,19 @@ def get_gce_instances_data(config, metrics_dict, gce_instance_dict, limit_dict):
       if net['self_link'] in gce_instance_dict:
         usage = gce_instance_dict[net['self_link']]
 
-      metrics.write_data_to_metric(
-          config, project, usage, metrics_dict["metrics_per_network"]
-          ["instance_per_network"]["usage"]["name"], net['network_name'])
-      metrics.write_data_to_metric(
-          config, project, net['limit'], metrics_dict["metrics_per_network"]
-          ["instance_per_network"]["limit"]["name"], net['network_name'])
-      metrics.write_data_to_metric(
-          config, project, usage / net['limit'],
-          metrics_dict["metrics_per_network"]["instance_per_network"]
-          ["utilization"]["name"], net['network_name'])
+      metric_labels = {
+          'project': project_id,
+          'network_name': net['network_name']
+      }
+      metrics.append_data_to_series_buffer(
+          config, metrics_dict["metrics_per_network"]["instance_per_network"]
+          ["usage"]["name"], usage, metric_labels, timestamp=timestamp)
+      metrics.append_data_to_series_buffer(
+          config, metrics_dict["metrics_per_network"]["instance_per_network"]
+          ["limit"]["name"], net['limit'], metric_labels, timestamp=timestamp)
+      metrics.append_data_to_series_buffer(
+          config, metrics_dict["metrics_per_network"]["instance_per_network"]
+          ["utilization"]["name"], usage / net['limit'], metric_labels,
+          timestamp=timestamp)
 
-    print(f"Wrote number of instances to metric for projects/{project}")
+    print(f"Buffered number of instances to metric for projects/{project_id}")

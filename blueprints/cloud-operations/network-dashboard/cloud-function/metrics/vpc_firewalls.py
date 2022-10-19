@@ -15,11 +15,13 @@
 #
 
 import re
+import time
+
 from collections import defaultdict
 from pydoc import doc
 from collections import defaultdict
 from google.protobuf import field_mask_pb2
-from . import metrics, networks, limits, peerings, routers
+from . import metrics, networks, limits
 
 
 def get_firewalls_dict(config: dict):
@@ -69,43 +71,51 @@ def get_firewalls_data(config, metrics_dict, project_quotas_dict,
       Parameters:
         config (dict): The dict containing config like clients and limits
         metrics_dict (dictionary of dictionary of string: string): metrics names and descriptions.
-        limit_dict (dictionary of string:int): Dictionary with the network link as key and the limit as value.
-        firewalls_dict (dictionary of dictionary): Keys are projects, subkeys are networks, values count #of VPC Firewall Rules
+        project_quotas_dict (dictionary of string:int): Dictionary with the network link as key and the limit as value.
+        firewalls_dict (dictionary of  of dictionary of string: string): Keys are projects, subkeys are networks, values count #of VPC Firewall Rules
       Returns:
         None
   '''
-  for project in config["monitored_projects"]:
 
-    current_quota_limit = project_quotas_dict[project]['global']["firewalls"]
+  timestamp = time.time()
+  for project_id in config["monitored_projects"]:
+
+    current_quota_limit = project_quotas_dict[project_id]['global']["firewalls"]
     if current_quota_limit is None:
       print(
-          f"Could not write VPC firewal rules to metric for projects/{project} due to missing quotas"
+          f"Could not determine VPC firewal rules to metric for projects/{project_id} due to missing quotas"
       )
       continue
 
-    network_dict = networks.get_networks(config, project)
+    network_dict = networks.get_networks(config, project_id)
 
     project_usage = 0
     for net in network_dict:
       usage = 0
-      if project in firewalls_dict and net['network_name'] in firewalls_dict[
-          project]:
-        usage = firewalls_dict[project][net['network_name']]
+      if project_id in firewalls_dict and net['network_name'] in firewalls_dict[
+          project_id]:
+        usage = firewalls_dict[project_id][net['network_name']]
         project_usage += usage
-      metrics.write_data_to_metric(
-          config, project, usage,
+      metric_labels = {
+          'project': project_id,
+          'network_name': net['network_name']
+      }
+      metrics.append_data_to_series_buffer(
+          config,
           metrics_dict["metrics_per_project"][f"firewalls"]["usage"]["name"],
-          net['network_name'])
+          usage, metric_labels, timestamp=timestamp)
 
+    metric_labels = {'project': project_id}
     # firewall quotas are per project, not per single VPC
-    metrics.write_data_to_metric(
-        config, project, current_quota_limit['limit'],
-        metrics_dict["metrics_per_project"][f"firewalls"]["limit"]["name"])
-    metrics.write_data_to_metric(
-        config, project, project_usage / current_quota_limit['limit']
-        if current_quota_limit['limit'] != 0 else 0,
-        metrics_dict["metrics_per_project"][f"firewalls"]["utilization"]
-        ["name"])
-
+    metrics.append_data_to_series_buffer(
+        config,
+        metrics_dict["metrics_per_project"][f"firewalls"]["limit"]["name"],
+        current_quota_limit['limit'], metric_labels, timestamp=timestamp)
+    metrics.append_data_to_series_buffer(
+        config, metrics_dict["metrics_per_project"][f"firewalls"]["utilization"]
+        ["name"], project_usage / current_quota_limit['limit']
+        if current_quota_limit['limit'] != 0 else 0, metric_labels,
+        timestamp=timestamp)
     print(
-        f"Wrote number of VPC Firewall Rules to metric for projects/{project}")
+        f"Buffered number of VPC Firewall Rules to metric for projects/{project_id}"
+    )

@@ -172,3 +172,17 @@ metrics_per_project:
     utilization:
       name: firewalls_per_project_utilization
       description: Number of VPC firewall rules in a project - utilization.
+metrics_per_firewall_policy:
+  firewall_policy_tuples:
+    usage:
+      name: firewall_policy_tuples_per_policy_usage
+      description: Number of tuples in a firewall policy - usage.
+    limit:
+      # This limit is not visibile through Google APIs, set default_value
+      name: firewall_policy_tuples_per_policy_limit
+      description: Number of tuples in a firewall policy - limit.
+      values:
+        default_value: 2000
+    utilization:
+      name: firewall_policy_tuples_per_policy_utilization
+      description: Number of tuples in a firewall policy - utilization.
