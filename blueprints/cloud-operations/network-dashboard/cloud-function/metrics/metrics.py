@@ -21,16 +21,17 @@ from google.cloud import monitoring_v3
 from . import peerings, limits, networks
 
 
-def create_metrics(monitoring_project):
+def create_metrics(monitoring_project, config):
   '''
     Creates all Cloud Monitoring custom metrics based on the metric.yaml file
       Parameters:
         monitoring_project (string): the project where the metrics are written to
+        config (dict): The dict containing config like clients and limits
       Returns:
         metrics_dict (dictionary of dictionary of string: string): metrics names and descriptions
         limits_dict (dictionary of dictionary of string: int): limits_dict[metric_name]: dict[network_name] = limit_value
   '''
-  client = monitoring_v3.MetricServiceClient()
+  client = config["clients"]["monitoring_client"]
   existing_metrics = []
   for desc in client.list_metric_descriptors(name=monitoring_project):
     existing_metrics.append(desc.type)
@@ -47,7 +48,7 @@ def create_metrics(monitoring_project):
             # If the metric doesn't exist yet, then we create it
             if metric_link not in existing_metrics:
               create_metric(sub_metric["name"], sub_metric["description"],
-                            monitoring_project)
+                            monitoring_project, config)
             # Parse limits for network and peering group metrics
             # Subnet level metrics have a different limit: the subnet IP range size
             if sub_metric_key == "limit" and metric_name != "ip_usage_per_subnet":
@@ -62,17 +63,18 @@ def create_metrics(monitoring_project):
       print(exc)
 
 
-def create_metric(metric_name, description, monitoring_project):
+def create_metric(metric_name, description, monitoring_project, config):
   '''
     Creates a Cloud Monitoring metric based on the parameter given if the metric is not already existing
       Parameters:
         metric_name (string): Name of the metric to be created
         description (string): Description of the metric to be created
         monitoring_project (string): the project where the metrics are written to
+        config (dict): The dict containing config like clients and limits
       Returns:
         None
   '''
-  client = monitoring_v3.MetricServiceClient()
+  client = config["clients"]["monitoring_client"]
 
   descriptor = ga_metric.MetricDescriptor()
   descriptor.type = f"custom.googleapis.com/{metric_name}"
@@ -99,7 +101,7 @@ def write_data_to_metric(config, monitored_project_id, value, metric_name,
         usage (int): Current usage for that network.
         limit (int): Current usage for that network.
   '''
-  client = monitoring_v3.MetricServiceClient()
+  client = config["clients"]["monitoring_client"]
 
   series = monitoring_v3.TimeSeries()
   series.metric.type = f"custom.googleapis.com/{metric_name}"

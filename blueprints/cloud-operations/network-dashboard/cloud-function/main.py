@@ -23,8 +23,6 @@ from googleapiclient import discovery
 from metrics import ilb_fwrules, instances, networks, metrics, limits, peerings, routes, subnets, vpc_firewalls
 
 CFv2 = os.environ.get("CF_VERSION")
-if CFv2:
-  import functions_framework
 
 
 def get_monitored_projects_list(config):
@@ -124,11 +122,12 @@ config = {
         "monitoring_client": monitoring_v3.MetricServiceClient()
     },
     # Improve performance for Asset Inventory queries on large environments
-    "page_size": 500,
+    "page_size":
+        500,
 }
 
 
-def main(event, context):
+def main(event, context=None):
   '''
       Cloud Function Entry point, called by the scheduler.
         Parameters:
@@ -148,7 +147,7 @@ def main(event, context):
   config["monitoring_interval"] = monitoring_interval()
 
   metrics_dict, limits_dict = metrics.create_metrics(
-      config["monitoring_project_link"])
+      config["monitoring_project_link"], config)
   project_quotas_dict = limits.get_quota_project_limit(config)
 
   firewalls_dict = vpc_firewalls.get_firewalls_dict(config)
@@ -210,11 +209,8 @@ def main(event, context):
 
 
 if CFv2:
+  import functions_framework
+  main_http = functions_framework.http(main)
 
-  @functions_framework.http
-  def main_http(request):
-    main(None, None)
-    return 'Function v2 executed successfully'
-else:
-  if __name__ == "__main__":
-    main(None, None)
+if __name__ == "__main__":
+  main(None, None)
