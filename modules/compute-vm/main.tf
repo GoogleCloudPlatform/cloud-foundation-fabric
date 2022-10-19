@@ -284,7 +284,7 @@ resource "google_compute_instance_template" "default" {
     for_each = local.attached_disks
     iterator = config
     content {
-      # auto_delete = config.value.options.auto_delete
+      auto_delete = config.value.options.auto_delete
       device_name = config.value.name
       # Cannot use `source` with any of the fields in
       # [disk_size_gb disk_name disk_type source_image labels]

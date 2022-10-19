@@ -14,25 +14,18 @@
  * limitations under the License.
  */
 
-output "cloud_run_service" {
-  description = "CloudRun service URL"
-  value       = module.cloud_run.service.status[0].url
-  sensitive   = true
+variable "views_dir" {
+  description = "Relative path for the folder storing view data."
+  type        = string
 }
 
-output "cloudsql_password" {
-  description = "CloudSQL password"
-  value       = var.cloudsql_password == null ? module.cloudsql.user_passwords[local.cloudsql_conf.user] : var.cloudsql_password
-  sensitive   = true
+variable "tables_dir" {
+  description = "Relative path for the folder storing table data."
+  type        = string
 }
 
-output "wp_user" {
-  description = "Wordpress username"
-  value       = local.wp_user
-}
+variable "project_id" {
+  description = "Project ID"
+  type        = string
 
-output "wp_password" {
-  description = "Wordpress user password"
-  value       = local.wp_pass
-  sensitive   = true
 }

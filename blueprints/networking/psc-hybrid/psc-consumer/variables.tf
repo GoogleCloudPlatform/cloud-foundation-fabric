@@ -14,25 +14,32 @@
  * limitations under the License.
  */
 
-output "cloud_run_service" {
-  description = "CloudRun service URL"
-  value       = module.cloud_run.service.status[0].url
-  sensitive   = true
+variable "project_id" {
+  description = "The ID of the project where this VPC will be created."
+  type        = string
 }
 
-output "cloudsql_password" {
-  description = "CloudSQL password"
-  value       = var.cloudsql_password == null ? module.cloudsql.user_passwords[local.cloudsql_conf.user] : var.cloudsql_password
-  sensitive   = true
+variable "name" {
+  description = "Name of the resources created."
+  type        = string
 }
 
-output "wp_user" {
-  description = "Wordpress username"
-  value       = local.wp_user
+variable "region" {
+  description = "Region where resources will be created."
+  type        = string
 }
 
-output "wp_password" {
-  description = "Wordpress user password"
-  value       = local.wp_pass
-  sensitive   = true
+variable "network" {
+  description = "Consumer network id."
+  type        = string
+}
+
+variable "subnet" {
+  description = "Subnetwork id where resources will be associated."
+  type        = string
+}
+
+variable "sa_id" {
+  description = "PSC producer service attachment id."
+  type        = string
 }

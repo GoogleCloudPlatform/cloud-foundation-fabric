@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-def test_resource_count(plan_runner):
-  "Test number of resources created."
-  _, resources = plan_runner()
-  assert len(resources) == 5
+def test_resources(e2e_plan_runner):
+  "Test that plan works and the numbers of resources is as expected."
+  modules, resources = e2e_plan_runner()
+  assert len(modules) > 0
+  assert len(resources) > 0
