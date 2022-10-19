@@ -14,6 +14,8 @@
 # limitations under the License.
 #
 
+import time
+
 from collections import defaultdict
 from . import metrics, networks, limits, peerings, routers
 
@@ -88,16 +90,17 @@ def get_dynamic_routes(config, metrics_dict, limits_dict):
   routers_dict = routers.get_routers(config)
   dynamic_routes_dict = defaultdict(int)
 
-  for project_id in config["monitored_projects"]:
-    network_dict = networks.get_networks(config, project_id)
+  timestamp = time.time()
+  for project in config["monitored_projects"]:
+    network_dict = networks.get_networks(config, project)
 
-    for network in network_dict:
-      sum_routes = get_routes_for_network(config, network['self_link'],
-                                          project_id, routers_dict)
-      dynamic_routes_dict[network['self_link']] = sum_routes
+    for net in network_dict:
+      sum_routes = get_routes_for_network(config, net['self_link'], project,
+                                          routers_dict)
+      dynamic_routes_dict[net['self_link']] = sum_routes
 
-      if network['self_link'] in limits_dict:
-        limit = limits_dict[network['self_link']]
+      if net['self_link'] in limits_dict:
+        limit = limits_dict[net['self_link']]
       else:
         if 'default_value' in limits_dict:
           limit = limits_dict['default_value']
@@ -106,21 +109,21 @@ def get_dynamic_routes(config, metrics_dict, limits_dict):
           break
 
       utilization = sum_routes / limit
+      metric_labels = {'project': project, 'network_name': net['network_name']}
+      metrics.append_data_to_series_buffer(
+          config, metrics_dict["metrics_per_network"]
+          ["dynamic_routes_per_network"]["usage"]["name"], sum_routes,
+          metric_labels, timestamp=timestamp)
+      metrics.append_data_to_series_buffer(
+          config, metrics_dict["metrics_per_network"]
+          ["dynamic_routes_per_network"]["limit"]["name"], limit, metric_labels,
+          timestamp=timestamp)
+      metrics.append_data_to_series_buffer(
+          config, metrics_dict["metrics_per_network"]
+          ["dynamic_routes_per_network"]["utilization"]["name"], utilization,
+          metric_labels, timestamp=timestamp)
 
-      metrics.write_data_to_metric(
-          config, project_id, sum_routes, metrics_dict["metrics_per_network"]
-          ["dynamic_routes_per_network"]["usage"]["name"],
-          network['network_name'])
-      metrics.write_data_to_metric(
-          config, project_id, limit, metrics_dict["metrics_per_network"]
-          ["dynamic_routes_per_network"]["limit"]["name"],
-          network['network_name'])
-      metrics.write_data_to_metric(
-          config, project_id, utilization, metrics_dict["metrics_per_network"]
-          ["dynamic_routes_per_network"]["utilization"]["name"],
-          network['network_name'])
-
-    print("Wrote metrics for dynamic routes for VPCs in project", project_id)
+    print("Buffered metrics for dynamic routes for VPCs in project", project)
 
     return dynamic_routes_dict
 
