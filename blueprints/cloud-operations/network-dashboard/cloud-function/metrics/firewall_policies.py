@@ -14,8 +14,6 @@
 # limitations under the License.
 #
 
-from ast import AnnAssign
-
 import re
 import time
 
