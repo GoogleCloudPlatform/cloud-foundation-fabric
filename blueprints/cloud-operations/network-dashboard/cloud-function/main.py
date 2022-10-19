@@ -123,6 +123,8 @@ config = {
         "asset_client": asset_v1.AssetServiceClient(),
         "monitoring_client": monitoring_v3.MetricServiceClient()
     },
+    # Improve performance for Asset Inventory queries on large environments
+    "page_size": 500,
 }
 
 

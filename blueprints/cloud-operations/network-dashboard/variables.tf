@@ -73,7 +73,7 @@ variable "region" {
   default     = "europe-west1"
 }
 variable "v2" {
-  description = "Whether to use Cloud Function version 2nd Gen or 1st Gen. Use CFv2 if your Cloud Function timeouts after 9 minutes."
+  description = "Whether to use Cloud Function version 2nd Gen or 1st Gen. Use CFv2 if your Cloud Function timeouts after 9 minutes. By default it is using CFv1."
   type        = bool
   default     = false
 }

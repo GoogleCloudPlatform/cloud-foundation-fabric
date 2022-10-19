@@ -40,6 +40,7 @@ def get_subnet_ranges_dict(config: dict):
           "scope": f"organizations/{config['organization']}",
           "asset_types": ["compute.googleapis.com/Subnetwork"],
           "read_mask": read_mask,
+          "page_size": config["page_size"],
       })
   for resource in response:
     ranges = 0

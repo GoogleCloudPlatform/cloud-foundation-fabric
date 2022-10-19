@@ -141,6 +141,7 @@ module "cloud-function" {
     location             = var.region
     lifecycle_delete_age = null
   }
+  region = var.region
 
   bundle_config = {
     source_dir  = "cloud-function"
@@ -149,7 +150,7 @@ module "cloud-function" {
   }
 
   function_config = {
-    timeout     = 180
+    timeout     = 480 # Timeout in seconds, increase it if your CF timeouts and use v2 if > 9 minutes.
     entry_point = "main"
     runtime     = "python39"
     instances   = 1
