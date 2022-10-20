@@ -78,6 +78,6 @@ variable "region" {
 }
 
 variable "schedule_cron" {
-  description = "Cron format schedule to run the Cloud Function. Default is every 5 minutes."
+  description = "Cron format schedule to run the Cloud Function. Default is every 10 minutes."
   default     = "*/10 * * * *"
 }
