@@ -247,7 +247,7 @@ def format_doc(outputs, variables, files, show_extra=False):
 
 def format_files(items):
   'Format files table.'
-  items.sort(key=lambda i: i.name)
+  items = sorted(items, key=lambda i: i.name)
   num_modules = sum(len(i.modules) for i in items)
   num_resources = sum(len(i.resources) for i in items)
   yield '| name | description |{}{}'.format(
@@ -271,7 +271,7 @@ def format_outputs(items, show_extra=True):
   'Format outputs table.'
   if not items:
     return
-  items.sort(key=lambda i: i.name)
+  items = sorted(items, key=lambda i: i.name)
   yield '| name | description | sensitive |' + (' consumers |'
                                                 if show_extra else '')
   yield '|---|---|:---:|' + ('---|' if show_extra else '')
@@ -289,8 +289,7 @@ def format_variables(items, show_extra=True):
   'Format variables table.'
   if not items:
     return
-  items.sort(key=lambda i: i.name)
-  items.sort(key=lambda i: i.required, reverse=True)
+  items = sorted(items, key=lambda i: (not i.required, i.name))
   yield '| name | description | type | required | default |' + (
       ' producer |' if show_extra else '')
   yield '|---|---|:---:|:---:|:---:|' + (':---:|' if show_extra else '')
