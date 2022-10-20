@@ -26,13 +26,13 @@ output "cloudsql_password" {
   sensitive   = true
 }
 
-output "wp_user" {
-  description = "Wordpress username"
-  value       = local.wp_user
-}
-
 output "wp_password" {
   description = "Wordpress user password"
   value       = local.wp_pass
   sensitive   = true
+}
+
+output "wp_user" {
+  description = "Wordpress username"
+  value       = local.wp_user
 }

@@ -40,6 +40,7 @@ def get_all_subnets(config):
           "scope": f"organizations/{config['organization']}",
           "asset_types": ['compute.googleapis.com/Subnetwork'],
           "read_mask": read_mask,
+          "page_size": config["page_size"],
       })
 
   for asset in response:
@@ -94,17 +95,20 @@ def compute_subnet_utilization(config, all_subnets_dict):
   '''
   read_mask = field_mask_pb2.FieldMask()
   read_mask.FromJsonString('name,versionedResources')
+
   response_vm = config["clients"]["asset_client"].search_all_resources(
       request={
           "scope": f"organizations/{config['organization']}",
           "asset_types": ["compute.googleapis.com/Instance"],
           "read_mask": read_mask,
+          "page_size": config["page_size"],
       })
 
   # Counting IP addresses for GCE instances (VMs)
   for asset in response_vm:
     for versioned in asset.versioned_resources:
       for field_name, field_value in versioned.resource.items():
+        # TODO: Handle multi-NIC
         if field_name == 'networkInterfaces':
           response_dict = MessageToDict(list(field_value._pb)[0])
           # Subnet self link:
@@ -124,6 +128,7 @@ def compute_subnet_utilization(config, all_subnets_dict):
           "scope": f"organizations/{config['organization']}",
           "asset_types": ["compute.googleapis.com/ForwardingRule"],
           "read_mask": read_mask,
+          "page_size": config["page_size"],
       })
 
   # Counting IP addresses for GCE Internal Load Balancers
@@ -136,7 +141,7 @@ def compute_subnet_utilization(config, all_subnets_dict):
     address = ''
     for versioned in asset.versioned_resources:
       for field_name, field_value in versioned.resource.items():
-        if 'loadBalancingScheme' in field_name and field_value == 'INTERNAL':
+        if 'loadBalancingScheme' in field_name and field_value in ['INTERNAL', 'INTERNAL_MANAGED']:
           internal = True
         # We want to count only accepted PSC endpoint Forwarding Rule
         # If the PSC endpoint Forwarding Rule is pending, we will count it in the reserved IP addresses
@@ -167,6 +172,7 @@ def compute_subnet_utilization(config, all_subnets_dict):
               "scope": f"organizations/{config['organization']}",
               "asset_types": ["compute.googleapis.com/Address"],
               "read_mask": read_mask,
+              "page_size": config["page_size"],
           })
 
   # Counting IP addresses for GCE Reserved IPs (ex: PSC, Cloud DNS Inbound policies, reserved GCE IPs)

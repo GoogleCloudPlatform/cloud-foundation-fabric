@@ -43,6 +43,7 @@ def get_firewalls_dict(config: dict):
           "scope": f"organizations/{config['organization']}",
           "asset_types": ["compute.googleapis.com/Firewall"],
           "read_mask": read_mask,
+          "page_size": config["page_size"],
       })
   for resource in response:
     project_id = re.search("(compute.googleapis.com/projects/)([\w\-\d]+)",
