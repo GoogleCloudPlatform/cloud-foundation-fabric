@@ -22,7 +22,7 @@ variable "cf_version" {
   description = "Cloud Function version 2nd Gen or 1st Gen. Possible options: 'V1' or 'V2'.Use CFv2 if your Cloud Function timeouts after 9 minutes. By default it is using CFv1."
   default     = "V1"
   validation {
-    condition     = var.cf_version == "V1" || var.cf_version == "v2"
+    condition     = var.cf_version == "V1" || var.cf_version == "V2"
     error_message = "The value of cf_version must be either V1 or V2."
   }
 }
