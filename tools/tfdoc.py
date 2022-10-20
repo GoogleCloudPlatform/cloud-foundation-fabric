@@ -358,7 +358,8 @@ def create_doc(module_path, files=False, show_extra=False, exclude_files=None,
     mod_outputs = list(parse_outputs(module_path, exclude_files))
   except (IOError, OSError) as e:
     raise SystemExit(e)
-  return format_doc(mod_outputs, mod_variables, mod_files, show_extra)
+  doc = format_doc(mod_outputs, mod_variables, mod_files, show_extra)
+  return (doc, mod_files, mod_variables, mod_outputs)
 
 
 def get_readme(readme_path):
@@ -400,7 +401,7 @@ def main(module_path=None, exclude_file=None, files=False, replace=True,
   'Program entry point.'
   readme_path = os.path.join(module_path, 'README.md')
   readme = get_readme(readme_path)
-  doc = create_doc(module_path, files, show_extra, exclude_file, readme)
+  doc, *_ = create_doc(module_path, files, show_extra, exclude_file, readme)
   if replace:
     replace_doc(readme_path, doc, readme)
   else:
