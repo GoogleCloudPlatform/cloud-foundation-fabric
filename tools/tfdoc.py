@@ -99,13 +99,13 @@ VAR_RE = re.compile(r'''(?smx)
 VAR_RE_TYPE = re.compile(r'([\(\{\}\)])')
 VAR_TEMPLATE = ('default', 'description', 'type', 'nullable')
 
+Document = collections.namedtuple('Document', 'content files variables outputs')
 File = collections.namedtuple('File', 'name description modules resources')
 Output = collections.namedtuple(
     'Output', 'name description sensitive consumers file line')
 Variable = collections.namedtuple(
     'Variable',
     'name description type default required nullable source file line')
-
 # parsing functions
 
 
@@ -359,7 +359,7 @@ def create_doc(module_path, files=False, show_extra=False, exclude_files=None,
   except (IOError, OSError) as e:
     raise SystemExit(e)
   doc = format_doc(mod_outputs, mod_variables, mod_files, show_extra)
-  return (doc, mod_files, mod_variables, mod_outputs)
+  return Document(doc, mod_files, mod_variables, mod_outputs)
 
 
 def get_readme(readme_path):
@@ -401,9 +401,9 @@ def main(module_path=None, exclude_file=None, files=False, replace=True,
   'Program entry point.'
   readme_path = os.path.join(module_path, 'README.md')
   readme = get_readme(readme_path)
-  doc, *_ = create_doc(module_path, files, show_extra, exclude_file, readme)
+  doc = create_doc(module_path, files, show_extra, exclude_file, readme)
   if replace:
-    replace_doc(readme_path, doc, readme)
+    replace_doc(readme_path, doc.content, readme)
   else:
     print(doc)
 

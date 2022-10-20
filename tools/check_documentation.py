@@ -47,13 +47,14 @@ def _check_dir(dir_name, exclude_files=None, files=False, show_extra=False):
       state = State.SKIP
     else:
       try:
-        new_doc, _, variables, outputs = tfdoc.create_doc(
-            readme_path.parent, files, show_extra, exclude_files, readme)
-        variables = [v.name for v in variables]
+        new_doc = tfdoc.create_doc(readme_path.parent, files, show_extra,
+                                   exclude_files, readme)
+        variables = [v.name for v in new_doc.variables]
+        outputs = [v.name for v in new_doc.outputs]
       except SystemExit:
         state = state.SKIP
       else:
-        if new_doc == result['doc']:
+        if new_doc.content == result['doc']:
           state = State.OK
         elif variables != sorted(variables):
           state = state.FAIL
@@ -72,7 +73,8 @@ def _check_dir(dir_name, exclude_files=None, files=False, show_extra=False):
         else:
           state = State.FAIL
           header = f'----- {mod_name} diff -----\n'
-          ndiff = difflib.ndiff(result['doc'].split('\n'), new_doc.split('\n'))
+          ndiff = difflib.ndiff(result['doc'].split('\n'),
+                                new_doc.content.split('\n'))
           diff = '\n'.join([header] + list(ndiff))
     yield mod_name, state, diff
 
