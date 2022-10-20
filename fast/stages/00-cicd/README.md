@@ -74,7 +74,7 @@ To configure GitHub, add the following variable:
 
 ```hcl
 github = {
-  url        = null # Or GitHub Enterprise base URL
+  url        = "https://github.com/my-github-org" # Or GitHub Enterprise base URL
   visibility = "private"
 }
 ```
