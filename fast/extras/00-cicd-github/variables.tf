@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 
+variable "commmit_config" {
+  description = "Configure commit metadata."
+  type = object({
+    author  = optional(string, "FAST loader")
+    email   = optional(string, "fast-loader@fast.gcp.tf")
+    message = optional(string, "FAST initial loading")
+  })
+  default  = {}
+  nullable = false
+}
 
 variable "organization" {
   description = "GitHub organization."

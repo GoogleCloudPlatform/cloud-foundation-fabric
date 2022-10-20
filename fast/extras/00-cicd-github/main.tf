@@ -105,8 +105,8 @@ resource "github_repository_file" "default" {
     )
     : file(each.value.file)
   )
-  commit_message      = "Managed by Terraform"
-  commit_author       = "Terraform User"
-  commit_email        = "terraform@example.com"
+  commit_message      = "${var.commmit_config.message} (${each.value.name})"
+  commit_author       = var.commmit_config.author
+  commit_email        = var.commmit_config.email
   overwrite_on_create = true
 }
