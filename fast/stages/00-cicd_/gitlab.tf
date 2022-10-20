@@ -19,10 +19,6 @@ locals {
   gitlab_existing_groups = distinct([for k, v in local.cicd_repositories_by_system["gitlab"] : v.group if !try(v.create_group, false)])
 }
 
-provider "gitlab" {
-  base_url = var.gitlab.url
-}
-
 data "gitlab_group" "group" {
   for_each  = toset(local.gitlab_existing_groups)
   full_path = each.value

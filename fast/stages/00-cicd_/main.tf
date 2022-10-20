@@ -17,18 +17,20 @@
 locals {
   supported_cicd_systems = ["gitlab", "github", "sourcerepo"]
   cicd_repositories = {
-    for k, v in coalesce(var.cicd_repositories, {}) : k => merge(v,
-      { group = join("/", slice(split("/", v.name), 0, length(split("/", v.name)) - 1)) },
-      { name = element(split("/", v.name), length(split("/", v.name)) - 1) },
-    { create_group = try(v.create_group, true) })
+    for k, v in coalesce(var.cicd_repositories, {}) : k => merge(v, {
+      create_group = try(v.create_group, true)
+      group        = join("/", slice(split("/", v.name), 0, length(split("/", v.name)) - 1))
+      name         = element(split("/", v.name), length(split("/", v.name)) - 1)
+    })
     if(
       v != null
       &&
       contains(local.supported_cicd_systems, try(v.type, ""))
     )
   }
-  cicd_repositories_by_system = { for system in local.supported_cicd_systems : system => {
-    for k, v in local.cicd_repositories : k => v if v.type == system
+  cicd_repositories_by_system = {
+    for system in local.supported_cicd_systems : system => {
+      for k, v in local.cicd_repositories : k => v if v.type == system
     }
   }
 }

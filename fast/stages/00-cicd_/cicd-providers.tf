@@ -14,3 +14,11 @@
  * limitations under the License.
  */
 
+provider "github" {
+  base_url = var.github.url
+  owner    = local.github_groups[0]
+}
+
+provider "gitlab" {
+  base_url = var.gitlab.url
+}

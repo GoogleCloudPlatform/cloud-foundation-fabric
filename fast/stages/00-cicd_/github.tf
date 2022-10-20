@@ -15,12 +15,9 @@
  */
 
 locals {
-  github_groups = distinct([for k, v in local.cicd_repositories_by_system["github"] : v.group])
-}
-
-provider "github" {
-  base_url = var.github.url
-  owner    = local.github_groups[0]
+  github_groups = distinct([
+    for k, v in local.cicd_repositories_by_system["github"] : v.group
+  ])
 }
 
 data "github_organization" "organization" {
@@ -29,17 +26,21 @@ data "github_organization" "organization" {
 }
 
 data "github_repository" "repositories" {
-  for_each  = { for name, repo in local.cicd_repositories_by_system["github"] : name => repo if !try(repo.create, true) }
+  for_each = {
+    for name, repo in local.cicd_repositories_by_system["github"] :
+    name => repo if !try(repo.create, true)
+  }
   full_name = format("%s/%s", each.value.group, each.value.name)
 }
 
 resource "github_repository" "repositories" {
-  for_each = { for name, repo in local.cicd_repositories_by_system["github"] : name => repo if try(repo.create, true) }
-
+  for_each = {
+    for name, repo in local.cicd_repositories_by_system["github"] :
+    name => repo if try(repo.create, true)
+  }
   name        = each.value.name
   description = each.value.description
-
-  visibility = var.github.visibility
+  visibility  = var.github.visibility
 }
 
 resource "github_actions_secret" "actions-modules-key" {
