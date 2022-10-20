@@ -1,5 +1,5 @@
 /**
- * Copyright 2022 Google LLC
+ * Copyright 2023 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -210,6 +210,16 @@ variable "router_configs" {
     }
     landing-trusted-ew4 = {
       asn = "64512"
+      adv = null
+      # adv = { default = false, custom = [] }
+    }
+    landing-trusted-ncc = {
+      asn = "64515"
+      adv = null
+      # adv = { default = false, custom = [] }
+    }
+    landing-untrusted-ncc = {
+      asn = "64515"
       adv = null
       # adv = { default = false, custom = [] }
     }
