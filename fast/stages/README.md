@@ -24,8 +24,6 @@ To destroy a previous FAST deployment follow the instructions detailed in [clean
 - [Bootstrap](00-bootstrap/README.md)  
   Enables critical organization-level functionality that depends on broad permissions. It has two primary purposes. The first is to bootstrap the resources needed for automation of this and the following stages (service accounts, GCS buckets). And secondly, it applies the minimum amount of configuration needed at the organization level, to avoid the need of broad permissions later on, and to implement a minimum of security features like sinks and exports from the start.\
   Exports: automation variables, organization-level custom roles
-- [CI/CD Bootstrap](00-cicd/README.md)  
-  Optionally set up CI/CD repositories and project structure automatically for GitHub and Gitlab. This stage is not needed if repository are created manually.
 - [Resource Management](01-resman/README.md)  
   Creates the base resource hierarchy (folders) and the automation resources required later to delegate deployment of each part of the hierarchy to separate stages. This stage also configures organization-level policies and any exceptions needed by different branches of the resource hierarchy.\
   Exports: folder ids, automation service account emails
