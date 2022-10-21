@@ -595,20 +595,29 @@
             "dataSets": [
               {
                 "minAlignmentPeriod": "60s",
-                "plotType": "STACKED_BAR",
+                "plotType": "LINE",
                 "targetAxis": "Y1",
                 "timeSeriesQuery": {
                   "apiSource": "DEFAULT_CLOUD",
                   "timeSeriesFilter": {
                     "aggregation": {
                       "alignmentPeriod": "60s",
+                      "crossSeriesReducer": "REDUCE_SUM",
+                      "groupByFields": [
+                        "metric.label.\"project\""
+                      ],
                       "perSeriesAligner": "ALIGN_MEAN"
                     },
-                    "filter": "metric.type=\"custom.googleapis.com/static_routes_per_project_vpc_usage\" resource.type=\"global\""
+                    "filter": "metric.type=\"custom.googleapis.com/static_routes_per_project_vpc_usage\" resource.type=\"global\"",
+                    "secondaryAggregation": {
+                      "alignmentPeriod": "60s",
+                      "perSeriesAligner": "ALIGN_NONE"
+                    }
                   }
                 }
               }
             ],
+            "thresholds": [],
             "timeshiftDuration": "0s",
             "yAxis": {
               "label": "y1Axis",
@@ -640,11 +649,7 @@
                       "alignmentPeriod": "60s",
                       "perSeriesAligner": "ALIGN_MEAN"
                     },
-                    "filter": "metric.type=\"custom.googleapis.com/static_routes_per_peering_group_utilization\" resource.type=\"global\"",
-                    "secondaryAggregation": {
-                      "alignmentPeriod": "60s",
-                      "perSeriesAligner": "ALIGN_NONE"
-                    }
+                    "filter": "metric.type=\"custom.googleapis.com/static_routes_per_peering_group_utilization\" resource.type=\"global\""
                   }
                 }
               }
