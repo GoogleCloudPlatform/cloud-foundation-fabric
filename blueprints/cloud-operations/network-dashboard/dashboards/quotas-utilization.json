@@ -609,7 +609,6 @@
                 }
               }
             ],
-            "thresholds": [],
             "timeshiftDuration": "0s",
             "yAxis": {
               "label": "y1Axis",
@@ -632,7 +631,7 @@
             "dataSets": [
               {
                 "minAlignmentPeriod": "60s",
-                "plotType": "STACKED_BAR",
+                "plotType": "LINE",
                 "targetAxis": "Y1",
                 "timeSeriesQuery": {
                   "apiSource": "DEFAULT_CLOUD",
@@ -682,16 +681,11 @@
                       "alignmentPeriod": "60s",
                       "perSeriesAligner": "ALIGN_MEAN"
                     },
-                    "filter": "metric.type=\"custom.googleapis.com/static_routes_per_project_utilization\" resource.type=\"global\"",
-                    "secondaryAggregation": {
-                      "alignmentPeriod": "60s",
-                      "perSeriesAligner": "ALIGN_NONE"
-                    }
+                    "filter": "metric.type=\"custom.googleapis.com/static_routes_per_project_utilization\" resource.type=\"global\""
                   }
                 }
               }
             ],
-            "thresholds": [],
             "timeshiftDuration": "0s",
             "yAxis": {
               "label": "y1Axis",

@@ -14,10 +14,7 @@
 # limitations under the License.
 #
 
-from ast import AnnAssign
-from os import times
 import re
-from sqlite3 import Timestamp
 import time
 
 from collections import defaultdict
@@ -187,7 +184,7 @@ def get_routes_ppg(config, metric_dict, usage_dict, limit_dict):
 
 def get_static_routes_dict(config):
   '''
-    Calls the Asset Inventory API to get all static customr routes under the GCP organization.
+    Calls the Asset Inventory API to get all static custom routes under the GCP organization.
     Parameters:
       config (dict): The dict containing config like clients and limits
     Returns:
@@ -211,10 +208,8 @@ def get_static_routes_dict(config):
       static_route = dict()
       for field_name, field_value in versioned.resource.items():
         static_route[field_name] = field_value
-      static_route["project_id"] = re.search("\/([^\/]*)(\/[^\/]*){3}$",
-                                             static_route["network"]).group(1)
-      static_route["network_name"] = re.search("\/([^\/]*)$",
-                                               static_route["network"]).group(1)
+      static_route["project_id"] = static_route["network"].split('/')[6]
+      static_route["network_name"] = static_route["network"].split('/')[-1]
       network_link = f"https://www.googleapis.com/compute/v1/projects/{static_route['project_id']}/global/networks/{static_route['network_name']}"
       #exclude default vpc and peering routes, dynamic routes are not in Cloud Asset Inventory
       if "nextHopPeering" not in static_route and "nextHopNetwork" not in static_route:
@@ -257,10 +252,10 @@ def get_static_routes_data(config, metrics_dict, static_routes_dict,
   #usage is drilled down by network
   for network_link in static_routes_dict:
 
-    project_id = re.search("\/([^\/]*)(\/[^\/]*){3}$", network_link).group(1)
+    project_id = network_link.split('/')[6]
     if (project_id not in config["monitored_projects"]):
       continue
-    network_name = re.search("\/([^\/]*)$", network_link).group(1)
+    network_name = network_link.split('/')[-1]
 
     project_usage[project_id] = project_usage[project_id] + static_routes_dict[
         network_link]
@@ -271,7 +266,7 @@ def get_static_routes_data(config, metrics_dict, static_routes_dict,
         ["usage"]["name"], static_routes_dict[network_link], metric_labels,
         timestamp=timestamp)
 
-  #limit and utilization are calculated by projec
+  #limit and utilization are calculated by project
   for project_id in project_usage:
     current_quota_limit = project_quotas_dict[project_id]['global']["routes"][
         "limit"]
