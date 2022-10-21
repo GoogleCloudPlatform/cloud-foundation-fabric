@@ -37,6 +37,7 @@ def get_routers(config):
           "scope": f"organizations/{config['organization']}",
           "asset_types": ["compute.googleapis.com/Router"],
           "read_mask": read_mask,
+          "page_size": config["page_size"],
       })
   for resource in response:
     network_link = None

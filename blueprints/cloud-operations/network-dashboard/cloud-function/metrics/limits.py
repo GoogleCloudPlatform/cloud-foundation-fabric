@@ -14,6 +14,8 @@
 # limitations under the License.
 #
 
+import time
+
 from google.api_core import exceptions
 from google.cloud import monitoring_v3
 from . import metrics
@@ -173,6 +175,8 @@ def count_effective_limit(config, project_id, network_dict, usage_metric_name,
         None
   '''
 
+  timestamp = time.time()
+
   if network_dict['peerings'] == []:
     return
 
@@ -215,11 +219,16 @@ def count_effective_limit(config, project_id, network_dict, usage_metric_name,
   # Calculates effective limit: Step 4: Find maximum from step 1 and step 3
   effective_limit = max(limit_step1, limit_step3)
   utilization = peering_group_usage / effective_limit
-
-  metrics.write_data_to_metric(config, project_id, peering_group_usage,
-                               usage_metric_name, network_dict['network_name'])
-  metrics.write_data_to_metric(config, project_id, effective_limit,
-                               limit_metric_name, network_dict['network_name'])
-  metrics.write_data_to_metric(config, project_id, utilization,
-                               utilization_metric_name,
-                               network_dict['network_name'])
+  metric_labels = {
+      'project': project_id,
+      'network_name': network_dict['network_name']
+  }
+  metrics.append_data_to_series_buffer(config, usage_metric_name,
+                                       peering_group_usage, metric_labels,
+                                       timestamp=timestamp)
+  metrics.append_data_to_series_buffer(config, limit_metric_name,
+                                       effective_limit, metric_labels,
+                                       timestamp=timestamp)
+  metrics.append_data_to_series_buffer(config, utilization_metric_name,
+                                       utilization, metric_labels,
+                                       timestamp=timestamp)
