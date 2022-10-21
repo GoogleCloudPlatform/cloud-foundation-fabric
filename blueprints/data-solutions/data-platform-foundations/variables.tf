@@ -55,12 +55,6 @@ variable "folder_id" {
   type        = string
 }
 
-variable "location" {
-  description = "Location used for multi-regional resources."
-  type        = string
-  default     = "eu"
-}
-
 variable "groups" {
   description = "User groups."
   type        = map(string)
@@ -69,6 +63,12 @@ variable "groups" {
     data-engineers = "gcp-data-engineers"
     data-security  = "gcp-data-security"
   }
+}
+
+variable "location" {
+  description = "Location used for multi-regional resources."
+  type        = string
+  default     = "eu"
 }
 
 variable "network_config" {
