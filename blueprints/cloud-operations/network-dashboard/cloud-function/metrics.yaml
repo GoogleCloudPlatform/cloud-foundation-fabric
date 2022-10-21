@@ -99,7 +99,8 @@ metrics_per_network:
     utilization:
       name: dynamic_routes_per_network_utilization
       description: Number of Dynamic routes per network - utilization.
-  static_routes_per_network:
+  #static routes limit is per project, but usage is per network
+  static_routes_per_project:
     usage:
       name: static_routes_per_project_vpc_usage
       description: Number of Static routes per project and network - usage.

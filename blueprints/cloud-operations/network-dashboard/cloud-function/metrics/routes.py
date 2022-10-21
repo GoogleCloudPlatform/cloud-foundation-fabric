@@ -267,7 +267,7 @@ def get_static_routes_data(config, metrics_dict, static_routes_dict,
 
     metric_labels = {"project": project_id, "network_name": network_name}
     metrics.append_data_to_series_buffer(
-        config, metrics_dict["metrics_per_network"]["static_routes_per_network"]
+        config, metrics_dict["metrics_per_network"]["static_routes_per_project"]
         ["usage"]["name"], static_routes_dict[network_link], metric_labels,
         timestamp=timestamp)
 
@@ -283,11 +283,11 @@ def get_static_routes_data(config, metrics_dict, static_routes_dict,
     # limit and utilization are calculted by project
     metric_labels = {"project": project_id}
     metrics.append_data_to_series_buffer(
-        config, metrics_dict["metrics_per_network"]["static_routes_per_network"]
+        config, metrics_dict["metrics_per_network"]["static_routes_per_project"]
         ["limit"]["name"], current_quota_limit, metric_labels,
         timestamp=timestamp)
     metrics.append_data_to_series_buffer(
-        config, metrics_dict["metrics_per_network"]["static_routes_per_network"]
+        config, metrics_dict["metrics_per_network"]["static_routes_per_project"]
         ["utilization"]["name"],
         project_usage[project_id] / current_quota_limit, metric_labels,
         timestamp=timestamp)
