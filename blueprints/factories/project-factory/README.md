@@ -169,7 +169,7 @@ org_policies:
       inherit_from_parent: null
       status: true
       suggested_value: null
-      values:
+      values: []
     #Example 3: Deny All
     constraints/compute.disableInternetNetworkEndpointGroup:
       inherit_from_parent: null
