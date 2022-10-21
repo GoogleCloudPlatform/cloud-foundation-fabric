@@ -14,6 +14,8 @@
 # limitations under the License.
 #
 
+import time
+
 from . import metrics
 from google.protobuf import field_mask_pb2
 from google.protobuf.json_format import MessageToDict
@@ -38,6 +40,7 @@ def get_all_subnets(config):
           "scope": f"organizations/{config['organization']}",
           "asset_types": ['compute.googleapis.com/Subnetwork'],
           "read_mask": read_mask,
+          "page_size": config["page_size"],
       })
 
   for asset in response:
@@ -92,17 +95,20 @@ def compute_subnet_utilization(config, all_subnets_dict):
   '''
   read_mask = field_mask_pb2.FieldMask()
   read_mask.FromJsonString('name,versionedResources')
+
   response_vm = config["clients"]["asset_client"].search_all_resources(
       request={
           "scope": f"organizations/{config['organization']}",
           "asset_types": ["compute.googleapis.com/Instance"],
           "read_mask": read_mask,
+          "page_size": config["page_size"],
       })
 
   # Counting IP addresses for GCE instances (VMs)
   for asset in response_vm:
     for versioned in asset.versioned_resources:
       for field_name, field_value in versioned.resource.items():
+        # TODO: Handle multi-NIC
         if field_name == 'networkInterfaces':
           response_dict = MessageToDict(list(field_value._pb)[0])
           # Subnet self link:
@@ -122,6 +128,7 @@ def compute_subnet_utilization(config, all_subnets_dict):
           "scope": f"organizations/{config['organization']}",
           "asset_types": ["compute.googleapis.com/ForwardingRule"],
           "read_mask": read_mask,
+          "page_size": config["page_size"],
       })
 
   # Counting IP addresses for GCE Internal Load Balancers
@@ -134,7 +141,7 @@ def compute_subnet_utilization(config, all_subnets_dict):
     address = ''
     for versioned in asset.versioned_resources:
       for field_name, field_value in versioned.resource.items():
-        if 'loadBalancingScheme' in field_name and field_value == 'INTERNAL':
+        if 'loadBalancingScheme' in field_name and field_value in ['INTERNAL', 'INTERNAL_MANAGED']:
           internal = True
         # We want to count only accepted PSC endpoint Forwarding Rule
         # If the PSC endpoint Forwarding Rule is pending, we will count it in the reserved IP addresses
@@ -165,6 +172,7 @@ def compute_subnet_utilization(config, all_subnets_dict):
               "scope": f"organizations/{config['organization']}",
               "asset_types": ["compute.googleapis.com/Address"],
               "read_mask": read_mask,
+              "page_size": config["page_size"],
           })
 
   # Counting IP addresses for GCE Reserved IPs (ex: PSC, Cloud DNS Inbound policies, reserved GCE IPs)
@@ -225,6 +233,7 @@ def get_subnets(config, metrics_dict):
   # Updates all_subnets_dict with the IP utilization info
   compute_subnet_utilization(config, all_subnets_dict)
 
+  timestamp = time.time()
   for project_id in config["monitored_projects"]:
     if project_id not in all_subnets_dict:
       continue
@@ -236,18 +245,23 @@ def get_subnets(config, metrics_dict):
 
       # Building unique identifier with subnet region/name
       subnet_id = f"{subnet_dict['region']}/{subnet_dict['name']}"
-      metrics.write_data_to_metric(
-          config, project_id, subnet_dict['used_ip_addresses'],
-          metrics_dict["metrics_per_subnet"]["ip_usage_per_subnet"]["usage"]
-          ["name"], subnet_dict['network_name'], subnet_id)
-      metrics.write_data_to_metric(
-          config, project_id, subnet_dict['total_ip_addresses'],
-          metrics_dict["metrics_per_subnet"]["ip_usage_per_subnet"]["limit"]
-          ["name"], subnet_dict['network_name'], subnet_id)
-      metrics.write_data_to_metric(
-          config, project_id, ip_utilization, metrics_dict["metrics_per_subnet"]
-          ["ip_usage_per_subnet"]["utilization"]["name"],
-          subnet_dict['network_name'], subnet_id)
+      metric_labels = {
+          'project': project_id,
+          'network_name': subnet_dict['network_name'],
+          'subnet_id': subnet_id
+      }
+      metrics.append_data_to_series_buffer(
+          config, metrics_dict["metrics_per_subnet"]["ip_usage_per_subnet"]
+          ["usage"]["name"], subnet_dict['used_ip_addresses'], metric_labels,
+          timestamp=timestamp)
+      metrics.append_data_to_series_buffer(
+          config, metrics_dict["metrics_per_subnet"]["ip_usage_per_subnet"]
+          ["limit"]["name"], subnet_dict['total_ip_addresses'], metric_labels,
+          timestamp=timestamp)
+      metrics.append_data_to_series_buffer(
+          config, metrics_dict["metrics_per_subnet"]["ip_usage_per_subnet"]
+          ["utilization"]["name"], ip_utilization, metric_labels,
+          timestamp=timestamp)
 
-    print("Wrote metrics for subnet ip utilization for VPCs in project",
+    print("Buffered metrics for subnet ip utilization for VPCs in project",
           project_id)

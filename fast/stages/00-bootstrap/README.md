@@ -195,23 +195,25 @@ Then make sure you have configured the correct values for the following variable
 
 You can also adapt the example that follows to your needs:
 
-```hcl
-# fetch the required id by running `gcloud beta billing accounts list`
-billing_account={
-    id="012345-67890A-BCDEF0"
-    organization_id="01234567890"
+```tfvars
+# use `gcloud beta billing accounts list`
+# if you have too many accounts, check the Cloud Console :)
+billing_account = {
+ id              = "012345-67890A-BCDEF0"
+ organization_id = 1234567890
 }
-# get the required info by running `gcloud organizations list`
-organization={
-    id="01234567890"
-    domain="fast.example.com"
-    customer_id="Cxxxxxxx"
-}
-# create your own 4-letters prefix
-prefix="fast"
 
-# comment out if you want to leverage automatic generation of configs
-# outputs_location = "~/fast-config"
+# use `gcloud organizations list`
+organization = {
+ domain      = "example.org"
+ id          = 1234567890
+ customer_id = "C000001"
+}
+
+outputs_location = "~/fast-config"
+
+# use something unique and no longer than 9 characters
+prefix = "abcd"
 ```
 
 ### Output files and cross-stage variables
