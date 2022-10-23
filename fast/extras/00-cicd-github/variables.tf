@@ -33,30 +33,32 @@ variable "organization" {
 variable "repositories" {
   description = "Repositories to create."
   type = map(object({
-    allow = optional(object({
-      auto_merge   = optional(bool)
-      merge_commit = optional(bool)
-      rebase_merge = optional(bool)
-      squash_merge = optional(bool)
-    }))
-    auto_init   = optional(bool)
-    description = optional(string)
-    features = optional(object({
-      issues   = optional(bool)
-      projects = optional(bool)
-      wiki     = optional(bool)
-    }))
-    modules_source = optional(bool, false)
-    templates = optional(object({
-      gitignore = optional(string, "Terraform")
-      license   = optional(string)
-      repository = optional(object({
-        name  = string
-        owner = string
+    create_options = optional(object({
+      allow = optional(object({
+        auto_merge   = optional(bool)
+        merge_commit = optional(bool)
+        rebase_merge = optional(bool)
+        squash_merge = optional(bool)
       }))
-    }), {})
-    populate_with = optional(string)
-    visibility    = optional(string, "private")
+      auto_init   = optional(bool)
+      description = optional(string)
+      features = optional(object({
+        issues   = optional(bool)
+        projects = optional(bool)
+        wiki     = optional(bool)
+      }))
+      templates = optional(object({
+        gitignore = optional(string, "Terraform")
+        license   = optional(string)
+        repository = optional(object({
+          name  = string
+          owner = string
+        }))
+      }), {})
+      visibility = optional(string, "private")
+    }))
+    has_modules   = optional(bool, false)
+    populate_from = optional(string)
   }))
   default  = {}
   nullable = true

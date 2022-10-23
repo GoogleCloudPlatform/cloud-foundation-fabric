@@ -16,65 +16,69 @@
 
 locals {
   _modules_repository = [
-    for k, v in var.repositories : k if v.modules_source
+    for k, v in var.repositories : local.repositories[k] if v.has_modules
   ]
-  _populate_md = flatten([
+  _repository_files = flatten([
     for k, v in var.repositories : [
-      for f in fileset(path.module, "${v.populate_with}/*.md") : {
+      for f in concat(
+        [for f in fileset(path.module, "${v.populate_from}/*.md") : f],
+        [for f in fileset(path.module, "${v.populate_from}/*.tf") : f]
+        ) : {
         repository = k
         file       = f
-        name       = replace(f, "${v.populate_with}/", "")
+        name       = replace(f, "${v.populate_from}/", "")
       }
-    ] if v.populate_with != null
-  ])
-  _populate_tf = flatten([
-    for k, v in var.repositories : [
-      for f in fileset(path.module, "${v.populate_with}/*.tf") : {
-        repository = k
-        file       = f
-        name       = replace(f, "${v.populate_with}/", "")
-      }
-    ] if v.populate_with != null
+    ] if v.populate_from != null
   ])
   modules_repository = (
-    length(local._modules_repository) > 0 ? local._modules_repository.0 : null
+    length(local._modules_repository) > 0
+    ? local._modules_repository.0
+    : null
   )
+  repositories = {
+    for k, v in var.repositories :
+    k => v.create_options == null ? k : github_repository.default[k].name
+  }
   repository_files = {
-    for k in concat(
-      local._populate_md,
-      [
-        for f in local._populate_tf :
-        f if !startswith(f.name, "0") && f.name != "globals.tf"
-      ]
-    ) : "${k.repository}/${k.name}" => k
+    for k in local._repository_files :
+    "${k.repository}/${k.name}" => k
+    if !endswith(k.name, ".tf") || (
+      !startswith(k.name, "0") && k.name != "globals.tf"
+    )
   }
 }
 
 resource "github_repository" "default" {
-  for_each = var.repositories
-  name     = each.key
+  for_each = {
+    for k, v in var.repositories : k => v if v.create_options != null
+  }
+  name = each.key
   description = (
-    each.value.description != null
-    ? each.value.description
+    each.value.create_options.description != null
+    ? each.value.create_options.description
     : "FAST stage ${each.key}."
   )
-  visibility         = each.value.visibility
-  auto_init          = each.value.auto_init
-  allow_auto_merge   = try(each.value.allow.auto_merge, null)
-  allow_merge_commit = try(each.value.allow.merge_commit, null)
-  allow_rebase_merge = try(each.value.allow.rebase_merge, null)
-  allow_squash_merge = try(each.value.allow.squash_merge, null)
-  has_issues         = try(each.value.features.issues, null)
-  has_projects       = try(each.value.features.projects, null)
-  has_wiki           = try(each.value.features.wiki, null)
-  gitignore_template = try(each.value.templates.gitignore, null)
-  license_template   = try(each.value.templates.license, null)
+  visibility         = each.value.create_options.visibility
+  auto_init          = each.value.create_options.auto_init
+  allow_auto_merge   = try(each.value.create_options.allow.auto_merge, null)
+  allow_merge_commit = try(each.value.create_options.allow.merge_commit, null)
+  allow_rebase_merge = try(each.value.create_options.allow.rebase_merge, null)
+  allow_squash_merge = try(each.value.create_options.allow.squash_merge, null)
+  has_issues         = try(each.value.create_options.features.issues, null)
+  has_projects       = try(each.value.create_options.features.projects, null)
+  has_wiki           = try(each.value.create_options.features.wiki, null)
+  gitignore_template = try(each.value.create_options.templates.gitignore, null)
+  license_template   = try(each.value.create_options.templates.license, null)
 
   dynamic "template" {
-    for_each = try(each.value.templates.repository, null) != null ? [""] : []
+    for_each = (
+      try(each.value.create_options.templates.repository, null) != null
+      ? [""]
+      : []
+    )
     content {
-      owner      = each.value.templates.repository.owner
-      repository = each.value.templates.repository.name
+      owner      = each.value.create_options.templates.repository.owner
+      repository = each.value.create_options.templates.repository.name
     }
   }
 }
@@ -85,15 +89,23 @@ resource "tls_private_key" "default" {
 }
 
 resource "github_actions_secret" "default" {
-  count           = local.modules_repository != null ? 1 : 0
-  repository      = github_repository.default[local.modules_repository].name
+  for_each = local.modules_repository == null ? {} : {
+    for k, v in local.repositories :
+    k => v if(
+      k != local.modules_repository &&
+      var.repositories[k].populate_from != null
+    )
+  }
+  repository      = local.repositories[local.modules_repository]
   secret_name     = "CICD_MODULES_KEY"
   plaintext_value = tls_private_key.default.0.private_key_openssh
 }
 
 resource "github_repository_file" "default" {
-  for_each   = local.repository_files
-  repository = github_repository.default[each.value.repository].name
+  for_each = (
+    local.modules_repository == null ? {} : local.repository_files
+  )
+  repository = local.repositories[each.value.repository]
   branch     = "main"
   file       = each.value.name
   content = (
