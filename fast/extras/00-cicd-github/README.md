@@ -11,7 +11,7 @@ Initial file population of repositories is controlled via the `populate_from` at
 - never run this stage gain with the same variables used for population once the repository starts being used,  as **Terraform will manage file state and revert any changes at each apply**, which is probably not what you want.
 - be mindful when enabling initial population of the modules repository, as the number of resulting files to manage is very close to the GitHub hourly limit for their API
 
-The scenario for which this stage has been designed is one-shot creation and/or population of stage repositories, running it multiple times with different variables and Terraform states if incrmental creation is needed for subsequent FAST stages (e.g. GKE, data platform, etc.).
+The scenario for which this stage has been designed is one-shot creation and/or population of stage repositories, running it multiple times with different variables and Terraform states if incremental creation is needed for subsequent FAST stages (e.g. GKE, data platform, etc.).
 
 ## GitHub provider credentials
 
