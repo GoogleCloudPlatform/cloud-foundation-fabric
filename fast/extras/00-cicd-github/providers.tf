@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description provider configuration
+# tfdoc:file:description Provider configuration.
 
 provider "github" {
   owner = var.organization

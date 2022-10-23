@@ -76,9 +76,9 @@ When initial population is configured for a repository, this stage also adds a s
 
 | name | description | resources |
 |---|---|---|
-| [cicd-versions.tf](./cicd-versions.tf) | provider version |  |
+| [cicd-versions.tf](./cicd-versions.tf) | Provider version. |  |
 | [main.tf](./main.tf) | Module-level locals and resources. | <code>github_actions_secret</code> · <code>github_repository</code> · <code>github_repository_file</code> · <code>tls_private_key</code> |
-| [providers.tf](./providers.tf) | provider configuration |  |
+| [providers.tf](./providers.tf) | Provider configuration. |  |
 | [variables.tf](./variables.tf) | Module variables. |  |
 
 ## Variables

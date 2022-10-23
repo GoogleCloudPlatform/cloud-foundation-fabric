@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description provider version
+# tfdoc:file:description Provider version.
 
 terraform {
   required_version = ">= 1.3.1"
