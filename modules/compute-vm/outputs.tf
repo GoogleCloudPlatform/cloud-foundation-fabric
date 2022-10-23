@@ -41,6 +41,14 @@ output "internal_ip" {
   )
 }
 
+output "internal_ips" {
+  description = "Instance interfaces internal IP addresses."
+  value = [
+    for nic in try(google_compute_instance.default.0.network_interface, [])
+    : nic.network_ip
+  ]
+}
+
 output "self_link" {
   description = "Instance self links."
   value       = try(google_compute_instance.default.0.self_link, null)
