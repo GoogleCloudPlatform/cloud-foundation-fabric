@@ -68,3 +68,25 @@ Finally, a `commit_config` variable is optional: it can be used to configure aut
 ## Modules secret
 
 When initial population is configured for a repository, this stage also adds a secret with the private key used to authenticate against the modules repository. This matches the configuration of the GitHub workflow files created for each FAST stage when CI/CD is enabled.
+
+<!-- TFDOC OPTS files:1 -->
+<!-- BEGIN TFDOC -->
+
+## Files
+
+| name | description | resources |
+|---|---|---|
+| [cicd-versions.tf](./cicd-versions.tf) | provider version |  |
+| [main.tf](./main.tf) | Module-level locals and resources. | <code>github_actions_secret</code> · <code>github_repository</code> · <code>github_repository_file</code> · <code>tls_private_key</code> |
+| [providers.tf](./providers.tf) | provider configuration |  |
+| [variables.tf](./variables.tf) | Module variables. |  |
+
+## Variables
+
+| name | description | type | required | default |
+|---|---|:---:|:---:|:---:|
+| [organization](variables.tf#L28) | GitHub organization. | <code>string</code> | ✓ |  |
+| [commmit_config](variables.tf#L17) | Configure commit metadata. | <code title="object&#40;&#123;&#10;  author  &#61; optional&#40;string, &#34;FAST loader&#34;&#41;&#10;  email   &#61; optional&#40;string, &#34;fast-loader&#64;fast.gcp.tf&#34;&#41;&#10;  message &#61; optional&#40;string, &#34;FAST initial loading&#34;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [repositories](variables.tf#L33) | Repositories to create. | <code title="map&#40;object&#40;&#123;&#10;  create_options &#61; optional&#40;object&#40;&#123;&#10;    allow &#61; optional&#40;object&#40;&#123;&#10;      auto_merge   &#61; optional&#40;bool&#41;&#10;      merge_commit &#61; optional&#40;bool&#41;&#10;      rebase_merge &#61; optional&#40;bool&#41;&#10;      squash_merge &#61; optional&#40;bool&#41;&#10;    &#125;&#41;&#41;&#10;    auto_init   &#61; optional&#40;bool&#41;&#10;    description &#61; optional&#40;string&#41;&#10;    features &#61; optional&#40;object&#40;&#123;&#10;      issues   &#61; optional&#40;bool&#41;&#10;      projects &#61; optional&#40;bool&#41;&#10;      wiki     &#61; optional&#40;bool&#41;&#10;    &#125;&#41;&#41;&#10;    templates &#61; optional&#40;object&#40;&#123;&#10;      gitignore &#61; optional&#40;string, &#34;Terraform&#34;&#41;&#10;      license   &#61; optional&#40;string&#41;&#10;      repository &#61; optional&#40;object&#40;&#123;&#10;        name  &#61; string&#10;        owner &#61; string&#10;      &#125;&#41;&#41;&#10;    &#125;&#41;, &#123;&#125;&#41;&#10;    visibility &#61; optional&#40;string, &#34;private&#34;&#41;&#10;  &#125;&#41;&#41;&#10;  has_modules   &#61; optional&#40;bool, false&#41;&#10;  populate_from &#61; optional&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+
+<!-- END TFDOC -->
