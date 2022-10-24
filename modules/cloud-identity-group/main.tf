@@ -17,6 +17,7 @@
 resource "google_cloud_identity_group" "group" {
   display_name = var.display_name
   parent       = var.customer_id
+  description  = var.description
 
   group_key {
     id = var.name

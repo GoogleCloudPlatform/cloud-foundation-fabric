@@ -87,7 +87,7 @@ This stage also implements initial support for two interrelated features
 
 Workload Identity Federation support allows configuring external providers independently from CI/CD, and offers predefined attributes for a few well known ones (more can be easily added by editing the `identity-providers.tf` file). Once providers have been configured their names are passed to the following stages via interface outputs, and can be leveraged to set up access or impersonation in IAM bindings.
 
-CI/CD support is fully implemented for GitHub, Gitlab support is almost complete and will be published soon, and Cloud Source Repositories / Cloud Build will follow.
+CI/CD support is fully implemented for GitHub, Gitlab, and Cloud Source Repositories / Cloud Build. For GitHub, we also offer a [separate supporting setup](../../extras/00-cicd-github/) to quickly create / configure repositories.
 
 <!-- TODO: add a general overview of our design -->
 
@@ -176,7 +176,7 @@ Before the first run, the following IAM groups must exist to allow IAM bindings 
 - `gcp-organization-admins`
 - `gcp-security-admins`
 
-You can refer to [this animated image](./groups.gif) for a step by step on group creation. 
+You can refer to [this animated image](./groups.gif) for a step by step on group creation.
 
 Please note that FAST also supports an additional group for users with permissions to create support tickets and view logging and monitoring data. To remain consistent with the [Google Cloud Enterprise Checklist](https://cloud.google.com/docs/enterprise/setup-checklist) we map these permissions to the `gcp-devops` by default. However, we recommend creating a dedicated `gcp-support` group and updating the `groups` variable with the right value.
 
