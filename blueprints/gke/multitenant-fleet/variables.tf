@@ -39,9 +39,12 @@ variable "clusters" {
       recurring_window        = null
       maintenance_exclusion   = []
     })
-    max_pods_per_node      = optional(number, 110)
-    min_master_version     = optional(string)
-    monitoring_config      = optional(list(string), ["SYSTEM_COMPONENTS"])
+    max_pods_per_node  = optional(number, 110)
+    min_master_version = optional(string)
+    monitoring_config = optional(object({
+      enable_components  = optional(list(string), ["SYSTEM_COMPONENTS"])
+      managed_prometheus = optional(bool)
+    }))
     node_locations         = optional(list(string))
     private_cluster_config = optional(any)
     release_channel        = optional(string)

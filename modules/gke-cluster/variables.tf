@@ -162,8 +162,14 @@ variable "min_master_version" {
 
 variable "monitoring_config" {
   description = "Monitoring components."
-  type        = list(string)
-  default     = ["SYSTEM_COMPONENTS"]
+  type = object({
+    enable_components  = optional(list(string))
+    managed_prometheus = optional(bool)
+    }
+  )
+  default = {
+    enable_components = ["SYSTEM_COMPONENTS"]
+  }
 }
 
 variable "name" {
