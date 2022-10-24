@@ -1,0 +1,447 @@
+[
+  {
+    "mode": "NULLABLE",
+    "name": "organization",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "environment",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "apiproxy",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "request_uri",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "proxy",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "proxy_basepath",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "request_verb",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "request_size",
+    "type": "INTEGER"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "response_status_code",
+    "type": "INTEGER"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "is_error",
+    "type": "INTEGER"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "client_received_start_timestamp",
+    "type": "TIMESTAMP"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "client_received_end_timestamp",
+    "type": "TIMESTAMP"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "target_sent_start_timestamp",
+    "type": "TIMESTAMP"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "target_sent_end_timestamp",
+    "type": "TIMESTAMP"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "target_received_start_timestamp",
+    "type": "TIMESTAMP"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "target_received_end_timestamp",
+    "type": "TIMESTAMP"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "client_sent_start_timestamp",
+    "type": "TIMESTAMP"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "client_sent_end_timestamp",
+    "type": "TIMESTAMP"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "client_ip",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "client_id",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "developer",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "developer_app",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "api_product",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "flow_resource",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "target",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "target_url",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "target_host",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "apiproxy_revision",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "proxy_pathsuffix",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "proxy_client_ip",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "target_basepath",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "target_ip",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "request_path",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "response_size",
+    "type": "INTEGER"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "developer_email",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "virtual_host",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "gateway_flow_id",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "message_count",
+    "type": "INTEGER"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "total_response_time",
+    "type": "INTEGER"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "request_processing_latency",
+    "type": "INTEGER"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "response_processing_latency",
+    "type": "INTEGER"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "target_response_time",
+    "type": "INTEGER"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "cache_hit",
+    "type": "INTEGER"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "x_forwarded_for_ip",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "useragent",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "target_response_code",
+    "type": "INTEGER"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "target_error",
+    "type": "INTEGER"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "policy_error",
+    "type": "INTEGER"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "ax_created_time",
+    "type": "TIMESTAMP"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "ax_ua_agent_type",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "ax_ua_os_version",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "ax_ua_os_family",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "ax_ua_agent_version",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "ax_ua_device_category",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "ax_ua_agent_family",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "gateway_source",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "ax_month_of_year",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "ax_hour_of_day",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "ax_week_of_month",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "ax_day_of_week",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "ax_cache_key",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "ax_cache_l1_count",
+    "type": "INTEGER"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "ax_cache_source",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "ax_cache_executed",
+    "type": "INTEGER"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "ax_cache_name",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "ax_edge_execution_fault_code",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "ax_edge_is_apigee_fault",
+    "type": "INTEGER"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "ax_execution_fault_policy_name",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "ax_execution_fault_flow_state",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "ax_execution_fault_flow_name",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "ax_dn_region",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "ax_true_client_ip",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "x_apigee_edge_execution_stats_request_flow_end_timestamp",
+    "type": "TIMESTAMP"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "x_apigee_edge_execution_stats_request_flow_start_timestamp",
+    "type": "TIMESTAMP"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "x_apigee_edge_execution_stats_response_flow_end_timestamp",
+    "type": "TIMESTAMP"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "x_apigee_edge_execution_stats_response_flow_start_timestamp",
+    "type": "TIMESTAMP"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "x_apigee_edge_stats_steps",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "senseaction",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "ax_resolved_client_ip",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "x_forwarded_proto",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "x_apigee_intelligence_service",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "envgroup_hostname",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "x_apigee_mintng_rate",
+    "type": "NUMERIC"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "x_apigee_mintng_rate_plan_id",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "x_apigee_mintng_dev_share",
+    "type": "NUMERIC"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "x_apigee_mintng_currency",
+    "type": "STRING"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "x_apigee_mintng_price",
+    "type": "NUMERIC"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "x_apigee_mintng_tx_success",
+    "type": "BOOLEAN"
+  },
+  {
+    "mode": "NULLABLE",
+    "name": "x_apigee_mintng_price_multiplier",
+    "type": "NUMERIC"
+  }
+]
