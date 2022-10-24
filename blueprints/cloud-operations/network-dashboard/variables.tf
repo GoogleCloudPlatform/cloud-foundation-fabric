@@ -82,12 +82,7 @@ variable "schedule_cron" {
   default     = "*/10 * * * *"
 }
 
-variable "custom_cloud_function_sa" {
-  description = "Preprovisioned custom SA. If one is provided, no new SA will be created."
-  default = ""
-}
-
-variable "custom_scheduler_sa" {
+variable "custom_service_account" {
   description = "Preprovisioned custom SA. If one is provided, no new SA will be created."
   default = ""
 }
