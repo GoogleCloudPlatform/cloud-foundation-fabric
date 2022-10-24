@@ -42,6 +42,7 @@ module "project-monitoring" {
 ################################################
 
 module "service-account-function" {
+  count           = var.monitoring_project_id == "" ? 1 : 0
   source       = "../../../modules/iam-service-account"
   project_id   = local.monitoring_project
   name         = "sa-dash"
@@ -68,6 +69,7 @@ module "service-account-function" {
 }
 
 module "service-account-scheduler" {
+  count        = var.custom_scheduler_sa == "" ? 1 : 0 #Allow the use of custom pre-provisioned accounts\
   source       = "../../../modules/iam-service-account"
   project_id   = local.monitoring_project
   name         = "sa-scheduler"
@@ -126,7 +128,7 @@ resource "google_cloud_scheduler_job" "job_httptrigger" {
     uri         = module.cloud-function.uri
 
     oidc_token {
-      service_account_email = module.service-account-scheduler.email
+      service_account_email = var.custom_scheduler_sa == "" ? module.service-account-scheduler.email : var.custom_scheduler_sa
     }
   }
 }
@@ -166,7 +168,7 @@ module "cloud-function" {
     CF_VERSION              = var.cf_version
   }
 
-  service_account = module.service-account-function.email
+  service_account = var.custom_cloud_function_sa == "" ? module.service-account-function.email : var.custom_cloud_function_sa
   # Internal only doesn't seem to work with CFv2:
   ingress_settings = var.cf_version == "V2" ? "ALLOW_ALL" : "ALLOW_INTERNAL_ONLY"
 

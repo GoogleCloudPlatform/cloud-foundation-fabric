@@ -81,3 +81,13 @@ variable "schedule_cron" {
   description = "Cron format schedule to run the Cloud Function. Default is every 10 minutes."
   default     = "*/10 * * * *"
 }
+
+variable "custom_cloud_function_sa" {
+  description = "Preprovisioned custom SA. If one is provided, no new SA will be created."
+  default = ""
+}
+
+variable "custom_scheduler_sa" {
+  description = "Preprovisioned custom SA. If one is provided, no new SA will be created."
+  default = ""
+}
