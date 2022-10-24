@@ -14,7 +14,6 @@
 # limitations under the License.
 #
 
-import re
 import time
 
 from collections import defaultdict
