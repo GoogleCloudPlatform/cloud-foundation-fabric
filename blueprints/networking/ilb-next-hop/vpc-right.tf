@@ -20,31 +20,25 @@ module "vpc-right" {
   name       = "${local.prefix}right"
   subnets = [
     {
-      ip_cidr_range      = var.ip_ranges.right
-      name               = "${local.prefix}right"
-      region             = var.region
-      secondary_ip_range = {}
+      ip_cidr_range = var.ip_ranges.right
+      name          = "${local.prefix}right"
+      region        = var.region
     },
   ]
   routes = {
     to-left-ilb = {
       dest_range    = var.ip_ranges.left
       priority      = var.ilb_right_enable ? 900 : 1100
-      tags          = null
       next_hop_type = "ilb"
       next_hop      = module.ilb-right.forwarding_rule.self_link
     }
     to-left-gw-1 = {
       dest_range    = var.ip_ranges.left
-      priority      = null
-      tags          = null
       next_hop_type = "instance"
       next_hop      = module.gw[var.zones[0]].self_link
     }
     to-left-gw-2 = {
       dest_range    = var.ip_ranges.left
-      priority      = null
-      tags          = null
       next_hop_type = "instance"
       next_hop      = module.gw[var.zones[1]].self_link
     }

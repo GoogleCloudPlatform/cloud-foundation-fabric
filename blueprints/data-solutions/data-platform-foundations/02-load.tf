@@ -74,9 +74,8 @@ module "load-project" {
     storage  = [try(local.service_encryption_keys.storage, null)]
   }
   shared_vpc_service_config = local.shared_vpc_project == null ? null : {
-    attach               = true
-    host_project         = local.shared_vpc_project
-    service_identity_iam = {}
+    attach       = true
+    host_project = local.shared_vpc_project
   }
 }
 
@@ -111,10 +110,9 @@ module "load-vpc" {
   name       = "${var.prefix}-default"
   subnets = [
     {
-      ip_cidr_range      = "10.10.0.0/24"
-      name               = "default"
-      region             = var.region
-      secondary_ip_range = {}
+      ip_cidr_range = "10.10.0.0/24"
+      name          = "default"
+      region        = var.region
     }
   ]
 }

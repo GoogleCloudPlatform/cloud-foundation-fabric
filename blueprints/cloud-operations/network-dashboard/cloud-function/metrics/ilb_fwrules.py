@@ -14,6 +14,8 @@
 # limitations under the License.
 #
 
+import time
+
 from collections import defaultdict
 from google.protobuf import field_mask_pb2
 from . import metrics, networks, limits
@@ -35,12 +37,12 @@ def get_forwarding_rules_dict(config, layer: str):
 
   forwarding_rules_dict = defaultdict(int)
 
-  # TODO: Paging?
   response = config["clients"]["asset_client"].search_all_resources(
       request={
           "scope": f"organizations/{config['organization']}",
           "asset_types": ["compute.googleapis.com/ForwardingRule"],
           "read_mask": read_mask,
+          "page_size": config["page_size"],
       })
 
   for resource in response:
@@ -75,15 +77,17 @@ def get_forwarding_rules_data(config, metrics_dict, forwarding_rules_dict,
       Returns:
         None
   '''
-  for project in config["monitored_projects"]:
-    network_dict = networks.get_networks(config, project)
+
+  timestamp = time.time()
+  for project_id in config["monitored_projects"]:
+    network_dict = networks.get_networks(config, project_id)
 
     current_quota_limit = limits.get_quota_current_limit(
-        config, f"projects/{project}", config["limit_names"][layer])
+        config, f"projects/{project_id}", config["limit_names"][layer])
 
     if current_quota_limit is None:
       print(
-          f"Could not write {layer} forwarding rules to metric for projects/{project} due to missing quotas"
+          f"Could not determine {layer} forwarding rules to metric for projects/{project_id} due to missing quotas"
       )
       continue
 
@@ -95,20 +99,24 @@ def get_forwarding_rules_data(config, metrics_dict, forwarding_rules_dict,
       usage = 0
       if net['self_link'] in forwarding_rules_dict:
         usage = forwarding_rules_dict[net['self_link']]
-      metrics.write_data_to_metric(
-          config, project, usage, metrics_dict["metrics_per_network"]
+
+      metric_labels = {
+          'project': project_id,
+          'network_name': net['network_name']
+      }
+      metrics.append_data_to_series_buffer(
+          config, metrics_dict["metrics_per_network"]
           [f"{layer.lower()}_forwarding_rules_per_network"]["usage"]["name"],
-          net['network_name'])
-      metrics.write_data_to_metric(
-          config, project, net['limit'], metrics_dict["metrics_per_network"]
+          usage, metric_labels, timestamp=timestamp)
+      metrics.append_data_to_series_buffer(
+          config, metrics_dict["metrics_per_network"]
           [f"{layer.lower()}_forwarding_rules_per_network"]["limit"]["name"],
-          net['network_name'])
-      metrics.write_data_to_metric(
-          config, project, usage / net['limit'],
-          metrics_dict["metrics_per_network"]
+          net['limit'], metric_labels, timestamp=timestamp)
+      metrics.append_data_to_series_buffer(
+          config, metrics_dict["metrics_per_network"]
           [f"{layer.lower()}_forwarding_rules_per_network"]["utilization"]
-          ["name"], net['network_name'])
+          ["name"], usage / net['limit'], metric_labels, timestamp=timestamp)
 
     print(
-        f"Wrote number of {layer} forwarding rules to metric for projects/{project}"
+        f"Buffered number of {layer} forwarding rules to metric for projects/{project_id}"
     )

@@ -14,6 +14,17 @@
 # limitations under the License.
 #
 ---
+metrics_per_subnet:
+  ip_usage_per_subnet:
+    usage:
+      name: number_of_ip_used
+      description: Number of used IP addresses in the subnet.
+    utilization:
+      name: ip_addresses_per_subnet_utilization
+      description: Percentage of IP used in the subnet.
+    limit:
+      name: number_of_max_ip
+      description: Number of available IP addresses in the subnet.
 metrics_per_network:
   instance_per_network:
     usage:
@@ -60,7 +71,7 @@ metrics_per_network:
       name: internal_forwarding_rules_l4_limit
       description: Number of Internal Forwarding Rules for Internal L4 Load Balancers - limit.
       values:
-        default_value: 300
+        default_value: 500
     utilization:
       name: internal_forwarding_rules_l4_utilization
       description: Number of Internal Forwarding Rules for Internal L4 Load Balancers - utilization.
@@ -97,7 +108,7 @@ metrics_per_peering_group:
       name: internal_forwarding_rules_l4_ppg_limit
       description: Number of Internal Forwarding Rules for Internal L4 Load Balancers per VPC peering group - effective limit.
       values:
-        default_value: 300
+        default_value: 500
     utilization:
       name: internal_forwarding_rules_l4_ppg_utilization
       description: Number of Internal Forwarding Rules for Internal L4 Load Balancers per VPC peering group - utilization.
@@ -149,3 +160,29 @@ metrics_per_peering_group:
     utilization:
       name: dynamic_routes_per_peering_group_utilization
       description: Number of Dynamic routes per peering group - utilization.
+metrics_per_project:
+  firewalls:
+    usage:
+      name: firewalls_per_project_vpc_usage
+      description: Number of VPC firewall rules in a project - usage.
+    limit:
+      # Firewalls limit is per project and we get the limit for the GCP quota API in vpc_firewalls.py
+      name: firewalls_per_project_limit
+      description: Number of VPC firewall rules in a project - limit.
+    utilization:
+      name: firewalls_per_project_utilization
+      description: Number of VPC firewall rules in a project - utilization.
+metrics_per_firewall_policy:
+  firewall_policy_tuples:
+    usage:
+      name: firewall_policy_tuples_per_policy_usage
+      description: Number of tuples in a firewall policy - usage.
+    limit:
+      # This limit is not visibile through Google APIs, set default_value
+      name: firewall_policy_tuples_per_policy_limit
+      description: Number of tuples in a firewall policy - limit.
+      values:
+        default_value: 2000
+    utilization:
+      name: firewall_policy_tuples_per_policy_utilization
+      description: Number of tuples in a firewall policy - utilization.

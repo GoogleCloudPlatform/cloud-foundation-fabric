@@ -30,12 +30,8 @@ module "gke-multitenant" {
     host_project_id = var.host_project_ids.dev-spoke-0
     vpc_self_link   = var.vpc_self_links.dev-spoke-0
   }
-  cluster_defaults                 = var.cluster_defaults
-  nodepool_defaults                = var.nodepool_defaults
   clusters                         = var.clusters
   nodepools                        = var.nodepools
-  authenticator_security_group     = var.authenticator_security_group
-  dns_domain                       = var.dns_domain
   fleet_configmanagement_clusters  = var.fleet_configmanagement_clusters
   fleet_configmanagement_templates = var.fleet_configmanagement_templates
   fleet_features                   = var.fleet_features

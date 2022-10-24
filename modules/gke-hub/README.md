@@ -4,14 +4,12 @@ This module allows simplified creation and management of a GKE Hub object and it
 
 To use this module you must ensure the following APIs are enabled in the target project:
 
-```
-"gkehub.googleapis.com"
-"gkeconnect.googleapis.com"
-"anthosconfigmanagement.googleapis.com"
-"multiclusteringress.googleapis.com"
-"multiclusterservicediscovery.googleapis.com"
-"mesh.googleapis.com"
-```
+- `gkehub.googleapis.com`
+- `gkeconnect.googleapis.com`
+- `anthosconfigmanagement.googleapis.com`
+- `multiclusteringress.googleapis.com`
+- `multiclusterservicediscovery.googleapis.com`
+- `mesh.googleapis.com`
 
 ## Full GKE Hub example
 
@@ -48,20 +46,24 @@ module "vpc" {
 }
 
 module "cluster_1" {
-  source                   = "./fabric/modules/gke-cluster"
-  project_id               = module.project.project_id
-  name                     = "cluster-1"
-  location                 = "europe-west1-b"
-  network                  = module.vpc.self_link
-  subnetwork               = module.vpc.subnet_self_links["europe-west1/cluster-1"]
-  secondary_range_pods     = "pods"
-  secondary_range_services = "services"
-  enable_dataplane_v2      = true
-  master_authorized_ranges = { rfc1918_10_8 = "10.0.0.0/8" }
-  private_cluster_config = {
-    enable_private_nodes    = true
-    enable_private_endpoint = true
+  source     = "./fabric/modules/gke-cluster"
+  project_id = module.project.project_id
+  name       = "cluster-1"
+  location   = "europe-west1"
+  vpc_config = {
+    network    = module.vpc.self_link
+    subnetwork = module.vpc.subnet_self_links["europe-west1/cluster-1"]
+    master_authorized_ranges = {
+      fc1918_10_8 = "10.0.0.0/8"
+    }
     master_ipv4_cidr_block  = "192.168.0.0/28"
+  }
+  enable_features = {
+    dataplane_v2      = true
+    workload_identity = true
+  }
+  private_cluster_config = {
+    enable_private_endpoint = true
     master_global_access    = false
   }
 }
@@ -225,66 +227,59 @@ module "firewall" {
 }
 
 module "cluster_1" {
-  source                   = "./fabric/modules/gke-cluster"
-  project_id               = module.project.project_id
-  name                     = "cluster-1"
-  location                 = "europe-wes1"
-  network                  = module.vpc.self_link
-  subnetwork               = module.vpc.subnet_self_links["europe-west1/subnet-cluster-1"]
-  secondary_range_pods     = "pods"
-  secondary_range_services = "services"
-  private_cluster_config = {
-    enable_private_nodes    = true
-    enable_private_endpoint = false
+  source     = "./fabric/modules/gke-cluster"
+  project_id = module.project.project_id
+  name       = "cluster-1"
+  location   = "europe-west1"
+  vpc_config = {
+    network    = module.vpc.self_link
+    subnetwork = module.vpc.subnet_self_links["europe-west1/subnet-cluster-1"]
+    master_authorized_ranges = {
+      mgmt           = "10.0.0.0/28"
+      pods-cluster-1 = "10.3.0.0/16"
+    }
     master_ipv4_cidr_block  = "192.168.1.0/28"
+  }
+  private_cluster_config = {
+    enable_private_endpoint = false
     master_global_access    = true
   }
-  master_authorized_ranges = {
-    mgmt           = "10.0.0.0/28"
-    pods-cluster-1 =  "10.3.0.0/16"
-  }
-  enable_autopilot  = false
-  release_channel   = "REGULAR"
-  workload_identity = true
+  release_channel = "REGULAR"
   labels = {
     mesh_id = "proj-${module.project.number}"
   }
 }
 
 module "cluster_1_nodepool" {
-  source                      = "./fabric/modules/gke-nodepool"
-  project_id                  = module.project.project_id
-  cluster_name                = module.cluster_1.name
-  location                    = "europe-west1"
-  name                        = "nodepool"
-  node_service_account_create = true
-  initial_node_count          = 1
-  node_machine_type           = "e2-standard-4"
-  node_tags                   = ["cluster-1-node"]
+  source          = "./fabric/modules/gke-nodepool"
+  project_id      = module.project.project_id
+  cluster_name    = module.cluster_1.name
+  location        = "europe-west1"
+  name            = "nodepool"
+  node_count      = { initial = 1 }
+  service_account = {}
+  tags            = ["cluster-1-node"]
 }
 
 module "cluster_2" {
   source                   = "./fabric/modules/gke-cluster"
   project_id               = module.project.project_id
-  name                     = "cluster-1"
-  location                 = "europe-wes1"
-  network                  = module.vpc.self_link
-  subnetwork               = module.vpc.subnet_self_links["europe-west4/subnet-cluster-2"]
-  secondary_range_pods     = "pods"
-  secondary_range_services = "services"
-  private_cluster_config = {
-    enable_private_nodes    = true
-    enable_private_endpoint = false
+  name                     = "cluster-2"
+  location                 = "europe-west4"
+  vpc_config = {
+    network    = module.vpc.self_link
+    subnetwork = module.vpc.subnet_self_links["europe-west4/subnet-cluster-2"]
+    master_authorized_ranges = {
+      mgmt           = "10.0.0.0/28"
+      pods-cluster-1 = "10.3.0.0/16"
+    }
     master_ipv4_cidr_block  = "192.168.2.0/28"
+  }
+  private_cluster_config = {
+    enable_private_endpoint = false
     master_global_access    = true
   }
-  master_authorized_ranges = {
-    mgmt           = "10.0.0.0/28"
-    pods-cluster-1 = "10.1.0.0/16"
-  }
-  enable_autopilot  = false
-  release_channel   = "REGULAR"
-  workload_identity = true
+  release_channel = "REGULAR"
   labels = {
     mesh_id = "proj-${module.project.number}"
   }
@@ -296,12 +291,10 @@ module "cluster_2_nodepool" {
   cluster_name                = module.cluster_2.name
   location                    = "europe-west4"
   name                        = "nodepool"
-  node_service_account_create = true
-  initial_node_count          = 1
-  node_machine_type           = "e2-standard-4"
-  node_tags                   = ["cluster-2-node"]
+  node_count      = { initial = 1 }
+  service_account = {}
+  tags            = ["cluster-2-node"]
 }
-
 
 module "hub" {
   source     = "./fabric/modules/gke-hub"
@@ -323,8 +316,10 @@ module "hub" {
     "cluster-2"
   ]
 }
+
 # tftest modules=8 resources=28
 ```
+
 <!-- BEGIN TFDOC -->
 
 ## Variables

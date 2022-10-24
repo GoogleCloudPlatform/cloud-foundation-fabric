@@ -15,14 +15,14 @@
  */
 
 module "test" {
-  source                   = "../../../../modules/gke-cluster"
-  project_id               = "my-project"
-  name                     = "cluster-1"
-  location                 = "europe-west1-b"
-  network                  = "mynetwork"
-  subnetwork               = "mysubnet"
-  secondary_range_pods     = "pods"
-  secondary_range_services = "services"
-  enable_autopilot         = var.enable_autopilot
-  addons                   = var.addons
+  source     = "../../../../modules/gke-cluster"
+  project_id = "my-project"
+  name       = "cluster-1"
+  location   = "europe-west1-b"
+  vpc_config = {
+    network    = "mynetwork"
+    subnetwork = "mysubnet"
+  }
+  enable_addons   = var.enable_addons
+  enable_features = var.enable_features
 }

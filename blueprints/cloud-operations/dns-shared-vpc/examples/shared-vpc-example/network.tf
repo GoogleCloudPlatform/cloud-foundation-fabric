@@ -22,10 +22,9 @@ module "shared-vpc" {
 
   subnets = [
     {
-      name               = "subnet-01"
-      ip_cidr_range      = "10.10.1.0/24"
-      region             = var.region
-      secondary_ip_range = {}
+      name          = "subnet-01"
+      ip_cidr_range = "10.10.1.0/24"
+      region        = var.region
     }
   ]
 }

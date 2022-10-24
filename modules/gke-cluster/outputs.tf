@@ -53,7 +53,7 @@ output "name" {
 
 output "notifications" {
   description = "GKE PubSub notifications topic."
-  value       = var.notification_config ? google_pubsub_topic.notifications[0].id : null
+  value       = try(google_pubsub_topic.notifications[0].id, null)
 }
 
 output "self_link" {

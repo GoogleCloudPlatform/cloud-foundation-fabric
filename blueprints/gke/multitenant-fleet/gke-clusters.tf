@@ -14,103 +14,30 @@
  * limitations under the License.
  */
 
-locals {
-  clusters = {
-    for name, config in var.clusters :
-    name => merge(config, {
-      overrides = coalesce(config.overrides, var.cluster_defaults)
-    })
-  }
-}
+# tfdoc:file:description GKE clusters.
 
 module "gke-cluster" {
   source                   = "../../../modules/gke-cluster"
-  for_each                 = local.clusters
+  for_each                 = var.clusters
   name                     = each.key
   project_id               = module.gke-project-0.project_id
+  cluster_autoscaling      = each.value.cluster_autoscaling
   description              = each.value.description
-  location                 = each.value.location
-  network                  = var.vpc_config.vpc_self_link
-  subnetwork               = each.value.net.subnet
-  secondary_range_pods     = each.value.net.pods
-  secondary_range_services = each.value.net.services
+  enable_features          = each.value.enable_features
+  issue_client_certificate = each.value.issue_client_certificate
   labels                   = each.value.labels
-  addons = {
-    cloudrun_config                       = each.value.overrides.cloudrun_config
-    dns_cache_config                      = true
-    http_load_balancing                   = true
-    gce_persistent_disk_csi_driver_config = true
-    horizontal_pod_autoscaling            = true
-    config_connector_config               = true
-    kalm_config                           = false
-    gcp_filestore_csi_driver_config       = each.value.overrides.gcp_filestore_csi_driver_config
-    gke_backup_agent_config               = false
-    # enable only if enable_dataplane_v2 is changed to false below
-    network_policy_config = false
-    istio_config = {
-      enabled = false
-      tls     = false
-    }
-  }
-  # change these here for all clusters if absolutely needed
-  authenticator_security_group = var.authenticator_security_group
-  enable_dataplane_v2          = true
-  enable_l4_ilb_subsetting     = false
-  enable_intranode_visibility  = true
-  enable_shielded_nodes        = true
-  workload_identity            = true
-  private_cluster_config = {
-    enable_private_nodes    = true
-    enable_private_endpoint = false
-    master_ipv4_cidr_block  = each.value.net.master_range
-    master_global_access    = true
-  }
-  dns_config = each.value.dns_domain == null ? null : {
-    cluster_dns        = "CLOUD_DNS"
-    cluster_dns_scope  = "VPC_SCOPE"
-    cluster_dns_domain = "${each.key}.${var.dns_domain}"
-  }
-  logging_config    = ["SYSTEM_COMPONENTS", "WORKLOADS"]
-  monitoring_config = ["SYSTEM_COMPONENTS", "WORKLOADS"]
-
-  peering_config = var.peering_config == null ? null : {
-    export_routes = var.peering_config.export_routes
-    import_routes = var.peering_config.import_routes
-    project_id    = var.vpc_config.host_project_id
-  }
-  resource_usage_export_config = {
-    enabled = true
-    dataset = module.gke-dataset-resource-usage.dataset_id
-  }
-  # TODO: the attributes below are "primed" from project-level defaults
-  #       in locals, merge defaults with cluster-level stuff
-  # TODO(jccb): change fabric module
-  database_encryption = (
-    each.value.overrides.database_encryption_key == null
-    ? {
-      enabled  = false
-      state    = null
-      key_name = null
-    }
-    : {
-      enabled  = true
-      state    = "ENCRYPTED"
-      key_name = each.value.overrides.database_encryption_key
-    }
-  )
-  default_max_pods_per_node = each.value.overrides.max_pods_per_node
-  master_authorized_ranges  = each.value.overrides.master_authorized_ranges
-  pod_security_policy       = each.value.overrides.pod_security_policy
-  release_channel           = each.value.overrides.release_channel
-  vertical_pod_autoscaling  = each.value.overrides.vertical_pod_autoscaling
-  # dynamic "cluster_autoscaling" {
-  #   for_each = each.value.cluster_autoscaling == null ? {} : { 1 = 1 }
-  #   content {
-  #     enabled    = true
-  #     cpu_min    = each.value.cluster_autoscaling.cpu_min
-  #     cpu_max    = each.value.cluster_autoscaling.cpu_max
-  #     memory_min = each.value.cluster_autoscaling.memory_min
-  #     memory_max = each.value.cluster_autoscaling.memory_max
-  #   }
-  # }
+  location                 = each.value.location
+  logging_config           = each.value.logging_config
+  maintenance_config       = each.value.maintenance_config
+  max_pods_per_node        = each.value.max_pods_per_node
+  min_master_version       = each.value.min_master_version
+  monitoring_config        = each.value.monitoring_config
+  node_locations           = each.value.node_locations
+  private_cluster_config   = each.value.private_cluster_config
+  release_channel          = each.value.release_channel
+  vpc_config = merge(each.value.vpc_config, {
+    network = coalesce(
+      each.value.vpc_config.network, var.vpc_config.vpc_self_link
+    )
+  })
 }

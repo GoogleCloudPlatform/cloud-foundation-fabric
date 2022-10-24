@@ -8,6 +8,28 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#897](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/897)] Project-factory: allow folder_id to be defined in defaults_file ([Malet](https://github.com/Malet)) <!-- 2022-10-21 08:20:06+00:00 -->
+- [[#900](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/900)] Improve net dashboard variables ([juliocc](https://github.com/juliocc)) <!-- 2022-10-20 20:59:31+00:00 -->
+- [[#896](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/896)] Network Dashboard: CFv2 and performance improvements ([aurelienlegrand](https://github.com/aurelienlegrand)) <!-- 2022-10-19 16:59:29+00:00 -->
+- [[#871](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/871)] Firewall Policy Metrics, parallel writes, aligned timestamps ([maunope](https://github.com/maunope)) <!-- 2022-10-19 15:37:19+00:00 -->
+- [[#884](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/884)] BigQuery factory blueprint ([marcjwo](https://github.com/marcjwo)) <!-- 2022-10-18 15:07:16+00:00 -->
+- [[#889](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/889)] Minor fixes to PSC hybrid blueprint readmes ([LucaPrete](https://github.com/LucaPrete)) <!-- 2022-10-17 08:40:12+00:00 -->
+- [[#888](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/888)] Let the cloudsql module generate a random password  ([skalolazka](https://github.com/skalolazka)) <!-- 2022-10-17 06:30:41+00:00 -->
+- [[#879](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/879)] New PSC hybrid blueprint ([LucaPrete](https://github.com/LucaPrete)) <!-- 2022-10-16 08:18:41+00:00 -->
+- [[#880](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/880)] **incompatible change:** Refactor net-vpc module for Terraform 1.3 ([ludoo](https://github.com/ludoo)) <!-- 2022-10-14 09:02:34+00:00 -->
+- [[#872](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/872)] added support 2nd generation cloud function  ([som-nitjsr](https://github.com/som-nitjsr)) <!-- 2022-10-13 06:09:00+00:00 -->
+- [[#875](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/875)] **incompatible change:** Refactor GKE nodepool for Terraform 1.3, refactor GKE blueprints and FAST stage ([ludoo](https://github.com/ludoo)) <!-- 2022-10-12 10:59:37+00:00 -->
+- [[#873](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/873)] Fix docker tag command and link to Cloud Shell in WP blueprint ([skalolazka](https://github.com/skalolazka)) <!-- 2022-10-11 12:40:25+00:00 -->
+- [[#870](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/870)] Temporarily revert to Terraform 1.3.1 to support Cloud Shell ([skalolazka](https://github.com/skalolazka)) <!-- 2022-10-10 09:36:41+00:00 -->
+- [[#856](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/856)] Add network firewall metrics to network dashboard ([maunope](https://github.com/maunope)) <!-- 2022-10-10 08:46:22+00:00 -->
+- [[#868](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/868)] **incompatible change:** Refactor GKE module for Terraform 1.3 ([ludoo](https://github.com/ludoo)) <!-- 2022-10-10 07:38:21+00:00 -->
+- [[#818](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/818)] Example wordpress ([skalolazka](https://github.com/skalolazka)) <!-- 2022-10-07 14:24:38+00:00 -->
+- [[#861](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/861)] Leverage new shared VPC project config defaults across the repo ([juliocc](https://github.com/juliocc)) <!-- 2022-10-07 07:50:43+00:00 -->
+- [[#854](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/854)] Added an example of a Nginx reverse proxy cluster using RMIGs ([rosmo](https://github.com/rosmo)) <!-- 2022-10-04 13:49:44+00:00 -->
+- [[#850](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/850)] Made sample alert creation optional ([maunope](https://github.com/maunope)) <!-- 2022-09-30 10:08:37+00:00 -->
+- [[#837](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/837)] Network dashboard: Subnet IP utilization update ([aurelienlegrand](https://github.com/aurelienlegrand)) <!-- 2022-09-30 08:51:16+00:00 -->
+- [[#848](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/848)] updated quota monitoring CF doc ([maunope](https://github.com/maunope)) <!-- 2022-09-29 17:55:22+00:00 -->
+- [[#847](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/847)] **incompatible change:** Quotas monitoring, time series format update ([maunope](https://github.com/maunope)) <!-- 2022-09-29 16:20:18+00:00 -->
 - [[#839](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/839)] **incompatible change:** Update to terraform 1.3 ([juliocc](https://github.com/juliocc)) <!-- 2022-09-28 11:25:27+00:00 -->
 - [[#828](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/828)] Update firewall rules. ([lcaggio](https://github.com/lcaggio)) <!-- 2022-09-20 15:24:12+00:00 -->
 - [[#813](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/813)] Add documentation example test for pf ([ludoo](https://github.com/ludoo)) <!-- 2022-09-14 12:34:30+00:00 -->
@@ -15,17 +37,54 @@ All notable changes to this project will be documented in this file.
 
 ### DOCUMENTATION
 
-- [[#806](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/806)] Companion Guide ([ajlopezn](https://github.com/ajlopezn)) <!-- 2022-09-12 07:11:03+00:00 -->
+- [[#898](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/898)] Update FAST bootstrap README.md ([juliocc](https://github.com/juliocc)) <!-- 2022-10-19 15:15:36+00:00 -->
+- [[#878](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/878)] chore: update cft and fabric ([bharathkkb](https://github.com/bharathkkb)) <!-- 2022-10-12 15:38:06+00:00 -->
+- [[#863](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/863)] Fabric vs CFT doc ([ludoo](https://github.com/ludoo)) <!-- 2022-10-07 12:47:51+00:00 -->
+- [[#806](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/806)] FAST Companion Guide ([ajlopezn](https://github.com/ajlopezn)) <!-- 2022-09-12 07:11:03+00:00 -->
 
 ### FAST
 
+- [[#903](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/903)] Initial replacement for CI/CD stage ([ludoo](https://github.com/ludoo)) <!-- 2022-10-23 17:52:46+00:00 -->
+- [[#898](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/898)] Update FAST bootstrap README.md ([juliocc](https://github.com/juliocc)) <!-- 2022-10-19 15:15:36+00:00 -->
+- [[#880](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/880)] **incompatible change:** Refactor net-vpc module for Terraform 1.3 ([ludoo](https://github.com/ludoo)) <!-- 2022-10-14 09:02:34+00:00 -->
+- [[#875](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/875)] **incompatible change:** Refactor GKE nodepool for Terraform 1.3, refactor GKE blueprints and FAST stage ([ludoo](https://github.com/ludoo)) <!-- 2022-10-12 10:59:37+00:00 -->
+- [[#566](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/566)] FAST: Separate network environment  ([sruffilli](https://github.com/sruffilli)) <!-- 2022-10-10 09:50:08+00:00 -->
+- [[#870](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/870)] Temporarily revert to Terraform 1.3.1 to support Cloud Shell ([skalolazka](https://github.com/skalolazka)) <!-- 2022-10-10 09:36:41+00:00 -->
+- [[#868](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/868)] **incompatible change:** Refactor GKE module for Terraform 1.3 ([ludoo](https://github.com/ludoo)) <!-- 2022-10-10 07:38:21+00:00 -->
+- [[#867](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/867)] FAST: Replace NVAs in 02-networking-nva with COS-based VMs ([sruffilli](https://github.com/sruffilli)) <!-- 2022-10-10 07:16:29+00:00 -->
+- [[#865](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/865)] Enable FAST 00-cicd provider test ([ludoo](https://github.com/ludoo)) <!-- 2022-10-07 11:20:57+00:00 -->
+- [[#861](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/861)] Leverage new shared VPC project config defaults across the repo ([juliocc](https://github.com/juliocc)) <!-- 2022-10-07 07:50:43+00:00 -->
+- [[#858](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/858)] Default gcp-support to gcp-devops ([juliocc](https://github.com/juliocc)) <!-- 2022-10-06 12:58:26+00:00 -->
+- [[#842](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/842)] Comment redundant role in bootstrap stage, align IAM.md files, improve IAM tool ([ludoo](https://github.com/ludoo)) <!-- 2022-09-29 06:30:02+00:00 -->
+- [[#841](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/841)] FAST: revert 00-cicd provider changes ([ludoo](https://github.com/ludoo)) <!-- 2022-09-28 14:17:40+00:00 -->
 - [[#835](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/835)] Fix workflow-gitlab.yaml template rendering ([muresan](https://github.com/muresan)) <!-- 2022-09-22 12:26:22+00:00 -->
 - [[#828](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/828)] Update firewall rules. ([lcaggio](https://github.com/lcaggio)) <!-- 2022-09-20 15:24:12+00:00 -->
 - [[#807](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/807)] FAST: refactor Gitlab template ([ludoo](https://github.com/ludoo)) <!-- 2022-09-12 05:26:49+00:00 -->
 
 ### MODULES
 
-- [[#840](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/840)] Refactor net-address module for 1.3 ([ludoo](https://github.com/ludoo)) <!-- 2022-09-28 12:10:05+00:00 -->
+- [[#904](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/904)] Add missing description field ([dsbutler101](https://github.com/dsbutler101)) <!-- 2022-10-21 15:05:11+00:00 -->
+- [[#891](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/891)] Add internal_ips output to compute-vm module ([LucaPrete](https://github.com/LucaPrete)) <!-- 2022-10-21 08:38:27+00:00 -->
+- [[#890](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/890)] Add auto_delete and instance_redistribution_type to compute-vm and compute-mig modules. ([giovannibaratta](https://github.com/giovannibaratta)) <!-- 2022-10-16 19:19:46+00:00 -->
+- [[#883](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/883)] Fix csi-driver, logging and monitoring default values when autopilot … ([danielmarzini](https://github.com/danielmarzini)) <!-- 2022-10-14 15:30:54+00:00 -->
+- [[#880](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/880)] **incompatible change:** Refactor net-vpc module for Terraform 1.3 ([ludoo](https://github.com/ludoo)) <!-- 2022-10-14 09:02:34+00:00 -->
+- [[#872](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/872)] added support 2nd generation cloud function  ([som-nitjsr](https://github.com/som-nitjsr)) <!-- 2022-10-13 06:09:00+00:00 -->
+- [[#877](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/877)] fix autoscaling block ([ludoo](https://github.com/ludoo)) <!-- 2022-10-12 14:44:48+00:00 -->
+- [[#875](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/875)] **incompatible change:** Refactor GKE nodepool for Terraform 1.3, refactor GKE blueprints and FAST stage ([ludoo](https://github.com/ludoo)) <!-- 2022-10-12 10:59:37+00:00 -->
+- [[#870](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/870)] Temporarily revert to Terraform 1.3.1 to support Cloud Shell ([skalolazka](https://github.com/skalolazka)) <!-- 2022-10-10 09:36:41+00:00 -->
+- [[#869](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/869)] Fix optionals for resource_usage_export field in `gke-cluster` ([juliocc](https://github.com/juliocc)) <!-- 2022-10-10 09:04:44+00:00 -->
+- [[#868](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/868)] **incompatible change:** Refactor GKE module for Terraform 1.3 ([ludoo](https://github.com/ludoo)) <!-- 2022-10-10 07:38:21+00:00 -->
+- [[#866](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/866)] Update ipprefix_by_netmask.sh in nva module ([sruffilli](https://github.com/sruffilli)) <!-- 2022-10-09 15:26:54+00:00 -->
+- [[#860](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/860)] **incompatible change:** Refactor compute-vm for Terraform 1.3 ([ludoo](https://github.com/ludoo)) <!-- 2022-10-07 08:53:53+00:00 -->
+- [[#861](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/861)] Leverage new shared VPC project config defaults across the repo ([juliocc](https://github.com/juliocc)) <!-- 2022-10-07 07:50:43+00:00 -->
+- [[#859](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/859)] Make project shared VPC fields optional ([juliocc](https://github.com/juliocc)) <!-- 2022-10-06 14:18:01+00:00 -->
+- [[#853](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/853)] Fixes NVA issue when health checks are not enabled ([sruffilli](https://github.com/sruffilli)) <!-- 2022-10-04 05:55:10+00:00 -->
+- [[#846](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/846)] COS based simple networking appliance ([sruffilli](https://github.com/sruffilli)) <!-- 2022-09-30 16:43:24+00:00 -->
+- [[#851](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/851)] nginx-tls: only use hostname part for TLS certificate ([rosmo](https://github.com/rosmo)) <!-- 2022-09-30 11:52:43+00:00 -->
+- [[#844](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/844)] Management of GCP project default service accounts ([ddaluka](https://github.com/ddaluka)) <!-- 2022-09-29 13:10:08+00:00 -->
+- [[#845](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/845)] added root password support for MS SQL Server ([cmalpe](https://github.com/cmalpe)) <!-- 2022-09-29 12:03:59+00:00 -->
+- [[#843](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/843)] Add support for disk encryption to instance templates in compute-vm module ([ludoo](https://github.com/ludoo)) <!-- 2022-09-29 07:01:16+00:00 -->
+- [[#840](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/840)] **incompatible change:** Refactor net-address module for 1.3 ([ludoo](https://github.com/ludoo)) <!-- 2022-09-28 12:10:05+00:00 -->
 - [[#839](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/839)] **incompatible change:** Update to terraform 1.3 ([juliocc](https://github.com/juliocc)) <!-- 2022-09-28 11:25:27+00:00 -->
 - [[#824](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/824)] Add simple composer 2 blueprint ([lcaggio](https://github.com/lcaggio)) <!-- 2022-09-28 09:07:29+00:00 -->
 - [[#834](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/834)] Add support for service_label property in internal load balancer ([kmucha555](https://github.com/kmucha555)) <!-- 2022-09-21 21:30:35+00:00 -->
@@ -36,6 +95,15 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#902](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/902)] Bring back sorted variables check ([juliocc](https://github.com/juliocc)) <!-- 2022-10-20 17:08:17+00:00 -->
+- [[#887](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/887)] Disable parallel execution of tests and plugin cache ([ludoo](https://github.com/ludoo)) <!-- 2022-10-14 17:52:38+00:00 -->
+- [[#886](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/886)] Revert "Improve handling of tf plugin cache in tests" ([ludoo](https://github.com/ludoo)) <!-- 2022-10-14 17:35:31+00:00 -->
+- [[#885](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/885)] Improve handling of tf plugin cache in tests ([ludoo](https://github.com/ludoo)) <!-- 2022-10-14 17:14:47+00:00 -->
+- [[#881](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/881)] Run tests in parallel using `pytest-xdist` ([ludoo](https://github.com/ludoo)) <!-- 2022-10-14 12:56:16+00:00 -->
+- [[#876](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/876)] Make changelog tool slower to work around inconsistencies in API results ([ludoo](https://github.com/ludoo)) <!-- 2022-10-12 12:49:32+00:00 -->
+- [[#865](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/865)] Enable FAST 00-cicd provider test ([ludoo](https://github.com/ludoo)) <!-- 2022-10-07 11:20:57+00:00 -->
+- [[#864](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/864)] **incompatible change:** Bump terraform required version ([ludoo](https://github.com/ludoo)) <!-- 2022-10-07 10:51:56+00:00 -->
+- [[#842](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/842)] Comment redundant role in bootstrap stage, align IAM.md files, improve IAM tool ([ludoo](https://github.com/ludoo)) <!-- 2022-09-29 06:30:02+00:00 -->
 - [[#811](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/811)] Fix changelog generator ([ludoo](https://github.com/ludoo)) <!-- 2022-09-13 09:41:29+00:00 -->
 - [[#810](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/810)] Fully recursive e2e test runner for examples ([juliocc](https://github.com/juliocc)) <!-- 2022-09-12 12:35:46+00:00 -->
 

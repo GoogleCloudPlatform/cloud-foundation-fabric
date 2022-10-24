@@ -44,10 +44,9 @@ module "vpc" {
   name       = "${local.prefix}vpc"
   subnets = [
     {
-      ip_cidr_range      = var.subnet_ip_cidr_block
-      name               = "subnet"
-      region             = var.region
-      secondary_ip_range = null
+      ip_cidr_range = var.subnet_ip_cidr_block
+      name          = "subnet"
+      region        = var.region
     }
   ]
 }
@@ -69,8 +68,6 @@ module "server" {
   network_interfaces = [{
     network    = var.network_config == null ? module.vpc[0].self_link : var.network_config.network
     subnetwork = var.network_config == null ? module.vpc[0].subnet_self_links["${var.region}/subnet"] : var.network_config.subnet
-    nat        = false
-    addresses  = null
   }]
   metadata = {
     # Enables OpenSSH in the Windows instance

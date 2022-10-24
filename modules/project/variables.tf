@@ -46,6 +46,12 @@ variable "descriptive_name" {
   default     = null
 }
 
+variable "default_service_account" {
+  description = "Project default service account setting: can be one of `delete`, `deprivilege`, `disable`, or `keep`."
+  default     = "keep"
+  type        = string
+}
+
 variable "group_iam" {
   description = "Authoritative IAM binding for organization groups, in {GROUP_EMAIL => [ROLES]} format. Group emails need to be static. Can be used in combination with the `iam` variable."
   type        = map(list(string))
@@ -231,7 +237,7 @@ variable "shared_vpc_host_config" {
   description = "Configures this project as a Shared VPC host project (mutually exclusive with shared_vpc_service_project)."
   type = object({
     enabled          = bool
-    service_projects = list(string)
+    service_projects = optional(list(string), [])
   })
   default = null
 }
@@ -241,7 +247,7 @@ variable "shared_vpc_service_config" {
   # the list of valid service identities is in service-accounts.tf
   type = object({
     host_project         = string
-    service_identity_iam = map(list(string))
+    service_identity_iam = optional(map(list(string)))
   })
   default = null
 }

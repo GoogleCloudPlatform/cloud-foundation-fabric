@@ -48,10 +48,9 @@ module "vpc" {
   project_id = module.project.project_id
   name       = var.name
   subnets = [{
-    ip_cidr_range      = "192.168.0.0/24"
-    name               = "${var.name}-default"
-    region             = var.region
-    secondary_ip_range = {}
+    ip_cidr_range = "192.168.0.0/24"
+    name          = "${var.name}-default"
+    region        = var.region
   }]
 }
 
@@ -104,8 +103,6 @@ module "simple-vm-example" {
   network_interfaces = [{
     network    = module.vpc.self_link
     subnetwork = try(module.vpc.subnet_self_links["${var.region}/${var.name}-default"], "")
-    nat        = false
-    addresses  = null
   }]
   tags = ["${var.project_id}-test-feed", "shared-test-feed"]
 }

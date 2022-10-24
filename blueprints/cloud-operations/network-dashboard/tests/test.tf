@@ -30,8 +30,7 @@ module "project-hub" {
   services        = var.project_vm_services
 
   shared_vpc_host_config = {
-    enabled          = true
-    service_projects = [] # defined later
+    enabled = true
   }
 }
 
@@ -41,10 +40,9 @@ module "vpc-hub" {
   name       = "vpc-hub"
   subnets = [
     {
-      ip_cidr_range      = "10.0.10.0/24"
-      name               = "subnet-hub-1"
-      region             = var.region
-      secondary_ip_range = {}
+      ip_cidr_range = "10.0.10.0/24"
+      name          = "subnet-hub-1"
+      region        = var.region
     }
   ]
 }
@@ -58,9 +56,8 @@ module "project-svc-hub" {
   services        = var.project_vm_services
 
   shared_vpc_service_config = {
-    attach               = true
-    host_project         = module.project-hub.project_id
-    service_identity_iam = {}
+    attach       = true
+    host_project = module.project-hub.project_id
   }
 }
 
@@ -73,8 +70,7 @@ module "project-prod" {
   services        = var.project_vm_services
 
   shared_vpc_host_config = {
-    enabled          = true
-    service_projects = [] # defined later
+    enabled = true
   }
 }
 
@@ -84,10 +80,9 @@ module "vpc-prod" {
   name       = "vpc-prod"
   subnets = [
     {
-      ip_cidr_range      = "10.0.20.0/24"
-      name               = "subnet-prod-1"
-      region             = var.region
-      secondary_ip_range = {}
+      ip_cidr_range = "10.0.20.0/24"
+      name          = "subnet-prod-1"
+      region        = var.region
     }
   ]
 }
@@ -101,9 +96,8 @@ module "project-svc-prod" {
   services        = var.project_vm_services
 
   shared_vpc_service_config = {
-    attach               = true
-    host_project         = module.project-prod.project_id
-    service_identity_iam = {}
+    attach       = true
+    host_project = module.project-prod.project_id
   }
 }
 
@@ -116,8 +110,7 @@ module "project-dev" {
   services        = var.project_vm_services
 
   shared_vpc_host_config = {
-    enabled          = true
-    service_projects = [] # defined later
+    enabled = true
   }
 }
 
@@ -127,10 +120,9 @@ module "vpc-dev" {
   name       = "vpc-dev"
   subnets = [
     {
-      ip_cidr_range      = "10.0.30.0/24"
-      name               = "subnet-dev-1"
-      region             = var.region
-      secondary_ip_range = {}
+      ip_cidr_range = "10.0.30.0/24"
+      name          = "subnet-dev-1"
+      region        = var.region
     }
   ]
 }
@@ -144,9 +136,8 @@ module "project-svc-dev" {
   services        = var.project_vm_services
 
   shared_vpc_service_config = {
-    attach               = true
-    host_project         = module.project-dev.project_id
-    service_identity_iam = {}
+    attach       = true
+    host_project = module.project-dev.project_id
   }
 }
 

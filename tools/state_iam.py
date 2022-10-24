@@ -92,11 +92,22 @@ def get_bindings(resources, prefix=None, folders=None):
 
 def get_folders(resources):
   'Parse resources and return folder id, name tuples.'
+  folders = {}
   for r in resources:
     if r['type'] != 'google_folder':
       continue
     for i in r['instances']:
-      yield i['attributes']['id'], i['attributes']['display_name']
+      folder_id = i['attributes']['id']
+      folder_name = i['attributes']['display_name']
+      if folder_name not in folders:
+        folders[folder_name] = []
+      folders[folder_name].append(folder_id)
+  for name, ids in folders.items():
+    for i, folder_id in enumerate(ids):
+      if len(ids) == 1:
+        yield folder_id, name
+      else:
+        yield folder_id, f'{name} [#{i}]'
 
 
 def output_csv(bindings):
@@ -113,7 +124,8 @@ def output_principals(bindings):
   print('# IAM bindings reference')
   print('\nLegend: <code>+</code> additive, <code>•</code> conditional.')
   for resource, resource_groups in resource_grouper:
-    print(f'\n## {resource[0].title()} <i>{resource[1].lower()}</i>\n')
+    resource_type, resource_name = resource
+    print(f'\n## {resource_type.title()} <i>{resource_name.lower()}</i>\n')
     principal_grouper = itertools.groupby(
         resource_groups, key=lambda b: (b.member_type, b.member_id))
     print('| members | roles |')

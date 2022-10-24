@@ -14,110 +14,88 @@
  * limitations under the License.
  */
 
-variable "project_id" {
-  type    = string
-  default = "my-project"
-}
-
-variable "name" {
-  type    = string
-  default = "my-vpc"
-}
-
 variable "auto_create_subnetworks" {
   type    = bool
   default = false
 }
 
-variable "iam" {
-  type    = map(map(set(string)))
+variable "data_folder" {
+  type    = string
   default = null
 }
 
-variable "log_configs" {
+variable "delete_default_routes_on_create" {
+  type    = bool
+  default = false
+}
+
+variable "description" {
+  type    = string
+  default = "Terraform-managed."
+}
+
+variable "dns_policy" {
   type    = any
   default = null
 }
 
-variable "log_config_defaults" {
-  type = any
-  default = {
-    aggregation_interval = "INTERVAL_5_SEC"
-    flow_sampling        = 0.5
-    metadata             = "INCLUDE_ALL_METADATA"
-  }
+variable "mtu" {
+  type    = number
+  default = null
 }
 
 variable "peering_config" {
-  type = object({
-    peer_vpc_self_link = string
-    export_routes      = bool
-    import_routes      = bool
-  })
+  type    = any
   default = null
 }
 
 variable "psa_config" {
-  description = "The Private Service Access configuration."
-  type        = any
-  default     = null
-}
-
-variable "routes" {
   type    = any
   default = null
 }
 
+variable "routes" {
+  type     = any
+  default  = {}
+  nullable = false
+}
+
 variable "routing_mode" {
-  description = "The network routing mode (default 'GLOBAL')."
-  type        = string
-  default     = "GLOBAL"
+  type    = string
+  default = "GLOBAL"
 }
 
 variable "shared_vpc_host" {
-  description = "Enable shared VPC for this project."
-  type        = bool
-  default     = false
+  type    = bool
+  default = false
 }
 
 variable "shared_vpc_service_projects" {
-  description = "Shared VPC service projects to register with this host."
-  type        = list(string)
-  default     = []
+  type    = list(string)
+  default = []
 }
 
 variable "subnets" {
-  description = "The list of subnets being created."
-  type        = any
-  default     = []
+  type    = any
+  default = []
 }
 
-variable "subnet_descriptions" {
-  description = "Optional map of subnet descriptions, keyed by subnet name."
-  type        = map(string)
-  default     = {}
+variable "subnet_iam" {
+  type    = map(map(list(string)))
+  default = {}
 }
 
-variable "subnet_flow_logs" {
-  description = "Optional map of boolean to control flow logs (default is disabled), keyed by subnet name."
-  type        = map(bool)
-  default     = {}
+variable "subnets_proxy_only" {
+  type    = any
+  default = []
 }
 
-variable "subnet_private_access" {
-  description = "Optional map of boolean to control private Google access (default is enabled), keyed by subnet name."
-  type        = map(bool)
-  default     = {}
+variable "subnets_psc" {
+  type    = any
+  default = []
 }
 
-variable "private_service_networking_range" {
-  description = "RFC1919 CIDR range used for Google services that support private service networking."
-  type        = string
-  default     = null
-}
-
-variable "data_folder" {
-  description = "An optional folder containing the subnet configurations in YaML format."
-  type        = string
-  default     = null
+variable "vpc_create" {
+  type    = bool
+  default = true
 }

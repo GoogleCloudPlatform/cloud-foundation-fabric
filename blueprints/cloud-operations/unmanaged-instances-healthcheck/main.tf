@@ -43,10 +43,9 @@ module "vpc" {
   name       = "vpc"
   subnets = [
     {
-      name               = "apps"
-      ip_cidr_range      = "10.8.32.0/24"
-      region             = var.region
-      secondary_ip_range = null
+      name          = "apps"
+      ip_cidr_range = "10.8.32.0/24"
+      region        = var.region
     }
   ]
 }

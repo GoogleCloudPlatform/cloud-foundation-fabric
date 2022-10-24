@@ -14,83 +14,54 @@
  * limitations under the License.
  */
 
-variable "authenticator_security_group" {
-  description = "Optional group used for Groups for GKE."
-  type        = string
-  default     = null
-}
-
 variable "billing_account_id" {
   description = "Billing account id."
   type        = string
 }
 
-variable "cluster_defaults" {
-  description = "Default values for optional cluster configurations."
-  type = object({
-    cloudrun_config                 = bool
-    database_encryption_key         = string
-    master_authorized_ranges        = map(string)
-    max_pods_per_node               = number
-    pod_security_policy             = bool
-    release_channel                 = string
-    vertical_pod_autoscaling        = bool
-    gcp_filestore_csi_driver_config = bool
-  })
-  default = {
-    # TODO: review defaults
-    cloudrun_config         = false
-    database_encryption_key = null
-    master_authorized_ranges = {
-      rfc1918_1 = "10.0.0.0/8"
-      rfc1918_2 = "172.16.0.0/12"
-      rfc1918_3 = "192.168.0.0/16"
-    }
-    max_pods_per_node               = 110
-    pod_security_policy             = false
-    release_channel                 = "STABLE"
-    vertical_pod_autoscaling        = false
-    gcp_filestore_csi_driver_config = false
-  }
-}
-
 variable "clusters" {
-  description = ""
+  description = "Clusters configuration. Refer to the gke-cluster module for type details."
   type = map(object({
-    cluster_autoscaling = object({
-      cpu_min    = number
-      cpu_max    = number
-      memory_min = number
-      memory_max = number
+    cluster_autoscaling = optional(any)
+    description         = optional(string)
+    enable_addons = optional(any, {
+      horizontal_pod_autoscaling = true, http_load_balancing = true
     })
-    description = string
-    dns_domain  = string
-    labels      = map(string)
-    location    = string
-    net = object({
-      master_range = string
-      pods         = string
-      services     = string
-      subnet       = string
+    enable_features = optional(any, {
+      workload_identity = true
     })
-    overrides = object({
-      cloudrun_config         = bool
-      database_encryption_key = string
-      # binary_authorization            = bool
-      master_authorized_ranges        = map(string)
-      max_pods_per_node               = number
-      pod_security_policy             = bool
-      release_channel                 = string
-      vertical_pod_autoscaling        = bool
-      gcp_filestore_csi_driver_config = bool
+    issue_client_certificate = optional(bool, false)
+    labels                   = optional(map(string))
+    location                 = string
+    logging_config           = optional(list(string), ["SYSTEM_COMPONENTS"])
+    maintenance_config = optional(any, {
+      daily_window_start_time = "03:00"
+      recurring_window        = null
+      maintenance_exclusion   = []
+    })
+    max_pods_per_node      = optional(number, 110)
+    min_master_version     = optional(string)
+    monitoring_config      = optional(list(string), ["SYSTEM_COMPONENTS"])
+    node_locations         = optional(list(string))
+    private_cluster_config = optional(any)
+    release_channel        = optional(string)
+    vpc_config = object({
+      subnetwork = string
+      network    = optional(string)
+      secondary_range_blocks = optional(object({
+        pods     = string
+        services = string
+      }))
+      secondary_range_names = optional(object({
+        pods     = string
+        services = string
+      }), { pods = "pods", services = "services" })
+      master_authorized_ranges = optional(map(string))
+      master_ipv4_cidr_block   = optional(string)
     })
   }))
-}
-
-variable "dns_domain" {
-  description = "Domain name used for clusters, prefixed by each cluster name. Leave null to disable Cloud DNS for GKE."
-  type        = string
-  default     = null
+  default  = {}
+  nullable = false
 }
 
 variable "fleet_configmanagement_clusters" {
@@ -180,52 +151,26 @@ variable "labels" {
   default     = {}
 }
 
-variable "nodepool_defaults" {
-  description = ""
-  type = object({
-    image_type        = string
-    max_pods_per_node = number
-    node_locations    = list(string)
-    node_tags         = list(string)
-    node_taints       = list(string)
-  })
-  default = {
-    image_type        = "COS_CONTAINERD"
-    max_pods_per_node = 110
-    node_locations    = null
-    node_tags         = null
-    node_taints       = []
-  }
-}
-
 variable "nodepools" {
-  description = ""
+  description = "Nodepools configuration. Refer to the gke-nodepool module for type details."
   type = map(map(object({
-    node_count         = number
-    node_type          = string
-    initial_node_count = number
-    overrides = object({
-      image_type        = string
-      max_pods_per_node = number
-      node_locations    = list(string)
-      node_tags         = list(string)
-      node_taints       = list(string)
-    })
-    spot = bool
+    gke_version           = optional(string)
+    labels                = optional(map(string), {})
+    max_pods_per_node     = optional(number)
+    name                  = optional(string)
+    node_config           = optional(any, { disk_type = "pd-balanced" })
+    node_count            = optional(map(number), { initial = 1 })
+    node_locations        = optional(list(string))
+    nodepool_config       = optional(any)
+    pod_range             = optional(any)
+    reservation_affinity  = optional(any)
+    service_account       = optional(any)
+    sole_tenant_nodegroup = optional(string)
+    tags                  = optional(list(string))
+    taints                = optional(list(any))
   })))
-}
-
-variable "peering_config" {
-  description = "Configure peering with the control plane VPC. Requires compute.networks.updatePeering. Set to null if you don't want to update the default peering configuration."
-  type = object({
-    export_routes = bool
-    import_routes = bool
-  })
-  default = {
-    export_routes = true
-    // TODO(jccb) is there any situation where the control plane VPC would export any routes?
-    import_routes = false
-  }
+  default  = {}
+  nullable = false
 }
 
 variable "prefix" {

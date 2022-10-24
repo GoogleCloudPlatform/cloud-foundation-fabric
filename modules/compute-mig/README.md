@@ -340,7 +340,7 @@ module "nginx-mig" {
     per_instance_config = {},
     mig_config = {
       stateful_disks = {
-        persistent-disk-1 = {
+        repd-1 = {
           delete_rule = "NEVER"
         }
       }
@@ -461,9 +461,9 @@ module "nginx-mig" {
 | [stateful_config](variables.tf#L90) | Stateful configuration can be done by individual instances or for all instances in the MIG. They key in per_instance_config is the name of the specific instance. The key of the stateful_disks is the 'device_name' field of the resource. Please note that device_name is defined at the OS mount level, unlike the disk name. | <code title="object&#40;&#123;&#10;  per_instance_config &#61; map&#40;object&#40;&#123;&#10;    stateful_disks &#61; map&#40;object&#40;&#123;&#10;      source      &#61; string&#10;      mode        &#61; string &#35; READ_WRITE &#124; READ_ONLY &#10;      delete_rule &#61; string &#35; NEVER &#124; ON_PERMANENT_INSTANCE_DELETION&#10;    &#125;&#41;&#41;&#10;    metadata &#61; map&#40;string&#41;&#10;    update_config &#61; object&#40;&#123;&#10;      minimal_action                   &#61; string &#35; NONE &#124; REPLACE &#124; RESTART &#124; REFRESH&#10;      most_disruptive_allowed_action   &#61; string &#35; REPLACE &#124; RESTART &#124; REFRESH &#124; NONE&#10;      remove_instance_state_on_destroy &#61; bool&#10;    &#125;&#41;&#10;  &#125;&#41;&#41;&#10;&#10;&#10;  mig_config &#61; object&#40;&#123;&#10;    stateful_disks &#61; map&#40;object&#40;&#123;&#10;      delete_rule &#61; string &#35; NEVER &#124; ON_PERMANENT_INSTANCE_DELETION&#10;    &#125;&#41;&#41;&#10;  &#125;&#41;&#10;&#10;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [target_pools](variables.tf#L121) | Optional list of URLs for target pools to which new instances in the group are added. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
 | [target_size](variables.tf#L127) | Group target size, leave null when using an autoscaler. | <code>number</code> |  | <code>null</code> |
-| [update_policy](variables.tf#L133) | Update policy. Type can be 'OPPORTUNISTIC' or 'PROACTIVE', action 'REPLACE' or 'restart', surge type 'fixed' or 'percent'. | <code title="object&#40;&#123;&#10;  type                 &#61; string &#35; OPPORTUNISTIC &#124; PROACTIVE&#10;  minimal_action       &#61; string &#35; REPLACE &#124; RESTART&#10;  min_ready_sec        &#61; number&#10;  max_surge_type       &#61; string &#35; fixed &#124; percent&#10;  max_surge            &#61; number&#10;  max_unavailable_type &#61; string&#10;  max_unavailable      &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [versions](variables.tf#L147) | Additional application versions, target_type is either 'fixed' or 'percent'. | <code title="map&#40;object&#40;&#123;&#10;  instance_template &#61; string&#10;  target_type       &#61; string &#35; fixed &#124; percent&#10;  target_size       &#61; number&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
-| [wait_for_instances](variables.tf#L157) | Wait for all instances to be created/updated before returning. | <code>bool</code> |  | <code>null</code> |
+| [update_policy](variables.tf#L133) | Update policy. Type can be 'OPPORTUNISTIC' or 'PROACTIVE', action 'REPLACE' or 'restart', surge type 'fixed' or 'percent'. | <code title="object&#40;&#123;&#10;  instance_redistribution_type &#61; optional&#40;string, &#34;PROACTIVE&#34;&#41; &#35; NONE &#124; PROACTIVE. The attribute is ignored if regional is set to false.&#10;  max_surge_type               &#61; string                        &#35; fixed &#124; percent&#10;  max_surge                    &#61; number&#10;  max_unavailable_type         &#61; string&#10;  max_unavailable              &#61; number&#10;  minimal_action               &#61; string &#35; REPLACE &#124; RESTART&#10;  min_ready_sec                &#61; number&#10;  type                         &#61; string &#35; OPPORTUNISTIC &#124; PROACTIVE&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [versions](variables.tf#L148) | Additional application versions, target_type is either 'fixed' or 'percent'. | <code title="map&#40;object&#40;&#123;&#10;  instance_template &#61; string&#10;  target_type       &#61; string &#35; fixed &#124; percent&#10;  target_size       &#61; number&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
+| [wait_for_instances](variables.tf#L158) | Wait for all instances to be created/updated before returning. | <code>bool</code> |  | <code>null</code> |
 
 ## Outputs
 
@@ -474,6 +474,3 @@ module "nginx-mig" {
 | [health_check](outputs.tf#L35) | Auto-created health-check resource. |  |
 
 <!-- END TFDOC -->
-## TODO
-
-- [✓] add support for instance groups

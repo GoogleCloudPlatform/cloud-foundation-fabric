@@ -28,14 +28,17 @@ output "bucket_name" {
 
 output "function" {
   description = "Cloud function resources."
-  value       = google_cloudfunctions_function.function
+  value       = local.function
 }
 
 output "function_name" {
   description = "Cloud function name."
-  value       = google_cloudfunctions_function.function.name
+  value       = local.function.name
 }
-
+output "uri" {
+  description = "Cloud function service uri."
+  value       = var.v2 ? google_cloudfunctions2_function.function[0].service_config[0].uri : null
+}
 output "service_account" {
   description = "Service account resource."
   value       = try(google_service_account.service_account[0], null)
