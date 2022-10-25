@@ -15,9 +15,8 @@
  */
 
 locals {
-  _recordsets = var.recordsets == null ? {} : var.recordsets
   recordsets = {
-    for key, attrs in local._recordsets :
+    for key, attrs in var.recordsets :
     key => merge(attrs, zipmap(["type", "name"], split(" ", key)))
   }
   zone = (
@@ -100,6 +99,9 @@ resource "google_dns_managed_zone" "non-public" {
     }
   }
 
+  cloud_logging_config {
+    enable_logging = var.enable_logging
+  }
 }
 
 data "google_dns_managed_zone" "public" {

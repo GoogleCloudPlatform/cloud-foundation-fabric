@@ -22,6 +22,7 @@ variable "client_networks" {
   description = "List of VPC self links that can see this zone."
   type        = list(string)
   default     = []
+  nullable    = false
 }
 
 variable "default_key_specs_key" {
