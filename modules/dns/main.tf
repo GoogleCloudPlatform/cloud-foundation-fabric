@@ -15,9 +15,8 @@
  */
 
 locals {
-  _recordsets = var.recordsets == null ? {} : var.recordsets
   recordsets = {
-    for key, attrs in local._recordsets :
+    for key, attrs in var.recordsets :
     key => merge(attrs, zipmap(["type", "name"], split(" ", key)))
   }
   zone = (
@@ -117,24 +116,25 @@ resource "google_dns_managed_zone" "public" {
   visibility  = "public"
 
   dynamic "dnssec_config" {
-    for_each = var.dnssec_config == {} ? [] : tolist([var.dnssec_config])
+    for_each = var.dnssec_config == null ? [] : [1]
     iterator = config
     content {
-      kind          = lookup(config.value, "kind", "dns#managedZoneDnsSecConfig")
-      non_existence = lookup(config.value, "non_existence", "nsec3")
-      state         = lookup(config.value, "state", "off")
+      kind          = "dns#managedZoneDnsSecConfig"
+      non_existence = var.dnssec_config.non_existence
+      state         = var.dnssec_config.state
 
       default_key_specs {
-        algorithm  = lookup(var.default_key_specs_key, "algorithm", "rsasha256")
-        key_length = lookup(var.default_key_specs_key, "key_length", 2048)
-        key_type   = lookup(var.default_key_specs_key, "key_type", "keySigning")
-        kind       = lookup(var.default_key_specs_key, "kind", "dns#dnsKeySpec")
+        algorithm  = var.dnssec_config.key_signing_key.algorithm
+        key_length = var.dnssec_config.key_signing_key.key_length
+        key_type   = "keySigning"
+        kind       = "dns#dnsKeySpec"
       }
+
       default_key_specs {
-        algorithm  = lookup(var.default_key_specs_zone, "algorithm", "rsasha256")
-        key_length = lookup(var.default_key_specs_zone, "key_length", 1024)
-        key_type   = lookup(var.default_key_specs_zone, "key_type", "zoneSigning")
-        kind       = lookup(var.default_key_specs_zone, "kind", "dns#dnsKeySpec")
+        algorithm  = var.dnssec_config.zone_signing_key.algorithm
+        key_length = var.dnssec_config.zone_signing_key.key_length
+        key_type   = "zoneSigning"
+        kind       = "dns#dnsKeySpec"
       }
     }
   }

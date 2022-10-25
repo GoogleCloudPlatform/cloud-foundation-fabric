@@ -157,8 +157,8 @@ module "host-dns" {
   domain          = "example.com."
   client_networks = [module.vpc-shared.self_link]
   recordsets = {
-    "A localhost" = { ttl = 300, records = ["127.0.0.1"] }
-    "A bastion"   = { ttl = 300, records = [module.vm-bastion.internal_ip] }
+    "A localhost" = { records = ["127.0.0.1"] }
+    "A bastion"   = { records = [module.vm-bastion.internal_ip] }
   }
 }
 
