@@ -241,8 +241,13 @@ resource "google_container_cluster" "cluster" {
     for_each = var.monitoring_config != null && !var.enable_features.autopilot ? [""] : []
     content {
       enable_components = var.monitoring_config.enable_components
-      managed_prometheus = {
-        enabled = var.monitoring_config.managed_prometheus
+      dynamic "managed_prometheus" {
+        for_each = (
+          try(var.monitoring_config.managed_prometheus, null) == true ? [""] : []
+        )
+        content {
+          enabled = true
+        }
       }
     }
   }
