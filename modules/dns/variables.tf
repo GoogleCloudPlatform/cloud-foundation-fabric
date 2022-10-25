@@ -48,6 +48,7 @@ variable "dnssec_config" {
   default = {
     state = "off"
   }
+  nullable = false
 }
 
 variable "domain" {
