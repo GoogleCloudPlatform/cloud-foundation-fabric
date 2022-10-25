@@ -165,8 +165,7 @@ variable "monitoring_config" {
   type = object({
     enable_components  = optional(list(string))
     managed_prometheus = optional(bool)
-    }
-  )
+  })
   default = {
     enable_components = ["SYSTEM_COMPONENTS"]
   }
