@@ -15,9 +15,41 @@
  */
 
 locals {
-  recordsets = {
+  # split record name and type and set as keys in a map
+  _recordsets_0 = {
     for key, attrs in var.recordsets :
     key => merge(attrs, zipmap(["type", "name"], split(" ", key)))
+  }
+  # compute the final resource name for the recordset
+  _recordsets = {
+    for key, attrs in local._recordsets_0 :
+    key => merge(attrs, {
+      resource_name = (
+        attrs.name == ""
+        ? var.domain
+        : (
+          substr(attrs.name, -1, 1) == "."
+          ? attrs.name
+          : "${attrs.name}.${var.domain}"
+        )
+      )
+    })
+  }
+  # split recordsets between regular, geo and wrr
+  geo_recordsets = {
+    for k, v in local._recordsets :
+    k => v
+    if v.geo_routing != null
+  }
+  regular_recordsets = {
+    for k, v in local._recordsets :
+    k => v
+    if v.records != null
+  }
+  wrr_recordsets = {
+    for k, v in local._recordsets :
+    k => v
+    if v.wrr_routing != null
   }
   zone = (
     var.zone_create
@@ -149,23 +181,72 @@ data "google_dns_keys" "dns_keys" {
 resource "google_dns_record_set" "cloud-static-records" {
   for_each = (
     var.type == "public" || var.type == "private"
-    ? local.recordsets
+    ? local.regular_recordsets
     : {}
   )
   project      = var.project_id
   managed_zone = var.name
-  name = (
-    each.value.name == ""
-    ? var.domain
-    : (
-      substr(each.value.name, -1, 1) == "."
-      ? each.value.name
-      : "${each.value.name}.${var.domain}"
-    )
+  name         = each.value.resource_name
+  type         = each.value.type
+  ttl          = each.value.ttl
+  rrdatas      = each.value.records
+
+  depends_on = [
+    google_dns_managed_zone.non-public, google_dns_managed_zone.public
+  ]
+}
+
+resource "google_dns_record_set" "cloud-geo-records" {
+  for_each = (
+    var.type == "public" || var.type == "private"
+    ? local.geo_recordsets
+    : {}
   )
-  type    = each.value.type
-  ttl     = each.value.ttl
-  rrdatas = each.value.records
+  project      = var.project_id
+  managed_zone = var.name
+  name         = each.value.resource_name
+  type         = each.value.type
+  ttl          = each.value.ttl
+
+  routing_policy {
+    dynamic "geo" {
+      for_each = each.value.geo_routing
+      iterator = policy
+      content {
+        location = policy.value.location
+        rrdatas  = policy.value.records
+      }
+    }
+  }
+
+  depends_on = [
+    google_dns_managed_zone.non-public, google_dns_managed_zone.public
+  ]
+}
+
+resource "google_dns_record_set" "cloud-wrr-records" {
+  for_each = (
+    var.type == "public" || var.type == "private"
+    ? local.wrr_recordsets
+    : {}
+  )
+  project      = var.project_id
+  managed_zone = var.name
+  name         = each.value.resource_name
+  type         = each.value.type
+  ttl          = each.value.ttl
+
+  routing_policy {
+    dynamic "wrr" {
+      for_each = each.value.wrr_routing
+      iterator = policy
+      content {
+        weight  = policy.value.weight
+        rrdatas = policy.value.records
+      }
+    }
+  }
+
   depends_on = [
     google_dns_managed_zone.non-public, google_dns_managed_zone.public
   ]
