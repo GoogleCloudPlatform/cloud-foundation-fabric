@@ -18,7 +18,7 @@ These modules are used in the examples included in this repository. If you are u
     - Sync from the upstream repository to get all the updates.
  
 - Use GitHub sources with refs to reference the modules. See an example below:
-    ```
+    ```terraform
     module "project" {
         source              = "github.com/GoogleCloudPlatform/cloud-foundation-fabric//modules/project?ref=v13.0.0"
         name                = "my-project"

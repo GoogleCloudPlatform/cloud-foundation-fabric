@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Output files persistence to automation GCS bucket.
+# tfdoc:file:description Provider version.
 
-resource "google_storage_bucket_object" "tfvars" {
-  bucket  = var.automation.outputs_bucket
-  name    = "tfvars/00-bootstrap.auto.tfvars.json"
-  content = jsonencode(local.tfvars)
+terraform {
+  required_version = ">= 1.3.1"
+  required_providers {
+    github = {
+      source  = "integrations/github"
+      version = "~> 4.0"
+    }
+  }
 }
+
+
