@@ -78,10 +78,11 @@ variable "project_id" {
 variable "recordsets" {
   description = "Map of DNS recordsets in \"type name\" => {ttl, [records]} format."
   type = map(object({
-    ttl     = number
+    ttl     = optional(number, 300)
     records = list(string)
   }))
-  default = {}
+  default  = {}
+  nullable = false
   validation {
     condition = alltrue([
       for k, v in var.recordsets == null ? {} : var.recordsets :
