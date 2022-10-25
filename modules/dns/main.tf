@@ -30,7 +30,7 @@ locals {
         : (
           substr(attrs.name, -1, 1) == "."
           ? attrs.name
-          : "${attrs.name}.${var.domain}."
+          : "${attrs.name}.${var.domain}"
         )
       )
     })
@@ -208,17 +208,13 @@ resource "google_dns_record_set" "cloud-geo-records" {
   type         = each.value.type
   ttl          = each.value.ttl
 
-  dynamic "routing_policy" {
-    for_each = each.value.geo_routing != null ? [1] : [0]
-    iterator = unused
-    content {
-      dynamic "geo" {
-        for_each = each.value.geo_routing
-        iterator = policy
-        content {
-          location = policy.value.location
-          rrdatas  = policy.value.records
-        }
+  routing_policy {
+    dynamic "geo" {
+      for_each = each.value.geo_routing
+      iterator = policy
+      content {
+        location = policy.value.location
+        rrdatas  = policy.value.records
       }
     }
   }
@@ -240,17 +236,13 @@ resource "google_dns_record_set" "cloud-wrr-records" {
   type         = each.value.type
   ttl          = each.value.ttl
 
-  dynamic "routing_policy" {
-    for_each = each.value.wrr_routing != null ? [1] : [0]
-    iterator = unused
-    content {
-      dynamic "wrr" {
-        for_each = each.value.wrr_routing
-        iterator = policy
-        content {
-          weight  = policy.value.weight
-          rrdatas = policy.value.records
-        }
+  routing_policy {
+    dynamic "wrr" {
+      for_each = each.value.wrr_routing
+      iterator = policy
+      content {
+        weight  = policy.value.weight
+        rrdatas = policy.value.records
       }
     }
   }
