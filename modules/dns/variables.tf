@@ -25,18 +25,6 @@ variable "client_networks" {
   nullable    = false
 }
 
-variable "default_key_specs_key" {
-  description = "DNSSEC default key signing specifications: algorithm, key_length, key_type, kind."
-  type        = any
-  default     = {}
-}
-
-variable "default_key_specs_zone" {
-  description = "DNSSEC default zone signing specifications: algorithm, key_length, key_type, kind."
-  type        = any
-  default     = {}
-}
-
 variable "description" {
   description = "Domain description."
   type        = string
@@ -44,9 +32,20 @@ variable "description" {
 }
 
 variable "dnssec_config" {
-  description = "DNSSEC configuration: kind, non_existence, state."
-  type        = any
-  default     = {}
+  description = "DNSSEC configuration for this zone."
+  type = object({
+    non_existence = optional(string, "nsec3")
+    state         = string
+    key_signing_key = optional(object(
+      { algorithm = string, key_length = number }),
+      { algorithm = "rsasha256", key_length = 2048 }
+    )
+    zone_signing_key = optional(object(
+      { algorithm = string, key_length = number }),
+      { algorithm = "rsasha256", key_length = 1024 }
+    )
+  })
+  default = null
 }
 
 variable "domain" {
@@ -58,6 +57,13 @@ variable "forwarders" {
   description = "Map of {IPV4_ADDRESS => FORWARDING_PATH} for 'forwarding' zone types. Path can be 'default', 'private', or null for provider default."
   type        = map(string)
   default     = {}
+}
+
+variable "enable_logging" {
+  description = "Enable query logging for this zone. Only valid for public zones."
+  type        = bool
+  default     = false
+  nullable    = false
 }
 
 variable "name" {
