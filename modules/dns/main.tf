@@ -41,7 +41,7 @@ locals {
     k => v
     if v.geo_routing != null
   }
-  recordsets = {
+  regular_recordsets = {
     for k, v in local._recordsets :
     k => v
     if v.records != null
@@ -181,7 +181,7 @@ data "google_dns_keys" "dns_keys" {
 resource "google_dns_record_set" "cloud-static-records" {
   for_each = (
     var.type == "public" || var.type == "private"
-    ? local.recordsets
+    ? local.regular_recordsets
     : {}
   )
   project      = var.project_id
