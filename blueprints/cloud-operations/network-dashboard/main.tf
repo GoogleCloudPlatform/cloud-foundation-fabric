@@ -69,7 +69,7 @@ module "service-account-function" {
 }
 
 module "service-account-scheduler" {
-  count        = var.custom_scheduler_sa == "" ? 1 : 0 #Allow the use of custom pre-provisioned accounts\
+  count        = var.custom_scheduler_sa == "" ? 1 : 0 # This SA will not be created if a existing one is provided
   source       = "../../../modules/iam-service-account"
   project_id   = local.monitoring_project
   name         = "sa-scheduler"
