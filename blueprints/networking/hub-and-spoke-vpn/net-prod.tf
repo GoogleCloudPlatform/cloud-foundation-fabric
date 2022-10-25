@@ -63,7 +63,7 @@ module "prod-dns-zone" {
   domain          = "prd.example.com."
   client_networks = [module.landing-vpc.self_link]
   recordsets = {
-    "A localhost" = { ttl = 300, records = ["127.0.0.1"] }
-    "A test-r1"   = { ttl = 300, records = [module.prod-r1-vm.internal_ip] }
+    "A localhost" = { records = ["127.0.0.1"] }
+    "A test-r1"   = { records = [module.prod-r1-vm.internal_ip] }
   }
 }

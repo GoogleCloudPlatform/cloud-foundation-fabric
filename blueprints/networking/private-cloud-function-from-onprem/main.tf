@@ -218,7 +218,7 @@ module "private-dns-onprem" {
   domain          = "${var.region}-${module.project.project_id}.cloudfunctions.net."
   client_networks = [module.vpc-onprem.self_link]
   recordsets = {
-    "A " = { ttl = 300, records = [module.addresses.psc_addresses[local.psc_name].address] }
+    "A " = { records = [module.addresses.psc_addresses[local.psc_name].address] }
   }
 }
 

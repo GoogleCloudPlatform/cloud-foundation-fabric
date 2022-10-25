@@ -26,7 +26,7 @@ module "prod-dns-private-zone" {
   domain          = "prod.gcp.example.com."
   client_networks = [module.landing-vpc.self_link]
   recordsets = {
-    "A localhost" = { type = "A", ttl = 300, records = ["127.0.0.1"] }
+    "A localhost" = { records = ["127.0.0.1"] }
   }
 }
 

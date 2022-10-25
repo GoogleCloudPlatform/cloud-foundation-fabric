@@ -55,7 +55,7 @@ module "gcp-example-dns-private-zone" {
     module.landing-trusted-vpc.self_link
   ]
   recordsets = {
-    "A localhost" = { type = "A", ttl = 300, records = ["127.0.0.1"] }
+    "A localhost" = { records = ["127.0.0.1"] }
   }
 }
 
@@ -72,12 +72,12 @@ module "googleapis-private-zone" {
     module.landing-trusted-vpc.self_link
   ]
   recordsets = {
-    "A private" = { type = "A", ttl = 300, records = [
+    "A private" = { records = [
       "199.36.153.8", "199.36.153.9", "199.36.153.10", "199.36.153.11"
     ] }
-    "A restricted" = { type = "A", ttl = 300, records = [
+    "A restricted" = { records = [
       "199.36.153.4", "199.36.153.5", "199.36.153.6", "199.36.153.7"
     ] }
-    "CNAME *" = { type = "CNAME", ttl = 300, records = ["private.googleapis.com."] }
+    "CNAME *" = { records = ["private.googleapis.com."] }
   }
 }
