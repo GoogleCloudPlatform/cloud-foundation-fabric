@@ -15,9 +15,24 @@
  */
 
 locals {
-  recordsets = {
+  _recordsets = {
     for key, attrs in var.recordsets :
     key => merge(attrs, zipmap(["type", "name"], split(" ", key)))
+  }
+  geo_recordsets = {
+    for k, v in local._recordsets :
+    k => v
+    if v.geo_routing != null
+  }
+  recordsets = {
+    for k, v in local._recordsets :
+    k => v
+    if v.records != null
+  }
+  wrr_recordsets = {
+    for k, v in local._recordsets :
+    k => v
+    if v.wrr_routing != null
   }
   zone = (
     var.zone_create
@@ -166,6 +181,87 @@ resource "google_dns_record_set" "cloud-static-records" {
   type    = each.value.type
   ttl     = each.value.ttl
   rrdatas = each.value.records
+
+  depends_on = [
+    google_dns_managed_zone.non-public, google_dns_managed_zone.public
+  ]
+}
+
+resource "google_dns_record_set" "cloud-geo-records" {
+  for_each = (
+    var.type == "public" || var.type == "private"
+    ? local.geo_recordsets
+    : {}
+  )
+  project      = var.project_id
+  managed_zone = var.name
+  name = (
+    each.value.name == ""
+    ? var.domain
+    : (
+      substr(each.value.name, -1, 1) == "."
+      ? each.value.name
+      : "${each.value.name}.${var.domain}"
+    )
+  )
+  type = each.value.type
+  ttl  = each.value.ttl
+
+  dynamic "routing_policy" {
+    for_each = each.value.geo_routing != null ? [1] : [0]
+    iterator = unused
+    content {
+      dynamic "geo" {
+        for_each = each.value.geo_routing
+        iterator = policy
+        content {
+          location = policy.value.location
+          rrdatas  = policy.value.records
+        }
+      }
+    }
+  }
+
+  depends_on = [
+    google_dns_managed_zone.non-public, google_dns_managed_zone.public
+  ]
+}
+
+resource "google_dns_record_set" "cloud-wrr-records" {
+  for_each = (
+    var.type == "public" || var.type == "private"
+    ? local.wrr_recordsets
+    : {}
+  )
+  project      = var.project_id
+  managed_zone = var.name
+  name = (
+    each.value.name == ""
+    ? var.domain
+    : (
+      substr(each.value.name, -1, 1) == "."
+      ? each.value.name
+      : "${each.value.name}.${var.domain}"
+    )
+  )
+  type = each.value.type
+  ttl  = each.value.ttl
+
+  dynamic "routing_policy" {
+    for_each = each.value.wrr_routing != null ? [1] : [0]
+    iterator = unused
+    content {
+      dynamic "wrr" {
+        for_each = each.value.wrr_routing
+        iterator = policy
+        content {
+          weight  = policy.value.weight
+          rrdatas = policy.value.records
+        }
+      }
+    }
+  }
+
   depends_on = [
     google_dns_managed_zone.non-public, google_dns_managed_zone.public
   ]

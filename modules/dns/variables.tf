@@ -45,7 +45,9 @@ variable "dnssec_config" {
       { algorithm = "rsasha256", key_length = 1024 }
     )
   })
-  default = null
+  default = {
+    state = "off"
+  }
 }
 
 variable "domain" {
@@ -86,16 +88,34 @@ variable "recordsets" {
   description = "Map of DNS recordsets in \"type name\" => {ttl, [records]} format."
   type = map(object({
     ttl     = optional(number, 300)
-    records = list(string)
+    records = optional(list(string))
+    geo_routing = optional(list(object({
+      location = string
+      records  = list(string)
+    })))
+    wrr_routing = optional(list(object({
+      weight  = number
+      records = list(string)
+    })))
   }))
   default  = {}
   nullable = false
   validation {
     condition = alltrue([
-      for k, v in var.recordsets == null ? {} : var.recordsets :
+      for k, v in coalesce(var.recordsets, {}) :
       length(split(" ", k)) == 2
     ])
     error_message = "Recordsets must have keys in the format \"type name\"."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in coalesce(var.recordsets, {}) : (
+        (v.records != null && v.wrr_routing == null && v.geo_routing == null) ||
+        (v.records == null && v.wrr_routing != null && v.geo_routing == null) ||
+        (v.records == null && v.wrr_routing == null && v.geo_routing != null)
+      )
+    ])
+    error_message = "Only one of records, wrr_routing or geo_routing can be defined for each recordset."
   }
 }
 
