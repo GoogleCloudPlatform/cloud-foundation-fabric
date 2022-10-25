@@ -12,13 +12,13 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 def test_private(plan_runner):
   "Test private zone with three recordsets."
   _, resources = plan_runner()
-  assert len(resources) == 5
-  assert set(r['type'] for r in resources) == set([
-      'google_dns_record_set', 'google_dns_managed_zone'
-  ])
+  assert len(resources) == 7
+  assert set(r['type'] for r in resources) == set(
+      ['google_dns_record_set', 'google_dns_managed_zone'])
   for r in resources:
     if r['type'] != 'google_dns_managed_zone':
       continue
@@ -29,14 +29,53 @@ def test_private(plan_runner):
 def test_private_recordsets(plan_runner):
   "Test recordsets in private zone."
   _, resources = plan_runner()
-  recordsets = [r['values']
-                for r in resources if r['type'] == 'google_dns_record_set']
+  recordsets = [
+      r['values'] for r in resources if r['type'] == 'google_dns_record_set'
+  ]
+
   assert set(r['name'] for r in recordsets) == set([
-      'localhost.test.example.',
-      'local-host.test.example.',
-      '*.test.example.',
-      "test.example."
+      'localhost.test.example.', 'local-host.test.example.', '*.test.example.',
+      "test.example.", "geo.test.example.", "wrr.test.example."
   ])
+
+  for r in recordsets:
+    if r['name'] not in ['wrr.test.example.', 'geo.test.example.']:
+      assert r['routing_policy'] == []
+      assert r['rrdatas'] != []
+
+  geo_zone = [
+      r['values'] for r in resources if r['address'] ==
+      'module.test.google_dns_record_set.cloud-geo-records["A geo"]'
+  ][0]
+  assert geo_zone['name'] == 'geo.test.example.'
+  assert geo_zone['routing_policy'][0]['wrr'] == []
+  assert geo_zone['routing_policy'][0]['geo'] == [{
+      'location': 'europe-west1',
+      'rrdatas': ['127.0.0.4']
+  }, {
+      'location': 'europe-west2',
+      'rrdatas': ['127.0.0.5']
+  }, {
+      'location': 'europe-west3',
+      'rrdatas': ['127.0.0.6']
+  }]
+
+  wrr_zone = [
+      r['values'] for r in resources if r['address'] ==
+      'module.test.google_dns_record_set.cloud-wrr-records["A wrr"]'
+  ][0]
+  assert wrr_zone['name'] == 'wrr.test.example.'
+  assert wrr_zone['routing_policy'][0]['wrr'] == [{
+      'rrdatas': ['127.0.0.7'],
+      'weight': 0.6
+  }, {
+      'rrdatas': ['127.0.0.8'],
+      'weight': 0.2
+  }, {
+      'rrdatas': ['10.10.0.9'],
+      'weight': 0.2
+  }]
+  assert wrr_zone['routing_policy'][0]['geo'] == []
 
 
 def test_private_no_networks(plan_runner):
@@ -60,26 +99,31 @@ def test_forwarding_recordsets_null_forwarders(plan_runner):
 
 def test_forwarding(plan_runner):
   "Test forwarding zone with single forwarder."
-  _, resources = plan_runner(
-      type='forwarding', recordsets='null',
-      forwarders='{ "1.2.3.4" = null }')
+  _, resources = plan_runner(type='forwarding', recordsets='null',
+                             forwarders='{ "1.2.3.4" = null }')
   assert len(resources) == 1
   resource = resources[0]
   assert resource['type'] == 'google_dns_managed_zone'
-  assert resource['values']['forwarding_config'] == [{'target_name_servers': [
-      {'forwarding_path': '', 'ipv4_address': '1.2.3.4'}]}]
+  assert resource['values']['forwarding_config'] == [{
+      'target_name_servers': [{
+          'forwarding_path': '',
+          'ipv4_address': '1.2.3.4'
+      }]
+  }]
 
 
 def test_peering(plan_runner):
   "Test peering zone."
-  _, resources = plan_runner(type='peering',
-                             recordsets='null',
+  _, resources = plan_runner(type='peering', recordsets='null',
                              peer_network='dummy-vpc-self-link')
   assert len(resources) == 1
   resource = resources[0]
   assert resource['type'] == 'google_dns_managed_zone'
-  assert resource['values']['peering_config'] == [
-      {'target_network': [{'network_url': 'dummy-vpc-self-link'}]}]
+  assert resource['values']['peering_config'] == [{
+      'target_network': [{
+          'network_url': 'dummy-vpc-self-link'
+      }]
+  }]
 
 
 def test_public(plan_runner):

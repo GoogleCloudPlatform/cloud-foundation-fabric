@@ -50,7 +50,7 @@ resource "google_sql_user" "service-account" {
   for_each = toset(var.data_eng_principals)
   project  = module.project.project_id
   # Omit the .gserviceaccount.com suffix in the email
-  name     = regex("(.+)(gserviceaccount)", module.service-account-sql.email)[0]
+  name     = regex("(.+)(.gserviceaccount)", module.service-account-sql.email)[0]
   instance = module.db.name
   type     = "CLOUD_IAM_SERVICE_ACCOUNT"
 }
