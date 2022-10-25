@@ -47,7 +47,7 @@ output "command_01_gcs" {
 
 output "command_02_dataflow" {
   description = "Command to run Dataflow template impersonating the service account."
-  value = templatefile("${path.module}/dataflow.tftpl", {
+  value = templatefile("${path.module}/templates/dataflow.tftpl", {
     sa_orch_email    = module.service-account-orch.email
     project_id       = module.project.project_id
     region           = var.region
@@ -68,7 +68,7 @@ output "command_02_dataflow" {
 
 output "command_03_bq" {
   description = "BigQuery command to query imported data."
-  value = templatefile("${path.module}/bigquery.tftpl", {
+  value = templatefile("${path.module}/templates/bigquery.tftpl", {
     project_id       = module.project.project_id
     bigquery_dataset = module.bigquery-dataset.dataset_id
     bigquery_table   = module.bigquery-dataset.tables["person"].table_id
