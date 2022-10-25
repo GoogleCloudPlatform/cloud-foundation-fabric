@@ -163,6 +163,9 @@ def main(event, context=None):
   l4_forwarding_rules_dict = ilb_fwrules.get_forwarding_rules_dict(config, "L4")
   l7_forwarding_rules_dict = ilb_fwrules.get_forwarding_rules_dict(config, "L7")
   subnet_range_dict = networks.get_subnet_ranges_dict(config)
+  static_routes_dict = routes.get_static_routes_dict(config)
+  dynamic_routes_dict = routes.get_dynamic_routes(
+      config, metrics_dict, limits_dict['dynamic_routes_per_network_limit'])
 
   try:
 
@@ -181,10 +184,12 @@ def main(event, context=None):
     ilb_fwrules.get_forwarding_rules_data(
         config, metrics_dict, l7_forwarding_rules_dict,
         limits_dict['internal_forwarding_rules_l7_limit'], "L7")
+
+    routes.get_static_routes_data(config, metrics_dict, static_routes_dict,
+                                  project_quotas_dict)
+
     peerings.get_vpc_peering_data(config, metrics_dict,
                                   limits_dict['number_of_vpc_peerings_limit'])
-    dynamic_routes_dict = routes.get_dynamic_routes(
-        config, metrics_dict, limits_dict['dynamic_routes_per_network_limit'])
 
     # Per VPC peering group metrics
     metrics.get_pgg_data(
@@ -207,7 +212,13 @@ def main(event, context=None):
         ["subnet_ranges_per_peering_group"], subnet_range_dict,
         config["limit_names"]["SUBNET_RANGES"],
         limits_dict['number_of_subnet_IP_ranges_ppg_limit'])
-    routes.get_dynamic_routes_ppg(
+    #static
+    routes.get_routes_ppg(
+        config, metrics_dict["metrics_per_peering_group"]
+        ["static_routes_per_peering_group"], static_routes_dict,
+        limits_dict['static_routes_per_peering_group_limit'])
+    #dynamic
+    routes.get_routes_ppg(
         config, metrics_dict["metrics_per_peering_group"]
         ["dynamic_routes_per_peering_group"], dynamic_routes_dict,
         limits_dict['dynamic_routes_per_peering_group_limit'])

@@ -13,7 +13,7 @@ They are meant to be used as minimal but complete starting points to create actu
 
 ### Cloud Storage to Bigquery with Cloud Dataflow with least privileges
 
-<a href="./gcs-to-bq-with-least-privileges/" title="Cloud Storage to Bigquery with Cloud Dataflow with least privileges"><img src="./gcs-to-bq-with-least-privileges/diagram.png" align="left" width="280px"></a> This [blueprint](./gcs-to-bq-with-least-privileges/) implements resources required to run GCS to BigQuery Dataflow pipelines. The solution rely on a set of Services account created with the least privileges principle.
+<a href="./gcs-to-bq-with-least-privileges/" title="Cloud Storage to Bigquery with Cloud Dataflow with least privileges"><img src="./gcs-to-bq-with-least-privileges/images/diagram.png" align="left" width="280px"></a> This [blueprint](./gcs-to-bq-with-least-privileges/) implements resources required to run GCS to BigQuery Dataflow pipelines. The solution rely on a set of Services account created with the least privileges principle.
 <br clear="left">
 
 ### Data Platform Foundations

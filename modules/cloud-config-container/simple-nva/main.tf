@@ -21,7 +21,7 @@ locals {
     network_interfaces   = local.network_interfaces
   }))
 
-  files = {
+  files = merge({
     "/var/run/nva/ipprefix_by_netmask.sh" = {
       content     = file("${path.module}/files/ipprefix_by_netmask.sh")
       owner       = "root"
@@ -32,7 +32,13 @@ locals {
       owner       = "root"
       permissions = "0744"
     }
-  }
+    }, {
+    for path, attrs in var.files : path => {
+      content     = attrs.content,
+      owner       = attrs.owner,
+      permissions = attrs.permissions
+    }
+  })
 
   network_interfaces = [
     for index, interface in var.network_interfaces : {
