@@ -15,10 +15,27 @@
  */
 
 locals {
-  _recordsets = {
+  # split record name and type and set as keys in a map
+  _recordsets_0 = {
     for key, attrs in var.recordsets :
     key => merge(attrs, zipmap(["type", "name"], split(" ", key)))
   }
+  # compute the final resource name for the recordset
+  _recordsets = {
+    for key, attrs in local._recordsets_0 :
+    key => merge(attrs, {
+      resource_name = (
+        attrs.name == ""
+        ? var.domain
+        : (
+          substr(attrs.name, -1, 1) == "."
+          ? attrs.name
+          : "${attrs.name}.${var.domain}."
+        )
+      )
+    })
+  }
+  # split recordsets between regular, geo and wrr
   geo_recordsets = {
     for k, v in local._recordsets :
     k => v
@@ -169,18 +186,10 @@ resource "google_dns_record_set" "cloud-static-records" {
   )
   project      = var.project_id
   managed_zone = var.name
-  name = (
-    each.value.name == ""
-    ? var.domain
-    : (
-      substr(each.value.name, -1, 1) == "."
-      ? each.value.name
-      : "${each.value.name}.${var.domain}"
-    )
-  )
-  type    = each.value.type
-  ttl     = each.value.ttl
-  rrdatas = each.value.records
+  name         = each.value.resource_name
+  type         = each.value.type
+  ttl          = each.value.ttl
+  rrdatas      = each.value.records
 
   depends_on = [
     google_dns_managed_zone.non-public, google_dns_managed_zone.public
@@ -195,17 +204,9 @@ resource "google_dns_record_set" "cloud-geo-records" {
   )
   project      = var.project_id
   managed_zone = var.name
-  name = (
-    each.value.name == ""
-    ? var.domain
-    : (
-      substr(each.value.name, -1, 1) == "."
-      ? each.value.name
-      : "${each.value.name}.${var.domain}"
-    )
-  )
-  type = each.value.type
-  ttl  = each.value.ttl
+  name         = each.value.resource_name
+  type         = each.value.type
+  ttl          = each.value.ttl
 
   dynamic "routing_policy" {
     for_each = each.value.geo_routing != null ? [1] : [0]
@@ -235,17 +236,9 @@ resource "google_dns_record_set" "cloud-wrr-records" {
   )
   project      = var.project_id
   managed_zone = var.name
-  name = (
-    each.value.name == ""
-    ? var.domain
-    : (
-      substr(each.value.name, -1, 1) == "."
-      ? each.value.name
-      : "${each.value.name}.${var.domain}"
-    )
-  )
-  type = each.value.type
-  ttl  = each.value.ttl
+  name         = each.value.resource_name
+  type         = each.value.type
+  ttl          = each.value.ttl
 
   dynamic "routing_policy" {
     for_each = each.value.wrr_routing != null ? [1] : [0]
