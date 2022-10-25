@@ -36,3 +36,4 @@ examples/cloud-operations/adfs/ansible/vars/vars.yaml
 examples/cloud-operations/adfs/ansible/gssh.sh
 examples/cloud-operations/multi-cluster-mesh-gke-fleet-api/ansible/vars.yaml
 examples/cloud-operations/multi-cluster-mesh-gke-fleet-api/ansible/gssh.sh
+blueprints/cloud-operations/network-dashboard/cloud-function.zip
