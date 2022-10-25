@@ -46,22 +46,32 @@ The Cloud Function currently tracks usage, limit and utilization of:
 - internal forwarding rules for internal L7 load balancers per VPC
 - internal forwarding rules for internal L4 load balancers per VPC peering group
 - internal forwarding rules for internal L7 load balancers per VPC peering group
-- Dynamic routes per VPC
-- Dynamic routes per VPC peering group
+- Dynamic routes per VPC 
+- Dynamic routes per VPC peering group 
+- Static routes per project (VPC drill down is available for usage)
+- Static routes per VPC peering group 
 - IP utilization per subnet (% of IP addresses used in a subnet)
 - VPC firewall rules per project (VPC drill down is available for usage)
 - Tuples per Firewall Policy
 
 It writes this values to custom metrics in Cloud Monitoring and creates a dashboard to visualize the current utilization of these metrics in Cloud Monitoring.
 
-Note that metrics are created in the cloud-function/metrics.yaml file.
+Note that metrics are created in the cloud-function/metrics.yaml file. You can also edit default limits for a specific network in that file. See the example for `vpc_peering_per_network`.
 
-You can also edit default limits for a specific network in that file. See the example for `vpc_peering_per_network`.
+## Assumptions and limitations
+- The CF assumes that all VPCs in peering groups are within the same organization, except for PSA peerings
+- The CF will only fetch subnet utilization data from the PSA peerings (not the VMs, ILB or routes usage)
+- The CF assumes global routing is ON, this impacts dynamic routes usage calculation
+- The CF assumes custom routes importing/exporting is ON, this impacts static and dynamic routes usage calculation
+- The CF assumes all networks in peering groups have the same global routing and custom routes sharing configuration
+
 
 ## Next steps and ideas
 In a future release, we could support:
-- Static routes per VPC / per VPC peering group
 - Google managed VPCs that are peered with PSA (such as Cloud SQL or Memorystore)
+- Dynamic routes calculation for VPCs/PPGs with "global routing" set to OFF
+- Static routes calculation for projects/PPGs with "custom routes importing/exporting" set to OFF
+- Calculations for cross Organization peering groups
 
 If you are interested in this and/or would like to contribute, please contact legranda@google.com.
 <!-- BEGIN TFDOC -->

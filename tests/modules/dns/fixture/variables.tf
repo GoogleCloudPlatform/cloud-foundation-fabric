@@ -32,15 +32,27 @@ variable "peer_network" {
 }
 
 variable "recordsets" {
-  type = map(object({
-    ttl     = number
-    records = list(string)
-  }))
+  type = any
   default = {
     "A localhost"                = { ttl = 300, records = ["127.0.0.1"] }
     "A local-host.test.example." = { ttl = 300, records = ["127.0.0.2"] }
     "CNAME *"                    = { ttl = 300, records = ["localhost.example.org."] }
     "A "                         = { ttl = 300, records = ["127.0.0.3"] }
+    "A geo" = {
+      geo_routing = [
+        { location = "europe-west1", records = ["127.0.0.4"] },
+        { location = "europe-west2", records = ["127.0.0.5"] },
+        { location = "europe-west3", records = ["127.0.0.6"] }
+      ]
+    }
+    "A wrr" = {
+      ttl = 600
+      wrr_routing = [
+        { weight = 0.6, records = ["127.0.0.7"] },
+        { weight = 0.2, records = ["127.0.0.8"] },
+        { weight = 0.2, records = ["10.10.0.9"] }
+      ]
+    }
   }
 }
 

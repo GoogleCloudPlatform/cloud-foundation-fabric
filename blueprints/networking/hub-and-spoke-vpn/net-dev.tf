@@ -63,7 +63,7 @@ module "dev-dns-zone" {
   domain          = "dev.example.com."
   client_networks = [module.landing-vpc.self_link]
   recordsets = {
-    "A localhost" = { ttl = 300, records = ["127.0.0.1"] }
-    "A test-r2"   = { ttl = 300, records = [module.dev-r2-vm.internal_ip] }
+    "A localhost" = { records = ["127.0.0.1"] }
+    "A test-r2"   = { records = [module.dev-r2-vm.internal_ip] }
   }
 }
