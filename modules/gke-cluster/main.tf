@@ -41,7 +41,7 @@ resource "google_container_cluster" "cluster" {
   initial_node_count       = 1
   remove_default_node_pool = var.enable_features.autopilot ? null : true
   datapath_provider = (
-    var.enable_features.dataplane_v2
+    var.enable_features.dataplane_v2 || var.enable_features.autopilot
     ? "ADVANCED_DATAPATH"
     : "DATAPATH_PROVIDER_UNSPECIFIED"
   )
