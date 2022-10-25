@@ -62,3 +62,8 @@ This [blueprint](./onprem-sa-key-management) shows how to manage IAM Service Acc
 <a href="./unmanaged-instances-healthcheck" title="Unmanaged GCE Instance healthchecker"><img src="./unmanaged-instances-healthcheck/diagram.png" align="left" width="280px"></a> This [blueprint](./unmanaged-instances-healthcheck) shows how to leverage [Serverless VPC Access](https://cloud.google.com/vpc/docs/configure-serverless-vpc-access) and Cloud Functions to organize a highly performant TCP healtheck for unmanaged GCE instances.
 
 <br clear="left">
+
+## Workload identity federation for Terraform Enterprise workflow
+<a href="./terraform-enterprise-wif" title="Workload identity federation for Terraform Cloud/Enterprise workflow"><img src="./terraform-enterprise-wif/diagram.png" align="left" width="280px"></a> This [blueprint](./terraform-enterprise-wif) shows how to configure [Wokload Identity Federation](https://cloud.google.com/iam/docs/workload-identity-federation) between [Terraform Cloud/Enterprise](https://developer.hashicorp.com/terraform/enterprise) instance and Google Cloud.
+
+<br clear="left">
