@@ -169,9 +169,9 @@ module "dns-gcp" {
   domain          = "gcp.example.org."
   client_networks = [module.vpc.self_link]
   recordsets = {
-    "A localhost" = { ttl = 300, records = ["127.0.0.1"] }
-    "A test-1"    = { ttl = 300, records = [module.vm-test1.internal_ip] }
-    "A test-2"    = { ttl = 300, records = [module.vm-test2.internal_ip] }
+    "A localhost" = { records = ["127.0.0.1"] }
+    "A test-1"    = { records = [module.vm-test1.internal_ip] }
+    "A test-2"    = { records = [module.vm-test2.internal_ip] }
   }
 }
 
@@ -183,9 +183,9 @@ module "dns-api" {
   domain          = "googleapis.com."
   client_networks = [module.vpc.self_link]
   recordsets = {
-    "CNAME *"      = { ttl = 300, records = ["private.googleapis.com."] }
-    "A private"    = { ttl = 300, records = local.vips.private }
-    "A restricted" = { ttl = 300, records = local.vips.restricted }
+    "CNAME *"      = { records = ["private.googleapis.com."] }
+    "A private"    = { records = local.vips.private }
+    "A restricted" = { records = local.vips.restricted }
   }
 }
 
