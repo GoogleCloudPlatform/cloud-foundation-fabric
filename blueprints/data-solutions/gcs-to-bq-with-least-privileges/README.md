@@ -60,8 +60,7 @@ __Note__: To grant a user a role, take a look at the [Granting and Revoking Acce
 
 Click on the button below, sign in if required and when the prompt appears, click on “confirm”.
 
-
-[![Open Cloudshell](images/shell_button.png)](https://goo.gle/GoDataPipe)
+[![Open Cloudshell](../../../assets/images/cloud-shell-button.png)](https://goo.gle/GoDataPipe)
 
 This will clone the repository to your cloud shell and a screen like this one will appear:
 
