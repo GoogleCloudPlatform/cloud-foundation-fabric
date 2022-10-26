@@ -1,20 +1,17 @@
 # Nginx-based reverse proxy cluster
 
-This blueprint shows how to deploy an autoscaling reverse proxy cluster using Nginx, based on regional
-Managed Instance Groups.
+This blueprint shows how to deploy an autoscaling reverse proxy cluster using Nginx, based on regional Managed Instance Groups.
 
 ![High-level diagram](reverse-proxy.png "High-level diagram")
 
-The autoscaling is driven by Nginx current connections metric, sent by Cloud Ops Agent. 
+The autoscaling is driven by Nginx current connections metric, sent by Cloud Ops Agent.
 
-The example is for Nginx, but it could be easily adapted to any other reverse proxy software (eg. 
-Squid, Varnish, etc).
+The example is for Nginx, but it could be easily adapted to any other reverse proxy software (eg. Squid, Varnish, etc).
 
 ## Ops Agent image
 
-There is a simple [`Dockerfile`](Dockerfile) available for building Ops Agent to be run
-inside the ContainerOS instance. Build the container, push it to your Container/Artifact
-Repository and set the `ops_agent_image` to point to the image you built.
+There is a simple [`Dockerfile`](Dockerfile) available for building Ops Agent to be run inside the ContainerOS instance. Build the container, push it to your Container/Artifact Repository and set the `ops_agent_image` to point to the image you built.
+
 <!-- BEGIN TFDOC -->
 
 ## Variables

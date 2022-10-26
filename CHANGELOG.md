@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#915](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/915)] TFE OIDC with GCP WIF blueprint added ([averbuks](https://github.com/averbuks)) <!-- 2022-10-25 19:06:43+00:00 -->
 - [[#899](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/899)] Static routes monitoring metrics added to network dashboard BP ([maunope](https://github.com/maunope)) <!-- 2022-10-25 11:36:39+00:00 -->
 - [[#909](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/909)] GCS2BQ: Move images and templates in sub-folders ([lcaggio](https://github.com/lcaggio)) <!-- 2022-10-25 08:31:25+00:00 -->
 - [[#907](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/907)] Fix CloudSQL blueprint ([lcaggio](https://github.com/lcaggio)) <!-- 2022-10-25 07:08:08+00:00 -->
@@ -67,6 +68,8 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#908](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/908)] GKE module: autopilot fixes ([ludoo](https://github.com/ludoo)) <!-- 2022-10-25 21:33:49+00:00 -->
+- [[#906](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/906)] GKE module: add managed_prometheus to features ([apichick](https://github.com/apichick)) <!-- 2022-10-25 21:18:50+00:00 -->
 - [[#916](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/916)] Add support for DNS routing policies ([juliocc](https://github.com/juliocc)) <!-- 2022-10-25 14:20:53+00:00 -->
 - [[#918](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/918)] Fix race condition in SimpleNVA ([sruffilli](https://github.com/sruffilli)) <!-- 2022-10-25 13:04:38+00:00 -->
 - [[#914](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/914)] **incompatible change:** Update DNS module ([juliocc](https://github.com/juliocc)) <!-- 2022-10-25 10:31:11+00:00 -->
@@ -102,6 +105,7 @@ All notable changes to this project will be documented in this file.
 
 ### TOOLS
 
+- [[#919](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/919)] Rename workflow names ([juliocc](https://github.com/juliocc)) <!-- 2022-10-25 15:22:51+00:00 -->
 - [[#902](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/902)] Bring back sorted variables check ([juliocc](https://github.com/juliocc)) <!-- 2022-10-20 17:08:17+00:00 -->
 - [[#887](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/887)] Disable parallel execution of tests and plugin cache ([ludoo](https://github.com/ludoo)) <!-- 2022-10-14 17:52:38+00:00 -->
 - [[#886](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/886)] Revert "Improve handling of tf plugin cache in tests" ([ludoo](https://github.com/ludoo)) <!-- 2022-10-14 17:35:31+00:00 -->
