@@ -21,7 +21,13 @@ module "cluster-1-nodepool-1" {
 
 ### Internally managed service account
 
-To have the module auto-create a service account for the nodes, define the `service_account` variable without setting its `email` attribute. You can then specify service account scopes, or use the default. The service account resource and email (in both plain and IAM formats) are then available in outputs to assign IAM roles from your own code.
+There are three different approaches to defining the nodes service account, all depending on the `service_account` variable where the `create` attribute controls creation of a new service account by this module, and the `email` attribute controls the actual service account to use.
+
+If you create a new service account, its resource and email (in both plain and IAM formats) are then available in outputs to reference it in other modules or resources.
+
+#### GCE default service account
+
+To use the GCE default service account, you can ignore the variable which is equivalent to `{ create = null, email = null }`.
 
 ```hcl
 module "cluster-1-nodepool-1" {
@@ -30,7 +36,44 @@ module "cluster-1-nodepool-1" {
   cluster_name    = "cluster-1"
   location        = "europe-west1-b"
   name            = "nodepool-1"
-  service_account = {}
+}
+# tftest modules=1 resources=1
+```
+
+#### Externally defined service account
+
+To use an existing service account, pass in just the `email` attribute.
+
+```hcl
+module "cluster-1-nodepool-1" {
+  source          = "./fabric/modules/gke-nodepool"
+  project_id      = "myproject"
+  cluster_name    = "cluster-1"
+  location        = "europe-west1-b"
+  name            = "nodepool-1"
+  service_account = {
+    email = "foo-bar@myproject.iam.gserviceaccount.com"
+  }
+}
+# tftest modules=1 resources=1
+```
+
+#### Auto-created service account
+
+To have the module create a service account, set the `create` attribute to `true` and optionally pass the desired account id in `email`.
+
+```hcl
+module "cluster-1-nodepool-1" {
+  source          = "./fabric/modules/gke-nodepool"
+  project_id      = "myproject"
+  cluster_name    = "cluster-1"
+  location        = "europe-west1-b"
+  name            = "nodepool-1"
+  service_account = {
+    create = true
+    # optional
+    email = "spam-eggs"
+  }
 }
 # tftest modules=1 resources=2
 ```
@@ -53,10 +96,10 @@ module "cluster-1-nodepool-1" {
 | [nodepool_config](variables.tf#L109) | Nodepool-level configuration. | <code title="object&#40;&#123;&#10;  autoscaling &#61; optional&#40;object&#40;&#123;&#10;    location_policy &#61; optional&#40;string&#41;&#10;    max_node_count  &#61; optional&#40;number&#41;&#10;    min_node_count  &#61; optional&#40;number&#41;&#10;    use_total_nodes &#61; optional&#40;bool, false&#41;&#10;  &#125;&#41;&#41;&#10;  management &#61; optional&#40;object&#40;&#123;&#10;    auto_repair  &#61; optional&#40;bool&#41;&#10;    auto_upgrade &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;&#10;  upgrade_settings &#61; optional&#40;object&#40;&#123;&#10;    max_surge       &#61; number&#10;    max_unavailable &#61; number&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [pod_range](variables.tf#L131) | Pod secondary range configuration. | <code title="object&#40;&#123;&#10;  secondary_pod_range &#61; object&#40;&#123;&#10;    cidr   &#61; optional&#40;string&#41;&#10;    create &#61; optional&#40;bool&#41;&#10;    name   &#61; string&#10;  &#125;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [reservation_affinity](variables.tf#L148) | Configuration of the desired reservation which instances could take capacity from. | <code title="object&#40;&#123;&#10;  consume_reservation_type &#61; string&#10;  key                      &#61; optional&#40;string&#41;&#10;  values                   &#61; optional&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [service_account](variables.tf#L158) | Nodepool service account. If this variable is set to null, the default GCE service account will be used. If set and email is null, a service account will be created. If scopes are null a default will be used. | <code title="object&#40;&#123;&#10;  email        &#61; optional&#40;string&#41;&#10;  oauth_scopes &#61; optional&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [sole_tenant_nodegroup](variables.tf#L167) | Sole tenant node group. | <code>string</code> |  | <code>null</code> |
-| [tags](variables.tf#L173) | Network tags applied to nodes. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
-| [taints](variables.tf#L179) | Kubernetes taints applied to all nodes. | <code title="list&#40;object&#40;&#123;&#10;  key    &#61; string&#10;  value  &#61; string&#10;  effect &#61; string&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
+| [service_account](variables.tf#L158) | Nodepool service account. If this variable is set to null, the default GCE service account will be used. If set and email is null, a service account will be created. If scopes are null a default will be used. | <code title="object&#40;&#123;&#10;  create       &#61; optional&#40;bool, false&#41;&#10;  email        &#61; optional&#40;string, null&#41;&#10;  oauth_scopes &#61; optional&#40;list&#40;string&#41;, null&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [sole_tenant_nodegroup](variables.tf#L169) | Sole tenant node group. | <code>string</code> |  | <code>null</code> |
+| [tags](variables.tf#L175) | Network tags applied to nodes. | <code>list&#40;string&#41;</code> |  | <code>null</code> |
+| [taints](variables.tf#L181) | Kubernetes taints applied to all nodes. | <code title="list&#40;object&#40;&#123;&#10;  key    &#61; string&#10;  value  &#61; string&#10;  effect &#61; string&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
