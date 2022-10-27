@@ -21,7 +21,46 @@ module "cluster-1-nodepool-1" {
 
 ### Internally managed service account
 
-To have the module auto-create a service account for the nodes, define the `service_account` variable without setting its `email` attribute. You can then specify service account scopes, or use the default. The service account resource and email (in both plain and IAM formats) are then available in outputs to assign IAM roles from your own code.
+There are three different approaches to defining the nodes service account, all depending on the `service_account` variable where the `create` attribute controls creation of a new service account by this module, and the `email` attribute controls the actual service account to use.
+
+If you create a new service account, its resource and email (in both plain and IAM formats) are then available in outputs to reference it in other modules or resources.
+
+#### GCE default service account
+
+To use the GCE default service account, you can ignore the variable which is equivalent to `{ create = null, email = null }`.
+
+```hcl
+module "cluster-1-nodepool-1" {
+  source          = "./fabric/modules/gke-nodepool"
+  project_id      = "myproject"
+  cluster_name    = "cluster-1"
+  location        = "europe-west1-b"
+  name            = "nodepool-1"
+}
+# tftest modules=1 resources=1
+```
+
+#### Externally defined service account
+
+To use an existing service account, pass in just the `email` attribute.
+
+```hcl
+module "cluster-1-nodepool-1" {
+  source          = "./fabric/modules/gke-nodepool"
+  project_id      = "myproject"
+  cluster_name    = "cluster-1"
+  location        = "europe-west1-b"
+  name            = "nodepool-1"
+  service_account = {
+    email = "foo-bar@myproject.iam.gserviceaccount.com"
+  }
+}
+# tftest modules=1 resources=1
+```
+
+#### Auto-created service account
+
+To have the module create a service account, set the `create` attribute to `true` and optionally pass the desired account id in `email`.
 
 ```hcl
 module "cluster-1-nodepool-1" {
@@ -32,6 +71,8 @@ module "cluster-1-nodepool-1" {
   name            = "nodepool-1"
   service_account = {
     create = true
+    # optional
+    email = "spam-eggs"
   }
 }
 # tftest modules=1 resources=2

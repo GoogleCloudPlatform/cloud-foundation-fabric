@@ -57,9 +57,13 @@ locals {
 }
 
 resource "google_service_account" "service_account" {
-  count        = var.service_account.create ? 1 : 0
-  project      = var.project_id
-  account_id   = "tf-gke-${var.name}"
+  count   = var.service_account.create ? 1 : 0
+  project = var.project_id
+  account_id = (
+    var.service_account.email != null
+    ? split("@", var.service_account.email)[0]
+    : "tf-gke-${var.name}"
+  )
   display_name = "Terraform GKE ${var.cluster_name} ${var.name}."
 }
 
