@@ -257,7 +257,9 @@ module "cluster_1_nodepool" {
   location        = "europe-west1"
   name            = "nodepool"
   node_count      = { initial = 1 }
-  service_account = {}
+  service_account = {
+    create = true
+  }
   tags            = ["cluster-1-node"]
 }
 

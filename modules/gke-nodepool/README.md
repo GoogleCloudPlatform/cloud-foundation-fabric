@@ -30,7 +30,9 @@ module "cluster-1-nodepool-1" {
   cluster_name    = "cluster-1"
   location        = "europe-west1-b"
   name            = "nodepool-1"
-  service_account = {}
+  service_account = {
+    create = true
+  }
 }
 # tftest modules=1 resources=2
 ```
