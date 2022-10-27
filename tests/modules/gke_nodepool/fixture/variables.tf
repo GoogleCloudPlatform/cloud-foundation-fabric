@@ -65,9 +65,9 @@ variable "reservation_affinity" {
   default = null
 }
 
-variable "service_account" {
-  type    = any
-  default = null
+variable "service_account_create" {
+  type    = bool
+  default = false
 }
 
 variable "sole_tenant_nodegroup" {

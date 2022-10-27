@@ -21,9 +21,9 @@ def test_defaults(plan_runner):
 
 
 def test_service_account(plan_runner):
-  _, resources = plan_runner(service_account='{email="foo@example.org"}')
+  _, resources = plan_runner()
   assert len(resources) == 1
-  _, resources = plan_runner(service_account='{}')
+  _, resources = plan_runner(service_account_create='true')
   assert len(resources) == 2
   assert 'google_service_account' in [r['type'] for r in resources]
 

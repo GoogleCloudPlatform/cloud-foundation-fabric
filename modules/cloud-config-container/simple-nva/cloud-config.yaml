@@ -22,17 +22,37 @@ write_files:
     content: |
       ${indent(6, data.content)}
 %{ endfor }
+  - path: /etc/systemd/system/routing.service
+    permissions: 0644
+    owner: root
+    content: |
+      [Install]
+      WantedBy=multi-user.target
+      [Unit]
+      Description=Start routing
+      After=network-online.target
+      Wants=network-online.target
+      [Service]
+      ExecStart=/bin/sh -c "/var/run/nva/start-routing.sh"
+  - path: /var/run/nva/start-routing.sh
+    permissions: 0744
+    owner: root
+    content: |
+      iptables --policy FORWARD ACCEPT
+%{ for interface in network_interfaces ~}
+%{ if enable_health_checks ~}
+      /var/run/nva/policy_based_routing.sh ${interface.name}
+%{ endif ~}
+%{ for route in interface.routes ~}
+      ip route add ${route} via `curl http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/${interface.number}/gateway -H "Metadata-Flavor:Google"` dev ${interface.name}
+%{ endfor ~}
+%{ endfor ~}
 
 bootcmd:
   - systemctl start node-problem-detector
 
 runcmd:
-  - iptables --policy FORWARD ACCEPT
-%{ for interface in network_interfaces ~}
-%{ if enable_health_checks ~}
-  - /var/run/nva/policy_based_routing.sh ${interface.name}
-%{ endif ~}
-%{ for route in interface.routes ~}
-  - ip route add ${route} via `curl http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/${interface.number}/gateway -H "Metadata-Flavor:Google"` dev ${interface.name}
-%{ endfor ~}
-%{ endfor ~}
+  - systemctl daemon-reload
+  - systemctl enable routing
+  - systemctl start routing
+  

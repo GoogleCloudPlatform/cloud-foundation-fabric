@@ -28,3 +28,10 @@ variable "enable_features" {
     workload_identity = true
   }
 }
+
+variable "monitoring_config" {
+  type = any
+  default = {
+    managed_prometheus = true
+  }
+}
