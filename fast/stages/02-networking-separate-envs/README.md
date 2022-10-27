@@ -69,6 +69,13 @@ DNS often goes hand in hand with networking, especially on GCP where Cloud DNS z
 
 - on-prem to cloud via private zones for cloud-managed domains, and an [inbound policy](https://cloud.google.com/dns/docs/server-policies-overview#dns-server-policy-in) used as forwarding target or via delegation (requires some extra configuration) from on-prem DNS resolvers
 - cloud to on-prem via forwarding zones for the on-prem managed domains
+- Private Google Access is enabled for a selection of the [supported domains](https://cloud.google.com/vpc/docs/configure-private-google-access#domain-options), namely
+  - `private.googleapis.com`
+  - `restricted.googleapis.com`
+  - `gcr.io`
+  - `packages.cloud.google.com`
+  - `pkg.dev`
+  - `pki.goog`
 
 To complete the configuration, the 35.199.192.0/19 range should be routed on the VPN tunnels from on-prem, and the following names configured for DNS forwarding to cloud:
 

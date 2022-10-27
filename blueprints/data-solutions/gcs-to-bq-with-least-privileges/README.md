@@ -23,7 +23,7 @@ Whether you’re transferring from another Cloud Service Provider or you’re ta
 
 ## Architecture
 
-![GCS to BigQuery High-level diagram](diagram.png "GCS to BigQuery High-level diagram")
+![GCS to BigQuery High-level diagram](images/diagram.png "GCS to BigQuery High-level diagram")
 
 The main components that we would be setting up are (to learn more about these products, click on the hyperlinks):
 
@@ -60,12 +60,11 @@ __Note__: To grant a user a role, take a look at the [Granting and Revoking Acce
 
 Click on the button below, sign in if required and when the prompt appears, click on “confirm”.
 
-
-[![Open Cloudshell](shell_button.png)](https://goo.gle/GoDataPipe)
+[![Open Cloudshell](../../../assets/images/cloud-shell-button.png)](https://goo.gle/GoDataPipe)
 
 This will clone the repository to your cloud shell and a screen like this one will appear:
 
-![cloud_shell](cloud_shell.png)
+![cloud_shell](images/cloud_shell.png)
 
 Before you deploy the architecture, make sure you run the following command to move your cloudshell session into your service project:
 
@@ -87,7 +86,7 @@ Before we deploy the architecture, you will need the following information:
 
 2. In the editor, edit the terraform.tfvars.sample file with the variables you gathered in the step above.
 
-![editor](editor.png)
+![editor](images/editor.png)
 
 * a. Fill in __data_eng_principals__ with the list of Users or Groups to impersonate service accounts.
 
@@ -105,7 +104,7 @@ Before we deploy the architecture, you will need the following information:
 
 The resource creation will take a few minutes, at the end this is the output you should expect for successful completion along with a list of the created resources:
 
-![output](output.png)
+![output](images/output.png)
 
 __Congratulations!__ You have successfully deployed the foundation for running your first ETL pipeline on Google Cloud.
 
@@ -146,13 +145,13 @@ Once this is done, the 3 files necessary to run the Dataflow Job will have been 
 
 Run the following command to start the dataflow job:
 
-        gcloud --impersonate-service-account=orchestrator@$SERVICE_PROJECT_ID.iam.gserviceaccount.com dataflow jobs run test_batch_01 \
+    gcloud --impersonate-service-account=orchestrator@$SERVICE_PROJECT_ID.iam.gserviceaccount.com dataflow jobs run test_batch_01 \
     --gcs-location gs://dataflow-templates/latest/GCS_Text_to_BigQuery \
     --project $SERVICE_PROJECT_ID \
     --region europe-west1 \
     --disable-public-ips \
     --subnetwork https://www.googleapis.com/compute/v1/projects/$SERVICE_PROJECT_ID/regions/europe-west1/subnetworks/subnet \
-    --staging-location gs://$PREFIX-df-tmp\
+    --staging-location gs://$PREFIX-df-tmp \
     --service-account-email df-loading@$SERVICE_PROJECT_ID.iam.gserviceaccount.com \
     --parameters \
     javascriptTextTransformFunctionName=transform,\
@@ -168,16 +167,16 @@ This command will start a dataflow job called test_batch_01 that uses a Dataflow
 
 The expected output is the following:
 
-![second_output](second_output.png)
+![second_output](images/second_output.png)
 
 Then, if you navigate to Dataflow on the console, you will see the following:
 
-![dataflow_console](dataflow_console.png)
+![dataflow_console](images/dataflow_console.png)
 
 This shows the job you started from the cloudshell is currently running in Dataflow.
 If you click on the job name, you can see the job graph created and how every step of the Dataflow pipeline is moving along:
 
-![dataflow_execution](dataflow_execution.png)
+![dataflow_execution](images/dataflow_execution.png)
 
 Once the job completes, you can navigate to BigQuery in the console and under __SERVICE_PROJECT_ID__ → datalake → person, you can see the data that was successfully imported into BigQuery through the Dataflow job.
 

@@ -42,7 +42,7 @@ def get_quotas_dict(quotas_list):
 
 def get_quota_project_limit(config, regions=["global"]):
   '''
-    Retrieves limit for a specific project quota 
+    Retrieves quotas for all monitored project in selected regions, default 'global'
       Parameters:
         project_link (string): Project link.
       Returns:
@@ -158,7 +158,7 @@ def get_quota_current_limit(config, project_link, metric_name):
 
 def count_effective_limit(config, project_id, network_dict, usage_metric_name,
                           limit_metric_name, utilization_metric_name,
-                          limit_dict):
+                          limit_dict, timestamp=None):
   '''
     Calculates the effective limits (using algorithm in the link below) for peering groups and writes data (usage, limit, utilization) to the custom metrics.
     Source: https://cloud.google.com/vpc/docs/quota#vpc-peering-effective-limit
@@ -171,11 +171,13 @@ def count_effective_limit(config, project_id, network_dict, usage_metric_name,
         limit_metric_name (string): Name of the custom metric to be populated for limit per VPC peering group.
         utilization_metric_name (string): Name of the custom metric to be populated for utilization per VPC peering group.
         limit_dict (dictionary of string:int): Dictionary containing the limit per peering group (either VPC specific or default limit).
+        timestamp (time): timestamp to be recorded for all points
       Returns:
         None
   '''
 
-  timestamp = time.time()
+  if timestamp == None:
+    timestamp = time.time()
 
   if network_dict['peerings'] == []:
     return

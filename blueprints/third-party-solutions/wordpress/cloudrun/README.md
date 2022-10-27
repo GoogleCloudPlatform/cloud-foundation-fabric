@@ -36,11 +36,11 @@ If `project_create` is left to null, the identity performing the deployment need
 
 If you want to deploy from your Cloud Shell, click on the image below, sign in if required and when the prompt appears, click on “confirm”.
 
-[![Open Cloudshell](images/button.png)](https://shell.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2FGoogleCloudPlatform%2Fcloud-foundation-fabric&cloudshell_workspace=blueprints%2Fthird-party-solutions%2Fwordpress%2Fcloudrun)
-
+[![Open Cloudshell](../../../../assets/images/cloud-shell-button.png)](https://shell.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https%3A%2F%2Fgithub.com%2FGoogleCloudPlatform%2Fcloud-foundation-fabric&cloudshell_workspace=blueprints%2Fthird-party-solutions%2Fwordpress%2Fcloudrun)
 
 Otherwise, in your console of choice:
-``` {shell}
+
+```bash
 git clone https://github.com/GoogleCloudPlatform/cloud-foundation-fabric
 ```
 
@@ -70,6 +70,7 @@ Once you have the required information, head back to your cloned repository. Mak
 Configure the Terraform variables in your `terraform.tfvars` file. See [terraform.tfvars.sample](terraform.tfvars.sample) as starting point - just copy it to `terraform.tfvars` and edit the latter. See the variables documentation below.
 
 **Notes**:
+
 1. If you will want to change your admin password later on, please note that it will only work in the admin interface of Wordpress, but not with redeploying with Terraform, since Wordpress writes that password into the database upon installation and ignores the environment variables (that you can change with Terraform) after that.
 2. If you have the [domain restriction org. policy](https://cloud.google.com/resource-manager/docs/organization-policy/restricting-domains) on your organization, you have to edit the `cloud_run_invoker` variable and give it a value that will be accepted in accordance to your policy.
 
@@ -81,22 +82,27 @@ Initialize your Terraform environment and deploy the resources:
 terraform init
 terraform apply
 ```
+
 The resource creation will take a few minutes.
 
 **Note**: you might get the following error (or a similar one):
+
 ``` {shell}
 │ Error: resource is in failed state "Ready:False", message: Revision '...' is not ready and cannot serve traffic.│
 ```
+
 You might try to reapply at this point, the Cloud Run service just needs several minutes.
 
 ### Step 4: Use the created resources
 
 Upon completion, you will see the output with the values for the Cloud Run service and the user and password to access the `/admin` part of the website. You can also view it later with:
+
 ``` {shell}
 terraform output
 # or for the concrete variable:
 terraform output cloud_run_service
 ```
+
 1. Open your browser at the URL that you get with that last command, and you will see your Wordpress installation.
 2. Add "/admin" in the end of the URL and log in to the admin interface, using the outputs "wp_user" and "wp_password".
 

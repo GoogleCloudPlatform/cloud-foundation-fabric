@@ -39,7 +39,7 @@ If `project_create` is left to `null`, the identity performing the deployment ne
 
 Click on the image below, sign in if required and when the prompt appears, click on “confirm”.
 
-[![Open Cloudshell](images/button.png)](https://goo.gle/GoCloudSQL)
+[![Open Cloudshell](../../../assets/images/cloud-shell-button.png)](https://goo.gle/GoCloudSQL)
 
 This will clone the repository to your cloud shell and a screen like this one will appear:
 
@@ -81,7 +81,8 @@ This implementation is intentionally minimal and easy to read. A real world use 
 - Using VPC-SC to mitigate data exfiltration
 
 ### Shared VPC
-The example supports the configuration of a Shared VPC as an input variable. 
+
+The example supports the configuration of a Shared VPC as an input variable.
 To deploy the solution on a Shared VPC, you have to configure the `network_config` variable:
 
 ```
@@ -94,12 +95,14 @@ network_config = {
 ```
 
 To run this example, the Shared VPC project needs to have:
- - A Private Service Connect with a range of `/24` (example: `10.60.0.0/24`) to deploy the Cloud SQL instance.
- - Internet access configured (for example Cloud NAT) to let the Test VM download packages. 
+
+- A Private Service Connect with a range of `/24` (example: `10.60.0.0/24`) to deploy the Cloud SQL instance.
+- Internet access configured (for example Cloud NAT) to let the Test VM download packages.
 
 In order to run the example and deploy Cloud SQL on a shared VPC the identity running Terraform must have the following IAM role on the Shared VPC Host project.
- - Compute Network Admin (roles/compute.networkAdmin)
- - Compute Shared VPC Admin (roles/compute.xpnAdmin)
+
+- Compute Network Admin (roles/compute.networkAdmin)
+- Compute Shared VPC Admin (roles/compute.xpnAdmin)
 
 ## Test your environment
 
