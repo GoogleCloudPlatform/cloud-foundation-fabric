@@ -31,17 +31,14 @@ locals {
   )
   # if no attributes passed for service account, use the GCE default
   # if no email specified, create service account
-  service_account_create = (
-    var.service_account != null && try(var.service_account.email, null) == null
-  )
   service_account_email = (
-    local.service_account_create
+    var.service_account.create
     ? google_service_account.service_account[0].email
-    : try(var.service_account.email, null)
+    : var.service_account.email
   )
   service_account_scopes = (
-    try(var.service_account.scopes, null) != null
-    ? var.service_account.scopes
+    var.service_account.oauth_scopes != null
+    ? var.service_account.oauth_scopes
     : [
       "https://www.googleapis.com/auth/devstorage.read_only",
       "https://www.googleapis.com/auth/logging.write",
@@ -60,9 +57,13 @@ locals {
 }
 
 resource "google_service_account" "service_account" {
-  count        = local.service_account_create ? 1 : 0
-  project      = var.project_id
-  account_id   = "tf-gke-${var.name}"
+  count   = var.service_account.create ? 1 : 0
+  project = var.project_id
+  account_id = (
+    var.service_account.email != null
+    ? split("@", var.service_account.email)[0]
+    : "tf-gke-${var.name}"
+  )
   display_name = "Terraform GKE ${var.cluster_name} ${var.name}."
 }
 
