@@ -60,7 +60,7 @@ Note that metrics are created in the cloud-function/metrics.yaml file. You can a
 
 ## Assumptions and limitations
 - The CF assumes that all VPCs in peering groups are within the same organization, except for PSA peerings
-- PSA peerings record only subnets data
+- The CF will only fetch subnet utilization data from the PSA peerings (not the VMs, ILB or routes usage)
 - The CF assumes global routing is ON, this impacts dynamic routes usage calculation
 - The CF assumes custom routes importing/exporting is ON, this impacts static and dynamic routes usage calculation
 - The CF assumes all networks in peering groups have the same global routing and custom routes sharing configuration

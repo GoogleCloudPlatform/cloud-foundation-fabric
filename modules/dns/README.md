@@ -17,10 +17,11 @@ module "private-dns" {
   domain          = "test.example."
   client_networks = [var.vpc.self_link]
   recordsets = {
-    "A localhost" = { ttl = 300, records = ["127.0.0.1"] }
+    "A localhost" = { records = ["127.0.0.1"] }
+    "A myhost"    = { ttl = 600, records = ["10.0.0.120"] }
   }
 }
-# tftest modules=1 resources=2
+# tftest modules=1 resources=3
 ```
 
 ### Forwarding Zone
@@ -59,19 +60,18 @@ module "private-dns" {
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [domain](variables.tf#L51) | Zone domain, must end with a period. | <code>string</code> | ✓ |  |
-| [name](variables.tf#L62) | Zone name, must be unique within the project. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L73) | Project id for the zone. | <code>string</code> | ✓ |  |
+| [name](variables.tf#L69) | Zone name, must be unique within the project. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L80) | Project id for the zone. | <code>string</code> | ✓ |  |
 | [client_networks](variables.tf#L21) | List of VPC self links that can see this zone. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [default_key_specs_key](variables.tf#L27) | DNSSEC default key signing specifications: algorithm, key_length, key_type, kind. | <code>any</code> |  | <code>&#123;&#125;</code> |
-| [default_key_specs_zone](variables.tf#L33) | DNSSEC default zone signing specifications: algorithm, key_length, key_type, kind. | <code>any</code> |  | <code>&#123;&#125;</code> |
-| [description](variables.tf#L39) | Domain description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
-| [dnssec_config](variables.tf#L45) | DNSSEC configuration: kind, non_existence, state. | <code>any</code> |  | <code>&#123;&#125;</code> |
+| [description](variables.tf#L28) | Domain description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
+| [dnssec_config](variables.tf#L34) | DNSSEC configuration for this zone. | <code title="object&#40;&#123;&#10;  non_existence &#61; optional&#40;string, &#34;nsec3&#34;&#41;&#10;  state         &#61; string&#10;  key_signing_key &#61; optional&#40;object&#40;&#10;    &#123; algorithm &#61; string, key_length &#61; number &#125;&#41;,&#10;    &#123; algorithm &#61; &#34;rsasha256&#34;, key_length &#61; 2048 &#125;&#10;  &#41;&#10;  zone_signing_key &#61; optional&#40;object&#40;&#10;    &#123; algorithm &#61; string, key_length &#61; number &#125;&#41;,&#10;    &#123; algorithm &#61; &#34;rsasha256&#34;, key_length &#61; 1024 &#125;&#10;  &#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [enable_logging](variables.tf#L62) | Enable query logging for this zone. Only valid for public zones. | <code>bool</code> |  | <code>false</code> |
 | [forwarders](variables.tf#L56) | Map of {IPV4_ADDRESS => FORWARDING_PATH} for 'forwarding' zone types. Path can be 'default', 'private', or null for provider default. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [peer_network](variables.tf#L67) | Peering network self link, only valid for 'peering' zone types. | <code>string</code> |  | <code>null</code> |
-| [recordsets](variables.tf#L78) | Map of DNS recordsets in \"type name\" => {ttl, [records]} format. | <code title="map&#40;object&#40;&#123;&#10;  ttl     &#61; number&#10;  records &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [service_directory_namespace](variables.tf#L94) | Service directory namespace id (URL), only valid for 'service-directory' zone types. | <code>string</code> |  | <code>null</code> |
-| [type](variables.tf#L100) | Type of zone to create, valid values are 'public', 'private', 'forwarding', 'peering', 'service-directory'. | <code>string</code> |  | <code>&#34;private&#34;</code> |
-| [zone_create](variables.tf#L110) | Create zone. When set to false, uses a data source to reference existing zone. | <code>bool</code> |  | <code>true</code> |
+| [peer_network](variables.tf#L74) | Peering network self link, only valid for 'peering' zone types. | <code>string</code> |  | <code>null</code> |
+| [recordsets](variables.tf#L85) | Map of DNS recordsets in \"type name\" => {ttl, [records]} format. | <code title="map&#40;object&#40;&#123;&#10;  ttl     &#61; optional&#40;number, 300&#41;&#10;  records &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [service_directory_namespace](variables.tf#L102) | Service directory namespace id (URL), only valid for 'service-directory' zone types. | <code>string</code> |  | <code>null</code> |
+| [type](variables.tf#L108) | Type of zone to create, valid values are 'public', 'private', 'forwarding', 'peering', 'service-directory'. | <code>string</code> |  | <code>&#34;private&#34;</code> |
+| [zone_create](variables.tf#L118) | Create zone. When set to false, uses a data source to reference existing zone. | <code>bool</code> |  | <code>true</code> |
 
 ## Outputs
 
