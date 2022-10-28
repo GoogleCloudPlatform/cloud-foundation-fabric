@@ -23,7 +23,7 @@ def resources(plan_runner):
 
 def test_resource_count(resources):
   "Test number of resources created."
-  assert len(resources) == 6
+  assert len(resources) == 7
 
 
 def test_envgroup_attachment(resources):
@@ -42,3 +42,19 @@ def test_envgroup(resources):
   assert envgroups[0]['name'] == 'eval'
   assert len(envgroups[0]['hostnames']) == 1
   assert envgroups[0]['hostnames'][0] == 'eval.api.example.com'
+
+
+def test_env(resources):
+  "Test environments."
+  envs = [r['values'] for r in resources if r['type']
+          == 'google_apigee_environment']
+  assert len(envs) == 3
+  assert envs[0]['name'] == 'eval1'
+  assert envs[0]['api_proxy_type'] == 'PROGRAMMABLE'
+  assert envs[0]['deployment_type'] == 'PROXY'
+  assert envs[1]['name'] == 'eval2'
+  assert envs[1]['api_proxy_type'] == 'CONFIGURABLE'
+  assert envs[1]['deployment_type'] == 'ARCHIVE'
+  assert envs[2]['name'] == 'eval3'
+  assert envs[2]['api_proxy_type'] == 'API_PROXY_TYPE_UNSPECIFIED'
+  assert envs[2]['deployment_type'] == 'DEPLOYMENT_TYPE_UNSPECIFIED'
