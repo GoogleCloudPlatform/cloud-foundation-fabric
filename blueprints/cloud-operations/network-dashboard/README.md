@@ -15,6 +15,7 @@ Three metric descriptors are created for each monitored resource: usage, limit a
 
 Clone this repository, then go through the following steps to create resources:
 - Create a terraform.tfvars file with the following content:
+  ```tfvars
   - organization_id = "<YOUR-ORG-ID>"
   - billing_account = "<YOUR-BILLING-ACCOUNT>"
   - monitoring_project_id = "<YOUR-MONITORING-PROJECT>" # Monitoring project where the dashboard will be created and the solution deployed, a project named "mon-network-dahshboard" will be created if left blank
@@ -22,6 +23,7 @@ Clone this repository, then go through the following steps to create resources:
   - monitored_folders_list = ["folder_id"] # Folders to be monitored by the solution
   - prefix = "<YOUR-PREFIX>" # Monitoring project name prefix, monitoring project name is <YOUR-PREFIX>-network-dashboard, ignored if monitoring_project_id variable is provided
   - v2 = true|false # Set to true to use V2 Cloud Functions environment
+    ```
 - `terraform init`
 - `terraform apply`
 

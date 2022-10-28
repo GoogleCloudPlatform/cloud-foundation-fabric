@@ -44,15 +44,17 @@ module "clusters" {
 }
 
 module "cluster_nodepools" {
-  for_each        = var.clusters_config
-  source          = "../../../modules/gke-nodepool"
-  project_id      = module.fleet_project.project_id
-  cluster_name    = module.clusters[each.key].name
-  location        = var.region
-  name            = "nodepool-${each.key}"
-  node_count      = { initial = 1 }
-  service_account = {}
-  tags            = ["${each.key}-node"]
+  for_each     = var.clusters_config
+  source       = "../../../modules/gke-nodepool"
+  project_id   = module.fleet_project.project_id
+  cluster_name = module.clusters[each.key].name
+  location     = var.region
+  name         = "nodepool-${each.key}"
+  node_count   = { initial = 1 }
+  service_account = {
+    create = true
+  }
+  tags = ["${each.key}-node"]
 }
 
 module "hub" {

@@ -50,7 +50,7 @@ module "gcp-example-dns-private-zone" {
   }
 }
 
-# Google API zone to trigger Private Access
+# Google APIs
 
 module "googleapis-private-zone" {
   source          = "../../../modules/dns"
@@ -67,5 +67,65 @@ module "googleapis-private-zone" {
       "199.36.153.4", "199.36.153.5", "199.36.153.6", "199.36.153.7"
     ] }
     "CNAME *" = { records = ["private.googleapis.com."] }
+  }
+}
+
+module "gcrio-private-zone" {
+  source          = "../../../modules/dns"
+  project_id      = module.landing-project.project_id
+  type            = "private"
+  name            = "gcr-io"
+  domain          = "gcr.io."
+  client_networks = [module.landing-vpc.self_link]
+  recordsets = {
+    "A gcr.io." = { ttl = 300, records = [
+      "199.36.153.8", "199.36.153.9", "199.36.153.10", "199.36.153.11"
+    ] }
+    "CNAME *" = { ttl = 300, records = ["private.googleapis.com."] }
+  }
+}
+
+module "packages-private-zone" {
+  source          = "../../../modules/dns"
+  project_id      = module.landing-project.project_id
+  type            = "private"
+  name            = "packages-cloud"
+  domain          = "packages.cloud.google.com."
+  client_networks = [module.landing-vpc.self_link]
+  recordsets = {
+    "A packages.cloud.google.com." = { ttl = 300, records = [
+      "199.36.153.8", "199.36.153.9", "199.36.153.10", "199.36.153.11"
+    ] }
+    "CNAME *" = { ttl = 300, records = ["private.googleapis.com."] }
+  }
+}
+
+module "pkgdev-private-zone" {
+  source          = "../../../modules/dns"
+  project_id      = module.landing-project.project_id
+  type            = "private"
+  name            = "pkg-dev"
+  domain          = "pkg.dev."
+  client_networks = [module.landing-vpc.self_link]
+  recordsets = {
+    "A pkg.dev." = { ttl = 300, records = [
+      "199.36.153.8", "199.36.153.9", "199.36.153.10", "199.36.153.11"
+    ] }
+    "CNAME *" = { ttl = 300, records = ["private.googleapis.com."] }
+  }
+}
+
+module "pkigoog-private-zone" {
+  source          = "../../../modules/dns"
+  project_id      = module.landing-project.project_id
+  type            = "private"
+  name            = "pki-goog"
+  domain          = "pki.goog."
+  client_networks = [module.landing-vpc.self_link]
+  recordsets = {
+    "A pki.goog." = { ttl = 300, records = [
+      "199.36.153.8", "199.36.153.9", "199.36.153.10", "199.36.153.11"
+    ] }
+    "CNAME *" = { ttl = 300, records = ["private.googleapis.com."] }
   }
 }

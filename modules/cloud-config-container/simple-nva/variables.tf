@@ -20,6 +20,16 @@ variable "cloud_config" {
   default     = null
 }
 
+variable "files" {
+  description = "Map of extra files to create on the instance, path as key. Owner and permissions will use defaults if null."
+  type = map(object({
+    content     = string
+    owner       = string
+    permissions = string
+  }))
+  default = {}
+}
+
 variable "enable_health_checks" {
   description = "Configures routing to enable responses to health check probes."
   type        = bool

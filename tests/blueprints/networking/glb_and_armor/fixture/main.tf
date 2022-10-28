@@ -13,7 +13,7 @@
 # limitations under the License.
 
 module "test" {
-  source                  = "../../../../../blueprints/cloud-operations/glb_and_armor"
+  source                  = "../../../../../blueprints/networking/glb-and-armor"
   project_create          = var.project_create
   project_id              = var.project_id
   enforce_security_policy = var.enforce_security_policy

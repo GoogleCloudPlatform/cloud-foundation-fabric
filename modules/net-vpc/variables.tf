@@ -179,6 +179,7 @@ variable "subnets_psc" {
     name          = string
     ip_cidr_range = string
     region        = string
+    description   = optional(string)
   }))
   default = []
 }
