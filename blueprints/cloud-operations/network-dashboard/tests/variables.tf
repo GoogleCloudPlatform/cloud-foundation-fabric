@@ -29,13 +29,20 @@ variable "prefix" {
 variable "project_vm_services" {
   description = "Service APIs enabled by default in new projects."
   default = [
+    "cloudasset.googleapis.com",
     "cloudbilling.googleapis.com",
+    "cloudfunctions.googleapis.com",
+    "cloudscheduler.googleapis.com",
     "compute.googleapis.com",
     "logging.googleapis.com",
     "monitoring.googleapis.com",
+    "pubsub.googleapis.com",
     "servicenetworking.googleapis.com",
+    "storage-component.googleapis.com"
   ]
 }
+
+
 
 variable "region" {
   description = "Region used to deploy subnets"
