@@ -157,20 +157,41 @@ variable "organization_id" {
   }
 }
 
-variable "policy_boolean" {
-  description = "Map of boolean org policies and enforcement value, set value to null for policy restore."
-  type        = map(bool)
-  default     = {}
-  nullable    = false
-}
-
-variable "policy_list" {
-  description = "Map of list org policies, status is true for allow, false for deny, null for restore. Values can only be used for allow or deny."
+variable "org_policies" {
+  description = "Organization policies applied to this organization keyed by policy name."
   type = map(object({
-    inherit_from_parent = bool
-    suggested_value     = string
-    status              = bool
-    values              = list(string)
+    inherit_from_parent = optional(bool) # for list policies only.
+    reset               = optional(bool)
+
+    # default (unconditional) values
+    allow = optional(object({
+      all    = optional(bool)
+      values = optional(list(string))
+    }))
+    deny = optional(object({
+      all    = optional(bool)
+      values = optional(list(string))
+    }))
+    enforce = optional(bool, true) # for boolean policies only.
+
+    # conditional values
+    rules = optional(list(object({
+      allow = optional(object({
+        all    = optional(bool)
+        values = optional(list(string))
+      }))
+      deny = optional(object({
+        all    = optional(bool)
+        values = optional(list(string))
+      }))
+      enforce = optional(bool, true) # for boolean policies only.
+      condition = object({
+        description = optional(string)
+        expression  = optional(string)
+        location    = optional(string)
+        title       = optional(string)
+      })
+    })), [])
   }))
   default  = {}
   nullable = false
