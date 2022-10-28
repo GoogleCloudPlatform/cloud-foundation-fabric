@@ -74,7 +74,7 @@ module "projects" {
   service_identities_iam = try(each.value.service_identities_iam, {})
   vpc                    = try(each.value.vpc, null)
 }
-# tftest modules=7 resources=27
+# tftest modules=7 resources=28
 ```
 
 ### Projects configuration
