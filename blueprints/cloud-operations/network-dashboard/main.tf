@@ -14,15 +14,6 @@
  * limitations under the License.
  */
      
-terraform {
-  required_version = "~> 1.3.3"
-  required_providers {
-    google = {
-      version = "~> 4.41.0"
-    }
-  }
-}
-     
 locals {
   project_ids = toset(var.monitored_projects_list)
   projects    = join(",", local.project_ids)
