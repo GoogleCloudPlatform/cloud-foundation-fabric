@@ -18,12 +18,12 @@ variable "project_id" {
   type        = string
 }
 
-variable "workload_identity_pool_provider_id" {
-  description = "GCP workload identity pool provider ID."
+variable "impersonate_service_account_email" {
+  description = "Service account to be impersonated by workload identity."
   type        = string
 }
 
-variable "impersonate_service_account_email" {
-  description = "Service account to be impersonated by workload identity."
+variable "workload_identity_pool_provider_id" {
+  description = "GCP workload identity pool provider ID."
   type        = string
 }
