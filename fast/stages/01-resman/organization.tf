@@ -18,18 +18,11 @@
 
 
 locals {
-  list_allow = {
-    inherit_from_parent = false
-    suggested_value     = null
-    status              = true
-    values              = []
-  }
-  list_deny = {
-    inherit_from_parent = false
-    suggested_value     = null
-    status              = false
-    values              = []
-  }
+  all_drs_domains = concat(
+    [var.organization.customer_id],
+    try(local.policy_configs.allowed_policy_member_domains, [])
+  )
+
   policy_configs = (
     var.organization_policy_configs == null
     ? {}
@@ -74,74 +67,55 @@ module "organization" {
     } : {}
   )
   # sample subset of useful organization policies, edit to suit requirements
-  policy_boolean = {
-    # "constraints/cloudfunctions.requireVPCConnector"              = true
-    # "constraints/compute.disableGuestAttributesAccess" = true
-    # "constraints/compute.disableInternetNetworkEndpointGroup"     = true
-    # "constraints/compute.disableNestedVirtualization"             = true
-    # "constraints/compute.disableSerialPortAccess"                 = true
-    "constraints/compute.requireOsLogin" = true
-    # "constraints/compute.restrictXpnProjectLienRemoval"           = true
-    "constraints/compute.skipDefaultNetworkCreation" = true
-    # "constraints/compute.setNewProjectDefaultToZonalDNSOnly"      = true
-    "constraints/iam.automaticIamGrantsForDefaultServiceAccounts" = true
-    "constraints/iam.disableServiceAccountKeyCreation"            = true
-    # "constraints/iam.disableServiceAccountKeyUpload"              = true
-    "constraints/sql.restrictPublicIp"             = true
-    "constraints/sql.restrictAuthorizedNetworks"   = true
-    "constraints/storage.uniformBucketLevelAccess" = true
-  }
-  policy_list = {
-    # "constraints/cloudfunctions.allowedIngressSettings" = merge(
-    #   local.list_allow, { values = ["is:ALLOW_INTERNAL_ONLY"] }
-    # )
-    # "constraints/cloudfunctions.allowedVpcConnectorEgressSettings" = merge(
-    #   local.list_allow, { values = ["is:PRIVATE_RANGES_ONLY"] }
-    # )
-    "constraints/compute.restrictLoadBalancerCreationForTypes" = merge(
-      local.list_allow, { values = ["in:INTERNAL"] }
-    )
-    "constraints/compute.vmExternalIpAccess" = local.list_deny
-    "constraints/iam.allowedPolicyMemberDomains" = merge(
-      local.list_allow, {
-        values = concat(
-          [var.organization.customer_id],
-          try(local.policy_configs.allowed_policy_member_domains, [])
-        )
-    })
-    "constraints/run.allowedIngress" = merge(
-      local.list_allow, { values = ["is:internal"] }
-    )
-    # "constraints/run.allowedVPCEgress" = merge(
-    #   local.list_allow, { values = ["is:private-ranges-only"] }
-    # )
-    # "constraints/compute.restrictCloudNATUsage"                      = local.list_deny
-    # "constraints/compute.restrictDedicatedInterconnectUsage"         = local.list_deny
-    # "constraints/compute.restrictPartnerInterconnectUsage"           = local.list_deny
-    # "constraints/compute.restrictProtocolForwardingCreationForTypes" = local.list_deny
-    # "constraints/compute.restrictSharedVpcHostProjects"              = local.list_deny
-    # "constraints/compute.restrictSharedVpcSubnetworks"               = local.list_deny
-    # "constraints/compute.restrictVpcPeering" = local.list_deny
-    # "constraints/compute.restrictVpnPeerIPs" = local.list_deny
-    # "constraints/compute.vmCanIpForward"     = local.list_deny
-    # "constraints/gcp.resourceLocations" = {
-    #   inherit_from_parent = false
-    #   suggested_value     = null
-    #   status              = true
-    #   values              = local.allowed_regions
+
+  org_policies = {
+    "compute.disableGuestAttributesAccess"            = { enforce = true }
+    "compute.requireOsLogin"                          = { enforce = true }
+    "compute.restrictLoadBalancerCreationForTypes"    = { allow = { values = ["in:INTERNAL"] } }
+    "compute.skipDefaultNetworkCreation"              = { enforce = true }
+    "compute.vmExternalIpAccess"                      = { deny = { all = true } }
+    "iam.allowedPolicyMemberDomains"                  = { allow = { values = local.all_drs_domains } }
+    "iam.automaticIamGrantsForDefaultServiceAccounts" = { enforce = true }
+    "iam.disableServiceAccountKeyCreation"            = { enforce = true }
+    "iam.disableServiceAccountKeyUpload"              = { enforce = true }
+    "run.allowedIngress"                              = { allow = { values = ["is:INTERNAL"] } }
+    "sql.restrictAuthorizedNetworks"                  = { enforce = true }
+    "sql.restrictPublicIp"                            = { enforce = true }
+    "storage.uniformBucketLevelAccess"                = { enforce = true }
+
+    # "cloudfunctions.allowedIngressSettings" = {
+    #   allow = { values = ["is:ALLOW_INTERNAL_ONLY"] }
     # }
-    # https://cloud.google.com/iam/docs/manage-workload-identity-pools-providers#restrict
-    # "constraints/iam.workloadIdentityPoolProviders" = merge(
-    #   local.list_allow, { values = [
-    #     for k, v in coalesce(var.automation.federated_identity_providers, {}) :
-    #     v.issuer_uri
-    #   ] }
-    # )
-    # "constraints/iam.workloadIdentityPoolAwsAccounts" = merge(
-    #   local.list_allow, { values = [
-    #
-    #   ] }
-    # )
+    # "cloudfunctions.allowedVpcConnectorEgressSettings" = {
+    #   allow = { values = ["is:PRIVATE_RANGES_ONLY"] }
+    # }
+    # "cloudfunctions.requireVPCConnector"              = { enforce = true }
+    # "compute.disableInternetNetworkEndpointGroup"     = { enforce = true }
+    # "compute.disableNestedVirtualization"             = { enforce = true }
+    # "compute.disableSerialPortAccess"                 = { enforce = true }
+    # "compute.restrictCloudNATUsage"                      = { deny = { all = true }}
+    # "compute.restrictDedicatedInterconnectUsage"         = { deny = { all = true }}
+    # "compute.restrictPartnerInterconnectUsage"           = { deny = { all = true }}
+    # "compute.restrictProtocolForwardingCreationForTypes" = { deny = { all = true }}
+    # "compute.restrictSharedVpcHostProjects"              = { deny = { all = true }}
+    # "compute.restrictSharedVpcSubnetworks"               = { deny = { all = true }}
+    # "compute.restrictVpcPeering" = { deny = { all = true }}
+    # "compute.restrictVpnPeerIPs" = { deny = { all = true }}
+    # "compute.restrictXpnProjectLienRemoval"           = { enforce = true }
+    # "compute.setNewProjectDefaultToZonalDNSOnly"      = { enforce = true }
+    # "compute.vmCanIpForward"     = { deny = { all = true }}
+    # "gcp.resourceLocations" = {
+    #   allow = { values = local.allowed_regions }
+    # }
+    # "iam.workloadIdentityPoolProviders" = {
+    #   allow =  {
+    #     values = [
+    #       for k, v in coalesce(var.automation.federated_identity_providers, {}) :
+    #       v.issuer_uri
+    #     ]
+    #   }
+    # }
+    # "run.allowedVPCEgress" = { allow = { values = ["is:private-ranges-only"] }  }
   }
   tags = {
     (var.tag_names.context) = {
