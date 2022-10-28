@@ -71,6 +71,8 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#926](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/926)] Fix backwards compatibility for vpc subnet descriptions ([ludoo](https://github.com/ludoo)) <!-- 2022-10-28 06:13:04+00:00 -->
+- [[#927](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/927)] Add support for deployment type and api proxy type for Apigee org ([kmucha555](https://github.com/kmucha555)) <!-- 2022-10-27 19:56:41+00:00 -->
 - [[#923](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/923)] Fix service account creation error in gke nodepool module ([ludoo](https://github.com/ludoo)) <!-- 2022-10-27 15:12:05+00:00 -->
 - [[#908](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/908)] GKE module: autopilot fixes ([ludoo](https://github.com/ludoo)) <!-- 2022-10-25 21:33:49+00:00 -->
 - [[#906](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/906)] GKE module: add managed_prometheus to features ([apichick](https://github.com/apichick)) <!-- 2022-10-25 21:18:50+00:00 -->
