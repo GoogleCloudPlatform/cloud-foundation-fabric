@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-     
+
 locals {
   project_ids = toset(var.monitored_projects_list)
   projects    = join(",", local.project_ids)
