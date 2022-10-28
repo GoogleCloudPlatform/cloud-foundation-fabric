@@ -38,8 +38,6 @@ def test_policy_boolean(plan_runner):
   assert len(resources) == 3
 
   policies = [r for r in resources if r['type'] == 'google_org_policy_policy']
-  from icecream import ic
-  ic(policies)
   assert len(policies) == 2
 
   p1 = [
