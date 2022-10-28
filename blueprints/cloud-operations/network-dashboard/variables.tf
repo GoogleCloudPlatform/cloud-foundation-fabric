@@ -50,7 +50,9 @@ variable "organization_id" {
 
 variable "prefix" {
   description = "Customer name to use as prefix for monitoring project"
+  default     = "mon"
 }
+
 
 variable "project_monitoring_services" {
   description = "Service APIs enabled in the monitoring project if it will be created."
@@ -59,18 +61,23 @@ variable "project_monitoring_services" {
     "cloudasset.googleapis.com",
     "cloudbilling.googleapis.com",
     "cloudbuild.googleapis.com",
+    "cloudfunctions.googleapis.com",
     "cloudresourcemanager.googleapis.com",
     "cloudscheduler.googleapis.com",
     "compute.googleapis.com",
-    "cloudfunctions.googleapis.com",
     "iam.googleapis.com",
     "iamcredentials.googleapis.com",
     "logging.googleapis.com",
     "monitoring.googleapis.com",
+    "pubsub.googleapis.com",
     "run.googleapis.com",
-    "serviceusage.googleapis.com"
+    "servicenetworking.googleapis.com",
+    "serviceusage.googleapis.com",
+    "storage-component.googleapis.com"
   ]
 }
+
+
 
 variable "region" {
   description = "Region used to deploy the cloud functions and scheduler"

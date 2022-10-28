@@ -30,7 +30,7 @@ locals {
 module "project-monitoring" {
   count           = var.monitoring_project_id == "" ? 1 : 0
   source          = "../../../modules/project"
-  name            = "monitoring"
+  name            = "network-dashboards"
   parent          = "organizations/${var.organization_id}"
   prefix          = var.prefix
   billing_account = var.billing_account
