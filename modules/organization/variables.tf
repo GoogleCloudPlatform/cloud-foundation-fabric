@@ -148,15 +148,6 @@ variable "logging_sinks" {
   nullable = false
 }
 
-variable "organization_id" {
-  description = "Organization id in organizations/nnnnnn format."
-  type        = string
-  validation {
-    condition     = can(regex("^organizations/[0-9]+", var.organization_id))
-    error_message = "The organization_id must in the form organizations/nnn."
-  }
-}
-
 variable "org_policies" {
   description = "Organization policies applied to this organization keyed by policy name."
   type = map(object({
@@ -195,6 +186,15 @@ variable "org_policies" {
   }))
   default  = {}
   nullable = false
+}
+
+variable "organization_id" {
+  description = "Organization id in organizations/nnnnnn format."
+  type        = string
+  validation {
+    condition     = can(regex("^organizations/[0-9]+", var.organization_id))
+    error_message = "The organization_id must in the form organizations/nnn."
+  }
 }
 
 variable "tag_bindings" {
