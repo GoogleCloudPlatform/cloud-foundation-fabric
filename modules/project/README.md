@@ -167,20 +167,46 @@ module "project" {
     "container.googleapis.com",
     "stackdriver.googleapis.com"
   ]
-  policy_boolean = {
-    "constraints/compute.disableGuestAttributesAccess" = true
-    "constraints/compute.skipDefaultNetworkCreation" = true
-  }
-  policy_list = {
+  org_policies = {
+    "compute.disableGuestAttributesAccess" = {
+      enforce = true
+    }
+    "constraints/compute.skipDefaultNetworkCreation" = {
+      enforce = true
+    }
+    "iam.disableServiceAccountKeyCreation" = {
+      enforce = true
+    }
+    "iam.disableServiceAccountKeyUpload" = {
+      enforce = false
+      rules = [
+        {
+          condition = {
+            expression  = "resource.matchTagId(\"tagKeys/1234\", \"tagValues/1234\")"
+            title       = "condition"
+            description = "test condition"
+            location    = "somewhere"
+          }
+          enforce = true
+        }
+      ]
+    }
+    "constraints/iam.allowedPolicyMemberDomains" = {
+      allow = {
+        values = ["C0xxxxxxx", "C0yyyyyyy"]
+      }
+    }
     "constraints/compute.trustedImageProjects" = {
-      inherit_from_parent = null
-      suggested_value = null
-      status = true
-      values = ["projects/my-project"]
+      allow = {
+        values = ["projects/my-project"]
+      }
+    }
+    "constraints/compute.vmExternalIpAccess" = {
+      deny = { all = true }
     }
   }
 }
-# tftest modules=1 resources=6
+# tftest modules=1 resources=10
 ```
 
 ## Logging Sinks
