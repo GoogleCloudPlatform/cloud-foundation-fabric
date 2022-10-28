@@ -53,12 +53,12 @@ jobs:
         run: |
           terraform fmt -recursive -check -diff $GITHUB_WORKSPACE
 
-      - name: Check documentation (fabric)
+      - name: Check documentation
         id: documentation-fabric
         run: |
-          python3 tools/check_documentation.py examples modules fast
+          python3 tools/check_documentation.py modules fast blueprints
 
-      - name: Check documentation links (fabric)
+      - name: Check documentation links
         id: documentation-links-fabric
         run: |
           python3 tools/check_links.py .

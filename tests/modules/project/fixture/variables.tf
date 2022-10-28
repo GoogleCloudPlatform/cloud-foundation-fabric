@@ -64,6 +64,11 @@ variable "lien_reason" {
   default = ""
 }
 
+variable "org_policies" {
+  type    = any
+  default = {}
+}
+
 variable "oslogin" {
   type    = bool
   default = false
@@ -82,21 +87,6 @@ variable "oslogin_users" {
 variable "parent" {
   type    = string
   default = null
-}
-
-variable "policy_boolean" {
-  type    = map(bool)
-  default = {}
-}
-
-variable "policy_list" {
-  type = map(object({
-    inherit_from_parent = bool
-    suggested_value     = string
-    status              = bool
-    values              = list(string)
-  }))
-  default = {}
 }
 
 variable "prefix" {

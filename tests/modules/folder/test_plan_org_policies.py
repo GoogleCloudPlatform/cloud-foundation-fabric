@@ -12,56 +12,212 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-def test_sink(plan_runner):
-  "Test folder-level sink."
-  policy_boolean = '{policy-a = true, policy-b = false, policy-c = null}'
-  _, resources = plan_runner(policy_boolean=policy_boolean)
 
+def test_policy_boolean(plan_runner):
+  "Test boolean org policy."
+  policies = '''{
+    "iam.disableServiceAccountKeyCreation" = {
+      enforce = true
+    }
+    "iam.disableServiceAccountKeyUpload" = {
+      enforce = false
+      rules = [
+        {
+          condition = {
+            expression  = "resource.matchTagId(\\"tagKeys/1234\\", \\"tagValues/1234\\")"
+            title       = "condition"
+            description = "test condition"
+            location    = "xxx"
+          }
+          enforce = true
+        }
+      ]
+    }
+  }'''
+  _, resources = plan_runner(org_policies=policies)
+  assert len(resources) == 3
+
+  policies = [r for r in resources if r['type'] == 'google_org_policy_policy']
+  assert len(policies) == 2
+
+  p1 = [
+      r['values']['spec'][0]
+      for r in policies
+      if r['index'] == 'iam.disableServiceAccountKeyCreation'
+  ][0]
+
+  assert p1['inherit_from_parent'] is None
+  assert p1['reset'] is None
+  assert p1['rules'] == [{
+      'allow_all': None,
+      'condition': [],
+      'deny_all': None,
+      'enforce': 'TRUE',
+      'values': []
+  }]
+
+  p2 = [
+      r['values']['spec'][0]
+      for r in policies
+      if r['index'] == 'iam.disableServiceAccountKeyUpload'
+  ][0]
+
+  assert p2['inherit_from_parent'] is None
+  assert p2['reset'] is None
+  assert len(p2['rules']) == 2
+  assert p2['rules'][0] == {
+      'allow_all': None,
+      'condition': [],
+      'deny_all': None,
+      'enforce': 'FALSE',
+      'values': []
+  }
+  assert p2['rules'][1] == {
+      'allow_all': None,
+      'condition': [{
+          'description': 'test condition',
+          'expression': 'resource.matchTagId("tagKeys/1234", "tagValues/1234")',
+          'location': 'xxx',
+          'title': 'condition'
+      }],
+      'deny_all': None,
+      'enforce': 'TRUE',
+      'values': []
+  }
+
+
+def test_policy_list(plan_runner):
+  "Test list org policy."
+  policies = '''{
+    "compute.vmExternalIpAccess" = {
+      deny = { all = true }
+    }
+    "iam.allowedPolicyMemberDomains" = {
+      allow = {
+        values = ["C0xxxxxxx", "C0yyyyyyy"]
+      }
+    }
+    "compute.restrictLoadBalancerCreationForTypes" = {
+      deny = { values = ["in:EXTERNAL"] }
+      rules = [
+        {
+          condition = {
+            expression  = "resource.matchTagId(\\"tagKeys/1234\\", \\"tagValues/1234\\")"
+            title       = "condition"
+            description = "test condition"
+            location    = "xxx"
+          }
+          allow = {
+            values = ["EXTERNAL_1"]
+          }
+        },
+        {
+          condition = {
+            expression  = "resource.matchTagId(\\"tagKeys/12345\\", \\"tagValues/12345\\")"
+            title       = "condition2"
+            description = "test condition2"
+            location    = "xxx"
+          }
+          allow = {
+            all = true
+          }
+        }
+      ]
+    }
+  }'''
+  _, resources = plan_runner(org_policies=policies)
   assert len(resources) == 4
-  resources = [r for r in resources if r['type']
-               == 'google_folder_organization_policy']
-  assert sorted([r['index'] for r in resources]) == [
-      'policy-a',
-      'policy-b',
-      'policy-c',
-  ]
-  policy_values = []
-  for resource in resources:
-    for policy in ('boolean_policy', 'restore_policy'):
-      value = resource['values'][policy]
-      if value:
-        policy_values.append((resource['index'], policy,) + value[0].popitem())
-  assert sorted(policy_values) == [
-      ('policy-a', 'boolean_policy', 'enforced', True),
-      ('policy-b', 'boolean_policy', 'enforced', False),
-      ('policy-c', 'restore_policy', 'default', True),
-  ]
 
+  policies = [r for r in resources if r['type'] == 'google_org_policy_policy']
+  assert len(policies) == 3
 
-def test_exclussions(plan_runner):
-  "Test folder-level logging exclusions."
-  policy_list = (
-      '{'
-      'policy-a = {inherit_from_parent = true, suggested_value = null, status = true, values = []}, '
-      'policy-b = {inherit_from_parent = null, suggested_value = "foo", status = false, values = ["bar"]}, '
-      'policy-c = {inherit_from_parent = null, suggested_value = true, status = null, values = null}'
-      '}'
-  )
-  _, resources = plan_runner(policy_list=policy_list)
-  assert len(resources) == 4
-  resources = [r for r in resources if r['type']
-               == 'google_folder_organization_policy']
-  assert sorted([r['index'] for r in resources]) == [
-      'policy-a',
-      'policy-b',
-      'policy-c',
-  ]
-  values = [r['values'] for r in resources]
-  assert [r['constraint'] for r in values] == [
-      'policy-a', 'policy-b', 'policy-c'
-  ]
-  assert values[0]['list_policy'][0]['allow'] == [
-      {'all': True, 'values': None}]
-  assert values[1]['list_policy'][0]['deny'] == [
-      {'all': False, 'values': ["bar"]}]
-  assert values[2]['restore_policy'] == [{'default': True}]
+  p1 = [
+      r['values']['spec'][0]
+      for r in policies
+      if r['index'] == 'compute.vmExternalIpAccess'
+  ][0]
+  assert p1['inherit_from_parent'] is None
+  assert p1['reset'] is None
+  assert p1['rules'] == [{
+      'allow_all': None,
+      'condition': [],
+      'deny_all': 'TRUE',
+      'enforce': None,
+      'values': []
+  }]
+
+  p2 = [
+      r['values']['spec'][0]
+      for r in policies
+      if r['index'] == 'iam.allowedPolicyMemberDomains'
+  ][0]
+  assert p2['inherit_from_parent'] is None
+  assert p2['reset'] is None
+  assert p2['rules'] == [{
+      'allow_all':
+          None,
+      'condition': [],
+      'deny_all':
+          None,
+      'enforce':
+          None,
+      'values': [{
+          'allowed_values': [
+              'C0xxxxxxx',
+              'C0yyyyyyy',
+          ],
+          'denied_values': None
+      }]
+  }]
+
+  p3 = [
+      r['values']['spec'][0]
+      for r in policies
+      if r['index'] == 'compute.restrictLoadBalancerCreationForTypes'
+  ][0]
+  assert p3['inherit_from_parent'] is None
+  assert p3['reset'] is None
+  assert len(p3['rules']) == 3
+  assert p3['rules'][0] == {
+      'allow_all': None,
+      'condition': [],
+      'deny_all': None,
+      'enforce': None,
+      'values': [{
+          'allowed_values': None,
+          'denied_values': ['in:EXTERNAL']
+      }]
+  }
+
+  assert p3['rules'][1] == {
+      'allow_all': None,
+      'condition': [{
+          'description': 'test condition',
+          'expression': 'resource.matchTagId("tagKeys/1234", "tagValues/1234")',
+          'location': 'xxx',
+          'title': 'condition'
+      }],
+      'deny_all': None,
+      'enforce': None,
+      'values': [{
+          'allowed_values': ['EXTERNAL_1'],
+          'denied_values': None
+      }]
+  }
+
+  assert p3['rules'][2] == {
+      'allow_all': 'TRUE',
+      'condition': [{
+          'description':
+              'test condition2',
+          'expression':
+              'resource.matchTagId("tagKeys/12345", "tagValues/12345")',
+          'location':
+              'xxx',
+          'title':
+              'condition2'
+      }],
+      'deny_all': None,
+      'enforce': None,
+      'values': []
+  }

@@ -226,13 +226,10 @@ module "folder-apps" {
   source = "../../../modules/folder"
   parent = var.root_node
   name   = "apps"
-  policy_list = {
+  org_policies = {
     # prevent VMs with public IPs in the apps folder
     "constraints/compute.vmExternalIpAccess" = {
-      inherit_from_parent = false
-      suggested_value     = null
-      status              = false
-      values              = []
+      deny = { all = true }
     }
   }
 }

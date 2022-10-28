@@ -148,9 +148,8 @@ module "project" {
   contacts                   = { for c in local.essential_contacts : c => ["ALL"] }
   iam                        = local.iam
   labels                     = local.labels
+  org_policies               = try(var.org_policies, {})
   parent                     = var.folder_id
-  policy_boolean             = try(var.org_policies.policy_boolean, {})
-  policy_list                = try(var.org_policies.policy_list, {})
   service_encryption_key_ids = var.kms_service_agents
   services                   = local.services
   shared_vpc_service_config = var.vpc == null ? null : {
