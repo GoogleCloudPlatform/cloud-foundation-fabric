@@ -25,12 +25,11 @@ module "test" {
   iam_additive_members       = var.iam_additive_members
   labels                     = var.labels
   lien_reason                = var.lien_reason
+  org_policies               = var.org_policies
   oslogin                    = var.oslogin
   oslogin_admins             = var.oslogin_admins
   oslogin_users              = var.oslogin_users
   parent                     = var.parent
-  policy_boolean             = var.policy_boolean
-  policy_list                = var.policy_list
   prefix                     = var.prefix
   service_encryption_key_ids = var.service_encryption_key_ids
   services                   = var.services
@@ -63,4 +62,3 @@ module "test-svpc-service" {
     }
   }
 }
-

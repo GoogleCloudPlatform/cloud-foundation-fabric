@@ -1,4 +1,4 @@
-s/**
+/**
  * Copyright 2022 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -59,8 +59,8 @@ locals {
 
 resource "google_org_policy_policy" "default" {
   for_each = local.org_policies
-  name     = "${local.organization_id}/policies/${each.key}"
-  parent   = "${local.organiza}"
+  name     = "${var.organization_id}/policies/${each.key}"
+  parent   = var.organization_id
 
   spec {
     inherit_from_parent = each.value.inherit_from_parent
@@ -101,7 +101,7 @@ resource "google_org_policy_policy" "default" {
           title       = rule.value.condition.title
         }
         dynamic "values" {
-          for_each = rule.value.has_values ? [1] : [0]
+          for_each = rule.value.has_values ? [1] : []
           content {
             allowed_values = try(rule.value.allow.values, null)
             denied_values  = try(rule.value.deny.values, null)

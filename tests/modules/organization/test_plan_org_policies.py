@@ -35,12 +35,13 @@ def test_policy_boolean(plan_runner):
     }
   }'''
   _, resources = plan_runner(org_policies=policies)
-  assert len(resources) == 3
+  assert len(resources) == 2
 
   policies = [r for r in resources if r['type'] == 'google_org_policy_policy']
-  from icecream import ic
-  ic(policies)
   assert len(policies) == 2
+  from icecream import ic
+  assert all(
+      x['values']['parent'] == 'organizations/1234567890' for x in policies)
 
   p1 = [
       r['values']['spec'][0]
@@ -128,10 +129,12 @@ def test_policy_list(plan_runner):
     }
   }'''
   _, resources = plan_runner(org_policies=policies)
-  assert len(resources) == 4
+  assert len(resources) == 3
 
   policies = [r for r in resources if r['type'] == 'google_org_policy_policy']
   assert len(policies) == 3
+  assert all(
+      x['values']['parent'] == 'organizations/1234567890' for x in policies)
 
   p1 = [
       r['values']['spec'][0]

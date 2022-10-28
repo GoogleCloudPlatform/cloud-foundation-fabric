@@ -82,7 +82,7 @@ resource "google_org_policy_policy" "default" {
           title       = rule.value.condition.title
         }
         dynamic "values" {
-          for_each = rule.value.has_values ? [1] : [0]
+          for_each = rule.value.has_values ? [1] : []
           content {
             allowed_values = try(rule.value.allow.values, null)
             denied_values  = try(rule.value.deny.values, null)
