@@ -54,6 +54,9 @@ org_policies:
     allow:
       values:
         - projects/fast-dev-iac-core-0
+  constraints/compute.vmExternalIpAccess:
+    deny:
+      all: true
 
 # [opt] Service account to create for the project and their roles on the project
 # in name => [roles] format
