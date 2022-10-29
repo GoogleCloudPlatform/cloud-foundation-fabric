@@ -12,56 +12,56 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module "gcs-data" {
-  source         = "../../../modules/gcs"
-  project_id     = module.project.project_id
-  prefix         = var.prefix
-  name           = "data"
-  location       = var.region
-  storage_class  = "REGIONAL"
-  encryption_key = var.cmek_encryption ? module.kms[0].keys.key-gcs.id : null
-  force_destroy  = true
-}
+#module "gcs-data" {
+#  source         = "../../../modules/gcs"
+#  project_id     = module.project.project_id
+#  prefix         = var.prefix
+#  name           = "data"
+#  location       = var.region
+#  storage_class  = "REGIONAL"
+#  encryption_key = var.cmek_encryption ? module.kms[0].keys.key-gcs.id : null
+#  force_destroy  = true
+#}
 
-module "gcs-df-tmp" {
-  source         = "../../../modules/gcs"
-  project_id     = module.project.project_id
-  prefix         = var.prefix
-  name           = "df-tmp"
-  location       = var.region
-  storage_class  = "REGIONAL"
-  encryption_key = var.cmek_encryption ? module.kms[0].keys.key-gcs.id : null
-  force_destroy  = true
-}
+#module "gcs-df-tmp" {
+#  source         = "../../../modules/gcs"
+#  project_id     = module.project.project_id
+#  prefix         = var.prefix
+#  name           = "df-tmp"
+#  location       = var.region
+#  storage_class  = "REGIONAL"
+#  encryption_key = var.cmek_encryption ? module.kms[0].keys.key-gcs.id : null
+#  force_destroy  = true
+#}
 
-module "bigquery-dataset" {
-  source     = "../../../modules/bigquery-dataset"
-  project_id = module.project.project_id
-  id         = "datalake"
-  location   = var.region
-
-  # Note: we define tables in Terraform for the purpose of this
-  # example. A production environment would probably handle table
-  # creation in a separate terraform pipeline or using a different
-  # tool (for example: Dataform)
-  tables = {
-    person = {
-      friendly_name = "Person. Dataflow import."
-      labels        = {}
-      options       = null
-      partitioning = {
-        field = null
-        range = null # use start/end/interval for range
-        time  = null
-      }
-      schema              = file("${path.module}/data-demo/person.json")
-      deletion_protection = false
-      options = {
-        clustering      = null
-        encryption_key  = var.cmek_encryption ? module.kms[0].keys.key-bq.id : null
-        expiration_time = null
-      }
-    }
-  }
-  encryption_key = var.cmek_encryption ? module.kms[0].keys.key-bq.id : null
-}
+#module "bigquery-dataset" {
+#  source     = "../../../modules/bigquery-dataset"
+#  project_id = module.project.project_id
+#  id         = "datalake"
+#  location   = var.region
+#
+#  # Note: we define tables in Terraform for the purpose of this
+#  # example. A production environment would probably handle table
+#  # creation in a separate terraform pipeline or using a different
+#  # tool (for example: Dataform)
+#  tables = {
+#    person = {
+#      friendly_name = "Person. Dataflow import."
+#      labels        = {}
+#      options       = null
+#      partitioning = {
+#        field = null
+#        range = null # use start/end/interval for range
+#        time  = null
+#      }
+#      schema              = file("${path.module}/data-demo/person.json")
+#      deletion_protection = false
+#      options = {
+#        clustering      = null
+#        encryption_key  = var.cmek_encryption ? module.kms[0].keys.key-bq.id : null
+#        expiration_time = null
+#      }
+#    }
+#  }
+#  encryption_key = var.cmek_encryption ? module.kms[0].keys.key-bq.id : null
+#}
