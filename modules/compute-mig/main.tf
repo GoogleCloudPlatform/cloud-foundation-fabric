@@ -130,57 +130,6 @@ resource "google_compute_per_instance_config" "default" {
   }
 }
 
-resource "google_compute_region_autoscaler" "default" {
-  provider    = google-beta
-  count       = var.regional && var.autoscaler_config != null ? 1 : 0
-  project     = var.project_id
-  name        = var.name
-  description = "Terraform managed."
-  region      = var.location
-  target      = google_compute_region_instance_group_manager.default.0.id
-
-  autoscaling_policy {
-    max_replicas    = var.autoscaler_config.max_replicas
-    min_replicas    = var.autoscaler_config.min_replicas
-    cooldown_period = var.autoscaler_config.cooldown_period
-
-    dynamic "cpu_utilization" {
-      for_each = (
-        var.autoscaler_config.cpu_utilization_target == null ? [] : [""]
-      )
-      content {
-        target = var.autoscaler_config.cpu_utilization_target
-      }
-    }
-
-    dynamic "load_balancing_utilization" {
-      for_each = (
-        var.autoscaler_config.load_balancing_utilization_target == null ? [] : [""]
-      )
-      content {
-        target = var.autoscaler_config.load_balancing_utilization_target
-      }
-    }
-
-    dynamic "metric" {
-      for_each = (
-        var.autoscaler_config.metric == null
-        ? []
-        : [var.autoscaler_config.metric]
-      )
-      iterator = config
-      content {
-        name                       = config.value.name
-        single_instance_assignment = config.value.single_instance_assignment
-        target                     = config.value.target
-        type                       = config.value.type
-        filter                     = config.value.filter
-      }
-    }
-  }
-}
-
-
 resource "google_compute_region_instance_group_manager" "default" {
   provider           = google-beta
   count              = var.regional ? 1 : 0
