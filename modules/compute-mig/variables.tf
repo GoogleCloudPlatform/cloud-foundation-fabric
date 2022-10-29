@@ -24,20 +24,49 @@ variable "auto_healing_policies" {
 }
 
 variable "autoscaler_config" {
-  description = "Optional autoscaler configuration. Only one of 'cpu_utilization_target' 'load_balancing_utilization_target' or 'metric' can be not null."
+  description = "Optional autoscaler configuration."
   type = object({
-    max_replicas                      = number
-    min_replicas                      = number
-    cooldown_period                   = number
-    cpu_utilization_target            = number
-    load_balancing_utilization_target = number
-    metric = object({
-      name                       = string
-      single_instance_assignment = number
-      target                     = number
-      type                       = string # GAUGE, DELTA_PER_SECOND, DELTA_PER_MINUTE
-      filter                     = string
-    })
+    max_replicas    = number
+    min_replicas    = number
+    cooldown_period = optional(number)
+    mode            = optional(string) # OFF, ONLY_UP, ON
+    scaling_control = optional(object({
+      down = optional(object({
+        max_replicas_fixed   = optional(number)
+        max_replicas_percent = optional(number)
+        time_window_sec      = optional(number)
+      }))
+      in = optional(object({
+        max_replicas_fixed   = optional(number)
+        max_replicas_percent = optional(number)
+        time_window_sec      = optional(number)
+      }))
+    }))
+    scaling_signals = optional(object({
+      cpu_utilization = optional(object({
+        target                = number
+        optimize_availability = optional(bool)
+      }))
+      load_balancing_utilization = optional(object({
+        target = number
+      }))
+      metrics = optional(list(object({
+        name                       = string
+        type                       = string # GAUGE, DELTA_PER_SECOND, DELTA_PER_MINUTE
+        target_value               = number
+        single_instance_assignment = optional(number)
+        time_series_filter         = optional(string)
+      })))
+      schedules = optional(list(object({
+        duration_sec          = number
+        name                  = string
+        min_required_replicas = number
+        cron_schedule         = string
+        description           = optional(bool)
+        timezone              = optional(string)
+        disabled              = optional(bool)
+      })))
+    }))
   })
   default = null
 }
@@ -48,6 +77,12 @@ variable "default_version" {
     instance_template = string
     name              = string
   })
+}
+
+variable "description" {
+  description = "Optional description used for all resources managed by this module."
+  type        = string
+  default     = "Terraform managed."
 }
 
 variable "health_check_config" {
@@ -96,7 +131,7 @@ variable "stateful_config" {
       stateful_disks = map(object({
         #device_name is the key
         source      = string
-        mode        = string # READ_WRITE | READ_ONLY 
+        mode        = string # READ_WRITE | READ_ONLY
         delete_rule = string # NEVER | ON_PERMANENT_INSTANCE_DELETION
       }))
       metadata = map(string)
