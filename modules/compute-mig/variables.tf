@@ -41,7 +41,7 @@ variable "autoscaler_config" {
         max_replicas_percent = optional(number)
         time_window_sec      = optional(number)
       }))
-    }))
+    }), {})
     scaling_signals = optional(object({
       cpu_utilization = optional(object({
         target                = number
@@ -66,7 +66,7 @@ variable "autoscaler_config" {
         timezone              = optional(string)
         disabled              = optional(bool)
       })))
-    }))
+    }), {})
   })
   default = null
 }
@@ -88,12 +88,47 @@ variable "description" {
 variable "health_check_config" {
   description = "Optional auto-created health check configuration, use the output self-link to set it in the auto healing policy. Refer to examples for usage."
   type = object({
-    type    = string      # http https tcp ssl http2
-    check   = map(any)    # actual health check block attributes
-    config  = map(number) # interval, thresholds, timeout
-    logging = bool
+    check_interval_sec  = optional(number)
+    description         = optional(string, "Terraform managed.")
+    enable_logging      = optional(bool, false)
+    healthy_threshold   = optional(number)
+    timeout_sec         = optional(number)
+    unhealthy_threshold = optional(number)
+    grpc = object({
+      port               = optional(number)
+      port_name          = optional(string)
+      port_specification = optional(string) # USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT
+      service_name       = optional(string)
+    })
+    http = object({
+      host               = optional(string)
+      port               = optional(number)
+      port_name          = optional(string)
+      port_specification = optional(string) # USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT
+      proxy_header       = optional(string)
+      request_path       = optional(string)
+      response           = optional(string)
+      use_protocol       = optional(string, "http") # http http2 https
+    })
+    tcp = object({
+      port               = optional(number)
+      port_name          = optional(string)
+      port_specification = optional(string) # USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT
+      proxy_header       = optional(string)
+      request            = optional(string)
+      response           = optional(string)
+      use_ssl            = optional(bool, false)
+    })
   })
   default = null
+  validation {
+    condition = (
+      (try(var.health_check_config.grpc, null) == null ? 0 : 1) +
+      (try(var.health_check_config.http, null) == null ? 0 : 1) +
+      (try(var.health_check_config.tcp, null) == null ? 0 : 1) <= 1
+    )
+    error_message = "Only one health check type can be configured at a time."
+  }
 }
 
 variable "location" {
