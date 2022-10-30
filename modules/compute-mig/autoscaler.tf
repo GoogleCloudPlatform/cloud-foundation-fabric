@@ -79,7 +79,7 @@ resource "google_compute_autoscaler" "default" {
       content {
         target = local.as_signals.cpu_utilization.target
         predictive_method = (
-          local.as_signals.cpu_utilization.optimize_availability
+          local.as_signals.cpu_utilization.optimize_availability == true
           ? "OPTIMIZE_AVAILABILITY"
           : null
         )
@@ -182,7 +182,7 @@ resource "google_compute_region_autoscaler" "default" {
       content {
         target = local.as_signals.cpu_utilization.target
         predictive_method = (
-          local.as_signals.cpu_utilization.optimize_availability
+          local.as_signals.cpu_utilization.optimize_availability == true
           ? "OPTIMIZE_AVAILABILITY"
           : null
         )

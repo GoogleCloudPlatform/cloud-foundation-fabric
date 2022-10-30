@@ -110,13 +110,13 @@ variable "health_check_config" {
     healthy_threshold   = optional(number)
     timeout_sec         = optional(number)
     unhealthy_threshold = optional(number)
-    grpc = object({
+    grpc = optional(object({
       port               = optional(number)
       port_name          = optional(string)
       port_specification = optional(string) # USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT
       service_name       = optional(string)
-    })
-    http = object({
+    }))
+    http = optional(object({
       host               = optional(string)
       port               = optional(number)
       port_name          = optional(string)
@@ -125,8 +125,8 @@ variable "health_check_config" {
       request_path       = optional(string)
       response           = optional(string)
       use_protocol       = optional(string, "http") # http http2 https
-    })
-    tcp = object({
+    }))
+    tcp = optional(object({
       port               = optional(number)
       port_name          = optional(string)
       port_specification = optional(string) # USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT
@@ -134,7 +134,7 @@ variable "health_check_config" {
       request            = optional(string)
       response           = optional(string)
       use_ssl            = optional(bool, false)
-    })
+    }))
   })
   default = null
   validation {
@@ -156,6 +156,7 @@ variable "location" {
   description = "Compute zone or region."
   type        = string
 }
+
 variable "name" {
   description = "Managed group name."
   type        = string

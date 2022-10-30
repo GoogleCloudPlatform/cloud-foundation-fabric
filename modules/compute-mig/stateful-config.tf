@@ -42,11 +42,11 @@ resource "google_compute_per_instance_config" "default" {
           device_name = disk.key
           source      = disk.value.source
           delete_rule = (
-            disk.value.delete_on_instance_deletion
+            disk.value.delete_on_instance_deletion == true
             ? "ON_PERMANENT_INSTANCE_DELETION"
             : "NEVER"
           )
-          mode = disk.value.read_only ? "READ_ONLY" : "READ_WRITE"
+          mode = disk.value.read_only == true ? "READ_ONLY" : "READ_WRITE"
         }
       }
     }
@@ -79,11 +79,11 @@ resource "google_compute_region_per_instance_config" "default" {
           device_name = disk.key
           source      = disk.value.source
           delete_rule = (
-            disk.value.delete_on_instance_deletion
+            disk.value.delete_on_instance_deletion == true
             ? "ON_PERMANENT_INSTANCE_DELETION"
             : "NEVER"
           )
-          mode = disk.value.read_only ? "READ_ONLY" : "READ_WRITE"
+          mode = disk.value.read_only == true ? "READ_ONLY" : "READ_WRITE"
         }
       }
     }
