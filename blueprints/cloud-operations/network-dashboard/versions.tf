@@ -12,18 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-
-variable "project_id" {
-  description = "GCP project ID."
-  type        = string
-}
-
-variable "impersonate_service_account_email" {
-  description = "Service account to be impersonated by workload identity."
-  type        = string
-}
-
-variable "workload_identity_pool_provider_id" {
-  description = "GCP workload identity pool provider ID."
-  type        = string
+terraform {
+  required_version = ">= 1.3.1"
+  required_providers {
+    google = {
+      source  = "hashicorp/google"
+      version = ">= 4.40.0" # tftest
+    }
+    google-beta = {
+      source  = "hashicorp/google-beta"
+      version = ">= 4.40.0" # tftest
+    }
+  }
 }

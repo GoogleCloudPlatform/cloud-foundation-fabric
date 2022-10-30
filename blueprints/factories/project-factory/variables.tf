@@ -98,16 +98,42 @@ variable "labels" {
 
 variable "org_policies" {
   description = "Org-policy overrides at project level."
-  type = object({
-    policy_boolean = map(bool)
-    policy_list = map(object({
-      inherit_from_parent = bool
-      suggested_value     = string
-      status              = bool
-      values              = list(string)
+  type = map(object({
+    inherit_from_parent = optional(bool) # for list policies only.
+    reset               = optional(bool)
+
+    # default (unconditional) values
+    allow = optional(object({
+      all    = optional(bool)
+      values = optional(list(string))
     }))
-  })
-  default = null
+    deny = optional(object({
+      all    = optional(bool)
+      values = optional(list(string))
+    }))
+    enforce = optional(bool, true) # for boolean policies only.
+
+    # conditional values
+    rules = optional(list(object({
+      allow = optional(object({
+        all    = optional(bool)
+        values = optional(list(string))
+      }))
+      deny = optional(object({
+        all    = optional(bool)
+        values = optional(list(string))
+      }))
+      enforce = optional(bool, true) # for boolean policies only.
+      condition = object({
+        description = optional(string)
+        expression  = optional(string)
+        location    = optional(string)
+        title       = optional(string)
+      })
+    })), [])
+  }))
+  default  = {}
+  nullable = false
 }
 
 variable "prefix" {
@@ -134,17 +160,18 @@ variable "service_accounts_iam" {
   nullable    = false
 }
 
-variable "services" {
-  description = "Services to be enabled for the project."
-  type        = list(string)
-  default     = []
-  nullable    = false
-}
 
 variable "service_identities_iam" {
   description = "Custom IAM settings for service identities in service => [role] format."
   type        = map(list(string))
   default     = {}
+  nullable    = false
+}
+
+variable "services" {
+  description = "Services to be enabled for the project."
+  type        = list(string)
+  default     = []
   nullable    = false
 }
 
@@ -160,6 +187,3 @@ variable "vpc" {
   })
   default = null
 }
-
-
-

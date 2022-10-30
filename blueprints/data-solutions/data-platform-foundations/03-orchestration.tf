@@ -67,8 +67,10 @@ module "orch-project" {
     "roles/storage.objectViewer" = [module.load-sa-df-0.iam_email]
   }
   oslogin = false
-  policy_boolean = {
-    "constraints/compute.requireOsLogin" = false
+  org_policies = {
+    "constraints/compute.requireOsLogin" = {
+      enforce = false
+    }
   }
   services = concat(var.project_services, [
     "artifactregistry.googleapis.com",

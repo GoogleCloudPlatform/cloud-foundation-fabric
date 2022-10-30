@@ -28,8 +28,7 @@ module "test" {
   iam_audit_config            = var.iam_audit_config
   logging_sinks               = var.logging_sinks
   logging_exclusions          = var.logging_exclusions
-  policy_boolean              = var.policy_boolean
-  policy_list                 = var.policy_list
+  org_policies                = var.org_policies
   tag_bindings                = var.tag_bindings
   tags                        = var.tags
 }

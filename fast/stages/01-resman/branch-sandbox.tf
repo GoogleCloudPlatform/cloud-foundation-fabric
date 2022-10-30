@@ -32,16 +32,9 @@ module "branch-sandbox-folder" {
     "roles/resourcemanager.folderAdmin"    = [module.branch-sandbox-sa.0.iam_email]
     "roles/resourcemanager.projectCreator" = [module.branch-sandbox-sa.0.iam_email]
   }
-  policy_boolean = {
-    "constraints/sql.restrictPublicIp" = false
-  }
-  policy_list = {
-    "constraints/compute.vmExternalIpAccess" = {
-      inherit_from_parent = false
-      suggested_value     = null
-      status              = true
-      values              = []
-    }
+  org_policies = {
+    "constraints/sql.restrictPublicIp"       = { enforce = false }
+    "constraints/compute.vmExternalIpAccess" = { allow = { all = true } }
   }
   tag_bindings = {
     context = try(

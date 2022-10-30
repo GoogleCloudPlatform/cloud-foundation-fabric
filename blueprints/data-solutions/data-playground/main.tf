@@ -40,8 +40,10 @@ module "project" {
     "storage.googleapis.com",
     "storage-component.googleapis.com"
   ]
-  policy_boolean = {
-    # "constraints/compute.requireOsLogin" = false
+  org_policies = {
+    # "constraints/compute.requireOsLogin" = {
+    #   enforce = false
+    # }
     # Example of applying a project wide policy, mainly useful for Composer
   }
   service_encryption_key_ids = {

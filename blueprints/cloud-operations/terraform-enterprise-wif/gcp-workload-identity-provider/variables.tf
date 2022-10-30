@@ -18,10 +18,10 @@ variable "billing_account" {
   type        = string
 }
 
-variable "project_create" {
-  description = "Create project instead of using an existing one."
-  type        = bool
-  default     = true
+variable "issuer_uri" {
+  description = "Terraform Enterprise uri. Replace the uri if a self hosted instance is used."
+  type        = string
+  default     = "https://app.terraform.io/"
 }
 
 variable "parent" {
@@ -34,6 +34,11 @@ variable "parent" {
   }
 }
 
+variable "project_create" {
+  description = "Create project instead of using an existing one."
+  type        = bool
+  default     = true
+}
 
 variable "project_id" {
   description = "Existing project id."
@@ -60,10 +65,4 @@ variable "workload_identity_pool_provider_id" {
   description = "Workload identity pool provider id."
   type        = string
   default     = "tfe-provider"
-}
-
-variable "issuer_uri" {
-  description = "Terraform Enterprise uri. Replace the uri if a self hosted instance is used."
-  type        = string
-  default     = "https://app.terraform.io/"
 }
