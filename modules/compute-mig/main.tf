@@ -113,13 +113,19 @@ resource "google_compute_instance_group_manager" "default" {
 }
 
 resource "google_compute_region_instance_group_manager" "default" {
-  provider                  = google-beta
-  count                     = local.is_regional ? 1 : 0
-  project                   = var.project_id
-  region                    = var.location
-  name                      = var.name
-  base_instance_name        = var.name
-  description               = var.description
+  provider           = google-beta
+  count              = local.is_regional ? 1 : 0
+  project            = var.project_id
+  region             = var.location
+  name               = var.name
+  base_instance_name = var.name
+  description        = var.description
+  distribution_policy_target_shape = try(
+    var.distribution_policy.target_shape, null
+  )
+  distribution_policy_zones = try(
+    var.distribution_policy.zones, null
+  )
   target_size               = var.target_size
   target_pools              = var.target_pools
   wait_for_instances        = try(var.wait_for_instances.enabled, null)
@@ -165,6 +171,7 @@ resource "google_compute_region_instance_group_manager" "default" {
     content {
       minimal_action                 = p.value.minimal_action
       type                           = p.value.type
+      instance_redistribution_type   = p.value.regional_redistribution_type
       max_surge_fixed                = try(p.value.max_surge.fixed, null)
       max_surge_percent              = try(p.value.max_surge.percent, null)
       max_unavailable_fixed          = try(p.value.max_unavailable.fixed, null)

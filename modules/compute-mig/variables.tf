@@ -92,6 +92,15 @@ variable "description" {
   default     = "Terraform managed."
 }
 
+variable "distribution_policy" {
+  description = "DIstribution policy for regional MIG."
+  type = object({
+    target_shape = optional(string)
+    zones        = optional(list(string))
+  })
+  default = null
+}
+
 variable "health_check_config" {
   description = "Optional auto-created health check configuration, use the output self-link to set it in the auto healing policy. Refer to examples for usage."
   type = object({
@@ -214,9 +223,10 @@ variable "update_policy" {
       fixed   = optional(number)
       percent = optional(number)
     }))
-    min_ready_sec          = optional(number)
-    most_disruptive_action = optional(string)
-    replacement_method     = optional(string)
+    min_ready_sec                = optional(number)
+    most_disruptive_action       = optional(string)
+    regional_redistribution_type = optional(string)
+    replacement_method           = optional(string)
   })
   default = null
 }

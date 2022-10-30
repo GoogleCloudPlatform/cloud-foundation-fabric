@@ -16,13 +16,6 @@
 
 # tfdoc:file:description Autoscaler resource.
 
-# If you want to autoscale a regional MIG, the following limitations apply:
-# You must set the group's target distribution shape to EVEN.
-# To scale in and out, you must enable proactive instance redistribution. If you set the autoscaler's mode to only scale out, then you don't need to enable proactive instance distribution.
-# You cannot use autoscaling if your MIG has stateful configuration.
-# An autoscaling policy must always have at least one scaling signal.
-# An autoscaler can make scaling decisions based on multiple signals, but it can handle only one signal per metric type except in the case of Cloud Monitoring metrics; an autoscaler can handle up to five signals based on Monitoring metrics. The autoscaler calculates the recommended number of virtual machines for each signal and then scales based on the signal that provides the largest number of virtual machines in the group.
-
 locals {
   as_enabled = true
   as_scaling = try(var.autoscaler_config.scaling_control, null)
