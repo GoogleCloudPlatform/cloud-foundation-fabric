@@ -14,10 +14,19 @@
  * limitations under the License.
  */
 
+variable "all_instances_config" {
+  description = "Metadata and labels set to all instances in the group."
+  type = object({
+    labels   = optional(map(string))
+    metadata = optional(map(string))
+  })
+  default = null
+}
+
 variable "auto_healing_policies" {
   description = "Auto-healing policies for this group."
   type = object({
-    health_check      = string
+    health_check      = optional(string)
     initial_delay_sec = number
   })
   default = null
@@ -71,12 +80,10 @@ variable "autoscaler_config" {
   default = null
 }
 
-variable "default_version" {
-  description = "Default application version template. Additional versions can be specified via the `versions` variable."
-  type = object({
-    instance_template = string
-    name              = string
-  })
+variable "default_version_name" {
+  description = "Name used for the default version."
+  type        = string
+  default     = "default"
 }
 
 variable "description" {
@@ -131,8 +138,13 @@ variable "health_check_config" {
   }
 }
 
+variable "instance_template" {
+  description = "Instance template for the default version."
+  type        = string
+}
+
 variable "location" {
-  description = "Compute zone, or region if `regional` is set to true."
+  description = "Compute zone or region."
   type        = string
 }
 variable "name" {
@@ -151,41 +163,30 @@ variable "project_id" {
   type        = string
 }
 
-variable "regional" {
-  description = "Use regional instance group. When set, `location` should be set to the region."
-  type        = bool
-  default     = false
+variable "stateful_disks" {
+  description = "Stateful disk configuration applied at the MIG level to all instances, in device name => on permanent instance delete rule as boolean."
+  type        = map(bool)
+  default     = {}
+  nullable    = false
 }
 
 variable "stateful_config" {
-  description = "Stateful configuration can be done by individual instances or for all instances in the MIG. They key in per_instance_config is the name of the specific instance. The key of the stateful_disks is the 'device_name' field of the resource. Please note that device_name is defined at the OS mount level, unlike the disk name."
-  type = object({
-    per_instance_config = map(object({
-      #name is the key
-      #name = string
-      stateful_disks = map(object({
-        #device_name is the key
-        source      = string
-        mode        = string # READ_WRITE | READ_ONLY
-        delete_rule = string # NEVER | ON_PERMANENT_INSTANCE_DELETION
-      }))
-      metadata = map(string)
-      update_config = object({
-        minimal_action                   = string # NONE | REPLACE | RESTART | REFRESH
-        most_disruptive_allowed_action   = string # REPLACE | RESTART | REFRESH | NONE
-        remove_instance_state_on_destroy = bool
-      })
+  description = "Stateful configuration for individual instances."
+  type = map(object({
+    minimal_action          = optional(string)
+    most_disruptive_action  = optional(string)
+    remove_state_on_destroy = optional(bool)
+    preserved_state = optional(object({
+      disks = optional(map(object({
+        source                      = string
+        delete_on_instance_deletion = optional(bool)
+        read_only                   = optional(bool)
+      })))
+      metadata = optional(map(string))
     }))
-
-    mig_config = object({
-      stateful_disks = map(object({
-        #device_name is the key
-        delete_rule = string # NEVER | ON_PERMANENT_INSTANCE_DELETION
-      }))
-    })
-
-  })
-  default = null
+  }))
+  default  = {}
+  nullable = false
 }
 
 variable "target_pools" {
@@ -201,32 +202,43 @@ variable "target_size" {
 }
 
 variable "update_policy" {
-  description = "Update policy. Type can be 'OPPORTUNISTIC' or 'PROACTIVE', action 'REPLACE' or 'restart', surge type 'fixed' or 'percent'."
+  description = "Update policy. Minimal action and type are required."
   type = object({
-    instance_redistribution_type = optional(string, "PROACTIVE") # NONE | PROACTIVE. The attribute is ignored if regional is set to false.
-    max_surge_type               = string                        # fixed | percent
-    max_surge                    = number
-    max_unavailable_type         = string
-    max_unavailable              = number
-    minimal_action               = string # REPLACE | RESTART
-    min_ready_sec                = number
-    type                         = string # OPPORTUNISTIC | PROACTIVE
+    minimal_action = string
+    type           = string
+    max_surge = optional(object({
+      fixed   = optional(number)
+      percent = optional(number)
+    }))
+    max_unavailable = optional(object({
+      fixed   = optional(number)
+      percent = optional(number)
+    }))
+    min_ready_sec          = optional(number)
+    most_disruptive_action = optional(string)
+    replacement_method     = optional(string)
   })
   default = null
 }
 
 variable "versions" {
-  description = "Additional application versions, target_type is either 'fixed' or 'percent'."
+  description = "Additional application versions, target_size is optional."
   type = map(object({
     instance_template = string
-    target_type       = string # fixed | percent
-    target_size       = number
+    target_size = optional(object({
+      fixed   = optional(number)
+      percent = optional(number)
+    }))
   }))
-  default = null
+  default  = {}
+  nullable = false
 }
 
 variable "wait_for_instances" {
   description = "Wait for all instances to be created/updated before returning."
-  type        = bool
-  default     = null
+  type = object({
+    enabled = bool
+    status  = optional(string)
+  })
+  default = null
 }

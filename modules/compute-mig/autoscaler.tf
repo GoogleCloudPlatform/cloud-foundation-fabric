@@ -31,7 +31,7 @@ locals {
 
 resource "google_compute_autoscaler" "default" {
   provider    = google-beta
-  count       = var.regional || var.autoscaler_config == null ? 0 : 1
+  count       = local.is_regional || var.autoscaler_config == null ? 0 : 1
   project     = var.project_id
   name        = var.name
   zone        = var.location
@@ -134,7 +134,7 @@ resource "google_compute_autoscaler" "default" {
 
 resource "google_compute_region_autoscaler" "default" {
   provider    = google-beta
-  count       = var.regional && var.autoscaler_config != null ? 1 : 0
+  count       = local.is_regional && var.autoscaler_config != null ? 1 : 0
   project     = var.project_id
   name        = var.name
   region      = var.location

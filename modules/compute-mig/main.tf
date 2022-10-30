@@ -14,54 +14,50 @@
  * limitations under the License.
  */
 
+locals {
+  health_check = (
+    try(var.auto_healing_policies.health_check, null) == null
+    ? try(google_compute_health_check.autohealing.0.self_link, null)
+    : try(var.auto_healing_policies.health_check, null)
+  )
+  instance_group_manager = (
+    local.is_regional ?
+    google_compute_region_instance_group_manager.default :
+    google_compute_instance_group_manager.default
+  )
+  is_regional = length(split("-", var.location)) == 2
+}
+
 resource "google_compute_instance_group_manager" "default" {
-  provider           = google-beta
-  count              = var.regional ? 0 : 1
-  project            = var.project_id
-  zone               = var.location
-  name               = var.name
-  base_instance_name = var.name
-  description        = "Terraform-managed."
-  target_size        = var.target_size
-  target_pools       = var.target_pools
-  wait_for_instances = var.wait_for_instances
+  provider                  = google-beta
+  count                     = local.is_regional ? 0 : 1
+  project                   = var.project_id
+  zone                      = var.location
+  name                      = var.name
+  base_instance_name        = var.name
+  description               = var.description
+  target_size               = var.target_size
+  target_pools              = var.target_pools
+  wait_for_instances        = try(var.wait_for_instances.enabled, null)
+  wait_for_instances_status = try(var.wait_for_instances.status, null)
+
+  dynamic "all_instances_config" {
+    for_each = var.all_instances_config == null ? [] : [""]
+    content {
+      labels   = try(var.all_instances_config.labels, null)
+      metadata = try(var.all_instances_config.metadata, null)
+    }
+  }
+
   dynamic "auto_healing_policies" {
-    for_each = var.auto_healing_policies == null ? [] : [var.auto_healing_policies]
+    for_each = var.auto_healing_policies == null ? [] : [""]
     iterator = config
     content {
-      health_check      = config.value.health_check
-      initial_delay_sec = config.value.initial_delay_sec
+      health_check      = local.health_check
+      initial_delay_sec = var.auto_healing_policies.initial_delay_sec
     }
   }
-  dynamic "stateful_disk" {
-    for_each = try(var.stateful_config.mig_config.stateful_disks, {})
-    iterator = config
-    content {
-      device_name = config.key
-      delete_rule = config.value.delete_rule
-    }
-  }
-  dynamic "update_policy" {
-    for_each = var.update_policy == null ? [] : [var.update_policy]
-    iterator = config
-    content {
-      type           = config.value.type
-      minimal_action = config.value.minimal_action
-      min_ready_sec  = config.value.min_ready_sec
-      max_surge_fixed = (
-        config.value.max_surge_type == "fixed" ? config.value.max_surge : null
-      )
-      max_surge_percent = (
-        config.value.max_surge_type == "percent" ? config.value.max_surge : null
-      )
-      max_unavailable_fixed = (
-        config.value.max_unavailable_type == "fixed" ? config.value.max_unavailable : null
-      )
-      max_unavailable_percent = (
-        config.value.max_unavailable_type == "percent" ? config.value.max_unavailable : null
-      )
-    }
-  }
+
   dynamic "named_port" {
     for_each = var.named_ports == null ? {} : var.named_ports
     iterator = config
@@ -70,116 +66,82 @@ resource "google_compute_instance_group_manager" "default" {
       port = config.value
     }
   }
-  version {
-    instance_template = var.default_version.instance_template
-    name              = var.default_version.name
+
+  dynamic "stateful_disk" {
+    for_each = var.stateful_disks
+    content {
+      device_name = stateful_disk.key
+      delete_rule = stateful_disk.value
+    }
   }
+
+  dynamic "update_policy" {
+    for_each = var.update_policy == null ? [] : [var.update_policy]
+    iterator = p
+    content {
+      minimal_action                 = p.value.minimal_action
+      type                           = p.value.type
+      max_surge_fixed                = try(p.value.max_surge.fixed, null)
+      max_surge_percent              = try(p.value.max_surge.percent, null)
+      max_unavailable_fixed          = try(p.value.max_unavailable.fixed, null)
+      max_unavailable_percent        = try(p.value.max_unavailable.percent, null)
+      min_ready_sec                  = p.value.min_ready_sec
+      most_disruptive_allowed_action = p.value.most_disruptive_allowed_action
+      replacement_method             = p.value.replacement_method
+    }
+  }
+
+  version {
+    instance_template = var.instance_template
+    name              = var.default_version_name
+  }
+
   dynamic "version" {
-    for_each = var.versions == null ? {} : var.versions
-    iterator = version
+    for_each = var.versions
     content {
       name              = version.key
       instance_template = version.value.instance_template
-      target_size {
-        fixed = (
-          version.value.target_type == "fixed" ? version.value.target_size : null
-        )
-        percent = (
-          version.value.target_type == "percent" ? version.value.target_size : null
-        )
-      }
-    }
-  }
-}
-
-locals {
-  instance_group_manager = (
-    var.regional ?
-    google_compute_region_instance_group_manager.default :
-    google_compute_instance_group_manager.default
-  )
-}
-
-resource "google_compute_per_instance_config" "default" {
-  for_each = try(var.stateful_config.per_instance_config, {})
-  #for_each = var.stateful_config && var.stateful_config.per_instance_config == null ? {} : length(var.stateful_config.per_instance_config)
-  zone = var.location
-  # terraform error, solved with locals
-  #instance_group_manager           = var.regional ? google_compute_region_instance_group_manager.default : google_compute_instance_group_manager.default
-  instance_group_manager           = local.instance_group_manager[0].id
-  name                             = each.key
-  project                          = var.project_id
-  minimal_action                   = try(each.value.update_config.minimal_action, null)
-  most_disruptive_allowed_action   = try(each.value.update_config.most_disruptive_allowed_action, null)
-  remove_instance_state_on_destroy = try(each.value.update_config.remove_instance_state_on_destroy, null)
-  preserved_state {
-
-    metadata = each.value.metadata
-
-    dynamic "disk" {
-      for_each = try(each.value.stateful_disks, {})
-      #for_each = var.stateful_config.mig_config.stateful_disks == null ? {} : var.stateful_config.mig_config.stateful_disks
-      iterator = config
-      content {
-        device_name = config.key
-        source      = config.value.source
-        mode        = config.value.mode
-        delete_rule = config.value.delete_rule
+      dynamic "target_size" {
+        for_each = version.value.target_size == null ? [] : [""]
+        content {
+          fixed   = version.value.target_size.fixed
+          percent = version.value.target_size.percent
+        }
       }
     }
   }
 }
 
 resource "google_compute_region_instance_group_manager" "default" {
-  provider           = google-beta
-  count              = var.regional ? 1 : 0
-  project            = var.project_id
-  region             = var.location
-  name               = var.name
-  base_instance_name = var.name
-  description        = "Terraform-managed."
-  target_size        = var.target_size
-  target_pools       = var.target_pools
-  wait_for_instances = var.wait_for_instances
-  dynamic "auto_healing_policies" {
-    for_each = var.auto_healing_policies == null ? [] : [var.auto_healing_policies]
-    iterator = config
+  provider                  = google-beta
+  count                     = local.is_regional ? 1 : 0
+  project                   = var.project_id
+  region                    = var.location
+  name                      = var.name
+  base_instance_name        = var.name
+  description               = var.description
+  target_size               = var.target_size
+  target_pools              = var.target_pools
+  wait_for_instances        = try(var.wait_for_instances.enabled, null)
+  wait_for_instances_status = try(var.wait_for_instances.status, null)
+
+  dynamic "all_instances_config" {
+    for_each = var.all_instances_config == null ? [] : [""]
     content {
-      health_check      = config.value.health_check
-      initial_delay_sec = config.value.initial_delay_sec
-    }
-  }
-  dynamic "stateful_disk" {
-    for_each = try(var.stateful_config.mig_config.stateful_disks, {})
-    iterator = config
-    content {
-      device_name = config.key
-      delete_rule = config.value.delete_rule
+      labels   = try(var.all_instances_config.labels, null)
+      metadata = try(var.all_instances_config.metadata, null)
     }
   }
 
-  dynamic "update_policy" {
-    for_each = var.update_policy == null ? [] : [var.update_policy]
+  dynamic "auto_healing_policies" {
+    for_each = var.auto_healing_policies == null ? [] : [""]
     iterator = config
     content {
-      instance_redistribution_type = config.value.instance_redistribution_type
-      type                         = config.value.type
-      minimal_action               = config.value.minimal_action
-      min_ready_sec                = config.value.min_ready_sec
-      max_surge_fixed = (
-        config.value.max_surge_type == "fixed" ? config.value.max_surge : null
-      )
-      max_surge_percent = (
-        config.value.max_surge_type == "percent" ? config.value.max_surge : null
-      )
-      max_unavailable_fixed = (
-        config.value.max_unavailable_type == "fixed" ? config.value.max_unavailable : null
-      )
-      max_unavailable_percent = (
-        config.value.max_unavailable_type == "percent" ? config.value.max_unavailable : null
-      )
+      health_check      = local.health_check
+      initial_delay_sec = var.auto_healing_policies.initial_delay_sec
     }
   }
+
   dynamic "named_port" {
     for_each = var.named_ports == null ? {} : var.named_ports
     iterator = config
@@ -188,23 +150,47 @@ resource "google_compute_region_instance_group_manager" "default" {
       port = config.value
     }
   }
-  version {
-    instance_template = var.default_version.instance_template
-    name              = var.default_version.name
+
+  dynamic "stateful_disk" {
+    for_each = var.stateful_disks
+    content {
+      device_name = stateful_disk.key
+      delete_rule = stateful_disk.value
+    }
   }
+
+  dynamic "update_policy" {
+    for_each = var.update_policy == null ? [] : [var.update_policy]
+    iterator = p
+    content {
+      minimal_action                 = p.value.minimal_action
+      type                           = p.value.type
+      max_surge_fixed                = try(p.value.max_surge.fixed, null)
+      max_surge_percent              = try(p.value.max_surge.percent, null)
+      max_unavailable_fixed          = try(p.value.max_unavailable.fixed, null)
+      max_unavailable_percent        = try(p.value.max_unavailable.percent, null)
+      min_ready_sec                  = p.value.min_ready_sec
+      most_disruptive_allowed_action = p.value.most_disruptive_allowed_action
+      replacement_method             = p.value.replacement_method
+    }
+  }
+
+  version {
+    instance_template = var.instance_template
+    name              = var.default_version_name
+  }
+
   dynamic "version" {
-    for_each = var.versions == null ? {} : var.versions
-    iterator = version
+    for_each = var.versions
     content {
       name              = version.key
       instance_template = version.value.instance_template
-      target_size {
-        fixed = (
-          version.value.target_type == "fixed" ? version.value.target_size : null
-        )
-        percent = (
-          version.value.target_type == "percent" ? version.value.target_size : null
-        )
+      dynamic "target_size" {
+        for_each = version.value.target_size == null ? [] : [""]
+        content {
+          fixed   = version.value.target_size.fixed
+          percent = version.value.target_size.percent
+        }
       }
     }
   }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description Health check resources.
+# tfdoc:file:description Health check resource.
 
 locals {
   hc      = var.health_check_config
