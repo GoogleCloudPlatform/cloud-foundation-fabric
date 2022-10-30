@@ -86,7 +86,7 @@ resource "google_compute_instance_group_manager" "default" {
       max_unavailable_fixed          = try(p.value.max_unavailable.fixed, null)
       max_unavailable_percent        = try(p.value.max_unavailable.percent, null)
       min_ready_sec                  = p.value.min_ready_sec
-      most_disruptive_allowed_action = p.value.most_disruptive_allowed_action
+      most_disruptive_allowed_action = p.value.most_disruptive_action
       replacement_method             = p.value.replacement_method
     }
   }
@@ -177,7 +177,7 @@ resource "google_compute_region_instance_group_manager" "default" {
       max_unavailable_fixed          = try(p.value.max_unavailable.fixed, null)
       max_unavailable_percent        = try(p.value.max_unavailable.percent, null)
       min_ready_sec                  = p.value.min_ready_sec
-      most_disruptive_allowed_action = p.value.most_disruptive_allowed_action
+      most_disruptive_allowed_action = p.value.most_disruptive_action
       replacement_method             = p.value.replacement_method
     }
   }

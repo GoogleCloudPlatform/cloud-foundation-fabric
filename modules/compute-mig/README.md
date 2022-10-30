@@ -2,7 +2,7 @@
 
 This module allows creating a managed instance group supporting one or more application versions via instance templates. Optionally, a health check and an autoscaler can be created, and the managed instance group can be configured to be stateful.
 
-This module can be coupled with the [`compute-vm`](../compute-vm) module which can manage instance templates, and the [`net-ilb`](../net-ilb) module to assign the MIG to a backend wired to an Internal Load Balancer. The first use case is shown in the examples below. 
+This module can be coupled with the [`compute-vm`](../compute-vm) module which can manage instance templates, and the [`net-ilb`](../net-ilb) module to assign the MIG to a backend wired to an Internal Load Balancer. The first use case is shown in the examples below.
 
 Stateful disks can be created directly, as shown in the last example below.
 
@@ -39,15 +39,12 @@ module "nginx-template" {
 }
 
 module "nginx-mig" {
-  source      = "./fabric/modules/compute-mig"
-  project_id  = "my-project"
-  location    = "europe-west1-b"
-  name        = "mig-test"
-  target_size = 2
-  default_version = {
-    instance_template = module.nginx-template.template.self_link
-    name              = "default"
-  }
+  source            = "./fabric/modules/compute-mig"
+  project_id        = "my-project"
+  location          = "europe-west1-b"
+  name              = "mig-test"
+  target_size       = 2
+  instance_template = module.nginx-template.template.self_link
 }
 # tftest modules=2 resources=2
 ```
@@ -85,20 +82,18 @@ module "nginx-template" {
 }
 
 module "nginx-mig" {
-  source      = "./fabric/modules/compute-mig"
-  project_id  = "my-project"
-  location    = "europe-west1-b"
-  name        = "mig-test"
-  target_size = 3
-  default_version = {
-    instance_template = module.nginx-template.template.self_link
-    name = "default"
-  }
+  source            = "./fabric/modules/compute-mig"
+  project_id        = "my-project"
+  location          = "europe-west1-b"
+  name              = "mig-test"
+  target_size       = 3
+  instance_template = module.nginx-template.template.self_link
   versions = {
     canary = {
       instance_template = module.nginx-template.template.self_link
-      target_type = "fixed"
-      target_size = 1
+      target_size = {
+        fixed = 1
+      }
     }
   }
 }
@@ -138,24 +133,20 @@ module "nginx-template" {
 }
 
 module "nginx-mig" {
-  source = "./fabric/modules/compute-mig"
-  project_id = "my-project"
-  location     = "europe-west1-b"
-  name       = "mig-test"
-  target_size   = 3
-  default_version = {
-    instance_template = module.nginx-template.template.self_link
-    name = "default"
-  }
+  source            = "./fabric/modules/compute-mig"
+  project_id        = "my-project"
+  location          = "europe-west1-b"
+  name              = "mig-test"
+  target_size       = 3
+  instance_template = module.nginx-template.template.self_link
   auto_healing_policies = {
-    health_check      = module.nginx-mig.health_check.self_link
     initial_delay_sec = 30
   }
   health_check_config = {
-    type    = "http"
-    check   = { port = 80 }
-    config  = {}
-    logging = true
+    enable_logging = true
+    http = {
+      port = 80
+    }
   }
 }
 # tftest modules=2 resources=3
@@ -194,22 +185,21 @@ module "nginx-template" {
 }
 
 module "nginx-mig" {
-  source = "./fabric/modules/compute-mig"
-  project_id = "my-project"
-  location     = "europe-west1-b"
-  name       = "mig-test"
-  target_size   = 3
-  default_version = {
-    instance_template = module.nginx-template.template.self_link
-    name = "default"
-  }
+  source            = "./fabric/modules/compute-mig"
+  project_id        = "my-project"
+  location          = "europe-west1-b"
+  name              = "mig-test"
+  target_size       = 3
+  instance_template = module.nginx-template.template.self_link
   autoscaler_config = {
-    max_replicas                      = 3
-    min_replicas                      = 1
-    cooldown_period                   = 30
-    cpu_utilization_target            = 0.65
-    load_balancing_utilization_target = null
-    metric                            = null
+    max_replicas    = 3
+    min_replicas    = 1
+    cooldown_period = 30
+    scaling_signals = {
+      cpu_utilization = {
+        target = 0.65
+      }
+    }
   }
 }
 # tftest modules=2 resources=3
@@ -246,23 +236,19 @@ module "nginx-template" {
 }
 
 module "nginx-mig" {
-  source = "./fabric/modules/compute-mig"
-  project_id = "my-project"
-  location     = "europe-west1-b"
-  name       = "mig-test"
-  target_size   = 3
-  default_version = {
-    instance_template = module.nginx-template.template.self_link
-    name = "default"
-  }
+  source            = "./fabric/modules/compute-mig"
+  project_id        = "my-project"
+  location          = "europe-west1-b"
+  name              = "mig-test"
+  target_size       = 3
+  instance_template = module.nginx-template.template.self_link
   update_policy = {
-    type                 = "PROACTIVE"
     minimal_action       = "REPLACE"
+    type                 = "PROACTIVE"
     min_ready_sec        = 30
-    max_surge_type       = "fixed"
-    max_surge            = 1
-    max_unavailable_type = null
-    max_unavailable      = null
+    max_surge = {
+      fixed = 1
+    }
   }
 }
 # tftest modules=2 resources=2
@@ -270,14 +256,13 @@ module "nginx-mig" {
 
 ### Stateful MIGs - MIG Config
 
-Stateful MIGs have some limitations documented [here](https://cloud.google.com/compute/docs/instance-groups/configuring-stateful-migs#limitations). Enforcement of these requirements is the responsibility of users of this module. 
+Stateful MIGs have some limitations documented [here](https://cloud.google.com/compute/docs/instance-groups/configuring-stateful-migs#limitations). Enforcement of these requirements is the responsibility of users of this module.
 
 You can configure a disk defined in the instance template to be stateful  for all instances in the MIG by configuring in the MIG's stateful policy, using the `stateful_disk_mig` variable. Alternatively, you can also configure stateful persistent disks individually per instance of the MIG by setting the `stateful_disk_instance` variable. A discussion on these scenarios can be found in the [docs](https://cloud.google.com/compute/docs/instance-groups/configuring-stateful-disks-in-migs).
 
 An example using only the configuration at the MIG level can be seen below.
 
 Note that when referencing the stateful disk, you use `device_name` and not `disk_name`.
-
 
 ```hcl
 module "cos-nginx" {
@@ -319,32 +304,24 @@ module "nginx-template" {
 }
 
 module "nginx-mig" {
-  source = "./fabric/modules/compute-mig"
-  project_id = "my-project"
-  location     = "europe-west1-b"
-  name       = "mig-test"
-  target_size   = 3
-  default_version = {
-    instance_template = module.nginx-template.template.self_link
-    name = "default"
-  }
+  source            = "./fabric/modules/compute-mig"
+  project_id        = "my-project"
+  location          = "europe-west1-b"
+  name              = "mig-test"
+  target_size       = 3
+  instance_template = module.nginx-template.template.self_link
   autoscaler_config = {
-    max_replicas                      = 3
-    min_replicas                      = 1
-    cooldown_period                   = 30
-    cpu_utilization_target            = 0.65
-    load_balancing_utilization_target = null
-    metric                            = null
-  }
-  stateful_config = {
-    per_instance_config = {},
-    mig_config = {
-      stateful_disks = {
-        repd-1 = {
-          delete_rule = "NEVER"
-        }
+    max_replicas    = 3
+    min_replicas    = 1
+    cooldown_period = 30
+    scaling_signals = {
+      cpu_utilization = {
+        target = 0.65
       }
     }
+  }
+  stateful_disks = {
+    repd-1 = null
   }
 }
 # tftest modules=2 resources=3
@@ -352,7 +329,8 @@ module "nginx-mig" {
 ```
 
 ### Stateful MIGs - Instance Config
-Here is an example defining the stateful config at the instance level. 
+
+Here is an example defining the stateful config at the instance level.
 
 Note that you will need to know the instance name in order to use this configuration.
 
@@ -396,46 +374,36 @@ module "nginx-template" {
 }
 
 module "nginx-mig" {
-  source = "./fabric/modules/compute-mig"
-  project_id = "my-project"
-  location     = "europe-west1-b"
-  name       = "mig-test"
-  target_size   = 3
-  default_version = {
-    instance_template = module.nginx-template.template.self_link
-    name = "default"
-  }
+  source            = "./fabric/modules/compute-mig"
+  project_id        = "my-project"
+  location          = "europe-west1-b"
+  name              = "mig-test"
+  target_size       = 3
+  instance_template = module.nginx-template.template.self_link
   autoscaler_config = {
-    max_replicas                      = 3
-    min_replicas                      = 1
-    cooldown_period                   = 30
-    cpu_utilization_target            = 0.65
-    load_balancing_utilization_target = null
-    metric                            = null
+    max_replicas    = 3
+    min_replicas    = 1
+    cooldown_period = 30
+    scaling_signals = {
+      cpu_utilization = {
+        target = 0.65
+      }
+    }
   }
   stateful_config = {
-    per_instance_config = {
-      # note that this needs to be the name of an existing instance within the Managed Instance Group
-      instance-1 = {
-        stateful_disks = {
+    # name needs to match a MIG instance name
+    instance-1 = {
+      minimal_action                   = "NONE",
+      most_disruptive_allowed_action   = "REPLACE"
+      preserved_state = {
+        disks = {
           persistent-disk-1 = {
             source = "test-disk", 
-            mode = "READ_ONLY",
-            delete_rule= "NEVER",
-          },
-        },
+          }
+        }
         metadata = {
           foo = "bar"
-        },
-        update_config = {
-          minimal_action                   = "NONE",
-          most_disruptive_allowed_action   = "REPLACE",
-          remove_instance_state_on_destroy = false, 
-        },
-      },
-    },
-    mig_config = {
-      stateful_disks = {
+        }
       }
     }
   }
