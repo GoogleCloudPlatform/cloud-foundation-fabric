@@ -21,7 +21,14 @@ locals {
       "group:${k}" if try(index(v, r), null) != null
     ]
   }
-  _group_iam_bindings = distinct(flatten(values(var.group_iam)))
+  _group_iam_additive = {
+    for r in local._group_iam_additive_bindings : r => [
+      for k, v in var.group_iam_additive :
+      "group:${k}" if try(index(v, r), null) != null
+    ]
+  }
+  _group_iam_bindings          = distinct(flatten(values(var.group_iam)))
+  _group_iam_additive_bindings = distinct(flatten(values(var.group_iam_additive)))
   _project_id = (
     var.prefix == null || var.prefix == ""
     ? var.project_id
@@ -37,6 +44,16 @@ locals {
   _service_accounts_iam_bindings = distinct(flatten(
     values(var.service_accounts)
   ))
+  _service_accounts_iam_additive = {
+    for r in local._service_accounts_iam_additive_bindings : r => [
+      for k, v in var.service_accounts_additive :
+      module.service-accounts[k].iam_email
+      if try(index(v, r), null) != null
+    ]
+  }
+  _service_accounts_iam_additive_bindings = distinct(flatten(
+    values(var.service_accounts_additive)
+  ))
   _services = concat([
     "billingbudgets.googleapis.com",
     "essentialcontacts.googleapis.com"
@@ -49,6 +66,14 @@ locals {
   _service_identities_iam = {
     for role in local._service_identities_roles : role => [
       for service, roles in var.service_identities_iam :
+      "serviceAccount:${module.project.service_accounts.robots[service]}"
+      if contains(roles, role)
+    ]
+  }
+  _service_identities_roles_additive = distinct(flatten(values(var.service_identities_iam_additive)))
+  _service_identities_iam_additive = {
+    for role in local._service_identities_roles_additive : role => [
+      for service, roles in var.service_identities_iam_additive :
       "serviceAccount:${module.project.service_accounts.robots[service]}"
       if contains(roles, role)
     ]
@@ -89,6 +114,20 @@ locals {
       try(local._group_iam[role], []),
       try(local._service_accounts_iam[role], []),
       try(local._service_identities_iam[role], []),
+    )
+  }
+  iam_additive = {
+    for role in distinct(concat(
+      keys(var.iam_additive),
+      keys(local._group_iam_additive),
+      keys(local._service_accounts_iam_additive),
+      keys(local._service_identities_iam_additive),
+    )) :
+    role => concat(
+      try(var.iam_additive[role], []),
+      try(local._group_iam_additive[role], []),
+      try(local._service_accounts_iam_additive[role], []),
+      try(local._service_identities_iam_additive[role], []),
     )
   }
   labels = merge(
@@ -147,6 +186,7 @@ module "project" {
   prefix                     = var.prefix
   contacts                   = { for c in local.essential_contacts : c => ["ALL"] }
   iam                        = local.iam
+  iam_additive               = local.iam_additive
   labels                     = local.labels
   org_policies               = try(var.org_policies, {})
   parent                     = var.folder_id
