@@ -78,8 +78,20 @@ variable "group_iam" {
   default     = {}
 }
 
+variable "group_iam_additive" {
+  description = "Custom additive IAM settings in group => [role] format."
+  type        = map(list(string))
+  default     = {}
+}
+
 variable "iam" {
   description = "Custom IAM settings in role => [principal] format."
+  type        = map(list(string))
+  default     = {}
+}
+
+variable "iam_additive" {
+  description = "Custom additive IAM settings in role => [principal] format."
   type        = map(list(string))
   default     = {}
 }
@@ -153,6 +165,12 @@ variable "service_accounts" {
   default     = {}
 }
 
+variable "service_accounts_additive" {
+  description = "Service accounts to be created, and roles assigned them on the project additively."
+  type        = map(list(string))
+  default     = {}
+}
+
 variable "service_accounts_iam" {
   description = "IAM bindings on service account resources. Format is KEY => {ROLE => [MEMBERS]}"
   type        = map(map(list(string)))
@@ -160,10 +178,9 @@ variable "service_accounts_iam" {
   nullable    = false
 }
 
-
-variable "service_identities_iam" {
-  description = "Custom IAM settings for service identities in service => [role] format."
-  type        = map(list(string))
+variable "service_accounts_iam_additive" {
+  description = "IAM additive bindings on service account resources. Format is KEY => {ROLE => [MEMBERS]}"
+  type        = map(map(list(string)))
   default     = {}
   nullable    = false
 }
@@ -172,6 +189,20 @@ variable "services" {
   description = "Services to be enabled for the project."
   type        = list(string)
   default     = []
+  nullable    = false
+}
+
+variable "service_identities_iam" {
+  description = "Custom IAM settings for service identities in service => [role] format."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+}
+
+variable "service_identities_iam_additive" {
+  description = "Custom additive IAM settings for service identities in service => [role] format."
+  type        = map(list(string))
+  default     = {}
   nullable    = false
 }
 
