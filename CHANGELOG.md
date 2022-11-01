@@ -8,6 +8,9 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#931](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/931)] **incompatible change:** Refactor compute-mig module for Terraform 1.3 ([ludoo](https://github.com/ludoo)) <!-- 2022-11-01 08:39:00+00:00 -->
+- [[#932](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/932)] feat(project-factory): introduce additive iam bindings to project-fac… ([Malet](https://github.com/Malet)) <!-- 2022-10-31 17:24:25+00:00 -->
+- [[#925](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/925)] Network dashboard: update main.tf and README following #922 ([brianhmj](https://github.com/brianhmj)) <!-- 2022-10-28 15:49:12+00:00 -->
 - [[#924](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/924)] Fix formatting for gcloud dataflow job launch command ([aymanfarhat](https://github.com/aymanfarhat)) <!-- 2022-10-27 14:07:25+00:00 -->
 - [[#921](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/921)] Align documentation, move glb blueprint ([ludoo](https://github.com/ludoo)) <!-- 2022-10-26 12:31:04+00:00 -->
 - [[#915](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/915)] TFE OIDC with GCP WIF blueprint added ([averbuks](https://github.com/averbuks)) <!-- 2022-10-25 19:06:43+00:00 -->
@@ -51,6 +54,9 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#935](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/935)] FAST: enable org policy API, fix run.allowedIngress value ([ludoo](https://github.com/ludoo)) <!-- 2022-11-01 08:52:03+00:00 -->
+- [[#931](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/931)] **incompatible change:** Refactor compute-mig module for Terraform 1.3 ([ludoo](https://github.com/ludoo)) <!-- 2022-11-01 08:39:00+00:00 -->
+- [[#930](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/930)] **incompatible change:** Update organization/folder/project modules to use new org policies API and tf1.3 optionals ([juliocc](https://github.com/juliocc)) <!-- 2022-10-28 16:21:06+00:00 -->
 - [[#911](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/911)] FAST: Additional PGA DNS records ([sruffilli](https://github.com/sruffilli)) <!-- 2022-10-25 12:28:29+00:00 -->
 - [[#903](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/903)] Initial replacement for CI/CD stage ([ludoo](https://github.com/ludoo)) <!-- 2022-10-23 17:52:46+00:00 -->
 - [[#898](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/898)] Update FAST bootstrap README.md ([juliocc](https://github.com/juliocc)) <!-- 2022-10-19 15:15:36+00:00 -->
@@ -71,6 +77,8 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#931](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/931)] **incompatible change:** Refactor compute-mig module for Terraform 1.3 ([ludoo](https://github.com/ludoo)) <!-- 2022-11-01 08:39:00+00:00 -->
+- [[#930](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/930)] **incompatible change:** Update organization/folder/project modules to use new org policies API and tf1.3 optionals ([juliocc](https://github.com/juliocc)) <!-- 2022-10-28 16:21:06+00:00 -->
 - [[#926](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/926)] Fix backwards compatibility for vpc subnet descriptions ([ludoo](https://github.com/ludoo)) <!-- 2022-10-28 06:13:04+00:00 -->
 - [[#927](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/927)] Add support for deployment type and api proxy type for Apigee org ([kmucha555](https://github.com/kmucha555)) <!-- 2022-10-27 19:56:41+00:00 -->
 - [[#923](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/923)] Fix service account creation error in gke nodepool module ([ludoo](https://github.com/ludoo)) <!-- 2022-10-27 15:12:05+00:00 -->
