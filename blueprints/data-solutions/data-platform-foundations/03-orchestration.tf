@@ -84,6 +84,7 @@ module "orch-project" {
     "container.googleapis.com",
     "containerregistry.googleapis.com",
     "dataflow.googleapis.com",
+    "orgpolicy.googleapis.com",
     "pubsub.googleapis.com",
     "servicenetworking.googleapis.com",
     "storage.googleapis.com",

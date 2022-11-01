@@ -56,7 +56,8 @@ locals {
   ))
   _services = concat([
     "billingbudgets.googleapis.com",
-    "essentialcontacts.googleapis.com"
+    "essentialcontacts.googleapis.com",
+    "orgpolicy.googleapis.com",
     ],
     length(var.dns_zones) > 0 ? ["dns.googleapis.com"] : [],
     try(var.vpc.gke_setup, null) != null ? ["container.googleapis.com"] : [],
