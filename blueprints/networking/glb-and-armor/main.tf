@@ -153,22 +153,20 @@ module "vm_siege" {
 }
 
 module "mig_ew1" {
-  source     = "../../../modules/compute-mig"
-  project_id = module.project.project_id
-  location   = "europe-west1"
-  name       = "${local.prefix}europe-west1-mig"
-  regional   = true
-  default_version = {
-    instance_template = module.instance_template_ew1.template.self_link
-    name              = "default"
-  }
+  source            = "../../../modules/compute-mig"
+  project_id        = module.project.project_id
+  location          = "europe-west1"
+  name              = "${local.prefix}europe-west1-mig"
+  instance_template = module.instance_template_ew1.template.self_link
   autoscaler_config = {
-    max_replicas                      = 5
-    min_replicas                      = 1
-    cooldown_period                   = 45
-    cpu_utilization_target            = 0.8
-    load_balancing_utilization_target = null
-    metric                            = null
+    max_replicas    = 5
+    min_replicas    = 1
+    cooldown_period = 45
+    scaling_signals = {
+      cpu_utilization = {
+        target = 0.65
+      }
+    }
   }
   named_ports = {
     http = 80
@@ -179,22 +177,20 @@ module "mig_ew1" {
 }
 
 module "mig_ue1" {
-  source     = "../../../modules/compute-mig"
-  project_id = module.project.project_id
-  location   = "us-east1"
-  name       = "${local.prefix}us-east1-mig"
-  regional   = true
-  default_version = {
-    instance_template = module.instance_template_ue1.template.self_link
-    name              = "default"
-  }
+  source            = "../../../modules/compute-mig"
+  project_id        = module.project.project_id
+  location          = "us-east1"
+  name              = "${local.prefix}us-east1-mig"
+  instance_template = module.instance_template_ue1.template.self_link
   autoscaler_config = {
-    max_replicas                      = 5
-    min_replicas                      = 1
-    cooldown_period                   = 45
-    cpu_utilization_target            = 0.8
-    load_balancing_utilization_target = null
-    metric                            = null
+    max_replicas    = 5
+    min_replicas    = 1
+    cooldown_period = 45
+    scaling_signals = {
+      cpu_utilization = {
+        target = 0.65
+      }
+    }
   }
   named_ports = {
     http = 80
