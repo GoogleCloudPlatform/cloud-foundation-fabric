@@ -29,10 +29,12 @@ variable "apigee_envgroups" {
 }
 
 variable "apigee_environments" {
-  description = "Apigee Environment Names."
+  description = "Configuration settings for Apigee Environment(s)."
   type = map(object({
     api_proxy_type  = optional(string, "API_PROXY_TYPE_UNSPECIFIED")
     deployment_type = optional(string, "DEPLOYMENT_TYPE_UNSPECIFIED")
+    min_node_count  = optional(string, 2)
+    max_node_count  = optional(string, 2)
   }))
   default = {}
   validation {
@@ -42,6 +44,15 @@ variable "apigee_environments" {
   validation {
     condition     = alltrue([for k, v in var.apigee_environments : contains(["DEPLOYMENT_TYPE_UNSPECIFIED", "PROXY", "ARCHIVE"], v.deployment_type)])
     error_message = "Allowed values for deployment_type \"DEPLOYMENT_TYPE_UNSPECIFIED\", \"PROXY\" or \"ARCHIVE\"."
+  }
+
+  validation {
+    condition     = alltrue([for k, v in var.apigee_environments : v.min_node_count >= 2])
+    error_message = "node_config.min_node_count should be greater than or equal to 2. Check the provided \"node_config\" for \"apigee_environments\"."
+  }
+  validation {
+    condition     = alltrue([for k, v in var.apigee_environments : v.max_node_count >= 2])
+    error_message = "node_config.max_node_count should be greater than or equal to 2. Check the provided \"node_config\" for \"apigee_environments\"."
   }
 }
 

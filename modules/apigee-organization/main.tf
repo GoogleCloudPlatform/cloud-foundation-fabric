@@ -19,6 +19,8 @@ locals {
     for env_name, env in var.apigee_environments : {
       api_proxy_type  = env.api_proxy_type
       deployment_type = env.deployment_type
+      min_node_count  = env.min_node_count
+      max_node_count  = env.max_node_count
       env_name        = env_name
     }
   ])
@@ -50,6 +52,15 @@ resource "google_apigee_environment" "apigee_env" {
   deployment_type = each.value.deployment_type
   name            = each.key
   org_id          = google_apigee_organization.apigee_org.id
+
+  dynamic "node_config" {
+    for_each = var.billing_type == "PAYG" ? toset([1]) : toset([])
+
+    content {
+      min_node_count = each.value.min_node_count
+      max_node_count = each.value.max_node_count
+    }
+  }
 }
 
 resource "google_apigee_envgroup" "apigee_envgroup" {
