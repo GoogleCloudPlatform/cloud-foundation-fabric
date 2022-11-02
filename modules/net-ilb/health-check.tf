@@ -17,25 +17,16 @@
 # tfdoc:file:description Health check resource.
 
 locals {
-  hc      = var.health_check_config
-  hc_grpc = try(local.hc.grpc, null) != null
-  hc_http = (
-    try(local.hc.http, null) != null &&
-    lower(try(local.hc.http.use_protocol, "")) == "http"
-  )
-  hc_http2 = (
-    try(local.hc.http, null) != null &&
-    lower(try(local.hc.http.use_protocol, "")) == "http2"
-  )
-  hc_https = (
-    try(local.hc.http, null) != null &&
-    lower(try(local.hc.http.use_protocol, "")) == "https"
-  )
-  hc_ssl = try(local.hc.tcp.use_ssl, null) == true
-  hc_tcp = try(local.hc.tcp, null) != null && !local.hc_ssl
+  hc       = var.health_check_config
+  hc_grpc  = try(local.hc.grpc, null) != null
+  hc_http  = try(local.hc.http, null) != null
+  hc_http2 = try(local.hc.http2, null) != null
+  hc_https = try(local.hc.https, null) != null
+  hc_ssl   = try(local.hc.ssl, null) != null
+  hc_tcp   = try(local.hc.tcp, null) != null
 }
 
-resource "google_compute_health_check" "autohealing" {
+resource "google_compute_health_check" "default" {
   provider            = google-beta
   count               = local.hc != null ? 1 : 0
   project             = var.project_id

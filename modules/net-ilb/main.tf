@@ -16,20 +16,13 @@
 
 
 locals {
+  bs_conntrack = var.backend_service_config.connection_tracking
+  bs_failover  = var.backend_service_config.failover_config
   health_check = (
     var.health_check != null
     ? var.health_check
-    : try(local.health_check_resource.self_link, null)
+    : google_compute_health_check.default.0.self_link
   )
-  health_check_resource = try(
-    google_compute_health_check.http.0,
-    google_compute_health_check.https.0,
-    google_compute_health_check.tcp.0,
-    google_compute_health_check.ssl.0,
-    google_compute_health_check.http2.0,
-    {}
-  )
-  health_check_type = try(var.health_check_config.type, null)
 }
 
 resource "google_compute_forwarding_rule" "default" {
@@ -44,9 +37,9 @@ resource "google_compute_forwarding_rule" "default" {
     google_compute_region_backend_service.default.self_link
   )
   load_balancing_scheme = "INTERNAL"
-  network               = var.network
+  network               = var.vpc_config.network
   ports                 = var.ports # "nnnnn" or "nnnnn,nnnnn,nnnnn" max 5
-  subnetwork            = var.subnetwork
+  subnetwork            = var.vpc_config.subnetwork
   allow_global_access   = var.global_access
   labels                = var.labels
   all_ports             = var.ports == null ? true : null
@@ -55,24 +48,18 @@ resource "google_compute_forwarding_rule" "default" {
 }
 
 resource "google_compute_region_backend_service" "default" {
-  provider              = google-beta
-  project               = var.project_id
-  region                = var.region
-  name                  = var.name
-  description           = var.description
-  load_balancing_scheme = "INTERNAL"
-  protocol              = var.protocol
-  network               = var.network
-  health_checks         = [local.health_check]
-  connection_draining_timeout_sec = try(
-    var.backend_config.connection_draining_timeout_sec, null
-  )
-  session_affinity = try(
-    var.backend_config.session_affinity, null
-  )
-  timeout_sec = try(
-    var.backend_config.timeout_sec, null
-  )
+  provider                        = google-beta
+  project                         = var.project_id
+  region                          = var.region
+  name                            = var.name
+  description                     = var.description
+  load_balancing_scheme           = "INTERNAL"
+  protocol                        = var.protocol
+  network                         = var.vpc_config.network
+  health_checks                   = [local.health_check]
+  connection_draining_timeout_sec = var.backend_service_config.connection_draining_timeout_sec
+  session_affinity                = var.backend_service_config.session_affinity
+  timeout_sec                     = var.backend_service_config.timeout_sec
 
   dynamic "backend" {
     for_each = { for b in var.backends : b.group => b }
@@ -85,42 +72,44 @@ resource "google_compute_region_backend_service" "default" {
   }
 
   dynamic "connection_tracking_policy" {
-
+    for_each = local.bs_conntrack == null ? [] : [""]
+    content {
+      connection_persistence_on_unhealthy_backends = (
+        local.bs_conntrack.persist_conn_on_unhealthy != null
+        ? local.bs_conntrack.persist_conn_on_unhealthy
+        : null
+      )
+      idle_timeout_sec = local.bs_conntrack.idle_timeout_sec
+      tracking_mode = (
+        local.bs_conntrack.track_per_session != null
+        ? local.bs_conntrack.track_per_session
+        : null
+      )
+    }
   }
 
   dynamic "failover_policy" {
-    for_each = var.failover_config == null ? [] : [var.failover_config]
-    iterator = config
+    for_each = local.bs_failover == null ? [] : [""]
     content {
-      disable_connection_drain_on_failover = config.value.disable_connection_drain
-      drop_traffic_if_unhealthy            = config.value.drop_traffic_if_unhealthy
-      failover_ratio                       = config.value.ratio
+      disable_connection_drain_on_failover = local.bs_failover.disable_conn_drain
+      drop_traffic_if_unhealthy            = local.bs_failover.drop_traffic_if_unhealthy
+      failover_ratio                       = local.bs_failover.ratio
     }
   }
 
   dynamic "log_config" {
-
+    for_each = var.backend_service_config.log_sample_rate == null ? [] : [""]
+    content {
+      enable      = true
+      sample_rate = var.backend_service_config.log_sample_rate
+    }
   }
 
   dynamic "subsetting" {
-
-  }
-
-}
-
-resource "google_compute_instance_group" "unmanaged" {
-  for_each    = var.group_configs
-  project     = var.project_id
-  zone        = each.value.zone
-  name        = each.key
-  description = "Terraform-managed."
-  instances   = each.value.instances
-  dynamic "named_port" {
-    for_each = each.value.named_ports != null ? each.value.named_ports : {}
-    iterator = config
+    for_each = var.backend_service_config.enable_subsetting == true ? [""] : []
     content {
-      name = config.key
-      port = config.value
+      policy = "CONSISTENT_HASH_SUBSETTING"
     }
   }
+
 }
