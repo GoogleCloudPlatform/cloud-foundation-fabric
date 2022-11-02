@@ -50,7 +50,7 @@ variable "recordsets" {
       wrr_routing = [
         { weight = 0.6, records = ["127.0.0.7"] },
         { weight = 0.2, records = ["127.0.0.8"] },
-        { weight = 0.2, records = ["10.10.0.9"] }
+        { weight = 0.2, records = ["127.0.0.9"] }
       ]
     }
   }

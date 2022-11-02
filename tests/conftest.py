@@ -98,8 +98,8 @@ def recursive_e2e_plan_runner(_plan_runner):
   def walk_plan(node, modules, resources):
     # TODO(jccb): this would be better with node.get() but
     # TerraformPlanOutput objects don't have it
-    new_modules = node['child_modules'] if 'child_modules' in node else []
-    resources += node['resources'] if 'resources' in node else []
+    new_modules = node.get('child_modules', [])
+    resources += node.get('resources', [])
     modules += new_modules
     for module in new_modules:
       walk_plan(module, modules, resources)
