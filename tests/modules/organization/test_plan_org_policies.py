@@ -12,6 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import difflib
+from pathlib import Path
+
 
 def test_policy_boolean(plan_runner):
   "Test boolean org policy."
@@ -225,3 +228,75 @@ def test_policy_list(plan_runner):
       'enforce': None,
       'values': []
   }
+
+
+def test_policy_implementation(plan_runner):
+  '''Verify org policy implementation is the same (except minor
+  differences) in the organization, folder and project modules.'''
+
+  modules_path = Path(__file__).parents[3] / 'modules'
+  lines = {}
+  for module in ['project', 'folder', 'organization']:
+    path = modules_path / module / 'organization-policies.tf'
+    lines[module] = path.open().readlines()
+
+  diff1 = difflib.unified_diff(lines['project'], lines['folder'])
+  assert list(diff1) == [
+      '--- \n',
+      '+++ \n',
+      '@@ -14,14 +14,14 @@\n',
+      '  * limitations under the License.\n',
+      '  */\n',
+      ' \n',
+      '-# tfdoc:file:description Project-level organization policies.\n',
+      '+# tfdoc:file:description Folder-level organization policies.\n',
+      ' \n',
+      ' locals {\n',
+      '   org_policies = {\n',
+      '     for k, v in var.org_policies :\n',
+      '     k => merge(v, {\n',
+      '-      name   = "projects/${local.project.project_id}/policies/${k}"\n',
+      '-      parent = "projects/${local.project.project_id}"\n',
+      '+      name   = "${local.folder.name}/policies/${k}"\n',
+      '+      parent = local.folder.name\n',
+      ' \n',
+      '       is_boolean_policy = v.allow == null && v.deny == null\n',
+      '       has_values = (\n',
+  ]
+
+  diff2 = difflib.unified_diff(lines['folder'], lines['organization'])
+  assert list(diff2) == [
+      '--- \n',
+      '+++ \n',
+      '@@ -14,14 +14,14 @@\n',
+      '  * limitations under the License.\n',
+      '  */\n',
+      ' \n',
+      '-# tfdoc:file:description Folder-level organization policies.\n',
+      '+# tfdoc:file:description Organization-level organization policies.\n',
+      ' \n',
+      ' locals {\n',
+      '   org_policies = {\n',
+      '     for k, v in var.org_policies :\n',
+      '     k => merge(v, {\n',
+      '-      name   = "${local.folder.name}/policies/${k}"\n',
+      '-      parent = local.folder.name\n',
+      '+      name   = "${var.organization_id}/policies/${k}"\n',
+      '+      parent = var.organization_id\n',
+      ' \n',
+      '       is_boolean_policy = v.allow == null && v.deny == null\n',
+      '       has_values = (\n',
+      '@@ -94,4 +94,12 @@\n',
+      '       }\n',
+      '     }\n',
+      '   }\n',
+      '+\n',
+      '+  depends_on = [\n',
+      '+    google_organization_iam_audit_config.config,\n',
+      '+    google_organization_iam_binding.authoritative,\n',
+      '+    google_organization_iam_custom_role.roles,\n',
+      '+    google_organization_iam_member.additive,\n',
+      '+    google_organization_iam_policy.authoritative,\n',
+      '+  ]\n',
+      ' }\n',
+  ]
