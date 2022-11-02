@@ -62,22 +62,22 @@ module "ilb-left" {
   project_id = module.project.project_id
   region     = var.region
   name       = "${local.prefix}ilb-left"
-  network    = module.vpc-left.self_link
-  subnetwork = values(module.vpc-left.subnet_self_links)[0]
-  address    = local.addresses.ilb-left
-  ports      = null
-  backend_config = {
-    session_affinity                = var.ilb_session_affinity
-    timeout_sec                     = null
-    connection_draining_timeout_sec = null
+  vpc_config = {
+    network    = module.vpc-left.self_link
+    subnetwork = values(module.vpc-left.subnet_self_links)[0]
+  }
+  address = local.addresses.ilb-left
+  backend_service_config = {
+    session_affinity = var.ilb_session_affinity
   }
   backends = [for z, mod in module.gw : {
-    failover       = false
-    group          = mod.group.self_link
-    balancing_mode = "CONNECTION"
+    group = mod.group.self_link
   }]
   health_check_config = {
-    type = "tcp", check = { port = 22 }, config = {}, logging = true
+    enable_logging = true
+    tcp = {
+      port = 22
+    }
   }
 }
 
@@ -86,21 +86,21 @@ module "ilb-right" {
   project_id = module.project.project_id
   region     = var.region
   name       = "${local.prefix}ilb-right"
-  network    = module.vpc-right.self_link
-  subnetwork = values(module.vpc-right.subnet_self_links)[0]
-  address    = local.addresses.ilb-right
-  ports      = null
-  backend_config = {
-    session_affinity                = var.ilb_session_affinity
-    timeout_sec                     = null
-    connection_draining_timeout_sec = null
+  vpc_config = {
+    network    = module.vpc-right.self_link
+    subnetwork = values(module.vpc-right.subnet_self_links)[0]
+  }
+  address = local.addresses.ilb-right
+  backend_service_config = {
+    session_affinity = var.ilb_session_affinity
   }
   backends = [for z, mod in module.gw : {
-    failover       = false
-    group          = mod.group.self_link
-    balancing_mode = "CONNECTION"
+    group = mod.group.self_link
   }]
   health_check_config = {
-    type = "tcp", check = { port = 22 }, config = {}, logging = true
+    enable_logging = true
+    tcp = {
+      port = 22
+    }
   }
 }

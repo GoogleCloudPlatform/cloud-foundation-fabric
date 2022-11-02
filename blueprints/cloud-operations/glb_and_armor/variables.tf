@@ -14,48 +14,28 @@
  * limitations under the License.
  */
 
-variable "address" {
-  type    = string
+variable "project_create" {
+  description = "Parameters for the creation of the new project."
+  type = object({
+    billing_account_id = string
+    parent             = string
+  })
   default = null
 }
 
-variable "backend_service_config" {
-  description = "Backend service level configuration."
-  type        = any
-  default     = {}
+variable "project_id" {
+  description = "Identifier of the project."
+  type        = string
 }
 
-variable "backends" {
-  type    = any
-  default = []
+variable "enforce_security_policy" {
+  description = "Enforce security policy."
+  type        = bool
+  default     = true
 }
 
-variable "description" {
-  type    = string
-  default = "Terraform managed."
-}
-
-variable "global_access" {
-  type    = bool
-  default = null
-}
-
-variable "group_configs" {
-  type    = any
-  default = {}
-}
-
-variable "ports" {
-  type    = list(string)
-  default = null
-}
-
-variable "protocol" {
-  type    = string
-  default = "TCP"
-}
-
-variable "service_label" {
-  type    = string
-  default = null
+variable "prefix" {
+  description = "Prefix used for created resources."
+  type        = string
+  default     = null
 }

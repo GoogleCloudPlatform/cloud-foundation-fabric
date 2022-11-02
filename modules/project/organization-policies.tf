@@ -20,6 +20,9 @@ locals {
   org_policies = {
     for k, v in var.org_policies :
     k => merge(v, {
+      name   = "projects/${local.project.project_id}/policies/${k}"
+      parent = "projects/${local.project.project_id}"
+
       is_boolean_policy = v.allow == null && v.deny == null
       has_values = (
         length(coalesce(try(v.allow.values, []), [])) > 0 ||
@@ -40,8 +43,8 @@ locals {
 
 resource "google_org_policy_policy" "default" {
   for_each = local.org_policies
-  name     = "projects/${local.project.project_id}/policies/${each.key}"
-  parent   = "projects/${local.project.project_id}"
+  name     = each.value.name
+  parent   = each.value.parent
 
   spec {
     inherit_from_parent = each.value.inherit_from_parent

@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-output "backend" {
+output "backend_service" {
   description = "Backend resource."
   value       = google_compute_region_backend_service.default
 }
 
-output "backend_id" {
+output "backend_service_id" {
   description = "Backend id."
   value       = google_compute_region_backend_service.default.id
 }
 
-output "backend_self_link" {
+output "backend_service_self_link" {
   description = "Backend self link."
   value       = google_compute_region_backend_service.default.self_link
 }
@@ -49,6 +49,11 @@ output "forwarding_rule_self_link" {
   value       = google_compute_forwarding_rule.default.self_link
 }
 
+output "groups" {
+  description = "Optional unmanaged instance group resources."
+  value       = google_compute_instance_group.unmanaged
+}
+
 output "group_self_links" {
   description = "Optional unmanaged instance group self links."
   value = {
@@ -56,22 +61,17 @@ output "group_self_links" {
   }
 }
 
-output "groups" {
-  description = "Optional unmanaged instance group resources."
-  value       = google_compute_instance_group.unmanaged
-}
-
 output "health_check" {
   description = "Auto-created health-check resource."
-  value       = local.health_check_resource
+  value       = try(google_compute_health_check.default.0, null)
 }
 
 output "health_check_self_id" {
   description = "Auto-created health-check self id."
-  value       = try(local.health_check_resource.id, null)
+  value       = try(google_compute_health_check.default.0.id, null)
 }
 
 output "health_check_self_link" {
   description = "Auto-created health-check self link."
-  value       = try(local.health_check_resource.self_link, null)
+  value       = try(google_compute_health_check.default.0.self_link, null)
 }
