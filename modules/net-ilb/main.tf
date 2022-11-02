@@ -57,27 +57,35 @@ resource "google_compute_forwarding_rule" "default" {
 resource "google_compute_region_backend_service" "default" {
   provider              = google-beta
   project               = var.project_id
-  name                  = var.name
-  description           = "Terraform managed."
-  load_balancing_scheme = "INTERNAL"
   region                = var.region
+  name                  = var.name
+  description           = var.description
+  load_balancing_scheme = "INTERNAL"
+  protocol              = var.protocol
   network               = var.network
   health_checks         = [local.health_check]
-  protocol              = var.protocol
-
-  session_affinity                = try(var.backend_config.session_affinity, null)
-  timeout_sec                     = try(var.backend_config.timeout_sec, null)
-  connection_draining_timeout_sec = try(var.backend_config.connection_draining_timeout_sec, null)
+  connection_draining_timeout_sec = try(
+    var.backend_config.connection_draining_timeout_sec, null
+  )
+  session_affinity = try(
+    var.backend_config.session_affinity, null
+  )
+  timeout_sec = try(
+    var.backend_config.timeout_sec, null
+  )
 
   dynamic "backend" {
     for_each = { for b in var.backends : b.group => b }
-    iterator = backend
     content {
       balancing_mode = backend.value.balancing_mode
-      description    = "Terraform managed."
+      description    = backend.value.description
       failover       = backend.value.failover
       group          = backend.key
     }
+  }
+
+  dynamic "connection_tracking_policy" {
+
   }
 
   dynamic "failover_policy" {
@@ -88,6 +96,14 @@ resource "google_compute_region_backend_service" "default" {
       drop_traffic_if_unhealthy            = config.value.drop_traffic_if_unhealthy
       failover_ratio                       = config.value.ratio
     }
+  }
+
+  dynamic "log_config" {
+
+  }
+
+  dynamic "subsetting" {
+
   }
 
 }

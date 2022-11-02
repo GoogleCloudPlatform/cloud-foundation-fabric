@@ -20,23 +20,25 @@ variable "address" {
   default     = null
 }
 
-variable "backend_config" {
-  description = "Optional backend configuration."
-  type = object({
-    session_affinity                = string
-    timeout_sec                     = number
-    connection_draining_timeout_sec = number
-  })
-  default = null
-}
-
 variable "backends" {
   description = "Load balancer backends, balancing mode is one of 'CONNECTION' or 'UTILIZATION'."
   type = list(object({
-    failover       = bool
-    group          = string
-    balancing_mode = string
+    group                           = string
+    balancing_mode                  = string
+    description                     = optional(string, "Terraform managed.")
+    failover                        = optional(bool, false)
+    session_affinity                = optional(string)
+    timeout_sec                     = optional(number)
+    connection_draining_timeout_sec = optional(number)
   }))
+  default  = []
+  nullable = false
+  validation {
+    condition = alltrue([for b in var.backends : contains(
+      [null, "CONNECTION", "UTILIZATION"], b.balancing_mode
+    )])
+    error_message = "When specified balancing mode needs to be 'CONNECTION' or 'UTILIZATION'."
+  }
 }
 
 variable "description" {
