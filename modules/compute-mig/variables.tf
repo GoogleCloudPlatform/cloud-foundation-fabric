@@ -124,7 +124,24 @@ variable "health_check_config" {
       proxy_header       = optional(string)
       request_path       = optional(string)
       response           = optional(string)
-      use_protocol       = optional(string, "http") # http http2 https
+    }))
+    http2 = optional(object({
+      host               = optional(string)
+      port               = optional(number)
+      port_name          = optional(string)
+      port_specification = optional(string) # USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT
+      proxy_header       = optional(string)
+      request_path       = optional(string)
+      response           = optional(string)
+    }))
+    https = optional(object({
+      host               = optional(string)
+      port               = optional(number)
+      port_name          = optional(string)
+      port_specification = optional(string) # USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT
+      proxy_header       = optional(string)
+      request_path       = optional(string)
+      response           = optional(string)
     }))
     tcp = optional(object({
       port               = optional(number)
@@ -133,7 +150,14 @@ variable "health_check_config" {
       proxy_header       = optional(string)
       request            = optional(string)
       response           = optional(string)
-      use_ssl            = optional(bool, false)
+    }))
+    ssl = optional(object({
+      port               = optional(number)
+      port_name          = optional(string)
+      port_specification = optional(string) # USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT
+      proxy_header       = optional(string)
+      request            = optional(string)
+      response           = optional(string)
     }))
   })
   default = null

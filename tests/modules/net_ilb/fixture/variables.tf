@@ -19,30 +19,20 @@ variable "address" {
   default = null
 }
 
+variable "backend_service_config" {
+  description = "Backend service level configuration."
+  type        = any
+  default     = {}
+}
+
 variable "backends" {
-  type = list(object({
-    failover       = bool
-    group          = string
-    balancing_mode = string
-  }))
+  type    = any
+  default = []
 }
 
-variable "backend_config" {
-  type = object({
-    session_affinity                = string
-    timeout_sec                     = number
-    connection_draining_timeout_sec = number
-  })
-  default = null
-}
-
-variable "failover_config" {
-  type = object({
-    disable_connection_drain  = bool
-    drop_traffic_if_unhealthy = bool
-    ratio                     = number
-  })
-  default = null
+variable "description" {
+  type    = string
+  default = "Terraform managed."
 }
 
 variable "global_access" {
@@ -50,26 +40,9 @@ variable "global_access" {
   default = null
 }
 
-variable "health_check" {
-  type    = string
-  default = null
-}
-
-variable "health_check_config" {
-  type = object({
-    type    = string      # http https tcp ssl http2
-    check   = map(any)    # actual health check block attributes
-    config  = map(number) # interval, thresholds, timeout
-    logging = bool
-  })
-  default = {
-    type = "http"
-    check = {
-      port_specification = "USE_SERVING_PORT"
-    }
-    config  = {}
-    logging = false
-  }
+variable "group_configs" {
+  type    = any
+  default = {}
 }
 
 variable "ports" {
