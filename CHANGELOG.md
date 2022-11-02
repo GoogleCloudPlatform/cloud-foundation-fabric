@@ -5,9 +5,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 <!-- None < 2022-09-09 18:02:15+00:00 -->
+- [[#939](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/939)] Temporarily duplicate cloud armor example ([ludoo](https://github.com/ludoo)) <!-- 2022-11-02 09:36:04+00:00 -->
 
 ### BLUEPRINTS
 
+- [[#941](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/941)] **incompatible change:** Refactor ILB module for Terraform 1.3 ([ludoo](https://github.com/ludoo)) <!-- 2022-11-02 17:05:21+00:00 -->
 - [[#936](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/936)] Enable org policy service and add README notice to modules ([ludoo](https://github.com/ludoo)) <!-- 2022-11-01 13:25:08+00:00 -->
 - [[#931](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/931)] **incompatible change:** Refactor compute-mig module for Terraform 1.3 ([ludoo](https://github.com/ludoo)) <!-- 2022-11-01 08:39:00+00:00 -->
 - [[#932](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/932)] feat(project-factory): introduce additive iam bindings to project-fac… ([Malet](https://github.com/Malet)) <!-- 2022-10-31 17:24:25+00:00 -->
@@ -56,6 +58,7 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#941](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/941)] **incompatible change:** Refactor ILB module for Terraform 1.3 ([ludoo](https://github.com/ludoo)) <!-- 2022-11-02 17:05:21+00:00 -->
 - [[#935](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/935)] FAST: enable org policy API, fix run.allowedIngress value ([ludoo](https://github.com/ludoo)) <!-- 2022-11-01 08:52:03+00:00 -->
 - [[#931](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/931)] **incompatible change:** Refactor compute-mig module for Terraform 1.3 ([ludoo](https://github.com/ludoo)) <!-- 2022-11-01 08:39:00+00:00 -->
 - [[#930](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/930)] **incompatible change:** Update organization/folder/project modules to use new org policies API and tf1.3 optionals ([juliocc](https://github.com/juliocc)) <!-- 2022-10-28 16:21:06+00:00 -->
@@ -79,6 +82,8 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#941](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/941)] **incompatible change:** Refactor ILB module for Terraform 1.3 ([ludoo](https://github.com/ludoo)) <!-- 2022-11-02 17:05:21+00:00 -->
+- [[#940](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/940)] Ensure the implementation of org policies is consistent ([juliocc](https://github.com/juliocc)) <!-- 2022-11-02 09:55:21+00:00 -->
 - [[#936](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/936)] Enable org policy service and add README notice to modules ([ludoo](https://github.com/ludoo)) <!-- 2022-11-01 13:25:08+00:00 -->
 - [[#931](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/931)] **incompatible change:** Refactor compute-mig module for Terraform 1.3 ([ludoo](https://github.com/ludoo)) <!-- 2022-11-01 08:39:00+00:00 -->
 - [[#930](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/930)] **incompatible change:** Update organization/folder/project modules to use new org policies API and tf1.3 optionals ([juliocc](https://github.com/juliocc)) <!-- 2022-10-28 16:21:06+00:00 -->
