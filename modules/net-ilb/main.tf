@@ -33,23 +33,25 @@ locals {
 }
 
 resource "google_compute_forwarding_rule" "default" {
-  provider              = google-beta
-  project               = var.project_id
-  name                  = var.name
-  description           = "Terraform managed."
+  provider    = google-beta
+  project     = var.project_id
+  region      = var.region
+  name        = var.name
+  description = var.description
+  ip_address  = var.address
+  ip_protocol = var.protocol # TCP | UDP
+  backend_service = (
+    google_compute_region_backend_service.default.self_link
+  )
   load_balancing_scheme = "INTERNAL"
-  region                = var.region
   network               = var.network
+  ports                 = var.ports # "nnnnn" or "nnnnn,nnnnn,nnnnn" max 5
   subnetwork            = var.subnetwork
-  ip_address            = var.address
-  ip_protocol           = var.protocol # TCP | UDP
-  ports                 = var.ports    # "nnnnn" or "nnnnn,nnnnn,nnnnn" max 5
-  service_label         = var.service_label
-  all_ports             = var.ports == null ? true : null
   allow_global_access   = var.global_access
-  backend_service       = google_compute_region_backend_service.default.self_link
+  labels                = var.labels
+  all_ports             = var.ports == null ? true : null
+  service_label         = var.service_label
   # is_mirroring_collector = false
-  labels = var.labels
 }
 
 resource "google_compute_region_backend_service" "default" {
@@ -106,162 +108,3 @@ resource "google_compute_instance_group" "unmanaged" {
     }
   }
 }
-
-resource "google_compute_health_check" "http" {
-  provider = google-beta
-  count = (
-    var.health_check == null && local.health_check_type == "http" ? 1 : 0
-  )
-  project     = var.project_id
-  name        = var.name
-  description = "Terraform managed."
-
-  check_interval_sec  = try(var.health_check_config.config.check_interval_sec, null)
-  healthy_threshold   = try(var.health_check_config.config.healthy_threshold, null)
-  timeout_sec         = try(var.health_check_config.config.timeout_sec, null)
-  unhealthy_threshold = try(var.health_check_config.config.unhealthy_threshold, null)
-
-  http_health_check {
-    host               = try(var.health_check_config.check.host, null)
-    port               = try(var.health_check_config.check.port, null)
-    port_name          = try(var.health_check_config.check.port_name, null)
-    port_specification = try(var.health_check_config.check.port_specification, null)
-    proxy_header       = try(var.health_check_config.check.proxy_header, null)
-    request_path       = try(var.health_check_config.check.request_path, null)
-    response           = try(var.health_check_config.check.response, null)
-  }
-
-  dynamic "log_config" {
-    for_each = try(var.health_check_config.logging, false) ? [""] : []
-    content {
-      enable = true
-    }
-  }
-}
-
-resource "google_compute_health_check" "https" {
-  provider = google-beta
-  count = (
-    var.health_check == null && local.health_check_type == "https" ? 1 : 0
-  )
-  project     = var.project_id
-  name        = var.name
-  description = "Terraform managed."
-
-  check_interval_sec  = try(var.health_check_config.config.check_interval_sec, null)
-  healthy_threshold   = try(var.health_check_config.config.healthy_threshold, null)
-  timeout_sec         = try(var.health_check_config.config.timeout_sec, null)
-  unhealthy_threshold = try(var.health_check_config.config.unhealthy_threshold, null)
-
-  https_health_check {
-    host               = try(var.health_check_config.check.host, null)
-    port               = try(var.health_check_config.check.port, null)
-    port_name          = try(var.health_check_config.check.port_name, null)
-    port_specification = try(var.health_check_config.check.port_specification, null)
-    proxy_header       = try(var.health_check_config.check.proxy_header, null)
-    request_path       = try(var.health_check_config.check.request_path, null)
-    response           = try(var.health_check_config.check.response, null)
-  }
-
-  dynamic "log_config" {
-    for_each = try(var.health_check_config.logging, false) ? [""] : []
-    content {
-      enable = true
-    }
-  }
-}
-
-resource "google_compute_health_check" "tcp" {
-  provider = google-beta
-  count = (
-    var.health_check == null && local.health_check_type == "tcp" ? 1 : 0
-  )
-  project     = var.project_id
-  name        = var.name
-  description = "Terraform managed."
-
-  check_interval_sec  = try(var.health_check_config.config.check_interval_sec, null)
-  healthy_threshold   = try(var.health_check_config.config.healthy_threshold, null)
-  timeout_sec         = try(var.health_check_config.config.timeout_sec, null)
-  unhealthy_threshold = try(var.health_check_config.config.unhealthy_threshold, null)
-
-  tcp_health_check {
-    port               = try(var.health_check_config.check.port, null)
-    port_name          = try(var.health_check_config.check.port_name, null)
-    port_specification = try(var.health_check_config.check.port_specification, null)
-    proxy_header       = try(var.health_check_config.check.proxy_header, null)
-    request            = try(var.health_check_config.check.request, null)
-    response           = try(var.health_check_config.check.response, null)
-  }
-
-  dynamic "log_config" {
-    for_each = try(var.health_check_config.logging, false) ? [""] : []
-    content {
-      enable = true
-    }
-  }
-}
-
-resource "google_compute_health_check" "ssl" {
-  provider = google-beta
-  count = (
-    var.health_check == null && local.health_check_type == "ssl" ? 1 : 0
-  )
-  project     = var.project_id
-  name        = var.name
-  description = "Terraform managed."
-
-  check_interval_sec  = try(var.health_check_config.config.check_interval_sec, null)
-  healthy_threshold   = try(var.health_check_config.config.healthy_threshold, null)
-  timeout_sec         = try(var.health_check_config.config.timeout_sec, null)
-  unhealthy_threshold = try(var.health_check_config.config.unhealthy_threshold, null)
-
-  ssl_health_check {
-    port               = try(var.health_check_config.check.port, null)
-    port_name          = try(var.health_check_config.check.port_name, null)
-    port_specification = try(var.health_check_config.check.port_specification, null)
-    proxy_header       = try(var.health_check_config.check.proxy_header, null)
-    request            = try(var.health_check_config.check.request, null)
-    response           = try(var.health_check_config.check.response, null)
-  }
-
-  dynamic "log_config" {
-    for_each = try(var.health_check_config.logging, false) ? [""] : []
-    content {
-      enable = true
-    }
-  }
-}
-
-resource "google_compute_health_check" "http2" {
-  provider = google-beta
-  count = (
-    var.health_check == null && local.health_check_type == "http2" ? 1 : 0
-  )
-  project     = var.project_id
-  name        = var.name
-  description = "Terraform managed."
-
-  check_interval_sec  = try(var.health_check_config.config.check_interval_sec, null)
-  healthy_threshold   = try(var.health_check_config.config.healthy_threshold, null)
-  timeout_sec         = try(var.health_check_config.config.timeout_sec, null)
-  unhealthy_threshold = try(var.health_check_config.config.unhealthy_threshold, null)
-
-  http2_health_check {
-    host               = try(var.health_check_config.check.host, null)
-    port               = try(var.health_check_config.check.port, null)
-    port_name          = try(var.health_check_config.check.port_name, null)
-    port_specification = try(var.health_check_config.check.port_specification, null)
-    proxy_header       = try(var.health_check_config.check.proxy_header, null)
-    request_path       = try(var.health_check_config.check.request_path, null)
-    response           = try(var.health_check_config.check.response, null)
-  }
-
-  dynamic "log_config" {
-    for_each = try(var.health_check_config.logging, false) ? [""] : []
-    content {
-      enable = true
-    }
-  }
-}
-
