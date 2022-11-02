@@ -13,14 +13,14 @@
 # limitations under the License.
 
 
+output "impersonate_service_account_email" {
+  description = "Service account to be impersonated by workload identity."
+  value       = module.sa-tfe.email
+}
+
 output "project_id" {
   description = "GCP Project ID."
   value       = module.project.project_id
-}
-
-output "workload_identity_pool_provider_id" {
-  description = "GCP workload identity pool provider ID."
-  value       = google_iam_workload_identity_pool_provider.tfe-pool-provider.name
 }
 
 output "workload_identity_audience" {
@@ -28,7 +28,7 @@ output "workload_identity_audience" {
   value       = "//iam.googleapis.com/${google_iam_workload_identity_pool_provider.tfe-pool-provider.name}"
 }
 
-output "impersonate_service_account_email" {
-  description = "Service account to be impersonated by workload identity."
-  value       = module.sa-tfe.email
+output "workload_identity_pool_provider_id" {
+  description = "GCP workload identity pool provider ID."
+  value       = google_iam_workload_identity_pool_provider.tfe-pool-provider.name
 }

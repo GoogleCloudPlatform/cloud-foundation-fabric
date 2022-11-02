@@ -21,26 +21,26 @@ module "kms" {
     location = var.region
   }
   keys = {
-    key-df  = null
-    key-gcs = null
-    key-bq  = null
+  #  key-df  = null
+  #  key-gcs = null
+  #  key-bq  = null
   }
   key_iam = {
-    key-gcs = {
-      "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
-        "serviceAccount:${module.project.service_accounts.robots.storage}"
-      ]
-    },
-    key-bq = {
-      "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
-        "serviceAccount:${module.project.service_accounts.robots.bq}"
-      ]
-    },
-    key-df = {
-      "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
-        "serviceAccount:${module.project.service_accounts.robots.dataflow}",
-        "serviceAccount:${module.project.service_accounts.robots.compute}",
-      ]
-    }
+  #  key-gcs = {
+  #    "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
+  #      "serviceAccount:${module.project.service_accounts.robots.storage}"
+  #    ]
+  #  },
+  #  key-bq = {
+  #    "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
+  #      "serviceAccount:${module.project.service_accounts.robots.bq}"
+  #    ]
+  #  },
+  #  key-df = {
+  #    "roles/cloudkms.cryptoKeyEncrypterDecrypter" = [
+  #      "serviceAccount:${module.project.service_accounts.robots.dataflow}",
+  #      "serviceAccount:${module.project.service_accounts.robots.compute}",
+  #    ]
+  #  }
   }
 }

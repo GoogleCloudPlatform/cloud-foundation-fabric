@@ -50,7 +50,6 @@ module "service-account-function" {
   # Required IAM permissions for this service account are:
   # 1) compute.networkViewer on projects to be monitored (I gave it at organization level for now for simplicity)
   # 2) monitoring viewer on the projects to be monitored (I gave it at organization level for now for simplicity)
-  # 3) if you dont have permission to create service account and assign permission at organization Level, move these 3 roles to project level.
 
   iam_organization_roles = {
     "${var.organization_id}" = [

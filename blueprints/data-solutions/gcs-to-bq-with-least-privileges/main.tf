@@ -16,64 +16,64 @@ locals {
   iam = {
     # GCS roles
     "roles/storage.objectAdmin" = [
-      module.service-account-df.iam_email,
+      #module.service-account-df.iam_email,
       module.service-account-landing.iam_email
     ],
     "roles/storage.objectViewer" = [
-      module.service-account-orch.iam_email,
+      #module.service-account-orch.iam_email,
     ],
     # BigQuery roles
     "roles/bigquery.admin" = concat([
-      module.service-account-orch.iam_email,
+      #module.service-account-orch.iam_email,
       ], var.data_eng_principals
     )
     "roles/bigquery.dataEditor" = [
-      module.service-account-df.iam_email,
-      module.service-account-bq.iam_email
+      #module.service-account-df.iam_email,
+      #module.service-account-bq.iam_email
     ]
     "roles/bigquery.dataViewer" = [
-      module.service-account-bq.iam_email,
-      module.service-account-orch.iam_email
+      #module.service-account-bq.iam_email,
+      #module.service-account-orch.iam_email
     ]
     "roles/bigquery.jobUser" = [
-      module.service-account-df.iam_email,
-      module.service-account-bq.iam_email
+      #module.service-account-df.iam_email,
+      #module.service-account-bq.iam_email
     ]
     "roles/bigquery.user" = [
-      module.service-account-bq.iam_email,
-      module.service-account-df.iam_email
+      #module.service-account-bq.iam_email,
+      #module.service-account-df.iam_email
     ]
     # common roles
     "roles/logging.admin" = var.data_eng_principals
     "roles/logging.logWriter" = [
-      module.service-account-bq.iam_email,
+      #module.service-account-bq.iam_email,
       module.service-account-landing.iam_email,
-      module.service-account-orch.iam_email,
+      #module.service-account-orch.iam_email,
     ]
     "roles/monitoring.metricWriter" = [
-      module.service-account-bq.iam_email,
+      #module.service-account-bq.iam_email,
       module.service-account-landing.iam_email,
-      module.service-account-orch.iam_email,
+      #module.service-account-orch.iam_email,
     ]
     "roles/iam.serviceAccountUser" = [
-      module.service-account-orch.iam_email,
+      #module.service-account-orch.iam_email,
     ]
     "roles/iam.serviceAccountTokenCreator" = concat(
       var.data_eng_principals
     )
     # Dataflow roles
     "roles/dataflow.admin" = concat(
-      [module.service-account-orch.iam_email],
+      #[module.service-account-orch.iam_email],
       var.data_eng_principals
     )
     "roles/dataflow.worker" = [
-      module.service-account-df.iam_email,
+      #module.service-account-df.iam_email,
     ]
     "roles/dataflow.developer" = var.data_eng_principals
     "roles/compute.viewer"     = var.data_eng_principals
     # network roles
     "roles/compute.networkUser" = [
-      module.service-account-df.iam_email,
+      #module.service-account-df.iam_email,
       "serviceAccount:${module.project.service_accounts.robots.dataflow}"
     ]
   }
@@ -96,8 +96,9 @@ locals {
   }
   shared_vpc_project = try(var.network_config.host_project, null)
   shared_vpc_role_members = {
-    robot-df     = "serviceAccount:${module.project.service_accounts.robots.dataflow}"
-    sa-df-worker = module.service-account-df.iam_email
+    # TODO: Add Shared VPC Role members
+    #robot-df     = "serviceAccount:${module.project.service_accounts.robots.dataflow}"
+    #sa-df-worker = module.service-account-df.iam_email
   }
   use_shared_vpc = var.network_config != null
 }

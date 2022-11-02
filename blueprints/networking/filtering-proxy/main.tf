@@ -165,33 +165,31 @@ module "squid-vm" {
 }
 
 module "squid-mig" {
-  count       = var.mig ? 1 : 0
-  source      = "../../../modules/compute-mig"
-  project_id  = module.project-host.project_id
-  location    = "${var.region}-b"
-  name        = "squid-mig"
-  target_size = 1
-  autoscaler_config = {
-    max_replicas                      = 10
-    min_replicas                      = 1
-    cooldown_period                   = 30
-    cpu_utilization_target            = 0.65
-    load_balancing_utilization_target = null
-    metric                            = null
+  count             = var.mig ? 1 : 0
+  source            = "../../../modules/compute-mig"
+  project_id        = module.project-host.project_id
+  location          = "${var.region}-b"
+  name              = "squid-mig"
+  instance_template = module.squid-vm.template.self_link
+  target_size       = 1
+  auto_healing_policies = {
+    initial_delay_sec = 60
   }
-  default_version = {
-    instance_template = module.squid-vm.template.self_link
-    name              = "default"
+  autoscaler_config = {
+    max_replicas    = 10
+    min_replicas    = 1
+    cooldown_period = 30
+    scaling_signals = {
+      cpu_utilization = {
+        target = 0.65
+      }
+    }
   }
   health_check_config = {
-    type    = "tcp"
-    check   = { port = 3128 }
-    config  = {}
-    logging = true
-  }
-  auto_healing_policies = {
-    health_check      = module.squid-mig.0.health_check.self_link
-    initial_delay_sec = 60
+    enable_logging = true
+    tcp = {
+      port = 3128
+    }
   }
 }
 
@@ -226,13 +224,10 @@ module "folder-apps" {
   source = "../../../modules/folder"
   parent = var.root_node
   name   = "apps"
-  policy_list = {
+  org_policies = {
     # prevent VMs with public IPs in the apps folder
     "constraints/compute.vmExternalIpAccess" = {
-      inherit_from_parent = false
-      suggested_value     = null
-      status              = false
-      values              = []
+      deny = { all = true }
     }
   }
 }

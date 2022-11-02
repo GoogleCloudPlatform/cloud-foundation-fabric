@@ -48,15 +48,15 @@ labels:
 
 # [opt] Org policy overrides defined at project level
 org_policies:
-  policy_boolean:
-    constraints/compute.disableGuestAttributesAccess: true
-  policy_list:
-    constraints/compute.trustedImageProjects:
-      inherit_from_parent: null
-      status: true
-      suggested_value: null
+  constraints/compute.disableGuestAttributesAccess:
+    enforce: true
+  constraints/compute.trustedImageProjects:
+    allow:
       values:
         - projects/fast-dev-iac-core-0
+  constraints/compute.vmExternalIpAccess:
+    deny:
+      all: true
 
 # [opt] Service account to create for the project and their roles on the project
 # in name => [roles] format
