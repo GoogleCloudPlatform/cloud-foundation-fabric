@@ -35,6 +35,7 @@ module "project" {
     "dataflow.googleapis.com",
     "ml.googleapis.com",
     "notebooks.googleapis.com",
+    "orgpolicy.googleapis.com",
     "servicenetworking.googleapis.com",
     "stackdriver.googleapis.com",
     "storage.googleapis.com",

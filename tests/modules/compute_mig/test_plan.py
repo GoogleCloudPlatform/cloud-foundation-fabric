@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+
 def test_defaults(plan_runner):
   "Test variable defaults."
   _, resources = plan_runner()
@@ -21,7 +22,7 @@ def test_defaults(plan_runner):
   assert mig['type'] == 'google_compute_instance_group_manager'
   assert mig['values']['target_size'] == 2
   assert mig['values']['zone']
-  _, resources = plan_runner(regional='true')
+  _, resources = plan_runner(location='"europe-west1"')
   assert len(resources) == 1
   mig = resources[0]
   assert mig['type'] == 'google_compute_region_instance_group_manager'
@@ -31,7 +32,12 @@ def test_defaults(plan_runner):
 
 def test_health_check(plan_runner):
   "Test health check resource."
-  health_check_config = '{type="tcp", check={port=80}, config=null, logging=false}'
+  health_check_config = '''{
+    enable_logging = true
+    tcp = {
+      port = 80
+    }
+  }'''
   _, resources = plan_runner(health_check_config=health_check_config)
   assert len(resources) == 2
   assert any(r['type'] == 'google_compute_health_check' for r in resources)
@@ -39,20 +45,26 @@ def test_health_check(plan_runner):
 
 def test_autoscaler(plan_runner):
   "Test autoscaler resource."
-  autoscaler_config = (
-      '{'
-      'max_replicas=3, min_replicas=1, cooldown_period=60,'
-      'cpu_utilization_target=65, load_balancing_utilization_target=null,'
-      'metric=null'
-      '}'
-  )
+  autoscaler_config = '''{
+    colldown_period = 60
+    max_replicas    = 3
+    min_replicas    = 1
+    scaling_signals = {
+      cpu_utilization = {
+        target = 65
+      }
+    }
+  }'''
   _, resources = plan_runner(autoscaler_config=autoscaler_config)
   assert len(resources) == 2
   autoscaler = resources[0]
   assert autoscaler['type'] == 'google_compute_autoscaler'
   assert autoscaler['values']['autoscaling_policy'] == [{
       'cooldown_period': 60,
-      'cpu_utilization': [{'predictive_method': 'NONE', 'target': 65}],
+      'cpu_utilization': [{
+          'predictive_method': 'NONE',
+          'target': 65
+      }],
       'load_balancing_utilization': [],
       'max_replicas': 3,
       'metric': [],
@@ -62,7 +74,7 @@ def test_autoscaler(plan_runner):
       'scaling_schedules': [],
   }]
   _, resources = plan_runner(autoscaler_config=autoscaler_config,
-                             regional='true')
+                             location='"europe-west1"')
   assert len(resources) == 2
   autoscaler = resources[0]
   assert autoscaler['type'] == 'google_compute_region_autoscaler'
@@ -71,17 +83,10 @@ def test_autoscaler(plan_runner):
 def test_stateful_mig(plan_runner):
   "Test stateful instances - mig."
 
-  stateful_config = (
-      '{'
-      'per_instance_config = {},'
-      'mig_config = {'
-      'stateful_disks = {'
-      'persistent-disk-1 = {delete_rule="NEVER"}'
-      '}'
-      '}'
-      '}'
-  )
-  _, resources = plan_runner(stateful_config=stateful_config)
+  stateful_disks = '''{
+    persistent-disk-1 = null
+  }'''
+  _, resources = plan_runner(stateful_disks=stateful_disks)
   assert len(resources) == 1
   statefuldisk = resources[0]
   assert statefuldisk['type'] == 'google_compute_instance_group_manager'
@@ -93,35 +98,19 @@ def test_stateful_mig(plan_runner):
 
 def test_stateful_instance(plan_runner):
   "Test stateful instances - instance."
-  stateful_config = (
-      '{'
-      'per_instance_config = {'
-      'instance-1 = {'
-      'stateful_disks = {'
-      'persistent-disk-1 = {'
-      'source = "test-disk",'
-      'mode = "READ_ONLY",'
-      'delete_rule= "NEVER",'
-      '},'
-      '},'
-      'metadata = {'
-      'foo = "bar"'
-      '},'
-      'update_config = {'
-      'minimal_action                   = "NONE",'
-      'most_disruptive_allowed_action   = "REPLACE",'
-      'remove_instance_state_on_destroy = false,'
-
-      '},'
-      '},'
-      '},'
-      'mig_config = {'
-      'stateful_disks = {'
-      'persistent-disk-1 = {delete_rule="NEVER"}'
-      '}'
-      '}'
-      '}'
-  )
+  stateful_config = '''{
+    instance-1 = {
+      most_disruptive_action   = "REPLACE",
+      preserved_state = {
+        disks = {
+          persistent-disk-1 = {
+            source = "test-disk"
+          }
+        }
+        metadata = { foo = "bar" }
+      }
+    }
+  }'''
   _, resources = plan_runner(stateful_config=stateful_config)
   assert len(resources) == 2
   instanceconfig = resources[0]
@@ -134,13 +123,12 @@ def test_stateful_instance(plan_runner):
           'device_name': 'persistent-disk-1',
           'delete_rule': 'NEVER',
           'source': 'test-disk',
-          'mode': 'READ_ONLY',
+          'mode': 'READ_WRITE',
       }],
       'metadata': {
           'foo': 'bar'
       }
   }]
-
   assert instanceconfig['values']['minimal_action'] == 'NONE'
   assert instanceconfig['values']['most_disruptive_allowed_action'] == 'REPLACE'
   assert instanceconfig['values']['remove_instance_state_on_destroy'] == False

@@ -78,11 +78,10 @@ module "organization" {
     "iam.automaticIamGrantsForDefaultServiceAccounts" = { enforce = true }
     "iam.disableServiceAccountKeyCreation"            = { enforce = true }
     "iam.disableServiceAccountKeyUpload"              = { enforce = true }
-    "run.allowedIngress"                              = { allow = { values = ["is:INTERNAL"] } }
+    "run.allowedIngress"                              = { allow = { values = ["is:internal"] } }
     "sql.restrictAuthorizedNetworks"                  = { enforce = true }
     "sql.restrictPublicIp"                            = { enforce = true }
     "storage.uniformBucketLevelAccess"                = { enforce = true }
-
     # "cloudfunctions.allowedIngressSettings" = {
     #   allow = { values = ["is:ALLOW_INTERNAL_ONLY"] }
     # }

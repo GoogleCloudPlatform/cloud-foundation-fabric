@@ -7,6 +7,8 @@ This module allows managing several organization properties:
 - audit logging configuration for services
 - organization policies
 
+To manage organization policies, the `orgpolicy.googleapis.com` service should be enabled in the quota project.
+
 ## Example
 
 ```hcl
