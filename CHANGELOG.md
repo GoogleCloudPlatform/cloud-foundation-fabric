@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 ### BLUEPRINTS
 
+- [[#936](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/936)] Enable org policy service and add README notice to modules ([ludoo](https://github.com/ludoo)) <!-- 2022-11-01 13:25:08+00:00 -->
 - [[#931](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/931)] **incompatible change:** Refactor compute-mig module for Terraform 1.3 ([ludoo](https://github.com/ludoo)) <!-- 2022-11-01 08:39:00+00:00 -->
 - [[#932](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/932)] feat(project-factory): introduce additive iam bindings to project-fac… ([Malet](https://github.com/Malet)) <!-- 2022-10-31 17:24:25+00:00 -->
 - [[#925](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/925)] Network dashboard: update main.tf and README following #922 ([brianhmj](https://github.com/brianhmj)) <!-- 2022-10-28 15:49:12+00:00 -->
@@ -46,6 +47,7 @@ All notable changes to this project will be documented in this file.
 
 ### DOCUMENTATION
 
+- [[#937](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/937)] Fix typos in blueprints README.md ([kumar-dhanagopal](https://github.com/kumar-dhanagopal)) <!-- 2022-11-02 07:39:26+00:00 -->
 - [[#921](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/921)] Align documentation, move glb blueprint ([ludoo](https://github.com/ludoo)) <!-- 2022-10-26 12:31:04+00:00 -->
 - [[#898](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/898)] Update FAST bootstrap README.md ([juliocc](https://github.com/juliocc)) <!-- 2022-10-19 15:15:36+00:00 -->
 - [[#878](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/878)] chore: update cft and fabric ([bharathkkb](https://github.com/bharathkkb)) <!-- 2022-10-12 15:38:06+00:00 -->
@@ -77,6 +79,7 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#936](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/936)] Enable org policy service and add README notice to modules ([ludoo](https://github.com/ludoo)) <!-- 2022-11-01 13:25:08+00:00 -->
 - [[#931](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/931)] **incompatible change:** Refactor compute-mig module for Terraform 1.3 ([ludoo](https://github.com/ludoo)) <!-- 2022-11-01 08:39:00+00:00 -->
 - [[#930](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/930)] **incompatible change:** Update organization/folder/project modules to use new org policies API and tf1.3 optionals ([juliocc](https://github.com/juliocc)) <!-- 2022-10-28 16:21:06+00:00 -->
 - [[#926](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/926)] Fix backwards compatibility for vpc subnet descriptions ([ludoo](https://github.com/ludoo)) <!-- 2022-10-28 06:13:04+00:00 -->
