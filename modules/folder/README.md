@@ -26,25 +26,53 @@ module "folder" {
 
 ### Organization policies
 
+To manage organization policies, the `orgpolicy.googleapis.com` service should be enabled in the quota project.
+
 ```hcl
 module "folder" {
   source = "./fabric/modules/folder"
   parent = "organizations/1234567890"
   name  = "Folder name"
-  policy_boolean = {
-    "constraints/compute.disableGuestAttributesAccess" = true
-    "constraints/compute.skipDefaultNetworkCreation" = true
-  }
-  policy_list = {
+  org_policies = {
+    "compute.disableGuestAttributesAccess" = {
+      enforce = true
+    }
+    "constraints/compute.skipDefaultNetworkCreation" = {
+      enforce = true
+    }
+    "iam.disableServiceAccountKeyCreation" = {
+      enforce = true
+    }
+    "iam.disableServiceAccountKeyUpload" = {
+      enforce = false
+      rules = [
+        {
+          condition = {
+            expression  = "resource.matchTagId(\"tagKeys/1234\", \"tagValues/1234\")"
+            title       = "condition"
+            description = "test condition"
+            location    = "somewhere"
+          }
+          enforce = true
+        }
+      ]
+    }
+    "constraints/iam.allowedPolicyMemberDomains" = {
+      allow = {
+        values = ["C0xxxxxxx", "C0yyyyyyy"]
+      }
+    }
     "constraints/compute.trustedImageProjects" = {
-      inherit_from_parent = null
-      suggested_value = null
-      status = true
-      values = ["projects/my-project"]
+      allow = {
+        values = ["projects/my-project"]
+      }
+    }
+    "constraints/compute.vmExternalIpAccess" = {
+      deny = { all = true }
     }
   }
 }
-# tftest modules=1 resources=4
+# tftest modules=1 resources=8
 ```
 
 ### Firewall policy factory
@@ -259,7 +287,7 @@ module "folder" {
 | [iam.tf](./iam.tf) | IAM bindings, roles and audit logging resources. | <code>google_folder_iam_binding</code> · <code>google_folder_iam_member</code> |
 | [logging.tf](./logging.tf) | Log sinks and supporting resources. | <code>google_bigquery_dataset_iam_member</code> · <code>google_logging_folder_exclusion</code> · <code>google_logging_folder_sink</code> · <code>google_project_iam_member</code> · <code>google_pubsub_topic_iam_member</code> · <code>google_storage_bucket_iam_member</code> |
 | [main.tf](./main.tf) | Module-level locals and resources. | <code>google_essential_contacts_contact</code> · <code>google_folder</code> |
-| [organization-policies.tf](./organization-policies.tf) | Folder-level organization policies. | <code>google_folder_organization_policy</code> |
+| [organization-policies.tf](./organization-policies.tf) | Folder-level organization policies. | <code>google_org_policy_policy</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |
 | [tags.tf](./tags.tf) | None | <code>google_tags_tag_binding</code> |
 | [variables.tf](./variables.tf) | Module variables. |  |
@@ -282,10 +310,9 @@ module "folder" {
 | [logging_exclusions](variables.tf#L98) | Logging exclusions for this folder in the form {NAME -> FILTER}. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [logging_sinks](variables.tf#L105) | Logging sinks to create for this folder. | <code title="map&#40;object&#40;&#123;&#10;  destination      &#61; string&#10;  type             &#61; string&#10;  filter           &#61; string&#10;  include_children &#61; bool&#10;  exclusions &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [name](variables.tf#L126) | Folder name. | <code>string</code> |  | <code>null</code> |
-| [parent](variables.tf#L132) | Parent in folders/folder_id or organizations/org_id format. | <code>string</code> |  | <code>null</code> |
-| [policy_boolean](variables.tf#L142) | Map of boolean org policies and enforcement value, set value to null for policy restore. | <code>map&#40;bool&#41;</code> |  | <code>&#123;&#125;</code> |
-| [policy_list](variables.tf#L149) | Map of list org policies, status is true for allow, false for deny, null for restore. Values can only be used for allow or deny. | <code title="map&#40;object&#40;&#123;&#10;  inherit_from_parent &#61; bool&#10;  suggested_value     &#61; string&#10;  status              &#61; bool&#10;  values              &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tag_bindings](variables.tf#L161) | Tag bindings for this folder, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [org_policies](variables.tf#L132) | Organization policies applied to this folder keyed by policy name. | <code title="map&#40;object&#40;&#123;&#10;  inherit_from_parent &#61; optional&#40;bool&#41; &#35; for list policies only.&#10;  reset               &#61; optional&#40;bool&#41;&#10;  allow &#61; optional&#40;object&#40;&#123;&#10;    all    &#61; optional&#40;bool&#41;&#10;    values &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  deny &#61; optional&#40;object&#40;&#123;&#10;    all    &#61; optional&#40;bool&#41;&#10;    values &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  enforce &#61; optional&#40;bool, true&#41; &#35; for boolean policies only.&#10;  rules &#61; optional&#40;list&#40;object&#40;&#123;&#10;    allow &#61; optional&#40;object&#40;&#123;&#10;      all    &#61; optional&#40;bool&#41;&#10;      values &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    deny &#61; optional&#40;object&#40;&#123;&#10;      all    &#61; optional&#40;bool&#41;&#10;      values &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    enforce &#61; optional&#40;bool, true&#41; &#35; for boolean policies only.&#10;    condition &#61; object&#40;&#123;&#10;      description &#61; optional&#40;string&#41;&#10;      expression  &#61; optional&#40;string&#41;&#10;      location    &#61; optional&#40;string&#41;&#10;      title       &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#10;  &#125;&#41;&#41;, &#91;&#93;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [parent](variables.tf#L172) | Parent in folders/folder_id or organizations/org_id format. | <code>string</code> |  | <code>null</code> |
+| [tag_bindings](variables.tf#L182) | Tag bindings for this folder, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
@@ -295,7 +322,7 @@ module "folder" {
 | [firewall_policy_id](outputs.tf#L21) | Map of firewall policy ids created in this folder. |  |
 | [folder](outputs.tf#L26) | Folder resource. |  |
 | [id](outputs.tf#L31) | Folder id. |  |
-| [name](outputs.tf#L41) | Folder name. |  |
-| [sink_writer_identities](outputs.tf#L46) | Writer identities created for each sink. |  |
+| [name](outputs.tf#L40) | Folder name. |  |
+| [sink_writer_identities](outputs.tf#L45) | Writer identities created for each sink. |  |
 
 <!-- END TFDOC -->

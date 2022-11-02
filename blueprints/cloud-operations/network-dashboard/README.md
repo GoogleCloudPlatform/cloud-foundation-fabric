@@ -27,6 +27,8 @@ Clone this repository, then go through the following steps to create resources:
 - `terraform init`
 - `terraform apply`
 
+Note: Org level viewing permission is required for some metrics such as firewall policies.
+
 Once the resources are deployed, go to the following page to see the dashboard: https://console.cloud.google.com/monitoring/dashboards?project=<YOUR-MONITORING-PROJECT>.
 A dashboard called "quotas-utilization" should be created.
 
@@ -75,6 +77,7 @@ In a future release, we could support:
 - Dynamic routes calculation for VPCs/PPGs with "global routing" set to OFF
 - Static routes calculation for projects/PPGs with "custom routes importing/exporting" set to OFF
 - Calculations for cross Organization peering groups
+- Support different scopes (reduced and fine-grained) 
 
 If you are interested in this and/or would like to contribute, please contact legranda@google.com.
 <!-- BEGIN TFDOC -->

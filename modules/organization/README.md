@@ -7,6 +7,8 @@ This module allows managing several organization properties:
 - audit logging configuration for services
 - organization policies
 
+To manage organization policies, the `orgpolicy.googleapis.com` service should be enabled in the quota project.
+
 ## Example
 
 ```hcl
@@ -19,20 +21,47 @@ module "org" {
   iam             = {
     "roles/resourcemanager.projectCreator" = ["group:cloud-admins@example.org"]
   }
-  policy_boolean = {
-    "constraints/compute.disableGuestAttributesAccess" = true
-    "constraints/compute.skipDefaultNetworkCreation"   = true
-  }
-  policy_list = {
+
+  org_policies = {
+    "compute.disableGuestAttributesAccess" = {
+      enforce = true
+    }
+    "constraints/compute.skipDefaultNetworkCreation" = {
+      enforce = true
+    }
+    "iam.disableServiceAccountKeyCreation" = {
+      enforce = true
+    }
+    "iam.disableServiceAccountKeyUpload" = {
+      enforce = false
+      rules = [
+        {
+          condition = {
+            expression  = "resource.matchTagId(\"tagKeys/1234\", \"tagValues/1234\")"
+            title       = "condition"
+            description = "test condition"
+            location    = "somewhere"
+          }
+          enforce = true
+        }
+      ]
+    }
+    "constraints/iam.allowedPolicyMemberDomains" = {
+      allow = {
+        values = ["C0xxxxxxx", "C0yyyyyyy"]
+      }
+    }
     "constraints/compute.trustedImageProjects" = {
-      inherit_from_parent = null
-      suggested_value     = null
-      status              = true
-      values              = ["projects/my-project"]
+      allow = {
+        values = ["projects/my-project"]
+      }
+    }
+    "constraints/compute.vmExternalIpAccess" = {
+      deny = { all = true }
     }
   }
 }
-# tftest modules=1 resources=6
+# tftest modules=1 resources=10
 ```
 
 ## IAM
@@ -281,7 +310,7 @@ module "org" {
 | [iam.tf](./iam.tf) | IAM bindings, roles and audit logging resources. | <code>google_organization_iam_audit_config</code> · <code>google_organization_iam_binding</code> · <code>google_organization_iam_custom_role</code> · <code>google_organization_iam_member</code> · <code>google_organization_iam_policy</code> |
 | [logging.tf](./logging.tf) | Log sinks and supporting resources. | <code>google_bigquery_dataset_iam_member</code> · <code>google_logging_organization_exclusion</code> · <code>google_logging_organization_sink</code> · <code>google_project_iam_member</code> · <code>google_pubsub_topic_iam_member</code> · <code>google_storage_bucket_iam_member</code> |
 | [main.tf](./main.tf) | Module-level locals and resources. | <code>google_essential_contacts_contact</code> |
-| [organization-policies.tf](./organization-policies.tf) | Organization-level organization policies. | <code>google_organization_policy</code> |
+| [organization-policies.tf](./organization-policies.tf) | Organization-level organization policies. | <code>google_org_policy_policy</code> |
 | [outputs.tf](./outputs.tf) | Module outputs. |  |
 | [tags.tf](./tags.tf) | None | <code>google_tags_tag_binding</code> · <code>google_tags_tag_key</code> · <code>google_tags_tag_key_iam_binding</code> · <code>google_tags_tag_value</code> · <code>google_tags_tag_value_iam_binding</code> |
 | [variables.tf](./variables.tf) | Module variables. |  |
@@ -291,7 +320,7 @@ module "org" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [organization_id](variables.tf#L151) | Organization id in organizations/nnnnnn format. | <code>string</code> | ✓ |  |
+| [organization_id](variables.tf#L191) | Organization id in organizations/nnnnnn format. | <code>string</code> | ✓ |  |
 | [contacts](variables.tf#L17) | List of essential contacts for this resource. Must be in the form EMAIL -> [NOTIFICATION_TYPES]. Valid notification types are ALL, SUSPENSION, SECURITY, TECHNICAL, BILLING, LEGAL, PRODUCT_UPDATES. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [custom_roles](variables.tf#L24) | Map of role name => list of permissions to create in this project. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [firewall_policies](variables.tf#L31) | Hierarchical firewall policy rules created in the organization. | <code title="map&#40;map&#40;object&#40;&#123;&#10;  action                  &#61; string&#10;  description             &#61; string&#10;  direction               &#61; string&#10;  logging                 &#61; bool&#10;  ports                   &#61; map&#40;list&#40;string&#41;&#41;&#10;  priority                &#61; number&#10;  ranges                  &#61; list&#40;string&#41;&#10;  target_resources        &#61; list&#40;string&#41;&#10;  target_service_accounts &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;&#41;">map&#40;map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
@@ -306,10 +335,9 @@ module "org" {
 | [iam_bindings_authoritative](variables.tf#L116) | IAM authoritative bindings, in {ROLE => [MEMBERS]} format. Roles and members not explicitly listed will be cleared. Bindings should also be authoritative when using authoritative audit config. Use with caution. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>null</code> |
 | [logging_exclusions](variables.tf#L122) | Logging exclusions for this organization in the form {NAME -> FILTER}. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [logging_sinks](variables.tf#L129) | Logging sinks to create for this organization. | <code title="map&#40;object&#40;&#123;&#10;  destination          &#61; string&#10;  type                 &#61; string&#10;  filter               &#61; string&#10;  include_children     &#61; bool&#10;  bq_partitioned_table &#61; bool&#10;  exclusions &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [policy_boolean](variables.tf#L160) | Map of boolean org policies and enforcement value, set value to null for policy restore. | <code>map&#40;bool&#41;</code> |  | <code>&#123;&#125;</code> |
-| [policy_list](variables.tf#L167) | Map of list org policies, status is true for allow, false for deny, null for restore. Values can only be used for allow or deny. | <code title="map&#40;object&#40;&#123;&#10;  inherit_from_parent &#61; bool&#10;  suggested_value     &#61; string&#10;  status              &#61; bool&#10;  values              &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [tag_bindings](variables.tf#L179) | Tag bindings for this organization, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
-| [tags](variables.tf#L185) | Tags by key name. The `iam` attribute behaves like the similarly named one at module level. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; string&#10;  iam         &#61; map&#40;list&#40;string&#41;&#41;&#10;  values &#61; map&#40;object&#40;&#123;&#10;    description &#61; string&#10;    iam         &#61; map&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
+| [org_policies](variables.tf#L151) | Organization policies applied to this organization keyed by policy name. | <code title="map&#40;object&#40;&#123;&#10;  inherit_from_parent &#61; optional&#40;bool&#41; &#35; for list policies only.&#10;  reset               &#61; optional&#40;bool&#41;&#10;  allow &#61; optional&#40;object&#40;&#123;&#10;    all    &#61; optional&#40;bool&#41;&#10;    values &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  deny &#61; optional&#40;object&#40;&#123;&#10;    all    &#61; optional&#40;bool&#41;&#10;    values &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  enforce &#61; optional&#40;bool, true&#41; &#35; for boolean policies only.&#10;  rules &#61; optional&#40;list&#40;object&#40;&#123;&#10;    allow &#61; optional&#40;object&#40;&#123;&#10;      all    &#61; optional&#40;bool&#41;&#10;      values &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    deny &#61; optional&#40;object&#40;&#123;&#10;      all    &#61; optional&#40;bool&#41;&#10;      values &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    enforce &#61; optional&#40;bool, true&#41; &#35; for boolean policies only.&#10;    condition &#61; object&#40;&#123;&#10;      description &#61; optional&#40;string&#41;&#10;      expression  &#61; optional&#40;string&#41;&#10;      location    &#61; optional&#40;string&#41;&#10;      title       &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#10;  &#125;&#41;&#41;, &#91;&#93;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [tag_bindings](variables.tf#L200) | Tag bindings for this organization, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [tags](variables.tf#L206) | Tags by key name. The `iam` attribute behaves like the similarly named one at module level. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; string&#10;  iam         &#61; map&#40;list&#40;string&#41;&#41;&#10;  values &#61; map&#40;object&#40;&#123;&#10;    description &#61; string&#10;    iam         &#61; map&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
@@ -320,8 +348,8 @@ module "org" {
 | [firewall_policies](outputs.tf#L36) | Map of firewall policy resources created in the organization. |  |
 | [firewall_policy_id](outputs.tf#L41) | Map of firewall policy ids created in the organization. |  |
 | [organization_id](outputs.tf#L46) | Organization id dependent on module resources. |  |
-| [sink_writer_identities](outputs.tf#L64) | Writer identities created for each sink. |  |
-| [tag_keys](outputs.tf#L72) | Tag key resources. |  |
-| [tag_values](outputs.tf#L79) | Tag value resources. |  |
+| [sink_writer_identities](outputs.tf#L63) | Writer identities created for each sink. |  |
+| [tag_keys](outputs.tf#L71) | Tag key resources. |  |
+| [tag_values](outputs.tf#L78) | Tag value resources. |  |
 
 <!-- END TFDOC -->

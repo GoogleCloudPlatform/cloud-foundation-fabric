@@ -44,16 +44,6 @@ variable "iam_audit_config" {
   default = {}
 }
 
-variable "policy_boolean" {
-  type    = any
-  default = {}
-}
-
-variable "policy_list" {
-  type    = any
-  default = {}
-}
-
 variable "firewall_policies" {
   type    = any
   default = {}
@@ -76,6 +66,11 @@ variable "logging_sinks" {
 
 variable "logging_exclusions" {
   type    = map(string)
+  default = {}
+}
+
+variable "org_policies" {
+  type    = any
   default = {}
 }
 

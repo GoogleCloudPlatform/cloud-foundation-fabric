@@ -78,8 +78,20 @@ variable "group_iam" {
   default     = {}
 }
 
+variable "group_iam_additive" {
+  description = "Custom additive IAM settings in group => [role] format."
+  type        = map(list(string))
+  default     = {}
+}
+
 variable "iam" {
   description = "Custom IAM settings in role => [principal] format."
+  type        = map(list(string))
+  default     = {}
+}
+
+variable "iam_additive" {
+  description = "Custom additive IAM settings in role => [principal] format."
   type        = map(list(string))
   default     = {}
 }
@@ -98,16 +110,42 @@ variable "labels" {
 
 variable "org_policies" {
   description = "Org-policy overrides at project level."
-  type = object({
-    policy_boolean = map(bool)
-    policy_list = map(object({
-      inherit_from_parent = bool
-      suggested_value     = string
-      status              = bool
-      values              = list(string)
+  type = map(object({
+    inherit_from_parent = optional(bool) # for list policies only.
+    reset               = optional(bool)
+
+    # default (unconditional) values
+    allow = optional(object({
+      all    = optional(bool)
+      values = optional(list(string))
     }))
-  })
-  default = null
+    deny = optional(object({
+      all    = optional(bool)
+      values = optional(list(string))
+    }))
+    enforce = optional(bool, true) # for boolean policies only.
+
+    # conditional values
+    rules = optional(list(object({
+      allow = optional(object({
+        all    = optional(bool)
+        values = optional(list(string))
+      }))
+      deny = optional(object({
+        all    = optional(bool)
+        values = optional(list(string))
+      }))
+      enforce = optional(bool, true) # for boolean policies only.
+      condition = object({
+        description = optional(string)
+        expression  = optional(string)
+        location    = optional(string)
+        title       = optional(string)
+      })
+    })), [])
+  }))
+  default  = {}
+  nullable = false
 }
 
 variable "prefix" {
@@ -127,8 +165,21 @@ variable "service_accounts" {
   default     = {}
 }
 
+variable "service_accounts_additive" {
+  description = "Service accounts to be created, and roles assigned them on the project additively."
+  type        = map(list(string))
+  default     = {}
+}
+
 variable "service_accounts_iam" {
   description = "IAM bindings on service account resources. Format is KEY => {ROLE => [MEMBERS]}"
+  type        = map(map(list(string)))
+  default     = {}
+  nullable    = false
+}
+
+variable "service_accounts_iam_additive" {
+  description = "IAM additive bindings on service account resources. Format is KEY => {ROLE => [MEMBERS]}"
   type        = map(map(list(string)))
   default     = {}
   nullable    = false
@@ -148,6 +199,13 @@ variable "service_identities_iam" {
   nullable    = false
 }
 
+variable "service_identities_iam_additive" {
+  description = "Custom additive IAM settings for service identities in service => [role] format."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+}
+
 variable "vpc" {
   description = "VPC configuration for the project."
   type = object({
@@ -160,6 +218,3 @@ variable "vpc" {
   })
   default = null
 }
-
-
-
