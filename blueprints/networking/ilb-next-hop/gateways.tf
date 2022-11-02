@@ -67,7 +67,7 @@ module "ilb-left" {
     subnetwork = values(module.vpc-left.subnet_self_links)[0]
   }
   address = local.addresses.ilb-left
-  backend_config = {
+  backend_service_config = {
     session_affinity = var.ilb_session_affinity
   }
   backends = [for z, mod in module.gw : {
@@ -91,7 +91,7 @@ module "ilb-right" {
     subnetwork = values(module.vpc-right.subnet_self_links)[0]
   }
   address = local.addresses.ilb-right
-  backend_config = {
+  backend_service_config = {
     session_affinity = var.ilb_session_affinity
   }
   backends = [for z, mod in module.gw : {

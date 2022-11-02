@@ -160,11 +160,7 @@ variable "health_check_config" {
       response           = optional(string)
     }))
   })
-  default = {
-    tcp = {
-      port_specification = "USE_SERVING_PORT"
-    }
-  }
+  default = null
   validation {
     condition = (
       (try(var.health_check_config.grpc, null) == null ? 0 : 1) +

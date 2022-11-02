@@ -15,26 +15,36 @@
 # tfdoc:file:description Creates the VPC and manages the firewall rules and ILB.
 
 locals {
-  listeners = { for aog in var.always_on_groups : format("%slb-%s", local.prefix, aog) => {
-    region     = var.region
-    subnetwork = local.subnetwork
+  internal_addresses = merge(
+    local.listeners,
+    local.node_ips,
+    {
+      "${local.prefix}cluster" = {
+        region     = var.region
+        subnetwork = local.subnetwork
+      }
+      (local.witness_netbios_name) = {
+        region     = var.region
+        subnetwork = local.subnetwork
+      }
     }
+  )
+  internal_address_ips = {
+    for k, v in module.ip-addresses.internal_addresses :
+    k => v.address
   }
-  node_ips = { for node_name in local.node_netbios_names : node_name => {
-    region     = var.region
-    subnetwork = local.subnetwork
-    }
-  }
-  internal_addresses = merge({
-    format("%scluster", local.prefix) = {
+  listeners = {
+    for aog in var.always_on_groups : "${local.prefix}lb-${aog}" => {
       region     = var.region
       subnetwork = local.subnetwork
     }
-    (local.witness_netbios_name) = {
+  }
+  node_ips = {
+    for node_name in local.node_netbios_names : node_name => {
       region     = var.region
       subnetwork = local.subnetwork
     }
-  }, local.listeners, local.node_ips)
+  }
 }
 
 data "google_compute_zones" "zones" {
@@ -50,7 +60,6 @@ data "google_compute_subnetwork" "subnetwork" {
   region  = var.region
 }
 
-# Create VPC if required
 module "vpc" {
   source = "../../../modules/net-vpc"
 
@@ -66,7 +75,6 @@ module "vpc" {
   vpc_create = var.project_create != null ? true : false
 }
 
-# Firewall rules required for WSFC nodes
 module "firewall" {
   source              = "../../../modules/net-vpc-firewall"
   project_id          = local.vpc_project
@@ -76,7 +84,7 @@ module "firewall" {
   https_source_ranges = []
   ssh_source_ranges   = []
   custom_rules = {
-    format("%sallow-all-between-wsfc-nodes", local.prefix) = {
+    "${local.prefix}allow-all-between-wsfc-nodes" = {
       description          = "Allow all between WSFC nodes"
       direction            = "INGRESS"
       action               = "allow"
@@ -91,7 +99,7 @@ module "firewall" {
       ]
       extra_attributes = {}
     }
-    format("%sallow-all-between-wsfc-witness", local.prefix) = {
+    "${local.prefix}allow-all-between-wsfc-witness" = {
       description          = "Allow all between WSFC witness nodes"
       direction            = "INGRESS"
       action               = "allow"
@@ -106,7 +114,7 @@ module "firewall" {
       ]
       extra_attributes = {}
     }
-    format("%sallow-sql-to-wsfc-nodes", local.prefix) = {
+    "${local.prefix}allow-sql-to-wsfc-nodes" = {
       description          = "Allow SQL connections to WSFC nodes"
       direction            = "INGRESS"
       action               = "allow"
@@ -119,7 +127,7 @@ module "firewall" {
       ]
       extra_attributes = {}
     }
-    format("%sallow-health-check-to-wsfc-nodes", local.prefix) = {
+    "${local.prefix}allow-health-check-to-wsfc-nodes" = {
       description          = "Allow health checks to WSFC nodes"
       direction            = "INGRESS"
       action               = "allow"
@@ -135,39 +143,31 @@ module "firewall" {
   }
 }
 
-# IP Address reservation for cluster and listener
 module "ip-addresses" {
-  source     = "../../../modules/net-address"
-  project_id = local.vpc_project
-
+  source             = "../../../modules/net-address"
+  project_id         = local.vpc_project
   internal_addresses = local.internal_addresses
 }
 
-# L4 Internal Load Balancer for SQL Listener
 module "listener-ilb" {
-  source   = "../../../modules/net-ilb"
-  for_each = toset(var.always_on_groups)
-
-  project_id = var.project_id
-  region     = var.region
-
-  name          = format("%s-%s-ilb", var.prefix, each.value)
-  service_label = format("%s-%s-ilb", var.prefix, each.value)
-
-  address    = module.ip-addresses.internal_addresses[format("%slb-%s", local.prefix, each.value)].address
-  network    = local.network
-  subnetwork = local.subnetwork
-
+  source        = "../../../modules/net-ilb"
+  for_each      = toset(var.always_on_groups)
+  project_id    = var.project_id
+  region        = var.region
+  name          = "${var.prefix}-${each.value}-ilb"
+  service_label = "${var.prefix}-${each.value}-ilb"
+  address       = local.internal_address_ips["${local.prefix}lb-${each.value}"]
+  vpc_config = {
+    network    = local.network
+    subnetwork = local.subnetwork
+  }
   backends = [for k, node in module.nodes : {
-    failover       = false
-    group          = node.group.self_link
-    balancing_mode = "CONNECTION"
+    group = node.group.self_link
   }]
-
   health_check_config = {
-    type    = "tcp",
-    check   = { port = var.health_check_port },
-    config  = var.health_check_config,
-    logging = true
+    enable_logging = true
+    tcp = {
+      port = var.health_check_port
+    }
   }
 }
