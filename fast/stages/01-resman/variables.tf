@@ -135,6 +135,12 @@ variable "custom_roles" {
   default = null
 }
 
+variable "data_dir" {
+  description = "Relative path for the folder storing configuration data."
+  type        = string
+  default     = "data"
+}
+
 variable "fast_features" {
   # tfdoc:variable:source 00-bootstrap
   description = "Selective control for top-level FAST features."
