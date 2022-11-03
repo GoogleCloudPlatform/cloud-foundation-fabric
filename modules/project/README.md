@@ -215,7 +215,7 @@ module "project" {
 
 Organization policies can be loaded from a directory containing YAML files where each file defines one or more constraints. The structure of the YAML files is exactly the same as the `org_policies` variable.
 
-Note that contraints defined both via `org_policies` take precedence over those in `org_policies_data_path`. In other words, if you specify the same contraint in a YAML file *and* in the `org_policies` variable, the latter will take priority.
+Note that contraints defined via `org_policies` take precedence over those in `org_policies_data_path`. In other words, if you specify the same contraint in a YAML file *and* in the `org_policies` variable, the latter will take priority.
 
 The example below deploys a few organization policies split between two YAML files.
 
