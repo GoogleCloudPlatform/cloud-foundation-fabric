@@ -157,8 +157,8 @@ module "host-dns" {
   domain          = "example.com."
   client_networks = [module.vpc-shared.self_link]
   recordsets = {
-    "A localhost" = { ttl = 300, records = ["127.0.0.1"] }
-    "A bastion"   = { ttl = 300, records = [module.vm-bastion.internal_ip] }
+    "A localhost" = { records = ["127.0.0.1"] }
+    "A bastion"   = { records = [module.vm-bastion.internal_ip] }
   }
 }
 
@@ -219,11 +219,13 @@ module "cluster-1" {
 }
 
 module "cluster-1-nodepool-1" {
-  source          = "../../../modules/gke-nodepool"
-  count           = var.cluster_create ? 1 : 0
-  name            = "nodepool-1"
-  project_id      = module.project-svc-gke.project_id
-  location        = module.cluster-1.0.location
-  cluster_name    = module.cluster-1.0.name
-  service_account = {}
+  source       = "../../../modules/gke-nodepool"
+  count        = var.cluster_create ? 1 : 0
+  name         = "nodepool-1"
+  project_id   = module.project-svc-gke.project_id
+  location     = module.cluster-1.0.location
+  cluster_name = module.cluster-1.0.name
+  service_account = {
+    create = true
+  }
 }

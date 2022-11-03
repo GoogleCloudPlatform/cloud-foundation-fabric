@@ -15,6 +15,14 @@
  */
 
 locals {
+  env_pairs = flatten([
+    for env_name, env in var.apigee_environments : {
+      api_proxy_type  = env.api_proxy_type
+      deployment_type = env.deployment_type
+      env_name        = env_name
+    }
+  ])
+
   env_envgroup_pairs = flatten([
     for eg_name, eg in var.apigee_envgroups : [
       for e in eg.environments : {
@@ -37,9 +45,11 @@ resource "google_apigee_organization" "apigee_org" {
 }
 
 resource "google_apigee_environment" "apigee_env" {
-  for_each = toset(var.apigee_environments)
-  org_id   = google_apigee_organization.apigee_org.id
-  name     = each.key
+  for_each        = { for env in local.env_pairs : env.env_name => env }
+  api_proxy_type  = each.value.api_proxy_type
+  deployment_type = each.value.deployment_type
+  name            = each.key
+  org_id          = google_apigee_organization.apigee_org.id
 }
 
 resource "google_apigee_envgroup" "apigee_envgroup" {

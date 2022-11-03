@@ -21,10 +21,17 @@ module "test" {
   runtime_type       = "CLOUD"
   billing_type       = "EVALUATION"
   authorized_network = var.network
-  apigee_environments = [
-    "eval1",
-    "eval2"
-  ]
+  apigee_environments = {
+    eval1 = {
+      api_proxy_type  = "PROGRAMMABLE"
+      deployment_type = "PROXY"
+    }
+    eval2 = {
+      api_proxy_type  = "CONFIGURABLE"
+      deployment_type = "ARCHIVE"
+    }
+    eval3 = {}
+  }
   apigee_envgroups = {
     eval = {
       environments = [

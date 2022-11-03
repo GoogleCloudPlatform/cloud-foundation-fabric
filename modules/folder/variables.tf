@@ -129,6 +129,52 @@ variable "name" {
   default     = null
 }
 
+variable "org_policies" {
+  description = "Organization policies applied to this folder keyed by policy name."
+  type = map(object({
+    inherit_from_parent = optional(bool) # for list policies only.
+    reset               = optional(bool)
+
+    # default (unconditional) values
+    allow = optional(object({
+      all    = optional(bool)
+      values = optional(list(string))
+    }))
+    deny = optional(object({
+      all    = optional(bool)
+      values = optional(list(string))
+    }))
+    enforce = optional(bool, true) # for boolean policies only.
+
+    # conditional values
+    rules = optional(list(object({
+      allow = optional(object({
+        all    = optional(bool)
+        values = optional(list(string))
+      }))
+      deny = optional(object({
+        all    = optional(bool)
+        values = optional(list(string))
+      }))
+      enforce = optional(bool, true) # for boolean policies only.
+      condition = object({
+        description = optional(string)
+        expression  = optional(string)
+        location    = optional(string)
+        title       = optional(string)
+      })
+    })), [])
+  }))
+  default  = {}
+  nullable = false
+}
+
+variable "org_policies_data_path" {
+  description = "Path containing org policies in YAML format."
+  type        = string
+  default     = null
+}
+
 variable "parent" {
   description = "Parent in folders/folder_id or organizations/org_id format."
   type        = string
@@ -137,25 +183,6 @@ variable "parent" {
     condition     = var.parent == null || can(regex("(organizations|folders)/[0-9]+", var.parent))
     error_message = "Parent must be of the form folders/folder_id or organizations/organization_id."
   }
-}
-
-variable "policy_boolean" {
-  description = "Map of boolean org policies and enforcement value, set value to null for policy restore."
-  type        = map(bool)
-  default     = {}
-  nullable    = false
-}
-
-variable "policy_list" {
-  description = "Map of list org policies, status is true for allow, false for deny, null for restore. Values can only be used for allow or deny."
-  type = map(object({
-    inherit_from_parent = bool
-    suggested_value     = string
-    status              = bool
-    values              = list(string)
-  }))
-  default  = {}
-  nullable = false
 }
 
 variable "tag_bindings" {

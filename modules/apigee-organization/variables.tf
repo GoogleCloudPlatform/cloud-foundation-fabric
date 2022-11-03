@@ -30,8 +30,19 @@ variable "apigee_envgroups" {
 
 variable "apigee_environments" {
   description = "Apigee Environment Names."
-  type        = list(string)
-  default     = []
+  type = map(object({
+    api_proxy_type  = optional(string, "API_PROXY_TYPE_UNSPECIFIED")
+    deployment_type = optional(string, "DEPLOYMENT_TYPE_UNSPECIFIED")
+  }))
+  default = {}
+  validation {
+    condition     = alltrue([for k, v in var.apigee_environments : contains(["API_PROXY_TYPE_UNSPECIFIED", "PROGRAMMABLE", "CONFIGURABLE"], v.api_proxy_type)])
+    error_message = "Allowed values for api_proxy_type \"API_PROXY_TYPE_UNSPECIFIED\", \"PROGRAMMABLE\" or \"CONFIGURABLE\"."
+  }
+  validation {
+    condition     = alltrue([for k, v in var.apigee_environments : contains(["DEPLOYMENT_TYPE_UNSPECIFIED", "PROXY", "ARCHIVE"], v.deployment_type)])
+    error_message = "Allowed values for deployment_type \"DEPLOYMENT_TYPE_UNSPECIFIED\", \"PROXY\" or \"ARCHIVE\"."
+  }
 }
 
 variable "authorized_network" {

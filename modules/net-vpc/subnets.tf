@@ -72,13 +72,17 @@ locals {
 }
 
 resource "google_compute_subnetwork" "subnetwork" {
-  for_each                 = local.subnets
-  project                  = var.project_id
-  network                  = local.network.name
-  name                     = each.value.name
-  region                   = each.value.region
-  ip_cidr_range            = each.value.ip_cidr_range
-  description              = try(each.value.description, "Terraform-managed.")
+  for_each      = local.subnets
+  project       = var.project_id
+  network       = local.network.name
+  name          = each.value.name
+  region        = each.value.region
+  ip_cidr_range = each.value.ip_cidr_range
+  description = (
+    each.value.description == null
+    ? "Terraform-managed."
+    : each.value.description
+  )
   private_ip_google_access = each.value.enable_private_access
   secondary_ip_range = each.value.secondary_ip_ranges == null ? [] : [
     for name, range in each.value.secondary_ip_ranges :
@@ -107,9 +111,10 @@ resource "google_compute_subnetwork" "proxy_only" {
   name          = each.value.name
   region        = each.value.region
   ip_cidr_range = each.value.ip_cidr_range
-  description = try(
-    each.value.description,
-    "Terraform-managed proxy-only subnet for Regional HTTPS or Internal HTTPS LB."
+  description = (
+    each.value.description == null
+    ? "Terraform-managed proxy-only subnet for Regional HTTPS or Internal HTTPS LB."
+    : each.value.description
   )
   purpose = "REGIONAL_MANAGED_PROXY"
   role = (
@@ -124,9 +129,10 @@ resource "google_compute_subnetwork" "psc" {
   name          = each.value.name
   region        = each.value.region
   ip_cidr_range = each.value.ip_cidr_range
-  description = try(
-    each.value.description,
-    "Terraform-managed subnet for Private Service Connect (PSC NAT)."
+  description = (
+    each.value.description == null
+    ? "Terraform-managed subnet for Private Service Connect (PSC NAT)."
+    : each.value.description
   )
   purpose = "PRIVATE_SERVICE_CONNECT"
 }

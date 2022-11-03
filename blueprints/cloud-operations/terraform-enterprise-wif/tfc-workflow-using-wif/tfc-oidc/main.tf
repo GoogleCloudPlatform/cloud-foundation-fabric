@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-output "policies" {
-  description = "Organization policies."
-  value       = google_org_policy_policy.primary
+locals {
+  audience = "//iam.googleapis.com/${var.workload_identity_pool_provider_id}"
+}
+
+data "external" "oidc_token_file" {
+  program = ["bash", "${path.module}/write_token.sh", "${var.tmp_oidc_token_path}"]
 }

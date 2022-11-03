@@ -15,14 +15,18 @@ Three metric descriptors are created for each monitored resource: usage, limit a
 
 Clone this repository, then go through the following steps to create resources:
 - Create a terraform.tfvars file with the following content:
-  - organization_id = "<YOUR-ORG-ID>"
-  - billing_account = "<YOUR-BILLING-ACCOUNT>"
-  - monitoring_project_id = "project-0" # Monitoring project where the dashboard will be created and the solution deployed
-  - monitored_projects_list = ["project-1", "project2"] # Projects to be monitored by the solution
-  - monitored_folders_list = ["folder_id"] # Folders to be monitored by the solution
-  - v2 = true|false # Set to true to use V2 Cloud Functions environment
+  ```tfvars
+  organization_id         = "<YOUR-ORG-ID>"
+  billing_account         = "<YOUR-BILLING-ACCOUNT>"
+  monitoring_project_id   = "project-0"               # Monitoring project where the dashboard will be created and the solution deployed
+  monitored_projects_list = ["project-1", "project2"] # Projects to be monitored by the solution
+  monitored_folders_list  = ["folder_id"]             # Folders to be monitored by the solution
+  v2                      = false                     # Set to true to use V2 Cloud Functions environment
+  ```
 - `terraform init`
 - `terraform apply`
+
+Note: Org level viewing permission is required for some metrics such as firewall policies.
 
 Once the resources are deployed, go to the following page to see the dashboard: https://console.cloud.google.com/monitoring/dashboards?project=<YOUR-MONITORING-PROJECT>.
 A dashboard called "quotas-utilization" should be created.
@@ -46,22 +50,33 @@ The Cloud Function currently tracks usage, limit and utilization of:
 - internal forwarding rules for internal L7 load balancers per VPC
 - internal forwarding rules for internal L4 load balancers per VPC peering group
 - internal forwarding rules for internal L7 load balancers per VPC peering group
-- Dynamic routes per VPC
-- Dynamic routes per VPC peering group
+- Dynamic routes per VPC 
+- Dynamic routes per VPC peering group 
+- Static routes per project (VPC drill down is available for usage)
+- Static routes per VPC peering group 
 - IP utilization per subnet (% of IP addresses used in a subnet)
 - VPC firewall rules per project (VPC drill down is available for usage)
 - Tuples per Firewall Policy
 
 It writes this values to custom metrics in Cloud Monitoring and creates a dashboard to visualize the current utilization of these metrics in Cloud Monitoring.
 
-Note that metrics are created in the cloud-function/metrics.yaml file.
+Note that metrics are created in the cloud-function/metrics.yaml file. You can also edit default limits for a specific network in that file. See the example for `vpc_peering_per_network`.
 
-You can also edit default limits for a specific network in that file. See the example for `vpc_peering_per_network`.
+## Assumptions and limitations
+- The CF assumes that all VPCs in peering groups are within the same organization, except for PSA peerings
+- The CF will only fetch subnet utilization data from the PSA peerings (not the VMs, ILB or routes usage)
+- The CF assumes global routing is ON, this impacts dynamic routes usage calculation
+- The CF assumes custom routes importing/exporting is ON, this impacts static and dynamic routes usage calculation
+- The CF assumes all networks in peering groups have the same global routing and custom routes sharing configuration
+
 
 ## Next steps and ideas
 In a future release, we could support:
-- Static routes per VPC / per VPC peering group
 - Google managed VPCs that are peered with PSA (such as Cloud SQL or Memorystore)
+- Dynamic routes calculation for VPCs/PPGs with "global routing" set to OFF
+- Static routes calculation for projects/PPGs with "custom routes importing/exporting" set to OFF
+- Calculations for cross Organization peering groups
+- Support different scopes (reduced and fine-grained) 
 
 If you are interested in this and/or would like to contribute, please contact legranda@google.com.
 <!-- BEGIN TFDOC -->

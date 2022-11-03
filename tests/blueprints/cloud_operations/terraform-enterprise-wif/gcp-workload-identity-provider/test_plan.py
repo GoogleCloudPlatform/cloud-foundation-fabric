@@ -4,7 +4,7 @@
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
 #
-#     https://www.apache.org/licenses/LICENSE-2.0
+#      http://www.apache.org/licenses/LICENSE-2.0
 #
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
@@ -12,9 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-module "test" {
-  source                  = "../../../../../blueprints/cloud-operations/glb_and_armor"
-  project_create          = var.project_create
-  project_id              = var.project_id
-  enforce_security_policy = var.enforce_security_policy
-}
+def test_resources(e2e_plan_runner):
+  "Test that plan works and the numbers of resources is as expected."
+  modules, resources = e2e_plan_runner()
+  assert len(modules) == 2
+  assert len(resources) == 10

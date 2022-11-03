@@ -257,7 +257,7 @@ module "cluster_1_nodepool" {
   location        = "europe-west1"
   name            = "nodepool"
   node_count      = { initial = 1 }
-  service_account = {}
+  service_account = { create = true }
   tags            = ["cluster-1-node"]
 }
 
@@ -292,7 +292,7 @@ module "cluster_2_nodepool" {
   location                    = "europe-west4"
   name                        = "nodepool"
   node_count      = { initial = 1 }
-  service_account = {}
+  service_account = { create = true }
   tags            = ["cluster-2-node"]
 }
 

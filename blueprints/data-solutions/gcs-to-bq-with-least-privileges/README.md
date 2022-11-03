@@ -60,8 +60,7 @@ __Note__: To grant a user a role, take a look at the [Granting and Revoking Acce
 
 Click on the button below, sign in if required and when the prompt appears, click on “confirm”.
 
-
-[![Open Cloudshell](images/shell_button.png)](https://goo.gle/GoDataPipe)
+[![Open Cloudshell](../../../assets/images/cloud-shell-button.png)](https://goo.gle/GoDataPipe)
 
 This will clone the repository to your cloud shell and a screen like this one will appear:
 
@@ -146,13 +145,13 @@ Once this is done, the 3 files necessary to run the Dataflow Job will have been 
 
 Run the following command to start the dataflow job:
 
-        gcloud --impersonate-service-account=orchestrator@$SERVICE_PROJECT_ID.iam.gserviceaccount.com dataflow jobs run test_batch_01 \
+    gcloud --impersonate-service-account=orchestrator@$SERVICE_PROJECT_ID.iam.gserviceaccount.com dataflow jobs run test_batch_01 \
     --gcs-location gs://dataflow-templates/latest/GCS_Text_to_BigQuery \
     --project $SERVICE_PROJECT_ID \
     --region europe-west1 \
     --disable-public-ips \
     --subnetwork https://www.googleapis.com/compute/v1/projects/$SERVICE_PROJECT_ID/regions/europe-west1/subnetworks/subnet \
-    --staging-location gs://$PREFIX-df-tmp\
+    --staging-location gs://$PREFIX-df-tmp \
     --service-account-email df-loading@$SERVICE_PROJECT_ID.iam.gserviceaccount.com \
     --parameters \
     javascriptTextTransformFunctionName=transform,\

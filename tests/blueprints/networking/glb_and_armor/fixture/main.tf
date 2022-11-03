@@ -12,18 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-terraform {
-  required_version = ">= 1.3.1"
-  required_providers {
-    google = {
-      source  = "hashicorp/google"
-      version = ">= 4.36.0" # tftest
-    }
-    google-beta = {
-      source  = "hashicorp/google-beta"
-      version = ">= 4.36.0" # tftest
-    }
-  }
+module "test" {
+  source                  = "../../../../../blueprints/networking/glb-and-armor"
+  project_create          = var.project_create
+  project_id              = var.project_id
+  enforce_security_policy = var.enforce_security_policy
 }
-
-

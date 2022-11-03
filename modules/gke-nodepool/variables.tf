@@ -158,10 +158,12 @@ variable "reservation_affinity" {
 variable "service_account" {
   description = "Nodepool service account. If this variable is set to null, the default GCE service account will be used. If set and email is null, a service account will be created. If scopes are null a default will be used."
   type = object({
-    email        = optional(string)
-    oauth_scopes = optional(list(string))
+    create       = optional(bool, false)
+    email        = optional(string, null)
+    oauth_scopes = optional(list(string), null)
   })
-  default = null
+  default  = {}
+  nullable = false
 }
 
 variable "sole_tenant_nodegroup" {
