@@ -54,7 +54,7 @@ locals {
       direction = rule.is_egress == true ? "EGRESS" : "INGRESS"
       rules     = { for k, v in rule.rules : k => v }
       ranges = flatten([
-        for range in rule.ranges :
+        for range in(rule.ranges == null ? [] : rule.ranges) :
         try(local._named_ranges[range], range)
       ])
     })

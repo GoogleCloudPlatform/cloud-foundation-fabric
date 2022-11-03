@@ -123,7 +123,7 @@ module "firewall" {
       ranges               = var.health_check_ranges
       use_service_accounts = true
       rules = [
-        { protocol = "tcp", ports = [] },
+        { protocol = "tcp", ports = [] }
       ]
     }
   }
