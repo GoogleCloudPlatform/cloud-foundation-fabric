@@ -76,6 +76,10 @@ If you set audit policies via the `iam_audit_config_authoritative` variable, be 
 
 Some care must also be takend with the `groups_iam` variable (and in some situations with the additive variables) to ensure that variable keys are static values, so that Terraform is able to compute the dependency graph.
 
+### Organization policy factory
+
+See the [organization policy factory in the project module](../project#Organization-policy-factory).
+
 ## Hierarchical firewall policies
 
 Hirerarchical firewall policies can be managed in two ways:

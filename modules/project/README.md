@@ -211,6 +211,69 @@ module "project" {
 # tftest modules=1 resources=10
 ```
 
+### Organization policy factory
+
+Organization policies can be loaded from a directory containing YAML files where each file defines one or more constraints. The structure of the YAML files is exactly the same as the `org_policies` variable.
+
+The example below deploys the same organization policies shown in the previous section using two YAML files.
+
+```hcl
+module "folder" {
+  source                 = "./fabric/modules/folder"
+  parent                 = "organizations/1234567890"
+  name                   = "Folder name"
+  org_policies_data_path = "/my/path"
+}
+# tftest skip
+```
+
+```yaml
+# /my/path/boolean.yaml
+iam.disableServiceAccountKeyCreation:
+  enforce: true
+
+iam.disableServiceAccountKeyUpload:
+  enforce: false
+  rules:
+    - condition:
+        expression: resource.matchTagId("tagKeys/1234", "tagValues/1234")
+        title: condition
+        description: test condition
+        location: xxx
+      enforce: true
+```
+
+```yaml
+# /my/path/list.yaml
+compute.vmExternalIpAccess:
+  deny:
+    all: true
+
+iam.allowedPolicyMemberDomains:
+  allow:
+    values:
+      - C0xxxxxxx
+      - C0yyyyyyy
+
+compute.restrictLoadBalancerCreationForTypes:
+  deny:
+    values: ["in:EXTERNAL"]
+  rules:
+    - condition:
+        expression: resource.matchTagId("tagKeys/1234", "tagValues/1234")
+        title: condition
+        description: test condition
+      allow:
+        values: ["in:EXTERNAL"]
+    - condition:
+        expression: resource.matchTagId("tagKeys/12345", "tagValues/12345")
+        title: condition2
+        description: test condition2
+      allow:
+        all: true
+```
+
+
 ## Logging Sinks
 
 ```hcl
