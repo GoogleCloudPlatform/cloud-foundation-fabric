@@ -169,6 +169,12 @@ variable "org_policies" {
   nullable = false
 }
 
+variable "org_policies_data_path" {
+  description = "Path containing org policies in YAML format."
+  type        = string
+  default     = null
+}
+
 variable "parent" {
   description = "Parent in folders/folder_id or organizations/org_id format."
   type        = string
