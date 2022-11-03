@@ -78,7 +78,7 @@ Some care must also be takend with the `groups_iam` variable (and in some situat
 
 ### Organization policy factory
 
-See the [organization policy factory in the project module](../project#Organization-policy-factory).
+See the [organization policy factory in the project module](../project#organization-policy-factory).
 
 ## Hierarchical firewall policies
 

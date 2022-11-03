@@ -77,7 +77,7 @@ module "folder" {
 
 ### Organization policy factory
 
-See the [organization policy factory in the project module](../project#Organization-policy-factory).
+See the [organization policy factory in the project module](../project#organization-policy-factory).
 
 ### Firewall policy factory
 
