@@ -7,6 +7,11 @@ run.allowedIngress:
     values:
     - is:internal
 
+# run.allowedVPCEgress:
+#   allow:
+#     values:
+#       - is:private-ranges-only
+
 # cloudfunctions.allowedIngressSettings:
 #   allow:
 #     values:

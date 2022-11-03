@@ -82,7 +82,6 @@ module "organization" {
     #     ]
     #   }
     # }
-    # "run.allowedVPCEgress" = { allow = { values = ["is:private-ranges-only"] }  }
   }
   org_policies_data_path = "${var.data_dir}/org-policies"
 
