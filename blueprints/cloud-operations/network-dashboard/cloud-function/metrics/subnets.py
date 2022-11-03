@@ -291,11 +291,11 @@ def compute_subnet_utilization_redis(config, read_mask, all_subnets_dict):
 
     # Only handling PSA for Redis for now
     if connect_mode == "PRIVATE_SERVICE_ACCESS":
-      # Reddis instance asset doesn't contain the subnet information in Asset Inventory
-      # We need to find the correct subnet with IP address matching
       redis_ip_range = ipaddress.ip_network(ip_range)
       for subnet_key, subnet_dict in all_subnets_dict[project_id].items():
         if subnet_dict["network_name"] == network_name:
+          # Reddis instance asset doesn't contain the subnet information in Asset Inventory
+          # We need to find the correct subnet range with IP address matching to compute the utilization
           if redis_ip_range.overlaps(
               ipaddress.ip_network(subnet_dict['ip_cidr_range'])):
             all_subnets_dict[project_id][subnet_key][
