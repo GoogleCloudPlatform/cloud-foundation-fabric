@@ -117,6 +117,8 @@ def validate_policy_boolean_resources(resources):
   assert len(resources) == 2
   policies = [r for r in resources if r['type'] == 'google_org_policy_policy']
   assert len(policies) == 2
+  assert all(
+      x['values']['parent'] == 'organizations/1234567890' for x in policies)
 
   p1 = [
       r['values']['spec'][0]
@@ -169,6 +171,8 @@ def validate_policy_list_resources(resources):
 
   policies = [r for r in resources if r['type'] == 'google_org_policy_policy']
   assert len(policies) == 3
+  assert all(
+      x['values']['parent'] == 'organizations/1234567890' for x in policies)
 
   p1 = [
       r['values']['spec'][0]
