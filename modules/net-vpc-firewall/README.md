@@ -16,10 +16,12 @@ This is often useful for prototyping or testing infrastructure, allowing open in
 
 ```hcl
 module "firewall" {
-  source               = "./fabric/modules/net-vpc-firewall"
-  project_id           = "my-project"
-  network              = "my-network"
-  admin_ranges         = ["10.0.0.0/8"]
+  source     = "./fabric/modules/net-vpc-firewall"
+  project_id = "my-project"
+  network    = "my-network"
+  default_rules_config = {
+    admin_ranges = ["10.0.0.0/8"]
+  }
 }
 # tftest modules=1 resources=4
 ```
@@ -30,21 +32,18 @@ This is an example of how to define custom rules, with a sample rule allowing op
 
 ```hcl
 module "firewall" {
-  source       = "./fabric/modules/net-vpc-firewall"
-  project_id   = "my-project"
-  network      = "my-network"
-  admin_ranges = ["10.0.0.0/8"]
+  source     = "./fabric/modules/net-vpc-firewall"
+  project_id = "my-project"
+  network    = "my-network"
+  default_rules_config = {
+    admin_ranges = ["10.0.0.0/8"]
+  }
   custom_rules = {
     ntp-svc = {
-      description          = "NTP service."
-      direction            = "INGRESS"
-      action               = "allow"
-      sources              = []
-      ranges               = ["0.0.0.0/0"]
-      targets              = ["ntp-svc"]
-      use_service_accounts = false
-      rules                = [{ protocol = "udp", ports = [123] }]
-      extra_attributes     = {}
+      description = "NTP service."
+      ranges      = ["0.0.0.0/0"]
+      targets     = ["ntp-svc"]
+      rules       = [{ protocol = "udp", ports = [123] }]
     }
   }
 }
@@ -57,39 +56,37 @@ If you don't want any predefined rules set `admin_ranges`, `http_source_ranges`,
 
 ```hcl
 module "firewall" {
-  source              = "./fabric/modules/net-vpc-firewall"
-  project_id          = "my-project"
-  network             = "my-network"
-  admin_ranges        = []
-  http_source_ranges  = []
-  https_source_ranges = []
-  ssh_source_ranges   = []
+  source     = "./fabric/modules/net-vpc-firewall"
+  project_id = "my-project"
+  network    = "my-network"
+  default_rules_config = {
+    http_ranges  = []
+    https_ranges = []
+    ssh_ranges   = []
+  }
   custom_rules = {
     allow-https = {
-      description          = "Allow HTTPS from internal networks."
-      direction            = "INGRESS"
-      action               = "allow"
-      sources              = []
-      ranges               = ["rfc1918"]
-      targets              = []
-      use_service_accounts = false
-      rules                = [{ protocol = "tcp", ports = [443] }]
-      extra_attributes     = {}
+      description = "Allow HTTPS from internal networks."
+      ranges      = ["rfc1918"]
+      rules       = [{ protocol = "tcp", ports = [443] }]
     }
   }
 }
 # tftest modules=1 resources=1
 ```
 
-
 ### Rules Factory
+
 The module includes a rules factory (see [Resource Factories](../../blueprints/factories/)) for the massive creation of rules leveraging YaML configuration files. Each configuration file can optionally contain more than one rule which a structure that reflects the `custom_rules` variable.
 
 ```hcl
 module "firewall" {
-  source             = "./fabric/modules/net-vpc-firewall"
-  project_id         = "my-project"
-  network            = "my-network"
+  source           = "./fabric/modules/net-vpc-firewall"
+  project_id       = "my-project"
+  network          = "my-network"
+  factories_config = {
+
+  }
   data_folder        = "config/firewall"
   cidr_template_file = "config/cidr_template.yaml"
 }
@@ -100,13 +97,9 @@ module "firewall" {
 # ./config/firewall/load_balancers.yaml
 allow-healthchecks:
   description: Allow ingress from healthchecks.
-  direction: INGRESS
-  action: allow
-  sources: []
   ranges:
-    - $healthchecks
+    - healthchecks
   targets: ["lb-backends"]
-  use_service_accounts: false
   rules:
     - protocol: tcp
       ports:
@@ -129,26 +122,18 @@ healthchecks:
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [network](variables.tf#L80) | Name of the network this set of firewall rules applies to. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L85) | Project id of the project that holds the network. | <code>string</code> | ✓ |  |
-| [admin_ranges](variables.tf#L17) | IP CIDR ranges that have complete access to all subnets. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [cidr_template_file](variables.tf#L23) | Path for optional file containing name->cidr_list map to be used by the rules factory. | <code>string</code> |  | <code>null</code> |
-| [custom_rules](variables.tf#L29) | List of custom rule definitions (refer to variables file for syntax). | <code title="map&#40;object&#40;&#123;&#10;  description          &#61; string&#10;  direction            &#61; string&#10;  action               &#61; string &#35; &#40;allow&#124;deny&#41;&#10;  ranges               &#61; list&#40;string&#41;&#10;  sources              &#61; list&#40;string&#41;&#10;  targets              &#61; list&#40;string&#41;&#10;  use_service_accounts &#61; bool&#10;  rules &#61; list&#40;object&#40;&#123;&#10;    protocol &#61; string&#10;    ports    &#61; list&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;  extra_attributes &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [data_folder](variables.tf#L48) | Path for optional folder containing firewall rules defined as YaML objects used by the rules factory. | <code>string</code> |  | <code>null</code> |
-| [http_source_ranges](variables.tf#L54) | List of IP CIDR ranges for tag-based HTTP rule, defaults to the health checkers ranges. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;35.191.0.0&#47;16&#34;, &#34;130.211.0.0&#47;22&#34;, &#34;209.85.152.0&#47;22&#34;, &#34;209.85.204.0&#47;22&#34;&#93;</code> |
-| [https_source_ranges](variables.tf#L60) | List of IP CIDR ranges for tag-based HTTPS rule, defaults to the health checkers ranges. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;35.191.0.0&#47;16&#34;, &#34;130.211.0.0&#47;22&#34;, &#34;209.85.152.0&#47;22&#34;, &#34;209.85.204.0&#47;22&#34;&#93;</code> |
-| [named_ranges](variables.tf#L66) | Names that can be used of valid values for the `ranges` field of `custom_rules`. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code title="&#123;&#10;  any                   &#61; &#91;&#34;0.0.0.0&#47;0&#34;&#93;&#10;  dns-forwarders        &#61; &#91;&#34;35.199.192.0&#47;19&#34;&#93;&#10;  health-checkers       &#61; &#91;&#34;35.191.0.0&#47;16&#34;, &#34;130.211.0.0&#47;22&#34;, &#34;209.85.152.0&#47;22&#34;, &#34;209.85.204.0&#47;22&#34;&#93;&#10;  iap-forwarders        &#61; &#91;&#34;35.235.240.0&#47;20&#34;&#93;&#10;  private-googleapis    &#61; &#91;&#34;199.36.153.8&#47;30&#34;&#93;&#10;  restricted-googleapis &#61; &#91;&#34;199.36.153.4&#47;30&#34;&#93;&#10;  rfc1918               &#61; &#91;&#34;10.0.0.0&#47;8&#34;, &#34;172.16.0.0&#47;12&#34;, &#34;192.168.0.0&#47;16&#34;&#93;&#10;&#125;">&#123;&#8230;&#125;</code> |
-| [ssh_source_ranges](variables.tf#L90) | List of IP CIDR ranges for tag-based SSH rule, defaults to the IAP forwarders range. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#34;35.235.240.0&#47;20&#34;&#93;</code> |
+| [network](variables.tf#L85) | Name of the network this set of firewall rules applies to. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L90) | Project id of the project that holds the network. | <code>string</code> | ✓ |  |
+| [custom_rules](variables.tf#L17) | List of custom rule definitions (refer to variables file for syntax). | <code title="map&#40;object&#40;&#123;&#10;  description &#61; optional&#40;string&#41;&#10;  disabled    &#61; optional&#40;bool, false&#41;&#10;  enable_logging &#61; optional&#40;object&#40;&#123;&#10;    include_metadata &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;&#10;  is_egress            &#61; optional&#40;bool, false&#41;&#10;  is_deny              &#61; optional&#40;bool, false&#41;&#10;  priority             &#61; optional&#40;number, 1000&#41;&#10;  ranges               &#61; optional&#40;list&#40;string&#41;&#41;&#10;  sources              &#61; optional&#40;list&#40;string&#41;&#41;&#10;  targets              &#61; optional&#40;list&#40;string&#41;&#41;&#10;  use_service_accounts &#61; optional&#40;bool, false&#41;&#10;  rules &#61; list&#40;object&#40;&#123;&#10;    protocol &#61; string&#10;    ports    &#61; list&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [default_rules_config](variables.tf#L40) | Optionally created convenience rules. Set the variable or individual members to null to disable. | <code title="object&#40;&#123;&#10;  admin_ranges &#61; optional&#40;list&#40;string&#41;&#41;&#10;  http_ranges &#61; optional&#40;list&#40;string&#41;, &#91;&#10;    &#34;35.191.0.0&#47;16&#34;, &#34;130.211.0.0&#47;22&#34;, &#34;209.85.152.0&#47;22&#34;, &#34;209.85.204.0&#47;22&#34;&#93;&#10;  &#41;&#10;  http_tags &#61; optional&#40;list&#40;string&#41;, &#91;&#34;http-server&#34;&#93;&#41;&#10;  https_ranges &#61; optional&#40;list&#40;string&#41;, &#91;&#10;    &#34;35.191.0.0&#47;16&#34;, &#34;130.211.0.0&#47;22&#34;, &#34;209.85.152.0&#47;22&#34;, &#34;209.85.204.0&#47;22&#34;&#93;&#10;  &#41;&#10;  https_tags &#61; optional&#40;list&#40;string&#41;, &#91;&#34;https-server&#34;&#93;&#41;&#10;  ssh_ranges &#61; optional&#40;list&#40;string&#41;, &#91;&#34;35.235.240.0&#47;20&#34;&#93;&#41;&#10;  ssh_tags   &#61; optional&#40;list&#40;string&#41;, &#91;&#34;ssh&#34;&#93;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [factories_config](variables.tf#L59) | Paths to data files and folders that enable factory functionality. | <code title="object&#40;&#123;&#10;  cidr_tpl_file &#61; optional&#40;string&#41;&#10;  rules_folder  &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [named_ranges](variables.tf#L68) | Define mapping of names to ranges that can be used in custom rules. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code title="&#123;&#10;  any            &#61; &#91;&#34;0.0.0.0&#47;0&#34;&#93;&#10;  dns-forwarders &#61; &#91;&#34;35.199.192.0&#47;19&#34;&#93;&#10;  health-checkers &#61; &#91;&#10;    &#34;35.191.0.0&#47;16&#34;, &#34;130.211.0.0&#47;22&#34;, &#34;209.85.152.0&#47;22&#34;, &#34;209.85.204.0&#47;22&#34;&#10;  &#93;&#10;  iap-forwarders        &#61; &#91;&#34;35.235.240.0&#47;20&#34;&#93;&#10;  private-googleapis    &#61; &#91;&#34;199.36.153.8&#47;30&#34;&#93;&#10;  restricted-googleapis &#61; &#91;&#34;199.36.153.4&#47;30&#34;&#93;&#10;  rfc1918               &#61; &#91;&#34;10.0.0.0&#47;8&#34;, &#34;172.16.0.0&#47;12&#34;, &#34;192.168.0.0&#47;16&#34;&#93;&#10;&#125;">&#123;&#8230;&#125;</code> |
 
 ## Outputs
 
 | name | description | sensitive |
 |---|---|:---:|
-| [admin_ranges](outputs.tf#L17) | Admin ranges data. |  |
-| [custom_egress_allow_rules](outputs.tf#L26) | Custom egress rules with allow blocks. |  |
-| [custom_egress_deny_rules](outputs.tf#L34) | Custom egress rules with allow blocks. |  |
-| [custom_ingress_allow_rules](outputs.tf#L42) | Custom ingress rules with allow blocks. |  |
-| [custom_ingress_deny_rules](outputs.tf#L50) | Custom ingress rules with deny blocks. |  |
-| [rules](outputs.tf#L58) | All google_compute_firewall resources created. |  |
+| [default_rules](outputs.tf#L17) | Default rule resources. |  |
+| [rules](outputs.tf#L27) | Custom rule resources. |  |
 
 <!-- END TFDOC -->

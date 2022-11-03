@@ -14,13 +14,9 @@
 
 allow-healthchecks:
   description: Allow ingress from healthchecks.
-  direction: INGRESS
-  action: allow
-  sources: []
   ranges:
-    - $healthchecks
+    - healthchecks
   targets: ["lb-backends"]
-  use_service_accounts: false
   rules:
     - protocol: tcp
       ports:
