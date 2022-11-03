@@ -57,10 +57,10 @@ module "branch-security-sa-cicd" {
     ? { 0 = local.cicd_repositories.security }
     : {}
   )
-  project_id  = var.automation.project_id
-  name        = "prod-resman-sec-1"
-  description = "Terraform CI/CD stage 2 security service account."
-  prefix      = var.prefix
+  project_id   = var.automation.project_id
+  name         = "prod-resman-sec-1"
+  display_name = "Terraform CI/CD stage 2 security service account."
+  prefix       = var.prefix
   iam = (
     each.value.type == "sourcerepo"
     # used directly from the cloud build trigger for source repos

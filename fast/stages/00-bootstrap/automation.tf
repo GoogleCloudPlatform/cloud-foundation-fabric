@@ -111,11 +111,11 @@ module "automation-tf-bootstrap-gcs" {
 }
 
 module "automation-tf-bootstrap-sa" {
-  source      = "../../../modules/iam-service-account"
-  project_id  = module.automation-project.project_id
-  name        = "bootstrap-0"
-  description = "Terraform organization bootstrap service account."
-  prefix      = local.prefix
+  source       = "../../../modules/iam-service-account"
+  project_id   = module.automation-project.project_id
+  name         = "bootstrap-0"
+  display_name = "Terraform organization bootstrap service account."
+  prefix       = local.prefix
   # allow SA used by CI/CD workflow to impersonate this SA
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
@@ -144,11 +144,11 @@ module "automation-tf-cicd-gcs" {
 }
 
 module "automation-tf-cicd-provisioning-sa" {
-  source      = "../../../modules/iam-service-account"
-  project_id  = module.automation-project.project_id
-  name        = "cicd-0"
-  description = "Terraform stage 1 CICD service account."
-  prefix      = local.prefix
+  source       = "../../../modules/iam-service-account"
+  project_id   = module.automation-project.project_id
+  name         = "cicd-0"
+  display_name = "Terraform stage 1 CICD service account."
+  prefix       = local.prefix
   # allow SA used by CI/CD workflow to impersonate this SA
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
@@ -177,11 +177,11 @@ module "automation-tf-resman-gcs" {
 }
 
 module "automation-tf-resman-sa" {
-  source      = "../../../modules/iam-service-account"
-  project_id  = module.automation-project.project_id
-  name        = "resman-0"
-  description = "Terraform stage 1 resman service account."
-  prefix      = local.prefix
+  source       = "../../../modules/iam-service-account"
+  project_id   = module.automation-project.project_id
+  name         = "resman-0"
+  display_name = "Terraform stage 1 resman service account."
+  prefix       = local.prefix
   # allow SA used by CI/CD workflow to impersonate this SA
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
