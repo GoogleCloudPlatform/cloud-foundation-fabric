@@ -58,3 +58,8 @@ variable "org_policies" {
   type    = any
   default = {}
 }
+
+variable "org_policies_data_path" {
+  type    = any
+  default = null
+}

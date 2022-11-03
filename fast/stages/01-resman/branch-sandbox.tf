@@ -68,10 +68,10 @@ moved {
 }
 
 module "branch-sandbox-sa" {
-  source      = "../../../modules/iam-service-account"
-  count       = var.fast_features.sandbox ? 1 : 0
-  project_id  = var.automation.project_id
-  name        = "dev-resman-sbox-0"
-  description = "Terraform resman sandbox service account."
-  prefix      = var.prefix
+  source       = "../../../modules/iam-service-account"
+  count        = var.fast_features.sandbox ? 1 : 0
+  project_id   = var.automation.project_id
+  name         = "dev-resman-sbox-0"
+  display_name = "Terraform resman sandbox service account."
+  prefix       = var.prefix
 }

@@ -69,6 +69,11 @@ variable "org_policies" {
   default = {}
 }
 
+variable "org_policies_data_path" {
+  type    = any
+  default = null
+}
+
 variable "oslogin" {
   type    = bool
   default = false

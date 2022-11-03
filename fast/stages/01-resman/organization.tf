@@ -66,44 +66,12 @@ module "organization" {
       )
     } : {}
   )
-  # sample subset of useful organization policies, edit to suit requirements
 
+  # sample subset of useful organization policies, edit to suit requirements
   org_policies = {
-    "compute.disableGuestAttributesAccess"            = { enforce = true }
-    "compute.requireOsLogin"                          = { enforce = true }
-    "compute.restrictLoadBalancerCreationForTypes"    = { allow = { values = ["in:INTERNAL"] } }
-    "compute.skipDefaultNetworkCreation"              = { enforce = true }
-    "compute.vmExternalIpAccess"                      = { deny = { all = true } }
-    "iam.allowedPolicyMemberDomains"                  = { allow = { values = local.all_drs_domains } }
-    "iam.automaticIamGrantsForDefaultServiceAccounts" = { enforce = true }
-    "iam.disableServiceAccountKeyCreation"            = { enforce = true }
-    "iam.disableServiceAccountKeyUpload"              = { enforce = true }
-    "run.allowedIngress"                              = { allow = { values = ["is:internal"] } }
-    "sql.restrictAuthorizedNetworks"                  = { enforce = true }
-    "sql.restrictPublicIp"                            = { enforce = true }
-    "storage.uniformBucketLevelAccess"                = { enforce = true }
-    # "cloudfunctions.allowedIngressSettings" = {
-    #   allow = { values = ["is:ALLOW_INTERNAL_ONLY"] }
-    # }
-    # "cloudfunctions.allowedVpcConnectorEgressSettings" = {
-    #   allow = { values = ["is:PRIVATE_RANGES_ONLY"] }
-    # }
-    # "cloudfunctions.requireVPCConnector"              = { enforce = true }
-    # "compute.disableInternetNetworkEndpointGroup"     = { enforce = true }
-    # "compute.disableNestedVirtualization"             = { enforce = true }
-    # "compute.disableSerialPortAccess"                 = { enforce = true }
-    # "compute.restrictCloudNATUsage"                      = { deny = { all = true }}
-    # "compute.restrictDedicatedInterconnectUsage"         = { deny = { all = true }}
-    # "compute.restrictPartnerInterconnectUsage"           = { deny = { all = true }}
-    # "compute.restrictProtocolForwardingCreationForTypes" = { deny = { all = true }}
-    # "compute.restrictSharedVpcHostProjects"              = { deny = { all = true }}
-    # "compute.restrictSharedVpcSubnetworks"               = { deny = { all = true }}
-    # "compute.restrictVpcPeering" = { deny = { all = true }}
-    # "compute.restrictVpnPeerIPs" = { deny = { all = true }}
-    # "compute.restrictXpnProjectLienRemoval"           = { enforce = true }
-    # "compute.setNewProjectDefaultToZonalDNSOnly"      = { enforce = true }
-    # "compute.vmCanIpForward"     = { deny = { all = true }}
-    # "gcp.resourceLocations" = {
+    "iam.allowedPolicyMemberDomains" = { allow = { values = local.all_drs_domains } }
+
+    #"gcp.resourceLocations" = {
     #   allow = { values = local.allowed_regions }
     # }
     # "iam.workloadIdentityPoolProviders" = {
@@ -114,8 +82,9 @@ module "organization" {
     #     ]
     #   }
     # }
-    # "run.allowedVPCEgress" = { allow = { values = ["is:private-ranges-only"] }  }
   }
+  org_policies_data_path = "${var.data_dir}/org-policies"
+
   tags = {
     (var.tag_names.context) = {
       description = "Resource management context."

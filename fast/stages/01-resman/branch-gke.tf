@@ -69,12 +69,12 @@ module "branch-gke-prod-folder" {
 }
 
 module "branch-gke-dev-sa" {
-  source      = "../../../modules/iam-service-account"
-  count       = var.fast_features.gke ? 1 : 0
-  project_id  = var.automation.project_id
-  name        = "dev-resman-gke-0"
-  description = "Terraform gke multitenant dev service account."
-  prefix      = var.prefix
+  source       = "../../../modules/iam-service-account"
+  count        = var.fast_features.gke ? 1 : 0
+  project_id   = var.automation.project_id
+  name         = "dev-resman-gke-0"
+  display_name = "Terraform gke multitenant dev service account."
+  prefix       = var.prefix
   iam = {
     "roles/iam.serviceAccountTokenCreator" = concat(
       ["group:${local.groups.gcp-devops}"],
@@ -89,12 +89,12 @@ module "branch-gke-dev-sa" {
 }
 
 module "branch-gke-prod-sa" {
-  source      = "../../../modules/iam-service-account"
-  count       = var.fast_features.gke ? 1 : 0
-  project_id  = var.automation.project_id
-  name        = "prod-resman-gke-0"
-  description = "Terraform gke multitenant prod service account."
-  prefix      = var.prefix
+  source       = "../../../modules/iam-service-account"
+  count        = var.fast_features.gke ? 1 : 0
+  project_id   = var.automation.project_id
+  name         = "prod-resman-gke-0"
+  display_name = "Terraform gke multitenant prod service account."
+  prefix       = var.prefix
   iam = {
     "roles/iam.serviceAccountTokenCreator" = concat(
       ["group:${local.groups.gcp-devops}"],
