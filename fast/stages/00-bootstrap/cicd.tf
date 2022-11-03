@@ -87,12 +87,12 @@ module "automation-tf-cicd-repo" {
 # SAs used by CI/CD workflows to impersonate automation SAs
 
 module "automation-tf-cicd-sa" {
-  source      = "../../../modules/iam-service-account"
-  for_each    = local.cicd_repositories
-  project_id  = module.automation-project.project_id
-  name        = "${each.key}-1"
-  description = "Terraform CI/CD ${each.key} service account."
-  prefix      = local.prefix
+  source       = "../../../modules/iam-service-account"
+  for_each     = local.cicd_repositories
+  project_id   = module.automation-project.project_id
+  name         = "${each.key}-1"
+  display_name = "Terraform CI/CD ${each.key} service account."
+  prefix       = local.prefix
   iam = (
     each.value.type == "sourcerepo"
     # used directly from the cloud build trigger for source repos

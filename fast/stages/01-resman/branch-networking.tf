@@ -86,11 +86,11 @@ module "branch-network-dev-folder" {
 # automation service account and bucket
 
 module "branch-network-sa" {
-  source      = "../../../modules/iam-service-account"
-  project_id  = var.automation.project_id
-  name        = "prod-resman-net-0"
-  description = "Terraform resman networking service account."
-  prefix      = var.prefix
+  source       = "../../../modules/iam-service-account"
+  project_id   = var.automation.project_id
+  name         = "prod-resman-net-0"
+  display_name = "Terraform resman networking service account."
+  prefix       = var.prefix
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
       try(module.branch-network-sa-cicd.0.iam_email, null)
