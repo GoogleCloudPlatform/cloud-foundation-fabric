@@ -95,10 +95,10 @@ module "branch-gke-dev-sa-cicd" {
     ? { 0 = local.cicd_repositories.gke_dev }
     : {}
   )
-  project_id  = var.automation.project_id
-  name        = "dev-resman-gke-1"
-  description = "Terraform CI/CD GKE development service account."
-  prefix      = var.prefix
+  project_id   = var.automation.project_id
+  name         = "dev-resman-gke-1"
+  display_name = "Terraform CI/CD GKE development service account."
+  prefix       = var.prefix
   iam = (
     each.value.type == "sourcerepo"
     # used directly from the cloud build trigger for source repos
@@ -138,10 +138,10 @@ module "branch-gke-prod-sa-cicd" {
     ? { 0 = local.cicd_repositories.gke_prod }
     : {}
   )
-  project_id  = var.automation.project_id
-  name        = "prod-resman-gke-1"
-  description = "Terraform CI/CD GKE production service account."
-  prefix      = var.prefix
+  project_id   = var.automation.project_id
+  name         = "prod-resman-gke-1"
+  display_name = "Terraform CI/CD GKE production service account."
+  prefix       = var.prefix
   iam = (
     each.value.type == "sourcerepo"
     # used directly from the cloud build trigger for source repos
