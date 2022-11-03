@@ -106,10 +106,10 @@ module "branch-pf-dev-sa-cicd" {
     ? { 0 = local.cicd_repositories.project_factory_dev }
     : {}
   )
-  project_id  = var.automation.project_id
-  name        = "dev-pf-resman-pf-1"
-  description = "Terraform CI/CD project factory development service account."
-  prefix      = var.prefix
+  project_id   = var.automation.project_id
+  name         = "dev-pf-resman-pf-1"
+  display_name = "Terraform CI/CD project factory development service account."
+  prefix       = var.prefix
   iam = (
     each.value.type == "sourcerepo"
     # used directly from the cloud build trigger for source repos
@@ -154,10 +154,10 @@ module "branch-pf-prod-sa-cicd" {
     ? { 0 = local.cicd_repositories.project_factory_prod }
     : {}
   )
-  project_id  = var.automation.project_id
-  name        = "prod-pf-resman-pf-1"
-  description = "Terraform CI/CD project factory production service account."
-  prefix      = var.prefix
+  project_id   = var.automation.project_id
+  name         = "prod-pf-resman-pf-1"
+  display_name = "Terraform CI/CD project factory production service account."
+  prefix       = var.prefix
   iam = (
     each.value.type == "sourcerepo"
     # used directly from the cloud build trigger for source repos

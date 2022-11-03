@@ -36,7 +36,6 @@ These modules are used in the examples included in this repository. If you are u
 - [service accounts](./iam-service-account)
 - [logging bucket](./logging-bucket)
 - [organization](./organization)
-- [organization-policy](./organization-policy)
 - [project](./project)
 - [projects-data-source](./projects-data-source)
 
