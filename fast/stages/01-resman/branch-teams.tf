@@ -40,12 +40,12 @@ module "branch-teams-folder" {
 }
 
 module "branch-teams-sa" {
-  source      = "../../../modules/iam-service-account"
-  count       = var.fast_features.teams ? 1 : 0
-  project_id  = var.automation.project_id
-  name        = "prod-resman-teams-0"
-  description = "Terraform resman teams service account."
-  prefix      = var.prefix
+  source       = "../../../modules/iam-service-account"
+  count        = var.fast_features.teams ? 1 : 0
+  project_id   = var.automation.project_id
+  name         = "prod-resman-teams-0"
+  display_name = "Terraform resman teams service account."
+  prefix       = var.prefix
   iam_storage_roles = {
     (var.automation.outputs_bucket) = ["roles/storage.admin"]
   }
@@ -83,12 +83,12 @@ module "branch-teams-team-folder" {
 }
 
 module "branch-teams-team-sa" {
-  source      = "../../../modules/iam-service-account"
-  for_each    = var.fast_features.teams ? coalesce(var.team_folders, {}) : {}
-  project_id  = var.automation.project_id
-  name        = "prod-teams-${each.key}-0"
-  description = "Terraform team ${each.key} service account."
-  prefix      = var.prefix
+  source       = "../../../modules/iam-service-account"
+  for_each     = var.fast_features.teams ? coalesce(var.team_folders, {}) : {}
+  project_id   = var.automation.project_id
+  name         = "prod-teams-${each.key}-0"
+  display_name = "Terraform team ${each.key} service account."
+  prefix       = var.prefix
   iam = {
     "roles/iam.serviceAccountTokenCreator" = (
       each.value.impersonation_groups == null
