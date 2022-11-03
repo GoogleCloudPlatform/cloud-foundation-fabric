@@ -31,7 +31,7 @@ variable "custom_rules" {
     use_service_accounts = optional(bool, false)
     rules = list(object({
       protocol = string
-      ports    = list(string)
+      ports    = optional(list(string))
     }))
   }))
   default = {}
