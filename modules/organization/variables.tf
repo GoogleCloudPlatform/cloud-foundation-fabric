@@ -197,6 +197,12 @@ variable "organization_id" {
   }
 }
 
+variable "org_policies_data_path" {
+  description = ""
+  type        = string
+  default     = null
+}
+
 variable "tag_bindings" {
   description = "Tag bindings for this organization, in key => tag value id format."
   type        = map(string)

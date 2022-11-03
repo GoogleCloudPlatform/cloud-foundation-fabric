@@ -173,6 +173,12 @@ variable "org_policies" {
   nullable = false
 }
 
+variable "org_policies_data_path" {
+  description = ""
+  type        = string
+  default     = null
+}
+
 variable "oslogin" {
   description = "Enable OS Login."
   type        = bool
