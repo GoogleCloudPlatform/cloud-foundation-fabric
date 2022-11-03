@@ -27,4 +27,5 @@ module "test" {
   logging_sinks               = var.logging_sinks
   logging_exclusions          = var.logging_exclusions
   org_policies                = var.org_policies
+  org_policies_data_path      = var.org_policies_data_path
 }

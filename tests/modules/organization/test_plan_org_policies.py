@@ -15,35 +15,108 @@
 import difflib
 from pathlib import Path
 
+import hcl2
+import yaml
+
+BOOLEAN_POLICIES = '''{
+  "iam.disableServiceAccountKeyCreation" = {
+    enforce = true
+  }
+  "iam.disableServiceAccountKeyUpload" = {
+    enforce = false
+    rules = [
+      {
+        condition = {
+          expression  = "resource.matchTagId(aa, bb)"
+          title       = "condition"
+          description = "test condition"
+          location    = "xxx"
+        }
+        enforce = true
+      }
+    ]
+  }
+}'''
+
+LIST_POLICIES = '''{
+  "compute.vmExternalIpAccess" = {
+    deny = { all = true }
+  }
+  "iam.allowedPolicyMemberDomains" = {
+    allow = {
+      values = ["C0xxxxxxx", "C0yyyyyyy"]
+    }
+  }
+  "compute.restrictLoadBalancerCreationForTypes" = {
+    deny = { values = ["in:EXTERNAL"] }
+    rules = [
+      {
+        condition = {
+          expression  = "resource.matchTagId(aa, bb)"
+          title       = "condition"
+          description = "test condition"
+          location    = "xxx"
+        }
+        allow = {
+          values = ["EXTERNAL_1"]
+        }
+      },
+      {
+        condition = {
+          expression  = "resource.matchTagId(cc, dd)"
+          title       = "condition2"
+          description = "test condition2"
+          location    = "xxx"
+        }
+        allow = {
+          all = true
+        }
+      }
+    ]
+  }
+}'''
+
 
 def test_policy_boolean(plan_runner):
   "Test boolean org policy."
-  policies = '''{
-    "iam.disableServiceAccountKeyCreation" = {
-      enforce = true
-    }
-    "iam.disableServiceAccountKeyUpload" = {
-      enforce = false
-      rules = [
-        {
-          condition = {
-            expression  = "resource.matchTagId(\\"tagKeys/1234\\", \\"tagValues/1234\\")"
-            title       = "condition"
-            description = "test condition"
-            location    = "xxx"
-          }
-          enforce = true
-        }
-      ]
-    }
-  }'''
-  _, resources = plan_runner(org_policies=policies)
-  assert len(resources) == 2
+  _, resources = plan_runner(org_policies=BOOLEAN_POLICIES)
+  validate_policy_boolean_resources(resources)
 
+
+def test_policy_list(plan_runner):
+  "Test list org policy."
+  _, resources = plan_runner(org_policies=LIST_POLICIES)
+  validate_policy_list_resources(resources)
+
+
+def test_policy_boolean_factory(plan_runner, tmp_path):
+  # convert hcl policies to yaml
+  hcl_policies = f'p = {BOOLEAN_POLICIES}'
+  yaml_policies = yaml.dump(hcl2.loads(hcl_policies)['p'])
+
+  yaml_file = tmp_path / 'policies.yaml'
+  yaml_file.write_text(yaml_policies)
+
+  _, resources = plan_runner(org_policies_data_path=f'"{tmp_path}"')
+  validate_policy_boolean_resources(resources)
+
+
+def test_policy_list_factory(plan_runner, tmp_path):
+  # convert hcl policies to yaml
+  hcl_policies = f'p = {LIST_POLICIES}'
+  yaml_policies = yaml.dump(hcl2.loads(hcl_policies)['p'])
+
+  yaml_file = tmp_path / 'policies.yaml'
+  yaml_file.write_text(yaml_policies)
+
+  _, resources = plan_runner(org_policies_data_path=f'"{tmp_path}"')
+  validate_policy_list_resources(resources)
+
+
+def validate_policy_boolean_resources(resources):
+  assert len(resources) == 2
   policies = [r for r in resources if r['type'] == 'google_org_policy_policy']
   assert len(policies) == 2
-  assert all(
-      x['values']['parent'] == 'organizations/1234567890' for x in policies)
 
   p1 = [
       r['values']['spec'][0]
@@ -81,7 +154,7 @@ def test_policy_boolean(plan_runner):
       'allow_all': None,
       'condition': [{
           'description': 'test condition',
-          'expression': 'resource.matchTagId("tagKeys/1234", "tagValues/1234")',
+          'expression': 'resource.matchTagId(aa, bb)',
           'location': 'xxx',
           'title': 'condition'
       }],
@@ -91,52 +164,11 @@ def test_policy_boolean(plan_runner):
   }
 
 
-def test_policy_list(plan_runner):
-  "Test list org policy."
-  policies = '''{
-    "compute.vmExternalIpAccess" = {
-      deny = { all = true }
-    }
-    "iam.allowedPolicyMemberDomains" = {
-      allow = {
-        values = ["C0xxxxxxx", "C0yyyyyyy"]
-      }
-    }
-    "compute.restrictLoadBalancerCreationForTypes" = {
-      deny = { values = ["in:EXTERNAL"] }
-      rules = [
-        {
-          condition = {
-            expression  = "resource.matchTagId(\\"tagKeys/1234\\", \\"tagValues/1234\\")"
-            title       = "condition"
-            description = "test condition"
-            location    = "xxx"
-          }
-          allow = {
-            values = ["EXTERNAL_1"]
-          }
-        },
-        {
-          condition = {
-            expression  = "resource.matchTagId(\\"tagKeys/12345\\", \\"tagValues/12345\\")"
-            title       = "condition2"
-            description = "test condition2"
-            location    = "xxx"
-          }
-          allow = {
-            all = true
-          }
-        }
-      ]
-    }
-  }'''
-  _, resources = plan_runner(org_policies=policies)
+def validate_policy_list_resources(resources):
   assert len(resources) == 3
 
   policies = [r for r in resources if r['type'] == 'google_org_policy_policy']
   assert len(policies) == 3
-  assert all(
-      x['values']['parent'] == 'organizations/1234567890' for x in policies)
 
   p1 = [
       r['values']['spec'][0]
@@ -200,7 +232,7 @@ def test_policy_list(plan_runner):
       'allow_all': None,
       'condition': [{
           'description': 'test condition',
-          'expression': 'resource.matchTagId("tagKeys/1234", "tagValues/1234")',
+          'expression': 'resource.matchTagId(aa, bb)',
           'location': 'xxx',
           'title': 'condition'
       }],
@@ -215,14 +247,10 @@ def test_policy_list(plan_runner):
   assert p3['rules'][2] == {
       'allow_all': 'TRUE',
       'condition': [{
-          'description':
-              'test condition2',
-          'expression':
-              'resource.matchTagId("tagKeys/12345", "tagValues/12345")',
-          'location':
-              'xxx',
-          'title':
-              'condition2'
+          'description': 'test condition2',
+          'expression': 'resource.matchTagId(cc, dd)',
+          'location': 'xxx',
+          'title': 'condition2'
       }],
       'deny_all': None,
       'enforce': None,
@@ -244,7 +272,7 @@ def test_policy_implementation(plan_runner):
   assert list(diff1) == [
       '--- \n',
       '+++ \n',
-      '@@ -14,14 +14,14 @@\n',
+      '@@ -14,7 +14,7 @@\n',
       '  * limitations under the License.\n',
       '  */\n',
       ' \n',
@@ -252,8 +280,10 @@ def test_policy_implementation(plan_runner):
       '+# tfdoc:file:description Folder-level organization policies.\n',
       ' \n',
       ' locals {\n',
+      '   _factory_data_raw = (\n',
+      '@@ -69,8 +69,8 @@\n',
       '   org_policies = {\n',
-      '     for k, v in var.org_policies :\n',
+      '     for k, v in local._org_policies :\n',
       '     k => merge(v, {\n',
       '-      name   = "projects/${local.project.project_id}/policies/${k}"\n',
       '-      parent = "projects/${local.project.project_id}"\n',
@@ -268,7 +298,7 @@ def test_policy_implementation(plan_runner):
   assert list(diff2) == [
       '--- \n',
       '+++ \n',
-      '@@ -14,14 +14,14 @@\n',
+      '@@ -14,7 +14,7 @@\n',
       '  * limitations under the License.\n',
       '  */\n',
       ' \n',
@@ -276,8 +306,10 @@ def test_policy_implementation(plan_runner):
       '+# tfdoc:file:description Organization-level organization policies.\n',
       ' \n',
       ' locals {\n',
+      '   _factory_data_raw = (\n',
+      '@@ -69,8 +69,8 @@\n',
       '   org_policies = {\n',
-      '     for k, v in var.org_policies :\n',
+      '     for k, v in local._org_policies :\n',
       '     k => merge(v, {\n',
       '-      name   = "${local.folder.name}/policies/${k}"\n',
       '-      parent = local.folder.name\n',
@@ -286,7 +318,7 @@ def test_policy_implementation(plan_runner):
       ' \n',
       '       is_boolean_policy = v.allow == null && v.deny == null\n',
       '       has_values = (\n',
-      '@@ -94,4 +94,12 @@\n',
+      '@@ -143,4 +143,12 @@\n',
       '       }\n',
       '     }\n',
       '   }\n',
