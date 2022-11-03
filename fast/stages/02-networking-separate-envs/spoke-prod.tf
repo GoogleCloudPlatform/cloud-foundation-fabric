@@ -66,15 +66,19 @@ module "prod-spoke-vpc" {
 }
 
 module "prod-spoke-firewall" {
-  source              = "../../../modules/net-vpc-firewall"
-  project_id          = module.prod-spoke-project.project_id
-  network             = module.prod-spoke-vpc.name
-  admin_ranges        = []
-  http_source_ranges  = []
-  https_source_ranges = []
-  ssh_source_ranges   = []
-  data_folder         = "${var.data_dir}/firewall-rules/prod"
-  cidr_template_file  = "${var.data_dir}/cidrs.yaml"
+  source     = "../../../modules/net-vpc-firewall"
+  project_id = module.prod-spoke-project.project_id
+  network    = module.prod-spoke-vpc.name
+  default_rules_config = {
+    admin_ranges = []
+    http_ranges  = []
+    https_ranges = []
+    ssh_ranges   = []
+  }
+  factories_config = {
+    cidr_tpl_file = "${var.data_dir}/cidrs.yaml"
+    rules_folder  = "${var.data_dir}/firewall-rules/prod"
+  }
 }
 
 module "prod-spoke-cloudnat" {

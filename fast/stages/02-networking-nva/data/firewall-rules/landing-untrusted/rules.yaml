@@ -2,13 +2,8 @@
 
 allow-hc-nva-ssh-untrusted:
   description: "Allow traffic from Google healthchecks to NVA appliances"
-  direction: INGRESS
-  action: allow
-  sources: []
   ranges:
-    - $healthchecks
-  targets: []
-  use_service_accounts: false
+    - healthchecks
   rules:
     - protocol: tcp
       ports:

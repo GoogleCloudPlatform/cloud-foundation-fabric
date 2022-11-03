@@ -70,14 +70,13 @@ module "firewall" {
   custom_rules = {
     image-builder-ingress-builder-vm = {
       description          = "Allow image builder vm ingress traffic"
-      direction            = "INGRESS"
-      action               = "allow"
-      sources              = []
       ranges               = var.packer_source_cidrs
       targets              = [module.service-account-image-builder-vm.email]
       use_service_accounts = true
-      rules                = [{ protocol = "tcp", ports = [22, 5985, 5986] }]
-      extra_attributes     = {}
+      rules = [{
+        protocol = "tcp"
+        ports    = [22, 5985, 5986]
+      }]
     }
   }
 }

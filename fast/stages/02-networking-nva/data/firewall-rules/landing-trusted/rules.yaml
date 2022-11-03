@@ -2,13 +2,8 @@
 
 allow-hc-nva-ssh-trusted:
   description: "Allow traffic from Google healthchecks to NVA appliances"
-  direction: INGRESS
-  action: allow
-  sources: []
   ranges:
-    - $healthchecks
-  targets: []
-  use_service_accounts: false
+    - healthchecks
   rules:
     - protocol: tcp
       ports:
@@ -16,13 +11,8 @@ allow-hc-nva-ssh-trusted:
 
 allow-onprem-probes-trusted-example:
   description: "Allow traffic from onprem probes"
-  direction: INGRESS
-  action: allow
-  sources: []
   ranges:
-    - $onprem_probes
-  targets: []
-  use_service_accounts: false
+    - onprem_probes
   rules:
     - protocol: tcp
       ports:

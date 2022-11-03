@@ -2,13 +2,8 @@
 
 allow-onprem-probes-example:
   description: "Allow traffic from onprem probes"
-  direction: INGRESS
-  action: allow
-  sources: []
   ranges:
-    - $onprem_probes
-  targets: []
-  use_service_accounts: false
+    - onprem_probes
   rules:
     - protocol: tcp
       ports:

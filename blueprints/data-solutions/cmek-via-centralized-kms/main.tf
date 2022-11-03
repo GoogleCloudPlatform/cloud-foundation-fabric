@@ -59,10 +59,12 @@ module "vpc" {
 }
 
 module "vpc-firewall" {
-  source       = "../../../modules/net-vpc-firewall"
-  project_id   = module.project-service.project_id
-  network      = module.vpc.name
-  admin_ranges = [var.vpc_ip_cidr_range]
+  source     = "../../../modules/net-vpc-firewall"
+  project_id = module.project-service.project_id
+  network    = module.vpc.name
+  default_rules_config = {
+    admin_ranges = [var.vpc_ip_cidr_range]
+  }
 }
 
 ###############################################################################

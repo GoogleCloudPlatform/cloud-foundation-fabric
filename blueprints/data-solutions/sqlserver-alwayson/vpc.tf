@@ -76,69 +76,55 @@ module "vpc" {
 }
 
 module "firewall" {
-  source              = "../../../modules/net-vpc-firewall"
-  project_id          = local.vpc_project
-  network             = local.network
-  admin_ranges        = []
-  http_source_ranges  = []
-  https_source_ranges = []
-  ssh_source_ranges   = []
+  source     = "../../../modules/net-vpc-firewall"
+  project_id = local.vpc_project
+  network    = local.network
+  default_rules_config = {
+    admin_ranges = []
+    http_ranges  = []
+    https_ranges = []
+    ssh_ranges   = []
+  }
   custom_rules = {
     "${local.prefix}allow-all-between-wsfc-nodes" = {
       description          = "Allow all between WSFC nodes"
-      direction            = "INGRESS"
-      action               = "allow"
       sources              = [module.compute-service-account.email]
       targets              = [module.compute-service-account.email]
-      ranges               = []
       use_service_accounts = true
       rules = [
         { protocol = "tcp", ports = [] },
         { protocol = "udp", ports = [] },
         { protocol = "icmp", ports = [] }
       ]
-      extra_attributes = {}
     }
     "${local.prefix}allow-all-between-wsfc-witness" = {
       description          = "Allow all between WSFC witness nodes"
-      direction            = "INGRESS"
-      action               = "allow"
       sources              = [module.compute-service-account.email]
       targets              = [module.witness-service-account.email]
-      ranges               = []
       use_service_accounts = true
       rules = [
         { protocol = "tcp", ports = [] },
         { protocol = "udp", ports = [] },
         { protocol = "icmp", ports = [] }
       ]
-      extra_attributes = {}
     }
     "${local.prefix}allow-sql-to-wsfc-nodes" = {
       description          = "Allow SQL connections to WSFC nodes"
-      direction            = "INGRESS"
-      action               = "allow"
-      sources              = []
       targets              = [module.compute-service-account.email]
       ranges               = var.sql_client_cidrs
       use_service_accounts = true
       rules = [
         { protocol = "tcp", ports = [1433] },
       ]
-      extra_attributes = {}
     }
     "${local.prefix}allow-health-check-to-wsfc-nodes" = {
       description          = "Allow health checks to WSFC nodes"
-      direction            = "INGRESS"
-      action               = "allow"
-      sources              = []
       targets              = [module.compute-service-account.email]
       ranges               = var.health_check_ranges
       use_service_accounts = true
       rules = [
         { protocol = "tcp", ports = [] },
       ]
-      extra_attributes = {}
     }
   }
 }

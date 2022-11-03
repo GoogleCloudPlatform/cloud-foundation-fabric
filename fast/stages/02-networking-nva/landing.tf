@@ -57,15 +57,19 @@ module "landing-untrusted-vpc" {
 }
 
 module "landing-untrusted-firewall" {
-  source              = "../../../modules/net-vpc-firewall"
-  project_id          = module.landing-project.project_id
-  network             = module.landing-untrusted-vpc.name
-  admin_ranges        = []
-  http_source_ranges  = []
-  https_source_ranges = []
-  ssh_source_ranges   = []
-  data_folder         = "${var.data_dir}/firewall-rules/landing-untrusted"
-  cidr_template_file  = "${var.data_dir}/cidrs.yaml"
+  source     = "../../../modules/net-vpc-firewall"
+  project_id = module.landing-project.project_id
+  network    = module.landing-untrusted-vpc.name
+  default_rules_config = {
+    admin_ranges = []
+    http_ranges  = []
+    https_ranges = []
+    ssh_ranges   = []
+  }
+  factories_config = {
+    cidr_tpl_file = "${var.data_dir}/cidrs.yaml"
+    rules_folder  = "${var.data_dir}/firewall-rules/landing-untrusted"
+  }
 }
 
 # NAT
@@ -123,13 +127,17 @@ module "landing-trusted-vpc" {
 }
 
 module "landing-trusted-firewall" {
-  source              = "../../../modules/net-vpc-firewall"
-  project_id          = module.landing-project.project_id
-  network             = module.landing-trusted-vpc.name
-  admin_ranges        = []
-  http_source_ranges  = []
-  https_source_ranges = []
-  ssh_source_ranges   = []
-  data_folder         = "${var.data_dir}/firewall-rules/landing-trusted"
-  cidr_template_file  = "${var.data_dir}/cidrs.yaml"
+  source     = "../../../modules/net-vpc-firewall"
+  project_id = module.landing-project.project_id
+  network    = module.landing-trusted-vpc.name
+  default_rules_config = {
+    admin_ranges = []
+    http_ranges  = []
+    https_ranges = []
+    ssh_ranges   = []
+  }
+  factories_config = {
+    cidr_tpl_file = "${var.data_dir}/cidrs.yaml"
+    rules_folder  = "${var.data_dir}/firewall-rules/landing-trusted"
+  }
 }
