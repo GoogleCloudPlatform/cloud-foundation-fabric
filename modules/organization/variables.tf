@@ -198,7 +198,7 @@ variable "organization_id" {
 }
 
 variable "org_policies_data_path" {
-  description = ""
+  description = "Path containing org policies in YAML format."
   type        = string
   default     = null
 }
