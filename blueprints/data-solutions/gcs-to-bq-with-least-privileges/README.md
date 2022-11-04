@@ -60,7 +60,7 @@ __Note__: To grant a user a role, take a look at the [Granting and Revoking Acce
 
 Click on the button below, sign in if required and when the prompt appears, click on “confirm”.
 
-[![Open Cloudshell](../../../assets/images/cloud-shell-button.png)](https://goo.gle/GoDataPipe)
+[![Open Cloudshell](../../../assets/images/cloud-shell-button.png)](https://shell.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https://github.com/GoogleCloudPlatform/cloud-foundation-fabric&cloudshell_git_branch=hero-designs&cloudshell_open_in_editor=terraform.tfvars.sample&cloudshell_workspace=blueprints/data-solutions/gcs-to-bq-with-least-privileges)
 
 This will clone the repository to your cloud shell and a screen like this one will appear:
 
