@@ -27,11 +27,13 @@ module "vpc" {
 }
 
 module "vpc-firewall" {
-  source       = "../../../modules/net-vpc-firewall"
-  count        = local.use_shared_vpc ? 0 : 1
-  project_id   = module.project.project_id
-  network      = module.vpc[0].name
-  admin_ranges = [var.vpc_subnet_range]
+  source     = "../../../modules/net-vpc-firewall"
+  count      = local.use_shared_vpc ? 0 : 1
+  project_id = module.project.project_id
+  network    = module.vpc[0].name
+  default_rules_config = {
+    admin_ranges = [var.vpc_subnet_range]
+  }
 }
 
 module "nat" {

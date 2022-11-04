@@ -1,27 +1,17 @@
 # skip boilerplate check
 
-ingress-allow-composer-nodes:
-  description: "Allow traffic to Composer nodes."
-  direction: INGRESS
-  action: allow
-  sources: []
-  ranges: ["0.0.0.0/0"]
-  targets:
-    - composer-worker
-  use_service_accounts: false
-  rules:
-    - protocol: tcp
-      ports: [80, 443, 3306, 3307]
-
-ingress-allow-dataflow-load:
-  description: "Allow traffic to Dataflow nodes."
-  direction: INGRESS
-  action: allow
-  sources: []
-  ranges: ["0.0.0.0/0"]
-  targets:
-    - dataflow
-  use_service_accounts: false
-  rules:
-    - protocol: tcp
-      ports: [12345, 12346]
+ingress:
+  ingress-allow-composer-nodes:
+    description: "Allow traffic to Composer nodes."
+    targets:
+      - composer-worker
+    rules:
+      - protocol: tcp
+        ports: [80, 443, 3306, 3307]
+  ingress-allow-dataflow-load:
+    description: "Allow traffic to Dataflow nodes."
+    targets:
+      - dataflow
+    rules:
+      - protocol: tcp
+        ports: [12345, 12346]

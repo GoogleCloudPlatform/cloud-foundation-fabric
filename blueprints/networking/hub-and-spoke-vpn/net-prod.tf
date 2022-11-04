@@ -39,10 +39,12 @@ module "prod-vpc" {
 }
 
 module "prod-firewall" {
-  source       = "../../../modules/net-vpc-firewall"
-  project_id   = var.project_id
-  network      = module.prod-vpc.name
-  admin_ranges = values(var.ip_ranges)
+  source     = "../../../modules/net-vpc-firewall"
+  project_id = var.project_id
+  network    = module.prod-vpc.name
+  default_rules_config = {
+    admin_ranges = values(var.ip_ranges)
+  }
 }
 
 module "prod-dns-peering" {

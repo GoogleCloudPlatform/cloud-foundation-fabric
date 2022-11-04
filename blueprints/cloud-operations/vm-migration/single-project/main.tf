@@ -66,24 +66,7 @@ module "landing-vpc" {
 }
 
 module "landing-vpc-firewall" {
-  source              = "../../../../modules/net-vpc-firewall"
-  project_id          = module.landing-project.project_id
-  network             = module.landing-vpc.name
-  admin_ranges        = []
-  http_source_ranges  = []
-  https_source_ranges = []
-  ssh_source_ranges   = []
-  custom_rules = {
-    allow-ssh = {
-      description          = "Allow SSH from IAP"
-      direction            = "INGRESS"
-      action               = "allow"
-      sources              = []
-      ranges               = ["35.235.240.0/20"]
-      targets              = []
-      use_service_accounts = false
-      rules                = [{ protocol = "tcp", ports = ["22"] }]
-      extra_attributes     = {}
-    }
-  }
+  source     = "../../../../modules/net-vpc-firewall"
+  project_id = module.landing-project.project_id
+  network    = module.landing-vpc.name
 }

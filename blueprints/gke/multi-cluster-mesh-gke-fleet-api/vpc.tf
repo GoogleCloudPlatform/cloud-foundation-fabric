@@ -40,36 +40,36 @@ module "firewall" {
   source     = "../../../modules/net-vpc-firewall"
   project_id = module.host_project.project_id
   network    = module.svpc.name
-  custom_rules = merge({ allow-mesh = {
-    description          = "Allow "
-    direction            = "INGRESS"
-    action               = "allow"
-    sources              = []
-    ranges               = [for k, v in var.clusters_config : v.pods_cidr_block]
-    targets              = [for k, v in var.clusters_config : "${k}-node"]
-    use_service_accounts = false
-    rules = [{ protocol = "tcp", ports = null },
-      { protocol = "udp", ports = null },
-      { protocol = "icmp", ports = null },
-      { protocol = "esp", ports = null },
-      { protocol = "ah", ports = null },
-    { protocol = "sctp", ports = null }]
-    extra_attributes = {
-      priority = 900
-    }
-    } },
-    { for k, v in var.clusters_config : "allow-${k}-istio" => {
-      description          = "Allow "
-      direction            = "INGRESS"
-      action               = "allow"
-      sources              = []
-      ranges               = [v.master_cidr_block]
-      targets              = ["${k}-node"]
-      use_service_accounts = false
-      rules                = [{ protocol = "tcp", ports = [8080, 15014, 15017] }]
-      extra_attributes = {
-        priority = 1000
+  ingress_rules = merge(
+    {
+      allow-mesh = {
+        description = "Allow mesh."
+        priority    = 900
+        source_ranges = [
+          for k, v in var.clusters_config : v.pods_cidr_block
+        ]
+        targets = [
+          for k, v in var.clusters_config : "${k}-node"
+        ]
+        rules = [
+          { protocol = "tcp" },
+          { protocol = "udp" },
+          { protocol = "icmp" },
+          { protocol = "esp" },
+          { protocol = "ah" },
+          { protocol = "sctp" }
+        ]
       }
+    },
+    {
+      for k, v in var.clusters_config : "allow-${k}-istio" => {
+        description   = "Allow istio."
+        source_ranges = [v.master_cidr_block]
+        targets       = ["${k}-node"]
+        rules = [{
+          protocol = "tcp"
+          ports    = [8080, 15014, 15017]
+        }]
       }
     }
   )
