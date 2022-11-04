@@ -25,7 +25,7 @@ locals {
     for f in local._factory_rule_files : [
       for name, rule in yamldecode(file(f)) : {
         name                 = name
-        rules                = rule.rules
+        rules                = try(rule.rules, [{ protocol = "all" }])
         description          = try(rule.description, null)
         disabled             = try(rule.disabled, null)
         enable_logging       = try(rule.enable_logging, null)

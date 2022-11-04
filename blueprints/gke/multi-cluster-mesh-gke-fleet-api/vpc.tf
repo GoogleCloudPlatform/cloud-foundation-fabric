@@ -52,12 +52,12 @@ module "firewall" {
           for k, v in var.clusters_config : "${k}-node"
         ]
         rules = [
-          { protocol = "tcp", ports = null },
-          { protocol = "udp", ports = null },
-          { protocol = "icmp", ports = null },
-          { protocol = "esp", ports = null },
-          { protocol = "ah", ports = null },
-          { protocol = "sctp", ports = null }
+          { protocol = "tcp" },
+          { protocol = "udp" },
+          { protocol = "icmp" },
+          { protocol = "esp" },
+          { protocol = "ah" },
+          { protocol = "sctp" }
         ]
       }
     },

@@ -92,9 +92,9 @@ module "firewall" {
       targets              = [module.compute-service-account.email]
       use_service_accounts = true
       rules = [
-        { protocol = "tcp", ports = [] },
-        { protocol = "udp", ports = [] },
-        { protocol = "icmp", ports = [] }
+        { protocol = "tcp" },
+        { protocol = "udp" },
+        { protocol = "icmp" }
       ]
     }
     "${local.prefix}allow-all-between-wsfc-witness" = {
@@ -103,9 +103,9 @@ module "firewall" {
       targets              = [module.witness-service-account.email]
       use_service_accounts = true
       rules = [
-        { protocol = "tcp", ports = [] },
-        { protocol = "udp", ports = [] },
-        { protocol = "icmp", ports = [] }
+        { protocol = "tcp" },
+        { protocol = "udp" },
+        { protocol = "icmp" }
       ]
     }
     "${local.prefix}allow-sql-to-wsfc-nodes" = {
@@ -123,7 +123,7 @@ module "firewall" {
       ranges               = var.health_check_ranges
       use_service_accounts = true
       rules = [
-        { protocol = "tcp", ports = [] }
+        { protocol = "tcp" }
       ]
     }
   }

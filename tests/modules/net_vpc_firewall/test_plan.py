@@ -14,7 +14,7 @@
 
 
 def test_vpc_firewall_simple(plan_runner):
-  "Test vpc with no extra options."
+  "Test variable defaults."
   _, resources = plan_runner()
   assert len(resources) == 3
   assert set([r['type'] for r in resources]) == set(['google_compute_firewall'])
@@ -27,8 +27,38 @@ def test_vpc_firewall_simple(plan_runner):
   assert set([r['values']['network'] for r in resources]) == set(['test-vpc'])
 
 
+def test_vpc_firewall_rules(plan_runner):
+  "Test custom rules."
+  custom_rules = '''{
+    allow-ingress-ntp = {
+      description = "Allow NTP service based on tag."
+      ranges      = ["0.0.0.0/0"]
+      targets     = ["ntp-svc"]
+      rules       = [{ protocol = "udp", ports = [123] }]
+    }
+    allow-egress-rfc1918 = {
+      description = "Allow egress to RFC 1918 ranges."
+      is_egress   = true
+      ranges      = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
+    }
+    deny-egress-all = {
+      description = "Block egress."
+      is_deny     = true
+      is_egress   = true
+    }
+  }'''
+  default_rules_config = '''{
+    http_ranges  = []
+    https_ranges = []
+    ssh_ranges   = []
+  }'''
+  _, resources = plan_runner(custom_rules=custom_rules,
+                             default_rules_config=default_rules_config)
+  assert len(resources) == 3
+
+
 def test_vpc_firewall_factory(plan_runner):
-  "Test shared vpc variables."
+  "Test factory."
   factories_config = '''{
     cidr_tpl_file = "config/cidr_template.yaml"
     rules_folder  = "config/firewall"

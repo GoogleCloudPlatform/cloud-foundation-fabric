@@ -29,10 +29,10 @@ variable "custom_rules" {
     sources              = optional(list(string))
     targets              = optional(list(string))
     use_service_accounts = optional(bool, false)
-    rules = list(object({
+    rules = optional(list(object({
       protocol = string
       ports    = optional(list(string))
-    }))
+    })), [{ protocol = "all" }])
   }))
   default = {}
 }
