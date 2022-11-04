@@ -43,8 +43,8 @@ locals {
     for r in local._factory_rule_list : r.name => r
   }
   _named_ranges = merge(
-    var.named_ranges,
-    try(yamldecode(file(var.factories_config.cidr_tpl_file)), {})
+    try(yamldecode(file(var.factories_config.cidr_tpl_file)), {}),
+    var.named_ranges
   )
   # convert rules data to resource format and replace range template variables
   rules = {
