@@ -14,67 +14,96 @@
  * limitations under the License.
  */
 
-variable "admin_ranges" {
-  description = "IP CIDR ranges that have complete access to all subnets."
-  type        = list(string)
-  default     = []
+variable "default_rules_config" {
+  description = "Optionally created convenience rules. Set the variable or individual members to null to disable."
+  type = object({
+    admin_ranges = optional(list(string))
+    disabled     = optional(bool, false)
+    http_ranges = optional(list(string), [
+      "35.191.0.0/16", "130.211.0.0/22", "209.85.152.0/22", "209.85.204.0/22"]
+    )
+    http_tags = optional(list(string), ["http-server"])
+    https_ranges = optional(list(string), [
+      "35.191.0.0/16", "130.211.0.0/22", "209.85.152.0/22", "209.85.204.0/22"]
+    )
+    https_tags = optional(list(string), ["https-server"])
+    ssh_ranges = optional(list(string), ["35.235.240.0/20"])
+    ssh_tags   = optional(list(string), ["ssh"])
+  })
+  default  = {}
+  nullable = false
 }
 
-variable "cidr_template_file" {
-  description = "Path for optional file containing name->cidr_list map to be used by the rules factory."
-  type        = string
-  default     = null
-}
-
-variable "custom_rules" {
-  description = "List of custom rule definitions (refer to variables file for syntax)."
+variable "egress_rules" {
+  description = "List of egress rule definitions, default to deny action."
   type = map(object({
-    description          = string
-    direction            = string
-    action               = string # (allow|deny)
-    ranges               = list(string)
-    sources              = list(string)
-    targets              = list(string)
-    use_service_accounts = bool
-    rules = list(object({
-      protocol = string
-      ports    = list(string)
+    deny               = optional(bool, true)
+    description        = optional(string)
+    destination_ranges = optional(list(string))
+    disabled           = optional(bool, false)
+    enable_logging = optional(object({
+      include_metadata = optional(bool)
     }))
-    extra_attributes = map(string)
+    priority             = optional(number, 1000)
+    sources              = optional(list(string))
+    targets              = optional(list(string))
+    use_service_accounts = optional(bool, false)
+    rules = optional(list(object({
+      protocol = string
+      ports    = optional(list(string))
+    })), [{ protocol = "all" }])
   }))
-  default = {}
+  default  = {}
+  nullable = false
 }
 
-variable "data_folder" {
-  description = "Path for optional folder containing firewall rules defined as YaML objects used by the rules factory."
-  type        = string
-  default     = null
+variable "ingress_rules" {
+  description = "List of ingress rule definitions, default to allow action."
+  type = map(object({
+    deny        = optional(bool, false)
+    description = optional(string)
+    disabled    = optional(bool, false)
+    enable_logging = optional(object({
+      include_metadata = optional(bool)
+    }))
+    priority             = optional(number, 1000)
+    source_ranges        = optional(list(string))
+    sources              = optional(list(string))
+    targets              = optional(list(string))
+    use_service_accounts = optional(bool, false)
+    rules = optional(list(object({
+      protocol = string
+      ports    = optional(list(string))
+    })), [{ protocol = "all" }])
+  }))
+  default  = {}
+  nullable = false
 }
 
-variable "http_source_ranges" {
-  description = "List of IP CIDR ranges for tag-based HTTP rule, defaults to the health checkers ranges."
-  type        = list(string)
-  default     = ["35.191.0.0/16", "130.211.0.0/22", "209.85.152.0/22", "209.85.204.0/22"]
-}
-
-variable "https_source_ranges" {
-  description = "List of IP CIDR ranges for tag-based HTTPS rule, defaults to the health checkers ranges."
-  type        = list(string)
-  default     = ["35.191.0.0/16", "130.211.0.0/22", "209.85.152.0/22", "209.85.204.0/22"]
+variable "factories_config" {
+  description = "Paths to data files and folders that enable factory functionality."
+  type = object({
+    cidr_tpl_file = optional(string)
+    rules_folder  = string
+  })
+  default = null
 }
 
 variable "named_ranges" {
-  description = "Names that can be used of valid values for the `ranges` field of `custom_rules`."
+  description = "Define mapping of names to ranges that can be used in custom rules."
   type        = map(list(string))
   default = {
-    any                   = ["0.0.0.0/0"]
-    dns-forwarders        = ["35.199.192.0/19"]
-    health-checkers       = ["35.191.0.0/16", "130.211.0.0/22", "209.85.152.0/22", "209.85.204.0/22"]
+    any            = ["0.0.0.0/0"]
+    dns-forwarders = ["35.199.192.0/19"]
+    health-checkers = [
+      "35.191.0.0/16", "130.211.0.0/22", "209.85.152.0/22", "209.85.204.0/22"
+    ]
     iap-forwarders        = ["35.235.240.0/20"]
     private-googleapis    = ["199.36.153.8/30"]
     restricted-googleapis = ["199.36.153.4/30"]
     rfc1918               = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
   }
+  nullable = false
 }
 
 variable "network" {
@@ -86,10 +115,3 @@ variable "project_id" {
   description = "Project id of the project that holds the network."
   type        = string
 }
-
-variable "ssh_source_ranges" {
-  description = "List of IP CIDR ranges for tag-based SSH rule, defaults to the IAP forwarders range."
-  type        = list(string)
-  default     = ["35.235.240.0/20"]
-}
-

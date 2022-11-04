@@ -28,8 +28,8 @@ BASEDIR = os.path.dirname(os.path.dirname(__file__))
 def _plan_runner():
   "Returns a function to run Terraform plan on a fixture."
 
-  def run_plan(fixture_path=None, targets=None, refresh=True, tmpdir=True,
-               **tf_vars):
+  def run_plan(fixture_path=None, extra_files=None, tf_var_file=None,
+               targets=None, refresh=True, tmpdir=True, **tf_vars):
     "Runs Terraform plan and returns parsed output."
     if fixture_path is None:
       # find out the fixture directory from the caller's directory
@@ -46,9 +46,9 @@ def _plan_runner():
         shutil.copytree(fixture_path, tmp_path, dirs_exist_ok=True)
       tf = tftest.TerraformTest(tmp_path if tmpdir else fixture_path, BASEDIR,
                                 os.environ.get('TERRAFORM', 'terraform'))
-      tf.setup(upgrade=True)
-      plan = tf.plan(output=True, refresh=refresh, tf_vars=tf_vars,
-                     targets=targets)
+      tf.setup(extra_files=extra_files, upgrade=True)
+      plan = tf.plan(output=True, refresh=refresh, tf_var_file=tf_var_file,
+                     tf_vars=tf_vars, targets=targets)
     return plan
 
   return run_plan
@@ -58,9 +58,11 @@ def _plan_runner():
 def plan_runner(_plan_runner):
   "Returns a function to run Terraform plan on a module fixture."
 
-  def run_plan(fixture_path=None, targets=None, **tf_vars):
+  def run_plan(fixture_path=None, extra_files=None, tf_var_file=None,
+               targets=None, **tf_vars):
     "Runs Terraform plan and returns plan and module resources."
-    plan = _plan_runner(fixture_path, targets=targets, **tf_vars)
+    plan = _plan_runner(fixture_path, extra_files=extra_files,
+                        tf_var_file=tf_var_file, targets=targets, **tf_vars)
     # skip the fixture
     root_module = plan.root_module['child_modules'][0]
     return plan, root_module['resources']

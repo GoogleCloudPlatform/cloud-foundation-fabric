@@ -15,14 +15,11 @@
  */
 
 module "firewall" {
-  source              = "../../../../modules/net-vpc-firewall"
-  project_id          = var.project_id
-  network             = var.network
-  admin_ranges        = var.admin_ranges
-  http_source_ranges  = var.http_source_ranges
-  https_source_ranges = var.https_source_ranges
-  ssh_source_ranges   = var.ssh_source_ranges
-  custom_rules        = var.custom_rules
-  data_folder         = var.data_folder
-  cidr_template_file  = var.cidr_template_file
+  source               = "../../../../modules/net-vpc-firewall"
+  project_id           = "test-project"
+  network              = "test-vpc"
+  default_rules_config = var.default_rules_config
+  egress_rules         = var.egress_rules
+  ingress_rules        = var.ingress_rules
+  factories_config     = var.factories_config
 }

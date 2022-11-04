@@ -46,11 +46,13 @@ module "vpc-right" {
 }
 
 module "firewall-right" {
-  source            = "../../../modules/net-vpc-firewall"
-  project_id        = module.project.project_id
-  network           = module.vpc-right.name
-  admin_ranges      = values(var.ip_ranges)
-  ssh_source_ranges = ["35.235.240.0/20", "35.191.0.0/16", "130.211.0.0/22"]
+  source     = "../../../modules/net-vpc-firewall"
+  project_id = module.project.project_id
+  network    = module.vpc-right.name
+  default_rules_config = {
+    admin_ranges = values(var.ip_ranges)
+    ssh_ranges   = ["35.235.240.0/20", "35.191.0.0/16", "130.211.0.0/22"]
+  }
 }
 
 module "nat-right" {
