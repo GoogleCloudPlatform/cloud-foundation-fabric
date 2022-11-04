@@ -95,12 +95,10 @@ module "firewall" {
   project_id = "my-project"
   network    = "my-network"
   default_rules_config = {
-    http_ranges  = []
-    https_ranges = []
     ssh_ranges   = []
   }
 }
-# tftest modules=0 resources=0
+# tftest modules=1 resources=2
 ```
 
 Or the entire set of rules can be disabled via the `disabled` attribute:
