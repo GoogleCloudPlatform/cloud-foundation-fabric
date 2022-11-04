@@ -22,8 +22,8 @@ module "branch-pf-dev-sa" {
   project_id = var.automation.project_id
   name       = "dev-resman-pf-0"
   # naming: environment in description
-  description = "Terraform project factory development service account."
-  prefix      = var.prefix
+  display_name = "Terraform project factory development service account."
+  prefix       = var.prefix
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
       try(module.branch-pf-dev-sa-cicd.0.iam_email, null)
@@ -40,8 +40,8 @@ module "branch-pf-prod-sa" {
   project_id = var.automation.project_id
   name       = "prod-resman-pf-0"
   # naming: environment in description
-  description = "Terraform project factory production service account."
-  prefix      = var.prefix
+  display_name = "Terraform project factory production service account."
+  prefix       = var.prefix
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
       try(module.branch-pf-prod-sa-cicd.0.iam_email, null)
