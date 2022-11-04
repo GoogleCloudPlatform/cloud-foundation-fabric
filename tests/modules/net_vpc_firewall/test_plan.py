@@ -32,7 +32,6 @@ def test_vpc_firewall_rules(plan_runner):
   custom_rules = '''{
     allow-ingress-ntp = {
       description = "Allow NTP service based on tag."
-      ranges      = ["0.0.0.0/0"]
       targets     = ["ntp-svc"]
       rules       = [{ protocol = "udp", ports = [123] }]
     }
@@ -55,6 +54,13 @@ def test_vpc_firewall_rules(plan_runner):
   _, resources = plan_runner(custom_rules=custom_rules,
                              default_rules_config=default_rules_config)
   assert len(resources) == 3
+  rules = {r['index']: r['values'] for r in resources}
+  rule = rules['allow-ingress-ntp']
+  assert rule['source_ranges'] == ['0.0.0.0/0']
+  assert rule['allow'] == [{'ports': ['123'], 'protocol': 'udp'}]
+  rule = rules['deny-egress-all']
+  assert rule['destination_ranges'] == ['0.0.0.0/0']
+  assert rule['deny'] == [{'ports': [], 'protocol': 'all'}]
 
 
 def test_vpc_firewall_factory(plan_runner):

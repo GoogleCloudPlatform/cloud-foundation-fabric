@@ -18,7 +18,7 @@
 
 locals {
   default_rules = {
-    for k, v in var.default_rules_config : k => v == null ? [] : v
+    for k, v in var.default_rules_config : k => coalesce(v, [])
   }
 }
 
