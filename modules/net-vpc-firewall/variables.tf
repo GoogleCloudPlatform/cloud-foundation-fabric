@@ -42,6 +42,7 @@ variable "default_rules_config" {
   description = "Optionally created convenience rules. Set the variable or individual members to null to disable."
   type = object({
     admin_ranges = optional(list(string))
+    disabled     = optional(bool, false)
     http_ranges = optional(list(string), [
       "35.191.0.0/16", "130.211.0.0/22", "209.85.152.0/22", "209.85.204.0/22"]
     )

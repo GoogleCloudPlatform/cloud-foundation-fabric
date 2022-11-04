@@ -18,7 +18,9 @@
 
 locals {
   default_rules = {
-    for k, v in var.default_rules_config : k => coalesce(v, [])
+    for k, v in var.default_rules_config :
+    k => var.default_rules_config.disabled == true || v == null ? [] : v
+    if k != "disabled"
   }
 }
 
