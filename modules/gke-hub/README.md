@@ -178,50 +178,28 @@ module "firewall" {
   source     = "./fabric/modules/net-vpc-firewall"
   project_id = module.project.project_id
   network    = module.vpc.name
-  custom_rules = { 
+  ingress_rules = {
     allow-mesh = {
-      description          = "Allow mesh"
-      direction            = "INGRESS"
-      action               = "allow"
-      sources              = []
-      ranges               = ["10.1.0.0/16", "10.3.0.0/16"]
-      targets              = ["cluster-1-node", "cluster-2-node"]
-      use_service_accounts = false
-      rules = [{ protocol = "tcp", ports = null },
-        { protocol = "udp", ports = null },
-        { protocol = "icmp", ports = null },
-        { protocol = "esp", ports = null },
-        { protocol = "ah", ports = null },
-      { protocol = "sctp", ports = null }]
-      extra_attributes = {
-        priority = 900
-      }
-    }, 
+      description   = "Allow mesh"
+      priority      = 900
+      source_ranges = ["10.1.0.0/16", "10.3.0.0/16"]
+      targets       = ["cluster-1-node", "cluster-2-node"]
+    },
     "allow-cluster-1-istio" = {
-      description          = "Allow istio sidecar injection, istioctl version and istioctl ps"
-      direction            = "INGRESS"
-      action               = "allow"
-      sources              = []
-      ranges               = [ "192.168.1.0/28" ]
-      targets              = ["cluster-1-node"]
-      use_service_accounts = false
-      rules                = [{ protocol = "tcp", ports = [8080, 15014, 15017] }]
-      extra_attributes = {
-        priority = 1000
-      }
+      description   = "Allow istio sidecar injection, istioctl version and istioctl ps"
+      source_ranges = ["192.168.1.0/28"]
+      targets       = ["cluster-1-node"]
+      rules = [
+        { protocol = "tcp", ports = [8080, 15014, 15017] }
+      ]
     },
     "allow-cluster-2-istio" = {
-      description          = "Allow istio sidecar injection, istioctl version and istioctl ps"
-      direction            = "INGRESS"
-      action               = "allow"
-      sources              = []
-      ranges               = [ "192.168.2.0/28" ]
-      targets              = ["cluster-2-node"]
-      use_service_accounts = false
-      rules                = [{ protocol = "tcp", ports = [8080, 15014, 15017] }]
-      extra_attributes = {
-        priority = 1000
-      }
+      description   = "Allow istio sidecar injection, istioctl version and istioctl ps"
+      source_ranges = ["192.168.2.0/28"]
+      targets       = ["cluster-2-node"]
+      rules = [
+        { protocol = "tcp", ports = [8080, 15014, 15017] }
+      ]
     }
   }
 }

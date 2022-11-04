@@ -69,7 +69,4 @@ module "landing-vpc-firewall" {
   source     = "../../../../modules/net-vpc-firewall"
   project_id = module.landing-project.project_id
   network    = module.landing-vpc.name
-  default_rules_config = {
-    disabled = true
-  }
 }
