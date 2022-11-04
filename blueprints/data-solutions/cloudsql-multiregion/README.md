@@ -39,7 +39,7 @@ If `project_create` is left to `null`, the identity performing the deployment ne
 
 Click on the image below, sign in if required and when the prompt appears, click on “confirm”.
 
-[![Open Cloudshell](../../../assets/images/cloud-shell-button.png)](https://shell.cloud.google.com/cloudshell/editor?cloudshell_git_repo=https://github.com/GoogleCloudPlatform/cloud-foundation-fabric&cloudshell_git_branch=hero-designs&cloudshell_workspace=blueprints/data-solutions/cloudsql-multiregion/)
+[![Open Cloudshell](../../../assets/images/cloud-shell-button.png)](https://goo.gle/GoCloudSQL)
 
 This will clone the repository to your cloud shell and a screen like this one will appear:
 
