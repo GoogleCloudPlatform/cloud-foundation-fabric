@@ -67,10 +67,10 @@ module "firewall" {
   source     = "../../../modules/net-vpc-firewall"
   project_id = module.project.project_id
   network    = module.vpc.name
-  custom_rules = {
+  ingress_rules = {
     image-builder-ingress-builder-vm = {
       description          = "Allow image builder vm ingress traffic"
-      ranges               = var.packer_source_cidrs
+      source_ranges        = var.packer_source_cidrs
       targets              = [module.service-account-image-builder-vm.email]
       use_service_accounts = true
       rules = [{

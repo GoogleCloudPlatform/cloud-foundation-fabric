@@ -74,10 +74,10 @@ module "firewall" {
   source     = "../../../modules/net-vpc-firewall"
   project_id = module.project-host.project_id
   network    = module.vpc.name
-  custom_rules = {
+  ingress_rules = {
     allow-ingress-squid = {
       description = "Allow squid ingress traffic"
-      ranges = [
+      source_ranges = [
         var.cidrs.apps, "35.191.0.0/16", "130.211.0.0/22"
       ]
       targets              = [module.service-account-squid.email]

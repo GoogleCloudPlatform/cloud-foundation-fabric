@@ -78,13 +78,13 @@ module "vpc-firewall" {
   default_rules_config = {
     admin_ranges = [var.vpc_config.ip_cidr_range]
   }
-  custom_rules = {
+  ingress_rules = {
     #TODO Remove and rely on 'ssh' tag once terraform-provider-google/issues/9273 is fixed
     ("${var.prefix}-iap") = {
-      description = "Enable SSH from IAP on Notebooks."
-      ranges      = ["35.235.240.0/20"]
-      targets     = ["notebook-instance"]
-      rules       = [{ protocol = "tcp", ports = [22] }]
+      description   = "Enable SSH from IAP on Notebooks."
+      source_ranges = ["35.235.240.0/20"]
+      targets       = ["notebook-instance"]
+      rules         = [{ protocol = "tcp", ports = [22] }]
     }
   }
 }

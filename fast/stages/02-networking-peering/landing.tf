@@ -71,10 +71,7 @@ module "landing-firewall" {
   project_id = module.landing-project.project_id
   network    = module.landing-vpc.name
   default_rules_config = {
-    admin_ranges = []
-    http_ranges  = []
-    https_ranges = []
-    ssh_ranges   = []
+    disabled = true
   }
   factories_config = {
     cidr_tpl_file = "${var.data_dir}/cidrs.yaml"

@@ -70,8 +70,6 @@ module "landing-vpc-firewall" {
   project_id = module.landing-project.project_id
   network    = module.landing-vpc.name
   default_rules_config = {
-    admin_ranges = []
-    http_ranges  = []
-    https_ranges = []
+    disabled = true
   }
 }

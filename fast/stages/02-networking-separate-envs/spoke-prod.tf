@@ -70,10 +70,7 @@ module "prod-spoke-firewall" {
   project_id = module.prod-spoke-project.project_id
   network    = module.prod-spoke-vpc.name
   default_rules_config = {
-    admin_ranges = []
-    http_ranges  = []
-    https_ranges = []
-    ssh_ranges   = []
+    disabled = true
   }
   factories_config = {
     cidr_tpl_file = "${var.data_dir}/cidrs.yaml"

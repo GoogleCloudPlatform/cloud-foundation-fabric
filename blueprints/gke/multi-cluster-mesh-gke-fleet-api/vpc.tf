@@ -40,12 +40,12 @@ module "firewall" {
   source     = "../../../modules/net-vpc-firewall"
   project_id = module.host_project.project_id
   network    = module.svpc.name
-  custom_rules = merge(
+  ingress_rules = merge(
     {
       allow-mesh = {
         description = "Allow mesh."
         priority    = 900
-        ranges = [
+        source_ranges = [
           for k, v in var.clusters_config : v.pods_cidr_block
         ]
         targets = [
@@ -63,9 +63,9 @@ module "firewall" {
     },
     {
       for k, v in var.clusters_config : "allow-${k}-istio" => {
-        description = "Allow istio."
-        ranges      = [v.master_cidr_block]
-        targets     = ["${k}-node"]
+        description   = "Allow istio."
+        source_ranges = [v.master_cidr_block]
+        targets       = ["${k}-node"]
         rules = [{
           protocol = "tcp"
           ports    = [8080, 15014, 15017]

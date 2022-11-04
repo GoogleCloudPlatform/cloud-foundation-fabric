@@ -80,12 +80,9 @@ module "firewall" {
   project_id = local.vpc_project
   network    = local.network
   default_rules_config = {
-    admin_ranges = []
-    http_ranges  = []
-    https_ranges = []
-    ssh_ranges   = []
+    disabled = true
   }
-  custom_rules = {
+  ingress_rules = {
     "${local.prefix}allow-all-between-wsfc-nodes" = {
       description          = "Allow all between WSFC nodes"
       sources              = [module.compute-service-account.email]
