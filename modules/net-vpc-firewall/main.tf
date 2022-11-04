@@ -23,38 +23,56 @@ locals {
   # decode rule files and account for optional attributes
   _factory_rule_list = flatten([
     for f in local._factory_rule_files : [
-      for name, rule in yamldecode(file(f)) : {
-        name                 = name
-        rules                = try(rule.rules, [{ protocol = "all" }])
-        description          = try(rule.description, null)
-        disabled             = try(rule.disabled, null)
-        enable_logging       = try(rule.enable_logging, null)
-        is_egress            = try(rule.is_egress, false)
-        is_deny              = try(rule.is_deny, false)
-        priority             = try(rule.priority, 1000)
-        ranges               = try(rule.ranges, null)
-        sources              = try(rule.sources, null)
-        targets              = try(rule.targets, null)
-        use_service_accounts = try(rule.use_service_accounts, false)
-      }
+      for direction, ruleset in yamldecode(file(f)) : [
+        for name, rule in ruleset : {
+          name                 = name
+          deny                 = try(rule.deny, false)
+          rules                = try(rule.rules, [{ protocol = "all" }])
+          description          = try(rule.description, null)
+          destination_ranges   = try(rule.destination_ranges, null)
+          direction            = upper(direction)
+          disabled             = try(rule.disabled, null)
+          enable_logging       = try(rule.enable_logging, null)
+          priority             = try(rule.priority, 1000)
+          source_ranges        = try(rule.source_ranges, null)
+          sources              = try(rule.sources, null)
+          targets              = try(rule.targets, null)
+          use_service_accounts = try(rule.use_service_accounts, false)
+        }
+      ]
     ]
   ])
   _factory_rules = {
     for r in local._factory_rule_list : r.name => r
+    if contains(["EGRESS", "INGRESS"], r.direction)
   }
   _named_ranges = merge(
     try(yamldecode(file(var.factories_config.cidr_tpl_file)), {}),
     var.named_ranges
   )
+  _rules = merge(
+    local._factory_rules, local._rules_egress, local._rules_ingress
+  )
+  _rules_egress = {
+    for name, rule in merge(var.egress_rules) :
+    name => merge(rule, { direction = "EGRESS" })
+  }
+  _rules_ingress = {
+    for name, rule in merge(var.ingress_rules) :
+    name => merge(rule, { direction = "INGRESS" })
+  }
   # convert rules data to resource format and replace range template variables
   rules = {
-    for name, rule in merge(local._factory_rules, var.custom_rules) :
+    for name, rule in local._rules :
     name => merge(rule, {
-      action    = rule.is_deny == true ? "DENY" : "ALLOW"
-      direction = rule.is_egress == true ? "EGRESS" : "INGRESS"
-      rules     = { for k, v in rule.rules : k => v }
-      ranges = flatten([
-        for range in coalesce(rule.ranges, []) :
+      action = rule.deny == true ? "DENY" : "ALLOW"
+      destination_ranges = flatten([
+        for range in coalesce(try(rule.destination_ranges, null), []) :
+        try(local._named_ranges[range], range)
+      ])
+      rules = { for k, v in rule.rules : k => v }
+      source_ranges = flatten([
+        for range in coalesce(try(rule.source_ranges, null), []) :
         try(local._named_ranges[range], range)
       ])
     })
@@ -71,17 +89,17 @@ resource "google_compute_firewall" "custom-rules" {
   source_ranges = (
     each.value.direction == "INGRESS"
     ? (
-      coalesce(each.value.ranges, []) == []
+      coalesce(each.value.source_ranges, []) == []
       ? ["0.0.0.0/0"]
-      : each.value.ranges
+      : each.value.source_ranges
     ) : null
   )
   destination_ranges = (
     each.value.direction == "EGRESS"
     ? (
-      coalesce(each.value.ranges, []) == []
+      coalesce(each.value.destination_ranges, []) == []
       ? ["0.0.0.0/0"]
-      : each.value.ranges
+      : each.value.destination_ranges
     ) : null
   )
   source_tags = (

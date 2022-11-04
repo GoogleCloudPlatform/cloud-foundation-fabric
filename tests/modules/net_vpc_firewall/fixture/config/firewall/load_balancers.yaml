@@ -12,13 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-allow-healthchecks:
-  description: Allow ingress from healthchecks.
-  ranges:
-    - healthchecks
-  targets: ["lb-backends"]
-  rules:
-    - protocol: tcp
-      ports:
-        - 80
-        - 443
+ingress:
+  allow-healthchecks:
+    description: Allow ingress from healthchecks.
+    source_ranges:
+      - healthchecks
+    targets: ["lb-backends"]
+    rules:
+      - protocol: tcp
+        ports:
+          - 80
+          - 443

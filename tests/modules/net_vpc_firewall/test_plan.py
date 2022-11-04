@@ -12,8 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import pytest
 
-def test_vpc_firewall_simple(plan_runner):
+
+def test_defaults(plan_runner):
   "Test variable defaults."
   _, resources = plan_runner()
   assert len(resources) == 3
@@ -27,32 +29,10 @@ def test_vpc_firewall_simple(plan_runner):
   assert set([r['values']['network'] for r in resources]) == set(['test-vpc'])
 
 
-def test_vpc_firewall_rules(plan_runner):
+def test_rules(plan_runner):
   "Test custom rules."
-  custom_rules = '''{
-    allow-ingress-ntp = {
-      description = "Allow NTP service based on tag."
-      targets     = ["ntp-svc"]
-      rules       = [{ protocol = "udp", ports = [123] }]
-    }
-    allow-egress-rfc1918 = {
-      description = "Allow egress to RFC 1918 ranges."
-      is_egress   = true
-      ranges      = ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16"]
-    }
-    deny-egress-all = {
-      description = "Block egress."
-      is_deny     = true
-      is_egress   = true
-    }
-  }'''
-  default_rules_config = '''{
-    http_ranges  = []
-    https_ranges = []
-    ssh_ranges   = []
-  }'''
-  _, resources = plan_runner(custom_rules=custom_rules,
-                             default_rules_config=default_rules_config)
+  tfvars = 'test.rules.tfvars'
+  _, resources = plan_runner(extra_files=[tfvars], tf_var_file=tfvars)
   assert len(resources) == 3
   rules = {r['index']: r['values'] for r in resources}
   rule = rules['allow-ingress-ntp']
@@ -63,7 +43,7 @@ def test_vpc_firewall_rules(plan_runner):
   assert rule['deny'] == [{'ports': [], 'protocol': 'all'}]
 
 
-def test_vpc_firewall_factory(plan_runner):
+def test_factory(plan_runner):
   "Test factory."
   factories_config = '''{
     cidr_tpl_file = "config/cidr_template.yaml"

@@ -30,12 +30,12 @@
  * limitations under the License.
  */
 
-variable "custom_rules" {
+variable "default_rules_config" {
   type    = any
   default = {}
 }
 
-variable "default_rules_config" {
+variable "egress_rules" {
   type    = any
   default = {}
 }
@@ -43,4 +43,9 @@ variable "default_rules_config" {
 variable "factories_config" {
   type    = any
   default = null
+}
+
+variable "ingress_rules" {
+  type    = any
+  default = {}
 }

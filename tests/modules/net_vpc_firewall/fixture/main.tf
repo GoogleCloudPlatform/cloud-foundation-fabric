@@ -19,6 +19,7 @@ module "firewall" {
   project_id           = "test-project"
   network              = "test-vpc"
   default_rules_config = var.default_rules_config
-  custom_rules         = var.custom_rules
+  egress_rules         = var.egress_rules
+  ingress_rules        = var.ingress_rules
   factories_config     = var.factories_config
 }

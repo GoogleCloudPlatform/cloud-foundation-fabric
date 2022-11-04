@@ -14,30 +14,6 @@
  * limitations under the License.
  */
 
-variable "custom_rules" {
-  description = "List of custom rule definitions (refer to variables file for syntax)."
-  type = map(object({
-    description = optional(string)
-    disabled    = optional(bool, false)
-    enable_logging = optional(object({
-      include_metadata = optional(bool)
-    }))
-    is_egress            = optional(bool, false)
-    is_deny              = optional(bool, false)
-    priority             = optional(number, 1000)
-    ranges               = optional(list(string))
-    sources              = optional(list(string))
-    targets              = optional(list(string))
-    use_service_accounts = optional(bool, false)
-    rules = optional(list(object({
-      protocol = string
-      ports    = optional(list(string))
-    })), [{ protocol = "all" }])
-  }))
-  default  = {}
-  nullable = false
-}
-
 variable "default_rules_config" {
   description = "Optionally created convenience rules. Set the variable or individual members to null to disable."
   type = object({
@@ -54,6 +30,52 @@ variable "default_rules_config" {
     ssh_ranges = optional(list(string), ["35.235.240.0/20"])
     ssh_tags   = optional(list(string), ["ssh"])
   })
+  default  = {}
+  nullable = false
+}
+
+variable "egress_rules" {
+  description = "List of egress rule definitions, default to deny action."
+  type = map(object({
+    deny               = optional(bool, true)
+    description        = optional(string)
+    destination_ranges = optional(list(string))
+    disabled           = optional(bool, false)
+    enable_logging = optional(object({
+      include_metadata = optional(bool)
+    }))
+    priority             = optional(number, 1000)
+    sources              = optional(list(string))
+    targets              = optional(list(string))
+    use_service_accounts = optional(bool, false)
+    rules = optional(list(object({
+      protocol = string
+      ports    = optional(list(string))
+    })), [{ protocol = "all" }])
+  }))
+  default  = {}
+  nullable = false
+}
+
+variable "ingress_rules" {
+  description = "List of ingress rule definitions, default to allow action."
+  type = map(object({
+    deny        = optional(bool, false)
+    description = optional(string)
+    disabled    = optional(bool, false)
+    enable_logging = optional(object({
+      include_metadata = optional(bool)
+    }))
+    priority             = optional(number, 1000)
+    source_ranges        = optional(list(string))
+    sources              = optional(list(string))
+    targets              = optional(list(string))
+    use_service_accounts = optional(bool, false)
+    rules = optional(list(object({
+      protocol = string
+      ports    = optional(list(string))
+    })), [{ protocol = "all" }])
+  }))
   default  = {}
   nullable = false
 }
