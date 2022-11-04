@@ -34,7 +34,8 @@ variable "custom_rules" {
       ports    = optional(list(string))
     })), [{ protocol = "all" }])
   }))
-  default = {}
+  default  = {}
+  nullable = false
 }
 
 variable "default_rules_config" {

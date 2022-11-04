@@ -26,7 +26,5 @@ output "default_rules" {
 
 output "rules" {
   description = "Custom rule resources."
-  value = {
-    for k, v in google_compute_firewall.custom-rules : k => v
-  }
+  value       = google_compute_firewall.custom-rules
 }
