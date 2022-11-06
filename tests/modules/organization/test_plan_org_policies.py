@@ -20,14 +20,14 @@ from .validate_policies import validate_policy_boolean, validate_policy_list
 def test_policy_boolean(plan_runner):
   "Test boolean org policy."
   tfvars = 'test.orgpolicies-boolean.tfvars'
-  _, resources = plan_runner(extra_files=[tfvars], tf_var_file=tfvars)
+  _, resources = plan_runner(tf_var_file=tfvars)
   validate_policy_boolean(resources)
 
 
 def test_policy_list(plan_runner):
   "Test list org policy."
   tfvars = 'test.orgpolicies-list.tfvars'
-  _, resources = plan_runner(extra_files=[tfvars], tf_var_file=tfvars)
+  _, resources = plan_runner(tf_var_file=tfvars)
   validate_policy_list(resources)
 
 

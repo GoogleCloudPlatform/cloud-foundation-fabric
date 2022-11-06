@@ -31,8 +31,7 @@ def test_defaults(plan_runner):
 
 def test_rules(plan_runner):
   "Test custom rules."
-  tfvars = 'test.rules.tfvars'
-  _, resources = plan_runner(extra_files=[tfvars], tf_var_file=tfvars)
+  _, resources = plan_runner(tf_var_file='test.rules.tfvars')
   assert len(resources) == 3
   rules = {r['index']: r['values'] for r in resources}
   rule = rules['allow-ingress-ntp']
