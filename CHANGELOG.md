@@ -89,6 +89,7 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#951](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/951)] cloud-functions v2 - fix reference to bucket_name ([wiktorn](https://github.com/wiktorn)) <!-- 2022-11-06 07:32:39+00:00 -->
 - [[#949](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/949)] **incompatible change:** Refactor VPC firewall module for Terraform 1.3 ([ludoo](https://github.com/ludoo)) <!-- 2022-11-04 12:56:08+00:00 -->
 - [[#946](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/946)] **incompatible change:** Deprecate organization-policy module ([juliocc](https://github.com/juliocc)) <!-- 2022-11-03 11:56:12+00:00 -->
 - [[#945](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/945)] Org policy factory ([juliocc](https://github.com/juliocc)) <!-- 2022-11-03 11:30:58+00:00 -->
