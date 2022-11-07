@@ -30,6 +30,7 @@ locals {
       }
     ] if v.populate_from != null
   ])
+  modules_ref = var.modules_ref == null ? "" : "?ref=${var.modules_ref}"
   modules_repository = (
     length(local._modules_repository) > 0
     ? local._modules_repository.0
@@ -109,8 +110,8 @@ resource "github_repository_file" "default" {
     endswith(each.value.name, ".tf") && local.modules_repository != null
     ? replace(
       file(each.value.file),
-      "/source\\s*=\\s*\"../../../modules/",
-      "source = \"git@github.com:${var.organization}/${local.modules_repository}.git/"
+      "/source\\s*=\\s*\"../../../modules/([^/\"]+)\"/",
+      "source = \"git@github.com:${var.organization}/${local.modules_repository}.git//$1${local.modules_ref}\"" # "
     )
     : file(each.value.file)
   )
