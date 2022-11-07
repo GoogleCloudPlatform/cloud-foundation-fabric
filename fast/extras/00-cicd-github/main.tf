@@ -94,7 +94,7 @@ resource "github_actions_secret" "default" {
     for k, v in local.repositories :
     k => v if k != local.modules_repository
   }
-  repository      = local.repositories[local.modules_repository]
+  repository      = each.key
   secret_name     = "CICD_MODULES_KEY"
   plaintext_value = tls_private_key.default.0.private_key_openssh
 }
