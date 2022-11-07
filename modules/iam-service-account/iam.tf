@@ -17,6 +17,15 @@
 # tfdoc:file:description IAM bindings.
 
 locals {
+  _iam_additive_pairs = flatten([
+    for role, members in var.iam_additive : [
+      for member in members : { role = role, member = member }
+    ]
+  ])
+  iam_additive = {
+    for pair in local._iam_additive_pairs :
+    "${pair.role}-${pair.member}" => pair
+  }
   iam_billing_pairs = flatten([
     for entity, roles in var.iam_billing_roles : [
       for role in roles : [
@@ -59,6 +68,13 @@ locals {
       ]
     ]
   ])
+}
+
+resource "google_service_account_iam_member" "roles" {
+  for_each           = local.iam_additive
+  service_account_id = local.service_account.name
+  role               = each.value.role
+  member             = each.value.member
 }
 
 resource "google_service_account_iam_binding" "roles" {
