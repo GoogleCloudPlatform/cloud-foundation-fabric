@@ -39,6 +39,13 @@ variable "iam" {
   nullable    = false
 }
 
+variable "iam_additive" {
+  description = "IAM additive bindings on the service account in {ROLE => [MEMBERS]} format."
+  type        = map(list(string))
+  default     = {}
+  nullable    = false
+}
+
 variable "iam_billing_roles" {
   description = "Billing account roles granted to this service account, by billing account id. Non-authoritative."
   type        = map(list(string))
