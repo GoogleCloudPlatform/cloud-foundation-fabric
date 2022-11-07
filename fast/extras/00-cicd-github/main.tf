@@ -91,10 +91,7 @@ resource "tls_private_key" "default" {
 resource "github_actions_secret" "default" {
   for_each = local.modules_repository == null ? {} : {
     for k, v in local.repositories :
-    k => v if(
-      k != local.modules_repository &&
-      var.repositories[k].populate_from != null
-    )
+    k => v if k != local.modules_repository
   }
   repository      = local.repositories[local.modules_repository]
   secret_name     = "CICD_MODULES_KEY"
@@ -112,7 +109,7 @@ resource "github_repository_file" "default" {
     endswith(each.value.name, ".tf") && local.modules_repository != null
     ? replace(
       file(each.value.file),
-      "/source\\s*=\\s*\"../../../",
+      "/source\\s*=\\s*\"../../../modules/",
       "source = \"git@github.com:${var.organization}/${local.modules_repository}.git/"
     )
     : file(each.value.file)
