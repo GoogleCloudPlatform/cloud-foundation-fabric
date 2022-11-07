@@ -40,13 +40,24 @@ locals {
     for k, v in var.repositories :
     k => v.create_options == null ? k : github_repository.default[k].name
   }
-  repository_files = {
-    for k in local._repository_files :
-    "${k.repository}/${k.name}" => k
-    if !endswith(k.name, ".tf") || (
-      !startswith(k.name, "0") && k.name != "globals.tf"
-    )
-  }
+  repository_files = merge(
+    {
+      for k in local._repository_files :
+      "${k.repository}/${k.name}" => k
+      if !endswith(k.name, ".tf") || (
+        !startswith(k.name, "0") && k.name != "globals.tf"
+      )
+    },
+    {
+      for k, v in var.repositories :
+      "${k}/templates/providers.tf.tpl" => {
+        repository = k
+        file       = "../../assets/templates/providers.tf.tpl"
+        name       = "templates/providers.tf.tpl"
+      }
+      if v.populate_from != null
+    }
+  )
 }
 
 resource "github_repository" "default" {
