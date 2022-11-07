@@ -89,6 +89,14 @@ resource "tls_private_key" "default" {
   algorithm = "ED25519"
 }
 
+resource "github_repository_deploy_key" "exdefaultample_repository_deploy_key" {
+  count      = local.modules_repository == null ? 0 : 1
+  title      = "Modules repository access"
+  repository = local.modules_repository
+  key        = tls_private_key.default.0.public_key_openssh
+  read_only  = true
+}
+
 resource "github_actions_secret" "default" {
   for_each = local.modules_repository == null ? {} : {
     for k, v in local.repositories :
