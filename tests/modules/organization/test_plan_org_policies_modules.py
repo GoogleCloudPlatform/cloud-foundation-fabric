@@ -72,11 +72,10 @@ def test_policy_implementation():
       '-      name   = "${local.folder.name}/policies/${k}"\n',
       '-      parent = local.folder.name\n',
       '+      name   = "${var.organization_id}/policies/${k}"\n',
-      '+      parent = var.organization_id\n',
-      ' \n',
+      '+      parent = var.organization_id\n', ' \n',
       '       is_boolean_policy = v.allow == null && v.deny == null\n',
       '       has_values = (\n',
-      '@@ -143,4 +143,12 @@\n',
+      '@@ -143,4 +143,13 @@\n',
       '       }\n',
       '     }\n',
       '   }\n',
@@ -87,6 +86,7 @@ def test_policy_implementation():
       '+    google_organization_iam_custom_role.roles,\n',
       '+    google_organization_iam_member.additive,\n',
       '+    google_organization_iam_policy.authoritative,\n',
+      '+    google_org_policy_custom_constraint.constraint,\n',
       '+  ]\n',
-      ' }\n',
+      ' }\n'
   ]
