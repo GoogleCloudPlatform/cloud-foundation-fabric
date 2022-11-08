@@ -30,6 +30,7 @@ locals {
       }
     ] if v.populate_from != null
   ])
+  modules_ref = var.modules_ref == null ? "" : "?ref=${var.modules_ref}"
   modules_repository = (
     length(local._modules_repository) > 0
     ? local._modules_repository.0
@@ -39,13 +40,24 @@ locals {
     for k, v in var.repositories :
     k => v.create_options == null ? k : github_repository.default[k].name
   }
-  repository_files = {
-    for k in local._repository_files :
-    "${k.repository}/${k.name}" => k
-    if !endswith(k.name, ".tf") || (
-      !startswith(k.name, "0") && k.name != "globals.tf"
-    )
-  }
+  repository_files = merge(
+    {
+      for k in local._repository_files :
+      "${k.repository}/${k.name}" => k
+      if !endswith(k.name, ".tf") || (
+        !startswith(k.name, "0") && k.name != "globals.tf"
+      )
+    },
+    {
+      for k, v in var.repositories :
+      "${k}/templates/providers.tf.tpl" => {
+        repository = k
+        file       = "../../assets/templates/providers.tf.tpl"
+        name       = "templates/providers.tf.tpl"
+      }
+      if v.populate_from != null
+    }
+  )
 }
 
 resource "github_repository" "default" {
@@ -88,15 +100,20 @@ resource "tls_private_key" "default" {
   algorithm = "ED25519"
 }
 
+resource "github_repository_deploy_key" "exdefaultample_repository_deploy_key" {
+  count      = local.modules_repository == null ? 0 : 1
+  title      = "Modules repository access"
+  repository = local.modules_repository
+  key        = tls_private_key.default.0.public_key_openssh
+  read_only  = true
+}
+
 resource "github_actions_secret" "default" {
   for_each = local.modules_repository == null ? {} : {
     for k, v in local.repositories :
-    k => v if(
-      k != local.modules_repository &&
-      var.repositories[k].populate_from != null
-    )
+    k => v if k != local.modules_repository
   }
-  repository      = local.repositories[local.modules_repository]
+  repository      = each.key
   secret_name     = "CICD_MODULES_KEY"
   plaintext_value = tls_private_key.default.0.private_key_openssh
 }
@@ -112,8 +129,8 @@ resource "github_repository_file" "default" {
     endswith(each.value.name, ".tf") && local.modules_repository != null
     ? replace(
       file(each.value.file),
-      "/source\\s*=\\s*\"../../../",
-      "source = \"git@github.com:${var.organization}/${local.modules_repository}.git/"
+      "/source\\s*=\\s*\"../../../modules/([^/\"]+)\"/",
+      "source = \"git@github.com:${var.organization}/${local.modules_repository}.git//$1${local.modules_ref}\"" # "
     )
     : file(each.value.file)
   )
