@@ -14,28 +14,7 @@
  * limitations under the License.
  */
 
-variable "project_create" {
-  description = "Parameters for the creation of the new project."
-  type = object({
-    billing_account_id = string
-    parent             = string
-  })
-  default = null
-}
-
-variable "project_id" {
-  description = "Identifier of the project."
-  type        = string
-}
-
-variable "enforce_security_policy" {
-  description = "Enforce security policy."
-  type        = bool
-  default     = true
-}
-
-variable "prefix" {
-  description = "Prefix used for created resources."
-  type        = string
-  default     = null
+variable "bucket_name" {
+  type    = string
+  default = "test"
 }

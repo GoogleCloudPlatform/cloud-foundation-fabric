@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-
-output "glb_ip_address" {
-  description = "Load balancer IP address."
-  value       = module.glb.global_forwarding_rule.ip_address
-}
-
-output "vm_siege_external_ip" {
-  description = "Siege VM external IP address."
-  value       = module.vm_siege.external_ip
+output "clone" {
+  description = "Clone repository commands."
+  value = {
+    for k, v in var.repositories :
+    k => "git clone git@github.com:${var.organization}/${k}.git"
+  }
 }
