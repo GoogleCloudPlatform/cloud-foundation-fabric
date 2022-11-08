@@ -138,10 +138,10 @@ module "firewall" {
   project_id       = "my-project"
   network          = "my-network"
   factories_config = {
-
+    rules_folder  = "config/firewall"
+    cidr_tpl_file = "config/cidr_template.yaml"
   }
-  data_folder        = "config/firewall"
-  cidr_template_file = "config/cidr_template.yaml"
+
 }
 # tftest skip
 ```
