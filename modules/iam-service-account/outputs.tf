@@ -32,9 +32,10 @@ output "iam_email" {
 
 output "id" {
   description = "Service account id."
-  value       = local.service_account.id
+  value       = local.service_account_id_static
   depends_on = [
-    local.service_account
+    data.google_service_account.service_account,
+    google_service_account.service_account
   ]
 }
 
@@ -46,7 +47,11 @@ output "key" {
 
 output "name" {
   description = "Service account name."
-  value       = local.service_account.name
+  value       = local.service_account_id_static
+  depends_on = [
+    data.google_service_account.service_account,
+    google_service_account.service_account
+  ]
 }
 
 output "service_account" {
