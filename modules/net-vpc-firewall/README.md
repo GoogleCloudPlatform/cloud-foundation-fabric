@@ -138,8 +138,8 @@ module "firewall" {
   project_id       = "my-project"
   network          = "my-network"
   factories_config = {
-    rules_folder    = "config/firewall"
-    cidr_tpl_fil    = "config/cidr_template.yaml"
+    rules_folder  = "config/firewall"
+    cidr_tpl_file = "config/cidr_template.yaml"
   }
 
 }
