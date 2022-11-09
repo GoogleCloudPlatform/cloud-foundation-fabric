@@ -138,3 +138,25 @@ def validate_policy_list(resources):
       'enforce': None,
       'values': []
   }
+
+def validate_policy_custom_constraints(resources):
+  assert len(resources) == 2
+  assert all(
+      r['values']['parent'] == 'organizations/1234567890' for r in resources)
+  constraints = {
+      r['index']: r['values']
+      for r in resources
+      if r['type'] == 'google_org_policy_custom_constraint'
+  }
+  assert len(constraints) == 2
+  c1 = constraints['custom.gkeEnableAutoUpgrade']
+  assert c1['resource_types'][0] == 'container.googleapis.com/NodePool'
+  assert c1['method_types'] == ['CREATE']
+  assert c1['condition'] == 'resource.management.autoUpgrade == true'
+  assert c1['action_type'] == 'ALLOW'
+  
+  c2 = constraints['custom.dataprocNoMoreThan10Workers']
+  assert c2['resource_types'][0] == 'dataproc.googleapis.com/Cluster'
+  assert c2['method_types'] == ['CREATE', 'UPDATE']
+  assert c2['condition'] == 'resource.config.workerConfig.numInstances + resource.config.secondaryWorkerConfig.numInstances > 10'
+  assert c2['action_type'] == 'DENY'

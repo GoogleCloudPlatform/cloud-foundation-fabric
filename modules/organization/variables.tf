@@ -188,6 +188,32 @@ variable "org_policies" {
   nullable = false
 }
 
+variable "org_policies_data_path" {
+  description = "Path containing org policies in YAML format."
+  type        = string
+  default     = null
+}
+
+variable "org_policy_custom_constraints" {
+  description = "Organization policiy custom constraints keyed by constraint name."
+  type = map(object({
+    display_name   = optional(string)
+    description    = optional(string)
+    action_type    = string
+    condition      = string
+    method_types   = list(string)
+    resource_types = list(string)
+  }))
+  default  = {}
+  nullable = false
+}
+
+variable "org_policy_custom_constraints_data_path" {
+  description = "Path containing org policy custom constraints in YAML format."
+  type        = string
+  default     = null
+}
+
 variable "organization_id" {
   description = "Organization id in organizations/nnnnnn format."
   type        = string
@@ -197,11 +223,6 @@ variable "organization_id" {
   }
 }
 
-variable "org_policies_data_path" {
-  description = "Path containing org policies in YAML format."
-  type        = string
-  default     = null
-}
 
 variable "tag_bindings" {
   description = "Tag bindings for this organization, in key => tag value id format."

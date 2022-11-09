@@ -14,7 +14,7 @@
 
 import pathlib
 
-from .validate_policies import validate_policy_boolean, validate_policy_list
+from .validate_policies import validate_policy_boolean, validate_policy_list, validate_policy_custom_constraints
 
 
 def test_policy_boolean(plan_runner):
@@ -31,6 +31,13 @@ def test_policy_list(plan_runner):
   validate_policy_list(resources)
 
 
+def test_policy_custom_constraints(plan_runner):
+  "Test org policy custom constraints."
+  tfvars = 'test.orgpolicy-custom-constraints.tfvars'
+  _, resources = plan_runner(tf_var_file=tfvars)
+  validate_policy_custom_constraints(resources)
+
+
 def test_factory_policy_boolean(plan_runner, tfvars_to_yaml, tmp_path):
   dest = tmp_path / 'policies.yaml'
   tfvars_to_yaml('test.orgpolicies-boolean.tfvars', dest, 'org_policies')
@@ -43,3 +50,10 @@ def test_factory_policy_list(plan_runner, tfvars_to_yaml, tmp_path):
   tfvars_to_yaml('test.orgpolicies-list.tfvars', dest, 'org_policies')
   _, resources = plan_runner(org_policies_data_path=f'"{tmp_path}"')
   validate_policy_list(resources)
+
+
+def test_factory_policy_custom_constraints(plan_runner, tfvars_to_yaml, tmp_path):
+  dest = tmp_path / 'constraints.yaml'
+  tfvars_to_yaml('test.orgpolicy-custom-constraints.tfvars', dest, 'org_policy_custom_constraints')
+  _, resources = plan_runner(org_policy_custom_constraints_data_path=f'"{tmp_path}"')
+  validate_policy_custom_constraints(resources)
