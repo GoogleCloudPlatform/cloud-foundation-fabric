@@ -25,7 +25,6 @@ import ipaddress
 def get_all_subnets(config):
   '''
     Returns a dictionary with subnet level informations (such as IP utilization)
-
       Parameters:
         config (dict): The dict containing config like clients and limits
       Returns:
@@ -83,19 +82,16 @@ def get_all_subnets(config):
   return subnet_dict
 
 
-def compute_subnet_utilization(config, all_subnets_dict):
+def compute_subnet_utilization_vms(config, read_mask, all_subnets_dict):
   '''
-    Counts resources (VMs, ILBs, reserved IPs) using private IPs in the different subnets.
+    Counts VMs using private IPs in the different subnets.
       Parameters:
         config (dict): Dict containing config like clients and limits
+        read_mask (FieldMask): read_mask to get additional metadata from Cloud Asset Inventory
         all_subnets_dict (dict): Dict containing the information for each subnets in the GCP organization
-
       Returns:
         None
   '''
-  read_mask = field_mask_pb2.FieldMask()
-  read_mask.FromJsonString('name,versionedResources')
-
   response_vm = config["clients"]["asset_client"].search_all_resources(
       request={
           "scope": f"organizations/{config['organization']}",
@@ -123,6 +119,17 @@ def compute_subnet_utilization(config, all_subnets_dict):
           all_subnets_dict[project_id][f"{subnet_region}/{subnet_name}"][
               'used_ip_addresses'] += 1
 
+
+def compute_subnet_utilization_ilbs(config, read_mask, all_subnets_dict):
+  '''
+    Counts ILBs using private IPs in the different subnets.
+      Parameters:
+        config (dict): Dict containing config like clients and limits
+        read_mask (FieldMask): read_mask to get additional metadata from Cloud Asset Inventory
+        all_subnets_dict (dict): Dict containing the information for each subnets in the GCP organization
+      Returns:
+        None
+  '''
   response_ilb = config["clients"]["asset_client"].search_all_resources(
       request={
           "scope": f"organizations/{config['organization']}",
@@ -131,7 +138,6 @@ def compute_subnet_utilization(config, all_subnets_dict):
           "page_size": config["page_size"],
       })
 
-  # Counting IP addresses for GCE Internal Load Balancers
   for asset in response_ilb:
     internal = False
     psc = False
@@ -139,9 +145,11 @@ def compute_subnet_utilization(config, all_subnets_dict):
     subnet_name = ''
     subnet_region = ''
     address = ''
+    network = ''
     for versioned in asset.versioned_resources:
       for field_name, field_value in versioned.resource.items():
-        if 'loadBalancingScheme' in field_name and field_value in ['INTERNAL', 'INTERNAL_MANAGED']:
+        if 'loadBalancingScheme' in field_name and field_value in [
+            'INTERNAL', 'INTERNAL_MANAGED']:
           internal = True
         # We want to count only accepted PSC endpoint Forwarding Rule
         # If the PSC endpoint Forwarding Rule is pending, we will count it in the reserved IP addresses
@@ -151,6 +159,7 @@ def compute_subnet_utilization(config, all_subnets_dict):
           address = field_value
         elif field_name == 'network':
           project_id = field_value.split('/')[6]
+          network = field_value.split('/')[-1]
         elif 'subnetwork' in field_name:
           subnet_name = field_value.split('/')[-1]
           subnet_region = field_value.split('/')[-3]
@@ -163,9 +172,21 @@ def compute_subnet_utilization(config, all_subnets_dict):
       # We need to find the correct subnet with IP address matching
       ip_address = ipaddress.ip_address(address)
       for subnet_key, subnet_dict in all_subnets_dict[project_id].items():
-        if ip_address in ipaddress.ip_network(subnet_dict['ip_cidr_range']):
-          all_subnets_dict[project_id][subnet_key]['used_ip_addresses'] += 1
+        if subnet_dict["network_name"] == network:
+          if ip_address in ipaddress.ip_network(subnet_dict['ip_cidr_range']):
+            all_subnets_dict[project_id][subnet_key]['used_ip_addresses'] += 1
 
+
+def compute_subnet_utilization_addresses(config, read_mask, all_subnets_dict):
+  '''
+    Counts reserved IP addresses in the different subnets.
+      Parameters:
+        config (dict): Dict containing config like clients and limits
+        read_mask (FieldMask): read_mask to get additional metadata from Cloud Asset Inventory
+        all_subnets_dict (dict): Dict containing the information for each subnets in the GCP organization
+      Returns:
+        None
+  '''
   response_reserved_ips = config["clients"][
       "asset_client"].search_all_resources(
           request={
@@ -185,8 +206,11 @@ def compute_subnet_utilization(config, all_subnets_dict):
     subnet_region = ""
     address = ""
     prefixLength = ""
+    address_name = ""
     for versioned in asset.versioned_resources:
       for field_name, field_value in versioned.resource.items():
+        if field_name == 'name':
+          address_name = field_value
         if field_name == 'purpose':
           purpose = field_value
         elif field_name == 'region':
@@ -214,9 +238,90 @@ def compute_subnet_utilization(config, all_subnets_dict):
           'used_ip_addresses'] += 1
     # PSA Range for Cloud SQL, MemoryStore, etc.
     elif purpose == "VPC_PEERING":
-      # TODO: PSA range to be handled later
-      # print("PSA range to be handled later:", address, prefixLength, network_name)
-      continue
+      ip_range = f"{address}/{int(prefixLength)}"
+      net = ipaddress.ip_network(ip_range)
+      # Note that 4 IP addresses are reserved by GCP in all subnets
+      # Source: https://cloud.google.com/vpc/docs/subnets#reserved_ip_addresses_in_every_subnet
+      total_ip_addresses = int(net.num_addresses) - 4
+      all_subnets_dict[project_id][f"psa/{address_name}"] = {
+          'name': f"psa/{address_name}",
+          'region': subnet_region,
+          'ip_cidr_range': ip_range,
+          'total_ip_addresses': total_ip_addresses,
+          'used_ip_addresses': 0,
+          'network_name': network_name
+      }
+
+
+def compute_subnet_utilization_redis(config, read_mask, all_subnets_dict):
+  '''
+    Counts Redis (Memorystore) instances using private IPs in the different subnets.
+      Parameters:
+        config (dict): Dict containing config like clients and limits
+        read_mask (FieldMask): read_mask to get additional metadata from Cloud Asset Inventory
+        all_subnets_dict (dict): Dict containing the information for each subnets in the GCP organization
+      Returns:
+        None
+  '''
+  response_redis = config["clients"]["asset_client"].search_all_resources(
+      request={
+          "scope": f"organizations/{config['organization']}",
+          "asset_types": ["redis.googleapis.com/Instance"],
+          "read_mask": read_mask,
+          "page_size": config["page_size"],
+      })
+
+  for asset in response_redis:
+    ip_range = ""
+    connect_mode = ""
+    network_name = ""
+    project_id = ""
+    region = ""
+    for versioned in asset.versioned_resources:
+      for field_name, field_value in versioned.resource.items():
+        if field_name == 'locationId':
+          region = field_value[0:-2]
+        if field_name == 'authorizedNetwork':
+          network_name = field_value.split('/')[-1]
+          project_id = field_value.split('/')[1]
+        if field_name == 'reservedIpRange':
+          ip_range = field_value
+        if field_name == 'connectMode':
+          connect_mode = field_value
+
+    # Only handling PSA for Redis for now
+    if connect_mode == "PRIVATE_SERVICE_ACCESS":
+      redis_ip_range = ipaddress.ip_network(ip_range)
+      for subnet_key, subnet_dict in all_subnets_dict[project_id].items():
+        if subnet_dict["network_name"] == network_name:
+          # Reddis instance asset doesn't contain the subnet information in Asset Inventory
+          # We need to find the correct subnet range with IP address matching to compute the utilization
+          if redis_ip_range.overlaps(
+              ipaddress.ip_network(subnet_dict['ip_cidr_range'])):
+            all_subnets_dict[project_id][subnet_key][
+                'used_ip_addresses'] += redis_ip_range.num_addresses
+            all_subnets_dict[project_id][subnet_key]['region'] = region
+
+
+def compute_subnet_utilization(config, all_subnets_dict):
+  '''
+    Counts resources (VMs, ILBs, reserved IPs) using private IPs in the different subnets.
+      Parameters:
+        config (dict): Dict containing config like clients and limits
+        all_subnets_dict (dict): Dict containing the information for each subnets in the GCP organization
+      Returns:
+        None
+  '''
+  read_mask = field_mask_pb2.FieldMask()
+  read_mask.FromJsonString('name,versionedResources')
+
+  compute_subnet_utilization_vms(config, read_mask, all_subnets_dict)
+  compute_subnet_utilization_ilbs(config, read_mask, all_subnets_dict)
+  compute_subnet_utilization_addresses(config, read_mask, all_subnets_dict)
+  # TODO: Other PSA services such as FileStore, Cloud SQL
+  compute_subnet_utilization_redis(config, read_mask, all_subnets_dict)
+
+  # TODO: Handle secondary ranges and count GKE pods
 
 
 def get_subnets(config, metrics_dict):
