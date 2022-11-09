@@ -17,8 +17,8 @@
 variable "bucket_config" {
   description = "Enable and configure auto-created bucket. Set fields to null to use defaults."
   type = object({
-    location             = string
-    lifecycle_delete_age = number
+    location             = optional(string)
+    lifecycle_delete_age = optional(number)
   })
   default = null
 }
@@ -38,8 +38,8 @@ variable "bundle_config" {
   description = "Cloud function source folder and generated zip bundle paths. Output path defaults to '/tmp/bundle.zip' if null."
   type = object({
     source_dir  = string
-    output_path = string
-    excludes    = list(string)
+    output_path = optional(string, "/tmp/bundle.zip")
+    excludes    = optional(list(string))
   })
 }
 
@@ -56,13 +56,13 @@ variable "environment_variables" {
 }
 
 variable "function_config" {
-  description = "Cloud function configuration."
+  description = "Cloud function configuration. Defaults to using main as entrypoint, 1 instance with 256MiB of memory, and 180 second timeout"
   type = object({
-    entry_point = string
-    instances   = number
-    memory      = number # Memory in MB
-    runtime     = string
-    timeout     = number
+    entry_point = optional(string, "main")
+    instances   = optional(number, 1)
+    memory      = optional(number, 256) # Memory in MB
+    runtime     = optional(string, "python37")
+    timeout     = optional(number, 180)
   })
   default = {
     entry_point = "main"
@@ -130,7 +130,7 @@ variable "secrets" {
 }
 
 variable "service_account" {
-  description = "Service account email. Unused if service account is auto-created."
+  description = "Service account email.service_account Unused if service account is auto-created."
   type        = string
   default     = null
 }
@@ -146,7 +146,24 @@ variable "trigger_config" {
   type = object({
     event    = string
     resource = string
-    retry    = bool
+    retry    = optional(bool)
+  })
+  default = null
+}
+
+variable "trigger_config_v2" {
+  description = "Function trigger configuration. Leave null for HTTP trigger."
+  type = object({
+    region       = optional(string)
+    event_type   = optional(string)
+    pubsub_topic = optional(string)
+    event_filters = optional(list(object({
+      attribute = string
+      value     = string
+      operator  = string
+    })), [])
+    service_account_email = optional(string)
+    retry_policy          = optional(string)
   })
   default = null
 }

@@ -126,7 +126,6 @@ resource "google_cloudfunctions_function" "function" {
       }
     }
   }
-
 }
 
 resource "google_cloudfunctions2_function" "function" {
@@ -146,6 +145,25 @@ resource "google_cloudfunctions2_function" "function" {
         bucket = local.bucket
         object = google_storage_bucket_object.bundle.name
       }
+    }
+  }
+  dynamic "event_trigger" {
+    for_each = var.trigger_config_v2 == null ? [] : [""]
+    content {
+      trigger_region = var.trigger_config_v2.region
+      event_type     = var.trigger_config_v2.event_type
+      pubsub_topic   = var.trigger_config_v2.pubsub_topic
+      dynamic "event_filters" {
+        for_each = var.trigger_config_v2.event_filters
+        iterator = event_filter
+        content {
+          attribute = event_filter.attribute
+          value     = event_filter.value
+          operator  = event_filter.operator
+        }
+      }
+      service_account_email = var.trigger_config_v2.service_account_email
+      retry_policy          = var.trigger_config_v2.retry_policy
     }
   }
   service_config {
@@ -240,13 +258,9 @@ resource "google_storage_bucket_object" "bundle" {
 }
 
 data "archive_file" "bundle" {
-  type       = "zip"
-  source_dir = var.bundle_config.source_dir
-  output_path = (
-    var.bundle_config.output_path == null
-    ? "/tmp/bundle.zip"
-    : var.bundle_config.output_path
-  )
+  type             = "zip"
+  source_dir       = var.bundle_config.source_dir
+  output_path      = var.bundle_config.output_path
   output_file_mode = "0666"
   excludes         = var.bundle_config.excludes
 }
