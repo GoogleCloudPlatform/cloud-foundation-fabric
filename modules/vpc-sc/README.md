@@ -144,7 +144,7 @@ module "test" {
   service_perimeters_regular = {
     r1 = {
       status = {
-        access_levels       = [module.test.access_level_names["a1"], "a2"]
+        access_levels       = ["a1", "a2"]
         resources           = ["projects/11111", "projects/111111"]
         restricted_services = ["storage.googleapis.com"]
         egress_policies     = ["gcs-sa-foo"]
@@ -154,7 +154,6 @@ module "test" {
           enable_restriction = true
         }
       }
-      use_explicit_dry_run_spec = false
     }
   }
 }
