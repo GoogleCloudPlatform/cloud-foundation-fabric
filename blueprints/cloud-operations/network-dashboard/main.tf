@@ -21,7 +21,7 @@ locals {
   folder_ids         = toset(var.monitored_folders_list)
   folders            = join(",", local.folder_ids)
   monitoring_project = var.monitoring_project_id == "" ? module.project-monitoring[0].project_id : var.monitoring_project_id
-  metrics_project = var.metrics_project_id == "" ? (var.monitoring_project_id == "" ? module.project-monitoring[0].project_id : var.monitoring_project_id) : var.metrics_project_id
+  metrics_project    = var.metrics_project_id == "" ? (var.monitoring_project_id == "" ? module.project-monitoring[0].project_id : var.monitoring_project_id) : var.metrics_project_id
 }
 
 ################################################
@@ -190,9 +190,5 @@ module "cloud-function" {
 
 resource "google_monitoring_dashboard" "dashboard" {
   dashboard_json = file("${path.module}/dashboards/quotas-utilization.json")
-<<<<<<< HEAD
   project        = local.metrics_project
-=======
-  project        = local.monitoring_project
->>>>>>> b7bfcf3575cda18a2fdd2862c72e33c1648c0aa4
 }
