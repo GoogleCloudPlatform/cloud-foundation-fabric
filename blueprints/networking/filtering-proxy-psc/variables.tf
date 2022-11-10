@@ -14,28 +14,6 @@
  * limitations under the License.
  */
 
-variable "project_create" {
-  description = "Set to non null if project needs to be created."
-  type = object({
-    billing_account = string
-    parent          = string
-  })
-  default = null
-  validation {
-    condition = (
-      var.project_create == null
-      ? true
-      : can(regex("(organizations|folders)/[0-9]+", var.project_create.parent))
-    )
-    error_message = "Project parent must be of the form folders/folder_id or organizations/organization_id."
-  }
-}
-
-variable "project_id" {
-  description = "Project id used for all resources."
-  type        = string
-}
-
 variable "allowed_domains" {
   description = "List of domains allowed by the squid proxy."
   type        = list(string)
@@ -65,6 +43,28 @@ variable "nat_logging" {
 
 variable "prefix" {
   description = "Prefix used for resources that need unique names."
+  type        = string
+}
+
+variable "project_create" {
+  description = "Set to non null if project needs to be created."
+  type = object({
+    billing_account = string
+    parent          = string
+  })
+  default = null
+  validation {
+    condition = (
+      var.project_create == null
+      ? true
+      : can(regex("(organizations|folders)/[0-9]+", var.project_create.parent))
+    )
+    error_message = "Project parent must be of the form folders/folder_id or organizations/organization_id."
+  }
+}
+
+variable "project_id" {
+  description = "Project id used for all resources."
   type        = string
 }
 
