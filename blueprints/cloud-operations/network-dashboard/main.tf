@@ -21,6 +21,8 @@ locals {
   folder_ids         = toset(var.monitored_folders_list)
   folders            = join(",", local.folder_ids)
   monitoring_project = var.monitoring_project_id == "" ? module.project-monitoring[0].project_id : var.monitoring_project_id
+
+  metrics_project = var.metrics_project_id == "" ? (var.monitoring_project_id == "" ? module.project-monitoring[0].project_id : var.monitoring_project_id) : var.metrics_project_id
 }
 
 ################################################
@@ -61,7 +63,7 @@ module "service-account-function" {
   }
 
   iam_project_roles = {
-    "${local.monitoring_project}" = [
+    "${local.metrics_project}" = [
       "roles/monitoring.metricWriter",
     ]
   }
@@ -142,6 +144,13 @@ module "cloud-function" {
     lifecycle_delete_age = null
   }
   region = var.region
+  vpc_connector = (var.vpc_connector_name != "" ?
+    {
+      create          = false
+      name            = var.vpc_connector_name
+      egress_settings = "ALL_TRAFFIC"
+  } : null)
+
 
   bundle_config = {
     source_dir  = "cloud-function"
@@ -161,7 +170,7 @@ module "cloud-function" {
   environment_variables = {
     MONITORED_PROJECTS_LIST = local.projects
     MONITORED_FOLDERS_LIST  = local.folders
-    MONITORING_PROJECT_ID   = local.monitoring_project
+    MONITORING_PROJECT_ID   = local.metrics_project
     ORGANIZATION_ID         = var.organization_id
     CF_VERSION              = var.cf_version
   }
@@ -169,6 +178,9 @@ module "cloud-function" {
   service_account = module.service-account-function.email
   # Internal only doesn't seem to work with CFv2:
   ingress_settings = var.cf_version == "V2" ? "ALLOW_ALL" : "ALLOW_INTERNAL_ONLY"
+
+
+
 
   trigger_config = {
     event    = "google.pubsub.topic.publish"
@@ -183,5 +195,5 @@ module "cloud-function" {
 
 resource "google_monitoring_dashboard" "dashboard" {
   dashboard_json = file("${path.module}/dashboards/quotas-utilization.json")
-  project        = local.monitoring_project
+  project        = local.metrics_project
 }
