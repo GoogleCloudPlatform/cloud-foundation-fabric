@@ -15,7 +15,7 @@
  */
 
 variable "access_levels" {
-  description = "Map of access levels in name => [conditions] format."
+  description = "Access level definitions."
   type = map(object({
     combining_function = optional(string)
     conditions = optional(list(object({

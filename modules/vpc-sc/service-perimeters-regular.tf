@@ -91,11 +91,11 @@ resource "google_access_context_manager_service_perimeter" "regular" {
               identities    = policy.value.from.identities
               dynamic "sources" {
                 for_each = toset(policy.value.from.access_levels)
+                iterator = s
                 content {
                   access_level = try(
-                    google_access_context_manager_access_level.basic[k].id, k
+                    google_access_context_manager_access_level.basic[s.value].id, s.value
                   )
-
                 }
               }
               dynamic "sources" {
@@ -107,7 +107,7 @@ resource "google_access_context_manager_service_perimeter" "regular" {
             }
           }
           dynamic "ingress_to" {
-            for_each = policy.key.ingress_to == null ? [] : [""]
+            for_each = policy.value.to == null ? [] : [""]
             content {
               resources = policy.value.to.resources
               dynamic "operations" {
@@ -118,7 +118,7 @@ resource "google_access_context_manager_service_perimeter" "regular" {
                   dynamic "method_selectors" {
                     for_each = toset(coalesce(o.value.method_selectors, []))
                     content {
-                      method = method_selectors.key
+                      method = method_selectors.value
                     }
                   }
                 }
@@ -202,8 +202,11 @@ resource "google_access_context_manager_service_perimeter" "regular" {
               identities    = policy.value.from.identities
               dynamic "sources" {
                 for_each = toset(policy.value.from.access_levels)
+                iterator = s
                 content {
-                  access_level = sources.key
+                  access_level = try(
+                    google_access_context_manager_access_level.basic[s.value].id, s.value
+                  )
                 }
               }
               dynamic "sources" {
@@ -215,7 +218,7 @@ resource "google_access_context_manager_service_perimeter" "regular" {
             }
           }
           dynamic "ingress_to" {
-            for_each = policy.key.ingress_to == null ? [] : [""]
+            for_each = policy.value.to == null ? [] : [""]
             content {
               resources = policy.value.to.resources
               dynamic "operations" {
@@ -226,7 +229,7 @@ resource "google_access_context_manager_service_perimeter" "regular" {
                   dynamic "method_selectors" {
                     for_each = toset(coalesce(o.value.method_selectors, []))
                     content {
-                      method = method_selectors.key
+                      method = method_selectors.value
                     }
                   }
                 }
