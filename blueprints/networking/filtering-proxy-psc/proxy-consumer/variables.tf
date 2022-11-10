@@ -14,31 +14,15 @@
  * limitations under the License.
  */
 
-variable "parent" {
-  description = "Parent folder or organization in 'folders/folder_id' or 'organizations/org_id' format."
+variable "project_id" {
+  description = "Project id used for all resources."
   type        = string
-  default     = null
-  validation {
-    condition     = var.parent == null || can(regex("(organizations|folders)/[0-9]+", var.parent))
-    error_message = "Parent must be of the form folders/folder_id or organizations/organization_id."
-  }
 }
 
 variable "prefix" {
   description = "Prefix used to generate project id and name."
   type        = string
   default     = null
-}
-
-variable "billing_account" {
-  description = "Billing account id."
-  type        = string
-  default     = null
-}
-
-variable "name" {
-  description = "Project name and id suffix."
-  type        = string
 }
 
 variable "region" {

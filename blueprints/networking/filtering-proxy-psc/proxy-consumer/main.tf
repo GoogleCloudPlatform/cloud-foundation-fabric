@@ -18,25 +18,13 @@
 #                          Consumer project and VPC                           #
 ###############################################################################
 
-module "project" {
-  source          = "../../../../modules/project"
-  billing_account = var.billing_account
-  name            = var.name
-  parent          = var.parent
-  prefix          = var.prefix
-  services = [
-    "compute.googleapis.com",
-    "dns.googleapis.com"
-  ]
-}
-
 module "vpc" {
   source     = "../../../../modules/net-vpc"
-  project_id = module.project.project_id
-  name       = "app"
+  project_id = var.project_id
+  name       = "${var.prefix}-app"
   subnets = [
     {
-      name          = "app"
+      name          = "${var.prefix}-app"
       ip_cidr_range = var.subnet_cidr
       region        = var.region
     }
@@ -49,14 +37,14 @@ module "vpc" {
 
 module "test-vm" {
   source        = "../../../../modules/compute-vm"
-  project_id    = module.project.project_id
+  project_id    = var.project_id
   zone          = "${var.region}-b"
-  name          = "test-vm"
+  name          = "${var.prefix}-test-vm"
   instance_type = "e2-micro"
   tags          = ["ssh"]
   network_interfaces = [{
     network    = module.vpc.self_link
-    subnetwork = module.vpc.subnet_self_links["${var.region}/app"]
+    subnetwork = module.vpc.subnet_self_links["${var.region}/${var.prefix}-app"]
     nat        = false
     addresses  = null
   }]
@@ -76,16 +64,16 @@ module "test-vm" {
 ###############################################################################
 
 resource "google_compute_address" "psc_endpoint_address" {
-  name         = "psc-proxy"
-  project      = module.project.project_id
+  name         = "${var.prefix}-psc-proxy-address"
+  project      = var.project_id
   address_type = "INTERNAL"
-  subnetwork   = module.vpc.subnet_self_links["${var.region}/app"]
+  subnetwork   = module.vpc.subnet_self_links["${var.region}/${var.prefix}-app"]
   region       = var.region
 }
 
 resource "google_compute_forwarding_rule" "psc_ilb_consumer" {
-  name                  = "psc-proxy-fw-rule"
-  project               = module.project.project_id
+  name                  = "${var.prefix}-psc-proxy-fw-rule"
+  project               = var.project_id
   region                = var.region
   target                = var.service_attachment_id
   load_balancing_scheme = ""
@@ -99,9 +87,9 @@ resource "google_compute_forwarding_rule" "psc_ilb_consumer" {
 
 module "private-dns" {
   source          = "../../../../modules/dns"
-  project_id      = module.project.project_id
+  project_id      = var.project_id
   type            = "private"
-  name            = "internal"
+  name            = "${var.prefix}-internal"
   domain          = "internal."
   client_networks = [module.vpc.self_link]
   recordsets = {
@@ -112,6 +100,6 @@ module "private-dns" {
 
 module "firewall" {
   source     = "../../../../modules/net-vpc-firewall"
-  project_id = module.project.project_id
+  project_id = var.project_id
   network    = module.vpc.name
 }

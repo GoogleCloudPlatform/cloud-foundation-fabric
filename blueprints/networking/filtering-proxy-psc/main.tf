@@ -15,26 +15,17 @@
  */
 
 ###############################################################################
-#                    Folder with network-related resources                    #
-###############################################################################
-
-module "folder-netops" {
-  source = "../../../modules/folder"
-  parent = var.root_node
-  name   = "netops"
-}
-
-###############################################################################
 #                        Host project and VPC resources                       #
 ###############################################################################
 
-module "project-host" {
+module "project" {
   source          = "../../../modules/project"
-  billing_account = var.billing_account
-  name            = "host"
-  parent          = module.folder-netops.id
-  prefix          = var.prefix
+  project_create  = var.project_create != null
+  billing_account = try(var.project_create.billing_account, null)
+  parent          = try(var.project_create.parent, null)
+  name            = var.project_id
   services = [
+    "dns.googleapis.com",
     "compute.googleapis.com",
     "logging.googleapis.com"
   ]
@@ -42,8 +33,8 @@ module "project-host" {
 
 module "vpc" {
   source     = "../../../modules/net-vpc"
-  project_id = module.project-host.project_id
-  name       = "vpc"
+  project_id = module.project.project_id
+  name       = "${var.prefix}-vpc"
   subnets = [
     {
       name          = "proxy"
@@ -62,7 +53,7 @@ module "vpc" {
 
 module "firewall" {
   source     = "../../../modules/net-vpc-firewall"
-  project_id = module.project-host.project_id
+  project_id = module.project.project_id
   network    = module.vpc.name
   ingress_rules = {
     allow-ingress-squid = {
@@ -82,7 +73,7 @@ module "firewall" {
 
 module "nat" {
   source                = "../../../modules/net-cloudnat"
-  project_id            = module.project-host.project_id
+  project_id            = module.project.project_id
   region                = var.region
   name                  = "default"
   router_network        = module.vpc.name
@@ -105,16 +96,16 @@ module "nat" {
 
 resource "google_compute_service_attachment" "service_attachment" {
   name                  = "psc"
-  project               = module.project-host.project_id
+  project               = module.project.project_id
   region                = var.region
   enable_proxy_protocol = false
-  connection_preference = "ACCEPT_AUTOMATIC"
+  connection_preference = "ACCEPT_MANUAL"
   nat_subnets           = [module.vpc.subnets_psc["${var.region}/psc"].self_link]
   target_service        = module.squid-ilb.forwarding_rule_self_link
-  #   consumer_accept_lists {
-  #     project_id_or_num = module.proxy-consumer.*.project_id
-  #     connection_limit  = 10
-  #   }
+  consumer_accept_lists {
+    project_id_or_num = module.project.project_id
+    connection_limit  = 10
+  }
 }
 
 ###############################################################################
@@ -123,10 +114,10 @@ resource "google_compute_service_attachment" "service_attachment" {
 
 module "service-account-squid" {
   source     = "../../../modules/iam-service-account"
-  project_id = module.project-host.project_id
+  project_id = module.project.project_id
   name       = "svc-squid"
   iam_project_roles = {
-    (module.project-host.project_id) = [
+    (module.project.project_id) = [
       "roles/logging.logWriter",
       "roles/monitoring.metricWriter",
     ]
@@ -141,7 +132,7 @@ module "cos-squid" {
 
 module "squid-vm" {
   source          = "../../../modules/compute-vm"
-  project_id      = module.project-host.project_id
+  project_id      = module.project.project_id
   zone            = "${var.region}-b"
   name            = "squid-vm"
   instance_type   = "e2-medium"
@@ -162,7 +153,7 @@ module "squid-vm" {
 
 module "squid-mig" {
   source            = "../../../modules/compute-mig"
-  project_id        = module.project-host.project_id
+  project_id        = module.project.project_id
   location          = "${var.region}-b"
   name              = "squid-mig"
   instance_template = module.squid-vm.template.self_link
@@ -198,7 +189,7 @@ module "squid-mig" {
 
 module "squid-ilb" {
   source        = "../../../modules/net-ilb"
-  project_id    = module.project-host.project_id
+  project_id    = module.project.project_id
   region        = var.region
   name          = "squid-ilb"
   ports         = [3128]
@@ -222,25 +213,18 @@ module "squid-ilb" {
 #                               Service projects                              #
 ###############################################################################
 
-module "folder-apps" {
-  source = "../../../modules/folder"
-  parent = var.root_node
-  name   = "apps"
-  org_policies = {
-    # prevent VMs with public IPs in the apps folder
-    "constraints/compute.vmExternalIpAccess" = {
-      deny = { all = true }
-    }
-  }
+module "proxy-consumer-1" {
+  source                = "./proxy-consumer"
+  project_id            = module.project.project_id
+  prefix                = "${var.prefix}-consumer-1"
+  subnet_cidr           = var.cidrs.apps1
+  service_attachment_id = google_compute_service_attachment.service_attachment.id
 }
 
-module "proxy-consumer" {
-  count                 = 3
+module "proxy-consumer-2" {
   source                = "./proxy-consumer"
-  billing_account       = var.billing_account
-  name                  = "proxy-consumer-${count.index}"
-  parent                = module.folder-apps.id
-  prefix                = var.prefix
-  subnet_cidr           = var.cidrs.apps
+  project_id            = module.project.project_id
+  prefix                = "${var.prefix}-consumer-2"
+  subnet_cidr           = var.cidrs.apps2
   service_attachment_id = google_compute_service_attachment.service_attachment.id
 }

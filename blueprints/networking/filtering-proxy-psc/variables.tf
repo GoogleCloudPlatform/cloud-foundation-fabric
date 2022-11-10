@@ -14,6 +14,28 @@
  * limitations under the License.
  */
 
+variable "project_create" {
+  description = "Set to non null if project needs to be created."
+  type = object({
+    billing_account = string
+    parent          = string
+  })
+  default = null
+  validation {
+    condition = (
+      var.project_create == null
+      ? true
+      : can(regex("(organizations|folders)/[0-9]+", var.project_create.parent))
+    )
+    error_message = "Project parent must be of the form folders/folder_id or organizations/organization_id."
+  }
+}
+
+variable "project_id" {
+  description = "Project id used for all resources."
+  type        = string
+}
+
 variable "allowed_domains" {
   description = "List of domains allowed by the squid proxy."
   type        = list(string)
@@ -25,18 +47,14 @@ variable "allowed_domains" {
   ]
 }
 
-variable "billing_account" {
-  description = "Billing account id used as default for new projects."
-  type        = string
-}
-
 variable "cidrs" {
   description = "CIDR ranges for subnets."
   type        = map(string)
   default = {
-    apps  = "10.0.0.0/24"
-    proxy = "10.0.1.0/28"
-    psc   = "10.0.2.0/28"
+    apps1 = "10.0.0.0/24"
+    apps2 = "10.0.1.0/24"
+    proxy = "10.0.2.0/28"
+    psc   = "10.0.3.0/28"
   }
 }
 
@@ -55,9 +73,4 @@ variable "region" {
   description = "Default region for resources."
   type        = string
   default     = "europe-west1"
-}
-
-variable "root_node" {
-  description = "Root node for the new hierarchy, either 'organizations/org_id' or 'folders/folder_id'."
-  type        = string
 }
