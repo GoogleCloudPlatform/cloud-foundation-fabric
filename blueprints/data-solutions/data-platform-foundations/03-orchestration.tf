@@ -67,8 +67,10 @@ module "orch-project" {
     "roles/storage.objectViewer" = [module.load-sa-df-0.iam_email]
   }
   oslogin = false
-  policy_boolean = {
-    "constraints/compute.requireOsLogin" = false
+  org_policies = {
+    "constraints/compute.requireOsLogin" = {
+      enforce = false
+    }
   }
   services = concat(var.project_services, [
     "artifactregistry.googleapis.com",
@@ -82,6 +84,7 @@ module "orch-project" {
     "container.googleapis.com",
     "containerregistry.googleapis.com",
     "dataflow.googleapis.com",
+    "orgpolicy.googleapis.com",
     "pubsub.googleapis.com",
     "servicenetworking.googleapis.com",
     "storage.googleapis.com",
@@ -130,11 +133,13 @@ module "orch-vpc" {
 }
 
 module "orch-vpc-firewall" {
-  source       = "../../../modules/net-vpc-firewall"
-  count        = local.use_shared_vpc ? 0 : 1
-  project_id   = module.orch-project.project_id
-  network      = module.orch-vpc.0.name
-  admin_ranges = ["10.10.0.0/24"]
+  source     = "../../../modules/net-vpc-firewall"
+  count      = local.use_shared_vpc ? 0 : 1
+  project_id = module.orch-project.project_id
+  network    = module.orch-vpc.0.name
+  default_rules_config = {
+    admin_ranges = ["10.10.0.0/24"]
+  }
 }
 
 module "orch-nat" {

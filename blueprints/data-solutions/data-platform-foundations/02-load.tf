@@ -118,11 +118,13 @@ module "load-vpc" {
 }
 
 module "load-vpc-firewall" {
-  source       = "../../../modules/net-vpc-firewall"
-  count        = local.use_shared_vpc ? 0 : 1
-  project_id   = module.load-project.project_id
-  network      = module.load-vpc.0.name
-  admin_ranges = ["10.10.0.0/24"]
+  source     = "../../../modules/net-vpc-firewall"
+  count      = local.use_shared_vpc ? 0 : 1
+  project_id = module.load-project.project_id
+  network    = module.load-vpc.0.name
+  default_rules_config = {
+    admin_ranges = ["10.10.0.0/24"]
+  }
 }
 
 module "load-nat" {

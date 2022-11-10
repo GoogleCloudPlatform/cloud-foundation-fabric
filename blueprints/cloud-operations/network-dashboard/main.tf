@@ -21,7 +21,6 @@ locals {
   folder_ids         = toset(var.monitored_folders_list)
   folders            = join(",", local.folder_ids)
   monitoring_project = var.monitoring_project_id == "" ? module.project-monitoring[0].project_id : var.monitoring_project_id
-
   metrics_project = var.metrics_project_id == "" ? (var.monitoring_project_id == "" ? module.project-monitoring[0].project_id : var.monitoring_project_id) : var.metrics_project_id
 }
 
@@ -52,7 +51,6 @@ module "service-account-function" {
   # Required IAM permissions for this service account are:
   # 1) compute.networkViewer on projects to be monitored (I gave it at organization level for now for simplicity)
   # 2) monitoring viewer on the projects to be monitored (I gave it at organization level for now for simplicity)
-  # 3) if you dont have permission to create service account and assign permission at organization Level, move these 3 roles to project level.
 
   iam_organization_roles = {
     "${var.organization_id}" = [
@@ -179,9 +177,6 @@ module "cloud-function" {
   # Internal only doesn't seem to work with CFv2:
   ingress_settings = var.cf_version == "V2" ? "ALLOW_ALL" : "ALLOW_INTERNAL_ONLY"
 
-
-
-
   trigger_config = {
     event    = "google.pubsub.topic.publish"
     resource = module.pubsub.topic.id
@@ -195,5 +190,9 @@ module "cloud-function" {
 
 resource "google_monitoring_dashboard" "dashboard" {
   dashboard_json = file("${path.module}/dashboards/quotas-utilization.json")
+<<<<<<< HEAD
   project        = local.metrics_project
+=======
+  project        = local.monitoring_project
+>>>>>>> b7bfcf3575cda18a2fdd2862c72e33c1648c0aa4
 }

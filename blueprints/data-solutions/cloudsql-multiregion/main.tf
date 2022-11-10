@@ -128,11 +128,13 @@ module "vpc" {
 }
 
 module "firewall" {
-  source       = "../../../modules/net-vpc-firewall"
-  count        = local.use_shared_vpc ? 0 : 1
-  project_id   = module.project.project_id
-  network      = module.vpc.0.name
-  admin_ranges = ["10.0.0.0/20"]
+  source     = "../../../modules/net-vpc-firewall"
+  count      = local.use_shared_vpc ? 0 : 1
+  project_id = module.project.project_id
+  network    = module.vpc.0.name
+  default_rules_config = {
+    admin_ranges = ["10.0.0.0/20"]
+  }
 }
 
 module "nat" {

@@ -14,57 +14,173 @@
  * limitations under the License.
  */
 
+variable "all_instances_config" {
+  description = "Metadata and labels set to all instances in the group."
+  type = object({
+    labels   = optional(map(string))
+    metadata = optional(map(string))
+  })
+  default = null
+}
+
 variable "auto_healing_policies" {
   description = "Auto-healing policies for this group."
   type = object({
-    health_check      = string
+    health_check      = optional(string)
     initial_delay_sec = number
   })
   default = null
 }
 
 variable "autoscaler_config" {
-  description = "Optional autoscaler configuration. Only one of 'cpu_utilization_target' 'load_balancing_utilization_target' or 'metric' can be not null."
+  description = "Optional autoscaler configuration."
   type = object({
-    max_replicas                      = number
-    min_replicas                      = number
-    cooldown_period                   = number
-    cpu_utilization_target            = number
-    load_balancing_utilization_target = number
-    metric = object({
-      name                       = string
-      single_instance_assignment = number
-      target                     = number
-      type                       = string # GAUGE, DELTA_PER_SECOND, DELTA_PER_MINUTE
-      filter                     = string
-    })
+    max_replicas    = number
+    min_replicas    = number
+    cooldown_period = optional(number)
+    mode            = optional(string) # OFF, ONLY_UP, ON
+    scaling_control = optional(object({
+      down = optional(object({
+        max_replicas_fixed   = optional(number)
+        max_replicas_percent = optional(number)
+        time_window_sec      = optional(number)
+      }))
+      in = optional(object({
+        max_replicas_fixed   = optional(number)
+        max_replicas_percent = optional(number)
+        time_window_sec      = optional(number)
+      }))
+    }), {})
+    scaling_signals = optional(object({
+      cpu_utilization = optional(object({
+        target                = number
+        optimize_availability = optional(bool)
+      }))
+      load_balancing_utilization = optional(object({
+        target = number
+      }))
+      metrics = optional(list(object({
+        name                       = string
+        type                       = string # GAUGE, DELTA_PER_SECOND, DELTA_PER_MINUTE
+        target_value               = number
+        single_instance_assignment = optional(number)
+        time_series_filter         = optional(string)
+      })))
+      schedules = optional(list(object({
+        duration_sec          = number
+        name                  = string
+        min_required_replicas = number
+        cron_schedule         = string
+        description           = optional(bool)
+        timezone              = optional(string)
+        disabled              = optional(bool)
+      })))
+    }), {})
   })
   default = null
 }
 
-variable "default_version" {
-  description = "Default application version template. Additional versions can be specified via the `versions` variable."
+variable "default_version_name" {
+  description = "Name used for the default version."
+  type        = string
+  default     = "default"
+}
+
+variable "description" {
+  description = "Optional description used for all resources managed by this module."
+  type        = string
+  default     = "Terraform managed."
+}
+
+variable "distribution_policy" {
+  description = "DIstribution policy for regional MIG."
   type = object({
-    instance_template = string
-    name              = string
+    target_shape = optional(string)
+    zones        = optional(list(string))
   })
+  default = null
 }
 
 variable "health_check_config" {
   description = "Optional auto-created health check configuration, use the output self-link to set it in the auto healing policy. Refer to examples for usage."
   type = object({
-    type    = string      # http https tcp ssl http2
-    check   = map(any)    # actual health check block attributes
-    config  = map(number) # interval, thresholds, timeout
-    logging = bool
+    check_interval_sec  = optional(number)
+    description         = optional(string, "Terraform managed.")
+    enable_logging      = optional(bool, false)
+    healthy_threshold   = optional(number)
+    timeout_sec         = optional(number)
+    unhealthy_threshold = optional(number)
+    grpc = optional(object({
+      port               = optional(number)
+      port_name          = optional(string)
+      port_specification = optional(string) # USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT
+      service_name       = optional(string)
+    }))
+    http = optional(object({
+      host               = optional(string)
+      port               = optional(number)
+      port_name          = optional(string)
+      port_specification = optional(string) # USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT
+      proxy_header       = optional(string)
+      request_path       = optional(string)
+      response           = optional(string)
+    }))
+    http2 = optional(object({
+      host               = optional(string)
+      port               = optional(number)
+      port_name          = optional(string)
+      port_specification = optional(string) # USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT
+      proxy_header       = optional(string)
+      request_path       = optional(string)
+      response           = optional(string)
+    }))
+    https = optional(object({
+      host               = optional(string)
+      port               = optional(number)
+      port_name          = optional(string)
+      port_specification = optional(string) # USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT
+      proxy_header       = optional(string)
+      request_path       = optional(string)
+      response           = optional(string)
+    }))
+    tcp = optional(object({
+      port               = optional(number)
+      port_name          = optional(string)
+      port_specification = optional(string) # USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT
+      proxy_header       = optional(string)
+      request            = optional(string)
+      response           = optional(string)
+    }))
+    ssl = optional(object({
+      port               = optional(number)
+      port_name          = optional(string)
+      port_specification = optional(string) # USE_FIXED_PORT USE_NAMED_PORT USE_SERVING_PORT
+      proxy_header       = optional(string)
+      request            = optional(string)
+      response           = optional(string)
+    }))
   })
   default = null
+  validation {
+    condition = (
+      (try(var.health_check_config.grpc, null) == null ? 0 : 1) +
+      (try(var.health_check_config.http, null) == null ? 0 : 1) +
+      (try(var.health_check_config.tcp, null) == null ? 0 : 1) <= 1
+    )
+    error_message = "Only one health check type can be configured at a time."
+  }
+}
+
+variable "instance_template" {
+  description = "Instance template for the default version."
+  type        = string
 }
 
 variable "location" {
-  description = "Compute zone, or region if `regional` is set to true."
+  description = "Compute zone or region."
   type        = string
 }
+
 variable "name" {
   description = "Managed group name."
   type        = string
@@ -81,41 +197,30 @@ variable "project_id" {
   type        = string
 }
 
-variable "regional" {
-  description = "Use regional instance group. When set, `location` should be set to the region."
-  type        = bool
-  default     = false
+variable "stateful_disks" {
+  description = "Stateful disk configuration applied at the MIG level to all instances, in device name => on permanent instance delete rule as boolean."
+  type        = map(bool)
+  default     = {}
+  nullable    = false
 }
 
 variable "stateful_config" {
-  description = "Stateful configuration can be done by individual instances or for all instances in the MIG. They key in per_instance_config is the name of the specific instance. The key of the stateful_disks is the 'device_name' field of the resource. Please note that device_name is defined at the OS mount level, unlike the disk name."
-  type = object({
-    per_instance_config = map(object({
-      #name is the key
-      #name = string
-      stateful_disks = map(object({
-        #device_name is the key
-        source      = string
-        mode        = string # READ_WRITE | READ_ONLY 
-        delete_rule = string # NEVER | ON_PERMANENT_INSTANCE_DELETION
-      }))
-      metadata = map(string)
-      update_config = object({
-        minimal_action                   = string # NONE | REPLACE | RESTART | REFRESH
-        most_disruptive_allowed_action   = string # REPLACE | RESTART | REFRESH | NONE
-        remove_instance_state_on_destroy = bool
-      })
+  description = "Stateful configuration for individual instances."
+  type = map(object({
+    minimal_action          = optional(string)
+    most_disruptive_action  = optional(string)
+    remove_state_on_destroy = optional(bool)
+    preserved_state = optional(object({
+      disks = optional(map(object({
+        source                      = string
+        delete_on_instance_deletion = optional(bool)
+        read_only                   = optional(bool)
+      })))
+      metadata = optional(map(string))
     }))
-
-    mig_config = object({
-      stateful_disks = map(object({
-        #device_name is the key
-        delete_rule = string # NEVER | ON_PERMANENT_INSTANCE_DELETION
-      }))
-    })
-
-  })
-  default = null
+  }))
+  default  = {}
+  nullable = false
 }
 
 variable "target_pools" {
@@ -131,32 +236,44 @@ variable "target_size" {
 }
 
 variable "update_policy" {
-  description = "Update policy. Type can be 'OPPORTUNISTIC' or 'PROACTIVE', action 'REPLACE' or 'restart', surge type 'fixed' or 'percent'."
+  description = "Update policy. Minimal action and type are required."
   type = object({
-    instance_redistribution_type = optional(string, "PROACTIVE") # NONE | PROACTIVE. The attribute is ignored if regional is set to false.
-    max_surge_type               = string                        # fixed | percent
-    max_surge                    = number
-    max_unavailable_type         = string
-    max_unavailable              = number
-    minimal_action               = string # REPLACE | RESTART
-    min_ready_sec                = number
-    type                         = string # OPPORTUNISTIC | PROACTIVE
+    minimal_action = string
+    type           = string
+    max_surge = optional(object({
+      fixed   = optional(number)
+      percent = optional(number)
+    }))
+    max_unavailable = optional(object({
+      fixed   = optional(number)
+      percent = optional(number)
+    }))
+    min_ready_sec                = optional(number)
+    most_disruptive_action       = optional(string)
+    regional_redistribution_type = optional(string)
+    replacement_method           = optional(string)
   })
   default = null
 }
 
 variable "versions" {
-  description = "Additional application versions, target_type is either 'fixed' or 'percent'."
+  description = "Additional application versions, target_size is optional."
   type = map(object({
     instance_template = string
-    target_type       = string # fixed | percent
-    target_size       = number
+    target_size = optional(object({
+      fixed   = optional(number)
+      percent = optional(number)
+    }))
   }))
-  default = null
+  default  = {}
+  nullable = false
 }
 
 variable "wait_for_instances" {
   description = "Wait for all instances to be created/updated before returning."
-  type        = bool
-  default     = null
+  type = object({
+    enabled = bool
+    status  = optional(string)
+  })
+  default = null
 }

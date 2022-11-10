@@ -32,16 +32,9 @@ module "branch-sandbox-folder" {
     "roles/resourcemanager.folderAdmin"    = [module.branch-sandbox-sa.0.iam_email]
     "roles/resourcemanager.projectCreator" = [module.branch-sandbox-sa.0.iam_email]
   }
-  policy_boolean = {
-    "constraints/sql.restrictPublicIp" = false
-  }
-  policy_list = {
-    "constraints/compute.vmExternalIpAccess" = {
-      inherit_from_parent = false
-      suggested_value     = null
-      status              = true
-      values              = []
-    }
+  org_policies = {
+    "constraints/sql.restrictPublicIp"       = { enforce = false }
+    "constraints/compute.vmExternalIpAccess" = { allow = { all = true } }
   }
   tag_bindings = {
     context = try(
@@ -75,10 +68,10 @@ moved {
 }
 
 module "branch-sandbox-sa" {
-  source      = "../../../modules/iam-service-account"
-  count       = var.fast_features.sandbox ? 1 : 0
-  project_id  = var.automation.project_id
-  name        = "dev-resman-sbox-0"
-  description = "Terraform resman sandbox service account."
-  prefix      = var.prefix
+  source       = "../../../modules/iam-service-account"
+  count        = var.fast_features.sandbox ? 1 : 0
+  project_id   = var.automation.project_id
+  name         = "dev-resman-sbox-0"
+  display_name = "Terraform resman sandbox service account."
+  prefix       = var.prefix
 }

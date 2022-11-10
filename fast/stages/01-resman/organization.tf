@@ -18,18 +18,11 @@
 
 
 locals {
-  list_allow = {
-    inherit_from_parent = false
-    suggested_value     = null
-    status              = true
-    values              = []
-  }
-  list_deny = {
-    inherit_from_parent = false
-    suggested_value     = null
-    status              = false
-    values              = []
-  }
+  all_drs_domains = concat(
+    [var.organization.customer_id],
+    try(local.policy_configs.allowed_policy_member_domains, [])
+  )
+
   policy_configs = (
     var.organization_policy_configs == null
     ? {}
@@ -73,76 +66,25 @@ module "organization" {
       )
     } : {}
   )
+
   # sample subset of useful organization policies, edit to suit requirements
-  policy_boolean = {
-    # "constraints/cloudfunctions.requireVPCConnector"              = true
-    # "constraints/compute.disableGuestAttributesAccess" = true
-    # "constraints/compute.disableInternetNetworkEndpointGroup"     = true
-    # "constraints/compute.disableNestedVirtualization"             = true
-    # "constraints/compute.disableSerialPortAccess"                 = true
-    "constraints/compute.requireOsLogin" = true
-    # "constraints/compute.restrictXpnProjectLienRemoval"           = true
-    "constraints/compute.skipDefaultNetworkCreation" = true
-    # "constraints/compute.setNewProjectDefaultToZonalDNSOnly"      = true
-    "constraints/iam.automaticIamGrantsForDefaultServiceAccounts" = true
-    "constraints/iam.disableServiceAccountKeyCreation"            = true
-    # "constraints/iam.disableServiceAccountKeyUpload"              = true
-    "constraints/sql.restrictPublicIp"             = true
-    "constraints/sql.restrictAuthorizedNetworks"   = true
-    "constraints/storage.uniformBucketLevelAccess" = true
-  }
-  policy_list = {
-    # "constraints/cloudfunctions.allowedIngressSettings" = merge(
-    #   local.list_allow, { values = ["is:ALLOW_INTERNAL_ONLY"] }
-    # )
-    # "constraints/cloudfunctions.allowedVpcConnectorEgressSettings" = merge(
-    #   local.list_allow, { values = ["is:PRIVATE_RANGES_ONLY"] }
-    # )
-    "constraints/compute.restrictLoadBalancerCreationForTypes" = merge(
-      local.list_allow, { values = ["in:INTERNAL"] }
-    )
-    "constraints/compute.vmExternalIpAccess" = local.list_deny
-    "constraints/iam.allowedPolicyMemberDomains" = merge(
-      local.list_allow, {
-        values = concat(
-          [var.organization.customer_id],
-          try(local.policy_configs.allowed_policy_member_domains, [])
-        )
-    })
-    "constraints/run.allowedIngress" = merge(
-      local.list_allow, { values = ["is:internal"] }
-    )
-    # "constraints/run.allowedVPCEgress" = merge(
-    #   local.list_allow, { values = ["is:private-ranges-only"] }
-    # )
-    # "constraints/compute.restrictCloudNATUsage"                      = local.list_deny
-    # "constraints/compute.restrictDedicatedInterconnectUsage"         = local.list_deny
-    # "constraints/compute.restrictPartnerInterconnectUsage"           = local.list_deny
-    # "constraints/compute.restrictProtocolForwardingCreationForTypes" = local.list_deny
-    # "constraints/compute.restrictSharedVpcHostProjects"              = local.list_deny
-    # "constraints/compute.restrictSharedVpcSubnetworks"               = local.list_deny
-    # "constraints/compute.restrictVpcPeering" = local.list_deny
-    # "constraints/compute.restrictVpnPeerIPs" = local.list_deny
-    # "constraints/compute.vmCanIpForward"     = local.list_deny
-    # "constraints/gcp.resourceLocations" = {
-    #   inherit_from_parent = false
-    #   suggested_value     = null
-    #   status              = true
-    #   values              = local.allowed_regions
+  org_policies = {
+    "iam.allowedPolicyMemberDomains" = { allow = { values = local.all_drs_domains } }
+
+    #"gcp.resourceLocations" = {
+    #   allow = { values = local.allowed_regions }
     # }
-    # https://cloud.google.com/iam/docs/manage-workload-identity-pools-providers#restrict
-    # "constraints/iam.workloadIdentityPoolProviders" = merge(
-    #   local.list_allow, { values = [
-    #     for k, v in coalesce(var.automation.federated_identity_providers, {}) :
-    #     v.issuer_uri
-    #   ] }
-    # )
-    # "constraints/iam.workloadIdentityPoolAwsAccounts" = merge(
-    #   local.list_allow, { values = [
-    #
-    #   ] }
-    # )
+    # "iam.workloadIdentityPoolProviders" = {
+    #   allow =  {
+    #     values = [
+    #       for k, v in coalesce(var.automation.federated_identity_providers, {}) :
+    #       v.issuer_uri
+    #     ]
+    #   }
+    # }
   }
+  org_policies_data_path = "${var.data_dir}/org-policies"
+
   tags = {
     (var.tag_names.context) = {
       description = "Resource management context."

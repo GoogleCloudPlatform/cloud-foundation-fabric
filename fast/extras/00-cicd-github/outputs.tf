@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-output "policies" {
-  description = "Organization policies."
-  value       = google_org_policy_policy.primary
+output "clone" {
+  description = "Clone repository commands."
+  value = {
+    for k, v in var.repositories :
+    k => "git clone git@github.com:${var.organization}/${k}.git"
+  }
 }

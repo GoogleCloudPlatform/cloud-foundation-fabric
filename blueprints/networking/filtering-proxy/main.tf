@@ -74,17 +74,18 @@ module "firewall" {
   source     = "../../../modules/net-vpc-firewall"
   project_id = module.project-host.project_id
   network    = module.vpc.name
-  custom_rules = {
+  ingress_rules = {
     allow-ingress-squid = {
-      description          = "Allow squid ingress traffic"
-      direction            = "INGRESS"
-      action               = "allow"
-      sources              = []
-      ranges               = [var.cidrs.apps, "35.191.0.0/16", "130.211.0.0/22"]
+      description = "Allow squid ingress traffic"
+      source_ranges = [
+        var.cidrs.apps, "35.191.0.0/16", "130.211.0.0/22"
+      ]
       targets              = [module.service-account-squid.email]
       use_service_accounts = true
-      rules                = [{ protocol = "tcp", ports = [3128] }]
-      extra_attributes     = {}
+      rules = [{
+        protocol = "tcp"
+        ports    = [3128]
+      }]
     }
   }
 }
@@ -165,33 +166,31 @@ module "squid-vm" {
 }
 
 module "squid-mig" {
-  count       = var.mig ? 1 : 0
-  source      = "../../../modules/compute-mig"
-  project_id  = module.project-host.project_id
-  location    = "${var.region}-b"
-  name        = "squid-mig"
-  target_size = 1
-  autoscaler_config = {
-    max_replicas                      = 10
-    min_replicas                      = 1
-    cooldown_period                   = 30
-    cpu_utilization_target            = 0.65
-    load_balancing_utilization_target = null
-    metric                            = null
+  count             = var.mig ? 1 : 0
+  source            = "../../../modules/compute-mig"
+  project_id        = module.project-host.project_id
+  location          = "${var.region}-b"
+  name              = "squid-mig"
+  instance_template = module.squid-vm.template.self_link
+  target_size       = 1
+  auto_healing_policies = {
+    initial_delay_sec = 60
   }
-  default_version = {
-    instance_template = module.squid-vm.template.self_link
-    name              = "default"
+  autoscaler_config = {
+    max_replicas    = 10
+    min_replicas    = 1
+    cooldown_period = 30
+    scaling_signals = {
+      cpu_utilization = {
+        target = 0.65
+      }
+    }
   }
   health_check_config = {
-    type    = "tcp"
-    check   = { port = 3128 }
-    config  = {}
-    logging = true
-  }
-  auto_healing_policies = {
-    health_check      = module.squid-mig.0.health_check.self_link
-    initial_delay_sec = 60
+    enable_logging = true
+    tcp = {
+      port = 3128
+    }
   }
 }
 
@@ -201,20 +200,20 @@ module "squid-ilb" {
   project_id    = module.project-host.project_id
   region        = var.region
   name          = "squid-ilb"
-  service_label = "squid-ilb"
-  network       = module.vpc.self_link
-  subnetwork    = module.vpc.subnet_self_links["${var.region}/proxy"]
   ports         = [3128]
+  service_label = "squid-ilb"
+  vpc_config = {
+    network    = module.vpc.self_link
+    subnetwork = module.vpc.subnet_self_links["${var.region}/proxy"]
+  }
   backends = [{
-    failover       = false
-    group          = module.squid-mig.0.group_manager.instance_group
-    balancing_mode = "CONNECTION"
+    group = module.squid-mig.0.group_manager.instance_group
   }]
   health_check_config = {
-    type    = "tcp"
-    check   = { port = 3128 }
-    config  = {}
-    logging = true
+    enable_logging = true
+    tcp = {
+      port = 3128
+    }
   }
 }
 
@@ -226,13 +225,10 @@ module "folder-apps" {
   source = "../../../modules/folder"
   parent = var.root_node
   name   = "apps"
-  policy_list = {
+  org_policies = {
     # prevent VMs with public IPs in the apps folder
     "constraints/compute.vmExternalIpAccess" = {
-      inherit_from_parent = false
-      suggested_value     = null
-      status              = false
-      values              = []
+      deny = { all = true }
     }
   }
 }

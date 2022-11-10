@@ -17,8 +17,9 @@ def test_private(plan_runner):
   "Test private zone with three recordsets."
   _, resources = plan_runner()
   assert len(resources) == 7
-  assert set(r['type'] for r in resources) == set(
-      ['google_dns_record_set', 'google_dns_managed_zone'])
+  assert set(r['type'] for r in resources) == {
+      'google_dns_record_set', 'google_dns_managed_zone'
+  }
   for r in resources:
     if r['type'] != 'google_dns_managed_zone':
       continue
@@ -33,48 +34,49 @@ def test_private_recordsets(plan_runner):
       r['values'] for r in resources if r['type'] == 'google_dns_record_set'
   ]
 
-  assert set(r['name'] for r in recordsets) == set([
+  assert set(r['name'] for r in recordsets) == {
       'localhost.test.example.', 'local-host.test.example.', '*.test.example.',
       "test.example.", "geo.test.example.", "wrr.test.example."
-  ])
+  }
 
   for r in recordsets:
     if r['name'] not in ['wrr.test.example.', 'geo.test.example.']:
       assert r['routing_policy'] == []
       assert r['rrdatas'] != []
 
+
+def test_routing_policies(plan_runner):
+  "Test recordsets with routing policies."
+  _, resources = plan_runner()
+  recordsets = [
+      r['values'] for r in resources if r['type'] == 'google_dns_record_set'
+  ]
   geo_zone = [
       r['values'] for r in resources if r['address'] ==
       'module.test.google_dns_record_set.cloud-geo-records["A geo"]'
   ][0]
   assert geo_zone['name'] == 'geo.test.example.'
   assert geo_zone['routing_policy'][0]['wrr'] == []
-  assert geo_zone['routing_policy'][0]['geo'] == [{
-      'location': 'europe-west1',
-      'rrdatas': ['127.0.0.4']
-  }, {
-      'location': 'europe-west2',
-      'rrdatas': ['127.0.0.5']
-  }, {
-      'location': 'europe-west3',
-      'rrdatas': ['127.0.0.6']
-  }]
+  geo_policy = geo_zone['routing_policy'][0]['geo']
+  assert geo_policy[0]['location'] == 'europe-west1'
+  assert geo_policy[0]['rrdatas'] == ['127.0.0.4']
+  assert geo_policy[1]['location'] == 'europe-west2'
+  assert geo_policy[1]['rrdatas'] == ['127.0.0.5']
+  assert geo_policy[2]['location'] == 'europe-west3'
+  assert geo_policy[2]['rrdatas'] == ['127.0.0.6']
 
   wrr_zone = [
       r['values'] for r in resources if r['address'] ==
       'module.test.google_dns_record_set.cloud-wrr-records["A wrr"]'
   ][0]
   assert wrr_zone['name'] == 'wrr.test.example.'
-  assert wrr_zone['routing_policy'][0]['wrr'] == [{
-      'rrdatas': ['127.0.0.7'],
-      'weight': 0.6
-  }, {
-      'rrdatas': ['127.0.0.8'],
-      'weight': 0.2
-  }, {
-      'rrdatas': ['10.10.0.9'],
-      'weight': 0.2
-  }]
+  wrr_policy = wrr_zone['routing_policy'][0]['wrr']
+  assert wrr_policy[0]['weight'] == 0.6
+  assert wrr_policy[0]['rrdatas'] == ['127.0.0.7']
+  assert wrr_policy[1]['weight'] == 0.2
+  assert wrr_policy[1]['rrdatas'] == ['127.0.0.8']
+  assert wrr_policy[2]['weight'] == 0.2
+  assert wrr_policy[2]['rrdatas'] == ['127.0.0.9']
   assert wrr_zone['routing_policy'][0]['geo'] == []
 
 

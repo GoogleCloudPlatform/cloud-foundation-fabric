@@ -12,18 +12,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-map(include('firewall_rule'))
+egress: map(include('firewall_rule'), required=False)
+ingress: map(include('firewall_rule'), required=False)
 ---
 firewall_rule:
-  description: str()
-  direction: enum("INGRESS", "EGRESS")
-  action: enum("allow", "deny")
-  sources: list(str())
-  ranges: list(str())
-  targets: list(str())
-  use_service_accounts: bool()
-  rules: list(include('rule'))
+  deny: bool(required=False)
+  description: str(required=False)
+  destination_ranges: list(str(), required=False)
+  disabled: bool(required=False)
+  # enable_logging:
+  #   include_metadata: bool(required=False)
+  priority: int(required=False)
+  source_ranges: list(str(), required=False)
+  sources: list(str(), required=False)
+  targets: list(str(), required=False)
+  use_service_accounts: bool(required=False)
+  rules: list(include('rule'), required=False)
 ---
 rule:
-  protocol: enum("tcp", "udp", "all")
+  protocol: str()
   ports: list(num())

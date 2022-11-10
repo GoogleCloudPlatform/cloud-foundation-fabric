@@ -12,47 +12,246 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import hcl2
+import yaml
+
+BOOLEAN_POLICIES = '''{
+  "iam.disableServiceAccountKeyCreation" = {
+    enforce = true
+  }
+  "iam.disableServiceAccountKeyUpload" = {
+    enforce = false
+    rules = [
+      {
+        condition = {
+          expression  = "resource.matchTagId(aa, bb)"
+          title       = "condition"
+          description = "test condition"
+          location    = "xxx"
+        }
+        enforce = true
+      }
+    ]
+  }
+}'''
+
+LIST_POLICIES = '''{
+  "compute.vmExternalIpAccess" = {
+    deny = { all = true }
+  }
+  "iam.allowedPolicyMemberDomains" = {
+    allow = {
+      values = ["C0xxxxxxx", "C0yyyyyyy"]
+    }
+  }
+  "compute.restrictLoadBalancerCreationForTypes" = {
+    deny = { values = ["in:EXTERNAL"] }
+    rules = [
+      {
+        condition = {
+          expression  = "resource.matchTagId(aa, bb)"
+          title       = "condition"
+          description = "test condition"
+          location    = "xxx"
+        }
+        allow = {
+          values = ["EXTERNAL_1"]
+        }
+      },
+      {
+        condition = {
+          expression  = "resource.matchTagId(cc, dd)"
+          title       = "condition2"
+          description = "test condition2"
+          location    = "xxx"
+        }
+        allow = {
+          all = true
+        }
+      }
+    ]
+  }
+}'''
+
+
 def test_policy_boolean(plan_runner):
   "Test boolean org policy."
-  policy_boolean = '{policy-a = true, policy-b = false, policy-c = null}'
-  _, resources = plan_runner(policy_boolean=policy_boolean)
-  assert len(resources) == 7
-  resources = [r for r in resources if r['type']
-               == 'google_project_organization_policy']
-  assert sorted([r['index'] for r in resources]) == [
-      'policy-a', 'policy-b', 'policy-c'
-  ]
-  policy_values = []
-  for resource in resources:
-    for policy in ('boolean_policy', 'restore_policy'):
-      value = resource['values'][policy]
-      if value:
-        policy_values.append((policy,) + value[0].popitem())
-  assert sorted(policy_values) == [
-      ('boolean_policy', 'enforced', False),
-      ('boolean_policy', 'enforced', True),
-      ('restore_policy', 'default', True)
-  ]
+  _, resources = plan_runner(org_policies=BOOLEAN_POLICIES)
+  validate_policy_boolean_resources(resources)
 
 
 def test_policy_list(plan_runner):
   "Test list org policy."
-  policy_list = (
-      '{'
-      'policy-a = {inherit_from_parent = true, suggested_value = null, status = true, values = []}, '
-      'policy-b = {inherit_from_parent = null, suggested_value = "foo", status = false, values = ["bar"]}, '
-      'policy-c = {inherit_from_parent = null, suggested_value = true, status = null, values = null}'
-      '}'
-  )
-  _, resources = plan_runner(policy_list=policy_list)
+  _, resources = plan_runner(org_policies=LIST_POLICIES)
+  validate_policy_list_resources(resources)
+
+
+def test_policy_boolean_factory(plan_runner, tmp_path):
+  # convert hcl policies to yaml
+  hcl_policies = f'p = {BOOLEAN_POLICIES}'
+  yaml_policies = yaml.dump(hcl2.loads(hcl_policies)['p'])
+
+  yaml_file = tmp_path / 'policies.yaml'
+  yaml_file.write_text(yaml_policies)
+
+  _, resources = plan_runner(org_policies_data_path=f'"{tmp_path}"')
+  validate_policy_boolean_resources(resources)
+
+
+def test_policy_list_factory(plan_runner, tmp_path):
+  # convert hcl policies to yaml
+  hcl_policies = f'p = {LIST_POLICIES}'
+  yaml_policies = yaml.dump(hcl2.loads(hcl_policies)['p'])
+
+  yaml_file = tmp_path / 'policies.yaml'
+  yaml_file.write_text(yaml_policies)
+
+  _, resources = plan_runner(org_policies_data_path=f'"{tmp_path}"')
+  validate_policy_list_resources(resources)
+
+
+def validate_policy_boolean_resources(resources):
+  assert len(resources) == 6
+  policies = [r for r in resources if r['type'] == 'google_org_policy_policy']
+  assert len(policies) == 2
+  assert all(x['values']['parent'] == 'projects/my-project' for x in policies)
+
+  p1 = [
+      r['values']['spec'][0]
+      for r in policies
+      if r['index'] == 'iam.disableServiceAccountKeyCreation'
+  ][0]
+
+  assert p1['inherit_from_parent'] is None
+  assert p1['reset'] is None
+  assert p1['rules'] == [{
+      'allow_all': None,
+      'condition': [],
+      'deny_all': None,
+      'enforce': 'TRUE',
+      'values': []
+  }]
+
+  p2 = [
+      r['values']['spec'][0]
+      for r in policies
+      if r['index'] == 'iam.disableServiceAccountKeyUpload'
+  ][0]
+
+  assert p2['inherit_from_parent'] is None
+  assert p2['reset'] is None
+  assert len(p2['rules']) == 2
+  assert p2['rules'][0] == {
+      'allow_all': None,
+      'condition': [],
+      'deny_all': None,
+      'enforce': 'FALSE',
+      'values': []
+  }
+  assert p2['rules'][1] == {
+      'allow_all': None,
+      'condition': [{
+          'description': 'test condition',
+          'expression': 'resource.matchTagId(aa, bb)',
+          'location': 'xxx',
+          'title': 'condition'
+      }],
+      'deny_all': None,
+      'enforce': 'TRUE',
+      'values': []
+  }
+
+
+def validate_policy_list_resources(resources):
   assert len(resources) == 7
-  values = [r['values'] for r in resources if r['type']
-            == 'google_project_organization_policy']
-  assert [r['constraint'] for r in values] == [
-      'policy-a', 'policy-b', 'policy-c'
-  ]
-  assert values[0]['list_policy'][0]['allow'] == [
-      {'all': True, 'values': None}]
-  assert values[1]['list_policy'][0]['deny'] == [
-      {'all': False, 'values': ["bar"]}]
-  assert values[2]['restore_policy'] == [{'default': True}]
+
+  policies = [r for r in resources if r['type'] == 'google_org_policy_policy']
+  assert len(policies) == 3
+  assert all(x['values']['parent'] == 'projects/my-project' for x in policies)
+
+  p1 = [
+      r['values']['spec'][0]
+      for r in policies
+      if r['index'] == 'compute.vmExternalIpAccess'
+  ][0]
+  assert p1['inherit_from_parent'] is None
+  assert p1['reset'] is None
+  assert p1['rules'] == [{
+      'allow_all': None,
+      'condition': [],
+      'deny_all': 'TRUE',
+      'enforce': None,
+      'values': []
+  }]
+
+  p2 = [
+      r['values']['spec'][0]
+      for r in policies
+      if r['index'] == 'iam.allowedPolicyMemberDomains'
+  ][0]
+  assert p2['inherit_from_parent'] is None
+  assert p2['reset'] is None
+  assert p2['rules'] == [{
+      'allow_all':
+          None,
+      'condition': [],
+      'deny_all':
+          None,
+      'enforce':
+          None,
+      'values': [{
+          'allowed_values': [
+              'C0xxxxxxx',
+              'C0yyyyyyy',
+          ],
+          'denied_values': None
+      }]
+  }]
+
+  p3 = [
+      r['values']['spec'][0]
+      for r in policies
+      if r['index'] == 'compute.restrictLoadBalancerCreationForTypes'
+  ][0]
+  assert p3['inherit_from_parent'] is None
+  assert p3['reset'] is None
+  assert len(p3['rules']) == 3
+  assert p3['rules'][0] == {
+      'allow_all': None,
+      'condition': [],
+      'deny_all': None,
+      'enforce': None,
+      'values': [{
+          'allowed_values': None,
+          'denied_values': ['in:EXTERNAL']
+      }]
+  }
+
+  assert p3['rules'][1] == {
+      'allow_all': None,
+      'condition': [{
+          'description': 'test condition',
+          'expression': 'resource.matchTagId(aa, bb)',
+          'location': 'xxx',
+          'title': 'condition'
+      }],
+      'deny_all': None,
+      'enforce': None,
+      'values': [{
+          'allowed_values': ['EXTERNAL_1'],
+          'denied_values': None
+      }]
+  }
+
+  assert p3['rules'][2] == {
+      'allow_all': 'TRUE',
+      'condition': [{
+          'description': 'test condition2',
+          'expression': 'resource.matchTagId(cc, dd)',
+          'location': 'xxx',
+          'title': 'condition2'
+      }],
+      'deny_all': None,
+      'enforce': None,
+      'values': []
+  }

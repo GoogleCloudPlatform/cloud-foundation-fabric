@@ -141,7 +141,7 @@ resource "google_cloudfunctions2_function" "function" {
     environment_variables = var.environment_variables
     source {
       storage_source {
-        bucket = google_storage_bucket.bucket[0].name
+        bucket = local.bucket
         object = google_storage_bucket_object.bundle.name
       }
     }

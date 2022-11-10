@@ -35,13 +35,16 @@ module "project" {
     "dataflow.googleapis.com",
     "ml.googleapis.com",
     "notebooks.googleapis.com",
+    "orgpolicy.googleapis.com",
     "servicenetworking.googleapis.com",
     "stackdriver.googleapis.com",
     "storage.googleapis.com",
     "storage-component.googleapis.com"
   ]
-  policy_boolean = {
-    # "constraints/compute.requireOsLogin" = false
+  org_policies = {
+    # "constraints/compute.requireOsLogin" = {
+    #   enforce = false
+    # }
     # Example of applying a project wide policy, mainly useful for Composer
   }
   service_encryption_key_ids = {
@@ -69,22 +72,19 @@ module "vpc" {
 }
 
 module "vpc-firewall" {
-  source       = "../../../modules/net-vpc-firewall"
-  project_id   = module.project.project_id
-  network      = module.vpc.name
-  admin_ranges = [var.vpc_config.ip_cidr_range]
-  custom_rules = {
+  source     = "../../../modules/net-vpc-firewall"
+  project_id = module.project.project_id
+  network    = module.vpc.name
+  default_rules_config = {
+    admin_ranges = [var.vpc_config.ip_cidr_range]
+  }
+  ingress_rules = {
     #TODO Remove and rely on 'ssh' tag once terraform-provider-google/issues/9273 is fixed
     ("${var.prefix}-iap") = {
-      description          = "Enable SSH from IAP on Notebooks."
-      direction            = "INGRESS"
-      action               = "allow"
-      sources              = []
-      ranges               = ["35.235.240.0/20"]
-      targets              = ["notebook-instance"]
-      use_service_accounts = false
-      rules                = [{ protocol = "tcp", ports = [22] }]
-      extra_attributes     = {}
+      description   = "Enable SSH from IAP on Notebooks."
+      source_ranges = ["35.235.240.0/20"]
+      targets       = ["notebook-instance"]
+      rules         = [{ protocol = "tcp", ports = [22] }]
     }
   }
 }

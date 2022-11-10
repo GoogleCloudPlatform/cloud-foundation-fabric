@@ -77,12 +77,12 @@ module "branch-dp-prod-folder" {
 # automation service accounts and buckets
 
 module "branch-dp-dev-sa" {
-  source      = "../../../modules/iam-service-account"
-  count       = var.fast_features.data_platform ? 1 : 0
-  project_id  = var.automation.project_id
-  name        = "dev-resman-dp-0"
-  description = "Terraform data platform development service account."
-  prefix      = var.prefix
+  source       = "../../../modules/iam-service-account"
+  count        = var.fast_features.data_platform ? 1 : 0
+  project_id   = var.automation.project_id
+  name         = "dev-resman-dp-0"
+  display_name = "Terraform data platform development service account."
+  prefix       = var.prefix
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
       try(module.branch-dp-dev-sa-cicd.0.iam_email, null)
@@ -94,12 +94,12 @@ module "branch-dp-dev-sa" {
 }
 
 module "branch-dp-prod-sa" {
-  source      = "../../../modules/iam-service-account"
-  count       = var.fast_features.data_platform ? 1 : 0
-  project_id  = var.automation.project_id
-  name        = "prod-resman-dp-0"
-  description = "Terraform data platform production service account."
-  prefix      = var.prefix
+  source       = "../../../modules/iam-service-account"
+  count        = var.fast_features.data_platform ? 1 : 0
+  project_id   = var.automation.project_id
+  name         = "prod-resman-dp-0"
+  display_name = "Terraform data platform production service account."
+  prefix       = var.prefix
   iam = {
     "roles/iam.serviceAccountTokenCreator" = compact([
       try(module.branch-dp-prod-sa-cicd.0.iam_email, null)
