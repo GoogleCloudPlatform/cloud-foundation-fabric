@@ -215,7 +215,7 @@ variable "prefix" {
   type        = string
   default     = null
   validation {
-    condition = var.prefix != ""
+    condition     = var.prefix != ""
     error_message = "Prefix can not be empty, please use null instead."
   }
 }

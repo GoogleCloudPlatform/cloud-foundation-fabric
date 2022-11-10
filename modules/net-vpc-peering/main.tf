@@ -17,7 +17,7 @@
 locals {
   local_network_name = element(reverse(split("/", var.local_network)), 0)
   peer_network_name  = element(reverse(split("/", var.peer_network)), 0)
-  prefix = var.prefix == null ? "" : "${var.prefix}-"
+  prefix             = var.prefix == null ? "" : "${var.prefix}-"
 }
 
 resource "google_compute_network_peering" "local_network_peering" {
