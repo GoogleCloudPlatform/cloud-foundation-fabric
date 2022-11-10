@@ -120,16 +120,20 @@ module "ilb-nva-untrusted" {
   name          = "nva-untrusted-${each.value.0}"
   service_label = var.prefix
   global_access = true
-  network       = module.landing-untrusted-vpc.self_link
-  subnetwork    = module.landing-untrusted-vpc.subnet_self_links["${each.key}/landing-untrusted-default-${each.value.0}"]
-  backends = [for key, _ in local.nva_locality :
-    {
-      failover       = false
-      group          = module.nva-mig[key].group_manager.instance_group
-      balancing_mode = "CONNECTION"
-  } if local.nva_locality[key].region == each.key]
+  vpc_config = {
+    network    = module.landing-untrusted-vpc.self_link
+    subnetwork = module.landing-untrusted-vpc.subnet_self_links["${each.key}/landing-untrusted-default-${each.value.0}"]
+  }
+  backends = [
+    for key, _ in local.nva_locality : {
+      group = module.nva-mig[key].group_manager.instance_group
+    } if local.nva_locality[key].region == each.key
+  ]
   health_check_config = {
-    type = "tcp", check = { port = 22 }, config = {}, logging = false
+    enable_logging = true
+    tcp = {
+      port = 22
+    }
   }
 }
 
@@ -142,16 +146,20 @@ module "ilb-nva-trusted" {
   name          = "nva-trusted-${each.value.0}"
   service_label = var.prefix
   global_access = true
-  network       = module.landing-trusted-vpc.self_link
-  subnetwork    = module.landing-trusted-vpc.subnet_self_links["${each.key}/landing-trusted-default-${each.value.0}"]
-  backends = [for key, _ in local.nva_locality :
-    {
-      failover       = false
-      group          = module.nva-mig[key].group_manager.instance_group
-      balancing_mode = "CONNECTION"
-  } if local.nva_locality[key].region == each.key]
+  vpc_config = {
+    network    = module.landing-trusted-vpc.self_link
+    subnetwork = module.landing-trusted-vpc.subnet_self_links["${each.key}/landing-trusted-default-${each.value.0}"]
+  }
+  backends = [
+    for key, _ in local.nva_locality : {
+      group = module.nva-mig[key].group_manager.instance_group
+    } if local.nva_locality[key].region == each.key
+  ]
   health_check_config = {
-    type = "tcp", check = { port = 22 }, config = {}, logging = false
+    enable_logging = true
+    tcp = {
+      port = 22
+    }
   }
 }
 

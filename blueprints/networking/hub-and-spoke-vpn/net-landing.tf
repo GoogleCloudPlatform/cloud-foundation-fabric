@@ -39,10 +39,12 @@ module "landing-vpc" {
 }
 
 module "landing-firewall" {
-  source       = "../../../modules/net-vpc-firewall"
-  project_id   = var.project_id
-  network      = module.landing-vpc.name
-  admin_ranges = values(var.ip_ranges)
+  source     = "../../../modules/net-vpc-firewall"
+  project_id = var.project_id
+  network    = module.landing-vpc.name
+  default_rules_config = {
+    admin_ranges = values(var.ip_ranges)
+  }
 }
 
 module "landing-dns-zone" {

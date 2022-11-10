@@ -26,6 +26,7 @@ module "test" {
   labels                     = var.labels
   lien_reason                = var.lien_reason
   org_policies               = var.org_policies
+  org_policies_data_path     = var.org_policies_data_path
   oslogin                    = var.oslogin
   oslogin_admins             = var.oslogin_admins
   oslogin_users              = var.oslogin_users

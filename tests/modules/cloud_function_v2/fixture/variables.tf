@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-module "org-policy" {
-  source = "../../../../modules/organization-policy"
-
-  config_directory = var.config_directory
-  policies         = var.policies
+variable "bucket_name" {
+  type    = string
+  default = "test"
 }

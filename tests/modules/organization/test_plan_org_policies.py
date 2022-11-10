@@ -12,216 +12,48 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import pathlib
+
+from .validate_policies import validate_policy_boolean, validate_policy_list, validate_policy_custom_constraints
+
 
 def test_policy_boolean(plan_runner):
   "Test boolean org policy."
-  policies = '''{
-    "iam.disableServiceAccountKeyCreation" = {
-      enforce = true
-    }
-    "iam.disableServiceAccountKeyUpload" = {
-      enforce = false
-      rules = [
-        {
-          condition = {
-            expression  = "resource.matchTagId(\\"tagKeys/1234\\", \\"tagValues/1234\\")"
-            title       = "condition"
-            description = "test condition"
-            location    = "xxx"
-          }
-          enforce = true
-        }
-      ]
-    }
-  }'''
-  _, resources = plan_runner(org_policies=policies)
-  assert len(resources) == 2
-
-  policies = [r for r in resources if r['type'] == 'google_org_policy_policy']
-  assert len(policies) == 2
-  assert all(
-      x['values']['parent'] == 'organizations/1234567890' for x in policies)
-
-  p1 = [
-      r['values']['spec'][0]
-      for r in policies
-      if r['index'] == 'iam.disableServiceAccountKeyCreation'
-  ][0]
-
-  assert p1['inherit_from_parent'] is None
-  assert p1['reset'] is None
-  assert p1['rules'] == [{
-      'allow_all': None,
-      'condition': [],
-      'deny_all': None,
-      'enforce': 'TRUE',
-      'values': []
-  }]
-
-  p2 = [
-      r['values']['spec'][0]
-      for r in policies
-      if r['index'] == 'iam.disableServiceAccountKeyUpload'
-  ][0]
-
-  assert p2['inherit_from_parent'] is None
-  assert p2['reset'] is None
-  assert len(p2['rules']) == 2
-  assert p2['rules'][0] == {
-      'allow_all': None,
-      'condition': [],
-      'deny_all': None,
-      'enforce': 'FALSE',
-      'values': []
-  }
-  assert p2['rules'][1] == {
-      'allow_all': None,
-      'condition': [{
-          'description': 'test condition',
-          'expression': 'resource.matchTagId("tagKeys/1234", "tagValues/1234")',
-          'location': 'xxx',
-          'title': 'condition'
-      }],
-      'deny_all': None,
-      'enforce': 'TRUE',
-      'values': []
-  }
+  tfvars = 'test.orgpolicies-boolean.tfvars'
+  _, resources = plan_runner(tf_var_file=tfvars)
+  validate_policy_boolean(resources)
 
 
 def test_policy_list(plan_runner):
   "Test list org policy."
-  policies = '''{
-    "compute.vmExternalIpAccess" = {
-      deny = { all = true }
-    }
-    "iam.allowedPolicyMemberDomains" = {
-      allow = {
-        values = ["C0xxxxxxx", "C0yyyyyyy"]
-      }
-    }
-    "compute.restrictLoadBalancerCreationForTypes" = {
-      deny = { values = ["in:EXTERNAL"] }
-      rules = [
-        {
-          condition = {
-            expression  = "resource.matchTagId(\\"tagKeys/1234\\", \\"tagValues/1234\\")"
-            title       = "condition"
-            description = "test condition"
-            location    = "xxx"
-          }
-          allow = {
-            values = ["EXTERNAL_1"]
-          }
-        },
-        {
-          condition = {
-            expression  = "resource.matchTagId(\\"tagKeys/12345\\", \\"tagValues/12345\\")"
-            title       = "condition2"
-            description = "test condition2"
-            location    = "xxx"
-          }
-          allow = {
-            all = true
-          }
-        }
-      ]
-    }
-  }'''
-  _, resources = plan_runner(org_policies=policies)
-  assert len(resources) == 3
+  tfvars = 'test.orgpolicies-list.tfvars'
+  _, resources = plan_runner(tf_var_file=tfvars)
+  validate_policy_list(resources)
 
-  policies = [r for r in resources if r['type'] == 'google_org_policy_policy']
-  assert len(policies) == 3
-  assert all(
-      x['values']['parent'] == 'organizations/1234567890' for x in policies)
 
-  p1 = [
-      r['values']['spec'][0]
-      for r in policies
-      if r['index'] == 'compute.vmExternalIpAccess'
-  ][0]
-  assert p1['inherit_from_parent'] is None
-  assert p1['reset'] is None
-  assert p1['rules'] == [{
-      'allow_all': None,
-      'condition': [],
-      'deny_all': 'TRUE',
-      'enforce': None,
-      'values': []
-  }]
+def test_policy_custom_constraints(plan_runner):
+  "Test org policy custom constraints."
+  tfvars = 'test.orgpolicy-custom-constraints.tfvars'
+  _, resources = plan_runner(tf_var_file=tfvars)
+  validate_policy_custom_constraints(resources)
 
-  p2 = [
-      r['values']['spec'][0]
-      for r in policies
-      if r['index'] == 'iam.allowedPolicyMemberDomains'
-  ][0]
-  assert p2['inherit_from_parent'] is None
-  assert p2['reset'] is None
-  assert p2['rules'] == [{
-      'allow_all':
-          None,
-      'condition': [],
-      'deny_all':
-          None,
-      'enforce':
-          None,
-      'values': [{
-          'allowed_values': [
-              'C0xxxxxxx',
-              'C0yyyyyyy',
-          ],
-          'denied_values': None
-      }]
-  }]
 
-  p3 = [
-      r['values']['spec'][0]
-      for r in policies
-      if r['index'] == 'compute.restrictLoadBalancerCreationForTypes'
-  ][0]
-  assert p3['inherit_from_parent'] is None
-  assert p3['reset'] is None
-  assert len(p3['rules']) == 3
-  assert p3['rules'][0] == {
-      'allow_all': None,
-      'condition': [],
-      'deny_all': None,
-      'enforce': None,
-      'values': [{
-          'allowed_values': None,
-          'denied_values': ['in:EXTERNAL']
-      }]
-  }
+def test_factory_policy_boolean(plan_runner, tfvars_to_yaml, tmp_path):
+  dest = tmp_path / 'policies.yaml'
+  tfvars_to_yaml('test.orgpolicies-boolean.tfvars', dest, 'org_policies')
+  _, resources = plan_runner(org_policies_data_path=f'"{tmp_path}"')
+  validate_policy_boolean(resources)
 
-  assert p3['rules'][1] == {
-      'allow_all': None,
-      'condition': [{
-          'description': 'test condition',
-          'expression': 'resource.matchTagId("tagKeys/1234", "tagValues/1234")',
-          'location': 'xxx',
-          'title': 'condition'
-      }],
-      'deny_all': None,
-      'enforce': None,
-      'values': [{
-          'allowed_values': ['EXTERNAL_1'],
-          'denied_values': None
-      }]
-  }
 
-  assert p3['rules'][2] == {
-      'allow_all': 'TRUE',
-      'condition': [{
-          'description':
-              'test condition2',
-          'expression':
-              'resource.matchTagId("tagKeys/12345", "tagValues/12345")',
-          'location':
-              'xxx',
-          'title':
-              'condition2'
-      }],
-      'deny_all': None,
-      'enforce': None,
-      'values': []
-  }
+def test_factory_policy_list(plan_runner, tfvars_to_yaml, tmp_path):
+  dest = tmp_path / 'policies.yaml'
+  tfvars_to_yaml('test.orgpolicies-list.tfvars', dest, 'org_policies')
+  _, resources = plan_runner(org_policies_data_path=f'"{tmp_path}"')
+  validate_policy_list(resources)
+
+
+def test_factory_policy_custom_constraints(plan_runner, tfvars_to_yaml, tmp_path):
+  dest = tmp_path / 'constraints.yaml'
+  tfvars_to_yaml('test.orgpolicy-custom-constraints.tfvars', dest, 'org_policy_custom_constraints')
+  _, resources = plan_runner(org_policy_custom_constraints_data_path=f'"{tmp_path}"')
+  validate_policy_custom_constraints(resources)

@@ -29,11 +29,11 @@ Clone this repository, then go through the following steps to create resources:
 
 Note: Org level viewing permission is required for some metrics such as firewall policies.
 
-Once the resources are deployed, go to the following page to see the dashboard: https://console.cloud.google.com/monitoring/dashboards?project=<YOUR-MONITORING-PROJECT>.
+Once the resources are deployed, go to the following page to see the dashboard: https://console.cloud.google.com/monitoring/dashboards?project=<YOUR-MONITORING-PROJECT> (or <YOUR-METRICS-PROJECT> if populated)
 A dashboard called "quotas-utilization" should be created.
 
 The Cloud Function runs every 10 minutes by default so you should start getting some data points after a few minutes.
-You can use the metric explorer to view the data points for the different custom metrics created: https://console.cloud.google.com/monitoring/metrics-explorer?project=<YOUR-MONITORING-PROJECT>.
+You can use the metric explorer to view the data points for the different custom metrics created: https://console.cloud.google.com/monitoring/metrics-explorer?project=<YOUR-MONITORING-PROJECT> (or <YOUR-METRICS-PROJECT> if populated).
 You can change this frequency by modifying the "schedule_cron" variable in variables.tf.
 
 Note that some charts in the dashboard align values over 1h so you might need to wait 1h to see charts on the dashboard views.
@@ -70,7 +70,6 @@ Note that metrics are created in the cloud-function/metrics.yaml file. You can a
 - The CF assumes custom routes importing/exporting is ON, this impacts static and dynamic routes usage calculation
 - The CF assumes all networks in peering groups have the same global routing and custom routes sharing configuration
 
-
 ## Next steps and ideas
 In a future release, we could support:
 - Google managed VPCs that are peered with PSA (such as Cloud SQL or Memorystore)
@@ -88,13 +87,15 @@ If you are interested in this and/or would like to contribute, please contact le
 |---|---|:---:|:---:|:---:|
 | [billing_account](variables.tf#L17) | The ID of the billing account to associate this project with | <code></code> | ✓ |  |
 | [monitored_projects_list](variables.tf#L36) | ID of the projects to be monitored (where limits and quotas data will be pulled) | <code>list&#40;string&#41;</code> | ✓ |  |
-| [organization_id](variables.tf#L47) | The organization id for the associated services | <code></code> | ✓ |  |
-| [prefix](variables.tf#L51) | Customer name to use as prefix for monitoring project | <code></code> | ✓ |  |
+| [organization_id](variables.tf#L54) | The organization id for the associated services | <code></code> | ✓ |  |
+| [prefix](variables.tf#L58) | Customer name to use as prefix for monitoring project | <code></code> | ✓ |  |
 | [cf_version](variables.tf#L21) | Cloud Function version 2nd Gen or 1st Gen. Possible options: 'V1' or 'V2'.Use CFv2 if your Cloud Function timeouts after 9 minutes. By default it is using CFv1. | <code></code> |  | <code>V1</code> |
+| [metrics_project_id](variables.tf#L46) | Optional, populate to write metrics and deploy the dashboard in a separated project | <code></code> |  |  |
 | [monitored_folders_list](variables.tf#L30) | ID of the projects to be monitored (where limits and quotas data will be pulled) | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [monitoring_project_id](variables.tf#L41) | Monitoring project where the dashboard will be created and the solution deployed; a project will be created if set to empty string | <code></code> |  |  |
-| [project_monitoring_services](variables.tf#L55) | Service APIs enabled in the monitoring project if it will be created. | <code></code> |  | <code title="&#91;&#10;  &#34;artifactregistry.googleapis.com&#34;,&#10;  &#34;cloudasset.googleapis.com&#34;,&#10;  &#34;cloudbilling.googleapis.com&#34;,&#10;  &#34;cloudbuild.googleapis.com&#34;,&#10;  &#34;cloudresourcemanager.googleapis.com&#34;,&#10;  &#34;cloudscheduler.googleapis.com&#34;,&#10;  &#34;compute.googleapis.com&#34;,&#10;  &#34;cloudfunctions.googleapis.com&#34;,&#10;  &#34;iam.googleapis.com&#34;,&#10;  &#34;iamcredentials.googleapis.com&#34;,&#10;  &#34;logging.googleapis.com&#34;,&#10;  &#34;monitoring.googleapis.com&#34;,&#10;  &#34;run.googleapis.com&#34;,&#10;  &#34;serviceusage.googleapis.com&#34;&#10;&#93;">&#91;&#8230;&#93;</code> |
-| [region](variables.tf#L75) | Region used to deploy the cloud functions and scheduler | <code></code> |  | <code>europe-west1</code> |
-| [schedule_cron](variables.tf#L80) | Cron format schedule to run the Cloud Function. Default is every 10 minutes. | <code></code> |  | <code>&#42;&#47;10 &#42; &#42; &#42; &#42;</code> |
+| [monitoring_project_id](variables.tf#L41) | Monitoring project where the dashboard will be created and the solution deployed; a project will be created if set to empty string, if metrics_project_id is provided, metrics and dashboard will be deployed there  | <code></code> |  |  |
+| [project_monitoring_services](variables.tf#L63) | Service APIs enabled in the monitoring project if it will be created. | <code></code> |  | <code title="&#91;&#10;  &#34;artifactregistry.googleapis.com&#34;,&#10;  &#34;cloudasset.googleapis.com&#34;,&#10;  &#34;cloudbilling.googleapis.com&#34;,&#10;  &#34;cloudbuild.googleapis.com&#34;,&#10;  &#34;cloudfunctions.googleapis.com&#34;,&#10;  &#34;cloudresourcemanager.googleapis.com&#34;,&#10;  &#34;cloudscheduler.googleapis.com&#34;,&#10;  &#34;compute.googleapis.com&#34;,&#10;  &#34;iam.googleapis.com&#34;,&#10;  &#34;iamcredentials.googleapis.com&#34;,&#10;  &#34;logging.googleapis.com&#34;,&#10;  &#34;monitoring.googleapis.com&#34;,&#10;  &#34;pubsub.googleapis.com&#34;,&#10;  &#34;run.googleapis.com&#34;,&#10;  &#34;servicenetworking.googleapis.com&#34;,&#10;  &#34;serviceusage.googleapis.com&#34;,&#10;  &#34;storage-component.googleapis.com&#34;&#10;&#93;">&#91;&#8230;&#93;</code> |
+| [region](variables.tf#L88) | Region used to deploy the cloud functions and scheduler | <code></code> |  | <code>europe-west1</code> |
+| [schedule_cron](variables.tf#L93) | Cron format schedule to run the Cloud Function. Default is every 10 minutes. | <code></code> |  | <code>&#42;&#47;10 &#42; &#42; &#42; &#42;</code> |
+| [vpc_connector_name](variables.tf#L99) | Serverless VPC connection name for the Cloud Function | <code></code> |  |  |
 
 <!-- END TFDOC -->

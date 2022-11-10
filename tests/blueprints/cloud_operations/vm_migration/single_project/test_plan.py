@@ -14,12 +14,11 @@
 
 import os
 
-
 FIXTURES_DIR = os.path.join(os.path.dirname(__file__), 'fixture')
 
 
 def test_resources(e2e_plan_runner):
-    "Test that plan works and the numbers of resources is as expected."
-    modules, resources = e2e_plan_runner(FIXTURES_DIR)
-    assert len(modules) == 4
-    assert len(resources) == 18
+  "Test that plan works and the numbers of resources is as expected."
+  modules, resources = e2e_plan_runner(FIXTURES_DIR)
+  assert len(modules) == 4
+  assert len(resources) == 20

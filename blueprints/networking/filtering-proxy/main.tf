@@ -74,17 +74,18 @@ module "firewall" {
   source     = "../../../modules/net-vpc-firewall"
   project_id = module.project-host.project_id
   network    = module.vpc.name
-  custom_rules = {
+  ingress_rules = {
     allow-ingress-squid = {
-      description          = "Allow squid ingress traffic"
-      direction            = "INGRESS"
-      action               = "allow"
-      sources              = []
-      ranges               = [var.cidrs.apps, "35.191.0.0/16", "130.211.0.0/22"]
+      description = "Allow squid ingress traffic"
+      source_ranges = [
+        var.cidrs.apps, "35.191.0.0/16", "130.211.0.0/22"
+      ]
       targets              = [module.service-account-squid.email]
       use_service_accounts = true
-      rules                = [{ protocol = "tcp", ports = [3128] }]
-      extra_attributes     = {}
+      rules = [{
+        protocol = "tcp"
+        ports    = [3128]
+      }]
     }
   }
 }
@@ -199,20 +200,20 @@ module "squid-ilb" {
   project_id    = module.project-host.project_id
   region        = var.region
   name          = "squid-ilb"
-  service_label = "squid-ilb"
-  network       = module.vpc.self_link
-  subnetwork    = module.vpc.subnet_self_links["${var.region}/proxy"]
   ports         = [3128]
+  service_label = "squid-ilb"
+  vpc_config = {
+    network    = module.vpc.self_link
+    subnetwork = module.vpc.subnet_self_links["${var.region}/proxy"]
+  }
   backends = [{
-    failover       = false
-    group          = module.squid-mig.0.group_manager.instance_group
-    balancing_mode = "CONNECTION"
+    group = module.squid-mig.0.group_manager.instance_group
   }]
   health_check_config = {
-    type    = "tcp"
-    check   = { port = 3128 }
-    config  = {}
-    logging = true
+    enable_logging = true
+    tcp = {
+      port = 3128
+    }
   }
 }
 

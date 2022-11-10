@@ -17,7 +17,7 @@
 locals {
   health_check = (
     try(var.auto_healing_policies.health_check, null) == null
-    ? try(google_compute_health_check.autohealing.0.self_link, null)
+    ? try(google_compute_health_check.default.0.self_link, null)
     : try(var.auto_healing_policies.health_check, null)
   )
   instance_group_manager = (

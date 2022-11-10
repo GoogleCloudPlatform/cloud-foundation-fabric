@@ -69,11 +69,13 @@ module "vpc" {
 }
 
 module "vpc-firewall" {
-  source            = "../../../modules/net-vpc-firewall"
-  project_id        = var.project_id
-  network           = module.vpc.name
-  admin_ranges      = values(var.ip_ranges)
-  ssh_source_ranges = var.ssh_source_ranges
+  source     = "../../../modules/net-vpc-firewall"
+  project_id = var.project_id
+  network    = module.vpc.name
+  default_rules_config = {
+    admin_ranges = values(var.ip_ranges)
+    ssh_ranges   = var.ssh_source_ranges
+  }
 }
 
 module "vpn1" {

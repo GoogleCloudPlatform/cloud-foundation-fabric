@@ -29,7 +29,7 @@ def test_defaults(plan_runner):
   assert backend['backend'][0]['group'] == 'foo'
   health_check = resources['google_compute_health_check']
   for k, v in health_check.items():
-    if k == 'http_health_check':
+    if k == 'tcp_health_check':
       assert len(v) == 1
       assert v[0]['port_specification'] == 'USE_SERVING_PORT'
     elif k.endswith('_health_check'):
@@ -38,12 +38,14 @@ def test_defaults(plan_runner):
 
 def test_forwarding_rule(plan_runner):
   "Test forwarding rule variables."
-  _, resources = plan_runner(backends=_BACKENDS,
-                             global_access='true',
+  _, resources = plan_runner(backends=_BACKENDS, global_access='true',
                              ports="[80]")
   assert len(resources) == 3
-  values = [r['values'] for r in resources if r['type']
-            == 'google_compute_forwarding_rule'][0]
+  values = [
+      r['values']
+      for r in resources
+      if r['type'] == 'google_compute_forwarding_rule'
+  ][0]
   assert not values['all_ports']
   assert values['ports'] == ['80']
   assert values['allow_global_access']

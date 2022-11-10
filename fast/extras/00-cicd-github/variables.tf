@@ -25,6 +25,12 @@ variable "commmit_config" {
   nullable = false
 }
 
+variable "modules_ref" {
+  description = "Optional git ref used in module sources."
+  type        = string
+  default     = null
+}
+
 variable "organization" {
   description = "GitHub organization."
   type        = string

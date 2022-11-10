@@ -15,149 +15,125 @@
  */
 
 locals {
-  _custom_rules = {
-    for id, rule in var.custom_rules :
-    id => merge(rule, {
-      # make rules a map so we use it in a for_each
-      rules = { for index, ports in rule.rules : index => ports }
-      # lookup any named ranges references
-      ranges = flatten([
-        for range in rule.ranges :
-        try(var.named_ranges[range], range)
+  # define list of rule files
+  _factory_rule_files = [
+    for f in try(fileset(var.factories_config.rules_folder, "**/*.yaml"), []) :
+    "${var.factories_config.rules_folder}/${f}"
+  ]
+  # decode rule files and account for optional attributes
+  _factory_rule_list = flatten([
+    for f in local._factory_rule_files : [
+      for direction, ruleset in yamldecode(file(f)) : [
+        for name, rule in ruleset : {
+          name                 = name
+          deny                 = try(rule.deny, false)
+          rules                = try(rule.rules, [{ protocol = "all" }])
+          description          = try(rule.description, null)
+          destination_ranges   = try(rule.destination_ranges, null)
+          direction            = upper(direction)
+          disabled             = try(rule.disabled, null)
+          enable_logging       = try(rule.enable_logging, null)
+          priority             = try(rule.priority, 1000)
+          source_ranges        = try(rule.source_ranges, null)
+          sources              = try(rule.sources, null)
+          targets              = try(rule.targets, null)
+          use_service_accounts = try(rule.use_service_accounts, false)
+        }
+      ]
+    ]
+  ])
+  _factory_rules = {
+    for r in local._factory_rule_list : r.name => r
+    if contains(["EGRESS", "INGRESS"], r.direction)
+  }
+  _named_ranges = merge(
+    try(yamldecode(file(var.factories_config.cidr_tpl_file)), {}),
+    var.named_ranges
+  )
+  _rules = merge(
+    local._factory_rules, local._rules_egress, local._rules_ingress
+  )
+  _rules_egress = {
+    for name, rule in merge(var.egress_rules) :
+    name => merge(rule, { direction = "EGRESS" })
+  }
+  _rules_ingress = {
+    for name, rule in merge(var.ingress_rules) :
+    name => merge(rule, { direction = "INGRESS" })
+  }
+  # convert rules data to resource format and replace range template variables
+  rules = {
+    for name, rule in local._rules :
+    name => merge(rule, {
+      action = rule.deny == true ? "DENY" : "ALLOW"
+      destination_ranges = flatten([
+        for range in coalesce(try(rule.destination_ranges, null), []) :
+        try(local._named_ranges[range], range)
+      ])
+      rules = { for k, v in rule.rules : k => v }
+      source_ranges = flatten([
+        for range in coalesce(try(rule.source_ranges, null), []) :
+        try(local._named_ranges[range], range)
       ])
     })
   }
-
-  cidrs = try({
-    for name, cidrs in yamldecode(file(var.cidr_template_file)) :
-    name => cidrs
-  }, {})
-
-  _factory_rules_raw = flatten([
-    for file in try(fileset(var.data_folder, "**/*.yaml"), []) : [
-      for key, ruleset in yamldecode(file("${var.data_folder}/${file}")) :
-      merge(ruleset, {
-        name  = "${key}"
-        rules = { for index, ports in ruleset.rules : index => ports }
-        ranges = try(ruleset.ranges, null) == null ? null : flatten(
-          [for cidr in ruleset.ranges :
-            can(regex("^\\$", cidr))
-            ? local.cidrs[trimprefix(cidr, "$")]
-            : [cidr]
-        ])
-        extra_attributes = try(ruleset.extra_attributes, {})
-      })
-    ]
-  ])
-
-  _factory_rules = {
-    for d in local._factory_rules_raw : d["name"] => d
-  }
-
-  custom_rules = merge(local._custom_rules, local._factory_rules)
 }
-
-
-###############################################################################
-#                            rules based on IP ranges
-###############################################################################
-
-resource "google_compute_firewall" "allow-admins" {
-  count         = length(var.admin_ranges) > 0 ? 1 : 0
-  name          = "${var.network}-ingress-admins"
-  description   = "Access from the admin subnet to all subnets"
-  network       = var.network
-  project       = var.project_id
-  source_ranges = var.admin_ranges
-  allow { protocol = "all" }
-}
-
-###############################################################################
-#                              rules based on tags
-###############################################################################
-
-resource "google_compute_firewall" "allow-tag-ssh" {
-  count         = length(var.ssh_source_ranges) > 0 ? 1 : 0
-  name          = "${var.network}-ingress-tag-ssh"
-  description   = "Allow SSH to machines with the 'ssh' tag"
-  network       = var.network
-  project       = var.project_id
-  source_ranges = var.ssh_source_ranges
-  target_tags   = ["ssh"]
-  allow {
-    protocol = "tcp"
-    ports    = ["22"]
-  }
-}
-
-resource "google_compute_firewall" "allow-tag-http" {
-  count         = length(var.http_source_ranges) > 0 ? 1 : 0
-  name          = "${var.network}-ingress-tag-http"
-  description   = "Allow HTTP to machines with the 'http-server' tag"
-  network       = var.network
-  project       = var.project_id
-  source_ranges = var.http_source_ranges
-  target_tags   = ["http-server"]
-  allow {
-    protocol = "tcp"
-    ports    = ["80"]
-  }
-}
-
-resource "google_compute_firewall" "allow-tag-https" {
-  count         = length(var.https_source_ranges) > 0 ? 1 : 0
-  name          = "${var.network}-ingress-tag-https"
-  description   = "Allow HTTPS to machines with the 'https' tag"
-  network       = var.network
-  project       = var.project_id
-  source_ranges = var.https_source_ranges
-  target_tags   = ["https-server"]
-  allow {
-    protocol = "tcp"
-    ports    = ["443"]
-  }
-}
-
-################################################################################
-#                                dynamic rules                                 #
-################################################################################
 
 resource "google_compute_firewall" "custom-rules" {
-  # provider                = "google-beta"
-  for_each    = local.custom_rules
+  for_each    = local.rules
+  project     = var.project_id
+  network     = var.network
   name        = each.key
   description = each.value.description
   direction   = each.value.direction
-  network     = var.network
-  project     = var.project_id
   source_ranges = (
     each.value.direction == "INGRESS"
-    ? coalesce(each.value.ranges, []) == [] ? ["0.0.0.0/0"] : each.value.ranges
-    : null
+    ? (
+      coalesce(each.value.source_ranges, []) == []
+      ? ["0.0.0.0/0"]
+      : each.value.source_ranges
+    ) : null
   )
   destination_ranges = (
     each.value.direction == "EGRESS"
-    ? coalesce(each.value.ranges, []) == [] ? ["0.0.0.0/0"] : each.value.ranges
+    ? (
+      coalesce(each.value.destination_ranges, []) == []
+      ? ["0.0.0.0/0"]
+      : each.value.destination_ranges
+    ) : null
+  )
+  source_tags = (
+    each.value.use_service_accounts || each.value.direction == "EGRESS"
+    ? null
+    : each.value.sources
+  )
+  source_service_accounts = (
+    each.value.use_service_accounts && each.value.direction == "INGRESS"
+    ? each.value.sources
     : null
   )
-  source_tags             = each.value.use_service_accounts || each.value.direction == "EGRESS" ? null : each.value.sources
-  source_service_accounts = each.value.use_service_accounts && each.value.direction == "INGRESS" ? each.value.sources : null
-  target_tags             = each.value.use_service_accounts ? null : each.value.targets
-  target_service_accounts = each.value.use_service_accounts ? each.value.targets : null
-  disabled                = lookup(each.value.extra_attributes, "disabled", false)
-  priority                = lookup(each.value.extra_attributes, "priority", 1000)
+  target_tags = (
+    each.value.use_service_accounts ? null : each.value.targets
+  )
+  target_service_accounts = (
+    each.value.use_service_accounts ? each.value.targets : null
+  )
+  disabled = each.value.disabled == true
+  priority = each.value.priority
 
   dynamic "log_config" {
-    for_each = lookup(each.value.extra_attributes, "logging", null) != null ? [each.value.extra_attributes.logging] : []
-    iterator = logging_config
+    for_each = each.value.enable_logging == null ? [] : [""]
     content {
-      metadata = logging_config.value
+      metadata = (
+        try(each.value.enable_logging.include_metadata, null) == true
+        ? "INCLUDE_ALL_METADATA"
+        : "EXCLUDE_ALL_METADATA"
+      )
     }
   }
 
   dynamic "deny" {
-    for_each = each.value.action == "deny" ? each.value.rules : {}
-
+    for_each = each.value.action == "DENY" ? each.value.rules : {}
     iterator = rule
     content {
       protocol = rule.value.protocol
@@ -166,8 +142,7 @@ resource "google_compute_firewall" "custom-rules" {
   }
 
   dynamic "allow" {
-    for_each = each.value.action == "allow" ? each.value.rules : {}
-
+    for_each = each.value.action == "ALLOW" ? each.value.rules : {}
     iterator = rule
     content {
       protocol = rule.value.protocol

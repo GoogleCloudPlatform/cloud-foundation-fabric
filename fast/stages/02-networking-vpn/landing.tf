@@ -67,15 +67,16 @@ module "landing-vpc" {
 }
 
 module "landing-firewall" {
-  source              = "../../../modules/net-vpc-firewall"
-  project_id          = module.landing-project.project_id
-  network             = module.landing-vpc.name
-  admin_ranges        = []
-  http_source_ranges  = []
-  https_source_ranges = []
-  ssh_source_ranges   = []
-  data_folder         = "${var.data_dir}/firewall-rules/landing"
-  cidr_template_file  = "${var.data_dir}/cidrs.yaml"
+  source     = "../../../modules/net-vpc-firewall"
+  project_id = module.landing-project.project_id
+  network    = module.landing-vpc.name
+  default_rules_config = {
+    disabled = true
+  }
+  factories_config = {
+    cidr_tpl_file = "${var.data_dir}/cidrs.yaml"
+    rules_folder  = "${var.data_dir}/firewall-rules/landing"
+  }
 }
 
 module "landing-nat-ew1" {

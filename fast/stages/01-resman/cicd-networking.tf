@@ -57,10 +57,10 @@ module "branch-network-sa-cicd" {
     ? { 0 = local.cicd_repositories.networking }
     : {}
   )
-  project_id  = var.automation.project_id
-  name        = "prod-resman-net-1"
-  description = "Terraform CI/CD stage 2 networking service account."
-  prefix      = var.prefix
+  project_id   = var.automation.project_id
+  name         = "prod-resman-net-1"
+  display_name = "Terraform CI/CD stage 2 networking service account."
+  prefix       = var.prefix
   iam = (
     each.value.type == "sourcerepo"
     # used directly from the cloud build trigger for source repos

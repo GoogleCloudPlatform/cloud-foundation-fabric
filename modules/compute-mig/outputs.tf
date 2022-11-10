@@ -37,6 +37,6 @@ output "health_check" {
   value = (
     var.health_check_config == null
     ? null
-    : google_compute_health_check.autohealing.0
+    : google_compute_health_check.default.0
   )
 }

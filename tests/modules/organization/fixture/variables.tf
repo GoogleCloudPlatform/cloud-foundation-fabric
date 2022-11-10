@@ -74,6 +74,21 @@ variable "org_policies" {
   default = {}
 }
 
+variable "org_policies_data_path" {
+  type    = any
+  default = null
+}
+
+variable "org_policy_custom_constraints" {
+  type    = any
+  default = {}
+}
+
+variable "org_policy_custom_constraints_data_path" {
+  type    = any
+  default = null
+}
+
 variable "tag_bindings" {
   type    = any
   default = null

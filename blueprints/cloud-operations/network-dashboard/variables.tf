@@ -39,9 +39,16 @@ variable "monitored_projects_list" {
 }
 
 variable "monitoring_project_id" {
-  description = "Monitoring project where the dashboard will be created and the solution deployed; a project will be created if set to empty string"
+  description = "Monitoring project where the dashboard will be created and the solution deployed; a project will be created if set to empty string, if metrics_project_id is provided, metrics and dashboard will be deployed there "
   default     = ""
 }
+
+variable "metrics_project_id" {
+  description = "Optional, populate to write metrics and deploy the dashboard in a separated project"
+  default     = ""
+}
+
+
 
 
 variable "organization_id" {
@@ -88,3 +95,13 @@ variable "schedule_cron" {
   description = "Cron format schedule to run the Cloud Function. Default is every 10 minutes."
   default     = "*/10 * * * *"
 }
+
+
+variable "vpc_connector_name" {
+  description = "Serverless VPC connection name for the Cloud Function"
+  default     = ""
+}
+
+
+
+

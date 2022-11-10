@@ -17,9 +17,61 @@
 # tfdoc:file:description Folder-level organization policies.
 
 locals {
+  _factory_data_raw = (
+    var.org_policies_data_path == null
+    ? tomap({})
+    : merge([
+      for f in fileset(var.org_policies_data_path, "*.yaml") :
+      yamldecode(file("${var.org_policies_data_path}/${f}"))
+    ]...)
+  )
+
+  # simulate applying defaults to data coming from yaml files
+  _factory_data = {
+    for k, v in local._factory_data_raw :
+    k => {
+      inherit_from_parent = try(v.inherit_from_parent, null)
+      reset               = try(v.reset, null)
+      allow = can(v.allow) ? {
+        all    = try(v.allow.all, null)
+        values = try(v.allow.values, null)
+      } : null
+      deny = can(v.deny) ? {
+        all    = try(v.deny.all, null)
+        values = try(v.deny.values, null)
+      } : null
+      enforce = try(v.enforce, true)
+
+      rules = [
+        for r in try(v.rules, []) : {
+          allow = can(r.allow) ? {
+            all    = try(r.allow.all, null)
+            values = try(r.allow.values, null)
+          } : null
+          deny = can(r.deny) ? {
+            all    = try(r.deny.all, null)
+            values = try(r.deny.values, null)
+          } : null
+          enforce = try(r.enforce, true)
+          condition = {
+            description = try(r.condition.description, null)
+            expression  = try(r.condition.expression, null)
+            location    = try(r.condition.location, null)
+            title       = try(r.condition.title, null)
+          }
+        }
+      ]
+    }
+  }
+
+  _org_policies = merge(local._factory_data, var.org_policies)
+
   org_policies = {
-    for k, v in var.org_policies :
+    for k, v in local._org_policies :
     k => merge(v, {
+      name   = "${local.folder.name}/policies/${k}"
+      parent = local.folder.name
+
       is_boolean_policy = v.allow == null && v.deny == null
       has_values = (
         length(coalesce(try(v.allow.values, []), [])) > 0 ||
@@ -40,8 +92,8 @@ locals {
 
 resource "google_org_policy_policy" "default" {
   for_each = local.org_policies
-  name     = "${local.folder.name}/policies/${each.key}"
-  parent   = local.folder.name
+  name     = each.value.name
+  parent   = each.value.parent
 
   spec {
     inherit_from_parent = each.value.inherit_from_parent
