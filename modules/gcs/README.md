@@ -113,7 +113,7 @@ module "bucket-gcs-notification" {
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
 | [name](variables.tf#L89) | Bucket name suffix. | <code>string</code> | ✓ |  |
-| [project_id](variables.tf#L112) | Bucket project id. | <code>string</code> | ✓ |  |
+| [project_id](variables.tf#L117) | Bucket project id. | <code>string</code> | ✓ |  |
 | [cors](variables.tf#L17) | CORS configuration for the bucket. Defaults to null. | <code title="object&#40;&#123;&#10;  origin          &#61; list&#40;string&#41;&#10;  method          &#61; list&#40;string&#41;&#10;  response_header &#61; list&#40;string&#41;&#10;  max_age_seconds &#61; number&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [encryption_key](variables.tf#L28) | KMS key that will be used for encryption. | <code>string</code> |  | <code>null</code> |
 | [force_destroy](variables.tf#L34) | Optional map to set force destroy keyed by name, defaults to false. | <code>bool</code> |  | <code>false</code> |
@@ -123,12 +123,12 @@ module "bucket-gcs-notification" {
 | [location](variables.tf#L74) | Bucket location. | <code>string</code> |  | <code>&#34;EU&#34;</code> |
 | [logging_config](variables.tf#L80) | Bucket logging configuration. | <code title="object&#40;&#123;&#10;  log_bucket        &#61; string&#10;  log_object_prefix &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [notification_config](variables.tf#L94) | GCS Notification configuration. | <code title="object&#40;&#123;&#10;  enabled           &#61; bool&#10;  payload_format    &#61; string&#10;  topic_name        &#61; string&#10;  sa_email          &#61; string&#10;  event_types       &#61; list&#40;string&#41;&#10;  custom_attributes &#61; map&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [prefix](variables.tf#L106) | Prefix used to generate the bucket name. | <code>string</code> |  | <code>null</code> |
-| [retention_policy](variables.tf#L117) | Bucket retention policy. | <code title="object&#40;&#123;&#10;  retention_period &#61; number&#10;  is_locked        &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [storage_class](variables.tf#L126) | Bucket storage class. | <code>string</code> |  | <code>&#34;MULTI_REGIONAL&#34;</code> |
-| [uniform_bucket_level_access](variables.tf#L136) | Allow using object ACLs (false) or not (true, this is the recommended behavior) , defaults to true (which is the recommended practice, but not the behavior of storage API). | <code>bool</code> |  | <code>true</code> |
-| [versioning](variables.tf#L142) | Enable versioning, defaults to false. | <code>bool</code> |  | <code>false</code> |
-| [website](variables.tf#L148) | Bucket website. | <code title="object&#40;&#123;&#10;  main_page_suffix &#61; string&#10;  not_found_page   &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [prefix](variables.tf#L107) | Optional prefix used to generate the bucket name. | <code>string</code> |  | <code>null</code> |
+| [retention_policy](variables.tf#L122) | Bucket retention policy. | <code title="object&#40;&#123;&#10;  retention_period &#61; number&#10;  is_locked        &#61; bool&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [storage_class](variables.tf#L131) | Bucket storage class. | <code>string</code> |  | <code>&#34;MULTI_REGIONAL&#34;</code> |
+| [uniform_bucket_level_access](variables.tf#L141) | Allow using object ACLs (false) or not (true, this is the recommended behavior) , defaults to true (which is the recommended practice, but not the behavior of storage API). | <code>bool</code> |  | <code>true</code> |
+| [versioning](variables.tf#L147) | Enable versioning, defaults to false. | <code>bool</code> |  | <code>false</code> |
+| [website](variables.tf#L153) | Bucket website. | <code title="object&#40;&#123;&#10;  main_page_suffix &#61; string&#10;  not_found_page   &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

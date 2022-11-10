@@ -97,6 +97,10 @@ variable "prefix" {
   description = "Prefix applied to service account names."
   type        = string
   default     = null
+  validation {
+    condition = var.prefix != ""
+    error_message = "Prefix can not be empty, please use null instead."
+  }
 }
 
 variable "project_id" {
