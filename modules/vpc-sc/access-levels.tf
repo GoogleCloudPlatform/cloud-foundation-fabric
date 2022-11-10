@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-# TODO(ludomagno): add a second variable and resource for custom access levels
+# tfdoc:file:description Access level resources.
 
 # this code implements "additive" access levels, if "authoritative"
 # access levels are needed, switch to the
@@ -38,7 +38,7 @@ resource "google_access_context_manager_access_level" "basic" {
         members                = c.value.members
         negate                 = c.value.negate
         regions                = c.value.regions
-        required_access_levels = c.value.required_access_levels == null
+        required_access_levels = coalesce(c.value.required_access_levels, [])
 
         dynamic "device_policy" {
           for_each = c.value.device_policy == null ? [] : [c.value.device_policy]

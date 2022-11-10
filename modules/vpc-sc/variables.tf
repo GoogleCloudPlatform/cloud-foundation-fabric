@@ -18,7 +18,7 @@ variable "access_levels" {
   description = "Map of access levels in name => [conditions] format."
   type = map(object({
     combining_function = optional(string)
-    conditions = list(object({
+    conditions = optional(list(object({
       device_policy = optional(object({
         allowed_device_management_levels = optional(list(string))
         allowed_encryption_statuses      = optional(list(string))
@@ -36,7 +36,7 @@ variable "access_levels" {
       negate                 = optional(bool)
       regions                = optional(list(string), [])
       required_access_levels = optional(list(string), [])
-    }), [])
+    })), [])
     description = optional(string)
   }))
   default  = {}
@@ -76,9 +76,9 @@ variable "egress_policies" {
     })
     to = object({
       operations = optional(list(object({
-        method_selectors = list(string)
+        method_selectors = optional(list(string))
         service_name     = string
-      })))
+      })), [])
       resources              = optional(list(string))
       resource_type_external = optional(bool, false)
     })
@@ -100,17 +100,17 @@ variable "ingress_policies" {
   description = "Ingress policy definitions that can be referenced in perimeters."
   type = map(object({
     from = object({
-      access_levels = optional(list(string))
+      access_levels = optional(list(string), [])
       identity_type = optional(string)
       identities    = optional(list(string))
-      resources     = optional(list(string))
+      resources     = optional(list(string), [])
     })
     to = object({
-      operations = list(object({
-        method_selectors = list(string)
+      operations = optional(list(object({
+        method_selectors = optional(list(string))
         service_name     = string
-      }))
-      resources = list(string)
+      })), [])
+      resources = optional(list(string))
     })
   }))
   default  = {}
@@ -121,7 +121,7 @@ variable "ingress_policies" {
       v.from.identity_type == null || contains([
         "IDENTITY_TYPE_UNSPECIFIED", "ANY_IDENTITY",
         "ANY_USER", "ANY_SERVICE_ACCOUNT"
-      ], v.from.identity_type)
+      ], coalesce(v.from.identity_type, "-"))
     ])
     error_message = "Invalid `from.identity_type` value in eress policy."
   }
@@ -130,9 +130,9 @@ variable "ingress_policies" {
 variable "service_perimeters_bridge" {
   description = "Bridge service perimeters."
   type = map(object({
-    spec_resources            = list(string)
-    status_resources          = list(string)
-    use_explicit_dry_run_spec = bool
+    spec_resources            = optional(list(string))
+    status_resources          = optional(list(string))
+    use_explicit_dry_run_spec = optional(bool, false)
   }))
   default = {}
 }
@@ -140,7 +140,7 @@ variable "service_perimeters_bridge" {
 variable "service_perimeters_regular" {
   description = "Regular service perimeters."
   type = map(object({
-    spec = object({
+    spec = optional(object({
       access_levels       = optional(list(string))
       resources           = optional(list(string))
       restricted_services = optional(list(string))
@@ -150,8 +150,8 @@ variable "service_perimeters_regular" {
         allowed_services   = list(string)
         enable_restriction = bool
       }))
-    })
-    status = object({
+    }), {})
+    status = optional(object({
       access_levels       = optional(list(string))
       resources           = optional(list(string))
       restricted_services = optional(list(string))
@@ -161,7 +161,7 @@ variable "service_perimeters_regular" {
         allowed_services   = list(string)
         enable_restriction = bool
       }))
-    })
+    }), {})
     use_explicit_dry_run_spec = optional(bool, false)
   }))
   default  = {}
