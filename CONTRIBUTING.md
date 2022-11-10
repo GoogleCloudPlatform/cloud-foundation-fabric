@@ -531,6 +531,27 @@ locals {
 }
 ```
 
+#### The `prefix` variable
+
+If you would like to use a "prefix" variable for resource names, please keep its definition consistent across all code:
+```hcl
+# variables.tf
+variable "prefix" {
+  description = "Optional prefix used for resource names."
+  type        = string
+  default     = null
+  validation {
+    condition = var.prefix != ""
+    error_message = "Prefix can not be empty, please use null instead."
+  }
+}
+
+# main.tf
+locals {
+  prefix = var.prefix == null ? "" : "${var.prefix}-"
+}
+```
+
 ### Interacting with checks, tests and tools
 
 Our modules are designed for composition and live in a monorepo together with several end-to-end blueprints, so it was inevitable that over time we found ways of ensuring that a change does not break consumers.
