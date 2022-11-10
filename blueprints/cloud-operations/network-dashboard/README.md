@@ -26,7 +26,8 @@ Clone this repository, then go through the following steps to create resources:
   # Folders to be monitored by the solution
   prefix = "<YOUR-PREFIX>" 
   # Monitoring project name prefix, monitoring project name is <YOUR-PREFIX>-network-dashboard, ignored if monitoring_project_id variable is provided
-  v2 = true|false # Set to true to use V2 Cloud Functions environment
+  cf_version = V1|V2
+  # Set to V2 to use V2 Cloud Functions environment
     ```
 - `terraform init`
 - `terraform apply`
