@@ -43,23 +43,13 @@ variable "monitoring_project_id" {
   default     = ""
 }
 
-variable "metrics_project_id" {
-  description = "Optional, populate to write metrics and deploy the dashboard in a separated project"
-  default     = ""
-}
-
-
-
-
 variable "organization_id" {
   description = "The organization id for the associated services"
 }
 
 variable "prefix" {
   description = "Customer name to use as prefix for monitoring project"
-  default     = "mon"
 }
-
 
 variable "project_monitoring_services" {
   description = "Service APIs enabled in the monitoring project if it will be created."
@@ -83,9 +73,6 @@ variable "project_monitoring_services" {
     "storage-component.googleapis.com"
   ]
 }
-
-
-
 variable "region" {
   description = "Region used to deploy the cloud functions and scheduler"
   default     = "europe-west1"
@@ -95,13 +82,3 @@ variable "schedule_cron" {
   description = "Cron format schedule to run the Cloud Function. Default is every 10 minutes."
   default     = "*/10 * * * *"
 }
-
-
-variable "vpc_connector_name" {
-  description = "Serverless VPC connection name for the Cloud Function"
-  default     = ""
-}
-
-
-
-
