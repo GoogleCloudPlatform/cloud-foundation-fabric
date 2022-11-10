@@ -18,13 +18,11 @@ Clone this repository, then go through the following steps to create resources:
   ```tfvars
   - organization_id = "<YOUR-ORG-ID>"
   - billing_account = "<YOUR-BILLING-ACCOUNT>"
-  - monitoring_project_id = "<YOUR-MONITORING-PROJECT>" # Monitoring project where the dashboard will be created and the solution deployed, a project named "<YOUR-PREFIX>-network-dahshboard" will be created if left blank
-  - metrics_project_id = "<YOUR-METRICS-PROJECT>" # Optional, overrides monitoring_project_id for metrics writing and dashboard deployment
+  - monitoring_project_id = "<YOUR-MONITORING-PROJECT>" # Monitoring project where the dashboard will be created and the solution deployed, a project named "mon-network-dahshboard" will be created if left blank
   - monitored_projects_list = ["project-1", "project2"] # Projects to be monitored by the solution
   - monitored_folders_list = ["folder_id"] # Folders to be monitored by the solution
   - prefix = "<YOUR-PREFIX>" # Monitoring project name prefix, monitoring project name is <YOUR-PREFIX>-network-dashboard, ignored if monitoring_project_id variable is provided
   - v2 = true|false # Set to true to use V2 Cloud Functions environment
-  - vpc_connector_name = "<YOUR-VPC-CONNECTOR-NAME>" # when using vpc service controls, it is mandatory to use VPC Connectors, refer to [VPC-SC compliant Cloud Functions deployment documentation](https://cloud.google.com/functions/docs/securing/using-vpc-service-controls#deploy-compliant-functions) for a full reference of requirements. 
     ```
 - `terraform init`
 - `terraform apply`
@@ -71,8 +69,6 @@ Note that metrics are created in the cloud-function/metrics.yaml file. You can a
 - The CF assumes global routing is ON, this impacts dynamic routes usage calculation
 - The CF assumes custom routes importing/exporting is ON, this impacts static and dynamic routes usage calculation
 - The CF assumes all networks in peering groups have the same global routing and custom routes sharing configuration
-- When using VPC-SC, it is assumed that <YOUR-VPC-CONNECTOR-NAME> exists before the CF deployment starts
-- If provided, <YOUR-METRICS-PROJECT> is assumed to exist before the CF deployment starts
 
 ## Next steps and ideas
 In a future release, we could support:

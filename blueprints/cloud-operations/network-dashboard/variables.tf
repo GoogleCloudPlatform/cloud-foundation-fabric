@@ -57,6 +57,7 @@ variable "organization_id" {
 
 variable "prefix" {
   description = "Customer name to use as prefix for monitoring project"
+  default     = "mon"
 }
 
 
