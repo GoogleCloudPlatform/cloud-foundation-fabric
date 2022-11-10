@@ -92,7 +92,10 @@ resource "google_access_context_manager_service_perimeter" "regular" {
               dynamic "sources" {
                 for_each = toset(policy.value.from.access_levels)
                 content {
-                  access_level = sources.key
+                  access_level = try(
+                    google_access_context_manager_access_level.basic[k].id, k
+                  )
+
                 }
               }
               dynamic "sources" {

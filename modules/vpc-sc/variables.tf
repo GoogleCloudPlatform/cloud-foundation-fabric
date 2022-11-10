@@ -54,7 +54,7 @@ variable "access_levels" {
 }
 
 variable "access_policy" {
-  description = "Access Policy name, leave null to use auto-created one."
+  description = "Access Policy name, set to null if creating one."
   type        = string
 }
 
