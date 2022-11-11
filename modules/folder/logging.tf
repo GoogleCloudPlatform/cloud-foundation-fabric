@@ -22,19 +22,27 @@ locals {
     type => {
       for name, sink in var.logging_sinks :
       name => sink
-      if sink.type == type
+      if sink.destination.type == type
     }
   }
 }
 
 resource "google_logging_folder_sink" "sink" {
-  for_each = var.logging_sinks
-  name     = each.key
-  #description = "${each.key} (Terraform-managed)."
+  for_each         = var.logging_sinks
+  name             = each.key
+  description      = coalesce(each.value.description, "${each.key} (Terraform-managed).")
   folder           = local.folder.name
-  destination      = "${each.value.type}.googleapis.com/${each.value.destination}"
+  destination      = "${each.value.destination.type}.googleapis.com/${each.value.destination.target}"
   filter           = each.value.filter
   include_children = each.value.include_children
+  disabled         = each.value.disabled
+
+  dynamic "bigquery_options" {
+    for_each = each.value.bigquery_use_partitioned_table != null ? [""] : []
+    content {
+      use_partitioned_tables = each.value.bigquery_use_partitioned_table
+    }
+  }
 
   dynamic "exclusions" {
     for_each = each.value.exclusions
@@ -52,34 +60,38 @@ resource "google_logging_folder_sink" "sink" {
 
 resource "google_storage_bucket_iam_member" "gcs-sinks-binding" {
   for_each = local.sink_bindings["storage"]
-  bucket   = each.value.destination
+  bucket   = each.value.destination.target
   role     = "roles/storage.objectCreator"
   member   = google_logging_folder_sink.sink[each.key].writer_identity
 }
 
 resource "google_bigquery_dataset_iam_member" "bq-sinks-binding" {
   for_each   = local.sink_bindings["bigquery"]
-  project    = split("/", each.value.destination)[1]
-  dataset_id = split("/", each.value.destination)[3]
+  project    = split("/", each.value.destination.target)[1]
+  dataset_id = split("/", each.value.destination.target)[3]
   role       = "roles/bigquery.dataEditor"
   member     = google_logging_folder_sink.sink[each.key].writer_identity
 }
 
 resource "google_pubsub_topic_iam_member" "pubsub-sinks-binding" {
   for_each = local.sink_bindings["pubsub"]
-  project  = split("/", each.value.destination)[1]
-  topic    = split("/", each.value.destination)[3]
+  project  = split("/", each.value.destination.target)[1]
+  topic    = split("/", each.value.destination.target)[3]
   role     = "roles/pubsub.publisher"
   member   = google_logging_folder_sink.sink[each.key].writer_identity
 }
 
 resource "google_project_iam_member" "bucket-sinks-binding" {
   for_each = local.sink_bindings["logging"]
-  project  = split("/", each.value.destination)[1]
+  project  = split("/", each.value.destination.target)[1]
   role     = "roles/logging.bucketWriter"
   member   = google_logging_folder_sink.sink[each.key].writer_identity
-  # TODO(jccb): use a condition to limit writer-identity only to this
-  # bucket
+
+  condition {
+    title       = "${each.key} bucket writer"
+    description = "Grants bucketWriter to ${google_logging_folder_sink.sink[each.key].writer_identity} used by log sink ${each.key} on ${local.folder.id}"
+    expression  = "resource.name.endsWith('${each.value.destination.target}')"
+  }
 }
 
 resource "google_logging_folder_exclusion" "logging-exclusion" {

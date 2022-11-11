@@ -14,24 +14,21 @@
  * limitations under the License.
  */
 
-output "bucket" {
-  description = "Bucket resource."
-  value       = google_storage_bucket.bucket
-}
-
-# We add `id` as an alias to `name` to simplify log sink handling.
-# Since all other log destinations (pubsub, logging-bucket, bigquery)
-# have an id output, it is convenient to have in this module too to
-# handle all log destination as homogeneous objects (i.e. you can
-# assume any valid log destination has an `id` output).
-
-output "id" {
-  description = "Bucket ID (same as name)."
-  value       = "${local.prefix}${lower(var.name)}"
+output "as_logging_destination" {
+  description = "Parameters to use this bucket as a log sink destination."
+  value = {
+    type   = "storage"
+    target = "${local.prefix}${lower(var.name)}"
+  }
   depends_on = [
     google_storage_bucket.bucket,
     google_storage_bucket_iam_binding.bindings
   ]
+}
+
+output "bucket" {
+  description = "Bucket resource."
+  value       = google_storage_bucket.bucket
 }
 
 output "name" {

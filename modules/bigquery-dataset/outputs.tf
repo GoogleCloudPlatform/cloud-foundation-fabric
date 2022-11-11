@@ -14,6 +14,21 @@
  * limitations under the License.
  */
 
+output "as_logging_destination" {
+  description = "Parameters to use this dataset as a log sink destination."
+  value = {
+    type   = "bigquery"
+    target = google_bigquery_dataset.default.id
+  }
+  depends_on = [
+    google_bigquery_dataset_access.domain,
+    google_bigquery_dataset_access.group_by_email,
+    google_bigquery_dataset_access.special_group,
+    google_bigquery_dataset_access.user_by_email,
+    google_bigquery_dataset_access.views
+  ]
+}
+
 output "dataset" {
   description = "Dataset resource."
   value       = google_bigquery_dataset.default

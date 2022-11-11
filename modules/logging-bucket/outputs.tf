@@ -14,6 +14,19 @@
  * limitations under the License.
  */
 
+output "as_logging_destination" {
+  description = "Parameters to use this bucket as a log sink destination."
+  value = {
+    type = "logging"
+    target = try(
+      google_logging_project_bucket_config.bucket.0.id,
+      google_logging_folder_bucket_config.bucket.0.id,
+      google_logging_organization_bucket_config.bucket.0.id,
+      google_logging_billing_account_bucket_config.bucket.0.id,
+    )
+  }
+}
+
 output "id" {
   description = "ID of the created bucket."
   value = try(

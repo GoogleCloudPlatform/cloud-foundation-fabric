@@ -166,37 +166,27 @@ module "bucket" {
   id          = "bucket"
 }
 
+
 module "folder-sink" {
   source = "./fabric/modules/folder"
   parent = "folders/657104291943"
   name   = "my-folder"
   logging_sinks = {
     warnings = {
-      type             = "storage"
-      destination      = module.gcs.id
-      filter           = "severity=WARNING"
-      include_children = true
-      exclusions       = {}
+      destination = module.gcs.as_logging_destination
+      filter      = "severity=WARNING"
     }
     info = {
-      type             = "bigquery"
-      destination      = module.dataset.id
-      filter           = "severity=INFO"
-      include_children = true
-      exclusions       = {}
+      destination = module.dataset.as_logging_destination
+      filter      = "severity=INFO"
     }
     notice = {
-      type             = "pubsub"
-      destination      = module.pubsub.id
-      filter           = "severity=NOTICE"
-      include_children = true
-      exclusions       = {}
+      destination = module.pubsub.as_logging_destination
+      filter      = "severity=NOTICE"
     }
     debug = {
-      type             = "logging"
-      destination      = module.bucket.id
-      filter           = "severity=DEBUG"
-      include_children = true
+      destination = module.bucket.as_logging_destination
+      filter      = "severity=DEBUG"
       exclusions = {
         no-compute = "logName:compute"
       }
@@ -312,12 +302,12 @@ module "folder" {
 | [iam_additive_members](variables.tf#L85) | IAM additive bindings in {MEMBERS => [ROLE]} format. This might break if members are dynamic values. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [id](variables.tf#L92) | Folder ID in case you use folder_create=false. | <code>string</code> |  | <code>null</code> |
 | [logging_exclusions](variables.tf#L98) | Logging exclusions for this folder in the form {NAME -> FILTER}. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [logging_sinks](variables.tf#L105) | Logging sinks to create for this folder. | <code title="map&#40;object&#40;&#123;&#10;  destination      &#61; string&#10;  type             &#61; string&#10;  filter           &#61; string&#10;  include_children &#61; bool&#10;  exclusions &#61; map&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [name](variables.tf#L126) | Folder name. | <code>string</code> |  | <code>null</code> |
-| [org_policies](variables.tf#L132) | Organization policies applied to this folder keyed by policy name. | <code title="map&#40;object&#40;&#123;&#10;  inherit_from_parent &#61; optional&#40;bool&#41; &#35; for list policies only.&#10;  reset               &#61; optional&#40;bool&#41;&#10;  allow &#61; optional&#40;object&#40;&#123;&#10;    all    &#61; optional&#40;bool&#41;&#10;    values &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  deny &#61; optional&#40;object&#40;&#123;&#10;    all    &#61; optional&#40;bool&#41;&#10;    values &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  enforce &#61; optional&#40;bool, true&#41; &#35; for boolean policies only.&#10;  rules &#61; optional&#40;list&#40;object&#40;&#123;&#10;    allow &#61; optional&#40;object&#40;&#123;&#10;      all    &#61; optional&#40;bool&#41;&#10;      values &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    deny &#61; optional&#40;object&#40;&#123;&#10;      all    &#61; optional&#40;bool&#41;&#10;      values &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    enforce &#61; optional&#40;bool, true&#41; &#35; for boolean policies only.&#10;    condition &#61; object&#40;&#123;&#10;      description &#61; optional&#40;string&#41;&#10;      expression  &#61; optional&#40;string&#41;&#10;      location    &#61; optional&#40;string&#41;&#10;      title       &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#10;  &#125;&#41;&#41;, &#91;&#93;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [org_policies_data_path](variables.tf#L172) | Path containing org policies in YAML format. | <code>string</code> |  | <code>null</code> |
-| [parent](variables.tf#L178) | Parent in folders/folder_id or organizations/org_id format. | <code>string</code> |  | <code>null</code> |
-| [tag_bindings](variables.tf#L188) | Tag bindings for this folder, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
+| [logging_sinks](variables.tf#L105) | Logging sinks to create for this folder. | <code title="map&#40;object&#40;&#123;&#10;  bigquery_use_partitioned_table &#61; optional&#40;bool&#41;&#10;  description                    &#61; optional&#40;string&#41;&#10;  destination &#61; object&#40;&#123;&#10;    type   &#61; string&#10;    target &#61; string&#10;  &#125;&#41;&#10;  disabled         &#61; optional&#40;bool, false&#41;&#10;  exclusions       &#61; optional&#40;map&#40;string&#41;, &#123;&#125;&#41;&#10;  filter           &#61; string&#10;  include_children &#61; optional&#40;bool, true&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [name](variables.tf#L137) | Folder name. | <code>string</code> |  | <code>null</code> |
+| [org_policies](variables.tf#L143) | Organization policies applied to this folder keyed by policy name. | <code title="map&#40;object&#40;&#123;&#10;  inherit_from_parent &#61; optional&#40;bool&#41; &#35; for list policies only.&#10;  reset               &#61; optional&#40;bool&#41;&#10;  allow &#61; optional&#40;object&#40;&#123;&#10;    all    &#61; optional&#40;bool&#41;&#10;    values &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  deny &#61; optional&#40;object&#40;&#123;&#10;    all    &#61; optional&#40;bool&#41;&#10;    values &#61; optional&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;&#10;  enforce &#61; optional&#40;bool, true&#41; &#35; for boolean policies only.&#10;  rules &#61; optional&#40;list&#40;object&#40;&#123;&#10;    allow &#61; optional&#40;object&#40;&#123;&#10;      all    &#61; optional&#40;bool&#41;&#10;      values &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    deny &#61; optional&#40;object&#40;&#123;&#10;      all    &#61; optional&#40;bool&#41;&#10;      values &#61; optional&#40;list&#40;string&#41;&#41;&#10;    &#125;&#41;&#41;&#10;    enforce &#61; optional&#40;bool, true&#41; &#35; for boolean policies only.&#10;    condition &#61; object&#40;&#123;&#10;      description &#61; optional&#40;string&#41;&#10;      expression  &#61; optional&#40;string&#41;&#10;      location    &#61; optional&#40;string&#41;&#10;      title       &#61; optional&#40;string&#41;&#10;    &#125;&#41;&#10;  &#125;&#41;&#41;, &#91;&#93;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
+| [org_policies_data_path](variables.tf#L183) | Path containing org policies in YAML format. | <code>string</code> |  | <code>null</code> |
+| [parent](variables.tf#L189) | Parent in folders/folder_id or organizations/org_id format. | <code>string</code> |  | <code>null</code> |
+| [tag_bindings](variables.tf#L199) | Tag bindings for this folder, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

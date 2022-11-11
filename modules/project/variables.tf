@@ -102,23 +102,34 @@ variable "logging_exclusions" {
 variable "logging_sinks" {
   description = "Logging sinks to create for this project."
   type = map(object({
-    destination   = string
-    type          = string
+    bigquery_use_partitioned_table = optional(bool)
+    description                    = optional(string)
+    destination = object({
+      type   = string
+      target = string
+    })
+    disabled      = optional(bool, false)
+    exclusions    = optional(map(string), {})
     filter        = string
-    iam           = bool
-    unique_writer = bool
-    # TODO exclusions also support description and disabled
-    exclusions = map(string)
+    iam           = optional(bool, true)
+    unique_writer = optional(bool)
   }))
-  validation {
-    condition = alltrue([
-      for k, v in(var.logging_sinks == null ? {} : var.logging_sinks) :
-      contains(["bigquery", "logging", "pubsub", "storage"], v.type)
-    ])
-    error_message = "Type must be one of 'bigquery', 'logging', 'pubsub', 'storage'."
-  }
   default  = {}
   nullable = false
+  validation {
+    condition = alltrue([
+      for k, v in var.logging_sinks :
+      contains(["bigquery", "logging", "pubsub", "storage"], v.destination.type)
+    ])
+    error_message = "Destination type must be one of 'bigquery', 'logging', 'pubsub', 'storage'."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.logging_sinks :
+      v.bigquery_use_partitioned_table != true || v.destination.type == "bigquery"
+    ])
+    error_message = "Can only set bigquery_use_partitioned_table when destination type is `bigquery`."
+  }
 }
 
 variable "metric_scopes" {
