@@ -14,13 +14,40 @@
  * limitations under the License.
  */
 
-module "test" {
-  source                     = "../../../../modules/vpc-sc"
-  access_policy              = var.access_policy
-  access_policy_create       = var.access_policy_create
-  access_levels              = var.access_levels
-  egress_policies            = var.egress_policies
-  ingress_policies           = var.ingress_policies
-  service_perimeters_bridge  = var.service_perimeters_bridge
-  service_perimeters_regular = var.service_perimeters_regular
+variable "access_levels" {
+  type     = any
+  default  = {}
+  nullable = false
+}
+
+variable "access_policy" {
+  type = string
+}
+
+variable "access_policy_create" {
+  type    = any
+  default = null
+}
+
+variable "egress_policies" {
+  type     = any
+  default  = {}
+  nullable = false
+}
+
+variable "ingress_policies" {
+  type     = any
+  default  = {}
+  nullable = false
+}
+
+variable "service_perimeters_bridge" {
+  type    = any
+  default = {}
+}
+
+variable "service_perimeters_regular" {
+  type     = any
+  default  = {}
+  nullable = false
 }

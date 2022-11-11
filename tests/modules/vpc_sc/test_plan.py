@@ -12,13 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import collections
+
+
 def test_create_policy(plan_runner):
   "Test with auto-created policy."
-  _, resources = plan_runner()
-  counts = {}
-  for r in resources:
-    n = f'{r["type"]}.{r["name"]}'
-    counts[n] = counts.get(n, 0) + 1
+  access_policy_create = '''{
+    parent = "organizations/123456"
+    title  = "vpcsc-policy"
+  }'''
+  _, resources = plan_runner(tf_var_file='test.regular.tfvars',
+                             access_policy='null',
+                             access_policy_create=access_policy_create)
+  counts = collections.Counter(f'{r["type"]}.{r["name"]}' for r in resources)
   assert counts == {
       'google_access_context_manager_access_level.basic': 2,
       'google_access_context_manager_access_policy.default': 1,
@@ -29,12 +35,9 @@ def test_create_policy(plan_runner):
 
 def test_use_policy(plan_runner):
   "Test with existing policy."
-  _, resources = plan_runner(access_policy_create="null",
+  _, resources = plan_runner(tf_var_file='test.regular.tfvars',
                              access_policy="accessPolicies/foobar")
-  counts = {}
-  for r in resources:
-    n = f'{r["type"]}.{r["name"]}'
-    counts[n] = counts.get(n, 0) + 1
+  counts = collections.Counter(f'{r["type"]}.{r["name"]}' for r in resources)
   assert counts == {
       'google_access_context_manager_access_level.basic': 2,
       'google_access_context_manager_service_perimeter.bridge': 2,

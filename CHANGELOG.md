@@ -5,6 +5,7 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 <!-- None < 2022-09-09 18:02:15+00:00 -->
+- [[#913](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/913)] Adding support for PSA ranges, starting with Redis instances. ([aurelienlegrand](https://github.com/aurelienlegrand)) <!-- 2022-11-09 11:07:41+00:00 -->
 - [[#939](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/939)] Temporarily duplicate cloud armor example ([ludoo](https://github.com/ludoo)) <!-- 2022-11-02 09:36:04+00:00 -->
 
 ### BLUEPRINTS
@@ -63,6 +64,7 @@ All notable changes to this project will be documented in this file.
 
 ### FAST
 
+- [[#963](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/963)] **incompatible change:** Refactor vps-sc module for Terraform 1.3 ([ludoo](https://github.com/ludoo)) <!-- 2022-11-10 18:34:45+00:00 -->
 - [[#956](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/956)] FAST: bootstrap and extra stage CI/CD improvements and fixes ([ludoo](https://github.com/ludoo)) <!-- 2022-11-08 08:38:16+00:00 -->
 - [[#949](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/949)] **incompatible change:** Refactor VPC firewall module for Terraform 1.3 ([ludoo](https://github.com/ludoo)) <!-- 2022-11-04 12:56:08+00:00 -->
 - [[#943](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/943)] Update bootstrap README.md with unique project id requirements ([KPRepos](https://github.com/KPRepos)) <!-- 2022-11-03 22:22:22+00:00 -->
@@ -92,6 +94,7 @@ All notable changes to this project will be documented in this file.
 
 ### MODULES
 
+- [[#963](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/963)] **incompatible change:** Refactor vps-sc module for Terraform 1.3 ([ludoo](https://github.com/ludoo)) <!-- 2022-11-10 18:34:45+00:00 -->
 - [[#958](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/958)] Add support for org policy custom constraints ([averbuks](https://github.com/averbuks)) <!-- 2022-11-09 09:07:46+00:00 -->
 - [[#960](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/960)] Fix README typo in firewall module ([valeriobponza](https://github.com/valeriobponza)) <!-- 2022-11-08 23:25:34+00:00 -->
 - [[#953](https://github.com/GoogleCloudPlatform/cloud-foundation-fabric/pull/953)] Added IAM Additive and converted some outputs to static ([muresan](https://github.com/muresan)) <!-- 2022-11-07 13:20:17+00:00 -->

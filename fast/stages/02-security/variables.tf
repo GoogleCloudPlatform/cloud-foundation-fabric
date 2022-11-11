@@ -118,92 +118,95 @@ variable "prefix" {
 variable "vpc_sc_access_levels" {
   description = "VPC SC access level definitions."
   type = map(object({
-    combining_function = string
-    conditions = list(object({
-      ip_subnetworks         = list(string)
-      members                = list(string)
-      negate                 = bool
-      regions                = list(string)
-      required_access_levels = list(string)
-    }))
+    combining_function = optional(string)
+    conditions = optional(list(object({
+      device_policy = optional(object({
+        allowed_device_management_levels = optional(list(string))
+        allowed_encryption_statuses      = optional(list(string))
+        require_admin_approval           = bool
+        require_corp_owned               = bool
+        require_screen_lock              = optional(bool)
+        os_constraints = optional(list(object({
+          os_type                    = string
+          minimum_version            = optional(string)
+          require_verified_chrome_os = optional(bool)
+        })))
+      }))
+      ip_subnetworks         = optional(list(string), [])
+      members                = optional(list(string), [])
+      negate                 = optional(bool)
+      regions                = optional(list(string), [])
+      required_access_levels = optional(list(string), [])
+    })), [])
+    description = optional(string)
   }))
-  default = {}
+  default  = {}
+  nullable = false
 }
 
 variable "vpc_sc_egress_policies" {
   description = "VPC SC egress policy defnitions."
   type = map(object({
-    egress_from = object({
-      identity_type = string
-      identities    = list(string)
+    from = object({
+      identity_type = optional(string, "ANY_IDENTITY")
+      identities    = optional(list(string))
     })
-    egress_to = object({
-      operations = list(object({
-        method_selectors = list(string)
+    to = object({
+      operations = optional(list(object({
+        method_selectors = optional(list(string))
         service_name     = string
-      }))
-      resources = list(string)
+      })), [])
+      resources              = optional(list(string))
+      resource_type_external = optional(bool, false)
     })
   }))
-  default = {}
+  default  = {}
+  nullable = false
 }
 
 variable "vpc_sc_ingress_policies" {
   description = "VPC SC ingress policy defnitions."
   type = map(object({
-    ingress_from = object({
-      identity_type        = string
-      identities           = list(string)
-      source_access_levels = list(string)
-      source_resources     = list(string)
+    from = object({
+      access_levels = optional(list(string), [])
+      identity_type = optional(string)
+      identities    = optional(list(string))
+      resources     = optional(list(string), [])
     })
-    ingress_to = object({
-      operations = list(object({
-        method_selectors = list(string)
+    to = object({
+      operations = optional(list(object({
+        method_selectors = optional(list(string))
         service_name     = string
-      }))
-      resources = list(string)
+      })), [])
+      resources = optional(list(string))
     })
   }))
-  default = {}
+  default  = {}
+  nullable = false
 }
 
-variable "vpc_sc_perimeter_access_levels" {
-  description = "VPC SC perimeter access_levels."
+variable "vpc_sc_perimeters" {
+  description = "VPC SC regular perimeter definitions."
   type = object({
-    dev     = list(string)
-    landing = list(string)
-    prod    = list(string)
+    dev = optional(object({
+      access_levels    = optional(list(string), [])
+      egress_policies  = optional(list(string), [])
+      ingress_policies = optional(list(string), [])
+      resources        = optional(list(string), [])
+    }), {})
+    landing = optional(object({
+      access_levels    = optional(list(string), [])
+      egress_policies  = optional(list(string), [])
+      ingress_policies = optional(list(string), [])
+      resources        = optional(list(string), [])
+    }), {})
+    prod = optional(object({
+      access_levels    = optional(list(string), [])
+      egress_policies  = optional(list(string), [])
+      ingress_policies = optional(list(string), [])
+      resources        = optional(list(string), [])
+    }), {})
   })
-  default = null
-}
-
-variable "vpc_sc_perimeter_egress_policies" {
-  description = "VPC SC egress policies per perimeter, values reference keys defined in the `vpc_sc_ingress_policies` variable."
-  type = object({
-    dev     = list(string)
-    landing = list(string)
-    prod    = list(string)
-  })
-  default = null
-}
-
-variable "vpc_sc_perimeter_ingress_policies" {
-  description = "VPC SC ingress policies per perimeter, values reference keys defined in the `vpc_sc_ingress_policies` variable."
-  type = object({
-    dev     = list(string)
-    landing = list(string)
-    prod    = list(string)
-  })
-  default = null
-}
-
-variable "vpc_sc_perimeter_projects" {
-  description = "VPC SC perimeter resources."
-  type = object({
-    dev     = list(string)
-    landing = list(string)
-    prod    = list(string)
-  })
-  default = null
+  default  = {}
+  nullable = false
 }
