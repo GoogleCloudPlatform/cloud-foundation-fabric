@@ -132,7 +132,7 @@ jobs:
 
             </details>
 
-            #### Terraform Plan \`$${{ steps.tf-plan.outcome }}\`
+            ### Terraform Plan \`$${{ steps.tf-plan.outcome }}\`
 
             <details><summary>Show Plan</summary>
 
@@ -142,7 +142,7 @@ jobs:
 
             </details>
 
-            #### Terraform Apply \`$${{ steps.tf-apply.outcome }}\`
+            ### Terraform Apply \`$${{ steps.tf-apply.outcome }}\`
 
             *Pusher: @$${{ github.actor }}, Action: \`$${{ github.event_name }}\`, Working Directory: \`$${{ env.tf_actions_working_dir }}\`, Workflow: \`$${{ github.workflow }}\`*`;
 
