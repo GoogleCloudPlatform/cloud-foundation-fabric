@@ -105,9 +105,13 @@ variable "network" {
 }
 
 variable "prefix" {
-  description = "Prefix used to generate instance names."
+  description = "Optional prefix used to generate instance names."
   type        = string
   default     = null
+  validation {
+    condition     = var.prefix != ""
+    error_message = "Prefix cannot be empty, please use null instead."
+  }
 }
 
 variable "project_id" {
