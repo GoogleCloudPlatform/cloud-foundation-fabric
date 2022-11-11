@@ -81,7 +81,7 @@ jobs:
 
       - id: tf-setup
         name: Set up Terraform
-        uses: hashicorp/setup-terraform@v1
+        uses: hashicorp/setup-terraform@v2.0.3
         with:
           terraform_version: $${{ env.TF_VERSION }}
 
@@ -99,14 +99,18 @@ jobs:
         name: Terraform plan
         continue-on-error: true
         run: |
-          terraform plan -input=false -out ../plan.out -no-color
+          echo -e "## Plan Output\n\n\`\`\`hcl" >> $$GITHUB_STEP_SUMMARY
+          terraform plan -input=false -out ../plan.out -no-color |tee -a $$GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $$GITHUB_STEP_SUMMARY
 
       - id: tf-apply
         if: github.event.pull_request.merged == true
         name: Terraform apply
         continue-on-error: true
         run: |
-          terraform apply -input=false -auto-approve -no-color ../plan.out
+          echo -e "## Apply Output\n\n\`\`\`hcl" >> $$GITHUB_STEP_SUMMARY
+          terraform apply -input=false -auto-approve -no-color ../plan.out |tee -a $$GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $$GITHUB_STEP_SUMMARY
 
       - id: pr-comment
         name: Post comment to Pull Request
@@ -116,8 +120,10 @@ jobs:
           PLAN: terraform\n$${{ steps.tf-plan.outputs.stdout }}
         with:
           script: |
-            const output = `#### Terraform Initialization ⚙️\`$${{ steps.tf-init.outcome }}\`
-            #### Terraform Validation 🤖\`$${{ steps.tf-validate.outcome }}\`
+            const output = `### Terraform Initialization \`$${{ steps.tf-init.outcome }}\`
+
+            ### Terraform Validation \`$${{ steps.tf-validate.outcome }}\`
+
             <details><summary>Validation Output</summary>
 
             \`\`\`\n
@@ -126,17 +132,17 @@ jobs:
 
             </details>
 
-            #### Terraform Plan 📖\`$${{ steps.tf-plan.outcome }}\`
+            ### Terraform Plan \`$${{ steps.tf-plan.outcome }}\`
 
             <details><summary>Show Plan</summary>
 
             \`\`\`\n
-            $${process.env.PLAN}
+            $${process.env.PLAN.split('\n').filter(l => l.match(/^([A-Z\s].*|)$$/)).join('\n')}
             \`\`\`
 
             </details>
 
-            #### Terraform Apply 📖\`$${{ steps.tf-apply.outcome }}\`
+            ### Terraform Apply \`$${{ steps.tf-apply.outcome }}\`
 
             *Pusher: @$${{ github.actor }}, Action: \`$${{ github.event_name }}\`, Working Directory: \`$${{ env.tf_actions_working_dir }}\`, Workflow: \`$${{ github.workflow }}\`*`;
 
