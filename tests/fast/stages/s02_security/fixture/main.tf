@@ -49,68 +49,59 @@ module "stage" {
     project-factory-dev  = "foobar@iam.gserviceaccount.com"
     project-factory-prod = "foobar@iam.gserviceaccount.com"
   }
+  vpc_sc_access_levels = {
+    onprem = {
+      conditions = [{
+        ip_subnetworks = ["101.101.101.0/24"]
+      }]
+    }
+  }
+  vpc_sc_egress_policies = {
+    iac-gcs = {
+      from = {
+        identities = [
+          "serviceAccount:xxx-prod-resman-security-0@xxx-prod-iac-core-0.iam.gserviceaccount.com"
+        ]
+      }
+      to = {
+        operations = [{
+          method_selectors = ["*"]
+          service_name     = "storage.googleapis.com"
+        }]
+        resources = ["projects/123456782"]
+      }
+    }
+  }
   vpc_sc_ingress_policies = {
     iac = {
-      ingress_from = {
+      from = {
         identities = [
-          "serviceAccount:fast-prod-resman-security-0@fast-prod-iac-core-0.iam.gserviceaccount.com"
-        ],
-        source_access_levels = ["*"], identity_type = null, source_resources = null
+          "serviceAccount:xxx-prod-resman-security-0@xxx-prod-iac-core-0.iam.gserviceaccount.com"
+        ]
+        access_levels = ["*"]
       }
-      ingress_to = {
+      to = {
         operations = [{ method_selectors = [], service_name = "*" }]
         resources  = ["*"]
       }
     }
   }
-  vpc_sc_perimeter_ingress_policies = {
-    dev     = ["iac"]
-    landing = null
-    prod    = ["iac"]
-  }
-  vpc_sc_perimeter_projects = {
-    dev = [
-      "projects/345678912", # ludo-dev-sec-core-0
-    ]
-    landing = []
-    prod = [
-      "projects/234567891", # ludo-prod-sec-core-0
-    ]
-  }
-
-  vpc_sc_access_levels = {
-    all = {
-      combining_function = null
-      conditions = [{
-        members = [
-          "serviceAccount:quota-monitor@foobar.iam.gserviceaccount.com",
-        ],
-        ip_subnetworks         = null, negate = null, regions = null,
-        required_access_levels = null
-      }]
+  vpc_sc_perimeters = {
+    dev = {
+      egress_policies  = ["iac-gcs"]
+      ingress_policies = ["iac"]
+      resources        = ["projects/1111111111"]
     }
-  }
-
-  vpc_sc_perimeter_access_levels = {
-    dev     = ["all"]
-    landing = null
-    prod    = ["all"]
-  }
-
-  vpc_sc_egress_policies = {
-    iac-gcs = {
-      egress_from = {
-        identity_type = null
-        identities = [
-          "serviceAccount:fast-prod-resman-security-0@fast-prod-iac-core-0.iam.gserviceaccount.com"
-        ]
-      }
-      egress_to = {
-        operations = [{
-          method_selectors = ["*"], service_name = "storage.googleapis.com"
-        }]
-        resources = ["projects/123456789"]
-      }
+    dev = {
+      egress_policies  = ["iac-gcs"]
+      ingress_policies = ["iac"]
+      resources        = ["projects/0000000000"]
+    }
+    dev = {
+      access_levels    = ["onprem"]
+      egress_policies  = ["iac-gcs"]
+      ingress_policies = ["iac"]
+      resources        = ["projects/2222222222"]
     }
   }
 }
