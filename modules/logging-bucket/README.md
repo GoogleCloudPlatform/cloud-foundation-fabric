@@ -56,6 +56,7 @@ module "bucket-default" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [id](outputs.tf#L17) | ID of the created bucket. |  |
+| [as_logging_destination](outputs.tf#L17) | Parameters to use this bucket as a log sink destination. |  |
+| [id](outputs.tf#L30) | ID of the created bucket. |  |
 
 <!-- END TFDOC -->

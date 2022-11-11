@@ -14,8 +14,6 @@
 
 from collections import Counter
 
-from icecream import ic
-
 
 def test_sinks(plan_runner):
   "Test folder-level sinks."

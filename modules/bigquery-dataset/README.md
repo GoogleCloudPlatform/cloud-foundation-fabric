@@ -196,13 +196,14 @@ module "bigquery-dataset" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [dataset](outputs.tf#L17) | Dataset resource. |  |
-| [dataset_id](outputs.tf#L22) | Dataset id. |  |
-| [id](outputs.tf#L34) | Fully qualified dataset id. |  |
-| [self_link](outputs.tf#L46) | Dataset self link. |  |
-| [table_ids](outputs.tf#L58) | Map of fully qualified table ids keyed by table ids. |  |
-| [tables](outputs.tf#L63) | Table resources. |  |
-| [view_ids](outputs.tf#L68) | Map of fully qualified view ids keyed by view ids. |  |
-| [views](outputs.tf#L73) | View resources. |  |
+| [as_logging_destination](outputs.tf#L17) | Parameters to use this dataset as a log sink destination. |  |
+| [dataset](outputs.tf#L32) | Dataset resource. |  |
+| [dataset_id](outputs.tf#L37) | Dataset id. |  |
+| [id](outputs.tf#L49) | Fully qualified dataset id. |  |
+| [self_link](outputs.tf#L61) | Dataset self link. |  |
+| [table_ids](outputs.tf#L73) | Map of fully qualified table ids keyed by table ids. |  |
+| [tables](outputs.tf#L78) | Table resources. |  |
+| [view_ids](outputs.tf#L83) | Map of fully qualified view ids keyed by view ids. |  |
+| [views](outputs.tf#L88) | View resources. |  |
 
 <!-- END TFDOC -->

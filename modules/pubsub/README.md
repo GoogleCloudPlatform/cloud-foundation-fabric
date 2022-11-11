@@ -111,9 +111,10 @@ module "pubsub" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [id](outputs.tf#L17) | Topic id. |  |
-| [subscription_id](outputs.tf#L25) | Subscription ids. |  |
-| [subscriptions](outputs.tf#L35) | Subscription resources. |  |
-| [topic](outputs.tf#L43) | Topic resource. |  |
+| [as_logging_destination](outputs.tf#L17) | Parameters to use this topic as a log sink destination. |  |
+| [id](outputs.tf#L28) | Topic id. |  |
+| [subscription_id](outputs.tf#L36) | Subscription ids. |  |
+| [subscriptions](outputs.tf#L46) | Subscription resources. |  |
+| [topic](outputs.tf#L54) | Topic resource. |  |
 
 <!-- END TFDOC -->

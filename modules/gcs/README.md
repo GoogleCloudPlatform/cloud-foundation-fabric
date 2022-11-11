@@ -134,11 +134,11 @@ module "bucket-gcs-notification" {
 
 | name | description | sensitive |
 |---|---|:---:|
-| [bucket](outputs.tf#L17) | Bucket resource. |  |
-| [id](outputs.tf#L28) | Bucket ID (same as name). |  |
-| [name](outputs.tf#L37) | Bucket name. |  |
-| [notification](outputs.tf#L46) | GCS Notification self link. |  |
-| [topic](outputs.tf#L51) | Topic ID used by GCS. |  |
-| [url](outputs.tf#L56) | Bucket URL. |  |
+| [as_logging_destination](outputs.tf#L17) | Parameters to use this bucket as a log sink destination. |  |
+| [bucket](outputs.tf#L29) | Bucket resource. |  |
+| [name](outputs.tf#L34) | Bucket name. |  |
+| [notification](outputs.tf#L43) | GCS Notification self link. |  |
+| [topic](outputs.tf#L48) | Topic ID used by GCS. |  |
+| [url](outputs.tf#L53) | Bucket URL. |  |
 
 <!-- END TFDOC -->
