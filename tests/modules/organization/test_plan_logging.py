@@ -17,49 +17,8 @@ from collections import Counter
 
 def test_sinks(plan_runner):
   "Test folder-level sinks."
-  logging_sinks = """ {
-    warning = {
-      type                 = "storage"
-      destination          = "mybucket"
-      filter               = "severity=WARNING"
-      iam                  = true
-      include_children     = true
-      bq_partitioned_table = null
-      exclusions           = {}
-    }
-    info = {
-      type                 = "bigquery"
-      destination          = "projects/myproject/datasets/mydataset"
-      filter               = "severity=INFO"
-      iam                  = true
-      include_children     = true
-      bq_partitioned_table = false
-      exclusions           = {}
-   }
-    notice = {
-      type                 = "pubsub"
-      destination          = "projects/myproject/topics/mytopic"
-      filter               = "severity=NOTICE"
-      iam                  = true
-      include_children     = false
-      bq_partitioned_table = null
-      exclusions           = {}
-    }
-    debug = {
-      type                 = "logging"
-      destination          = "projects/myproject/locations/global/buckets/mybucket"
-      filter               = "severity=DEBUG"
-      iam                  = true
-      include_children     = false
-      bq_partitioned_table = null
-      exclusions           = {
-        no-compute   = "logName:compute"
-        no-container = "logName:container"
-      }
-    }
-  }
-  """
-  _, resources = plan_runner(logging_sinks=logging_sinks)
+  tfvars = 'test.logging-sinks.tfvars'
+  _, resources = plan_runner(tf_var_file=tfvars)
   assert len(resources) == 8
 
   resource_types = Counter([r["type"] for r in resources])
@@ -71,23 +30,21 @@ def test_sinks(plan_runner):
       "google_storage_bucket_iam_member": 1,
   }
 
-  sinks = [r for r in resources if r["type"]
-           == "google_logging_organization_sink"]
+  sinks = [
+      r for r in resources if r["type"] == "google_logging_organization_sink"
+  ]
   assert sorted([r["index"] for r in sinks]) == [
       "debug",
       "info",
       "notice",
       "warning",
   ]
-  values = [
-      (
-          r["index"],
-          r["values"]["filter"],
-          r["values"]["destination"],
-          r["values"]["include_children"],
-      )
-      for r in sinks
-  ]
+  values = [(
+      r["index"],
+      r["values"]["filter"],
+      r["values"]["destination"],
+      r["values"]["include_children"],
+  ) for r in sinks]
   assert sorted(values) == [
       (
           "debug",
@@ -114,9 +71,11 @@ def test_sinks(plan_runner):
   values = [(r["index"], r["type"], r["values"]["role"]) for r in bindings]
   assert sorted(values) == [
       ("debug", "google_project_iam_member", "roles/logging.bucketWriter"),
-      ("info", "google_bigquery_dataset_iam_member", "roles/bigquery.dataEditor"),
+      ("info", "google_bigquery_dataset_iam_member",
+       "roles/bigquery.dataEditor"),
       ("notice", "google_pubsub_topic_iam_member", "roles/pubsub.publisher"),
-      ("warning", "google_storage_bucket_iam_member", "roles/storage.objectCreator"),
+      ("warning", "google_storage_bucket_iam_member",
+       "roles/storage.objectCreator"),
   ]
 
   exclusions = [(r["index"], r["values"]["exclusions"]) for r in sinks]
@@ -146,16 +105,15 @@ def test_sinks(plan_runner):
 
 def test_exclusions(plan_runner):
   "Test folder-level logging exclusions."
-  logging_exclusions = (
-      "{"
-      'exclusion1 = "resource.type=gce_instance", '
-      'exclusion2 = "severity=NOTICE", '
-      "}"
-  )
+  logging_exclusions = ("{"
+                        'exclusion1 = "resource.type=gce_instance", '
+                        'exclusion2 = "severity=NOTICE", '
+                        "}")
   _, resources = plan_runner(logging_exclusions=logging_exclusions)
   assert len(resources) == 2
   exclusions = [
-      r for r in resources if r["type"] == "google_logging_organization_exclusion"
+      r for r in resources
+      if r["type"] == "google_logging_organization_exclusion"
   ]
   assert sorted([r["index"] for r in exclusions]) == [
       "exclusion1",
