@@ -195,11 +195,9 @@ module "function-hello" {
   bundle_config = {
     source_dir  = "${path.module}/assets"
     output_path = "bundle.zip"
-    excludes    = null
   }
   bucket_config = {
-    location             = var.region
-    lifecycle_delete_age = null
+    location = var.region
   }
   iam = {
     "roles/cloudfunctions.invoker" = ["allUsers"]

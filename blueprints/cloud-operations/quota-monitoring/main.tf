@@ -52,13 +52,11 @@ module "cf" {
   name        = var.name
   bucket_name = "${var.name}-${random_pet.random.id}"
   bucket_config = {
-    location             = var.region
-    lifecycle_delete_age = null
+    location = var.region
   }
   bundle_config = {
     source_dir  = "cf"
     output_path = var.bundle_path
-    excludes    = null
   }
   # https://github.com/hashicorp/terraform-provider-archive/issues/40
   # https://issuetracker.google.com/issues/155215191
@@ -68,9 +66,10 @@ module "cf" {
   }
   service_account_create = true
   trigger_config = {
-    event    = "google.pubsub.topic.publish"
-    resource = module.pubsub.topic.id
-    retry    = null
+    v1 = {
+      event    = "google.pubsub.topic.publish"
+      resource = module.pubsub.topic.id
+    }
   }
 }
 

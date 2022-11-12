@@ -50,23 +50,25 @@ Other trigger types other than HTTP are configured via the `trigger_config` vari
 
 ```hcl
 module "cf-http" {
-  source        = "./fabric/modules/cloud-function"
-  project_id    = "my-project"
-  name          = "test-cf-http"
-  bucket_name   = "test-cf-bundles"
+  source      = "./fabric/modules/cloud-function"
+  project_id  = "my-project"
+  name        = "test-cf-http"
+  bucket_name = "test-cf-bundles"
   bundle_config = {
     source_dir  = "fabric/assets/"
     output_path = "bundle.zip"
   }
   trigger_config = {
-    event = "google.pubsub.topic.publish"
-    resource = "local.my-topic"
+    v1 = {
+      event    = "google.pubsub.topic.publish"
+      resource = "local.my-topic"
+    }
   }
 }
 # tftest modules=1 resources=2
 ```
 
-Cloud Functions 2nd gen support only [Eventarc](https://cloud.google.com/eventarc/docs) and user separate structure
+Cloud Functions 2nd gen support only [Eventarc](https://cloud.google.com/eventarc/docs) and uses separate structure
 to configure:
 ```hcl
 module "trigger-service-account" {
@@ -81,19 +83,21 @@ module "trigger-service-account" {
 }
 
 module "cf-http" {
-  source        = "./fabric/modules/cloud-function"
-  project_id    = "my-project"
-  v2            = true
-  name          = "test-cf-http"
-  bucket_name   = "test-cf-bundles"
+  source      = "./fabric/modules/cloud-function"
+  project_id  = "my-project"
+  v2          = true
+  name        = "test-cf-http"
+  bucket_name = "test-cf-bundles"
   bundle_config = {
     source_dir  = "fabric/assets/"
     output_path = "bundle.zip"
   }
-  trigger_config_v2 = {
-    event_type            = "google.cloud.pubsub.topic.v1.messagePublished"
-    pubsub_topic          = "local.my-topic"
-    service_account_email = module.trigger-service-account.email
+  trigger_config = {
+    v2 = {
+      event_type            = "google.cloud.pubsub.topic.v1.messagePublished"
+      pubsub_topic          = "local.my-topic"
+      service_account_email = module.trigger-service-account.email
+    }
   }
 }
 # tftest modules=2 resources=4
@@ -230,20 +234,19 @@ module "cf-http" {
 | [build_worker_pool](variables.tf#L31) | Build worker pool, in projects/<PROJECT-ID>/locations/<REGION>/workerPools/<POOL_NAME> format | <code>string</code> |  | <code>null</code> |
 | [description](variables.tf#L46) | Optional description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
 | [environment_variables](variables.tf#L52) | Cloud function environment variables. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [function_config](variables.tf#L58) | Cloud function configuration. Defaults to using main as entrypoint, 1 instance with 256MiB of memory, and 180 second timeout | <code title="object&#40;&#123;&#10;  entry_point &#61; optional&#40;string, &#34;main&#34;&#41;&#10;  instances   &#61; optional&#40;number, 1&#41;&#10;  memory      &#61; optional&#40;number, 256&#41; &#35; Memory in MB&#10;  runtime     &#61; optional&#40;string, &#34;python37&#34;&#41;&#10;  timeout     &#61; optional&#40;number, 180&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  entry_point &#61; &#34;main&#34;&#10;  instances   &#61; 1&#10;  memory      &#61; 256&#10;  runtime     &#61; &#34;python37&#34;&#10;  timeout     &#61; 180&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [function_config](variables.tf#L58) | Cloud function configuration. Defaults to using main as entrypoint, 1 instance with 256MiB of memory, and 180 second timeout | <code title="object&#40;&#123;&#10;  entry_point &#61; optional&#40;string, &#34;main&#34;&#41;&#10;  instances   &#61; optional&#40;number, 1&#41;&#10;  memory      &#61; optional&#40;number, 256&#41; &#35; Memory in MB&#10;  runtime     &#61; optional&#40;string, &#34;python310&#34;&#41;&#10;  timeout     &#61; optional&#40;number, 180&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  entry_point &#61; &#34;main&#34;&#10;  instances   &#61; 1&#10;  memory      &#61; 256&#10;  runtime     &#61; &#34;python37&#34;&#10;  timeout     &#61; 180&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [iam](variables.tf#L76) | IAM bindings for topic in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [ingress_settings](variables.tf#L82) | Control traffic that reaches the cloud function. Allowed values are ALLOW_ALL, ALLOW_INTERNAL_AND_GCLB and ALLOW_INTERNAL_ONLY . | <code>string</code> |  | <code>null</code> |
 | [labels](variables.tf#L88) | Resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
 | [prefix](variables.tf#L99) | Optional prefix used for resource names. | <code>string</code> |  | <code>null</code> |
 | [region](variables.tf#L114) | Region used for all resources. | <code>string</code> |  | <code>&#34;europe-west1&#34;</code> |
 | [secrets](variables.tf#L120) | Secret Manager secrets. Key is the variable name or mountpoint, volume versions are in version:path format. | <code title="map&#40;object&#40;&#123;&#10;  is_volume  &#61; bool&#10;  project_id &#61; number&#10;  secret     &#61; string&#10;  versions   &#61; list&#40;string&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
-| [service_account](variables.tf#L132) | Service account email.service_account Unused if service account is auto-created. | <code>string</code> |  | <code>null</code> |
+| [service_account](variables.tf#L132) | Service account email. Unused if service account is auto-created. | <code>string</code> |  | <code>null</code> |
 | [service_account_create](variables.tf#L138) | Auto-create service account. | <code>bool</code> |  | <code>false</code> |
-| [trigger_config](variables.tf#L144) | Function trigger configuration. Leave null for HTTP trigger. | <code title="object&#40;&#123;&#10;  event    &#61; string&#10;  resource &#61; string&#10;  retry    &#61; optional&#40;bool&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [trigger_config_v2](variables.tf#L154) | Function trigger configuration. Leave null for HTTP trigger. | <code title="object&#40;&#123;&#10;  region       &#61; optional&#40;string&#41;&#10;  event_type   &#61; optional&#40;string&#41;&#10;  pubsub_topic &#61; optional&#40;string&#41;&#10;  event_filters &#61; optional&#40;list&#40;object&#40;&#123;&#10;    attribute &#61; string&#10;    value     &#61; string&#10;    operator  &#61; string&#10;  &#125;&#41;&#41;, &#91;&#93;&#41;&#10;  service_account_email &#61; optional&#40;string&#41;&#10;  retry_policy          &#61; optional&#40;string&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [v2](variables.tf#L190) | Whether to use Cloud Function version 2nd Gen or 1st Gen. | <code>bool</code> |  | <code>false</code> |
-| [vpc_connector](variables.tf#L171) | VPC connector configuration. Set create to 'true' if a new connector needs to be created. | <code title="object&#40;&#123;&#10;  create          &#61; bool&#10;  name            &#61; string&#10;  egress_settings &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
-| [vpc_connector_config](variables.tf#L181) | VPC connector network configuration. Must be provided if new VPC connector is being created. | <code title="object&#40;&#123;&#10;  ip_cidr_range &#61; string&#10;  network       &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [trigger_config](variables.tf#L144) | Function trigger configuration. Leave null for HTTP trigger. | <code title="object&#40;&#123;&#10;  v1 &#61; optional&#40;object&#40;&#123;&#10;    event    &#61; string&#10;    resource &#61; string&#10;    retry    &#61; optional&#40;bool&#41;&#10;  &#125;&#41;&#41;,&#10;  v2 &#61; optional&#40;object&#40;&#123;&#10;    region       &#61; optional&#40;string&#41;&#10;    event_type   &#61; optional&#40;string&#41;&#10;    pubsub_topic &#61; optional&#40;string&#41;&#10;    event_filters &#61; optional&#40;list&#40;object&#40;&#123;&#10;      attribute &#61; string&#10;      value     &#61; string&#10;      operator  &#61; string&#10;    &#125;&#41;&#41;&#41;&#10;    service_account_email &#61; optional&#40;string&#41;&#10;    retry_policy          &#61; optional&#40;string&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [v2](variables.tf#L191) | Whether to use Cloud Function version 2nd Gen or 1st Gen. | <code>bool</code> |  | <code>false</code> |
+| [vpc_connector](variables.tf#L172) | VPC connector configuration. Set create to 'true' if a new connector needs to be created. | <code title="object&#40;&#123;&#10;  create          &#61; bool&#10;  name            &#61; string&#10;  egress_settings &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [vpc_connector_config](variables.tf#L182) | VPC connector network configuration. Must be provided if new VPC connector is being created. | <code title="object&#40;&#123;&#10;  ip_cidr_range &#61; string&#10;  network       &#61; string&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

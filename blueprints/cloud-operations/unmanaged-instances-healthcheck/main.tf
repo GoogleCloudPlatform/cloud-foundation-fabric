@@ -114,13 +114,11 @@ module "cf-restarter" {
   region      = var.region
   bucket_name = "cf-bundle-bucket-${random_pet.random.id}"
   bucket_config = {
-    location             = var.region
-    lifecycle_delete_age = null
+    location = var.region
   }
   bundle_config = {
     source_dir  = "${path.module}/function/restarter"
     output_path = "restarter.zip"
-    excludes    = []
   }
   service_account = module.service-account-restarter.email
 
@@ -134,9 +132,10 @@ module "cf-restarter" {
   }
 
   trigger_config = {
-    event    = "google.pubsub.topic.publish"
-    resource = module.pubsub.topic.id
-    retry    = null
+    v1 = {
+      event    = "google.pubsub.topic.publish"
+      resource = module.pubsub.topic.id
+    }
   }
 
 }
@@ -151,7 +150,6 @@ module "cf-healthchecker" {
   bundle_config = {
     source_dir  = "${path.module}/function/healthchecker"
     output_path = "healthchecker.zip"
-    excludes    = []
   }
   service_account = module.service-account-healthchecker.email
 

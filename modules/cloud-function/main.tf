@@ -75,7 +75,7 @@ resource "google_cloudfunctions_function" "function" {
   source_archive_bucket = local.bucket
   source_archive_object = google_storage_bucket_object.bundle.name
   labels                = var.labels
-  trigger_http          = var.trigger_config == null ? true : null
+  trigger_http          = try(var.trigger_config.v1 == null, true) ? true : null
   ingress_settings      = var.ingress_settings
   build_worker_pool     = var.build_worker_pool
 
@@ -85,14 +85,14 @@ resource "google_cloudfunctions_function" "function" {
   )
 
   dynamic "event_trigger" {
-    for_each = var.trigger_config == null ? [] : [""]
+    for_each = try(var.trigger_config.v1 == null, true) ? [] : [""]
     content {
-      event_type = var.trigger_config.event
-      resource   = var.trigger_config.resource
+      event_type = var.trigger_config.v1.event
+      resource   = var.trigger_config.v1.resource
       dynamic "failure_policy" {
-        for_each = var.trigger_config.retry == null ? [] : [""]
+        for_each = var.trigger_config.v1.retry == null ? [] : [""]
         content {
-          retry = var.trigger_config.retry
+          retry = var.trigger_config.v1.retry
         }
       }
     }
@@ -148,13 +148,13 @@ resource "google_cloudfunctions2_function" "function" {
     }
   }
   dynamic "event_trigger" {
-    for_each = var.trigger_config_v2 == null ? [] : [""]
+    for_each = try(var.trigger_config.v2 == null, true) ? [] : [""]
     content {
-      trigger_region = var.trigger_config_v2.region
-      event_type     = var.trigger_config_v2.event_type
-      pubsub_topic   = var.trigger_config_v2.pubsub_topic
+      trigger_region = var.trigger_config.v2.region
+      event_type     = var.trigger_config.v2.event_type
+      pubsub_topic   = var.trigger_config.v2.pubsub_topic
       dynamic "event_filters" {
-        for_each = var.trigger_config_v2.event_filters
+        for_each = var.trigger_config.v2.event_filters == null ? [] : var.trigger_config.v2.event_filters
         iterator = event_filter
         content {
           attribute = event_filter.attribute
@@ -162,8 +162,8 @@ resource "google_cloudfunctions2_function" "function" {
           operator  = event_filter.operator
         }
       }
-      service_account_email = var.trigger_config_v2.service_account_email
-      retry_policy          = var.trigger_config_v2.retry_policy
+      service_account_email = var.trigger_config.v2.service_account_email
+      retry_policy          = var.trigger_config.v2.retry_policy
     }
   }
   service_config {

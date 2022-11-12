@@ -61,7 +61,7 @@ variable "function_config" {
     entry_point = optional(string, "main")
     instances   = optional(number, 1)
     memory      = optional(number, 256) # Memory in MB
-    runtime     = optional(string, "python37")
+    runtime     = optional(string, "python310")
     timeout     = optional(number, 180)
   })
   default = {
@@ -130,7 +130,7 @@ variable "secrets" {
 }
 
 variable "service_account" {
-  description = "Service account email.service_account Unused if service account is auto-created."
+  description = "Service account email. Unused if service account is auto-created."
   type        = string
   default     = null
 }
@@ -144,28 +144,29 @@ variable "service_account_create" {
 variable "trigger_config" {
   description = "Function trigger configuration. Leave null for HTTP trigger."
   type = object({
-    event    = string
-    resource = string
-    retry    = optional(bool)
+    v1 = optional(object({
+      event    = string
+      resource = string
+      retry    = optional(bool)
+    })),
+    v2 = optional(object({
+      region       = optional(string)
+      event_type   = optional(string)
+      pubsub_topic = optional(string)
+      event_filters = optional(list(object({
+        attribute = string
+        value     = string
+        operator  = string
+      })))
+      service_account_email = optional(string)
+      retry_policy          = optional(string)
+    }))
   })
   default = null
-}
-
-variable "trigger_config_v2" {
-  description = "Function trigger configuration. Leave null for HTTP trigger."
-  type = object({
-    region       = optional(string)
-    event_type   = optional(string)
-    pubsub_topic = optional(string)
-    event_filters = optional(list(object({
-      attribute = string
-      value     = string
-      operator  = string
-    })), [])
-    service_account_email = optional(string)
-    retry_policy          = optional(string)
-  })
-  default = null
+  validation {
+    condition     = try(((var.trigger_config.v1 == null) != (var.trigger_config.v2 == null)), var.trigger_config == null)
+    error_message = "Provide configuration for only one generation - either v1 or v2"
+  }
 }
 
 variable "vpc_connector" {
