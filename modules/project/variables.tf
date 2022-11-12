@@ -104,31 +104,29 @@ variable "logging_sinks" {
   type = map(object({
     bq_partitioned_table = optional(bool)
     description          = optional(string)
-    destination = object({
-      type   = string
-      target = string
-    })
-    disabled      = optional(bool, false)
-    exclusions    = optional(map(string), {})
-    filter        = string
-    iam           = optional(bool, true)
-    unique_writer = optional(bool)
+    destination          = string
+    disabled             = optional(bool, false)
+    exclusions           = optional(map(string), {})
+    filter               = string
+    iam                  = optional(bool, true)
+    type                 = string
+    unique_writer        = optional(bool)
   }))
   default  = {}
   nullable = false
   validation {
     condition = alltrue([
       for k, v in var.logging_sinks :
-      contains(["bigquery", "logging", "pubsub", "storage"], v.destination.type)
+      contains(["bigquery", "logging", "pubsub", "storage"], v.type)
     ])
-    error_message = "Destination type must be one of 'bigquery', 'logging', 'pubsub', 'storage'."
+    error_message = "Type must be one of 'bigquery', 'logging', 'pubsub', 'storage'."
   }
   validation {
     condition = alltrue([
       for k, v in var.logging_sinks :
-      v.bq_partitioned_table != true || v.destination.type == "bigquery"
+      v.bq_partitioned_table != true || v.type == "bigquery"
     ])
-    error_message = "Can only set bq_partitioned_table when destination type is `bigquery`."
+    error_message = "Can only set bq_partitioned_table when type is `bigquery`."
   }
 }
 

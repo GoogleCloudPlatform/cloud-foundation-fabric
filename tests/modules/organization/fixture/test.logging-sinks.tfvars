@@ -1,32 +1,24 @@
 logging_sinks = {
   warning = {
-    destination = {
-      type   = "storage"
-      target = "mybucket"
-    }
-    filter = "severity=WARNING"
+    destination = "mybucket"
+    type        = "storage"
+    filter      = "severity=WARNING"
   }
   info = {
-    destination = {
-      type   = "bigquery"
-      target = "projects/myproject/datasets/mydataset"
-    }
-    filter   = "severity=INFO"
-    disabled = true
+    destination = "projects/myproject/datasets/mydataset"
+    type        = "bigquery"
+    filter      = "severity=INFO"
+    disabled    = true
   }
   notice = {
-    destination = {
-      type   = "pubsub"
-      target = "projects/myproject/topics/mytopic"
-    }
+    destination      = "projects/myproject/topics/mytopic"
+    type             = "pubsub"
     filter           = "severity=NOTICE"
     include_children = false
   }
   debug = {
-    destination = {
-      type   = "logging"
-      target = "projects/myproject/locations/global/buckets/mybucket"
-    }
+    destination      = "projects/myproject/locations/global/buckets/mybucket"
+    type             = "logging"
     filter           = "severity=DEBUG"
     include_children = false
     exclusions = {
