@@ -71,6 +71,11 @@ pytest tests/examples
 
 Once everything looks good, add/commit any pending changes then push and open a PR on GitHub. We typically enforce a set of design and style conventions, so please make sure you have familiarized yourself with the following sections and implemented them in your code, to avoid lengthy review cycles.
 
+HINT: if you work on high-latency or low-bandwidth network use `TF_PLUGIN_CACHE_DIR` environment variable to dramatically speed up the tests, for example
+```bash
+TF_PLUGIN_CACHE_DIR=/tmp/tfcache pytest tests
+```
+
 ## Developer's handbook
 
 Over the years we have assembled a specific set of design principles and style conventions that allow for better readability and make understanding and changing code more predictable.
