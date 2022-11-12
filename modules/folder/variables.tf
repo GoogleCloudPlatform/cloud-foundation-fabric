@@ -105,7 +105,7 @@ variable "logging_exclusions" {
 variable "logging_sinks" {
   description = "Logging sinks to create for this folder."
   type = map(object({
-    bigquery_use_partitioned_table = optional(bool)
+    bq_partitioned_table = optional(bool)
     description                    = optional(string)
     destination = object({
       type   = string
@@ -128,9 +128,9 @@ variable "logging_sinks" {
   validation {
     condition = alltrue([
       for k, v in var.logging_sinks :
-      v.bigquery_use_partitioned_table != true || v.destination.type == "bigquery"
+      v. != true || v.destination.type == "bigquery"
     ])
-    error_message = "Can only set bigquery_use_partitioned_table when destination type is `bigquery`."
+    error_message = "Can only set  when destination type is `bigquery`."
   }
 }
 

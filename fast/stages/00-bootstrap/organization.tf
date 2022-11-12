@@ -192,9 +192,9 @@ module "organization" {
   }
   logging_sinks = {
     for name, attrs in var.log_sinks : name => {
-      destination                    = local.log_sink_destinations[name].as_logging_destination
-      filter                         = attrs.filter
-      bigquery_use_partitioned_table = attrs.type == "bigquery"
+      bq_partitioned_table = attrs.type == "bigquery"
+      destination          = local.log_sink_destinations[name].as_logging_destination
+      filter               = attrs.filter
     }
   }
 }
