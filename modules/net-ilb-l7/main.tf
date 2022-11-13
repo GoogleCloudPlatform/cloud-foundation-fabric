@@ -33,8 +33,8 @@ locals {
     "${v.neg}-${v.ip_address}-${coalesce(v.port, "none")}" => v
   }
   proxy_ssl_certificates = concat(
-    [for k, v in google_compute_region_ssl_certificate.default : v.id],
-    [for v in var.ssl_certificates : v.self_link if v.id != null]
+    coalesce(var.ssl_certificates.certificate_ids, []),
+    [for k, v in google_compute_region_ssl_certificate.default : v.id]
   )
 }
 
@@ -57,12 +57,12 @@ resource "google_compute_forwarding_rule" "default" {
 }
 
 resource "google_compute_region_ssl_certificate" "default" {
-  for_each    = { for v in var.ssl_certificates : v.name => v if v.id == null }
+  for_each    = var.ssl_certificates.create_configs
   project     = var.project_id
   region      = var.region
   name        = "${var.name}-${each.key}"
-  certificate = try(each.value.tls_self_signed_cert, null)
-  private_key = try(each.value.tls_private_key, null)
+  certificate = each.value.certificate
+  private_key = each.value.private_key
 }
 
 resource "google_compute_region_target_http_proxy" "default" {

@@ -23,12 +23,18 @@ locals {
 }
 
 resource "google_compute_region_url_map" "default" {
-  provider        = google-beta
-  project         = var.project_id
-  region          = var.region
-  name            = var.name
-  description     = var.description
-  default_service = var.urlmap_config.default_service
+  provider    = google-beta
+  project     = var.project_id
+  region      = var.region
+  name        = var.name
+  description = var.description
+  default_service = (
+    var.urlmap_config.default_service == null ? null : lookup(
+      local.backend_ids,
+      var.urlmap_config.default_service,
+      var.urlmap_config.default_service
+    )
+  )
 
   dynamic "default_url_redirect" {
     for_each = (
@@ -48,11 +54,7 @@ resource "google_compute_region_url_map" "default" {
   }
 
   dynamic "host_rule" {
-    for_each = (
-      var.urlmap_config.host_rule == null
-      ? []
-      : [var.urlmap_config.host_rule]
-    )
+    for_each = coalesce(var.urlmap_config.host_rules, [])
     iterator = r
     content {
       hosts        = r.value.hosts
@@ -68,8 +70,8 @@ resource "google_compute_region_url_map" "default" {
       default_service = m.value.default_service == null ? null : lookup(
         local.backend_ids, m.value.default_service, m.value.default_service
       )
-      description = pm.value.description
-      name        = pm.key
+      description = m.value.description
+      name        = m.key
       dynamic "default_url_redirect" {
         for_each = (
           m.value.default_url_redirect == null
@@ -89,10 +91,10 @@ resource "google_compute_region_url_map" "default" {
         for_each = toset(coalesce(m.value.path_rules))
         content {
           paths = path_rule.value.paths
-          service = path_rule.value.default_service == null ? null : lookup(
+          service = path_rule.value.service == null ? null : lookup(
             local.backend_ids,
-            path_rule.value.default_service,
-            path_rule.value.default_service
+            path_rule.value.service,
+            path_rule.value.service
           )
           dynamic "route_action" {
             for_each = (
@@ -254,9 +256,9 @@ resource "google_compute_region_url_map" "default" {
           }
           dynamic "url_redirect" {
             for_each = (
-              path_rule.value.default_url_redirect == null
+              path_rule.value.url_redirect == null
               ? []
-              : [path_rule.value.default_url_redirect]
+              : [path_rule.value.url_redirect]
             )
             content {
               host_redirect          = url_redirect.value.host
@@ -270,7 +272,7 @@ resource "google_compute_region_url_map" "default" {
         }
       }
       dynamic "route_rules" {
-        for_each = toset(coalesce(m.value.route_rules))
+        for_each = toset(coalesce(m.value.route_rules, []))
         content {
           priority = route_rules.value.priority
           service = route_rules.value.service == null ? null : lookup(

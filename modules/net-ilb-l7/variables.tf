@@ -87,10 +87,17 @@ variable "ports" {
 }
 
 variable "protocol" {
-  description = "IP protocol used, defaults to TCP."
+  description = "Protocol supported by this load balancer."
   type        = string
   default     = "HTTP"
   nullable    = false
+  validation {
+    condition = (
+      var.protocol == null || var.protocol == "HTTP" || var.protocol == "HTTPS"
+    )
+    error_message = "Protocol must be HTTP or HTTPS"
+  }
+
 }
 
 variable "region" {
@@ -99,17 +106,15 @@ variable "region" {
 }
 
 variable "ssl_certificates" {
-  description = "SSL target proxy certificates (only if protocol is HTTPS). Specify id for existing certificates, create config attributes to create."
-  type = list(object({
-    create_config = optional(object({
-      domains              = list(string)
-      name                 = list(string)
-      tls_private_key      = string
-      tls_self_signed_cert = string
-    }))
-    id = optional(string)
-  }))
-  default  = []
+  description = "SSL target proxy certificates (only if protocol is HTTPS)."
+  type = object({
+    certificate_ids = optional(list(string), [])
+    create_configs = optional(map(object({
+      certificate = string
+      private_key = string
+    })), {})
+  })
+  default  = {}
   nullable = false
 }
 

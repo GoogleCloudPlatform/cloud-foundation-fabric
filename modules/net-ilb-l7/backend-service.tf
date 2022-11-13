@@ -17,9 +17,14 @@
 # tfdoc:file:description Backend service resources.
 
 locals {
-  group_ids = {
-    for k, v in google_compute_instance_group.default : k => v.id
-  }
+  group_ids = merge(
+    {
+      for k, v in google_compute_instance_group.default : k => v.id
+    },
+    {
+      for k, v in google_compute_network_endpoint_group.default : k => v.id
+    }
+  )
   hc_ids = {
     for k, v in google_compute_health_check.default : k => v.id
   }

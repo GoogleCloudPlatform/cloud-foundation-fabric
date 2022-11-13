@@ -1,6 +1,7 @@
 # Internal (HTTP/S) Load Balancer Module
 
 The module allows managing Internal HTTP/HTTPS Load Balancers (HTTP(S) ILBs), integrating the forwarding rule, the url-map, the backends, optional health checks and SSL certificates.
+
 It's designed to be a simple match for the [`vpc`](../net-vpc) and the [`compute-mig`](../compute-mig) modules, which can be used to manage VPCs and instance groups.
 
 ## Examples
@@ -33,7 +34,39 @@ module "ilb-l7" {
 # tftest modules=1 resources=5
 ```
 
-### Defining Health Checks
+An HTTPS ILB needs a few additional fields:
+
+```hcl
+module "ilb-l7" {
+  source     = "./fabric/modules/net-ilb-l7"
+  name       = "ilb-test"
+  project_id = var.project_id
+  region     = "europe-west1"
+  backend_service_configs = {
+    default = {
+      backends = [{
+        group = "projects/myprj/zones/europe-west1-a/instanceGroups/my-ig"
+      }]
+    }
+  }
+  protocol = "HTTPS"
+  ssl_certificates = {
+    certificate_ids = [
+      "projects/myprj/regions/europe-west1/sslCertificates/my-cert"
+    ]
+  }
+  urlmap_config = {
+    default_service = "default"
+  }
+  vpc_config = {
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+  }
+}
+# tftest modules=1 resources=5
+```
+
+### Health Checks
 
 You can leverage externally defined health checks for backend services, or have the module create them for you. By default a simple HTTP health check is created, and used in backend services.
 
@@ -99,7 +132,70 @@ module "ilb-l7" {
 # tftest modules=1 resources=4
 ```
 
-#### Instance Group Management
+### SSL Certificates
+
+Similarly to health checks, SSL certificates can also be created by the module. In this example we are using private key and certificate resources so that the example test only depends on Terraform providers, but in real use those can be replaced by external files.
+
+```hcl
+
+resource "tls_private_key" "default" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "tls_self_signed_cert" "default" {
+  private_key_pem = tls_private_key.default.private_key_pem
+  subject {
+    common_name  = "example.com"
+    organization = "ACME Examples, Inc"
+  }
+  validity_period_hours = 720
+  allowed_uses = [
+    "key_encipherment",
+    "digital_signature",
+    "server_auth",
+  ]
+}
+
+module "ilb-l7" {
+  source     = "./fabric/modules/net-ilb-l7"
+  name       = "ilb-test"
+  project_id = var.project_id
+  region     = "europe-west1"
+  backend_service_configs = {
+    default = {
+      backends = [{
+        group = "projects/myprj/zones/europe-west1-a/instanceGroups/my-ig"
+      }]
+    }
+  }
+  health_check_configs = {
+    default = {
+      https = { port = 443 }
+    }
+  }
+  protocol = "HTTPS"
+  ssl_certificates = {
+    create_configs = {
+      default = {
+        # certificate and key could also be read via file() from external files
+        certificate = tls_self_signed_cert.default.cert_pem
+        private_key = tls_private_key.default.private_key_pem
+      }
+    }
+  }
+  urlmap_config = {
+    default_service = "default"
+  }
+  vpc_config = {
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+  }
+}
+# tftest modules=1 resources=8
+```
+
+### Instance Groups
 
 The module can optionally create unmanaged instance groups, which can then be referred to in backends via their key:
 
@@ -204,16 +300,9 @@ module "ilb-l7" {
 # tftest modules=1 resources=7
 ```
 
-### Url-map
+### URL Map
 
-The url-map can be customized with lots of different configurations. This includes leveraging multiple backends in different parts of the configuration.
-Given its complexity, it's left to the user passing the right data structure.
-
-For simplicity, *if no configurations are given* the first backend service defined (in alphabetical order, with priority to bucket backend services, if any) is used as the *default_service*, thus answering to the root (*/*) path.
-
-Backend services can be specified as needed in the url-map configuration, referencing the id used to declare them in the backend services map. If a corresponding backend service is found, their object id is automatically used; otherwise, it is assumed that the string passed is the id of an already existing backend and it is given to the provider as it was passed.
-
-In this example, we're using a backend service as the default backend
+The module exposes the full URL map resource configuration, with some minor changes to the interface to decrease verbosity, and support for aliasing backend services via keys:
 
 ```hcl
 module "ilb-l7" {
@@ -221,196 +310,41 @@ module "ilb-l7" {
   name       = "ilb-test"
   project_id = var.project_id
   region     = "europe-west1"
-  network    = var.vpc.self_link
-  subnetwork = var.subnet.self_link
-
-  url_map_config = {
-    default_service      = "my-backend-svc"
-    default_url_redirect = null
-    tests                = null
-    host_rules           = []
-    path_matchers = [
-      {
-        name = "my-example-page"
-        path_rules = [
-          {
-            paths   = ["/my-example-page"]
-            service = "another-group-backend"
-          }
-        ]
+  backend_service_configs = {
+    default = {
+      backends = [{
+        group = "projects/myprj/zones/europe-west1-a/instanceGroups/my-ig"
+      }]
+    }
+    video = {
+      backends = [{
+        group = "projects/myprj/zones/europe-west1-a/instanceGroups/my-ig-2"
+      }]
+    }
+  }
+  urlmap_config = {
+    default_service = "default"
+    host_rules = [{
+      hosts        = ["*"]
+      path_matcher = "pathmap"
+    }]
+    path_matchers = {
+      pathmap = {
+        path_rules = [{
+          paths = ["/video", "/video/*"]
+          service = "video"
+        }]
       }
-    ]
-  }
-
-  backend_services_config = {
-    my-backend-svc = {
-      backends = [
-        {
-          group   = "projects/my-project/zones/europe-west1-a/instanceGroups/my-ig"
-          options = null
-        }
-      ],
-      health_checks = []
-      log_config = null
-      options = null
-    },
-    my-example-page = {
-      backends = [
-        {
-          group   = "projects/my-project/zones/europe-west1-a/instanceGroups/another-ig"
-          options = null
-        }
-      ],
-      health_checks = []
-      log_config = null
-      options = null
     }
   }
+  vpc_config = {
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+  }
 }
+
+# tftest modules=1 resources=6
 ```
-<!-- # tftest modules=1 resources=6 -->
-
-### Reserve a static IP address
-
-Optionally, a static IP address can be reserved:
-
-```hcl
-module "ilb-l7" {
-  source     = "./fabric/modules/net-ilb-l7"
-  name       = "ilb-test"
-  project_id = var.project_id
-  region     = "europe-west1"
-  network    = var.vpc.self_link
-  subnetwork = var.subnet.self_link
-
-  static_ip_config = {
-    reserve = true
-    options = null
-  }
-
-  backend_services_config = {
-    my-backend-svc = {
-      backends = [
-        {
-          group   = "projects/my-project/zones/europe-west1-a/instanceGroups/my-ig"
-          options = null
-        }
-      ],
-      health_checks = []
-      log_config = null
-      options = null
-    }
-  }
-}
-```
-<!-- # tftest modules=1 resources=6 -->
-
-### HTTPS And SSL Certificates
-
-HTTPS is disabled by default but it can be optionally enabled.
-
-When HTTPS is enabled, if the ids specified in the `target_proxy_https_config` variable are not found in the `ssl_certificates_config` map, they are used as is, assuming the ssl certificates already exist:
-
-```hcl
-module "ilb-l7" {
-  source     = "./fabric/modules/net-ilb-l7"
-  name       = "ilb-test"
-  project_id = var.project_id
-  region     = "europe-west1"
-  network    = var.vpc.self_link
-  subnetwork = var.subnet.self_link
-
-  https = true
-
-  target_proxy_https_config = {
-    ssl_certificates = [
-      "an-existing-cert"
-    ]
-  }
-
-  backend_services_config = {
-    my-backend-svc = {
-      backends = [
-        {
-          group   = "projects/my-project/zones/europe-west1-a/instanceGroups/my-ig"
-          options = null
-        }
-      ]
-      health_checks = []
-      log_config = null
-      options = null
-    }
-  }
-}
-```
-<!-- # tftest modules=1 resources=5-->
-
-Otherwise, unmanaged certificates can also be contextually created:
-
-```hcl
-module "ilb-l7" {
-  source     = "./fabric/modules/net-ilb-l7"
-  name       = "ilb-test"
-  project_id = var.project_id
-  region     = "europe-west1"
-  network    = var.vpc.self_link
-  subnetwork = var.subnet.self_link
-
-  https = true
-
-  ssl_certificates_config = {
-    my-domain = {
-      domains = [
-        "my-domain.com"
-      ],
-      tls_private_key      = tls_private_key.self_signed_key.private_key_pem
-      tls_self_signed_cert = tls_self_signed_cert.self_signed_cert.cert_pem
-    }
-  }
-
-  target_proxy_https_config = {
-    ssl_certificates = [
-      "my-domain"
-    ]
-  }
-
-  backend_services_config = {
-    my-backend-svc = {
-      backends = [
-        {
-          group   = "projects/my-project/zones/europe-west1-a/instanceGroups/my-ig"
-          options = null
-        }
-      ],
-      health_checks = []
-      log_config = null
-      options = null
-    }
-  }
-}
-
-resource "tls_private_key" "self_signed_key" {
-  algorithm = "RSA"
-  rsa_bits  = 2048
-}
-
-resource "tls_self_signed_cert" "self_signed_cert" {
-  private_key_pem       = tls_private_key.self_signed_key.private_key_pem
-  validity_period_hours = 12
-  early_renewal_hours   = 3
-  dns_names             = ["example.com"]
-  allowed_uses = [
-    "key_encipherment",
-    "digital_signature",
-    "server_auth"
-  ]
-  subject {
-    common_name  = "example.com"
-    organization = "My Test Org"
-  }
-}
-```
-<!-- # tftest modules=1 resources=5-->
 
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->

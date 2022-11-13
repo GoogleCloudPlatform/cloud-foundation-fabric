@@ -28,11 +28,11 @@ variable "urlmap_config" {
       response_code = optional(string)
       strip_query   = optional(bool)
     }))
-    host_rule = optional(object({
+    host_rules = optional(list(object({
       hosts        = list(string)
       path_matcher = string
       description  = optional(string)
-    }))
+    })))
     path_matchers = optional(map(object({
       description     = optional(string)
       default_service = optional(string)
