@@ -1,8 +1,6 @@
 # Internal (HTTP/S) Load Balancer Module
 
-The module allows managing Internal HTTP/HTTPS Load Balancers (HTTP(S) ILBs), integrating the forwarding rule, the url-map, the backends, optional health checks and SSL certificates.
-
-It's designed to be a simple match for the [`vpc`](../net-vpc) and the [`compute-mig`](../compute-mig) modules, which can be used to manage VPCs and instance groups.
+This module allows managing Internal HTTP/HTTPS Load Balancers (L7 ILBs). It's designed to expose the full configuration of the underlying resources, and to facilitate common usage patterns by providing sensible defaults, and optionally managing prerequisite resources like health checks, instance groups, etc.
 
 ## Examples
 
