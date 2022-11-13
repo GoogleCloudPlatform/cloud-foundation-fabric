@@ -17,7 +17,10 @@
 # tfdoc:file:description Backend service resources.
 
 locals {
-  hc = {
+  group_ids = {
+    for k, v in google_compute_instance_group.default : k => v.id
+  }
+  hc_ids = {
     for k, v in google_compute_health_check.default : k => v.id
   }
 }
@@ -32,7 +35,7 @@ resource "google_compute_region_backend_service" "default" {
   affinity_cookie_ttl_sec         = each.value.affinity_cookie_ttl_sec
   connection_draining_timeout_sec = each.value.connection_draining_timeout_sec
   health_checks = [
-    for k in each.value.health_checks : lookup(local.hc, k, k)
+    for k in each.value.health_checks : lookup(local.hc_ids, k, k)
   ] # not for internet / serverless NEGs
   locality_lb_policy    = each.value.locality_lb_policy
   load_balancing_scheme = "INTERNAL_MANAGED"
@@ -45,7 +48,7 @@ resource "google_compute_region_backend_service" "default" {
   dynamic "backend" {
     for_each = { for b in coalesce(each.value.backends, []) : b.group => b }
     content {
-      group           = backend.key
+      group           = lookup(local.group_ids, backend.key, backend.key)
       balancing_mode  = backend.value.balancing_mode
       capacity_scaler = backend.value.capacity_scaler
       description     = backend.value.description

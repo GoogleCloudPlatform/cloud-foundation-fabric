@@ -10,7 +10,7 @@ It's designed to be a simple match for the [`vpc`](../net-vpc) and the [`compute
 An HTTP ILB with a backend service pointing to a GCE instance group:
 
 ```hcl
-module "ilb" {
+module "ilb-l7" {
   source     = "./fabric/modules/net-ilb-l7"
   name       = "ilb-test"
   project_id = var.project_id
@@ -42,7 +42,7 @@ Health check configuration is controlled via the `health_check_configs` variable
 Defining different health checks fromt he default is very easy. You can for example replace the default HTTP health check with a TCP one and reference it in you backend service:
 
 ```hcl
-module "ilb" {
+module "ilb-l7" {
   source     = "./fabric/modules/net-ilb-l7"
   name       = "ilb-test"
   project_id = var.project_id
@@ -74,7 +74,7 @@ module "ilb" {
 To leverage existing health checks without having the module create them, simply pass their self links to backend services and set the `health_check_configs` variable to an empty map:
 
 ```hcl
-module "ilb" {
+module "ilb-l7" {
   source     = "./fabric/modules/net-ilb-l7"
   name       = "ilb-test"
   project_id = var.project_id
@@ -99,14 +99,54 @@ module "ilb" {
 # tftest modules=1 resources=4
 ```
 
-### Instance Group Management
+### Backends
+
+#### Instance Group Management
+
+The module can optionally create unmanaged instance groups, which can then be referred to in backends via their key:
+
+```hcl
+module "ilb-l7" {
+  source     = "./fabric/modules/net-ilb-l7"
+  name       = "ilb-test"
+  project_id = var.project_id
+  region     = "europe-west1"
+  backend_service_configs = {
+    default = {
+      port_name = "http"
+      backends  = [
+        { group = "default" }
+      ]
+    }
+  }
+  group_configs = {
+    default = {
+      zone = "europe-west1-b"
+      instances = [
+        "projects/myprj/zones/europe-west1-b/instances/vm-a"
+      ]
+      named_ports = {
+        http = 80
+      }
+    }
+  }
+  urlmap_config = {
+    default_service = "default"
+  }
+  vpc_config = {
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+  }
+}
+# tftest modules=1 resources=6
+```
 
 ### Network Endpoint Groups (NEGs)
 
 Zonal Network Endpoint Groups (NEGs) can also be used as backends:
 
 ```hcl
-module "ilb" {
+module "ilb-l7" {
   source     = "./fabric/modules/net-ilb-l7"
   name       = "ilb-test"
   project_id = var.project_id
@@ -159,9 +199,9 @@ module "ilb" {
     }
   }
 }
-# tftest modules=1 resources=6
 ```
--->
+
+<!-- # tftest modules=1 resources=6 -->
 
 ### Url-map
 
@@ -175,7 +215,7 @@ Backend services can be specified as needed in the url-map configuration, refere
 In this example, we're using a backend service as the default backend
 
 ```hcl
-module "ilb" {
+module "ilb-l7" {
   source     = "./fabric/modules/net-ilb-l7"
   name       = "ilb-test"
   project_id = var.project_id
@@ -226,15 +266,15 @@ module "ilb" {
     }
   }
 }
-# tftest modules=1 resources=6
 ```
+<!-- # tftest modules=1 resources=6 -->
 
 ### Reserve a static IP address
 
 Optionally, a static IP address can be reserved:
 
 ```hcl
-module "ilb" {
+module "ilb-l7" {
   source     = "./fabric/modules/net-ilb-l7"
   name       = "ilb-test"
   project_id = var.project_id
@@ -261,8 +301,8 @@ module "ilb" {
     }
   }
 }
-# tftest modules=1 resources=6
 ```
+<!-- # tftest modules=1 resources=6 -->
 
 ### HTTPS And SSL Certificates
 
@@ -271,7 +311,7 @@ HTTPS is disabled by default but it can be optionally enabled.
 When HTTPS is enabled, if the ids specified in the `target_proxy_https_config` variable are not found in the `ssl_certificates_config` map, they are used as is, assuming the ssl certificates already exist:
 
 ```hcl
-module "ilb" {
+module "ilb-l7" {
   source     = "./fabric/modules/net-ilb-l7"
   name       = "ilb-test"
   project_id = var.project_id
@@ -301,13 +341,13 @@ module "ilb" {
     }
   }
 }
-# tftest modules=1 resources=5
 ```
+<!-- # tftest modules=1 resources=5-->
 
 Otherwise, unmanaged certificates can also be contextually created:
 
 ```hcl
-module "ilb" {
+module "ilb-l7" {
   source     = "./fabric/modules/net-ilb-l7"
   name       = "ilb-test"
   project_id = var.project_id
@@ -368,18 +408,8 @@ resource "tls_self_signed_cert" "self_signed_cert" {
     organization = "My Test Org"
   }
 }
-# tftest modules=1 resources=8
 ```
-
-## Components And Files Mapping
-
-An Internal HTTP Load Balancer is made of multiple components, that change depending on the configurations. Sometimes, it may be tricky to understand what they are, and how they relate to each other. Following, we provide a very brief overview to become more familiar with them.
-
-- The global load balancer [forwarding rule](forwarding-rule.tf) binds a frontend public Virtual IP (VIP) to an HTTP(S) [target proxy](target-proxy.tf).
-- If the target proxy is HTTPS, it requires one or more unmanaged [SSL certificates](ssl-certificates.tf).
-- Target proxies  leverage [url-maps](url-map.tf): a set of L7 rules that create a mapping between specific hostnames, URIs (and more) to one or more [backends services](backend-services.tf).
-- [Backend services](backend-services.tf) link to one or multiple infrastructure groups (GCE instance groups or NEGs). It is assumed in this module that groups have been previously created through other modules, and referenced in the input variables.
-- Backend services support one or more [health checks](health-checks.tf), used to verify that the backend is indeed healthy, so that traffic can be forwarded to it. Health checks currently supported in this module are HTTP, HTTPS, HTTP2, SSL, TCP.
+<!-- # tftest modules=1 resources=5-->
 
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
