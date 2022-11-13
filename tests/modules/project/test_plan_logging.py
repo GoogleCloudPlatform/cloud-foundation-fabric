@@ -17,45 +17,8 @@ from collections import Counter
 
 def test_sinks(plan_runner):
   "Test folder-level sinks."
-  logging_sinks = """ {
-    warning = {
-      type          = "storage"
-      destination   = "mybucket"
-      filter        = "severity=WARNING"
-      iam           = true
-      exclusions    = {}
-      unique_writer = false
-    }
-    info = {
-      type        = "bigquery"
-      destination = "projects/myproject/datasets/mydataset"
-      filter      = "severity=INFO"
-      iam         = true
-      exclusions  = {}
-      unique_writer = false
-    }
-    notice = {
-      type          = "pubsub"
-      destination   = "projects/myproject/topics/mytopic"
-      filter        = "severity=NOTICE"
-      iam           = true
-      exclusions    = {}
-      unique_writer = false
-    }
-    debug = {
-      type          = "logging"
-      destination   = "projects/myproject/locations/global/buckets/mybucket"
-      filter        = "severity=DEBUG"
-      iam           = true
-      exclusions    = {
-        no-compute   = "logName:compute"
-        no-container = "logName:container"
-      }
-      unique_writer = true
-    }
-  }
-  """
-  _, resources = plan_runner(logging_sinks=logging_sinks)
+  tfvars = 'test.logging-sinks.tfvars'
+  _, resources = plan_runner(tf_var_file=tfvars)
   assert len(resources) == 12
 
   resource_types = Counter([r["type"] for r in resources])
@@ -77,15 +40,12 @@ def test_sinks(plan_runner):
       "notice",
       "warning",
   ]
-  values = [
-      (
-          r["index"],
-          r["values"]["filter"],
-          r["values"]["destination"],
-          r["values"]["unique_writer_identity"],
-      )
-      for r in sinks
-  ]
+  values = [(
+      r["index"],
+      r["values"]["filter"],
+      r["values"]["destination"],
+      r["values"]["unique_writer_identity"],
+  ) for r in sinks]
   assert sorted(values) == [
       (
           "debug",
@@ -103,7 +63,7 @@ def test_sinks(plan_runner):
           "notice",
           "severity=NOTICE",
           "pubsub.googleapis.com/projects/myproject/topics/mytopic",
-          False,
+          True,
       ),
       ("warning", "severity=WARNING", "storage.googleapis.com/mybucket", False),
   ]
@@ -112,9 +72,11 @@ def test_sinks(plan_runner):
   values = [(r["index"], r["type"], r["values"]["role"]) for r in bindings]
   assert sorted(values) == [
       ("debug", "google_project_iam_member", "roles/logging.bucketWriter"),
-      ("info", "google_bigquery_dataset_iam_member", "roles/bigquery.dataEditor"),
+      ("info", "google_bigquery_dataset_iam_member",
+       "roles/bigquery.dataEditor"),
       ("notice", "google_pubsub_topic_iam_member", "roles/pubsub.publisher"),
-      ("warning", "google_storage_bucket_iam_member", "roles/storage.objectCreator"),
+      ("warning", "google_storage_bucket_iam_member",
+       "roles/storage.objectCreator"),
   ]
 
   exclusions = [(r["index"], r["values"]["exclusions"]) for r in sinks]
@@ -144,12 +106,10 @@ def test_sinks(plan_runner):
 
 def test_exclusions(plan_runner):
   "Test folder-level logging exclusions."
-  logging_exclusions = (
-      "{"
-      'exclusion1 = "resource.type=gce_instance", '
-      'exclusion2 = "severity=NOTICE", '
-      "}"
-  )
+  logging_exclusions = ("{"
+                        'exclusion1 = "resource.type=gce_instance", '
+                        'exclusion2 = "severity=NOTICE", '
+                        "}")
   _, resources = plan_runner(logging_exclusions=logging_exclusions)
   assert len(resources) == 6
   exclusions = [
