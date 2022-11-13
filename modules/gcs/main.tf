@@ -15,11 +15,7 @@
  */
 
 locals {
-  prefix = (
-    var.prefix == null || var.prefix == "" # keep "" for backward compatibility
-    ? ""
-    : "${var.prefix}-"
-  )
+  prefix       = var.prefix == null ? "" : "${var.prefix}-"
   notification = try(var.notification_config.enabled, false)
 }
 

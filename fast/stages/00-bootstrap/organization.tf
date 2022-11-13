@@ -194,10 +194,7 @@ module "organization" {
     for name, attrs in var.log_sinks : name => {
       bq_partitioned_table = attrs.type == "bigquery"
       destination          = local.log_sink_destinations[name].id
-      exclusions           = {}
       filter               = attrs.filter
-      iam                  = true
-      include_children     = true
       type                 = attrs.type
     }
   }
