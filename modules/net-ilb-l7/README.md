@@ -33,43 +33,13 @@ module "ilb" {
 # tftest modules=1 resources=5
 ```
 
-Network and subnetwork can be entered using their name (if present in the same project) or leveraging their link id. The latter is mandatory if you're trying to deploy an ILB in a shared VPC environment.
-
-```hcl
-module "ilb" {
-  source     = "./fabric/modules/net-ilb-l7"
-  name       = "ilb-test"
-  project_id = var.project_id
-  region     = "europe-west1"
-  network    = "projects/my-host-project/global/networks/my-shared-vpc"
-  subnetwork = "projects/my-host-project/regions/europe-west1/subnetworks/my-shared-subnet"
-
-  backend_services_config = {
-    my-backend-svc = {
-      backends = [
-        {
-          group   = "projects/my-project/zones/europe-west1-a/instanceGroups/my-ig"
-          options = null
-        }
-      ]
-      health_checks = []
-      log_config = null
-      options = null
-    }
-  }
-}
-# tftest modules=1 resources=5
-```
-
 ### Defining Health Checks
 
-If no health checks are specified, a default health check is created and associated to each backend service without health checks already associated. The default health check configuration can be modified through the `health_checks_config_defaults` variable.
+You can leverage externally defined health checks for backend services, or have the module create them for you. By default a simple HTTP health check is created, and used in backend services.
 
-If the `health_checks_config_defaults` variable is set to null, no default health checks will be automatically associted to backend services.
+Health check configuration is controlled via the `health_check_configs` variable, which behaves in a similar way to other LB modules in this repository.
 
-Alternatively, one or more health checks can be either contextually created or attached, if existing. If the id of the health checks specified is equal to one of the keys of the `health_checks_config` variable, the health check is contextually created; otherwise, the health check id is used as is, assuming an health check with that id alredy exists.
-
-For example, to contextually create a health check and attach it to the backend service:
+Defining different health checks fromt he default is very easy. You can for example replace the default HTTP health check with a TCP one and reference it in you backend service:
 
 ```hcl
 module "ilb" {
@@ -77,45 +47,87 @@ module "ilb" {
   name       = "ilb-test"
   project_id = var.project_id
   region     = "europe-west1"
-  network    = var.vpc.self_link
-  subnetwork = var.subnet.self_link
-
-  backend_services_config = {
-    my-backend-svc = {
-      backends = [
-        {
-          group   = "projects/my-project/zones/europe-west1-a/instanceGroups/my-ig"
-          options = null
-        }
-      ],
-      health_checks = ["hc-1"]
-      log_config = null
-      options = null
+  backend_service_configs = {
+    default = {
+      backends = [{
+        group = "projects/myprj/zones/europe-west1-a/instanceGroups/my-ig"
+      }]
+      health_checks = ["custom-tcp"]
     }
   }
-
-  health_checks_config = {
-    hc-1 = {
-      type    = "http"
-      logging = true
-      options = {
-        timeout_sec = 5
-      }
-      check = {
-        port_specification = "USE_SERVING_PORT"
-      }
+  health_check_configs = {
+    custom-tcp = {
+      tcp = { port = 80 }
     }
+  }
+  urlmap_config = {
+    default_service = "default"
+  }
+  vpc_config = {
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
   }
 }
 # tftest modules=1 resources=5
 ```
+
+To leverage existing health checks without having the module create them, simply pass their self links to backend services and set the `health_check_configs` variable to an empty map:
+
+```hcl
+module "ilb" {
+  source     = "./fabric/modules/net-ilb-l7"
+  name       = "ilb-test"
+  project_id = var.project_id
+  region     = "europe-west1"
+  backend_service_configs = {
+    default = {
+      backends = [{
+        group = "projects/myprj/zones/europe-west1-a/instanceGroups/my-ig"
+      }]
+      health_checks = ["projects/myprj/global/healthChecks/custom"]
+    }
+  }
+  health_check_configs = {}
+  urlmap_config = {
+    default_service = "default"
+  }
+  vpc_config = {
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+  }
+}
+# tftest modules=1 resources=4
+```
+
+### Instance Group Management
 
 ### Network Endpoint Groups (NEGs)
 
-Zonal Network Endpoint Groups (NEGs) can also be used, as shown in the example below.
+Zonal Network Endpoint Groups (NEGs) can also be used as backends:
 
 ```hcl
 module "ilb" {
+  source     = "./fabric/modules/net-ilb-l7"
+  name       = "ilb-test"
+  project_id = var.project_id
+  region     = "europe-west1"
+  backend_service_configs = {
+    default = {
+      backends = [{
+        group = "projects/myprj/zones/europe-west1-a/instanceGroups/my-ig"
+      }]
+      health_checks = ["projects/myprj/global/healthChecks/custom"]
+    }
+  }
+  health_check_configs = {}
+  urlmap_config = {
+    default_service = "default"
+  }
+  vpc_config = {
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+  }
+  
   source     = "./fabric/modules/net-ilb-l7"
   name       = "ilb-test"
   project_id = var.project_id
@@ -146,15 +158,6 @@ module "ilb" {
       options = null
     }
   }
-}
-
-resource "google_compute_network_endpoint_group" "my-neg" {
-  name         = "my-neg"
-  project      = var.project_id
-  network      = var.vpc.self_link
-  subnetwork   = var.subnet.self_link
-  default_port = "90"
-  zone         = "europe-west1-b"
 }
 # tftest modules=1 resources=6
 ```
