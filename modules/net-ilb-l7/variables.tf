@@ -27,7 +27,7 @@ variable "description" {
 }
 
 variable "group_configs" {
-  description = "Optional unmanaged groups to create. Can be referenced in backends via outputs."
+  description = "Optional unmanaged groups to create. Can be referenced in backends via key or outputs."
   type = map(object({
     zone        = string
     instances   = optional(list(string), [])
@@ -46,6 +46,26 @@ variable "labels" {
 variable "name" {
   description = "Load balancer name."
   type        = string
+}
+
+variable "neg_configs" {
+  description = "Optional network endpoint groups to create. Can be referenced in backends via key or outputs."
+  type = map(object({
+    zone         = string
+    type         = optional(string, "GCE_VM_IP") # GCE_VM_IP, GCE_VM_IP_PORT, and NON_GCP_PRIVATE_IP_PORT
+    default_port = optional(number)
+    endpoints = optional(list(object({
+      ip_address = string
+      instance   = optional(string)
+      port       = optional(number)
+    })))
+    vpc_config = optional(object({
+      network    = optional(string)
+      subnetwork = optional(string)
+    }))
+  }))
+  default  = {}
+  nullable = false
 }
 
 variable "network_tier_premium" {

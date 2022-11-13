@@ -99,8 +99,6 @@ module "ilb-l7" {
 # tftest modules=1 resources=4
 ```
 
-### Backends
-
 #### Instance Group Management
 
 The module can optionally create unmanaged instance groups, which can then be referred to in backends via their key:
@@ -143,7 +141,7 @@ module "ilb-l7" {
 
 ### Network Endpoint Groups (NEGs)
 
-Zonal Network Endpoint Groups (NEGs) can also be used as backends:
+Zonal Network Endpoint Groups (NEGs) can be used as backends, by passing their id as the backend group in a backends service configuration:
 
 ```hcl
 module "ilb-l7" {
@@ -154,12 +152,10 @@ module "ilb-l7" {
   backend_service_configs = {
     default = {
       backends = [{
-        group = "projects/myprj/zones/europe-west1-a/instanceGroups/my-ig"
+        group = "projects/myprj/zones/europe-west1-a/networkEndpointGroups/my-neg"
       }]
-      health_checks = ["projects/myprj/global/healthChecks/custom"]
     }
   }
-  health_check_configs = {}
   urlmap_config = {
     default_service = "default"
   }
@@ -167,41 +163,46 @@ module "ilb-l7" {
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
   }
-  
+}
+# tftest modules=1 resources=5
+```
+
+Similarly to instance groups, NEGs can also be managed by this module:
+
+```hcl
+module "ilb-l7" {
   source     = "./fabric/modules/net-ilb-l7"
   name       = "ilb-test"
   project_id = var.project_id
   region     = "europe-west1"
-  network    = var.vpc.self_link
-  subnetwork = var.subnet.self_link
-
-  backend_services_config = {
-    my-backend-svc = {
+  backend_service_configs = {
+    default = {
       backends = [
-        {
-          group   = google_compute_network_endpoint_group.my-neg.id
-          options = {
-            balancing_mode               = "RATE"
-            capacity_scaler              = 1.0
-            max_connections              = null
-            max_connections_per_instance = null
-            max_connections_per_endpoint = null
-            max_rate                     = 100
-            max_rate_per_endpoint        = null
-            max_rate_per_instance        = null
-            max_utilization              = null
-          }
-        }
-      ],
-      health_checks = []
-      log_config = null
-      options = null
+        { group = "my-neg" }
+      ]
     }
   }
+  neg_configs = {
+    my-neg = {
+      zone = "europe-west1-b"
+      endpoints = [
+        {
+          ip_address = "10.0.0.10"
+          instance   = "test-1"
+        }
+      ]
+    }
+  }
+  urlmap_config = {
+    default_service = "default"
+  }
+  vpc_config = {
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+  }
 }
+# tftest modules=1 resources=7
 ```
-
-<!-- # tftest modules=1 resources=6 -->
 
 ### Url-map
 

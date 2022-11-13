@@ -15,6 +15,11 @@
  */
 
 locals {
+  _neg_endpoints = flatten([
+    for k, v in var.neg_configs : [
+      for vv in v.endpoints : merge(vv, { neg = k })
+    ]
+  ])
   fwd_rule_ports = (
     var.protocol == "HTTPS" ? [443] : coalesce(var.ports, [80])
   )
@@ -23,6 +28,10 @@ locals {
     ? google_compute_region_target_https_proxy.default.0.id
     : google_compute_region_target_http_proxy.default.0.id
   )
+  neg_endpoints = {
+    for v in local._neg_endpoints :
+    "${v.neg}-${v.ip_address}-${coalesce(v.port, "none")}" => v
+  }
   proxy_ssl_certificates = concat(
     [for k, v in google_compute_region_ssl_certificate.default : v.id],
     [for v in var.ssl_certificates : v.self_link if v.id != null]
@@ -90,3 +99,26 @@ resource "google_compute_instance_group" "default" {
     }
   }
 }
+
+resource "google_compute_network_endpoint_group" "default" {
+  for_each              = var.neg_configs
+  project               = var.project_id
+  zone                  = each.value.zone
+  name                  = "${var.name}-${each.key}"
+  description           = var.description
+  network_endpoint_type = each.value.type
+  network               = try(each.value.vpc_config.network, var.vpc_config.network)
+  subnetwork            = try(each.value.vpc_config.subnetwork, var.vpc_config.subnetwork)
+}
+
+resource "google_compute_network_endpoint" "default" {
+  for_each = local.neg_endpoints
+  project  = var.project_id
+  network_endpoint_group = (
+    google_compute_network_endpoint_group.default[each.value.neg].name
+  )
+  instance   = each.value.instance
+  ip_address = each.value.ip_address
+  port       = each.value.port
+}
+
