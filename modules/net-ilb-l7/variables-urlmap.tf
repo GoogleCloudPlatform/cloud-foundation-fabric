@@ -132,9 +132,13 @@ variable "urlmap_config" {
           ignore_case = optional(bool, false)
           headers = optional(list(object({
             name         = string
-            value        = string
             invert_match = optional(bool, false)
             type         = optional(string, "present") # exact, prefix, suffix, regex, present, range
+            value        = optional(string)
+            range_value = optional(object({
+              end   = string
+              start = string
+            }))
           })))
           metadata_filters = optional(list(object({
             labels    = map(string)

@@ -37,11 +37,10 @@ resource "google_compute_forwarding_rule" "default" {
   description           = var.description
   ip_address            = var.address
   ip_protocol           = "TCP"
-  backend_service       = google_compute_region_backend_service.default.self_link
   load_balancing_scheme = "INTERNAL_MANAGED"
   network               = var.vpc_config.network
   network_tier          = var.network_tier_premium ? "PREMUIM" : "STANDARD"
-  port_range            = local.fwd_rule_ports
+  port_range            = join(",", local.fwd_rule_ports)
   subnetwork            = var.vpc_config.subnetwork
   labels                = var.labels
   target                = local.fwd_rule_target

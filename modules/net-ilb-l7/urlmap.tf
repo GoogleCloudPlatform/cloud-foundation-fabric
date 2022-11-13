@@ -23,6 +23,7 @@ locals {
 }
 
 resource "google_compute_region_url_map" "default" {
+  provider        = google-beta
   project         = var.project_id
   region          = var.region
   name            = var.name
@@ -71,9 +72,9 @@ resource "google_compute_region_url_map" "default" {
       name        = pm.key
       dynamic "default_url_redirect" {
         for_each = (
-          each.value.default_url_redirect == null
+          m.value.default_url_redirect == null
           ? []
-          : [each.value.default_url_redirect]
+          : [m.value.default_url_redirect]
         )
         content {
           host_redirect          = default_url_redirect.value.host
@@ -85,7 +86,7 @@ resource "google_compute_region_url_map" "default" {
         }
       }
       dynamic "path_rule" {
-        for_each = toset(coalesce(each.value.path_rules))
+        for_each = toset(coalesce(m.value.path_rules))
         content {
           paths = path_rule.value.paths
           service = path_rule.value.default_service == null ? null : lookup(
@@ -269,7 +270,7 @@ resource "google_compute_region_url_map" "default" {
         }
       }
       dynamic "route_rules" {
-        for_each = toset(coalesce(each.value.route_rules))
+        for_each = toset(coalesce(m.value.route_rules))
         content {
           priority = route_rules.value.priority
           service = route_rules.value.service == null ? null : lookup(
@@ -333,9 +334,19 @@ resource "google_compute_region_url_map" "default" {
                   invert_match  = h.value.invert_match
                   prefix_match  = h.value.type == "prefix" ? h.value.value : null
                   present_match = h.value.type == "present" ? h.value.value : null
-                  range_match   = h.value.type == "range" ? h.value.value : null
                   regex_match   = h.value.type == "regex" ? h.value.value : null
                   suffix_match  = h.value.type == "suffix" ? h.value.value : null
+                  dynamic "range_match" {
+                    for_each = (
+                      h.value.type != "range" || h.value.range_value == null
+                      ? []
+                      : [""]
+                    )
+                    content {
+                      range_end   = h.value.range_value.end
+                      range_start = h.value.range_value.start
+                    }
+                  }
                 }
               }
               dynamic "metadata_filters" {
