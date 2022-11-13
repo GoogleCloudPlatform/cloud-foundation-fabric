@@ -15,21 +15,19 @@ module "ilb" {
   name       = "ilb-test"
   project_id = var.project_id
   region     = "europe-west1"
-  network    = var.vpc.self_link
-  subnetwork = var.subnet.self_link
-
-  backend_services_config = {
-    my-backend-svc = {
-      backends = [
-        {
-          group   = "projects/my-project/zones/europe-west1-a/instanceGroups/my-ig"
-          options = null
-        }
-      ]
-      health_checks = []
-      log_config = null
-      options = null
+  backend_service_configs = {
+    default = {
+      backends = [{
+        group = "projects/myprj/zones/europe-west1-a/instanceGroups/my-ig"
+      }]
     }
+  }
+  urlmap_config = {
+    default_service = "default"
+  }
+  vpc_config = {
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
   }
 }
 # tftest modules=1 resources=5

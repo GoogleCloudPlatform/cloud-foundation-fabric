@@ -17,7 +17,6 @@
 # tfdoc:file:description Backend service resources.
 
 locals {
-  bsc = var.backend_service_config
   hc = {
     for k, v in google_compute_health_check.default : k => v.id
   }
@@ -25,7 +24,7 @@ locals {
 
 resource "google_compute_region_backend_service" "default" {
   provider                        = google-beta
-  for_each                        = var.backend_service_config
+  for_each                        = var.backend_service_configs
   project                         = var.project_id
   region                          = var.region
   name                            = "${var.name}-${each.key}"
@@ -44,7 +43,7 @@ resource "google_compute_region_backend_service" "default" {
   timeout_sec           = each.value.timeout_sec
 
   dynamic "backend" {
-    for_each = { for b in coalesce(var.backends, []) : b.group => b }
+    for_each = { for b in coalesce(each.value.backends, []) : b.group => b }
     content {
       group           = backend.key
       balancing_mode  = backend.value.balancing_mode
@@ -167,10 +166,10 @@ resource "google_compute_region_backend_service" "default" {
   }
 
   dynamic "log_config" {
-    for_each = var.backend_service_config.log_sample_rate == null ? [] : [""]
+    for_each = each.value.log_sample_rate == null ? [] : [""]
     content {
       enable      = true
-      sample_rate = var.backend_service_config.log_sample_rate
+      sample_rate = each.value.log_sample_rate
     }
   }
 
@@ -211,7 +210,7 @@ resource "google_compute_region_backend_service" "default" {
   }
 
   dynamic "subsetting" {
-    for_each = var.backend_service_config.enable_subsetting == true ? [""] : []
+    for_each = each.value.enable_subsetting == true ? [""] : []
     content {
       policy = "CONSISTENT_HASH_SUBSETTING"
     }

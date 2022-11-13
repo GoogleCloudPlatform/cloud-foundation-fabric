@@ -228,5 +228,4 @@ variable "urlmap_config" {
       description = optional(string)
     })))
   })
-  default = null
 }

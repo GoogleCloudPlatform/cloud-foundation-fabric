@@ -26,7 +26,7 @@ variable "description" {
   default     = "Terraform managed."
 }
 
-variable "backend_service_config" {
+variable "backend_service_configs" {
   description = "Backend service level configuration."
   type = map(object({
     affinity_cookie_ttl_sec         = optional(number)
@@ -37,6 +37,24 @@ variable "backend_service_config" {
     port_name                       = optional(string)
     session_affinity                = optional(string)
     timeout_sec                     = optional(number)
+    backends = list(object({
+      group           = string
+      balancing_mode  = optional(string, "CONNECTION")
+      capacity_scaler = optional(number)
+      description     = optional(string, "Terraform managed.")
+      failover        = optional(bool, false)
+      max_connections = optional(object({
+        per_endpoint = optional(number)
+        per_group    = optional(number)
+        per_instance = optional(number)
+      }))
+      max_rate = optional(object({
+        per_endpoint = optional(number)
+        per_group    = optional(number)
+        per_instance = optional(number)
+      }))
+      max_utilization = optional(number)
+    }))
     circuit_breakers = optional(object({
       max_connections             = optional(number)
       max_pending_requests        = optional(number)
@@ -104,7 +122,7 @@ variable "backend_service_config" {
         "-", "ROUND_ROBIN", "LEAST_REQUEST", "RING_HASH",
         "RANDOM", "ORIGINAL_DESTINATION", "MAGLEV"
       ],
-      try(var.backend_service_config.locality_lb_policy, "-")
+      try(var.backend_service_configs.locality_lb_policy, "-")
     )
     error_message = "Invalid locality lb policy value."
   }
@@ -114,41 +132,9 @@ variable "backend_service_config" {
         "NONE", "CLIENT_IP", "CLIENT_IP_NO_DESTINATION",
         "CLIENT_IP_PORT_PROTO", "CLIENT_IP_PROTO"
       ],
-      try(var.backend_service_config.session_affinity, "NONE")
+      try(var.backend_service_configs.session_affinity, "NONE")
     )
     error_message = "Invalid session affinity value."
-  }
-}
-
-variable "backends" {
-  description = "Load balancer backends, balancing mode is one of 'CONNECTION', 'RATE' or 'UTILIZATION'."
-  type = list(object({
-    group           = string
-    balancing_mode  = optional(string, "CONNECTION")
-    capacity_scaler = optional(number)
-    description     = optional(string, "Terraform managed.")
-    failover        = optional(bool, false)
-    max_connections = optional(object({
-      per_endpoint = optional(number)
-      per_group    = optional(number)
-      per_instance = optional(number)
-    }))
-    max_rate = optional(object({
-      per_endpoint = optional(number)
-      per_group    = optional(number)
-      per_instance = optional(number)
-    }))
-    max_utilization = optional(number)
-  }))
-  default  = []
-  nullable = false
-  validation {
-    condition = alltrue([
-      for b in var.backends : contains(
-        ["CONNECTION", "RATE", "UTILIZATION"],
-        coalesce(b.balancing_mode, "CONNECTION")
-    )])
-    error_message = "When specified balancing mode needs to be 'CONNECTION', 'RATE' or 'UTILIZATION'."
   }
 }
 
