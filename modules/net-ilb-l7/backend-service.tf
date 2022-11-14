@@ -44,11 +44,12 @@ resource "google_compute_region_backend_service" "default" {
   ] # not for internet / serverless NEGs
   locality_lb_policy    = each.value.locality_lb_policy
   load_balancing_scheme = "INTERNAL_MANAGED"
-  network               = var.vpc_config.network
   port_name             = each.value.port_name # defaults to http, not for NEGs
-  protocol              = var.protocol
-  session_affinity      = each.value.session_affinity
-  timeout_sec           = each.value.timeout_sec
+  protocol = (
+    each.value.protocol == null ? var.protocol : each.value.protocol
+  )
+  session_affinity = each.value.session_affinity
+  timeout_sec      = each.value.timeout_sec
 
   dynamic "backend" {
     for_each = { for b in coalesce(each.value.backends, []) : b.group => b }
@@ -223,5 +224,4 @@ resource "google_compute_region_backend_service" "default" {
       policy = "CONSISTENT_HASH_SUBSETTING"
     }
   }
-
 }

@@ -51,9 +51,10 @@ variable "name" {
 variable "neg_configs" {
   description = "Optional network endpoint groups to create. Can be referenced in backends via key or outputs."
   type = map(object({
-    zone         = string
-    type         = optional(string, "GCE_VM_IP") # GCE_VM_IP, GCE_VM_IP_PORT, and NON_GCP_PRIVATE_IP_PORT
-    default_port = optional(number)
+    zone = string
+    # re-enable once provider properly support this
+    # default_port = optional(number)
+    is_hybrid = optional(bool, false)
     endpoints = optional(list(object({
       ip_address = string
       instance   = optional(string)

@@ -25,12 +25,13 @@ variable "backend_service_configs" {
     locality_lb_policy              = optional(string)
     log_sample_rate                 = optional(number)
     port_name                       = optional(string)
+    protocol                        = optional(string)
     session_affinity                = optional(string)
     timeout_sec                     = optional(number)
     backends = list(object({
       group           = string
-      balancing_mode  = optional(string, "CONNECTION")
-      capacity_scaler = optional(number)
+      balancing_mode  = optional(string, "UTILIZATION")
+      capacity_scaler = optional(number, 1)
       description     = optional(string, "Terraform managed.")
       failover        = optional(bool, false)
       max_connections = optional(object({

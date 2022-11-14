@@ -17,7 +17,7 @@
 locals {
   _neg_endpoints = flatten([
     for k, v in var.neg_configs : [
-      for vv in v.endpoints : merge(vv, { neg = k })
+      for vv in v.endpoints : merge(vv, { neg = k, zone = v.zone })
     ]
   ])
   fwd_rule_ports = (
@@ -48,7 +48,7 @@ resource "google_compute_forwarding_rule" "default" {
   ip_protocol           = "TCP"
   load_balancing_scheme = "INTERNAL_MANAGED"
   network               = var.vpc_config.network
-  network_tier          = var.network_tier_premium ? "PREMUIM" : "STANDARD"
+  network_tier          = var.network_tier_premium ? "PREMIUM" : "STANDARD"
   port_range            = join(",", local.fwd_rule_ports)
   subnetwork            = var.vpc_config.subnetwork
   labels                = var.labels
@@ -101,14 +101,24 @@ resource "google_compute_instance_group" "default" {
 }
 
 resource "google_compute_network_endpoint_group" "default" {
-  for_each              = var.neg_configs
-  project               = var.project_id
-  zone                  = each.value.zone
-  name                  = "${var.name}-${each.key}"
-  description           = var.description
-  network_endpoint_type = each.value.type
-  network               = try(each.value.vpc_config.network, var.vpc_config.network)
-  subnetwork            = try(each.value.vpc_config.subnetwork, var.vpc_config.subnetwork)
+  for_each = var.neg_configs
+  project  = var.project_id
+  zone     = each.value.zone
+  name     = "${var.name}-${each.key}"
+  # re-enable once provider properly supports this
+  # default_port = each.value.default_port
+  description = var.description
+  network_endpoint_type = (
+    each.value.is_hybrid
+    ? "NON_GCP_PRIVATE_IP_PORT"
+    : "GCE_VM_IP_PORT"
+  )
+  network = try(each.value.vpc_config.network, var.vpc_config.network)
+  subnetwork = (
+    each.value.is_hybrid
+    ? null
+    : try(each.value.vpc_config.subnetwork, var.vpc_config.subnetwork)
+  )
 }
 
 resource "google_compute_network_endpoint" "default" {
@@ -120,5 +130,6 @@ resource "google_compute_network_endpoint" "default" {
   instance   = each.value.instance
   ip_address = each.value.ip_address
   port       = each.value.port
+  zone       = each.value.zone
 }
 

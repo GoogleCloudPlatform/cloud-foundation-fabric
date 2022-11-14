@@ -88,7 +88,7 @@ resource "google_compute_region_url_map" "default" {
         }
       }
       dynamic "path_rule" {
-        for_each = toset(coalesce(m.value.path_rules))
+        for_each = toset(coalesce(m.value.path_rules, []))
         content {
           paths = path_rule.value.paths
           service = path_rule.value.service == null ? null : lookup(
