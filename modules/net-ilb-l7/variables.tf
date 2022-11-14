@@ -98,7 +98,6 @@ variable "protocol" {
     )
     error_message = "Protocol must be HTTP or HTTPS"
   }
-
 }
 
 variable "region" {
@@ -117,21 +116,6 @@ variable "ssl_certificates" {
   })
   default  = {}
   nullable = false
-}
-
-variable "static_ip_config" {
-  description = "Static IP address configuration."
-  type = object({
-    reserve = bool
-    options = object({
-      address    = string
-      subnetwork = string # The subnet id
-    })
-  })
-  default = {
-    reserve = false
-    options = null
-  }
 }
 
 variable "vpc_config" {

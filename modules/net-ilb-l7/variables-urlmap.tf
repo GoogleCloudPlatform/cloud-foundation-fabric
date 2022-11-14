@@ -228,4 +228,7 @@ variable "urlmap_config" {
       description = optional(string)
     })))
   })
+  default = {
+    default_service = "default"
+  }
 }
