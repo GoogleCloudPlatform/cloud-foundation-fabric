@@ -219,9 +219,7 @@ module "ilb-l7" {
       instances = [
         "projects/myprj/zones/europe-west1-b/instances/vm-a"
       ]
-      named_ports = {
-        http = 80
-      }
+      named_ports = { http = 80 }
     }
   }
   urlmap_config = {
@@ -248,7 +246,9 @@ module "ilb-l7" {
   backend_service_configs = {
     default = {
       backends = [{
-        group = "projects/myprj/zones/europe-west1-a/networkEndpointGroups/my-neg"
+        balancing_mode = "RATE"
+        group          = "projects/myprj/zones/europe-west1-a/networkEndpointGroups/my-neg"
+        max_rate       = { per_endpoint = 1 }
       }]
     }
   }
@@ -273,21 +273,59 @@ module "ilb-l7" {
   region     = "europe-west1"
   backend_service_configs = {
     default = {
-      backends = [
-        { group = "my-neg" }
-      ]
+      backends = [{
+        balancing_mode = "RATE"
+        group = "my-neg"
+        max_rate       = { per_endpoint = 1 }
+      }]
     }
   }
   neg_configs = {
     my-neg = {
-      zone         = "europe-west1-b"
-      default_port = 80
-      endpoints = [
-        {
-          ip_address = "10.0.0.10"
-          instance   = "test-1"
-        }
-      ]
+      zone      = "europe-west1-b"
+      endpoints = [{
+        ip_address = "10.0.0.10"
+        instance   = "test-1"
+        port = 80
+      }]
+    }
+  }
+  urlmap_config = {
+    default_service = "default"
+  }
+  vpc_config = {
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+  }
+}
+# tftest modules=1 resources=7
+```
+
+Hybrid NEGs are also supported:
+
+```hcl
+module "ilb-l7" {
+  source     = "./fabric/modules/net-ilb-l7"
+  name       = "ilb-test"
+  project_id = var.project_id
+  region     = "europe-west1"
+  backend_service_configs = {
+    default = {
+      backends = [{
+        balancing_mode = "RATE"
+        group = "my-neg"
+        max_rate       = { per_endpoint = 1 }
+      }]
+    }
+  }
+  neg_configs = {
+    my-neg = {
+      zone      = "europe-west1-b"
+      is_hybrid = true
+      endpoints = [{
+        ip_address = "10.0.0.10"
+        port = 80
+      }]
     }
   }
   urlmap_config = {
@@ -346,6 +384,130 @@ module "ilb-l7" {
 }
 
 # tftest modules=1 resources=6
+```
+
+### Complex example
+
+This example mixes group and NEG backends, and shows how to set HTTPS for specific backends.
+
+```hcl
+module "ilb-l7" {
+  source     = "./fabric/modules/net-ilb-l7"
+  name       = "ilb-l7-test-0"
+  project_id = "prj-gce"
+  region     = "europe-west8"
+  backend_service_configs = {
+    default = {
+      backends = [
+        { group = "nginx-ew8-b" },
+        { group = "nginx-ew8-c" },
+      ]
+    }
+    gce-neg = {
+      backends = [{
+        balancing_mode = "RATE"
+        group          = "neg-nginx-ew8-c"
+        max_rate       = { per_endpoint = 1 }
+      }]
+    }
+    home = {
+      backends = [{
+        balancing_mode = "RATE"
+        group          = "neg-home-hello"
+        max_rate = {
+          per_endpoint = 1
+        }
+      }]
+      health_checks      = ["neg"]
+      locality_lb_policy = "ROUND_ROBIN"
+      protocol           = "HTTPS"
+      port_name          = "https"
+    }
+  }
+  group_configs = {
+    nginx-ew8-b = {
+      zone = "europe-west8-b"
+      instances = [
+        "projects/prj-gce/zones/europe-west8-b/instances/nginx-ew8-b"
+      ]
+      named_ports = { http = 80 }
+    }
+    nginx-ew8-c = {
+      zone = "europe-west8-c"
+      instances = [
+        "projects/prj-gce/zones/europe-west8-c/instances/nginx-ew8-c"
+      ]
+      named_ports = { http = 80 }
+    }
+  }
+  health_check_configs = {
+    default = {
+      http = {
+        port = 80
+      }
+    }
+    neg = {
+      https = {
+        host = "hello.home.example.com"
+        port = 443
+      }
+    }
+  }
+  neg_configs = {
+    neg-nginx-ew8-c = {
+      zone = "europe-west8-c"
+      endpoints = [
+        {
+          ip_address = "10.24.32.26"
+          instance   = "nginx-ew8-c"
+          port       = 80
+        }
+      ]
+    }
+    neg-home-hello = {
+      zone      = "europe-west8-b"
+      is_hybrid = true
+      endpoints = [
+        {
+          ip_address = "192.168.0.3"
+          port       = 443
+        }
+      ]
+    }
+  }
+  urlmap_config = {
+    default_service = "default"
+    host_rules = [
+      {
+        hosts        = ["*"]
+        path_matcher = "gce"
+      },
+      {
+        hosts        = ["hello.home.example.com"]
+        path_matcher = "home"
+      }
+    ]
+    path_matchers = {
+      gce = {
+        default_service = "default"
+        path_rules = [
+          {
+            paths   = ["/gce-neg", "/gce-neg/*"]
+            service = "gce-neg"
+          }
+        ]
+      }
+      home = {
+        default_service = "home"
+      }
+    }
+  }
+  vpc_config = {
+    network    = "projects/prj-host/global/networks/shared-vpc"
+    subnetwork = "projects/prj-host/regions/europe-west8/subnetworks/gce"
+  }
+}
+# tftest modules=1 resources=14
 ```
 
 <!-- TFDOC OPTS files:1 -->
