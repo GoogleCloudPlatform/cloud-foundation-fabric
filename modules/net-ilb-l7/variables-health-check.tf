@@ -92,4 +92,14 @@ variable "health_check_configs" {
     ])
     error_message = "Only one health check type can be configured at a time."
   }
+  validation {
+    condition = alltrue(flatten([
+      for k, v in var.health_check_configs : [
+        for kk, vv in v : contains([
+          "-", "USE_FIXED_PORT", "USE_NAMED_PORT", "USE_SERVING_PORT"
+        ], coalesce(try(vv.port_specification, null), "-"))
+      ]
+    ]))
+    error_message = "Invalid 'port_specification' value. Supported values are 'USE_FIXED_PORT', 'USE_NAMED_PORT', 'USE_SERVING_PORT'."
+  }
 }
