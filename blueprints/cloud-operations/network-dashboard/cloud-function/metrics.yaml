@@ -25,6 +25,16 @@ metrics_per_subnet:
     limit:
       name: number_of_max_ip
       description: Number of available IP addresses in the subnet.
+  ip_usage_per_secondaryRange:
+    usage:
+      name: number_of_sr_ip_used
+      description: Number of used IP addresses in the secondary range.
+    utilization:
+      name: ip_addresses_per_sr_utilization
+      description: Percentage of IP used in the secondary range.
+    limit:
+      name: number_of_max_sr_ip
+      description: Number of available IP addresses in the secondary range.
 metrics_per_network:
   instance_per_network:
     usage:
