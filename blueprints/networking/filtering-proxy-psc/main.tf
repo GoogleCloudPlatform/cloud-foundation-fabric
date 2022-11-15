@@ -27,7 +27,8 @@ module "project" {
   services = [
     "dns.googleapis.com",
     "compute.googleapis.com",
-    "logging.googleapis.com"
+    "logging.googleapis.com",
+    "monitoring.googleapis.com"
   ]
 }
 
