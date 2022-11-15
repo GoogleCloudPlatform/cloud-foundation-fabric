@@ -99,15 +99,17 @@ jobs:
         name: Terraform plan
         continue-on-error: true
         run: |
+          set -o pipefail
           echo -e "## Plan Output\n\n\`\`\`hcl" >> $$GITHUB_STEP_SUMMARY
           terraform plan -input=false -out ../plan.out -no-color |tee -a $$GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $$GITHUB_STEP_SUMMARY
 
       - id: tf-apply
-        if: github.event.pull_request.merged == true
+        if: github.event.pull_request.merged == true && success()
         name: Terraform apply
         continue-on-error: true
         run: |
+          set -o pipefail
           echo -e "## Apply Output\n\n\`\`\`hcl" >> $$GITHUB_STEP_SUMMARY
           terraform apply -input=false -auto-approve -no-color ../plan.out |tee -a $$GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $$GITHUB_STEP_SUMMARY
@@ -117,7 +119,7 @@ jobs:
         uses: actions/github-script@v6
         if: github.event_name == 'pull_request'
         env:
-          PLAN: terraform\n$${{ steps.tf-plan.outputs.stdout }}
+          PLAN: $${{ steps.tf-plan.outputs.stdout }}\n$${{ steps.tf-plan.outputs.stderr }}
         with:
           script: |
             const output = `### Terraform Initialization \`$${{ steps.tf-init.outcome }}\`
@@ -153,4 +155,12 @@ jobs:
               body: output
             })
 
-      # jq -j -r '.resource_changes[] | (.change.actions | join(",")), " ", .address, "\n" ' foo.json
+      - id: check-outcome
+        name: Check on failures
+        if: steps.tf-plan.outcome != 'success'
+        run: |
+          echo -e "## Plan Output\n\n\`\`\`hcl" > $$GITHUB_STEP_SUMMARY
+          echo "$${{ steps.tf-plan.outputs.stdout }}" >> $$GITHUB_STEP_SUMMARY
+          echo "$${{ steps.tf-plan.outputs.stderr }}" >> $$GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $$GITHUB_STEP_SUMMARY
+          exit 1
