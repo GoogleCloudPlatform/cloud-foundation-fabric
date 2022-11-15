@@ -30,31 +30,24 @@ RESOURCES = {}
 Result = collections.namedtuple('Result', 'phase resource data')
 
 
-def do_discovery_end():
-  phase, step = plugins.Phase.DISCOVERY, plugins.Step.END
-  handlers = {p.resource: p.func for p in plugins.get_plugins(phase, step)}
-  while Q_COLLECTION:
-    result = Q_COLLECTION.popleft()
-    func = handlers.get(result.resource)
-    if not func:
-      logging.critical(
-          f'collection result with no handler for {result.resource}')
-      print(result.resource, result.data)
-    else:
-      func(RESOURCES, result.data)
-
-
-def do_discovery_start():
-  phase, step = plugins.Phase.DISCOVERY, plugins.Step.START
-  for plugin in plugins.get_plugins(phase, step):
-    for url in plugin.func(RESOURCES):
+def do_discovery():
+  phase = plugins.Phase.DISCOVERY
+  data_handlers = {
+      p.resource: p.func for p in plugins.get_plugins(phase, plugins.Step.END)
+  }
+  for plugin in plugins.get_plugins(phase, plugins.Step.START):
+    data_handler = data_handlers.get(plugin.resource)
+    urls = collections.deque(plugin.func(RESOURCES))
+    for url in urls:
       data = fetch(url)
-      Q_COLLECTION.append(Result(phase, plugin.resource, data))
+      next_url = data_handler(RESOURCES, data, url)
+      if next_url:
+        urls.append(next_url)
 
 
 def do_init(organization, folder, project):
   if organization:
-    RESOURCES['organization'] = {organization: {}}
+    RESOURCES['organization'] = {'id': organization}
   if folder:
     RESOURCES['folders'] = {f: {} for f in folder}
   if project:
@@ -84,9 +77,7 @@ def main(organization=None, op_project=None, project=None, folder=None):
 
   do_init(organization, folder, project)
 
-  do_discovery_start()
-
-  do_discovery_end()
+  do_discovery()
 
   import icecream
   icecream.ic(RESOURCES)

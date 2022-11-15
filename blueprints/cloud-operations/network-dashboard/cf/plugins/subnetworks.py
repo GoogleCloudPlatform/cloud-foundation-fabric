@@ -18,9 +18,9 @@ import urllib.parse
 from . import *
 from .utils import parse_cai_page_token, parse_cai_results
 
-LEVEL = Level.CORE
-NAME = 'project'
-TYPE = 'cloudresourcemanager.googleapis.com/Project'
+LEVEL = Level.PRIMARY
+NAME = 'subnetworks'
+TYPE = 'compute.googleapis.com/Subnetwork'
 
 CAI_URL = ('https://content-cloudasset.googleapis.com/v1p1beta1'
            '/{}/resources:searchAll'
@@ -29,26 +29,35 @@ CAI_URL = ('https://content-cloudasset.googleapis.com/v1p1beta1'
 
 @register(NAME, Phase.INIT, Step.START)
 def start_discovery(resources):
-  if 'projects' not in resources:
-    resources['projects'] = {}
-  if 'project_numbers' not in resources:
-    resources['projects:number'] = {}
+  if 'subnetworks' not in resources:
+    resources['subnetworks'] = {}
 
 
 @register(NAME, Phase.DISCOVERY, Step.START, LEVEL, 0)
 def start_discovery(resources):
-  for resource_type in ('projects', 'folders'):
-    for k in resources.get(resource_type, []):
-      yield CAI_URL.format(f'{resource_type}/{k}')
+  org_id = resources['organization']['id']
+  yield CAI_URL.format(f'organizations/{org_id}')
+
+
+# {'name': '//compute.googleapis.com/projects/tf-playground-svpc-net-dr/regions/europe-west1/subnetworks/gke', 'assetType': 'compute.googleapis.com/Subnetwork', 'project': 'projects/697669426824', 'displayName': 'gke', 'description': 'Terraform-managed.', 'additionalAttributes': ['10.0.8.1'], 'location': 'europe-west1'}
 
 
 @register(NAME, Phase.DISCOVERY, Step.END)
 def end_discovery(resources, data, url):
   for result in parse_cai_results(NAME, TYPE, data):
-    number = result['project'].split('/')[1]
-    project_id = result['displayName']
-    resources['projects'][project_id] = {'number': number}
-    resources['projects:number'][number] = project_id
+    name = result['displayName']
+    project_number = result['project'].split('/')[1]
+    project_id = resources['projects:number'].get(project_number)
+    if not project_id:
+      logging.info(f'skipping subnetwork {name} in {project_number}')
+      continue
+    resources['networks'][f'{project_id}/{name}'] = {
+        'cidr_range': result['additionalAttributes'][0],
+        'name': name,
+        'project_id': project_id,
+        'project_number': project_number,
+        'region': result['location'],
+    }
   return parse_cai_page_token(url, data)
 
 
