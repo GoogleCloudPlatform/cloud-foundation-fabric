@@ -14,8 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# TODO: switch to the gcplogs logging driver, and set driver labels
-
 users:
 - name: squid
   uid: 2000
@@ -71,9 +69,6 @@ write_files:
       Environment="HOME=/home/squid"
       ExecStartPre=/usr/bin/docker-credential-gcr configure-docker
       ExecStart=/usr/bin/docker run --rm --name=squid  \
-        %{~ if docker_logging ~}
-        --log-driver=gcplogs \
-        %{~ endif ~}
         --network host \
         -v /etc/squid:/etc/squid \
         gcr.io/pso-cft-fabric/squid:0.10

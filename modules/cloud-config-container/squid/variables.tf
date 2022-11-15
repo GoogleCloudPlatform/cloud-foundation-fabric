@@ -26,12 +26,6 @@ variable "config_variables" {
   default     = {}
 }
 
-variable "docker_logging" {
-  description = "Log via the Docker gcplogs driver. Disable if you use the legacy Logging Agent instead."
-  type        = bool
-  default     = true
-}
-
 variable "squid_config" {
   description = "Squid configuration path, if null default will be used."
   type        = string

@@ -44,8 +44,6 @@ module "cos-envoy-td" {
     }
   }
 
-  gcp_logging = var.docker_logging
-
   run_commands = [
     "iptables -t nat -N ENVOY_IN_REDIRECT",
     "iptables -t nat -A ENVOY_IN_REDIRECT -p tcp -j REDIRECT --to-port 15001",

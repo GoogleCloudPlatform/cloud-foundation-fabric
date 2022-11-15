@@ -17,8 +17,6 @@
 # https://hub.docker.com/r/coredns/coredns/
 # https://coredns.io/manual/toc/#installation
 
-# TODO: switch to the gcplogs logging driver, and set driver labels
-
 write_files:
   - path: /var/lib/docker/daemon.json
     permissions: 0644
@@ -58,9 +56,6 @@ write_files:
       Wants=gcr-online.target docker.socket docker-events-collector.service
       [Service]
       ExecStart=/usr/bin/docker run --rm --name=coredns  \
-        %{~ if docker_logging ~}
-        --log-driver=gcplogs \
-        %{~ endif ~}
         --network host \
         -v /etc/coredns:/etc/coredns \
         coredns/coredns -conf /etc/coredns/Corefile

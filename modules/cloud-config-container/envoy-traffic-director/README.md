@@ -18,10 +18,11 @@ module "cos-envoy-td" {
 
 # COS VM
 module "vm-cos" {
-  source     = "./fabric/modules/compute-vm"
-  project_id = local.project_id
-  zone       = local.zone
-  name       = "cos-envoy-td"
+  source                = "./fabric/modules/compute-vm"
+  project_id            = local.project_id
+  zone                  = local.zone
+  name                  = "cos-envoy-td"
+  enable_google_logging = true
   network_interfaces = [{
     network    = local.vpc.self_link,
     subnetwork = local.vpc.subnet_self_link,
@@ -49,7 +50,6 @@ module "vm-cos" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [docker_logging](variables.tf#L23) | Log via the Docker gcplogs driver. Disable if you use the legacy Logging Agent instead. | <code>bool</code> |  | <code>true</code> |
 | [envoy_image](variables.tf#L17) | Envoy Proxy container image to use. | <code>string</code> |  | <code>&#34;envoyproxy&#47;envoy:v1.15.5&#34;</code> |
 
 ## Outputs

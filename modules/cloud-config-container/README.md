@@ -21,8 +21,6 @@ These modules are designed for several use cases:
 
 All modules are designed to be as lightweight as possible, so that specialized modules like [compute-vm](../compute-vm) can be leveraged to manage instances or instance templates, and to allow simple forking to create custom derivatives.
 
-Modules use Docker's [Google Cloud Logging driver](https://docs.docker.com/config/containers/logging/gcplogs/) by default, so projects need to have the logging API enabled. If that's not desirable simply remove `--log-driver=gcplogs` from the relevant systemd unit in `cloud-config.yaml`.
-
 To use the modules with instances or instance templates, simply set use their `cloud_config` output for the `user-data` metadata. When updating the metadata after a variable change remember to manually restart the instances that use a module's output, or the changes won't effect the running system.
 
 For convenience when developing or prototyping infrastructure, an optional test instance is included in all modules. If it's not needed, the linked `*instance.tf` files can be removed from the modules without harm.

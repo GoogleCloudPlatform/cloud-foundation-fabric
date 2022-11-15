@@ -25,7 +25,6 @@ locals {
     Environment="HOME=/home/opsagent"
     ExecStartPre=/usr/bin/docker-credential-gcr configure-docker
     ExecStart=/usr/bin/docker run --rm --name=monitoring-agent \
-          --log-driver=gcplogs \
           --network host \
           -v /etc/google-cloud-ops-agent/config.yaml:/etc/google-cloud-ops-agent/config.yaml \
           ${var.ops_agent_image}
@@ -290,12 +289,13 @@ module "mig-proxy" {
 }
 
 module "proxy-vm" {
-  source        = "../../../modules/compute-vm"
-  project_id    = module.project.project_id
-  zone          = format("%s-c", var.region)
-  name          = "nginx-test-vm"
-  instance_type = "e2-standard-2"
-  tags          = ["proxy-cluster"]
+  source                = "../../../modules/compute-vm"
+  project_id            = module.project.project_id
+  zone                  = format("%s-c", var.region)
+  name                  = "nginx-test-vm"
+  instance_type         = "e2-standard-2"
+  tags                  = ["proxy-cluster"]
+  enable_google_logging = true
   network_interfaces = [{
     network    = module.vpc.self_link
     subnetwork = module.vpc.subnet_self_links[format("%s/%s", var.region, var.subnetwork)]

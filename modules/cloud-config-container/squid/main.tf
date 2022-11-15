@@ -16,9 +16,8 @@
 
 locals {
   cloud_config = templatefile(local.template, merge(local.config_variables, {
-    docker_logging = var.docker_logging
-    squid_config   = templatefile(local.squid_config, local.config_variables)
-    files          = local.files
+    squid_config = templatefile(local.squid_config, local.config_variables)
+    files        = local.files
   }))
   squid_config = (
     var.squid_config == null ? "${path.module}/squid.conf" : var.squid_config
