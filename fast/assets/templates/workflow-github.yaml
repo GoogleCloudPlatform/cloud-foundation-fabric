@@ -116,6 +116,7 @@ jobs:
 
       - id: pr-comment
         name: Post comment to Pull Request
+        continue-on-error: true
         uses: actions/github-script@v6
         if: github.event_name == 'pull_request'
         env:
@@ -155,12 +156,32 @@ jobs:
               body: output
             })
 
+      - id: pr-short-comment
+        name: Post comment to Pull Request
+        uses: actions/github-script@v6
+        if: github.event_name == 'pull_request' && steps.pr-comment.outcome != 'success'
+        with:
+          script: |
+            const output = `### Terraform Initialization \`$${{ steps.tf-init.outcome }}\`
+
+            ### Terraform Validation \`$${{ steps.tf-validate.outcome }}\`
+
+            ### Terraform Plan \`$${{ steps.tf-plan.outcome }}\`
+
+            Plan output is in the action log.
+
+            ### Terraform Apply \`$${{ steps.tf-apply.outcome }}\`
+
+            *Pusher: @$${{ github.actor }}, Action: \`$${{ github.event_name }}\`, Working Directory: \`$${{ env.tf_actions_working_dir }}\`, Workflow: \`$${{ github.workflow }}\`*`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+
       - id: check-outcome
         name: Check on failures
         if: steps.tf-plan.outcome != 'success'
-        run: |
-          echo -e "## Plan Output\n\n\`\`\`hcl" > $$GITHUB_STEP_SUMMARY
-          echo "$${{ steps.tf-plan.outputs.stdout }}" >> $$GITHUB_STEP_SUMMARY
-          echo "$${{ steps.tf-plan.outputs.stderr }}" >> $$GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $$GITHUB_STEP_SUMMARY
-          exit 1
+        run: exit 1
