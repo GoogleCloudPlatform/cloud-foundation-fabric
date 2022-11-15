@@ -15,19 +15,24 @@
  */
 
 module "test" {
-  source                        = "../../../../modules/net-ilb-l7"
-  project_id                    = "my-project"
-  name                          = "ilb-l7-test"
-  region                        = "europe-west1"
-  network                       = "projects/my-project/global/networks/default"
-  subnetwork                    = "projects/my-project/regions/europe-west1/subnetworks/default"
-  backend_services_config       = var.backend_services_config
-  forwarding_rule_config        = var.forwarding_rule_config
-  health_checks_config          = var.health_checks_config
-  health_checks_config_defaults = var.health_checks_config_defaults
-  https                         = var.https
-  ssl_certificates_config       = var.ssl_certificates_config
-  static_ip_config              = var.static_ip_config
-  target_proxy_https_config     = var.target_proxy_https_config
-  url_map_config                = var.url_map_config
+  source     = "../../../../modules/net-ilb-l7"
+  project_id = "my-project"
+  name       = "ilb-l7-test"
+  region     = "europe-west1"
+  vpc_config = {
+    network    = "projects/my-project/global/networks/default"
+    subnetwork = "projects/my-project/regions/europe-west1/subnetworks/default"
+  }
+  address                 = var.address
+  backend_service_configs = var.backend_service_configs
+  description             = var.description
+  group_configs           = var.group_configs
+  health_check_configs    = var.health_check_configs
+  labels                  = var.labels
+  neg_configs             = var.neg_configs
+  network_tier_premium    = var.network_tier_premium
+  ports                   = var.ports
+  protocol                = var.protocol
+  ssl_certificates        = var.ssl_certificates
+  urlmap_config           = var.urlmap_config
 }
