@@ -54,11 +54,11 @@ def do_discovery_start():
 
 def do_init(organization, folder, project):
   if organization:
-    RESOURCES['organization'] = plugins.Resource(organization, {})
+    RESOURCES['organization'] = {organization: {}}
   if folder:
-    RESOURCES['folders'] = [plugins.Resource(f, {}) for f in folder]
+    RESOURCES['folders'] = {f: {} for f in folder}
   if project:
-    RESOURCES['project'] = [plugins.Resource(p, {}) for p in project]
+    RESOURCES['projects'] = {p: {} for p in project}
   phase = plugins.Phase.INIT
   for plugin in plugins.get_plugins(phase):
     plugin.func(RESOURCES)

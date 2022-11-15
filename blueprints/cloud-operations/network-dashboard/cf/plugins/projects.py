@@ -12,15 +12,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
+
 from . import *
 
 LEVEL = Level.CORE
 NAME = 'project'
 TYPE = 'cloudresourcemanager.googleapis.com/Project'
 
-_CAI_URL = ('https://content-cloudasset.googleapis.com/v1p1beta1/folders'
-            '/{}/resources:searchAll'
-            '?assetTypes=cloudresourcemanager.googleapis.com%2FProject')
+CAI_URL = ('https://content-cloudasset.googleapis.com/v1p1beta1'
+           '/{}/resources:searchAll'
+           '?assetTypes=cloudresourcemanager.googleapis.com%2FProject')
 
 
 @register(NAME, Phase.INIT, Step.START)
@@ -31,8 +33,9 @@ def start_discovery(resources):
 
 @register(NAME, Phase.DISCOVERY, Step.START, LEVEL, 0)
 def start_discovery(resources):
-  for f in resources.get('folders', []):
-    yield _CAI_URL.format(f.id)
+  for resource_type in ('projects', 'folders'):
+    for k in resources.get(resource_type, []):
+      yield CAI_URL.format(f'{resource_type}/{k}')
 
 
 @register(NAME, Phase.DISCOVERY, Step.END)
@@ -41,8 +44,12 @@ def end_discovery(resources, data):
   if not results:
     raise PluginError('---')
   for result in results:
-    project_id = result['project'].split('/')[1]
-    resources['projects'].append(Resource(project_id, {}))
+    if result['assetType'] != TYPE:
+      logging.warn(f'result for wrong type {result["assetType"]}')
+      continue
+    number = result['project'].split('/')[1]
+    project_id = result['displayName']
+    resources['projects'][project_id] = {'number': number}
 
 
 @register(NAME, Phase.COLLECTION, Step.START, LEVEL, 0)
