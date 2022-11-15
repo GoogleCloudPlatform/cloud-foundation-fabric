@@ -137,7 +137,7 @@ resource "google_cloudfunctions2_function" "function" {
   name        = "${local.prefix}${var.name}"
   description = var.description
   build_config {
-    worker_pool           = var.build_worker_pool ##check
+    worker_pool           = var.build_worker_pool
     runtime               = var.function_config.runtime
     entry_point           = "${var.function_config.entry_point}_http" # Set the entry point 
     environment_variables = var.environment_variables
