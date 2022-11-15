@@ -282,5 +282,3 @@ variable "zone" {
   description = "Compute zone."
   type        = string
 }
-
-

@@ -25,7 +25,6 @@ locals {
     Environment="HOME=/home/opsagent"
     ExecStartPre=/usr/bin/docker-credential-gcr configure-docker
     ExecStart=/usr/bin/docker run --rm --name=monitoring-agent \
-          --log-driver=gcplogs \
           --network host \
           -v /etc/google-cloud-ops-agent/config.yaml:/etc/google-cloud-ops-agent/config.yaml \
           ${var.ops_agent_image}
@@ -305,7 +304,8 @@ module "proxy-vm" {
   }
   create_template = true
   metadata = {
-    user-data = !var.tls ? module.cos-nginx.0.cloud_config : module.cos-nginx-tls.0.cloud_config
+    user-data              = !var.tls ? module.cos-nginx.0.cloud_config : module.cos-nginx-tls.0.cloud_config
+    google-logging-enabled = true
   }
   service_account        = module.service-account-proxy.email
   service_account_create = false
