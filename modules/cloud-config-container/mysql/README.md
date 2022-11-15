@@ -32,10 +32,10 @@ module "cos-mysql" {
 
 # use it as metadata in a compute instance or template
 module "vm-mysql" {
-  source                = "./fabric/modules/compute-vm"
-  enable_google_logging = true
+  source = "./fabric/modules/compute-vm"
   metadata = {
-    user-data = module.cos-mysql.cloud_config
+    user-data              = module.cos-mysql.cloud_config
+    google-logging-enabled = true
   }
 }
 ```

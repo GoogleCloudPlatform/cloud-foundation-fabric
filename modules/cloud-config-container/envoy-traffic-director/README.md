@@ -22,7 +22,6 @@ module "vm-cos" {
   project_id            = local.project_id
   zone                  = local.zone
   name                  = "cos-envoy-td"
-  enable_google_logging = true
   network_interfaces = [{
     network    = local.vpc.self_link,
     subnetwork = local.vpc.subnet_self_link,
@@ -32,7 +31,8 @@ module "vm-cos" {
   tags           = ["ssh", "http"]
 
   metadata = {
-    user-data = module.cos-envoy-td.cloud_config
+    user-data              = module.cos-envoy-td.cloud_config
+    google-logging-enabled = true
   }
 
   boot_disk = {

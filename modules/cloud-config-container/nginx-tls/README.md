@@ -23,7 +23,6 @@ module "vm-nginx-tls" {
   project_id            = local.project_id
   zone                  = local.zone
   name                  = "cos-nginx-tls"
-  enable_google_logging = true
   network_interfaces = [{
     network    = local.vpc.self_link,
     subnetwork = local.vpc.subnet_self_link,
@@ -32,7 +31,8 @@ module "vm-nginx-tls" {
   }]
 
   metadata = {
-    user-data = module.cos-nginx-tls.cloud_config
+    user-data              = module.cos-nginx-tls.cloud_config
+    google-logging-enabled = true
   }
 
   boot_disk = {

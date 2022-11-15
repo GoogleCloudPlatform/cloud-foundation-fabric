@@ -29,10 +29,10 @@ module "cos-nginx" {
 
 # use it as metadata in a compute instance or template
 module "vm-nginx" {
-  source                = "./fabric/modules/compute-vm"
-  enable_google_logging = true
+  source = "./fabric/modules/compute-vm"
   metadata = {
-    user-data = module.cos-nginx.cloud_config
+    user-data              = module.cos-nginx.cloud_config
+    google-logging-enabled = true
   }
 }
 ```

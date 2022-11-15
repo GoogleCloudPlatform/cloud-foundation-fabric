@@ -123,12 +123,6 @@ variable "enable_display" {
   default     = false
 }
 
-variable "enable_google_logging" {
-  description = "Enable the logging agent included with the Container-Optimized OS."
-  type        = bool
-  default     = false
-}
-
 variable "encryption" {
   description = "Encryption options. Only one of kms_key_self_link and disk_encryption_key_raw may be set. If needed, you can specify to encrypt or not the boot disk."
   type = object({

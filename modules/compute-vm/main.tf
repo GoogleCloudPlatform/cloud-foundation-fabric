@@ -61,9 +61,6 @@ locals {
     )
   )
   termination_action = var.options.spot ? coalesce(var.options.termination_action, "STOP") : null
-  metadata = merge(var.metadata, var.enable_google_logging == true ? {
-    google-logging-enabled = true
-  } : null)
 }
 
 resource "google_compute_disk" "disks" {
@@ -135,7 +132,7 @@ resource "google_compute_instance" "default" {
   deletion_protection       = var.options.deletion_protection
   enable_display            = var.enable_display
   labels                    = var.labels
-  metadata                  = local.metadata
+  metadata                  = var.metadata
 
   dynamic "attached_disk" {
     for_each = local.attached_disks_zonal
@@ -265,7 +262,7 @@ resource "google_compute_instance_template" "default" {
   machine_type     = var.instance_type
   min_cpu_platform = var.min_cpu_platform
   can_ip_forward   = var.can_ip_forward
-  metadata         = local.metadata
+  metadata         = var.metadata
   labels           = var.labels
 
   disk {

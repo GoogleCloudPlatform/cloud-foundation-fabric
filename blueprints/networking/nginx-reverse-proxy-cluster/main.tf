@@ -289,13 +289,12 @@ module "mig-proxy" {
 }
 
 module "proxy-vm" {
-  source                = "../../../modules/compute-vm"
-  project_id            = module.project.project_id
-  zone                  = format("%s-c", var.region)
-  name                  = "nginx-test-vm"
-  instance_type         = "e2-standard-2"
-  tags                  = ["proxy-cluster"]
-  enable_google_logging = true
+  source        = "../../../modules/compute-vm"
+  project_id    = module.project.project_id
+  zone          = format("%s-c", var.region)
+  name          = "nginx-test-vm"
+  instance_type = "e2-standard-2"
+  tags          = ["proxy-cluster"]
   network_interfaces = [{
     network    = module.vpc.self_link
     subnetwork = module.vpc.subnet_self_links[format("%s/%s", var.region, var.subnetwork)]
@@ -305,7 +304,8 @@ module "proxy-vm" {
   }
   create_template = true
   metadata = {
-    user-data = !var.tls ? module.cos-nginx.0.cloud_config : module.cos-nginx-tls.0.cloud_config
+    user-data              = !var.tls ? module.cos-nginx.0.cloud_config : module.cos-nginx-tls.0.cloud_config
+    google-logging-enabled = true
   }
   service_account        = module.service-account-proxy.email
   service_account_create = false

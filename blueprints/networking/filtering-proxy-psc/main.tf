@@ -135,13 +135,12 @@ module "cos-squid" {
 }
 
 module "squid-vm" {
-  source                = "../../../modules/compute-vm"
-  project_id            = module.project.project_id
-  zone                  = "${var.region}-b"
-  name                  = "squid-vm"
-  instance_type         = "e2-medium"
-  create_template       = true
-  enable_google_logging = true
+  source          = "../../../modules/compute-vm"
+  project_id      = module.project.project_id
+  zone            = "${var.region}-b"
+  name            = "squid-vm"
+  instance_type   = "e2-medium"
+  create_template = true
   network_interfaces = [{
     network    = module.vpc.self_link
     subnetwork = module.vpc.subnet_self_links["${var.region}/proxy"]
@@ -152,7 +151,8 @@ module "squid-vm" {
   service_account        = module.service-account-squid.email
   service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
   metadata = {
-    user-data = module.cos-squid.cloud_config
+    user-data              = module.cos-squid.cloud_config
+    google-logging-enabled = true
   }
 }
 
