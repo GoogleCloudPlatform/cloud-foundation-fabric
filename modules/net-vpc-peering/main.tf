@@ -17,10 +17,11 @@
 locals {
   local_network_name = element(reverse(split("/", var.local_network)), 0)
   peer_network_name  = element(reverse(split("/", var.peer_network)), 0)
+  prefix             = var.prefix == null ? "" : "${var.prefix}-"
 }
 
 resource "google_compute_network_peering" "local_network_peering" {
-  name                 = "${var.prefix}-${local.local_network_name}-${local.peer_network_name}"
+  name                 = "${local.prefix}${local.local_network_name}-${local.peer_network_name}"
   network              = var.local_network
   peer_network         = var.peer_network
   export_custom_routes = var.export_local_custom_routes
@@ -29,7 +30,7 @@ resource "google_compute_network_peering" "local_network_peering" {
 
 resource "google_compute_network_peering" "peer_network_peering" {
   count                = var.peer_create_peering ? 1 : 0
-  name                 = "${var.prefix}-${local.peer_network_name}-${local.local_network_name}"
+  name                 = "${local.prefix}${local.peer_network_name}-${local.local_network_name}"
   network              = var.peer_network
   peer_network         = var.local_network
   export_custom_routes = var.export_peer_custom_routes

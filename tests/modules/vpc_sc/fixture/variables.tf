@@ -14,13 +14,40 @@
  * limitations under the License.
  */
 
-# tfdoc:file:description SSL certificates.
+variable "access_levels" {
+  type     = any
+  default  = {}
+  nullable = false
+}
 
-resource "google_compute_region_ssl_certificate" "certificates" {
-  for_each    = var.ssl_certificates_config
-  project     = var.project_id
-  name        = "${var.name}-${each.key}"
-  certificate = try(each.value.tls_self_signed_cert, null)
-  private_key = try(each.value.tls_private_key, null)
-  region      = var.region
+variable "access_policy" {
+  type = string
+}
+
+variable "access_policy_create" {
+  type    = any
+  default = null
+}
+
+variable "egress_policies" {
+  type     = any
+  default  = {}
+  nullable = false
+}
+
+variable "ingress_policies" {
+  type     = any
+  default  = {}
+  nullable = false
+}
+
+variable "service_perimeters_bridge" {
+  type    = any
+  default = {}
+}
+
+variable "service_perimeters_regular" {
+  type     = any
+  default  = {}
+  nullable = false
 }

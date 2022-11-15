@@ -31,7 +31,8 @@ module "vm-nginx-tls" {
   }]
 
   metadata = {
-    user-data = module.cos-nginx-tls.cloud_config
+    user-data              = module.cos-nginx-tls.cloud_config
+    google-logging-enabled = true
   }
 
   boot_disk = {
@@ -49,12 +50,11 @@ module "vm-nginx-tls" {
 
 | name | description | type | required | default |
 |---|---|:---:|:---:|:---:|
-| [docker_logging](variables.tf#L23) | Log via the Docker gcplogs driver. Disable if you use the legacy Logging Agent instead. | <code>bool</code> |  | <code>true</code> |
-| [files](variables.tf#L41) | Map of extra files to create on the instance, path as key. Owner and permissions will use defaults if null. | <code title="map&#40;object&#40;&#123;&#10;  content     &#61; string&#10;  owner       &#61; string&#10;  permissions &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
+| [files](variables.tf#L35) | Map of extra files to create on the instance, path as key. Owner and permissions will use defaults if null. | <code title="map&#40;object&#40;&#123;&#10;  content     &#61; string&#10;  owner       &#61; string&#10;  permissions &#61; string&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
 | [nginx_image](variables.tf#L17) | Nginx container image to use. | <code>string</code> |  | <code>&#34;nginx:1.23.1&#34;</code> |
-| [runcmd_post](variables.tf#L35) | Extra commands to run after starting nginx. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [runcmd_pre](variables.tf#L29) | Extra commands to run before starting nginx. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
-| [users](variables.tf#L51) | Additional list of usernames to be created. | <code title="list&#40;object&#40;&#123;&#10;  username &#61; string,&#10;  uid      &#61; number,&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code title="&#91;&#10;&#93;">&#91;&#8230;&#93;</code> |
+| [runcmd_post](variables.tf#L29) | Extra commands to run after starting nginx. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [runcmd_pre](variables.tf#L23) | Extra commands to run before starting nginx. | <code>list&#40;string&#41;</code> |  | <code>&#91;&#93;</code> |
+| [users](variables.tf#L45) | Additional list of usernames to be created. | <code title="list&#40;object&#40;&#123;&#10;  username &#61; string,&#10;  uid      &#61; number,&#10;&#125;&#41;&#41;">list&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code title="&#91;&#10;&#93;">&#91;&#8230;&#93;</code> |
 
 ## Outputs
 

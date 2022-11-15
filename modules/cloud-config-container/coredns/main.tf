@@ -16,9 +16,8 @@
 
 locals {
   cloud_config = templatefile(local.template, merge(var.config_variables, {
-    corefile       = templatefile(local.corefile, var.config_variables)
-    docker_logging = var.docker_logging
-    files          = local.files
+    corefile = templatefile(local.corefile, var.config_variables)
+    files    = local.files
   }))
   corefile = (
     var.coredns_config == null ? "${path.module}/Corefile" : var.coredns_config

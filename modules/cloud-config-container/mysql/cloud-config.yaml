@@ -96,9 +96,6 @@ write_files:
       ExecStartPre=/bin/chown -R 2000 /run/mysql/secrets /run/mysql/data
       ExecStart=/usr/bin/docker run --rm --name=mysql \
         --user 2000:2000 \
-        %{~ if docker_logging ~}
-        --log-driver=gcplogs \
-        %{~ endif ~}
         --network host \
         -e MYSQL_ROOT_PASSWORD_FILE=/etc/secrets/mysql-passwd.txt \
         -v /run/mysql/secrets:/etc/secrets \
