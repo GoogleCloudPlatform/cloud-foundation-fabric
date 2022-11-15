@@ -141,13 +141,6 @@ module "cloud-function" {
     lifecycle_delete_age = null
   }
   region = var.region
-  vpc_connector = (var.vpc_connector_name != "" ?
-    {
-      create          = false
-      name            = var.vpc_connector_name
-      egress_settings = "ALL_TRAFFIC"
-  } : null)
-
 
   bundle_config = {
     source_dir  = "cloud-function"
