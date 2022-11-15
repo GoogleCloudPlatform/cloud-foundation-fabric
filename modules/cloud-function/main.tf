@@ -39,6 +39,16 @@ locals {
     )
     : var.service_account
   )
+  trigger_service_account_email = (
+    try(var.trigger_config.v2.service_account_create, null) == null
+    ? false
+    : var.trigger_config.v2.service_account_create ? (
+      length(google_service_account.trigger_service_account) > 0
+      ? google_service_account.trigger_service_account[0].email
+      : null
+    )
+    : try(var.trigger_config.v2.service_account_email, null)
+  )
   vpc_connector = (
     var.vpc_connector == null
     ? null
@@ -212,9 +222,18 @@ resource "google_cloudfunctions2_function" "function" {
 }
 
 resource "google_cloudfunctions_function_iam_binding" "default" {
-  for_each       = var.iam
+  for_each       = var.v2 == false ? var.iam : {}
   project        = var.project_id
   region         = var.region
+  cloud_function = local.function.name
+  role           = each.key
+  members        = each.value
+}
+
+resource "google_cloudfunctions2_function_iam_binding" "default" {
+  for_each       = var.v2 == true ? var.iam : {}
+  project        = var.project_id
+  location       = google_cloudfunctions2_function.function[0].location
   cloud_function = local.function.name
   role           = each.key
   members        = each.value
@@ -270,4 +289,22 @@ resource "google_service_account" "service_account" {
   project      = var.project_id
   account_id   = "tf-cf-${var.name}"
   display_name = "Terraform Cloud Function ${var.name}."
+}
+
+resource "google_service_account" "trigger_service_account" {
+  count = try(var.trigger_config.v2.service_account_create, null) == null ? 0 : (
+    var.trigger_config.v2.service_account_create ? 1 : 0
+  )
+  project      = var.project_id
+  account_id   = "tf-cf-trigger-${var.name}"
+  display_name = "Terraform trigger for Cloud Function ${var.name}."
+}
+
+resource "google_project_iam_member" "trigger_iam" {
+  count = try(var.trigger_config.v2.service_account_create, null) == null ? 0 : (
+    var.trigger_config.v2.service_account_create ? 1 : 0
+  )
+  project = var.project_id
+  member  = "serviceAccount:${google_service_account.trigger_service_account[0].email}"
+  role    = "roles/run.invoker"
 }

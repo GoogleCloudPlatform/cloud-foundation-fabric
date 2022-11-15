@@ -68,7 +68,7 @@ variable "function_config" {
     entry_point = "main"
     instances   = 1
     memory      = 256
-    runtime     = "python37"
+    runtime     = "python310"
     timeout     = 180
   }
 }
@@ -158,8 +158,9 @@ variable "trigger_config" {
         value     = string
         operator  = string
       })))
-      service_account_email = optional(string)
-      retry_policy          = optional(string)
+      service_account_email  = optional(string)
+      service_account_create = optional(bool)
+      retry_policy           = optional(string)
     }))
   })
   default = null

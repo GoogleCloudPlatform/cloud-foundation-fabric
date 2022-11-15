@@ -169,9 +169,9 @@ module "cloud-function" {
 
   trigger_config = var.cf_version == "V2" ? {
     v2 = {
-      event_type   = "google.cloud.pubsub.topic.v1.messagePublished"
-      pubsub_topic = module.pubsub.topic.id
-      # TODO: service_account_email
+      event_type             = "google.cloud.pubsub.topic.v1.messagePublished"
+      pubsub_topic           = module.pubsub.topic.id
+      service_account_create = true
     }
     } : {
     v1 = {
