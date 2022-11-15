@@ -17,7 +17,7 @@ The simplest example leverages defaults for the boot disk image and size, and us
 module "simple-vm-example" {
   source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
-  zone     = "europe-west1-b"
+  zone       = "europe-west1-b"
   name       = "test"
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -37,11 +37,11 @@ module "simple-vm-example" {
 module "spot-vm-example" {
   source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
-  zone     = "europe-west1-b"
+  zone       = "europe-west1-b"
   name       = "test"
   options = {
-    spot                      = true
-    termination_action = "STOP"    
+    spot               = true
+    termination_action = "STOP"
   }
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -68,7 +68,7 @@ This is an example of attaching a pre-existing regional PD to a new instance:
 module "simple-vm-example" {
   source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
-  zone     = "${var.region}-b"
+  zone       = "${var.region}-b"
   name       = "test"
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -94,7 +94,7 @@ And the same example for an instance template (where not using the full self lin
 module "simple-vm-example" {
   source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
-  zone     = "${var.region}-b"
+  zone       = "${var.region}-b"
   name       = "test"
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -110,7 +110,7 @@ module "simple-vm-example" {
     }
   }]
   service_account_create = true
-  create_template  = true
+  create_template = true
 }
 # tftest modules=1 resources=2
 ```
@@ -137,11 +137,11 @@ module "kms-vm-example" {
   ]
   service_account_create = true
   boot_disk = {
-    image        = "projects/debian-cloud/global/images/family/debian-10"
+    image = "projects/debian-cloud/global/images/family/debian-10"
   }
   encryption = {
-    encrypt_boot            = true
-    kms_key_self_link       = var.kms_key.self_link
+    encrypt_boot      = true
+    kms_key_self_link = var.kms_key.self_link
   }
 }
 # tftest modules=1 resources=3
@@ -199,7 +199,7 @@ module "vm-with-gvnic" {
   project_id = "my-project"
   zone       = "europe-west1-b"
   name       = "test"
-  boot_disk      = {
+  boot_disk = {
       image = google_compute_image.cos-gvnic.self_link
       type  = "pd-ssd"
   }
@@ -221,23 +221,23 @@ This example shows how to use the module to manage an instance template that def
 module "cos-test" {
   source     = "./fabric/modules/compute-vm"
   project_id = "my-project"
-  zone     = "europe-west1-b"
+  zone       = "europe-west1-b"
   name       = "test"
   network_interfaces = [{
     network    = var.vpc.self_link
     subnetwork = var.subnet.self_link
   }]
-  boot_disk      = {
+  boot_disk = {
     image = "projects/cos-cloud/global/images/family/cos-stable"
   }
   attached_disks = [
     {
-      name        = "disk-1"
-      size        = 10
+      name = "disk-1"
+      size = 10
     }
   ]
-  service_account        = "vm-default@my-project.iam.gserviceaccount.com"
-  create_template  = true
+  service_account = "vm-default@my-project.iam.gserviceaccount.com"
+  create_template = true
 }
 # tftest modules=1 resources=1
 ```
@@ -254,7 +254,7 @@ locals {
 module "instance-group" {
   source     = "./fabric/modules/compute-vm"
   project_id = "my-project"
-  zone     = "europe-west1-b"
+  zone       = "europe-west1-b"
   name       = "ilb-test"
   network_interfaces = [{
     network    = var.vpc.self_link
