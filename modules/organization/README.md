@@ -464,7 +464,7 @@ module "org" {
 | [org_policy_custom_constraints_data_path](variables.tf#L219) | Path containing org policy custom constraints in YAML format. | <code>string</code> |  | <code>null</code> |
 | [tag_bindings](variables.tf#L235) | Tag bindings for this organization, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 | [tags](variables.tf#L241) | Tags by key name. The `iam` attribute behaves like the similarly named one at module level. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; string&#10;  iam         &#61; map&#40;list&#40;string&#41;&#41;&#10;  values &#61; map&#40;object&#40;&#123;&#10;    description &#61; string&#10;    iam         &#61; map&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
-| [tags_network](variables.tf#L254) | Tags by key name. The `iam` attribute behaves like the similarly named one at module level. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; string&#10;  iam         &#61; map&#40;list&#40;string&#41;&#41;&#10;  network     &#61; string&#10;  values &#61; map&#40;object&#40;&#123;&#10;    description &#61; string&#10;    iam         &#61; map&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
+| [tags_network](variables.tf#L254) | Tags by key name. The `iam` attribute behaves like the similarly named one at module level. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; string&#10;  iam         &#61; map&#40;list&#40;string&#41;&#41;&#10;  network     &#61; string &#35; project_id&#47;vpc_name&#10;  values &#61; map&#40;object&#40;&#123;&#10;    description &#61; string&#10;    iam         &#61; map&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 
@@ -477,6 +477,8 @@ module "org" {
 | [organization_id](outputs.tf#L46) | Organization id dependent on module resources. |  |
 | [sink_writer_identities](outputs.tf#L63) | Writer identities created for each sink. |  |
 | [tag_keys](outputs.tf#L71) | Tag key resources. |  |
+| [tag_network_keys](outputs.tf#L86) | Tag key resources. |  |
+| [tag_network_values](outputs.tf#L93) | Tag value resources. |  |
 | [tag_values](outputs.tf#L78) | Tag value resources. |  |
 
 <!-- END TFDOC -->
