@@ -29,6 +29,6 @@ def test_resource_count(resources):
 def test_iam(resources):
   "Test IAM binding resources."
   bindings = [r['values'] for r in resources if r['type']
-              == 'google_cloudfunctions_function_iam_binding']
+              == 'google_cloudfunctions2_function_iam_binding']
   assert len(bindings) == 1
   assert bindings[0]['role'] == 'roles/cloudfunctions.invoker'
