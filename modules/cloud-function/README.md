@@ -154,6 +154,27 @@ module "cf-http" {
 }
 # tftest skip
 ```
+
+### Private Cloud Build Pool
+
+This deploys a Cloud Function with an HTTP endpoint, using a pre-existing GCS bucket for deployment using a pre existing private Cloud Build worker pool. 
+
+```hcl
+module "cf-http" {
+  source        = "./fabric/modules/cloud-function"
+  project_id    = "my-project"
+  name          = "test-cf-http"
+  bucket_name   = "test-cf-bundles"
+  build_worker_pool = "projects/my-project/locations/europe-west1/workerPools/my_build_worker_pool"
+  bundle_config = {
+    source_dir  = "my-cf-source-folder"
+    output_path = "bundle.zip"
+    excludes    = null
+  }
+}
+# tftest skip
+```
+
 <!-- BEGIN TFDOC -->
 
 ## Variables
