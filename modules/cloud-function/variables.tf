@@ -28,6 +28,12 @@ variable "bucket_name" {
   type        = string
 }
 
+variable "build_worker_pool" {
+  description = "Build worker pool, in projects/<PROJECT-ID>/locations/<REGION>/workerPools/<POOL_NAME> format"
+  type        = string
+  default     = null
+}
+
 variable "bundle_config" {
   description = "Cloud function source folder and generated zip bundle paths. Output path defaults to '/tmp/bundle.zip' if null."
   type = object({
@@ -169,4 +175,5 @@ variable "v2" {
   type        = bool
   default     = false
 }
+
 
