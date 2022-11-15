@@ -34,11 +34,10 @@ Clone this repository, then go through the following steps to create resources:
 
 Note: Org level viewing permission is required for some metrics such as firewall policies.
 
-Once the resources are deployed, go to the following page to see the dashboard: https://console.cloud.google.com/monitoring/dashboards?project=<YOUR-MONITORING-PROJECT> (or <YOUR-METRICS-PROJECT> if populated)
-A dashboard called "quotas-utilization" should be created.
+Once the resources are deployed, go to the following page to see the dashboard: https://console.cloud.google.com/monitoring/dashboards?project=<YOUR-MONITORING-PROJECT> a dashboard called "quotas-utilization" should be created.
 
 The Cloud Function runs every 10 minutes by default so you should start getting some data points after a few minutes.
-You can use the metric explorer to view the data points for the different custom metrics created: https://console.cloud.google.com/monitoring/metrics-explorer?project=<YOUR-MONITORING-PROJECT> (or <YOUR-METRICS-PROJECT> if populated).
+You can use the metric explorer to view the data points for the different custom metrics created: https://console.cloud.google.com/monitoring/metrics-explorer?project=<YOUR-MONITORING-PROJECT>.
 You can change this frequency by modifying the "schedule_cron" variable in variables.tf.
 
 Note that some charts in the dashboard align values over 1h so you might need to wait 1h to see charts on the dashboard views.
