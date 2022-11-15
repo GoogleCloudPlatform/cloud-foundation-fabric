@@ -85,9 +85,10 @@ resource "google_cloudfunctions_function" "function" {
   source_archive_bucket = local.bucket
   source_archive_object = google_storage_bucket_object.bundle.name
   labels                = var.labels
-  trigger_http          = try(var.trigger_config.v1 == null, true) ? true : null
-  ingress_settings      = var.ingress_settings
-  build_worker_pool     = var.build_worker_pool
+  trigger_http          = try(var.trigger_config.v1, null) == null ? true : null
+
+  ingress_settings  = var.ingress_settings
+  build_worker_pool = var.build_worker_pool
 
   vpc_connector = local.vpc_connector
   vpc_connector_egress_settings = try(
@@ -95,7 +96,7 @@ resource "google_cloudfunctions_function" "function" {
   )
 
   dynamic "event_trigger" {
-    for_each = try(var.trigger_config.v1 == null, true) ? [] : [""]
+    for_each = try(var.trigger_config.v1, null) != null ? [""] : []
     content {
       event_type = var.trigger_config.v1.event
       resource   = var.trigger_config.v1.resource
@@ -158,7 +159,7 @@ resource "google_cloudfunctions2_function" "function" {
     }
   }
   dynamic "event_trigger" {
-    for_each = try(var.trigger_config.v2 == null, true) ? [] : [""]
+    for_each = try(var.trigger_config.v2, null) != null ? [""] : []
     content {
       trigger_region = var.trigger_config.v2.region
       event_type     = var.trigger_config.v2.event_type
