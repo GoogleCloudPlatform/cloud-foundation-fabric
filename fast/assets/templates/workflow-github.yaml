@@ -99,20 +99,14 @@ jobs:
         name: Terraform plan
         continue-on-error: true
         run: |
-          set -o pipefail
-          echo -e "## Plan Output\n\n\`\`\`hcl" >> $$GITHUB_STEP_SUMMARY
-          terraform plan -input=false -out ../plan.out -no-color |tee -a $$GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $$GITHUB_STEP_SUMMARY
+          terraform plan -input=false -out ../plan.out -no-color
 
       - id: tf-apply
         if: github.event.pull_request.merged == true && success()
         name: Terraform apply
         continue-on-error: true
         run: |
-          set -o pipefail
-          echo -e "## Apply Output\n\n\`\`\`hcl" >> $$GITHUB_STEP_SUMMARY
-          terraform apply -input=false -auto-approve -no-color ../plan.out |tee -a $$GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $$GITHUB_STEP_SUMMARY
+          terraform apply -input=false -auto-approve -no-color ../plan.out
 
       - id: pr-comment
         name: Post comment to Pull Request
@@ -181,7 +175,12 @@ jobs:
               body: output
             })
 
-      - id: check-outcome
-        name: Check on failures
+      - id: check-plan
+        name: Check plan failure
         if: steps.tf-plan.outcome != 'success'
+        run: exit 1
+
+      - id: check-apply
+        name: Check apply failure
+        if: github.event.pull_request.merged == true && steps.tf-apply.outcome != 'success'
         run: exit 1
