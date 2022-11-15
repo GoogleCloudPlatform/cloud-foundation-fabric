@@ -98,7 +98,7 @@ resource "google_compute_service_attachment" "service_attachment" {
   name                  = "psc"
   project               = module.project.project_id
   region                = var.region
-  enable_proxy_protocol = false
+  enable_proxy_protocol = true
   connection_preference = "ACCEPT_MANUAL"
   nat_subnets           = [module.vpc.subnets_psc["${var.region}/psc"].self_link]
   target_service        = module.squid-ilb.forwarding_rule_self_link
@@ -125,9 +125,13 @@ module "service-account-squid" {
 }
 
 module "cos-squid" {
-  source  = "../../../modules/cloud-config-container/squid"
-  allow   = var.allowed_domains
-  clients = [var.cidrs.psc]
+  source       = "../../../modules/cloud-config-container/squid"
+  allow        = var.allowed_domains
+  clients      = [var.cidrs.app]
+  squid_config = "${path.module}/squid.conf"
+  config_variables = {
+    psc_cidr = var.cidrs.psc
+  }
 }
 
 module "squid-vm" {
@@ -147,7 +151,8 @@ module "squid-vm" {
   service_account        = module.service-account-squid.email
   service_account_scopes = ["https://www.googleapis.com/auth/cloud-platform"]
   metadata = {
-    user-data = module.cos-squid.cloud_config
+    user-data              = module.cos-squid.cloud_config
+    google-logging-enabled = true
   }
 }
 
@@ -174,7 +179,8 @@ module "squid-mig" {
   health_check_config = {
     enable_logging = true
     tcp = {
-      port = 3128
+      port         = 3128
+      proxy_header = "PROXY_V1"
     }
   }
   update_policy = {
@@ -204,7 +210,8 @@ module "squid-ilb" {
   health_check_config = {
     enable_logging = true
     tcp = {
-      port = 3128
+      port         = 3128
+      proxy_header = "PROXY_V1"
     }
   }
 }

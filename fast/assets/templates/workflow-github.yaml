@@ -99,25 +99,22 @@ jobs:
         name: Terraform plan
         continue-on-error: true
         run: |
-          echo -e "## Plan Output\n\n\`\`\`hcl" >> $$GITHUB_STEP_SUMMARY
-          terraform plan -input=false -out ../plan.out -no-color |tee -a $$GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $$GITHUB_STEP_SUMMARY
+          terraform plan -input=false -out ../plan.out -no-color
 
       - id: tf-apply
-        if: github.event.pull_request.merged == true
+        if: github.event.pull_request.merged == true && success()
         name: Terraform apply
         continue-on-error: true
         run: |
-          echo -e "## Apply Output\n\n\`\`\`hcl" >> $$GITHUB_STEP_SUMMARY
-          terraform apply -input=false -auto-approve -no-color ../plan.out |tee -a $$GITHUB_STEP_SUMMARY
-          echo "\`\`\`" >> $$GITHUB_STEP_SUMMARY
+          terraform apply -input=false -auto-approve -no-color ../plan.out
 
       - id: pr-comment
         name: Post comment to Pull Request
+        continue-on-error: true
         uses: actions/github-script@v6
         if: github.event_name == 'pull_request'
         env:
-          PLAN: terraform\n$${{ steps.tf-plan.outputs.stdout }}
+          PLAN: $${{ steps.tf-plan.outputs.stdout }}\n$${{ steps.tf-plan.outputs.stderr }}
         with:
           script: |
             const output = `### Terraform Initialization \`$${{ steps.tf-init.outcome }}\`
@@ -153,4 +150,37 @@ jobs:
               body: output
             })
 
-      # jq -j -r '.resource_changes[] | (.change.actions | join(",")), " ", .address, "\n" ' foo.json
+      - id: pr-short-comment
+        name: Post comment to Pull Request
+        uses: actions/github-script@v6
+        if: github.event_name == 'pull_request' && steps.pr-comment.outcome != 'success'
+        with:
+          script: |
+            const output = `### Terraform Initialization \`$${{ steps.tf-init.outcome }}\`
+
+            ### Terraform Validation \`$${{ steps.tf-validate.outcome }}\`
+
+            ### Terraform Plan \`$${{ steps.tf-plan.outcome }}\`
+
+            Plan output is in the action log.
+
+            ### Terraform Apply \`$${{ steps.tf-apply.outcome }}\`
+
+            *Pusher: @$${{ github.actor }}, Action: \`$${{ github.event_name }}\`, Working Directory: \`$${{ env.tf_actions_working_dir }}\`, Workflow: \`$${{ github.workflow }}\`*`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
+
+      - id: check-plan
+        name: Check plan failure
+        if: steps.tf-plan.outcome != 'success'
+        run: exit 1
+
+      - id: check-apply
+        name: Check apply failure
+        if: github.event.pull_request.merged == true && steps.tf-apply.outcome != 'success'
+        run: exit 1

@@ -52,9 +52,6 @@ write_files:
       %{~ if length(users) > 0 && run_as_first_user ~}
         --user=${users[0].uid} \
       %{~ endif ~}
-      %{~ if docker_logging ~}
-        --log-driver=gcplogs \
-      %{~ endif ~}
       %{~ if docker_args != null ~}
         ${docker_args} \
       %{~ endif ~}
