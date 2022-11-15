@@ -163,9 +163,9 @@ variable "trigger_config" {
       retry_policy           = optional(string)
     }))
   })
-  default = null
+  default = { v1 = null, v2 = null }
   validation {
-    condition     = try(((var.trigger_config.v1 == null) != (var.trigger_config.v2 == null)), var.trigger_config == null)
+    condition     = !(var.trigger_config.v1 != null && var.trigger_config.v2 != null)
     error_message = "Provide configuration for only one generation - either v1 or v2"
   }
 }

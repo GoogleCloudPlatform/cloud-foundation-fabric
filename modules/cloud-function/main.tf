@@ -85,7 +85,7 @@ resource "google_cloudfunctions_function" "function" {
   source_archive_bucket = local.bucket
   source_archive_object = google_storage_bucket_object.bundle.name
   labels                = var.labels
-  trigger_http          = try(var.trigger_config.v1, null) == null ? true : null
+  trigger_http          = var.trigger_config.v1 == null ? true : null
 
   ingress_settings  = var.ingress_settings
   build_worker_pool = var.build_worker_pool
@@ -96,7 +96,7 @@ resource "google_cloudfunctions_function" "function" {
   )
 
   dynamic "event_trigger" {
-    for_each = try(var.trigger_config.v1, null) != null ? [""] : []
+    for_each = var.trigger_config.v1 == null ? [] : [""]
     content {
       event_type = var.trigger_config.v1.event
       resource   = var.trigger_config.v1.resource
@@ -159,7 +159,7 @@ resource "google_cloudfunctions2_function" "function" {
     }
   }
   dynamic "event_trigger" {
-    for_each = try(var.trigger_config.v2, null) != null ? [""] : []
+    for_each = var.trigger_config.v2 == null ? [] : [""]
     content {
       trigger_region = var.trigger_config.v2.region
       event_type     = var.trigger_config.v2.event_type
@@ -223,7 +223,7 @@ resource "google_cloudfunctions2_function" "function" {
 }
 
 resource "google_cloudfunctions_function_iam_binding" "default" {
-  for_each       = var.v2 == false ? var.iam : {}
+  for_each       = !var.v2 ? var.iam : {}
   project        = var.project_id
   region         = var.region
   cloud_function = local.function.name
@@ -232,7 +232,7 @@ resource "google_cloudfunctions_function_iam_binding" "default" {
 }
 
 resource "google_cloudfunctions2_function_iam_binding" "default" {
-  for_each       = var.v2 == true ? var.iam : {}
+  for_each       = var.v2 ? var.iam : {}
   project        = var.project_id
   location       = google_cloudfunctions2_function.function[0].location
   cloud_function = local.function.name
@@ -293,18 +293,14 @@ resource "google_service_account" "service_account" {
 }
 
 resource "google_service_account" "trigger_service_account" {
-  count = try(var.trigger_config.v2.service_account_create, null) == null ? 0 : (
-    var.trigger_config.v2.service_account_create ? 1 : 0
-  )
+  count        = try(var.trigger_config.v2.service_account_create, false) == true ? 1 : 0
   project      = var.project_id
   account_id   = "tf-cf-trigger-${var.name}"
   display_name = "Terraform trigger for Cloud Function ${var.name}."
 }
 
 resource "google_project_iam_member" "trigger_iam" {
-  count = try(var.trigger_config.v2.service_account_create, null) == null ? 0 : (
-    var.trigger_config.v2.service_account_create ? 1 : 0
-  )
+  count   = try(var.trigger_config.v2.service_account_create, false) == true ? 1 : 0
   project = var.project_id
   member  = "serviceAccount:${google_service_account.trigger_service_account[0].email}"
   role    = "roles/run.invoker"
