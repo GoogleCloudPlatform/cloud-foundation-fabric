@@ -31,6 +31,7 @@ variable "bucket_name" {
 variable "build_worker_pool" {
   description = "Build worker pool, in projects/<PROJECT-ID>/locations/<REGION>/workerPools/<POOL_NAME> format"
   type        = string
+  default     = null
 }
 
 variable "bundle_config" {
