@@ -55,10 +55,12 @@ locals {
   tag_values_iam = {
     for t in local._tag_values_iam : "${t.key}:${t.role}" => t
   }
-
   tags = {
-    for k, v in coalesce(merge(var.tags, var.tags_network), {}) :
-    k => v == null ? { description = null, iam = {}, values = null } : v
+    for k, v in merge(coalesce(var.tags, {}), coalesce(var.tags_network, {})) : k => (
+      v == null
+      ? { description = null, iam = {}, network = null, values = null }
+      : merge({ network = null }, v)
+    )
   }
   tags_iam = {
     for t in local._tags_iam : "${t.tag}:${t.role}" => t
@@ -68,11 +70,15 @@ locals {
 # keys
 
 resource "google_tags_tag_key" "default" {
-  for_each     = local.tags
-  parent       = var.organization_id
-  purpose      = try(each.value.network, null) == null ? null : "GCE_FIREWALL"
-  purpose_data = try(each.value.network, null) == null ? null : each.value.network
-  short_name   = each.key
+  for_each = local.tags
+  parent   = var.organization_id
+  purpose = (
+    each.value.network == null ? null : "GCE_FIREWALL"
+  )
+  purpose_data = (
+    each.value.network == null ? null : { network = each.value.network }
+  )
+  short_name = each.key
   description = coalesce(
     each.value.description,
     "Managed by the Terraform organization module."

@@ -393,14 +393,14 @@ module "org" {
 # tftest modules=1 resources=7
 ```
 
-You can also add network tags, through a dedicated variable *tags_network*:
+You can also define network tags, through a dedicated variable *tags_network*:
 
 ```hcl
 module "org" {
   source          = "./fabric/modules/organization"
   organization_id = var.organization_id
   tags_network = {
-    environment = {
+    net-environment = {
       description  = "This is a network tag."
       network      = "my_project/my_vpc"
       iam          = {

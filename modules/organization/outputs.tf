@@ -79,7 +79,7 @@ output "tag_values" {
   description = "Tag value resources."
   value = {
     for k, v in google_tags_tag_value.default
-    : k => v if google_tags_tag_key.default["k"].purpose == null
+    : k => v if google_tags_tag_key.default[split("/", k)[0]].purpose == null
   }
 }
 
@@ -94,6 +94,6 @@ output "tag_network_values" {
   description = "Tag value resources."
   value = {
     for k, v in google_tags_tag_value.default
-    : k => v if google_tags_tag_key.default["k"].purpose != null
+    : k => v if google_tags_tag_key.default[split("/", k)[0]].purpose != null
   }
 }
