@@ -77,6 +77,7 @@ resource "google_cloudfunctions_function" "function" {
   labels                = var.labels
   trigger_http          = var.trigger_config == null ? true : null
   ingress_settings      = var.ingress_settings
+  build_worker_pool     = var.build_worker_pool
 
   vpc_connector = local.vpc_connector
   vpc_connector_egress_settings = try(
@@ -136,6 +137,7 @@ resource "google_cloudfunctions2_function" "function" {
   name        = "${local.prefix}${var.name}"
   description = var.description
   build_config {
+    worker_pool           = var.build_worker_pool ##check
     runtime               = var.function_config.runtime
     entry_point           = "${var.function_config.entry_point}_http" # Set the entry point 
     environment_variables = var.environment_variables
