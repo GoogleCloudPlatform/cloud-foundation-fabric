@@ -19,10 +19,10 @@ module "cos-nginx-tls" {
 
 # COS VM
 module "vm-nginx-tls" {
-  source                = "./fabric/modules/compute-vm"
-  project_id            = local.project_id
-  zone                  = local.zone
-  name                  = "cos-nginx-tls"
+  source     = "./fabric/modules/compute-vm"
+  project_id = local.project_id
+  zone       = local.zone
+  name       = "cos-nginx-tls"
   network_interfaces = [{
     network    = local.vpc.self_link,
     subnetwork = local.vpc.subnet_self_link,

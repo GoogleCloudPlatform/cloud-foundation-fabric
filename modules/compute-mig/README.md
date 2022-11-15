@@ -19,7 +19,7 @@ module "nginx-template" {
   source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
   name       = "nginx-template"
-  zone     = "europe-west1-b"
+  zone       = "europe-west1-b"
   tags       = ["http-server", "ssh"]
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -62,7 +62,7 @@ module "nginx-template" {
   source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
   name       = "nginx-template"
-  zone     = "europe-west1-b"
+  zone       = "europe-west1-b"
   tags       = ["http-server", "ssh"]
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -75,7 +75,7 @@ module "nginx-template" {
     type  = "pd-ssd"
     size  = 10
   }
-  create_template  = true
+  create_template = true
   metadata = {
     user-data = module.cos-nginx.cloud_config
   }
@@ -113,7 +113,7 @@ module "nginx-template" {
   source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
   name       = "nginx-template"
-  zone     = "europe-west1-b"
+  zone       = "europe-west1-b"
   tags       = ["http-server", "ssh"]
   network_interfaces = [{
     network    = var.vpc.self_link,
@@ -126,7 +126,7 @@ module "nginx-template" {
     type  = "pd-ssd"
     size  = 10
   }
-  create_template  = true
+  create_template = true
   metadata = {
     user-data = module.cos-nginx.cloud_config
   }
@@ -165,7 +165,7 @@ module "nginx-template" {
   source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
   name       = "nginx-template"
-  zone     = "europe-west1-b"
+  zone       = "europe-west1-b"
   tags       = ["http-server", "ssh"]
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -178,7 +178,7 @@ module "nginx-template" {
     type  = "pd-ssd"
     size  = 10
   }
-  create_template  = true
+  create_template = true
   metadata = {
     user-data = module.cos-nginx.cloud_config
   }
@@ -216,7 +216,7 @@ module "nginx-template" {
   source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
   name       = "nginx-template"
-  zone     = "europe-west1-b"
+  zone       = "europe-west1-b"
   tags       = ["http-server", "ssh"]
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -229,7 +229,7 @@ module "nginx-template" {
     type  = "pd-ssd"
     size  = 10
   }
-  create_template  = true
+  create_template = true
   metadata = {
     user-data = module.cos-nginx.cloud_config
   }
@@ -273,7 +273,7 @@ module "nginx-template" {
   source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
   name       = "nginx-template"
-  zone     = "europe-west1-b"
+  zone       = "europe-west1-b"
   tags       = ["http-server", "ssh"]
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -297,7 +297,7 @@ module "nginx-template" {
       type         = "PERSISTENT"
     }
   }]
-  create_template  = true
+  create_template = true
   metadata = {
     user-data = module.cos-nginx.cloud_config
   }
@@ -343,7 +343,7 @@ module "nginx-template" {
   source     = "./fabric/modules/compute-vm"
   project_id = var.project_id
   name       = "nginx-template"
-  zone     = "europe-west1-b"
+  zone       = "europe-west1-b"
   tags       = ["http-server", "ssh"]
   network_interfaces = [{
     network    = var.vpc.self_link
@@ -367,7 +367,7 @@ module "nginx-template" {
       type         = "PERSISTENT"
     }
   }]
-  create_template  = true
+  create_template = true
   metadata = {
     user-data = module.cos-nginx.cloud_config
   }
@@ -398,7 +398,7 @@ module "nginx-mig" {
       preserved_state = {
         disks = {
           persistent-disk-1 = {
-            source = "test-disk", 
+            source = "test-disk",
           }
         }
         metadata = {

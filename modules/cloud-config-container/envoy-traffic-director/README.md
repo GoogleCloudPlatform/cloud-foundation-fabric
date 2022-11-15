@@ -18,17 +18,17 @@ module "cos-envoy-td" {
 
 # COS VM
 module "vm-cos" {
-  source                = "./fabric/modules/compute-vm"
-  project_id            = local.project_id
-  zone                  = local.zone
-  name                  = "cos-envoy-td"
+  source     = "./fabric/modules/compute-vm"
+  project_id = local.project_id
+  zone       = local.zone
+  name       = "cos-envoy-td"
   network_interfaces = [{
     network    = local.vpc.self_link,
     subnetwork = local.vpc.subnet_self_link,
     nat        = false,
     addresses  = null
   }]
-  tags           = ["ssh", "http"]
+  tags = ["ssh", "http"]
 
   metadata = {
     user-data              = module.cos-envoy-td.cloud_config
