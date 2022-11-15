@@ -172,7 +172,6 @@ module "cf-http" {
     excludes    = null
   }
 }
-# tftest skip
 ```
 <!-- BEGIN TFDOC -->
 
