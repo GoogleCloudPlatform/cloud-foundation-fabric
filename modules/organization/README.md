@@ -393,6 +393,34 @@ module "org" {
 # tftest modules=1 resources=7
 ```
 
+You can also add network tags, through a dedicated variable *tags_network*:
+
+```hcl
+module "org" {
+  source          = "./fabric/modules/organization"
+  organization_id = var.organization_id
+  tags_network = {
+    environment = {
+      description  = "This is a network tag."
+      network      = "my_project/my_vpc"
+      iam          = {
+        "roles/resourcemanager.tagAdmin" = ["group:admins@example.com"]
+      }
+      values = {
+        dev  = null
+        prod = {
+          description = "Environment: production."
+          iam = {
+            "roles/resourcemanager.tagUser" = ["user:user1@example.com"]
+          }
+        }
+      }
+    }
+  }
+}
+# tftest modules=1 resources=5
+```
+
 <!-- TFDOC OPTS files:1 -->
 <!-- BEGIN TFDOC -->
 
@@ -436,6 +464,7 @@ module "org" {
 | [org_policy_custom_constraints_data_path](variables.tf#L219) | Path containing org policy custom constraints in YAML format. | <code>string</code> |  | <code>null</code> |
 | [tag_bindings](variables.tf#L235) | Tag bindings for this organization, in key => tag value id format. | <code>map&#40;string&#41;</code> |  | <code>null</code> |
 | [tags](variables.tf#L241) | Tags by key name. The `iam` attribute behaves like the similarly named one at module level. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; string&#10;  iam         &#61; map&#40;list&#40;string&#41;&#41;&#10;  values &#61; map&#40;object&#40;&#123;&#10;    description &#61; string&#10;    iam         &#61; map&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
+| [tags_network](variables.tf#L254) | Tags by key name. The `iam` attribute behaves like the similarly named one at module level. | <code title="map&#40;object&#40;&#123;&#10;  description &#61; string&#10;  iam         &#61; map&#40;list&#40;string&#41;&#41;&#10;  network     &#61; string&#10;  values &#61; map&#40;object&#40;&#123;&#10;    description &#61; string&#10;    iam         &#61; map&#40;list&#40;string&#41;&#41;&#10;  &#125;&#41;&#41;&#10;&#125;&#41;&#41;">map&#40;object&#40;&#123;&#8230;&#125;&#41;&#41;</code> |  | <code>null</code> |
 
 ## Outputs
 

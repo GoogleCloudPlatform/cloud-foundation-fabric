@@ -250,3 +250,17 @@ variable "tags" {
   }))
   default = null
 }
+
+variable "tags_network" {
+  description = "Tags by key name. The `iam` attribute behaves like the similarly named one at module level."
+  type = map(object({
+    description = string
+    iam         = map(list(string))
+    network     = string # project_id/vpc_name
+    values = map(object({
+      description = string
+      iam         = map(list(string))
+    }))
+  }))
+  default = null
+}

@@ -71,13 +71,29 @@ output "sink_writer_identities" {
 output "tag_keys" {
   description = "Tag key resources."
   value = {
-    for k, v in google_tags_tag_key.default : k => v
+    for k, v in google_tags_tag_key.default : k => v if v.purpose == null
   }
 }
 
 output "tag_values" {
   description = "Tag value resources."
   value = {
-    for k, v in google_tags_tag_value.default : k => v
+    for k, v in google_tags_tag_value.default
+    : k => v if google_tags_tag_key.default["k"].purpose == null
+  }
+}
+
+output "tag_network_keys" {
+  description = "Tag key resources."
+  value = {
+    for k, v in google_tags_tag_key.default : k => v if v.purpose != null
+  }
+}
+
+output "tag_network_values" {
+  description = "Tag value resources."
+  value = {
+    for k, v in google_tags_tag_value.default
+    : k => v if google_tags_tag_key.default["k"].purpose != null
   }
 }
