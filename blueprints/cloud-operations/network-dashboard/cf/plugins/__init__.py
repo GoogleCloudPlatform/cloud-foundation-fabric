@@ -22,9 +22,10 @@ import pkgutil
 _PLUGINS = []
 
 Level = enum.IntEnum('Level', 'CORE PRIMARY DERIVED')
-Phase = enum.IntEnum('Phase', 'DISCOVERY COLLECTION')
+Phase = enum.IntEnum('Phase', 'INIT DISCOVERY COLLECTION')
 Plugin = collections.namedtuple('Plugin',
                                 'phase step level priority resource func')
+Resource = collections.namedtuple('Resource', 'id data')
 Step = enum.IntEnum('Step', 'START END')
 
 
@@ -53,4 +54,7 @@ for mod_info in pkgutil.iter_modules([_plugins_path], 'plugins.'):
 
 _PLUGINS.sort()
 
-__all__ = ['Level', 'Phase', 'Step', 'get_plugins', 'register']
+__all__ = [
+    'Level', 'Phase', 'PluginError', 'Resource', 'Step', 'get_plugins',
+    'register'
+]

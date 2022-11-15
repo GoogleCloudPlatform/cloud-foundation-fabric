@@ -16,6 +16,7 @@
 import click
 import collections
 import google.auth
+import logging
 import requests
 
 import plugins
@@ -26,20 +27,45 @@ HTTP = AuthorizedSession(google.auth.default()[0])
 Q_COLLECTION = collections.deque()
 RESOURCES = {}
 
-Resource = collections.namedtuple('Resource', 'id data')
 Result = collections.namedtuple('Result', 'phase resource data')
 
 
-def discovery_start():
-  phase = plugins.Phase.DISCOVERY
-  for plugin in plugins.get_plugins(phase, plugins.Step.START):
+def do_discovery_end():
+  phase, step = plugins.Phase.DISCOVERY, plugins.Step.END
+  handlers = {p.resource: p.func for p in plugins.get_plugins(phase, step)}
+  while Q_COLLECTION:
+    result = Q_COLLECTION.popleft()
+    func = handlers.get(result.resource)
+    if not func:
+      logging.critical(
+          f'collection result with no handler for {result.resource}')
+      print(result.resource, result.data)
+    else:
+      func(RESOURCES, result.data)
+
+
+def do_discovery_start():
+  phase, step = plugins.Phase.DISCOVERY, plugins.Step.START
+  for plugin in plugins.get_plugins(phase, step):
     for url in plugin.func(RESOURCES):
       data = fetch(url)
       Q_COLLECTION.append(Result(phase, plugin.resource, data))
 
 
+def do_init(organization, folder, project):
+  if organization:
+    RESOURCES['organization'] = plugins.Resource(organization, {})
+  if folder:
+    RESOURCES['folders'] = [plugins.Resource(f, {}) for f in folder]
+  if project:
+    RESOURCES['project'] = [plugins.Resource(p, {}) for p in project]
+  phase = plugins.Phase.INIT
+  for plugin in plugins.get_plugins(phase):
+    plugin.func(RESOURCES)
+
+
 def fetch(url):
-  print(url)
+  # try
   response = HTTP.get(url)
   return response.json()
 
@@ -54,16 +80,16 @@ def fetch(url):
 @click.option('--folder', '-p', required=False, type=int, multiple=True,
               help='GCP folder id, can be specified multiple times')
 def main(organization=None, op_project=None, project=None, folder=None):
-  if organization:
-    RESOURCES['organization'] = Resource(organization, {})
-  if folder:
-    RESOURCES['folders'] = [Resource(f, {}) for f in folder]
-  if project:
-    RESOURCES['project'] = [Resource(p, {}) for p in project]
+  logging.basicConfig(level=logging.INFO)
 
-  discovery_start()
+  do_init(organization, folder, project)
 
-  print(Q_COLLECTION)
+  do_discovery_start()
+
+  do_discovery_end()
+
+  import icecream
+  icecream.ic(RESOURCES)
 
 
 if __name__ == '__main__':

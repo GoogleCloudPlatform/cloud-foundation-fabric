@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from . import register, Level, Phase, Step
+from . import *
 
 LEVEL = Level.CORE
 NAME = 'project'
@@ -23,15 +23,26 @@ _CAI_URL = ('https://content-cloudasset.googleapis.com/v1p1beta1/folders'
             '?assetTypes=cloudresourcemanager.googleapis.com%2FProject')
 
 
+@register(NAME, Phase.INIT, Step.START)
+def start_discovery(resources):
+  if 'projects' not in resources:
+    resources['projects'] = []
+
+
 @register(NAME, Phase.DISCOVERY, Step.START, LEVEL, 0)
 def start_discovery(resources):
   for f in resources.get('folders', []):
     yield _CAI_URL.format(f.id)
 
 
-@register(NAME, Phase.DISCOVERY, Step.END, LEVEL, 0)
+@register(NAME, Phase.DISCOVERY, Step.END)
 def end_discovery(resources, data):
-  return
+  results = data.get('results')
+  if not results:
+    raise PluginError('---')
+  for result in results:
+    project_id = result['project'].split('/')[1]
+    resources['projects'].append(Resource(project_id, {}))
 
 
 @register(NAME, Phase.COLLECTION, Step.START, LEVEL, 0)
@@ -39,6 +50,6 @@ def start_collection(resources):
   return
 
 
-@register(NAME, Phase.COLLECTION, Step.END, LEVEL, 0)
+@register(NAME, Phase.COLLECTION, Step.END)
 def end_collection(resources, metrics, data):
   return
