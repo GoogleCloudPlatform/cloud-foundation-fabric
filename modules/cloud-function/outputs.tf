@@ -57,6 +57,24 @@ output "service_account_iam_email" {
   ])
 }
 
+output "trigger_service_account" {
+  description = "Service account resource."
+  value       = try(google_service_account.trigger_service_account[0], null)
+}
+
+output "trigger_service_account_email" {
+  description = "Service account email."
+  value       = local.trigger_service_account_email
+}
+
+output "trigger_service_account_iam_email" {
+  description = "Service account email."
+  value = join("", [
+    "serviceAccount:",
+    local.trigger_service_account_email == null ? "" : local.trigger_service_account_email
+  ])
+}
+
 output "vpc_connector" {
   description = "VPC connector resource if created."
   value       = try(google_vpc_access_connector.connector.0.id, null)
