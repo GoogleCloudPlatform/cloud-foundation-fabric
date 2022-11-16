@@ -13,22 +13,24 @@
 # limitations under the License.
 
 import logging
+import re
+
+RE_URL = re.compile(r'pageToken=[^&]+&?')
 
 
-def parse_cai_results(resource_name, resource_type, data):
+def parse_cai_results(data, name, resource_type=None):
   results = data.get('results')
   if not results:
-    logging.info(f'no results for {resource_name}')
+    logging.info(f'no results for {name}')
     return
   for result in results:
-    if result['assetType'] != resource_type:
+    if resource_type and result['assetType'] != resource_type:
       logging.warn(f'result for wrong type {result["assetType"]}')
       continue
     yield result
 
 
-def parse_cai_page_token(url, data):
+def parse_cai_page_token(data, url):
   page_token = data.get('pageToken')
   if page_token:
-    url, _, _ = url.split('&pageToken')[0]
-    return f'{url}&pageToken={page_token}'
+    return RE_URL.sub(f'pageToken={page_token}&', url)

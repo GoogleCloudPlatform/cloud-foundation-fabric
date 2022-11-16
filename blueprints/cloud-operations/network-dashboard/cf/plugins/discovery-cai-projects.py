@@ -12,30 +12,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import logging
-import urllib.parse
-
 from . import *
 from .utils import parse_cai_page_token, parse_cai_results
 
-LEVEL = Level.CORE
 NAME = 'project'
 TYPE = 'cloudresourcemanager.googleapis.com/Project'
 
-CAI_URL = ('https://content-cloudasset.googleapis.com/v1p1beta1'
-           '/{}/resources:searchAll'
-           f'?assetTypes={urllib.parse.quote(TYPE)}&pageSize=500')
+CAI_URL = (
+    'https://content-cloudasset.googleapis.com/v1p1beta1'
+    '/{}/resources:searchAll'
+    f'?assetTypes=cloudresourcemanager.googleapis.com%2FProject&pageSize=500')
 
 
 @register(NAME, Phase.INIT, Step.START)
 def init(resources):
   if 'projects' not in resources:
     resources['projects'] = {}
-  if 'project_numbers' not in resources:
+  if 'project:numbers' not in resources:
     resources['projects:number'] = {}
 
 
-@register(NAME, Phase.DISCOVERY, Step.START, LEVEL, 0)
+@register(NAME, Phase.DISCOVERY, Step.START, Level.CORE, 0)
 def start_discovery(resources):
   for resource_type in ('projects', 'folders'):
     for k in resources.get(resource_type, []):
@@ -44,19 +41,9 @@ def start_discovery(resources):
 
 @register(NAME, Phase.DISCOVERY, Step.END)
 def end_discovery(resources, data, url):
-  for result in parse_cai_results(NAME, TYPE, data):
+  for result in parse_cai_results(data, NAME, TYPE):
     number = result['project'].split('/')[1]
     project_id = result['displayName']
     resources['projects'][project_id] = {'number': number}
     resources['projects:number'][number] = project_id
-  return parse_cai_page_token(url, data)
-
-
-@register(NAME, Phase.COLLECTION, Step.START, LEVEL, 0)
-def start_collection(resources):
-  return
-
-
-@register(NAME, Phase.COLLECTION, Step.END)
-def end_collection(resources, metrics, data):
-  return
+  return parse_cai_page_token(data, url)

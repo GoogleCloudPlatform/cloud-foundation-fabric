@@ -14,6 +14,7 @@
 # limitations under the License.
 
 import collections
+import json
 import logging
 
 import click
@@ -60,7 +61,14 @@ def do_init(organization, folder, project):
 def fetch(url):
   # try
   response = HTTP.get(url)
-  return response.json()
+  if response.status_code != 200:
+    logging.critical(f'response code {response.status_code} for URL {url}')
+    return {}
+  try:
+    return response.json()
+  except json.decoder.JSONDecodeError as e:
+    logging.critical(f'error decoding URL {url}: {e.args[0]}')
+    return {}
 
 
 @click.command()
