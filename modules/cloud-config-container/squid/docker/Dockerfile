@@ -17,17 +17,20 @@ FROM debian:buster-slim
 ENV SQUID_VERSION=4.6 \
   SQUID_CACHE_DIR=/var/spool/squid \
   SQUID_LOG_DIR=/var/log/squid \
+  SQUID_PID_DIR=/var/run/squid \
   SQUID_USER=proxy
 
 RUN apt-get update \
-  && DEBIAN_FRONTEND=noninteractive apt-get install -y sudo squid=${SQUID_VERSION}* \
+  && DEBIAN_FRONTEND=noninteractive apt-get install -y squid=${SQUID_VERSION}* \
   && rm -rf /var/lib/apt/lists/*
 
 COPY entrypoint.sh /sbin/entrypoint.sh
 RUN chmod 755 /sbin/entrypoint.sh
 
-RUN echo "Defaults:${SQUID_USER} !requiretty" > /etc/sudoers.d/squid && \
-    echo "${SQUID_USER} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/squid
+# Create the PID file directory as root, as the non-privileged user squid is not
+# allowed to write in /var/run.
+RUN mkdir -p ${SQUID_PID_DIR} \
+  && chown ${SQUID_USER}:${SQUID_USER} ${SQUID_PID_DIR}
 
 USER ${SQUID_USER}
 

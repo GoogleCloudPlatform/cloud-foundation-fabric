@@ -46,10 +46,10 @@ fi
 if [[ -z ${1} ]]; then
   if [[ ! -d ${SQUID_CACHE_DIR}/00 ]]; then
     echo "Initializing cache..."
-    sudo $(which squid) -N -f /etc/squid/squid.conf -z
+    $(which squid) -N -f /etc/squid/squid.conf -z
   fi
   echo "Starting squid..."
-  exec sudo $(which squid) -f /etc/squid/squid.conf -NYCd 1 ${EXTRA_ARGS}
+  exec $(which squid) -f /etc/squid/squid.conf -NYCd 1 ${EXTRA_ARGS}
 else
   exec "$@"
 fi
