@@ -213,12 +213,11 @@ module "cf-http" {
   bucket_name   = "test-cf-bundles"
   build_worker_pool = "projects/my-project/locations/europe-west1/workerPools/my_build_worker_pool"
   bundle_config = {
-    source_dir  = "my-cf-source-folder"
+    source_dir  = "fabric/assets"
     output_path = "bundle.zip"
-    excludes    = null
   }
 }
-# tftest skip
+# tftest modules=1 resources=2
 ```
 <!-- BEGIN TFDOC -->
 
@@ -230,11 +229,11 @@ module "cf-http" {
 | [bundle_config](variables.tf#L37) | Cloud function source folder and generated zip bundle paths. Output path defaults to '/tmp/bundle.zip' if null. | <code title="object&#40;&#123;&#10;  source_dir  &#61; string&#10;  output_path &#61; optional&#40;string, &#34;&#47;tmp&#47;bundle.zip&#34;&#41;&#10;  excludes    &#61; optional&#40;list&#40;string&#41;&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> | ✓ |  |
 | [name](variables.tf#L94) | Name used for cloud function and associated resources. | <code>string</code> | ✓ |  |
 | [project_id](variables.tf#L109) | Project id used for all resources. | <code>string</code> | ✓ |  |
-| [bucket_config](variables.tf#L17) | Enable and configure auto-created bucket. Set fields to null to use defaults. | <code title="object&#40;&#123;&#10;  location             &#61; optional&#40;string&#41;&#10;  lifecycle_delete_age &#61; optional&#40;number&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
+| [bucket_config](variables.tf#L17) | Enable and configure auto-created bucket. Set fields to null to use defaults. | <code title="object&#40;&#123;&#10;  location                  &#61; optional&#40;string&#41;&#10;  lifecycle_delete_age_days &#61; optional&#40;number&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code>null</code> |
 | [build_worker_pool](variables.tf#L31) | Build worker pool, in projects/<PROJECT-ID>/locations/<REGION>/workerPools/<POOL_NAME> format | <code>string</code> |  | <code>null</code> |
 | [description](variables.tf#L46) | Optional description. | <code>string</code> |  | <code>&#34;Terraform managed.&#34;</code> |
 | [environment_variables](variables.tf#L52) | Cloud function environment variables. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
-| [function_config](variables.tf#L58) | Cloud function configuration. Defaults to using main as entrypoint, 1 instance with 256MiB of memory, and 180 second timeout | <code title="object&#40;&#123;&#10;  entry_point &#61; optional&#40;string, &#34;main&#34;&#41;&#10;  instances   &#61; optional&#40;number, 1&#41;&#10;  memory      &#61; optional&#40;number, 256&#41; &#35; Memory in MB&#10;  runtime     &#61; optional&#40;string, &#34;python310&#34;&#41;&#10;  timeout     &#61; optional&#40;number, 180&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  entry_point &#61; &#34;main&#34;&#10;  instances   &#61; 1&#10;  memory      &#61; 256&#10;  runtime     &#61; &#34;python310&#34;&#10;  timeout     &#61; 180&#10;&#125;">&#123;&#8230;&#125;</code> |
+| [function_config](variables.tf#L58) | Cloud function configuration. Defaults to using main as entrypoint, 1 instance with 256MiB of memory, and 180 second timeout | <code title="object&#40;&#123;&#10;  entry_point     &#61; optional&#40;string, &#34;main&#34;&#41;&#10;  instance_count  &#61; optional&#40;number, 1&#41;&#10;  memory_mb       &#61; optional&#40;number, 256&#41; &#35; Memory in MB&#10;  runtime         &#61; optional&#40;string, &#34;python310&#34;&#41;&#10;  timeout_seconds &#61; optional&#40;number, 180&#41;&#10;&#125;&#41;">object&#40;&#123;&#8230;&#125;&#41;</code> |  | <code title="&#123;&#10;  entry_point     &#61; &#34;main&#34;&#10;  instance_count  &#61; 1&#10;  memory_mb       &#61; 256&#10;  runtime         &#61; &#34;python310&#34;&#10;  timeout_seconds &#61; 180&#10;&#125;">&#123;&#8230;&#125;</code> |
 | [iam](variables.tf#L76) | IAM bindings for topic in {ROLE => [MEMBERS]} format. | <code>map&#40;list&#40;string&#41;&#41;</code> |  | <code>&#123;&#125;</code> |
 | [ingress_settings](variables.tf#L82) | Control traffic that reaches the cloud function. Allowed values are ALLOW_ALL, ALLOW_INTERNAL_AND_GCLB and ALLOW_INTERNAL_ONLY . | <code>string</code> |  | <code>null</code> |
 | [labels](variables.tf#L88) | Resource labels. | <code>map&#40;string&#41;</code> |  | <code>&#123;&#125;</code> |
