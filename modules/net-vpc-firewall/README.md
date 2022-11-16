@@ -147,7 +147,7 @@ module "firewall" {
 ```
 
 ```yaml
-# ./configs/firewall/rules/load_balancers.yaml
+# tftest file configs/firewall/rules/load_balancers.yaml
 allow-healthchecks:
   description: Allow ingress from healthchecks.
   ranges:
@@ -161,10 +161,9 @@ allow-healthchecks:
 ```
 
 ```yaml
-# ./configs/firewall/cidr_template.yaml
+# tftest file configs/firewall/cidr_template.yaml
 healthchecks:
   - 35.191.0.0/16
-
   - 130.211.0.0/22
   - 209.85.152.0/22
   - 209.85.204.0/22

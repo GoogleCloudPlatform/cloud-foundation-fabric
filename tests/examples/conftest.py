@@ -39,17 +39,18 @@ def pytest_generate_tests(metafunc):
       last_header = None
       mark = pytest.mark.xdist_group(name=module.name)
       for child in doc.children:
-        if isinstance(child, marko.block.FencedCode) and child.lang == 'hcl':
+        if isinstance(child, marko.block.FencedCode):
           index += 1
           code = child.children[0].children
           if 'tftest skip' in code:
             continue
-          examples.append(pytest.param(code, marks=mark))
-          path = module.relative_to(FABRIC_ROOT)
-          name = f'{path}:{last_header}'
-          if index > 1:
-            name += f' {index}'
-          ids.append(name)
+          if child.lang == 'hcl' or 'tftest file' in code:
+            examples.append(pytest.param(code, marks=mark))
+            path = module.relative_to(FABRIC_ROOT)
+            name = f'{path}:{last_header}'
+            if index > 1:
+              name += f' {index}'
+            ids.append(name)
         elif isinstance(child, marko.block.Heading):
           last_header = child.children[0].children
           index = 0

@@ -1,3 +1,4 @@
+# skip boilerplate check
 allow-healthchecks:
   description: Allow ingress from healthchecks.
   ranges:

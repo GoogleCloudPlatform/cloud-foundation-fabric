@@ -1,3 +1,4 @@
+# skip boilerplate check
 allow-admins:
   description: Access from the admin subnet to all subnets
   direction: INGRESS

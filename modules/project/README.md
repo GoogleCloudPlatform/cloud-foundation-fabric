@@ -230,7 +230,7 @@ module "folder" {
 ```
 
 ```yaml
-# configs/org-policies/boolean.yaml
+# tftest file configs/org-policies/boolean.yaml
 iam.disableServiceAccountKeyCreation:
   enforce: true
 
@@ -246,7 +246,7 @@ iam.disableServiceAccountKeyUpload:
 ```
 
 ```yaml
-# configs/org-policies/list.yaml
+# tftest file configs/org-policies/list.yaml
 compute.vmExternalIpAccess:
   deny:
     all: true

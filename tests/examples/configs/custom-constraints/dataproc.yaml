@@ -1,3 +1,4 @@
+# skip boilerplate check
 custom.dataprocNoMoreThan10Workers:
   resource_types:
   - dataproc.googleapis.com/Cluster

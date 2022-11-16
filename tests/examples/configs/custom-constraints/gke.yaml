@@ -1,3 +1,4 @@
+# skip boilerplate check
 custom.gkeEnableLogging:
   resource_types:
   - container.googleapis.com/Cluster
