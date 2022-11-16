@@ -13,7 +13,7 @@ Three metric descriptors are created for each monitored resource: usage, limit a
 
 ## Usage
 
-Clone this repository, then go through the following steps to create resources:
+Clone this repos itory, then go through the following steps to create resources:
 - Create a terraform.tfvars file with the following content:
   ```tfvars
   billing_account = "<YOUR-BILLING-ACCOUNT>"
@@ -32,7 +32,7 @@ Clone this repository, then go through the following steps to create resources:
   # ID of the organization where CF will be deployed
   prefix = "<YOUR-PREFIX>" 
   # Monitoring project name prefix, monitoring project name is <YOUR-PREFIX>-network-dashboard, ignored if monitoring_project_id variable is provided
-  vpc_connector_name = "YOUR-VPC-CONNECTOR-NAME"
+  vpc_connector_name = "<YOUR-VPC-CONNECTOR-NAM>"
   # Serverless VPC connection name for the Cloud Function
     ```
 - `terraform init`
@@ -40,11 +40,11 @@ Clone this repository, then go through the following steps to create resources:
 
 Note: Org level viewing permission is required for some metrics such as firewall policies.
 
-Once the resources are deployed, go to the following page to see the dashboard: https://console.cloud.google.com/monitoring/dashboards?project=<YOUR-MONITORING-PROJECT> (or <YOUR-METRICS-PROJECT> if populated)
+Once the resources are deployed, go to the following page to see the dashboard: https://console.cloud.google.com/monitoring/dashboards?project=YOUR-MONITORING-PROJECT (or YOUR-METRICS-PROJECT if populated)
 A dashboard called "quotas-utilization" should be created.
 
 The Cloud Function runs every 10 minutes by default so you should start getting some data points after a few minutes.
-You can use the metric explorer to view the data points for the different custom metrics created: https://console.cloud.google.com/monitoring/metrics-explorer?project=<YOUR-MONITORING-PROJECT> (or <YOUR-METRICS-PROJECT> if populated).
+You can use the metric explorer to view the data points for the different custom metrics created: https://console.cloud.google.com/monitoring/metrics-explorer?project=YOUR-MONITORING-PROJECT (or YOUR-METRICS-PROJECT if populated).
 You can change this frequency by modifying the "schedule_cron" variable in variables.tf.
 
 Note that some charts in the dashboard align values over 1h so you might need to wait 1h to see charts on the dashboard views.
@@ -80,8 +80,7 @@ Note that metrics are created in the cloud-function/metrics.yaml file. You can a
 - The CF assumes global routing is ON, this impacts dynamic routes usage calculation
 - The CF assumes custom routes importing/exporting is ON, this impacts static and dynamic routes usage calculation
 - The CF assumes all networks in peering groups have the same global routing and custom routes sharing configuration
-- When using VPC-SC, Cloud Function configuration is required to follow [VPC-SC compliancy rules]
-(https://cloud.google.com/functions/docs/securing/using-vpc-service-controls#deploy-compliant-functions): it is assumed that <YOUR-VPC-CONNECTOR-NAME> exists before the CF deployment starts
+- When using VPC-SC, Cloud Function configuration is required to follow [VPC-SC compliancy rules](https://cloud.google.com/functions/docs/securing/using-vpc-service-controls#deploy-compliant-functions): it is assumed that <YOUR-VPC-CONNECTOR-NAME> exists before the CF deployment starts
 - If provided, <YOUR-METRICS-PROJECT> and <<YOUR-BUILD-WORKER-POOL>> and are assumed to exist before the CF deployment starts
 
 ## Next steps and ideas
