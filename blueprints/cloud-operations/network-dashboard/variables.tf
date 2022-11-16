@@ -18,6 +18,11 @@ variable "billing_account" {
   description = "The ID of the billing account to associate this project with"
 }
 
+variable "build_worker_pool" {
+  description = "Cloud Build worker pool, in projects/<PROJECT-ID>/locations/<REGION>/workerPools/<POOL_NAME> format"
+  default     = null
+}
+
 variable "cf_version" {
   description = "Cloud Function version 2nd Gen or 1st Gen. Possible options: 'V1' or 'V2'.Use CFv2 if your Cloud Function timeouts after 9 minutes. By default it is using CFv1."
   default     = "V1"
@@ -39,7 +44,12 @@ variable "monitored_projects_list" {
 }
 
 variable "monitoring_project_id" {
-  description = "Monitoring project where the dashboard will be created and the solution deployed; a project will be created if set to empty string"
+  description = "Monitoring project where the dashboard will be created and the solution deployed; a project will be created if set to empty string, if metrics_project_id is provided, metrics and dashboard will be deployed there "
+  default     = ""
+}
+
+variable "metrics_project_id" {
+  description = "Optional, populate to write metrics and deploy the dashboard in a separated project"
   default     = ""
 }
 
@@ -73,6 +83,7 @@ variable "project_monitoring_services" {
     "storage-component.googleapis.com"
   ]
 }
+
 variable "region" {
   description = "Region used to deploy the cloud functions and scheduler"
   default     = "europe-west1"
@@ -81,4 +92,9 @@ variable "region" {
 variable "schedule_cron" {
   description = "Cron format schedule to run the Cloud Function. Default is every 10 minutes."
   default     = "*/10 * * * *"
+}
+
+variable "vpc_connector_name" {
+  description = "Serverless VPC connection name for the Cloud Function"
+  default     = ""
 }
