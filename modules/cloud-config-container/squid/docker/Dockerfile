@@ -20,11 +20,16 @@ ENV SQUID_VERSION=4.6 \
   SQUID_USER=proxy
 
 RUN apt-get update \
-  && DEBIAN_FRONTEND=noninteractive apt-get install -y squid=${SQUID_VERSION}* \
+  && DEBIAN_FRONTEND=noninteractive apt-get install -y sudo squid=${SQUID_VERSION}* \
   && rm -rf /var/lib/apt/lists/*
 
 COPY entrypoint.sh /sbin/entrypoint.sh
 RUN chmod 755 /sbin/entrypoint.sh
+
+RUN echo "Defaults:${SQUID_USER} !requiretty" > /etc/sudoers.d/squid && \
+    echo "${SQUID_USER} ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/squid
+
+USER ${SQUID_USER}
 
 EXPOSE 3128/tcp
 ENTRYPOINT ["/sbin/entrypoint.sh"]

@@ -71,28 +71,9 @@ write_files:
       ExecStart=/usr/bin/docker run --rm --name=squid \
         --network host \
         -v /etc/squid:/etc/squid \
-        -v squid_logs:/var/log/squid \
-        gcr.io/pso-cft-fabric/squid:0.10
+        gcr.io/pso-cft-fabric/squid:20221116
       ExecStop=/usr/bin/docker stop squid
       ExecStopPost=/usr/bin/docker rm squid
-
-  # logtail container service
-  - path: /etc/systemd/system/logtail.service
-    permissions: 0644
-    owner: root
-    content: |
-      [Unit]
-      Description=Start logtail container
-      After=squid.service
-      Wants=squid.service
-
-      [Service]
-      Environment="HOME=/home/squid"
-      ExecStart=/usr/bin/docker run --rm --name=logtail \
-        -v squid_logs:/var/log/squid:ro \
-        alpine:3 tail -F /var/log/squid/access.log
-      ExecStop=/usr/bin/docker stop logtail
-      ExecStopPost=/usr/bin/docker rm logtail
 
   %{ for path, data in files }
   - path: ${path}
@@ -109,4 +90,3 @@ runcmd:
   - iptables -I INPUT 1 -p tcp -m tcp --dport 3128 -m state --state NEW,ESTABLISHED -j ACCEPT
   - systemctl daemon-reload
   - systemctl start squid
-  - systemctl start logtail
