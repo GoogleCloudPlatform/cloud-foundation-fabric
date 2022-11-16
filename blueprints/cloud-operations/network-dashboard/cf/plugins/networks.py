@@ -28,7 +28,7 @@ CAI_URL = ('https://content-cloudasset.googleapis.com/v1p1beta1'
 
 
 @register(NAME, Phase.INIT, Step.START)
-def start_discovery(resources):
+def init(resources):
   if 'networks' not in resources:
     resources['networks'] = {}
 

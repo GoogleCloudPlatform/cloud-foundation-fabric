@@ -13,12 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import click
 import collections
-import google.auth
 import logging
-import requests
 
+import click
+import google.auth
 import plugins
 
 from google.auth.transport.requests import AuthorizedSession
@@ -38,7 +37,8 @@ def do_discovery():
   for plugin in plugins.get_plugins(phase, plugins.Step.START):
     data_handler = data_handlers.get(plugin.resource)
     urls = collections.deque(plugin.func(RESOURCES))
-    for url in urls:
+    while urls:
+      url = urls.popleft()
       data = fetch(url)
       next_url = data_handler(RESOURCES, data, url)
       if next_url:
