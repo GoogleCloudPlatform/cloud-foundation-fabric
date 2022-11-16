@@ -96,5 +96,5 @@ variable "schedule_cron" {
 
 variable "vpc_connector_name" {
   description = "Serverless VPC connection name for the Cloud Function"
-  default     = ""
+  default     = null
 }
