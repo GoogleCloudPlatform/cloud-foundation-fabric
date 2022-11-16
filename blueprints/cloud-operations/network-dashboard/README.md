@@ -32,6 +32,8 @@ Clone this repository, then go through the following steps to create resources:
   # ID of the organization where CF will be deployed
   prefix = "<YOUR-PREFIX>" 
   # Monitoring project name prefix, monitoring project name is <YOUR-PREFIX>-network-dashboard, ignored if monitoring_project_id variable is provided
+  vpc_connector_name = "YOUR-VPC-CONNECTOR-NAME"
+  # Serverless VPC connection name for the Cloud Function
     ```
 - `terraform init`
 - `terraform apply`
@@ -78,7 +80,8 @@ Note that metrics are created in the cloud-function/metrics.yaml file. You can a
 - The CF assumes global routing is ON, this impacts dynamic routes usage calculation
 - The CF assumes custom routes importing/exporting is ON, this impacts static and dynamic routes usage calculation
 - The CF assumes all networks in peering groups have the same global routing and custom routes sharing configuration
-- When using VPC-SC, it is assumed that <YOUR-VPC-CONNECTOR-NAME> exists before the CF deployment starts
+- When using VPC-SC, Cloud Function configuration is required to follow [VPC-SC compliancy rules]
+(https://cloud.google.com/functions/docs/securing/using-vpc-service-controls#deploy-compliant-functions): it is assumed that <YOUR-VPC-CONNECTOR-NAME> exists before the CF deployment starts
 - If provided, <YOUR-METRICS-PROJECT> and <<YOUR-BUILD-WORKER-POOL>> and are assumed to exist before the CF deployment starts
 
 ## Next steps and ideas
