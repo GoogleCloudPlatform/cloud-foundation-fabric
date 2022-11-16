@@ -33,7 +33,7 @@ locals {
     "${v.neg}-${v.ip_address}-${coalesce(v.port, "none")}" => v
   }
   neg_regional = {
-    for k, v in var.neg_configs : k => v if v.cloudrun != null
+    for k, v in var.neg_configs : k => v.cloudrun if v.cloudrun != null
   }
   neg_zonal = {
     # we need to rebuild new objects as we cannot merge different types

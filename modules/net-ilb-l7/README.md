@@ -315,6 +315,41 @@ module "ilb-l7" {
 # tftest modules=1 resources=7
 ```
 
+As are serverless NEGs for Cloud Run:
+
+```hcl
+module "ilb-l7" {
+  source     = "./fabric/modules/net-ilb-l7"
+  name       = "ilb-test"
+  project_id = var.project_id
+  region     = "europe-west1"
+  backend_service_configs = {
+    default = {
+      backends = [{
+        balancing_mode = "RATE"
+        group = "my-neg"
+        max_rate       = { per_endpoint = 1 }
+      }]
+    }
+  }
+  neg_configs = {
+    my-neg = {
+      cloudrun = {
+        region = "europe-west1"
+        target_service = {
+          name = "my-run=service"
+        }
+      }
+    }
+  }
+  vpc_config = {
+    network    = var.vpc.self_link
+    subnetwork = var.subnet.self_link
+  }
+}
+# tftest modules=1 resources=6
+```
+
 ### URL Map
 
 The module exposes the full URL map resource configuration, with some minor changes to the interface to decrease verbosity, and support for aliasing backend services via keys.
