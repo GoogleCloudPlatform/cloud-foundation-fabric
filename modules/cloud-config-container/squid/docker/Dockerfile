@@ -17,6 +17,7 @@ FROM debian:buster-slim
 ENV SQUID_VERSION=4.6 \
   SQUID_CACHE_DIR=/var/spool/squid \
   SQUID_LOG_DIR=/var/log/squid \
+  SQUID_PID_DIR=/var/run/squid \
   SQUID_USER=proxy
 
 RUN apt-get update \
@@ -25,6 +26,13 @@ RUN apt-get update \
 
 COPY entrypoint.sh /sbin/entrypoint.sh
 RUN chmod 755 /sbin/entrypoint.sh
+
+# Create the PID file directory as root, as the non-privileged user squid is not
+# allowed to write in /var/run.
+RUN mkdir -p ${SQUID_PID_DIR} \
+  && chown ${SQUID_USER}:${SQUID_USER} ${SQUID_PID_DIR}
+
+USER ${SQUID_USER}
 
 EXPOSE 3128/tcp
 ENTRYPOINT ["/sbin/entrypoint.sh"]

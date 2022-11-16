@@ -24,7 +24,7 @@ steps:
       - .
 
 substitutions:
-  _IMAGE_VERSION: "20210215"
+  _IMAGE_VERSION: "20221116"
 images:
   - "gcr.io/$PROJECT_ID/squid:${_IMAGE_VERSION}"
   - "gcr.io/$PROJECT_ID/squid:latest"
