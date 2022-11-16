@@ -7,11 +7,13 @@ backend_service_configs = {
 }
 neg_configs = {
   custom = {
-    zone = "europe-west1-b"
-    endpoints = [{
-      ip_address = "10.0.0.10"
-      instance   = "test-1"
-      port       = 80
-    }]
+    gce = {
+      zone = "europe-west1-b"
+      endpoints = [{
+        ip_address = "10.0.0.10"
+        instance   = "test-1"
+        port       = 80
+      }]
+    }
   }
 }

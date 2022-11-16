@@ -51,22 +51,60 @@ variable "name" {
 variable "neg_configs" {
   description = "Optional network endpoint groups to create. Can be referenced in backends via key or outputs."
   type = map(object({
-    zone = string
-    # re-enable once provider properly support this
-    # default_port = optional(number)
-    is_hybrid = optional(bool, false)
-    endpoints = optional(list(object({
-      ip_address = string
-      instance   = optional(string)
-      port       = optional(number)
-    })))
-    vpc_config = optional(object({
+    cloudrun = optional(object({
+      region = string
+      target_service = optional(object({
+        name = string
+        tag  = optional(string)
+      }))
+      target_urlmask = optional(string)
+    }))
+    gce = optional(object({
+      zone = string
+      # default_port = optional(number)
       network    = optional(string)
       subnetwork = optional(string)
+      endpoints = optional(list(object({
+        instance   = string
+        ip_address = string
+        port       = number
+      })))
+
     }))
+    hybrid = optional(object({
+      zone    = string
+      network = optional(string)
+      # re-enable once provider properly support this
+      # default_port = optional(number)
+      endpoints = optional(list(object({
+        ip_address = string
+        port       = number
+      })))
+    }))
+    # psc = optional(object({}))
   }))
   default  = {}
   nullable = false
+  validation {
+    condition = alltrue([
+      for k, v in var.neg_configs : (
+        (try(v.cloudrun, null) == null ? 0 : 1) +
+        (try(v.gce, null) == null ? 0 : 1) +
+        (try(v.hybrid, null) == null ? 0 : 1) == 1
+      )
+    ])
+    error_message = "Only one type of neg can be configured at a time."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.neg_configs : (
+        v.cloudrun == null
+        ? true
+        : v.cloudrun.target_urlmask != null || v.cloudrun.target_service != null
+      )
+    ])
+    error_message = "Cloud Run negs need either target type or target urlmask defined."
+  }
 }
 
 variable "network_tier_premium" {

@@ -36,7 +36,6 @@ variable "project_vm_services" {
     "servicenetworking.googleapis.com",
   ]
 }
-
 variable "region" {
   description = "Region used to deploy subnets"
   default     = "europe-west1"
