@@ -29,16 +29,8 @@ locals {
     ? google_cloudfunctions2_function.function[0]
     : google_cloudfunctions_function.function[0]
   )
-  prefix = var.prefix == null ? "" : "${var.prefix}-"
-  service_account_email = (
-    var.service_account_create
-    ? (
-      length(google_service_account.service_account) > 0
-      ? google_service_account.service_account[0].email
-      : null
-    )
-    : var.service_account
-  )
+  prefix                = var.prefix == null ? "" : "${var.prefix}-"
+  service_account_email = var.service_account_create ? google_service_account.service_account[0].email : var.service_account
   trigger_service_account_email = (
     coalesce(try(var.trigger_config.v2.service_account_create, false), false)
     ? google_service_account.trigger_service_account[0].email
