@@ -22,7 +22,7 @@ import pkgutil
 _PLUGINS = []
 
 Level = enum.IntEnum('Level', 'CORE PRIMARY DERIVED')
-Phase = enum.IntEnum('Phase', 'INIT DISCOVERY ENRICHMENT COLLECTION')
+Phase = enum.IntEnum('Phase', 'INIT DISCOVER EXTEND AGGREGATE')
 Plugin = collections.namedtuple('Plugin',
                                 'phase step level priority resource func')
 Resource = collections.namedtuple('Resource', 'id data')

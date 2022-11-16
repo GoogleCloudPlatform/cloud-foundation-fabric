@@ -18,8 +18,8 @@ import re
 RE_URL = re.compile(r'pageToken=[^&]+&?')
 
 
-def parse_cai_results(data, name, resource_type=None):
-  results = data.get('results')
+def parse_cai_results(data, name, resource_type=None, method='search'):
+  results = data.get('results' if method == 'search' else 'assets')
   if not results:
     logging.info(f'no results for {name}')
     return

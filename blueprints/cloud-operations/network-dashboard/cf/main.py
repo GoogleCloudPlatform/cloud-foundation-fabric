@@ -31,7 +31,7 @@ Result = collections.namedtuple('Result', 'phase resource data')
 
 
 def do_discovery():
-  phase = plugins.Phase.DISCOVERY
+  phase = plugins.Phase.DISCOVER
   data_handlers = {
       p.resource: p.func for p in plugins.get_plugins(phase, plugins.Step.END)
   }

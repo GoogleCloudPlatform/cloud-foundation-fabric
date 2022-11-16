@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import logging
+
 from . import *
 from .utils import parse_cai_page_token, parse_cai_results
 
@@ -32,14 +34,15 @@ def init(resources):
     resources['projects:number'] = {}
 
 
-@register(NAME, Phase.DISCOVERY, Step.START, Level.CORE, 0)
+@register(NAME, Phase.DISCOVER, Step.START, Level.CORE, 0)
 def start_discovery(resources):
+  logging.info('discovery projects start')
   for resource_type in ('projects', 'folders'):
     for k in resources.get(resource_type, []):
       yield CAI_URL.format(f'{resource_type}/{k}')
 
 
-@register(NAME, Phase.DISCOVERY, Step.END)
+@register(NAME, Phase.DISCOVER, Step.END)
 def end_discovery(resources, data, url):
   for result in parse_cai_results(data, NAME, TYPE):
     number = result['project'].split('/')[1]
