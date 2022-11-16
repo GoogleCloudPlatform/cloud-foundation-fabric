@@ -40,14 +40,9 @@ locals {
     : var.service_account
   )
   trigger_service_account_email = (
-    try(var.trigger_config.v2.service_account_create, null) == null
-    ? false
-    : var.trigger_config.v2.service_account_create ? (
-      length(google_service_account.trigger_service_account) > 0
-      ? google_service_account.trigger_service_account[0].email
-      : null
-    )
-    : try(var.trigger_config.v2.service_account_email, null)
+    coalesce(try(var.trigger_config.v2.service_account_create, false), false)
+    ? google_service_account.trigger_service_account[0].email
+    : null
   )
   vpc_connector = (
     var.vpc_connector == null
@@ -293,14 +288,14 @@ resource "google_service_account" "service_account" {
 }
 
 resource "google_service_account" "trigger_service_account" {
-  count        = try(var.trigger_config.v2.service_account_create, false) == true ? 1 : 0
+  count        = coalesce(try(var.trigger_config.v2.service_account_create, false), false) ? 1 : 0
   project      = var.project_id
   account_id   = "tf-cf-trigger-${var.name}"
   display_name = "Terraform trigger for Cloud Function ${var.name}."
 }
 
 resource "google_project_iam_member" "trigger_iam" {
-  count   = try(var.trigger_config.v2.service_account_create, false) == true ? 1 : 0
+  count   = coalesce(try(var.trigger_config.v2.service_account_create, false), false) ? 1 : 0
   project = var.project_id
   member  = "serviceAccount:${google_service_account.trigger_service_account[0].email}"
   role    = "roles/run.invoker"
