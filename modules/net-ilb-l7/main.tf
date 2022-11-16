@@ -32,6 +32,9 @@ locals {
     for v in local._neg_endpoints :
     "${v.neg}-${v.ip_address}-${coalesce(v.port, "none")}" => v
   }
+  neg_regional = {
+    for k, v in var.neg_configs : k => v if v.cloudrun != null
+  }
   neg_zonal = {
     # we need to rebuild new objects as we cannot merge different types
     for k, v in var.neg_configs : k => {
@@ -141,3 +144,16 @@ resource "google_compute_network_endpoint" "default" {
   zone       = each.value.zone
 }
 
+resource "google_compute_region_network_endpoint_group" "default" {
+  for_each              = local.neg_regional
+  project               = var.project_id
+  region                = each.value.region
+  name                  = "${var.name}-${each.key}"
+  description           = var.description
+  network_endpoint_type = "SERVERLESS"
+  cloud_run {
+    service  = try(each.value.target_service.name, null)
+    tag      = try(each.value.target_service.tag, null)
+    url_mask = each.value.target_urlmask
+  }
+}

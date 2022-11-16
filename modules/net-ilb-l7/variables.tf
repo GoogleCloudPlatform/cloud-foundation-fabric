@@ -53,6 +53,11 @@ variable "neg_configs" {
   type = map(object({
     cloudrun = optional(object({
       region = string
+      target_service = optional(object({
+        name = string
+        tag  = optional(string)
+      }))
+      target_urlmask = optional(string)
     }))
     gce = optional(object({
       zone = string
@@ -89,6 +94,16 @@ variable "neg_configs" {
       )
     ])
     error_message = "Only one type of neg can be configured at a time."
+  }
+  validation {
+    condition = alltrue([
+      for k, v in var.neg_configs : (
+        v.cloudrun == null
+        ? true
+        : v.cloudrun.target_urlmask != null || v.cloudrun.target_service != null
+      )
+    ])
+    error_message = "Cloud Run negs need either target type or target urlmask defined."
   }
 }
 
