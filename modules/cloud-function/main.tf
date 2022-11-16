@@ -76,9 +76,9 @@ resource "google_cloudfunctions_function" "function" {
   name                  = "${local.prefix}${var.name}"
   description           = var.description
   runtime               = var.function_config.runtime
-  available_memory_mb   = var.function_config.memory
-  max_instances         = var.function_config.instances
-  timeout               = var.function_config.timeout
+  available_memory_mb   = var.function_config.memory_mb
+  max_instances         = var.function_config.instance_count
+  timeout               = var.function_config.timeout_seconds
   entry_point           = var.function_config.entry_point
   environment_variables = var.environment_variables
   service_account_email = local.service_account_email
@@ -178,10 +178,10 @@ resource "google_cloudfunctions2_function" "function" {
     }
   }
   service_config {
-    max_instance_count             = var.function_config.instances
+    max_instance_count             = var.function_config.instance_count
     min_instance_count             = 0
-    available_memory               = "${var.function_config.memory}M"
-    timeout_seconds                = var.function_config.timeout
+    available_memory               = "${var.function_config.memory_mb}M"
+    timeout_seconds                = var.function_config.timeout_seconds
     environment_variables          = var.environment_variables
     ingress_settings               = var.ingress_settings
     all_traffic_on_latest_revision = true
@@ -253,18 +253,18 @@ resource "google_storage_bucket" "bucket" {
   labels = var.labels
 
   dynamic "lifecycle_rule" {
-    for_each = var.bucket_config.lifecycle_delete_age == null ? [] : [""]
+    for_each = var.bucket_config.lifecycle_delete_age_days == null ? [] : [""]
     content {
       action { type = "Delete" }
       condition {
-        age        = var.bucket_config.lifecycle_delete_age
+        age        = var.bucket_config.lifecycle_delete_age_days
         with_state = "ARCHIVED"
       }
     }
   }
 
   dynamic "versioning" {
-    for_each = var.bucket_config.lifecycle_delete_age == null ? [] : [""]
+    for_each = var.bucket_config.lifecycle_delete_age_days == null ? [] : [""]
     content {
       enabled = true
     }

@@ -137,7 +137,7 @@ module "cf-http" {
   name          = "test-cf-http"
   bucket_name   = "test-cf-bundles"
   bucket_config = {
-    lifecycle_delete_age = 1
+    lifecycle_delete_age_days = 1
   }
   bundle_config = {
     source_dir  = "fabric/assets/"

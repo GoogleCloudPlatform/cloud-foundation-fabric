@@ -17,8 +17,8 @@
 variable "bucket_config" {
   description = "Enable and configure auto-created bucket. Set fields to null to use defaults."
   type = object({
-    location             = optional(string)
-    lifecycle_delete_age = optional(number)
+    location                  = optional(string)
+    lifecycle_delete_age_days = optional(number)
   })
   default = null
 }
@@ -58,18 +58,18 @@ variable "environment_variables" {
 variable "function_config" {
   description = "Cloud function configuration. Defaults to using main as entrypoint, 1 instance with 256MiB of memory, and 180 second timeout"
   type = object({
-    entry_point = optional(string, "main")
-    instances   = optional(number, 1)
-    memory      = optional(number, 256) # Memory in MB
-    runtime     = optional(string, "python310")
-    timeout     = optional(number, 180)
+    entry_point     = optional(string, "main")
+    instance_count  = optional(number, 1)
+    memory_mb       = optional(number, 256) # Memory in MB
+    runtime         = optional(string, "python310")
+    timeout_seconds = optional(number, 180)
   })
   default = {
-    entry_point = "main"
-    instances   = 1
-    memory      = 256
-    runtime     = "python310"
-    timeout     = 180
+    entry_point     = "main"
+    instance_count  = 1
+    memory_mb       = 256
+    runtime         = "python310"
+    timeout_seconds = 180
   }
 }
 

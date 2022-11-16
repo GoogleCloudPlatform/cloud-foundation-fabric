@@ -151,7 +151,7 @@ module "cloud-function" {
     entry_point = "main"
     runtime     = "python39"
     instances   = 1
-    memory      = 256 # Memory in MB
+    memory_mb   = 256
 
   }
 

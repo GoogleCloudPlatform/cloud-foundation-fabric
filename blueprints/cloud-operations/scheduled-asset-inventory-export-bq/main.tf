@@ -114,8 +114,8 @@ module "cffile" {
   name        = var.name_cffile
   bucket_name = "${var.name_cffile}-${random_pet.random.id}"
   bucket_config = {
-    location             = var.region
-    lifecycle_delete_age = null
+    location                  = var.region
+    lifecycle_delete_age_days = null
   }
   bundle_config = {
     source_dir  = "cffile"

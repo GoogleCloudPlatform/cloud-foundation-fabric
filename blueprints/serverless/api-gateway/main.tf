@@ -70,8 +70,8 @@ module "functions" {
   region           = each.value
   ingress_settings = "ALLOW_ALL"
   bucket_config = {
-    location             = null
-    lifecycle_delete_age = 1
+    location                  = null
+    lifecycle_delete_age_days = 1
   }
   bundle_config = {
     source_dir  = "${path.module}/function"

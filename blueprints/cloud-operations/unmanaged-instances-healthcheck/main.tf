@@ -125,8 +125,8 @@ module "cf-restarter" {
   function_config = {
     entry_point      = "RestartInstance"
     ingress_settings = null
-    instances        = 1
-    memory           = 256
+    instance_count   = 1
+    memory_mb        = 256
     runtime          = "go116"
     timeout          = 300
   }
@@ -156,8 +156,8 @@ module "cf-healthchecker" {
   function_config = {
     entry_point      = "HealthCheck"
     ingress_settings = null
-    instances        = 1
-    memory           = 256
+    instance_count   = 1
+    memory_mb        = 256
     runtime          = "go116"
     timeout          = 300
   }
