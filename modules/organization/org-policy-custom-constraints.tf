@@ -18,10 +18,10 @@ locals {
   _custom_constraints_factory_data_raw = (
     var.org_policy_custom_constraints_data_path == null
     ? tomap({})
-    : tomap(merge([
+    : merge([
       for f in fileset(var.org_policy_custom_constraints_data_path, "*.yaml") :
       yamldecode(file("${var.org_policy_custom_constraints_data_path}/${f}"))
-    ]...))
+    ]...)
   )
 
   _custom_constraints_factory_data = {

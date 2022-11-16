@@ -137,14 +137,13 @@ module "org" {
   source          = "./fabric/modules/organization"
   organization_id = var.organization_id
   
-  org_policy_custom_constraints_data_path = "/my/path"
-
+  org_policy_custom_constraints_data_path = "configs/custom-constraints"
 }
-# tftest skip
+# tftest modules=1 resources=3
 ```
 
 ```yaml
-# /my/path/gke.yaml
+# configs/custom-constraints/gke.yaml
 custom.gkeEnableLogging:
   resource_types: 
   - container.googleapis.com/Cluster
@@ -166,9 +165,8 @@ custom.gkeEnableAutoUpgrade:
 ```
 
 ```yaml
-# /my/path/dataproc.yaml
-
-custom.dataprocNoMoreThan10Workers
+# configs/custom-constraints/dataproc.yaml
+custom.dataprocNoMoreThan10Workers:
   resource_types: 
   - dataproc.googleapis.com/Cluster
   method_types:
@@ -228,15 +226,15 @@ module "org" {
   source          = "./fabric/modules/organization"
   organization_id = var.organization_id
   firewall_policy_factory = {
-    cidr_file   = "data/cidrs.yaml"
+    cidr_file   = "configs/firewall-policies/cidrs.yaml"
     policy_name = null
-    rules_file  = "data/rules.yaml"
+    rules_file  = "configs/firewall-policies/rules.yaml"
   }
   firewall_policy_association = {
     factory-policy = module.org.firewall_policy_id["factory"]
   }
 }
-# tftest skip
+# tftest modules=1 resources=4
 ```
 
 ```yaml

@@ -233,7 +233,7 @@ module "vpc" {
   name        = "my-network"
   data_folder = "config/subnets"
 }
-# tftest skip
+# tftest modules=1 resources=1
 ```
 
 ```yaml

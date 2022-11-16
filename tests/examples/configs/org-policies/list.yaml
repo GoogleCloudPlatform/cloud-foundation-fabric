@@ -1,0 +1,26 @@
+compute.vmExternalIpAccess:
+  deny:
+    all: true
+
+iam.allowedPolicyMemberDomains:
+  allow:
+    values:
+      - C0xxxxxxx
+      - C0yyyyyyy
+
+compute.restrictLoadBalancerCreationForTypes:
+  deny:
+    values: ["in:EXTERNAL"]
+  rules:
+    - condition:
+        expression: resource.matchTagId("tagKeys/1234", "tagValues/1234")
+        title: condition
+        description: test condition
+      allow:
+        values: ["in:EXTERNAL"]
+    - condition:
+        expression: resource.matchTagId("tagKeys/12345", "tagValues/12345")
+        title: condition2
+        description: test condition2
+      allow:
+        all: true

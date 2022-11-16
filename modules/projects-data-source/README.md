@@ -22,7 +22,7 @@ output "folders" {
   value = module.my-org.folders
 }
 
-# tftest skip
+# tftest skip (uses data sources)
 ```
 
 ### My dev projects based on parent and label
@@ -42,7 +42,7 @@ output "dev-folders" {
   value = module.my-dev.folders
 }
 
-# tftest skip
+# tftest skip (uses data sources)
 ```
 <!-- BEGIN TFDOC -->
 

@@ -11,14 +11,14 @@ module "endpoint" {
   source         = "./fabric/modules/endpoints"
   project_id     = "my-project"
   service_name   = "YOUR-API.endpoints.YOUR-PROJECT-ID.cloud.goog"
-  openapi_config = { "yaml_path" = "openapi.yaml" }
+  openapi_config = { "yaml_path" = "configs/endpoints/openapi.yaml" }
   iam = {
     "servicemanagement.serviceController" = [
       "serviceAccount:123456890-compute@developer.gserviceaccount.com"
     ]
   }
 }
-# tftest skip
+# tftest modules=1 resources=2
 ```
 
 [Here](https://github.com/GoogleCloudPlatform/python-docs-samples/blob/master/endpoints/getting-started/openapi.yaml) you can find an example of an openapi.yaml file. Once created the endpoint, remember to activate the service at project level.

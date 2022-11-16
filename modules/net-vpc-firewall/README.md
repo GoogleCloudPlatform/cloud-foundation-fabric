@@ -138,16 +138,16 @@ module "firewall" {
   project_id       = "my-project"
   network          = "my-network"
   factories_config = {
-    rules_folder  = "config/firewall"
-    cidr_tpl_file = "config/cidr_template.yaml"
+    rules_folder  = "configs/firewal/rules"
+    cidr_tpl_file = "configs/firewal/cidr_template.yaml"
   }
 
 }
-# tftest skip
+# tftest modules=1 resources=3
 ```
 
 ```yaml
-# ./config/firewall/load_balancers.yaml
+# ./configs/firewall/rules/load_balancers.yaml
 allow-healthchecks:
   description: Allow ingress from healthchecks.
   ranges:
@@ -161,13 +161,13 @@ allow-healthchecks:
 ```
 
 ```yaml
-# ./config/cidr_template.yaml
+# ./configs/firewall/cidr_template.yaml
 healthchecks:
   - 35.191.0.0/16
+
   - 130.211.0.0/22
   - 209.85.152.0/22
   - 209.85.204.0/22
-
 ```
 <!-- BEGIN TFDOC -->
 

@@ -224,13 +224,13 @@ module "folder" {
   source                 = "./fabric/modules/folder"
   parent                 = "organizations/1234567890"
   name                   = "Folder name"
-  org_policies_data_path = "/my/path"
+  org_policies_data_path = "configs/org-policies/"
 }
-# tftest skip
+# tftest modules=1 resources=6
 ```
 
 ```yaml
-# /my/path/boolean.yaml
+# configs/org-policies/boolean.yaml
 iam.disableServiceAccountKeyCreation:
   enforce: true
 
@@ -246,7 +246,7 @@ iam.disableServiceAccountKeyUpload:
 ```
 
 ```yaml
-# /my/path/list.yaml
+# configs/org-policies/list.yaml
 compute.vmExternalIpAccess:
   deny:
     all: true

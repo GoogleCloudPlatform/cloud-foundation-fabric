@@ -12,7 +12,7 @@ module "dns-policy-addresses" {
   project_id = "myproject"
   regions    = ["europe-west1", "europe-west3"]
 }
-# tftest skip
+# tftest skip (uses data sources)
 ```
 
 The output is a map with lists of addresses of type `DNS_RESOLVER` for each region specified in variables.

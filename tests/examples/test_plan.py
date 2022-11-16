@@ -23,13 +23,16 @@ def test_example(recursive_e2e_plan_runner, tmp_path, example):
   (tmp_path / 'fabric').symlink_to(Path(BASE_PATH, '../../').resolve())
   (tmp_path / 'variables.tf').symlink_to(
       Path(BASE_PATH, 'variables.tf').resolve())
+  (tmp_path / 'configs').symlink_to(Path(BASE_PATH, 'configs').resolve())
   (tmp_path / 'main.tf').write_text(example)
 
   match = EXPECTED_RESOURCES_RE.search(example)
   expected_modules = int(match.group(1)) if match is not None else 1
   expected_resources = int(match.group(2)) if match is not None else 1
 
+  assert match is not None, "can't find tftest directive"
+
   num_modules, num_resources = recursive_e2e_plan_runner(
       str(tmp_path), tmpdir=False)
-  assert expected_modules == num_modules
-  assert expected_resources == num_resources
+  assert expected_modules == num_modules, 'wrong number of modules'
+  assert expected_resources == num_resources, 'wrong number of resources'

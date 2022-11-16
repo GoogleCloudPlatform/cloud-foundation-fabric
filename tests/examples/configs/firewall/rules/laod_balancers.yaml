@@ -1,0 +1,10 @@
+allow-healthchecks:
+  description: Allow ingress from healthchecks.
+  ranges:
+    - healthchecks
+  targets: ["lb-backends"]
+  rules:
+    - protocol: tcp
+      ports:
+        - 80
+        - 443

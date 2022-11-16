@@ -89,15 +89,15 @@ module "folder" {
   parent = "organizations/1234567890"
   name  = "Folder name"
   firewall_policy_factory = {
-    cidr_file   = "data/cidrs.yaml"
+    cidr_file   = "configs/firewall-policies/cidrs.yaml"
     policy_name = null
-    rules_file  = "data/rules.yaml"
+    rules_file  = "configs/firewall-policies/rules.yaml"
   }
   firewall_policy_association = {
     factory-policy = module.folder.firewall_policy_id["factory"]
   }
 }
-# tftest skip
+# tftest modules=1 resources=5
 ```
 
 ```yaml
