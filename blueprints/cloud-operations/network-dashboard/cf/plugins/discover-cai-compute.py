@@ -16,7 +16,7 @@ import logging
 import urllib.parse
 
 from . import *
-from .utils import parse_cai_page_token, parse_cai_results
+from .utils import parse_cai_results
 
 # https://content-cloudasset.googleapis.com/v1/organizations/436789450919/assets?contentType=RESOURCE&assetTypes=compute.googleapis.com/Network
 
@@ -148,6 +148,15 @@ def _set_parent(resource, parent, resources):
   return update is not None
 
 
+def _url(resources):
+  'Return discovery URL'
+  organization = resources['organization']['id']
+  asset_types = '&'.join(
+      'assetTypes=compute.googleapis.com/{}'.format(urllib.parse.quote(t))
+      for t in TYPES.values())
+  return CAI_URL.format(organization=organization, asset_types=asset_types)
+
+
 @register(PLUGIN_NAME, Phase.INIT, Step.START)
 def init(resources):
   'Prepare the shared datastructures for asset types managed here.'
@@ -160,11 +169,7 @@ def init(resources):
 def start_discovery(resources):
   'Start discovery by returning the asset list URL for asset types.'
   logging.info('discovery compute start')
-  organization = resources['organization']['id']
-  asset_types = '&'.join(
-      'assetTypes=compute.googleapis.com/{}'.format(urllib.parse.quote(t))
-      for t in TYPES.values())
-  yield CAI_URL.format(organization=organization, asset_types=asset_types)
+  yield _url(resources)
 
 
 @register(PLUGIN_NAME, Phase.DISCOVER, Step.END)
@@ -186,4 +191,8 @@ def end_discovery(resources, data, url):
     except Skip:
       continue
     resources[resource_name][resource['self_link']] = resource
-  return parse_cai_page_token(data, url)
+  page_token = data.get('nextPageToken')
+  if page_token:
+    logging.info('requesting next page')
+    url = _url(resources)
+    return f'{url}&pageToken={page_token}'

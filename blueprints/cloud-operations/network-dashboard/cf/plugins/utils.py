@@ -15,7 +15,7 @@
 import logging
 import re
 
-RE_URL = re.compile(r'pageToken=[^&]+&?')
+RE_URL = re.compile(r'nextPageToken=[^&]+&?')
 
 
 def parse_cai_results(data, name, resource_type=None, method='search'):
@@ -31,6 +31,8 @@ def parse_cai_results(data, name, resource_type=None, method='search'):
 
 
 def parse_cai_page_token(data, url):
-  page_token = data.get('pageToken')
+  page_token = data.get('nextPageToken')
+  if page_token:
+    logging.info(f'page  token {page_token}')
   if page_token:
     return RE_URL.sub(f'pageToken={page_token}&', url)

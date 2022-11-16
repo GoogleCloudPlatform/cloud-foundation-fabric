@@ -60,6 +60,7 @@ def do_init(organization, folder, project):
 
 def fetch(url):
   # try
+  logging.info(f'fetch {url}')
   response = HTTP.get(url)
   if response.status_code != 200:
     logging.critical(f'response code {response.status_code} for URL {url}')
@@ -87,8 +88,8 @@ def main(organization=None, op_project=None, project=None, folder=None):
 
   do_discovery()
 
-  import icecream
-  icecream.ic(RESOURCES)
+  # import icecream
+  # icecream.ic(RESOURCES)
 
 
 if __name__ == '__main__':
