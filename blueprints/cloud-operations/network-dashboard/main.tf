@@ -137,15 +137,13 @@ module "cloud-function" {
   name        = "network-dashboard-cloud-function"
   bucket_name = "${local.monitoring_project}-network-dashboard-bucket"
   bucket_config = {
-    location             = var.region
-    lifecycle_delete_age = null
+    location = var.region
   }
   region = var.region
 
   bundle_config = {
     source_dir  = "cloud-function"
     output_path = "cloud-function.zip"
-    excludes    = null
   }
 
   function_config = {
@@ -153,7 +151,7 @@ module "cloud-function" {
     entry_point = "main"
     runtime     = "python39"
     instances   = 1
-    memory      = 256 # Memory in MB
+    memory_mb   = 256
 
   }
 
@@ -169,10 +167,17 @@ module "cloud-function" {
   # Internal only doesn't seem to work with CFv2:
   ingress_settings = var.cf_version == "V2" ? "ALLOW_ALL" : "ALLOW_INTERNAL_ONLY"
 
-  trigger_config = {
-    event    = "google.pubsub.topic.publish"
-    resource = module.pubsub.topic.id
-    retry    = null
+  trigger_config = var.cf_version == "V2" ? {
+    v2 = {
+      event_type             = "google.cloud.pubsub.topic.v1.messagePublished"
+      pubsub_topic           = module.pubsub.topic.id
+      service_account_create = true
+    }
+    } : {
+    v1 = {
+      event    = "google.pubsub.topic.publish"
+      resource = module.pubsub.topic.id
+    }
   }
 }
 
