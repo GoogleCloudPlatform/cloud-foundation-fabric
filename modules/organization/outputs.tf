@@ -83,14 +83,14 @@ output "tag_values" {
   }
 }
 
-output "tag_network_keys" {
+output "network_tag_keys" {
   description = "Tag key resources."
   value = {
     for k, v in google_tags_tag_key.default : k => v if v.purpose != null
   }
 }
 
-output "tag_network_values" {
+output "network_tag_values" {
   description = "Tag value resources."
   value = {
     for k, v in google_tags_tag_value.default

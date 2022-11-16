@@ -248,11 +248,12 @@ variable "tags" {
       iam         = map(list(string))
     }))
   }))
-  default = null
+  nullable = false
+  default  = {}
 }
 
-variable "tags_network" {
-  description = "Tags by key name. The `iam` attribute behaves like the similarly named one at module level."
+variable "network_tags" {
+  description = "Network tags by key name. The `iam` attribute behaves like the similarly named one at module level."
   type = map(object({
     description = string
     iam         = map(list(string))
@@ -262,5 +263,6 @@ variable "tags_network" {
       iam         = map(list(string))
     }))
   }))
-  default = null
+  nullable = false
+  default  = {}
 }

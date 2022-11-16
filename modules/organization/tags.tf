@@ -56,7 +56,7 @@ locals {
     for t in local._tag_values_iam : "${t.key}:${t.role}" => t
   }
   tags = {
-    for k, v in merge(coalesce(var.tags, {}), coalesce(var.tags_network, {})) : k => (
+    for k, v in merge(var.tags, var.network_tags) : k => (
       v == null
       ? { description = null, iam = {}, network = null, values = null }
       : merge({ network = null }, v)
