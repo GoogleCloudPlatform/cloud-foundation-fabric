@@ -337,7 +337,7 @@ module "ilb-l7" {
       cloudrun = {
         region = "europe-west1"
         target_service = {
-          name = "my-run=service"
+          name = "my-run-service"
         }
       }
     }
