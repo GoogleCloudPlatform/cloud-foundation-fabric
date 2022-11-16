@@ -39,7 +39,7 @@ variable "monitored_projects_list" {
 }
 
 variable "monitoring_project_id" {
-  description = "Monitoring project where the dashboard will be created and the solution deployed; a project will be created if set to empty string, if metrics_project_id is provided, metrics and dashboard will be deployed there "
+  description = "Monitoring project where the dashboard will be created and the solution deployed; a project will be created if set to empty string"
   default     = ""
 }
 
