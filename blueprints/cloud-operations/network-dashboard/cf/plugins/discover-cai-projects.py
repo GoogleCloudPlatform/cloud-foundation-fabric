@@ -12,9 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
 import logging
 
-from . import *
+from . import Level, Phase, HTTPRequest, Step, register
 from .utils import parse_cai_page_token, parse_cai_results
 
 NAME = 'project'
@@ -39,14 +40,22 @@ def start_discovery(resources):
   logging.info('discovery projects start')
   for resource_type in ('projects', 'folders'):
     for k in resources.get(resource_type, []):
-      yield CAI_URL.format(f'{resource_type}/{k}')
+      yield HTTPRequest(CAI_URL.format(f'{resource_type}/{k}'), {}, None)
 
 
 @register(NAME, Phase.DISCOVER, Step.END)
-def end_discovery(resources, data, url):
+def end_discovery(resources, response):
+  request = response.request
+  try:
+    data = response.json()
+  except json.decoder.JSONDecodeError as e:
+    logging.critical(f'error decoding URL {request.url}: {e.args[0]}')
+    return {}
   for result in parse_cai_results(data, NAME, TYPE):
     number = result['project'].split('/')[1]
     project_id = result['displayName']
     resources['projects'][project_id] = {'number': number}
     resources['projects:number'][number] = project_id
-  return parse_cai_page_token(data, url)
+  next_url = parse_cai_page_token(data, request.url)
+  if next_url:
+    yield HTTPRequest(next_url, {}, None)

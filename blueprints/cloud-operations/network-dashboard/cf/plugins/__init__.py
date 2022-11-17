@@ -19,8 +19,14 @@ import itertools
 import pathlib
 import pkgutil
 
+__all__ = [
+    'HTTPRequest', 'Level', 'Phase', 'PluginError', 'Resource', 'Step',
+    'get_plugins', 'register'
+]
+
 _PLUGINS = []
 
+HTTPRequest = collections.namedtuple('HTTPRequest', 'url headers data')
 Level = enum.IntEnum('Level', 'CORE PRIMARY DERIVED')
 Phase = enum.IntEnum('Phase', 'INIT DISCOVER EXTEND AGGREGATE')
 Plugin = collections.namedtuple('Plugin',
@@ -53,8 +59,3 @@ for mod_info in pkgutil.iter_modules([_plugins_path], 'plugins.'):
   importlib.import_module(mod_info.name)
 
 _PLUGINS.sort()
-
-__all__ = [
-    'Level', 'Phase', 'PluginError', 'Resource', 'Step', 'get_plugins',
-    'register'
-]

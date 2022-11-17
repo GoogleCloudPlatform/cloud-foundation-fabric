@@ -12,9 +12,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
 import logging
 import re
 
+from . import HTTPRequest, PluginError
+
+MP_PART = '''\
+Content-Type: application/http
+MIME-Version: 1.0
+Content-Transfer-Encoding: binary
+
+GET {}?alt=json HTTP/1.1
+Content-Type: application/json
+MIME-Version: 1.0
+Content-Length: 0
+Accept: application/json
+Accept-Encoding: gzip, deflate
+Host: compute.googleapis.com
+
+'''
 RE_URL = re.compile(r'nextPageToken=[^&]+&?')
 
 
@@ -36,3 +53,33 @@ def parse_cai_page_token(data, url):
     logging.info(f'page  token {page_token}')
   if page_token:
     return RE_URL.sub(f'pageToken={page_token}&', url)
+
+
+def dirty_mp_request(urls, boundary='1234567890'):
+  boundary = f'--{boundary}'
+  data = [boundary]
+  for url in urls:
+    data += ['\n', MP_PART.format(url), boundary]
+  data.append('--\n')
+  headers = {'content-type': f'multipart/mixed; boundary={boundary[2:]}'}
+  return HTTPRequest('https://compute.googleapis.com/batch/compute/v1', headers,
+                     ''.join(data))
+
+
+def dirty_mp_response(content_type, content):
+  try:
+    _, boundary = content_type.split('=')
+  except ValueError:
+    raise PluginError('no boundary found in content type')
+  content = content.decode('utf-8').strip()[:-2]
+  if boundary not in content:
+    raise PluginError('MIME boundary not found')
+  for part in content.split(f'--{boundary}'):
+    part = part.strip()
+    if not part:
+      continue
+    try:
+      mime_header, header, body = part.split('\r\n\r\n', 3)
+    except ValueError:
+      raise PluginError('cannot parse MIME part')
+    yield json.loads(body)

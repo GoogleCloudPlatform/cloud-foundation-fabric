@@ -36,14 +36,19 @@ def do_discovery():
       p.resource: p.func for p in plugins.get_plugins(phase, plugins.Step.END)
   }
   for plugin in plugins.get_plugins(phase, plugins.Step.START):
+    logging.info(f'discovery {plugin.resource}')
     data_handler = data_handlers.get(plugin.resource)
-    urls = collections.deque(plugin.func(RESOURCES))
-    while urls:
-      url = urls.popleft()
-      data = fetch(url)
-      next_url = data_handler(RESOURCES, data, url)
-      if next_url:
-        urls.append(next_url)
+    requests = collections.deque(plugin.func(RESOURCES))
+    while requests:
+      request = requests.popleft()
+      response = fetch(request)
+      if not data_handler:
+        logging.warn(f'no discovery data handler for {plugin.resource}')
+      for next_request in data_handler(RESOURCES, response):
+        if not next_request:
+          continue
+        logging.info(f'next request {next_request}')
+        requests.append(next_request)
 
 
 def do_init(organization, folder, project):
@@ -58,18 +63,24 @@ def do_init(organization, folder, project):
     plugin.func(RESOURCES)
 
 
-def fetch(url):
+def fetch(request):
   # try
-  logging.info(f'fetch {url}')
-  response = HTTP.get(url)
+  logging.info(f'fetch {request.url}')
+  if not request.data:
+    response = HTTP.get(request.url, headers=request.headers)
+  else:
+    response = HTTP.post(request.url, headers=request.headers,
+                         data=request.data)
   if response.status_code != 200:
-    logging.critical(f'response code {response.status_code} for URL {url}')
-    return {}
-  try:
-    return response.json()
-  except json.decoder.JSONDecodeError as e:
-    logging.critical(f'error decoding URL {url}: {e.args[0]}')
-    return {}
+    # TODO: handle this
+    logging.critical(
+        f'response code {response.status_code} for URL {request.url}')
+    print(request.url)
+    print(request.headers)
+    print(request.data)
+    print(response.headers)
+    print(response.content)
+  return response
 
 
 @click.command()
@@ -88,8 +99,8 @@ def main(organization=None, op_project=None, project=None, folder=None):
 
   do_discovery()
 
-  # import icecream
-  # icecream.ic(RESOURCES)
+  import icecream
+  icecream.ic(RESOURCES)
 
 
 if __name__ == '__main__':

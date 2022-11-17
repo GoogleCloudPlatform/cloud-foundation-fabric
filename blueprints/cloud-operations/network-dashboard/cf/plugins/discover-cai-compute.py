@@ -12,10 +12,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import json
 import logging
 import urllib.parse
 
-from . import *
+from . import Level, Phase, HTTPRequest, Step, register
 from .utils import parse_cai_results
 
 # https://content-cloudasset.googleapis.com/v1/organizations/436789450919/assets?contentType=RESOURCE&assetTypes=compute.googleapis.com/Network
@@ -169,12 +170,18 @@ def init(resources):
 def start_discovery(resources):
   'Start discovery by returning the asset list URL for asset types.'
   logging.info('discovery compute start')
-  yield _url(resources)
+  yield HTTPRequest(_url(resources), {}, None)
 
 
 @register(PLUGIN_NAME, Phase.DISCOVER, Step.END)
-def end_discovery(resources, data, url):
+def end_discovery(resources, response):
   'Process discovery data.'
+  request = response.request
+  try:
+    data = response.json()
+  except json.decoder.JSONDecodeError as e:
+    logging.critical(f'error decoding URL {request.url}: {e.args[0]}')
+    return {}
   for result in parse_cai_results(data, PLUGIN_NAME, method='list'):
     resource = {}
     resource_data = result['resource']
@@ -195,4 +202,4 @@ def end_discovery(resources, data, url):
   if page_token:
     logging.info('requesting next page')
     url = _url(resources)
-    return f'{url}&pageToken={page_token}'
+    yield HTTPRequest(f'{url}&pageToken={page_token}', {}, None)
