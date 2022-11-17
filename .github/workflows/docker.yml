@@ -30,7 +30,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
-          context: ${{ inputs.path }}
+          context: "{{defaultContext}}:${{ inputs.path }}"
           push: false
           tags: user/app:latest
 
