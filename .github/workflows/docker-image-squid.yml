@@ -32,4 +32,4 @@ jobs:
     with:
       image_name: squid
       context: modules/cloud-config-container/squid/docker
-      #action: ${{ github.event_name == 'pull_request' && github.event.action == 'opened' }}
+      event_name: ${{ github.event_name }}
