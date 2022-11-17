@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import itertools
 import json
 import logging
 import re
@@ -35,27 +36,18 @@ Host: compute.googleapis.com
 RE_URL = re.compile(r'nextPageToken=[^&]+&?')
 
 
-def parse_cai_results(data, name, resource_type=None, method='search'):
-  results = data.get('results' if method == 'search' else 'assets')
-  if not results:
-    logging.info(f'no results for {name}')
-    return
-  for result in results:
-    if resource_type and result['assetType'] != resource_type:
-      logging.warn(f'result for wrong type {result["assetType"]}')
-      continue
-    yield result
-
-
-def parse_cai_page_token(data, url):
-  page_token = data.get('nextPageToken')
-  if page_token:
-    logging.info(f'page  token {page_token}')
-  if page_token:
-    return RE_URL.sub(f'pageToken={page_token}&', url)
+def batched(iterable, n):
+  'Batch data into lists of length n. The last batch may be shorter.'
+  # batched('ABCDEFG', 3) --> ABC DEF G
+  if n < 1:
+    raise ValueError('n must be at least one')
+  it = iter(iterable)
+  while (batch := list(itertools.islice(it, n))):
+    yield batch
 
 
 def dirty_mp_request(urls, boundary='1234567890'):
+  'Bundle urls into a single multipart mixed batched request.'
   boundary = f'--{boundary}'
   data = [boundary]
   for url in urls:
@@ -67,6 +59,7 @@ def dirty_mp_request(urls, boundary='1234567890'):
 
 
 def dirty_mp_response(content_type, content):
+  'Parse multipart mixed response and return individual parts.'
   try:
     _, boundary = content_type.split('=')
   except ValueError:
@@ -83,3 +76,25 @@ def dirty_mp_response(content_type, content):
     except ValueError:
       raise PluginError('cannot parse MIME part')
     yield json.loads(body)
+
+
+def parse_cai_results(data, name, resource_type=None, method='search'):
+  'Preliminary parsing of CAI asset result.'
+  results = data.get('results' if method == 'search' else 'assets')
+  if not results:
+    logging.info(f'no results for {name}')
+    return
+  for result in results:
+    if resource_type and result['assetType'] != resource_type:
+      logging.warn(f'result for wrong type {result["assetType"]}')
+      continue
+    yield result
+
+
+def parse_cai_page_token(data, url):
+  'Detect next page token in result and return next page URL.'
+  page_token = data.get('nextPageToken')
+  if page_token:
+    logging.info(f'page  token {page_token}')
+  if page_token:
+    return RE_URL.sub(f'pageToken={page_token}&', url)

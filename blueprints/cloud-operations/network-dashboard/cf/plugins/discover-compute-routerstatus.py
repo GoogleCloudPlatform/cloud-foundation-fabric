@@ -15,7 +15,7 @@
 import logging
 
 from . import Level, register_init, register_discovery
-from .utils import dirty_mp_request, dirty_mp_response
+from .utils import batched, dirty_mp_request, dirty_mp_response
 
 LOGGER = logging.getLogger('net-dash.discovery.compute-routes-dynamic')
 NAME = 'routes-dynamic'
@@ -63,9 +63,11 @@ def init(resources):
 @register_discovery(_handle_discovery, Level.DERIVED)
 def start_discovery(resources):
   LOGGER.info('discovery start')
-  # TODO: split in batches
   urls = [
       API_URL.format(r['project_id'], r['region'], r['name'])
       for r in resources['routers'].values()
   ]
-  yield dirty_mp_request(urls)
+  if not urls:
+    return
+  for batch in batched(urls, 10):
+    yield dirty_mp_request(batch)
