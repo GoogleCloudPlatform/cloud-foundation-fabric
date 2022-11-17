@@ -24,8 +24,10 @@ __all__ = [
     'get_init_plugins', 'register_discovery', 'register_init'
 ]
 
-_PLUGINS_INIT = []
+_PLUGINS_SERIES = []
 _PLUGINS_DISCOVERY = []
+_PLUGINS_INIT = []
+_PLUGINS_SERIES = []
 
 HTTPRequest = collections.namedtuple('HTTPRequest', 'url headers data')
 Level = enum.IntEnum('Level', 'CORE PRIMARY DERIVED')
@@ -39,33 +41,60 @@ class PluginError(Exception):
 
 
 def get_discovery_plugins():
+  'Return discovery plugins.'
   for p in _PLUGINS_DISCOVERY:
     yield p
 
 
 def get_init_plugins():
+  'Return init plugins.'
   for p in _PLUGINS_INIT:
     yield p
 
 
+def get_series_plugins():
+  'Return metrics plugins.'
+  for p in _PLUGINS_SERIES:
+    yield p
+
+
+def _register(collection, func, *args):
+  'Derive plugin name from function and add to its collection.'
+  name = f'{func.__module__}.{func.__name__}'
+  collection.append(Plugin(func, name, *args))
+
+
 def register_discovery(handler_func, level=Level.PRIMARY, priority=99):
+  'Register plugins that discover data.'
 
   def outer(func):
-    _PLUGINS_DISCOVERY.append(
-        Plugin(func, func.__module__, level, priority, handler_func))
+    _register(_PLUGINS_DISCOVERY, func, level, priority, handler_func)
     return func
 
   return outer
 
 
 def register_init(*args):
-
+  'Register plugins that prepare the shared data structure.'
   if args and type(args[0]) == types.FunctionType:
-    _PLUGINS_INIT.append(Plugin(args[0], args[0].__module__))
+    _register(_PLUGINS_INIT, args[0])
     return
 
   def outer(func):
-    _PLUGINS_INIT.append(Plugin(func, func.__module__))
+    _register(_PLUGINS_INIT, func)
+    return func
+
+  return outer
+
+
+def register_series(*args):
+  'Register plugins that derive metrics series from data.'
+  if args and type(args[0]) == types.FunctionType:
+    _register(_PLUGINS_SERIES, args[0])
+    return
+
+  def outer(func):
+    _register(_PLUGINS_SERIES, func)
     return func
 
   return outer

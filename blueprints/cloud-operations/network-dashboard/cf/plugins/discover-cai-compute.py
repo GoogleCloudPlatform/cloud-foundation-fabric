@@ -26,13 +26,15 @@ CAI_URL = ('https://content-cloudasset.googleapis.com/v1'
            '?contentType=RESOURCE&{asset_types}&pageSize=500')
 LOGGER = logging.getLogger('net-dash.discovery.cai-compute')
 TYPES = {
+    'addresses': 'Address',
+    'firewall_policies': 'FirewallPolicy',
+    'firewalls': 'Firewall',
+    'forwarding_rules': 'ForwardingRule',
+    'instances': 'Instance',
     'networks': 'Network',
     'subnetworks': 'Subnetwork',
-    'firewalls': 'Firewall',
-    'firewall_policies': 'FirewallPolicy',
-    'instances': 'Instance',
+    'routers': 'Router',
     'routes': 'Route',
-    'routers': 'Router'
 }
 NAMES = {v: k for k, v in TYPES.items()}
 
@@ -73,34 +75,27 @@ def _handle_discovery(resources, response):
     yield HTTPRequest(f'{url}&pageToken={page_token}', {}, None)
 
 
-def _handle_networks(resource, data):
-  'Handle network type resource data.'
+def _handle_addresses(resource, data):
+  'Handle address type resource data.'
   resource['id'] = data['id']
   resource['name'] = data['name']
   resource['self_link'] = _self_link(data['selfLink'])
-  resource['peerings'] = []
-  for p in data.get('peerings', []):
-    if p['state'] != 'ACTIVE':
-      continue
-    resource['peerings'].append({'name': p['name'], 'network': p['network']})
-  resource['subnets'] = [_self_link(s) for s in data.get('subnetworks', [])]
-
-
-def _handle_subnetworks(resource, data):
-  'Handle subnetwork type resource data.'
-  resource['id'] = data['id']
-  resource['name'] = data['name']
-  resource['self_link'] = _self_link(data['selfLink'])
-  resource['cidr_range'] = data['ipCidrRange']
-  resource['network'] = _self_link(data['network'])
+  resource['network'] = _self_link(
+      data['network']) if 'network' in data else None
+  resource['subnetwork'] = _self_link(
+      data['subnetwork']) if 'subnetwork' in data else None
+  resource['address'] = data['address']
+  resource['internal'] = data.get('addressType') == 'INTERNAL'
   resource['purpose'] = data.get('purpose')
-  resource['region'] = data['region']
-  resource['secondary_ranges'] = []
-  for s in data.get('secondaryIpRanges', []):
-    resource['secondary_ranges'].append({
-        'name': s['rangeName'],
-        'cidr_range': s['ipCidrRange']
-    })
+
+
+def _handle_firewall_policies(resource, data):
+  'Handle firewall policy type resource data.'
+  resource['id'] = data['id']
+  resource['name'] = data['name']
+  resource['self_link'] = _self_link(data['selfLink'])
+  resource['num_rules'] = len(data.get('rules', []))
+  resource['num_tuples'] = data.get('ruleTupleCount', 0)
 
 
 def _handle_firewalls(resource, data):
@@ -111,13 +106,21 @@ def _handle_firewalls(resource, data):
   resource['network'] = _self_link(data['network'])
 
 
-def _handle_firewall_policies(resource, data):
-  'Handle firewall policy type resource data.'
+def _handle_forwarding_rules(resource, data):
+  'Handle forwarding_rules type resource data.'
+  from icecream import ic
   resource['id'] = data['id']
   resource['name'] = data['name']
   resource['self_link'] = _self_link(data['selfLink'])
-  resource['num_rules'] = len(data.get('rules', []))
-  resource['num_tuples'] = data.get('ruleTupleCount', 0)
+  resource['region'] = data['region'].split(
+      '/')[-1] if 'region' in data else None
+  resource['load_balancing_scheme'] = data['loadBalancingScheme']
+  resource['address'] = data['IPAddress'] if 'IPAddress' in data else None
+  resource['network'] = _self_link(
+      data['network']) if 'network' in data else None
+  resource['subnetwork'] = _self_link(
+      data['subnetwork']) if 'subnetwork' in data else None
+  resource['psc'] = True if data.get('pscConnectionStatus') else False
 
 
 def _handle_instances(resource, data):
@@ -136,6 +139,28 @@ def _handle_instances(resource, data):
     })
 
 
+def _handle_networks(resource, data):
+  'Handle network type resource data.'
+  resource['id'] = data['id']
+  resource['name'] = data['name']
+  resource['self_link'] = _self_link(data['selfLink'])
+  resource['peerings'] = []
+  for p in data.get('peerings', []):
+    if p['state'] != 'ACTIVE':
+      continue
+    resource['peerings'].append({'name': p['name'], 'network': p['network']})
+  resource['subnets'] = [_self_link(s) for s in data.get('subnetworks', [])]
+
+
+def _handle_routers(resource, data):
+  'Handle router type resource data.'
+  resource['id'] = data['id']
+  resource['name'] = data['name']
+  resource['self_link'] = _self_link(data['selfLink'])
+  resource['network'] = _self_link(data['network'])
+  resource['region'] = data['region'].split('/')[-1]
+
+
 def _handle_routes(resource, data):
   'Handle route type resource data.'
   resource['id'] = data['id']
@@ -148,13 +173,21 @@ def _handle_routes(resource, data):
   resource['next_hope_type'] = hop[0]
 
 
-def _handle_routers(resource, data):
-  'Handle router type resource data.'
+def _handle_subnetworks(resource, data):
+  'Handle subnetwork type resource data.'
   resource['id'] = data['id']
   resource['name'] = data['name']
   resource['self_link'] = _self_link(data['selfLink'])
+  resource['cidr_range'] = data['ipCidrRange']
   resource['network'] = _self_link(data['network'])
-  resource['region'] = data['region'].split('/')[-1]
+  resource['purpose'] = data.get('purpose')
+  resource['region'] = data['region']
+  resource['secondary_ranges'] = []
+  for s in data.get('secondaryIpRanges', []):
+    resource['secondary_ranges'].append({
+        'name': s['rangeName'],
+        'cidr_range': s['ipCidrRange']
+    })
 
 
 def _self_link(s):
